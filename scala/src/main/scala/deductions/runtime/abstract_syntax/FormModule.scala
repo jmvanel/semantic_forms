@@ -29,7 +29,7 @@ trait FormModule[URI] {
   class Entry(val label: String, val comment: String // , val value:Any
   ) {
     	override def toString() : String = {
-    		label + " " + comment
+    		s""" "$label", "$comment" """
     	}
   }
   case class ResourceEntry( l: String,  c: String,
@@ -43,7 +43,7 @@ trait FormModule[URI] {
     property: DatatypeProperty, validator: DatatypeValidator,
     value: String = "") extends Entry(l, c) {
   	override def toString() : String = {
-  		super.toString  + ", " + value
+  		super.toString  + s""" := "$value" """
   	}
   }
 
