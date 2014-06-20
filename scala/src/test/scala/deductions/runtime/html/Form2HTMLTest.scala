@@ -1,7 +1,7 @@
 package deductions.runtime.html
 
 import org.w3.banana.RDF
-import deductions.runtime.swing.components.abstract_syntax.FormSyntaxFactoryTest
+import deductions.runtime.components.abstract_syntax.FormSyntaxFactoryTest
 import org.w3.banana.RDFReader
 import org.w3.banana.Turtle
 import org.w3.banana.RDFOps

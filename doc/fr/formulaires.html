@@ -10,25 +10,36 @@
 </head>
 
 <body>
-<p style="font-size: 20pt">Formulaires</p>
+<p style="font-size: 20pt">Formulaires : vers la sémantique</p>
 
 <p>© 2014-05 <b>Jean-Marc Vanel</b> <a
 href="http://deductions-software.com/">deductions-software.com</a> - license <a
 href="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative Commons
 License by-nc-nd 3.0</a></p>
 
-<p>[Version de réference de cet article: <a
-href="formulaires.html">Formulaires</a>]</p>
+<p>[Version de réference de cet article ]</p>
+
+<p></p>
 
 <p>Table</p>
 
 <div class="toc">
 <ul>
   <li><a href="#L33">Introduction</a></li>
-  <li><a href="#L63">Avec le Web Sémantique</a></li>
-  <li><a href="#L361">Problématiques de la génration de formulaires</a></li>
+  <li><a href="#L63">Avec le Web Sémantique</a> 
+    <ul>
+      <li><a href="#L473">Fresnel</a></li>
+      <li><a href="#L124">Data manager GUI dans le cadriciel EulerGUI</a></li>
+    </ul>
+  </li>
+  <li><a href="#L361">Problématiques de la génération de formulaires</a></li>
   <li><a href="#L119">Recherche Internet: <em>semantic web RDF "forms"
-    field</em></a></li>
+    field</em></a> 
+    <ul>
+      <li><a href="#L558">OWF</a></li>
+    </ul>
+  </li>
+  <li><a href="#L638">Liste des projets de formulaires sémantiques</a></li>
 </ul>
 </div>
 
@@ -44,16 +55,19 @@ href="formulaires.html">Formulaires</a>]</p>
 l'orienté objet. Et une classe orientée objet n'est pas directement isomorphe
 à un formulaire de l'application.</p>
 
-<p>On peut faire un formulaire en HTML pur, mais les nuances n'y sont pas
-(champs obligatoires ou non, validation). On met alors du JavaScript, ou ça
-retourne au serveur HTTP. Bref ça n'est pas très <a
+<p>On peut faire un formulaire en HTML pur, mais les nuances n'y sont pas en
+HTML (champs obligatoires ou non, validation). On met alors du JavaScript, ou
+ça retourne au serveur HTTP. Bref ça n'est pas très <a
 href="http://fr.wikipedia.org/wiki/Programmation_d%C3%A9clarative">déclaratif</a>.</p>
+
+<p>A moins que <a href="http://fr.wikipedia.org/wiki/HTML5">HTML5</a> apporte
+quelque chose ?</p>
 
 <p>Toutes les variétés de RAD ( <a
 href="http://fr.wikipedia.org/wiki/D%C3%A9veloppement_rapide_d'applications">Développement_rapide_d'applications</a>
-) utilisent tous des éditeurs/générateurs de formulaires, qui peuvent ou non
-être confondus avec les éditeurs de modèle de données. Voir une liste des
-<a href="http://fr.wikipedia.org/wiki/Outils_RAD">Outils_RAD</a>.</p>
+) utilisent tous des éditeurs / générateurs de formulaires, qui peuvent ou
+non être confondus avec les éditeurs de modèle de données. Voir une liste
+des <a href="http://fr.wikipedia.org/wiki/Outils_RAD">Outils_RAD</a>.</p>
 
 <p>Il y a aussi les générateurs de processus métier (alias BMP, workflow)
 (Bonita, etc).</p>
@@ -61,11 +75,18 @@ href="http://fr.wikipedia.org/wiki/D%C3%A9veloppement_rapide_d'applications">Dé
 <p>Il y a les formulaires en XML via <a
 href="http://fr.wikipedia.org/wiki/XForms">XForms</a>, liés à XML Schema.</p>
 
-<p>Les principaux cadriciels Web comme Ruby on Rails, Play! ou Drupal ont leur
-façon de créer des formulaires, soit à partir des tables SQL, soit du
-modèle objet.</p>
+<p>Les principaux cadriciels Web comme Ruby on Rails, Play! , Simfony, ou
+Drupal ont leur façon de créer des formulaires, soit à partir des tables
+SQL, soit du modèle objet.</p>
+
+<p>Certains cadriciels Web comme Play! ou Simfony sont plus flexibles que les
+autres en ce qui concerne la liaison entre le stockage et le formulaire.</p>
+
+<p></p>
 
 <h3 id="L63">Avec le Web Sémantique</h3>
+
+<h4 id="L473">Fresnel</h4>
 
 <p>Dans le monde du Web Sémantique, le plus naturel est de créer un
 formulaire à partir d'une liste de propriétés RDF.</p>
@@ -91,7 +112,7 @@ contenant les 3 propriétés <code>name, surname, depiction</code>". La syntaxe
 <p>De toute façon, Fresnel est un vocabulaire d'affichage, pas directement
 pour l'entrée de données. Il est cependant réutilisable à cette fin.</p>
 
-<p></p>
+<h4 id="L124">Data manager GUI dans le cadriciel EulerGUI</h4>
 
 <p>Un autre exemple est le composant <a
 href="http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/html/documentation.html#Data1">Data
@@ -145,7 +166,7 @@ implémenté, sauf récemment comme on va voir plus loin.</p>
     <p>langue;</p>
     <p>types de médias pour URL: image, son, vidéo</p>
   </li>
-  <li>édition
+  <li>édition 
     <p>se lier à un URI connu possible limité par son type</p>
     <p>valeur littérale : validation </p>
     <p>propriétés mono-valuées (le défaut pour édition) ou multi-valuées
@@ -153,7 +174,7 @@ implémenté, sauf récemment comme on va voir plus loin.</p>
     <p>énumération (déclaration via OWL)</p>
   </li>
   <li>triplets "secondaires" , c à d. <code>&lt;SUJET&gt; ?P ?V. <strong>?V
-    ?P1 ?V1.</strong></code>
+    ?P1 ?V1.</strong></code> 
     <p>typiquement ?V représente une resource liée seulement à
     &lt;SUJET&gt;, comme l'adresse de quelqu'un;</p>
     <p>c'est souvent un noeud anonyme (blank node);</p>
@@ -163,7 +184,7 @@ implémenté, sauf récemment comme on va voir plus loin.</p>
     href="http://viejs.org/widgets/forms/">comme le fait VIE</a></p>
     <p>comment ? un prédicat portant sur le prédicat ?P</p>
   </li>
-  <li>origine des prédicats ( distinguer à l'affichage )
+  <li>origine des prédicats ( distinguer à l'affichage ) 
     <p>présent dans l'instance,</p>
     <p>provient de telle classe via domaine et super-classe;</p>
     <p>triplets directs ou inverses, </p>
@@ -241,6 +262,8 @@ for that field in the form.</em></p>
 <p><em>18 janv. 2012 - Semantic forms deal with the concept of data-driven web
 forms and how ... This doesn't work so well on password fields since the
 placeholder ...</em></p>
+
+<h4 id="L558">OWF</h4>
 <hr />
 
 <p>Le plus prometteur est le premier article (à la 10th Extended Semantic Web
@@ -345,13 +368,27 @@ href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/reasoner
 
 <p></p>
 
-<p>Does Jena TDB and Jena Inference infrastructure can work together?</p>
+<p>Can Jena TDB and Jena Inference infrastructure work together?</p>
 
 <p></p>
 
 <p>Y a t-il un site où OWF est déployé ???????</p>
 
 <p></p>
+
+<h3 id="L638">Liste des projets de formulaires sémantiques</h3>
+<ul>
+  <li>cette liste couvre un domaine plus large que les formulaires
+    sémantiques; elle couvre les tentatives d'aller plus loin et d'offrir un
+    cadriciel sémantique complet pour construire des Systèmes d'Information
+    Sémantiques: 
+    <p><a
+    href="http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/html/semantic_based_apps_review.html">http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/html/semantic_based_apps_review.html</a></p>
+  </li>
+  <li>PHP projects with simfony:
+    <p><a href="https://github.com/conjecto">https://github.com/conjecto</a></p>
+  </li>
+</ul>
 
 <p></p>
 

@@ -1,4 +1,4 @@
-package deductions.runtime.swing.components.abstract_syntax
+package deductions.runtime.components.abstract_syntax
 
 import java.io.FileInputStream
 
