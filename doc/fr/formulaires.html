@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>Formulaires</title>
+  <meta name="generator" content="Amaya, see http://www.w3.org/Amaya/" />
+  <link href="deductions.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<p style="font-size: 20pt">Formulaires</p>
+
+<p>© 2014-05 <b>Jean-Marc Vanel</b> <a
+href="http://deductions-software.com/">deductions-software.com</a> - license <a
+href="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative Commons
+License by-nc-nd 3.0</a></p>
+
+<p>[Version de réference de cet article: <a
+href="formulaires.html">Formulaires</a>]</p>
+
+<p>Table</p>
+
+<div class="toc">
+<ul>
+  <li><a href="#L33">Introduction</a></li>
+  <li><a href="#L63">Avec le Web Sémantique</a></li>
+  <li><a href="#L361">Problématiques de la génration de formulaires</a></li>
+  <li><a href="#L119">Recherche Internet: <em>semantic web RDF "forms"
+    field</em></a></li>
+</ul>
+</div>
+
+<p></p>
+
+<h3 id="L33">Introduction</h3>
+
+<p>Les formulaires c'est le nerf de la guerre de l'informatique.</p>
+
+<p>Autrefois tout partait de la spécification d'une suite d'"écrans".</p>
+
+<p>Maintenant on le fait en HTML, enfin pas toujours, car on a inventé
+l'orienté objet. Et une classe orientée objet n'est pas directement isomorphe
+à un formulaire de l'application.</p>
+
+<p>On peut faire un formulaire en HTML pur, mais les nuances n'y sont pas
+(champs obligatoires ou non, validation). On met alors du JavaScript, ou ça
+retourne au serveur HTTP. Bref ça n'est pas très <a
+href="http://fr.wikipedia.org/wiki/Programmation_d%C3%A9clarative">déclaratif</a>.</p>
+
+<p>Toutes les variétés de RAD ( <a
+href="http://fr.wikipedia.org/wiki/D%C3%A9veloppement_rapide_d'applications">Développement_rapide_d'applications</a>
+) utilisent tous des éditeurs/générateurs de formulaires, qui peuvent ou non
+être confondus avec les éditeurs de modèle de données. Voir une liste des
+<a href="http://fr.wikipedia.org/wiki/Outils_RAD">Outils_RAD</a>.</p>
+
+<p>Il y a aussi les générateurs de processus métier (alias BMP, workflow)
+(Bonita, etc).</p>
+
+<p>Il y a les formulaires en XML via <a
+href="http://fr.wikipedia.org/wiki/XForms">XForms</a>, liés à XML Schema.</p>
+
+<p>Les principaux cadriciels Web comme Ruby on Rails, Play! ou Drupal ont leur
+façon de créer des formulaires, soit à partir des tables SQL, soit du
+modèle objet.</p>
+
+<h3 id="L63">Avec le Web Sémantique</h3>
+
+<p>Dans le monde du Web Sémantique, le plus naturel est de créer un
+formulaire à partir d'une liste de propriétés RDF.</p>
+
+<p>Si l'on veut ajouter des "nuances", le plus naturel est d'ajouter des
+propriétés aux champs du formulaire.</p>
+
+<p>C'est ce que fait <a
+href="http://www.w3.org/2005/04/fresnel-info/">Fresnel</a>, qui est, plus
+largement, un vocabulaire pour afficher des données RDF. Par exemple ceci :</p>
+<pre>:foafPersonDefaultLens rdf:type fresnel:Lens ;
+                       fresnel:classLensDomain foaf:Person ;
+                       fresnel:showProperties ( <span class="IMPORTANT_CODE">foaf:name 
+                                                foaf:surname 
+                                                foaf:depiction</span> ) .</pre>
+
+<p></p>
+
+<p>exprime cela: "ceci s'applique à la classe person de FOAF et c'est une vue
+contenant les 3 propriétés <code>name, surname, depiction</code>". La syntaxe
+() exprime un ordre, ce qui convient à un formulaire.</p>
+
+<p>De toute façon, Fresnel est un vocabulaire d'affichage, pas directement
+pour l'entrée de données. Il est cependant réutilisable à cette fin.</p>
+
+<p></p>
+
+<p>Un autre exemple est le composant <a
+href="http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/html/documentation.html#Data1">Data
+manager GUI</a> dans le cadriciel <strong>EulerGUI</strong>. A partir d'une
+instance (URI resource) il affiche tous les triplets directs (ou inverse)
+existants, et donne la possibilité d'ajouter des litéraux ou des URI, suivant
+que la propriété est datatype ou objet. <a
+href="http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/html/documentation.html#L7253">DomainApplication</a>
+est un autre composant générique qui permet de saisir une nouvelle instance
+d'une classe donnée. Il affiche toutes les propriétés dont le domaine
+correspond ( domaines inférés aussi pour super-classes ).</p>
+
+<p></p>
+
+<p>Voici un example du composant générique DomainApplication, avec 2 icônes
+de création d'instance ( personne FOAF et musique de Musical Ontology) ,
+après avoir appuyé sur la première icône. Toutes les propriétés du
+domaine personne FOAF sont affichées:</p>
+
+<p><img alt=" Composant générique DomainApplication"
+src="http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/html/images/domain-app1.png"
+/></p>
+
+<p></p>
+
+<p>Quelques références sur Fresnel :</p>
+
+<p><a
+href="http://www.w3.org/2005/04/fresnel-info/">http://www.w3.org/2005/04/fresnel-info/</a></p>
+
+<p>Présentation : <a
+href="https://www.lri.fr/~pietriga/2006/11/fresnelISWC06.pdf">https://www.lri.fr/~pietriga/2006/11/fresnelISWC06.pdf</a></p>
+
+<p><a
+href="http://www.w3.org/2005/04/fresnel-info/manual/">http://www.w3.org/2005/04/fresnel-info/manual/</a></p>
+
+<p></p>
+
+<p>Hélas, après un intérêt entre 2004 et 2008, Fresnel n'a plus été
+implémenté, sauf récemment comme on va voir plus loin.</p>
+
+<h3 id="L361">Problématiques de la génération de formulaires</h3>
+<ul>
+  <li>label pour un URI (propriété ou resource ordinaire) : utiliser
+    rdfs:label ou autre propriété suivant type; tenir compte de la langue de
+    l'application</li>
+  <li>création, affichage ou édition, ou les deux</li>
+  <li>affichage: 
+    <p>propriétés mono ou multi-valuées,</p>
+    <p>datatype éventuel (aussi géocoordonnées);</p>
+    <p>langue;</p>
+    <p>types de médias pour URL: image, son, vidéo</p>
+  </li>
+  <li>édition
+    <p>se lier à un URI connu possible limité par son type</p>
+    <p>valeur littérale : validation </p>
+    <p>propriétés mono-valuées (le défaut pour édition) ou multi-valuées
+    (déclaration via OWL)</p>
+    <p>énumération (déclaration via OWL)</p>
+  </li>
+  <li>triplets "secondaires" , c à d. <code>&lt;SUJET&gt; ?P ?V. <strong>?V
+    ?P1 ?V1.</strong></code>
+    <p>typiquement ?V représente une resource liée seulement à
+    &lt;SUJET&gt;, comme l'adresse de quelqu'un;</p>
+    <p>c'est souvent un noeud anonyme (blank node);</p>
+    <p>( correspond à la notion d'agrégation en UML, ou en SQL delete en
+    cascade)</p>
+    <p>il convient de détecter et afficher ces triplets "secondaires", <a
+    href="http://viejs.org/widgets/forms/">comme le fait VIE</a></p>
+    <p>comment ? un prédicat portant sur le prédicat ?P</p>
+  </li>
+  <li>origine des prédicats ( distinguer à l'affichage )
+    <p>présent dans l'instance,</p>
+    <p>provient de telle classe via domaine et super-classe;</p>
+    <p>triplets directs ou inverses, </p>
+    <p>prédicats standards, qui peuvent être partout , comme
+    <code>rdfs:label</code></p>
+    <p>axiomes OWL ( raisonnement inductif possible ?)</p>
+  </li>
+  <li>aspect mise à jour dynamique via MVC ou moteur de règles</li>
+  <li>téléchargement dynamique des ontologies en cas de besoin</li>
+</ul>
+
+<h3 id="L119">Recherche Internet: <em>semantic web RDF "forms" field</em></h3>
+
+<p>Une recherche avec </p>
+
+<p><em>semantic web RDF "Forms" field</em></p>
+
+<p>donne quelques resources:</p>
+
+<p></p>
+
+<p><em><a
+href="http://www.swcs2013.org/SWCS-Rutledge-final2.pdf">http://www.swcs2013.org/SWCS-Rutledge-final2.pdf</a></em></p>
+
+<p><em>http://semantic-mediawiki.org/wiki/SMWCon_Fall_2013/OWL_Wiki_Forms_%28OWF%29:_A_Style_Language_that_Generates_Wikis_from_Semantic_Web_Ontologies</em></p>
+
+<p>http://fr.slideshare.net/Lloyd.Rutledge/smwcon-fall-2013-owl-wiki-forms</p>
+
+<p></p>
+
+<p><em>https://groups.drupal.org/node/152939</em></p>
+
+<p>http://mes.github.io/marbles/ a server-side application that formats
+Semantic Web content for XHTML clients using Fresnel lenses and formats.
+Colored dots are used to correlate the origin of displayed data with a list of
+data sources, hence the name.</p>
+
+<p></p>
+
+<p><em>http://dzineblog.com/2012/01/guide-to-building-semantic-web-forms.html</em></p>
+
+<p><em></em></p>
+
+<p><em>Semantic Forms in Drupal: Making the Semantic Web Usable ...</em></p>
+
+<p><em>https://groups.drupal.org/node/152939‎</em></p>
+
+<p><em>1 juin 2011 - 6 messages - ‎4 auteurs</em></p>
+
+<p><em>Are there any current initiatives for semantic forms in Drupal? ... make
+it easy for people to use semantic identifiers as values in form fields. ....
+work the Web application does doesn't need to be SemWeb-y... the RDF just needs
+ ...</em></p>
+
+<p><em>Help:SMW extensions - semantic-mediawiki.org</em></p>
+
+<p></p>
+
+<p><em>https://semantic-mediawiki.org/.../Help:SMW_extensi...‎</em></p>
+
+<p><em>11 juin 2013 - 1.1 Semantic Forms; 1.2 Semantic Image Input; 1.3
+Semantic Forms Inputs ... 2.1 Frequent Pattern Tag Cloud; 2.2 Semantic
+Drilldown; 2.3 Semantic Web Browser; 2.4 SolrStore ... 5 Storing data via an
+RDF triplestore ... property helps determine what sort of input will show up
+for that field in the form.</em></p>
+
+<p></p>
+
+<p><em>Guide to Building Semantic Web Forms - DzineBlog.com</em></p>
+
+<p><em>dzineblog.com/.../guide-to-building-semantic...</em></p>
+
+<p><em>De Jake Rocheleau - Dans 1 977 cercles Google+</em></p>
+
+<p><em>18 janv. 2012 - Semantic forms deal with the concept of data-driven web
+forms and how ... This doesn't work so well on password fields since the
+placeholder ...</em></p>
+<hr />
+
+<p>Le plus prometteur est le premier article (à la 10th Extended Semantic Web
+Conference, ESWC 2013, Montpellier, France, May 27th, 2013), qui commence par
+"nous décrivons une transformation à partir d'une ontologie OWL vers des
+données de style Fresnel, et de là vers des wikis sémantiques à base de
+formulaires" , et intitulé:</p>
+
+<p><em>From Ontology to Wiki – Generating Cascadable Default</em></p>
+
+<p><em>Fresnel Style from Given Ontologies for Creating</em></p>
+
+<p><em>Semantic Wiki Interfaces</em></p>
+
+<p><em>Lloyd Rutledge</em></p>
+
+<p>OWF utilise SPARQL 1.1 à la fois pour accéder aux ontologies, et pour
+inférer et écrire les spécifications Fresnel dans la base SPARQL.</p>
+
+<p>Donc cette partie est indépendante de Semantic Media Wiki (un gros pâté
+de PHP et SQL).</p>
+
+<p>http://is.cs.ou.nl/OWF/index.php5/Main_Page</p>
+
+<p><a
+href="http://is.cs.ou.nl/OWF/index.php5/OWL_Wiki_Forms_v0.2_installation">http://is.cs.ou.nl/OWF/index.php5/OWL_Wiki_Forms_v0.2_installation</a></p>
+
+<p>Quand on regarde là-dedans, il y a surtout les 444 lignes de
+SpecialOWLwikiForms.php , et là -dedans la partie "utile" est la</p>
+<pre>function ontos2DefFresnel ( $inOntosStr )</pre>
+
+<p>Et, dans cette fonction, 2 requêtes SPARQL, une pour les propriétés avec
+un ou plusieurs domaines affirmés ou or inferrés, et une pour les autres
+propriétés.</p>
+
+<p>Voici la 1ère, brute en PHP avec insertion SPARQL:</p>
+<pre>endpointUpd ( &lt;&lt;&lt;EOT
+ INSERT {
+  ?lensuri rdf:type       fresnel:Lens ;
+  fresnel:classLensDomain ?domain      ;
+  fresnel:showProperties  ?prop                 .
+}
+
+WHERE {
+ ?prop a           rdf:Property ;
+  rdfs:domain ?domain        .
+ FILTER ( ! bound(?subDomain) )
+ FILTER ( ! regex(str( ?prop   ), "http://www.w3.org/1999/02/22-rdf-syntax-ns#" ) )
+ FILTER ( ! regex(str( ?prop   ), "http://www.w3.org/2000/01/rdf-schema#"       ) )
+ FILTER ( ! regex(str( ?prop   ), "http://www.w3.org/2002/07/owl#"              ) )
+ FILTER ( ! regex(str( ?prop   ), "http://www.w3.org/2004/09/fresnel#"          ) )
+ BIND(IRI(CONCAT("
+EOT
+ . WIKIURI . 'defaultLens", ' . &lt;&lt;&lt;EOT
+
+  REPLACE(str(?domain), "[^A-Za-z0-9]", "", "i" )
+  )) AS ?lensuri)
+ OPTIONAL {
+  ?prop      rdfs:domain     ?subDomain .
+  ?subDomain rdfs:subClassOf ?domain    .
+ FILTER ( ! sameterm ( ?domain , ?subDomain) )
+}
+}
+EOT
+);</pre>
+
+<p>Simple et parfaitement réutilisable !</p>
+
+<p></p>
+
+<p>Cependant ça ne va pas très loin, en fait ça réutilise le raisonneur de
+Fuseki qui s'appelle :</p>
+
+<p>&lt;http://jena.hpl.hp.com/2003/OWLFBRuleReasoner&gt; .</p>
+
+<p><a
+href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/reasoner/rulesys/OWLFBRuleReasoner.html">http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/reasoner/rulesys/OWLFBRuleReasoner.html</a></p>
+
+<p></p>
+
+<p>via cette confiuguration:</p>
+<pre>&lt;#OWF&gt;
+    a ja:RDFDataset ;
+    rdfs:label "OWF" ;
+    ja:defaultGraph 
+      [ rdfs:label "OWF" ;
+        ja:reasoner &lt;#Reasoner&gt;
+      ] 
+    .
+&lt;#Reasoner&gt; ja:reasonerURL &lt;http://jena.hpl.hp.com/2003/OWLFBRuleReasoner&gt; .</pre>
+
+<p></p>
+
+<p>C'est quelque chose qui n'est pas très bien documenté sur les sites Jena
+:</p>
+
+<p>http://jena.apache.org/documentation/serving_data/#fuseki-configuration-file</p>
+
+<p>http://jena.apache.org/documentation/assembler/index.html</p>
+
+<p>http://jena.apache.org/documentation/inference/#OWLconfiguration</p>
+
+<p></p>
+
+<p>Does Jena TDB and Jena Inference infrastructure can work together?</p>
+
+<p></p>
+
+<p>Y a t-il un site où OWF est déployé ???????</p>
+
+<p></p>
+
+<p></p>
+
+<p></p>
+</body>
+</html>

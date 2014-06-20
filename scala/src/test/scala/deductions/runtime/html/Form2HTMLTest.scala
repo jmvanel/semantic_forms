@@ -18,8 +18,5 @@ class Form2HTMLTest[Rdf <: RDF]
 {
   println("Entering Form2HTMLTest")
   val nullURI = ops.makeUri("")
-  /* FIXED :)))))
-   * type mismatch; found : Form2HTMLTest.this.fact.FormSyntax,
-   * 								required: Form2HTMLTest.this.FormSyntax */
    println( generateHTML( form ) )
 }
