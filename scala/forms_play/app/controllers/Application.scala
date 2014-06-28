@@ -2,11 +2,19 @@ package controllers
 
 import play.api._
 import play.api.mvc._
+import deductions.runtime.html.TableView
 
-object Application extends Controller {
+object Application extends Controller with TableView 
+{
 
-  def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+  val uri = "/home/jmv/jmvanel.free.fr/jmv.rdf"
+  val f =  htmlFormString(uri)
+  def index = {
+    Action {
+      (
+      //  Ok(views.html.index("application is ready."))
+          Ok(views.html.index(f ))
+      )
+    }
   }
-
 }
