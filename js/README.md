@@ -2,7 +2,8 @@ JavaScript implementations
 ---
 
 Some example of pure JavaScript implementations are:
-	http://viejs.org/
+
+	http://viejs.org/ ,
 	http://www.hydra-cg.com/
 
 Of course, SPARQL servers can spit JSON-LD, which can readily be used by many JS libraries.
