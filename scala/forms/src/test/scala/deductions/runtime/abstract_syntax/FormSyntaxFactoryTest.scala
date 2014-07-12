@@ -1,7 +1,6 @@
-package deductions.runtime.components.abstract_syntax
+package deductions.runtime.abstract_syntax
 
 import java.io.FileInputStream
-
 import org.hamcrest.BaseMatcher
 import org.junit.Assert
 import org.junit.Test
@@ -12,18 +11,53 @@ import org.w3.banana.RDFReader
 import org.w3.banana.Turtle
 import org.w3.banana.diesel.toPointedGraphW
 import org.w3.banana.jena.Jena
-
+import org.scalatest.FunSuite
 import deductions.runtime.abstract_syntax.FormSyntaxFactory
+import org.w3.banana.RDFModule
+import org.w3.banana.RDFOpsModule
+import org.w3.banana.TurtleReaderModule
+import org.w3.banana.RDFDSL
+import org.w3.banana.jena.JenaModule
 
-object FormSyntaxFactoryTestApp extends FormSyntaxFactoryTest[Jena] with App {t1}
 
-class FormSyntaxFactoryTestJena extends FormSyntaxFactoryTest[Jena]
+//trait RDFDSLModule extends RDFModule with RDFDSL[RDFModule.Rdf] {
+////  implicit val Ops: RDFOps[Rdf]
+//}
 
-class FormSyntaxFactoryTest[Rdf <: RDF]
-  ( implicit ops: RDFOps[Rdf],
-    turtleReader : RDFReader[Rdf, Turtle] ) {
+//object FormSyntaxFactoryTestApp extends FormSyntaxFactoryTestJena with App {t1}
 
-  import ops._
+//class FormSyntaxFactoryTestJena0 extends FormSyntaxFactoryTest[Jena]
+class FormSyntaxFactoryTestJena extends FunSuite 
+with JenaModule
+with FormSyntaxFactoryTest // [Jena]
+  {
+  test("form contains label and data") {
+    val form = createForm
+    println("form:\n" + form)
+    Assert.assertThat("form contains label and data", form.toString,
+      new BaseMatcher[String]() {
+        def matches(a: Any): Boolean = {
+          val s = a.toString
+          s.contains("Alexandre") &&
+            s.contains("name")
+        }
+        def describeTo(x$1: org.hamcrest.Description): Unit = {}
+      })
+  }
+}
+trait FormSyntaxFactoryTest // [Rdf <: RDF]
+extends RDFModule
+with RDFOpsModule
+with TurtleReaderModule
+//with RDFDSLModule
+//  ( implicit ops: RDFOps[Rdf],
+//    turtleReader : RDFReader[Rdf, Turtle] 
+//  )
+  {
+
+  def createForm() = {
+  import Ops._
+
   val foaf = FOAFPrefix[Rdf]
   val graph1 = (
     URI("betehess")
@@ -35,7 +69,7 @@ class FormSyntaxFactoryTest[Rdf <: RDF]
       -- foaf.currentProject ->- URI("http://webid.info/"))).graph
 
   val resource = new FileInputStream("src/test/resources/foaf.n3")
-  val graph2 = turtleReader.read(resource, "http://xmlns.com/foaf/0.1/").get
+  val graph2 = TurtleReader.read(resource, "http://xmlns.com/foaf/0.1/").get
 
   //    val graph = graph1.union(graph2)	// KO !
   //    val graph = union (graph1 :: graph2)	// KO !
@@ -45,17 +79,6 @@ class FormSyntaxFactoryTest[Rdf <: RDF]
   println((graph.toIterable).mkString("\n"))
   val form = fact.createForm(URI("betehess"),
     Seq(foaf.name))
-
-  @Test def t1() {
-    println("form:\n" + form)
-    Assert.assertThat("form contains label and data", form.toString,
-      new BaseMatcher[String]() {
-        def matches(a: Any): Boolean = {
-          val s = a.toString
-          s.contains("Alexandre") &&
-            s.contains("name")
-        }
-        def describeTo(x$1: org.hamcrest.Description): Unit = {}
-      })
+  form
   }
 }

@@ -88,9 +88,12 @@ extends FormModule[Rdf#URI] {
 
   private def getStringOrElse(n: Rdf#Node, default: String): String = {
     ops.foldNode(n)(_ => default, _ => default, l =>
-      ops.foldLiteral(l)(
-        tl => ops.fromTypedLiteral(tl)._1,
-        ll => ops.fromLangLiteral(ll)._1))
+      l.toString
+      // TODO ???????
+//      ops.foldLiteral(l)(
+//        tl => ops.fromTypedLiteral(tl)._1,
+//        ll => ops.fromLangLiteral(ll)._1)
+      )
   }
 
   private def getHeadOrElse(subject: Rdf#URI, predicate: Rdf#URI,
