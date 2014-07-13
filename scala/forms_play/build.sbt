@@ -4,8 +4,9 @@ name := "semantic_forms_play"
 
 version := "1.0-SNAPSHOT"
 
-scalaVersion := "2.10.4"
+lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
+scalaVersion := "2.10.4"
 // scalaVersion := "2.11.1"
 
 // libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.0" % "test"
@@ -22,5 +23,5 @@ resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + 
 
 libraryDependencies += "deductions" %%  "semantic_forms" %  "1.0-SNAPSHOT"
 
-play.Project.playScalaSettings
+// play.Project.playScalaSettings
 
