@@ -8,6 +8,7 @@ import org.w3.banana.diesel._
 import org.w3.banana.jena.Jena
 import deductions.runtime.sparql_cache.RDFCacheJena
 import org.apache.log4j.Logger
+import scala.xml.Elem
 
 /** Table View of a form */
 trait TableView
@@ -28,7 +29,11 @@ trait TableView
   val foafURI = foaf.prefixIri
 
   /** create a form for given uri with background knowledge ??? TODO */
-  def htmlFormString(uri:String) : String = {
+    def htmlFormString(uri:String) : String = {
+    htmlForm(uri).toString
+  }
+
+  def htmlForm(uri:String) : Elem = {
     // TODO load ontologies from local SPARQL; probably use a pointed graph
     /* TODO use Jena Riot for smart reading of any format,
     cf https://github.com/w3c/banana-rdf/issues/105 */
@@ -39,7 +44,11 @@ trait TableView
   }
 
   /** create a form for given uri with background knowledge in graph1 */
-  def graf2form(graph1: Rdf#Graph, uri:String): String = {
+  def graf2formString(graph1: Rdf#Graph, uri:String): String = {
+    graf2form(graph1, uri).toString
+  }
+
+  def graf2form(graph1: Rdf#Graph, uri:String): Elem = {
     val connection = new java.net.URL(foafURI).openConnection()
     val acceptHeaderRDFXML = "application/rdf+xml"
     connection.setRequestProperty("Accept", acceptHeaderRDFXML)
@@ -55,11 +64,10 @@ trait TableView
     val form = factory.createForm(URI(uri),
       Seq(foaf.name))
     println("form:\n" + form)
-
     val htmlForm = generateHTML(form)
     println(htmlForm)
-
-    val htmlFormString = htmlForm.toString
-    htmlFormString
+    htmlForm
+//    val htmlFormString = htmlForm.toString
+//    htmlFormString
   }
 }
