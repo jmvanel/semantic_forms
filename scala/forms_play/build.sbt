@@ -6,6 +6,13 @@ version := "1.0-SNAPSHOT"
 
 scalaVersion := "2.10.4"
 
+// scalaVersion := "2.11.1"
+
+// libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.0" % "test"
+libraryDependencies += "org.scalatest" % "scalatest_2.10" % "2.2.0" % "test"
+
+
+
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
 
 // resolvers += Resolver.mavenLocal

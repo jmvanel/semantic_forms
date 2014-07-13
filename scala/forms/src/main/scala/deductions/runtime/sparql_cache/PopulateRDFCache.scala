@@ -18,6 +18,7 @@ import com.hp.hpl.jena.tdb.TDBFactory
 import org.w3.banana.RDFStore
 import org.w3.banana.GraphStore
 import org.w3.banana.OWLPrefix
+import deductions.runtime.jena.RDFStoreObject
 
 /** Populate RDF Cache with commonly used vocabularies;
  *  should be done just once;
@@ -27,7 +28,7 @@ import org.w3.banana.OWLPrefix
  *  but without any dependency to EulerGUI.
  *   */
 object PopulateRDFCache extends RDFCacheJena with App {
-  val store = RDFStore.store
+  val store = RDFStoreObject.store
   val uri: Rdf#URI = RDFSPrefix[Rdf].apply("")
   // loop on most used vocab's
   val vocabs0 = List(
