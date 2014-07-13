@@ -47,7 +47,7 @@ object PopulateRDFCache extends RDFCacheJena with App {
     val vocabs2 = 
      makeUri("http://usefulinc.com/ns/doap#") :: 
      makeUri("http://rdfs.org/sioc/ns#") ::
-//     makeUri("http://schema.rdfs.org/all.ttl") :: // TODO currently broken ( asked to Richard & Michael )
+     makeUri("http://schema.rdfs.org/all.ttl") :: // is broken ( asked to Richard & Michael )
      makeUri("http://downloads.dbpedia.org/3.9/dbpedia_3.9.owl") :: // OK with Jena 2.11.1 !!!
     	 Nil
      

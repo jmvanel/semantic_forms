@@ -18,6 +18,7 @@ import com.hp.hpl.jena.tdb.TDBFactory
 import org.w3.banana.RDFStore
 import org.w3.banana.GraphStore
 import java.net.URL
+import org.apache.log4j.Logger
 
 /** */
 trait RDFCache
@@ -28,18 +29,18 @@ trait RDFCache
 }
   
 trait RDFCacheJena extends RDFCache with JenaModule {
-   self => // ????????????
-     
-    /** store URI in a graph named by itself,
-   *  and stores the timestamp TODO */
-  def retrieveURI(uri: Rdf#URI, store: JenaStore) {
-    
+//   self =>
+
+  /** retrieve URI from a graph named by itself,
+   * according to timestamp */
+  def retrieveURI(uri: Rdf#URI, store: JenaStore) : Rdf#Graph = {
+    null // TODO
   }
   /** store URI in a graph named by itself,
    *  and stores the timestamp TODO */
   def storeURI(uri: Rdf#URI, store: JenaStore) {
     store.writeTransaction {
-      print(s"$uri ")
+      Logger.getRootLogger().info(s"storeURI uri $uri ")
       try{
       	val gForStore = store.getGraph(uri)
       	RDFDataMgr.read(gForStore, uri.toString()) // , N3)
