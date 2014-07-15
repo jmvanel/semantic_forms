@@ -6,7 +6,6 @@ $Id$
 package deductions.runtime.abstract_syntax
 
 import scala.collection.mutable
-
 import org.w3.banana.PointedGraph
 import org.w3.banana.RDF
 import org.w3.banana.RDFOps
@@ -14,6 +13,7 @@ import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
 import org.w3.banana.XSDPrefix
 import org.w3.banana.diesel.toPointedGraphW
+import org.apache.log4j.Logger
 
 //import deductions.Namespaces
 
@@ -30,7 +30,9 @@ extends FormModule[Rdf#URI] {
     props: Seq[Rdf#URI]): FormSyntax[Rdf#URI] = {
     val fields = mutable.ArrayBuffer[Entry]()
     for (prop <- props) {
+      Logger.getRootLogger().info(s"createForm subject $subject, prop $prop")
       val ranges = oQuery( prop, RDFSPrefix[Rdf].range )
+      
       val rangesSize = ranges . size
       val mess = if( rangesSize > 1 ) {
         "WARNING: ranges " + ranges + " for property " + prop + " are multiple."
@@ -38,16 +40,19 @@ extends FormModule[Rdf#URI] {
         "WARNING: There is no range for property " + prop
       } else ""
       println( mess, System.err)
+      
       fields.append( makeEntry(subject, prop, ranges) )
     }
     FormSyntax(subject, fields)
   }
 
+  /** try to get rdfs:label, comment, rdf:type, */
   private def makeEntry(subject: Rdf#URI, prop: Rdf#URI, ranges:Set[Rdf#Node]) : Entry = {
     val label =		getHeadStringOrElse( prop, RDFSPrefix[Rdf].label, prop.toString )
     val comment =	getHeadStringOrElse( prop, RDFSPrefix[Rdf].comment, "" )
     val propClass = getHeadOrElse( prop, RDFPrefix[Rdf].typ )
-    val firstOobject = getHeadValueOrElse( Set(subject), prop ) // TODO associate each object with its property
+    val firstOobject = getHeadValueOrElse( Set(subject), prop )
+    // TODO associate each object with its property
     val classs = getHeadValueOrElse( ranges, RDFPrefix[Rdf].typ )
     def literalEntry = LiteralEntry(label, comment, prop, DatatypeValidator(propClass)
         , getStringOrElse(firstOobject, "" ) ) // TODO classs ?
@@ -88,11 +93,8 @@ extends FormModule[Rdf#URI] {
 
   private def getStringOrElse(n: Rdf#Node, default: String): String = {
     ops.foldNode(n)(_ => default, _ => default, l =>
-      l.toString
-      // TODO ???????
-//      ops.foldLiteral(l)(
-//        tl => ops.fromTypedLiteral(tl)._1,
-//        ll => ops.fromLangLiteral(ll)._1)
+      ops.fromLiteral(l)._1
+      // TODO use application language
       )
   }
 
@@ -119,7 +121,8 @@ extends FormModule[Rdf#URI] {
   private def oQuery(subject: Rdf#URI, predicate: Rdf#URI ): Set[Rdf#Node] = {
     val pg = PointedGraph[Rdf]( subject, graph )
     val objects = pg / predicate
-    objects.map(_.pointer).toSet
+    objects.map(_.pointer)
+      .toSet
   }
 
 //  def oQuery2[T](subject: Rdf#URI, predicate: Rdf#URI, action: Rdf#Node => T ) : Set[T] = {
