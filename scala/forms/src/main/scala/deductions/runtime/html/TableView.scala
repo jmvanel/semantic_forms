@@ -24,16 +24,14 @@ trait TableView
   with RDFCacheJena // TODO depend on generic Rdf
 {
   import Ops._
-  
   val nullURI : Rdf#URI = Ops.URI( "" )
-
   val foaf = FOAFPrefix[Rdf]
 //  val foafURI = foaf.prefixIri
 
   /** create a form for given uri with background knowledge ??? TODO */
   def htmlForm(uri:String) : Elem = {
     val store =  RDFStoreObject.store
-    RDFStoreObject.printGraphList
+//    RDFStoreObject.printGraphList
     // TODO load ontologies from local SPARQL; probably use a pointed graph
     /* TODO use Jena Riot for smart reading of any format,
     cf https://github.com/w3c/banana-rdf/issues/105 */
@@ -41,10 +39,10 @@ trait TableView
 //    val graph = TurtleReader.read(from, uri).get
     storeURI(makeUri(uri), store)
     Logger.getRootLogger().info(s"After storeURI(makeUri($uri), store)")
-    RDFStoreObject.printGraphList
+//    RDFStoreObject.printGraphList
 //    graf2form(graph, uri)
     store.readTransaction {
-      graf2form(store.getGraph(makeUri("urn:x-arq:DefaultGraph")), uri)
+      graf2form(store.getGraph(makeUri("urn:x-arq:UnionGraph")), uri)
     }
   }
 

@@ -8,7 +8,7 @@ import scala.collection.JavaConversions._
 
 object RDFStoreObject extends JenaModule {
   lazy val dataset = TDBFactory.createDataset("TDB")
-  lazy val store = JenaStore(dataset, defensiveCopy = true)
+  lazy val store = JenaStore(dataset, defensiveCopy = false)
 
   def printGraphList {
     Logger.getRootLogger().info(s"listGraphNodes store.dg.getClass() ${store.dg.getClass()}" )
@@ -18,6 +18,7 @@ object RDFStoreObject extends JenaModule {
       for (gn <- lgn) {
         Logger.getRootLogger().info(s"${gn.toString()}")
       }
+      Logger.getRootLogger().info(s"afer listGraphNodes")
     }
   }
 }

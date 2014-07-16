@@ -1,23 +1,16 @@
 package deductions.runtime.abstract_syntax
 
 import java.io.FileInputStream
+
 import org.hamcrest.BaseMatcher
 import org.junit.Assert
-import org.junit.Test
-import org.w3.banana.FOAFPrefix
-import org.w3.banana.RDF
-import org.w3.banana.RDFOps
-import org.w3.banana.RDFReader
-import org.w3.banana.Turtle
-import org.w3.banana.diesel.toPointedGraphW
-import org.w3.banana.jena.Jena
 import org.scalatest.FunSuite
+import org.w3.banana.FOAFPrefix
 import org.w3.banana.RDFModule
 import org.w3.banana.RDFOpsModule
 import org.w3.banana.TurtleReaderModule
-import org.w3.banana.RDFDSL
+import org.w3.banana.diesel.toPointedGraphW
 import org.w3.banana.jena.JenaModule
-
 
 class FormSyntaxFactoryTestJena extends FunSuite 
 with JenaModule
@@ -38,8 +31,7 @@ with FormSyntaxFactoryTest // [Jena]
   }
 }
 trait FormSyntaxFactoryTest // [Rdf <: RDF]
-extends RDFModule
-with RDFOpsModule
+extends RDFOpsModule
 with TurtleReaderModule {
 
   def createForm() = {
@@ -57,10 +49,7 @@ with TurtleReaderModule {
 
   val resource = new FileInputStream("src/test/resources/foaf.n3")
   val graph2 = TurtleReader.read(resource, "http://xmlns.com/foaf/0.1/").get
-
-  //  val graph = graph1.union(graph2)	// KO !
-  //  val graph = union (graph1 :: graph2)	// KO !
-  val graph = union(Seq(graph1, graph2)) // .asInstanceOf[Rdf#Graph]))
+  val graph = union(Seq(graph1, graph2))
 
   val fact = new FormSyntaxFactory[Rdf](graph)
   println((graph.toIterable).mkString("\n"))
