@@ -5,8 +5,8 @@ import org.w3.banana.RDFOpsModule
 import org.w3.banana.RDFXMLReaderModule
 import org.w3.banana.TurtleReaderModule
 import org.w3.banana.jena.JenaStore
-
 import deductions.runtime.jena.JenaHelpers
+import deductions.runtime.jena.RDFStoreObject
 
 /** */
 trait RDFCache
@@ -17,6 +17,8 @@ trait RDFCache
 }
 
 trait RDFCacheJena extends RDFCache with JenaHelpers {
+//trait RDFCacheJena extends RDFCache with JenaHelpers with RDFStoreObject {
+//trait RDFCacheJena extends RDFStoreObject with JenaHelpers with RDFCache {
   //   self =>
 
   /**
@@ -31,7 +33,7 @@ trait RDFCacheJena extends RDFCache with JenaHelpers {
 
   /**
    * store URI in a graph named by itself,
-   *  and stores the timestamp TODO
+   *  and store the timestamp TODO
    */
   def storeURI(uri: Rdf#URI, store: JenaStore) {
     storeURI(uri, uri, store)

@@ -9,32 +9,30 @@ import org.w3.banana.SparqlOps
 import org.w3.banana.SparqlHttp
 import java.net.URL
 import org.w3.banana.jena.JenaModule
+import org.w3.banana.Command
 
 trait JenaHelpers extends JenaModule {
 
-    /** store URI in a graph named by itself,
-   *  and stores the timestamp TODO */
-  def storeURI(uri: Jena#URI, graphUri: Jena#URI, store: JenaStore) {
+    /** store URI in a named graph, using Jena's RDFDataMgr */
+    def storeURI(uri: Jena#URI, graphUri: Jena#URI, store: JenaStore) {
     store.writeTransaction {
       Logger.getRootLogger().info(s"storeURI uri $uri ")
       try{
       	val gForStore = store.getGraph(uri)
       	RDFDataMgr.read(gForStore, graphUri.toString())
-      	println( "	stored")
+      	Logger.getRootLogger().info(s"storeURI uri $uri : stored")
       } catch {
       case t: Throwable => Logger.getRootLogger().error( "ERROR: " + t )
       }
-      //  val g = RDFXMLReader.read(
-      //      v.toString(), v.toString() )
+    }
+  }
+      //  val g = RDFXMLReader.read( v.toString(), v.toString() )
       //  store.execute {
       //    val ret = Command.append[Rdf]( v, g.toIterable ) // NOT COMPILING <<<<
       //    println(s"store executed: append on $v of {triples.size} triples")
       //    ret
       //  }
-    }
-  }
-  
-  
+    
   // TODO:
 
   import Ops._

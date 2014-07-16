@@ -9,6 +9,8 @@ import org.w3.banana.jena.Jena
 import deductions.runtime.sparql_cache.RDFCacheJena
 import org.apache.log4j.Logger
 import scala.xml.Elem
+import deductions.runtime.jena.RDFStoreObject
+import scala.collection.JavaConversions._
 
 /** Table View of a form */
 trait TableView
@@ -26,48 +28,57 @@ trait TableView
   val nullURI : Rdf#URI = Ops.URI( "" )
 
   val foaf = FOAFPrefix[Rdf]
-  val foafURI = foaf.prefixIri
+//  val foafURI = foaf.prefixIri
 
   /** create a form for given uri with background knowledge ??? TODO */
-    def htmlFormString(uri:String) : String = {
-    htmlForm(uri).toString
-  }
-
   def htmlForm(uri:String) : Elem = {
+    val store =  RDFStoreObject.store
+    RDFStoreObject.printGraphList
     // TODO load ontologies from local SPARQL; probably use a pointed graph
     /* TODO use Jena Riot for smart reading of any format,
     cf https://github.com/w3c/banana-rdf/issues/105 */
-    val from = new java.net.URL(uri).openStream()
-//    val graph = RDFXMLReader.read(from, uri).get
-    val graph = TurtleReader.read(from, uri).get
-    graf2form(graph, uri)
+//    val from = new java.net.URL(uri).openStream()
+//    val graph = TurtleReader.read(from, uri).get
+    storeURI(makeUri(uri), store)
+    Logger.getRootLogger().info(s"After storeURI(makeUri($uri), store)")
+    RDFStoreObject.printGraphList
+//    graf2form(graph, uri)
+    store.readTransaction {
+      graf2form(store.getGraph(makeUri("urn:x-arq:DefaultGraph")), uri)
+    }
   }
 
-  /** create a form for given uri with background knowledge in graph1 */
-  def graf2formString(graph1: Rdf#Graph, uri:String): String = {
-    graf2form(graph1, uri).toString
-  }
-
+  /** create a form for given URI resource (instance) with background knowledge in graph1 */
   def graf2form(graph1: Rdf#Graph, uri:String): Elem = {
-    val connection = new java.net.URL(foafURI).openConnection()
-    val acceptHeaderRDFXML = "application/rdf+xml"
-    connection.setRequestProperty("Accept", acceptHeaderRDFXML)
-    val from = connection.getInputStream()
-    Logger.getRootLogger().info( s"Reading from $foafURI" )
-//    val vocabGraph = TurtleReader.read(from, foafURI).get
-    val vocabGraph = RDFXMLReader.read(from, foafURI).get
+//    val connection = new java.net.URL(uri).openConnection()
+//    val acceptHeaderRDFXML = "application/rdf+xml"
+//    connection.setRequestProperty("Accept", acceptHeaderRDFXML)
+//    val from = connection.getInputStream()
+//    Logger.getRootLogger().info( s"Reading from $uri" )
+//    val vocabGraph = RDFXMLReader.read(from, uri).get
 
-    val graph = graph1.union(vocabGraph)
+    val graph = graph1 // .union(vocabGraph)
 
     val factory = new FormSyntaxFactory[Rdf](graph)
     println((graph.toIterable).mkString("\n"))
-    val form = factory.createForm(URI(uri),
-      Seq(foaf.name))
+    val form = factory.createForm(
+        URI(uri),
+        // TODO : find properties from instance
+        Seq(
+          foaf.title,foaf.firstName,foaf.givenName,
+          foaf.currentProject
+      ))
     println("form:\n" + form)
     val htmlForm = generateHTML(form)
     println(htmlForm)
     htmlForm
-//    val htmlFormString = htmlForm.toString
-//    htmlFormString
+  }
+  
+  def htmlFormString(uri:String) : String = {
+    htmlForm(uri).toString
+  }
+
+  def graf2formString(graph1: Rdf#Graph, uri:String): String = {
+    graf2form(graph1, uri).toString
   }
 }
