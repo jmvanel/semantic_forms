@@ -6,7 +6,6 @@ $Id$
 package deductions.runtime.abstract_syntax
 
 import scala.collection.mutable
-
 import org.apache.log4j.Logger
 import org.w3.banana.PointedGraph
 import org.w3.banana.RDF
@@ -15,11 +14,14 @@ import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
 import org.w3.banana.XSDPrefix
 import org.w3.banana.diesel.toPointedGraphW
+import org.w3.banana.URIOps
+import org.w3.banana._
 
 //import deductions.Namespaces
 
 class FormSyntaxFactory[Rdf <: RDF](graph: Rdf#Graph) 
-( implicit ops: RDFOps[Rdf] )
+( implicit ops: RDFOps[Rdf],
+    uriOps: URIOps[Rdf] )
 extends FormModule[Rdf#URI] {
 
   val nullURI : Rdf#URI = ops.URI( "http://null.com#" ) // TODO better : "" ????????????
@@ -50,7 +52,7 @@ extends FormModule[Rdf#URI] {
   /** try to get rdfs:label, comment, rdf:type, */
   private def makeEntry(subject: Rdf#URI, prop: Rdf#URI, ranges:Set[Rdf#Node]) : Entry = {
     Logger.getRootLogger().info( s"makeEntry subject $subject, prop $prop")
-    val label =		getHeadStringOrElse( prop, RDFSPrefix[Rdf].label, prop.toString )
+    val label =		getHeadStringOrElse( prop, RDFSPrefix[Rdf].label, terminalPart(prop) )
 //    Logger.getRootLogger().info( s"makeEntry subject $subject, prop $prop 1")
     val comment =	getHeadStringOrElse( prop, RDFSPrefix[Rdf].comment, "" )
 //        Logger.getRootLogger().info( s"makeEntry subject $subject, prop $prop 2")
@@ -87,9 +89,16 @@ extends FormModule[Rdf#URI] {
     formEntry
   }
 
-  /** */
+  def terminalPart(uri: Rdf#URI): String = {
+    uriOps.getFragment(uri) match {
+      case None => uriOps.lastSegment(uri)
+      case Some(frag) => frag
+    }
+  }
+
+  /** get "first" String value (RDF object) Or Else given default */
   private def getHeadStringOrElse(subject: Rdf#URI, predicate: Rdf#URI, default: String): String = {
-    oQuery(subject.asInstanceOf[Rdf#URI], predicate) match {
+    oQuery(subject, predicate) match {
       case ll if ll == Set.empty => default
       case ll =>
         val n = ll.head

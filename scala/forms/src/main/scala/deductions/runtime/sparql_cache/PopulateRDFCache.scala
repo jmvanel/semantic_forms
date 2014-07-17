@@ -28,6 +28,10 @@ import deductions.runtime.jena.RDFStoreObject
  *  but without any dependency to EulerGUI.
  *   */
 object PopulateRDFCache extends RDFCacheJena with App {
+  
+  loadCommonVocabularies
+  
+  def loadCommonVocabularies() {
   val store = RDFStoreObject.store
   val uri: Rdf#URI = RDFSPrefix[Rdf].apply("")
   // loop on most used vocab's
@@ -56,4 +60,5 @@ object PopulateRDFCache extends RDFCacheJena with App {
   /* geo: , con: , <foaf_fr.n3>  TODO */
 
      vocabs2 map { storeURI( _, store) }
+  }
   }
