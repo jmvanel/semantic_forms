@@ -6,6 +6,8 @@ $Id$
 package deductions.runtime.abstract_syntax
 
 import scala.collection.mutable
+
+import org.apache.log4j.Logger
 import org.w3.banana.PointedGraph
 import org.w3.banana.RDF
 import org.w3.banana.RDFOps
@@ -13,7 +15,6 @@ import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
 import org.w3.banana.XSDPrefix
 import org.w3.banana.diesel.toPointedGraphW
-import org.apache.log4j.Logger
 
 //import deductions.Namespaces
 
@@ -48,11 +49,16 @@ extends FormModule[Rdf#URI] {
 
   /** try to get rdfs:label, comment, rdf:type, */
   private def makeEntry(subject: Rdf#URI, prop: Rdf#URI, ranges:Set[Rdf#Node]) : Entry = {
+    Logger.getRootLogger().info( s"makeEntry subject $subject, prop $prop")
     val label =		getHeadStringOrElse( prop, RDFSPrefix[Rdf].label, prop.toString )
+//    Logger.getRootLogger().info( s"makeEntry subject $subject, prop $prop 1")
     val comment =	getHeadStringOrElse( prop, RDFSPrefix[Rdf].comment, "" )
+//        Logger.getRootLogger().info( s"makeEntry subject $subject, prop $prop 2")
     val propClass = getHeadOrElse( prop, RDFPrefix[Rdf].typ )
+//    Logger.getRootLogger().info( s"makeEntry subject $subject, prop $prop 3")
     val firstOobject = getHeadValueOrElse( Set(subject), prop )
     // TODO associate each object with its property
+//    Logger.getRootLogger().info( s"makeEntry subject $subject, prop $ranges $prop ${RDFPrefix[Rdf].typ}")
     val classs = getHeadValueOrElse( ranges, RDFPrefix[Rdf].typ )
     def literalEntry = LiteralEntry(label, comment, prop, DatatypeValidator(propClass)
         , getStringOrElse(firstOobject, "" ) ) // TODO classs ?
@@ -99,12 +105,12 @@ extends FormModule[Rdf#URI] {
   }
 
   private def getHeadOrElse(subject: Rdf#URI, predicate: Rdf#URI,
-    default:Rdf#URI=nullURI ) : Rdf#URI= {
-      oQuery( subject, predicate )
-      match {
+    default: Rdf#URI = nullURI): Rdf#URI = {
+    oQuery(subject, predicate) match {
+      case ll if ll.isEmpty => default
       case ll if ops.isURI[Unit](ll.head) => ll.head.asInstanceOf[Rdf#URI]
       case _ => default
-      }
+    }
   }
 
   private def getHeadValueOrElse(subjects: Set[Rdf#Node], predicate: Rdf#URI ) : Rdf#Node = {
