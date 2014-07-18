@@ -11,15 +11,19 @@ import java.net.URL
 import org.w3.banana.jena.JenaModule
 import org.w3.banana.Command
 
+/** Jena Helpers for JenaStore */
 trait JenaHelpers extends JenaModule {
 
-    /** store URI in a named graph, using Jena's RDFDataMgr */
+    /** store URI in a named graph, using Jena's RDFDataMgr
+     *  (use content-type or else file extension) */
     def storeURI(uri: Jena#URI, graphUri: Jena#URI, store: JenaStore) {
     store.writeTransaction {
-      Logger.getRootLogger().info(s"storeURI uri $uri ")
+      Logger.getRootLogger().info(s"storeURI uri $uri graphUri $graphUri")
       try{
-      	val gForStore = store.getGraph(uri)
-      	RDFDataMgr.read(gForStore, graphUri.toString())
+      	val gForStore = store.getGraph(graphUri)
+//      	val model = RDFDataMgr.loadModel(uri.toString())
+      	RDFDataMgr.read(gForStore, uri.toString())
+      	// getNsPrefixMap
       	Logger.getRootLogger().info(s"storeURI uri $uri : stored")
       } catch {
       case t: Throwable => Logger.getRootLogger().error( "ERROR: " + t )
