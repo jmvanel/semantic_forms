@@ -29,7 +29,7 @@ class Form2HTMLTest
     }
     val xhtml = fh.generateHTML(createForm)
     System.out.println(xhtml)
-    Files.write(Paths.get("tmp.form.xhtml"), xhtml.toString().getBytes );
+    Files.write(Paths.get("tmp.form.html"), xhtml.toString().getBytes );
     Assert.assertTrue(xhtml.toString().contains("Alexandre"))
   }
 }

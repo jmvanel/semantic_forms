@@ -18,8 +18,12 @@ trait Form2HTML[URI] extends FormModule[URI] {
             <td>{
               field match {
                 case l: LiteralEntry =>
-                  <input>{ l.value }</input>
+                  <input value={ l.value }></input>
                 case r: ResourceEntry =>
+                  /* TODO: link to a known resource of the right type,
+                   * or create a sub-form for a blank node of an ancillary type (like a street address),
+                   * or just create a new resource with its type, given by range, or derived
+                   * (like in N3Form in EulerGUI ) */
                   <a href={ r.value.toString }>{ r.label }</a>
               }
             }</td>

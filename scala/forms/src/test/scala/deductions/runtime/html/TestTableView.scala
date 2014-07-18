@@ -1,6 +1,8 @@
 package deductions.runtime.html
 
 import org.scalatest.FunSuite
+import java.nio.file.Files
+import java.nio.file.Paths
 
 class TestTableView extends FunSuite with TableView {
 
@@ -11,5 +13,6 @@ class TestTableView extends FunSuite with TableView {
 //    val uri = "http://jmvanel.free.fr/jmv.n3"
     val f = htmlFormString(uri)
     println(f)
+    Files.write(Paths.get("tmp.form2.html"), f.toString().getBytes );
   }
 }
