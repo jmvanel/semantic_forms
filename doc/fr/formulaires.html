@@ -167,40 +167,38 @@ sujet.</p>
 d'édition.</p>
 
 <h3 id="L361">Problématiques de la génération de formulaires</h3>
-<ul>
+<ol>
   <li>label pour une URI (aussi bien propriété que ressource ordinaire) :
     utiliser <code>rdfs:label</code> ou autre propriété suivant le type;
     tenir compte de la langue de l'application</li>
   <li>création, affichage ou édition, ou les deux (mise à jour)</li>
-  <li>affichage de la valeur (l'objet au sens RDF) : tenir compte de :
-    <p>propriétés mono ou multi-valuées,</p>
-    <p>datatype éventuel (aussi géocoordonnées);</p>
-    <p>langue;</p>
-    <p>types de médias pour URL: image, son, vidéo</p>
-    <ul>
-      <li>édition : tenir compte de :
-        <p>pour une propriété avec <code>rdfs:range </code>qui est une
-        <code>owl:ObjectProperty</code> (ou une <code>rdf:Property</code>): au
-        choix:</p>
-        <ol>
-          <li>se lier à un URI connu parmi les valeurs possibles connues,
-            d'après le type ( rdf:range de la propriété );</li>
-          <li>créer une nouvelle resource anonyme (blank node), et éditer ses
-            valeurs (voir ci-dessous "triplets secondaires");</li>
-          <li>créer un nouvel URI, , et éditer ses valeurs;</li>
-          <li>chercher dans des annuaires RDF tel que sindice.com, ou non
-          RDF</li>
-        </ol>
-        <p>valeur littérale : validation par rapport au type de donnée</p>
-        <p>propriété obligatoire ou non : tenir compte de
-        <code>owl:SomeValueFrom</code> , et autres axiomes ; mais aussi
-        nécessité de configuration spécifique au formulaire</p>
-        <p>propriétés mono-valuées (le défaut pour édition) ou
-        multi-valuées (déclaration via OWL)</p>
-        <p>énumération (déclaration via OWL)</p>
-      </li>
-    </ul>
+  <li>affichage de la valeur (l'objet au sens RDF) : tenir compte de : 
+    <ol>
+      <li>propriétés mono ou multi-valuées,</li>
+      <li>datatype éventuel (date, géocoordonnées, ...);</li>
+      <li>langue;</li>
+      <li>types de médias pour URL: image, son, vidéo</li>
+    </ol>
   </li>
+  <li>édition : tenir compte de :pour une propriété avec <code>rdfs:range
+    </code>qui est une <code>owl:ObjectProperty</code> (ou une
+    <code>rdf:Property</code>): au choix: 
+    <ol>
+      <li>se lier à un URI connu parmi les valeurs possibles connues, d'après
+        le type ( rdf:range de la propriété );</li>
+      <li>créer une nouvelle resource anonyme (blank node), et éditer ses
+        valeurs (voir ci-dessous "triplets secondaires");</li>
+      <li>créer un nouvel URI, , et éditer ses valeurs;</li>
+      <li>chercher dans des annuaires RDF tel que sindice.com, ou non RDF</li>
+    </ol>
+  </li>
+  <li>valeur littérale : validation par rapport au type de donnée</li>
+  <li>propriété obligatoire ou non : tenir compte de
+    <code>owl:SomeValueFrom</code> , et autres axiomes ; mais aussi nécessité
+    de configuration spécifique au formulaire</li>
+  <li>propriétés mono-valuées (le défaut pour édition) ou multi-valuées
+    (déclaration via OWL)</li>
+  <li>énumération (déclaration via OWL)</li>
   <li>triplets "secondaires" , c à d. <code>&lt;SUJET&gt; ?P ?V. <strong>?V
     ?P1 ?V1.</strong></code> 
     <p>typiquement ?V représente une resource liée seulement à
@@ -213,16 +211,343 @@ d'édition.</p>
     <p>comment ? un prédicat portant sur le prédicat ?P</p>
   </li>
   <li>origine des prédicats ( distinguer à l'affichage ) 
-    <p>présent dans l'instance,</p>
-    <p>provient de telle classe via domaine et super-classe (en édition);</p>
-    <p>triplets directs ou inverses, </p>
-    <p>prédicats standards, qui peuvent s'appliquer à tout , comme
-    <code>rdfs:label</code></p>
-    <p>axiomes OWL ( raisonnement inductif possible ?)</p>
+    <ol>
+      <li>présent dans l'instance,</li>
+      <li>provient de telle classe via domaine et super-classe (en
+      édition);</li>
+      <li>triplets directs ou inverses, </li>
+      <li>prédicats standards, qui peuvent s'appliquer à tout , comme
+        <code>rdfs:label</code></li>
+      <li>axiomes OWL ( raisonnement inductif possible ?)</li>
+    </ol>
   </li>
   <li>aspect mise à jour dynamique via MVC ou moteur de règles</li>
-  <li>téléchargement dynamique des ontologies en cas de besoin</li>
-</ul>
+  <li>téléchargement dynamique des ontologies en cas de besoin ( à partir
+    des préfixes utilisés dans le Turtle, ou des préfixes dans le
+    vocabulaire utilisé</li>
+</ol>
+
+<p></p>
+
+<h3>Tableau des fonctionnalités par outil</h3>
+
+<table border="1" style="width: 100%">
+  <caption>fonctionnalités des générateur de formulaires</caption>
+  <col />
+  <col />
+  <col />
+  <col />
+  <col />
+  <col />
+  <tbody>
+    <tr>
+      <td>Fonc.</td>
+      <td><a
+        href="http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/html/documentation.html#L7253">Dom.App.</a></td>
+      <td><a
+        href="http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/html/documentation.html#L6973">swing-rules3</a></td>
+      <td><a href="http://viejs.org/widgets/forms/">VIE</a></td>
+      <td>Conjecto</td>
+      <td>PixelHumain</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>x</td>
+      <td>x</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>2 </td>
+      <td>x</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>3.1</td>
+      <td>x</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>3.2</td>
+      <td>x</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>3.3</td>
+      <td>x</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>3.4</td>
+      <td>x</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>4.1</td>
+      <td>x</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>4.2</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>4.3</td>
+      <td>x</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>4.4</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>x</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>x</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td></td>
+      <td></td>
+      <td>x</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>10.1</td>
+      <td>x</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>10.2</td>
+      <td>x</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>10.3</td>
+      <td>x</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>10.4</td>
+      <td>x</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>10.5</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td>x</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td>x</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
 
 <h3 id="L119">Recherche Internet: <em>semantic web RDF "forms" field</em></h3>
 
@@ -398,7 +723,7 @@ href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/reasoner
 
 <p>A VOIR:</p>
 <ul>
-  <li>Can Jena TDB and Jena Inference infrastructure work together?
+  <li>Can Jena TDB and Jena Inference infrastructure work together? 
     <p>Est-ce que Jena TDB et linfrastructure Jena pour inférence peuvent
     travailler ensemble ?</p>
   </li>
