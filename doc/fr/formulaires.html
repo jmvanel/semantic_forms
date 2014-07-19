@@ -112,6 +112,12 @@ contenant les 3 propriétés <code>name, surname, depiction</code>". La syntaxe
 <p>De toute façon, Fresnel est un vocabulaire d'affichage, pas directement
 pour l'entrée de données. Il est cependant réutilisable à cette fin.</p>
 
+<h4>Autres vocabulaires pour formulaires</h4>
+
+<p>Ce projet développe un vocabulaire pour les formulaires, en alignement avec
+Fresnel pour compatibilité avec les outils existants ou futurs: <a
+href="../../vocabulary/forms.owl.ttl">vocabulary/forms.owl.ttl</a></p>
+
 <h4 id="L124">Data manager GUI dans le cadriciel EulerGUI</h4>
 
 <p>Un autre exemple est le composant <a
@@ -154,29 +160,51 @@ href="http://www.w3.org/2005/04/fresnel-info/manual/">http://www.w3.org/2005/04/
 <p>Hélas, après un intérêt entre 2004 et 2008, Fresnel n'a plus été
 implémenté, sauf récemment comme on va voir plus loin.</p>
 
+<p>De plus, la métaphore optique (lentilles de Fresnel) n'est pas près du
+sujet.</p>
+
+<p>Enfin, Fresnel ne traite que les problématiques d'affichage, et pas du tout
+d'édition.</p>
+
 <h3 id="L361">Problématiques de la génération de formulaires</h3>
 <ul>
-  <li>label pour un URI (propriété ou resource ordinaire) : utiliser
-    rdfs:label ou autre propriété suivant type; tenir compte de la langue de
-    l'application</li>
-  <li>création, affichage ou édition, ou les deux</li>
-  <li>affichage: 
+  <li>label pour une URI (aussi bien propriété que ressource ordinaire) :
+    utiliser <code>rdfs:label</code> ou autre propriété suivant le type;
+    tenir compte de la langue de l'application</li>
+  <li>création, affichage ou édition, ou les deux (mise à jour)</li>
+  <li>affichage de la valeur (l'objet au sens RDF) : tenir compte de :
     <p>propriétés mono ou multi-valuées,</p>
     <p>datatype éventuel (aussi géocoordonnées);</p>
     <p>langue;</p>
     <p>types de médias pour URL: image, son, vidéo</p>
-  </li>
-  <li>édition 
-    <p>se lier à un URI connu possible limité par son type</p>
-    <p>valeur littérale : validation </p>
-    <p>propriétés mono-valuées (le défaut pour édition) ou multi-valuées
-    (déclaration via OWL)</p>
-    <p>énumération (déclaration via OWL)</p>
+    <ul>
+      <li>édition : tenir compte de :
+        <p>pour une propriété avec <code>rdfs:range </code>qui est une
+        <code>owl:ObjectProperty</code> (ou une <code>rdf:Property</code>): au
+        choix:</p>
+        <ol>
+          <li>se lier à un URI connu parmi les valeurs possibles connues,
+            d'après le type ( rdf:range de la propriété );</li>
+          <li>créer une nouvelle resource anonyme (blank node), et éditer ses
+            valeurs (voir ci-dessous "triplets secondaires");</li>
+          <li>créer un nouvel URI, , et éditer ses valeurs;</li>
+          <li>chercher dans des annuaires RDF tel que sindice.com, ou non
+          RDF</li>
+        </ol>
+        <p>valeur littérale : validation par rapport au type de donnée</p>
+        <p>propriété obligatoire ou non : tenir compte de
+        <code>owl:SomeValueFrom</code> , et autres axiomes ; mais aussi
+        nécessité de configuration spécifique au formulaire</p>
+        <p>propriétés mono-valuées (le défaut pour édition) ou
+        multi-valuées (déclaration via OWL)</p>
+        <p>énumération (déclaration via OWL)</p>
+      </li>
+    </ul>
   </li>
   <li>triplets "secondaires" , c à d. <code>&lt;SUJET&gt; ?P ?V. <strong>?V
     ?P1 ?V1.</strong></code> 
     <p>typiquement ?V représente une resource liée seulement à
-    &lt;SUJET&gt;, comme l'adresse de quelqu'un;</p>
+    &lt;SUJET&gt;, comme l'adresse postale de quelqu'un;</p>
     <p>c'est souvent un noeud anonyme (blank node);</p>
     <p>( correspond à la notion d'agrégation en UML, ou en SQL delete en
     cascade)</p>
@@ -186,9 +214,9 @@ implémenté, sauf récemment comme on va voir plus loin.</p>
   </li>
   <li>origine des prédicats ( distinguer à l'affichage ) 
     <p>présent dans l'instance,</p>
-    <p>provient de telle classe via domaine et super-classe;</p>
+    <p>provient de telle classe via domaine et super-classe (en édition);</p>
     <p>triplets directs ou inverses, </p>
-    <p>prédicats standards, qui peuvent être partout , comme
+    <p>prédicats standards, qui peuvent s'appliquer à tout , comme
     <code>rdfs:label</code></p>
     <p>axiomes OWL ( raisonnement inductif possible ?)</p>
   </li>
@@ -368,11 +396,14 @@ href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/reasoner
 
 <p></p>
 
-<p>Can Jena TDB and Jena Inference infrastructure work together?</p>
-
-<p></p>
-
-<p>Y a t-il un site où OWF est déployé ???????</p>
+<p>A VOIR:</p>
+<ul>
+  <li>Can Jena TDB and Jena Inference infrastructure work together?
+    <p>Est-ce que Jena TDB et linfrastructure Jena pour inférence peuvent
+    travailler ensemble ?</p>
+  </li>
+  <li>Y a t-il un site où OWF est déployé ?</li>
+</ul>
 
 <p></p>
 
@@ -385,9 +416,10 @@ href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/reasoner
     <p><a
     href="http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/html/semantic_based_apps_review.html">http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/html/semantic_based_apps_review.html</a></p>
   </li>
-  <li>PHP projects with simfony:
+  <li>PHP projects with simfony: 
     <p><a href="https://github.com/conjecto">https://github.com/conjecto</a></p>
   </li>
+  <li>Pixel Humain</li>
 </ul>
 
 <p></p>

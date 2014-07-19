@@ -6,19 +6,20 @@ $Id$
 package deductions.runtime.abstract_syntax
 
 import scala.collection.mutable
+
 import org.apache.log4j.Logger
 import org.w3.banana.PointedGraph
 import org.w3.banana.RDF
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
+import org.w3.banana.URIOps
 import org.w3.banana.XSDPrefix
 import org.w3.banana.diesel.toPointedGraphW
-import org.w3.banana.URIOps
-import org.w3.banana._
 
 //import deductions.Namespaces
 
+/** Factory for an abstract Form Syntax */
 class FormSyntaxFactory[Rdf <: RDF](graph: Rdf#Graph) 
 ( implicit ops: RDFOps[Rdf],
     uriOps: URIOps[Rdf] )

@@ -63,8 +63,12 @@ trait TableView
         URI(uri),
         // TODO : find properties from instance
         Seq(
-          foaf.title,foaf.firstName,foaf.givenName,
-          foaf.currentProject
+          foaf.title, 
+          foaf.givenName,
+          foaf.familyName, 
+          foaf.currentProject,
+          foaf.img,
+          foaf.mbox
       ))
     println("form:\n" + form)
     val htmlForm = generateHTML(form)

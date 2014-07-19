@@ -6,6 +6,7 @@ import org.w3.banana.jena.JenaModule
 import org.apache.log4j.Logger
 import scala.collection.JavaConversions._
 
+/** singleton  hosting a Jena TDB database in directory "TDB" */
 object RDFStoreObject extends JenaModule {
   lazy val dataset = TDBFactory.createDataset("TDB")
   lazy val store = JenaStore(dataset, defensiveCopy = false)

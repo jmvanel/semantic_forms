@@ -1,0 +1,43 @@
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix owl:     <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix fresnel: <http://www.w3.org/2004/09/fresnel#>.
+
+@prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#>.
+
+
+<> a owl:Ontology ;
+	rdfs:label "Triple Display specifications"@en ;
+	rdfs:comment """an Ontology for Displaying and editing Triples, typically for a form;
+		aligned with Fresnel."""@en ;
+	rdfs:seeAlso <https://github.com/jmvanel/semantic_forms/tree/master/vocabulary/forms.owl.ttl> ;
+	rdfs:seeAlso <http://htmlpreview.github.io/?https://github.com/jmvanel/semantic_forms/blob/master/doc/fr/formulaires.html>
+ .
+
+form:TripleDisplay a owl:Class ;
+	rdfs:label "Triple Display specification"@en ;
+	rdfs:comment """a specification for Displaying Triples, typically for a form."""@en ;
+	owl:sameClassAs fresnel:Lens 
+.
+
+
+form:classDomain a owl:ObjectProperty ;
+	rdfs:domain form:TripleDisplay ;
+	rdfs:range rdfs:Class ;
+	owl:samePropertyAs fresnel:classLensDomain 
+.
+
+form:showProperties a owl:ObjectProperty ;
+	rdfs:domain form:TripleDisplay ;
+	rdfs:range rdf:List ; # a list of rdf:Property
+	owl:samePropertyAs fresnel:showProperties .
+
+#### editing ####
+
+form:TripleEdit a owl:Class ;
+	rdfs:label "Triple Edit specification"@en ;
+	rdfs:comment """a specification for Editing Triples, typically for a form."""@en ;
+	rdfs:subclassOf form:TripleDisplay .
+
+# to be continued :) ...
+
