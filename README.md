@@ -23,7 +23,7 @@ I developed in Scala with Swing semantic Web aware Forms; they are described her
 
 I have taken notes from my experience with Scala Swing N3 Forms and other; I added them here:
 
-[Formulaires](http://htmlpreview.github.io/?https://github.com/jmvanel/semantic_forms/blob/master/doc/fr/formulaires.html)
+[Formulaires](https://htmlpreview.github.io/?https://github.com/jmvanel/semantic_forms/blob/master/doc/fr/formulaires.html)
 <!-- alas github does not serve HTML as such : doc/fr/formulaires.html 
 première version: http://jmvanel.free.fr/notes_fr/formulaires.html -->
  ( in french )

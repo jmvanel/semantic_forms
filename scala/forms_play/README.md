@@ -13,5 +13,5 @@ With these elements to add one after the other:
 
 At one point it will be useful to also introduce in place of FA an RDF vocabulary for forms, perhaps reusing Fresnel;
  see (in french) :
-[doc/fr/formulaires.html](http://htmlpreview.github.io/?http://github.com/jmvanel/semantic_forms/blob/master/doc/fr/formulaires.html)
+[doc/fr/formulaires.html](https://htmlpreview.github.io/?http://github.com/jmvanel/semantic_forms/blob/master/doc/fr/formulaires.html)
 
