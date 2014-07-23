@@ -1,0 +1,22 @@
+# From prefix.cc
+@prefix unspsc: <http://ontoview.org/schema/unspsc/1#>.
+@prefix wn30:   <http://purl.org/vocabularies/princeton/wn30/>.
+
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix foaf:  <http://xmlns.com/foaf/0.1/>.
+@prefix dc:  <http://purl.org/dc/elements/1.1/>.
+@prefix sioc:  <http://rdfs.org/sioc/ns#>.
+@prefix dbo:  <http://dbpedia.org/ontology/>.
+@prefix dbpedia:  <http://dbpedia.org/resource/>.
+@prefix dbprop:  <http://dbpedia.org/property/>.
+
+# facets will be used to generate rdf:Property's & input fields, retrieving rdf:label
+@prefix wnform: <wordnet-forms> .
+# <http://ontoview.org/schema/unspsc/1#010529> <http://www.w3.org/2000/01/rdf-schema#label> "Language schooling" .
+_:form1 wnform:class unspsc:010529 ;
+        wnform:facets (
+         wn30:synset-length-noun-3 # "durée"@fr
+         wn30:synset-language-noun-1
+       ).

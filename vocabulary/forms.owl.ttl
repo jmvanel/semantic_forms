@@ -57,10 +57,9 @@ form:Cardinality a owl:Class ;
 		form:zeroOrMore	
 		form:oneOrMore
 		form:zeroOrOne	
-		form:oneOrMore
 		form:exactlyOne	) ;
 	rdfs:label "possible Cardinality values of Triple Edit"@en ;
-	rdfs:comment """ . """@en .
+	rdfs:comment """ In oneOrMore or exactlyOne cases, the form tool should open a sub form in place or a popup. """@en .
 
          
 form:widgetClass a owl:ObjectProperty ;
