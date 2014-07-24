@@ -186,7 +186,7 @@ d'édition.</p>
     <code>rdf:Property</code>): au choix: 
     <ol>
       <li>se lier à un URI connu parmi les valeurs possibles connues, d'après
-        le type ( rdf:range de la propriété );</li>
+        le type ( <code>rdfs:range</code> de la propriété );</li>
       <li>créer une nouvelle resource anonyme (blank node), et éditer ses
         valeurs (voir ci-dessous "triplets secondaires");</li>
       <li>créer un nouvel URI, , et éditer ses valeurs;</li>
@@ -209,7 +209,8 @@ d'édition.</p>
     cascade)</p>
     <p>il convient de détecter et afficher ces triplets "secondaires", <a
     href="http://viejs.org/widgets/forms/">comme le fait VIE</a></p>
-    <p>comment ? un prédicat portant sur le prédicat ?P</p>
+    <p>comment ? dans la configuration un prédicat portant sur le prédicat
+    ?P</p>
   </li>
   <li>origine des prédicats ( distinguer à l'affichage ) 
     <ol>
@@ -226,6 +227,20 @@ d'édition.</p>
   <li>téléchargement dynamique des ontologies en cas de besoin ( à partir
     des préfixes utilisés dans le Turtle, ou des préfixes dans le
     vocabulaire utilisé</li>
+  <li>logique de validation: 
+    <ol>
+      <li>utilisation de règles logiques ( N3, ...)</li>
+      <li>utilisation de code procédural ( JS, ... )</li>
+    </ol>
+  </li>
+  <li>liaison avec un graphe en mémoire</li>
+  <li>liaison avec une base SPARQL:
+    <ol>
+      <li>via API</li>
+      <li>via SPARQL update</li>
+    </ol>
+  </li>
+  <li>IHM pour créer un formulaire ( via formulaire, ou arborescence )</li>
 </ol>
 
 <p></p>
@@ -233,7 +248,7 @@ d'édition.</p>
 <h3>Tableau des fonctionnalités par outil</h3>
 
 <table border="1" style="width: 100%">
-  <caption>fonctionnalités des générateur de formulaires</caption>
+  <caption>Fonctionnalités des générateurs de formulaires</caption>
   <col />
   <col />
   <col />
@@ -262,7 +277,7 @@ d'édition.</p>
     <tr>
       <td>2 </td>
       <td>x</td>
-      <td></td>
+      <td>x</td>
       <td></td>
       <td></td>
       <td></td>
@@ -318,7 +333,7 @@ d'édition.</p>
     <tr>
       <td>4.3</td>
       <td>x</td>
-      <td></td>
+      <td>x</td>
       <td></td>
       <td></td>
       <td></td>
@@ -368,8 +383,8 @@ d'édition.</p>
       <td></td>
       <td></td>
       <td>x</td>
-      <td></td>
-      <td></td>
+      <td>x</td>
+      <td>x</td>
     </tr>
     <tr>
       <td>10.1</td>
@@ -420,12 +435,52 @@ d'édition.</p>
       <td></td>
     </tr>
     <tr>
-      <td>12</td>
+      <td>13.1</td>
+      <td>x</td>
+      <td>x</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>13.2</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>14</td>
+      <td>x</td>
+      <td>x</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>15.1</td>
       <td>x</td>
       <td></td>
       <td></td>
       <td></td>
       <td></td>
+    </tr>
+    <tr>
+      <td>15.2</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>x</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>16</td>
+      <td>x</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>x</td>
     </tr>
     <tr>
       <td></td>
@@ -725,7 +780,7 @@ href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/reasoner
 <p>A VOIR:</p>
 <ul>
   <li>Can Jena TDB and Jena Inference infrastructure work together? 
-    <p>Est-ce que Jena TDB et linfrastructure Jena pour inférence peuvent
+    <p>Est-ce que Jena TDB et l'infrastructure Jena pour inférence peuvent
     travailler ensemble ?</p>
   </li>
   <li>Y a t-il un site où OWF est déployé ?</li>
@@ -745,7 +800,13 @@ href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/reasoner
   <li>PHP projects with simfony: 
     <p><a href="https://github.com/conjecto">https://github.com/conjecto</a></p>
   </li>
-  <li>Pixel Humain</li>
+  <li>Pixel Humain: example ici : création de formulaire par choix dans une
+    arborescence de propriétés; basé sur VIE, limité pour l'instant à
+    schema.org ; stockage de JSON-LD dans MongoDB:
+    <p><a
+    href="http://qa.pixelhumain.com/ph/tools/vie#">http://qa.pixelhumain.com/ph/tools/vie#</a></p>
+  </li>
+  <li></li>
 </ul>
 
 <p></p>
