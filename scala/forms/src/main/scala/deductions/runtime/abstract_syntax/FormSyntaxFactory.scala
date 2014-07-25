@@ -10,6 +10,7 @@ import scala.collection.mutable
 import org.apache.log4j.Logger
 import org.w3.banana.PointedGraph
 import org.w3.banana.RDF
+import org.w3.banana.RDFDSL
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
@@ -17,15 +18,30 @@ import org.w3.banana.URIOps
 import org.w3.banana.XSDPrefix
 import org.w3.banana.diesel.toPointedGraphW
 
-//import deductions.Namespaces
 
 /** Factory for an abstract Form Syntax */
 class FormSyntaxFactory[Rdf <: RDF](graph: Rdf#Graph) 
 ( implicit ops: RDFOps[Rdf],
-    uriOps: URIOps[Rdf] )
-extends FormModule[Rdf#URI] {
+    uriOps: URIOps[Rdf],
+    rdfDSL: RDFDSL[Rdf]
+    )
+extends 
+//RDFOpsModule with 
+FormModule[Rdf#URI]
+//with FormFromInstance[Rdf] 
+{
 
-  val nullURI : Rdf#URI = ops.URI( "http://null.com#" ) // TODO better : "" ????????????
+  val nullURI // : Rdf#URI 
+    = ops.URI( "http://null.com#" ) // TODO better : "" ????????????
+
+  def createForm(subject: Rdf#URI ) : FormSyntax[Rdf#URI] = {
+//    println("createForm " + subject + " " + graph.hashCode + "\n\t"
+//        + printGraph(graph)
+////        + (graph.toIterable).mkString("\n")
+//    )
+     val props = fields(subject, graph)
+     createForm(subject, props )
+  }
 
     /** For each given property (props)
    *  look at its rdfs:range ?D
@@ -48,6 +64,11 @@ extends FormModule[Rdf#URI] {
       fields.append( makeEntry(subject, prop, ranges) )
     }
     FormSyntax(subject, fields)
+  }
+
+    /** find fields from given Instance subject */
+  private def fields(subject: Rdf#URI, graph: Rdf#Graph): Seq[Rdf#URI] = {
+    rdfDSL.getPredicates(graph, subject).toSeq
   }
 
   /** try to get rdfs:label, comment, rdf:type, */
@@ -148,7 +169,7 @@ extends FormModule[Rdf#URI] {
 //    r.toSet
 //  }
 
-  private def printGraph(answers: Rdf#Graph) {
+  def printGraph(answers: Rdf#Graph) {
     val iterable = ops.graphToIterable(answers)
     for (t <- iterable) {
       println(t)

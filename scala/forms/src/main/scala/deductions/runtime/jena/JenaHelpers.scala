@@ -17,7 +17,10 @@ import com.hp.hpl.jena.rdf.model.ModelFactory
 trait JenaHelpers extends JenaModule {
 
     /** store URI in a named graph, using Jena's RDFDataMgr
-     *  (use content-type or else file extension) */
+     * (use content-type or else file extension) 
+     * with Jena Riot for smart reading of any format,
+     * cf https://github.com/w3c/banana-rdf/issues/105
+    */
     def storeURI(uri: Jena#URI, graphUri: Jena#URI, store: JenaStore) : Model = {
     store.writeTransaction {
       Logger.getRootLogger().info(s"storeURI uri $uri graphUri $graphUri")
