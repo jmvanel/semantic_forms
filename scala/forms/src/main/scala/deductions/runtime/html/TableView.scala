@@ -1,16 +1,15 @@
 package deductions.runtime.html
 
 import scala.xml.Elem
-
 import org.apache.log4j.Logger
 import org.w3.banana.FOAFPrefix
 import org.w3.banana.RDFModule
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
-
 import deductions.runtime.abstract_syntax.FormSyntaxFactory
 import deductions.runtime.jena.RDFStoreObject
 import deductions.runtime.sparql_cache.RDFCacheJena
+import scala.xml.PrettyPrinter
 
 /** Table View of a form */
 trait TableView
@@ -66,7 +65,9 @@ trait TableView
   }
   
   def htmlFormString(uri:String) : String = {
-    htmlForm(uri).toString
+    val f = htmlForm(uri)
+    val pp = new PrettyPrinter(80, 2)
+    pp.format(f)
   }
 
   def graf2formString(graph1: Rdf#Graph, uri:String): String = {

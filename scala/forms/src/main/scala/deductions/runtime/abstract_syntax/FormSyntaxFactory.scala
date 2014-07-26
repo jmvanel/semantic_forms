@@ -6,7 +6,6 @@ $Id$
 package deductions.runtime.abstract_syntax
 
 import scala.collection.mutable
-
 import org.apache.log4j.Logger
 import org.w3.banana.PointedGraph
 import org.w3.banana.RDF
@@ -17,33 +16,28 @@ import org.w3.banana.RDFSPrefix
 import org.w3.banana.URIOps
 import org.w3.banana.XSDPrefix
 import org.w3.banana.diesel.toPointedGraphW
+import org.w3.banana.OWLPrefix
 
 
 /** Factory for an abstract Form Syntax */
-class FormSyntaxFactory[Rdf <: RDF](graph: Rdf#Graph) 
+class FormSyntaxFactory[Rdf <: RDF]
+(graph: Rdf#Graph) 
 ( implicit ops: RDFOps[Rdf],
     uriOps: URIOps[Rdf],
     rdfDSL: RDFDSL[Rdf]
-    )
-extends 
-//RDFOpsModule with 
-FormModule[Rdf#URI]
-//with FormFromInstance[Rdf] 
-{
+)
+extends // RDFOpsModule with 
+FormModule[Rdf#URI] {
 
   val nullURI // : Rdf#URI 
     = ops.URI( "http://null.com#" ) // TODO better : "" ????????????
 
   def createForm(subject: Rdf#URI ) : FormSyntax[Rdf#URI] = {
-//    println("createForm " + subject + " " + graph.hashCode + "\n\t"
-//        + printGraph(graph)
-////        + (graph.toIterable).mkString("\n")
-//    )
      val props = fields(subject, graph)
      createForm(subject, props )
   }
 
-    /** For each given property (props)
+  /** For each given property (props)
    *  look at its rdfs:range ?D
    *  see if ?D is a datatype or an OWL or RDFS class */
   def createForm(subject: Rdf#URI,
@@ -52,7 +46,6 @@ FormModule[Rdf#URI]
     for (prop <- props) {
       Logger.getRootLogger().info(s"createForm subject $subject, prop $prop")
       val ranges = oQuery( prop, RDFSPrefix[Rdf].range )
-      
       val rangesSize = ranges . size
       val mess = if( rangesSize > 1 ) {
         "WARNING: ranges " + ranges + " for property " + prop + " are multiple."
@@ -71,44 +64,37 @@ FormModule[Rdf#URI]
     rdfDSL.getPredicates(graph, subject).toSeq
   }
 
-  /** try to get rdfs:label, comment, rdf:type, */
+  /** try to get rdfs:label, comment, rdf:type,
+   *  TODO : multi-valued properties */
   private def makeEntry(subject: Rdf#URI, prop: Rdf#URI, ranges:Set[Rdf#Node]) : Entry = {
     Logger.getRootLogger().info( s"makeEntry subject $subject, prop $prop")
     val label =		getHeadStringOrElse( prop, RDFSPrefix[Rdf].label, terminalPart(prop) )
-//    Logger.getRootLogger().info( s"makeEntry subject $subject, prop $prop 1")
     val comment =	getHeadStringOrElse( prop, RDFSPrefix[Rdf].comment, "" )
-//        Logger.getRootLogger().info( s"makeEntry subject $subject, prop $prop 2")
+    if( prop.toString.contains("currentProject")) {
+      println
+    }
     val propClass = getHeadOrElse( prop, RDFPrefix[Rdf].typ )
-//    Logger.getRootLogger().info( s"makeEntry subject $subject, prop $prop 3")
-    val firstOobject = getHeadValueOrElse( Set(subject), prop )
+    val firstObject = getHeadValueOrElse( Set(subject), prop )
     // TODO associate each object with its property
-//    Logger.getRootLogger().info( s"makeEntry subject $subject, prop $ranges $prop ${RDFPrefix[Rdf].typ}")
-    val classs = getHeadValueOrElse( ranges, RDFPrefix[Rdf].typ )
+    val rangeClass = getHeadValueOrElse( ranges, RDFPrefix[Rdf].typ )
     def literalEntry = LiteralEntry(label, comment, prop, DatatypeValidator(propClass)
-        , getStringOrElse(firstOobject, "" ) ) // TODO classs ?
+        , getStringOrElse(firstObject, "<empty>" ) ) // TODO classs ?
     def resourceEntry = ResourceEntry(label, comment, prop, ResourceValidator(propClass)
-        , firstOobject.asInstanceOf[Rdf#URI] ) // TODO bnode
+        , firstObject.asInstanceOf[Rdf#URI] )
+    // TODO bnode
 
-//    val owl = OWLPrefix[Rdf]
-    val owlPrefix = "http://www.w3.org/2002/07/owl#"
+    val owl = OWLPrefix[Rdf]
+    val xsdPrefix = XSDPrefix[Rdf].prefixIri
 
-    /* see if range class is an XSD datatype,
-     * or else if property is a DatatypeProperty
-     * or else if property is an ObjectProperty
-     * or else we arbitrarily set range String */
-    val formEntry = classs match {
-      case cl if cl.toString startsWith( XSDPrefix[Rdf] . prefixIri)  =>
-        literalEntry
-      case _ if ops.fromUri(propClass) ==
-        // TODO use Banana
-        owlPrefix + "DatatypeProperty" =>
-        literalEntry
-      case _ if ops.fromUri(propClass) ==
-        owlPrefix + "ObjectProperty" =>
-        resourceEntry
+    rangeClass match {
+      case _ if rangeClass.toString startsWith(xsdPrefix)  => literalEntry
+      case _ if propClass == owl.DatatypeProperty => literalEntry
+      case _ if propClass == owl.ObjectProperty => resourceEntry
+      case _ if rangeClass == owl.Class => resourceEntry
+//    case _ if ranges.contains(owl.Thing) => resourceEntry
+      case _ if ranges.contains(ops.makeUri(owl.prefixIri+"Thing")) => resourceEntry
       case _ => literalEntry
     }
-    formEntry
   }
 
   def terminalPart(uri: Rdf#URI): String = {
