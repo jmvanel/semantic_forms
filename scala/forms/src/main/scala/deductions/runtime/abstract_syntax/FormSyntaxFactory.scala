@@ -6,7 +6,9 @@ $Id$
 package deductions.runtime.abstract_syntax
 
 import scala.collection.mutable
+
 import org.apache.log4j.Logger
+import org.w3.banana.OWLPrefix
 import org.w3.banana.PointedGraph
 import org.w3.banana.RDF
 import org.w3.banana.RDFDSL
@@ -16,12 +18,11 @@ import org.w3.banana.RDFSPrefix
 import org.w3.banana.URIOps
 import org.w3.banana.XSDPrefix
 import org.w3.banana.diesel.toPointedGraphW
-import org.w3.banana.OWLPrefix
 
 
 /** Factory for an abstract Form Syntax */
 class FormSyntaxFactory[Rdf <: RDF]
-(graph: Rdf#Graph) 
+(graph: Rdf#Graph)
 ( implicit ops: RDFOps[Rdf],
     uriOps: URIOps[Rdf],
     rdfDSL: RDFDSL[Rdf]
@@ -45,7 +46,7 @@ FormModule[Rdf#URI] {
     val fields = mutable.ArrayBuffer[Entry]()
     for (prop <- props) {
       Logger.getRootLogger().info(s"createForm subject $subject, prop $prop")
-      val ranges = oQuery( prop, RDFSPrefix[Rdf].range )
+      val ranges = extractRDFURIs( oQuery( prop, RDFSPrefix[Rdf].range ) )
       val rangesSize = ranges . size
       val mess = if( rangesSize > 1 ) {
         "WARNING: ranges " + ranges + " for property " + prop + " are multiple."
@@ -54,7 +55,7 @@ FormModule[Rdf#URI] {
       } else ""
       println( mess, System.err)
       
-      fields.append( makeEntry(subject, prop, ranges) )
+      fields ++= ( makeEntry(subject, prop, ranges) )
     }
     FormSyntax(subject, fields)
   }
@@ -64,37 +65,46 @@ FormModule[Rdf#URI] {
     rdfDSL.getPredicates(graph, subject).toSeq
   }
 
-  /** try to get rdfs:label, comment, rdf:type,
-   *  TODO : multi-valued properties */
-  private def makeEntry(subject: Rdf#URI, prop: Rdf#URI, ranges:Set[Rdf#Node]) : Entry = {
-    Logger.getRootLogger().info( s"makeEntry subject $subject, prop $prop")
-    val label =		getHeadStringOrElse( prop, RDFSPrefix[Rdf].label, terminalPart(prop) )
-    val comment =	getHeadStringOrElse( prop, RDFSPrefix[Rdf].comment, "" )
-    if( prop.toString.contains("currentProject")) {
-      println
-    }
-    val propClass = getHeadOrElse( prop, RDFPrefix[Rdf].typ )
-    val firstObject = getHeadValueOrElse( Set(subject), prop )
-    // TODO associate each object with its property
-    val rangeClass = getHeadValueOrElse( ranges, RDFPrefix[Rdf].typ )
-    def literalEntry = LiteralEntry(label, comment, prop, DatatypeValidator(propClass)
-        , getStringOrElse(firstObject, "<empty>" ) ) // TODO classs ?
-    def resourceEntry = ResourceEntry(label, comment, prop, ResourceValidator(propClass)
-        , firstObject.asInstanceOf[Rdf#URI] )
-    // TODO bnode
+  /**
+   * try to get rdfs:label, comment, rdf:type,
+   * or else display terminal Part of URI as label;
+   *  taking in account multi-valued properties
+   */
+  private def makeEntry(subject: Rdf#URI, prop: Rdf#URI, ranges: Set[Rdf#URI]): Seq[Entry] = {
+    Logger.getRootLogger().info(s"makeEntry subject $subject, prop $prop")
+    val label = getHeadStringOrElse(prop, RDFSPrefix[Rdf].label, terminalPart(prop))
+    val comment = getHeadStringOrElse(prop, RDFSPrefix[Rdf].comment, "")
+        if( prop.toString.contains("schoolHomepage")) {
+          println
+        }
+    val propClasses = oQuery(prop, RDFPrefix[Rdf].typ)
+    val objects = oQuery(subject, prop)
+    val result = scala.collection.mutable.ArrayBuffer[Entry]()
+    val rangeClasses = oQuery(ranges, RDFPrefix[Rdf].typ)
+    for (object_ <- objects) {
+      def literalEntry = LiteralEntry(label, comment, prop, DatatypeValidator(ranges), getStringOrElse(object_.pointer, "<empty>"))
+      def resourceEntry = ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_.pointer.asInstanceOf[Rdf#URI])
+      // TODO bnode
 
-    val owl = OWLPrefix[Rdf]
-    val xsdPrefix = XSDPrefix[Rdf].prefixIri
+      val owl = OWLPrefix[Rdf]
+      val xsdPrefix = XSDPrefix[Rdf].prefixIri
+      val rdf = RDFPrefix[Rdf]
 
-    rangeClass match {
-      case _ if rangeClass.toString startsWith(xsdPrefix)  => literalEntry
-      case _ if propClass == owl.DatatypeProperty => literalEntry
-      case _ if propClass == owl.ObjectProperty => resourceEntry
-      case _ if rangeClass == owl.Class => resourceEntry
-//    case _ if ranges.contains(owl.Thing) => resourceEntry
-      case _ if ranges.contains(ops.makeUri(owl.prefixIri+"Thing")) => resourceEntry
-      case _ => literalEntry
+      val entry = rangeClasses match {
+//        case _ if rangeClass.toString startsWith (xsdPrefix) => literalEntry
+        case _ if rangeClasses.exists{ c => c.toString startsWith (xsdPrefix)}
+        => literalEntry
+        case _ if propClasses.contains(owl.DatatypeProperty) => literalEntry
+        case _ if propClasses.contains(owl.ObjectProperty) => resourceEntry
+        case _ if rangeClasses.contains(owl.Class) => resourceEntry
+        case _ if rangeClasses.contains(rdf.Property) => resourceEntry
+        //    case _ if ranges.contains(owl.Thing) => resourceEntry
+        case _ if ranges.contains(ops.makeUri(owl.prefixIri + "Thing")) => resourceEntry
+        case _ => literalEntry
+      }
+      result += entry
     }
+    result
   }
 
   def terminalPart(uri: Rdf#URI): String = {
@@ -130,22 +140,32 @@ FormModule[Rdf#URI] {
     }
   }
 
-  private def getHeadValueOrElse(subjects: Set[Rdf#Node], predicate: Rdf#URI ) : Rdf#Node = {
-      val values = for( subject <- subjects;
-          values <- oQuery( subject.asInstanceOf[Rdf#URI], predicate )
-          ) yield values
-      values.headOption match {
+  private def getHeadValueOrElse(subjects: Set[Rdf#Node], predicate: Rdf#URI): Rdf#Node = {
+    val values = oQuery(subjects, predicate)
+    values.headOption match {
       case Some(x) => x
       case _ => nullURI
-      }
     }
+  }
   
-  /** Query for object in triple, given subject & predicate */
+  /** Query for objects in triple, given subject & predicate */
   private def oQuery(subject: Rdf#URI, predicate: Rdf#URI ): Set[Rdf#Node] = {
     val pg = PointedGraph[Rdf]( subject, graph )
     val objects = pg / predicate
-    objects.map(_.pointer)
-      .toSet
+    objects.map(_.pointer).toSet
+  }
+
+  private def oQuery[T <: Rdf#Node](subjects: Set[T], predicate: Rdf#URI): Set[Rdf#Node] = {
+    val values = for (
+      subject <- subjects;
+      values <- oQuery(subject.asInstanceOf[Rdf#URI], predicate)
+    ) yield values
+    values
+  }
+
+  private def extractRDFURIs(nodes:Set[Rdf#Node]) : Set[Rdf#URI] = {
+    val v = nodes filter { node:Rdf#Node => ops.isURI(node) }
+    v . map { node => node.asInstanceOf[Rdf#URI] }
   }
 
 //  def oQuery2[T](subject: Rdf#URI, predicate: Rdf#URI, action: Rdf#Node => T ) : Set[T] = {

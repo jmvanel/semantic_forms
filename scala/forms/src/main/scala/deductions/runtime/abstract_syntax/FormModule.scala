@@ -50,6 +50,6 @@ trait FormModule[URI] {
   type DatatypeProperty = URI
   type ObjectProperty = URI
 
-  case class ResourceValidator(typ:URI)
-  case class DatatypeValidator(typ:URI)
+  case class ResourceValidator(typ:Set[URI])
+  case class DatatypeValidator(typ:Set[URI])
 }

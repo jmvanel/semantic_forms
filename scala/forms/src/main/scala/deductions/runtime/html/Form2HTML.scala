@@ -24,7 +24,9 @@ trait Form2HTML[URI] extends FormModule[URI] {
                    * or create a sub-form for a blank node of an ancillary type (like a street address),
                    * or just create a new resource with its type, given by range, or derived
                    * (like in N3Form in EulerGUI ) */
-                  <a href={ r.value.toString }>{ r.label }</a>
+                  <a href={ r.value.toString }>{
+                    r.value.toString
+                  }</a>
               }
             }</td>
           }</tr>
