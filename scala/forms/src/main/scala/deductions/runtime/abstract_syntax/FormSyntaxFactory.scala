@@ -62,7 +62,7 @@ FormModule[Rdf#URI] {
 
     /** find fields from given Instance subject */
   private def fields(subject: Rdf#URI, graph: Rdf#Graph): Seq[Rdf#URI] = {
-    rdfDSL.getPredicates(graph, subject).toSeq
+    rdfDSL.getPredicates(graph, subject).toSet.toSeq
   }
 
   /**
@@ -74,9 +74,9 @@ FormModule[Rdf#URI] {
     Logger.getRootLogger().info(s"makeEntry subject $subject, prop $prop")
     val label = getHeadStringOrElse(prop, RDFSPrefix[Rdf].label, terminalPart(prop))
     val comment = getHeadStringOrElse(prop, RDFSPrefix[Rdf].comment, "")
-        if( prop.toString.contains("schoolHomepage")) {
-          println
-        }
+//        if( prop.toString.contains("workInfoHomepage")) {
+//          println
+//        }
     val propClasses = oQuery(prop, RDFPrefix[Rdf].typ)
     val objects = oQuery(subject, prop)
     val result = scala.collection.mutable.ArrayBuffer[Entry]()
@@ -88,14 +88,16 @@ FormModule[Rdf#URI] {
 
       val owl = OWLPrefix[Rdf]
       val xsdPrefix = XSDPrefix[Rdf].prefixIri
-      val rdf = RDFPrefix[Rdf]
+      val rdf  = RDFPrefix[Rdf]
+      val rdfs = RDFSPrefix[Rdf]
 
       val entry = rangeClasses match {
 //        case _ if rangeClass.toString startsWith (xsdPrefix) => literalEntry
         case _ if rangeClasses.exists{ c => c.toString startsWith (xsdPrefix)}
         => literalEntry
+        case _ if rangeClasses.contains(rdfs.Literal) => literalEntry
         case _ if propClasses.contains(owl.DatatypeProperty) => literalEntry
-        case _ if propClasses.contains(owl.ObjectProperty) => resourceEntry
+        case _ if propClasses.contains(owl.ObjectProperty)	=> resourceEntry
         case _ if rangeClasses.contains(owl.Class) => resourceEntry
         case _ if rangeClasses.contains(rdf.Property) => resourceEntry
         //    case _ if ranges.contains(owl.Thing) => resourceEntry
