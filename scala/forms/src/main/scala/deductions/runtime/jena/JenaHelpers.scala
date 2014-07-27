@@ -27,8 +27,12 @@ trait JenaHelpers extends JenaModule {
       try{
       	val gForStore = store.getGraph(graphUri)
       	val model = RDFDataMgr.loadModel(uri.toString())
-      	store.appendToGraph( uri, model.getGraph() )
-//      	 model.getNsPrefixMap
+      	
+      	// not possible, as Banana also starts a transaction:
+//      	store.appendToGraph( uri, model.getGraph() )
+      	store.dg.addGraph( uri, model.getGraph() )
+      	
+      	//	model.getNsPrefixMap // TODO use it to load referred vocab's
       	Logger.getRootLogger().info(s"storeURI uri $uri : stored")
       	model
       } catch {

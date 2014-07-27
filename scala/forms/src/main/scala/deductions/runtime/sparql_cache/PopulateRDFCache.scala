@@ -19,6 +19,7 @@ import org.w3.banana.RDFStore
 import org.w3.banana.GraphStore
 import org.w3.banana.OWLPrefix
 import deductions.runtime.jena.RDFStoreObject
+import org.apache.log4j.Logger
 
 /** Populate RDF Cache with commonly used vocabularies;
  *  should be done just once;
@@ -59,6 +60,7 @@ object PopulateRDFCache extends RDFCacheJena with App {
      val vocabs = vocabs1 ::: vocabs2
   /* geo: , con: , <foaf_fr.n3>  TODO */
 
-     vocabs2 map { storeURI( _, store) }
+     Logger.getRootLogger().info(vocabs)
+     vocabs1 map { storeURI( _, store) }
   }
   }
