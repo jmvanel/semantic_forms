@@ -24,7 +24,7 @@ trait TableView
 //  val foafURI = foaf.prefixIri
 
   /** create a form for given uri with background knowledge ??? TODO */
-  def htmlForm(uri:String) : Elem = {
+  def htmlForm(uri:String, hrefPrefix:String="") : Elem = {
     val store =  RDFStoreObject.store
 //    RDFStoreObject.printGraphList
     // TODO load ontologies from local SPARQL; probably use a pointed graph
@@ -33,12 +33,13 @@ trait TableView
 //    RDFStoreObject.printGraphList
     store.readTransaction {
       val allNamedGraphs = store.getGraph(makeUri("urn:x-arq:UnionGraph"))
-      graf2form(allNamedGraphs, uri)
+      graf2form(allNamedGraphs, uri, hrefPrefix)
     }
   }
 
   /** create a form for given URI resource (instance) with background knowledge in graph1 */
-  def graf2form(graph1: Rdf#Graph, uri:String): Elem = {
+  def graf2form(graph1: Rdf#Graph, uri:String,
+      hrefPrefix:String="" ): Elem = {
     val graph = graph1 // .union(vocabGraph)
 
     val factory = new FormSyntaxFactory[Rdf](graph)
@@ -49,17 +50,15 @@ trait TableView
     val form = factory.createForm(
         URI(uri)
         // find properties from instance
-//       , Seq(
-//          foaf.title, 
+//       , Seq( foaf.title, 
 //          foaf.givenName,
 //          foaf.familyName, 
 //          foaf.currentProject,
 //          foaf.img,
-//          foaf.mbox
-//      )
+//          foaf.mbox )
     )
     println("form:\n" + form)
-    val htmlForm = generateHTML(form)
+    val htmlForm = generateHTML(form, hrefPrefix )
     println(htmlForm)
     htmlForm
   }

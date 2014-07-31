@@ -171,19 +171,28 @@ d'édition.</p>
   <li>label pour une URI (aussi bien propriété que ressource ordinaire) :
     utiliser <code>rdfs:label</code> ou autre propriété suivant le type;
     tenir compte de la langue de l'application</li>
-  <li>création, affichage ou édition, ou les deux (mise à jour)</li>
+  <li>création, affichage ou édition, ou les deux (mise à jour)
+    <ol>
+      <li>un même formulaire peut avoir des propriétés éditables et
+        d'autres non</li>
+    </ol>
+  </li>
   <li>affichage de la valeur (l'objet au sens RDF) : tenir compte de : 
     <ol>
       <li>propriétés mono ou multi-valuées,</li>
       <li>datatype éventuel (date, géocoordonnées, ...);</li>
       <li>langue;</li>
-      <li>types de médias pour URL: image, son, vidéo ( utiliser prédicats
-        avec image comme range, ou the content-type )</li>
+      <li>types de médias affichables mais non éditables :
+        <p>image, son, vidéo ( utiliser prédicats avec image comme range, ou
+        le <code>content-type</code> ),</p>
+        <p>HTML,</p>
+        <p>tel: , urn:, isbn: , ...</p>
+      </li>
     </ol>
   </li>
-  <li>édition : tenir compte de :pour une propriété avec <code>rdfs:range
-    </code>qui est une <code>owl:ObjectProperty</code> (ou une
-    <code>rdf:Property</code>): au choix: 
+  <li>édition : pour une propriété avec <code>rdfs:range </code>qui est une
+    <code>owl:ObjectProperty</code> (ou une <code>rdf:Property</code>): au
+    choix: 
     <ol>
       <li>se lier à un URI connu parmi les valeurs possibles connues, d'après
         le type ( <code>rdfs:range</code> de la propriété );</li>
@@ -223,7 +232,7 @@ d'édition.</p>
       <li>axiomes OWL ( raisonnement inductif possible ?)</li>
     </ol>
   </li>
-  <li>aspect mise à jour dynamique via MVC ou moteur de règles</li>
+  <li>mise à jour dynamique via MVC ou moteur de règles</li>
   <li>téléchargement dynamique des ontologies en cas de besoin ( à partir
     des préfixes utilisés dans le Turtle, ou des préfixes dans le
     vocabulaire utilisé</li>
@@ -234,7 +243,7 @@ d'édition.</p>
     </ol>
   </li>
   <li>liaison avec un graphe en mémoire</li>
-  <li>liaison avec une base SPARQL:
+  <li>liaison avec une base SPARQL: 
     <ol>
       <li>via API</li>
       <li>via SPARQL update</li>
@@ -802,7 +811,7 @@ href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/reasoner
   </li>
   <li>Pixel Humain: example ici : création de formulaire par choix dans une
     arborescence de propriétés; basé sur VIE, limité pour l'instant à
-    schema.org ; stockage de JSON-LD dans MongoDB:
+    schema.org ; stockage de JSON-LD dans MongoDB: 
     <p><a
     href="http://qa.pixelhumain.com/ph/tools/vie#">http://qa.pixelhumain.com/ph/tools/vie#</a></p>
   </li>

@@ -2,12 +2,14 @@ package deductions.runtime.html
 
 import scala.xml.Elem
 import deductions.runtime.abstract_syntax.FormModule
+import java.net.URLEncoder
 
 /** TODO : different modes: display or edit;
  *  take in account datatype */
 trait Form2HTML[URI] extends FormModule[URI] {
   type fm = FormModule[URI]
-  def generateHTML(form: fm#FormSyntax[URI]): Elem = {
+  def generateHTML(form: fm#FormSyntax[URI],
+      hrefPrefix:String=""): Elem = {
     <table>
       {
         for (field <- form.fields) yield {
@@ -24,7 +26,7 @@ trait Form2HTML[URI] extends FormModule[URI] {
                    * or create a sub-form for a blank node of an ancillary type (like a street address),
                    * or just create a new resource with its type, given by range, or derived
                    * (like in N3Form in EulerGUI ) */
-                  <a href={ r.value.toString }>{
+                  <a href={ createHyperlinkString( hrefPrefix, r.value.toString) }>{
                     r.value.toString
                   }</a>
               }
@@ -33,5 +35,12 @@ trait Form2HTML[URI] extends FormModule[URI] {
         }
       }
     </table>
+  }
+  
+  def createHyperlinkString( hrefPrefix:String, uri:String ) :String = {
+    if ( hrefPrefix == "" )
+      uri
+    else
+      hrefPrefix + URLEncoder.encode(uri, "utf-8")
   }
 }

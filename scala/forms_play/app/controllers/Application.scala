@@ -6,14 +6,18 @@ import deductions.runtime.html.TableView
 
 object Application extends Controller with TableView {
   def index = {
-    Action { (
+    Action {
+      (
           Ok( views.html.index(global.Global.form) )
-      ) }
+      )
+    }
   }
 
   def displayURI(uri:String) = {
-    Action { (
+    Action {
+      (
           Ok( views.html.index(global.Global.htmlForm(uri)) )
-      ) }
+      )
+    }
   }
 }

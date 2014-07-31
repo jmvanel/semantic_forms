@@ -3,6 +3,7 @@ import play.api.Application
 import deductions.runtime.html.TableView
 import scala.xml.Elem
 import deductions.runtime.sparql_cache.PopulateRDFCache
+import org.apache.log4j.Logger
 
 package global {
 
@@ -13,20 +14,15 @@ object Global extends play.api.GlobalSettings {
   override def onStart(app: Application) {
     val uri = "http://jmvanel.free.fr/jmv.rdf#me"
     PopulateRDFCache.loadCommonVocabularies
-    
-//    global.Global.
     form = htmlForm(uri)
   }
 
     def htmlForm(uri: String): scala.xml.Elem = {
+      Logger.getRootLogger().info("Global.htmlForm uri "+ uri)
       if (uri != null && uri != "")
-        tv.htmlForm(uri)
+        tv.htmlForm(uri, "/display?displayuri=" )
       else
         <p>Enter an URI</p>
     }
 }
-
-//  object Global {
-//      var form : Elem = <p>initial value</p>
-//  }
 }
