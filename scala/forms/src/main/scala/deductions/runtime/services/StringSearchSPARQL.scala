@@ -40,7 +40,7 @@ class StringSearchSPARQL[Rdf <: RDF](store: RDFStore[Rdf])(
     <p>{
       uris.map( uri => {
         val uriString = uri.toString
-        <div><a href={uriString}>{uriString}</a></div>
+        <div><a href={uriString}>{uriString}</a><br/></div>
       } )
     }</p>
   }
