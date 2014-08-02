@@ -15,7 +15,7 @@ import scala.xml.PrettyPrinter
 trait TableView
   extends RDFModule
   with JenaModule // TODO depend on generic Rdf
-  with Form2HTML[Jena#URI]
+  with Form2HTML[Jena#Node, Jena#URI]
   with RDFCacheJena // TODO depend on generic Rdf
 {
   import Ops._
@@ -23,32 +23,30 @@ trait TableView
   val foaf = FOAFPrefix[Rdf]
 //  val foafURI = foaf.prefixIri
 
-  /** create a form for given uri with background knowledge ??? TODO */
-  def htmlForm(uri:String, hrefPrefix:String="") : Elem = {
+  /** create a form for given uri with background knowledge in RDFStoreObject.store  */
+  def htmlForm(uri:String, hrefPrefix:String="", blankNode:String="" ) : Elem = {
     val store =  RDFStoreObject.store
 //    RDFStoreObject.printGraphList
     // TODO load ontologies from local SPARQL; probably use a pointed graph
-    storeURI(makeUri(uri), store)
-    Logger.getRootLogger().info(s"After storeURI(makeUri($uri), store)")
-//    RDFStoreObject.printGraphList
+    if(blankNode != "true"){
+      storeURI(makeUri(uri), store)
+      Logger.getRootLogger().info(s"After storeURI(makeUri($uri), store)")
+    }
     store.readTransaction {
       val allNamedGraphs = store.getGraph(makeUri("urn:x-arq:UnionGraph"))
-      graf2form(allNamedGraphs, uri, hrefPrefix)
+      graf2form(allNamedGraphs, uri, hrefPrefix, blankNode)
     }
   }
 
-  /** create a form for given URI resource (instance) with background knowledge in graph1 */
-  def graf2form(graph1: Rdf#Graph, uri:String,
-      hrefPrefix:String="" ): Elem = {
-    val graph = graph1 // .union(vocabGraph)
-
+  /** create a form for given URI resource (instance) with background knowledge in given graph */
+  def graf2form(graph: Rdf#Graph, uri:String,
+      hrefPrefix:String="", blankNode:String="" ): Elem = {
     val factory = new FormSyntaxFactory[Rdf](graph)
 //    println("graf2form " + " " + graph.hashCode() + "\n" 
 ////        + (graph.toIterable).mkString("\n")
-//                + factory.printGraph(graph)
-//    )
+//                + factory.printGraph(graph) )
     val form = factory.createForm(
-        URI(uri)
+        if( blankNode ==true ) BNode(uri) else URI(uri)
         // find properties from instance
 //       , Seq( foaf.title, 
 //          foaf.givenName,

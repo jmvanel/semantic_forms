@@ -17,10 +17,10 @@ object Global extends play.api.GlobalSettings {
     form = htmlForm(uri)
   }
 
-    def htmlForm(uri: String): scala.xml.Elem = {
+    def htmlForm(uri: String, blankNode:String=""): scala.xml.Elem = {
       Logger.getRootLogger().info("Global.htmlForm uri "+ uri)
       if (uri != null && uri != "")
-        tv.htmlForm(uri, "/display?displayuri=" )
+        tv.htmlForm(uri, "/display?displayuri=", blankNode )
       else
         <p>Enter an URI</p>
     }

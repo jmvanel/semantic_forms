@@ -13,10 +13,10 @@ object Application extends Controller with TableView {
     }
   }
 
-  def displayURI(uri:String) = {
+  def displayURI(uri:String, blanknode:String="") = {
     Action {
       (
-          Ok( views.html.index(global.Global.htmlForm(uri)) )
+          Ok( views.html.index(global.Global.htmlForm(uri, blanknode)) )
       )
     }
   }

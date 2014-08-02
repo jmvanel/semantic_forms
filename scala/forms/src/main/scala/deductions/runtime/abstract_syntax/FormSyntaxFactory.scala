@@ -28,12 +28,14 @@ class FormSyntaxFactory[Rdf <: RDF]
     rdfDSL: RDFDSL[Rdf]
 )
 extends // RDFOpsModule with 
-FormModule[Rdf#URI] {
+FormModule[Rdf#Node, Rdf#URI] {
+//FormModule[Rdf#URI] {
 
   val nullURI // : Rdf#URI 
     = ops.URI( "http://null.com#" ) // TODO better : "" ????????????
 
-  def createForm(subject: Rdf#URI ) : FormSyntax[Rdf#URI] = {
+//  def createForm(subject: Rdf#URI ) : FormSyntax[Rdf#URI] = {
+  def createForm(subject: Rdf#Node ) : FormSyntax[Rdf#Node, Rdf#URI] = {
      val props = fields(subject, graph)
      createForm(subject, props )
   }
@@ -41,8 +43,10 @@ FormModule[Rdf#URI] {
   /** For each given property (props)
    *  look at its rdfs:range ?D
    *  see if ?D is a datatype or an OWL or RDFS class */
-  def createForm(subject: Rdf#URI,
-    props: Seq[Rdf#URI]): FormSyntax[Rdf#URI] = {
+  def createForm(subject: Rdf#Node,
+//  def createForm(subject: Rdf#URI,
+//    props: Seq[Rdf#URI]): FormSyntax[Rdf#URI] = {
+    props: Seq[Rdf#URI]): FormSyntax[Rdf#Node, Rdf#URI] = {
     val fields = mutable.ArrayBuffer[Entry]()
     for (prop <- props) {
       Logger.getRootLogger().info(s"createForm subject $subject, prop $prop")
@@ -61,7 +65,8 @@ FormModule[Rdf#URI] {
   }
 
     /** find fields from given Instance subject */
-  private def fields(subject: Rdf#URI, graph: Rdf#Graph): Seq[Rdf#URI] = {
+//  private def fields(subject: Rdf#URI, graph: Rdf#Graph): Seq[Rdf#URI] = {
+  private def fields(subject: Rdf#Node, graph: Rdf#Graph): Seq[Rdf#URI] = {
     rdfDSL.getPredicates(graph, subject).toSet.toSeq
   }
 
@@ -70,7 +75,8 @@ FormModule[Rdf#URI] {
    * or else display terminal Part of URI as label;
    *  taking in account multi-valued properties
    */
-  private def makeEntry(subject: Rdf#URI, prop: Rdf#URI, ranges: Set[Rdf#URI]): Seq[Entry] = {
+//  private def makeEntry(subject: Rdf#URI, prop: Rdf#URI, ranges: Set[Rdf#URI]): Seq[Entry] = {
+  private def makeEntry(subject: Rdf#Node, prop: Rdf#URI, ranges: Set[Rdf#URI]): Seq[Entry] = {
     Logger.getRootLogger().info(s"makeEntry subject $subject, prop $prop")
     val label = getHeadStringOrElse(prop, RDFSPrefix[Rdf].label, terminalPart(prop))
     val comment = getHeadStringOrElse(prop, RDFSPrefix[Rdf].comment, "")
@@ -81,18 +87,34 @@ FormModule[Rdf#URI] {
     val objects = oQuery(subject, prop)
     val result = scala.collection.mutable.ArrayBuffer[Entry]()
     val rangeClasses = oQuery(ranges, RDFPrefix[Rdf].typ)
+
+    def makeBN(label: String, comment: String,
+      property: ObjectProperty, validator: ResourceValidator,
+      value: Rdf#BNode) = {
+      new BlankNodeEntry(label, comment, prop, ResourceValidator(ranges), value) {
+    	 override def getId : String = ops.fromBNode(value.asInstanceOf[Rdf#BNode])
+      }
+    }
+    
     for (object_ <- objects) {
       def literalEntry = LiteralEntry(label, comment, prop, DatatypeValidator(ranges), getStringOrElse(object_.pointer, "<empty>"))
-      def resourceEntry = ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_.pointer.asInstanceOf[Rdf#URI])
-      // TODO bnode
-
+      def resourceEntry = {
+        ops.foldNode(object_)(
+            object_ => ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_),
+//                object_.pointer.asInstanceOf[Rdf#URI]),
+            object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_),
+              // BlankNodeEntry(label, comment, prop, ResourceValidator(ranges), object_),
+            object_ => LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
+                getStringOrElse(object_.pointer, "<empty>"))
+            )
+//        ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_.pointer.asInstanceOf[Rdf#URI])
+      }
       val owl = OWLPrefix[Rdf]
       val xsdPrefix = XSDPrefix[Rdf].prefixIri
       val rdf  = RDFPrefix[Rdf]
       val rdfs = RDFSPrefix[Rdf]
 
       val entry = rangeClasses match {
-//        case _ if rangeClass.toString startsWith (xsdPrefix) => literalEntry
         case _ if rangeClasses.exists{ c => c.toString startsWith (xsdPrefix)}
         => literalEntry
         case _ if rangeClasses.contains(rdfs.Literal) => literalEntry
@@ -151,7 +173,9 @@ FormModule[Rdf#URI] {
   }
   
   /** Query for objects in triple, given subject & predicate */
-  private def oQuery(subject: Rdf#URI, predicate: Rdf#URI ): Set[Rdf#Node] = {
+  private def oQuery(subject: Rdf#Node, predicate: Rdf#URI ): Set[Rdf#Node] = {
+//  private def oQuery(subject: Rdf#BNode, predicate: Rdf#URI ): Set[Rdf#Node] = {
+//  private def oQuery(subject: Rdf#URI, predicate: Rdf#URI ): Set[Rdf#Node] = {
     val pg = PointedGraph[Rdf]( subject, graph )
     val objects = pg / predicate
     objects.map(_.pointer).toSet

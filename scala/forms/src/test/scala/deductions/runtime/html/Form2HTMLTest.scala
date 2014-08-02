@@ -24,7 +24,7 @@ class Form2HTMLTest
   val nullURI1 = makeUri("")
 
   test("Test HTML") {
-    val fh = new Form2HTML[Rdf#URI]{
+    val fh = new Form2HTML[Rdf#Node, Rdf#URI]{
       override val nullURI = nullURI1 // Ops.makeURI("")
     }
     val xhtml = fh.generateHTML(createForm)

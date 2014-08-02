@@ -13,6 +13,10 @@ With these features to add one after the other:
 - 4. entering new triplets, as in DataGUI or as in Ontowiki: http://aksw.org/source/edit
 - 5. introduce the RDF cache, creation of a new URI in its class as DomainApplication ..... etc etc ...
 
+For now, the display looks like this, 
+plus a textbox to enter a URL semantics, eg a FOAF profile or DBpedia URI : 
+[example.form.foaf.html](http://htmlpreview.github.io/?https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/example.form.foaf.html)
+
 # How to run
 
 - build with sbt project ../forms
@@ -21,7 +25,7 @@ With these features to add one after the other:
 Tips:
 
 - in case of troubles delete target/ directory
-- create eclipse configuration with "eclipse" command in sbt and activator
+- create eclipse configurations with the "eclipse" command in sbt and activator
 
 # Vocabulary for forms
 At one point it will be useful to also introduce in place of FA an RDF vocabulary for forms, perhaps reusing Fresnel;

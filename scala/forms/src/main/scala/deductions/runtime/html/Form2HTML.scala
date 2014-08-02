@@ -6,9 +6,9 @@ import java.net.URLEncoder
 
 /** TODO : different modes: display or edit;
  *  take in account datatype */
-trait Form2HTML[URI] extends FormModule[URI] {
-  type fm = FormModule[URI]
-  def generateHTML(form: fm#FormSyntax[URI],
+trait Form2HTML[NODE, URI] extends FormModule[NODE, URI] {
+  type fm = FormModule[NODE, URI]
+  def generateHTML(form: fm#FormSyntax[NODE, URI],
       hrefPrefix:String=""): Elem = {
     <table>
       {
@@ -29,6 +29,10 @@ trait Form2HTML[URI] extends FormModule[URI] {
                   <a href={ createHyperlinkString( hrefPrefix, r.value.toString) }>{
                     r.value.toString
                   }</a>
+                case r: BlankNodeEntry =>
+                  <a href={ createHyperlinkString( hrefPrefix, r.value.toString, "&blanknode=true") }>{
+                    r.getId // value.toString
+                  }</a>
               }
             }</td>
           }</tr>
@@ -37,10 +41,10 @@ trait Form2HTML[URI] extends FormModule[URI] {
     </table>
   }
   
-  def createHyperlinkString( hrefPrefix:String, uri:String ) :String = {
+  def createHyperlinkString( hrefPrefix:String, uri:String, suffix:String="" ) :String = {
     if ( hrefPrefix == "" )
       uri
     else
-      hrefPrefix + URLEncoder.encode(uri, "utf-8")
+      hrefPrefix + URLEncoder.encode(uri, "utf-8") + suffix
   }
 }
