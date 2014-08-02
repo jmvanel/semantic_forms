@@ -20,4 +20,10 @@ object Application extends Controller with TableView {
       )
     }
   }
+  
+  def wordsearch(q:String="") = {
+    Action { (
+          Ok( views.html.index(global.Global.wordsearch(q)) )
+    ) }
+  }
 }

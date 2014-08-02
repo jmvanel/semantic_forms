@@ -11,10 +11,13 @@ import deductions.runtime.jena.RDFStoreObject
 import deductions.runtime.sparql_cache.RDFCacheJena
 import scala.xml.PrettyPrinter
 
+/** Table View of a form (Jena) */
+trait TableView extends TableViewModule
+
 /** Table View of a form */
-trait TableView
+trait TableViewModule
   extends RDFModule
-  with JenaModule // TODO depend on generic Rdf
+//  with JenaModule
   with Form2HTML[Jena#Node, Jena#URI]
   with RDFCacheJena // TODO depend on generic Rdf
 {

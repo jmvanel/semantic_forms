@@ -24,5 +24,10 @@ object Global extends play.api.GlobalSettings {
       else
         <p>Enter an URI</p>
     }
+    
+
+    def wordsearch(q:String="") = {
+
+    }
 }
 }

@@ -4,6 +4,8 @@
 
 GET     /display            controllers.Application.displayURI(displayuri:String, blanknode:String="")
 
+GET     /wordsearch         controllers.Application.wordsearch(q:String="")
+
 # Home page
 GET     /                   controllers.Application.index
 
