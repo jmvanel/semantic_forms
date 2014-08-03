@@ -26,11 +26,11 @@ trait Form2HTML[NODE, URI] extends FormModule[NODE, URI] {
                    * or create a sub-form for a blank node of an ancillary type (like a street address),
                    * or just create a new resource with its type, given by range, or derived
                    * (like in N3Form in EulerGUI ) */
-                  <a href={ createHyperlinkString( hrefPrefix, r.value.toString) }>{
+                  <a href={ Form2HTML.createHyperlinkString( hrefPrefix, r.value.toString) }>{
                     r.value.toString
                   }</a>
                 case r: BlankNodeEntry =>
-                  <a href={ createHyperlinkString( hrefPrefix, r.value.toString, "&blanknode=true") }>{
+                  <a href={ Form2HTML.createHyperlinkString( hrefPrefix, r.value.toString, true) }>{
                     r.getId // value.toString
                   }</a>
               }
@@ -40,11 +40,15 @@ trait Form2HTML[NODE, URI] extends FormModule[NODE, URI] {
       }
     </table>
   }
-  
-  def createHyperlinkString( hrefPrefix:String, uri:String, suffix:String="" ) :String = {
+}
+
+object Form2HTML {
+  def createHyperlinkString( hrefPrefix:String, uri:String, blanknode:Boolean=false ) :String = {
     if ( hrefPrefix == "" )
       uri
-    else
+    else {
+      val suffix = if(blanknode) "&blanknode=true" else ""
       hrefPrefix + URLEncoder.encode(uri, "utf-8") + suffix
+    }
   }
 }

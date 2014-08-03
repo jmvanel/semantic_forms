@@ -23,8 +23,6 @@ trait TableViewModule
 {
   import Ops._
   val nullURI : Rdf#URI = Ops.URI( "" )
-  val foaf = FOAFPrefix[Rdf]
-//  val foafURI = foaf.prefixIri
 
   /** create a form for given uri with background knowledge in RDFStoreObject.store  */
   def htmlForm(uri:String, hrefPrefix:String="", blankNode:String="" ) : Elem = {
@@ -45,11 +43,20 @@ trait TableViewModule
   def graf2form(graph: Rdf#Graph, uri:String,
       hrefPrefix:String="", blankNode:String="" ): Elem = {
     val factory = new FormSyntaxFactory[Rdf](graph)
+//    println (Ops.emptyGraph )
 //    println("graf2form " + " " + graph.hashCode() + "\n" 
 ////        + (graph.toIterable).mkString("\n")
 //                + factory.printGraph(graph) )
     val form = factory.createForm(
-        if( blankNode ==true ) BNode(uri) else URI(uri)
+        if( blankNode == "true" )
+          /* TDB specific:
+           * Jena supports "concrete bnodes" in SPARQL syntax as pseudo URIs in the "_" URI scheme
+           * (it's an illegal name for a URI scheme)
+          */
+          BNode(uri)
+//          BNode("_:"+uri)
+//            URI("_:"+uri)
+          else URI(uri)
         // find properties from instance
 //       , Seq( foaf.title, 
 //          foaf.givenName,

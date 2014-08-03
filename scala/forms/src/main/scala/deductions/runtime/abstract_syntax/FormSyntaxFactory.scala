@@ -6,7 +6,6 @@ $Id$
 package deductions.runtime.abstract_syntax
 
 import scala.collection.mutable
-
 import org.apache.log4j.Logger
 import org.w3.banana.OWLPrefix
 import org.w3.banana.PointedGraph
@@ -18,7 +17,8 @@ import org.w3.banana.RDFSPrefix
 import org.w3.banana.URIOps
 import org.w3.banana.XSDPrefix
 import org.w3.banana.diesel.toPointedGraphW
-
+import org.apache.log4j.Logger
+import org.w3.banana.jena.JenaOps
 
 /** Factory for an abstract Form Syntax */
 class FormSyntaxFactory[Rdf <: RDF]
@@ -29,9 +29,8 @@ class FormSyntaxFactory[Rdf <: RDF]
 )
 extends // RDFOpsModule with 
 FormModule[Rdf#Node, Rdf#URI] {
-//FormModule[Rdf#URI] {
 
-  val nullURI // : Rdf#URI 
+  lazy val nullURI // : Rdf#URI 
     = ops.URI( "http://null.com#" ) // TODO better : "" ????????????
 
 //  def createForm(subject: Rdf#URI ) : FormSyntax[Rdf#URI] = {
@@ -44,9 +43,8 @@ FormModule[Rdf#Node, Rdf#URI] {
    *  look at its rdfs:range ?D
    *  see if ?D is a datatype or an OWL or RDFS class */
   def createForm(subject: Rdf#Node,
-//  def createForm(subject: Rdf#URI,
-//    props: Seq[Rdf#URI]): FormSyntax[Rdf#URI] = {
     props: Seq[Rdf#URI]): FormSyntax[Rdf#Node, Rdf#URI] = {
+    Logger.getRootLogger().info(s"createForm subject $subject, props $props")
     val fields = mutable.ArrayBuffer[Entry]()
     for (prop <- props) {
       Logger.getRootLogger().info(s"createForm subject $subject, prop $prop")
@@ -149,8 +147,17 @@ FormModule[Rdf#Node, Rdf#URI] {
   }
 
   private def getStringOrElse(n: Rdf#Node, default: String): String = {
-    ops.foldNode(n)(_ => default, _ => default, l =>
-      ops.fromLiteral(l)._1
+    Logger.getRootLogger().info( "getStringOrElse ops " + ops
+        + " Rdf#Node " + n + " " + n.getClass ) // debug <<<<<<<<<<<<<<<<<<<
+    ops.foldNode(n)(_ => default, _ => default, l => {
+      Logger.getRootLogger().info( "getStringOrElse 2 ops " + ops
+        + " Rdf#Node " + l + " " + l.getClass ) // debug <<<<<<<<<<<<<<<<<<<
+        Logger.getRootLogger().info( "getStringOrElse 2.1 "
+            + ops.asInstanceOf[JenaOps] . __xsdStringURI )// debug <<<<<<<
+      val v = ops.fromLiteral(l)
+      Logger.getRootLogger().info( "getStringOrElse 3 " + v )
+      v._1
+    }
       // TODO use application language
       )
   }

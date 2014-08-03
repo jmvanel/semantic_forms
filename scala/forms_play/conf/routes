@@ -2,7 +2,7 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET     /display            controllers.Application.displayURI(displayuri:String, blanknode:String="")
+GET     /display            controllers.Application.displayURI(displayuri:String, blanknode:String ?= "")
 
 GET     /wordsearch         controllers.Application.wordsearch(q:String="")
 

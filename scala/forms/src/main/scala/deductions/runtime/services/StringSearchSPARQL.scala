@@ -9,6 +9,8 @@ import scala.xml.Elem
 import scala.concurrent._
 import scala.concurrent.util._
 import scala.concurrent.ExecutionContext.Implicits.global
+import deductions.runtime.html.Form2HTML
+import scala.concurrent.duration._
 
 /** String Search with simple SPARQL */
 class StringSearchSPARQL[Rdf <: RDF](store: RDFStore[Rdf])(
@@ -21,8 +23,32 @@ class StringSearchSPARQL[Rdf <: RDF](store: RDFStore[Rdf])(
 
   val sparqlEngine = SparqlEngine[Rdf](store)
 
-  def search(search: String) : Elem = {
-    val queryString =
+  def search(search: String, hrefPrefix:String="") : Elem = {
+    val uris = search_only(search)
+    val res = Await.result(uris, 5000 millis)
+    displayResults( res, hrefPrefix)
+  }
+
+  def searchFuture(search: String, hrefPrefix:String="") : Future[Elem] = {
+    val uris = search_only(search)
+    val elem = uris . map (
+        (u : Iterable[Rdf#Node]) =>
+          displayResults( u, hrefPrefix) )
+    elem
+  }
+    
+  def displayResults( res: Iterable[Rdf#Node], hrefPrefix:String ) = {
+        <p>{
+      res.map( uri => {
+        val uriString = uri.toString
+        <div><a href={Form2HTML.createHyperlinkString( hrefPrefix, uriString) }>
+        { uriString }</a><br/></div>
+      } )
+    }</p>
+  }
+  
+  private def search_only(search: String) = {
+   val queryString =
     // |prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
       s"""
          |SELECT DISTINCT ?thing WHERE {
@@ -37,11 +63,7 @@ class StringSearchSPARQL[Rdf <: RDF](store: RDFStore[Rdf])(
       map(_.toIterable.map {
         row => row("thing") getOrElse sys.error("")
       })
-    <p>{
-      uris.map( uri => {
-        val uriString = uri.toString
-        <div><a href={uriString}>{uriString}</a><br/></div>
-      } )
-    }</p>
+    uris
   }
+
 }
