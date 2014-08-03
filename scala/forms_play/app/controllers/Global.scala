@@ -12,28 +12,31 @@ package global {
 object Global extends play.api.GlobalSettings {
   var form : Elem = <p>initial value</p>
   lazy val tv = new TableView {}
-//  lazy val store =  RDFStoreObject.store
-//  lazy val search = new StringSearchSPARQL(store)
-  
+  lazy val store =  RDFStoreObject.store
+  lazy val search = new StringSearchSPARQL(store)
+  val hrefPrefix = "/display?displayuri="
+    
   override def onStart(app: Application) {
     val uri = "http://jmvanel.free.fr/jmv.rdf#me"
     PopulateRDFCache.loadCommonVocabularies
     form = htmlForm(uri)
   }
 
-    def htmlForm(uri: String, blankNode:String=""): scala.xml.Elem = {
+    def htmlForm(uri: String, blankNode:String=""): Elem = {
       Logger.getRootLogger().info("Global.htmlForm uri "+ uri +
           " blankNode \"" + blankNode + "\"" )
-      if (uri != null && uri != "")
-        tv.htmlForm(uri, "/display?displayuri=", blankNode )
+      <p>Properties for URI {uri}<br/>
+      {if (uri != null && uri != "")
+        tv.htmlForm(uri, hrefPrefix, blankNode )
       else
-        <p>Enter an URI</p>
+        <p>Enter an URI</p>}
+      </p>
     }
-    
 
     def wordsearch(q:String="") : Elem = {
-//    	search.search(q)
-      <p/>
+      <p>Searched for "{q}" :<br/>
+    	  {search.search(q, hrefPrefix)}
+      </p>
     }
 }
 }

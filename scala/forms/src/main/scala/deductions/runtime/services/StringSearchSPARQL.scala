@@ -11,6 +11,7 @@ import scala.concurrent.util._
 import scala.concurrent.ExecutionContext.Implicits.global
 import deductions.runtime.html.Form2HTML
 import scala.concurrent.duration._
+import org.apache.log4j.Logger
 
 /** String Search with simple SPARQL */
 class StringSearchSPARQL[Rdf <: RDF](store: RDFStore[Rdf])(
@@ -26,6 +27,7 @@ class StringSearchSPARQL[Rdf <: RDF](store: RDFStore[Rdf])(
   def search(search: String, hrefPrefix:String="") : Elem = {
     val uris = search_only(search)
     val res = Await.result(uris, 5000 millis)
+    Logger.getRootLogger().info(s"search $search ${res.mkString(", ")}")
     displayResults( res, hrefPrefix)
   }
 
@@ -38,10 +40,11 @@ class StringSearchSPARQL[Rdf <: RDF](store: RDFStore[Rdf])(
   }
     
   def displayResults( res: Iterable[Rdf#Node], hrefPrefix:String ) = {
-        <p>{
+    <p>{
       res.map( uri => {
         val uriString = uri.toString
-        <div><a href={Form2HTML.createHyperlinkString( hrefPrefix, uriString) }>
+        val blanknode = ! ops.isURI(uri)
+        <div><a href={Form2HTML.createHyperlinkString( hrefPrefix, uriString, blanknode) }>
         { uriString }</a><br/></div>
       } )
     }</p>
