@@ -136,7 +136,8 @@ FormModule[Rdf#Node, Rdf#URI] {
     }
   }
 
-  /** get "first" String value (RDF object) Or Else given default */
+  /** get "first" String value (RDF object) Or Else given default
+   *  TODO use application language */
   private def getHeadStringOrElse(subject: Rdf#URI, predicate: Rdf#URI, default: String): String = {
     oQuery(subject, predicate) match {
       case ll if ll == Set.empty => default
@@ -147,19 +148,16 @@ FormModule[Rdf#Node, Rdf#URI] {
   }
 
   private def getStringOrElse(n: Rdf#Node, default: String): String = {
-    Logger.getRootLogger().info( "getStringOrElse ops " + ops
-        + " Rdf#Node " + n + " " + n.getClass ) // debug <<<<<<<<<<<<<<<<<<<
+//    Logger.getRootLogger().info( "getStringOrElse ops " + ops + " Rdf#Node " + n + " " + n.getClass )
     ops.foldNode(n)(_ => default, _ => default, l => {
-      Logger.getRootLogger().info( "getStringOrElse 2 ops " + ops
-        + " Rdf#Node " + l + " " + l.getClass ) // debug <<<<<<<<<<<<<<<<<<<
-        Logger.getRootLogger().info( "getStringOrElse 2.1 "
-            + ops.asInstanceOf[JenaOps] . __xsdStringURI )// debug <<<<<<<
+//      Logger.getRootLogger().info( "getStringOrElse 2 ops " + ops + " Rdf#Node " + l + " " + l.getClass )
+//      Logger.getRootLogger().info( "getStringOrElse 2.1 "
+//            + ops.asInstanceOf[JenaOps] . __xsdStringURI )
       val v = ops.fromLiteral(l)
-      Logger.getRootLogger().info( "getStringOrElse 3 " + v )
+//      Logger.getRootLogger().info( "getStringOrElse 3 " + v )
       v._1
     }
-      // TODO use application language
-      )
+    )
   }
 
   private def getHeadOrElse(subject: Rdf#URI, predicate: Rdf#URI,

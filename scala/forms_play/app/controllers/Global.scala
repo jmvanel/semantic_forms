@@ -22,12 +22,21 @@ object Global extends play.api.GlobalSettings {
     form = htmlForm(uri)
   }
 
-    def htmlForm(uri: String, blankNode:String=""): Elem = {
+    def htmlForm(uri0: String, blankNode:String=""): Elem = {
       Logger.getRootLogger().info("Global.htmlForm uri "+ uri +
           " blankNode \"" + blankNode + "\"" )
+      val uri = uri0.trim()
       <p>Properties for URI {uri}<br/>
       {if (uri != null && uri != "")
+        try {
         tv.htmlForm(uri, hrefPrefix, blankNode )
+        } catch {
+        case e:Exception // e.g. org.apache.jena.riot.RiotException
+        =>
+          <p style="color:red">{e.getLocalizedMessage()}<br/> Cause: 
+          {e.getCause().getLocalizedMessage()}
+          </p>
+        }
       else
         <p>Enter an URI</p>}
       </p>
