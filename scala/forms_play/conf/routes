@@ -6,6 +6,8 @@ GET     /display            controllers.Application.displayURI(displayuri:String
 
 GET     /wordsearch         controllers.Application.wordsearch(q:String ?= "")
 
+GET     /download           controllers.Application.download( url:String )
+
 # Home page
 GET     /                   controllers.Application.index
 

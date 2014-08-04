@@ -26,4 +26,10 @@ object Application extends Controller with TableView {
           Ok( views.html.index(global.Global.wordsearch(q)) )
     ) }
   }
+  
+  def download( url:String ) = {
+    Action { (
+        Ok( global.Global.download(url) )
+    ) }
+    }
 }

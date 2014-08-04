@@ -6,6 +6,7 @@ import deductions.runtime.sparql_cache.PopulateRDFCache
 import org.apache.log4j.Logger
 import deductions.runtime.jena.RDFStoreObject
 import deductions.runtime.services.StringSearchSPARQL
+import java.net.URLEncoder
 
 package global {
 
@@ -14,8 +15,9 @@ object Global extends play.api.GlobalSettings {
   lazy val tv = new TableView {}
   lazy val store =  RDFStoreObject.store
   lazy val search = new StringSearchSPARQL(store)
-  val hrefPrefix = "/display?displayuri="
-    
+  val hrefDisplayPrefix = "/display?displayuri="
+  val hrefDownloadPrefix = "/download?url="
+
   override def onStart(app: Application) {
     val uri = "http://jmvanel.free.fr/jmv.rdf#me"
     PopulateRDFCache.loadCommonVocabularies
@@ -26,10 +28,15 @@ object Global extends play.api.GlobalSettings {
       Logger.getRootLogger().info("Global.htmlForm uri "+ uri +
           " blankNode \"" + blankNode + "\"" )
       val uri = uri0.trim()
-      <p>Properties for URI {uri}<br/>
+      URLEncoder.encode(s, enc)
+
+      <p>Properties for URI {uri}
+      <a href="{uri}" title="Download HTML">HTML</a>
+      <a href={hrefDownloadPrefix + URLEncoder.encode(uri,"utf-8")} title="Download Turtle">Triples</a>
+      <br/>
       {if (uri != null && uri != "")
         try {
-        tv.htmlForm(uri, hrefPrefix, blankNode )
+        tv.htmlForm(uri, hrefDisplayPrefix, blankNode )
         } catch {
         case e:Exception // e.g. org.apache.jena.riot.RiotException
         =>
@@ -44,8 +51,13 @@ object Global extends play.api.GlobalSettings {
 
     def wordsearch(q:String="") : Elem = {
       <p>Searched for "{q}" :<br/>
-    	  {search.search(q, hrefPrefix)}
+    	  {search.search(q, hrefDisplayPrefix)}
       </p>
     }
+    
+      def download( url:String ) : String = {
+        "work in progress!" // TODO BrowsableGraph focusOnURI( url )
+      }
+
 }
 }
