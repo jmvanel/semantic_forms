@@ -13,7 +13,8 @@ import deductions.runtime.html.Form2HTML
 import scala.concurrent.duration._
 import org.apache.log4j.Logger
 
-
+/** Browsable Graph implementation, in the sense of
+ *  http://www.w3.org/DesignIssues/LinkedData.html */
 class BrowsableGraph [Rdf <: RDF](store: RDFStore[Rdf])(
   implicit
   ops: RDFOps[Rdf],
@@ -32,9 +33,9 @@ class BrowsableGraph [Rdf <: RDF](store: RDFStore[Rdf])(
       s"""
          |CONSTRUCT { ?thing ?p ?o . } WHERE {
          |  graph ?g {
-         | UNION  # TODO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-         |    ?thing ?p ?o .
-         |    ?s ?p1 ?thing .
+         |   { ?thing ?p ?o . }
+         | UNION {      
+         |     ?s ?p1 ?thing . }
          |  }
          |}""".stripMargin
     val query = ConstructQuery(queryString)

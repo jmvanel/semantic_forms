@@ -25,13 +25,12 @@ object Global extends play.api.GlobalSettings {
   }
 
     def htmlForm(uri0: String, blankNode:String=""): Elem = {
-      Logger.getRootLogger().info("Global.htmlForm uri "+ uri +
+      Logger.getRootLogger().info("Global.htmlForm uri "+ uri0 +
           " blankNode \"" + blankNode + "\"" )
       val uri = uri0.trim()
-      URLEncoder.encode(s, enc)
 
       <p>Properties for URI {uri}
-      <a href="{uri}" title="Download HTML">HTML</a>
+      <a href={uri} title="Download HTML">HTML</a>
       <a href={hrefDownloadPrefix + URLEncoder.encode(uri,"utf-8")} title="Download Turtle">Triples</a>
       <br/>
       {if (uri != null && uri != "")
