@@ -28,8 +28,9 @@ object Application extends Controller with TableView {
   }
   
   def download( url:String ) = {
-    Action { (
-        Ok( global.Global.download(url) )
-    ) }
+    Action {
+        Ok( global.Global.download(url) ).as("text/turtle")
+        // Map(CONTENT_TYPE -> "text/turtle") ?????????????
     }
+  }
 }

@@ -12,23 +12,35 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import deductions.runtime.html.Form2HTML
 import scala.concurrent.duration._
 import org.apache.log4j.Logger
+import org.w3.banana.RDFWriter
+import org.w3.banana.Turtle
+import java.io.ByteArrayOutputStream
 
 /** Browsable Graph implementation, in the sense of
  *  http://www.w3.org/DesignIssues/LinkedData.html */
 class BrowsableGraph [Rdf <: RDF](store: RDFStore[Rdf])(
   implicit
   ops: RDFOps[Rdf],
-  sparqlOps: SparqlOps[Rdf]) {
+  sparqlOps: SparqlOps[Rdf],
+  writer : RDFWriter[Rdf, Turtle]
+  ) {
 
   import ops._
   import sparqlOps._
 
   val sparqlEngine = SparqlEngine[Rdf](store)
 
-  def focusOnURI( uri:String ) {
-    
+  def focusOnURI( uri:String ) = {
+    val triples = search_only(uri)
+    val graph = Await.result(triples, 5000 millis)
+    Logger.getRootLogger().info(s"uri $uri ${graph}")
+    val to = new ByteArrayOutputStream
+    val ret = writer.write(graph, to, base = uri)
+    to.toString
   }
-    private def search_only(search: String) = {
+    
+  
+  private def search_only(search: String) = {
    val queryString =
       s"""
          |CONSTRUCT { ?thing ?p ?o . } WHERE {

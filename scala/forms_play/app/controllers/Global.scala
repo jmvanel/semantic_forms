@@ -7,6 +7,7 @@ import org.apache.log4j.Logger
 import deductions.runtime.jena.RDFStoreObject
 import deductions.runtime.services.StringSearchSPARQL
 import java.net.URLEncoder
+import deductions.runtime.services.BrowsableGraph
 
 package global {
 
@@ -15,6 +16,8 @@ object Global extends play.api.GlobalSettings {
   lazy val tv = new TableView {}
   lazy val store =  RDFStoreObject.store
   lazy val search = new StringSearchSPARQL(store)
+  lazy val dl = new BrowsableGraph(store)
+  
   val hrefDisplayPrefix = "/display?displayuri="
   val hrefDownloadPrefix = "/download?url="
 
@@ -55,7 +58,8 @@ object Global extends play.api.GlobalSettings {
     }
     
       def download( url:String ) : String = {
-        "work in progress!" // TODO BrowsableGraph focusOnURI( url )
+//        "work in progress!" // TODO BrowsableGraph focusOnURI( url )
+        dl.focusOnURI( url ) // .contentEquals("text/turtle")
       }
 
 }

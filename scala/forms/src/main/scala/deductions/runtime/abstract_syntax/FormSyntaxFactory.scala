@@ -179,8 +179,6 @@ FormModule[Rdf#Node, Rdf#URI] {
   
   /** Query for objects in triple, given subject & predicate */
   private def oQuery(subject: Rdf#Node, predicate: Rdf#URI ): Set[Rdf#Node] = {
-//  private def oQuery(subject: Rdf#BNode, predicate: Rdf#URI ): Set[Rdf#Node] = {
-//  private def oQuery(subject: Rdf#URI, predicate: Rdf#URI ): Set[Rdf#Node] = {
     val pg = PointedGraph[Rdf]( subject, graph )
     val objects = pg / predicate
     objects.map(_.pointer).toSet
