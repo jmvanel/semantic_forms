@@ -122,6 +122,8 @@ FormModule[Rdf#Node, Rdf#URI] {
         case _ if rangeClasses.contains(rdf.Property) => resourceEntry
         //    case _ if ranges.contains(owl.Thing) => resourceEntry
         case _ if ranges.contains(ops.makeUri(owl.prefixIri + "Thing")) => resourceEntry
+        case _ if ops.isURI(object_ ) => resourceEntry
+        case _ if object_.toString.startsWith("_:") => resourceEntry
         case _ => literalEntry
       }
       result += entry
