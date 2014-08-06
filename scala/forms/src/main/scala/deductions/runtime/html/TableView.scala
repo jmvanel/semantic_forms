@@ -25,7 +25,9 @@ trait TableViewModule
   val nullURI : Rdf#URI = Ops.URI( "" )
 
   /** create a form for given uri with background knowledge in RDFStoreObject.store  */
-  def htmlForm(uri:String, hrefPrefix:String="", blankNode:String="" ) : Elem = {
+  def htmlForm(uri:String, hrefPrefix:String="", blankNode:String="",
+      editable:Boolean=false,
+      actionURI:String="/save" ) : Elem = {
     val store =  RDFStoreObject.store
 //    RDFStoreObject.printGraphList
     // TODO load ontologies from local SPARQL; probably use a pointed graph
@@ -35,13 +37,16 @@ trait TableViewModule
     }
     store.readTransaction {
       val allNamedGraphs = store.getGraph(makeUri("urn:x-arq:UnionGraph"))
-      graf2form(allNamedGraphs, uri, hrefPrefix, blankNode)
+      graf2form(allNamedGraphs, uri, hrefPrefix, blankNode, editable, actionURI)
     }
   }
 
   /** create a form for given URI resource (instance) with background knowledge in given graph */
   def graf2form(graph: Rdf#Graph, uri:String,
-      hrefPrefix:String="", blankNode:String="" ): Elem = {
+      hrefPrefix:String="", blankNode:String="",
+      editable:Boolean=false,
+      actionURI:String="/save"
+  ): Elem = {
     val factory = new FormSyntaxFactory[Rdf](graph)
 //    println (Ops.emptyGraph )
 //    println("graf2form " + " " + graph.hashCode() + "\n" 
@@ -66,13 +71,15 @@ trait TableViewModule
 //          foaf.mbox )
     )
     println("form:\n" + form)
-    val htmlForm = generateHTML(form, hrefPrefix )
+    val htmlForm = generateHTML(form, hrefPrefix, editable, actionURI )
     println(htmlForm)
     htmlForm
   }
   
-  def htmlFormString(uri:String) : String = {
-    val f = htmlForm(uri)
+  def htmlFormString(uri:String,
+      editable:Boolean=false,
+      actionURI:String="/save" ) : String = {
+    val f = htmlForm(uri, editable=editable, actionURI=actionURI)
     val pp = new PrettyPrinter(80, 2)
     pp.format(f)
   }

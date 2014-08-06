@@ -20,7 +20,17 @@ plus a textbox to enter a URL semantics, eg a FOAF profile or DBpedia URI :
 # How to run
 
 - build with sbt project ../forms
-- build and run with latest play activator this project : type run
+- build and run this project with latest play activator this project: type: run
+
+Preloading RDF content
+
+- Preloading common vocabularies: in activator shell type:
+	run-main deductions.runtime.sparql_cache.PopulateRDFCache
+- Preloading a local file: in activator shell type: for example:
+	run-main tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me /home/jmv/data/foaf/jmv.rdf
+	NOTE: with next Jena release it will be possible to directly load from Internet:
+	run-main tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me http://jmvanel.free.fr/jmv.rdf#me 
+
 
 Tips:
 

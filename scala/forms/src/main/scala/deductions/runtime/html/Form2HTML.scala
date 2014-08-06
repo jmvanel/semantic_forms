@@ -4,13 +4,20 @@ import scala.xml.Elem
 import deductions.runtime.abstract_syntax.FormModule
 import java.net.URLEncoder
 
+import Form2HTML._
+
 /** TODO : different modes: display or edit;
  *  take in account datatype */
-trait Form2HTML[NODE, URI] extends FormModule[NODE, URI] {
+trait Form2HTML[NODE, URI<: NODE] extends FormModule[NODE, URI] {
   type fm = FormModule[NODE, URI]
   def generateHTML(form: fm#FormSyntax[NODE, URI],
-      hrefPrefix:String=""): Elem = {
+      hrefPrefix:String="",
+      editable:Boolean=false,
+      actionURI:String="/save"): Elem = {
+        
+    val htmlForm = 
     <table>
+    <input type="hiden" name="uri" value={urlEncode(form.subject)}/>
       {
         for (field <- form.fields) yield {
           val l = field.label
@@ -20,16 +27,25 @@ trait Form2HTML[NODE, URI] extends FormModule[NODE, URI] {
             <td>{
               field match {
                 case l: LiteralEntry =>
-                  <input value={ l.value }></input>
+                  if( editable)
+                  <input value={ l.value } name={urlEncode(l.property)}></input>
+                  else
+                  <div>{ l.value }</div>
                 case r: ResourceEntry =>
                   /* TODO: link to a known resource of the right type,
                    * or create a sub-form for a blank node of an ancillary type (like a street address),
                    * or just create a new resource with its type, given by range, or derived
                    * (like in N3Form in EulerGUI ) */
+                  if( editable )
+                  <input value={ r.value.toString } name={urlEncode(r.property)}></input>
+                  else
                   <a href={ Form2HTML.createHyperlinkString( hrefPrefix, r.value.toString) }>{
                     r.value.toString
                   }</a>
                 case r: BlankNodeEntry =>
+                  if( editable )
+                  <input value={ r.value.toString } name={urlEncode(r.property)}></input>
+                  else
                   <a href={ Form2HTML.createHyperlinkString( hrefPrefix, r.value.toString, true) }>{
                     r.getId // value.toString
                   }</a>
@@ -39,16 +55,25 @@ trait Form2HTML[NODE, URI] extends FormModule[NODE, URI] {
         }
       }
     </table>
+      if( editable)
+        <form action={actionURI}>
+          <input value="SAVE" type="submit"/>
+          {htmlForm}
+        </form>
+        else
+          htmlForm
   }
 }
 
 object Form2HTML {
+  def urlEncode(node:Any) = {URLEncoder.encode( node.toString, "utf-8")}
+
   def createHyperlinkString( hrefPrefix:String, uri:String, blanknode:Boolean=false ) :String = {
     if ( hrefPrefix == "" )
       uri
     else {
       val suffix = if(blanknode) "&blanknode=true" else ""
-      hrefPrefix + URLEncoder.encode(uri, "utf-8") + suffix
+      hrefPrefix + urlEncode(uri) + suffix
     }
   }
 }

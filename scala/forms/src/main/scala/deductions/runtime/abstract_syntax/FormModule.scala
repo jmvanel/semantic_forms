@@ -10,13 +10,13 @@ import org.w3.banana.diesel._
 import org.w3.banana.syntax._
 import scala.collection.mutable
 
-trait FormModule[NODE, URI] {
+trait FormModule[NODE, URI <: NODE] {
   /**
    * abstract_syntax for a semantic form:
    *  - generated from a list of URI's for properties, and a triple store
    *  - used in conjunction with N3Form(Swing), HTML5 forms and Banana-RDF
    */
-  case class FormSyntax[NODE, URI](
+  case class FormSyntax[NODE, URI<: NODE](
     val subject: NODE,
     val fields: Seq[Entry]) {
     override def toString() : String = {
