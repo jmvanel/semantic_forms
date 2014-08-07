@@ -8,6 +8,10 @@ GET     /wordsearch         controllers.Application.wordsearch(q:String ?= "")
 
 GET     /download           controllers.Application.download( url:String )
 
+GET     /edit           controllers.Application.edit( url:String )
+
+GET     /save           controllers.Application.save( url:String )
+
 # Home page
 GET     /                   controllers.Application.index
 

@@ -28,8 +28,22 @@ object Application extends Controller with TableView {
   }
   
   def download( url:String ) = {
+    Action { Ok( global.Global.download(url) ).as("text/turtle") }
+  }
+  
+  def edit( url:String ) = {
     Action {
-      Ok( global.Global.download(url) ).as("text/turtle")
+      Ok( views.html.index(global.Global.htmlForm(
+          url,
+          editable=true
+//          actionURI="save"
+            )) )
+      }
+  }
+
+  def save( url:String ) = {
+    Action {  implicit request => Ok( global.Global.save(url, request) )
+        // ( implicit request:Request[_] ) }
     }
   }
 }

@@ -17,7 +17,7 @@ trait Form2HTML[NODE, URI<: NODE] extends FormModule[NODE, URI] {
         
     val htmlForm = 
     <table>
-    <input type="hiden" name="uri" value={urlEncode(form.subject)}/>
+    <input type="hidden" name="uri" value={urlEncode(form.subject)}/>
       {
         for (field <- form.fields) yield {
           val l = field.label
@@ -28,7 +28,7 @@ trait Form2HTML[NODE, URI<: NODE] extends FormModule[NODE, URI] {
               field match {
                 case l: LiteralEntry =>
                   if( editable)
-                  <input value={ l.value } name={urlEncode(l.property)}></input>
+                  <input value={ l.value } name={"LIT-"+urlEncode(l.property)}></input>
                   else
                   <div>{ l.value }</div>
                 case r: ResourceEntry =>
@@ -37,14 +37,14 @@ trait Form2HTML[NODE, URI<: NODE] extends FormModule[NODE, URI] {
                    * or just create a new resource with its type, given by range, or derived
                    * (like in N3Form in EulerGUI ) */
                   if( editable )
-                  <input value={ r.value.toString } name={urlEncode(r.property)}></input>
+                  <input value={ r.value.toString } name={"RES-"+urlEncode(r.property)}></input>
                   else
                   <a href={ Form2HTML.createHyperlinkString( hrefPrefix, r.value.toString) }>{
                     r.value.toString
                   }</a>
                 case r: BlankNodeEntry =>
                   if( editable )
-                  <input value={ r.value.toString } name={urlEncode(r.property)}></input>
+                  <input value={ r.value.toString } name={"BLA-"+urlEncode(r.property)}></input>
                   else
                   <a href={ Form2HTML.createHyperlinkString( hrefPrefix, r.value.toString, true) }>{
                     r.getId // value.toString

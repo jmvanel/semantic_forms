@@ -8,6 +8,8 @@ import deductions.runtime.jena.RDFStoreObject
 import deductions.runtime.services.StringSearchSPARQL
 import java.net.URLEncoder
 import deductions.runtime.services.BrowsableGraph
+import play.api.mvc.Request
+import deductions.runtime.services.FormSaver
 
 package global {
 
@@ -17,6 +19,7 @@ object Global extends play.api.GlobalSettings {
   lazy val store =  RDFStoreObject.store
   lazy val search = new StringSearchSPARQL(store)
   lazy val dl = new BrowsableGraph(store)
+  lazy val fs = new FormSaver(store)
   
   val hrefDisplayPrefix = "/display?displayuri="
   val hrefDownloadPrefix = "/download?url="
@@ -27,7 +30,8 @@ object Global extends play.api.GlobalSettings {
     form = htmlForm(uri)
   }
 
-    def htmlForm(uri0: String, blankNode:String=""): Elem = {
+    def htmlForm(uri0: String, blankNode:String="",
+        editable:Boolean=false): Elem = {
       Logger.getRootLogger().info("Global.htmlForm uri "+ uri0 +
           " blankNode \"" + blankNode + "\"" )
       val uri = uri0.trim()
@@ -38,7 +42,7 @@ object Global extends play.api.GlobalSettings {
       <br/>
       {if (uri != null && uri != "")
         try {
-        tv.htmlForm(uri, hrefDisplayPrefix, blankNode )
+        tv.htmlForm(uri, hrefDisplayPrefix, blankNode, editable )
         } catch {
         case e:Exception // e.g. org.apache.jena.riot.RiotException
         =>
@@ -62,5 +66,17 @@ object Global extends play.api.GlobalSettings {
         dl.focusOnURI( url ) // .contentEquals("text/turtle")
       }
 
+      def edit( url:String ) : Elem = {
+//        store.
+        htmlForm(url, editable=true)
+      }
+
+      def save( url:String, request:Request[_] )
+//      ( implicit request:Request[_] )
+      : Elem = {
+        val map = request.queryString
+        fs.saveTriples(map)
+        htmlForm(url, editable=false)
+      }
 }
 }
