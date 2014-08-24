@@ -41,9 +41,10 @@ object Application extends Controller with TableView {
       }
   }
 
-  def save( url:String ) = {
-    Action {  implicit request => Ok( global.Global.save(url, request) )
-        // ( implicit request:Request[_] ) }
+//  def save( url:String ) = {
+  def save() = {
+    Action { implicit request =>
+      Ok( global.Global.save(request) ).as("text/html")
     }
   }
 }

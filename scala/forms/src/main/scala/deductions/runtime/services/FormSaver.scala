@@ -48,19 +48,24 @@ class FormSaver[Rdf <: RDF](store: RDFStore[Rdf])(
   }
   def saveTriple(uri: String, prop: String, obj0: String,
     triples: ArrayBuffer[Rdf#Triple]) = {
-    val obj = URLDecoder.decode(obj0, "uftf-8")
-    val objActualValue = obj .substring(4)
+    val obj = URLDecoder.decode(obj0, "utf-8")
+//    println("saveTriple: " + obj)
     triples +=
-      makeTriple(makeUri(uri),
+      makeTriple(
+        makeUri(uri),
         makeUri(prop),
         // obj is literal, URI, or BN ?
         obj match {
           case obj if (obj startsWith ("LIT-")) =>
+            val objActualValue = obj .substring(4)
             makeLiteral(objActualValue, xsd.string)
           case obj if (obj startsWith ("RES-")) =>
+            val objActualValue = obj .substring(4)
             makeUri(objActualValue)
           case obj if (obj startsWith ("BLA-")) =>
+            val objActualValue = obj .substring(4)
             makeBNodeLabel(objActualValue)
+          case _ => makeLiteral("CASE NOT COVERED: " + obj, xsd.string)
         }
       )
   }

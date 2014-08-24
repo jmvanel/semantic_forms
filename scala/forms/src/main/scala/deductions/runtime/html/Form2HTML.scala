@@ -56,8 +56,9 @@ trait Form2HTML[NODE, URI<: NODE] extends FormModule[NODE, URI] {
       }
     </table>
       if( editable)
-        <form action={actionURI}>
+        <form action={actionURI}  method="POST" >
           <input value="SAVE" type="submit"/>
+          <input type="hidden" name="url" value={urlEncode(form.subject)}/>
           {htmlForm}
         </form>
         else

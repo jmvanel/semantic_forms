@@ -10,10 +10,16 @@ import java.net.URLEncoder
 import deductions.runtime.services.BrowsableGraph
 import play.api.mvc.Request
 import deductions.runtime.services.FormSaver
+import play.api.data.Form
+import play.core.parsers.FormUrlEncodedParser
+import play.api.mvc.Controller
+import play.api.mvc.AnyContentAsFormUrlEncoded
+import java.net.URLDecoder
 
 package global {
 
-object Global extends play.api.GlobalSettings {
+object Global extends Controller // play.api.GlobalSettings
+{
   var form : Elem = <p>initial value</p>
   lazy val tv = new TableView {}
   lazy val store =  RDFStoreObject.store
@@ -24,25 +30,27 @@ object Global extends play.api.GlobalSettings {
   val hrefDisplayPrefix = "/display?displayuri="
   val hrefDownloadPrefix = "/download?url="
 
-  override def onStart(app: Application) {
-    val uri = "http://jmvanel.free.fr/jmv.rdf#me"
-    PopulateRDFCache.loadCommonVocabularies
-    form = htmlForm(uri)
-  }
+//  override def onStart(app: Application) {
+//    val uri = "http://jmvanel.free.fr/jmv.rdf#me"
+//    PopulateRDFCache.loadCommonVocabularies
+//    form = htmlForm(uri)
+//  }
 
-    def htmlForm(uri0: String, blankNode:String="",
-        editable:Boolean=false): Elem = {
+  def htmlForm(uri0: String, blankNode:String="",
+    editable:Boolean=false): Elem = {
       Logger.getRootLogger().info("Global.htmlForm uri "+ uri0 +
           " blankNode \"" + blankNode + "\"" )
-      val uri = uri0.trim()
+    val uri = uri0.trim()
 
-      <p>Properties for URI {uri}
-      <a href={uri} title="Download HTML">HTML</a>
-      <a href={hrefDownloadPrefix + URLEncoder.encode(uri,"utf-8")} title="Download Turtle">Triples</a>
+    <p>
+      Properties for URI {uri}
+      <a href={uri} title="Download HTML from original URI">HTML</a>
+      <a href={hrefDownloadPrefix + URLEncoder.encode(uri,"utf-8")}
+         title="Download Turtle">Triples</a>
       <br/>
       {if (uri != null && uri != "")
         try {
-        tv.htmlForm(uri, hrefDisplayPrefix, blankNode, editable )
+          tv.htmlForm(uri, hrefDisplayPrefix, blankNode, editable )
         } catch {
         case e:Exception // e.g. org.apache.jena.riot.RiotException
         =>
@@ -52,31 +60,47 @@ object Global extends play.api.GlobalSettings {
         }
       else
         <p>Enter an URI</p>}
-      </p>
-    }
+    </p>
+  }
 
-    def wordsearch(q:String="") : Elem = {
+  def wordsearch(q:String="") : Elem = {
       <p>Searched for "{q}" :<br/>
     	  {search.search(q, hrefDisplayPrefix)}
       </p>
     }
     
-      def download( url:String ) : String = {
-//        "work in progress!" // TODO BrowsableGraph focusOnURI( url )
-        dl.focusOnURI( url ) // .contentEquals("text/turtle")
+  def download( url:String ) : String = {
+        dl.focusOnURI( url )
       }
 
-      def edit( url:String ) : Elem = {
-//        store.
+  def edit( url:String ) : Elem = {
         htmlForm(url, editable=true)
-      }
+  }
 
-      def save( url:String, request:Request[_] )
-//      ( implicit request:Request[_] )
-      : Elem = {
-        val map = request.queryString
-        fs.saveTriples(map)
-        htmlForm(url, editable=false)
+  def save(request: Request[_]): Elem = {
+      val body = request.body
+      body match {
+        case form: AnyContentAsFormUrlEncoded =>
+          val map = form.data
+          println("Global.save: " + body.getClass + ", map " + map)
+//          println("save: " + body.toString)
+          try{
+          fs.saveTriples(map)
+          } catch {
+          case t:Throwable => println( "Exception in saveTriples: " + t )
+          // TODO show Exception to user
+          }
+          val uriOption = map.getOrElse("uri", Seq()).headOption
+          println("Global.save: uriOption " + uriOption )
+          uriOption match {
+            case Some(url1) => htmlForm(
+                URLDecoder.decode(url1, "utf-8"),
+                editable = false )
+            case _ => <p>Save: not normal: { uriOption }</p>
+          }      
+        case _ => <p>Save: not normal: { form.getClass() }</p>
+ 
       }
-}
+  }
+ }
 }

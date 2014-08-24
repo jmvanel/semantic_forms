@@ -171,7 +171,7 @@ d'édition.</p>
   <li>label pour une URI (aussi bien propriété que ressource ordinaire) :
     utiliser <code>rdfs:label</code> ou autre propriété suivant le type;
     tenir compte de la langue de l'application</li>
-  <li>création, affichage ou édition, ou les deux (mise à jour)
+  <li>création, affichage ou édition, ou les deux (mise à jour) 
     <ol>
       <li>un même formulaire peut avoir des propriétés éditables et
         d'autres non</li>
@@ -182,12 +182,14 @@ d'édition.</p>
       <li>propriétés mono ou multi-valuées,</li>
       <li>datatype éventuel (date, géocoordonnées, ...);</li>
       <li>langue;</li>
-      <li>types de médias affichables mais non éditables :
+      <li>types de médias affichables mais non éditables : 
         <p>image, son, vidéo ( utiliser prédicats avec image comme range, ou
         le <code>content-type</code> ),</p>
         <p>HTML,</p>
         <p>tel: , urn:, isbn: , ...</p>
       </li>
+      <li>nœuds anonymes (blank nodes) afficher comme si c'était une
+      resource</li>
     </ol>
   </li>
   <li>édition : pour une propriété avec <code>rdfs:range </code>qui est une
@@ -264,6 +266,7 @@ d'édition.</p>
   <col />
   <col />
   <col />
+  <col />
   <tbody>
     <tr>
       <td>Fonc.</td>
@@ -274,11 +277,13 @@ d'édition.</p>
       <td><a href="http://viejs.org/widgets/forms/">VIE</a></td>
       <td>Conjecto</td>
       <td>PixelHumain</td>
+      <td>BigData explorer</td>
     </tr>
     <tr>
       <td>1</td>
       <td>x</td>
       <td>x</td>
+      <td></td>
       <td></td>
       <td></td>
       <td></td>
@@ -290,10 +295,12 @@ d'édition.</p>
       <td></td>
       <td></td>
       <td></td>
+      <td></td>
     </tr>
     <tr>
       <td>3.1</td>
       <td>x</td>
+      <td></td>
       <td></td>
       <td></td>
       <td></td>
@@ -306,10 +313,12 @@ d'édition.</p>
       <td></td>
       <td></td>
       <td></td>
+      <td></td>
     </tr>
     <tr>
       <td>3.3</td>
       <td>x</td>
+      <td></td>
       <td></td>
       <td></td>
       <td></td>
@@ -322,6 +331,16 @@ d'édition.</p>
       <td></td>
       <td></td>
       <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>3.5</td>
+      <td>x</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
     </tr>
     <tr>
       <td>4.1</td>
@@ -330,9 +349,11 @@ d'édition.</p>
       <td></td>
       <td></td>
       <td></td>
+      <td></td>
     </tr>
     <tr>
       <td>4.2</td>
+      <td></td>
       <td></td>
       <td></td>
       <td></td>
@@ -346,9 +367,11 @@ d'édition.</p>
       <td></td>
       <td></td>
       <td></td>
+      <td></td>
     </tr>
     <tr>
       <td>4.4</td>
+      <td></td>
       <td></td>
       <td></td>
       <td></td>
@@ -362,9 +385,11 @@ d'édition.</p>
       <td></td>
       <td></td>
       <td></td>
+      <td></td>
     </tr>
     <tr>
       <td>6</td>
+      <td></td>
       <td></td>
       <td></td>
       <td></td>
@@ -378,9 +403,11 @@ d'édition.</p>
       <td></td>
       <td></td>
       <td></td>
+      <td></td>
     </tr>
     <tr>
       <td>8</td>
+      <td></td>
       <td></td>
       <td></td>
       <td></td>
@@ -394,10 +421,12 @@ d'édition.</p>
       <td>x</td>
       <td>x</td>
       <td>x</td>
+      <td></td>
     </tr>
     <tr>
       <td>10.1</td>
       <td>x</td>
+      <td></td>
       <td></td>
       <td></td>
       <td></td>
@@ -410,10 +439,12 @@ d'édition.</p>
       <td></td>
       <td></td>
       <td></td>
+      <td></td>
     </tr>
     <tr>
       <td>10.3</td>
       <td>x</td>
+      <td></td>
       <td></td>
       <td></td>
       <td></td>
@@ -426,9 +457,11 @@ d'édition.</p>
       <td></td>
       <td></td>
       <td></td>
+      <td></td>
     </tr>
     <tr>
       <td>10.5</td>
+      <td></td>
       <td></td>
       <td></td>
       <td></td>
@@ -442,6 +475,7 @@ d'édition.</p>
       <td></td>
       <td></td>
       <td></td>
+      <td></td>
     </tr>
     <tr>
       <td>13.1</td>
@@ -450,9 +484,11 @@ d'édition.</p>
       <td></td>
       <td></td>
       <td></td>
+      <td></td>
     </tr>
     <tr>
       <td>13.2</td>
+      <td></td>
       <td></td>
       <td></td>
       <td></td>
@@ -466,10 +502,12 @@ d'édition.</p>
       <td></td>
       <td></td>
       <td></td>
+      <td></td>
     </tr>
     <tr>
       <td>15.1</td>
       <td>x</td>
+      <td></td>
       <td></td>
       <td></td>
       <td></td>
@@ -482,6 +520,7 @@ d'édition.</p>
       <td></td>
       <td>x</td>
       <td></td>
+      <td></td>
     </tr>
     <tr>
       <td>16</td>
@@ -490,24 +529,10 @@ d'édition.</p>
       <td></td>
       <td></td>
       <td>x</td>
-    </tr>
-    <tr>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
       <td></td>
     </tr>
     <tr>
       <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
       <td></td>
       <td></td>
       <td></td>
@@ -522,24 +547,10 @@ d'édition.</p>
       <td></td>
       <td></td>
       <td></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
       <td></td>
     </tr>
     <tr>
       <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
       <td></td>
       <td></td>
       <td></td>
@@ -554,24 +565,10 @@ d'édition.</p>
       <td></td>
       <td></td>
       <td></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
       <td></td>
     </tr>
     <tr>
       <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
       <td></td>
       <td></td>
       <td></td>
@@ -586,13 +583,6 @@ d'édition.</p>
       <td></td>
       <td></td>
       <td></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
       <td></td>
     </tr>
     <tr>
@@ -602,8 +592,73 @@ d'édition.</p>
       <td></td>
       <td></td>
       <td></td>
+      <td></td>
     </tr>
     <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
       <td></td>
       <td></td>
       <td></td>
