@@ -32,8 +32,11 @@ class FormSaver[Rdf <: RDF](store: RDFStore[Rdf])(
   def saveTriples(map: Map[String, Seq[String]]) = {
     val uriOption = map.getOrElse("uri", Seq()).headOption
     uriOption match {
-      case Some(uri) =>
-        val v = map.map { case (prop, obj) => saveTriplesForProperty(uri, prop, obj) }
+      case Some(uri0) =>
+        val uri = URLDecoder.decode(uri0, "utf-8")
+        val v = map.map { case (prop0, obj) =>
+          val prop = URLDecoder.decode(prop0, "utf-8")
+          saveTriplesForProperty(uri, prop, obj) }
       case _ =>
     }
   }
@@ -49,23 +52,24 @@ class FormSaver[Rdf <: RDF](store: RDFStore[Rdf])(
   def saveTriple(uri: String, prop: String, obj0: String,
     triples: ArrayBuffer[Rdf#Triple]) = {
     val obj = URLDecoder.decode(obj0, "utf-8")
-//    println("saveTriple: " + obj)
+//    println("saveTriple: " + prop +" \""+ obj + "\"")
+    if( prop != "url" &&
+        prop != "uri" )
     triples +=
       makeTriple(
         makeUri(uri),
-        makeUri(prop),
+        makeUri(prop.substring(4)),
         // obj is literal, URI, or BN ?
-        obj match {
-          case obj if (obj startsWith ("LIT-")) =>
-            val objActualValue = obj .substring(4)
-            makeLiteral(objActualValue, xsd.string)
-          case obj if (obj startsWith ("RES-")) =>
-            val objActualValue = obj .substring(4)
-            makeUri(objActualValue)
-          case obj if (obj startsWith ("BLA-")) =>
-            val objActualValue = obj .substring(4)
-            makeBNodeLabel(objActualValue)
-          case _ => makeLiteral("CASE NOT COVERED: " + obj, xsd.string)
+        prop match {
+          case prop if (prop startsWith ("LIT-")) =>
+            makeLiteral(obj, xsd.string)
+          case prop if (prop startsWith ("RES-")) =>
+            makeUri(obj)
+          case prop if (prop startsWith ("BLA-")) =>
+            makeBNodeLabel(obj)
+          case _ => makeLiteral("CASE NOT COVERED: "
+              + prop.substring(4) + ", "
+              + obj, xsd.string)
         }
       )
   }
