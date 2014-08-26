@@ -13,11 +13,11 @@ object Application extends Controller with TableView {
     }
   }
 
-  def displayURI(uri:String, blanknode:String="") = {
-    Action {
-      (
-          Ok( views.html.index(global.Global.htmlForm(uri, blanknode)) )
-      )
+  def displayURI(uri:String, blanknode:String="", Edit:String="") = {
+    Action { implicit request =>
+      println( "displayURI: " + request )
+      println( "displayURI: " + Edit )
+      Ok( views.html.index(global.Global.htmlForm(uri, blanknode, editable=Edit!="" )) )
     }
   }
   
@@ -36,15 +36,14 @@ object Application extends Controller with TableView {
       Ok( views.html.index(global.Global.htmlForm(
           url,
           editable=true
-//          actionURI="save"
-            )) )
+      )) )
       }
   }
 
-//  def save( url:String ) = {
   def save() = {
     Action { implicit request =>
-      Ok( global.Global.save(request) ).as("text/html")
+      Ok( views.html.index(global.Global.save(request) )) // .as("text/html")
+      // Ok( views.html.index(global.Global.htmlForm(uri, blanknode)) )
     }
   }
 }

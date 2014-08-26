@@ -37,7 +37,7 @@ object Global extends Controller // play.api.GlobalSettings
 //  }
 
   def htmlForm(uri0: String, blankNode:String="",
-    editable:Boolean=false): Elem = {
+    editable:Boolean=false ) : Elem = {
       Logger.getRootLogger().info("Global.htmlForm uri "+ uri0 +
           " blankNode \"" + blankNode + "\"" )
     val uri = uri0.trim()

@@ -2,7 +2,7 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET     /display            controllers.Application.displayURI(displayuri:String, blanknode:String ?= "")
+GET     /display            controllers.Application.displayURI(displayuri:String, blanknode:String ?= "", Edit:String?="")
 
 GET     /wordsearch         controllers.Application.wordsearch(q:String ?= "")
 
@@ -10,7 +10,6 @@ GET     /download           controllers.Application.download( url:String )
 
 GET     /edit               controllers.Application.edit( url:String )
 
-# POST    /save               controllers.Application.save( url:String )
 POST    /save               controllers.Application.save()
 
 # Home page
