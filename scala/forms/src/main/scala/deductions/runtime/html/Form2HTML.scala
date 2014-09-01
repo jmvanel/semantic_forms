@@ -28,26 +28,30 @@ trait Form2HTML[NODE, URI<: NODE] extends FormModule[NODE, URI] {
               field match {
                 case l: LiteralEntry =>
                   if( editable)
-                  <input value={ l.value } name={"LIT-"+urlEncode(l.property)}></input>
+                  <input value={ l.value } name={"LIT-"+urlEncode(l.property)} />
+                  <input value={ l.value } name={"ORIG-LIT-"+urlEncode(l.property)} type="hidden" />
                   else
                   <div>{ l.value }</div>
                 case r: ResourceEntry =>
-                  /* TODO: link to a known resource of the right type,
+                  /* link to a known resource of the right type,
                    * or create a sub-form for a blank node of an ancillary type (like a street address),
                    * or just create a new resource with its type, given by range, or derived
                    * (like in N3Form in EulerGUI ) */
                   if( editable )
-                  <input value={ r.value.toString } name={"RES-"+urlEncode(r.property)}></input>
+                  <input value={ r.value.toString } name={"RES-"+urlEncode(r.property)} />
+                  <input value={ r.value.toString } name={"ORIG-RES-"+urlEncode(r.property)} type="hidden" />
                   else
                   <a href={ Form2HTML.createHyperlinkString( hrefPrefix, r.value.toString) }>{
                     r.value.toString
                   }</a>
                 case r: BlankNodeEntry =>
                   if( editable )
-                  <input value={ r.value.toString } name={"BLA-"+urlEncode(r.property)}></input>
+                  <input value={ r.value.toString } name={"BLA-"+urlEncode(r.property)} />
+                  <input value={ r.value.toString } name={"ORIG-BLA-"+urlEncode(r.property)} type="hidden" />
+
                   else
                   <a href={ Form2HTML.createHyperlinkString( hrefPrefix, r.value.toString, true) }>{
-                    r.getId // value.toString
+                    r.getId
                   }</a>
               }
             }</td>

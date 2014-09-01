@@ -1,20 +1,18 @@
-import play.api.GlobalSettings
-import play.api.Application
-import deductions.runtime.html.TableView
-import scala.xml.Elem
-import deductions.runtime.sparql_cache.PopulateRDFCache
-import org.apache.log4j.Logger
-import deductions.runtime.jena.RDFStoreObject
-import deductions.runtime.services.StringSearchSPARQL
-import java.net.URLEncoder
-import deductions.runtime.services.BrowsableGraph
-import play.api.mvc.Request
-import deductions.runtime.services.FormSaver
-import play.api.data.Form
-import play.core.parsers.FormUrlEncodedParser
-import play.api.mvc.Controller
-import play.api.mvc.AnyContentAsFormUrlEncoded
 import java.net.URLDecoder
+import java.net.URLEncoder
+
+import scala.xml.Elem
+
+import org.apache.log4j.Logger
+
+import deductions.runtime.html.TableView
+import deductions.runtime.jena.RDFStoreObject
+import deductions.runtime.services.BrowsableGraph
+import deductions.runtime.services.FormSaver
+import deductions.runtime.services.StringSearchSPARQL
+import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.mvc.Controller
+import play.api.mvc.Request
 
 package global {
 
@@ -85,7 +83,7 @@ object Global extends Controller // play.api.GlobalSettings
           println("Global.save: " + body.getClass + ", map " + map)
 //          println("save: " + body.toString)
           try{
-          fs.saveTriples(map)
+        	  fs.saveTriples(map)
           } catch {
           case t:Throwable => println( "Exception in saveTriples: " + t )
           // TODO show Exception to user
