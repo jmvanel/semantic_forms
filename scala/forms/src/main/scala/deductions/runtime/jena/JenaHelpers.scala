@@ -30,6 +30,7 @@ trait JenaHelpers extends JenaModule {
       	
       	// not possible, as Banana also starts a transaction:
 //      	store.appendToGraph( uri, model.getGraph() )
+      	
       	store.dg.addGraph( uri, model.getGraph() )
       	
       	//	model.getNsPrefixMap // TODO use it to load referred vocab's
@@ -48,12 +49,11 @@ trait JenaHelpers extends JenaModule {
       //    ret
       //  }
     
-  // TODO:
-
   import Ops._
   import SparqlOps._
   
-  def storeURI2() {
+  // TODO:
+  def SparqlQuery() {
     val client = SparqlHttp(new URL("http://dbpedia.org/sparql/"))
     /* creates a Sparql Select query */
     val query = SelectQuery("""

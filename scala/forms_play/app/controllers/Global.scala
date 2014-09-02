@@ -19,7 +19,7 @@ package global {
 object Global extends Controller // play.api.GlobalSettings
 {
   var form : Elem = <p>initial value</p>
-  lazy val tv = new TableView {}
+  lazy val tableView = new TableView {}
   lazy val store =  RDFStoreObject.store
   lazy val search = new StringSearchSPARQL(store)
   lazy val dl = new BrowsableGraph(store)
@@ -46,9 +46,10 @@ object Global extends Controller // play.api.GlobalSettings
       <a href={hrefDownloadPrefix + URLEncoder.encode(uri,"utf-8")}
          title="Download Turtle">Triples</a>
       <br/>
+
       {if (uri != null && uri != "")
         try {
-          tv.htmlForm(uri, hrefDisplayPrefix, blankNode, editable )
+          tableView.htmlForm(uri, hrefDisplayPrefix, blankNode, editable )
         } catch {
         case e:Exception // e.g. org.apache.jena.riot.RiotException
         =>
@@ -81,7 +82,6 @@ object Global extends Controller // play.api.GlobalSettings
         case form: AnyContentAsFormUrlEncoded =>
           val map = form.data
           println("Global.save: " + body.getClass + ", map " + map)
-//          println("save: " + body.toString)
           try{
         	  fs.saveTriples(map)
           } catch {
@@ -97,7 +97,6 @@ object Global extends Controller // play.api.GlobalSettings
             case _ => <p>Save: not normal: { uriOption }</p>
           }      
         case _ => <p>Save: not normal: { form.getClass() }</p>
- 
       }
   }
  }

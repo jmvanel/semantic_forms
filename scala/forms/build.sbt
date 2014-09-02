@@ -13,6 +13,8 @@ resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + 
 
 libraryDependencies += "org.w3" %  "banana-jena_2.10" %  "0.6"
 
+libraryDependencies += "org.apache.httpcomponents" % "httpcomponents-client" % "4.3.5"
+
 libraryDependencies += "junit" % "junit" % "4.8.1" % "test"
 
 // libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.0" % "test"

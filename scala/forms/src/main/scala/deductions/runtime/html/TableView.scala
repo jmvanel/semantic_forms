@@ -31,8 +31,10 @@ trait TableViewModule
     val store =  RDFStoreObject.store
 //    RDFStoreObject.printGraphList
     // TODO load ontologies from local SPARQL; probably use a pointed graph
+    
     if(blankNode != "true"){
-      storeURI(makeUri(uri), store)
+      retrieveURI(makeUri(uri), store)
+//      storeURI(makeUri(uri), store)
       Logger.getRootLogger().info(s"After storeURI(makeUri($uri), store)")
     }
     store.readTransaction {
