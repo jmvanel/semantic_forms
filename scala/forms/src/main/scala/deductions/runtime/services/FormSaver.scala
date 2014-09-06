@@ -33,6 +33,10 @@ class FormSaver[Rdf <: RDF](store: RDFStore[Rdf])(
     println("FormSaver.saveTriples")
     val uriOption = map.getOrElse("uri", Seq()).headOption
     println("FormSaver.saveTriples "+uriOption)
+    
+    val triples = ArrayBuffer[Rdf#Triple]()
+    val triplesToRemove = ArrayBuffer[Rdf#Triple]()
+    
     uriOption match {
       case Some(uri0) =>
         val uri = URLDecoder.decode(uri0, "utf-8")
@@ -41,14 +45,18 @@ class FormSaver[Rdf <: RDF](store: RDFStore[Rdf])(
             val prop = URLDecoder.decode(prop0, "utf-8")
             saveTriplesForProperty(uri, prop, obj, map)
         }
+        doSave(uri:String)
       case _ =>
-    }
-  }
+    } 
+    // end of body of saveTriples
 
   def saveTriplesForProperty(uri: String, prop: String, objects: Seq[String], map: Map[String, Seq[String]]) = {
-    val triples = ArrayBuffer[Rdf#Triple]()
-    val triplesToRemove = ArrayBuffer[Rdf#Triple]()
-    
+   
+    objects.map(object_ => saveTriple(uri, prop, object_))
+    println("triplesToRemove " + triplesToRemove)
+    println("triples To add " + triples)
+  }
+  
     def processChange(uri: String, prop: String, obj: String): (Boolean, String) = {
       val originalValue = map.getOrElse(
           "ORIG-" + URLEncoder.encode(prop,"utf-8"), Seq("")).headOption.getOrElse("")
@@ -98,12 +106,8 @@ class FormSaver[Rdf <: RDF](store: RDFStore[Rdf])(
         }
       }
     }
-
-    // do save:
-    objects.map(object_ => saveTriple(uri, prop, object_))
-    println("triplesToRemove " + triplesToRemove)
-    println("triples To add " + triples)
-
+    
+  def doSave(uri:String) {
     val init = store.execute {
       for {
         _ <- Command.remove(makeUri(uri), triplesToRemove)
@@ -123,6 +127,7 @@ class FormSaver[Rdf <: RDF](store: RDFStore[Rdf])(
               }
           }
       }
+  }
   }
 
 }
