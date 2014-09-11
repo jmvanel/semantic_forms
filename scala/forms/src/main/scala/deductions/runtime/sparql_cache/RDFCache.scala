@@ -33,6 +33,7 @@ trait RDFCacheJena extends RDFCache with JenaHelpers {
    * retrieve URI from a graph named by itself;
    * or download and store URI only if corresponding graph is empty
    * TODO according to timestamp retrieve from Jena Store,
+   * TODO save in another Dataset
    */
   def retrieveURI(uri: Rdf#URI, store: JenaStore) = {
 //      def storeURI(uri: Rdf#URI, store: GraphStore[Rdf]) {
@@ -63,7 +64,6 @@ trait RDFCacheJena extends RDFCache with JenaHelpers {
 
    def lastModified( url0:String, timeout:Int) : (Boolean, Long) = {
     val url = url0.replaceFirst("https", "http"); // Otherwise an exception may be thrown on invalid SSL certificates.
-
     try {
         val connection0 = new URL(url).openConnection()
         val connection = connection0.asInstanceOf[HttpURLConnection] 
@@ -71,14 +71,28 @@ trait RDFCacheJena extends RDFCache with JenaHelpers {
         connection.setReadTimeout(timeout);
         connection.setRequestMethod("HEAD");
         val responseCode = connection.getResponseCode();
-        val dateString = connection.getHeaderField("Last-Modified")
-        val date : java.util.Date = DateUtils.parseDate(dateString) // from apache http-components
-        
-        println( "responseCode: " + responseCode + " date " + date)
-        (200 <= responseCode && responseCode <= 399 , date.getTime() )
+        def tryHeaderField(headerName:String) : (Boolean, Boolean, Long ) = {
+             val dateString = connection.getHeaderField(headerName)
+             if( dateString != null ) {
+               val date : java.util.Date = DateUtils.parseDate(dateString) // from apache http-components
+               println( "responseCode: " + responseCode + " date " + date)
+               (true, 200 <= responseCode && responseCode <= 399 , date.getTime() )
+             } else (false, false, Long.MaxValue )
+        }
+        // TODO should be a better way in Scala:
+        val lm = tryHeaderField("Last-Modified")
+        val r = if( lm . _1 ) {
+          ( lm . _2,  lm . _3 )
+        } else {
+          val lm2 = tryHeaderField("Date")
+          if( lm2 . _1 ) {
+            ( lm2 . _2,  lm2 . _3 )
+          } else (false, Long.MaxValue)
+        }
+        return r 
     } catch {
-    case exception: IOException => (false, Long.MinValue) 
-    case e:Throwable => throw e
+          case exception: IOException => (false, Long.MinValue) 
+          case e:Throwable => throw e
     }
    }
 }
