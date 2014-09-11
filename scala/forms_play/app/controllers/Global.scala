@@ -53,8 +53,11 @@ object Global extends Controller // play.api.GlobalSettings
         } catch {
         case e:Exception // e.g. org.apache.jena.riot.RiotException
         =>
-          <p style="color:red">{e.getLocalizedMessage()}<br/> Cause: 
-          {e.getCause().getLocalizedMessage()}
+          <p style="color:red">{
+            e.getLocalizedMessage() + " " + printTrace(e)
+            } <br/>
+          Cause: 
+          { if ( e.getCause() != null ) e.getCause().getLocalizedMessage()}
           </p>
         }
       else
@@ -62,6 +65,12 @@ object Global extends Controller // play.api.GlobalSettings
     </p>
   }
 
+  def printTrace(e: Exception) : String = {
+    var s = ""
+    for ( i <- e.getStackTrace() ) { s = s + " " + i }
+    s
+  }
+  
   def wordsearch(q:String="") : Elem = {
       <p>Searched for "{q}" :<br/>
     	  {search.search(q, hrefDisplayPrefix)}

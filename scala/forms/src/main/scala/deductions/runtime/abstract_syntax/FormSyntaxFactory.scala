@@ -19,7 +19,8 @@ import org.w3.banana.URIOps
 import org.w3.banana.XSDPrefix
 import org.w3.banana.diesel.toPointedGraphW
 
-/** Factory for an abstract Form Syntax */
+/** Factory for an abstract Form Syntax;
+ *   */
 class FormSyntaxFactory[Rdf <: RDF]
 (graph: Rdf#Graph)
 ( implicit ops: RDFOps[Rdf],
@@ -31,8 +32,9 @@ FormModule[Rdf#Node, Rdf#URI] {
 
   lazy val nullURI // : Rdf#URI 
     = ops.URI( "http://null.com#" ) // TODO better : "" ????????????
-
-//  def createForm(subject: Rdf#URI ) : FormSyntax[Rdf#URI] = {
+  val rdfs = RDFSPrefix[Rdf]
+  
+  /**create Form from an instance (subject) URI */
   def createForm(subject: Rdf#Node ) : FormSyntax[Rdf#Node, Rdf#URI] = {
      val props = fields(subject, graph)
      createForm(subject, props )
@@ -47,7 +49,7 @@ FormModule[Rdf#Node, Rdf#URI] {
     val fields = mutable.ArrayBuffer[Entry]()
     for (prop <- props) {
       Logger.getRootLogger().info(s"createForm subject $subject, prop $prop")
-      val ranges = extractRDFURIs( oQuery( prop, RDFSPrefix[Rdf].range ) )
+      val ranges = extractURIs( oQuery( prop, rdfs.range ) )
       val rangesSize = ranges . size
       val mess = if( rangesSize > 1 ) {
         "WARNING: ranges " + ranges + " for property " + prop + " are multiple."
@@ -75,8 +77,8 @@ FormModule[Rdf#Node, Rdf#URI] {
 //  private def makeEntry(subject: Rdf#URI, prop: Rdf#URI, ranges: Set[Rdf#URI]): Seq[Entry] = {
   private def makeEntry(subject: Rdf#Node, prop: Rdf#URI, ranges: Set[Rdf#URI]): Seq[Entry] = {
     Logger.getRootLogger().info(s"makeEntry subject $subject, prop $prop")
-    val label = getHeadStringOrElse(prop, RDFSPrefix[Rdf].label, terminalPart(prop))
-    val comment = getHeadStringOrElse(prop, RDFSPrefix[Rdf].comment, "")
+    val label = getHeadStringOrElse(prop, rdfs.label, terminalPart(prop))
+    val comment = getHeadStringOrElse(prop, rdfs.comment, "")
 //        if( prop.toString.contains("workInfoHomepage")) {
 //          println
 //        }
@@ -130,7 +132,7 @@ FormModule[Rdf#Node, Rdf#URI] {
     result
   }
 
-  def terminalPart(uri: Rdf#URI): String = {
+  private def terminalPart(uri: Rdf#URI): String = {
     uriOps.getFragment(uri) match {
       case None => uriOps.lastSegment(uri)
       case Some(frag) => frag
@@ -179,7 +181,7 @@ FormModule[Rdf#Node, Rdf#URI] {
   }
   
   /** Query for objects in triple, given subject & predicate */
-  private def oQuery(subject: Rdf#Node, predicate: Rdf#URI ): Set[Rdf#Node] = {
+  def oQuery(subject: Rdf#Node, predicate: Rdf#URI ): Set[Rdf#Node] = {
     val pg = PointedGraph[Rdf]( subject, graph )
     val objects = pg / predicate
     objects.map(_.pointer).toSet
@@ -193,20 +195,14 @@ FormModule[Rdf#Node, Rdf#URI] {
     values
   }
 
-  private def extractRDFURIs(nodes:Set[Rdf#Node]) : Set[Rdf#URI] = {
+  /*** from given Set of Rdf#Node , extract rdf#URI */
+  def extractURIs(nodes:Set[Rdf#Node]) : Set[Rdf#URI] = {
     val v = nodes filter { node:Rdf#Node => ops.isURI(node) }
     v . map { node => node.asInstanceOf[Rdf#URI] }
   }
 
-//  def oQuery2[T](subject: Rdf#URI, predicate: Rdf#URI, action: Rdf#Node => T ) : Set[T] = {
-//    val pg = PointedGraph[Rdf]( subject, graph )
-//    val objects = pg / predicate
-//    val r = objects.map( obj => action(obj.pointer) )
-//    r.toSet
-//  }
-
-  def printGraph(answers: Rdf#Graph) {
-    val iterable = ops.graphToIterable(answers)
+  def printGraph(graph: Rdf#Graph) {
+    val iterable = ops.graphToIterable(graph)
     for (t <- iterable) {
       println(t)
       val (subj, pred, obj) = ops.fromTriple(t)
