@@ -14,6 +14,17 @@ import org.w3.banana.OWLPrefix
  * @author j.m. Vanel
  *
  */
+object UnfilledFormFactory {
+  var instanceURIPrefix = "http://assemblee-virtuelle.org/resource/"
+  def makeId : String = {
+    val r = instanceURIPrefix + System.currentTimeMillis() + "-" + System.nanoTime()
+//    currentId = currentId + 1
+    r
+  }
+}
+
+import UnfilledFormFactory._
+
 class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph)(implicit ops: RDFOps[Rdf],
   uriOps: URIOps[Rdf],
   rdfDSL: RDFDSL[Rdf])
@@ -23,7 +34,7 @@ class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph)(implicit ops: RDFOps[Rdf
   /** create Form from an instance (subject) URI */
   def createFormFromClass(classs: Rdf#URI): FormSyntax[Rdf#Node, Rdf#URI] = {
     val props = fieldsFromClass(classs, graph)
-    createForm(nullURI, props toSeq)
+    createForm(ops.makeUri(makeId), props toSeq)
   }
 
   private def fieldsFromClass(classs: Rdf#URI, graph: Rdf#Graph): Set[Rdf#URI] = {
