@@ -37,7 +37,12 @@ FormModule[Rdf#Node, Rdf#URI] {
   /**create Form from an instance (subject) URI */
   def createForm(subject: Rdf#Node ) : FormSyntax[Rdf#Node, Rdf#URI] = {
      val props = fields(subject, graph)
-     createForm(subject, props )
+     
+     // TODO several classes
+     val classs = classFromSubject(subject)
+     
+     val fromClass = fieldsFromClass( classs, graph )
+     createForm(subject, props ++ fromClass )
   }
 
   /** For each given property (props)
@@ -131,7 +136,7 @@ FormModule[Rdf#Node, Rdf#URI] {
       addOneEntry(object_)
     }
     
-    // TODO entry associated to prop
+    // entry associated to prop
    if(objects isEmpty ) {
      addOneEntry(nullURI) // TODO ??? nullURI
    }
@@ -169,7 +174,7 @@ FormModule[Rdf#Node, Rdf#URI] {
     )
   }
 
-  private def getHeadOrElse(subject: Rdf#URI, predicate: Rdf#URI,
+  private def getHeadOrElse(subject: Rdf#Node, predicate: Rdf#URI,
     default: Rdf#URI = nullURI): Rdf#URI = {
     oQuery(subject, predicate) match {
       case ll if ll.isEmpty => default
@@ -213,5 +218,37 @@ FormModule[Rdf#Node, Rdf#URI] {
       println(t)
       val (subj, pred, obj) = ops.fromTriple(t)
     }
+  }
+
+
+  // TODO extract in another trait
+  
+  val owl = OWLPrefix[Rdf]
+
+  def fieldsFromClass(classs: Rdf#URI, graph: Rdf#Graph): Set[Rdf#URI] = {
+    def domainFromClass(classs: Rdf#Node) = {
+      val relevantPredicates = rdfDSL.getSubjects(graph, rdfs.domain, classs).toSet
+      extractURIs(relevantPredicates) toSet
+    }
+    
+    val result = scala.collection.mutable.Set[Rdf#URI]()
+    processSuperClasses(classs)
+    
+    /** recursively process super-classes until reaching owl:Thing */
+    def processSuperClasses(classs: Rdf#URI) {
+      result ++= domainFromClass(classs)
+      if (classs != owl.Thing ) {
+        val superClasses = rdfDSL.getObjects(graph, classs, rdfs.subClassOf)
+        superClasses foreach (sc => result ++= domainFromClass(sc))
+      }
+    }
+    result.toSet
+  }
+     
+  val rdf = RDFPrefix[Rdf]
+
+  def classFromSubject(subject: Rdf#Node ) = {
+    getHeadOrElse( subject, rdf.typ )
+//       ops.URI(")
   }
 }
