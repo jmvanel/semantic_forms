@@ -13,7 +13,8 @@ trait CreationForm extends RDFModule
 {
   import Ops._
   val nullURI : Rdf#URI = Ops.URI( "" )
-  
+  var actionURI = "/save"
+    
   def create( uri:String )  : Elem = {
     val store =  RDFStoreObject.store
     store.readTransaction {
@@ -21,7 +22,7 @@ trait CreationForm extends RDFModule
       val factory = new UnfilledFormFactory[Rdf](allNamedGraphs)
       val form = factory.createFormFromClass(URI(uri))
     println(form)
-      val htmlForm = generateHTML(form, hrefPrefix="", editable=true, "actionURI" )
+      val htmlForm = generateHTML(form, hrefPrefix="", editable=true, actionURI )
     println(htmlForm)
     htmlForm
     }

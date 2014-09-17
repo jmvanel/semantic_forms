@@ -22,7 +22,7 @@ object Global extends Controller // play.api.GlobalSettings
   lazy val search = new StringSearchSPARQL(store)
   lazy val dl = new BrowsableGraph(store)
   lazy val fs = new FormSaver(store)
-  lazy val cf = new CreationForm {}
+  lazy val cf = new CreationForm { actionURI = "/save" }
   
   val hrefDisplayPrefix = "/display?displayuri="
   val hrefDownloadPrefix = "/download?url="
