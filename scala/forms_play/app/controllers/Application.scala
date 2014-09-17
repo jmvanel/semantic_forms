@@ -46,4 +46,12 @@ object Application extends Controller with TableView {
       // Ok( views.html.index(global.Global.htmlForm(uri, blanknode)) )
     }
   }
+  
+  def create( uri:String ) = {
+    Action { implicit request =>
+      println( "create: " + request )
+      println( "create: " + uri )
+      Ok( views.html.index(global.Global.create(uri) ))
+    }
+  }
 }

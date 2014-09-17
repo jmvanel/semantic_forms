@@ -1,10 +1,7 @@
 import java.net.URLDecoder
 import java.net.URLEncoder
-
 import scala.xml.Elem
-
 import org.apache.log4j.Logger
-
 import deductions.runtime.html.TableView
 import deductions.runtime.jena.RDFStoreObject
 import deductions.runtime.services.BrowsableGraph
@@ -13,6 +10,7 @@ import deductions.runtime.services.StringSearchSPARQL
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.mvc.Controller
 import play.api.mvc.Request
+import deductions.runtime.html.CreationForm
 
 package global {
 
@@ -24,6 +22,7 @@ object Global extends Controller // play.api.GlobalSettings
   lazy val search = new StringSearchSPARQL(store)
   lazy val dl = new BrowsableGraph(store)
   lazy val fs = new FormSaver(store)
+  lazy val cf = new CreationForm {}
   
   val hrefDisplayPrefix = "/display?displayuri="
   val hrefDownloadPrefix = "/download?url="
@@ -41,7 +40,7 @@ object Global extends Controller // play.api.GlobalSettings
     val uri = uri0.trim()
 
     <p>
-      Properties for URI {uri}
+      Properties for URI <bold>{uri}</bold>
       <a href={uri} title="Download HTML from original URI">HTML</a>
       <a href={hrefDownloadPrefix + URLEncoder.encode(uri,"utf-8")}
          title="Download Turtle">Triples</a>
@@ -108,5 +107,15 @@ object Global extends Controller // play.api.GlobalSettings
         case _ => <p>Save: not normal: { form.getClass() }</p>
       }
   }
+  
+  def create( uri0:String ) : Elem = {
+    Logger.getRootLogger().info("Global.htmlForm uri "+ uri0 )
+    val uri = uri0.trim()
+    
+    <p>Creating an instance of Class <bold>{uri}</bold>
+      {cf.create(uri)}
+    </p>
+    }
+
  }
 }

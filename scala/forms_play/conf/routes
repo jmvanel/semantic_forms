@@ -12,6 +12,8 @@ GET     /edit               controllers.Application.edit( url:String )
 
 POST    /save               controllers.Application.save()
 
+GET     /create             controllers.Application.create( uri:String )
+
 # Home page
 GET     /                   controllers.Application.index
 

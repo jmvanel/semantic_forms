@@ -19,6 +19,7 @@ class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph)(implicit ops: RDFOps[Rdf
   rdfDSL: RDFDSL[Rdf])
   extends FormSyntaxFactory[Rdf](graph: Rdf#Graph) {
   val owl = OWLPrefix[Rdf]
+  
   /** create Form from an instance (subject) URI */
   def createFormFromClass(classs: Rdf#URI): FormSyntax[Rdf#Node, Rdf#URI] = {
     val props = fieldsFromClass(classs, graph)

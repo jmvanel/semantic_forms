@@ -79,9 +79,6 @@ FormModule[Rdf#Node, Rdf#URI] {
     Logger.getRootLogger().info(s"makeEntry subject $subject, prop $prop")
     val label = getHeadStringOrElse(prop, rdfs.label, terminalPart(prop))
     val comment = getHeadStringOrElse(prop, rdfs.comment, "")
-//        if( prop.toString.contains("workInfoHomepage")) {
-//          println
-//        }
     val propClasses = oQuery(prop, RDFPrefix[Rdf].typ)
     val objects = oQuery(subject, prop)
     val result = scala.collection.mutable.ArrayBuffer[Entry]()
@@ -94,9 +91,10 @@ FormModule[Rdf#Node, Rdf#URI] {
     	 override def getId : String = ops.fromBNode(value.asInstanceOf[Rdf#BNode])
       }
     }
-    
-    for (object_ <- objects) {
-      def literalEntry = LiteralEntry(label, comment, prop, DatatypeValidator(ranges), getStringOrElse(object_.pointer, "<empty>"))
+              
+    def addOneEntry(object_ : Rdf#Node) = {
+      def literalEntry = LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
+          getStringOrElse(object_.pointer, "<empty>"))
       def resourceEntry = {
         ops.foldNode(object_)(
             object_ => ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_),
@@ -128,7 +126,15 @@ FormModule[Rdf#Node, Rdf#URI] {
         case _ => literalEntry
       }
       result += entry
+      }
+    for (object_ <- objects) {
+      addOneEntry(object_)
     }
+    
+    // TODO entry associated to prop
+   if(objects isEmpty ) {
+     addOneEntry(nullURI) // TODO ??? nullURI
+   }
     result
   }
 

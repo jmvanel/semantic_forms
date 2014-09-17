@@ -30,7 +30,7 @@ trait TableViewModule
       actionURI:String="/save" ) : Elem = {
     val store =  RDFStoreObject.store
 //    RDFStoreObject.printGraphList
-    // TODO load ontologies from local SPARQL; probably use a pointed graph
+    // TODO ? load ontologies from local SPARQL; probably use a pointed graph
     
     if(blankNode != "true"){
       retrieveURI(makeUri(uri), store)
