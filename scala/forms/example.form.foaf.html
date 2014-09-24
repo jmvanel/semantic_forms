@@ -1,8 +1,11 @@
-<form action="/save">
+<form action="/save" method="POST">
   <input value="SAVE" type="submit"/>
+  <input 
+  type="hidden" name="url" value="http%3A%2F%2Fjmvanel.free.fr%2Fjmv.rdf%23me">
+</input>
   <table>
     <input 
-    type="hiden" name="uri" value="http%3A%2F%2Fjmvanel.free.fr%2Fjmv.rdf%23me">
+    type="hidden" name="uri" value="http%3A%2F%2Fjmvanel.free.fr%2Fjmv.rdf%23me">
 </input>
     <tr>
       <td 
@@ -11,7 +14,10 @@
 </td>
       <td>
         <input 
-        value="http://jmvanel.free.fr/images/jmv_id.jpg" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fimg">
+        value="http://jmvanel.free.fr/images/jmv_id.jpg" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fimg">
+</input>
+        <input 
+        value="http://jmvanel.free.fr/images/jmv_id.jpg" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fimg" type="hidden">
 </input>
       </td>
     </tr>
@@ -19,7 +25,10 @@
       <td title="The given name of some person.">Given name</td>
       <td>
         <input 
-        value="Jean-Marc" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FgivenName">
+        value="Jean-Marc" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FgivenName">
+</input>
+        <input 
+        value="Jean-Marc" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FgivenName" type="hidden">
 </input>
       </td>
     </tr>
@@ -27,7 +36,10 @@
       <td title="A current project this person works on.">current project</td>
       <td>
         <input 
-        value="http://sourceforge.net/projects/eulergui" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FcurrentProject">
+        value="http://github.com/jmvanel/semantic_forms" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FcurrentProject">
+</input>
+        <input 
+        value="http://github.com/jmvanel/semantic_forms" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FcurrentProject" type="hidden">
 </input>
       </td>
     </tr>
@@ -35,7 +47,10 @@
       <td title="A current project this person works on.">current project</td>
       <td>
         <input 
-        value="http://wwbota.free.fr" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FcurrentProject">
+        value="http://github.com/jmvanel/rdf-i18n" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FcurrentProject">
+</input>
+        <input 
+        value="http://github.com/jmvanel/rdf-i18n" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FcurrentProject" type="hidden">
 </input>
       </td>
     </tr>
@@ -43,7 +58,10 @@
       <td title="A current project this person works on.">current project</td>
       <td>
         <input 
-        value="http://github.com/jmvanel/semantic_forms" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FcurrentProject">
+        value="http://wwbota.free.fr" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FcurrentProject">
+</input>
+        <input 
+        value="http://wwbota.free.fr" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FcurrentProject" type="hidden">
 </input>
       </td>
     </tr>
@@ -51,7 +69,10 @@
       <td title="A current project this person works on.">current project</td>
       <td>
         <input 
-        value="http://github.com/jmvanel/rdf-i18n" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FcurrentProject">
+        value="http://sourceforge.net/projects/eulergui" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FcurrentProject">
+</input>
+        <input 
+        value="http://sourceforge.net/projects/eulergui" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FcurrentProject" type="hidden">
 </input>
       </td>
     </tr>
@@ -59,22 +80,54 @@
       <td title="A name for some thing.">name</td>
       <td>
         <input 
-        value="Jean-Marc Vanel" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fname">
+        value="Jean-Marc Vanel" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fname">
+</input>
+        <input 
+        value="Jean-Marc Vanel" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fname" type="hidden">
 </input>
       </td>
     </tr>
     <tr>
       <td title="The family name of some person.">familyName</td>
       <td>
-        <input value="Vanel" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FfamilyName">
-        </input>
+        <input 
+        value="Van Eel" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FfamilyName">
+</input>
+        <input 
+        value="Van Eel" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FfamilyName" type="hidden">
+</input>
       </td>
     </tr>
     <tr>
       <td title="A homepage for some thing.">homepage</td>
       <td>
         <input 
-        value="http://jmvanel.free.fr/" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fhomepage">
+        value="http://jmvanel.free.fr/" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fhomepage">
+</input>
+        <input 
+        value="http://jmvanel.free.fr/" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fhomepage" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="">timestampGraph</td>
+      <td>
+        <input 
+        value="-9223372036854775808" name="LIT-http%3A%2F%2Fdeductions-software.com%2FtimestampGraph">
+</input>
+        <input 
+        value="-9223372036854775808" name="ORIG-LIT-http%3A%2F%2Fdeductions-software.com%2FtimestampGraph" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="">timestampGraph</td>
+      <td>
+        <input 
+        value="1407420398000" name="LIT-http%3A%2F%2Fdeductions-software.com%2FtimestampGraph">
+</input>
+        <input 
+        value="1407420398000" name="ORIG-LIT-http%3A%2F%2Fdeductions-software.com%2FtimestampGraph" type="hidden">
 </input>
       </td>
     </tr>
@@ -85,7 +138,10 @@
 </td>
       <td>
         <input 
-        value="http://deductions-software.com" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FworkplaceHomepage">
+        value="http://deductions-software.com" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FworkplaceHomepage">
+</input>
+        <input 
+        value="http://deductions-software.com" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FworkplaceHomepage" type="hidden">
 </input>
       </td>
     </tr>
@@ -93,7 +149,10 @@
       <td title="">type</td>
       <td>
         <input 
-        value="http://xmlns.com/foaf/0.1/Person" name="http%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type">
+        value="http://xmlns.com/foaf/0.1/Person" name="RES-http%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type">
+</input>
+        <input 
+        value="http://xmlns.com/foaf/0.1/Person" name="ORIG-RES-http%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type" type="hidden">
 </input>
       </td>
     </tr>
@@ -101,7 +160,10 @@
       <td title="A homepage of a school attended by the person.">schoolHomepage</td>
       <td>
         <input 
-        value="http://www.ens-cachan.fr/" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FschoolHomepage">
+        value="http://www.ens-cachan.fr/" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FschoolHomepage">
+</input>
+        <input 
+        value="http://www.ens-cachan.fr/" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FschoolHomepage" type="hidden">
 </input>
       </td>
     </tr>
@@ -109,7 +171,10 @@
       <td title="A homepage of a school attended by the person.">schoolHomepage</td>
       <td>
         <input 
-        value="http://unice.fr" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FschoolHomepage">
+        value="http://unice.fr" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FschoolHomepage">
+</input>
+        <input 
+        value="http://unice.fr" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FschoolHomepage" type="hidden">
 </input>
       </td>
     </tr>
@@ -117,7 +182,10 @@
       <td title="Indicates an account held by this agent.">account</td>
       <td>
         <input 
-        value="http://jmvanel.free.fr/jmv.rdf#meOnIRC" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Faccount">
+        value="http://jmvanel.free.fr/jmv.rdf#meOnIRC" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Faccount">
+</input>
+        <input 
+        value="http://jmvanel.free.fr/jmv.rdf#meOnIRC" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Faccount" type="hidden">
 </input>
       </td>
     </tr>
@@ -125,7 +193,10 @@
       <td title="Indicates an account held by this agent.">account</td>
       <td>
         <input 
-        value="http://twitter.com/jmvanel" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Faccount">
+        value="http://twitter.com/jmvanel_fr" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Faccount">
+</input>
+        <input 
+        value="http://twitter.com/jmvanel_fr" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Faccount" type="hidden">
 </input>
       </td>
     </tr>
@@ -133,7 +204,10 @@
       <td title="Indicates an account held by this agent.">account</td>
       <td>
         <input 
-        value="http://twitter.com/jmvanel_fr" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Faccount">
+        value="https://plus.google.com/106137725737026245498" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Faccount">
+</input>
+        <input 
+        value="https://plus.google.com/106137725737026245498" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Faccount" type="hidden">
 </input>
       </td>
     </tr>
@@ -141,7 +215,10 @@
       <td title="Indicates an account held by this agent.">account</td>
       <td>
         <input 
-        value="https://plus.google.com/106137725737026245498" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Faccount">
+        value="http://twitter.com/jmvanel" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Faccount">
+</input>
+        <input 
+        value="http://twitter.com/jmvanel" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Faccount" type="hidden">
 </input>
       </td>
     </tr>
@@ -151,7 +228,10 @@
       </td>
       <td>
         <input 
-        value="http://jmvanel.free.fr/computer-notes.html" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fweblog">
+        value="http://jmvanel.free.fr/computer-notes.html" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fweblog">
+</input>
+        <input 
+        value="http://jmvanel.free.fr/computer-notes.html" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fweblog" type="hidden">
 </input>
       </td>
     </tr>
@@ -161,7 +241,10 @@
       </td>
       <td>
         <input 
-        value="http://jmvanel.free.fr/notes-informatiques.html" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fweblog">
+        value="http://jmvanel.free.fr/notes-informatiques.html" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fweblog">
+</input>
+        <input 
+        value="http://jmvanel.free.fr/notes-informatiques.html" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fweblog" type="hidden">
 </input>
       </td>
     </tr>
@@ -171,535 +254,10 @@
       </td>
       <td>
         <input 
-        value="http://jmvanel.free.fr/Block-note.html.html" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fweblog">
+        value="http://jmvanel.free.fr/Block-note.html.html" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fweblog">
 </input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="-6cc921b0:1479307d042:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="5102c978:1474898e1e3:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="3c4dabce:147455f859f:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="299fc148:1479775a657:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="3c4dabce:147455f859f:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="221e2595:1474032f443:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="-1c071d61:147920a023f:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="-5057e66f:1474886399e:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="5f813d18:147403a4f52:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="-3292c8bb:147408e9188:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="aa0211c:147488a62c7:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="http://bblfish.net/people/henry/card#me" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="-5b2aa89a:1474ada9911:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="http://sort-of.strangled.net/foaf.rdf#me" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="-3292c8bb:147408e9188:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="-d28d37c:14740365683:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="1645e811:1479d016261:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="-2d28f95b:14792e9d132:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="http://moustaki.org/foaf.rdf#moustaki" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="149678d4:14793136b5c:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="http://danbri.org/foaf.rdf#danbri" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="-186cd37e:1479d0422a3:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="-6ba579ec:14748712482:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="-1c071d61:147920a023f:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="3516960:14792dafb6c:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="49eeb19f:147aa6f8e46:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="http://www.agfa.com/w3c/jdroo/card.rdf#me" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="6e6ece95:147403ce7bb:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="-6ba579ec:14748712482:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="http://sort-of.crabdance.com/foaf.rdf#me" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="1b93fb5d:1479d02c136:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="38644574:1479d07bf17:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="299fc148:1479775a657:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="-186cd37e:1479d0422a3:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="5c534215:147aa6a345f:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="149678d4:14793136b5c:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="-6cc921b0:1479307d042:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="-5b2aa89a:1474ada9911:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="aa0211c:147488a62c7:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="666e5c58:147aa6cb06f:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="49eeb19f:147aa6f8e46:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="5c534215:147aa6a345f:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="7793b71:1479309f891:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="6e6ece95:147403ce7bb:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="1b93fb5d:1479d02c136:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="38644574:1479d07bf17:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
-        <input 
-        value="-34fa9694:14776ab8d26:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
         <input 
-        value="4e3944a:1479d05b782:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+        value="http://jmvanel.free.fr/Block-note.html.html" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fweblog" type="hidden">
 </input>
       </td>
     </tr>
@@ -710,18 +268,10 @@
 </td>
       <td>
         <input 
-        value="1645e811:1479d016261:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+        value="http://bblfish.net/people/henry/card#me" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
 </input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
         <input 
-        value="-ca6fd5b:1479d15d15a:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+        value="http://bblfish.net/people/henry/card#me" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows" type="hidden">
 </input>
       </td>
     </tr>
@@ -732,18 +282,10 @@
 </td>
       <td>
         <input 
-        value="221e2595:1474032f443:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+        value="http://sort-of.strangled.net/foaf.rdf#me" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
 </input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
         <input 
-        value="3516960:14792dafb6c:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+        value="http://sort-of.strangled.net/foaf.rdf#me" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows" type="hidden">
 </input>
       </td>
     </tr>
@@ -754,18 +296,10 @@
 </td>
       <td>
         <input 
-        value="-3d036855:147402e42af:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+        value="http://moustaki.org/foaf.rdf#moustaki" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
 </input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
         <input 
-        value="666e5c58:147aa6cb06f:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+        value="http://moustaki.org/foaf.rdf#moustaki" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows" type="hidden">
 </input>
       </td>
     </tr>
@@ -776,18 +310,10 @@
 </td>
       <td>
         <input 
-        value="7793b71:1479309f891:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+        value="http://danbri.org/foaf.rdf#danbri" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
 </input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
         <input 
-        value="http://site26.com/me/frmorel.rdf" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+        value="http://danbri.org/foaf.rdf#danbri" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows" type="hidden">
 </input>
       </td>
     </tr>
@@ -798,18 +324,10 @@
 </td>
       <td>
         <input 
-        value="5f813d18:147403a4f52:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+        value="76c02fc6:14836cd3300:-7fff" name="BLA-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
 </input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
         <input 
-        value="5102c978:1474898e1e3:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+        value="76c02fc6:14836cd3300:-7fff" name="ORIG-BLA-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows" type="hidden">
 </input>
       </td>
     </tr>
@@ -820,18 +338,10 @@
 </td>
       <td>
         <input 
-        value="-5057e66f:1474886399e:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+        value="http://www.agfa.com/w3c/jdroo/card.rdf#me" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
 </input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
         <input 
-        value="3b8dd928:147920420b5:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+        value="http://www.agfa.com/w3c/jdroo/card.rdf#me" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows" type="hidden">
 </input>
       </td>
     </tr>
@@ -842,18 +352,10 @@
 </td>
       <td>
         <input 
-        value="http://fcns.eu/people/andrei/card#me" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+        value="http://sort-of.crabdance.com/foaf.rdf#me" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
 </input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
         <input 
-        value="3b8dd928:147920420b5:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+        value="http://sort-of.crabdance.com/foaf.rdf#me" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows" type="hidden">
 </input>
       </td>
     </tr>
@@ -864,18 +366,10 @@
 </td>
       <td>
         <input 
-        value="-d28d37c:14740365683:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+        value="76c02fc6:14836cd3300:-7ffe" name="BLA-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
 </input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
         <input 
-        value="-ca6fd5b:1479d15d15a:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+        value="76c02fc6:14836cd3300:-7ffe" name="ORIG-BLA-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows" type="hidden">
 </input>
       </td>
     </tr>
@@ -886,18 +380,10 @@
 </td>
       <td>
         <input 
-        value="4e3944a:1479d05b782:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+        value="http://site26.com/me/frmorel.rdf#me" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
 </input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
         <input 
-        value="-3d036855:147402e42af:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+        value="http://site26.com/me/frmorel.rdf#me" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows" type="hidden">
 </input>
       </td>
     </tr>
@@ -908,18 +394,10 @@
 </td>
       <td>
         <input 
-        value="-2d28f95b:14792e9d132:-7fff" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+        value="http://fcns.eu/people/andrei/card#me" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
 </input>
-      </td>
-    </tr>
-    <tr>
-      <td 
-      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
-        knows
-</td>
-      <td>
         <input 
-        value="-34fa9694:14776ab8d26:-7ffe" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+        value="http://fcns.eu/people/andrei/card#me" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows" type="hidden">
 </input>
       </td>
     </tr>
@@ -930,7 +408,10 @@
 </td>
       <td>
         <input 
-        value="mailto:mailto:jeanmarc.vanel@gmail.com" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fmbox">
+        value="mailto:mailto:jeanmarc.vanel@gmail.com" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fmbox">
+</input>
+        <input 
+        value="mailto:mailto:jeanmarc.vanel@gmail.com" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fmbox" type="hidden">
 </input>
       </td>
     </tr>
@@ -941,14 +422,20 @@
 </td>
       <td>
         <input 
-        value="47554e5293b708f607dbdba7eb4f8017a4b298e9" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fmbox_sha1sum">
+        value="47554e5293b708f607dbdba7eb4f8017a4b298e9" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fmbox_sha1sum">
+</input>
+        <input 
+        value="47554e5293b708f607dbdba7eb4f8017a4b298e9" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fmbox_sha1sum" type="hidden">
 </input>
       </td>
     </tr>
     <tr>
       <td title="Title (Mr, Mrs, Ms, Dr. etc)">title</td>
       <td>
-        <input value="Mr" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ftitle"></input>
+        <input value="Mr" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ftitle"/>
+        <input 
+        value="Mr" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ftitle" type="hidden">
+</input>
       </td>
     </tr>
     <tr>
@@ -958,7 +445,10 @@
 </td>
       <td>
         <input 
-        value="tel:+33-689-162-952" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fphone">
+        value="tel:+33-689-162-952" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fphone">
+</input>
+        <input 
+        value="tel:+33-689-162-952" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fphone" type="hidden">
 </input>
       </td>
     </tr>
@@ -966,7 +456,10 @@
       <td title="A thing of interest to this person.">topic_interest</td>
       <td>
         <input 
-        value="http://en.wikipedia.org/wiki/Botany" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ftopic_interest">
+        value="http://en.wikipedia.org/wiki/Jazz" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ftopic_interest">
+</input>
+        <input 
+        value="http://en.wikipedia.org/wiki/Jazz" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ftopic_interest" type="hidden">
 </input>
       </td>
     </tr>
@@ -974,7 +467,10 @@
       <td title="A thing of interest to this person.">topic_interest</td>
       <td>
         <input 
-        value="http://en.wikipedia.org/wiki/Jazz" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ftopic_interest">
+        value="http://en.wikipedia.org/wiki/Botany" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ftopic_interest">
+</input>
+        <input 
+        value="http://en.wikipedia.org/wiki/Botany" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ftopic_interest" type="hidden">
 </input>
       </td>
     </tr>
@@ -985,15 +481,10 @@
 </td>
       <td>
         <input 
-        value="http://deductions-software.com" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FworkInfoHomepage">
+        value="http://deductions-software.com" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FworkInfoHomepage">
 </input>
-      </td>
-    </tr>
-    <tr>
-      <td title="The given name of some person.">Given name</td>
-      <td>
         <input 
-        value="Jean-Marc" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fgivenname">
+        value="http://deductions-software.com" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FworkInfoHomepage" type="hidden">
 </input>
       </td>
     </tr>
@@ -1001,254 +492,32 @@
       <td title="">key</td>
       <td>
         <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
+        value="&lt;empty&gt;" name="LIT-http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
 </input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
         <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
-</input>
-      </td>
-    </tr>
-    <tr>
-      <td title="">key</td>
-      <td>
-        <input 
-        value="&lt;empty&gt;" name="http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key">
+        value="&lt;empty&gt;" name="ORIG-LIT-http%3A%2F%2Fwww.w3.org%2Fns%2Fauth%2Fcert%23key" type="hidden">
 </input>
       </td>
     </tr>
     <tr>
       <td title="A Skype ID">Skype ID</td>
       <td>
-        <input value="jmvanel1" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FskypeID">
-        </input>
+        <input 
+        value="jmvanel1" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FskypeID">
+</input>
+        <input 
+        value="jmvanel1" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FskypeID" type="hidden">
+</input>
       </td>
     </tr>
     <tr>
       <td title="The first name of a person.">firstName</td>
       <td>
         <input 
-        value="Jean-Marc" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FfirstName">
+        value="Jean-Marc" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FfirstName">
+</input>
+        <input 
+        value="Jean-Marc" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FfirstName" type="hidden">
 </input>
       </td>
     </tr>
@@ -1256,7 +525,10 @@
       <td title="A depiction of some thing.">depiction</td>
       <td>
         <input 
-        value="http://jmvanel.free.fr/images/jmv_id.jpg" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fdepiction">
+        value="http://jmvanel.free.fr/images/jmv_id.jpg" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fdepiction">
+</input>
+        <input 
+        value="http://jmvanel.free.fr/images/jmv_id.jpg" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fdepiction" type="hidden">
 </input>
       </td>
     </tr>
@@ -1264,15 +536,698 @@
       <td title="A project this person has previously worked on.">past project</td>
       <td>
         <input 
-        value="http://exist-db.org" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FpastProject">
+        value="http://exist-db.org" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FpastProject">
+</input>
+        <input 
+        value="http://exist-db.org" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FpastProject" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td 
+      title="An image that can be used to represent some thing (ie. those depictions which are particularly representative of something, eg. one's photo on a homepage).">
+        image
+</td>
+      <td>
+        <input 
+        value="http://jmvanel.free.fr/images/jmv_id.jpg" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fimg">
+</input>
+        <input 
+        value="http://jmvanel.free.fr/images/jmv_id.jpg" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fimg" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="A page about a topic of interest to this person.">interest</td>
+      <td>
+        <input 
+        value="http://null.com#" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Finterest">
+</input>
+        <input 
+        value="http://null.com#" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Finterest" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td 
+      title="A location that something is based near, for some broadly human notion of near.">
+        based near
+</td>
+      <td>
+        <input 
+        value="http://null.com#" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fbased_near">
+</input>
+        <input 
+        value="http://null.com#" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fbased_near" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="An OpenID for an Agent.">openid</td>
+      <td>
+        <input 
+        value="http://null.com#" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fopenid">
+</input>
+        <input 
+        value="http://null.com#" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fopenid" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="The last name of a person.">lastName</td>
+      <td>
+        <input 
+        value="&lt;empty&gt;" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FlastName">
+</input>
+        <input 
+        value="&lt;empty&gt;" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FlastName" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="A current project this person works on.">current project</td>
+      <td>
+        <input 
+        value="http://github.com/jmvanel/semantic_forms" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FcurrentProject">
+</input>
+        <input 
+        value="http://github.com/jmvanel/semantic_forms" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FcurrentProject" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="A current project this person works on.">current project</td>
+      <td>
+        <input 
+        value="http://github.com/jmvanel/rdf-i18n" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FcurrentProject">
+</input>
+        <input 
+        value="http://github.com/jmvanel/rdf-i18n" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FcurrentProject" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="A current project this person works on.">current project</td>
+      <td>
+        <input 
+        value="http://wwbota.free.fr" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FcurrentProject">
+</input>
+        <input 
+        value="http://wwbota.free.fr" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FcurrentProject" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="A current project this person works on.">current project</td>
+      <td>
+        <input 
+        value="http://sourceforge.net/projects/eulergui" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FcurrentProject">
+</input>
+        <input 
+        value="http://sourceforge.net/projects/eulergui" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FcurrentProject" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td 
+      title="A tipjar document for this agent, describing means for payment and reward.">
+        tipjar
+</td>
+      <td>
+        <input 
+        value="http://null.com#" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ftipjar">
+</input>
+        <input 
+        value="http://null.com#" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ftipjar" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="A Myers Briggs (MBTI) personality classification.">myersBriggs</td>
+      <td>
+        <input 
+        value="&lt;empty&gt;" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FmyersBriggs">
+</input>
+        <input 
+        value="&lt;empty&gt;" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FmyersBriggs" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="An AIM chat ID">AIM chat ID</td>
+      <td>
+        <input 
+        value="&lt;empty&gt;" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FaimChatID">
+</input>
+        <input 
+        value="&lt;empty&gt;" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FaimChatID" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="Indicates an account held by this agent.">account</td>
+      <td>
+        <input 
+        value="http://null.com#" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FholdsAccount">
+</input>
+        <input 
+        value="http://null.com#" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FholdsAccount" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td 
+      title="The birthday of this Agent, represented in mm-dd string form, eg. '12-31'.">
+        birthday
+</td>
+      <td>
+        <input 
+        value="&lt;empty&gt;" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fbirthday">
+</input>
+        <input 
+        value="&lt;empty&gt;" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fbirthday" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="The family name of some person.">familyName</td>
+      <td>
+        <input 
+        value="Van Eel" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FfamilyName">
+</input>
+        <input 
+        value="Van Eel" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FfamilyName" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td 
+      title="A workplace homepage of some person; the homepage of an organization they work for.">
+        workplace homepage
+</td>
+      <td>
+        <input 
+        value="http://deductions-software.com" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FworkplaceHomepage">
+</input>
+        <input 
+        value="http://deductions-software.com" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FworkplaceHomepage" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="The age in years of some agent.">age</td>
+      <td>
+        <input 
+        value="&lt;empty&gt;" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fage">
+</input>
+        <input 
+        value="&lt;empty&gt;" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fage" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="A Yahoo chat ID">Yahoo chat ID</td>
+      <td>
+        <input 
+        value="&lt;empty&gt;" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FyahooChatID">
+</input>
+        <input 
+        value="&lt;empty&gt;" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FyahooChatID" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="A homepage of a school attended by the person.">schoolHomepage</td>
+      <td>
+        <input 
+        value="http://www.ens-cachan.fr/" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FschoolHomepage">
+</input>
+        <input 
+        value="http://www.ens-cachan.fr/" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FschoolHomepage" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="A homepage of a school attended by the person.">schoolHomepage</td>
+      <td>
+        <input 
+        value="http://unice.fr" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FschoolHomepage">
+</input>
+        <input 
+        value="http://unice.fr" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FschoolHomepage" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="Indicates an account held by this agent.">account</td>
+      <td>
+        <input 
+        value="http://jmvanel.free.fr/jmv.rdf#meOnIRC" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Faccount">
+</input>
+        <input 
+        value="http://jmvanel.free.fr/jmv.rdf#meOnIRC" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Faccount" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="Indicates an account held by this agent.">account</td>
+      <td>
+        <input 
+        value="http://twitter.com/jmvanel_fr" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Faccount">
+</input>
+        <input 
+        value="http://twitter.com/jmvanel_fr" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Faccount" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="Indicates an account held by this agent.">account</td>
+      <td>
+        <input 
+        value="https://plus.google.com/106137725737026245498" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Faccount">
+</input>
+        <input 
+        value="https://plus.google.com/106137725737026245498" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Faccount" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="Indicates an account held by this agent.">account</td>
+      <td>
+        <input 
+        value="http://twitter.com/jmvanel" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Faccount">
+</input>
+        <input 
+        value="http://twitter.com/jmvanel" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Faccount" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="A weblog of some thing (whether person, group, company etc.).">
+        weblog
+      </td>
+      <td>
+        <input 
+        value="http://jmvanel.free.fr/computer-notes.html" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fweblog">
+</input>
+        <input 
+        value="http://jmvanel.free.fr/computer-notes.html" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fweblog" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="A weblog of some thing (whether person, group, company etc.).">
+        weblog
+      </td>
+      <td>
+        <input 
+        value="http://jmvanel.free.fr/notes-informatiques.html" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fweblog">
+</input>
+        <input 
+        value="http://jmvanel.free.fr/notes-informatiques.html" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fweblog" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="A weblog of some thing (whether person, group, company etc.).">
+        weblog
+      </td>
+      <td>
+        <input 
+        value="http://jmvanel.free.fr/Block-note.html.html" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fweblog">
+</input>
+        <input 
+        value="http://jmvanel.free.fr/Block-note.html.html" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fweblog" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td 
+      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
+        knows
+</td>
+      <td>
+        <input 
+        value="http://bblfish.net/people/henry/card#me" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+</input>
+        <input 
+        value="http://bblfish.net/people/henry/card#me" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td 
+      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
+        knows
+</td>
+      <td>
+        <input 
+        value="http://sort-of.strangled.net/foaf.rdf#me" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+</input>
+        <input 
+        value="http://sort-of.strangled.net/foaf.rdf#me" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td 
+      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
+        knows
+</td>
+      <td>
+        <input 
+        value="http://moustaki.org/foaf.rdf#moustaki" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+</input>
+        <input 
+        value="http://moustaki.org/foaf.rdf#moustaki" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td 
+      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
+        knows
+</td>
+      <td>
+        <input 
+        value="http://danbri.org/foaf.rdf#danbri" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+</input>
+        <input 
+        value="http://danbri.org/foaf.rdf#danbri" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td 
+      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
+        knows
+</td>
+      <td>
+        <input 
+        value="76c02fc6:14836cd3300:-7fff" name="BLA-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+</input>
+        <input 
+        value="76c02fc6:14836cd3300:-7fff" name="ORIG-BLA-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td 
+      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
+        knows
+</td>
+      <td>
+        <input 
+        value="http://www.agfa.com/w3c/jdroo/card.rdf#me" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+</input>
+        <input 
+        value="http://www.agfa.com/w3c/jdroo/card.rdf#me" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td 
+      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
+        knows
+</td>
+      <td>
+        <input 
+        value="http://sort-of.crabdance.com/foaf.rdf#me" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+</input>
+        <input 
+        value="http://sort-of.crabdance.com/foaf.rdf#me" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td 
+      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
+        knows
+</td>
+      <td>
+        <input 
+        value="76c02fc6:14836cd3300:-7ffe" name="BLA-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+</input>
+        <input 
+        value="76c02fc6:14836cd3300:-7ffe" name="ORIG-BLA-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td 
+      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
+        knows
+</td>
+      <td>
+        <input 
+        value="http://site26.com/me/frmorel.rdf#me" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+</input>
+        <input 
+        value="http://site26.com/me/frmorel.rdf#me" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td 
+      title="A person known by this person (indicating some level of reciprocated interaction between the parties).">
+        knows
+</td>
+      <td>
+        <input 
+        value="http://fcns.eu/people/andrei/card#me" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows">
+</input>
+        <input 
+        value="http://fcns.eu/people/andrei/card#me" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fknows" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td 
+      title="A  personal mailbox, ie. an Internet mailbox associated with exactly one owner, the first owner of this mailbox. This is a 'static inverse functional property', in that  there is (across time and change) at most one individual that ever has any particular value for foaf:mbox.">
+        personal mailbox
+</td>
+      <td>
+        <input 
+        value="mailto:mailto:jeanmarc.vanel@gmail.com" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fmbox">
+</input>
+        <input 
+        value="mailto:mailto:jeanmarc.vanel@gmail.com" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fmbox" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="An MSN chat ID">MSN chat ID</td>
+      <td>
+        <input 
+        value="&lt;empty&gt;" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FmsnChatID">
+</input>
+        <input 
+        value="&lt;empty&gt;" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FmsnChatID" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="The surname of some person.">Surname</td>
+      <td>
+        <input 
+        value="&lt;empty&gt;" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fsurname">
+</input>
+        <input 
+        value="&lt;empty&gt;" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fsurname" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td 
+      title="A textual geekcode for this person, see http://www.geekcode.com/geek.html">
+        geekcode
+</td>
+      <td>
+        <input 
+        value="&lt;empty&gt;" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fgeekcode">
+</input>
+        <input 
+        value="&lt;empty&gt;" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fgeekcode" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="Something that was made by this agent.">made</td>
+      <td>
+        <input 
+        value="http://null.com#" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fmade">
+</input>
+        <input 
+        value="http://null.com#" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fmade" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td 
+      title="The gender of this Agent (typically but not necessarily 'male' or 'female').">
+        gender
+</td>
+      <td>
+        <input 
+        value="&lt;empty&gt;" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fgender">
+</input>
+        <input 
+        value="&lt;empty&gt;" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fgender" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td 
+      title="The sha1sum of the URI of an Internet mailbox associated with exactly one owner, the  first owner of the mailbox.">
+        sha1sum of a personal mailbox URI name
+</td>
+      <td>
+        <input 
+        value="47554e5293b708f607dbdba7eb4f8017a4b298e9" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fmbox_sha1sum">
+</input>
+        <input 
+        value="47554e5293b708f607dbdba7eb4f8017a4b298e9" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fmbox_sha1sum" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="A thing of interest to this person.">topic_interest</td>
+      <td>
+        <input 
+        value="http://en.wikipedia.org/wiki/Jazz" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ftopic_interest">
+</input>
+        <input 
+        value="http://en.wikipedia.org/wiki/Jazz" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ftopic_interest" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="A thing of interest to this person.">topic_interest</td>
+      <td>
+        <input 
+        value="http://en.wikipedia.org/wiki/Botany" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ftopic_interest">
+</input>
+        <input 
+        value="http://en.wikipedia.org/wiki/Botany" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ftopic_interest" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td 
+      title="A work info homepage of some person; a page about their work for some organization.">
+        work info homepage
+</td>
+      <td>
+        <input 
+        value="http://deductions-software.com" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FworkInfoHomepage">
+</input>
+        <input 
+        value="http://deductions-software.com" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FworkInfoHomepage" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="A link to the publications of this person.">publications</td>
+      <td>
+        <input 
+        value="http://null.com#" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fpublications">
+</input>
+        <input 
+        value="http://null.com#" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fpublications" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="A Skype ID">Skype ID</td>
+      <td>
+        <input 
+        value="jmvanel1" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FskypeID">
+</input>
+        <input 
+        value="jmvanel1" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FskypeID" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="The first name of a person.">firstName</td>
+      <td>
+        <input 
+        value="Jean-Marc" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FfirstName">
+</input>
+        <input 
+        value="Jean-Marc" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FfirstName" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="An ICQ chat ID">ICQ chat ID</td>
+      <td>
+        <input 
+        value="&lt;empty&gt;" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FicqChatID">
+</input>
+        <input 
+        value="&lt;empty&gt;" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FicqChatID" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="A jabber ID for something.">jabber ID</td>
+      <td>
+        <input 
+        value="&lt;empty&gt;" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FjabberID">
+</input>
+        <input 
+        value="&lt;empty&gt;" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FjabberID" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td 
+      title="A string expressing what the user is happy for the general public (normally) to know about their current activity.">
+        status
+</td>
+      <td>
+        <input 
+        value="&lt;empty&gt;" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fstatus">
+</input>
+        <input 
+        value="&lt;empty&gt;" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fstatus" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="A project this person has previously worked on.">past project</td>
+      <td>
+        <input 
+        value="http://exist-db.org" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FpastProject">
+</input>
+        <input 
+        value="http://exist-db.org" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FpastProject" type="hidden">
 </input>
       </td>
     </tr>
     <tr>
       <td title="The family name of some person.">family_name</td>
       <td>
-        <input value="Vanel" name="http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ffamily_name">
-        </input>
+        <input 
+        value="&lt;empty&gt;" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ffamily_name">
+</input>
+        <input 
+        value="&lt;empty&gt;" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ffamily_name" type="hidden">
+</input>
+      </td>
+    </tr>
+    <tr>
+      <td title="A .plan comment, in the tradition of finger and '.plan' files.">
+        plan
+      </td>
+      <td>
+        <input 
+        value="&lt;empty&gt;" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fplan">
+</input>
+        <input 
+        value="&lt;empty&gt;" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Fplan" type="hidden">
+</input>
       </td>
     </tr>
   </table>

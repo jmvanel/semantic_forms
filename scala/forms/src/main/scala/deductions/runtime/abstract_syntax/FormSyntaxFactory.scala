@@ -33,7 +33,10 @@ FormModule[Rdf#Node, Rdf#URI] {
   lazy val nullURI // : Rdf#URI 
     = ops.URI( "http://null.com#" ) // TODO better : "" ????????????
   val rdfs = RDFSPrefix[Rdf]
-  
+      
+  val owl = OWLPrefix[Rdf]
+  val owlThing = owl.prefixIri + "Thing"
+    
   /**create Form from an instance (subject) URI */
   def createForm(subject: Rdf#Node ) : FormSyntax[Rdf#Node, Rdf#URI] = {
      val props = fields(subject, graph)
@@ -96,7 +99,7 @@ FormModule[Rdf#Node, Rdf#URI] {
     	 override def getId : String = ops.fromBNode(value.asInstanceOf[Rdf#BNode])
       }
     }
-              
+      
     def addOneEntry(object_ : Rdf#Node) = {
       def literalEntry = LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
           getStringOrElse(object_.pointer, "<empty>"))
@@ -111,7 +114,6 @@ FormModule[Rdf#Node, Rdf#URI] {
             )
 //        ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_.pointer.asInstanceOf[Rdf#URI])
       }
-      val owl = OWLPrefix[Rdf]
       val xsdPrefix = XSDPrefix[Rdf].prefixIri
       val rdf  = RDFPrefix[Rdf]
       val rdfs = RDFSPrefix[Rdf]
@@ -125,7 +127,7 @@ FormModule[Rdf#Node, Rdf#URI] {
         case _ if rangeClasses.contains(owl.Class) => resourceEntry
         case _ if rangeClasses.contains(rdf.Property) => resourceEntry
         //    case _ if ranges.contains(owl.Thing) => resourceEntry
-        case _ if ranges.contains(ops.makeUri(owl.prefixIri + "Thing")) => resourceEntry
+        case _ if ranges.contains(ops.makeUri(owlThing)) => resourceEntry
         case _ if ops.isURI(object_ ) => resourceEntry
         case _ if object_.toString.startsWith("_:") => resourceEntry
         case _ => literalEntry
@@ -223,8 +225,6 @@ FormModule[Rdf#Node, Rdf#URI] {
 
   // TODO extract in another trait
   
-  val owl = OWLPrefix[Rdf]
-
   def fieldsFromClass(classs: Rdf#URI, graph: Rdf#Graph): Set[Rdf#URI] = {
     def domainFromClass(classs: Rdf#Node) = {
       val relevantPredicates = rdfDSL.getSubjects(graph, rdfs.domain, classs).toSet
@@ -237,7 +237,8 @@ FormModule[Rdf#Node, Rdf#URI] {
     /** recursively process super-classes until reaching owl:Thing */
     def processSuperClasses(classs: Rdf#URI) {
       result ++= domainFromClass(classs)
-      if (classs != owl.Thing ) {
+//      if (classs != owl.Thing ) {
+      if (classs != ops.makeUri(owlThing) ) {
         val superClasses = rdfDSL.getObjects(graph, classs, rdfs.subClassOf)
         superClasses foreach (sc => result ++= domainFromClass(sc))
       }
