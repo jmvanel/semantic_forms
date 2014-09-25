@@ -40,7 +40,7 @@ object Global extends Controller // play.api.GlobalSettings
     val uri = uri0.trim()
 
     <p>
-      Properties for URI <bold>{uri}</bold>
+      Properties for URI <b>{uri}</b>
       <a href={uri} title="Download HTML from original URI">HTML</a>
       <a href={hrefDownloadPrefix + URLEncoder.encode(uri,"utf-8")}
          title="Download Turtle">Triples</a>

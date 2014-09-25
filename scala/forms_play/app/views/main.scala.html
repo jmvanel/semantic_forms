@@ -14,7 +14,12 @@
     </head>
     <body>
       <form action="/display">
-        URI to display: <input  type="text" name='displayuri' />
+        URI to display: <input type="text" name='displayuri' list="start_uris" />
+        <datalist id="start_uris" >
+          <option> http://jmvanel.free.fr/jmv.rdf#me </option>
+          <option> http://dbpedia.org/resource/Paris </option>
+          <option> http://bblfish.net/people/henry/card#me </option>
+        </datalist>
         <input type="submit" name="Display" value="Display" />
         <input type="submit" name="Edit" value="Edit" />
       </form>
@@ -23,7 +28,15 @@
         <input type="submit" value="Search">
       </form>      
       <form action="/create">
-        Create instance of: <input  type="text" name='uri' />
+        Create instance of: <input  type="text" name='uri' list="class_uris" />
+        <datalist id="class_uris" >
+          <option> http://xmlns.com/foaf/0.1/Person </option>
+          <option> http://usefulinc.com/ns/doap#Project </option>
+          <option> http://xmlns.com/foaf/0.1/Organization </option>
+        </datalist>
+        <!-- preDefinedClasses
+          http://www.w3.org/2002/12/cal/ical#Vevent" // "cal:Vevent" 
+         -->
         <input type="submit" value="Create">
       </form>
       @content
