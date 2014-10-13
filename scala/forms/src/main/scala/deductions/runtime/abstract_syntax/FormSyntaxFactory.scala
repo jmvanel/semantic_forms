@@ -36,7 +36,8 @@ FormModule[Rdf#Node, Rdf#URI] {
       
   val owl = OWLPrefix[Rdf]
   val owlThing = owl.prefixIri + "Thing"
-    
+  val rdf = RDFPrefix[Rdf]
+
   /**create Form from an instance (subject) URI */
   def createForm(subject: Rdf#Node ) : FormSyntax[Rdf#Node, Rdf#URI] = {
      val props = fields(subject, graph)
@@ -176,6 +177,9 @@ FormModule[Rdf#Node, Rdf#URI] {
     )
   }
 
+  /** get first ?OBJ such that:
+   *   subject predicate ?OBJ	,
+   *   or returns default */
   private def getHeadOrElse(subject: Rdf#Node, predicate: Rdf#URI,
     default: Rdf#URI = nullURI): Rdf#URI = {
     oQuery(subject, predicate) match {
@@ -223,33 +227,64 @@ FormModule[Rdf#Node, Rdf#URI] {
   }
 
 
-  // TODO extract in another trait
+  // TODO extract in another trait : FieldsInference : populate Fields in form by inferencing from class(es)
   
   def fieldsFromClass(classs: Rdf#URI, graph: Rdf#Graph): Set[Rdf#URI] = {
-    def domainFromClass(classs: Rdf#Node) = {
+    def domainsFromClass(classs: Rdf#Node) = {
       val relevantPredicates = rdfDSL.getSubjects(graph, rdfs.domain, classs).toSet
       extractURIs(relevantPredicates) toSet
     }
     
     val result = scala.collection.mutable.Set[Rdf#URI]()
-    processSuperClasses(classs)
-    
+
     /** recursively process super-classes until reaching owl:Thing */
     def processSuperClasses(classs: Rdf#URI) {
-      result ++= domainFromClass(classs)
-//      if (classs != owl.Thing ) {
+      result ++= domainsFromClass(classs)
+//      if (classs != owl.Thing ) { // for Banana 0.7
       if (classs != ops.makeUri(owlThing) ) {
         val superClasses = rdfDSL.getObjects(graph, classs, rdfs.subClassOf)
-        superClasses foreach (sc => result ++= domainFromClass(sc))
+        superClasses foreach (sc => result ++= domainsFromClass(sc))
       }
     }
+    
+    /** TODO : related to URI cache */
+    def getGraphURI(classs: Rdf#URI) : String = {
+     ops.getFragment(classs) match {
+      case Some(frag) =>
+//        classs.getURI().substring(frag.length() + 1)
+        classs.toString().substring(frag.length() + 1)
+      case None => ""
+    }
+  }
+
+    /**
+     * Properties without Domain are supposed to be applicable to any class in the same ontology
+     *  ( use case : DOAP )
+     */
+    def addDomainlessProperties(uri: Rdf#URI) {
+      val props1 = ops.find(graph, ops.ANY, ops.toConcreteNodeMatch(rdf.typ), ops.toConcreteNodeMatch(rdf.Property))
+      val props2 = ops.find(graph, ops.ANY, ops.toConcreteNodeMatch(rdf.typ), ops.toConcreteNodeMatch(owl.ObjectProperty))
+      val props3 = ops.find(graph, ops.ANY, ops.toConcreteNodeMatch(rdf.typ), ops.toConcreteNodeMatch(owl.DatatypeProperty))
+      val pp = props1 ++ props2 ++ props3
+      for (t <- pp) {
+        val (prop, _, _) = ops.fromTriple(t)
+        val graphURI = getGraphURI(uri)
+        if (prop.toString().startsWith(graphURI)) {
+          val doms = ops.find(graph, ops.toConcreteNodeMatch(prop), ops.toConcreteNodeMatch(rdfs.domain), ops.ANY)
+          if (doms.size == 0) {
+            result += prop.asInstanceOf[Rdf#URI]
+            println("addDomainlessProperties: add " + prop)
+          }
+        }
+      }
+    }
+
+    processSuperClasses(classs)
+    addDomainlessProperties(classs)
     result.toSet
   }
      
-  val rdf = RDFPrefix[Rdf]
-
   def classFromSubject(subject: Rdf#Node ) = {
     getHeadOrElse( subject, rdf.typ )
-//       ops.URI(")
   }
 }

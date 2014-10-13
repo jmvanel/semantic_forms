@@ -23,7 +23,7 @@ trait CreationForm extends RDFModule
       val form = factory.createFormFromClass(URI(uri))
     println(form)
       val htmlForm = generateHTML(form, hrefPrefix="", editable=true, actionURI )
-    println(htmlForm)
+//    println(htmlForm)
     htmlForm
     }
 

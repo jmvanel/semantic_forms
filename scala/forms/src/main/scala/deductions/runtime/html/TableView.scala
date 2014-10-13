@@ -74,7 +74,7 @@ trait TableViewModule
     )
     println("form:\n" + form)
     val htmlForm = generateHTML(form, hrefPrefix, editable, actionURI )
-    println(htmlForm)
+//    println(htmlForm)
     htmlForm
   }
   

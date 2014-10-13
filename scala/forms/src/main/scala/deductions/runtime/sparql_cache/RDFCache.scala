@@ -42,7 +42,10 @@ trait RDFCacheJena extends RDFCache with JenaHelpers {
       g.isEmpty()
     }
     println( "uriGraphIsEmpty " + uriGraphIsEmpty )
-    if( uriGraphIsEmpty ) storeURI(uri, store)
+    if( uriGraphIsEmpty ) {
+      storeURI(uri, store)
+      println( "Graph at URI was downloaded: " + uri )
+    }
   }
 
   /**
@@ -96,3 +99,16 @@ trait RDFCacheJena extends RDFCache with JenaHelpers {
     }
    }
 }
+
+//object RDFCache extends RDFModule
+//  with RDFOpsModule {
+//   /** unused currently ... */
+//  def getGraphURI(classs: Rdf#URI) : String = {
+//    Ops.getFragment(classs) match {
+//      case Some(frag) =>
+////        classs.getURI().substring(frag.length() + 1)
+//        classs.toString().substring(frag.length() + 1)
+//      case None => ""
+//    }
+//  }
+//}
