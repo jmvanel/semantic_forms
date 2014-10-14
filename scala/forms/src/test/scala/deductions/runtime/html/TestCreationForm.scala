@@ -9,7 +9,7 @@ class TestCreationForm extends FunSuite with CreationForm {
       // http://xmlns.com/foaf/0.1/Person
     val store =  RDFStoreObject.store
     retrieveURI( Ops.makeUri(uri), store )
-    println( create(uri) )
+    println( create(uri, lang="fr") )
     // TODO assertion
   }
 

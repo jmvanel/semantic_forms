@@ -37,6 +37,9 @@ FormModule[Rdf#Node, Rdf#URI] {
   val owlThing = owl.prefixIri + "Thing"
   val rdf = RDFPrefix[Rdf]
 
+        
+  println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
+
   /**create Form from an instance (subject) URI */
   def createForm(subject: Rdf#Node ) : FormSyntax[Rdf#Node, Rdf#URI] = {
      val props = fields(subject, graph)
@@ -176,7 +179,7 @@ FormModule[Rdf#Node, Rdf#URI] {
         value match {
           case value: Rdf#Literal if (!ops.isURI(value)) =>
             val (raw, uri, langOption) = ops.fromLiteral(value)
-//            println("getPreferedLanguageFromValues: " +  (raw, uri, langOption) )
+            println("getPreferedLanguageFromValues: " +  (raw, uri, langOption) )
             langOption match {
               case Some(language) => 
                 if( language == preferedLanguage ) preferedLanguageValue = raw
@@ -189,7 +192,7 @@ FormModule[Rdf#Node, Rdf#URI] {
           case _ =>
         }
       }
-      println("preferedLanguageValue: " + preferedLanguageValue)
+      println(s"preferedLanguageValue: $preferedLanguageValue , enValue $enValue, noLanguageValue $noLanguageValue")
       (preferedLanguageValue, enValue, noLanguageValue)
     }
     val (preferedLanguageValue, enValue, noLanguageValue) = computeValues

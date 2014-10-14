@@ -34,9 +34,9 @@ object Global extends Controller // play.api.GlobalSettings
 //  }
 
   def htmlForm(uri0: String, blankNode:String="",
-    editable:Boolean=false ) : Elem = {
-      Logger.getRootLogger().info("Global.htmlForm uri "+ uri0 +
-          " blankNode \"" + blankNode + "\"" )
+    editable:Boolean=false,
+    lang:String="en" ) : Elem = {
+      Logger.getRootLogger().info( s"""Global.htmlForm uri $uri0 blankNode "$blankNode" lang=$lang """ )
     val uri = uri0.trim()
 
     <p>
@@ -48,7 +48,7 @@ object Global extends Controller // play.api.GlobalSettings
 
       {if (uri != null && uri != "")
         try {
-          tableView.htmlForm(uri, hrefDisplayPrefix, blankNode, editable )
+          tableView.htmlForm(uri, hrefDisplayPrefix, blankNode, editable=editable, lang=lang )
         } catch {
         case e:Exception // e.g. org.apache.jena.riot.RiotException
         =>
@@ -108,12 +108,12 @@ object Global extends Controller // play.api.GlobalSettings
       }
   }
   
-  def create( uri0:String ) : Elem = {
+  def create( uri0:String, lang:String="en"  ) : Elem = {
     Logger.getRootLogger().info("Global.htmlForm uri "+ uri0 )
     val uri = uri0.trim()
     
     <p>Creating an instance of Class <bold>{uri}</bold>
-      {cf.create(uri)}
+      {cf.create(uri, lang)}
     </p>
     }
 

@@ -27,7 +27,8 @@ trait TableViewModule
   /** create a form for given uri with background knowledge in RDFStoreObject.store  */
   def htmlForm(uri:String, hrefPrefix:String="", blankNode:String="",
       editable:Boolean=false,
-      actionURI:String="/save" ) : Elem = {
+      actionURI:String="/save",
+      lang:String="en") : Elem = {
     val store =  RDFStoreObject.store
 //    RDFStoreObject.printGraphList
     // TODO ? load ontologies from local SPARQL; probably use a pointed graph
@@ -39,7 +40,7 @@ trait TableViewModule
     }
     store.readTransaction {
       val allNamedGraphs = store.getGraph(makeUri("urn:x-arq:UnionGraph"))
-      graf2form(allNamedGraphs, uri, hrefPrefix, blankNode, editable, actionURI)
+      graf2form(allNamedGraphs, uri, hrefPrefix, blankNode, editable, actionURI, lang)
     }
   }
 
@@ -47,9 +48,10 @@ trait TableViewModule
   def graf2form(graph: Rdf#Graph, uri:String,
       hrefPrefix:String="", blankNode:String="",
       editable:Boolean=false,
-      actionURI:String="/save"
+      actionURI:String="/save",
+      lang:String="en"
   ): Elem = {
-    val factory = new FormSyntaxFactory[Rdf](graph)
+    val factory = new FormSyntaxFactory[Rdf](graph, preferedLanguage=lang )
 //    println (Ops.emptyGraph )
 //    println("graf2form " + " " + graph.hashCode() + "\n" 
 ////        + (graph.toIterable).mkString("\n")

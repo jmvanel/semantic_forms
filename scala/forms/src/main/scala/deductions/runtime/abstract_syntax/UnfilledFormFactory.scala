@@ -25,10 +25,11 @@ object UnfilledFormFactory {
 
 import UnfilledFormFactory._
 
-class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph)(implicit ops: RDFOps[Rdf],
+class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
+    preferedLanguage:String="en")(implicit ops: RDFOps[Rdf],
   uriOps: URIOps[Rdf],
   rdfDSL: RDFDSL[Rdf])
-  extends FormSyntaxFactory[Rdf](graph: Rdf#Graph) {
+  extends FormSyntaxFactory[Rdf](graph: Rdf#Graph, preferedLanguage) {
   
   /** create Form from an instance (subject) URI */
   def createFormFromClass(classs: Rdf#URI): FormSyntax[Rdf#Node, Rdf#URI] = {
