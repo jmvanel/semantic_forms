@@ -30,8 +30,7 @@ class FormSyntaxFactory[Rdf <: RDF]
 extends // RDFOpsModule with 
 FormModule[Rdf#Node, Rdf#URI] {
 
-  lazy val nullURI // : Rdf#URI 
-    = ops.URI( "http://null.com#" ) // TODO better : "" ????????????
+  lazy val nullURI = ops.URI( "http://null.com#" ) // TODO better : "" ????????????
   val rdfs = RDFSPrefix[Rdf]
       
   val owl = OWLPrefix[Rdf]
@@ -86,9 +85,6 @@ FormModule[Rdf#Node, Rdf#URI] {
 //  private def makeEntry(subject: Rdf#URI, prop: Rdf#URI, ranges: Set[Rdf#URI]): Seq[Entry] = {
   private def makeEntry(subject: Rdf#Node, prop: Rdf#URI, ranges: Set[Rdf#URI]): Seq[Entry] = {
     Logger.getRootLogger().info(s"makeEntry subject $subject, prop $prop")
-//    if( prop.toString() == "http://usefulinc.com/ns/doap#os" ) {
-//      println("makeEntry: " + prop) // TODO debug
-//    }
     val label = getHeadStringOrElse(prop, rdfs.label, terminalPart(prop))
     val comment = getHeadStringOrElse(prop, rdfs.comment, "")
     val propClasses = oQuery(prop, RDFPrefix[Rdf].typ)
@@ -144,7 +140,7 @@ FormModule[Rdf#Node, Rdf#URI] {
     
     // entry associated to prop
    if(objects isEmpty ) {
-     addOneEntry(nullURI) // TODO ??? nullURI
+     addOneEntry(nullURI)
    }
     result
   }
@@ -160,12 +156,10 @@ FormModule[Rdf#Node, Rdf#URI] {
     }
   }
 
-  /** get "first" String value (RDF object) Or Else given default
-   *  TODO use application language */
+  /** get "first" String value (RDF object) Or Else given default;
+   *  use application language */
   private def getHeadStringOrElse(subject: Rdf#URI, predicate: Rdf#URI, default: String): String = {
-    if( subject.toString() == "http://usefulinc.com/ns/doap#os" ) {
-        println("getHeadStringOrElse: " + subject ) // TODO debug
-    }
+//    println("getHeadStringOrElse: " + subject + " " + predicate) // debug
     oQuery(subject, predicate) match {
       case ll if ll == Set.empty => default
       case ll => getPreferedLanguageFromValues(ll)
@@ -174,22 +168,31 @@ FormModule[Rdf#Node, Rdf#URI] {
 
   /** get Prefered Language value From Values */
   private def getPreferedLanguageFromValues(values: Iterable[Rdf#Node]): String = {
-    var preferedLanguageValue = ""
-    var enValue = ""
-    var noLanguageValue = ""
-      
-    for (value <- values) {
-      value match {
-        case value: Rdf#Literal if ( ! ops.isURI(value) )  =>
-          val (raw, uri, langOption) = ops.fromLiteral(value)
-          langOption match {
-          case Some(preferedLanguage) => preferedLanguageValue = raw
-          case Some("en") => enValue = raw
-          case None => noLanguageValue = raw
+    def computeValues(): (String, String, String) = {
+      var preferedLanguageValue = ""
+      var enValue = ""
+      var noLanguageValue = ""
+      for (value <- values) {
+        value match {
+          case value: Rdf#Literal if (!ops.isURI(value)) =>
+            val (raw, uri, langOption) = ops.fromLiteral(value)
+//            println("getPreferedLanguageFromValues: " +  (raw, uri, langOption) )
+            langOption match {
+              case Some(language) => 
+                if( language == preferedLanguage ) preferedLanguageValue = raw
+                else if( language == "en")
+//              case Some("en") => 
+                  enValue = raw
+              case None => noLanguageValue = raw
+              case _ =>
+            }
           case _ =>
-          }
+        }
       }
+      println("preferedLanguageValue: " + preferedLanguageValue)
+      (preferedLanguageValue, enValue, noLanguageValue)
     }
+    val (preferedLanguageValue, enValue, noLanguageValue) = computeValues
     (preferedLanguageValue, enValue, noLanguageValue) match {
     case _ if(preferedLanguageValue != "" ) => preferedLanguageValue 
     case _ if(enValue != "" ) => enValue 
