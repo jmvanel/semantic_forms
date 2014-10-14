@@ -22,7 +22,7 @@ import org.w3.banana.diesel.toPointedGraphW
 /** Factory for an abstract Form Syntax;
  *   */
 class FormSyntaxFactory[Rdf <: RDF]
-(graph: Rdf#Graph)
+(graph: Rdf#Graph, preferedLanguage:String="en" )
 ( implicit ops: RDFOps[Rdf],
     uriOps: URIOps[Rdf],
     rdfDSL: RDFDSL[Rdf]
@@ -86,6 +86,9 @@ FormModule[Rdf#Node, Rdf#URI] {
 //  private def makeEntry(subject: Rdf#URI, prop: Rdf#URI, ranges: Set[Rdf#URI]): Seq[Entry] = {
   private def makeEntry(subject: Rdf#Node, prop: Rdf#URI, ranges: Set[Rdf#URI]): Seq[Entry] = {
     Logger.getRootLogger().info(s"makeEntry subject $subject, prop $prop")
+//    if( prop.toString() == "http://usefulinc.com/ns/doap#os" ) {
+//      println("makeEntry: " + prop) // TODO debug
+//    }
     val label = getHeadStringOrElse(prop, rdfs.label, terminalPart(prop))
     val comment = getHeadStringOrElse(prop, rdfs.comment, "")
     val propClasses = oQuery(prop, RDFPrefix[Rdf].typ)
@@ -146,6 +149,10 @@ FormModule[Rdf#Node, Rdf#URI] {
     result
   }
 
+  /** compute terminal Part of URI, eg
+   *  Person from http://xmlns.com/foaf/0.1/Person
+   *  Project from http://usefulinc.com/ns/doap#Project
+   *  TODO : use if for getting the ontology prefix */
   private def terminalPart(uri: Rdf#URI): String = {
     uriOps.getFragment(uri) match {
       case None => uriOps.lastSegment(uri)
@@ -156,14 +163,40 @@ FormModule[Rdf#Node, Rdf#URI] {
   /** get "first" String value (RDF object) Or Else given default
    *  TODO use application language */
   private def getHeadStringOrElse(subject: Rdf#URI, predicate: Rdf#URI, default: String): String = {
+    if( subject.toString() == "http://usefulinc.com/ns/doap#os" ) {
+        println("getHeadStringOrElse: " + subject ) // TODO debug
+    }
     oQuery(subject, predicate) match {
       case ll if ll == Set.empty => default
-      case ll =>
-        val n = ll.head
-        getStringOrElse(n, default)
+      case ll => getPreferedLanguageFromValues(ll)
     }
   }
 
+  /** get Prefered Language value From Values */
+  private def getPreferedLanguageFromValues(values: Iterable[Rdf#Node]): String = {
+    var preferedLanguageValue = ""
+    var enValue = ""
+    var noLanguageValue = ""
+      
+    for (value <- values) {
+      value match {
+        case value: Rdf#Literal if ( ! ops.isURI(value) )  =>
+          val (raw, uri, langOption) = ops.fromLiteral(value)
+          langOption match {
+          case Some(preferedLanguage) => preferedLanguageValue = raw
+          case Some("en") => enValue = raw
+          case None => noLanguageValue = raw
+          case _ =>
+          }
+      }
+    }
+    (preferedLanguageValue, enValue, noLanguageValue) match {
+    case _ if(preferedLanguageValue != "" ) => preferedLanguageValue 
+    case _ if(enValue != "" ) => enValue 
+    case _ if(noLanguageValue != "" ) => noLanguageValue 
+    }
+  }
+  
   private def getStringOrElse(n: Rdf#Node, default: String): String = {
 //    Logger.getRootLogger().info( "getStringOrElse ops " + ops + " Rdf#Node " + n + " " + n.getClass )
     ops.foldNode(n)(_ => default, _ => default, l => {
@@ -247,7 +280,8 @@ FormModule[Rdf#Node, Rdf#URI] {
       }
     }
     
-    /** TODO : related to URI cache */
+    /** get the ontology prefix
+     *  TODO : related to URI cache */
     def getGraphURI(classs: Rdf#URI) : String = {
      ops.getFragment(classs) match {
       case Some(frag) =>
