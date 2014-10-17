@@ -2,6 +2,7 @@ semantic forms
 ==============
 
 Form generators leveraging semantic web standards RDF(S), OWL, SPARQL , JSON-LD , ...
+Under GNU Public Licence version 3 [GPL v3](http://www.gnu.org/copyleft/gpl.html)
 
 This will be a building block for web application frameworks,
 like Play! Framework, Ruby on Rails, Drupal, etc, but not SQL based.
@@ -13,7 +14,7 @@ I foresee 3 kinds of implementations, each of which can be deployed as web appli
 
 * rules in N3 ; could leverage on Fresnel vocab' , see  [Forms generated from a resource or a class](http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/html/documentation.html#L6973)
 
-* in Scala generating HTML ; code here [./scala](./scala)
+* in Scala generating HTML ; code here [./scala](./scala/README.md)
 
 * pure JavaScript implementation ; see [./js](./js/README.md)
 

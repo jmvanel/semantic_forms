@@ -82,3 +82,6 @@ form:WidgetClass a owl:Class ;
 # a owl:DatatypeProperty .
 # to be continued :) ...
 
+# from e-commerce project ...
+# form:has_applicable_property 	form:has_mandatory_properties  form:computedProperty
+
