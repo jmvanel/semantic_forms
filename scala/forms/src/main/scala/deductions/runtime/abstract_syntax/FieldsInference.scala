@@ -30,9 +30,11 @@ trait FieldsInference [Rdf <: RDF] {
     def getGraphURI(classs: Rdf#URI) : String = {
      ops.getFragment(classs) match {
       case Some(frag) =>
-//        classs.getURI().substring(frag.length() + 1)
-        classs.toString().substring(frag.length() + 1)
-      case None => ""
+//        classs.toString().substring(frag.length() + 1)
+         ops.withoutFragment(classs) + "#"
+      case None =>
+        val i = classs.toString().lastIndexOf("/")
+        classs.toString().substring(0, i)
     }
   }
 
@@ -47,6 +49,8 @@ trait FieldsInference [Rdf <: RDF] {
       val pp = props1 ++ props2 ++ props3
       for (t <- pp) {
         val (prop, _, _) = ops.fromTriple(t)
+//        if( prop.toString.contains("doap") && prop.toString.contains("name"))
+//          println("doap") // debug <<<<<
         val graphURI = getGraphURI(uri)
         if (prop.toString().startsWith(graphURI)) {
           val doms = ops.find(graph, ops.toConcreteNodeMatch(prop), ops.toConcreteNodeMatch(rdfs.domain), ops.ANY)

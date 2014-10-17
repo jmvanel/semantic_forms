@@ -26,9 +26,9 @@ object UnfilledFormFactory {
 import UnfilledFormFactory._
 
 class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
-    preferedLanguage:String="en")(implicit ops: RDFOps[Rdf],
-  uriOps: URIOps[Rdf],
-  rdfDSL: RDFDSL[Rdf])
+    preferedLanguage:String="en")
+    (implicit ops: RDFOps[Rdf],
+    		uriOps: URIOps[Rdf] )
   extends FormSyntaxFactory[Rdf](graph: Rdf#Graph, preferedLanguage) {
   
   /** create Form from an instance (subject) URI */
