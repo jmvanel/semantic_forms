@@ -2,6 +2,7 @@ semantic forms
 ==============
 
 Form generators leveraging semantic web standards RDF(S), OWL, SPARQL , JSON-LD , ...
+
 Under GNU Public Licence version 3 [GPL v3](http://www.gnu.org/copyleft/gpl.html)
 
 This will be a building block for web application frameworks,
