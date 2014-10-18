@@ -77,8 +77,11 @@ object Global extends Controller // play.api.GlobalSettings
     }
     
   def download( url:String ) : String = {
-        dl.focusOnURI( url )
-      }
+    println( "download url " + url )
+    val res = dl.focusOnURI( url )
+    println( "download result " + res )
+    res
+  }
 
   def edit( url:String ) : Elem = {
         htmlForm(url, editable=true)

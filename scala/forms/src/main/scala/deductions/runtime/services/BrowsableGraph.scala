@@ -30,7 +30,7 @@ class BrowsableGraph [Rdf <: RDF](store: RDFStore[Rdf])(
 
   val sparqlEngine = SparqlEngine[Rdf](store)
 
-  def focusOnURI( uri:String ) = {
+  def focusOnURI( uri:String ) : String = {
     val triples = search_only(uri)
     val graph = Await.result(triples, 5000 millis)
     Logger.getRootLogger().info(s"uri $uri ${graph}")
@@ -38,26 +38,28 @@ class BrowsableGraph [Rdf <: RDF](store: RDFStore[Rdf])(
     val ret = writer.write(graph, to, base = uri)
     to.toString
   }
-    
-  
+
+  /** all triples in graph <$search> , plus "reverse" triples everywhere */
   private def search_only(search: String) = {
-   val queryString =
+    val queryString =
       s"""
-         |CONSTRUCT { ?thing ?p ?o . } WHERE {
-         |  graph ?g {
-         |   { ?thing ?p ?o . }
-         | UNION {      
-         |     ?s ?p1 ?thing . }
-         |  }
+         |CONSTRUCT {
+         |  ?thing ?p ?o .
+         |  ?s ?p1 ?thing .     
+         |}
+         |WHERE {
+         |  graph <$search>
+         |    { ?thing ?p ?o . }
+         |  graph ?GRAPH
+         |    { ?s ?p1 ?thing . }
          |}""".stripMargin
     val query = ConstructQuery(queryString)
     val es = sparqlEngine.executeConstruct(query)
     es
   }
-    
-  
-    private def search_only2(search: String) = {
-   val queryString =
+
+  private def search_only_string(search: String) = {
+    val queryString =
       s"""
          |SELECT DISTINCT ?thing WHERE {
          |  graph ?g {

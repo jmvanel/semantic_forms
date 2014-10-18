@@ -84,4 +84,5 @@ form:WidgetClass a owl:Class ;
 
 # from e-commerce project ...
 # form:has_applicable_property 	form:has_mandatory_properties  form:computedProperty
+# form:Field form:property form:class 	form:label 	form:detail
 
