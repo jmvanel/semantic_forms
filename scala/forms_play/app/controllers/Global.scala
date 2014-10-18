@@ -41,9 +41,9 @@ object Global extends Controller // play.api.GlobalSettings
 
     <p>
       Properties for URI <b>{uri}</b>
-      <a href={uri} title="Download HTML from original URI">HTML</a>
+      <a href={uri} title="Download from original URI">HTML</a>
       <a href={hrefDownloadPrefix + URLEncoder.encode(uri,"utf-8")}
-         title="Download Turtle">Triples</a>
+         title="Download Turtle from database (augmented by users' edits)">Triples</a>
       <br/>
 
       {if (uri != null && uri != "")
@@ -118,7 +118,14 @@ object Global extends Controller // play.api.GlobalSettings
     <p>Creating an instance of Class <bold>{uri}</bold>
       {cf.create(uri, lang)}
     </p>
-    }
+  }
 
+  def sparql( query:String, lang:String="en"  ) : Elem = {
+    Logger.getRootLogger().info("Global.sparql query  "+ query )
+    <p>SPARQL query:<br/>{query}
+    <br/>
+    {dl.sparqlConstructQuery(query)}
+    </p>
+  }
  }
 }

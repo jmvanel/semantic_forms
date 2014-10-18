@@ -32,15 +32,19 @@ class BrowsableGraph [Rdf <: RDF](store: RDFStore[Rdf])(
 
   def focusOnURI( uri:String ) : String = {
     val triples = search_only(uri)
+    futureGraph2String(triples, uri)
+  }
+
+  private def futureGraph2String(triples: Future[Rdf#Graph], uri:String ) : String = {
     val graph = Await.result(triples, 5000 millis)
     Logger.getRootLogger().info(s"uri $uri ${graph}")
     val to = new ByteArrayOutputStream
     val ret = writer.write(graph, to, base = uri)
     to.toString
   }
-
+    
   /** all triples in graph <$search> , plus "reverse" triples everywhere */
-  private def search_only(search: String) = {
+  private def search_only(search: String) : Future[Rdf#Graph] = {
     val queryString =
       s"""
          |CONSTRUCT {
@@ -53,11 +57,19 @@ class BrowsableGraph [Rdf <: RDF](store: RDFStore[Rdf])(
          |  graph ?GRAPH
          |    { ?s ?p1 ?thing . }
          |}""".stripMargin
+    sparqlConstructQueryFuture(queryString)
+  }
+
+  def sparqlConstructQuery(queryString: String) : String = {
+    val r = sparqlConstructQueryFuture(queryString)
+    futureGraph2String( r, "")
+  }
+  def sparqlConstructQueryFuture(queryString: String) : Future[Rdf#Graph] = {
     val query = ConstructQuery(queryString)
     val es = sparqlEngine.executeConstruct(query)
     es
   }
-
+    
   private def search_only_string(search: String) = {
     val queryString =
       s"""
@@ -73,6 +85,5 @@ class BrowsableGraph [Rdf <: RDF](store: RDFStore[Rdf])(
       map(_.toIterable.map {
         row => row("thing") getOrElse sys.error("")
       })
-    uris
   }
 }

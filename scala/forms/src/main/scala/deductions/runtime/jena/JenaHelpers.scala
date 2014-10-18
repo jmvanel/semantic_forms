@@ -13,7 +13,10 @@ import org.w3.banana.Command
 import com.hp.hpl.jena.rdf.model.Model
 import com.hp.hpl.jena.rdf.model.ModelFactory
 
-/** Jena Helpers for JenaStore */
+/** Jena Helpers for JenaStore
+ *  TODO pave the way for Banana 0.7 :
+ *  - JenaStore is not existing anymore
+ *  - generic API for transactions */
 trait JenaHelpers extends JenaModule {
 
     /** store URI in a named graph, using Jena's RDFDataMgr

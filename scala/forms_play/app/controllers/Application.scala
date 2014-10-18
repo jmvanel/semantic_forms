@@ -66,4 +66,12 @@ object Application extends Controller with TableView {
       Ok( views.html.index(global.Global.create(uri, chooseLanguage(request)) ))
     }
   }
+  
+  def sparql( query: String) = {
+        Action { implicit request =>
+      println( "sparql: " + request )
+      println( "sparql: " + query )
+      Ok( views.html.index(global.Global.sparql( query, chooseLanguage(request)) ))
+    }
+  }
 }

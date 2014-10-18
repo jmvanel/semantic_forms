@@ -14,6 +14,8 @@ POST    /save               controllers.Application.save()
 
 GET     /create             controllers.Application.create( uri:String )
 
+GET     /sparql             controllers.Application.sparql( query:String )
+
 # Home page
 GET     /                   controllers.Application.index
 
