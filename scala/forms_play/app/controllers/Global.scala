@@ -41,7 +41,7 @@ object Global extends Controller // play.api.GlobalSettings
 
     <p>
       Properties for URI <b>{uri}</b>
-      <a href={uri} title="Download from original URI">HTML</a>
+      <a href={uri} title="Download from original URI">original URI</a>
       <a href={hrefDownloadPrefix + URLEncoder.encode(uri,"utf-8")}
          title="Download Turtle from database (augmented by users' edits)">Triples</a>
       <br/>

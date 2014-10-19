@@ -49,14 +49,16 @@ class BrowsableGraph [Rdf <: RDF](store: RDFStore[Rdf])(
       s"""
          |CONSTRUCT {
          |  ?thing ?p ?o .
-         |  ?s ?p1 ?thing .     
+         | # ?s ?p1 ?thing .     
          |}
          |WHERE {
          |  graph <$search>
          |    { ?thing ?p ?o . }
-         |  graph ?GRAPH
-         |    { ?s ?p1 ?thing . }
+         | # UNION
+         | # graph ?GRAPH
+         | #   { ?s ?p1 ?thing . }
          |}""".stripMargin
+    println( "search_only " + queryString )
     sparqlConstructQueryFuture(queryString)
   }
 
