@@ -105,7 +105,7 @@ with FieldsInference[Rdf] {
       
     def addOneEntry(object_ : Rdf#Node) = {
       def literalEntry = LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
-          getStringOrElse(object_.pointer, "<empty>"))
+          getStringOrElse(object_.pointer, "..empty.."))
       def resourceEntry = {
         ops.foldNode(object_)(
             object_ => ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_),
@@ -113,7 +113,7 @@ with FieldsInference[Rdf] {
             object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_),
               // BlankNodeEntry(label, comment, prop, ResourceValidator(ranges), object_),
             object_ => LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
-                getStringOrElse(object_.pointer, "<empty>"))
+                getStringOrElse(object_.pointer, "..empty.."))
             )
 //        ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_.pointer.asInstanceOf[Rdf#URI])
       }

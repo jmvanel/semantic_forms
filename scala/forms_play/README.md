@@ -4,14 +4,29 @@ Play! framework implementations
 # Introduction
 Here is a web application with Play! framework around the [form generator](../forms/README.md).
 
-With these features to add one after the other:
+With these features :
 
 - 1. a SPARQL 1.1 server available (BigData (R)). - DONE
 - 2. user enters an URI and form view appears with the data from Internet - DONE
-- 2.1 user enters an URI and form view appears with the data from the SPARQL server
+- 2.1 user enters an URI and form view appears with the data from the SPARQL server (RDF cache) - DONE
 - 3. URIs in the form can be clicked to display another form with the data from Internet - DONE
-- 4. entering new triplets, as in DataGUI or as in Ontowiki: http://aksw.org/source/edit
-- 5. introduce the RDF cache, creation of a new URI in its class as DomainApplication ..... etc etc ...
+- 4. entering new triples for existing properties, as in DataGUI or as in Ontowiki: http://aksw.org/source/edit
+- 5. introduce the RDF cache, - implemented - TODO test
+- 6. creation of a new URI infering on its class as DomainApplication does - DONE
+- 7. use HTTP HEAD to distinguish content types, and have different hyperlinks and styles for HTML, RDF, and image URL's
+- 8. data validation in JS or Scala.JS
+- 9. creating or editing URI's : propose URI's in relation with rdfs:domain class value
+- 10 simple vocab' to specify properties in form
+- 11 button to remove a triple
+Integrating non-blocking: Iterat* 
+Migration to Banana 0.7 
+ScalaJS migration 
+Dashboard 
+View SPARQL select & construct 
+Search : also in URI's
+Add simple login 
+Inferences for forms : eliminate archaic properties; owl union
+..... etc etc ...
 
 For now, the display looks like this, 
 plus a textbox to enter a URL semantics, eg a FOAF profile or DBpedia URI : 
@@ -30,7 +45,8 @@ Preloading RDF content
 	run-main tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me /home/jmv/data/foaf/jmv.rdf
 	NOTE: with next Jena release it will be possible to directly load from Internet:
 	run-main tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me http://jmvanel.free.fr/jmv.rdf#me 
-
+- dumping all database:
+	run-main tdb.tdbdump   --loc=TDB > dump.nt
 
 Tips:
 

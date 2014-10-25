@@ -49,6 +49,25 @@ class BrowsableGraph [Rdf <: RDF](store: RDFStore[Rdf])(
       s"""
          |CONSTRUCT {
          |  ?thing ?p ?o .
+         |  ?s ?p1 ?thing .     
+         |}
+         |WHERE {
+         |  { graph <$search>
+         |    { ?thing ?p ?o . }
+         |  } OPTIONAL {
+         |  graph ?GRAPH
+         |   { ?s ?p1 ?thing . }
+         |  }
+         |}""".stripMargin
+    println( "search_only " + queryString )
+    sparqlConstructQueryFuture(queryString)
+  }
+  
+  private def search_only_old(search: String) : Future[Rdf#Graph] = {
+    val queryString =
+      s"""
+         |CONSTRUCT {
+         |  ?thing ?p ?o .
          | # ?s ?p1 ?thing .     
          |}
          |WHERE {
