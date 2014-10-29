@@ -2,35 +2,44 @@ package controllers
 
 import play.api._
 import play.api.mvc._
-import play.api.mvc.Request // [play.api.mvc.AnyContent]
+import play.api.mvc.Request
 import deductions.runtime.html.TableView
+import play.api.libs.iteratee.Enumerator
+import play.api.libs.iteratee.Iteratee
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object Application extends Controller with TableView {
+  val glob = _root_.global.Global
+  
   def index = {
-    Action {
-      (
-          Ok( views.html.index(global.Global.form) )
-      )
-    }
+    Action { Ok( views.html.index(glob.form) ) }
   }
 
   def displayURI(uri:String, blanknode:String="", Edit:String="") = {
     Action { implicit request =>
       println( "displayURI: " + request )
       println( "displayURI: " + Edit )
-      Ok( views.html.index(global.Global.htmlForm(uri, blanknode, editable=Edit!="",
+      Ok( views.html.index(glob.htmlForm(uri, blanknode, editable=Edit!="",
                     lang=chooseLanguage(request) )) )
     }
   }
+
+  def wordsearch(q:String="") = wordsearchNEW(q)
+
+  def wordsearchOLD(q:String="") = {
+    Action { Ok( views.html.index(glob.wordsearch(q)) ) }
+  }
   
-  def wordsearch(q:String="") = {
-    Action { (
-          Ok( views.html.index(global.Global.wordsearch(q)) )
-    ) }
+  /** TODO !!!!!!!!!!!!!!!!!!!! */
+  def wordsearchNEW(q:String="") = Action.async {
+    val f = glob.wordsearchFuture(q)
+    val res = f.map( r => Ok(views.html.index(r)) )
+    res
   }
   
   def download( url:String ) = {
-    Action { Ok( global.Global.download(url) ).as("text/turtle") }
+    Action { Ok( glob.download(url) ).as("text/turtle") }
   }
 
   def chooseLanguage(request: Request[_]): String = {
@@ -44,7 +53,7 @@ object Application extends Controller with TableView {
   def edit( url:String ) = {
     Action {
         request =>
-      Ok( views.html.index(global.Global.htmlForm(
+      Ok( views.html.index(glob.htmlForm(
           url,
           editable=true,
           lang=chooseLanguage(request)
@@ -54,8 +63,8 @@ object Application extends Controller with TableView {
 
   def save() = {
     Action { implicit request =>
-      Ok( views.html.index(global.Global.save(request) )) // .as("text/html")
-      // Ok( views.html.index(global.Global.htmlForm(uri, blanknode)) )
+      Ok( views.html.index(glob.save(request) )) // .as("text/html")
+      // Ok( views.html.index(glob.htmlForm(uri, blanknode)) )
     }
   }
   
@@ -63,7 +72,7 @@ object Application extends Controller with TableView {
     Action { implicit request =>
       println( "create: " + request )
       println( "create: " + uri )
-      Ok( views.html.index(global.Global.create(uri, chooseLanguage(request)) ))
+      Ok( views.html.index(glob.create(uri, chooseLanguage(request)) ))
     }
   }
   
@@ -71,7 +80,7 @@ object Application extends Controller with TableView {
         Action { implicit request =>
       println( "sparql: " + request )
       println( "sparql: " + query )
-      Ok( views.html.index(global.Global.sparql( query, chooseLanguage(request)) ))
+      Ok( views.html.index(glob.sparql( query, chooseLanguage(request)) ))
     }
   }
 }

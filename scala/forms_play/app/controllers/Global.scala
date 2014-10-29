@@ -11,6 +11,7 @@ import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.mvc.Controller
 import play.api.mvc.Request
 import deductions.runtime.html.CreationForm
+import scala.concurrent.Future
 
 package global {
 
@@ -74,6 +75,15 @@ object Global extends Controller // play.api.GlobalSettings
       <p>Searched for "{q}" :<br/>
     	  {search.search(q, hrefDisplayPrefix)}
       </p>
+  }
+
+    import scala.concurrent.ExecutionContext.Implicits.global
+    def wordsearchFuture(q: String = ""): Future[Elem] = {
+      val f = search.searchFuture(q, hrefDisplayPrefix)
+      val xml = f . map { v =>
+        <p> Searched for "{ q }" :<br/>
+        {v} </p> }
+      xml
     }
     
   def download( url:String ) : String = {
