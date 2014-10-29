@@ -49,15 +49,14 @@ object Global extends Controller // play.api.GlobalSettings
 
       {if (uri != null && uri != "")
         try {
-          tableView.htmlForm(uri, hrefDisplayPrefix, blankNode, editable=editable, lang=lang )
+          tableView.htmlForm(uri, hrefDisplayPrefix, blankNode, editable=editable,
+              lang=lang )
         } catch {
-        case e:Exception // e.g. org.apache.jena.riot.RiotException
-        =>
+        case e:Exception => // e.g. org.apache.jena.riot.RiotException
           <p style="color:red">{
             e.getLocalizedMessage() + " " + printTrace(e)
             } <br/>
-          Cause: 
-          { if ( e.getCause() != null ) e.getCause().getLocalizedMessage()}
+          Cause: { if( e.getCause() != null ) e.getCause().getLocalizedMessage()}
           </p>
         }
       else

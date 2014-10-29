@@ -6,7 +6,7 @@ import java.net.URLEncoder
 
 import Form2HTML._
 
-/** TODO : different modes: display or edit;
+/** different modes: display or edit;
  *  take in account datatype */
 trait Form2HTML[NODE, URI<: NODE] extends FormModule[NODE, URI] {
   type fm = FormModule[NODE, URI]

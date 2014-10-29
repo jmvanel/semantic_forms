@@ -41,18 +41,20 @@ with FieldsInference[Rdf] {
   println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
 
   /**create Form from an instance (subject) URI */
-  def createForm(subject: Rdf#Node ) : FormSyntax[Rdf#Node, Rdf#URI] = {
-     val props = fieldsFromSubject(subject, graph)
-     
-//     val classs = classFromSubject(subject) // TODO several classes
-//     val fromClass = fieldsFromClass( classs, graph )   
-     createForm(subject, props ) // ++ fromClass )
+  def createForm(subject: Rdf#Node,
+    editable: Boolean = false): FormSyntax[Rdf#Node, Rdf#URI] = {
+    val props = fieldsFromSubject(subject, graph)
+    val fromClass = if (editable) {
+      val classs = classFromSubject(subject) // TODO several classes
+      fieldsFromClass(classs, graph)
+    } else Seq()
+    createForm(subject, props ++ fromClass)
   }
 
   /** For each given property (props)
    *  look at its rdfs:range ?D
    *  see if ?D is a datatype or an OWL or RDFS class
-   *  ( used for creating a Form from a class URI )
+   *  ( used for creating an empty Form from a class URI )
    *    */
   def createForm(subject: Rdf#Node,
     props: Seq[Rdf#URI]): FormSyntax[Rdf#Node, Rdf#URI] = {

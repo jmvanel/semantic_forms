@@ -35,7 +35,6 @@ trait TableViewModule
     
     if(blankNode != "true"){
       retrieveURI(makeUri(uri), store)
-//      storeURI(makeUri(uri), store)
       Logger.getRootLogger().info(s"After storeURI(makeUri($uri), store)")
     }
     store.readTransaction {
@@ -44,7 +43,9 @@ trait TableViewModule
     }
   }
 
-  /** create a form for given URI resource (instance) with background knowledge in given graph */
+  /** create a form for given URI resource (instance) with background knowledge
+   *  in given graph
+   *  TODO non blocking */
   def graf2form(graph: Rdf#Graph, uri:String,
       hrefPrefix:String="", blankNode:String="",
       editable:Boolean=false,
@@ -52,27 +53,14 @@ trait TableViewModule
       lang:String="en"
   ): Elem = {
     val factory = new FormSyntaxFactory[Rdf](graph, preferedLanguage=lang )
-//    println (Ops.emptyGraph )
-//    println("graf2form " + " " + graph.hashCode() + "\n" 
-////        + (graph.toIterable).mkString("\n")
-//                + factory.printGraph(graph) )
     val form = factory.createForm(
         if( blankNode == "true" )
           /* TDB specific:
            * Jena supports "concrete bnodes" in SPARQL syntax as pseudo URIs in the "_" URI scheme
-           * (it's an illegal name for a URI scheme)
-          */
+           * (it's an illegal name for a URI scheme) */
           BNode(uri)
-//          BNode("_:"+uri)
-//            URI("_:"+uri)
-          else URI(uri)
-        // find properties from instance
-//       , Seq( foaf.title, 
-//          foaf.givenName,
-//          foaf.familyName, 
-//          foaf.currentProject,
-//          foaf.img,
-//          foaf.mbox )
+        else URI(uri)
+        , editable
     )
     println("form:\n" + form)
     val htmlForm = generateHTML(form, hrefPrefix, editable, actionURI )
