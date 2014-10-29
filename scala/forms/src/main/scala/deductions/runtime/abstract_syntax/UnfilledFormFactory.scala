@@ -31,7 +31,7 @@ class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
     		uriOps: URIOps[Rdf] )
   extends FormSyntaxFactory[Rdf](graph: Rdf#Graph, preferedLanguage) {
   
-  /** create Form from an instance (subject) URI */
+  /** create Form from a class URI */
   def createFormFromClass(classs: Rdf#URI): FormSyntax[Rdf#Node, Rdf#URI] = {
     val props = fieldsFromClass(classs, graph)
     createForm(ops.makeUri(makeId), props toSeq)

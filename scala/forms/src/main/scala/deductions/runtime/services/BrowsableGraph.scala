@@ -44,7 +44,7 @@ class BrowsableGraph [Rdf <: RDF](store: RDFStore[Rdf])(
   }
     
   /** all triples in graph <$search> , plus "reverse" triples everywhere */
-  private def search_only(search: String) : Future[Rdf#Graph] = {
+  def search_only(search: String) : Future[Rdf#Graph] = {
     val queryString =
       s"""
          |CONSTRUCT {

@@ -21,7 +21,7 @@ With these features :
 Integrating non-blocking: Iterat* 
 Migration to Banana 0.7 
 ScalaJS migration 
-Dashboard 
+Dashboard : # of triples, # of of resources; # of resources of each type
 View SPARQL select & construct 
 Search : also in URI's
 Add simple login 

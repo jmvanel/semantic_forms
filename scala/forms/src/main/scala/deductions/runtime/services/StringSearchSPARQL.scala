@@ -24,14 +24,14 @@ class StringSearchSPARQL[Rdf <: RDF](store: RDFStore[Rdf])(
 
   val sparqlEngine = SparqlEngine[Rdf](store)
 
-  def search(search: String, hrefPrefix:String="") : Elem = {
-    val uris = search_only(search)
-    val res = Await.result(uris, 5000 millis)
-    Logger.getRootLogger().info(s"search $search ${res.mkString(", ")}")
-    displayResults( res, hrefPrefix)
-  }
+//  def search(search: String, hrefPrefix:String="") : Elem = {
+//    val uris = search_only(search)
+//    val res = Await.result(uris, 5000 millis)
+//    Logger.getRootLogger().info(s"search $search ${res.mkString(", ")}")
+//    displayResults( res, hrefPrefix)
+//  }
 
-  def searchFuture(search: String, hrefPrefix:String="") : Future[Elem] = {
+  def search(search: String, hrefPrefix:String="") : Future[Elem] = {
     val uris = search_only(search)
     val elem = uris . map (
         (u : Iterable[Rdf#Node]) =>
@@ -39,7 +39,7 @@ class StringSearchSPARQL[Rdf <: RDF](store: RDFStore[Rdf])(
     elem
   }
     
-  def displayResults( res: Iterable[Rdf#Node], hrefPrefix:String ) = {
+  private def displayResults( res: Iterable[Rdf#Node], hrefPrefix:String ) = {
     <p>{
       res.map( uri => {
         val uriString = uri.toString

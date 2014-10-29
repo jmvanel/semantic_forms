@@ -79,7 +79,7 @@ object Global extends Controller // play.api.GlobalSettings
 
     import scala.concurrent.ExecutionContext.Implicits.global
     def wordsearchFuture(q: String = ""): Future[Elem] = {
-      val f = search.searchFuture(q, hrefDisplayPrefix)
+      val f = search.search(q, hrefDisplayPrefix)
       val xml = f . map { v =>
         <p> Searched for "{ q }" :<br/>
         {v} </p> }
@@ -89,6 +89,12 @@ object Global extends Controller // play.api.GlobalSettings
   def download( url:String ) : String = {
     println( "download url " + url )
     val res = dl.focusOnURI( url )
+    
+//    val r = dl.search_only( url )// TODO
+    /* TODO non blocking
+     *     val to = new ByteArrayOutputStream
+    val ret = writer.write(graph, to, base = uri)
+     */
     println( "download result " + res )
     res
   }

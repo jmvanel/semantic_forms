@@ -44,16 +44,16 @@ with FieldsInference[Rdf] {
   def createForm(subject: Rdf#Node ) : FormSyntax[Rdf#Node, Rdf#URI] = {
      val props = fieldsFromSubject(subject, graph)
      
-     // TODO several classes
-     val classs = classFromSubject(subject)
-     
-     val fromClass = fieldsFromClass( classs, graph )
-     createForm(subject, props ++ fromClass )
+//     val classs = classFromSubject(subject) // TODO several classes
+//     val fromClass = fieldsFromClass( classs, graph )   
+     createForm(subject, props ) // ++ fromClass )
   }
 
   /** For each given property (props)
    *  look at its rdfs:range ?D
-   *  see if ?D is a datatype or an OWL or RDFS class */
+   *  see if ?D is a datatype or an OWL or RDFS class
+   *  ( used for creating a Form from a class URI )
+   *    */
   def createForm(subject: Rdf#Node,
     props: Seq[Rdf#URI]): FormSyntax[Rdf#Node, Rdf#URI] = {
     Logger.getRootLogger().info(s"createForm subject $subject, props $props")
