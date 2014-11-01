@@ -16,14 +16,13 @@ trait Form2HTML[NODE, URI<: NODE] extends FormModule[NODE, URI] {
       actionURI:String="/save"): Elem = {
         
     val htmlForm = 
-    <table>
+    <div style="resize:both;">
     <input type="hidden" name="uri" value={urlEncode(form.subject)}/>
+    <table style="resize:both;" >
       {
         for (field <- form.fields) yield {
-          val l = field.label
-          val c = field.comment
-          <tr>{
-            <td title={ c }>{ l }</td>
+          <tr>
+            <td title={ field.comment }>{ field.label }</td>
             <td>{
               field match {
                 case l: LiteralEntry =>
@@ -55,10 +54,10 @@ trait Form2HTML[NODE, URI<: NODE] extends FormModule[NODE, URI] {
                   }</a>
               }
             }</td>
-          }</tr>
+          </tr>
         }
       }
-    </table>
+    </table></div>
       if( editable)
         <form action={actionURI}  method="POST" >
           <input value="SAVE" type="submit"/>
