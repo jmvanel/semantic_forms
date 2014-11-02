@@ -12,6 +12,11 @@ import play.api.mvc.Controller
 import play.api.mvc.Request
 import deductions.runtime.html.CreationForm
 import scala.concurrent.Future
+import play.api.libs.iteratee.Enumerator
+import org.w3.banana.RDFWriter
+import org.w3.banana.jena.Jena
+import org.w3.banana.Turtle
+import org.w3.banana.jena.JenaRDFWriter
 
 package global {
 
@@ -76,28 +81,35 @@ object Global extends Controller // play.api.GlobalSettings
       </p>
   }
 
-    import scala.concurrent.ExecutionContext.Implicits.global
-    def wordsearchFuture(q: String = ""): Future[Elem] = {
-      val f = search.search(q, hrefDisplayPrefix)
-      val xml = f . map { v =>
-        <p> Searched for "{ q }" :<br/>
-        {v} </p> }
-      xml
-    }
+  import scala.concurrent.ExecutionContext.Implicits.global
+  def wordsearchFuture(q: String = ""): Future[Elem] = {
+		  val f = search.search(q, hrefDisplayPrefix)
+				  val xml = f . map { v =>
+				  <p> Searched for "{ q }" :<br/>
+				  {v} </p> }
+		  xml
+  }
     
-  def download( url:String ) : String = {
+  def downloadAsString( url:String ) : String = {
     println( "download url " + url )
-    val res = dl.focusOnURI( url )
-    
-//    val r = dl.search_only( url )// TODO
-    /* TODO non blocking
-     *     val to = new ByteArrayOutputStream
-    val ret = writer.write(graph, to, base = uri)
-     */
+    val res = dl.focusOnURI( url )  
     println( "download result " + res )
     res
   }
 
+    def download(url: String) = {
+      // cf https://www.playframework.com/documentation/2.3.x/ScalaStream
+      Enumerator.outputStream { os =>
+        val graph = dl.search_only(url)
+        graph.map { graph =>
+          /* non blocking */
+          val writer: RDFWriter[Jena, Turtle] = JenaRDFWriter.turtleWriter
+          val ret = writer.write(graph, os, base = url)
+          os.close()
+        }
+      }
+    }
+  
   def edit( url:String ) : Elem = {
         htmlForm(url, editable=true)
   }

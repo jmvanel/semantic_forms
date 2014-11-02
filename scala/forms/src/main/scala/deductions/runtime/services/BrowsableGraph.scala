@@ -30,6 +30,7 @@ class BrowsableGraph [Rdf <: RDF](store: RDFStore[Rdf])(
 
   val sparqlEngine = SparqlEngine[Rdf](store)
 
+  /** not used in Play! app : blocking ! */
   def focusOnURI( uri:String ) : String = {
     val triples = search_only(uri)
     futureGraph2String(triples, uri)
@@ -43,7 +44,8 @@ class BrowsableGraph [Rdf <: RDF](store: RDFStore[Rdf])(
     to.toString
   }
     
-  /** all triples in graph <$search> , plus "reverse" triples everywhere */
+  /** all triples in graph <$search> , plus "reverse" triples everywhere
+   *  used in Play! app : NON blocking ! */
   def search_only(search: String) : Future[Rdf#Graph] = {
     val queryString =
       s"""

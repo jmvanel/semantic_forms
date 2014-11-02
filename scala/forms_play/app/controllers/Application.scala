@@ -38,10 +38,19 @@ object Application extends Controller with TableView {
     res
   }
   
-  def download( url:String ) = {
-    Action { Ok( glob.download(url) ).as("text/turtle") }
+  def download0( url:String ) = {
+//    Action { Ok.chunked( glob.download(url) ).as("text/turtle") }
+    Action { Ok( glob.downloadAsString(url) ).as("text/turtle") }
   }
 
+  def download( url:String ) = {
+    Action { Ok.chunked( glob.download(url) ).as("text/turtle") }
+//    Action { Ok.stream( glob.download(url) ).as("text/turtle") }
+  }
+    
+  /* Ok.stream(enumerator >>> Enumerator.eof).
+   * 
+   */
   def chooseLanguage(request: Request[_]): String = {
     //     val l1 = request.headers.get("Accept-Language")
     val languages = request.acceptLanguages
