@@ -43,6 +43,7 @@ object Application extends Controller with TableView {
     Action { Ok( glob.downloadAsString(url) ).as("text/turtle") }
   }
 
+  /** cf https://www.playframework.com/documentation/2.3.x/ScalaStream */
   def download( url:String ) = {
     Action { Ok.chunked( glob.download(url) ).as("text/turtle") }
 //    Action { Ok.stream( glob.download(url) ).as("text/turtle") }

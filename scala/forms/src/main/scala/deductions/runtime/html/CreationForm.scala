@@ -6,8 +6,9 @@ import deductions.runtime.sparql_cache.RDFCacheJena
 import deductions.runtime.jena.RDFStoreObject
 import scala.xml.Elem
 import deductions.runtime.abstract_syntax.UnfilledFormFactory
+import org.w3.banana.RDFOpsModule
 
-trait CreationForm extends RDFModule
+trait CreationForm extends RDFOpsModule
   with Form2HTML[Jena#Node, Jena#URI]
   with RDFCacheJena // TODO depend on generic Rdf
 {

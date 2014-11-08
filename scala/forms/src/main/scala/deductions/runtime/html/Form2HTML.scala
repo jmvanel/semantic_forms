@@ -55,6 +55,7 @@ trait Form2HTML[NODE, URI<: NODE] extends FormModule[NODE, URI] {
               }
             }</td>
           </tr>
+            
         }
       }
     </table></div>

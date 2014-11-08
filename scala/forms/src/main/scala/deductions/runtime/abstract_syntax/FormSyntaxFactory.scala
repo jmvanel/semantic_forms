@@ -6,7 +6,6 @@ $Id$
 package deductions.runtime.abstract_syntax
 
 import scala.collection.mutable
-
 import org.apache.log4j.Logger
 import org.w3.banana.OWLPrefix
 import org.w3.banana.PointedGraph
@@ -18,6 +17,7 @@ import org.w3.banana.RDFSPrefix
 import org.w3.banana.URIOps
 import org.w3.banana.XSDPrefix
 import org.w3.banana.diesel.toPointedGraphW
+import org.w3.banana.PrefixBuilder
 
 /** Factory for an abstract Form Syntax;
  *   */
@@ -36,6 +36,7 @@ with FieldsInference[Rdf] {
   val owl = OWLPrefix[Rdf]
   val owlThing = owl.prefixIri + "Thing"
   val rdf = RDFPrefix[Rdf]
+  val form = new PrefixBuilder("form", "http://deductions-software.com/ontologies/forms.owl.ttl#" )
 
         
   println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
