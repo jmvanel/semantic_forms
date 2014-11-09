@@ -18,7 +18,8 @@ trait FormModule[NODE, URI <: NODE] {
    */
   case class FormSyntax[NODE, URI<: NODE](
     val subject: NODE,
-    val fields: Seq[Entry]) {
+    val fields: Seq[Entry],
+    classs: URI=nullURI) {
     override def toString() : String = {
       "FormSyntax:\n\t" + 
     	fields.mkString("\n")

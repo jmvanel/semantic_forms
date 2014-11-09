@@ -58,7 +58,9 @@ with FieldsInference[Rdf] {
    *  ( used for creating an empty Form from a class URI )
    *    */
   def createForm(subject: Rdf#Node,
-    props: Seq[Rdf#URI]): FormSyntax[Rdf#Node, Rdf#URI] = {
+    props: Seq[Rdf#URI]
+//    ,classs: Rdf#URI=nullURI 
+    ): FormSyntax[Rdf#Node, Rdf#URI] = {
     Logger.getRootLogger().info(s"createForm subject $subject, props $props")
     val fields = mutable.ArrayBuffer[Entry]()
     for (prop <- props) {
@@ -74,7 +76,7 @@ with FieldsInference[Rdf] {
       
       fields ++= ( makeEntry(subject, prop, ranges) )
     }
-    FormSyntax(subject, fields)
+    FormSyntax(subject, fields) // , classs)// TODO <<<<<<<<<<<<<<<<<
   }
 
     /** find fields from given Instance subject */

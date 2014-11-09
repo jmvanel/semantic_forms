@@ -35,9 +35,9 @@ class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
   def createFormFromClass(classs: Rdf#URI): FormSyntax[Rdf#Node, Rdf#URI] = {
     if( lookFormConfiguration(classs).isEmpty ) { 
     	val props = fieldsFromClass(classs, graph)
-    	createForm(ops.makeUri(makeId), props toSeq)
+    	createForm(ops.makeUri(makeId), props toSeq) // TODO , classs=classs)
     } else
-        createForm(ops.makeUri(makeId), lookFormConfiguration(classs)toSeq)
+        createForm(ops.makeUri(makeId), lookFormConfiguration(classs)toSeq) // TODO , classs=classs)
   }
 
   def lookFormConfiguration(classs: Rdf#URI): Seq[Rdf#URI] = {

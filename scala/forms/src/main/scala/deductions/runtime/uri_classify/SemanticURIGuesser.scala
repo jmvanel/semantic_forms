@@ -1,21 +1,13 @@
 package deductions.runtime.uri_classify
 
 import java.net.URL
-import spray.http._
-import spray.client.pipelining._
+import akka.http.model._
 import akka.actor.ActorSystem
-import scala.concurrent.Future
-import spray.http.parser.HttpParser
-import spray.http._
-import parser.HttpParser
-import CacheDirectives._
-import HttpHeaders._
-import MediaTypes._
-import MediaRanges._
-import HttpCharsets._
-import HttpEncodings._
 import HttpMethods._
-import spray.util._
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+import akka.http.engine.parsing.HttpHeaderParser
+import akka.http.model.HttpHeader
 
 /* classify URI, leveraging on MIME types in HTTP headers.
 MIME categories :
@@ -25,7 +17,7 @@ sound,
 video,
 xml, and other machine processable stuff
 rdf, Json-LD, Turtle and other semantic content 
- * */
+ */
 object SemanticURIGuesser {
   
   abstract class SemanticURIType
@@ -41,50 +33,48 @@ object SemanticURIGuesser {
   object Unknown extends SemanticURIType
   
   def guessSemanticURIType(url: String) = {
-    // cf http://spray.io/documentation/1.1-SNAPSHOT/spray-client/#usage
-    println("before ActorSystem")
-    implicit val system = ActorSystem("guessSemanticURIType")
-    println("after ActorSystem")
-    import system.dispatcher // execution context for futures
-    println("system.dispatcher")
-    
-    // crashes here ::::::::::::::::::::::::::
-    val pipeline: HttpRequest => Future[HttpResponse] = sendReceive
-    println("sendReceive")
-    val response: Future[HttpResponse] = pipeline(Head(url))
-    println("response")
+    val response: Future[HttpResponse] = HttpClient.makeRequest(url, HEAD)
+    println("response " + response)
     response.map {
-      resp => resp.status match {
-          case StatusCodes.OK =>
+      resp => 
+//        resp.status match {
+//          case StatusCodes.OK 
+//          =>
             semanticURITypeFromHeaders(resp.headers, url)
-          case _ => Unknown // or Future fails
-        }
+//          case _ => Unknown // or Future fails
+//      }
     }
   }
 
-  private def semanticURITypeFromHeaders(headers: List[HttpHeader], url: String) : SemanticURIType = {
-    val optionSemanticURIType : Option[SemanticURIType] = headers.collectFirst {
+  private def semanticURITypeFromHeaders(headers: Seq[HttpHeader], url: String): SemanticURIType = {
+	println( "headers " + headers )
+    val optionSemanticURIType: Option[SemanticURIType] = headers.collectFirst {
       case header if (header.is("content-type")) =>
-        val semanticURIType: SemanticURIType = header match {
-          case `Content-Type`(ct) =>
-            val mediaType = ct.mediaType
-            mediaType match {
-              case mt if mt.isApplication => guessHeader(mt,url, Application)
-              case mt if mt.isAudio => Audio
-              case mt if mt.isImage => Image
-              case mt if mt.isMessage => Data
-              case mt if mt.isMultipart => Data
-              case mt if mt.isText => guessHeader(mt,url, Text)
-              case mt if mt.isVideo => Video
-              case _ => Unknown
-            }
-          case _ => Unknown
-        }
+        //        HttpHeaderParser
+      println( "header " + header )
+        val semanticURIType: SemanticURIType =
+          SemanticURI // TODO
+//          header match {
+//            case ContentType(mediaType, definedCharset) =>
+//              val mediaType = ct.mediaType
+//              mediaType match {
+//                case mt if mt.isApplication => guessHeader(mt, url, Application)
+//                case mt if mt.isAudio => Audio
+//                case mt if mt.isImage => Image
+//                case mt if mt.isMessage => Data
+//                case mt if mt.isMultipart => Data
+//                case mt if mt.isText => guessHeader(mt, url, Text)
+//                case mt if mt.isVideo => Video
+//                case _ => Unknown
+//              }
+//            case _ => Unknown
+//          }
         semanticURIType
     }
+	println( "optionSemanticURIType " + optionSemanticURIType )
     optionSemanticURIType match {
-    case Some(semanticURIType) => semanticURIType
-    case None => Unknown
+      case Some(semanticURIType) => semanticURIType
+      case None => Unknown
     }
   }
   
@@ -123,5 +113,3 @@ object SemanticURIGuesser {
                         protocol: HttpProtocol = HttpProtocols.`HTTP/1.1`) extends HttpMessage with HttpResponsePart {
    */
 }
-    //      case _ => println( "Not an Http URL Connection: " + url )
-    //      }
