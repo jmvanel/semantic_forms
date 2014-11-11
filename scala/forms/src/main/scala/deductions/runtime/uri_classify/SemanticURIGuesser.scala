@@ -9,6 +9,26 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import akka.http.engine.parsing.HttpHeaderParser
 import akka.http.model.HttpHeader
 
+import scala.concurrent.Future
+import scala.concurrent.duration._
+import scala.async.Async.{ async, await }
+import akka.io.IO
+import akka.util.Timeout
+import akka.http.Http
+import akka.actor.{ ActorSystem }
+import akka.http.model.{ HttpMethods, HttpEntity, HttpRequest, HttpResponse, Uri }
+import akka.stream.{ FlowMaterializer }
+import akka.stream.scaladsl.Flow
+import akka.pattern.ask
+import HttpEntity._
+import com.typesafe.config.ConfigFactory
+import com.typesafe.config.Config
+import akka.stream.scaladsl.Source
+import akka.stream.scaladsl.Sink
+import akka.http.model._
+import akka.http.model.HttpMethods._
+import java.net.URL
+
 /* classify URI, leveraging on MIME types in HTTP headers.
 MIME categories :
 text (including HTML), 
@@ -40,35 +60,34 @@ object SemanticURIGuesser {
 //        resp.status match {
 //          case StatusCodes.OK 
 //          =>
-            semanticURITypeFromHeaders(resp.headers, url)
+            semanticURITypeFromHeaders(resp, url)
 //          case _ => Unknown // or Future fails
 //      }
     }
   }
-
-  private def semanticURITypeFromHeaders(headers: Seq[HttpHeader], url: String): SemanticURIType = {
+// .header[headers.Server]
+  private def semanticURITypeFromHeaders(
+      resp : HttpResponse,
+      url: String): SemanticURIType = {
+    val headers: Seq[HttpHeader] = resp.headers 
 	println( "headers " + headers )
-    val optionSemanticURIType: Option[SemanticURIType] = headers.collectFirst {
-      case header if (header.is("content-type")) =>
-        //        HttpHeaderParser
+    type ContentType = akka.http.model.headers.`Content-Type`
+	val contentType = resp.header[ContentType]
+    val optionSemanticURIType: Option[SemanticURIType] = contentType.collectFirst {
+      case header =>
       println( "header " + header )
-        val semanticURIType: SemanticURIType =
-          SemanticURI // TODO
-//          header match {
-//            case ContentType(mediaType, definedCharset) =>
-//              val mediaType = ct.mediaType
-//              mediaType match {
-//                case mt if mt.isApplication => guessHeader(mt, url, Application)
-//                case mt if mt.isAudio => Audio
-//                case mt if mt.isImage => Image
-//                case mt if mt.isMessage => Data
-//                case mt if mt.isMultipart => Data
-//                case mt if mt.isText => guessHeader(mt, url, Text)
-//                case mt if mt.isVideo => Video
-//                case _ => Unknown
-//              }
-//            case _ => Unknown
-//          }
+      val mediaType = header.contentType.mediaType
+      val semanticURIType: SemanticURIType =
+          mediaType match {
+                case mt if mt.isApplication => guessHeader(mt, url, Application)
+                case mt if mt.isAudio => Audio
+                case mt if mt.isImage => Image
+                case mt if mt.isMessage => Data
+                case mt if mt.isMultipart => Data
+                case mt if mt.isText => guessHeader(mt, url, Text)
+                case mt if mt.isVideo => Video
+                case _ => Unknown // TODO : take in account suffix (jpg, etc; there must a library for this :) )
+          }
         semanticURIType
     }
 	println( "optionSemanticURIType " + optionSemanticURIType )
