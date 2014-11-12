@@ -29,7 +29,7 @@ import akka.http.model._
 import akka.http.model.HttpMethods._
 import java.net.URL
 
-/* classify URI, leveraging on MIME types in HTTP headers.
+/* classify URI (non-blocking): leveraging on MIME types in HTTP headers.
 MIME categories :
 text (including HTML), 
 image,
@@ -52,52 +52,78 @@ object SemanticURIGuesser {
   object Data extends SemanticURIType
   object Unknown extends SemanticURIType
   
-  def guessSemanticURIType(url: String) = {
+  def guessSemanticURIType(url: String) : Future[SemanticURIType]= {
     val response: Future[HttpResponse] = HttpClient.makeRequest(url, HEAD)
     println("response " + response)
-    response.map {
-      resp => 
-//        resp.status match {
-//          case StatusCodes.OK 
-//          =>
-            semanticURITypeFromHeaders(resp, url)
-//          case _ => Unknown // or Future fails
-//      }
-    }
+    response.map { resp => semanticURITypeFromHeaders(resp, url) }
   }
-// .header[headers.Server]
+
   private def semanticURITypeFromHeaders(
-      resp : HttpResponse,
-      url: String): SemanticURIType = {
-    val headers: Seq[HttpHeader] = resp.headers 
-	println( "headers " + headers )
+    resp: HttpResponse,
+    url: String): SemanticURIType = {
+    val headers: Seq[HttpHeader] = resp.headers
+    println("headers " + headers)
     type ContentType = akka.http.model.headers.`Content-Type`
-	val contentType = resp.header[ContentType]
-    val optionSemanticURIType: Option[SemanticURIType] = contentType.collectFirst {
-      case header =>
-      println( "header " + header )
-      val mediaType = header.contentType.mediaType
-      val semanticURIType: SemanticURIType =
-          mediaType match {
-                case mt if mt.isApplication => guessHeader(mt, url, Application)
-                case mt if mt.isAudio => Audio
-                case mt if mt.isImage => Image
-                case mt if mt.isMessage => Data
-                case mt if mt.isMultipart => Data
-                case mt if mt.isText => guessHeader(mt, url, Text)
-                case mt if mt.isVideo => Video
-                case _ => Unknown // TODO : take in account suffix (jpg, etc; there must a library for this :) )
-          }
-        semanticURIType
+    val contentType = resp.header[ContentType]
+    println("semanticURITypeFromHeaders: contentType " + contentType)
+    val semanticURIType: SemanticURIType =
+      contentType match { 
+      case Some(header) =>
+        println("header " + header)
+        val mediaType = header.contentType.mediaType
+        val semanticURIType: SemanticURIType = makeSemanticURIType(mediaType, url)
+        if (semanticURIType == Unknown)
+          makeSemanticURITypeFromSuffix(url)
+        else semanticURIType
+      case None => makeSemanticURITypeFromSuffix(url)
     }
-	println( "optionSemanticURIType " + optionSemanticURIType )
-    optionSemanticURIType match {
-      case Some(semanticURIType) => semanticURIType
-      case None => Unknown
+    println("semanticURITypeFromHeaders: semanticURIType " + semanticURIType)
+    semanticURIType 
+  }
+
+  def makeSemanticURITypeFromSuffix(url: String) = {
+    val mimeTypeFromSuffix = trySuffix(url)
+    println( "makeSemanticURITypeFromSuffix: mimeTypeFromSuffix " + mimeTypeFromSuffix )
+    if (mimeTypeFromSuffix == null)
+      Unknown
+    else {
+      val mediaTypeFromSuffix: Option[MediaType] = MediaTypes.forExtension(mimeTypeFromSuffix)
+      println( "makeSemanticURITypeFromSuffix: mediaTypeFromSuffix " + mediaTypeFromSuffix )
+      mediaTypeFromSuffix match {
+        case None => Unknown
+        case Some(mt) => makeSemanticURIType(mt, url)
+      }
     }
   }
   
-  private def guessHeader(mt:MediaType, url: String, t:SemanticURIType) : SemanticURIType = {
+  private def makeSemanticURIType(mt:MediaType, url: String) = {
+    mt match {
+      case mt if mt.isApplication => guessFromHeader(mt, url, Application)
+      case mt if mt.isAudio => Audio
+      case mt if mt.isImage => Image
+      case mt if mt.isMessage => Data
+      case mt if mt.isMultipart => Data
+      case mt if mt.isText => guessFromHeader(mt, url, Text)
+      case mt if mt.isVideo => Video
+      case _ => Unknown
+    }
+  }
+  
+  /** take in account suffix (jpg, etc) ;
+   *  TODO: works in the REPL, but not in TestSemanticURIGuesser */
+  private def trySuffix(url: String) : String = {
+    import java.nio.file._
+//    import java.net._
+//    val urlObj = new URL(url)
+//    println( "trySuffix " + url )
+//    val source = Paths.get(urlObj.getFile)
+    val source = Paths.get(url)
+    val res = Files.probeContentType(source)
+    println( "trySuffix " + res )
+    res
+  }
+  
+  private def guessFromHeader(mt:MediaType, url: String, t:SemanticURIType) : SemanticURIType = {
     val st = mt.subType 
     if(
         st == "rdf+xml" || 
@@ -107,28 +133,5 @@ object SemanticURIGuesser {
       SemanticURI
     } else t
   }
-  
-//  HttpParser.parse( acceptHeaderTurtlePriority )
-//  val acceptHeaderTurtlePriority =
-//    "text/n3," +
-//      "text/turtle;q=1, " +
-//      "application/rdf+xml;q=0.6, " +
-//      "text/xml;q=0.5" +
-//      ", text/plain;q=0.4" +
-//      ", text/xhtml;q=0.35" +
-//      ", text/html;q=0.3"
-//  val acceptHeaderRDFPriority =
-//    "application/rdf+xml;q=1, " +
-//      "text/xml;q=0.9" +
-//      "text/n3;q=0.6," +
-//      "text/turtle;;q=0.6, " +
-//      ", text/plain;q=0.4" +
-//      ", text/xhtml;q=0.35" +
-//      ", text/html;q=0.3"
-//      
-  /* case class HttpResponse(status: StatusCode = StatusCodes.OK,
-                        entity: HttpEntity = HttpEntity.Empty,
-                        headers: List[HttpHeader] = Nil,
-                        protocol: HttpProtocol = HttpProtocols.`HTTP/1.1`) extends HttpMessage with HttpResponsePart {
-   */
+
 }
