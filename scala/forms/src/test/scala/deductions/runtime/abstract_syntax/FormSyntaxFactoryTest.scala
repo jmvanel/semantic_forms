@@ -56,7 +56,7 @@ with TurtleReaderModule {
   val form = fact.createForm(
       URI("betehess"),
       Seq(foaf.title,
-          foaf.name))
+          foaf.name), URI("") )
   form
   }
 }

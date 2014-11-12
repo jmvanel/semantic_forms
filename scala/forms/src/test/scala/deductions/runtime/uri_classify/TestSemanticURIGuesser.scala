@@ -4,23 +4,24 @@ import org.scalatest.FunSuite
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Await
 import scala.concurrent.duration._
- 
+import SemanticURIGuesser._
+
 class TestSemanticURIGuesser extends FunSuite {
   test("TestSemanticURIGuesser") {
     for (
-      uri <- List(
-        "http://jmvanel.free.fr/images/jmv_id.jpg"
-//        ,"http://danbri.org/foaf.rdf#danbri"
-//        ,"http://fcns.eu/people/andrei/card#me"
+      (uri, semanticType) <- List(
+        ( "http://jmvanel.free.fr/images/jmv_id.jpg", Image ),
+        ("http://danbri.org/foaf.rdf#danbri", SemanticURI)
+        // fails because no clue except looking into content, or maybe using the presence of #   
+//        ,("http://fcns.eu/people/andrei/card#me", SemanticURI)
     		  )
     ) {
       val fut = SemanticURIGuesser.guessSemanticURIType(uri)
-//      Thread.sleep( 6000 )
-      Await.result(fut, 10000 millis)
+      Await.result(fut, 1000000 millis)
       
       fut onSuccess{
         case t => println("SemanticURIType: "+t)
-       	assert(true) // TODO
+       	assert(t == semanticType)
       }
       fut onFailure {
         case t => println("onFailure SemanticURIType: "+t)

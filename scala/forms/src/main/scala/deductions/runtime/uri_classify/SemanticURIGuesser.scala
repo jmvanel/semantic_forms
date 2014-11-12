@@ -81,18 +81,15 @@ object SemanticURIGuesser {
     semanticURIType 
   }
 
-  def makeSemanticURITypeFromSuffix(url: String) = {
+  private def makeSemanticURITypeFromSuffix(url: String) : SemanticURIType = {
     val mimeTypeFromSuffix = trySuffix(url)
     println( "makeSemanticURITypeFromSuffix: mimeTypeFromSuffix " + mimeTypeFromSuffix )
     if (mimeTypeFromSuffix == null)
       Unknown
     else {
-      val mediaTypeFromSuffix: Option[MediaType] = MediaTypes.forExtension(mimeTypeFromSuffix)
+      val mediaTypeFromSuffix = MediaType.custom(mimeTypeFromSuffix)
       println( "makeSemanticURITypeFromSuffix: mediaTypeFromSuffix " + mediaTypeFromSuffix )
-      mediaTypeFromSuffix match {
-        case None => Unknown
-        case Some(mt) => makeSemanticURIType(mt, url)
-      }
+      makeSemanticURIType(mediaTypeFromSuffix, url)
     }
   }
   
@@ -113,11 +110,12 @@ object SemanticURIGuesser {
    *  TODO: works in the REPL, but not in TestSemanticURIGuesser */
   private def trySuffix(url: String) : String = {
     import java.nio.file._
-//    import java.net._
-//    val urlObj = new URL(url)
-//    println( "trySuffix " + url )
-//    val source = Paths.get(urlObj.getFile)
-    val source = Paths.get(url)
+    import java.net._
+    val urlObj = new URL(url)
+    println( "trySuffix " + url )
+    // to eliminate #me in FOAF profiles: 
+    val source = Paths.get(urlObj.getFile)
+//    val source = Paths.get(url)
     val res = Files.probeContentType(source)
     println( "trySuffix " + res )
     res
