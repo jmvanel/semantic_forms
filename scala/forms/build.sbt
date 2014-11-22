@@ -26,6 +26,8 @@ libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "0
 
 libraryDependencies += "org.scala-lang.modules" %% "scala-async" % "0.9.2"
 
+// libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.2"
+
 libraryDependencies += "junit" % "junit" % "4.8.1" % "test"
 
 // libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.0" % "test"
