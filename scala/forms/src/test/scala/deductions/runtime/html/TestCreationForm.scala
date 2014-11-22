@@ -7,13 +7,14 @@ import org.w3.banana.RDF
 import org.w3.banana._
 import org.w3.banana.syntax._
 import org.w3.banana.diesel._
+import deductions.runtime.utils.Fil‍eUtils
 
 class TestCreationForm extends FunSuite with CreationForm {
-//   implicit val ops : RDFOps[Rdf] = Ops
   val form = new PrefixBuilder[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#" )
   val foaf = FOAFPrefix[Rdf]
         
   test("display form") {
+    Fil‍eUtils.deleteLocalSPARL()
     val uri = // 
 //      "http://usefulinc.com/ns/doap#Project"
      // "http://xmlns.com/foaf/0.1/Organization"
