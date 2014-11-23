@@ -25,13 +25,15 @@ object UnfilledFormFactory {
   }
 }
 
+/** Factory for an Unfilled Form */
 class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
     preferedLanguage:String="en")
     (implicit ops: RDFOps[Rdf],
     		uriOps: URIOps[Rdf] )
   extends FormSyntaxFactory[Rdf](graph: Rdf#Graph, preferedLanguage) {
   
-	/** create Form from a class URI */
+	/** create Form from a class URI,
+   *  looking up for Form Configuration within RDF graph in this class */
   def createFormFromClass(classs: Rdf#URI): FormSyntax[Rdf#Node, Rdf#URI] = {
   val formConfig = lookFormConfiguration(classs)
   if( formConfig.isEmpty ) { 
@@ -41,9 +43,10 @@ class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
       createForm(ops.makeUri(makeId), formConfig.toSeq, classs)
   }
   
+  /** lookup for Form Configuration within RDF graph in this class */
   def lookFormConfiguration(classs: Rdf#URI): Seq[Rdf#URI] = {
     val rdf = RDFPrefix[Rdf]
-    val forms = ops.getSubjects(graph, form("classDomain"), classs)
+    val forms = ops.getSubjects(graph, formPrefix("classDomain"), classs)
     val form_ = forms.flatMap {
       form => ops.foldNode(form)(uri => Some(uri), bn => Some(bn), lit => None)
     }.headOption
@@ -52,7 +55,7 @@ class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
       case None => Seq()
       case Some(f) =>
 //        val props = ops.getObjects(graph, f, form("showProperties"))
-        val props = oQuery(f, form("showProperties") )
+        val props = oQuery(f, formPrefix("showProperties") )
         for( p <- props ) { println( "showProperties " + p) }
         val p = props.headOption
         nodeSeqToURISeq( rdfListToSeq(p) )

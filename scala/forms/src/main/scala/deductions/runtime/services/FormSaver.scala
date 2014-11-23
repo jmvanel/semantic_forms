@@ -50,8 +50,7 @@ class FormSaver[Rdf <: RDF](store: RDFStore[Rdf])(
     } 
     // end of body of saveTriples
 
-  def saveTriplesForProperty(uri: String, prop: String, objects: Seq[String], map: Map[String, Seq[String]]) = {
-   
+  def saveTriplesForProperty(uri: String, prop: String, objects: Seq[String], map: Map[String, Seq[String]]) = {  
     objects.map(object_ => saveTriple(uri, prop, object_))
     println("triplesToRemove " + triplesToRemove)
     println("triples To add " + triples)

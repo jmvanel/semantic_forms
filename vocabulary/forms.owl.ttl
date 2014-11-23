@@ -62,6 +62,8 @@ form:Cardinality a owl:Class ;
 	rdfs:comment """ In oneOrMore or exactlyOne cases, the form tool should open a sub form in place or a popup. """@en .
 
          
+form:DatatypeInputFiled a owl:Class .
+
 form:widgetClass a owl:ObjectProperty ;
 	rdfs:domain form:TripleEdit ;
 	rdfs:range form:WidgetClass .

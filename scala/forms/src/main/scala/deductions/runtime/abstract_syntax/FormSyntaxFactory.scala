@@ -19,6 +19,11 @@ import org.w3.banana.XSDPrefix
 import org.w3.banana.diesel.toPointedGraphW
 import org.w3.banana.PrefixBuilder
 
+object FormSyntaxFactory {
+  /** vocabulary for form specifications */
+   val formVocabPrefix = "http://deductions-software.com/ontologies/forms.owl.ttl#" 
+}
+
 /** Factory for an abstract Form Syntax;
  *   */
 class FormSyntaxFactory[Rdf <: RDF]
@@ -36,12 +41,12 @@ with FieldsInference[Rdf] {
   val owl = OWLPrefix[Rdf]
   val owlThing = owl.prefixIri + "Thing"
   val rdf = RDFPrefix[Rdf]
-  val form = new PrefixBuilder("form", "http://deductions-software.com/ontologies/forms.owl.ttl#" )
-
-        
+  import FormSyntaxFactory._
+  val formPrefix = new PrefixBuilder( "form", formVocabPrefix ) 
+      
   println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
 
-  /**create Form from an instance (subject) URI */
+  /** create Form from an instance (subject) URI */
   def createForm(subject: Rdf#Node,
     editable: Boolean = false): FormSyntax[Rdf#Node, Rdf#URI] = {
     val props = fieldsFromSubject(subject, graph)
@@ -49,7 +54,7 @@ with FieldsInference[Rdf] {
       val classs = classFromSubject(subject) // TODO several classes
       fieldsFromClass(classs, graph)
     } else Seq()
-    createForm(subject, props ++ fromClass)
+    createForm(subject, props ++ fromClass, nullURI)
   }
 
   /** For each given property (props)
@@ -59,11 +64,10 @@ with FieldsInference[Rdf] {
    *    */
   def createForm(subject: Rdf#Node,
     props: Seq[Rdf#URI]
-//    ,classs: Rdf#URI=nullURI 
+    , classs: Rdf#URI 
     ): FormSyntax[Rdf#Node, Rdf#URI] = {
-    Logger.getRootLogger().info(s"createForm subject $subject, props $props")
-    val fields = mutable.ArrayBuffer[Entry]()
-    for (prop <- props) {
+    Logger.getRootLogger().info(s"createForm subject $subject, props $props")   
+    val f = for (prop <- props) yield {
       Logger.getRootLogger().info(s"createForm subject $subject, prop $prop")
       val ranges = extractURIs( oQuery( prop, rdfs.range ) )
       val rangesSize = ranges . size
@@ -73,14 +77,25 @@ with FieldsInference[Rdf] {
         "WARNING: There is no range for property " + prop
       } else ""
       println( mess, System.err)
-      
-      fields ++= ( makeEntry(subject, prop, ranges) )
+     makeEntry(subject, prop, ranges)
     }
-    FormSyntax(subject, fields) // , classs)// TODO <<<<<<<<<<<<<<<<<
+    val fields = f.flatMap{ s => s }    
+    val fields2 = addTypeTriple(subject, classs, fields)
+    FormSyntax(subject, fields2, classs)
   }
 
-    /** find fields from given Instance subject */
-//  private def fields(subject: Rdf#URI, graph: Rdf#Graph): Seq[Rdf#URI] = {
+  def addTypeTriple(subject: Rdf#Node, classs: Rdf#URI,
+      fields: Seq[Entry]
+  ) : Seq[Entry] = {
+      val formEntry = ResourceEntry(
+          // TODO not I18N:
+          "type", "class",
+          rdf.typ, ResourceValidator(Set(owl.Class)), classs,
+          false)
+      fields :+ formEntry
+  }
+
+  /** find fields from given Instance subject */
   private def fieldsFromSubject(subject: Rdf#Node, graph: Rdf#Graph): Seq[Rdf#URI] = {
     ops.getPredicates(graph, subject).toSet.toSeq
   }
@@ -90,7 +105,6 @@ with FieldsInference[Rdf] {
    * or else display terminal Part of URI as label;
    *  taking in account multi-valued properties
    */
-//  private def makeEntry(subject: Rdf#URI, prop: Rdf#URI, ranges: Set[Rdf#URI]): Seq[Entry] = {
   private def makeEntry(subject: Rdf#Node, prop: Rdf#URI, ranges: Set[Rdf#URI]): Seq[Entry] = {
     Logger.getRootLogger().info(s"makeEntry subject $subject, prop $prop")
     val label = getHeadStringOrElse(prop, rdfs.label, terminalPart(prop))
@@ -142,9 +156,8 @@ with FieldsInference[Rdf] {
       }
       result += entry
       }
-    for (object_ <- objects) {
-      addOneEntry(object_)
-    }
+
+    for (obj <- objects) addOneEntry(obj)
     
     // entry associated to prop
    if(objects isEmpty ) {

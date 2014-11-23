@@ -15,7 +15,8 @@ trait CreationForm extends RDFOpsModule
   import Ops._
   val nullURI : Rdf#URI = Ops.URI( "" )
   var actionURI = "/save"
-    
+  
+  /** create an XHTML input form from a class URI */
   def create( uri:String, lang:String="en" )  : Elem = {
     val store =  RDFStoreObject.store
     store.readTransaction {
