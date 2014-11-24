@@ -7,9 +7,10 @@ import org.w3.banana.RDF
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFStore.RDFStore2GraphStore
 import org.w3.banana.diesel.toPointedGraphW
-
 import deductions.runtime.jena.RDFStoreObject
 import deductions.runtime.utils.Fil‍eUtils
+import java.nio.file.Paths
+import java.nio.file.Files
 
 class TestCreationForm2 extends FunSuite with CreationForm {
   test("display form custom") {
@@ -19,7 +20,8 @@ class TestCreationForm2 extends FunSuite with CreationForm {
     retrieveURI( Ops.makeUri(uri), store )
     store.appendToGraph( Ops.makeUri("test"), graphTest.personFormSpec )
     val form = create(uri, lang="fr") 
-    println( form )
+    Files.write(Paths.get("tmp.creation.form.2.html"), form.toString().getBytes );
+
     assert ( ! form . toString() . contains("homepage") )
     assert (   form . toString() . contains("firstName") )
     assert (   form . toString() . contains("lastName") )

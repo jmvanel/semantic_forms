@@ -27,7 +27,7 @@ trait FormModule[NODE, URI <: NODE] {
   }
   
   val nullURI : URI
-  sealed class Entry(val label: String, val comment: String,
+  sealed abstract class Entry(val label: String, val comment: String,
       mandatory:Boolean=false 
   ) {
     	override def toString() : String = {

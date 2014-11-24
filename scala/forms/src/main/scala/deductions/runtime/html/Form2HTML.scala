@@ -39,12 +39,16 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
                    * or just create a new resource with its type, given by range, or derived
                    * (like in N3Form in EulerGUI ) */
                       if (editable) {
+                        <span>
                         <input value={ r.value.toString } name={ "RES-" + urlEncode(r.property) } style="resize: both"/>
-                        if (!r.alreadyInDatabase) { // WIP !!!!!!!!!
-                          {println("!r.alreadyInDatabase " + r ) }
-                          <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden"/>
+                        {
+                          if (!r.alreadyInDatabase) { // WIP !!!!!!!!!
+                        	  {println("!r.alreadyInDatabase " + r ) }
+                        	  <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden"/>
                           }
-                          
+                        }
+                        </span>
+
                       } else
                         <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }>{
                           r.value.toString

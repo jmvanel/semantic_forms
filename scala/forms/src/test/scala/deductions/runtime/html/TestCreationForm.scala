@@ -8,6 +8,8 @@ import org.w3.banana._
 import org.w3.banana.syntax._
 import org.w3.banana.diesel._
 import deductions.runtime.utils.Fil‍eUtils
+import java.nio.file.Files
+import java.nio.file.Paths
 
 class TestCreationForm extends FunSuite with CreationForm {
   val form = new PrefixBuilder[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#" )
@@ -22,7 +24,7 @@ class TestCreationForm extends FunSuite with CreationForm {
     val store =  RDFStoreObject.store
     retrieveURI( Ops.makeUri(uri), store )
     val form = create(uri, lang="fr") 
-    println( form )
+    Files.write(Paths.get("tmp.creation.form.html"), form.toString().getBytes );
     assert ( form . toString() . contains("homepage") )
   }
 
