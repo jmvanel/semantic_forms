@@ -42,7 +42,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
                         <span>
                         <input value={ r.value.toString } name={ "RES-" + urlEncode(r.property) } style="resize: both"/>
                         {
-                          if (!r.alreadyInDatabase) { // WIP !!!!!!!!!
+                          if (r.alreadyInDatabase) {
                         	  {println("!r.alreadyInDatabase " + r ) }
                         	  <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden"/>
                           }

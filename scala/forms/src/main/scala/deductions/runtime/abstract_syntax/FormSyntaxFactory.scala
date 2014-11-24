@@ -91,7 +91,7 @@ with FieldsInference[Rdf] {
           // TODO not I18N:
           "type", "class",
           rdf.typ, ResourceValidator(Set(owl.Class)), classs,
-          false)
+          alreadyInDatabase=false)
       fields :+ formEntry
   }
 
@@ -127,7 +127,8 @@ with FieldsInference[Rdf] {
           getStringOrElse(object_.pointer, "..empty.."))
       def resourceEntry = {
         ops.foldNode(object_)(
-            object_ => ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_),
+            object_ => ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_,
+                alreadyInDatabase=true),
 //                object_.pointer.asInstanceOf[Rdf#URI]),
             object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_),
               // BlankNodeEntry(label, comment, prop, ResourceValidator(ranges), object_),
