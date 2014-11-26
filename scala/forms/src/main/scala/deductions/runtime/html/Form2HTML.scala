@@ -19,11 +19,6 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
 
     val htmlForm =
       <div style="resize:both;">
-    		<style type="text/css"> 
-    	.cell {{ resize: both; overflow: auto; width: 100%; height: 100%; }}
-    .input {{ overflow: auto; width: 100%; height: 100%; }}
-    th, td {{ class: cell }}
-    </style>
         <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
         <table>
           {
@@ -34,7 +29,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
                   field match {
                     case l: LiteralEntry =>
                       if (editable)
-                        <input value={ l.value } name={ "LIT-" + urlEncode(l.property) } class="input" />
+                        <input value={ l.value } name={ "LIT-" + urlEncode(l.property) } class="overflow" width="48" />
                         <input value={ l.value } name={ "ORIG-LIT-" + urlEncode(l.property) } type="hidden"/>
                       else
                         <div>{ l.value }</div>
@@ -44,15 +39,15 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
                    * or just create a new resource with its type, given by range, or derived
                    * (like in N3Form in EulerGUI ) */
                       if (editable) {
-                        <span>
-                        <input value={ r.value.toString } name={ "RES-" + urlEncode(r.property) } class="input" />
+                        <div class="resize overflow">
+                        <input value={ r.value.toString } name={ "RES-" + urlEncode(r.property) } class="overflow" width="48" />
                         {
                           if (r.alreadyInDatabase) {
-                        	  {println("!r.alreadyInDatabase " + r ) }
+                        	  {println("r.alreadyInDatabase " + r ) }
                         	  <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden"/>
                           }
                         }
-                        </span>
+                        </div>
 
                       } else
                         <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }>{
@@ -60,9 +55,10 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
                         }</a>
                     case r: BlankNodeEntry =>
                       if (editable)
-                        <input value={ r.value.toString } name={ "BLA-" + urlEncode(r.property) } class="input" />
+                    	  <div class="resize overflow">
+                        <input value={ r.value.toString } name={ "BLA-" + urlEncode(r.property) } class="overflow" width="48" />
                         <input value={ r.value.toString } name={ "ORIG-BLA-" + urlEncode(r.property) } type="hidden"/>
-
+                        </div>
                       else
                         <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString, true) }>{
                           r.getId

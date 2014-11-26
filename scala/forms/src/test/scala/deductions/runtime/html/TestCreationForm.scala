@@ -24,7 +24,7 @@ class TestCreationForm extends FunSuite with CreationForm {
     val store =  RDFStoreObject.store
     retrieveURI( Ops.makeUri(uri), store )
     val form = create(uri, lang="fr") 
-    Files.write(Paths.get("tmp.creation.form.html"), form.toString().getBytes );
+    Files.write(Paths.get("example.creation.form.html"), form.toString().getBytes );
     assert ( form . toString() . contains("homepage") )
   }
 
