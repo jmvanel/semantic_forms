@@ -1,10 +1,17 @@
+// import play.Project._
+
 organization := "deductions"
 
 name := "semantic_forms_play"
 
 version := "1.0-SNAPSHOT"
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
+// lazy val semantic_forms = (project in file("../forms"))
+lazy val semantic_forms =  RootProject(file("../forms"))
+
+lazy val semantic_forms_play = (project in file("."))
+        .dependsOn(semantic_forms)
+	.enablePlugins(PlayScala)
 
 scalaVersion := "2.10.4"
 // scalaVersion := "2.11.1"

@@ -34,8 +34,7 @@ plus a textbox to enter a URL semantics, eg a FOAF profile or DBpedia URI :
 
 # How to run
 
-- build with sbt project ../forms
-- build and run this project with latest play activator this project: type: run
+- build and run this project with [latest play activator from typesafe.com](http://typesafe.com/platform/getstarted) , and type in activator : ~run
 
 Preloading RDF content
 
@@ -59,5 +58,5 @@ see a first attempt :
 [vocabulary/forms.owl.ttl](../../vocabulary/forms.owl.ttl)
 
 See (in french) :
-[doc/fr/formulaires.html](http://htmlpreview.github.io/?http://github.com/jmvanel/semantic_forms/blob/master/doc/fr/formulaires.html)
+[doc/fr/formulaires.html](http://htmlpreview.github.io/?https://github.com/jmvanel/semantic_forms/blob/master/doc/fr/formulaires.html)
 
