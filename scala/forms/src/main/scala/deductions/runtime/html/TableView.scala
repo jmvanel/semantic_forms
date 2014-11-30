@@ -10,6 +10,8 @@ import deductions.runtime.abstract_syntax.FormSyntaxFactory
 import deductions.runtime.jena.RDFStoreObject
 import deductions.runtime.sparql_cache.RDFCacheJena
 import scala.xml.PrettyPrinter
+import deductions.runtime.uri_classify.SemanticURIGuesser
+import scala.concurrent.Future
 
 /** Table View of a form (Jena) */
 trait TableView extends TableViewModule
@@ -46,7 +48,7 @@ trait TableViewModule
   /** create a form for given URI resource (instance) with background knowledge
    *  in given graph
    *  TODO non blocking */
-  def graf2form(graph: Rdf#Graph, uri:String,
+  private def graf2form(graph: Rdf#Graph, uri:String,
       hrefPrefix:String="", blankNode:String="",
       editable:Boolean=false,
       actionURI:String="/save",
@@ -64,7 +66,6 @@ trait TableViewModule
     )
     println("form:\n" + form)
     val htmlForm = generateHTML(form, hrefPrefix, editable, actionURI )
-//    println(htmlForm)
     htmlForm
   }
   
@@ -78,5 +79,28 @@ trait TableViewModule
 
   def graf2formString(graph1: Rdf#Graph, uri:String): String = {
     graf2form(graph1, uri).toString
+  }
+
+  /** From the list of ?O such that uri ?P ?O ,
+   *  return the list of their SemanticURIType as a Future */
+  def getSemanticURItypes(uri: String) :
+	  Future[Iterator[(Rdf#Node, SemanticURIGuesser.SemanticURIType)]] = {
+    val store = RDFStoreObject.store
+    // get the list of ?O such that uri ?P ?O .
+    import scala.concurrent.ExecutionContext.Implicits.global
+    store.readTransaction {
+      val allNamedGraphs = store.getGraph(Ops.makeUri("urn:x-arq:UnionGraph"))
+      val triples = Ops.find(allNamedGraphs, Ops.makeUri(uri), ANY, ANY)
+      val semanticURItypes =
+        for (triple <- triples) yield {
+          val node = triple.getObject
+          val semanticURItype = if (isURI(node)) {
+            SemanticURIGuesser.guessSemanticURIType(node.toString())
+          } else
+            Future.successful(SemanticURIGuesser.Unknown) // TODO NONE
+          semanticURItype .map{ st => (node, st) }
+        }
+      Future sequence semanticURItypes
+    }
   }
 }

@@ -52,10 +52,11 @@ trait RDFCacheJena extends RDFCache with JenaHelpers {
    * download and store URI in a graph named by itself,
    *  and store the timestamp from HTTP HEAD request
    */
-  def storeURI(uri: Rdf#URI, store: JenaStore) {
+  def storeURI(uri: Rdf#URI, store: JenaStore) : Rdf#Graph = {
 //  def storeURI(uri: Rdf#URI, store: GraphStore[Rdf]) {
     val model = storeURI(uri, uri, store)
     val time = lastModified(uri.getURI(), 1000)
+    // add timestamp to Graph
     store.writeTransaction {
       store.appendToGraph(makeUri(timestampGraphURI),
           Seq( makeTriple(
@@ -63,6 +64,7 @@ trait RDFCacheJena extends RDFCache with JenaHelpers {
               makeUri(timestampGraphURI),
               makeLiteral(time._2.toString, xsd.int ) ) ) )
     }
+    model
   }
 
    def lastModified( url0:String, timeout:Int) : (Boolean, Long) = {

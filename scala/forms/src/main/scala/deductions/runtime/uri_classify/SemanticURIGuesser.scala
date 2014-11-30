@@ -40,7 +40,7 @@ rdf, Json-LD, Turtle and other semantic content
  */
 object SemanticURIGuesser {
   
-  abstract class SemanticURIType
+  sealed abstract class SemanticURIType
   object SemanticURI extends SemanticURIType
   object Application extends SemanticURIType
   object Audio extends SemanticURIType

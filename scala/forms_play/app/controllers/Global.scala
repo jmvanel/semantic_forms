@@ -17,6 +17,7 @@ import org.w3.banana.RDFWriter
 import org.w3.banana.jena.Jena
 import org.w3.banana.Turtle
 import org.w3.banana.jena.JenaRDFWriter
+import deductions.runtime.uri_classify.SemanticURIGuesser
 
 package global {
 
@@ -69,6 +70,17 @@ object Global extends Controller // play.api.GlobalSettings
     </p>
   }
 
+  def displayURI2(uri:String) : Enumerator[scala.xml.Elem] = {
+    val t2= SemanticURIGuesser.guessSemanticURIType("http://xmlns.com/foaf/0.1/")
+    import scala.concurrent.ExecutionContext.Implicits.global
+    val enum = Enumerator.enumerate( Seq(t2) )
+//    Future.successful(t)
+    // http://docs.scala-lang.org/overviews/core/futures.html
+//    Enumerator.empty
+    enum.map { x => <span>{ x.toString() }</span> }
+    // TODO <<<<<<<<<<<<<<<<<<
+  }
+  
   def printTrace(e: Exception) : String = {
     var s = ""
     for ( i <- e.getStackTrace() ) { s = s + " " + i }

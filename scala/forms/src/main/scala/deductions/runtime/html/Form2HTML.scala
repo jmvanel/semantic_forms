@@ -35,9 +35,9 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
                         <div>{ l.value }</div>
                     case r: ResourceEntry =>
                       /* link to a known resource of the right type,
-                   * or create a sub-form for a blank node of an ancillary type (like a street address),
-                   * or just create a new resource with its type, given by range, or derived
-                   * (like in N3Form in EulerGUI ) */
+                       * or create a sub-form for a blank node of an ancillary type (like a street address),
+                       * or just create a new resource with its type, given by range, or derived
+                       * (like in N3Form in EulerGUI ) */
                       if (editable) {
                         <div class="resize overflow">
                         <input value={ r.value.toString } name={ "RES-" + urlEncode(r.property) } class="overflow" width="48" />

@@ -25,6 +25,14 @@ object Application extends Controller with TableView {
     }
   }
 
+  def displayURI2(uri:String) = {
+    Action { implicit request =>
+      println( "displayURI2: " + request )
+//      Ok.chunked( glob.displayURI2(uri) ) // TODO
+      Ok( "OK" )
+    }
+  }
+    
   def wordsearch(q:String="") = wordsearchNEW(q)
 
   def wordsearchOLD(q:String="") = {
@@ -39,7 +47,6 @@ object Application extends Controller with TableView {
   }
   
   def download0( url:String ) = {
-//    Action { Ok.chunked( glob.download(url) ).as("text/turtle") }
     Action { Ok( glob.downloadAsString(url) ).as("text/turtle") }
   }
 
@@ -49,9 +56,7 @@ object Application extends Controller with TableView {
 //    Action { Ok.stream( glob.download(url) ).as("text/turtle") }
   }
     
-  /* Ok.stream(enumerator >>> Enumerator.eof).
-   * 
-   */
+  /* Ok.stream(enumerator >>> Enumerator.eof */
   def chooseLanguage(request: Request[_]): String = {
     //     val l1 = request.headers.get("Accept-Language")
     val languages = request.acceptLanguages

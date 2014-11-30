@@ -24,7 +24,10 @@ trait JenaHelpers extends JenaModule {
      * with Jena Riot for smart reading of any format,
      * cf https://github.com/w3c/banana-rdf/issues/105
     */
-    def storeURI(uri: Jena#URI, graphUri: Jena#URI, store: JenaStore) : Model = {
+    def storeURI(uri: Jena#URI, graphUri: Jena#URI, store: JenaStore) :
+//    Model
+    Jena#Graph
+    = {
     store.writeTransaction {
       Logger.getRootLogger().info(s"storeURI uri $uri graphUri $graphUri")
       try{
@@ -38,10 +41,10 @@ trait JenaHelpers extends JenaModule {
       	
       	//	model.getNsPrefixMap // TODO use it to load referred vocab's
       	Logger.getRootLogger().info(s"storeURI uri $uri : stored")
-      	model
+      	model.getGraph
       } catch {
       case t: Throwable => Logger.getRootLogger().error( "ERROR: " + t )
-      ModelFactory.createDefaultModel()
+      ModelFactory.createDefaultModel().getGraph
       }
     }
   }
