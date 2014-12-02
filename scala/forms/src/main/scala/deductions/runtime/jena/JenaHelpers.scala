@@ -24,9 +24,9 @@ trait JenaHelpers extends JenaModule {
      * with Jena Riot for smart reading of any format,
      * cf https://github.com/w3c/banana-rdf/issues/105
     */
-    def storeURI(uri: Jena#URI, graphUri: Jena#URI, store: JenaStore) :
+    def storeURI(uri: Rdf#URI, graphUri: Rdf#URI, store: JenaStore) :
 //    Model
-    Jena#Graph
+    Rdf#Graph
     = {
     store.writeTransaction {
       Logger.getRootLogger().info(s"storeURI uri $uri graphUri $graphUri")

@@ -19,9 +19,9 @@ trait TableView extends TableViewModule
 /** Table View of a form */
 trait TableViewModule
   extends RDFModule
-//  with JenaModule
-  with Form2HTML[Jena#Node, Jena#URI]
   with RDFCacheJena // TODO depend on generic Rdf
+//  with Form2HTML[Rdf#Node, Rdf#URI]
+  with Form2HTML[Jena#Node, Jena#URI]
 {
   import Ops._
   val nullURI : Rdf#URI = Ops.URI( "" )
@@ -90,7 +90,7 @@ trait TableViewModule
     import scala.concurrent.ExecutionContext.Implicits.global
     store.readTransaction {
       val allNamedGraphs = store.getGraph(Ops.makeUri("urn:x-arq:UnionGraph"))
-      val triples = Ops.find(allNamedGraphs, Ops.makeUri(uri), ANY, ANY)
+      val triples :Iterator[Rdf#Triple] = Ops.find(allNamedGraphs, Ops.makeUri(uri), ANY, ANY)
       val semanticURItypes =
         for (triple <- triples) yield {
           val node = triple.getObject
