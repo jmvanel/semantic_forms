@@ -109,7 +109,7 @@ object Global extends Controller // play.api.GlobalSettings
     res
   }
 
-    def download(url: String) = {
+    def download(url: String) : Enumerator[Array[Byte]] = {
       // cf https://www.playframework.com/documentation/2.3.x/ScalaStream
       // and http://greweb.me/2012/11/play-framework-enumerator-outputstream/
       Enumerator.outputStream { os =>
