@@ -3,6 +3,9 @@ package deductions.sparql
 import org.w3.banana._
 import org.w3.banana.diesel._
 import java.net.URL
+import org.w3.banana.jena.JenaModule
+import java.io.OutputStream
+import java.io.ByteArrayOutputStream
 
 /* declare your dependencies as a trait with all the modules you need
  */
@@ -11,6 +14,7 @@ trait SPARQLHelperDependencies
   with RDFOpsModule
   with SparqlOpsModule
   with SparqlHttpModule
+//  with JsonLDWriterModule
 
 /* Here is an example doing some IO. Read below to see what's
  * happening.
@@ -32,7 +36,7 @@ trait SPARQLHelper extends SPARQLHelperDependencies
   import sparqlOps._
   import sparqlHttp.sparqlEngineSyntax._
 
-  runSparql("""
+  runSparqlSelect("""
     PREFIX ont: <http://dbpedia.org/ontology/>
 
     SELECT DISTINCT ?language WHERE {
@@ -41,21 +45,52 @@ trait SPARQLHelper extends SPARQLHelperDependencies
     ?other ont:influencedBy ?language .
     } LIMIT 100
     """,
-    Seq("language")
-    )
+    Seq("language"))
   
-  def runSparql( queryString:String, vars:Seq[String] ) {
+  val foaf = FOAFPrefix[Rdf]
+  runSparqlContruct( s"""
+    PREFIX foaf: <${foaf.prefixIri}>
     
-    /* gets a SparqlEngine out of a Sparql endpoint */
-    val endpoint = new URL("http://dbpedia.org/sparql/")
+    CONSTRUCT {
+      ?P <${foaf.familyName}> ?FN .
+    }
+    WHERE {
+      ?P <${foaf.familyName}> ?FN .
+    } LIMIT 100
+    """ )
+  
+  def runSparqlContruct( queryString:String,
+        endpoint:String="http://dbpedia.org/sparql/" ) {
+//    implicit val jsonldCompactedWriter
+    
+	  /* gets a SparqlEngine out of a Sparql endpoint */
+    val endpointURL = new URL("http://dbpedia.org/sparql/")
 
     /* creates a Sparql Select query */
     println( s"sparqlOps $sparqlOps" )
-    val query0 = parseSelect(queryString)
-    val query = query0.get
+    val query : Rdf#ConstructQuery = parseConstruct(queryString).get
+    val answer : Rdf#Graph = endpointURL.executeConstruct(query).getOrFail()
+    println( answer )
+    val os = new ByteArrayOutputStream
+//    val r = jsonldCompactedWriter.write(answer, os, endpoint )    
+    os.close()
+    println( os.toString("utf-8") )
+  }
+  
+  def runSparqlSelect(
+      queryString:String, vars:Seq[String],
+      endpoint:String="http://dbpedia.org/sparql/"
+      ) {
+    
+    /* gets a SparqlEngine out of a Sparql endpoint */
+    val endpointURL = new URL("http://dbpedia.org/sparql/")
+
+    /* creates a Sparql Select query */
+    println( s"sparqlOps $sparqlOps" )
+    val query = parseSelect(queryString).get
 
     /* executes the query */
-    val answers: Rdf#Solutions = endpoint.executeSelect(query).getOrFail()
+    val answers: Rdf#Solutions = endpointURL.executeSelect(query).getOrFail()
 
     /* iterate through the solutions */
     for (varia <- vars) {
@@ -70,13 +105,6 @@ trait SPARQLHelper extends SPARQLHelperDependencies
   }
   
 }
-
-/* Here is how you instantiate your modules. Note that this is using
- * the default module implementations in banana-rdf but nothing is
- * preventing you from implementing your own or re-using part of
- * them. */
-
-import org.w3.banana.jena.JenaModule
 
 object SPARQLAppWithJena 
 extends JenaModule 
