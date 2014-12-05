@@ -24,7 +24,6 @@ trait SPARQLExampleDependencies
  *   run-main org.w3.banana.examples.SPARQLExampleWithJena
  */
 trait SPARQLExample extends SPARQLExampleDependencies 
-// with App
 {
 //  self =>
 
@@ -33,9 +32,6 @@ trait SPARQLExample extends SPARQLExampleDependencies
   import sparqlHttp.sparqlEngineSyntax._
 
   def main(args: Array[String]): Unit = {
-
-//  runSparql
-//  def runSparql() {
     
     /* gets a SparqlEngine out of a Sparql endpoint */
     val endpoint = new URL("http://dbpedia.org/sparql/")
@@ -57,11 +53,13 @@ SELECT DISTINCT ?language WHERE {
     /* iterate through the solutions */
     val languages: Iterator[Rdf#URI] = answers.iterator map { row =>
       /* row is an Rdf#Solution, we can get an Rdf#Node from the variable name */
-      /* both the #Rdf#Node projection and the transformation to Rdf#URI can fail in the Try type, hense the flatMap */
+      /* both the #Rdf#Node projection and the transformation to Rdf#URI can fail in the Try type,
+       * hence the flatMap */
       row("language").get.as[Rdf#URI].get
     }
     println(languages.to[List].mkString("\n"))
   }
+  
 }
 
 /* Here is how you instantiate your modules. Note that this is using
