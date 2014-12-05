@@ -12,6 +12,8 @@ resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + 
 
 libraryDependencies += "org.w3" %%  "jena" %  "0.7.1-SNAPSHOT" // 0.7"
 
+libraryDependencies += "org.w3" %%  "sesame" %  "0.7.1-SNAPSHOT" // 0.7"
+
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.0" % Test
 
 // resolvers += "betehess" at  "http://dl.bintray.com/betehess/banana-rdf"

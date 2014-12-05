@@ -12,15 +12,15 @@ import org.w3.banana.XSDPrefix
 import org.w3.banana.jena.JenaStore
 import deductions.runtime.jena.JenaHelpers
 import org.w3.banana.GraphStore
-//import org.apache.http.client.utils.DateUtils
+import org.w3.banana.RDFStore
+import org.w3.banana.jena.JenaDatasetStore
 
 /** */
 trait RDFCache
   extends RDFModule
   with RDFOpsModule
   with TurtleReaderModule
-  with RDFXMLReaderModule {
-}
+  with RDFXMLReaderModule
 
 // TODO depend on generic Rdf
 trait RDFCacheJena extends RDFCache with JenaHelpers {
@@ -32,10 +32,12 @@ trait RDFCacheJena extends RDFCache with JenaHelpers {
   /**
    * retrieve URI from a graph named by itself;
    * or download and store URI only if corresponding graph is empty
-   * TODO according to timestamp retrieve from Jena Store,
+   * TODO according to timestamp retrieve from Store,
    * TODO save in another Dataset
    */
+  // RDFStore[Rdf]
   def retrieveURI(uri: Rdf#URI, store: JenaStore) = {
+//  def retrieveURI(uri: Rdf#URI, store: RDFStore[Rdf] with JenaDatasetStore ) = {
 //      def storeURI(uri: Rdf#URI, store: GraphStore[Rdf]) {
     val uriGraphIsEmpty = store.readTransaction {
       val g = store.getGraph(uri)
@@ -53,10 +55,12 @@ trait RDFCacheJena extends RDFCache with JenaHelpers {
    *  and store the timestamp from HTTP HEAD request
    */
   def storeURI(uri: Rdf#URI, store: JenaStore) : Rdf#Graph = {
+//  def storeURI(uri: Rdf#URI, store: RDFStore[Rdf] ) : Rdf#Graph = {
 //  def storeURI(uri: Rdf#URI, store: GraphStore[Rdf]) {
     val model = storeURI(uri, uri, store)
     val time = lastModified(uri.getURI(), 1000)
     // add timestamp to Graph
+//    store.writeTransaction {
     store.writeTransaction {
       store.appendToGraph(makeUri(timestampGraphURI),
           Seq( makeTriple(

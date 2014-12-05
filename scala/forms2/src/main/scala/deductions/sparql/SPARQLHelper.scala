@@ -6,31 +6,18 @@ import java.net.URL
 import org.w3.banana.jena.JenaModule
 import java.io.OutputStream
 import java.io.ByteArrayOutputStream
+import org.w3.banana.sesame.SesameModule
 
-/* declare your dependencies as a trait with all the modules you need
- */
+/* declare your dependencies as a trait with all the modules you need */
 trait SPARQLHelperDependencies
   extends RDFModule
   with RDFOpsModule
   with SparqlOpsModule
   with SparqlHttpModule
-//  with JsonLDWriterModule
+//  with JsonLDWriterModule // TODO contribute this in Banana for Jena 
 
-/* Here is an example doing some IO. Read below to see what's
- * happening.
- * 
- * As you can see, we never use Jena nor Sesame directly. The binding
- * is done later by providing the module implementation you
- * want. Hopefully, you'll have the same results :-)
- * 
- * To run this example from sbt:
- *   project examples
- *   run-main org.w3.banana.examples.SPARQLExampleWithJena
- */
-trait SPARQLHelper extends SPARQLHelperDependencies 
-// with App
-{
-//  self =>
+/** Here is an example doing some SPARQL. */
+trait SPARQLHelper extends SPARQLHelperDependencies {
 
   import ops._
   import sparqlOps._
@@ -72,7 +59,7 @@ trait SPARQLHelper extends SPARQLHelperDependencies
     val answer : Rdf#Graph = endpointURL.executeConstruct(query).getOrFail()
     println( answer )
     val os = new ByteArrayOutputStream
-//    val r = jsonldCompactedWriter.write(answer, os, endpoint )    
+//    val r = jsonldCompactedWriter.write(answer, os, endpoint )  // TODO  
     os.close()
     println( os.toString("utf-8") )
   }
@@ -106,7 +93,12 @@ trait SPARQLHelper extends SPARQLHelperDependencies
   
 }
 
-object SPARQLAppWithJena 
+//object SPARQLAppWithSesame
+//extends SesameModule 
+//with App
+//with SPARQLHelper
+
+object SPARQLAppWithJena
 extends JenaModule 
 with App
 with SPARQLHelper

@@ -23,10 +23,10 @@ trait CreationForm extends RDFOpsModule
       val allNamedGraphs = store.getGraph(makeUri("urn:x-arq:UnionGraph"))
       val factory = new UnfilledFormFactory[Rdf](allNamedGraphs, preferedLanguage=lang)
       val form = factory.createFormFromClass(URI(uri))
-    println(form)
+      println(form)
       val htmlForm = generateHTML(form, hrefPrefix="", editable=true, actionURI )
 //    println(htmlForm)
-    htmlForm
+      htmlForm
     }
 
   }

@@ -164,7 +164,7 @@ object Global extends Controller // play.api.GlobalSettings
     Logger.getRootLogger().info("Global.sparql query  "+ query )
     <p>SPARQL query:<br/>{query}
     <br/>
-    {dl.sparqlConstructQuery(query)}
+    {dl.sparqlConstructQuery(query) /* TODO Future !!!!!!!!!!!!!!!!!!! */ }
     </p>
   }
  }

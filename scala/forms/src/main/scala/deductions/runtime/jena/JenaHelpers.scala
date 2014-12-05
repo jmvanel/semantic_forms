@@ -12,6 +12,7 @@ import org.w3.banana.jena.JenaModule
 import org.w3.banana.Command
 import com.hp.hpl.jena.rdf.model.Model
 import com.hp.hpl.jena.rdf.model.ModelFactory
+import org.w3.banana.RDFStore
 
 /** Jena Helpers for JenaStore
  *  TODO pave the way for Banana 0.7 :
@@ -24,9 +25,8 @@ trait JenaHelpers extends JenaModule {
      * with Jena Riot for smart reading of any format,
      * cf https://github.com/w3c/banana-rdf/issues/105
     */
-    def storeURI(uri: Rdf#URI, graphUri: Rdf#URI, store: JenaStore) :
-//    Model
-    Rdf#Graph
+    def storeURI(uri: Rdf#URI, graphUri: Rdf#URI, store: JenaStore ) //  RDFStore[Rdf] )
+    : Rdf#Graph
     = {
     store.writeTransaction {
       Logger.getRootLogger().info(s"storeURI uri $uri graphUri $graphUri")
@@ -47,37 +47,5 @@ trait JenaHelpers extends JenaModule {
       ModelFactory.createDefaultModel().getGraph
       }
     }
-  }
-      //  val g = RDFXMLReader.read( v.toString(), v.toString() )
-      //  store.execute {
-      //    val ret = Command.append[Rdf]( v, g.toIterable ) // NOT COMPILING <<<<
-      //    println(s"store executed: append on $v of {triples.size} triples")
-      //    ret
-      //  }
-    
-  import Ops._
-  import SparqlOps._
-  
-  // TODO:
-  def SparqlQuery() {
-    val client = SparqlHttp(new URL("http://dbpedia.org/sparql/"))
-    /* creates a Sparql Select query */
-    val query = SelectQuery("""
-PREFIX ont: <http://dbpedia.org/ontology/>
-SELECT DISTINCT ?language WHERE {
- ?language a ont:ProgrammingLanguage .
- ?language ont:influencedBy ?other .
- ?other ont:influencedBy ?language .
-} LIMIT 100""")
-    /* executes the query */
-    //    val answers: Rdf#Solutions = client.executeSelect(query).getOrFail()
-    //
-    //    /* iterate through the solutions */
-    //    val languages: Iterable[Rdf#URI] = answers.toIterable map { row =>
-    //      /* row is an Rdf#Solution, we can get an Rdf#Node from the variable name */
-    //      /* both the #Rdf#Node projection and the transformation to Rdf#URI can fail in the Try type, hense the flatMap */
-    //      row("language").flatMap(_.as[Rdf#URI]) getOrElse sys.error("die")
-    //    }
-    //    println(languages.toList)
   }
 }

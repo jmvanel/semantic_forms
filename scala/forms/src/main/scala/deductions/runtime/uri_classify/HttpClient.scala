@@ -53,12 +53,11 @@ object HttpClient {
       response ← sendRequest(HttpRequest(method, uri = uri), connection)
     } yield response // .header[headers.Server]
     
-    val result2 = for {
-      connection ← IO(Http).ask(Http.Connect(host)).mapTo[Http.OutgoingConnection]
-      response ← sendRequest(HttpRequest(method, uri = uri), connection)
-    } yield response.header[headers.Server]
-    type ct = headers.`Content-Type`
-//    val v = result.header[ct]
+//    val result2 = for {
+//      connection ← IO(Http).ask(Http.Connect(host)).mapTo[Http.OutgoingConnection]
+//      response ← sendRequest(HttpRequest(method, uri = uri), connection)
+//    } yield response.header[headers.Server]
+//    type ct = headers.`Content-Type`
     
     result
   }
