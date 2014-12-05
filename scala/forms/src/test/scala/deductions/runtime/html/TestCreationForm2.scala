@@ -13,19 +13,20 @@ import java.nio.file.Paths
 import java.nio.file.Files
 
 class TestCreationForm2 extends FunSuite with CreationForm {
-  test("display form custom") {
+  test("display form custom") ({
     Fil‍eUtils.deleteLocalSPARL()
     val uri = "http://xmlns.com/foaf/0.1/Person"
     val store =  RDFStoreObject.store
     retrieveURI( Ops.makeUri(uri), store )
     store.appendToGraph( Ops.makeUri("test"), graphTest.personFormSpec )
     val form = create(uri, lang="fr") 
-    Files.write(Paths.get("tmp.creation.form.2.html"), form.toString().getBytes );
-
+    val file = "creation.form.2.html"
+    Files.write(Paths.get(file), form.toString().getBytes );
+    println( s"file created $file" )
     assert ( ! form . toString() . contains("homepage") )
     assert (   form . toString() . contains("firstName") )
     assert (   form . toString() . contains("lastName") )
-  }
+  })
 
   
   trait GraphTest[Rdf <: RDF] {

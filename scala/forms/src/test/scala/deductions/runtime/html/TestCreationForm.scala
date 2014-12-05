@@ -10,9 +10,9 @@ import org.w3.banana.diesel._
 import deductions.runtime.utils.Fil‍eUtils
 import java.nio.file.Files
 import java.nio.file.Paths
+import scala.xml.Elem
 
 class TestCreationForm extends FunSuite with CreationForm {
-  val form = new PrefixBuilder[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#" )
   val foaf = FOAFPrefix[Rdf]
         
   test("display form") {
@@ -20,12 +20,27 @@ class TestCreationForm extends FunSuite with CreationForm {
     val uri = // 
 //      "http://usefulinc.com/ns/doap#Project"
      // "http://xmlns.com/foaf/0.1/Organization"
-        "http://xmlns.com/foaf/0.1/Person"
+        foaf.Person.toString()
     val store =  RDFStoreObject.store
     retrieveURI( Ops.makeUri(uri), store )
-    val form = create(uri, lang="fr") 
-    Files.write(Paths.get("example.creation.form.html"), form.toString().getBytes );
-    assert ( form . toString() . contains("homepage") )
+    val rawForm = create(uri, lang="fr")
+    val form = wrapWithHTML(rawForm)
+    val file = "example.creation.form.html"
+    Files.write(Paths.get(file), form.toString().getBytes );
+    println( s"file created $file" )  
+    
+    assert ( rawForm . toString() . contains("homepage") )
   }
+
+  def wrapWithHTML( e:Elem ) : Elem =
+    <html>
+    <head>
+		  <style type="text/css">   
+		  .resize {{ resize: both; width: 100%; height: 100%; }}
+      .overflow {{ overflow: auto; width: 100%; height: 100%; }}
+		  </style> 
+		</head>
+    <body>{e}</body>
+    </html>
 
 }
