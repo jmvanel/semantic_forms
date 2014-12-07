@@ -12,6 +12,9 @@ import deductions.runtime.sparql_cache.RDFCacheJena
 import scala.xml.PrettyPrinter
 import deductions.runtime.uri_classify.SemanticURIGuesser
 import scala.concurrent.Future
+import deductions.runtime.utils.MonadicHelpers
+import scala.concurrent.Await
+import scala.concurrent.duration._
 
 /** Table View of a form (Jena) */
 trait TableView extends TableViewModule
@@ -25,26 +28,37 @@ trait TableViewModule
 {
   import Ops._
   val nullURI : Rdf#URI = Ops.URI( "" )
-
+  import scala.concurrent.ExecutionContext.Implicits.global
+ 
   /** create a form for given uri with background knowledge in RDFStoreObject.store  */
-  def htmlForm(uri:String, hrefPrefix:String="", blankNode:String="",
+  def htmlForm( uri:String, hrefPrefix:String="", blankNode:String="",
       editable:Boolean=false,
       actionURI:String="/save",
-      lang:String="en") : Elem = {
-    val store =  RDFStoreObject.store
-//    RDFStoreObject.printGraphList
-    // TODO ? load ontologies from local SPARQL; probably use a pointed graph
-    
+      lang:String="en") : Future[Elem] = {   
+    val dataset =  RDFStoreObject.dataset
     if(blankNode != "true"){
-      retrieveURI(makeUri(uri), store)
+      retrieveURI_new(makeUri(uri), dataset)
       Logger.getRootLogger().info(s"After storeURI(makeUri($uri), store)")
     }
-    store.readTransaction {
-      val allNamedGraphs = store.getGraph(makeUri("urn:x-arq:UnionGraph"))
+    val r = rdfStore.r(dataset, {
+//    store.readTransaction {
+      for( 
+         allNamedGraphs <- rdfStore.getGraph(makeUri("urn:x-arq:UnionGraph"))
+         ) yield
       graf2form(allNamedGraphs, uri, hrefPrefix, blankNode, editable, actionURI, lang)
-    }
+    })
+    MonadicHelpers.tryToFutureFlat(r)
   }
 
+  def htmlFormElem(uri: String, hrefPrefix: String = "", blankNode: String = "",
+                   editable: Boolean = false,
+                   actionURI: String = "/save",
+                   lang: String = "en"): Elem = {
+    Await.result(
+      htmlForm( uri, hrefPrefix, blankNode, editable, actionURI, lang),
+      5 seconds)
+  }
+    
   /** create a form for given URI resource (instance) with background knowledge
    *  in given graph
    *  TODO non blocking */
@@ -72,7 +86,7 @@ trait TableViewModule
   def htmlFormString(uri:String,
       editable:Boolean=false,
       actionURI:String="/save" ) : String = {
-    val f = htmlForm(uri, editable=editable, actionURI=actionURI)
+    val f = htmlFormElem(uri, editable=editable, actionURI=actionURI)
     val pp = new PrettyPrinter(80, 2)
     pp.format(f)
   }
@@ -85,11 +99,14 @@ trait TableViewModule
    *  return the list of their SemanticURIType as a Future */
   def getSemanticURItypes(uri: String) :
 	  Future[Iterator[(Rdf#Node, SemanticURIGuesser.SemanticURIType)]] = {
-    val store = RDFStoreObject.store
     // get the list of ?O such that uri ?P ?O .
     import scala.concurrent.ExecutionContext.Implicits.global
-    store.readTransaction {
-      val allNamedGraphs = store.getGraph(Ops.makeUri("urn:x-arq:UnionGraph"))
+    val dataset =  RDFStoreObject.dataset
+    val r = rdfStore.r(dataset, {
+//    store.readTransaction {
+      for( 
+        allNamedGraphs <- rdfStore.getGraph(Ops.makeUri("urn:x-arq:UnionGraph"))
+      ) yield { 
       val triples :Iterator[Rdf#Triple] = Ops.find(allNamedGraphs, Ops.makeUri(uri), ANY, ANY)
       val semanticURItypes =
         for (triple <- triples) yield {
@@ -101,6 +118,8 @@ trait TableViewModule
           semanticURItype .map{ st => (node, st) }
         }
       Future sequence semanticURItypes
-    }
+      }
+    })
+    MonadicHelpers.tryToFutureFlat(r).flatMap( identity )
   }
 }

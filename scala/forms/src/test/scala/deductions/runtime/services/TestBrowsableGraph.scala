@@ -16,7 +16,7 @@ class TestBrowsableGraph
 {
   import Ops._
   
-  lazy val store =  RDFStoreObject.store
+//  lazy val store =  RDFStoreObject.store
   lazy val bg = new BrowsableGraph(store)
   
   val uri = "http://jmvanel.free.fr/jmv.rdf#me"

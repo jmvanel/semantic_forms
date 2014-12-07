@@ -23,7 +23,7 @@ class TestCreationForm extends FunSuite with CreationForm {
         foaf.Person.toString()
     val store =  RDFStoreObject.store
     retrieveURI( Ops.makeUri(uri), store )
-    val rawForm = create(uri, lang="fr")
+    val rawForm = createElem(uri, lang="fr")
     val form = wrapWithHTML(rawForm)
     val file = "example.creation.form.html"
     Files.write(Paths.get(file), form.toString().getBytes );

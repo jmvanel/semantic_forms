@@ -18,7 +18,9 @@ import java.io.ByteArrayOutputStream
 
 /** Browsable Graph implementation, in the sense of
  *  http://www.w3.org/DesignIssues/LinkedData.html */
-class BrowsableGraph [Rdf <: RDF](store: RDFStore[Rdf])(
+class BrowsableGraph [Rdf <: RDF](
+    store: RDFStore[Rdf]
+    )(
   implicit
   ops: RDFOps[Rdf],
   sparqlOps: SparqlOps[Rdf],

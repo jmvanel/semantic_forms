@@ -66,7 +66,8 @@ with FieldsInference[Rdf] {
     props: Seq[Rdf#URI]
     , classs: Rdf#URI 
     ): FormSyntax[Rdf#Node, Rdf#URI] = {
-    Logger.getRootLogger().info(s"createForm subject $subject, props $props")   
+    Logger.getRootLogger().info(s"createForm subject $subject, props $props")
+    
     val f = for (prop <- props) yield {
       Logger.getRootLogger().info(s"createForm subject $subject, prop $prop")
       val ranges = extractURIs( oQuery( prop, rdfs.range ) )
@@ -221,18 +222,12 @@ with FieldsInference[Rdf] {
     case _ if(noLanguageValue != "" ) => noLanguageValue 
     }
   }
-  
+
   private def getStringOrElse(n: Rdf#Node, default: String): String = {
-//    Logger.getRootLogger().info( "getStringOrElse ops " + ops + " Rdf#Node " + n + " " + n.getClass )
     ops.foldNode(n)(_ => default, _ => default, l => {
-//      Logger.getRootLogger().info( "getStringOrElse 2 ops " + ops + " Rdf#Node " + l + " " + l.getClass )
-//      Logger.getRootLogger().info( "getStringOrElse 2.1 "
-//            + ops.asInstanceOf[JenaOps] . __xsdStringURI )
       val v = ops.fromLiteral(l)
-//      Logger.getRootLogger().info( "getStringOrElse 3 " + v )
       v._1
-    }
-    )
+    })
   }
 
   /** get first ?OBJ such that:

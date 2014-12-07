@@ -46,9 +46,12 @@ Preloading RDF content
 - Preloading a local file: in activator shell type: for example:
 
 	run-main tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me /home/jmv/data/foaf/jmv.rdf
-	# NOTE: with next Jena release it will be possible to directly load from Internet:
+
+	// With Jena it is possible to directly load from Internet:
 	run-main tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me http://jmvanel.free.fr/jmv.rdf#me 
+
 - dumping all database:
+
 	run-main tdb.tdbdump   --loc=TDB > dump.nt
 
 Tips:

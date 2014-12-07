@@ -40,7 +40,6 @@ with App {
   loadCommonFormSpecifications()
 
   def loadCommonVocabularies() {
-    val store = RDFStoreObject.store
     //  val uri: Rdf#URI = RDFSPrefix[Rdf].apply("")
     // loop on most used vocab's
     val vocabs0 = List(
@@ -66,7 +65,8 @@ with App {
     /* geo: , con: , <foaf_fr.n3>  TODO */
 
     Logger.getRootLogger().info(vocabs)
-    vocabs1 map { storeURI(_, store) }
+//    vocabs1 map { storeURI(_, store) }
+    vocabs1 map { storeURI_new(_, dataset ) }
   }
   
   /** load CommonForm Specifications from a well know place */
@@ -77,7 +77,7 @@ with App {
     import deductions.runtime.abstract_syntax.FormSyntaxFactory._
     val formPrefix = new PrefixBuilder("form", formVocabPrefix ) 
     
-    val store =  RDFStoreObject.store
+//    val store =  RDFStoreObject.store
 
     /* Retrieving :
      * foaf: form:ontologyHasFormSpecification <foaf.form.ttl> . */
@@ -89,7 +89,8 @@ with App {
     for( obj <- objects ) {
           val from = new java.net.URL(obj.toString()).openStream()
           val form_spec_graph: Rdf#Graph = TurtleReader.read( from, base = obj.toString() ) getOrElse sys.error(s"couldn't read ${obj.toString()}")
-          store.appendToGraph( Ops.makeUri("form_specs"), form_spec_graph )
+//          store.appendToGraph( Ops.makeUri("form_specs"), form_spec_graph )
+          rdfStore.appendToGraph( Ops.makeUri("form_specs"), form_spec_graph )
           println("Added form_spec " + obj)
     }
   }

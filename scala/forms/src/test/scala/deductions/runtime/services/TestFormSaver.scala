@@ -18,7 +18,7 @@ class TestFormSaver
 {
   import Ops._
   
-  lazy val store =  RDFStoreObject.store
+//  lazy val store =  RDFStoreObject.store
   lazy val fs = new FormSaver(store)
   
   val uri = "http://jmvanel.free.fr/jmv.rdf#me"
