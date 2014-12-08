@@ -13,22 +13,31 @@ import play.api.mvc.Request
 import deductions.runtime.html.CreationForm
 import scala.concurrent.Future
 import play.api.libs.iteratee.Enumerator
-import org.w3.banana.RDFWriter
+import org.w3.banana.io.RDFWriter
 import org.w3.banana.jena.Jena
-import org.w3.banana.Turtle
-import org.w3.banana.jena.JenaRDFWriter
+import org.w3.banana.io.Turtle
 import deductions.runtime.uri_classify.SemanticURIGuesser
+import deductions.runtime.sparql_cache.RDFCacheJena
+import org.w3.banana.RDFOpsModule
+import scala.util.Try
+import org.w3.banana.TurtleWriterModule
 
 package global {
 
 object Global extends Controller // play.api.GlobalSettings
+  with RDFCacheJena
+   with RDFOpsModule
+   with TurtleWriterModule
+//   with SparqlGraphModule
+//   with SparqlOpsModule
+//   with RDFStoreLocalProvider
 {
   var form : Elem = <p>initial value</p>
   lazy val tableView = new TableView {}
-  lazy val store =  RDFStoreObject.store
-  lazy val search = new StringSearchSPARQL(store)
-  lazy val dl = new BrowsableGraph(store)
-  lazy val fs = new FormSaver(store)
+//  lazy val store =  RDFStoreObject.store
+  lazy val search = new StringSearchSPARQL()
+  lazy val dl = new BrowsableGraph()
+  lazy val fs = new FormSaver()
   lazy val cf = new CreationForm { actionURI = "/save" }
   
   val hrefDisplayPrefix = "/display?displayuri="
@@ -56,7 +65,7 @@ object Global extends Controller // play.api.GlobalSettings
       {if (uri != null && uri != "")
         try {
           tableView.htmlForm(uri, hrefDisplayPrefix, blankNode, editable=editable,
-              lang=lang )
+              lang=lang ) . get
         } catch {
         case e:Exception => // e.g. org.apache.jena.riot.RiotException
           <p style="color:red">{
@@ -116,7 +125,7 @@ object Global extends Controller // play.api.GlobalSettings
         val graph = dl.search_only(url)
         graph.map { graph =>
           /* non blocking */
-          val writer: RDFWriter[Jena, Turtle] = JenaRDFWriter.turtleWriter
+          val writer: RDFWriter[Jena, Try, Turtle] = turtleWriter
           val ret = writer.write(graph, os, base = url)
           os.close()
         }
@@ -156,7 +165,7 @@ object Global extends Controller // play.api.GlobalSettings
     val uri = uri0.trim()
     
     <p>Creating an instance of Class <bold>{uri}</bold>
-      {cf.create(uri, lang)}
+      {cf.create(uri, lang).get}
     </p>
   }
 

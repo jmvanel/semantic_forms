@@ -9,7 +9,7 @@ import org.w3.banana.FOAFPrefix
 import org.w3.banana.RDFModule
 import org.w3.banana.RDFOpsModule
 import org.w3.banana.TurtleReaderModule
-import org.w3.banana.diesel.toPointedGraphW
+import org.w3.banana.diesel._
 import org.w3.banana.jena.JenaModule
 
 class FormSyntaxFactoryTestJena extends FunSuite 
@@ -35,7 +35,7 @@ extends RDFOpsModule
 with TurtleReaderModule {
 
   def createForm() = {
-  import Ops._
+  import ops._
 
   val foaf = FOAFPrefix[Rdf]
   val graph1 = (
@@ -48,11 +48,11 @@ with TurtleReaderModule {
       -- foaf.currentProject ->- URI("http://webid.info/"))).graph
 
   val resource = new FileInputStream("src/test/resources/foaf.n3")
-  val graph2 = TurtleReader.read(resource, "http://xmlns.com/foaf/0.1/").get
+  val graph2 = turtleReader.read(resource, "http://xmlns.com/foaf/0.1/").get
   val graph = union(Seq(graph1, graph2))
 
   val fact = new FormSyntaxFactory[Rdf](graph)
-  println((graph.toIterable).mkString("\n"))
+  println((graph.triples).mkString("\n"))
   val form = fact.createForm(
       URI("betehess"),
       Seq(foaf.title,

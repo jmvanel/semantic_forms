@@ -4,8 +4,8 @@ name := "semantic_forms"
 
 version := "1.0-SNAPSHOT"
 
-scalaVersion := "2.10.4"
-// scalaVersion := "2.11.1"
+// scalaVersion := "2.10.4"
+scalaVersion := "2.11.1"
 
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
 
@@ -13,8 +13,8 @@ resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + 
 
 // resolvers += "spray repo" at "http://repo.spray.io"
 
-// libraryDependencies += "org.w3" %  "banana-jena_2.10" %  "0.6"
-libraryDependencies += "org.w3" %%  "banana-jena" %  "0.6"
+// libraryDependencies += "org.w3" %%  "banana-jena" %  "0.6"
+libraryDependencies += "org.w3" %%  "jena" %  "0.7.1-SNAPSHOT" // 0.7"
 
 // libraryDependencies += "org.apache.httpcomponents" % "httpcomponents-client" % "4.3.5"
 // libraryDependencies += "io.spray" %% "spray-client" % "1.3.2"

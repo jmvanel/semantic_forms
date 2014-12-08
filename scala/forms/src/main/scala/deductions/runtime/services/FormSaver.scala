@@ -2,32 +2,36 @@ package deductions.runtime.services
 
 import java.net.URLDecoder
 import java.net.URLEncoder
-
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
-
-import org.w3.banana.Command
 import org.w3.banana.RDF
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFStore
-import org.w3.banana.RDFStore.RDFStore2GraphStore
-import org.w3.banana.RDFWriter
+import org.w3.banana.io.RDFWriter
 import org.w3.banana.SparqlEngine
 import org.w3.banana.SparqlOps
-import org.w3.banana.Turtle
-//import org.w3.banana.TurtleWriterModule
+import org.w3.banana.io.Turtle
+import deductions.runtime.jena.RDFStoreObject
+import scala.util.Try
+import scala.concurrent.Future
+import org.w3.banana._
+import deductions.runtime.jena.RDFStoreLocalProvider
 
-class FormSaver[Rdf <: RDF](store: RDFStore[Rdf])(
+class FormSaver[Rdf <: RDF](
+//    store: RDFStore[Rdf, Try, RDFStoreObject.DATASET]
+    )
+(
   implicit ops: RDFOps[Rdf],
   sparqlOps: SparqlOps[Rdf],
-  writer: RDFWriter[Rdf, Turtle])
+  writer: RDFWriter[Rdf, Try, Turtle],
+//  sparqlEngine : SparqlEngine[Rdf, Future, RDFStoreObject.DATASET],
+  rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET]
+)
+//extends RDFStoreLocalProvider
 //  extends TurtleWriterModule 
   {
-
   import ops._
   import sparqlOps._
-
-  val sparqlEngine = SparqlEngine[Rdf](store)
 
   def saveTriples(map: Map[String, Seq[String]]) = {
     println("FormSaver.saveTriples")
@@ -47,14 +51,14 @@ class FormSaver[Rdf <: RDF](store: RDFStore[Rdf])(
         }
         doSave(uri:String)
       case _ =>
-    } 
+    }
     // end of body of saveTriples
 
-  def saveTriplesForProperty(uri: String, prop: String, objects: Seq[String], map: Map[String, Seq[String]]) = {  
-    objects.map(object_ => saveTriple(uri, prop, object_))
-    println("triplesToRemove " + triplesToRemove)
-    println("triples To add " + triples)
-  }
+    def saveTriplesForProperty(uri: String, prop: String, objects: Seq[String], map: Map[String, Seq[String]]) = {  
+    	objects.map(object_ => saveTriple(uri, prop, object_))
+    	println("triplesToRemove " + triplesToRemove)
+    	println("triples To add " + triples)
+    }
   
     def processChange(uri: String, prop: String, obj: String): (Boolean, String) = {
       val originalValue = map.getOrElse(
@@ -105,28 +109,33 @@ class FormSaver[Rdf <: RDF](store: RDFStore[Rdf])(
         }
       }
     }
-    
-  def doSave(uri:String) {
-    val init = store.execute {
-      for {
-        _ <- Command.remove(makeUri(uri), triplesToRemove)
-        _ <- Command.append(makeUri(uri), triples)
-      } yield ()
-    }
-    
-    init onSuccess {
+
+    def doSave(uri: String) {
+    	import ops._
+//      val rdfStore = RDFStoreObject.rdfStore
+      val init =
+        rdfStore.rw(RDFStoreObject.dataset, {
+          rdfStore.removeTriples( RDFStoreObject.dataset, makeUri(uri), triplesToRemove.toIterable )
+          rdfStore.appendToGraph( RDFStoreObject.dataset, makeUri(uri),
+            makeGraph(triples) )
+        }).flatMap { identity }
+
+      val f = init.asFuture
+      
+      f  onSuccess {
         case _ =>
           println("Successfully stored triples in store")
-          store.getGraph(makeUri(uri)).onSuccess {
-            case gr =>
-              if( triplesToRemove.size > 0 ||
+          rdfStore.getGraph( RDFStoreObject.dataset, makeUri(uri)).asFuture.
+            onSuccess {
+              case gr =>
+                if (triplesToRemove.size > 0 ||
                   triples.size > 0) {
-              val graphAsString = writer.asString(gr, base = uri) getOrElse sys.error("coudn't serialize the graph")
-              println("Graph with modifications:\n" + graphAsString)
-              }
-          }
+                  val graphAsString = writer.asString(gr, base = uri) getOrElse sys.error("coudn't serialize the graph")
+                  println("Graph with modifications:\n" + graphAsString)
+                }
+            }
       }
-  }
+    }
   }
 
 }

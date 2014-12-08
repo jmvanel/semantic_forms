@@ -2,8 +2,8 @@ package deductions.runtime.html
 
 import org.w3.banana.RDF
 import deductions.runtime.abstract_syntax.FormSyntaxFactoryTest
-import org.w3.banana.RDFReader
-import org.w3.banana.Turtle
+import org.w3.banana.io.RDFReader
+import org.w3.banana.io.Turtle
 import org.w3.banana.RDFOps
 import org.w3.banana.jena.Jena
 import org.junit.Assert
@@ -19,7 +19,7 @@ class Form2HTMLTestJena extends Form2HTMLTest
 class Form2HTMLTest
       extends FunSuite with FormSyntaxFactoryTest
       with JenaModule {
-  import Ops._
+  import ops._
   println("Entering Form2HTMLTest")
   val nullURI1 = makeUri("")
 

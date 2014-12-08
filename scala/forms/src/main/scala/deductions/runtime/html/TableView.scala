@@ -15,48 +15,57 @@ import scala.concurrent.Future
 import deductions.runtime.utils.MonadicHelpers
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import scala.util.Try
+import scala.util.Success
+import scala.util.Failure
 
-/** Table View of a form (Jena) */
+/** Table View of a form */
 trait TableView extends TableViewModule
 
 /** Table View of a form */
 trait TableViewModule
   extends RDFModule
-  with RDFCacheJena // TODO depend on generic Rdf
+  with RDFCacheJena
+//  with Form2HTML[Rdf.Node, Rdf.URI]
 //  with Form2HTML[Rdf#Node, Rdf#URI]
-  with Form2HTML[Jena#Node, Jena#URI]
+  with Form2HTML[Jena#Node, Jena#URI] // TODO Jena !!!!!!!!!!!!!!
 {
-  import Ops._
-  val nullURI : Rdf#URI = Ops.URI( "" )
+  import ops._
+  val nullURI : Rdf#URI = ops.URI( "" )
   import scala.concurrent.ExecutionContext.Implicits.global
  
   /** create a form for given uri with background knowledge in RDFStoreObject.store  */
   def htmlForm( uri:String, hrefPrefix:String="", blankNode:String="",
       editable:Boolean=false,
       actionURI:String="/save",
-      lang:String="en") : Future[Elem] = {   
+      lang:String="en") : Try[Elem] = {   
     val dataset =  RDFStoreObject.dataset
     if(blankNode != "true"){
-      retrieveURI_new(makeUri(uri), dataset)
+      retrieveURI(makeUri(uri), dataset)
       Logger.getRootLogger().info(s"After storeURI(makeUri($uri), store)")
     }
     val r = rdfStore.r(dataset, {
 //    store.readTransaction {
       for( 
-         allNamedGraphs <- rdfStore.getGraph(makeUri("urn:x-arq:UnionGraph"))
+         allNamedGraphs <- rdfStore.getGraph(dataset, makeUri("urn:x-arq:UnionGraph"))
          ) yield
       graf2form(allNamedGraphs, uri, hrefPrefix, blankNode, editable, actionURI, lang)
     })
-    MonadicHelpers.tryToFutureFlat(r)
+//    MonadicHelpers.tryToFutureFlat(r)
+    r.flatMap { identity }
   }
 
   def htmlFormElem(uri: String, hrefPrefix: String = "", blankNode: String = "",
                    editable: Boolean = false,
                    actionURI: String = "/save",
                    lang: String = "en"): Elem = {
-    Await.result(
-      htmlForm( uri, hrefPrefix, blankNode, editable, actionURI, lang),
-      5 seconds)
+//    Await.result(
+      htmlForm( uri, hrefPrefix, blankNode, editable, actionURI, lang)
+      match {
+        case Success(e) => e
+        case Failure(e) => <p>Exception occured: {e}</p>
+      }
+//      , 5 seconds)
   }
     
   /** create a form for given URI resource (instance) with background knowledge
@@ -105,9 +114,10 @@ trait TableViewModule
     val r = rdfStore.r(dataset, {
 //    store.readTransaction {
       for( 
-        allNamedGraphs <- rdfStore.getGraph(Ops.makeUri("urn:x-arq:UnionGraph"))
+        allNamedGraphs <- rdfStore.getGraph(dataset, ops.makeUri("urn:x-arq:UnionGraph"))
       ) yield { 
-      val triples :Iterator[Rdf#Triple] = Ops.find(allNamedGraphs, Ops.makeUri(uri), ANY, ANY)
+      val triples :Iterator[Rdf#Triple] = ops.find(allNamedGraphs,
+          ops.makeUri(uri), ANY, ANY)
       val semanticURItypes =
         for (triple <- triples) yield {
           val node = triple.getObject
@@ -120,6 +130,12 @@ trait TableViewModule
       Future sequence semanticURItypes
       }
     })
-    MonadicHelpers.tryToFutureFlat(r).flatMap( identity )
+    val r1 = r.flatMap( identity )
+    val rr = MonadicHelpers.tryToFuture(r1)
+    rr.flatMap( identity )
   }
+  
+  def isURI( node:Rdf#Node) = ops.foldNode( node )(identity, x => None, x => None) != None
+
+//  def r[Int](dataset: DATASET, body: => Int): M[Int] = M {333}
 }

@@ -2,11 +2,10 @@ package deductions.runtime.html
 
 import org.scalatest.FunSuite
 import org.w3.banana.FOAFPrefix
-import org.w3.banana.PrefixBuilder
+import org.w3.banana.Prefix
 import org.w3.banana.RDF
 import org.w3.banana.RDFOps
-import org.w3.banana.RDFStore.RDFStore2GraphStore
-import org.w3.banana.diesel.toPointedGraphW
+import org.w3.banana.diesel._
 import deductions.runtime.jena.RDFStoreObject
 import deductions.runtime.utils.Fil‍eUtils
 import java.nio.file.Paths
@@ -16,9 +15,8 @@ class TestCreationForm2 extends FunSuite with CreationForm {
   test("display form custom") ({
     Fil‍eUtils.deleteLocalSPARL()
     val uri = "http://xmlns.com/foaf/0.1/Person"
-    val store =  RDFStoreObject.store
-    retrieveURI( Ops.makeUri(uri), store )
-    store.appendToGraph( Ops.makeUri("test"), graphTest.personFormSpec )
+    retrieveURI( ops.makeUri(uri), dataset )
+    rdfStore.appendToGraph( dataset, ops.makeUri("test"), graphTest.personFormSpec )
     val form = create(uri, lang="fr") 
     val file = "creation.form.2.html"
     Files.write(Paths.get(file), form.toString().getBytes );
@@ -30,10 +28,10 @@ class TestCreationForm2 extends FunSuite with CreationForm {
 
   
   trait GraphTest[Rdf <: RDF] {
-    implicit val ops: RDFOps[Rdf] = Ops.asInstanceOf[org.w3.banana.RDFOps[Rdf]]
+    implicit val ops: RDFOps[Rdf] = ops.asInstanceOf[org.w3.banana.RDFOps[Rdf]]
     import ops._
 //    import syntax._
-    val form = new PrefixBuilder[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#")
+    val form = Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#")
     val foaf = FOAFPrefix[Rdf]
     val personFormSpec = (
       URI("personForm")
@@ -46,5 +44,5 @@ class TestCreationForm2 extends FunSuite with CreationForm {
   }
   
   val graphTest = new AnyRef with GraphTest[Rdf]
-  println(TurtleWriter.asString(graphTest.personFormSpec, "" ))
+  println(turtleWriter.asString(graphTest.personFormSpec, "" ))
 }

@@ -16,8 +16,9 @@ import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
 import org.w3.banana.URIOps
 import org.w3.banana.XSDPrefix
-import org.w3.banana.diesel.toPointedGraphW
-import org.w3.banana.PrefixBuilder
+import org.w3.banana.diesel._
+import org.w3.banana.Prefix
+import org.w3.banana.syntax._
 
 object FormSyntaxFactory {
   /** vocabulary for form specifications */
@@ -34,7 +35,8 @@ class FormSyntaxFactory[Rdf <: RDF]
 extends // RDFOpsModule with 
 FormModule[Rdf#Node, Rdf#URI]
 with FieldsInference[Rdf] {
-
+  import ops._
+  
   lazy val nullURI = ops.URI( "http://null.com#" ) // TODO better : "" ????????????
   val rdfs = RDFSPrefix[Rdf]
       
@@ -42,7 +44,7 @@ with FieldsInference[Rdf] {
   val owlThing = owl.prefixIri + "Thing"
   val rdf = RDFPrefix[Rdf]
   import FormSyntaxFactory._
-  val formPrefix = new PrefixBuilder( "form", formVocabPrefix ) 
+  val formPrefix = Prefix( "form", formVocabPrefix ) 
       
   println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
 
@@ -125,7 +127,7 @@ with FieldsInference[Rdf] {
       
     def addOneEntry(object_ : Rdf#Node) = {
       def literalEntry = LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
-          getStringOrElse(object_.pointer, "..empty.."))
+          getStringOrElse(object_, "..empty.."))
       def resourceEntry = {
         ops.foldNode(object_)(
             object_ => ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_,
@@ -134,7 +136,7 @@ with FieldsInference[Rdf] {
             object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_),
               // BlankNodeEntry(label, comment, prop, ResourceValidator(ranges), object_),
             object_ => LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
-                getStringOrElse(object_.pointer, "..empty.."))
+                getStringOrElse(object_, "..empty.."))
             )
 //        ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_.pointer.asInstanceOf[Rdf#URI])
       }
@@ -152,7 +154,8 @@ with FieldsInference[Rdf] {
         case _ if rangeClasses.contains(rdf.Property) => resourceEntry
         //    case _ if ranges.contains(owl.Thing) => resourceEntry
         case _ if ranges.contains(ops.makeUri(owlThing)) => resourceEntry
-        case _ if ops.isURI(object_ ) => resourceEntry
+//        case _ if ops.isURI(object_ ) => resourceEntry
+        case _ if (isURIorBN( object_)) => resourceEntry
         case _ if object_.toString.startsWith("_:") => resourceEntry
         case _ => literalEntry
       }
@@ -168,6 +171,9 @@ with FieldsInference[Rdf] {
     result
   }
 
+  def isURIorBN(node:Rdf#Node) = ops.foldNode( node )(identity, identity, x => None) != None
+  def isURI(    node:Rdf#Node) = ops.foldNode( node )(identity, x => None, x => None) != None
+  
   /** compute terminal Part of URI, eg
    *  Person from http://xmlns.com/foaf/0.1/Person
    *  Project from http://usefulinc.com/ns/doap#Project
@@ -197,7 +203,7 @@ with FieldsInference[Rdf] {
       var noLanguageValue = ""
       for (value <- values) {
         value match {
-          case value: Rdf#Literal if (!ops.isURI(value)) =>
+          case value: Rdf#Literal if (!isURIorBN(value)) =>
             val (raw, uri, langOption) = ops.fromLiteral(value)
 //            println("getPreferedLanguageFromValues: " +  (raw, uri, langOption) )
             langOption match {
@@ -230,14 +236,16 @@ with FieldsInference[Rdf] {
     })
   }
 
-  /** get first ?OBJ such that:
+  /**
+   * get first ?OBJ such that:
    *   subject predicate ?OBJ	,
-   *   or returns default */
+   *   or returns default
+   */
   private def getHeadOrElse(subject: Rdf#Node, predicate: Rdf#URI,
-    default: Rdf#URI = nullURI): Rdf#URI = {
+                            default: Rdf#URI = nullURI): Rdf#URI = {
     oQuery(subject, predicate) match {
       case ll if ll.isEmpty => default
-      case ll if ops.isURI[Unit](ll.head) => ll.head.asInstanceOf[Rdf#URI]
+      case ll if ( isURI(ll.head) ) => ll.head.asInstanceOf[Rdf#URI]
       case _ => default
     }
   }
@@ -266,13 +274,18 @@ with FieldsInference[Rdf] {
   }
 
   /*** from given Set of Rdf#Node , extract rdf#URI */
-  def extractURIs(nodes:Set[Rdf#Node]) : Set[Rdf#URI] = {
-    val v = nodes filter { node:Rdf#Node => ops.isURI(node) }
-    v . map { node => node.asInstanceOf[Rdf#URI] }
+  def extractURIs( nodes:Set[Rdf#Node] ) : Set[Rdf#URI] = {
+    nodes . map {
+      node => ops.foldNode( node )(
+        identity, identity, x => None
+      )
+    }
+    .filter ( _ != None )
+    . map { node => node.asInstanceOf[Rdf#URI] }
   }
 
   def printGraph(graph: Rdf#Graph) {
-    val iterable = ops.graphToIterable(graph)
+    val iterable = ops.getTriples(graph)
     for (t <- iterable) {
       println(t)
       val (subj, pred, obj) = ops.fromTriple(t)

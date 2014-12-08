@@ -1,7 +1,7 @@
 package deductions.runtime.html
 import org.scalatest.FunSuite
 import deductions.runtime.jena.RDFStoreObject
-import org.w3.banana.PrefixBuilder
+import org.w3.banana.Prefix
 import org.w3.banana.GraphStore
 import org.w3.banana.RDF
 import org.w3.banana._
@@ -21,8 +21,8 @@ class TestCreationForm extends FunSuite with CreationForm {
 //      "http://usefulinc.com/ns/doap#Project"
      // "http://xmlns.com/foaf/0.1/Organization"
         foaf.Person.toString()
-    val store =  RDFStoreObject.store
-    retrieveURI( Ops.makeUri(uri), store )
+//    val store =  RDFStoreObject.store
+    retrieveURI( ops.makeUri(uri), dataset )
     val rawForm = createElem(uri, lang="fr")
     val form = wrapWithHTML(rawForm)
     val file = "example.creation.form.html"

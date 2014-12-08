@@ -79,7 +79,7 @@ class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
   
   def nodeSeqToURISeq( s:Seq[Rdf#Node]) : Seq[Rdf#URI] = {
     s.collect{
-      case uri if( ops.isURI(uri)) => ops.makeUri(uri.toString)
+      case uri if( isURI(uri)) => ops.makeUri(uri.toString)
     }
   }
 }

@@ -1,7 +1,7 @@
 import org.w3.banana.FOAFPrefix
 import org.w3.banana.RDFModule
 import org.w3.banana.RDFOpsModule
-import org.w3.banana.diesel.toPointedGraphW
+import org.w3.banana.diesel._
 import org.w3.banana.jena.JenaModule
 
 
@@ -15,7 +15,7 @@ trait TestBananaDSL
   extends RDFModule
   with RDFOpsModule
 {
-  import Ops._
+  import ops._
   
   lazy val foaf = FOAFPrefix[Rdf]
 //  val foafURI = foaf.prefixIri

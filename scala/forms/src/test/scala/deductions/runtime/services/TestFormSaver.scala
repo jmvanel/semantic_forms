@@ -7,22 +7,24 @@ import deductions.runtime.sparql_cache.RDFCacheJena
 import org.w3.banana.SparqlGraphModule
 import org.w3.banana.SparqlOpsModule
 import org.w3.banana.PointedGraph
-import org.w3.banana.diesel.toPointedGraphW
+import org.w3.banana.diesel._
 import org.scalatest.FunSuite
+import deductions.runtime.jena.RDFStoreLocalProvider
 
 class TestFormSaver 
-  extends FunSuite with RDFCacheJena // TODO depend on generic Rdf
+  extends FunSuite
+  with RDFCacheJena
    with RDFOpsModule
    with SparqlGraphModule
    with SparqlOpsModule
+   with RDFStoreLocalProvider
 {
-  import Ops._
+  import ops._
   
-//  lazy val store =  RDFStoreObject.store
-  lazy val fs = new FormSaver(store)
+  lazy val fs = new FormSaver()
   
   val uri = "http://jmvanel.free.fr/jmv.rdf#me"
-  retrieveURI(makeUri(uri), store)
+  retrieveURI(makeUri(uri), dataset)
   val map: Map[String, Seq[String]] = Map(
       "uri" ->  Seq( encode(uri) ),
       "url" ->  Seq( encode(uri) ),
@@ -32,15 +34,16 @@ class TestFormSaver
 
   test("remove the old value from TDB when saving") {
     fs.saveTriples(map)
-    store.readTransaction {
-      val graph = store.getGraph(makeUri("urn:x-arq:UnionGraph"))
-      val pg = PointedGraph[Rdf](makeUri(uri), graph)
+    rdfStore.r( dataset, {
+//    store.readTransaction {
+      val graph = rdfStore.getGraph( dataset, makeUri("urn:x-arq:UnionGraph"))
+      val pg = PointedGraph[Rdf]( makeUri(uri), graph.get)
       val objects = pg / makeUri("http://xmlns.com/foaf/0.1/familyName")
       val familyNames = objects.map(_.pointer).toSet
       // assert that foaf:familyName "Vanel" has been removed from Triple store
       assert(familyNames.size == 1)
       assert(familyNames.contains(makeLiteral("Van Eel", xsd.string)))
-    }
+    })
   }
   ////
   def encode(uri:String) = { URLEncoder.encode(uri, "utf-8" ) }

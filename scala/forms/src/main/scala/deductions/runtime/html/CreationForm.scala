@@ -19,12 +19,12 @@ trait CreationForm extends RDFOpsModule
   with Form2HTML[Jena#Node, Jena#URI]
   with RDFCacheJena // TODO depend on generic Rdf
 {
-  import Ops._
-  val nullURI : Rdf#URI = Ops.URI( "" )
+  import ops._
+  val nullURI : Rdf#URI = ops.URI( "" )
   var actionURI = "/save"
   
   /** create an XHTML input form from a class URI */
-  def create( uri:String, lang:String="en" ) : Future[Elem] = {
+  def create( uri:String, lang:String="en" ) : Try[Elem] = {
     import scala.concurrent.ExecutionContext.Implicits.global
 //        val r0 = rdfStore.r(dataset, {
 //    //    store.readTransaction {
@@ -39,7 +39,7 @@ trait CreationForm extends RDFOpsModule
     val r = rdfStore.r(dataset, {
       //    store.readTransaction {
       for (
-        allNamedGraphs <- rdfStore.getGraph(makeUri("urn:x-arq:UnionGraph"))
+        allNamedGraphs <- rdfStore.getGraph(dataset, makeUri("urn:x-arq:UnionGraph"))
       ) yield {
         val factory = new UnfilledFormFactory[Rdf](allNamedGraphs, preferedLanguage = lang)
         val form = factory.createFormFromClass(URI(uri))
@@ -48,13 +48,15 @@ trait CreationForm extends RDFOpsModule
         htmlForm
       }
     })
-    MonadicHelpers.tryToFutureFlat(r)
+//    MonadicHelpers.tryToFutureFlat(r)
+    r.flatMap { identity }
   }
 
   def createElem( uri:String, lang:String="en" ) : Elem = {
-	  Await.result(
-			  create( uri, lang),
-			  5 seconds )
+//	  Await.result(
+			  create( uri, lang).getOrElse(
+            <p>Problem occured when creating an XHTML input form from a class URI.</p>)
+//			  5 seconds )
   }
 
 }

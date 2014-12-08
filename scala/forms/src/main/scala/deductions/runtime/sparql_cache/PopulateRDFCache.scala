@@ -13,13 +13,12 @@ import org.w3.banana.RDFXMLReaderModule
 import org.w3.banana.TurtleReaderModule
 import org.w3.banana.WebACLPrefix
 import org.w3.banana.jena.JenaModule
-import org.w3.banana.jena.JenaStore
 import org.w3.banana.RDFStore
 import org.w3.banana.GraphStore
 import org.w3.banana.OWLPrefix
 import deductions.runtime.jena.RDFStoreObject
 import org.apache.log4j.Logger
-import org.w3.banana.PrefixBuilder
+import org.w3.banana.Prefix // Builder
 import org.w3.banana.SparqlUpdate
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFDSL
@@ -52,7 +51,7 @@ with App {
       //    IANALinkPrefix[Rdf],
       WebACLPrefix[Rdf],
       CertPrefix[Rdf], OWLPrefix[Rdf])
-    import Ops._
+    import ops._
     val vocabs1 = (vocabs0 map { p => p.apply("") })
     val vocabs2 =
       makeUri("http://usefulinc.com/ns/doap#") ::
@@ -66,31 +65,31 @@ with App {
 
     Logger.getRootLogger().info(vocabs)
 //    vocabs1 map { storeURI(_, store) }
-    vocabs1 map { storeURI_new(_, dataset ) }
+    vocabs1 map { storeURI( _, dataset ) }
   }
   
   /** load CommonForm Specifications from a well know place */
   def loadCommonFormSpecifications()  {
     val all_form_specs = "https://raw.githubusercontent.com/jmvanel/semantic_forms/master/scala/forms/form_specs/specs.ttl"    
     val from = new java.net.URL(all_form_specs).openStream()
-    val form_specs_graph: Rdf#Graph = TurtleReader.read(from, base = all_form_specs) getOrElse sys.error(s"couldn't read $all_form_specs")
+    val form_specs_graph: Rdf#Graph = turtleReader.read(from, base = all_form_specs) getOrElse sys.error(s"couldn't read $all_form_specs")
     import deductions.runtime.abstract_syntax.FormSyntaxFactory._
-    val formPrefix = new PrefixBuilder("form", formVocabPrefix ) 
+    val formPrefix = Prefix("form", formVocabPrefix ) 
     
 //    val store =  RDFStoreObject.store
 
     /* Retrieving :
      * foaf: form:ontologyHasFormSpecification <foaf.form.ttl> . */
     val triples : Iterator[Rdf#Triple] 
-       = Ops.find( form_specs_graph, Ops.ANY, formPrefix("ontologyHasFormSpecification"), Ops.ANY)
+       = ops.find( form_specs_graph, ops.ANY, formPrefix("ontologyHasFormSpecification"), ops.ANY)
     val objects = for( triple <- triples) yield {
       triple.getObject
     } 
     for( obj <- objects ) {
           val from = new java.net.URL(obj.toString()).openStream()
-          val form_spec_graph: Rdf#Graph = TurtleReader.read( from, base = obj.toString() ) getOrElse sys.error(s"couldn't read ${obj.toString()}")
+          val form_spec_graph: Rdf#Graph = turtleReader.read( from, base = obj.toString() ) getOrElse sys.error(s"couldn't read ${obj.toString()}")
 //          store.appendToGraph( Ops.makeUri("form_specs"), form_spec_graph )
-          rdfStore.appendToGraph( Ops.makeUri("form_specs"), form_spec_graph )
+          rdfStore.appendToGraph( dataset, ops.makeUri("form_specs"), form_spec_graph )
           println("Added form_spec " + obj)
     }
   }

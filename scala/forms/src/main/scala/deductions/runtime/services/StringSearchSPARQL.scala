@@ -12,23 +12,28 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import deductions.runtime.html.Form2HTML
 import scala.concurrent.duration._
 import org.apache.log4j.Logger
+import deductions.runtime.jena.RDFStoreObject
+import scala.util.Try
+import org.w3.banana._
 
 /** String Search with simple SPARQL */
-class StringSearchSPARQL[Rdf <: RDF](store: RDFStore[Rdf])(
+class StringSearchSPARQL[Rdf <: RDF](
+//    store: RDFStore[Rdf, Try, RDFStoreObject.DATASET]
+)(
   implicit //    reader: RDFReader[Rdf, RDFXML],
   ops: RDFOps[Rdf],
-  sparqlOps: SparqlOps[Rdf]) {
+  sparqlOps: SparqlOps[Rdf]
+//  sparqlEngine : SparqlEngine[Rdf, Future, RDFStoreObject.DATASET]
+    , rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET]
+) {
 
   import ops._
   import sparqlOps._
 
-  val sparqlEngine = SparqlEngine[Rdf](store)
-
   def search(search: String, hrefPrefix:String="") : Future[Elem] = {
     val uris = search_only(search)
     val elem = uris . map (
-        (u : Iterable[Rdf#Node]) =>
-          displayResults( u, hrefPrefix) )
+        u => displayResults( u.toIterable, hrefPrefix) )
     elem
   }
     
@@ -36,16 +41,15 @@ class StringSearchSPARQL[Rdf <: RDF](store: RDFStore[Rdf])(
     <p>{
       res.map( uri => {
         val uriString = uri.toString
-        val blanknode = ! ops.isURI(uri)
+        val blanknode = ! isURI(uri)
         <div><a href={Form2HTML.createHyperlinkString( hrefPrefix, uriString, blanknode) }>
         { uriString }</a><br/></div>
       } )
     }</p>
   }
   
-  private def search_only(search: String) = {
+  private def search_only(search: String) : Future[Iterator[Rdf#Node]]= {
    val queryString =
-    // |prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
       s"""
          |SELECT DISTINCT ?thing WHERE {
          |  graph ?g {
@@ -53,13 +57,18 @@ class StringSearchSPARQL[Rdf <: RDF](store: RDFStore[Rdf])(
          |    FILTER regex( ?string, "$search", 'i')
          |  }
          |}""".stripMargin
-    val query = SelectQuery(queryString)
-    val es = sparqlEngine.executeSelect(query)
-    val uris: Future[Iterable[Rdf#Node]] = es.
-      map(_.toIterable.map {
+    val r = for {
+      query <- parseSelect(queryString).asFuture
+      solutions <- rdfStore.executeSelect( RDFStoreObject.dataset, query, Map()).
+        asFuture
+    } yield {
+      solutions.toIterable.map {
         row => row("thing") getOrElse sys.error("")
-      })
-    uris
+      }      
+    }        
+    r // toIterable
   }
+  
+  def isURI(    node:Rdf#Node) = ops.foldNode( node )(identity, x => None, x => None) != None
 
 }

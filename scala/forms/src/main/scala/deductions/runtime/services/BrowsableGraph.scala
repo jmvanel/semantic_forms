@@ -1,36 +1,46 @@
 package deductions.runtime.services
 
-import org.w3.banana.SparqlEngine
+import java.io.ByteArrayOutputStream
+
+import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.concurrent.duration.DurationInt
+import scala.util.Try
+
+import org.apache.log4j.Logger
 import org.w3.banana.RDF
 import org.w3.banana.RDFOps
-import org.w3.banana.SparqlOps
 import org.w3.banana.RDFStore
-import scala.xml.Elem
-import scala.concurrent._
-import scala.concurrent.util._
-import scala.concurrent.ExecutionContext.Implicits.global
-import deductions.runtime.html.Form2HTML
-import scala.concurrent.duration._
-import org.apache.log4j.Logger
-import org.w3.banana.RDFWriter
-import org.w3.banana.Turtle
-import java.io.ByteArrayOutputStream
+import org.w3.banana.SparqlEngine
+import org.w3.banana.SparqlOps
+import org.w3.banana.TryW
+import org.w3.banana.io.RDFWriter
+import org.w3.banana.io.Turtle
+
+import deductions.runtime.jena.RDFStoreObject
 
 /** Browsable Graph implementation, in the sense of
  *  http://www.w3.org/DesignIssues/LinkedData.html */
-class BrowsableGraph [Rdf <: RDF](
-    store: RDFStore[Rdf]
+class BrowsableGraph
+[Rdf <: RDF](
+//[Rdf <: RDF, Store](
+//    store: RDFStore[Rdf, Try, RDFStoreObject.DATASET]
     )(
   implicit
   ops: RDFOps[Rdf],
   sparqlOps: SparqlOps[Rdf],
-  writer : RDFWriter[Rdf, Turtle]
+  turtleWriter : RDFWriter[Rdf, Try, Turtle]
+//  sparqlEngine : SparqlEngine[Rdf, Future, RDFStoreObject.DATASET]
+//  sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]
+//  , rdfStore: RDFStore[Rdf, Try, Store] 
+  , rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET]
   ) {
 
   import ops._
   import sparqlOps._
 
-  val sparqlEngine = SparqlEngine[Rdf](store)
+//  val sparqlEngine = SparqlEngine[Rdf, Try, RDFStoreObject.DATASET] // (store)
 
   /** not used in Play! app : blocking ! */
   def focusOnURI( uri:String ) : String = {
@@ -42,7 +52,7 @@ class BrowsableGraph [Rdf <: RDF](
     val graph = Await.result(triples, 5000 millis)
     Logger.getRootLogger().info(s"uri $uri ${graph}")
     val to = new ByteArrayOutputStream
-    val ret = writer.write(graph, to, base = uri)
+    val ret = turtleWriter.write(graph, to, base = uri)
     to.toString
   }
     
@@ -90,25 +100,33 @@ class BrowsableGraph [Rdf <: RDF](
     futureGraph2String( r, "")
   }
   def sparqlConstructQueryFuture(queryString: String) : Future[Rdf#Graph] = {
-    val query = ConstructQuery(queryString)
-    val es = sparqlEngine.executeConstruct(query)
-    es
+    val r = for {
+      query <- parseConstruct(queryString) // .asFuture
+      es <- rdfStore.executeConstruct( RDFStoreObject.dataset, query, Map() )
+    } yield es
+    r .asFuture
   }
     
-  private def search_only_string(search: String) = {
-    val queryString =
-      s"""
-         |SELECT DISTINCT ?thing WHERE {
-         |  graph ?g {
-         |    ?thing ?p ?string .
-         |    FILTER regex( ?string, "$search", 'i')
-         |  }
-         |}""".stripMargin
-    val query = SelectQuery(queryString)
-    val es = sparqlEngine.executeSelect(query)
-    val uris: Future[Iterable[Rdf#Node]] = es.
-      map(_.toIterable.map {
-        row => row("thing") getOrElse sys.error("")
-      })
-  }
+//  private def search_only_string(search: String) = {
+//    val queryString =
+//      s"""
+//         |SELECT DISTINCT ?thing WHERE {
+//         |  graph ?g {
+//         |    ?thing ?p ?string .
+//         |    FILTER regex( ?string, "$search", 'i')
+//         |  }
+//         |}""".stripMargin
+//    val r = for {
+//       query <- parseSelect(queryString).asFuture
+//       solutions <- sparqlEngine.executeSelect( RDFStoreObject.dataset, query, Map() )
+////       x <- es. iterator. map(_.toIterable.map {
+////            row => row("thing") getOrElse sys.error("")
+////          })
+//    } yield solutions
+//    
+//    	val uris: Future[Iterable[Rdf#Node]] = r.
+//    			map(_.toIterable.map {
+//    				row => row("thing") getOrElse sys.error("")
+//    			})
+//  }
 }
