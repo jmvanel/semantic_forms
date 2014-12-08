@@ -11,23 +11,26 @@ With these features :
 - 2.1 user enters an URI and form view appears with the data from the SPARQL server (RDF cache) - DONE
 - 3. URIs in the form can be clicked to display another form with the data from Internet - DONE
 - 4. entering new triples for existing properties, as in DataGUI or as in Ontowiki: http://aksw.org/source/edit
-- 5. introduce the RDF cache, - implemented - TODO test
+- 5. introduce the RDF cache, - implemented - TODO unit test
 - 6. creation of a new URI infering form from its class, as DomainApplication does - DONE
-- 7. use HTTP HEAD to distinguish content types, and have different hyperlinks and styles for HTML, RDF, and image URL's
+- 7. use HTTP HEAD to distinguish content types, and have different hyperlinks and styles for HTML, RDF, and image URL's - WIP
 - 8. data validation in JS or Scala.JS
 - 9. creating or editing URI's : propose URI's in relation with rdfs:domain class value
 - 10 simple vocab' to specify properties in form - DONE
 - 11 button to remove a triple
+- 12 Integrate non-blocking: Future, Iteratee Enumerator -WIP
+- 13 Migration to Banana 0.7  - DONE
+- 14 Migration to BigData(R)
+- 15 ScalaJS migration 
+- 16 Dashboard : # of triples, # of of resources; # of resources of each type
+- 17 View SPARQL select & construct results
+- 18 Search : search also in URI's
+- 19 Add simple login 
+- 20 Inferences for forms : eliminate archaic properties; implement owl union
+- 21 write some JavaScript samples to call the different features
+- 22 Add a button to edit the currently displayed URI
+- 23 display the "reverse" triples ( called in-going links in BigData workbench )
 
-Integrate non-blocking: Future, Iteratee Enumerator
-Migration to Banana 0.7 
-Migration to BigData(R)
-ScalaJS migration 
-Dashboard : # of triples, # of of resources; # of resources of each type
-View SPARQL select & construct results
-Search : also in URI's
-Add simple login 
-Inferences for forms : eliminate archaic properties; implement owl union
 ..... etc etc ...
 
 For now, the display looks like this, 
@@ -36,19 +39,24 @@ plus a textbox to enter a URL semantics, eg a FOAF profile or DBpedia URI :
 
 # How to run
 
+Dependencies : Java 7 (Scala is not ready for Java 8), SBT or Typesafe Activator 
+
 - build and run this project with [latest play activator from typesafe.com](http://typesafe.com/platform/getstarted) , and type in activator : ~run
 
-Preloading RDF content
+# Preloading RDF content
 
-- Preloading common vocabularies: in activator shell type:
+- Preloading common vocabularies, and preloading some pre-defined form specifications ( currently FOAF ) : in activator shell type:
 
 	run-main deductions.runtime.sparql_cache.PopulateRDFCache
+
 - Preloading a local file: in activator shell type: for example:
 
 	run-main tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me /home/jmv/data/foaf/jmv.rdf
 
 	// With Jena it is possible to directly load from Internet:
 	run-main tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me http://jmvanel.free.fr/jmv.rdf#me 
+
+
 
 - dumping all database:
 

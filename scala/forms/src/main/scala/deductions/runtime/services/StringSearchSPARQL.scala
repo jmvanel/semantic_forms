@@ -47,9 +47,12 @@ class StringSearchSPARQL[Rdf <: RDF](
       } )
     }</p>
   }
-  
-  private def search_only(search: String) : Future[Iterator[Rdf#Node]]= {
-   val queryString =
+
+  /** NOTE: this stuff is pretty generic;
+   *  just add these arguments :
+   *  queryString:String, vars:Seq[String] */
+  private def search_only(search: String): Future[Iterator[Rdf#Node]] = {
+    val queryString =
       s"""
          |SELECT DISTINCT ?thing WHERE {
          |  graph ?g {
@@ -57,16 +60,20 @@ class StringSearchSPARQL[Rdf <: RDF](
          |    FILTER regex( ?string, "$search", 'i')
          |  }
          |}""".stripMargin
-    val r = for {
-      query <- parseSelect(queryString).asFuture
-      solutions <- rdfStore.executeSelect( RDFStoreObject.dataset, query, Map()).
-        asFuture
-    } yield {
-      solutions.toIterable.map {
-        row => row("thing") getOrElse sys.error("")
-      }      
-    }        
-    r // toIterable
+
+    val transaction =
+      rdfStore.rw(RDFStoreObject.dataset, {
+        val result = for {
+          query <- parseSelect(queryString)
+          solutions <- rdfStore.executeSelect(RDFStoreObject.dataset, query, Map())
+        } yield {
+          solutions.toIterable.map {
+            row => row("thing") getOrElse sys.error("")
+          }
+        }
+        result
+      })
+      transaction.flatMap { identity } . asFuture
   }
   
   def isURI(    node:Rdf#Node) = ops.foldNode( node )(identity, x => None, x => None) != None

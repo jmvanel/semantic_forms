@@ -17,14 +17,11 @@ import scala.concurrent.Future
 import org.w3.banana._
 import deductions.runtime.jena.RDFStoreLocalProvider
 
-class FormSaver[Rdf <: RDF](
-//    store: RDFStore[Rdf, Try, RDFStoreObject.DATASET]
-    )
+class FormSaver[Rdf <: RDF]()
 (
   implicit ops: RDFOps[Rdf],
   sparqlOps: SparqlOps[Rdf],
   writer: RDFWriter[Rdf, Try, Turtle],
-//  sparqlEngine : SparqlEngine[Rdf, Future, RDFStoreObject.DATASET],
   rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET]
 )
 //extends RDFStoreLocalProvider
@@ -112,15 +109,13 @@ class FormSaver[Rdf <: RDF](
 
     def doSave(uri: String) {
     	import ops._
-//      val rdfStore = RDFStoreObject.rdfStore
-      val init =
+      val transaction =
         rdfStore.rw(RDFStoreObject.dataset, {
           rdfStore.removeTriples( RDFStoreObject.dataset, makeUri(uri), triplesToRemove.toIterable )
-          rdfStore.appendToGraph( RDFStoreObject.dataset, makeUri(uri),
-            makeGraph(triples) )
+          rdfStore.appendToGraph( RDFStoreObject.dataset, makeUri(uri), makeGraph(triples) )
         }).flatMap { identity }
 
-      val f = init.asFuture
+      val f = transaction.asFuture
       
       f  onSuccess {
         case _ =>
@@ -130,7 +125,8 @@ class FormSaver[Rdf <: RDF](
               case gr =>
                 if (triplesToRemove.size > 0 ||
                   triples.size > 0) {
-                  val graphAsString = writer.asString(gr, base = uri) getOrElse sys.error("coudn't serialize the graph")
+                  val graphAsString = writer.asString(gr, base = uri) getOrElse sys.error(
+                      "coudn't serialize the graph")
                   println("Graph with modifications:\n" + graphAsString)
                 }
             }
