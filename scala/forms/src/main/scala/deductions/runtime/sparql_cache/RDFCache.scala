@@ -22,9 +22,8 @@ trait RDFCacheDependencies
   with TurtleReaderModule
   with RDFXMLReaderModule
 
-/* depends on generic Rdf
- * TODO rename RDFCache */
-trait RDFCacheJena extends RDFStoreLocalProvider
+/* depends on generic Rdf */
+trait RDFCache extends RDFStoreLocalProvider
 with RDFCacheDependencies with JenaHelpers {
 
   val timestampGraphURI = "http://deductions-software.com/timestampGraph"

@@ -5,7 +5,7 @@ import org.w3.banana.RDFOpsModule
 import org.w3.banana.SparqlGraphModule
 import org.w3.banana.SparqlOpsModule
 import deductions.runtime.jena.RDFStoreObject
-import deductions.runtime.sparql_cache.RDFCacheJena
+import deductions.runtime.sparql_cache.RDFCache
 import deductions.runtime.jena.RDFStoreLocalProvider
 import org.w3.banana.SparqlHttpModule
 import org.w3.banana.RDFOps
@@ -28,7 +28,7 @@ class TestBrowsableGraph [Rdf <: RDF, Store]
 //  rdfStore: RDFStore[Rdf, Try, Store],
 //  sparqlOps: SparqlOps[Rdf]
 //)
-  with RDFCacheJena
+  with RDFCache
    with RDFOpsModule
    with SparqlGraphModule
    with SparqlOpsModule

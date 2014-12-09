@@ -40,7 +40,9 @@ rdf, Json-LD, Turtle and other semantic content
  */
 object SemanticURIGuesser {
   
-  sealed abstract class SemanticURIType
+  sealed abstract class SemanticURIType {
+    override def toString = getClass.getSimpleName
+  }
   object SemanticURI extends SemanticURIType
   object Application extends SemanticURIType
   object Audio extends SemanticURIType
@@ -115,10 +117,23 @@ object SemanticURIGuesser {
     println( "trySuffix " + url )
     // to eliminate #me in FOAF profiles: 
     val source = Paths.get(urlObj.getFile)
-//    val source = Paths.get(url)
-    val res = Files.probeContentType(source)
-    println( "trySuffix " + res )
-    res
+    val source2 = source.toString()
+
+    val mimeType = URLConnection.guessContentTypeFromName(url)
+    val mimeType2 = mimeType match {
+      case null => source2 match {
+        // TODO : do not use strings but an API
+        case _ if( source2.endsWith(".rdf") ) => "application/rdf+xml"
+        case _ if( source2.endsWith(".owl") ) => "application/owl+xml"
+        case _ if( source2.endsWith(".ttl") ) => "application/turtle"
+        case _ if( source2.endsWith(".n3") ) => "application/n3"
+        case _ => "application/text"
+      }
+      case _ => mimeType
+    }
+//    val res = Files.probeContentType(source)
+    println( s"trySuffix  + $mimeType + $mimeType2" )
+    mimeType2
   }
   
   private def guessFromHeader(mt:MediaType, url: String, t:SemanticURIType) : SemanticURIType = {

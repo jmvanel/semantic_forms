@@ -2,7 +2,7 @@ package deductions.runtime.html
 
 import org.w3.banana.RDFModule
 import org.w3.banana.jena.Jena
-import deductions.runtime.sparql_cache.RDFCacheJena
+import deductions.runtime.sparql_cache.RDFCache
 import deductions.runtime.jena.RDFStoreObject
 import scala.xml.Elem
 import deductions.runtime.abstract_syntax.UnfilledFormFactory
@@ -17,7 +17,7 @@ import deductions.runtime.utils.MonadicHelpers
 
 trait CreationForm extends RDFOpsModule
   with Form2HTML[Jena#Node, Jena#URI]
-  with RDFCacheJena // TODO depend on generic Rdf
+  with RDFCache
 {
   import ops._
   val nullURI : Rdf#URI = ops.URI( "" )

@@ -3,7 +3,7 @@ package deductions.runtime.services
 import java.net.URLEncoder
 import org.w3.banana.RDFOpsModule
 import deductions.runtime.jena.RDFStoreObject
-import deductions.runtime.sparql_cache.RDFCacheJena
+import deductions.runtime.sparql_cache.RDFCache
 import org.w3.banana.SparqlGraphModule
 import org.w3.banana.SparqlOpsModule
 import org.w3.banana.PointedGraph
@@ -13,7 +13,7 @@ import deductions.runtime.jena.RDFStoreLocalProvider
 
 class TestFormSaver 
   extends FunSuite
-  with RDFCacheJena
+  with RDFCache
    with RDFOpsModule
    with SparqlGraphModule
    with SparqlOpsModule

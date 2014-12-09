@@ -12,6 +12,10 @@ import java.nio.file.Paths
 import java.nio.file.Files
 
 class TestCreationForm2 extends FunSuite with CreationForm {
+//   Prefix[Rdf]("bla" , "bli" )
+//   FOAFPrefix[Rdf]
+//RDFOps[Rdf]
+   
   test("display form custom") ({
     Fil‍eUtils.deleteLocalSPARL()
     val uri = "http://xmlns.com/foaf/0.1/Person"
@@ -28,7 +32,7 @@ class TestCreationForm2 extends FunSuite with CreationForm {
 
   
   trait GraphTest[Rdf <: RDF] {
-    implicit val ops: RDFOps[Rdf] = ops.asInstanceOf[org.w3.banana.RDFOps[Rdf]]
+    implicit val ops: RDFOps[Rdf] = ops.asInstanceOf[org.w3.banana.RDFOps[Rdf]] // TODO : suspect !!!!!!!!!
     import ops._
 //    import syntax._
     val form = Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#")

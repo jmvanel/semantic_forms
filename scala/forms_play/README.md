@@ -47,25 +47,27 @@ Dependencies : Java 7 (Scala is not ready for Java 8), SBT or Typesafe Activator
 
 - Preloading common vocabularies, and preloading some pre-defined form specifications ( currently FOAF ) : in activator shell type:
 
-	run-main deductions.runtime.sparql_cache.PopulateRDFCache
+    run-main deductions.runtime.sparql_cache.PopulateRDFCache
 
 - Preloading a local file: in activator shell type: for example:
 
-	run-main tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me /home/jmv/data/foaf/jmv.rdf
+    run-main tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me /home/jmv/data/foaf/jmv.rdf
 
-	// With Jena it is possible to directly load from Internet:
-	run-main tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me http://jmvanel.free.fr/jmv.rdf#me 
+    // With Jena it is possible to directly load from Internet:
+    run-main tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me http://jmvanel.free.fr/jmv.rdf#me 
 
 
 
 - dumping all database:
 
-	run-main tdb.tdbdump   --loc=TDB > dump.nt
+    run-main tdb.tdbdump   --loc=TDB > dump.nt
 
 Tips:
 
 - in case of troubles delete target/ directory
-- create eclipse configurations with the "eclipse" command in sbt and activator
+- create eclipse configurations with the "eclipse" command in sbt or activator:
+
+    eclipse with-source=true
 
 # Vocabulary for forms
 At one point it will be useful to also introduce in place of FA an RDF vocabulary for forms, perhaps reusing Fresnel;

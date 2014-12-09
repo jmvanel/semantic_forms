@@ -31,7 +31,7 @@ import org.w3.banana.RDFDSL
  *  http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/examples/defaultVocabularies.n3p.n3
  *  but without any dependency to EulerGUI.
  */
-object PopulateRDFCache extends RDFCacheJena
+object PopulateRDFCache extends RDFCache
 //with SparqlUpdate
 with App {
 

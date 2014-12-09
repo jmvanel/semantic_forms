@@ -10,10 +10,12 @@ class TestSemanticURIGuesser extends FunSuite {
   test("TestSemanticURIGuesser") {
     for (
       (uri, semanticType) <- List(
-        ( "http://jmvanel.free.fr/images/jmv_id.jpg", Image ),
-        ("http://danbri.org/foaf.rdf#danbri", SemanticURI)
+          ( "http://jmvanel.free.fr/images/jmv_id.jpg", Image )
+        , ( "http://jmvanel.free.fr/images/jmv.rdf", SemanticURI )
+        ,
+          ("http://danbri.org/foaf.rdf#danbri", SemanticURI)
         // fails because no clue except looking into content, or maybe using the presence of #   
-//        ,("http://fcns.eu/people/andrei/card#me", SemanticURI)
+//        , ("http://fcns.eu/people/andrei/card#me", SemanticURI)
     		  )
     ) {
       val fut = SemanticURIGuesser.guessSemanticURIType(uri)
@@ -21,7 +23,7 @@ class TestSemanticURIGuesser extends FunSuite {
       
       fut onSuccess{
         case t => println("SemanticURIType: "+t)
-       	assert(t == semanticType)
+       	assert(t.toString() == semanticType.toString())
       }
       fut onFailure {
         case t => println("onFailure SemanticURIType: "+t)

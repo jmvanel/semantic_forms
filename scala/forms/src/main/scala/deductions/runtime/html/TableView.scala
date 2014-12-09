@@ -8,7 +8,7 @@ import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
 import deductions.runtime.abstract_syntax.FormSyntaxFactory
 import deductions.runtime.jena.RDFStoreObject
-import deductions.runtime.sparql_cache.RDFCacheJena
+import deductions.runtime.sparql_cache.RDFCache
 import scala.xml.PrettyPrinter
 import deductions.runtime.uri_classify.SemanticURIGuesser
 import scala.concurrent.Future
@@ -18,17 +18,21 @@ import scala.concurrent.duration._
 import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
+import org.w3.banana.RDFOps
+import org.w3.banana.RDF
+import deductions.runtime.abstract_syntax.FormModule
 
 /** Table View of a form */
+//trait TableView[Rdf <: RDF] extends TableViewModule[Rdf]
 trait TableView extends TableViewModule
 
 /** Table View of a form */
 trait TableViewModule
+//trait TableViewModule[Rdf <: RDF]
   extends RDFModule
-  with RDFCacheJena
-//  with Form2HTML[Rdf.Node, Rdf.URI]
+  with RDFCache
 //  with Form2HTML[Rdf#Node, Rdf#URI]
-  with Form2HTML[Jena#Node, Jena#URI] // TODO Jena !!!!!!!!!!!!!!
+  with Form2HTML[Jena#Node, Jena#URI] // TODO remove Jena !!!!!!!!!!!!!!
 {
   import ops._
   val nullURI : Rdf#URI = ops.URI( "" )
@@ -88,7 +92,10 @@ trait TableViewModule
         , editable
     )
     println("form:\n" + form)
-    val htmlForm = generateHTML(form, hrefPrefix, editable, actionURI )
+    val htmlForm = generateHTML(
+        form
+//        .asInstanceOf[FormModule[Rdf#Node,Rdf#URI]#FormSyntax[Rdf#Node,Rdf#URI]]
+        , hrefPrefix, editable, actionURI )
     htmlForm
   }
   
