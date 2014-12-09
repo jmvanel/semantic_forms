@@ -16,26 +16,16 @@ import org.w3.banana.RDFOpsModule
 import org.w3.banana.RDFOps
 import scala.util.Try
 import org.w3.banana.RDF
+import org.w3.banana.jena.io.JenaRDFReader
 
 /** Helpers for RDF Store
- *  paved the way for Banana 0.7 :
+ *  In Banana 0.7 :
  *  - JenaStore is not existing anymore
- *  - generic API for transactions 
+ *  - generic API for transactions
+ *  
  * TODO rename RDFStoreHelpers  */
 
-trait JenaHelpers /*[Rdf]*/ extends 
-// RDFStore[Rdf, Try, RDFStoreObject.DATASET ]
-// with 
- JenaModule
-// class StoreHelpers[Rdf <: RDF,
-//   Store]
-// (implicit
-//  ops: RDFOps[Rdf],
-////  turtleReader: RDFReader[Rdf, Try, Turtle],
-////  rdfXMLWriter: RDFWriter[Rdf, Try, RDFXML],
-//  rdfStore: RDFStore[Rdf, Try, Store]
-//)
-{
+trait JenaHelpers extends JenaModule {
 	import ops._
 
   type Store = RDFStoreObject.DATASET
@@ -51,17 +41,16 @@ trait JenaHelpers /*[Rdf]*/ extends
     rdfStore.rw( dataset, {      
       Logger.getRootLogger().info(s"storeURI uri $uri graphUri $graphUri")
       try{
-//        val dataset =  RDFStoreObject.dataset
       	val gForStore = rdfStore.getGraph(dataset, graphUri)
         // read from uri no matter what the syntax is:
-      	val model = RDFDataMgr.loadModel(uri.toString())
-      	
-      	rdfStore. appendToGraph( dataset, uri, model.getGraph() )   	
+      	val graph = RDFDataMgr.loadModel(uri.toString()) . getGraph  
+//        val graph = anyRDFReader.readAnyRDFSyntax(uri.toString()) . get // TODO
+      	rdfStore. appendToGraph( dataset, uri, graph )   	
       	Logger.getRootLogger().info(s"storeURI uri $uri : stored")
-      	model.getGraph
+      	graph
       } catch {
       case t: Throwable => Logger.getRootLogger().error( "ERROR: " + t )
-      ModelFactory.createDefaultModel().getGraph
+    		  ModelFactory.createDefaultModel().getGraph
       }
     }).getOrElse( emptyGraph )
   }
