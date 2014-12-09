@@ -30,6 +30,8 @@ With these features :
 - 21 write some JavaScript samples to call the different features
 - 22 Add a button to edit the currently displayed URI
 - 23 display the "reverse" triples ( called in-going links in BigData workbench )
+- 24   (HTML) : add CSS classes for labels and values;
+- 24.1 (HTML) : new HTML output with CSS rendering instead of explicit HTML table formatting
 
 ..... etc etc ...
 
