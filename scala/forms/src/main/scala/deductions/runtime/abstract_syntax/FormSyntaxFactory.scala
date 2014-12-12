@@ -19,6 +19,10 @@ import org.w3.banana.XSDPrefix
 import org.w3.banana.diesel._
 import org.w3.banana.Prefix
 import org.w3.banana.syntax._
+import scala.util.Try
+import scala.util.Failure
+import scala.util.Success
+import org.w3.banana.LocalNameException
 
 object FormSyntaxFactory {
   /** vocabulary for form specifications */
@@ -44,8 +48,38 @@ with FieldsInference[Rdf] {
   val owlThing = owl.prefixIri + "Thing"
   val rdf = RDFPrefix[Rdf]
   import FormSyntaxFactory._
-  val formPrefix = Prefix( "form", formVocabPrefix ) 
-      
+  
+  // TODO remove <<<<<<<<<<<<<<<<<<<<<<<<<<<
+  private class PrefixBuilder2
+  // [Rdf <: RDF]
+  (
+  val prefixName: String,
+  val prefixIri: String
+  )
+//(implicit
+//  ops: RDFOps[Rdf]
+//)
+extends Prefix[Rdf] {
+  import ops._
+  override def toString: String = "Prefix(" + prefixName + ")"
+  def apply(value: String): Rdf#URI = makeUri(prefixIri + value)
+  def unapply(iri: Rdf#URI): Option[String] = {
+    val uriString = fromUri(iri)
+    if (uriString.startsWith(prefixIri))
+      Some(uriString.substring(prefixIri.length))
+    else
+      None
+  }
+  def getLocalName(iri: Rdf#URI): Try[String] =
+    unapply(iri) match {
+      case None => Failure(LocalNameException(this.toString + " couldn't extract localname for " + iri.toString))
+      case Some(localname) => Success(localname)
+    }
+}
+  
+  val formPrefix : Prefix[Rdf] = new PrefixBuilder2/*[Rdf]*/( "form", formVocabPrefix ) 
+
+    
   println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
 
   /** create Form from an instance (subject) URI */

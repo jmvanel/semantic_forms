@@ -18,10 +18,14 @@ import org.w3.banana.GraphStore
 import org.w3.banana.OWLPrefix
 import deductions.runtime.jena.RDFStoreObject
 import org.apache.log4j.Logger
-import org.w3.banana.Prefix // Builder
+import org.w3.banana.Prefix
 import org.w3.banana.SparqlUpdate
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFDSL
+import scala.util.Failure
+import scala.util.Try
+import scala.util.Success
+import org.w3.banana.LocalNameException
 
 /**
  * Populate RDF Cache with commonly used vocabularies;
@@ -74,7 +78,7 @@ with App {
     val from = new java.net.URL(all_form_specs).openStream()
     val form_specs_graph: Rdf#Graph = turtleReader.read(from, base = all_form_specs) getOrElse sys.error(s"couldn't read $all_form_specs")
     import deductions.runtime.abstract_syntax.FormSyntaxFactory._
-    val formPrefix = Prefix("form", formVocabPrefix ) 
+    val formPrefix = new PrefixBuilder2("form", formVocabPrefix ) 
     
 //    val store =  RDFStoreObject.store
 
@@ -93,4 +97,33 @@ with App {
           println("Added form_spec " + obj)
     }
   }
+  
+  // TODO remove <<<<<<<<<<<<<<<<<<<<<<<<<<<
+  private class PrefixBuilder2
+  // [Rdf <: RDF]
+  (
+  val prefixName: String,
+  val prefixIri: String
+  )
+//(implicit
+//  ops: RDFOps[Rdf]
+//)
+extends Prefix[Rdf] {
+  import ops._
+  override def toString: String = "Prefix(" + prefixName + ")"
+  def apply(value: String): Rdf#URI = makeUri(prefixIri + value)
+  def unapply(iri: Rdf#URI): Option[String] = {
+    val uriString = fromUri(iri)
+    if (uriString.startsWith(prefixIri))
+      Some(uriString.substring(prefixIri.length))
+    else
+      None
+  }
+  def getLocalName(iri: Rdf#URI): Try[String] =
+    unapply(iri) match {
+      case None => Failure(LocalNameException(this.toString + " couldn't extract localname for " + iri ))
+      case Some(localname) => Success(localname)
+    }
+}
+  
 }
