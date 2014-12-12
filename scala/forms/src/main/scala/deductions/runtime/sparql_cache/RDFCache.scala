@@ -67,7 +67,8 @@ with RDFCacheDependencies with JenaHelpers {
 
   /**
    * download and store URI in a graph named by itself,
-   *  and store the timestamp from HTTP HEAD request
+   *  and store the current timestamp
+   *  TODO timestamp from HTTP HEAD request
    */
   def storeURI(uri: Rdf#URI, dataset: DATASET ) : Rdf#Graph = {
 	  val model = storeURI( uri, uri, dataset)
@@ -78,7 +79,7 @@ with RDFCacheDependencies with JenaHelpers {
           makeGraph( Seq( makeTriple(
               uri,
               makeUri(timestampGraphURI),
-              makeLiteral(time._2.toString, xsd.int ) ) ) ) )
+              makeLiteral(time._2.toString, xsd.integer ) ) ) ) )
     })
     model
   }
