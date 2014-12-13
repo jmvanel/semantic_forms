@@ -49,9 +49,9 @@ plus a textbox to enter a URL semantics, eg a FOAF profile or DBpedia URI :
 
 Dependencies : Java 7 (Scala is not ready for Java 8), SBT or Typesafe Activator 
 
-- build and run this project with [latest play activator from typesafe.com](http://typesafe.com/platform/getstarted) , and type in activator : ~run
+- build and run this project with [latest play activator from typesafe.com](http://typesafe.com/platform/getstarted) , and type in activator : `~ run`
 
-To package to run on a server that has Java only: type in activator : dist
+To package to run on a server that has Java only: type in activator : `dist`
 
 Then the archive is found here :
 `target/universal/semantic_forms_play-1.0-SNAPSHOT.zip`
@@ -77,18 +77,25 @@ nohup bin/semantic_forms_play -Dlog4j.configuration=myconf.properties -mem 50 &
 - Preloading a local file: in activator shell type: for example:
 
 ```
-    run-main tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me
+    run-main tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me \
       /home/jmv/data/foaf/jmv.rdf
     # With Jena it is possible to directly load from Internet:
-    run-main tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me
+    run-main tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me \
        http://jmvanel.free.fr/jmv.rdf#me 
 ```
 
 - dumping all database:
 
 ```
-    activator run-main tdb.tdbdump   --loc=TDB > dump.nt
+for f in lib/*.jar
+do
+  JARS=$JARS:$f
+done
+echo java -cp $JARS
+java -cp $JARS tdb.tdbdump --loc=TDB > dump.nt
 ```
+( we cannot use activator here, as it does not allow output redirect)
+
 
 Tips:
 

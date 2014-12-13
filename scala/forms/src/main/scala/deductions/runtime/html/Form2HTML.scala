@@ -26,7 +26,26 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
               <tr>
                 <td title={ field.comment }>{ field.label }</td>
                 <td>{
-                  field match {
+                  createHTMLField(field, editable, hrefPrefix)
+                }</td>
+              </tr>
+            }
+          }
+    </table></div>
+      if( editable)
+        <form action={actionURI}  method="POST" >
+          <input value="SAVE" type="submit"/>
+          <input type="hidden" name="url" value={urlEncode(form.subject)}/>
+          {htmlForm}
+        </form>
+        else
+          htmlForm
+  }
+            
+            
+  def createHTMLField(field:fm#Entry, editable:Boolean,
+          hrefPrefix: String = "" ) = {
+                      field match {
                     case l: LiteralEntry =>
                       if (editable)
                         <input value={ l.value } name={ "LIT-" + urlEncode(l.property) } class="overflow" width="48" />
@@ -43,8 +62,8 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
                         <input value={ r.value.toString } name={ "RES-" + urlEncode(r.property) } class="overflow" width="48" />
                         {
                           if (r.alreadyInDatabase) {
-                        	  {println("r.alreadyInDatabase " + r ) }
-                        	  <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden"/>
+                            {println("r.alreadyInDatabase " + r ) }
+                            <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden"/>
                           }
                         }
                         </div>
@@ -55,7 +74,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
                         }</a>
                     case r: BlankNodeEntry =>
                       if (editable)
-                    	  <div class="resize overflow">
+                        <div class="resize overflow">
                         <input value={ r.value.toString } name={ "BLA-" + urlEncode(r.property) } class="overflow" width="48" />
                         <input value={ r.value.toString } name={ "ORIG-BLA-" + urlEncode(r.property) } type="hidden"/>
                         </div>
@@ -64,21 +83,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
                           r.getId
                         }</a>
                   }
-                }</td>
 
-              </tr>
-              
-            }
-          }
-    </table></div>
-      if( editable)
-        <form action={actionURI}  method="POST" >
-          <input value="SAVE" type="submit"/>
-          <input type="hidden" name="url" value={urlEncode(form.subject)}/>
-          {htmlForm}
-        </form>
-        else
-          htmlForm
   }
 }
 

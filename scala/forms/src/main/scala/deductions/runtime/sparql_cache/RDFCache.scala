@@ -30,9 +30,15 @@ with RDFCacheDependencies with JenaHelpers {
   val xsd = XSDPrefix[Rdf]
   import ops._
 
+  
+  /**
+   * retrieve URI from a graph named by itself;
+   * or download and store URI only if corresponding graph is empty
+   * TODO according to timestamp retrieve from Store,
+   * TODO save timestamp in another Dataset
+   */
   def retrieveURI(uri: Rdf#URI, dataset: DATASET) = {
     import scala.concurrent.ExecutionContext.Implicits.global
-    //      store.readTransaction {
     rdfStore.rw(dataset, {
       for (graph <- rdfStore.getGraph(dataset, uri)) yield {
         val uriGraphIsEmpty = graph.isEmpty()
@@ -44,26 +50,6 @@ with RDFCacheDependencies with JenaHelpers {
       }
     })
   }
-
-  /**
-   * retrieve URI from a graph named by itself;
-   * or download and store URI only if corresponding graph is empty
-   * TODO according to timestamp retrieve from Store,
-   * TODO save timestamp in another Dataset
-   */
-//  def retrieveURI(uri: Rdf#URI, store: JenaStore) = {
-////  def retrieveURI(uri: Rdf#URI, store: RDFStore[Rdf] with JenaDatasetStore ) = {
-////      def storeURI(uri: Rdf#URI, store: GraphStore[Rdf]) {
-//    val uriGraphIsEmpty = store.readTransaction {
-//      val g = store.getGraph(uri)
-//      g.isEmpty()
-//    }
-//    println( "uriGraphIsEmpty " + uriGraphIsEmpty )
-//    if( uriGraphIsEmpty ) {
-//      storeURI(uri, store)
-//      println( "Graph at URI was downloaded: " + uri )
-//    }
-//  }
 
   /**
    * download and store URI in a graph named by itself,
