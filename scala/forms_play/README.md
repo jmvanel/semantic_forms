@@ -26,7 +26,7 @@ With these features :
 - 14 Migration to BigData(R)
 - 15 ScalaJS migration 
 - 16 Dashboard : # of triples, # of of resources; # of resources of each type
-- 17 View SPARQL select & construct results
+- 17 View SPARQL select & construct results : possibly add FlintSPARQLEditor, but this implies to launch SPARQL HTTP server like Fuseki, or BigData
 - 18 Search : search also in URI's
 - 19 Add simple login 
 - 20 Inferences for forms : eliminate archaic properties; implement owl union
@@ -38,6 +38,8 @@ With these features :
 - 25   (HTML) : add component to enter a dbpedia URI ( use dbpedia lookup API )
 - 26   (HTML) : add component to enter an ordered RDF list
 - 27   (HTML) : add component to enter a choice (single or multiple) for owl:OneOf classes
+- 28 for each URI, display a summary of the resource (rdfs:label, foaf:name, etc, depending on what is present in instance and of the class) instead of the URI
+- 29 have a kind of merge in case of diverging modifications in the local endpoint and the original URI
 
 ..... etc etc ...
 
@@ -72,15 +74,15 @@ nohup bin/semantic_forms_play -Dlog4j.configuration=myconf.properties -mem 50 &
 
 - Preloading common vocabularies, and preloading some pre-defined form specifications ( currently FOAF ) : in activator shell type:
 ```
-    run-main deductions.runtime.sparql_cache.PopulateRDFCache
+    runMain deductions.runtime.sparql_cache.PopulateRDFCache
 ```
 - Preloading a local file: in activator shell type: for example:
 
 ```
-    run-main tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me \
+    runMain tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me \
       /home/jmv/data/foaf/jmv.rdf
     # With Jena it is possible to directly load from Internet:
-    run-main tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me \
+    runMain tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me \
        http://jmvanel.free.fr/jmv.rdf#me 
 ```
 

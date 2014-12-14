@@ -44,11 +44,13 @@ with RDFCacheDependencies with JenaHelpers {
         val uriGraphIsEmpty = graph.isEmpty()
         println("uriGraphIsEmpty " + uriGraphIsEmpty)
         if (uriGraphIsEmpty) {
-          storeURI( uri, uri, dataset)
-          println("Graph at URI was downloaded: " + uri)
-        }
+          val g = storeURINoTransaction( uri, uri, dataset)
+          println("Graph at URI was downloaded: " + uri + " , size "+ g.size )
+          g
+        } else
+          graph
       }
-    })
+    }) . flatMap { identity }
   }
 
   /**
