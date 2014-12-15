@@ -164,9 +164,10 @@ object Global extends Controller // play.api.GlobalSettings
     Logger.getRootLogger().info("Global.htmlForm uri "+ uri0 )
     val uri = uri0.trim()
     
-    <p>Creating an instance of Class <bold>{uri}</bold>
+    <div class="container">
+    	<h2>Creating an instance of Class <strong>{uri}</strong></h2>
       {cf.create(uri, lang).get}
-    </p>
+		</div>
   }
 
   def sparql( query:String, lang:String="en"  ) : Elem = {
