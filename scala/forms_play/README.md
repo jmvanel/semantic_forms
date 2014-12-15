@@ -13,7 +13,7 @@ With these features :
 - 2.3 when document pointed by URI entered by user has no triple with that URI as subject, show a list of URI's in the document like the search results
 - 3. URIs in the form can be clicked to display another form with the data from Internet - DONE
 - 4. entering new triples for existing properties, as in DataGUI or as in Ontowiki: http://aksw.org/source/edit
-- 5. introduce the RDF cache, - implemented - TODO unit test
+- 5. introduce the RDF cache, - implemented - done: unit test
 - 6. creation of a new URI infering form from its class, as DomainApplication does - DONE
 - 7. use HTTP HEAD to distinguish content types, and have different hyperlinks and styles for HTML, RDF, and image URL's - WIP
 - 7.1 have icons to distinguish content types, to display near hyperlinks for HTML, RDF, image, etc URL's
@@ -28,7 +28,8 @@ With these features :
 - 16 Dashboard : # of triples, # of of resources; # of resources of each type
 - 17 View SPARQL select & construct results : possibly add FlintSPARQLEditor, but this implies to launch SPARQL HTTP server like Fuseki, or BigData
 - 18 Search : search also in URI's
-- 19 Add simple login 
+- 19 Add simple login
+- 19.1 record who did what
 - 20 Inferences for forms : eliminate archaic properties; implement owl union
 - 21 write some JavaScript samples to call the different features
 - 22 Add a button to edit the currently displayed URI
@@ -40,6 +41,10 @@ With these features :
 - 27   (HTML) : add component to enter a choice (single or multiple) for owl:OneOf classes
 - 28 for each URI, display a summary of the resource (rdfs:label, foaf:name, etc, depending on what is present in instance and of the class) instead of the URI
 - 29 have a kind of merge in case of diverging modifications in the local endpoint and the original URI
+- 30 (from Dario) : Separation of the attributes of a peer and the list of connected peers: on the left a list with the peer in question and all peers (connected) in its ecosystem and on the right a list of attributes the selected peer
+	* in the left list one should be able to click on a peer so that it becomes the selected peer and its ecosystem appears (and updating on the right with its attributes)
+- 31 write a small help page explaining the role of local database in relation with the external data downloaded
+
 
 ..... etc etc ...
 
@@ -49,7 +54,13 @@ plus a textbox to enter a URL semantics, eg a FOAF profile or DBpedia URI :
 
 # How to run
 
-Dependencies : Java 7 (Scala is not ready for Java 8), SBT or Typesafe Activator 
+Dependencies to install : Java 7 (Scala is not ready for Java 8), SBT or Typesafe Activator .
+Then SBT or Activator donwload the rest.
+
+*Temporarily* there is a dependency to Banana-RDF 0.7.1-SNAPSHOT, so one must also build Banana-RDF; see
+[how-to-start-geeking](https://github.com/w3c/banana-rdf/#how-to-start-geeking) ,
+and type in Activator:
+`publishLocal`
 
 - build and run this project with [latest play activator from typesafe.com](http://typesafe.com/platform/getstarted) , and type in activator : `~ run`
 
@@ -68,7 +79,10 @@ vi myconf.properties
 nohup bin/semantic_forms_play -Dlog4j.configuration=myconf.properties -mem 50 &
 ```
 
+# Setting a IDE project ( eclipse ...)
 
+Please read explanations on the Banana-RDF project:
+[ide-setup](https://github.com/w3c/banana-rdf/#ide-setup)
 
 # Preloading RDF content
 

@@ -53,7 +53,6 @@ trait JenaHelpers extends JenaModule {
   
     def storeURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset : Store )
         : Rdf#Graph = {
-            println(s"storeURI uri $uri graphUri $graphUri") // TODO remove <<<<<<<<
       Logger.getRootLogger().info(s"storeURI uri $uri graphUri $graphUri")
 //      try{
         val gForStore = rdfStore.getGraph(dataset, graphUri)
@@ -62,7 +61,6 @@ trait JenaHelpers extends JenaModule {
 //        val graph = anyRDFReader.readAnyRDFSyntax(uri.toString()) . get // TODO
         rdfStore. appendToGraph( dataset, uri, graph )    
         Logger.getRootLogger().info(s"storeURI uri $uri : stored")
-        println( s"storeURI uri $uri : stored ; size ${graph.size()}") // TODO remove <<<<<<<<
         graph
 //      } catch {
 //      case t: Throwable => Logger.getRootLogger().error( "ERROR: " + t )
