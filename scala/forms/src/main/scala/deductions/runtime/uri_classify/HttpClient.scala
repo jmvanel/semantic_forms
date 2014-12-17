@@ -19,9 +19,12 @@ import akka.stream.scaladsl.Sink
 import akka.http.model._
 import akka.http.model.HttpMethods._
 import java.net.URL
+import akka.http.model.MediaRange.One
 
 /* taken from 
- * akka-http-core/src/test/scala/akka/http/TestClient.scala */
+ * akka-http-core/src/test/scala/akka/http/TestClient.scala
+ * 
+ * see http://doc.akka.io/docs/akka-stream-and-http-experimental/0.10/scala.html */
 object HttpClient {
   implicit val askTimeout: Timeout = 10000.millis
   val testConf: Config = ConfigFactory.parseString("""
@@ -48,16 +51,16 @@ object HttpClient {
         .run()
       Source(connection.responsePublisher).map(_._1).runWith(Sink.head)
     }
+    import scala.collection._
     val result = for {
       connection ← IO(Http).ask(Http.Connect(host)).mapTo[Http.OutgoingConnection]
-      response ← sendRequest(HttpRequest(method, uri = uri), connection)
-    } yield response // .header[headers.Server]
-    
-//    val result2 = for {
-//      connection ← IO(Http).ask(Http.Connect(host)).mapTo[Http.OutgoingConnection]
-//      response ← sendRequest(HttpRequest(method, uri = uri), connection)
-//    } yield response.header[headers.Server]
-//    type ct = headers.`Content-Type`
+      response ← sendRequest(HttpRequest(method, uri = uri,
+          headers=immutable.Seq(
+              headers.Accept(MediaRange.custom("text/turtle")),
+              headers.Accept(MediaRange.custom("application/rdf+xml", qValue=0.8f)),
+              headers.Accept(MediaRange.custom("application/text", qValue=0.5f))
+              ) ), connection)
+     } yield response // .header[headers.Server]
     
     result
   }

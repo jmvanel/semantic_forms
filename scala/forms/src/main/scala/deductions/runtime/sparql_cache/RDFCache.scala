@@ -29,7 +29,21 @@ with RDFCacheDependencies with JenaHelpers {
   val timestampGraphURI = "http://deductions-software.com/timestampGraph"
   val xsd = XSDPrefix[Rdf]
   import ops._
+  import scala.concurrent.ExecutionContext.Implicits.global
 
+  def isGraphInUse(uri: String) : Boolean = {
+	  isGraphInUse(makeUri(uri))  
+  }
+
+  def isGraphInUse(uri: Rdf#URI) = {
+    rdfStore.rw(dataset, {
+      for (graph <- rdfStore.getGraph(dataset, uri)) yield {
+        val uriGraphIsEmpty = graph.isEmpty()
+        println("uriGraphIsEmpty " + uriGraphIsEmpty)
+        ! uriGraphIsEmpty
+      }
+    }). flatMap { identity } . getOrElse( false )
+  }
   
   /**
    * retrieve URI from a graph named by itself;
@@ -38,7 +52,6 @@ with RDFCacheDependencies with JenaHelpers {
    * TODO save timestamp in another Dataset
    */
   def retrieveURI(uri: Rdf#URI, dataset: DATASET) = {
-    import scala.concurrent.ExecutionContext.Implicits.global
     rdfStore.rw(dataset, {
       for (graph <- rdfStore.getGraph(dataset, uri)) yield {
         val uriGraphIsEmpty = graph.isEmpty()
@@ -54,9 +67,10 @@ with RDFCacheDependencies with JenaHelpers {
   }
 
   /**
-   * download and store URI in a graph named by itself,
-   *  and store the current timestamp
-   *  TODO timestamp from HTTP HEAD request
+   * download and store URI in a graph named by its URI minus the # part,
+   *  and store the timestamp from HTTP HEAD request
+   *  
+   *  TODO: URI minus the # part
    */
   def storeURI(uri: Rdf#URI, dataset: DATASET ) : Rdf#Graph = {
 	  val model = storeURI( uri, uri, dataset)
@@ -72,20 +86,8 @@ with RDFCacheDependencies with JenaHelpers {
     model
   }
 
-//  def storeURI(uri: Rdf#URI, store: JenaStore) : Rdf#Graph = {
-//    val model = storeURI(uri, uri, store)
-//    val time = lastModified(uri.getURI(), 1000)
-//    // add timestamp to Graph
-//    store.writeTransaction {
-//      store.appendToGraph(makeUri(timestampGraphURI),
-//          Seq( makeTriple(
-//              uri,
-//              makeUri(timestampGraphURI),
-//              makeLiteral(time._2.toString, xsd.int ) ) ) )
-//    }
-//    model
-//  }
-
+   /** timestamp from HTTP HEAD request
+    *  NOTE elsewhere akka HTTP client is used */
    def lastModified( url0:String, timeout:Int) : (Boolean, Long) = {
     val url = url0.replaceFirst("https", "http"); // Otherwise an exception may be thrown on invalid SSL certificates.
     try {

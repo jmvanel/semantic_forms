@@ -66,7 +66,6 @@ trait JenaHelpers extends JenaModule {
 //      case t: Throwable => Logger.getRootLogger().error( "ERROR: " + t )
 //          ModelFactory.createDefaultModel().getGraph
 //      }
-
     }
 
 }

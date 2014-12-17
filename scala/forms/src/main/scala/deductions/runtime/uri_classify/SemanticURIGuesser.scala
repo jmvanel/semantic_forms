@@ -8,7 +8,6 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import akka.http.engine.parsing.HttpHeaderParser
 import akka.http.model.HttpHeader
-
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.async.Async.{ async, await }
@@ -28,6 +27,7 @@ import akka.stream.scaladsl.Sink
 import akka.http.model._
 import akka.http.model.HttpMethods._
 import java.net.URL
+import deductions.runtime.sparql_cache.RDFCache
 
 /* classify URI (non-blocking): leveraging on MIME types in HTTP headers.
 MIME categories :
@@ -38,7 +38,7 @@ video,
 xml, and other machine processable stuff
 rdf, Json-LD, Turtle and other semantic content 
  */
-object SemanticURIGuesser {
+object SemanticURIGuesser extends RDFCache {
   
   sealed abstract class SemanticURIType {
     override def toString = getClass.getSimpleName
@@ -55,6 +55,8 @@ object SemanticURIGuesser {
   object Unknown extends SemanticURIType
   
   def guessSemanticURIType(url: String) : Future[SemanticURIType]= {
+    if(isGraphInUse(url)) Future.successful(SemanticURI)
+    
     val response: Future[HttpResponse] = HttpClient.makeRequest(url, HEAD)
     println("response " + response)
     response.map { resp => semanticURITypeFromHeaders(resp, url) }
