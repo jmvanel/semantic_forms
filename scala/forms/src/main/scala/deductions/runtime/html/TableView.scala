@@ -118,8 +118,9 @@ trait TableViewModule
     // get the list of ?O such that uri ?P ?O .
     import scala.concurrent.ExecutionContext.Implicits.global
     val dataset =  RDFStoreObject.dataset
+    //  TODO val graphFuture =  RDFStoreObject.allNamedGraphsFuture
+
     val r = rdfStore.r(dataset, {
-//    store.readTransaction {
       for( 
         allNamedGraphs <- rdfStore.getGraph(dataset, ops.makeUri("urn:x-arq:UnionGraph"))
       ) yield { 
@@ -128,7 +129,7 @@ trait TableViewModule
       val semanticURItypes =
         for (triple <- triples) yield {
           val node = triple.getObject
-          val semanticURItype = if (isURI(node)) {
+          val semanticURItype = if (isDereferenceableURI(node)) {
             SemanticURIGuesser.guessSemanticURIType(node.toString())
           } else
             Future.successful(SemanticURIGuesser.Unknown) // TODO NONE
@@ -141,8 +142,16 @@ trait TableViewModule
     val rr = MonadicHelpers.tryToFuture(r1)
     rr.flatMap( identity )
   }
+
+  def isDereferenceableURI(node: Rdf#Node) = {
+    if (isURI(node)) {
+      val uri = node.toString()
+      uri.startsWith("http:") ||
+        uri.startsWith("https:") ||
+        uri.startsWith("ftp:")
+    }
+    else false
+  }
   
   def isURI( node:Rdf#Node) = ops.foldNode( node )(identity, x => None, x => None) != None
-
-//  def r[Int](dataset: DATASET, body: => Int): M[Int] = M {333}
 }

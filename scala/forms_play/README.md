@@ -15,7 +15,7 @@ With these features :
 - 4. entering new triples for existing properties, as in DataGUI or as in Ontowiki: http://aksw.org/source/edit
 - 5. introduce the RDF cache, - implemented - done: unit test
 - 6. creation of a new URI infering form from its class, as DomainApplication does - DONE
-- 7. use HTTP HEAD to distinguish content types, and have different hyperlinks and styles for HTML, RDF, and image URL's - WIP
+- 7. use HTTP HEAD to distinguish RDF content types and others, and have different hyperlinks and styles for HTML, RDF, and image URL's - WIP
 - 7.1 have icons to distinguish content types, to display near hyperlinks for HTML, RDF, image, etc URL's
 - 8. data validation in JS or Scala.JS
 - 9. creating or editing URI's : propose URI's in relation with rdfs:domain class value
@@ -44,6 +44,16 @@ With these features :
 - 30 (from Dario) : Separation of the attributes of a peer and the list of connected peers: on the left a list with the peer in question and all peers (connected) in its ecosystem and on the right a list of attributes the selected peer
 	* in the left list one should be able to click on a peer so that it becomes the selected peer and its ecosystem appears (and updating on the right with its attributes)
 - 31 write a small help page explaining the role of local database in relation with the external data downloaded
+- 32 TEST : write Selenium scenario(s)
+- 33 framework to orchestrate a series of questions to user when the data is not present in database
+- 34 datatype validation : integer, date, telephone, ...
+- 35 enforce mandatory properties
+- 36 display properties of blank nodes being objects
+- 37 datatype date : display a calendar
+- 38 RDF Vocabulary for forms, with details for each field ( see below )
+- 39 custom validation via JS
+- 40
+
 
 
 ..... etc etc ...
@@ -68,7 +78,7 @@ To package to run on a server that has Java only: type in activator : `dist`
 
 Then the archive is found here :
 `target/universal/semantic_forms_play-1.0-SNAPSHOT.zip`
-Donwnload this zip on the server, unzip and type:
+Download this zip on the server, unzip and type:
 ```
 nohup bin/semantic_forms_play -mem 50 &
 ```

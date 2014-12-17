@@ -21,6 +21,8 @@ import deductions.runtime.sparql_cache.RDFCache
 import org.w3.banana.RDFOpsModule
 import scala.util.Try
 import org.w3.banana.TurtleWriterModule
+import play.api.libs.iteratee.Enumeratee
+import play.api.libs.iteratee.Iteratee
 
 package global {
 
@@ -79,15 +81,39 @@ object Global extends Controller // play.api.GlobalSettings
     </p>
   }
 
-  def displayURI2(uri:String) : Enumerator[scala.xml.Elem] = {
-    val t2= SemanticURIGuesser.guessSemanticURIType("http://xmlns.com/foaf/0.1/")
+  def displayURI2(uriSubject:String)
+//  : Enumerator[scala.xml.Elem] 
+  = {
+    import ops._    
+    val graphFuture = RDFStoreObject.allNamedGraphsFuture
     import scala.concurrent.ExecutionContext.Implicits.global
-    val enum = Enumerator.enumerate( Seq(t2) )
-//    Future.successful(t)
-    // http://docs.scala-lang.org/overviews/core/futures.html
-//    Enumerator.empty
-    enum.map { x => <span>{ x.toString() }</span> }
-    // TODO <<<<<<<<<<<<<<<<<<
+
+    type URIPair = (Rdf#Node, SemanticURIGuesser.SemanticURIType)
+      val semanticURItypesFuture = tableView.getSemanticURItypes(uriSubject)
+      // TODO get rid of mutable, but did not found out with yield
+      val elems : Future[Iterator[Elem]] = semanticURItypesFuture map {
+        semanticURItypes => {
+            semanticURItypes .
+            filter { p => isURI(p._1) } .
+            map {
+              semanticURItype =>
+                val uri = semanticURItype._1
+                val semanticType = semanticURItype._2
+                <p>
+                  <div>{ uri }</div>
+                  <div>{ semanticType }</div>
+                </p>
+            }
+          }
+      }   
+//    def makeEnumerator[E, A]( f: Future[Iterator[A]] ) : Enumerator[A] = new Enumerator[A] {
+//      def apply[A]( i : Iteratee[A, Iterator[A]]): Future[Iteratee[A, Iterator[A]]]
+//      = {
+//        Future(i) // ?????
+//      }
+//    }
+//    val enum = makeEnumerator(elems) // [ , ]
+    elems
   }
   
   def printTrace(e: Exception) : String = {
@@ -176,5 +202,6 @@ object Global extends Controller // play.api.GlobalSettings
     {dl.sparqlConstructQuery(query) /* TODO Future !!!!!!!!!!!!!!!!!!! */ }
     </p>
   }
+  def isURI( node:Rdf#Node) = ops.foldNode( node )(identity, x => None, x => None) != None
  }
 }
