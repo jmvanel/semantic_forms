@@ -25,7 +25,8 @@ import scala.util.Failure
  *  - JenaStore is not existing anymore
  *  - generic API for transactions
  *  
- * TODO rename RDFStoreHelpers  */
+ * TODO rename RDFStoreHelpers
+ * TODO remove dependency to Jena after anyRDFReader is introduced in Banana */
 
 trait JenaHelpers extends JenaModule {
 	import ops._

@@ -14,6 +14,7 @@ import org.w3.banana.GraphStore
 import org.w3.banana.RDFStore
 import org.w3.banana.jena.JenaDatasetStore
 import deductions.runtime.jena.RDFStoreLocalProvider
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
 
 /** */
 trait RDFCacheDependencies
@@ -23,7 +24,7 @@ trait RDFCacheDependencies
   with RDFXMLReaderModule
 
 /* depends on generic Rdf */
-trait RDFCache extends RDFStoreLocalProvider
+trait RDFCache extends RDFStoreLocalJena1Provider
 with RDFCacheDependencies with JenaHelpers {
 
   val timestampGraphURI = "http://deductions-software.com/timestampGraph"

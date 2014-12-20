@@ -14,12 +14,9 @@ import org.w3.banana.RDF
 import scala.util.Try
 import deductions.runtime.utils.MonadicHelpers
 
-//trait RDFStore2[Rdf <: RDF] extends RDFStore[Rdf,  Try, Dataset]
-//with Transactor[Rdf, Dataset]
-//with SparqlUpdate[Rdf,  Try, Dataset]
 
 /** singleton  hosting a Jena TDB database in directory "TDB" */
-object RDFStoreObject extends RDFStoreLocalProvider
+object RDFStoreObject extends RDFStoreLocalJena1Provider
 with JenaModule {
   // TODO remove allNamedGraphs elsewhere
   lazy val allNamedGraphs = rdfStore.getGraph(dataset, ops.makeUri("urn:x-arq:UnionGraph"))
@@ -27,12 +24,17 @@ with JenaModule {
   lazy val allNamedGraphsFuture = tryToFuture( allNamedGraphs )
 }
 
-trait RDFStoreLocalProvider {
-  type DATASET = Dataset
+trait RDFStoreLocalJena1Provider extends RDFStoreLocalProvider with JenaModule {
+	override type DATASET = Dataset
   lazy val dataset : DATASET = TDBFactory.createDataset("TDB")
 }
 
-trait RDFGraphPrinter extends RDFStoreLocalProvider with JenaModule {
+trait RDFStoreLocalProvider {
+  type DATASET // = Dataset
+  val dataset:DATASET
+}
+
+trait RDFGraphPrinter extends RDFStoreLocalJena1Provider with JenaModule {
   def printGraphList {
     rdfStore.r(dataset, {
         val lgn = dataset.asDatasetGraph().listGraphNodes()
