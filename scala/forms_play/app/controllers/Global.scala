@@ -55,13 +55,21 @@ object Global extends Controller // play.api.GlobalSettings
       Logger.getRootLogger().info( s"""Global.htmlForm uri $uri0 blankNode "$blankNode" lang=$lang """ )
     val uri = uri0.trim()
 
-    <p>
-      Properties for URI <b>{uri}</b>
-      <a href={uri} title="Download from original URI">original URI</a>
-      <a href={hrefDownloadPrefix + URLEncoder.encode(uri,"utf-8")}
-         title="Download Turtle from database (augmented by users' edits)">Triples</a>
-      <br/>
-
+    <div class="container">
+			<div class="container">
+				<div class="row">
+					<h3>Properties for URI <b>{uri}</b></h3>
+				</div>
+				<div class="row">
+      		<div class="col-md-6">
+						<a href={uri} title="Download from original URI">Download from original URI</a>
+					</div>
+					<div class="col-md-6">
+      			<a href={hrefDownloadPrefix + URLEncoder.encode(uri,"utf-8")}
+       					 title="Download Turtle from database (augmented by users' edits)">Triples</a>
+      		</div>
+				</div>
+			</div>
       {if (uri != null && uri != "")
         try {
           tableView.htmlForm(uri, hrefDisplayPrefix, blankNode, editable=editable,
@@ -75,8 +83,9 @@ object Global extends Controller // play.api.GlobalSettings
           </p>
         }
       else
-        <p>Enter an URI</p>}
-    </p>
+        <div class="row">Enter an URI</div>
+      }
+      </div>
   }
 
   def displayURI2(uri:String) : Enumerator[scala.xml.Elem] = {

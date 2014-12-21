@@ -18,12 +18,21 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
     actionURI: String = "/save"): Elem = {
 
     val htmlForm =
-      <div style="resize:both;">
+      <div class="container">
         <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
         <div class="form">
           {
             for (field <- form.fields) yield {
-              createHTMLField(field, editable, hrefPrefix)  
+            <div class="form-group">
+              <div class="row">
+                <label class="col-md-4 control-label" title={ field.comment }>{ field.label }</label>
+                <div class="col-md-8">
+              		{
+                    createHTMLField(field, editable, hrefPrefix)
+                  }
+								</div>
+						  </div>
+						</div>  
             }
           }
     	</div>
@@ -42,90 +51,46 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
         </form>
       else
         htmlForm
-  }
-  
-  def generateHTMLTable(form: fm#FormSyntax[NODE, URI],
-    hrefPrefix: String = "",
-    editable: Boolean = false,
-    actionURI: String = "/save"): Elem = {
-
-    val htmlForm =
-      <div style="resize:both;">
-        <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
-        <table>
-          {
-            for (field <- form.fields) yield {
-              <tr>
-                <td title={ field.comment }>{ field.label }</td>
-                <td>{
-                  createHTMLField(field, editable, hrefPrefix)
-                }</td>
-              </tr>
-            }
-          }
-    </table></div>
-      if( editable)
-        <form action={actionURI}  method="POST" >
-          <input value="SAVE" type="submit"/>
-          <input type="hidden" name="url" value={urlEncode(form.subject)}/>
-          {htmlForm}
-        </form>
-        else
-          htmlForm
-  }
-            
+  }         
             
   def createHTMLField(field:fm#Entry, editable:Boolean,
           hrefPrefix: String = "" ) = {
       field match {
         case l: LiteralEntry =>
-          if (editable)
-            <div class="form-group">
-							<div class="row">
-            		<label class="col-md-2 control-label" for={ l.value } title={ l.comment }>{ l.label }</label>
-								<div class="col-md-10">
-            			<input class="form-control" value={ l.value } name={ "LIT-" + urlEncode(l.property) } />
+            		{if (editable) {
+									<input class="form-control" value={ l.value } name={ "LIT-" + urlEncode(l.property) } />
             			<input value={ l.value } name={ "ORIG-LIT-" + urlEncode(l.property) } type="hidden"/>
-								</div>
-						  </div>
-						</div>
-          else
-            <div>{ l.value }</div>
+                } else {
+            			<div>{ l.value }</div>
+                }}
         case r: ResourceEntry =>
           /* link to a known resource of the right type,
            * or create a sub-form for a blank node of an ancillary type (like a street address),
            * or just create a new resource with its type, given by range, or derived
            * (like in N3Form in EulerGUI ) */
-          if (editable) {
-            <div class="form-group">
-							<div class="row">
-            		<label class="col-md-2 control-label" for={ r.value.toString } title={ r.comment }>{ r.label }</label>
-								<div class="col-md-10">
-              		<input class="form-control" value={ r.value.toString } name={ "RES-" + urlEncode(r.property) } />
-                  {
-                    if (r.alreadyInDatabase) {
-                      {println("r.alreadyInDatabase " + r ) }
-                      <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden"/>
-                    }
+          {if (editable) {
+              <div>
+          			<input class="form-control" value={ r.value.toString } name={ "RES-" + urlEncode(r.property) } />
+                {
+                  if (r.alreadyInDatabase) {
+                    {println("r.alreadyInDatabase " + r ) }
+                    <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden"/>
                   }
-                </div>
+                }
               </div>
-						</div>
           } else
-            <span title={ r.comment }>{ r.label }</span>
-            <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }>{
-              r.value.toString
-            }</a>
+          		<a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }>{
+                r.value.toString
+              }</a>}
         case r: BlankNodeEntry =>
-          if (editable)
-            <div class="form-group">
-                <input class="form-control" value={ r.value.toString } name={ "BLA-" + urlEncode(r.property) } />
-                <input value={ r.value.toString } name={ "ORIG-BLA-" + urlEncode(r.property) } type="hidden"/>
-            </div>
-          else
-            <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString, true) }>{
+          {if (editable) {
+             <input class="form-control" value={ r.value.toString } name={ "BLA-" + urlEncode(r.property) } />
+             <input value={ r.value.toString } name={ "ORIG-BLA-" + urlEncode(r.property) } type="hidden"/>
+          }else
+          	<a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString, true) }>{
               r.getId
             }</a>
+          }
       }
 
   }
