@@ -26,134 +26,140 @@ import play.api.libs.iteratee.Iteratee
 
 package global {
 
-object Global extends Controller // play.api.GlobalSettings
-  with RDFCache
-   with RDFOpsModule
-   with TurtleWriterModule
-//   with SparqlGraphModule
-//   with SparqlOpsModule
-//   with RDFStoreLocalProvider
-{
-  var form : Elem = <p>initial value</p>
-  lazy val tableView = new TableView {}
-//  lazy val store =  RDFStoreObject.store
-  lazy val search = new StringSearchSPARQL()
-  lazy val dl = new BrowsableGraph()
-  lazy val fs = new FormSaver()
-  lazy val cf = new CreationForm { actionURI = "/save" }
-  
-  val hrefDisplayPrefix = "/display?displayuri="
-  val hrefDownloadPrefix = "/download?url="
+  object Global extends Controller // play.api.GlobalSettings
+      with RDFCache
+      with RDFOpsModule
+      with TurtleWriterModule //   with SparqlGraphModule
+      //   with SparqlOpsModule
+      //   with RDFStoreLocalProvider
+      {
+    var form: Elem = <p>initial value</p>
+    lazy val tableView = new TableView {}
+    //  lazy val store =  RDFStoreObject.store
+    lazy val search = new StringSearchSPARQL()
+    lazy val dl = new BrowsableGraph()
+    lazy val fs = new FormSaver()
+    lazy val cf = new CreationForm { actionURI = "/save" }
 
-//  override def onStart(app: Application) {
-//    val uri = "http://jmvanel.free.fr/jmv.rdf#me"
-//    PopulateRDFCache.loadCommonVocabularies
-//    form = htmlForm(uri)
-//  }
+    val hrefDisplayPrefix = "/display?displayuri="
+    val hrefDownloadPrefix = "/download?url="
 
-  def htmlForm(uri0: String, blankNode:String="",
-    editable:Boolean=false,
-    lang:String="en" ) : Elem = {
-      Logger.getRootLogger().info( s"""Global.htmlForm uri $uri0 blankNode "$blankNode" lang=$lang """ )
-    val uri = uri0.trim()
+    //  override def onStart(app: Application) {
+    //    val uri = "http://jmvanel.free.fr/jmv.rdf#me"
+    //    PopulateRDFCache.loadCommonVocabularies
+    //    form = htmlForm(uri)
+    //  }
 
-    <div class="container">
-			<div class="container">
-				<div class="row">
-					<h3>Properties for URI <b>{uri}</b></h3>
-				</div>
-				<div class="row">
-      		<div class="col-md-6">
-						<a href={uri} title="Download from original URI">Download from original URI</a>
-					</div>
-					<div class="col-md-6">
-      			<a href={hrefDownloadPrefix + URLEncoder.encode(uri,"utf-8")}
-       					 title="Download Turtle from database (augmented by users' edits)">Triples</a>
-      		</div>
-				</div>
-			</div>
-      {if (uri != null && uri != "")
-        try {
-          tableView.htmlForm(uri, hrefDisplayPrefix, blankNode, editable=editable,
-              lang=lang ) . get
-        } catch {
-        case e:Exception => // e.g. org.apache.jena.riot.RiotException
-          <p style="color:red">{
-            e.getLocalizedMessage() + " " + printTrace(e)
-            } <br/>
-          Cause: { if( e.getCause() != null ) e.getCause().getLocalizedMessage()}
-          </p>
-        }
-      else
-        <div class="row">Enter an URI</div>
-      }
-      </div>
-  }
+    def htmlForm(uri0: String, blankNode: String = "",
+      editable: Boolean = false,
+      lang: String = "en"): Elem = {
+      Logger.getRootLogger().info(s"""Global.htmlForm uri $uri0 blankNode "$blankNode" lang=$lang """)
+      val uri = uri0.trim()
 
-  def displayURI2(uriSubject:String)
-//  : Enumerator[scala.xml.Elem] 
-  = {
-    import ops._    
-    val graphFuture = RDFStoreObject.allNamedGraphsFuture
-    import scala.concurrent.ExecutionContext.Implicits.global
-
-    type URIPair = (Rdf#Node, SemanticURIGuesser.SemanticURIType)
-      val semanticURItypesFuture = tableView.getSemanticURItypes(uriSubject)
-      // TODO get rid of mutable, but did not found out with yield
-      val elems : Future[Iterator[Elem]] = semanticURItypesFuture map {
-        semanticURItypes => {
-            semanticURItypes .
-            filter { p => isURI(p._1) } .
-            map {
-              semanticURItype =>
-                val uri = semanticURItype._1
-                val semanticType = semanticURItype._2
-                <p>
-                  <div>{ uri }</div>
-                  <div>{ semanticType }</div>
+      <div class="container">
+        <div class="container">
+          <div class="row">
+            <h3>Properties for URI <b>{ uri }</b></h3>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <a href={ uri } title="Download from original URI">Download from original URI</a>
+            </div>
+            <div class="col-md-6">
+              <a href={ hrefDownloadPrefix + URLEncoder.encode(uri, "utf-8") } title="Download Turtle from database (augmented by users' edits)">Triples</a>
+            </div>
+          </div>
+        </div>
+        {
+          if (uri != null && uri != "")
+            try {
+              tableView.htmlForm(uri, hrefDisplayPrefix, blankNode, editable = editable,
+                lang = lang).get
+            } catch {
+              case e: Exception => // e.g. org.apache.jena.riot.RiotException
+                <p style="color:red">
+                  {
+                    e.getLocalizedMessage() + " " + printTrace(e)
+                  }<br/>
+                  Cause:{ if (e.getCause() != null) e.getCause().getLocalizedMessage() }
                 </p>
             }
+          else
+            <div class="row">Enter an URI</div>
+        }
+      </div>
+    }
+
+    def displayURI2(uriSubject: String) //  : Enumerator[scala.xml.Elem] 
+    = {
+      import ops._
+      val graphFuture = RDFStoreObject.allNamedGraphsFuture
+      import scala.concurrent.ExecutionContext.Implicits.global
+
+      type URIPair = (Rdf#Node, SemanticURIGuesser.SemanticURIType)
+      val semanticURItypesFuture = tableView.getSemanticURItypes(uriSubject)
+      // TODO get rid of mutable, but did not found out with yield
+      val elems: Future[Iterator[Elem]] = semanticURItypesFuture map {
+        semanticURItypes =>
+          {
+            semanticURItypes.
+              filter { p => isURI(p._1) }.
+              map {
+                semanticURItype =>
+                  val uri = semanticURItype._1
+                  val semanticType = semanticURItype._2
+                  <p>
+                    <div>{ uri }</div>
+                    <div>{ semanticType }</div>
+                  </p>
+              }
           }
-      }   
-//    def makeEnumerator[E, A]( f: Future[Iterator[A]] ) : Enumerator[A] = new Enumerator[A] {
-//      def apply[A]( i : Iteratee[A, Iterator[A]]): Future[Iteratee[A, Iterator[A]]]
-//      = {
-//        Future(i) // ?????
-//      }
-//    }
-//    val enum = makeEnumerator(elems) // [ , ]
-    elems
-  }
-  
-  def printTrace(e: Exception) : String = {
-    var s = ""
-    for ( i <- e.getStackTrace() ) { s = s + " " + i }
-    s
-  }
-  
-  def wordsearch(q:String="") : Elem = {
-      <p>Searched for "{q}" :<br/>
-    	  {search.search(q, hrefDisplayPrefix)}
+      }
+      //    def makeEnumerator[E, A]( f: Future[Iterator[A]] ) : Enumerator[A] = new Enumerator[A] {
+      //      def apply[A]( i : Iteratee[A, Iterator[A]]): Future[Iteratee[A, Iterator[A]]]
+      //      = {
+      //        Future(i) // ?????
+      //      }
+      //    }
+      //    val enum = makeEnumerator(elems) // [ , ]
+      elems
+    }
+
+    def printTrace(e: Exception): String = {
+      var s = ""
+      for (i <- e.getStackTrace()) { s = s + " " + i }
+      s
+    }
+
+    def wordsearch(q: String = ""): Elem = {
+      <p>
+        Searched for "{ q }
+        " :<br/>
+        { search.search(q, hrefDisplayPrefix) }
       </p>
-  }
+    }
 
-  import scala.concurrent.ExecutionContext.Implicits.global
-  def wordsearchFuture(q: String = ""): Future[Elem] = {
-		  val f = search.search(q, hrefDisplayPrefix)
-				  val xml = f . map { v =>
-				  <p> Searched for "{ q }" :<br/>
-				  {v} </p> }
-		  xml
-  }
-    
-  def downloadAsString( url:String ) : String = {
-    println( "download url " + url )
-    val res = dl.focusOnURI( url )  
-    println( "download result " + res )
-    res
-  }
+    import scala.concurrent.ExecutionContext.Implicits.global
+    def wordsearchFuture(q: String = ""): Future[Elem] = {
+      val f = search.search(q, hrefDisplayPrefix)
+      val xml = f.map { v =>
+        <p>
+          Searched for "{ q }
+          " :<br/>
+          { v }
+        </p>
+      }
+      xml
+    }
 
-    def download(url: String) : Enumerator[Array[Byte]] = {
+    def downloadAsString(url: String): String = {
+      println("download url " + url)
+      val res = dl.focusOnURI(url)
+      println("download result " + res)
+      res
+    }
+
+    def download(url: String): Enumerator[Array[Byte]] = {
       // cf https://www.playframework.com/documentation/2.3.x/ScalaStream
       // and http://greweb.me/2012/11/play-framework-enumerator-outputstream/
       Enumerator.outputStream { os =>
@@ -166,52 +172,53 @@ object Global extends Controller // play.api.GlobalSettings
         }
       }
     }
-  
-  def edit( url:String ) : Elem = {
-        htmlForm(url, editable=true)
-  }
 
-  def save(request: Request[_]): Elem = {
+    def edit(url: String): Elem = {
+      htmlForm(url, editable = true)
+    }
+
+    def save(request: Request[_]): Elem = {
       val body = request.body
       body match {
         case form: AnyContentAsFormUrlEncoded =>
           val map = form.data
           println("Global.save: " + body.getClass + ", map " + map)
-          try{
-        	  fs.saveTriples(map)
+          try {
+            fs.saveTriples(map)
           } catch {
-          case t:Throwable => println( "Exception in saveTriples: " + t )
-          // TODO show Exception to user
+            case t: Throwable => println("Exception in saveTriples: " + t)
+            // TODO show Exception to user
           }
           val uriOption = map.getOrElse("uri", Seq()).headOption
-          println("Global.save: uriOption " + uriOption )
+          println("Global.save: uriOption " + uriOption)
           uriOption match {
             case Some(url1) => htmlForm(
-                URLDecoder.decode(url1, "utf-8"),
-                editable = false )
+              URLDecoder.decode(url1, "utf-8"),
+              editable = false)
             case _ => <p>Save: not normal: { uriOption }</p>
-          }      
+          }
         case _ => <p>Save: not normal: { form.getClass() }</p>
       }
-  }
-  
-  def create( uri0:String, lang:String="en"  ) : Elem = {
-    Logger.getRootLogger().info("Global.htmlForm uri "+ uri0 )
-    val uri = uri0.trim()
-    
-    <div class="container">
-    	<h2>Creating an instance of Class <strong>{uri}</strong></h2>
-      {cf.create(uri, lang).get}
-		</div>
-  }
+    }
 
-  def sparql( query:String, lang:String="en"  ) : Elem = {
-    Logger.getRootLogger().info("Global.sparql query  "+ query )
-    <p>SPARQL query:<br/>{query}
-    <br/>
-    {dl.sparqlConstructQuery(query) /* TODO Future !!!!!!!!!!!!!!!!!!! */ }
-    </p>
+    def create(uri0: String, lang: String = "en"): Elem = {
+      Logger.getRootLogger().info("Global.htmlForm uri " + uri0)
+      val uri = uri0.trim()
+
+      <div class="container">
+        <h2>Creating an instance of Class <strong>{ uri }</strong></h2>
+        { cf.create(uri, lang).get }
+      </div>
+    }
+
+    def sparql(query: String, lang: String = "en"): Elem = {
+      Logger.getRootLogger().info("Global.sparql query  " + query)
+      <p>
+        SPARQL query:<br/>{ query }
+        <br/>
+        { dl.sparqlConstructQuery(query) /* TODO Future !!!!!!!!!!!!!!!!!!! */ }
+      </p>
+    }
+    def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
   }
-  def isURI( node:Rdf#Node) = ops.foldNode( node )(identity, x => None, x => None) != None
- }
 }
