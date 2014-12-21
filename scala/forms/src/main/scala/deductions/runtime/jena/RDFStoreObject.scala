@@ -12,6 +12,7 @@ import org.w3.banana.Transactor
 import com.hp.hpl.jena.query.Dataset
 import org.w3.banana.RDF
 import scala.util.Try
+import deductions.runtime.utils.MonadicHelpers
 
 //trait RDFStore2[Rdf <: RDF] extends RDFStore[Rdf,  Try, Dataset]
 //with Transactor[Rdf, Dataset]
@@ -19,7 +20,12 @@ import scala.util.Try
 
 /** singleton  hosting a Jena TDB database in directory "TDB" */
 object RDFStoreObject extends RDFStoreLocalProvider
-with JenaModule
+with JenaModule {
+  // TODO remove allNamedGraphs elsewhere
+  lazy val allNamedGraphs = rdfStore.getGraph(dataset, ops.makeUri("urn:x-arq:UnionGraph"))
+	import MonadicHelpers._
+  lazy val allNamedGraphsFuture = tryToFuture( allNamedGraphs )
+}
 
 trait RDFStoreLocalProvider {
   type DATASET = Dataset

@@ -17,17 +17,13 @@ import org.w3.banana.RDFPrefix
  *
  */
 object UnfilledFormFactory {
-  var instanceURIPrefix = "http://assemblee-virtuelle.org/resource/"
-  def makeId : String = {
-    val r = instanceURIPrefix + System.currentTimeMillis() + "-" + System.nanoTime()
-//    currentId = currentId + 1
-    r
-  }
+  var defaultInstanceURIPrefix = "http://assemblee-virtuelle.org/resource/"
 }
 
 /** Factory for an Unfilled Form */
 class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
-    preferedLanguage:String="en")
+    preferedLanguage:String="en",
+    instanceURIPrefix:String = defaultInstanceURIPrefix )
     (implicit ops: RDFOps[Rdf],
     		uriOps: URIOps[Rdf] )
   extends FormSyntaxFactory[Rdf](graph: Rdf#Graph, preferedLanguage) {
@@ -62,6 +58,11 @@ class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
     }
   }
 
+  def makeId : String = {
+    val r = instanceURIPrefix + System.currentTimeMillis() + "-" + System.nanoTime() // currentId = currentId + 1
+    r
+  }
+  
   /** recursively iterate on the Rdf#Node through rdf:first and rdf:rest */
   def rdfListToSeq(listOp: Option[Rdf#Node], result: Seq[Rdf#Node] = Seq()): Seq[Rdf#Node] = {
     listOp match {
