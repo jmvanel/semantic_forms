@@ -7,8 +7,6 @@ import org.w3.banana.RDFOpsModule
 import org.w3.banana.SparqlOps
 import java.net.URL
 import org.w3.banana.jena.JenaModule
-import com.hp.hpl.jena.rdf.model.Model
-import com.hp.hpl.jena.rdf.model.ModelFactory
 import org.w3.banana.RDFStore
 import org.w3.banana.diesel._
 import org.w3.banana.RDFStore
@@ -49,13 +47,11 @@ trait JenaHelpers extends JenaModule {
         Logger.getRootLogger().error( "ERROR: " + e )
         throw e
     }
-    // .getOrElse( emptyGraph )
   }
   
     def storeURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset : Store )
         : Rdf#Graph = {
       Logger.getRootLogger().info(s"storeURI uri $uri graphUri $graphUri")
-//      try{
         val gForStore = rdfStore.getGraph(dataset, graphUri)
         // read from uri no matter what the syntax is:
         val graph = RDFDataMgr.loadModel(uri.toString()) . getGraph  
@@ -63,9 +59,6 @@ trait JenaHelpers extends JenaModule {
         rdfStore. appendToGraph( dataset, uri, graph )    
         Logger.getRootLogger().info(s"storeURI uri $uri : stored")
         graph
-//      } catch {
-//      case t: Throwable => Logger.getRootLogger().error( "ERROR: " + t )
-//          ModelFactory.createDefaultModel().getGraph
 //      }
     }
 

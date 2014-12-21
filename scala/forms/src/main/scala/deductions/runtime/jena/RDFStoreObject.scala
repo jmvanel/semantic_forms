@@ -34,7 +34,7 @@ trait RDFStoreLocalProvider {
   val dataset:DATASET
 }
 
-trait RDFGraphPrinter extends RDFStoreLocalJena1Provider with JenaModule {
+trait RDFGraphPrinter extends RDFStoreLocalJena1Provider {
   def printGraphList {
     rdfStore.r(dataset, {
         val lgn = dataset.asDatasetGraph().listGraphNodes()
