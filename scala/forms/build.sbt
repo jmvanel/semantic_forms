@@ -38,3 +38,6 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.0" % "test"
 
 resolvers += "betehess" at  "http://dl.bintray.com/betehess/banana-rdf"
 
+// addSbtPlugin("com.typesafe.sbt" % "sbt-scalariform" % "1.3.0")
+
+scalariformSettings

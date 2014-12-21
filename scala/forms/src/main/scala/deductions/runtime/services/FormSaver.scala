@@ -17,27 +17,24 @@ import scala.concurrent.Future
 import org.w3.banana._
 import deductions.runtime.jena.RDFStoreLocalProvider
 
-class FormSaver[Rdf <: RDF]()
-(
-  implicit ops: RDFOps[Rdf],
-  sparqlOps: SparqlOps[Rdf],
-  writer: RDFWriter[Rdf, Try, Turtle],
-  rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET]
-)
-//extends RDFStoreLocalProvider
-//  extends TurtleWriterModule 
-  {
+class FormSaver[Rdf <: RDF]()(
+    implicit ops: RDFOps[Rdf],
+    sparqlOps: SparqlOps[Rdf],
+    writer: RDFWriter[Rdf, Try, Turtle],
+    rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET]) //extends RDFStoreLocalProvider
+    //  extends TurtleWriterModule 
+    {
   import ops._
   import sparqlOps._
 
   def saveTriples(map: Map[String, Seq[String]]) = {
     println("FormSaver.saveTriples")
     val uriOption = map.getOrElse("uri", Seq()).headOption
-    println("FormSaver.saveTriples "+uriOption)
-    
+    println("FormSaver.saveTriples " + uriOption)
+
     val triples = ArrayBuffer[Rdf#Triple]()
     val triplesToRemove = ArrayBuffer[Rdf#Triple]()
-    
+
     uriOption match {
       case Some(uri0) =>
         val uri = URLDecoder.decode(uri0, "utf-8")
@@ -46,25 +43,25 @@ class FormSaver[Rdf <: RDF]()
             val prop = URLDecoder.decode(prop0, "utf-8")
             saveTriplesForProperty(uri, prop, obj, map)
         }
-        doSave(uri:String)
+        doSave(uri: String)
       case _ =>
     }
     // end of body of saveTriples
 
-    def saveTriplesForProperty(uri: String, prop: String, objects: Seq[String], map: Map[String, Seq[String]]) = {  
-    	objects.map(object_ => saveTriple(uri, prop, object_))
-    	println("triplesToRemove " + triplesToRemove)
-    	println("triples To add " + triples)
+    def saveTriplesForProperty(uri: String, prop: String, objects: Seq[String], map: Map[String, Seq[String]]) = {
+      objects.map(object_ => saveTriple(uri, prop, object_))
+      println("triplesToRemove " + triplesToRemove)
+      println("triples To add " + triples)
     }
-  
+
     def processChange(uri: String, prop: String, obj: String): (Boolean, String) = {
       val originalValue = map.getOrElse(
-          "ORIG-" + URLEncoder.encode(prop,"utf-8"), Seq("")).headOption.getOrElse("")
-//      val userValue = map.getOrElse(
-//          "ORIG-" + URLEncoder.encode(prop,"utf-8"), Seq("")).headOption.getOrElse("")
-      val userValue = obj    
-      println( "processChange " + uri + " " + prop + " " + obj +
-          " userValue " + userValue  + " originalValue " + originalValue)
+        "ORIG-" + URLEncoder.encode(prop, "utf-8"), Seq("")).headOption.getOrElse("")
+      //      val userValue = map.getOrElse(
+      //          "ORIG-" + URLEncoder.encode(prop,"utf-8"), Seq("")).headOption.getOrElse("")
+      val userValue = obj
+      println("processChange " + uri + " " + prop + " " + obj +
+        " userValue " + userValue + " originalValue " + originalValue)
       (userValue != originalValue, originalValue)
     }
 
@@ -82,10 +79,10 @@ class FormSaver[Rdf <: RDF]()
           + obj, xsd.string)
       }
     }
-                  
-    def saveTriple(uri: String, prop: String, obj0: String ): Unit = {
+
+    def saveTriple(uri: String, prop: String, obj0: String): Unit = {
       val obj = URLDecoder.decode(obj0, "utf-8")
-      println("saveTriple: " + prop +" \""+ obj + "\"")
+      println("saveTriple: " + prop + " \"" + obj + "\"")
       if (prop != "url" &&
         prop != "uri" &&
         !prop.startsWith("ORIG-")) {
@@ -97,36 +94,36 @@ class FormSaver[Rdf <: RDF]()
               makeUri(uri),
               makeUri(prop.substring(4)),
               decodeHTTPParam(prop, obj)
-              )                    
+            )
           triplesToRemove +=
             makeTriple(
               makeUri(uri),
               makeUri(prop.substring(4)),
-              decodeHTTPParam(prop, originalValue ) )
+              decodeHTTPParam(prop, originalValue))
         }
       }
     }
 
     def doSave(uri: String) {
-    	import ops._
+      import ops._
       val transaction =
         rdfStore.rw(RDFStoreObject.dataset, {
-          rdfStore.removeTriples( RDFStoreObject.dataset, makeUri(uri), triplesToRemove.toIterable )
-          rdfStore.appendToGraph( RDFStoreObject.dataset, makeUri(uri), makeGraph(triples) )
+          rdfStore.removeTriples(RDFStoreObject.dataset, makeUri(uri), triplesToRemove.toIterable)
+          rdfStore.appendToGraph(RDFStoreObject.dataset, makeUri(uri), makeGraph(triples))
         }).flatMap { identity }
 
       val f = transaction.asFuture
-      
-      f  onSuccess {
+
+      f onSuccess {
         case _ =>
           println("Successfully stored triples in store")
-          rdfStore.getGraph( RDFStoreObject.dataset, makeUri(uri)).asFuture.
+          rdfStore.getGraph(RDFStoreObject.dataset, makeUri(uri)).asFuture.
             onSuccess {
               case gr =>
                 if (triplesToRemove.size > 0 ||
                   triples.size > 0) {
                   val graphAsString = writer.asString(gr, base = uri) getOrElse sys.error(
-                      "coudn't serialize the graph")
+                    "coudn't serialize the graph")
                   println("Graph with modifications:\n" + graphAsString)
                 }
             }

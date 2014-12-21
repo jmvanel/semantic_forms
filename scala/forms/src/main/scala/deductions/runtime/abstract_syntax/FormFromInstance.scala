@@ -16,11 +16,11 @@ import org.w3.banana._
 import org.w3.banana.diesel._
 
 /** unused */
-trait FormFromInstance[Rdf <: RDF] 
-extends RDFOpsModule {
+trait FormFromInstance[Rdf <: RDF]
+    extends RDFOpsModule {
   /** find fields from given Instance subject */
   def fields(subject: Rdf#URI, graph: Rdf#Graph): Seq[Rdf#URI] = {
-    ops.getPredicates(graph, subject ). toSeq
+    ops.getPredicates(graph, subject).toSeq
   }
 
 }

@@ -36,8 +36,8 @@ import org.w3.banana.LocalNameException
  *  but without any dependency to EulerGUI.
  */
 object PopulateRDFCache extends RDFCache
-//with SparqlUpdate
-with App {
+    //with SparqlUpdate
+    with App {
 
   loadCommonVocabularies
   loadCommonFormSpecifications()
@@ -68,62 +68,59 @@ with App {
     /* geo: , con: , <foaf_fr.n3>  TODO */
 
     Logger.getRootLogger().info(vocabs)
-//    vocabs1 map { storeURI(_, store) }
-    vocabs1 map { storeURI( _, dataset ) }
+    //    vocabs1 map { storeURI(_, store) }
+    vocabs1 map { storeURI(_, dataset) }
   }
-  
+
   /** load CommonForm Specifications from a well know place */
-  def loadCommonFormSpecifications()  {
-    val all_form_specs = "https://raw.githubusercontent.com/jmvanel/semantic_forms/master/scala/forms/form_specs/specs.ttl"    
+  def loadCommonFormSpecifications() {
+    val all_form_specs = "https://raw.githubusercontent.com/jmvanel/semantic_forms/master/scala/forms/form_specs/specs.ttl"
     val from = new java.net.URL(all_form_specs).openStream()
     val form_specs_graph: Rdf#Graph = turtleReader.read(from, base = all_form_specs) getOrElse sys.error(s"couldn't read $all_form_specs")
     import deductions.runtime.abstract_syntax.FormSyntaxFactory._
-    val formPrefix = new PrefixBuilder2("form", formVocabPrefix ) 
-    
-//    val store =  RDFStoreObject.store
+    val formPrefix = new PrefixBuilder2("form", formVocabPrefix)
+
+    //    val store =  RDFStoreObject.store
 
     /* Retrieving :
      * foaf: form:ontologyHasFormSpecification <foaf.form.ttl> . */
-    val triples : Iterator[Rdf#Triple] 
-       = ops.find( form_specs_graph, ops.ANY, formPrefix("ontologyHasFormSpecification"), ops.ANY)
-    val objects = for( triple <- triples) yield {
+    val triples: Iterator[Rdf#Triple] = ops.find(form_specs_graph, ops.ANY, formPrefix("ontologyHasFormSpecification"), ops.ANY)
+    val objects = for (triple <- triples) yield {
       triple.getObject
-    } 
-    for( obj <- objects ) {
-          val from = new java.net.URL(obj.toString()).openStream()
-          val form_spec_graph: Rdf#Graph = turtleReader.read( from, base = obj.toString() ) getOrElse sys.error(s"couldn't read ${obj.toString()}")
-//          store.appendToGraph( Ops.makeUri("form_specs"), form_spec_graph )
-          rdfStore.appendToGraph( dataset, ops.makeUri("form_specs"), form_spec_graph )
-          println("Added form_spec " + obj)
+    }
+    for (obj <- objects) {
+      val from = new java.net.URL(obj.toString()).openStream()
+      val form_spec_graph: Rdf#Graph = turtleReader.read(from, base = obj.toString()) getOrElse sys.error(s"couldn't read ${obj.toString()}")
+      //          store.appendToGraph( Ops.makeUri("form_specs"), form_spec_graph )
+      rdfStore.appendToGraph(dataset, ops.makeUri("form_specs"), form_spec_graph)
+      println("Added form_spec " + obj)
     }
   }
-  
+
   // TODO remove <<<<<<<<<<<<<<<<<<<<<<<<<<<
-  private class PrefixBuilder2
-  // [Rdf <: RDF]
+  private class PrefixBuilder2 // [Rdf <: RDF]
   (
-  val prefixName: String,
-  val prefixIri: String
-  )
-//(implicit
-//  ops: RDFOps[Rdf]
-//)
-extends Prefix[Rdf] {
-  import ops._
-  override def toString: String = "Prefix(" + prefixName + ")"
-  def apply(value: String): Rdf#URI = makeUri(prefixIri + value)
-  def unapply(iri: Rdf#URI): Option[String] = {
-    val uriString = fromUri(iri)
-    if (uriString.startsWith(prefixIri))
-      Some(uriString.substring(prefixIri.length))
-    else
-      None
-  }
-  def getLocalName(iri: Rdf#URI): Try[String] =
-    unapply(iri) match {
-      case None => Failure(LocalNameException(this.toString + " couldn't extract localname for " + iri ))
-      case Some(localname) => Success(localname)
+    val prefixName: String,
+    val prefixIri: String)
+      //(implicit
+      //  ops: RDFOps[Rdf]
+      //)
+      extends Prefix[Rdf] {
+    import ops._
+    override def toString: String = "Prefix(" + prefixName + ")"
+    def apply(value: String): Rdf#URI = makeUri(prefixIri + value)
+    def unapply(iri: Rdf#URI): Option[String] = {
+      val uriString = fromUri(iri)
+      if (uriString.startsWith(prefixIri))
+        Some(uriString.substring(prefixIri.length))
+      else
+        None
     }
-}
-  
+    def getLocalName(iri: Rdf#URI): Try[String] =
+      unapply(iri) match {
+        case None => Failure(LocalNameException(this.toString + " couldn't extract localname for " + iri))
+        case Some(localname) => Success(localname)
+      }
+  }
+
 }

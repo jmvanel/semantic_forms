@@ -3,40 +3,41 @@ package deductions.runtime.abstract_syntax
 import org.w3.banana.RDF
 
 /** populate Fields in form by inferencing from class(es) */
-trait FieldsInference [Rdf <: RDF] {
-  self : FormSyntaxFactory[Rdf] =>
-    
-  
+trait FieldsInference[Rdf <: RDF] {
+  self: FormSyntaxFactory[Rdf] =>
+
   def fieldsFromClass(classs: Rdf#URI, graph: Rdf#Graph): Set[Rdf#URI] = {
     def domainsFromClass(classs: Rdf#Node) = {
       val relevantPredicates = ops.getSubjects(graph, rdfs.domain, classs).toSet
       extractURIs(relevantPredicates) toSet
     }
-    
+
     val result = scala.collection.mutable.Set[Rdf#URI]()
 
     /** recursively process super-classes until reaching owl:Thing */
     def processSuperClasses(classs: Rdf#URI) {
       result ++= domainsFromClass(classs)
-//      if (classs != owl.Thing ) { // for Banana 0.7
-      if (classs != ops.makeUri(owlThing) ) {
+      //      if (classs != owl.Thing ) { // for Banana 0.7
+      if (classs != ops.makeUri(owlThing)) {
         val superClasses = ops.getObjects(graph, classs, rdfs.subClassOf)
         superClasses foreach (sc => result ++= domainsFromClass(sc))
       }
     }
-    
-    /** get the ontology prefix
-     *  TODO : related to URI cache */
-    def getGraphURI(classs: Rdf#URI) : String = {
-     ops.getFragment(classs) match {
-      case Some(frag) =>
-//        classs.toString().substring(frag.length() + 1)
-         ops.withoutFragment(classs) + "#"
-      case None =>
-        val i = classs.toString().lastIndexOf("/")
-        classs.toString().substring(0, i)
+
+    /**
+     * get the ontology prefix
+     *  TODO : related to URI cache
+     */
+    def getGraphURI(classs: Rdf#URI): String = {
+      ops.getFragment(classs) match {
+        case Some(frag) =>
+          //        classs.toString().substring(frag.length() + 1)
+          ops.withoutFragment(classs) + "#"
+        case None =>
+          val i = classs.toString().lastIndexOf("/")
+          classs.toString().substring(0, i)
+      }
     }
-  }
 
     /**
      * Properties without Domain are supposed to be applicable to any class in the same ontology
@@ -49,8 +50,8 @@ trait FieldsInference [Rdf <: RDF] {
       val pp = props1 ++ props2 ++ props3
       for (t <- pp) {
         val (prop, _, _) = ops.fromTriple(t)
-//        if( prop.toString.contains("doap") && prop.toString.contains("name"))
-//          println("doap") // debug <<<<<
+        //        if( prop.toString.contains("doap") && prop.toString.contains("name"))
+        //          println("doap") // debug <<<<<
         val graphURI = getGraphURI(uri)
         if (prop.toString().startsWith(graphURI)) {
           val doms = ops.find(graph, ops.toConcreteNodeMatch(prop), ops.toConcreteNodeMatch(rdfs.domain), ops.ANY)

@@ -16,52 +16,51 @@ trait FormModule[NODE, URI <: NODE] {
    *  - generated from a list of URI's for properties, and a triple store
    *  - used in conjunction with N3Form(Swing), HTML5 forms and Banana-RDF
    */
-  case class FormSyntax[NODE, URI<: NODE](
-    val subject: NODE,
-    val fields: Seq[Entry],
-    classs: URI=nullURI) {
-    override def toString() : String = {
-      "FormSyntax:\n\t" + 
-    	fields.mkString("\n")
+  case class FormSyntax[NODE, URI <: NODE](
+      val subject: NODE,
+      val fields: Seq[Entry],
+      classs: URI = nullURI) {
+    override def toString(): String = {
+      "FormSyntax:\n\t" +
+        fields.mkString("\n")
     }
   }
-  
-  val nullURI : URI
+
+  val nullURI: URI
   sealed abstract class Entry(val label: String, val comment: String,
-      mandatory:Boolean=false 
-  ) {
-    	override def toString() : String = {
-    		s""" "$label", "$comment" """
-    	}
+      mandatory: Boolean = false) {
+    override def toString(): String = {
+      s""" "$label", "$comment" """
+    }
   }
-  case class ResourceEntry( l: String,  c: String,
-    property: ObjectProperty, validator: ResourceValidator,
-    value: URI=nullURI, alreadyInDatabase:Boolean=true) extends Entry(l, c) {
-    	override def toString() : String = {
-    		super.toString + ", " + value
-    	}
+  case class ResourceEntry(l: String, c: String,
+      property: ObjectProperty, validator: ResourceValidator,
+      value: URI = nullURI, alreadyInDatabase: Boolean = true) extends Entry(l, c) {
+    override def toString(): String = {
+      super.toString + ", " + value
+    }
   }
-  case class BlankNodeEntry( l: String,  c: String,
-    property: ObjectProperty, validator: ResourceValidator,
-    value: NODE) extends Entry(l, c) {
-    	override def toString() : String = {
-    		super.toString + ", " + value
-    	}
-    	def getId : String = value.toString
+  case class BlankNodeEntry(l: String, c: String,
+      property: ObjectProperty, validator: ResourceValidator,
+      value: NODE) extends Entry(l, c) {
+    override def toString(): String = {
+      super.toString + ", " + value
+    }
+    def getId: String = value.toString
   }
   case class LiteralEntry(l: String, c: String,
-    property: DatatypeProperty, validator: DatatypeValidator,
-    value: String = "", widgetType:WidgetType=Text) extends Entry(l, c) {
-  	override def toString() : String = {
-  		super.toString  + s""" := "$value" """
-  	}
+      property: DatatypeProperty, validator: DatatypeValidator,
+      value: String = "", widgetType: WidgetType = Text) extends Entry(l, c) {
+    override def toString(): String = {
+      super.toString + s""" := "$value" """
+    }
   }
 
   type DatatypeProperty = URI
   type ObjectProperty = URI
 
-  case class ResourceValidator(typ:Set[URI])
-  case class DatatypeValidator(typ:Set[URI])
+  case class ResourceValidator(typ: Set[URI])
+  case class DatatypeValidator(typ: Set[URI])
 
   sealed class WidgetType
   object Text extends WidgetType

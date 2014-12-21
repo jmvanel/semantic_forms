@@ -17,40 +17,40 @@ import scala.util.Try
 import org.w3.banana._
 
 /** String Search with simple SPARQL */
-class StringSearchSPARQL[Rdf <: RDF](
-//    store: RDFStore[Rdf, Try, RDFStoreObject.DATASET]
+class StringSearchSPARQL[Rdf <: RDF]( //    store: RDFStore[Rdf, Try, RDFStoreObject.DATASET]
 )(
-  implicit //    reader: RDFReader[Rdf, RDFXML],
-  ops: RDFOps[Rdf],
-  sparqlOps: SparqlOps[Rdf]
-//  sparqlEngine : SparqlEngine[Rdf, Future, RDFStoreObject.DATASET]
-    , rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET]
-) {
+    implicit //    reader: RDFReader[Rdf, RDFXML],
+    ops: RDFOps[Rdf],
+    sparqlOps: SparqlOps[Rdf] //  sparqlEngine : SparqlEngine[Rdf, Future, RDFStoreObject.DATASET]
+    , rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET]) {
 
   import ops._
   import sparqlOps._
 
-  def search(search: String, hrefPrefix:String="") : Future[Elem] = {
+  def search(search: String, hrefPrefix: String = ""): Future[Elem] = {
     val uris = search_only(search)
-    val elem = uris . map (
-        u => displayResults( u.toIterable, hrefPrefix) )
+    val elem = uris.map(
+      u => displayResults(u.toIterable, hrefPrefix))
     elem
   }
-    
-  private def displayResults( res: Iterable[Rdf#Node], hrefPrefix:String ) = {
+
+  private def displayResults(res: Iterable[Rdf#Node], hrefPrefix: String) = {
     <p>{
-      res.map( uri => {
+      res.map(uri => {
         val uriString = uri.toString
-        val blanknode = ! isURI(uri)
-        <div><a href={Form2HTML.createHyperlinkString( hrefPrefix, uriString, blanknode) }>
-        { uriString }</a><br/></div>
-      } )
+        val blanknode = !isURI(uri)
+        <div><a href={ Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode) }>
+               { uriString }
+             </a><br/></div>
+      })
     }</p>
   }
 
-  /** NOTE: this stuff is pretty generic;
+  /**
+   * NOTE: this stuff is pretty generic;
    *  just add these arguments :
-   *  queryString:String, vars:Seq[String] */
+   *  queryString:String, vars:Seq[String]
+   */
   private def search_only(search: String): Future[Iterator[Rdf#Node]] = {
     val queryString =
       s"""
@@ -73,9 +73,9 @@ class StringSearchSPARQL[Rdf <: RDF](
         }
         result
       })
-      transaction.flatMap { identity } . asFuture
+    transaction.flatMap { identity }.asFuture
   }
-  
-  def isURI(    node:Rdf#Node) = ops.foldNode( node )(identity, x => None, x => None) != None
+
+  def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
 
 }

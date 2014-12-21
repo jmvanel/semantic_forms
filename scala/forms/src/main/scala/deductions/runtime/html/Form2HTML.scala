@@ -31,70 +31,70 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
               </tr>
             }
           }
-    </table></div>
-      if( editable)
-        <form action={actionURI}  method="POST" >
-          <input value="SAVE" type="submit"/>
-          <input type="hidden" name="url" value={urlEncode(form.subject)}/>
-          {htmlForm}
-        </form>
-        else
-          htmlForm
+        </table>
+      </div>
+    if (editable)
+      <form action={ actionURI } method="POST">
+        <input value="SAVE" type="submit"/>
+        <input type="hidden" name="url" value={ urlEncode(form.subject) }/>
+        { htmlForm }
+      </form>
+    else
+      htmlForm
   }
-            
-            
-  def createHTMLField(field:fm#Entry, editable:Boolean,
-          hrefPrefix: String = "" ) = {
-                      field match {
-                    case l: LiteralEntry =>
-                      if (editable)
-                        <input value={ l.value } name={ "LIT-" + urlEncode(l.property) } class="overflow" width="48" />
-                        <input value={ l.value } name={ "ORIG-LIT-" + urlEncode(l.property) } type="hidden"/>
-                      else
-                        <div>{ l.value }</div>
-                    case r: ResourceEntry =>
-                      /* link to a known resource of the right type,
+
+  def createHTMLField(field: fm#Entry, editable: Boolean,
+    hrefPrefix: String = "") = {
+    field match {
+      case l: LiteralEntry =>
+        if (editable)
+          <input value={ l.value } name={ "LIT-" + urlEncode(l.property) } class="overflow" width="48"/>
+          <input value={ l.value } name={ "ORIG-LIT-" + urlEncode(l.property) } type="hidden"/>
+        else
+          <div>{ l.value }</div>
+      case r: ResourceEntry =>
+        /* link to a known resource of the right type,
                        * or create a sub-form for a blank node of an ancillary type (like a street address),
                        * or just create a new resource with its type, given by range, or derived
                        * (like in N3Form in EulerGUI ) */
-                      if (editable) {
-                        <div class="resize overflow">
-                        <input value={ r.value.toString } name={ "RES-" + urlEncode(r.property) } class="overflow" width="48" />
-                        {
-                          if (r.alreadyInDatabase) {
-                            {println("r.alreadyInDatabase " + r ) }
-                            <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden"/>
-                          }
-                        }
-                        </div>
+        if (editable) {
+          <div class="resize overflow">
+            <input value={ r.value.toString } name={ "RES-" + urlEncode(r.property) } class="overflow" width="48"/>
+            {
+              if (r.alreadyInDatabase) {
+                { println("r.alreadyInDatabase " + r) }
+                <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden"/>
+              }
+            }
+          </div>
 
-                      } else
-                        <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }>{
-                          r.value.toString
-                        }</a>
-                    case r: BlankNodeEntry =>
-                      if (editable)
-                        <div class="resize overflow">
-                        <input value={ r.value.toString } name={ "BLA-" + urlEncode(r.property) } class="overflow" width="48" />
-                        <input value={ r.value.toString } name={ "ORIG-BLA-" + urlEncode(r.property) } type="hidden"/>
-                        </div>
-                      else
-                        <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString, true) }>{
-                          r.getId
-                        }</a>
-                  }
+        } else
+          <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }>{
+            r.value.toString
+          }</a>
+      case r: BlankNodeEntry =>
+        if (editable)
+          <div class="resize overflow">
+            <input value={ r.value.toString } name={ "BLA-" + urlEncode(r.property) } class="overflow" width="48"/>
+            <input value={ r.value.toString } name={ "ORIG-BLA-" + urlEncode(r.property) } type="hidden"/>
+          </div>
+        else
+          <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString, true) }>{
+            r.getId
+          }</a>
+    }
 
   }
 }
 
 object Form2HTML {
-  def urlEncode(node:Any) = {URLEncoder.encode( node.toString, "utf-8")}
+  def urlEncode(node: Any) = { URLEncoder.encode(node.toString, "utf-8") }
 
-  def createHyperlinkString( hrefPrefix:String, uri:String, blanknode:Boolean=false ) :String = {
-    if ( hrefPrefix == "" )
+  def createHyperlinkString(hrefPrefix: String, uri: String, blanknode: Boolean = false): String = {
+    if (hrefPrefix == "")
       uri
     else {
-      val suffix = if(blanknode) "&blanknode=true" else ""
+      val suffix = if (blanknode) "&blanknode=true" else ""
       hrefPrefix + urlEncode(uri) + suffix
     }
   }
