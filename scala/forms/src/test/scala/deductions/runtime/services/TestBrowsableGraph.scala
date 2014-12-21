@@ -17,32 +17,25 @@ import org.w3.banana.io.RDFXML
 import scala.util.Try
 import org.w3.banana.RDF
 import org.w3.banana.SparqlOps
+import deductions.runtime.jena.RDFStoreObject
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
 
 class TestBrowsableGraph [Rdf <: RDF, Store]
   extends FunSuite
-//  (implicit
-//  ops: RDFOps[Rdf],
-//  turtleReader: RDFReader[Rdf, Try, Turtle],
-//  turtleWriter : RDFWriter[Rdf, Try, Turtle],
-//  rdfXMLWriter: RDFWriter[Rdf, Try, RDFXML],
-//  rdfStore: RDFStore[Rdf, Try, Store],
-//  sparqlOps: SparqlOps[Rdf]
-//)
-  with RDFCache
+   with RDFCache
    with RDFOpsModule
    with SparqlGraphModule
    with SparqlOpsModule
    with SparqlHttpModule
-   with RDFStoreLocalProvider
+   with RDFStoreLocalJena1Provider
 {
   import ops._
-  
+
   def test {
-//  lazy val store =  RDFStoreObject.store
-  lazy val bg = new BrowsableGraph()
-  
-  val uri = "http://jmvanel.free.fr/jmv.rdf#me"
-  retrieveURI(makeUri(uri), dataset)
-  println( "bg.focusOnURI(uri)\n" + bg.focusOnURI(uri) )
-}
+    lazy val bg = new BrowsableGraph()
+
+    val uri = "http://jmvanel.free.fr/jmv.rdf#me"
+    retrieveURI(makeUri(uri), dataset)
+    println("bg.focusOnURI(uri)\n" + bg.focusOnURI(uri))
+  }
 }

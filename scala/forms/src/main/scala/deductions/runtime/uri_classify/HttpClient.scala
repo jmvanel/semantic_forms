@@ -35,8 +35,7 @@ object HttpClient {
   import system.dispatcher
   implicit val materializer = FlowMaterializer()
 
-  def makeRequest(url: String, method:HttpMethod )
-//  (implicit system: ActorSystem, materializer: FlowMaterializer)
+  def makeRequest(url: String, method: HttpMethod) //  (implicit system: ActorSystem, materializer: FlowMaterializer)
   : Future[HttpResponse] = {
     val u = new URL(url)
     val host = u.getHost()
@@ -55,13 +54,13 @@ object HttpClient {
     val result = for {
       connection ← IO(Http).ask(Http.Connect(host)).mapTo[Http.OutgoingConnection]
       response ← sendRequest(HttpRequest(method, uri = uri,
-          headers=immutable.Seq(
-              headers.Accept(MediaRange.custom("text/turtle")),
-              headers.Accept(MediaRange.custom("application/rdf+xml", qValue=0.8f)),
-              headers.Accept(MediaRange.custom("application/text", qValue=0.5f))
-              ) ), connection)
-     } yield response // .header[headers.Server]
-    
+        headers = immutable.Seq(
+          headers.Accept(MediaRange.custom("text/turtle")),
+          headers.Accept(MediaRange.custom("application/rdf+xml", qValue = 0.8f)),
+          headers.Accept(MediaRange.custom("application/text", qValue = 0.5f))
+        )), connection)
+    } yield response // .header[headers.Server]
+
     result
   }
 }

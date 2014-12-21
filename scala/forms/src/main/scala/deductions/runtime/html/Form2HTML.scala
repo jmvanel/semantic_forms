@@ -92,18 +92,17 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
             }</a>
           }
       }
-
   }
 }
 
 object Form2HTML {
-  def urlEncode(node:Any) = {URLEncoder.encode( node.toString, "utf-8")}
+  def urlEncode(node: Any) = { URLEncoder.encode(node.toString, "utf-8") }
 
-  def createHyperlinkString( hrefPrefix:String, uri:String, blanknode:Boolean=false ) :String = {
-    if ( hrefPrefix == "" )
+  def createHyperlinkString(hrefPrefix: String, uri: String, blanknode: Boolean = false): String = {
+    if (hrefPrefix == "")
       uri
     else {
-      val suffix = if(blanknode) "&blanknode=true" else ""
+      val suffix = if (blanknode) "&blanknode=true" else ""
       hrefPrefix + urlEncode(uri) + suffix
     }
   }

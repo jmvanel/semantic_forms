@@ -26,60 +26,55 @@ import org.w3.banana.LocalNameException
 
 object FormSyntaxFactory {
   /** vocabulary for form specifications */
-   val formVocabPrefix = "http://deductions-software.com/ontologies/forms.owl.ttl#" 
+  val formVocabPrefix = "http://deductions-software.com/ontologies/forms.owl.ttl#"
 }
 
-/** Factory for an abstract Form Syntax;
- *   */
-class FormSyntaxFactory[Rdf <: RDF]
-(graph: Rdf#Graph, preferedLanguage:String="en" )
-( implicit val ops: RDFOps[Rdf],
-    val uriOps: URIOps[Rdf]
-)
-extends // RDFOpsModule with 
-FormModule[Rdf#Node, Rdf#URI]
-with FieldsInference[Rdf] {
+/**
+ * Factory for an abstract Form Syntax;
+ */
+class FormSyntaxFactory[Rdf <: RDF](graph: Rdf#Graph, preferedLanguage: String = "en")(implicit val ops: RDFOps[Rdf],
+  val uriOps: URIOps[Rdf])
+    extends // RDFOpsModule with 
+    FormModule[Rdf#Node, Rdf#URI]
+    with FieldsInference[Rdf] {
   import ops._
-  
-  lazy val nullURI = ops.URI( "http://null.com#" ) // TODO better : "" ????????????
+
+  lazy val nullURI = ops.URI("http://null.com#") // TODO better : "" ????????????
   val rdfs = RDFSPrefix[Rdf]
-      
+
   val owl = OWLPrefix[Rdf]
   val owlThing = owl.prefixIri + "Thing"
   val rdf = RDFPrefix[Rdf]
   import FormSyntaxFactory._
-  
-  // TODO remove <<<<<<<<<<<<<<<<<<<<<<<<<<<
-  private class PrefixBuilder2
-  // [Rdf <: RDF]
-  (
-  val prefixName: String,
-  val prefixIri: String
-  )
-//(implicit
-//  ops: RDFOps[Rdf]
-//)
-extends Prefix[Rdf] {
-  import ops._
-  override def toString: String = "Prefix(" + prefixName + ")"
-  def apply(value: String): Rdf#URI = makeUri(prefixIri + value)
-  def unapply(iri: Rdf#URI): Option[String] = {
-    val uriString = fromUri(iri)
-    if (uriString.startsWith(prefixIri))
-      Some(uriString.substring(prefixIri.length))
-    else
-      None
-  }
-  def getLocalName(iri: Rdf#URI): Try[String] =
-    unapply(iri) match {
-      case None => Failure(LocalNameException(this.toString + " couldn't extract localname for " + iri.toString))
-      case Some(localname) => Success(localname)
-    }
-}
-  
-  val formPrefix : Prefix[Rdf] = new PrefixBuilder2/*[Rdf]*/( "form", formVocabPrefix ) 
 
-    
+  // TODO remove <<<<<<<<<<<<<<<<<<<<<<<<<<<
+  private class PrefixBuilder2 // [Rdf <: RDF]
+  (
+    val prefixName: String,
+    val prefixIri: String)
+      //(implicit
+      //  ops: RDFOps[Rdf]
+      //)
+      extends Prefix[Rdf] {
+    import ops._
+    override def toString: String = "Prefix(" + prefixName + ")"
+    def apply(value: String): Rdf#URI = makeUri(prefixIri + value)
+    def unapply(iri: Rdf#URI): Option[String] = {
+      val uriString = fromUri(iri)
+      if (uriString.startsWith(prefixIri))
+        Some(uriString.substring(prefixIri.length))
+      else
+        None
+    }
+    def getLocalName(iri: Rdf#URI): Try[String] =
+      unapply(iri) match {
+        case None => Failure(LocalNameException(this.toString + " couldn't extract localname for " + iri.toString))
+        case Some(localname) => Success(localname)
+      }
+  }
+
+  val formPrefix: Prefix[Rdf] = new PrefixBuilder2 /*[Rdf]*/ ("form", formVocabPrefix)
+
   println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
 
   /** create Form from an instance (subject) URI */
@@ -93,43 +88,41 @@ extends Prefix[Rdf] {
     createForm(subject, props ++ fromClass, nullURI)
   }
 
-  /** For each given property (props)
+  /**
+   * For each given property (props)
    *  look at its rdfs:range ?D
    *  see if ?D is a datatype or an OWL or RDFS class
    *  ( used for creating an empty Form from a class URI )
-   *    */
+   */
   def createForm(subject: Rdf#Node,
-    props: Seq[Rdf#URI]
-    , classs: Rdf#URI 
-    ): FormSyntax[Rdf#Node, Rdf#URI] = {
+    props: Seq[Rdf#URI], classs: Rdf#URI): FormSyntax[Rdf#Node, Rdf#URI] = {
     Logger.getRootLogger().info(s"createForm subject $subject, props $props")
-    
+
     val f = for (prop <- props) yield {
       Logger.getRootLogger().info(s"createForm subject $subject, prop $prop")
-      val ranges = extractURIs( oQuery( prop, rdfs.range ) )
-      val rangesSize = ranges . size
-      val mess = if( rangesSize > 1 ) {
+      val ranges = extractURIs(oQuery(prop, rdfs.range))
+      val rangesSize = ranges.size
+      val mess = if (rangesSize > 1) {
         "WARNING: ranges " + ranges + " for property " + prop + " are multiple."
-      } else if( rangesSize == 0 ) {
+      } else if (rangesSize == 0) {
         "WARNING: There is no range for property " + prop
       } else ""
-      println( mess, System.err)
-     makeEntry(subject, prop, ranges)
+      println(mess, System.err)
+      makeEntry(subject, prop, ranges)
     }
-    val fields = f.flatMap{ s => s }    
+    val fields = f.flatMap { s => s }
     val fields2 = addTypeTriple(subject, classs, fields)
     FormSyntax(subject, fields2, classs)
   }
 
   def addTypeTriple(subject: Rdf#Node, classs: Rdf#URI,
-      fields: Seq[Entry]
-  ) : Seq[Entry] = {
-      val formEntry = ResourceEntry(
-          // TODO not I18N:
-          "type", "class",
-          rdf.typ, ResourceValidator(Set(owl.Class)), classs,
-          alreadyInDatabase=false)
-      fields :+ formEntry
+    fields: Seq[Entry]): Seq[Entry] = {
+    val formEntry = ResourceEntry(
+      // TODO not I18N:
+      "type", "class",
+      rdf.typ, ResourceValidator(Set(owl.Class)), classs,
+      alreadyInDatabase = false)
+    fields :+ formEntry
   }
 
   /** find fields from given Instance subject */
@@ -155,63 +148,64 @@ extends Prefix[Rdf] {
       property: ObjectProperty, validator: ResourceValidator,
       value: Rdf#BNode) = {
       new BlankNodeEntry(label, comment, prop, ResourceValidator(ranges), value) {
-    	 override def getId : String = ops.fromBNode(value.asInstanceOf[Rdf#BNode])
+        override def getId: String = ops.fromBNode(value.asInstanceOf[Rdf#BNode])
       }
     }
-      
+
     def addOneEntry(object_ : Rdf#Node) = {
       def literalEntry = LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
-          getStringOrElse(object_, "..empty.."))
+        getStringOrElse(object_, "..empty.."))
       def resourceEntry = {
         ops.foldNode(object_)(
-            object_ => ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_,
-                alreadyInDatabase=true),
-//                object_.pointer.asInstanceOf[Rdf#URI]),
-            object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_),
-              // BlankNodeEntry(label, comment, prop, ResourceValidator(ranges), object_),
-            object_ => LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
-                getStringOrElse(object_, "..empty.."))
-            )
-//        ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_.pointer.asInstanceOf[Rdf#URI])
+          object_ => ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_,
+            alreadyInDatabase = true),
+          //                object_.pointer.asInstanceOf[Rdf#URI]),
+          object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_),
+          // BlankNodeEntry(label, comment, prop, ResourceValidator(ranges), object_),
+          object_ => LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
+            getStringOrElse(object_, "..empty.."))
+        )
+        //        ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_.pointer.asInstanceOf[Rdf#URI])
       }
       val xsdPrefix = XSDPrefix[Rdf].prefixIri
-      val rdf  = RDFPrefix[Rdf]
+      val rdf = RDFPrefix[Rdf]
       val rdfs = RDFSPrefix[Rdf]
 
       val entry = rangeClasses match {
-        case _ if rangeClasses.exists{ c => c.toString startsWith (xsdPrefix)}
-        => literalEntry
+        case _ if rangeClasses.exists { c => c.toString startsWith (xsdPrefix) } => literalEntry
         case _ if rangeClasses.contains(rdfs.Literal) => literalEntry
         case _ if propClasses.contains(owl.DatatypeProperty) => literalEntry
-        case _ if propClasses.contains(owl.ObjectProperty)	=> resourceEntry
+        case _ if propClasses.contains(owl.ObjectProperty) => resourceEntry
         case _ if rangeClasses.contains(owl.Class) => resourceEntry
         case _ if rangeClasses.contains(rdf.Property) => resourceEntry
         //    case _ if ranges.contains(owl.Thing) => resourceEntry
         case _ if ranges.contains(ops.makeUri(owlThing)) => resourceEntry
-//        case _ if ops.isURI(object_ ) => resourceEntry
-        case _ if (isURIorBN( object_)) => resourceEntry
+        //        case _ if ops.isURI(object_ ) => resourceEntry
+        case _ if (isURIorBN(object_)) => resourceEntry
         case _ if object_.toString.startsWith("_:") => resourceEntry
         case _ => literalEntry
       }
       result += entry
-      }
+    }
 
     for (obj <- objects) addOneEntry(obj)
-    
+
     // entry associated to prop
-   if(objects isEmpty ) {
-     addOneEntry(nullURI)
-   }
+    if (objects isEmpty) {
+      addOneEntry(nullURI)
+    }
     result
   }
 
-  def isURIorBN(node:Rdf#Node) = ops.foldNode( node )(identity, identity, x => None) != None
-  def isURI(    node:Rdf#Node) = ops.foldNode( node )(identity, x => None, x => None) != None
-  
-  /** compute terminal Part of URI, eg
+  def isURIorBN(node: Rdf#Node) = ops.foldNode(node)(identity, identity, x => None) != None
+  def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
+
+  /**
+   * compute terminal Part of URI, eg
    *  Person from http://xmlns.com/foaf/0.1/Person
    *  Project from http://usefulinc.com/ns/doap#Project
-   *  NOTE: code related for getting the ontology prefix */
+   *  NOTE: code related for getting the ontology prefix
+   */
   def terminalPart(uri: Rdf#URI): String = {
     uriOps.getFragment(uri) match {
       case None => uriOps.lastSegment(uri)
@@ -219,10 +213,12 @@ extends Prefix[Rdf] {
     }
   }
 
-  /** get "first" String value (RDF object) Or Else given default;
-   *  use application language */
+  /**
+   * get "first" String value (RDF object) Or Else given default;
+   *  use application language
+   */
   private def getHeadStringOrElse(subject: Rdf#URI, predicate: Rdf#URI, default: String): String = {
-//    println("getHeadStringOrElse: " + subject + " " + predicate) // debug
+    //    println("getHeadStringOrElse: " + subject + " " + predicate) // debug
     oQuery(subject, predicate) match {
       case ll if ll == Set.empty => default
       case ll => getPreferedLanguageFromValues(ll)
@@ -239,12 +235,12 @@ extends Prefix[Rdf] {
         value match {
           case value: Rdf#Literal if (!isURIorBN(value)) =>
             val (raw, uri, langOption) = ops.fromLiteral(value)
-//            println("getPreferedLanguageFromValues: " +  (raw, uri, langOption) )
+            //            println("getPreferedLanguageFromValues: " +  (raw, uri, langOption) )
             langOption match {
-              case Some(language) => 
-                if( language == preferedLanguage ) preferedLanguageValue = raw
-                else if( language == "en")
-//              case Some("en") => 
+              case Some(language) =>
+                if (language == preferedLanguage) preferedLanguageValue = raw
+                else if (language == "en")
+                  //              case Some("en") => 
                   enValue = raw
               case None => noLanguageValue = raw
               case _ =>
@@ -257,9 +253,9 @@ extends Prefix[Rdf] {
     }
     val (preferedLanguageValue, enValue, noLanguageValue) = computeValues
     (preferedLanguageValue, enValue, noLanguageValue) match {
-    case _ if(preferedLanguageValue != "" ) => preferedLanguageValue 
-    case _ if(enValue != "" ) => enValue 
-    case _ if(noLanguageValue != "" ) => noLanguageValue 
+      case _ if (preferedLanguageValue != "") => preferedLanguageValue
+      case _ if (enValue != "") => enValue
+      case _ if (noLanguageValue != "") => noLanguageValue
     }
   }
 
@@ -276,10 +272,10 @@ extends Prefix[Rdf] {
    *   or returns default
    */
   private def getHeadOrElse(subject: Rdf#Node, predicate: Rdf#URI,
-                            default: Rdf#URI = nullURI): Rdf#URI = {
+    default: Rdf#URI = nullURI): Rdf#URI = {
     oQuery(subject, predicate) match {
       case ll if ll.isEmpty => default
-      case ll if ( isURI(ll.head) ) => ll.head.asInstanceOf[Rdf#URI]
+      case ll if (isURI(ll.head)) => ll.head.asInstanceOf[Rdf#URI]
       case _ => default
     }
   }
@@ -291,10 +287,10 @@ extends Prefix[Rdf] {
       case _ => nullURI
     }
   }
-  
+
   /** Query for objects in triple, given subject & predicate */
-  def oQuery(subject: Rdf#Node, predicate: Rdf#URI ): Set[Rdf#Node] = {
-    val pg = PointedGraph[Rdf]( subject, graph )
+  def oQuery(subject: Rdf#Node, predicate: Rdf#URI): Set[Rdf#Node] = {
+    val pg = PointedGraph[Rdf](subject, graph)
     val objects = pg / predicate
     objects.map(_.pointer).toSet
   }
@@ -308,14 +304,15 @@ extends Prefix[Rdf] {
   }
 
   /*** from given Set of Rdf#Node , extract rdf#URI */
-  def extractURIs( nodes:Set[Rdf#Node] ) : Set[Rdf#URI] = {
-    nodes . map {
-      node => ops.foldNode( node )(
-        identity, identity, x => None
-      )
+  def extractURIs(nodes: Set[Rdf#Node]): Set[Rdf#URI] = {
+    nodes.map {
+      node =>
+        ops.foldNode(node)(
+          identity, identity, x => None
+        )
     }
-    .filter ( _ != None )
-    . map { node => node.asInstanceOf[Rdf#URI] }
+      .filter(_ != None)
+      .map { node => node.asInstanceOf[Rdf#URI] }
   }
 
   def printGraph(graph: Rdf#Graph) {
@@ -325,8 +322,8 @@ extends Prefix[Rdf] {
       val (subj, pred, obj) = ops.fromTriple(t)
     }
   }
-     
-  def classFromSubject(subject: Rdf#Node ) = {
-    getHeadOrElse( subject, rdf.typ )
+
+  def classFromSubject(subject: Rdf#Node) = {
+    getHeadOrElse(subject, rdf.typ)
   }
 }

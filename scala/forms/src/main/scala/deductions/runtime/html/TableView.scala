@@ -28,119 +28,117 @@ trait TableView extends TableViewModule
 
 /** Table View of a form */
 trait TableViewModule
-//trait TableViewModule[Rdf <: RDF]
-  extends RDFModule
-  with RDFCache
-//  with Form2HTML[Rdf#Node, Rdf#URI]
-  with Form2HTML[Jena#Node, Jena#URI] // TODO remove Jena !!!!!!!!!!!!!!
-{
+    //trait TableViewModule[Rdf <: RDF]
+    extends RDFModule
+    with RDFCache
+    //  with Form2HTML[Rdf#Node, Rdf#URI]
+    with Form2HTML[Jena#Node, Jena#URI] // TODO remove Jena !!!!!!!!!!!!!!
+    {
   import ops._
-  val nullURI : Rdf#URI = ops.URI( "" )
+  val nullURI: Rdf#URI = ops.URI("")
   import scala.concurrent.ExecutionContext.Implicits.global
- 
+
   /** create a form for given uri with background knowledge in RDFStoreObject.store  */
-  def htmlForm( uri:String, hrefPrefix:String="", blankNode:String="",
-      editable:Boolean=false,
-      actionURI:String="/save",
-      lang:String="en") : Try[Elem] = {   
-    val dataset =  RDFStoreObject.dataset
-    if(blankNode != "true"){
+  def htmlForm(uri: String, hrefPrefix: String = "", blankNode: String = "",
+    editable: Boolean = false,
+    actionURI: String = "/save",
+    lang: String = "en"): Try[Elem] = {
+    val dataset = RDFStoreObject.dataset
+    if (blankNode != "true") {
       retrieveURI(makeUri(uri), dataset)
       Logger.getRootLogger().info(s"After storeURI(makeUri($uri), store)")
     }
     val r = rdfStore.r(dataset, {
-//    store.readTransaction {
-      for( 
-         allNamedGraphs <- rdfStore.getGraph(dataset, makeUri("urn:x-arq:UnionGraph"))
-         ) yield
-      graf2form(allNamedGraphs, uri, hrefPrefix, blankNode, editable, actionURI, lang)
+      //    store.readTransaction {
+      for (
+        allNamedGraphs <- rdfStore.getGraph(dataset, makeUri("urn:x-arq:UnionGraph"))
+      ) yield graf2form(allNamedGraphs, uri, hrefPrefix, blankNode, editable, actionURI, lang)
     })
-//    MonadicHelpers.tryToFutureFlat(r)
+    //    MonadicHelpers.tryToFutureFlat(r)
     r.flatMap { identity }
   }
 
   def htmlFormElem(uri: String, hrefPrefix: String = "", blankNode: String = "",
-                   editable: Boolean = false,
-                   actionURI: String = "/save",
-                   lang: String = "en"): Elem = {
-//    Await.result(
-      htmlForm( uri, hrefPrefix, blankNode, editable, actionURI, lang)
-      match {
-        case Success(e) => e
-        case Failure(e) => <p>Exception occured: {e}</p>
-      }
-//      , 5 seconds)
+    editable: Boolean = false,
+    actionURI: String = "/save",
+    lang: String = "en"): Elem = {
+    //    Await.result(
+    htmlForm(uri, hrefPrefix, blankNode, editable, actionURI, lang) match {
+      case Success(e) => e
+      case Failure(e) => <p>Exception occured: { e }</p>
+    }
+    //      , 5 seconds)
   }
-    
-  /** create a form for given URI resource (instance) with background knowledge
+
+  /**
+   * create a form for given URI resource (instance) with background knowledge
    *  in given graph
-   *  TODO non blocking */
-  private def graf2form(graph: Rdf#Graph, uri:String,
-      hrefPrefix:String="", blankNode:String="",
-      editable:Boolean=false,
-      actionURI:String="/save",
-      lang:String="en"
-  ): Elem = {
-    val factory = new FormSyntaxFactory[Rdf](graph, preferedLanguage=lang )
+   *  TODO non blocking
+   */
+  private def graf2form(graph: Rdf#Graph, uri: String,
+    hrefPrefix: String = "", blankNode: String = "",
+    editable: Boolean = false,
+    actionURI: String = "/save",
+    lang: String = "en"): Elem = {
+    val factory = new FormSyntaxFactory[Rdf](graph, preferedLanguage = lang)
     val form = factory.createForm(
-        if( blankNode == "true" )
-          /* TDB specific:
+      if (blankNode == "true")
+        /* TDB specific:
            * Jena supports "concrete bnodes" in SPARQL syntax as pseudo URIs in the "_" URI scheme
            * (it's an illegal name for a URI scheme) */
-          BNode(uri)
-        else URI(uri)
-        , editable
+        BNode(uri)
+      else URI(uri), editable
     )
     println("form:\n" + form)
     val htmlForm = generateHTML(
-        form
-//        .asInstanceOf[FormModule[Rdf#Node,Rdf#URI]#FormSyntax[Rdf#Node,Rdf#URI]]
-        , hrefPrefix, editable, actionURI )
+      form //        .asInstanceOf[FormModule[Rdf#Node,Rdf#URI]#FormSyntax[Rdf#Node,Rdf#URI]]
+      , hrefPrefix, editable, actionURI)
     htmlForm
   }
-  
-  def htmlFormString(uri:String,
-      editable:Boolean=false,
-      actionURI:String="/save" ) : String = {
-    val f = htmlFormElem(uri, editable=editable, actionURI=actionURI)
+
+  def htmlFormString(uri: String,
+    editable: Boolean = false,
+    actionURI: String = "/save"): String = {
+    val f = htmlFormElem(uri, editable = editable, actionURI = actionURI)
     val pp = new PrettyPrinter(80, 2)
     pp.format(f)
   }
 
-  def graf2formString(graph1: Rdf#Graph, uri:String): String = {
+  def graf2formString(graph1: Rdf#Graph, uri: String): String = {
     graf2form(graph1, uri).toString
   }
 
-  /** From the list of ?O such that uri ?P ?O ,
-   *  return the list of their SemanticURIType as a Future */
-  def getSemanticURItypes(uri: String) :
-	  Future[Iterator[(Rdf#Node, SemanticURIGuesser.SemanticURIType)]] = {
+  /**
+   * From the list of ?O such that uri ?P ?O ,
+   *  return the list of their SemanticURIType as a Future
+   */
+  def getSemanticURItypes(uri: String): Future[Iterator[(Rdf#Node, SemanticURIGuesser.SemanticURIType)]] = {
     // get the list of ?O such that uri ?P ?O .
     import scala.concurrent.ExecutionContext.Implicits.global
-    val dataset =  RDFStoreObject.dataset
+    val dataset = RDFStoreObject.dataset
     //  TODO val graphFuture =  RDFStoreObject.allNamedGraphsFuture
 
     val r = rdfStore.r(dataset, {
-      for( 
+      for (
         allNamedGraphs <- rdfStore.getGraph(dataset, ops.makeUri("urn:x-arq:UnionGraph"))
-      ) yield { 
-      val triples :Iterator[Rdf#Triple] = ops.find(allNamedGraphs,
+      ) yield {
+        val triples: Iterator[Rdf#Triple] = ops.find(allNamedGraphs,
           ops.makeUri(uri), ANY, ANY)
-      val semanticURItypes =
-        for (triple <- triples) yield {
-          val node = triple.getObject
-          val semanticURItype = if (isDereferenceableURI(node)) {
-            SemanticURIGuesser.guessSemanticURIType(node.toString())
-          } else
-            Future.successful(SemanticURIGuesser.Unknown) // TODO NONE
-          semanticURItype .map{ st => (node, st) }
-        }
-      Future sequence semanticURItypes
+        val semanticURItypes =
+          for (triple <- triples) yield {
+            val node = triple.getObject
+            val semanticURItype = if (isDereferenceableURI(node)) {
+              SemanticURIGuesser.guessSemanticURIType(node.toString())
+            } else
+              Future.successful(SemanticURIGuesser.Unknown) // TODO NONE
+            semanticURItype.map { st => (node, st) }
+          }
+        Future sequence semanticURItypes
       }
     })
-    val r1 = r.flatMap( identity )
+    val r1 = r.flatMap(identity)
     val rr = MonadicHelpers.tryToFuture(r1)
-    rr.flatMap( identity )
+    rr.flatMap(identity)
   }
 
   def isDereferenceableURI(node: Rdf#Node) = {
@@ -149,9 +147,8 @@ trait TableViewModule
       uri.startsWith("http:") ||
         uri.startsWith("https:") ||
         uri.startsWith("ftp:")
-    }
-    else false
+    } else false
   }
-  
-  def isURI( node:Rdf#Node) = ops.foldNode( node )(identity, x => None, x => None) != None
+
+  def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
 }

@@ -39,7 +39,7 @@ xml, and other machine processable stuff
 rdf, Json-LD, Turtle and other semantic content 
  */
 object SemanticURIGuesser extends RDFCache {
-  
+
   sealed abstract class SemanticURIType {
     override def toString = getClass.getSimpleName
   }
@@ -53,10 +53,10 @@ object SemanticURIGuesser extends RDFCache {
   object Video extends SemanticURIType
   object Data extends SemanticURIType
   object Unknown extends SemanticURIType
-  
-  def guessSemanticURIType(url: String) : Future[SemanticURIType]= {
-    if(isGraphInUse(url)) Future.successful(SemanticURI)
-    
+
+  def guessSemanticURIType(url: String): Future[SemanticURIType] = {
+    if (isGraphInUse(url)) Future.successful(SemanticURI)
+
     val response: Future[HttpResponse] = HttpClient.makeRequest(url, HEAD)
     println("response " + response)
     response.map { resp => semanticURITypeFromHeaders(resp, url) }
@@ -71,33 +71,33 @@ object SemanticURIGuesser extends RDFCache {
     val contentType = resp.header[ContentType]
     println("semanticURITypeFromHeaders: contentType " + contentType)
     val semanticURIType: SemanticURIType =
-      contentType match { 
-      case Some(header) =>
-        println("header " + header)
-        val mediaType = header.contentType.mediaType
-        val semanticURIType: SemanticURIType = makeSemanticURIType(mediaType, url)
-        if (semanticURIType == Unknown)
-          makeSemanticURITypeFromSuffix(url)
-        else semanticURIType
-      case None => makeSemanticURITypeFromSuffix(url)
-    }
+      contentType match {
+        case Some(header) =>
+          println("header " + header)
+          val mediaType = header.contentType.mediaType
+          val semanticURIType: SemanticURIType = makeSemanticURIType(mediaType, url)
+          if (semanticURIType == Unknown)
+            makeSemanticURITypeFromSuffix(url)
+          else semanticURIType
+        case None => makeSemanticURITypeFromSuffix(url)
+      }
     println("semanticURITypeFromHeaders: semanticURIType " + semanticURIType)
-    semanticURIType 
+    semanticURIType
   }
 
-  private def makeSemanticURITypeFromSuffix(url: String) : SemanticURIType = {
+  private def makeSemanticURITypeFromSuffix(url: String): SemanticURIType = {
     val mimeTypeFromSuffix = trySuffix(url)
-    println( "makeSemanticURITypeFromSuffix: mimeTypeFromSuffix " + mimeTypeFromSuffix )
+    println("makeSemanticURITypeFromSuffix: mimeTypeFromSuffix " + mimeTypeFromSuffix)
     if (mimeTypeFromSuffix == null)
       Unknown
     else {
       val mediaTypeFromSuffix = MediaType.custom(mimeTypeFromSuffix)
-      println( "makeSemanticURITypeFromSuffix: mediaTypeFromSuffix " + mediaTypeFromSuffix )
+      println("makeSemanticURITypeFromSuffix: mediaTypeFromSuffix " + mediaTypeFromSuffix)
       makeSemanticURIType(mediaTypeFromSuffix, url)
     }
   }
-  
-  private def makeSemanticURIType(mt:MediaType, url: String) = {
+
+  private def makeSemanticURIType(mt: MediaType, url: String) = {
     mt match {
       case mt if mt.isApplication => guessFromHeader(mt, url, Application)
       case mt if mt.isAudio => Audio
@@ -109,14 +109,16 @@ object SemanticURIGuesser extends RDFCache {
       case _ => Unknown
     }
   }
-  
-  /** take in account suffix (jpg, etc) ;
-   *  TODO: works in the REPL, but not in TestSemanticURIGuesser */
-  private def trySuffix(url: String) : String = {
+
+  /**
+   * take in account suffix (jpg, etc) ;
+   *  TODO: works in the REPL, but not in TestSemanticURIGuesser
+   */
+  private def trySuffix(url: String): String = {
     import java.nio.file._
     import java.net._
     val urlObj = new URL(url)
-    println( "trySuffix " + url )
+    println("trySuffix " + url)
     // to eliminate #me in FOAF profiles: 
     val source = Paths.get(urlObj.getFile)
     val source2 = source.toString()
@@ -125,26 +127,25 @@ object SemanticURIGuesser extends RDFCache {
     val mimeType2 = mimeType match {
       case null => source2 match {
         // TODO : do not use strings but an API
-        case _ if( source2.endsWith(".rdf") ) => "application/rdf+xml"
-        case _ if( source2.endsWith(".owl") ) => "application/owl+xml"
-        case _ if( source2.endsWith(".ttl") ) => "application/turtle"
-        case _ if( source2.endsWith(".n3") ) => "application/n3"
+        case _ if (source2.endsWith(".rdf")) => "application/rdf+xml"
+        case _ if (source2.endsWith(".owl")) => "application/owl+xml"
+        case _ if (source2.endsWith(".ttl")) => "application/turtle"
+        case _ if (source2.endsWith(".n3")) => "application/n3"
         case _ => "application/text"
       }
       case _ => mimeType
     }
-//    val res = Files.probeContentType(source)
-    println( s"trySuffix  + $mimeType + $mimeType2" )
+    //    val res = Files.probeContentType(source)
+    println(s"trySuffix  + $mimeType + $mimeType2")
     mimeType2
   }
-  
-  private def guessFromHeader(mt:MediaType, url: String, t:SemanticURIType) : SemanticURIType = {
-    val st = mt.subType 
-    if(
-        st == "rdf+xml" || 
-        st == "turtle" ||
-        st == "n3" ||
-        st == "x-turtle" ) {
+
+  private def guessFromHeader(mt: MediaType, url: String, t: SemanticURIType): SemanticURIType = {
+    val st = mt.subType
+    if (st == "rdf+xml" ||
+      st == "turtle" ||
+      st == "n3" ||
+      st == "x-turtle") {
       SemanticURI
     } else t
   }
