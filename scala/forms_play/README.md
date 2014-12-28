@@ -143,3 +143,17 @@ see a first attempt :
 See (in french) :
 [doc/fr/formulaires.html](http://htmlpreview.github.io/?https://github.com/jmvanel/semantic_forms/blob/master/doc/fr/formulaires.html)
 
+
+# Contributing
+
+To ensure that all commits are formatted in a consistent way, it is strongly advised to use scalariform.
+
+Please read how-to on the Banana-RDF project:
+[ide-setup](https://github.com/w3c/banana-rdf/#ide-setup)
+
+# Community
+
+For discussions that don't fit in the issues tracker, you may try 
+the #eulergui IRC channel on freenode using a dedicated IRC client like XChat connecting to irc://irc.freenode.net:6667/eulergui,
+ or using the freenode HTML interface, for quick real time socializing.
+

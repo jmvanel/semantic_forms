@@ -17,17 +17,20 @@
 	dc:creator	<http://jmvanel.free.fr/jmv.rdf#me> ;
 	owl:versionInfo  "$Id$"^^xsd:string ;
 	rdfs:seeAlso <https://github.com/jmvanel/semantic_forms/tree/master/vocabulary/forms.owl.ttl> ;
-	rdfs:seeAlso <https://htmlpreview.github.io/?https://github.com/jmvanel/semantic_forms/blob/master/doc/fr/formulaires.html>
+	rdfs:seeAlso <https://htmlpreview.github.io/?https://github.com/jmvanel/semantic_forms/blob/master/doc/fr/formulaires.html> ;
+	rdfs:seeAlso <../scala/forms/form_specs/foaf.form.ttl>
 .
 
-form:TripleDisplay a owl:Class ;
+#### displaying or editing ####
+
+form:TriplesDisplay a owl:Class ;
 	rdfs:label "Triple Display specification"@en ;
 	rdfs:comment """a specification for Displaying Triples, typically for a form."""@en ;
 	owl:sameClassAs fresnel:Lens
 .
 
 form:classDomain a owl:ObjectProperty ;
-	rdfs:domain form:TripleDisplay ;
+	rdfs:domain form:TriplesDisplay ;
 	rdfs:range rdfs:Class ;
 	rdfs:label "class Domain"@en ;
 	rdfs:comment """ the Display specification applies to URI's of this type(s)"""@en ;
@@ -35,7 +38,7 @@ form:classDomain a owl:ObjectProperty ;
 .
 
 form:showProperties a owl:ObjectProperty ;
-	rdfs:domain form:TripleDisplay ;
+	rdfs:domain form:TriplesDisplay ;
 	rdfs:range rdf:List ; # a list of rdf:Property
 	rdfs:label "show properties"@en ;
 	rdfs:comment "List of all properties which should be shown."@en ;
@@ -44,9 +47,15 @@ form:showProperties a owl:ObjectProperty ;
 #### editing ####
 
 form:TripleEdit a owl:Class ;
-	rdfs:label "Triple Edit specification"@en ;
-	rdfs:comment """a specification for Editing Triples, typically for a form."""@en ;
-	rdfs:subclassOf form:TripleDisplay .
+	rdfs:label "Triple Edit specification, a.k.a. a field, an input field"@en ;
+	rdfs:comment """a specification for Editing a Triple, typically for a form."""@en .
+
+form:fieldAppliesToForm  a owl:ObjectProperty ;
+	rdfs:domain form:TripleEdit ;
+	rdfs:range form:TriplesDisplay .
+form:fieldAppliesToProperty a owl:ObjectProperty ;
+	rdfs:domain form:TripleEdit ;
+	rdfs:range rdf:Property .
 
 form:cardinality a owl:ObjectProperty ;
 	rdfs:domain form:TripleEdit ;
@@ -62,7 +71,8 @@ form:Cardinality a owl:Class ;
 	rdfs:comment """ In oneOrMore or exactlyOne cases, the form tool should open a sub form in place or a popup. """@en .
 
          
-form:DatatypeInputFiled a owl:Class .
+form:DatatypeInputField a owl:Class ; rdfs:subClassOf form:TripleEdit .
+form:ObjectInputField a owl:Class ; rdfs:subClassOf form:TripleEdit .
 
 form:widgetClass a owl:ObjectProperty ;
 	rdfs:domain form:TripleEdit ;
@@ -79,10 +89,9 @@ form:WidgetClass a owl:Class ;
 		form:Checkbox
 		form:Choice
 		form:Collection
+		form:DBPediaLookup
         ) .
         
-# a owl:DatatypeProperty .
-# to be continued :) ...
 
 # from e-commerce project ...
 # form:has_applicable_property 	form:has_mandatory_properties  form:computedProperty form:multipleChoice  

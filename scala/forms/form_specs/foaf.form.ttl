@@ -3,12 +3,12 @@
 @prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 
-# form specification for FOAF
+# form specifications for FOAF
 
 <personForm>
-	form:classDomain foaf:Person ;
-        form:showProperties
-( foaf:givenName foaf:familyName
+  form:classDomain foaf:Person ;
+  form:showProperties (
+	foaf:givenName foaf:familyName
 	foaf:homepage
 	# literal or resource
 	foaf:phone
@@ -17,12 +17,17 @@
 	foaf:topic_interest
 	foaf:knows
 	foaf:currentProject
-) .
+  ) .
+
+<topic_interest>
+	form:fieldAppliesToForm <personForm> ;
+	form:fieldAppliesToProperty foaf:topic_interest ;
+	form:widgetClass form:DBPediaLookup .
 
 <projectForm>
-	form:classDomain foaf:Project ;
-        form:showProperties
-( rdfs:label rdfs:comment
+  form:classDomain foaf:Project ;
+  form:showProperties (
+	rdfs:label rdfs:comment
 	foaf:homepage
 	foaf:maker
 	foaf:mbox
@@ -32,5 +37,5 @@
 	foaf:holdsAccount
 	foaf:age
 	dc:subject
-) .
+  ) .
 

@@ -78,11 +78,8 @@ object PopulateRDFCache extends RDFCache
     val from = new java.net.URL(all_form_specs).openStream()
     val form_specs_graph: Rdf#Graph = turtleReader.read(from, base = all_form_specs) getOrElse sys.error(s"couldn't read $all_form_specs")
     import deductions.runtime.abstract_syntax.FormSyntaxFactory._
-    val formPrefix = new PrefixBuilder2("form", formVocabPrefix)
-
-    //    val store =  RDFStoreObject.store
-
-    /* Retrieving :
+    val formPrefix = Prefix("form", formVocabPrefix)
+    /* Retrieving triple :
      * foaf: form:ontologyHasFormSpecification <foaf.form.ttl> . */
     val triples: Iterator[Rdf#Triple] = ops.find(form_specs_graph, ops.ANY, formPrefix("ontologyHasFormSpecification"), ops.ANY)
     val objects = for (triple <- triples) yield {

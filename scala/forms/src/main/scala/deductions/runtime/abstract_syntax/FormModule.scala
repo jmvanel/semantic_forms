@@ -15,7 +15,7 @@ trait FormModule[NODE, URI <: NODE] {
    * abstract_syntax for a semantic form , called FA (Abstract Form) :
    *  - generated from a list of URI's for properties, and a triple store
    *  - used in conjunction with HTML5 forms and Banana-RDF
-   *  - could be used N3Form(Swing) in EulerGUI, 
+   *  - could be used with N3Form(Swing) in EulerGUI,
    */
   case class FormSyntax[NODE, URI <: NODE](
       val subject: NODE,
