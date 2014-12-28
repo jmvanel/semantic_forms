@@ -29,13 +29,9 @@ package global {
   object Global extends Controller // play.api.GlobalSettings
       with RDFCache
       with RDFOpsModule
-      with TurtleWriterModule //   with SparqlGraphModule
-      //   with SparqlOpsModule
-      //   with RDFStoreLocalProvider
-      {
+      with TurtleWriterModule  {
     var form: Elem = <p>initial value</p>
     lazy val tableView = new TableView {}
-    //  lazy val store =  RDFStoreObject.store
     lazy val search = new StringSearchSPARQL()
     lazy val dl = new BrowsableGraph()
     lazy val fs = new FormSaver()

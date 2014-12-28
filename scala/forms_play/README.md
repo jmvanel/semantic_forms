@@ -149,7 +149,7 @@ See (in french) :
 To ensure that all commits are formatted in a consistent way, it is strongly advised to use scalariform.
 
 Please read how-to on the Banana-RDF project:
-[ide-setup](https://github.com/w3c/banana-rdf/#ide-setup)
+[ide-setup](https://github.com/w3c/banana-rdf/#contributions)
 
 # Community
 
