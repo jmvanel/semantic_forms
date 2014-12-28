@@ -17,7 +17,7 @@ trait TestJenaHelpersRaw extends JenaHelpers {
     val uri = ops.makeUri("src/test/resources/foaf.n3")
     val graphUri = uri
     lazy val dataset = TDBFactory.createDataset("TDB")
-    jh.storeURI(uri, graphUri, dataset )
-//    store.executeSelect(query, bindings)
+    jh.storeURI(uri, graphUri, dataset)
+    //    store.executeSelect(query, bindings)
   }
 }

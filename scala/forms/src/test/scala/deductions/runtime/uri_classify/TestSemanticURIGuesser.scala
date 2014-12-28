@@ -10,27 +10,27 @@ class TestSemanticURIGuesser extends FunSuite {
   test("TestSemanticURIGuesser") {
     for (
       (uri, semanticType) <- List(
-          ( "http://jmvanel.free.fr/images/jmv_id.jpg", Image )
-        , ( "http://jmvanel.free.fr/images/jmv.rdf", SemanticURI )
-        , ("http://danbri.org/foaf.rdf#danbri", SemanticURI)
-        
-        // TODO: must try parent URI http://xmlns.com/foaf/0.1/ for a graph in RDF store
-//        , ("http://xmlns.com/foaf/0.1/Person", SemanticURI)
-        
-        // fails because no clue except looking into content, or maybe using the presence of #   
-//        , ("http://fcns.eu/people/andrei/card#me", SemanticURI)
-    		  )
+        ("http://jmvanel.free.fr/images/jmv_id.jpg", Image), ("http://jmvanel.free.fr/images/jmv.rdf", SemanticURI), ("http://danbri.org/foaf.rdf#danbri", SemanticURI)
+
+      // TODO: must try parent URI http://xmlns.com/foaf/0.1/ for a graph in RDF store
+      //        , ("http://xmlns.com/foaf/0.1/Person", SemanticURI)
+
+      // fails because no clue except looking into content, or maybe using the presence of #   
+      //        , ("http://fcns.eu/people/andrei/card#me", SemanticURI)
+      )
     ) {
       val fut = SemanticURIGuesser.guessSemanticURIType(uri)
       Await.result(fut, 1000000 millis)
-      
-      fut onSuccess{
-        case t => println("SemanticURIType: "+t)
-       	assert(t.toString() == semanticType.toString())
+
+      fut onSuccess {
+        case t =>
+          println("SemanticURIType: " + t)
+          assert(t.toString() == semanticType.toString())
       }
       fut onFailure {
-        case t => println("onFailure SemanticURIType: "+t)
-       	fail()
+        case t =>
+          println("onFailure SemanticURIType: " + t)
+          fail()
       }
     }
   }

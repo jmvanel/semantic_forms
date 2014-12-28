@@ -17,19 +17,19 @@ import org.scalatest.FunSuite
 class Form2HTMLTestJena extends Form2HTMLTest
 
 class Form2HTMLTest
-      extends FunSuite with FormSyntaxFactoryTest
-      with JenaModule {
+    extends FunSuite with FormSyntaxFactoryTest
+    with JenaModule {
   import ops._
   println("Entering Form2HTMLTest")
   val nullURI1 = makeUri("")
 
   test("Test HTML") {
-    val fh = new Form2HTML[Rdf#Node, Rdf#URI]{
+    val fh = new Form2HTML[Rdf#Node, Rdf#URI] {
       override val nullURI = nullURI1 // Ops.makeURI("")
     }
     val xhtml = fh.generateHTML(createForm)
     System.out.println(xhtml)
-    Files.write(Paths.get("tmp.form.html"), xhtml.toString().getBytes );
+    Files.write(Paths.get("tmp.form.html"), xhtml.toString().getBytes);
     Assert.assertTrue(xhtml.toString().contains("Alexandre"))
   }
 }

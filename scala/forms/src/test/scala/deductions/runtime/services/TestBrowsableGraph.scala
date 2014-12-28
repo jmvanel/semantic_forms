@@ -20,15 +20,14 @@ import org.w3.banana.SparqlOps
 import deductions.runtime.jena.RDFStoreObject
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 
-class TestBrowsableGraph [Rdf <: RDF, Store]
-  extends FunSuite
-   with RDFCache
-   with RDFOpsModule
-   with SparqlGraphModule
-   with SparqlOpsModule
-   with SparqlHttpModule
-   with RDFStoreLocalJena1Provider
-{
+class TestBrowsableGraph[Rdf <: RDF, Store]
+    extends FunSuite
+    with RDFCache
+    with RDFOpsModule
+    with SparqlGraphModule
+    with SparqlOpsModule
+    with SparqlHttpModule
+    with RDFStoreLocalJena1Provider {
   import ops._
 
   def test {

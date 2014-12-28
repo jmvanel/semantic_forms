@@ -219,6 +219,6 @@ package global {
         { dl.sparqlConstructQuery(query) /* TODO Future !!!!!!!!!!!!!!!!!!! */ }
       </p>
     }
-    def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
+//    def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
   }
 }

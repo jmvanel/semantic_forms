@@ -63,13 +63,16 @@ plus a textbox to enter a URL semantics, eg a FOAF profile or DBpedia URI :
 
 # How to run
 
-Dependencies to install : Java 7 (Scala is not ready for Java 8), SBT or Typesafe Activator .
+Dependencies to install : Java 7 (Scala is not ready for Java 8), [SBT](http://www.scala-sbt.org/)
+or [Typesafe Activator]((http://typesafe.com/platform/getstarted) .
 Then SBT or Activator donwload the rest.
 
+<!---
 *Temporarily* there is a dependency to Banana-RDF 0.7.1-SNAPSHOT, so one must also build Banana-RDF; see
 [how-to-start-geeking](https://github.com/w3c/banana-rdf/#how-to-start-geeking) ,
 and type in Activator:
 `publishLocal`
+-->
 
 - build and run this project with [latest play activator from typesafe.com](http://typesafe.com/platform/getstarted) , and type in activator : `~ run`
 
@@ -133,7 +136,7 @@ Tips:
 
 # Vocabulary for forms
 
-At one point it will be useful to also introduce in place of FA an RDF vocabulary for forms, perhaps reusing Fresnel;
+It will be useful to introduce upstream of the FA (Abstract Form) in class FormModule.FormSyntax an RDF vocabulary for forms, perhaps reusing Fresnel;
 see a first attempt :
 [vocabulary/forms.owl.ttl](../../vocabulary/forms.owl.ttl)
 

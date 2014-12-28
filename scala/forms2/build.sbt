@@ -8,14 +8,16 @@ scalaVersion := "2.11.2"
 
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
 
-resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
 
-libraryDependencies += "org.w3" %%  "jena" %  "0.7.1-SNAPSHOT" // 0.7"
+libraryDependencies += "org.w3" %%  "jena" %  "0.7.1" // "0.7.2-SNAPSHOT"
 
-libraryDependencies += "org.w3" %%  "sesame" %  "0.7.1-SNAPSHOT" // 0.7"
+libraryDependencies += "org.w3" %%  "sesame" %  "0.7.1" // "0.7.2-SNAPSHOT"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.0" % Test
 
+
+
+resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
 // resolvers += "betehess" at  "http://dl.bintray.com/betehess/banana-rdf"
 
     resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"

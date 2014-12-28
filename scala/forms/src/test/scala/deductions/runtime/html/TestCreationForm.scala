@@ -14,33 +14,33 @@ import scala.xml.Elem
 
 class TestCreationForm extends FunSuite with CreationForm {
   val foaf = FOAFPrefix[Rdf]
-        
+
   test("display form") {
     Fil‍eUtils.deleteLocalSPARL()
     val uri = // 
-//      "http://usefulinc.com/ns/doap#Project"
-     // "http://xmlns.com/foaf/0.1/Organization"
-        foaf.Person.toString()
-//    val store =  RDFStoreObject.store
-    retrieveURI( ops.makeUri(uri), dataset )
-    val rawForm = createElem(uri, lang="fr")
+      //      "http://usefulinc.com/ns/doap#Project"
+      // "http://xmlns.com/foaf/0.1/Organization"
+      foaf.Person.toString()
+    //    val store =  RDFStoreObject.store
+    retrieveURI(ops.makeUri(uri), dataset)
+    val rawForm = createElem(uri, lang = "fr")
     val form = wrapWithHTML(rawForm)
     val file = "example.creation.form.html"
-    Files.write(Paths.get(file), form.toString().getBytes );
-    println( s"file created $file" )  
-    
-    assert ( rawForm . toString() . contains("homepage") )
+    Files.write(Paths.get(file), form.toString().getBytes);
+    println(s"file created $file")
+
+    assert(rawForm.toString().contains("homepage"))
   }
 
-  def wrapWithHTML( e:Elem ) : Elem =
+  def wrapWithHTML(e: Elem): Elem =
     <html>
-    <head>
-		  <style type="text/css">   
-		  .resize {{ resize: both; width: 100%; height: 100%; }}
+      <head>
+        <style type="text/css">
+          .resize {{ resize: both; width: 100%; height: 100%; }}
       .overflow {{ overflow: auto; width: 100%; height: 100%; }}
-		  </style> 
-		</head>
-    <body>{e}</body>
+        </style>
+      </head>
+      <body>{ e }</body>
     </html>
 
 }

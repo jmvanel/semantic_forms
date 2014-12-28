@@ -4,21 +4,19 @@ import org.w3.banana.RDFOpsModule
 import org.w3.banana.diesel._
 import org.w3.banana.jena.JenaModule
 
-
-object TestBananaDSLApp extends App 
-		with TestBananaDSL
-		with JenaModule {
-  println( exampleGraph.toString )
+object TestBananaDSLApp extends App
+    with TestBananaDSL
+    with JenaModule {
+  println(exampleGraph.toString)
 }
 
 trait TestBananaDSL
-  extends RDFModule
-  with RDFOpsModule
-{
+    extends RDFModule
+    with RDFOpsModule {
   import ops._
-  
+
   lazy val foaf = FOAFPrefix[Rdf]
-//  val foafURI = foaf.prefixIri
+  //  val foafURI = foaf.prefixIri
   lazy val exampleGraph = (
     URI("betehess")
     -- foaf.name ->- "Alexandre".lang("fr")
