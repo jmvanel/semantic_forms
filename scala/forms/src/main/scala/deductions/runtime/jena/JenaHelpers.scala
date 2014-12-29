@@ -34,7 +34,8 @@ trait JenaHelpers extends JenaModule {
   type Store = RDFStoreObject.DATASET
 
   /**
-   * store URI in a named graph, using Jena's RDFDataMgr
+   * store URI in a named graph, with transaction,
+   * using Jena's RDFDataMgr
    * (use content-type or else file extension)
    * with Jena Riot for smart reading of any format,
    * cf https://github.com/w3c/banana-rdf/issues/105

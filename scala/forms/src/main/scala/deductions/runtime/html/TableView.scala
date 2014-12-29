@@ -150,5 +150,5 @@ trait TableViewModule
     } else false
   }
 
-  def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
+  private def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
 }

@@ -24,7 +24,7 @@ trait RDFCacheDependencies
   with RDFXMLReaderModule
 
 /* depends on generic Rdf */
-trait RDFCache extends RDFStoreLocalJena1Provider 
+trait RDFCache extends RDFStoreLocalJena1Provider
     with RDFCacheDependencies with JenaHelpers {
 
   val timestampGraphURI = "http://deductions-software.com/timestampGraph"
@@ -68,7 +68,7 @@ trait RDFCache extends RDFStoreLocalJena1Provider
   }
 
   /**
-   * download and store URI in a graph named by its URI minus the # part,
+   * download and store URI, with transaction, in a graph named by its URI minus the # part,
    *  and store the timestamp from HTTP HEAD request
    *
    *  TODO: URI minus the # part
