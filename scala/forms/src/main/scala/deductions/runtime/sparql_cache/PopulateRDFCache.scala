@@ -88,36 +88,35 @@ object PopulateRDFCache extends RDFCache
     for (obj <- objects) {
       val from = new java.net.URL(obj.toString()).openStream()
       val form_spec_graph: Rdf#Graph = turtleReader.read(from, base = obj.toString()) getOrElse sys.error(
-          s"couldn't read ${obj.toString()}" )
+        s"couldn't read ${obj.toString()}")
       rdfStore.appendToGraph(dataset, ops.makeUri("form_specs"), form_spec_graph)
       println("Added form_spec " + obj)
     }
   }
 }
 
-  //  private class PrefixBuilder2 // [Rdf <: RDF]
-  //  (
-  //    val prefixName: String,
-  //    val prefixIri: String)
-  //      //(implicit
-  //      //  ops: RDFOps[Rdf]
-  //      //)
-  //      extends Prefix[Rdf] {
-  //    import ops._
-  //    override def toString: String = "Prefix(" + prefixName + ")"
-  //    def apply(value: String): Rdf#URI = makeUri(prefixIri + value)
-  //    def unapply(iri: Rdf#URI): Option[String] = {
-  //      val uriString = fromUri(iri)
-  //      if (uriString.startsWith(prefixIri))
-  //        Some(uriString.substring(prefixIri.length))
-  //      else
-  //        None
-  //    }
-  //    def getLocalName(iri: Rdf#URI): Try[String] =
-  //      unapply(iri) match {
-  //        case None => Failure(LocalNameException(this.toString + " couldn't extract localname for " + iri))
-  //        case Some(localname) => Success(localname)
-  //      }
-  //  }
-
+//  private class PrefixBuilder2 // [Rdf <: RDF]
+//  (
+//    val prefixName: String,
+//    val prefixIri: String)
+//      //(implicit
+//      //  ops: RDFOps[Rdf]
+//      //)
+//      extends Prefix[Rdf] {
+//    import ops._
+//    override def toString: String = "Prefix(" + prefixName + ")"
+//    def apply(value: String): Rdf#URI = makeUri(prefixIri + value)
+//    def unapply(iri: Rdf#URI): Option[String] = {
+//      val uriString = fromUri(iri)
+//      if (uriString.startsWith(prefixIri))
+//        Some(uriString.substring(prefixIri.length))
+//      else
+//        None
+//    }
+//    def getLocalName(iri: Rdf#URI): Try[String] =
+//      unapply(iri) match {
+//        case None => Failure(LocalNameException(this.toString + " couldn't extract localname for " + iri))
+//        case Some(localname) => Success(localname)
+//      }
+//  }
 

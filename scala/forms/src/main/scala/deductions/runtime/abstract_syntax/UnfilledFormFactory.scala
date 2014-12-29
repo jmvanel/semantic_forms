@@ -44,11 +44,13 @@ class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
   def lookFormConfiguration(classs: Rdf#URI): Seq[Rdf#URI] = {
     val rdf = RDFPrefix[Rdf]
     val forms = ops.getSubjects(graph, formPrefix("classDomain"), classs)
-    val form_ = forms.flatMap {
+    val b = new StringBuilder
+    println("forms " + forms.addString(b, "; "))
+    val formNodeOption = forms.flatMap {
       form => ops.foldNode(form)(uri => Some(uri), bn => Some(bn), lit => None)
     }.headOption
-    println("form_ " + form_)
-    form_ match {
+    println("formNodeOption " + formNodeOption)
+    formNodeOption match {
       case None => Seq()
       case Some(f) =>
         //        val props = ops.getObjects(graph, f, form("showProperties"))

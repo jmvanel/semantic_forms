@@ -10,7 +10,8 @@ trait DatasetUtils[Rdf <: RDF]
     extends DatasetFactory
     with RDFOpsModule {
 
-  def merge(datasets: Seq[Dataset]) = {
+  /** merge given datasets */
+  def merge(datasets: Seq[Dataset]): GraphStore[Rdf, Try, Dataset] = {
     val output: Dataset = createInMemory
     val gs: GraphStore[Rdf, Try, Dataset] =
       new GraphStore[Rdf, Try, Dataset] {

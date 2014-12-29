@@ -24,7 +24,7 @@ trait RDFCacheDependencies
   with RDFXMLReaderModule
 
 /* depends on generic Rdf */
-trait RDFCache extends RDFStoreLocalJena1Provider
+trait RDFCache extends RDFStoreLocalJena1Provider 
     with RDFCacheDependencies with JenaHelpers {
 
   val timestampGraphURI = "http://deductions-software.com/timestampGraph"
@@ -75,23 +75,27 @@ trait RDFCache extends RDFStoreLocalJena1Provider
    */
   def storeURI(uri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
     val model = storeURI(uri, uri, dataset)
+    addTimestampToDataset(uri, dataset)
+    model
+  }
+
+  /** add timestamp to dataset (actually a dedicated Graph timestampGraphURI ) */
+  private def addTimestampToDataset(uri: Rdf#URI, dataset: DATASET) = {
     val time = lastModified(uri.getURI(), 1000)
     rdfStore.rw(dataset, {
-      // add timestamp to Graph
       rdfStore.appendToGraph(dataset, makeUri(timestampGraphURI),
         makeGraph(Seq(makeTriple(
           uri,
           makeUri(timestampGraphURI),
           makeLiteral(time._2.toString, xsd.integer)))))
     })
-    model
   }
 
   /**
    * timestamp from HTTP HEAD request
    *  NOTE elsewhere akka HTTP client is used
    */
-  def lastModified(url0: String, timeout: Int): (Boolean, Long) = {
+  private def lastModified(url0: String, timeout: Int): (Boolean, Long) = {
     val url = url0.replaceFirst("https", "http"); // Otherwise an exception may be thrown on invalid SSL certificates.
     try {
       val connection0 = new URL(url).openConnection()
