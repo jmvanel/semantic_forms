@@ -36,7 +36,8 @@ trait FormModule[NODE, URI <: NODE] {
   }
   case class ResourceEntry(l: String, c: String,
       property: ObjectProperty, validator: ResourceValidator,
-      value: URI = nullURI, alreadyInDatabase: Boolean = true) extends Entry(l, c) {
+      value: URI = nullURI, alreadyInDatabase: Boolean = true,
+      possibleValues:Seq[URI] = Seq() ) extends Entry(l, c) {
     override def toString(): String = {
       super.toString + ", " + value
     }

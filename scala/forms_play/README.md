@@ -34,8 +34,8 @@ With these features :
 - 21 write some JavaScript samples to call the different features
 - 22 Add a button to edit the currently displayed URI
 - 23 display the "reverse" triples ( called in-going links in BigData workbench )
-- 24   (HTML) : add CSS classes for labels and values; - WIP
-- 24.1 (HTML) : new HTML output with CSS rendering instead of explicit HTML table formatting - WIP
+- 24   (HTML) : add CSS classes for labels and values; - DONE
+- 24.1 (HTML) : new HTML output with CSS rendering instead of explicit HTML table formatting - DONE
 - 25   (HTML) : add component to enter a dbpedia URI ( use dbpedia lookup API , by JavaScript )
 - 26   (HTML) : add component to enter an ordered RDF list : use same mechanism as multiple values, but send a Turtle list in parentheses; by JavaScript
 - 27   (HTML) : add component to enter a choice (single or multiple) for owl:OneOf classes ( by JavaScript or HTML 5 )

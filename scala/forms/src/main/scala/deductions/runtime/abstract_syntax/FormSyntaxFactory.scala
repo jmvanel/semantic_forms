@@ -32,11 +32,17 @@ object FormSyntaxFactory {
 /**
  * Factory for an abstract Form Syntax;
  */
-class FormSyntaxFactory[Rdf <: RDF](graph: Rdf#Graph, preferedLanguage: String = "en")(implicit val ops: RDFOps[Rdf],
+class FormSyntaxFactory[Rdf <: RDF]
+(graph: Rdf#Graph, preferedLanguage: String = "en")
+( implicit val ops: RDFOps[Rdf],
   val uriOps: URIOps[Rdf])
+
     extends // RDFOpsModule with 
     FormModule[Rdf#Node, Rdf#URI]
-    with FieldsInference[Rdf] {
+    with FieldsInference[Rdf]
+    with RangeInference[Rdf]
+{
+  
   import ops._
 
   lazy val nullURI = ops.URI("http://null.com#") // TODO better : "" ????????????
@@ -47,33 +53,33 @@ class FormSyntaxFactory[Rdf <: RDF](graph: Rdf#Graph, preferedLanguage: String =
   val rdf = RDFPrefix[Rdf]
   import FormSyntaxFactory._
 
-  // TODO remove <<<<<<<<<<<<<<<<<<<<<<<<<<<
-  private class PrefixBuilder2 // [Rdf <: RDF]
-  (
-    val prefixName: String,
-    val prefixIri: String)
-      //(implicit
-      //  ops: RDFOps[Rdf]
-      //)
-      extends Prefix[Rdf] {
-    import ops._
-    override def toString: String = "Prefix(" + prefixName + ")"
-    def apply(value: String): Rdf#URI = makeUri(prefixIri + value)
-    def unapply(iri: Rdf#URI): Option[String] = {
-      val uriString = fromUri(iri)
-      if (uriString.startsWith(prefixIri))
-        Some(uriString.substring(prefixIri.length))
-      else
-        None
-    }
-    def getLocalName(iri: Rdf#URI): Try[String] =
-      unapply(iri) match {
-        case None => Failure(LocalNameException(this.toString + " couldn't extract localname for " + iri.toString))
-        case Some(localname) => Success(localname)
-      }
-  }
+  // removed <<<<<<<<<<<<<<<<<<<<<<
+//  private class PrefixBuilder2 // [Rdf <: RDF]
+//  (
+//    val prefixName: String,
+//    val prefixIri: String)
+//      //(implicit
+//      //  ops: RDFOps[Rdf]
+//      //)
+//      extends Prefix[Rdf] {
+//    import ops._
+//    override def toString: String = "Prefix(" + prefixName + ")"
+//    def apply(value: String): Rdf#URI = makeUri(prefixIri + value)
+//    def unapply(iri: Rdf#URI): Option[String] = {
+//      val uriString = fromUri(iri)
+//      if (uriString.startsWith(prefixIri))
+//        Some(uriString.substring(prefixIri.length))
+//      else
+//        None
+//    }
+//    def getLocalName(iri: Rdf#URI): Try[String] =
+//      unapply(iri) match {
+//        case None => Failure(LocalNameException(this.toString + " couldn't extract localname for " + iri.toString))
+//        case Some(localname) => Success(localname)
+//      }
+//  }
 
-  val formPrefix: Prefix[Rdf] = new PrefixBuilder2 /*[Rdf]*/ ("form", formVocabPrefix)
+  val formPrefix: Prefix[Rdf] = Prefix/*[Rdf]*/ ("form", formVocabPrefix)
 
   println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
 
@@ -98,7 +104,7 @@ class FormSyntaxFactory[Rdf <: RDF](graph: Rdf#Graph, preferedLanguage: String =
     props: Seq[Rdf#URI], classs: Rdf#URI): FormSyntax[Rdf#Node, Rdf#URI] = {
     Logger.getRootLogger().info(s"createForm subject $subject, props $props")
 
-    val f = for (prop <- props) yield {
+    val entries = for (prop <- props) yield {
       Logger.getRootLogger().info(s"createForm subject $subject, prop $prop")
       val ranges = extractURIs(oQuery(prop, rdfs.range))
       val rangesSize = ranges.size
@@ -110,7 +116,7 @@ class FormSyntaxFactory[Rdf <: RDF](graph: Rdf#Graph, preferedLanguage: String =
       println(mess, System.err)
       makeEntry(subject, prop, ranges)
     }
-    val fields = f.flatMap { s => s }
+    val fields = entries.flatMap { s => s }
     val fields2 = addTypeTriple(subject, classs, fields)
     FormSyntax(subject, fields2, classs)
   }
@@ -159,13 +165,10 @@ class FormSyntaxFactory[Rdf <: RDF](graph: Rdf#Graph, preferedLanguage: String =
         ops.foldNode(object_)(
           object_ => ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_,
             alreadyInDatabase = true),
-          //                object_.pointer.asInstanceOf[Rdf#URI]),
           object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_),
-          // BlankNodeEntry(label, comment, prop, ResourceValidator(ranges), object_),
           object_ => LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
             getStringOrElse(object_, "..empty.."))
         )
-        //        ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_.pointer.asInstanceOf[Rdf#URI])
       }
       val xsdPrefix = XSDPrefix[Rdf].prefixIri
       val rdf = RDFPrefix[Rdf]
@@ -178,22 +181,17 @@ class FormSyntaxFactory[Rdf <: RDF](graph: Rdf#Graph, preferedLanguage: String =
         case _ if propClasses.contains(owl.ObjectProperty) => resourceEntry
         case _ if rangeClasses.contains(owl.Class) => resourceEntry
         case _ if rangeClasses.contains(rdf.Property) => resourceEntry
-        //    case _ if ranges.contains(owl.Thing) => resourceEntry
-        case _ if ranges.contains(ops.makeUri(owlThing)) => resourceEntry
+        case _ if ranges.contains(owl.Thing) => resourceEntry
         //        case _ if ops.isURI(object_ ) => resourceEntry
         case _ if (isURIorBN(object_)) => resourceEntry
         case _ if object_.toString.startsWith("_:") => resourceEntry
         case _ => literalEntry
       }
-      result += entry
+      result += addPossibleValues(entry, ranges)
     }
 
     for (obj <- objects) addOneEntry(obj)
-
-    // entry associated to prop
-    if (objects isEmpty) {
-      addOneEntry(nullURI)
-    }
+    if (objects isEmpty) addOneEntry(nullURI)
     result
   }
 

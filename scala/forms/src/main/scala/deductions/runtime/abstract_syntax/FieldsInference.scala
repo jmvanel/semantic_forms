@@ -2,11 +2,12 @@ package deductions.runtime.abstract_syntax
 
 import org.w3.banana.RDF
 
-/** populate Fields in form by inferencing from class(es) */
+/** populate Fields in form by inferencing from class(es) of given instance URI */
 trait FieldsInference[Rdf <: RDF] {
   self: FormSyntaxFactory[Rdf] =>
 
   def fieldsFromClass(classs: Rdf#URI, graph: Rdf#Graph): Set[Rdf#URI] = {
+    /** retrieve rdfs:domain's From given Class */
     def domainsFromClass(classs: Rdf#Node) = {
       val relevantPredicates = ops.getSubjects(graph, rdfs.domain, classs).toSet
       extractURIs(relevantPredicates) toSet
@@ -25,7 +26,8 @@ trait FieldsInference[Rdf <: RDF] {
     }
 
     /**
-     * get the ontology prefix
+     * get the ontology prefix,
+     * taking in account if it ends with #, or with / like FOAF .
      *  TODO : related to URI cache
      */
     def getGraphURI(classs: Rdf#URI): String = {
@@ -39,8 +41,8 @@ trait FieldsInference[Rdf <: RDF] {
       }
     }
 
-    /**
-     * Properties without Domain are supposed to be applicable to any class in the same ontology
+    /** add Domainless Properties;
+     * properties without Domain are supposed to be applicable to any class in the same ontology
      *  ( use case : DOAP )
      */
     def addDomainlessProperties(uri: Rdf#URI) {
