@@ -32,17 +32,14 @@ object FormSyntaxFactory {
 /**
  * Factory for an abstract Form Syntax;
  */
-class FormSyntaxFactory[Rdf <: RDF]
-(graph: Rdf#Graph, preferedLanguage: String = "en")
-( implicit val ops: RDFOps[Rdf],
+class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: String = "en")(implicit val ops: RDFOps[Rdf],
   val uriOps: URIOps[Rdf])
 
     extends // RDFOpsModule with 
     FormModule[Rdf#Node, Rdf#URI]
     with FieldsInference[Rdf]
-    with RangeInference[Rdf]
-{
-  
+    with RangeInference[Rdf] {
+
   import ops._
 
   lazy val nullURI = ops.URI("http://null.com#") // TODO better : "" ????????????
@@ -54,32 +51,32 @@ class FormSyntaxFactory[Rdf <: RDF]
   import FormSyntaxFactory._
 
   // removed <<<<<<<<<<<<<<<<<<<<<<
-//  private class PrefixBuilder2 // [Rdf <: RDF]
-//  (
-//    val prefixName: String,
-//    val prefixIri: String)
-//      //(implicit
-//      //  ops: RDFOps[Rdf]
-//      //)
-//      extends Prefix[Rdf] {
-//    import ops._
-//    override def toString: String = "Prefix(" + prefixName + ")"
-//    def apply(value: String): Rdf#URI = makeUri(prefixIri + value)
-//    def unapply(iri: Rdf#URI): Option[String] = {
-//      val uriString = fromUri(iri)
-//      if (uriString.startsWith(prefixIri))
-//        Some(uriString.substring(prefixIri.length))
-//      else
-//        None
-//    }
-//    def getLocalName(iri: Rdf#URI): Try[String] =
-//      unapply(iri) match {
-//        case None => Failure(LocalNameException(this.toString + " couldn't extract localname for " + iri.toString))
-//        case Some(localname) => Success(localname)
-//      }
-//  }
+  //  private class PrefixBuilder2 // [Rdf <: RDF]
+  //  (
+  //    val prefixName: String,
+  //    val prefixIri: String)
+  //      //(implicit
+  //      //  ops: RDFOps[Rdf]
+  //      //)
+  //      extends Prefix[Rdf] {
+  //    import ops._
+  //    override def toString: String = "Prefix(" + prefixName + ")"
+  //    def apply(value: String): Rdf#URI = makeUri(prefixIri + value)
+  //    def unapply(iri: Rdf#URI): Option[String] = {
+  //      val uriString = fromUri(iri)
+  //      if (uriString.startsWith(prefixIri))
+  //        Some(uriString.substring(prefixIri.length))
+  //      else
+  //        None
+  //    }
+  //    def getLocalName(iri: Rdf#URI): Try[String] =
+  //      unapply(iri) match {
+  //        case None => Failure(LocalNameException(this.toString + " couldn't extract localname for " + iri.toString))
+  //        case Some(localname) => Success(localname)
+  //      }
+  //  }
 
-  val formPrefix: Prefix[Rdf] = Prefix/*[Rdf]*/ ("form", formVocabPrefix)
+  val formPrefix: Prefix[Rdf] = Prefix /*[Rdf]*/ ("form", formVocabPrefix)
 
   println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
 

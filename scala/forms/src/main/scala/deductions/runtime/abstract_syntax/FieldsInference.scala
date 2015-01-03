@@ -41,7 +41,8 @@ trait FieldsInference[Rdf <: RDF] {
       }
     }
 
-    /** add Domainless Properties;
+    /**
+     * add Domainless Properties;
      * properties without Domain are supposed to be applicable to any class in the same ontology
      *  ( use case : DOAP )
      */
