@@ -17,13 +17,14 @@ class TestCreationForm extends FunSuite with CreationForm {
 
   test("display form") {
     Fil‍eUtils.deleteLocalSPARL()
-    val uri = // 
-      //      "http://usefulinc.com/ns/doap#Project"
+    val uri = //      "http://usefulinc.com/ns/doap#Project"
       // "http://xmlns.com/foaf/0.1/Organization"
-      foaf.Person.toString()
-    //    val store =  RDFStoreObject.store
-    retrieveURI(ops.makeUri(uri), dataset)
-    val rawForm = createElem(uri, lang = "fr")
+      foaf.Person
+    retrieveURI( uri, dataset)
+    // to test possible values generation:
+    retrieveURI(ops.makeUri("http://jmvanel.free.fr/jmv.rdf#me"), dataset)
+    
+    val rawForm = createElem(uri.toString(), lang = "fr")
     val form = wrapWithHTML(rawForm)
     val file = "example.creation.form.html"
     Files.write(Paths.get(file), form.toString().getBytes);

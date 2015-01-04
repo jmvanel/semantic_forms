@@ -107,7 +107,8 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
         <datalist id="possibleValues">
           {
             for (value <- re.possibleValues) {
-              <option> { value } </option>
+              // TODO: HTML5 datalist differentiate value and option text?
+              <option label={ value._1.toString() } value={ value._2 }/>
             }
           }
         </datalist>

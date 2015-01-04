@@ -22,8 +22,9 @@ trait FormModule[NODE, URI <: NODE] {
       val fields: Seq[Entry],
       classs: URI = nullURI) {
     override def toString(): String = {
-      "FormSyntax:\n\t" +
-        fields.mkString("\n")
+      s"""FormSyntax:
+        subject: $subject
+      """ + fields.mkString("\n")
     }
   }
 
@@ -37,7 +38,7 @@ trait FormModule[NODE, URI <: NODE] {
   case class ResourceEntry(l: String, c: String,
       property: ObjectProperty, validator: ResourceValidator,
       value: URI = nullURI, alreadyInDatabase: Boolean = true,
-      possibleValues: Seq[URI] = Seq()) extends Entry(l, c) {
+      possibleValues: Seq[(URI, String)] = Seq()) extends Entry(l, c) {
     override def toString(): String = {
       super.toString + ", " + value
     }

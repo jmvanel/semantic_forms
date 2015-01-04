@@ -23,6 +23,8 @@ import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
 import org.w3.banana.LocalNameException
+import org.w3.banana.RDFStore
+import deductions.runtime.jena.RDFStoreObject
 
 object FormSyntaxFactory {
   /** vocabulary for form specifications */
@@ -31,9 +33,11 @@ object FormSyntaxFactory {
 
 /**
  * Factory for an abstract Form Syntax;
+ * NON transactional
  */
 class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: String = "en")(implicit val ops: RDFOps[Rdf],
-  val uriOps: URIOps[Rdf])
+  val uriOps: URIOps[Rdf] //  val rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET]
+  )
 
     extends // RDFOpsModule with 
     FormModule[Rdf#Node, Rdf#URI]
@@ -298,7 +302,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     values
   }
 
-  /*** from given Set of Rdf#Node , extract rdf#URI */
+  /** from given Set of Rdf#Node , extract rdf#URI */
   def extractURIs(nodes: Set[Rdf#Node]): Set[Rdf#URI] = {
     nodes.map {
       node =>

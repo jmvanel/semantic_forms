@@ -48,7 +48,8 @@ trait RDFCache extends RDFStoreLocalJena1Provider
 
   /**
    * retrieve URI from a graph named by itself;
-   * or download and store URI only if corresponding graph is empty
+   * or download and store URI only if corresponding graph is empty,
+   * with transaction
    * TODO according to timestamp retrieve from Store,
    * TODO save timestamp in another Dataset
    */

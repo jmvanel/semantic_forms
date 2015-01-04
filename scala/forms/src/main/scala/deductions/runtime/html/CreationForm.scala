@@ -22,21 +22,14 @@ trait CreationForm extends RDFOpsModule
   val nullURI: Rdf#URI = ops.URI("")
   var actionURI = "/save"
 
-  /** create an XHTML input form from a class URI */
+  /**
+   * create an XHTML input form from a class URI;
+   *  transactional
+   */
   def create(uri: String, lang: String = "en"): Try[Elem] = {
     import scala.concurrent.ExecutionContext.Implicits.global
-    //        val r0 = rdfStore.r(dataset, {
-    //    //    store.readTransaction {
-    //          val allNamedGraphs : Future[Rdf#Graph] = rdfStore.getGraph(makeUri("urn:x-arq:UnionGraph"))
-    //          val factory = new UnfilledFormFactory[Rdf](allNamedGraphs, preferedLanguage=lang)
-    //          val form = factory.createFormFromClass(URI(uri))
-    //          println(form)
-    //          val htmlForm = generateHTML(form, hrefPrefix="", editable=true, actionURI )
-    //          htmlForm
-    //        })
     val dataset = RDFStoreObject.dataset
     val r = rdfStore.r(dataset, {
-      //    store.readTransaction {
       for (
         allNamedGraphs <- rdfStore.getGraph(dataset, makeUri("urn:x-arq:UnionGraph"))
       ) yield {

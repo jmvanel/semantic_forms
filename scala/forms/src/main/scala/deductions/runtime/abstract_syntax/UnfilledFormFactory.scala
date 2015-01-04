@@ -12,6 +12,9 @@ import org.w3.banana.OWLPrefix
 import UnfilledFormFactory._
 import org.w3.banana.RDFPrefix
 import deductions.runtime.utils.RDFHelpers
+import org.w3.banana.RDFStore
+import deductions.runtime.jena.RDFStoreObject
+import scala.util.Try
 
 /**
  * @author j.m. Vanel
@@ -25,7 +28,8 @@ object UnfilledFormFactory {
 class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
   preferedLanguage: String = "en",
   instanceURIPrefix: String = defaultInstanceURIPrefix)(implicit ops: RDFOps[Rdf],
-    uriOps: URIOps[Rdf])
+    uriOps: URIOps[Rdf],
+    rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET])
     extends FormSyntaxFactory[Rdf](graph: Rdf#Graph, preferedLanguage) {
 
   val gr = graph

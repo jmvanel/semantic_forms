@@ -22,13 +22,11 @@ import org.w3.banana.RDFOps
 import org.w3.banana.RDF
 import deductions.runtime.abstract_syntax.FormModule
 
-/** Table View of a form */
-//trait TableView[Rdf <: RDF] extends TableViewModule[Rdf]
+/** Table View of a form; transactional */
 trait TableView extends TableViewModule
 
-/** Table View of a form */
+/** Table View of a form; transactional */
 trait TableViewModule
-    //trait TableViewModule[Rdf <: RDF]
     extends RDFModule
     with RDFCache
     //  with Form2HTML[Rdf#Node, Rdf#URI]
@@ -49,7 +47,6 @@ trait TableViewModule
       Logger.getRootLogger().info(s"After storeURI(makeUri($uri), store)")
     }
     val r = rdfStore.r(dataset, {
-      //    store.readTransaction {
       for (
         allNamedGraphs <- rdfStore.getGraph(dataset, makeUri("urn:x-arq:UnionGraph"))
       ) yield graf2form(allNamedGraphs, uri, hrefPrefix, blankNode, editable, actionURI, lang)

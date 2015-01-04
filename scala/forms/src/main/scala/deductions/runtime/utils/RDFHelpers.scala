@@ -6,8 +6,7 @@ import org.w3.banana.RDFOps
 import org.w3.banana.URIOps
 import org.w3.banana.RDF
 
-abstract class RDFHelpers[Rdf <: RDF] // extends RDFOpsModule
-(implicit ops: RDFOps[Rdf]) {
+abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf]) {
   val graph: Rdf#Graph
   val rdf = RDFPrefix[Rdf]
 
