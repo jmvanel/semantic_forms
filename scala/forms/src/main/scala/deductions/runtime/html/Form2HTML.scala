@@ -53,8 +53,8 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
       htmlForm
   }
 
-  def createHTMLField(field: fm#Entry, editable: Boolean,
-    hrefPrefix: String = "") = {
+  private def createHTMLField(field: fm#Entry, editable: Boolean,
+    hrefPrefix: String = ""): xml.NodeSeq = {
     field match {
       case l: LiteralEntry =>
         {
@@ -73,8 +73,9 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
         {
           if (editable) {
             <div>
-              <input class="form-control" value={ r.value.toString } name={ "RES-" + urlEncode(r.property) }/>
+              <input class="form-control" value={ r.value.toString } name={ "RES-" + urlEncode(r.property) } list="possibleValues"/>
               {
+                formatPossibleValues(field)
                 if (r.alreadyInDatabase) {
                   { println("r.alreadyInDatabase " + r) }
                   <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden"/>
@@ -96,6 +97,21 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
               r.getId
             }</a>
         }
+      case _ => <p>Should not happen! createHTMLField({ field })</p>
+    }
+  }
+
+  private def formatPossibleValues(field: fm#Entry): Elem = {
+    field match {
+      case re: ResourceEntry =>
+        <datalist id="possibleValues">
+          {
+            for (value <- re.possibleValues) {
+              <option> { value } </option>
+            }
+          }
+        </datalist>
+      case _ => <span/>
     }
   }
 }

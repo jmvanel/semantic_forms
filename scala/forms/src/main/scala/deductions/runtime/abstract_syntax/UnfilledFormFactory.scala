@@ -11,6 +11,7 @@ import org.w3.banana.RDFDSL
 import org.w3.banana.OWLPrefix
 import UnfilledFormFactory._
 import org.w3.banana.RDFPrefix
+import deductions.runtime.utils.RDFHelpers
 
 /**
  * @author j.m. Vanel
@@ -26,6 +27,9 @@ class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
   instanceURIPrefix: String = defaultInstanceURIPrefix)(implicit ops: RDFOps[Rdf],
     uriOps: URIOps[Rdf])
     extends FormSyntaxFactory[Rdf](graph: Rdf#Graph, preferedLanguage) {
+
+  val gr = graph
+  val rdfh = new RDFHelpers[Rdf] { val graph = gr }
 
   /**
    * create Form from a class URI,
@@ -57,7 +61,7 @@ class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
         val props = oQuery(f, formPrefix("showProperties"))
         for (p <- props) { println("showProperties " + p) }
         val p = props.headOption
-        nodeSeqToURISeq(rdfListToSeq(p))
+        rdfh.nodeSeqToURISeq(rdfh.rdfListToSeq(p))
     }
   }
 
@@ -66,24 +70,24 @@ class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
     r
   }
 
-  /** recursively iterate on the Rdf#Node through rdf:first and rdf:rest */
-  def rdfListToSeq(listOp: Option[Rdf#Node], result: Seq[Rdf#Node] = Seq()): Seq[Rdf#Node] = {
-    listOp match {
-      case None => result
-      case Some(list) =>
-        list match {
-          case rdf.nil => result
-          case _ =>
-            val first = ops.getObjects(graph, list, rdf.first)
-            val rest = ops.getObjects(graph, list, rdf.rest)
-            result ++ first ++ rdfListToSeq(rest.headOption, result)
-        }
-    }
-  }
-
-  def nodeSeqToURISeq(s: Seq[Rdf#Node]): Seq[Rdf#URI] = {
-    s.collect {
-      case uri if (isURI(uri)) => ops.makeUri(uri.toString)
-    }
-  }
+  //  /** recursively iterate on the Rdf#Node through rdf:first and rdf:rest */
+  //  def rdfListToSeq(listOp: Option[Rdf#Node], result: Seq[Rdf#Node] = Seq()): Seq[Rdf#Node] = {
+  //    listOp match {
+  //      case None => result
+  //      case Some(list) =>
+  //        list match {
+  //          case rdf.nil => result
+  //          case _ =>
+  //            val first = ops.getObjects(graph, list, rdf.first)
+  //            val rest = ops.getObjects(graph, list, rdf.rest)
+  //            result ++ first ++ rdfListToSeq(rest.headOption, result)
+  //        }
+  //    }
+  //  }
+  //
+  //  def nodeSeqToURISeq(s: Seq[Rdf#Node]): Seq[Rdf#URI] = {
+  //    s.collect {
+  //      case uri if (isURI(uri)) => ops.makeUri(uri.toString)
+  //    }
+  //  }
 }

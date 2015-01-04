@@ -15,8 +15,6 @@ trait RangeInference[Rdf <: RDF] {
   ): Entry = {
     val owl = OWLPrefix[Rdf]
     val gr = graph
-    //    class RDFH extends RDFHelpers2[Rdf] { val graph = gr }
-    //    val rdfh: RDFHelpers2[Rdf] = new RDFH
     val rdfh = new RDFHelpers[Rdf] { val graph = gr }
 
     /* modify entry to populate possibleValues,
