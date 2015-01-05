@@ -28,12 +28,12 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
       val possibleValues = mutable.ArrayBuffer[(Rdf#URI, String)]()
       for (range <- ranges) {
         val enumerated = ops.getObjects(graph, range, owl.oneOf)
-        fillPossibleValues(enumerated, possibleValues)
+        fillPossibleValuesFromList(enumerated, possibleValues)
       }
       entry.copy(possibleValues = possibleValues)
     }
 
-    def fillPossibleValues(enumerated: Iterable[Rdf#Node],
+    def fillPossibleValuesFromList(enumerated: Iterable[Rdf#Node],
       possibleValues: mutable.ArrayBuffer[(Rdf#URI, String)]) =
       for (enum <- enumerated)
         ops.foldNode(enum)(
@@ -50,24 +50,39 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
       val possibleValues = mutable.ArrayBuffer[(Rdf#URI, String)]()
 
       // debug
-      //      implicit val ops = this.ops
-      //      val foaf = FOAFPrefix[Rdf]()
-      //      val triples = ops.find(graph, ANY, rdf.typ, foaf.Person)
       val personURI = ops.URI("http://xmlns.com/foaf/0.1/Person")
       if (ranges.contains(personURI)) {
         println(s"populateFromInstances: entry $entry")
         val triples = ops.find(graph, ANY, rdf.typ, personURI)
         println(s"populateFromInstances: triples size ${triples.size}")
-        for (t <- triples) println(t)
+        for (t <- triples) println(t._1)
       }
       for (range <- ranges) {
         // TODO also take in account subClassOf inference
         // TODO limit number of possible values; later implement Comet on demand access to possible Values
         val enumerated = ops.getSubjects(graph, rdf.typ, range)
+        // debug
+        if (range == personURI) {
+          println(s"populateFromInstances: enumerated ${enumerated.mkString("; ")}")
+        }
         fillPossibleValues(enumerated, possibleValues)
+        // debug
+        if (range == personURI)
+          println(s"possibleValues $possibleValues")
       }
       entry.copy(possibleValues = possibleValues)
     }
+
+    def fillPossibleValues(enumerated: Iterable[Rdf#Node],
+      possibleValues: mutable.ArrayBuffer[(Rdf#URI, String)]) =
+      for (enum <- enumerated)
+        ops.foldNode(enum)(
+          uri => {
+            possibleValues.append(
+              (uri, instanceLabel(uri))
+            )
+          },
+          x => (), x => ())
 
     //    val res = rdfStore.r(RDFStoreObject.dataset, {
     entry match {

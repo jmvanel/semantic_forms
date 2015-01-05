@@ -239,7 +239,6 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
               case Some(language) =>
                 if (language == preferedLanguage) preferedLanguageValue = raw
                 else if (language == "en")
-                  //              case Some("en") => 
                   enValue = raw
               case None => noLanguageValue = raw
               case _ =>

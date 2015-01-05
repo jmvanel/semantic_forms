@@ -3,8 +3,8 @@ package deductions.runtime.html
 import scala.xml.Elem
 import deductions.runtime.abstract_syntax.FormModule
 import java.net.URLEncoder
-
 import Form2HTML._
+import scala.xml.NodeSeq
 
 /**
  * different modes: display or edit;
@@ -75,11 +75,12 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
             <div>
               <input class="form-control" value={ r.value.toString } name={ "RES-" + urlEncode(r.property) } list="possibleValues"/>
               {
-                formatPossibleValues(field)
-                if (r.alreadyInDatabase) {
-                  { println("r.alreadyInDatabase " + r) }
-                  <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden"/>
-                }
+                Seq(
+                  formatPossibleValues(field),
+                  if (r.alreadyInDatabase) {
+                    { println("r.alreadyInDatabase " + r) }
+                    <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden"/>
+                  })
               }
             </div>
           } else
@@ -106,10 +107,8 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
       case re: ResourceEntry =>
         <datalist id="possibleValues">
           {
-            for (value <- re.possibleValues) {
-              // TODO: HTML5 datalist differentiate value and option text?
-              <option label={ value._1.toString() } value={ value._2 }/>
-            }
+            for (value <- re.possibleValues) yield // TODO: HTML5 datalist differentiate value and option text?
+            <option label={ value._1.toString() } value={ value._2 }/>
           }
         </datalist>
       case _ => <span/>
