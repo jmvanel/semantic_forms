@@ -36,8 +36,7 @@ object FormSyntaxFactory {
  * NON transactional
  */
 class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: String = "en")(implicit val ops: RDFOps[Rdf],
-  val uriOps: URIOps[Rdf] //  val rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET]
-  )
+  val uriOps: URIOps[Rdf])
 
     extends // RDFOpsModule with 
     FormModule[Rdf#Node, Rdf#URI]
@@ -53,32 +52,6 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
   val owlThing = owl.prefixIri + "Thing"
   val rdf = RDFPrefix[Rdf]
   import FormSyntaxFactory._
-
-  // removed <<<<<<<<<<<<<<<<<<<<<<
-  //  private class PrefixBuilder2 // [Rdf <: RDF]
-  //  (
-  //    val prefixName: String,
-  //    val prefixIri: String)
-  //      //(implicit
-  //      //  ops: RDFOps[Rdf]
-  //      //)
-  //      extends Prefix[Rdf] {
-  //    import ops._
-  //    override def toString: String = "Prefix(" + prefixName + ")"
-  //    def apply(value: String): Rdf#URI = makeUri(prefixIri + value)
-  //    def unapply(iri: Rdf#URI): Option[String] = {
-  //      val uriString = fromUri(iri)
-  //      if (uriString.startsWith(prefixIri))
-  //        Some(uriString.substring(prefixIri.length))
-  //      else
-  //        None
-  //    }
-  //    def getLocalName(iri: Rdf#URI): Try[String] =
-  //      unapply(iri) match {
-  //        case None => Failure(LocalNameException(this.toString + " couldn't extract localname for " + iri.toString))
-  //        case Some(localname) => Success(localname)
-  //      }
-  //  }
 
   val formPrefix: Prefix[Rdf] = Prefix /*[Rdf]*/ ("form", formVocabPrefix)
 
@@ -165,7 +138,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
       def resourceEntry = {
         ops.foldNode(object_)(
           object_ => ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_,
-            alreadyInDatabase = true),
+            alreadyInDatabase = true, valueLabel = instanceLabel(object_)),
           object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_),
           object_ => LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
             getStringOrElse(object_, "..empty.."))

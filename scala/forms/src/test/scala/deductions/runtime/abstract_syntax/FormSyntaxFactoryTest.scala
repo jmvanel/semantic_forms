@@ -24,7 +24,8 @@ class FormSyntaxFactoryTestJena extends FunSuite
         def matches(a: Any): Boolean = {
           val s = a.toString
           s.contains("Alexandre") &&
-            s.contains("name")
+            s.contains("name") &&
+            s.contains("Henry Story")
         }
         def describeTo(x$1: org.hamcrest.Description): Unit = {}
       })
@@ -55,8 +56,9 @@ trait FormSyntaxFactoryTest // [Rdf <: RDF]
     println((graph.triples).mkString("\n"))
     val form = fact.createForm(
       URI("betehess"),
-      Seq(foaf.title,
-        foaf.name), URI(""))
+      Seq( foaf.title,
+        foaf.name, foaf.knows ),
+      URI(""))
     form
   }
 }

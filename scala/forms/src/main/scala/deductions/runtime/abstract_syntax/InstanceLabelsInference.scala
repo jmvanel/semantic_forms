@@ -17,7 +17,6 @@ trait InstanceLabelsInference[Rdf <: RDF] {
   self: FormSyntaxFactory[Rdf] =>
 
   import ops._
-  //  val rdfs = RDFSPrefix[Rdf]
   val foaf = FOAFPrefix[Rdf]
 
   def instanceLabels(list: Seq[Rdf#URI]): Seq[String] = list.map(instanceLabel)

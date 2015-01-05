@@ -85,7 +85,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
             </div>
           } else
             <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }>{
-              r.value.toString
+              r.valueLabel
             }</a>
         }
       case r: BlankNodeEntry =>

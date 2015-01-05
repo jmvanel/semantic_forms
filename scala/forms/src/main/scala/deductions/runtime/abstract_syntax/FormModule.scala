@@ -36,11 +36,13 @@ trait FormModule[NODE, URI <: NODE] {
     }
   }
   case class ResourceEntry(l: String, c: String,
-      property: ObjectProperty, validator: ResourceValidator,
-      value: URI = nullURI, alreadyInDatabase: Boolean = true,
-      possibleValues: Seq[(URI, String)] = Seq()) extends Entry(l, c) {
+    property: ObjectProperty, validator: ResourceValidator,
+    value: URI = nullURI, alreadyInDatabase: Boolean = true,
+    possibleValues: Seq[(URI, String)] = Seq(),
+    valueLabel: String = "")
+      extends Entry(l, c) {
     override def toString(): String = {
-      super.toString + ", " + value
+      super.toString + s""" : <$value>, "$valueLabel" """
     }
   }
   case class BlankNodeEntry(l: String, c: String,
