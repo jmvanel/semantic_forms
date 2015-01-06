@@ -73,7 +73,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
         {
           if (editable) {
             <div>
-              <input class="form-control" value={ r.value.toString } name={ "RES-" + urlEncode(r.property) } list="possibleValues"/>
+              <input class="form-control" value={ r.value.toString } name={ "RES-" + urlEncode(r.property) } list={ makeHTMLId(r) }/>
               {
                 Seq(
                   formatPossibleValues(field),
@@ -102,12 +102,19 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
     }
   }
 
+  private def makeHTMLId(re: Entry) = {
+    re match {
+      case re: ResourceEntry => "possibleValues-" + re.property + "--" + re.value
+      case lit: LiteralEntry => "possibleValues-" + lit.property + "--" + lit.value
+      case bn: BlankNodeEntry => "possibleValues-" + bn.property + "--" + bn.value
+    }
+  }
   private def formatPossibleValues(field: fm#Entry): Elem = {
     field match {
       case re: ResourceEntry =>
-        <datalist id="possibleValues">
+        <datalist id={ makeHTMLId(re) }>
           {
-            for (value <- re.possibleValues) yield // TODO: HTML5 datalist differentiate value and option text?
+            for (value <- re.possibleValues) yield // TODO: does HTML5 datalist differentiate value and option text?
             <option label={ value._1.toString() } value={ value._2 }/>
           }
         </datalist>

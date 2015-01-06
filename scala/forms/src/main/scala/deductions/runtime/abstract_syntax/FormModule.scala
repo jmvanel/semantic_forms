@@ -29,6 +29,7 @@ trait FormModule[NODE, URI <: NODE] {
   }
 
   val nullURI: URI
+  /** TODO somehow factor out value: Any ? */
   sealed abstract class Entry(val label: String, val comment: String,
       mandatory: Boolean = false) {
     override def toString(): String = {
