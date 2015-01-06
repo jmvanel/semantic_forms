@@ -25,20 +25,23 @@ class TestCreationForm extends FunSuite with CreationForm {
     retrieveURI(ops.makeUri("http://jmvanel.free.fr/jmv.rdf#me"), dataset)
     
     val rawForm = createElem(uri.toString(), lang = "fr")
-    val form = wrapWithHTML(rawForm)
+    val form = TestCreationForm.wrapWithHTML(rawForm)
     val file = "example.creation.form.html"
     Files.write(Paths.get(file), form.toString().getBytes);
     println(s"file created $file")
 
     assert(rawForm.toString().contains("homepage"))
   }
+}
 
+object TestCreationForm {
   def wrapWithHTML(e: Elem): Elem =
     <html>
       <head>
         <style type="text/css">
           .resize {{ resize: both; width: 100%; height: 100%; }}
-      .overflow {{ overflow: auto; width: 100%; height: 100%; }}
+          .overflow {{ overflow: auto; width: 100%; height: 100%; }}
+					.form-control {{ width:100% }}
         </style>
       </head>
       <body>{ e }</body>

@@ -88,8 +88,7 @@ trait TableViewModule
     )
     println("form:\n" + form)
     val htmlForm = generateHTML(
-      form //        .asInstanceOf[FormModule[Rdf#Node,Rdf#URI]#FormSyntax[Rdf#Node,Rdf#URI]]
-      , hrefPrefix, editable, actionURI)
+      form, hrefPrefix, editable, actionURI)
     htmlForm
   }
 

@@ -75,6 +75,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
             <div>
               <input class="form-control" value={ r.value.toString } name={ "RES-" + urlEncode(r.property) } list={ makeHTMLId(r) }/>
               {
+                /* TODO: send a value which is different from the displayed text */
                 Seq(
                   formatPossibleValues(field),
                   if (r.alreadyInDatabase) {
@@ -103,19 +104,21 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
   }
 
   private def makeHTMLId(re: Entry) = {
-    re match {
-      case re: ResourceEntry => "possibleValues-" + re.property + "--" + re.value
-      case lit: LiteralEntry => "possibleValues-" + lit.property + "--" + lit.value
-      case bn: BlankNodeEntry => "possibleValues-" + bn.property + "--" + bn.value
-    }
+    "possibleValues-" + (
+      re match {
+        case re: ResourceEntry => (re.property + "--" + re.value).hashCode().toString()
+        case lit: LiteralEntry => (lit.property + "--" + lit.value).hashCode().toString()
+        case bn: BlankNodeEntry => (bn.property + "--" + bn.value).hashCode().toString()
+      })
   }
   private def formatPossibleValues(field: fm#Entry): Elem = {
     field match {
       case re: ResourceEntry =>
         <datalist id={ makeHTMLId(re) }>
           {
-            for (value <- re.possibleValues) yield // TODO: does HTML5 datalist differentiate value and option text?
-            <option label={ value._1.toString() } value={ value._2 }/>
+            for (value <- re.possibleValues) yield <option data-uri={ value._1.toString() } data-label={ value._2 }>
+                                                     { value._1 }
+                                                   </option>
           }
         </datalist>
       case _ => <span/>
