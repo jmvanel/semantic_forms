@@ -128,9 +128,9 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     def makeBN(label: String, comment: String,
       property: ObjectProperty, validator: ResourceValidator,
       value: Rdf#BNode,
-      typ:Rdf#URI=nullURI) = {
+      typ: Rdf#URI = nullURI) = {
       new BlankNodeEntry(label, comment, prop, ResourceValidator(ranges), value,
-          typ=typ) {
+        typ = typ) {
         override def getId: String = ops.fromBNode(value.asInstanceOf[Rdf#BNode])
       }
     }
@@ -141,18 +141,17 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
 
       def literalEntry = LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
         getStringOrElse(object_, "..empty.."),
-        typ=rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI) )
+        typ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI))
       def resourceEntry = {
         ops.foldNode(object_)(
           object_ => ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_,
             alreadyInDatabase = true, valueLabel = instanceLabel(object_),
-            typ=rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI)),
-          object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_
-        		   , typ=rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI) 
-              ),
+            typ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI)),
+          object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_, typ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI)
+          ),
           object_ => LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
             getStringOrElse(object_, "..empty.."),
-            typ=rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI))
+            typ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI))
         )
       }
 

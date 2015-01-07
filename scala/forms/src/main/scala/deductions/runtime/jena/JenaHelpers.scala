@@ -34,10 +34,11 @@ trait JenaHelpers extends JenaModule {
   type Store = RDFStoreObject.DATASET
 
   /**
-   * store URI in a named graph, with transaction,
+   * store URI in a named graph,
+   * with transaction,
    * using Jena's RDFDataMgr
-   * (use content-type or else file extension)
    * with Jena Riot for smart reading of any format,
+   * (use content-type or else file extension)
    * cf https://github.com/w3c/banana-rdf/issues/105
    */
   def storeURI(uri: Rdf#URI, graphUri: Rdf#URI, dataset: Store): Rdf#Graph = {
@@ -61,7 +62,6 @@ trait JenaHelpers extends JenaModule {
     rdfStore.appendToGraph(dataset, uri, graph)
     Logger.getRootLogger().info(s"storeURI uri $uri : stored")
     graph
-    //      }
   }
 
 }

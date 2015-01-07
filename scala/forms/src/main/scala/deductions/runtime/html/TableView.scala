@@ -44,7 +44,7 @@ trait TableViewModule
     val dataset = RDFStoreObject.dataset
     if (blankNode != "true") {
       retrieveURI(makeUri(uri), dataset)
-      Logger.getRootLogger().info(s"After storeURI(makeUri($uri), store)")
+      Logger.getRootLogger().info(s"After retrieveURI(makeUri($uri), store)")
     }
     val r = rdfStore.r(dataset, {
       for (

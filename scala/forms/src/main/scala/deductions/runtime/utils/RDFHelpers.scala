@@ -6,9 +6,10 @@ import org.w3.banana.RDFOps
 import org.w3.banana.URIOps
 import org.w3.banana.RDF
 
-/** use with :
+/**
+ * use with :
  *  val rdfh = new RDFHelpers[Rdf] { val graph = gr }
- *  */
+ */
 abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf]) {
   val graph: Rdf#Graph
   val rdf = RDFPrefix[Rdf]
