@@ -6,6 +6,9 @@ import org.w3.banana.RDFOps
 import org.w3.banana.URIOps
 import org.w3.banana.RDF
 
+/** use with :
+ *  val rdfh = new RDFHelpers[Rdf] { val graph = gr }
+ *  */
 abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf]) {
   val graph: Rdf#Graph
   val rdf = RDFPrefix[Rdf]
@@ -25,10 +28,12 @@ abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf]) {
     }
   }
 
-  def nodeSeqToURISeq(s: Seq[Rdf#Node]): Seq[Rdf#URI] = {
-    s.collect {
+  def nodeSeqToURISeq(s: Iterable[Rdf#Node]): Seq[Rdf#URI] = {
+    val r = s.collect {
       case uri if (isURI(uri)) => ops.makeUri(uri.toString)
     }
+    val seq = r.to
+    seq
   }
 
   def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None

@@ -31,7 +31,8 @@ trait FormModule[NODE, URI <: NODE] {
   val nullURI: URI
   /** TODO somehow factor out value: Any ? */
   sealed abstract class Entry(val label: String, val comment: String,
-      mandatory: Boolean = false) {
+      val mandatory: Boolean = false,
+      val type_ :URI=nullURI) {
     override def toString(): String = {
       s""" "$label", "$comment" """
     }
@@ -40,15 +41,16 @@ trait FormModule[NODE, URI <: NODE] {
     property: ObjectProperty, validator: ResourceValidator,
     value: URI = nullURI, alreadyInDatabase: Boolean = true,
     possibleValues: Seq[(URI, String)] = Seq(),
-    valueLabel: String = "")
-      extends Entry(l, c) {
+    valueLabel: String = "",
+    typ:URI=nullURI)
+      extends Entry(l, c, type_ =typ) {
     override def toString(): String = {
       super.toString + s""" : <$value>, "$valueLabel" """
     }
   }
   case class BlankNodeEntry(l: String, c: String,
       property: ObjectProperty, validator: ResourceValidator,
-      value: NODE) extends Entry(l, c) {
+      value: NODE, typ:URI=nullURI) extends Entry(l, c, type_ =typ) {
     override def toString(): String = {
       super.toString + ", " + value
     }
@@ -56,7 +58,8 @@ trait FormModule[NODE, URI <: NODE] {
   }
   case class LiteralEntry(l: String, c: String,
       property: DatatypeProperty, validator: DatatypeValidator,
-      value: String = "", widgetType: WidgetType = Text) extends Entry(l, c) {
+      value: String = "", widgetType: WidgetType = Text,
+      typ:URI=nullURI ) extends Entry(l, c, type_ =typ) {
     override def toString(): String = {
       super.toString + s""" := "$value" """
     }

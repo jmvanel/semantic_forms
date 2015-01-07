@@ -59,8 +59,9 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
       case l: LiteralEntry =>
         {
           if (editable) {
-            <input class="form-control" value={ l.value } name={ "LIT-" + urlEncode(l.property) }/>
-            <input value={ l.value } name={ "ORIG-LIT-" + urlEncode(l.property) } type="hidden"/>
+            <input class="form-control" value={ l.value } name={ "LIT-" + urlEncode(l.property) }
+              data-type={ l.type_.toString() } />
+            <input value={ l.value } name={ "ORIG-LIT-" + urlEncode(l.property) } type="hidden" />
           } else {
             <div>{ l.value }</div>
           }
@@ -73,9 +74,12 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
         {
           if (editable) {
             <div>
-              <input class="form-control" value={ r.value.toString } name={ "RES-" + urlEncode(r.property) } list={ makeHTMLId(r) }/>
+              <input class="form-control" value={ r.value.toString }
+              name={ "RES-" + urlEncode(r.property) } list={ makeHTMLId(r) }
+              data-type={ r.typ.toString() }
+              />
               {
-                /* TODO: send a value which is different from the displayed text */
+                /* TODO: send an URI value which is different from the displayed text */
                 Seq(
                   formatPossibleValues(field),
                   if (r.alreadyInDatabase) {
@@ -92,7 +96,8 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
       case r: BlankNodeEntry =>
         {
           if (editable) {
-            <input class="form-control" value={ r.value.toString } name={ "BLA-" + urlEncode(r.property) }/>
+            <input class="form-control" value={ r.value.toString } name={ "BLA-" + urlEncode(r.property) }
+            data-type={ r.type_.toString() } />
             <input value={ r.value.toString } name={ "ORIG-BLA-" + urlEncode(r.property) } type="hidden"/>
           } else
             <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString, true) }>{
