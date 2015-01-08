@@ -1,7 +1,8 @@
 @prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#> .
-
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix av: <http://www.assemblee-virtuelle.org/ontologies/v1.owl#> .
 
 # list of form specifications for various classes in common vocabularies
 
 foaf: form:ontologyHasFormSpecification <foaf.form.ttl> .
+av: form:ontologyHasFormSpecification <https://raw.githubusercontent.com/assemblee-virtuelle/pair/master/form.ttl> .
