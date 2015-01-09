@@ -37,7 +37,9 @@ trait FieldsInference[Rdf <: RDF] {
           ops.withoutFragment(classs) + "#"
         case None =>
           val i = classs.toString().lastIndexOf("/")
-          classs.toString().substring(0, i)
+          if (i > 0)
+            classs.toString().substring(0, i)
+          else classs.toString()
       }
     }
 

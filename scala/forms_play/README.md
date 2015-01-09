@@ -4,7 +4,8 @@ Play! framework implementations
 # Introduction
 Here is a web application with Play! framework around the [form generator](../forms/README.md).
 
-With these features :
+The features are listed here for convenience, but from now on, we manage features on 
+[Github issues](https://github.com/jmvanel/semantic_forms/issues).
 
 - 1. a SPARQL 1.1 server available - DONE
 - 2. user enters an URI and form view appears with the data from Internet - DONE
@@ -17,7 +18,7 @@ With these features :
 - 6. creation of a new URI infering form from its class, as DomainApplication does - DONE
 - 7. use HTTP HEAD to distinguish RDF content types and others, and have different hyperlinks and styles for HTML, RDF, and image URL's - WIP
 - 7.1 have icons to distinguish content types, to display near hyperlinks for HTML, RDF, image, etc URL's
-- 8. datatype validation : integer, date, telephone, .. ( by JavaScript or Scala.JS ) - WIP
+- 8. datatype validation : integer, date, telephone, .. ( by JavaScript or Scala.JS ) - WIP - in issues
 - 9. creating or editing URI's : propose URI's in relation with rdfs:domain class value; by JavaScript; could use the timestamps to order the URI's
 - 10 simple vocab' to specify properties by class in form - DONE
 - 11 button to remove a triple; by JavaScript

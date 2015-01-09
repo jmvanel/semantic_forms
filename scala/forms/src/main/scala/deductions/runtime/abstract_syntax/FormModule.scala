@@ -45,7 +45,7 @@ trait FormModule[NODE, URI <: NODE] {
     typ: URI = nullURI)
       extends Entry(l, c, type_ = typ) {
     override def toString(): String = {
-      super.toString + s""" : <$value>, "$valueLabel" """
+      super.toString + s""" : <$value>, "$valueLabel" possibleValues count:${possibleValues.size} """
     }
   }
   case class BlankNodeEntry(l: String, c: String,
