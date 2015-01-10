@@ -270,7 +270,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     }
   }
 
-  /** Query for objects in triple, given subject & predicate */
+  /** Query for objects in triples, given subject & predicate */
   def oQuery(subject: Rdf#Node, predicate: Rdf#URI): Set[Rdf#Node] = {
     val pg = PointedGraph[Rdf](subject, graph)
     val objects = pg / predicate

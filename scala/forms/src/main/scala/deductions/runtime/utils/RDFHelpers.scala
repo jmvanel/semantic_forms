@@ -5,6 +5,8 @@ import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFOps
 import org.w3.banana.URIOps
 import org.w3.banana.RDF
+import org.w3.banana.PointedGraph
+import org.w3.banana.diesel._
 
 /**
  * use with :
@@ -39,4 +41,10 @@ abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf]) {
 
   def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
 
+    /** Query for objects in triples, given subject & predicate */
+  def objectsQuery(subject: Rdf#Node, predicate: Rdf#URI): Set[Rdf#Node] = {
+    val pg = PointedGraph[Rdf](subject, graph)
+    val objects = pg / predicate
+    objects.map(_.pointer).toSet
+  }
 }

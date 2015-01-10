@@ -77,4 +77,5 @@ trait FormModule[NODE, URI <: NODE] {
   object Checkbox extends WidgetType
   object Choice extends WidgetType
   object Collection extends WidgetType
+  object DBPediaLookup extends WidgetType
 }
