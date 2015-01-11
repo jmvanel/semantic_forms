@@ -22,10 +22,10 @@ import org.w3.banana.RDFOps
 import org.w3.banana.RDF
 import deductions.runtime.abstract_syntax.FormModule
 
-/** Table View of a form; transactional */
+/** Form for a subject URI with existing triples; transactional */
 trait TableView extends TableViewModule
 
-/** Table View of a form; transactional */
+/** Form; transactional */
 trait TableViewModule
     extends RDFModule
     with RDFCache
@@ -36,7 +36,7 @@ trait TableViewModule
   val nullURI: Rdf#URI = ops.URI("")
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  /** create a form for given uri with background knowledge in RDFStoreObject.store  */
+  /** create a form for given URI with background knowledge in RDFStoreObject.store  */
   def htmlForm(uri: String, hrefPrefix: String = "", blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",

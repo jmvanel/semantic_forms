@@ -12,6 +12,7 @@ import scala.xml.NodeSeq
  */
 trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
   type fm = FormModule[NODE, URI]
+
   def generateHTML(form: fm#FormSyntax[NODE, URI],
     hrefPrefix: String = "",
     editable: Boolean = false,
@@ -73,10 +74,10 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
         {
           if (editable) {
             <div>
-              <input class="form-control" value={ r.value.toString } name={ "RES-" + urlEncode(r.property) } list={ makeHTMLId(r) } data-type={ r.typ.toString() }/>
+              <input class="form-control" value={ r.value.toString } name={ makeHTMLId(r) } list={ makeHTMLIdForDatalist(r) } data-type={ r.type_.toString() }/>
               {
-                /* TODO: send an URI value which is different from the displayed text */
                 Seq(
+                  addDBPediaLookup(r),
                   formatPossibleValues(field),
                   if (r.alreadyInDatabase) {
                     { println("r.alreadyInDatabase " + r) }
@@ -104,6 +105,9 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
   }
 
   private def makeHTMLId(re: Entry) = {
+    "RES-" + urlEncode(re.property)
+  }
+  private def makeHTMLIdForDatalist(re: Entry) = {
     "possibleValues-" + (
       re match {
         case re: ResourceEntry => (re.property + "--" + re.value).hashCode().toString()
@@ -114,7 +118,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
   private def formatPossibleValues(field: fm#Entry): Elem = {
     field match {
       case re: ResourceEntry =>
-        <datalist id={ makeHTMLId(re) }>
+        <datalist id={ makeHTMLIdForDatalist(re) }>
           {
             for (value <- re.possibleValues) yield <option data-uri={ value._1.toString() } data-label={ value._2 }>
                                                      { value._1 }
@@ -123,6 +127,12 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
         </datalist>
       case _ => <span/>
     }
+  }
+  def addDBPediaLookup(r: ResourceEntry): Elem = {
+    <script>
+      installDbpediaComplete( "{ makeHTMLId(r) }
+      " );
+    </script>
   }
 }
 

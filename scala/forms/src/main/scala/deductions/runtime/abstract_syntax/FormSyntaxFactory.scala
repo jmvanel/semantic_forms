@@ -34,13 +34,13 @@ object FormSyntaxFactory {
 
 /**
  * Factory for an abstract Form Syntax;
+ * the main class here;
  * NON transactional
  */
 class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: String = "en")(implicit val ops: RDFOps[Rdf],
   val uriOps: URIOps[Rdf])
 
-    extends // RDFOpsModule with 
-    FormModule[Rdf#Node, Rdf#URI]
+    extends FormModule[Rdf#Node, Rdf#URI]
     with FieldsInference[Rdf]
     with RangeInference[Rdf] {
 
@@ -53,20 +53,19 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
   val owlThing = owl.prefixIri + "Thing"
   val rdf = RDFPrefix[Rdf]
   import FormSyntaxFactory._
-
-  val formPrefix: Prefix[Rdf] = Prefix /*[Rdf]*/ ("form", formVocabPrefix)
+  val formPrefix: Prefix[Rdf] = Prefix("form", formVocabPrefix)
 
   println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
 
   /** create Form from an instance (subject) URI */
   def createForm(subject: Rdf#Node,
     editable: Boolean = false): FormSyntax[Rdf#Node, Rdf#URI] = {
-    val props = fieldsFromSubject(subject, graph)
-    val fromClass = if (editable) {
-      val classs = classFromSubject(subject) // TODO several classes
+    val propsFromSubject = fieldsFromSubject(subject, graph)
+    val classs = classFromSubject(subject) // TODO several classes
+    val propsFromClass = if (editable) {
       fieldsFromClass(classs, graph)
     } else Seq()
-    createForm(subject, props ++ fromClass, nullURI)
+    createForm(subject, propsFromSubject ++ propsFromClass, classs)
   }
 
   /**
@@ -93,12 +92,39 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     }
     val fields = entries.flatMap { s => s }
     val fields2 = addTypeTriple(subject, classs, fields)
-    FormSyntax(subject, fields2, classs)
+    val formSyntax = FormSyntax(subject, fields2, classs)
+    updateFormForClass(formSyntax)
+  }
+
+  type AbstractForm = FormSyntax[Rdf#Node, Rdf#URI]
+  val formConfiguration = new FormConfigurationFactory[Rdf](graph)
+  /**
+   * update given Form,
+   * looking up for Form Configuration within RDF graph in this class
+   * e g in :
+   *  <pre>
+   *  <topic_interest>
+   * :fieldAppliesToForm <personForm> ;
+   * :fieldAppliesToProperty foaf:topic_interest ;
+   * :widgetClass form:DBPediaLookup .
+   *  <pre>
+   */
+  def updateFormForClass(formSyntax: AbstractForm): AbstractForm = {
+    val updatedFields = for (field <- formSyntax.fields) yield {
+      val fieldSpecs = formConfiguration.lookFieldSpecInConfiguration(field.property)
+      fieldSpecs.map {
+        fieldSpec =>
+          val triples = find(graph, fieldSpec.subject, ANY, ANY)
+          for (t <- triples)
+            field.addTriple(t.subject, t.predicate, t.objectt)
+      }
+    }
+    formSyntax
   }
 
   def addTypeTriple(subject: Rdf#Node, classs: Rdf#URI,
     fields: Seq[Entry]): Seq[Entry] = {
-    val formEntry = ResourceEntry(
+    val formEntry = new ResourceEntry(
       // TODO not I18N:
       "type", "class",
       rdf.typ, ResourceValidator(Set(owl.Class)), classs,
@@ -130,7 +156,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
       value: Rdf#BNode,
       typ: Rdf#URI = nullURI) = {
       new BlankNodeEntry(label, comment, prop, ResourceValidator(ranges), value,
-        typ = typ) {
+        type_ = typ) {
         override def getId: String = ops.fromBNode(value.asInstanceOf[Rdf#BNode])
       }
     }
@@ -139,19 +165,19 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
       val gr = graph
       val rdfh = new RDFHelpers[Rdf] { val graph = gr }
 
-      def literalEntry = LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
+      def literalEntry = new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
         getStringOrElse(object_, "..empty.."),
-        typ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI))
+        type_ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI))
       def resourceEntry = {
         ops.foldNode(object_)(
-          object_ => ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_,
+          object_ => new ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_,
             alreadyInDatabase = true, valueLabel = instanceLabel(object_),
-            typ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI)),
+            type_ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI)),
           object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_, typ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI)
           ),
-          object_ => LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
+          object_ => new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
             getStringOrElse(object_, "..empty.."),
-            typ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI))
+            type_ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI))
         )
       }
 
@@ -270,7 +296,10 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     }
   }
 
-  /** Query for objects in triples, given subject & predicate */
+  /**
+   * Query for objects in triples, given subject & predicate
+   *  TODO move to class RDFHelpers
+   */
   def oQuery(subject: Rdf#Node, predicate: Rdf#URI): Set[Rdf#Node] = {
     val pg = PointedGraph[Rdf](subject, graph)
     val objects = pg / predicate

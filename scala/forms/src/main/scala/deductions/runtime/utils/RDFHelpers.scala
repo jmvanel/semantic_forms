@@ -41,7 +41,7 @@ abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf]) {
 
   def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
 
-    /** Query for objects in triples, given subject & predicate */
+  /** Query for objects in triples, given subject & predicate */
   def objectsQuery(subject: Rdf#Node, predicate: Rdf#URI): Set[Rdf#Node] = {
     val pg = PointedGraph[Rdf](subject, graph)
     val objects = pg / predicate

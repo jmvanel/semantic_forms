@@ -20,10 +20,10 @@ class TestCreationForm extends FunSuite with CreationForm with GraphTestEnum {
     val classUri = // "http://usefulinc.com/ns/doap#Project"
       // foaf.Organization
       foaf.Person
-    retrieveURI( classUri, dataset)
+    retrieveURI(classUri, dataset)
     // to test possible values generation:
     retrieveURI(ops.makeUri("http://jmvanel.free.fr/jmv.rdf#me"), dataset)
-    
+
     val rawForm = createElem(classUri.toString(), lang = "fr")
     val form = TestCreationForm.wrapWithHTML(rawForm)
     val file = "example.creation.form.html"
@@ -33,14 +33,14 @@ class TestCreationForm extends FunSuite with CreationForm with GraphTestEnum {
     assert(rawForm.toString().contains("homepage"))
   }
 
-  test("display form with owl:oneOf" ) {
-	  Fil‍eUtils.deleteLocalSPARL()
+  test("display form with owl:oneOf") {
+    Fil‍eUtils.deleteLocalSPARL()
     import ops._
-//    println( vocab )
-    rdfStore.rw( dataset, {
-    	rdfStore.appendToGraph(dataset, URI("Person"), vocab )
-    } )
-    val rawForm = createElem( ("Person"), lang = "fr")
+    //    println( vocab )
+    rdfStore.rw(dataset, {
+      rdfStore.appendToGraph(dataset, URI("Person"), vocab)
+    })
+    val rawForm = createElem(("Person"), lang = "fr")
     val form = TestCreationForm.wrapWithHTML(rawForm)
     val file = "example.creation.form2.html"
     Files.write(Paths.get(file), form.toString().getBytes);
@@ -60,19 +60,18 @@ trait GraphTestEnum extends RDFOpsModule {
   val vocab1 = (
     URI("PersonType")
     -- rdf.typ ->- owl.Class
-    -- owl.oneOf ->- List( URI("hero"), URI("evil"), URI("wise") ) ).graph
+    -- owl.oneOf ->- List(URI("hero"), URI("evil"), URI("wise"))).graph
   val vocab2 = (
-    URI("Person") -- rdf.typ ->- owl.Class ).graph
+    URI("Person") -- rdf.typ ->- owl.Class).graph
   val vocab3 = (
     URI("style")
     -- rdf.typ ->- owl.ObjectProperty
     -- rdfs.domain ->- URI("Person")
     -- rdfs.range ->- URI("PersonType")
     -- rdfs.label ->- "style de personne"
-    ).graph
+  ).graph
   val vocab = vocab1 union vocab2 union vocab3
 }
-
 
 object TestCreationForm {
   def wrapWithHTML(e: Elem): Elem =

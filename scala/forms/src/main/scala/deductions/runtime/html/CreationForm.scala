@@ -23,10 +23,10 @@ trait CreationForm extends RDFOpsModule
   var actionURI = "/save"
 
   /**
-   * create an XHTML input form from a class URI;
+   * create an XHTML input form for a new instance from a class URI;
    *  transactional
    */
-  def create(uri: String, lang: String = "en"): Try[Elem] = {
+  def create(classUri: String, lang: String = "en"): Try[Elem] = {
     import scala.concurrent.ExecutionContext.Implicits.global
     val dataset = RDFStoreObject.dataset
     val r = rdfStore.r(dataset, {
@@ -34,7 +34,7 @@ trait CreationForm extends RDFOpsModule
         allNamedGraphs <- rdfStore.getGraph(dataset, makeUri("urn:x-arq:UnionGraph"))
       ) yield {
         val factory = new UnfilledFormFactory[Rdf](allNamedGraphs, preferedLanguage = lang)
-        val form = factory.createFormFromClass(URI(uri))
+        val form = factory.createFormFromClass(URI(classUri))
         println(form)
         val htmlForm = generateHTML(form, hrefPrefix = "", editable = true, actionURI)
         htmlForm

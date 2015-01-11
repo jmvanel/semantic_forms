@@ -15,29 +15,26 @@ import org.apache.log4j.Logger
 import org.w3.banana.Prefix
 
 /**
- * Factory for an Unfilled Form
- *  TODO extract code for form:showProperties (ordered list of fields);
+ * Factory for populating Form from graph
  */
 class FormConfigurationFactory[Rdf <: RDF](graph: Rdf#Graph)(implicit ops: RDFOps[Rdf],
-                                                             uriOps: URIOps[Rdf],
-                                                             rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET]) {
+    uriOps: URIOps[Rdf] //    rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET]
+    ) {
 
   val formPrefix: Prefix[Rdf] = Prefix("form", FormSyntaxFactory.formVocabPrefix)
   val gr = graph
   val rdfh = new RDFHelpers[Rdf] { val graph = gr }
   import rdfh._
-  
-  /** lookup for form:showProperties (ordered list of fields) in Form Configuration within RDF graph in this class
-   *  usable for unfilled and filled Forms */
+  import ops._
+  //    val rdf = RDFPrefix[Rdf]
+
+  /**
+   * lookup for form:showProperties (ordered list of fields) in Form Configuration within RDF graph in this class
+   *  usable for unfilled and filled Forms
+   */
   def lookPropertieslistFormInConfiguration(classs: Rdf#URI): Seq[Rdf#URI] = {
-    val rdf = RDFPrefix[Rdf]
-    val forms = ops.getSubjects(graph, formPrefix("classDomain"), classs)
-    val b = new StringBuilder; Logger.getRootLogger().debug("forms " + forms.addString(b, "; "))
-    val formNodeOption = forms.flatMap {
-      form => ops.foldNode(form)(uri => Some(uri), bn => Some(bn), lit => None)
-    }.headOption
-    Logger.getRootLogger().debug("formNodeOption " + formNodeOption)
-    formNodeOption match {
+    val formSpecOption = lookFormSpecInConfiguration(classs)
+    formSpecOption match {
       case None => Seq()
       case Some(f) =>
         // val props = ops.getObjects(graph, f, form("showProperties"))
@@ -46,5 +43,31 @@ class FormConfigurationFactory[Rdf <: RDF](graph: Rdf#Graph)(implicit ops: RDFOp
         val p = props.headOption
         rdfh.nodeSeqToURISeq(rdfh.rdfListToSeq(p))
     }
+  }
+
+  private def lookFormSpecInConfiguration(classs: Rdf#URI): Option[Rdf#Node] = {
+    val forms = ops.getSubjects(graph, formPrefix("classDomain"), classs)
+    val debugString = new StringBuilder; Logger.getRootLogger().debug("forms " + forms.addString(debugString, "; "))
+    val formSpecOption = forms.flatMap {
+      form => ops.foldNode(form)(uri => Some(uri), bn => Some(bn), lit => None)
+    }.headOption
+    Logger.getRootLogger().debug("formNodeOption " + formSpecOption)
+    formSpecOption
+  }
+
+  /**
+   * return e g :  <topic_interest>
+   *  in :
+   *  <pre>
+   *  &lt;topic_interest&gt;
+   * :fieldAppliesToForm <personForm> ;
+   * :fieldAppliesToProperty foaf:topic_interest ;
+   * :widgetClass form:DBPediaLookup .
+   *  <pre>
+   */
+  def lookFieldSpecInConfiguration(
+    //      classs: Rdf#URI, 
+    prop: Rdf#URI) = {
+    find(graph, ANY, formPrefix("fieldAppliesToProperty"), prop)
   }
 }

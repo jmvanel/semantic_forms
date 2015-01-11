@@ -30,8 +30,9 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
         val enumerated = ops.getObjects(graph, range, owl.oneOf)
         fillPossibleValuesFromList(enumerated, possibleValues)
       }
-//      entry.copy(possibleValues = possibleValues)
-      entry.copy(possibleValues = possibleValues ++ entry.possibleValues )
+      //      entry.copy(possibleValues = possibleValues)
+
+      entry.setPossibleValues(possibleValues ++ entry.possibleValues)
     }
 
     def fillPossibleValuesFromList(enumerated: Iterable[Rdf#Node],
@@ -44,39 +45,40 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
               list zip instanceLabels(list)
             )
           },
-          x => { println(s"bnode $x")
+          x => {
+            println(s"bnode $x")
             val list = rdfh.nodeSeqToURISeq(rdfh.rdfListToSeq(Some(x)))
             possibleValues.appendAll(
               list zip instanceLabels(list)
             )
           },
-          x => {println(s"lit $x"); () } )
+          x => { println(s"lit $x"); () })
 
     /** modify entry to populate possible Values From Instances */
     def populateFromInstances(entry: ResourceEntry): Entry = {
       val possibleValues = mutable.ArrayBuffer[(Rdf#URI, String)]()
 
       // debug
-//      val personURI = ops.URI("http://xmlns.com/foaf/0.1/Person")
-//      if (ranges.contains(personURI)) {
-//        println(s"populateFromInstances: entry $entry")
-//        val triples = ops.find(graph, ANY, rdf.typ, personURI)
-//        println(s"populateFromInstances: triples size ${triples.size}")
-//        for (t <- triples) println(t._1)
-//      }
+      //      val personURI = ops.URI("http://xmlns.com/foaf/0.1/Person")
+      //      if (ranges.contains(personURI)) {
+      //        println(s"populateFromInstances: entry $entry")
+      //        val triples = ops.find(graph, ANY, rdf.typ, personURI)
+      //        println(s"populateFromInstances: triples size ${triples.size}")
+      //        for (t <- triples) println(t._1)
+      //      }
       for (range <- ranges) {
         // TODO also take in account subClassOf inference
         // TODO limit number of possible values; later implement Comet on demand access to possible Values
         val enumerated = ops.getSubjects(graph, rdf.typ, range)
         // debug
-//        if (range == personURI) {
-//          println(s"populateFromInstances: enumerated ${enumerated.mkString("; ")}")
-//        }
+        //        if (range == personURI) {
+        //          println(s"populateFromInstances: enumerated ${enumerated.mkString("; ")}")
+        //        }
         fillPossibleValues(enumerated, possibleValues)
         // debug
-//        if (range == personURI) println(s"possibleValues $possibleValues")
+        //        if (range == personURI) println(s"possibleValues $possibleValues")
       }
-      entry.copy(possibleValues = possibleValues ++ entry.possibleValues )
+      entry.setPossibleValues(possibleValues ++ entry.possibleValues)
     }
 
     def fillPossibleValues(enumerated: Iterable[Rdf#Node],
@@ -93,8 +95,8 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
     //    val res = rdfStore.r(RDFStoreObject.dataset, {
     entryField match {
       case r: ResourceEntry =>
-        populateFromInstances( populateFromOwlOneOf(r) )
-//        populateFromOwlOneOf(r)
+        populateFromInstances(populateFromOwlOneOf(r))
+      //        populateFromOwlOneOf(r)
       case _ => entryField
     }
     //    })

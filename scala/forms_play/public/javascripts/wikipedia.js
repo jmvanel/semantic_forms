@@ -5,9 +5,9 @@
 
 var urlReqPrefix = "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=10&QueryString="
 
-function installDbpediaComplete( word, inputElement) {
-  // on user input ??????
-  inputElement.onChange = dbpediaComplete( inputElement)
+function installDbpediaComplete( inputElement) {
+  // on user input lunch completion ??????
+  inputElement.onChange = dbpediaComplete( inputElement )
 };
 
 function dbpediaComplete( inputElement, callback ) {

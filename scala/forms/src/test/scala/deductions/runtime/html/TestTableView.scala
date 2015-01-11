@@ -9,7 +9,7 @@ class TestTableView extends FunSuite with TableView {
   test("display form") {
     val uri = "http://jmvanel.free.fr/jmv.rdf#me"
     val fo = htmlForm(uri, editable = true).get
-    val f = TestCreationForm.wrapWithHTML(fo)    
+    val f = TestCreationForm.wrapWithHTML(fo)
     Files.write(Paths.get("example.form.foaf.html"), f.toString().getBytes);
   }
 

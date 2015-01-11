@@ -1,21 +1,17 @@
 package deductions.runtime.html
 
+import java.nio.file.Files
+import java.nio.file.Paths
+
 import org.scalatest.FunSuite
 import org.w3.banana.FOAFPrefix
 import org.w3.banana.Prefix
-import org.w3.banana.RDF
-import org.w3.banana.RDFOps
-import org.w3.banana.diesel._
-import deductions.runtime.jena.RDFStoreObject
-import deductions.runtime.utils.Fil‍eUtils
-import java.nio.file.Paths
-import java.nio.file.Files
-import org.w3.banana.diesel._
-import org.w3.banana._
-import org.w3.banana.binder._
-import org.w3.banana.syntax._
+import org.w3.banana.RDFOpsModule
+import org.w3.banana.TurtleWriterModule
+import org.w3.banana.diesel.toPointedGraphW
 import org.w3.banana.jena.JenaModule
-import deductions.runtime.sparql_cache.PopulateRDFCache
+
+import deductions.runtime.utils.Fil‍eUtils
 
 /** Test Creation Form with form specification */
 class TestCreationForm2 extends FunSuite
@@ -26,7 +22,7 @@ class TestCreationForm2 extends FunSuite
     Fil‍eUtils.deleteLocalSPARL()
     val uri = "http://xmlns.com/foaf/0.1/Person"
     retrieveURI(ops.makeUri(uri), dataset)
-//    PopulateRDFCache.loadCommonFormSpecifications
+    //    PopulateRDFCache.loadCommonFormSpecifications
 
     rdfStore.appendToGraph(dataset, ops.makeUri("test"), graphTest.personFormSpec)
     val form = create(uri, lang = "fr")
@@ -44,9 +40,9 @@ class TestCreationForm2 extends FunSuite
 
 trait GraphTest extends RDFOpsModule {
   import ops._
-  import syntax._
+//  import syntax._
   println(ops) // TODO debug !!!!!!!!
-  //    println( classOf[Rdf#URI] ) // TODO debug !!!!!!!!
+  //    println( classOf[Rdf#URI] ) // debug !!!!!!!!
   val form = Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#")
   println(form) // TODO debug !!!!!!!!
   val foaf = FOAFPrefix[Rdf]

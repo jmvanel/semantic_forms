@@ -28,45 +28,61 @@ trait FormModule[NODE, URI <: NODE] {
     }
   }
 
+  type DatatypeProperty = URI
+  type ObjectProperty = URI
+  case class Triple(val s: NODE, val p: URI, val o: NODE)
+
   val nullURI: URI
   /** TODO somehow factor out value: Any ? */
-  sealed abstract class Entry(val label: String, val comment: String,
+  sealed abstract class Entry(
+      val label: String, val comment: String,
+      val property: URI = nullURI,
       val mandatory: Boolean = false,
-      val type_ : URI = nullURI) {
+      val type_ : URI = nullURI //      widgetType: WidgetType = Text
+      ) {
+    private val triples: mutable.Buffer[Triple] = mutable.ListBuffer[Triple]()
     override def toString(): String = {
       s""" "$label", "$comment" """
     }
+    def addTriple(s: NODE, p: URI, o: NODE) = {
+      val t = Triple(s, p, o)
+      triples :+ t
+    }
   }
-  case class ResourceEntry(l: String, c: String,
-    property: ObjectProperty, validator: ResourceValidator,
-    value: URI = nullURI, alreadyInDatabase: Boolean = true,
-    possibleValues: Seq[(URI, String)] = Seq(),
-    valueLabel: String = "",
-    typ: URI = nullURI)
-      extends Entry(l, c, type_ = typ) {
+
+  class ResourceEntry(label: String, comment: String,
+    property: ObjectProperty = nullURI, validator: ResourceValidator,
+    val value: URI = nullURI, val alreadyInDatabase: Boolean = true,
+    val possibleValues: Seq[(URI, String)] = Seq(),
+    val valueLabel: String = "",
+    type_ : URI = nullURI)
+      extends Entry(label, comment, property, type_ = type_) {
     override def toString(): String = {
       super.toString + s""" : <$value>, "$valueLabel" possibleValues count:${possibleValues.size} """
     }
+    def setPossibleValues(newPossibleValues: Seq[(URI, String)]) = {
+      new ResourceEntry(label, comment,
+        property, validator,
+        value, alreadyInDatabase,
+        newPossibleValues, valueLabel, type_)
+    }
   }
-  case class BlankNodeEntry(l: String, c: String,
-      property: ObjectProperty, validator: ResourceValidator,
-      value: NODE, typ: URI = nullURI) extends Entry(l, c, type_ = typ) {
+  class BlankNodeEntry(label: String, comment: String,
+      property: ObjectProperty = nullURI, validator: ResourceValidator,
+      val value: NODE, type_ : URI = nullURI) extends Entry(label, comment, property, type_ = type_) {
     override def toString(): String = {
       super.toString + ", " + value
     }
     def getId: String = value.toString
   }
-  case class LiteralEntry(l: String, c: String,
-      property: DatatypeProperty, validator: DatatypeValidator,
-      value: String = "", widgetType: WidgetType = Text,
-      typ: URI = nullURI) extends Entry(l, c, type_ = typ) {
+  class LiteralEntry(l: String, c: String,
+      property: DatatypeProperty = nullURI, validator: DatatypeValidator,
+      val value: String = "",
+      type_ : URI = nullURI) extends Entry(l, c, property, type_ = type_) {
     override def toString(): String = {
       super.toString + s""" := "$value" """
     }
   }
-
-  type DatatypeProperty = URI
-  type ObjectProperty = URI
 
   case class ResourceValidator(typ: Set[URI])
   case class DatatypeValidator(typ: Set[URI])
