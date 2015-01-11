@@ -54,7 +54,9 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
   val rdf = RDFPrefix[Rdf]
   import FormSyntaxFactory._
   val formPrefix: Prefix[Rdf] = Prefix("form", formVocabPrefix)
-
+  val gr = graph
+  val rdfh = new RDFHelpers[Rdf] { val graph = gr }
+  import rdfh._
   println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
 
   /** create Form from an instance (subject) URI */
@@ -80,7 +82,8 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
 
     val entries = for (prop <- props) yield {
       Logger.getRootLogger().info(s"createForm subject $subject, prop $prop")
-      val ranges = extractURIs(oQuery(prop, rdfs.range))
+      //      val ranges = extractURIs(objectsQuery(prop, rdfs.range))
+      val ranges = nodeSeqToURISet(objectsQuery(prop, rdfs.range))
       val rangesSize = ranges.size
       val mess = if (rangesSize > 1) {
         "WARNING: ranges " + ranges + " for property " + prop + " are multiple."
@@ -88,7 +91,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
         "WARNING: There is no range for property " + prop
       } else ""
       println(mess, System.err)
-      makeEntry(subject, prop, ranges)
+      makeEntries(subject, prop, ranges)
     }
     val fields = entries.flatMap { s => s }
     val fields2 = addTypeTriple(subject, classs, fields)
@@ -142,14 +145,17 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
    * or else display terminal Part of URI as label;
    *  taking in account multi-valued properties
    */
-  private def makeEntry(subject: Rdf#Node, prop: Rdf#URI, ranges: Set[Rdf#URI]): Seq[Entry] = {
+  private def makeEntries(subject: Rdf#Node, prop: Rdf#URI, ranges: Set[Rdf#URI]): Seq[Entry] = {
     Logger.getRootLogger().info(s"makeEntry subject $subject, prop $prop")
     val label = getHeadStringOrElse(prop, rdfs.label, terminalPart(prop))
     val comment = getHeadStringOrElse(prop, rdfs.comment, "")
-    val propClasses = oQuery(prop, RDFPrefix[Rdf].typ)
-    val objects = oQuery(subject, prop)
+    val propClasses = objectsQuery(prop, RDFPrefix[Rdf].typ)
+    val objects = objectsQuery(subject, prop)
     val result = scala.collection.mutable.ArrayBuffer[Entry]()
-    val rangeClasses = oQuery(ranges, RDFPrefix[Rdf].typ)
+    val rangeClasses = objectsQueries(ranges, RDFPrefix[Rdf].typ)
+
+    for (obj <- objects) addOneEntry(obj)
+    if (objects isEmpty) addOneEntry(nullURI)
 
     def makeBN(label: String, comment: String,
       property: ObjectProperty, validator: ResourceValidator,
@@ -162,8 +168,6 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     }
 
     def addOneEntry(object_ : Rdf#Node) = {
-      val gr = graph
-      val rdfh = new RDFHelpers[Rdf] { val graph = gr }
 
       def literalEntry = new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
         getStringOrElse(object_, "..empty.."),
@@ -180,7 +184,6 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
             type_ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI))
         )
       }
-
       val xsdPrefix = XSDPrefix[Rdf].prefixIri
       val rdf = RDFPrefix[Rdf]
       val rdfs = RDFSPrefix[Rdf]
@@ -200,9 +203,6 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
       }
       result += addPossibleValues(entry, ranges)
     }
-
-    for (obj <- objects) addOneEntry(obj)
-    if (objects isEmpty) addOneEntry(nullURI)
     result
   }
 
@@ -228,7 +228,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
    */
   private def getHeadStringOrElse(subject: Rdf#URI, predicate: Rdf#URI, default: String): String = {
     //    println("getHeadStringOrElse: " + subject + " " + predicate) // debug
-    oQuery(subject, predicate) match {
+    objectsQuery(subject, predicate) match {
       case ll if ll == Set.empty => default
       case ll => getPreferedLanguageFromValues(ll)
     }
@@ -241,10 +241,12 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
       var enValue = ""
       var noLanguageValue = ""
       for (value <- values) {
-        value match {
-          case value: Rdf#Literal if (!isURIorBN(value)) =>
-            val (raw, uri, langOption) = ops.fromLiteral(value)
-            //            println("getPreferedLanguageFromValues: " +  (raw, uri, langOption) )
+        foldNode(value)(
+          x => (), x => (),
+          value => {
+            val tt = fromLiteral(value)
+            val (raw, uri, langOption) = fromLiteral(value)
+            // println("getPreferedLanguageFromValues: " + (raw, uri, langOption) )
             langOption match {
               case Some(language) =>
                 if (language == preferedLanguage) preferedLanguageValue = raw
@@ -253,8 +255,8 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
               case None => noLanguageValue = raw
               case _ =>
             }
-          case _ =>
-        }
+          }
+        )
       }
       println(s"preferedLanguageValue: $preferedLanguageValue , enValue $enValue, noLanguageValue $noLanguageValue")
       (preferedLanguageValue, enValue, noLanguageValue)
@@ -267,13 +269,6 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     }
   }
 
-  private def getStringOrElse(n: Rdf#Node, default: String): String = {
-    ops.foldNode(n)(_ => default, _ => default, l => {
-      val v = ops.fromLiteral(l)
-      v._1
-    })
-  }
-
   /**
    * get first ?OBJ such that:
    *   subject predicate ?OBJ	,
@@ -281,7 +276,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
    */
   private def getHeadOrElse(subject: Rdf#Node, predicate: Rdf#URI,
     default: Rdf#URI = nullURI): Rdf#URI = {
-    oQuery(subject, predicate) match {
+    objectsQuery(subject, predicate) match {
       case ll if ll.isEmpty => default
       case ll if (isURI(ll.head)) => ll.head.asInstanceOf[Rdf#URI]
       case _ => default
@@ -289,48 +284,10 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
   }
 
   private def getHeadValueOrElse(subjects: Set[Rdf#Node], predicate: Rdf#URI): Rdf#Node = {
-    val values = oQuery(subjects, predicate)
+    val values = objectsQueries(subjects, predicate)
     values.headOption match {
       case Some(x) => x
       case _ => nullURI
-    }
-  }
-
-  /**
-   * Query for objects in triples, given subject & predicate
-   *  TODO move to class RDFHelpers
-   */
-  def oQuery(subject: Rdf#Node, predicate: Rdf#URI): Set[Rdf#Node] = {
-    val pg = PointedGraph[Rdf](subject, graph)
-    val objects = pg / predicate
-    objects.map(_.pointer).toSet
-  }
-
-  private def oQuery[T <: Rdf#Node](subjects: Set[T], predicate: Rdf#URI): Set[Rdf#Node] = {
-    val values = for (
-      subject <- subjects;
-      values <- oQuery(subject.asInstanceOf[Rdf#URI], predicate)
-    ) yield values
-    values
-  }
-
-  /** from given Set of Rdf#Node , extract rdf#URI */
-  def extractURIs(nodes: Set[Rdf#Node]): Set[Rdf#URI] = {
-    nodes.map {
-      node =>
-        ops.foldNode(node)(
-          identity, identity, x => None
-        )
-    }
-      .filter(_ != None)
-      .map { node => node.asInstanceOf[Rdf#URI] }
-  }
-
-  def printGraph(graph: Rdf#Graph) {
-    val iterable = ops.getTriples(graph)
-    for (t <- iterable) {
-      println(t)
-      val (subj, pred, obj) = ops.fromTriple(t)
     }
   }
 

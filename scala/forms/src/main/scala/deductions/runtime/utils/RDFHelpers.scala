@@ -31,12 +31,33 @@ abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf]) {
     }
   }
 
+  /** from given Set of Rdf#Node , extract rdf#URI */
   def nodeSeqToURISeq(s: Iterable[Rdf#Node]): Seq[Rdf#URI] = {
     val r = s.collect {
       case uri if (isURI(uri)) => ops.makeUri(uri.toString)
     }
     val seq = r.to
     seq
+  }
+
+  /** from given Set of Rdf#Node , extract rdf#URI */
+  def nodeSeqToURISet(s: Iterable[Rdf#Node]): Set[Rdf#URI] = {
+    nodeSeqToURISeq(s).toSet
+  }
+
+  /**
+   * from given Set of Rdf#Node , extract rdf#URI
+   *  TODO : check that it's the same as nodeSeqToURISet
+   */
+  private def extractURIs(nodes: Set[Rdf#Node]): Set[Rdf#URI] = {
+    nodes.map {
+      node =>
+        ops.foldNode(node)(
+          identity, identity, x => None
+        )
+    }
+      .filter(_ != None)
+      .map { node => node.asInstanceOf[Rdf#URI] }
   }
 
   def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
@@ -46,5 +67,28 @@ abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf]) {
     val pg = PointedGraph[Rdf](subject, graph)
     val objects = pg / predicate
     objects.map(_.pointer).toSet
+  }
+
+  def objectsQueries[T <: Rdf#Node](subjects: Set[T], predicate: Rdf#URI): Set[Rdf#Node] = {
+    val values = for (
+      subject <- subjects;
+      values <- objectsQuery(subject.asInstanceOf[Rdf#URI], predicate)
+    ) yield values
+    values
+  }
+
+  def getStringOrElse(n: Rdf#Node, default: String): String = {
+    ops.foldNode(n)(_ => default, _ => default, l => {
+      val v = ops.fromLiteral(l)
+      v._1
+    })
+  }
+
+  def printGraph(graph: Rdf#Graph) {
+    val iterable = ops.getTriples(graph)
+    for (t <- iterable) {
+      println(t)
+      val (subj, pred, obj) = ops.fromTriple(t)
+    }
   }
 }

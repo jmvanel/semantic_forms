@@ -10,7 +10,8 @@ trait FieldsInference[Rdf <: RDF] {
     /** retrieve rdfs:domain's From given Class */
     def domainsFromClass(classs: Rdf#Node) = {
       val relevantPredicates = ops.getSubjects(graph, rdfs.domain, classs).toSet
-      extractURIs(relevantPredicates) toSet
+      //      extractURIs(relevantPredicates) toSet
+      rdfh.nodeSeqToURISet(relevantPredicates)
     }
 
     val result = scala.collection.mutable.Set[Rdf#URI]()
