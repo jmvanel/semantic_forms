@@ -23,6 +23,7 @@ object RDFStoreObject extends RDFStoreLocalJena1Provider
   lazy val allNamedGraphsFuture = tryToFuture(allNamedGraphs)
 }
 
+/** sets a default location fir the Jena TDB store directory : ./TDB/ */
 trait RDFStoreLocalJena1Provider extends RDFStoreLocalProvider with JenaModule {
   override type DATASET = Dataset
   lazy val dataset: DATASET = TDBFactory.createDataset("TDB")

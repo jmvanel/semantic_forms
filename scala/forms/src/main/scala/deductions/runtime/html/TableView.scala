@@ -48,6 +48,7 @@ trait TableViewModule
     }
     val r = rdfStore.r(dataset, {
       for (
+        // TODO use allNamedGraphs from RDFStoreObject
         allNamedGraphs <- rdfStore.getGraph(dataset, makeUri("urn:x-arq:UnionGraph"))
       ) yield graf2form(allNamedGraphs, uri, hrefPrefix, blankNode, editable, actionURI, lang)
     })
@@ -116,6 +117,7 @@ trait TableViewModule
 
     val r = rdfStore.r(dataset, {
       for (
+        // TODO use allNamedGraphs from RDFStoreObject
         allNamedGraphs <- rdfStore.getGraph(dataset, ops.makeUri("urn:x-arq:UnionGraph"))
       ) yield {
         val triples: Iterator[Rdf#Triple] = ops.find(allNamedGraphs,

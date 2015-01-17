@@ -9,7 +9,7 @@ scalaVersion := "2.11.1"
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
 
 
-libraryDependencies += "org.w3" %%  "jena" %  "0.7.1" // "0.7.2-SNAPSHOT"
+libraryDependencies += "org.w3" %%  "jena" % "0.7.1" // "0.7.2.radical" 
 
 libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "0.10"
 // See more at: https://typesafe.com/blog/akka-http-preview#sthash.IZR1O9fx.dpuf
@@ -30,6 +30,7 @@ resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + 
 
 // resolvers += Resolver.mavenLocal
 
-resolvers += "betehess" at  "http://dl.bintray.com/betehess/banana-rdf"
+// resolvers += "betehess" at  "http://dl.bintray.com/betehess/banana-rdf"
+resolvers += "betehess" at  "http://dl.bintray.com/banana-rdf/banana-rdf"
 
 scalariformSettings

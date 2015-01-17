@@ -65,7 +65,7 @@ plus a textbox to enter a URL semantics, eg a FOAF profile or DBpedia URI :
 # How to run
 
 Dependencies to install : Java 7 (Scala is not ready for Java 8), [SBT](http://www.scala-sbt.org/)
-or [Typesafe Activator]((http://typesafe.com/platform/getstarted) .
+or [Typesafe Activator](http://typesafe.com/platform/getstarted) .
 Then SBT or Activator donwload the rest.
 
 <!---

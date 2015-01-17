@@ -58,7 +58,7 @@ trait JenaHelpers extends JenaModule {
     val gForStore = rdfStore.getGraph(dataset, graphUri)
     // read from uri no matter what the syntax is:
     val graph = RDFDataMgr.loadModel(uri.toString()).getGraph
-    //        val graph = anyRDFReader.readAnyRDFSyntax(uri.toString()) . get // TODO
+    // val graph = anyRDFReader.readAnyRDFSyntax(uri.toString()) . get // TODO after proposing anyRDFReader to Banana
     rdfStore.appendToGraph(dataset, uri, graph)
     Logger.getRootLogger().info(s"storeURI uri $uri : stored")
     graph

@@ -56,8 +56,8 @@ trait FormSyntaxFactoryTest // [Rdf <: RDF]
     println((graph.triples).mkString("\n"))
     val form = fact.createForm(
       URI("betehess"),
-      Seq( foaf.title,
-        foaf.name, foaf.knows ),
+      Seq(foaf.title,
+        foaf.name, foaf.knows),
       URI(""))
     form
   }

@@ -31,6 +31,7 @@ trait CreationForm extends RDFOpsModule
     val dataset = RDFStoreObject.dataset
     val r = rdfStore.r(dataset, {
       for (
+        // TODO use allNamedGraphs from RDFStoreObject
         allNamedGraphs <- rdfStore.getGraph(dataset, makeUri("urn:x-arq:UnionGraph"))
       ) yield {
         val factory = new UnfilledFormFactory[Rdf](allNamedGraphs, preferedLanguage = lang)

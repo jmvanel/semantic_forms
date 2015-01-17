@@ -27,7 +27,7 @@ trait RDFCacheDependencies
   with TurtleReaderModule
   with RDFXMLReaderModule
 
-/* depends on generic Rdf */
+/** depends on generic Rdf but, through RDFStoreLocalJena1Provider and JenaHelpers, on Jena :( TODO remove Jena */
 trait RDFCache extends RDFStoreLocalJena1Provider
     with RDFCacheDependencies with JenaHelpers {
 
