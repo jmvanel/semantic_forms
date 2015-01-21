@@ -20,6 +20,10 @@ import deductions.runtime.jena.RDFStoreObject
  */
 object UnfilledFormFactory {
   var defaultInstanceURIPrefix = "http://assemblee-virtuelle.org/resource/"
+  /** make a unique Id with given prefix, currentTimeMillis() and nanoTime() */
+  def makeId(instanceURIPrefix: String): String = {
+    instanceURIPrefix + System.currentTimeMillis() + "-" + System.nanoTime() // currentId = currentId + 1
+  }
 }
 
 /** Factory for an Unfilled Form */
@@ -49,7 +53,7 @@ class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
   }
 
   def makeId: String = {
-    val r = instanceURIPrefix + System.currentTimeMillis() + "-" + System.nanoTime() // currentId = currentId + 1
-    r
+    //      instanceURIPrefix + System.currentTimeMillis() + "-" + System.nanoTime() // currentId = currentId + 1
+    UnfilledFormFactory.makeId(instanceURIPrefix)
   }
 }

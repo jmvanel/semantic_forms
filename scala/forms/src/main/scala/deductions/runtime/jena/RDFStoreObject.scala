@@ -31,10 +31,11 @@ trait RDFStoreLocalJena1Provider extends RDFStoreLocalProvider2[Jena, Dataset] w
   lazy val dataset: DATASET = TDBFactory.createDataset("TDB")
 }
 
-/** abstract RDFStore Local Provider
- *  TODO RDFStoreLocalProvider2 must replace RDFStoreLocalProvider */
-trait RDFStoreLocalProvider2[Rdf<: RDF, DATASET] extends RDFOpsModule with RDFStoreLocalProvider
-{
+/**
+ * abstract RDFStore Local Provider
+ *  TODO RDFStoreLocalProvider2 must replace RDFStoreLocalProvider
+ */
+trait RDFStoreLocalProvider2[Rdf <: RDF, DATASET] extends RDFOpsModule with RDFStoreLocalProvider {
   // NOTE: same design pattern as for XXXModule in Banana
   implicit val rdfStore: RDFStore[Rdf, Try, DATASET]
   type DATASET
