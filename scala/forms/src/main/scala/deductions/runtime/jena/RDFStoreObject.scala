@@ -13,24 +13,37 @@ import com.hp.hpl.jena.query.Dataset
 import org.w3.banana.RDF
 import scala.util.Try
 import deductions.runtime.utils.MonadicHelpers
+import org.w3.banana.RDFOpsModule
 
 /** singleton  hosting a Jena TDB database in directory "TDB" */
-object RDFStoreObject extends RDFStoreLocalJena1Provider
-    with JenaModule {
+// object RDFStoreObject extends RDFStoreLocalJena1Provider with JenaModule {
+object RDFStoreObject extends JenaModule with RDFStoreLocalJena1Provider {
   // TODO remove allNamedGraphs elsewhere
   lazy val allNamedGraphs = rdfStore.getGraph(dataset, ops.makeUri("urn:x-arq:UnionGraph"))
   import MonadicHelpers._
   lazy val allNamedGraphsFuture = tryToFuture(allNamedGraphs)
 }
 
-/** sets a default location fir the Jena TDB store directory : ./TDB/ */
-trait RDFStoreLocalJena1Provider extends RDFStoreLocalProvider with JenaModule {
+/** sets a default location for the Jena TDB store directory : ./TDB/ */
+//trait RDFStoreLocalJena1Provider extends RDFStoreLocalProvider with JenaModule {
+trait RDFStoreLocalJena1Provider extends RDFStoreLocalProvider2[Jena, Dataset] with JenaModule {
   override type DATASET = Dataset
   lazy val dataset: DATASET = TDBFactory.createDataset("TDB")
 }
 
+/** abstract RDFStore Local Provider
+ *  TODO RDFStoreLocalProvider2 must replace RDFStoreLocalProvider */
+trait RDFStoreLocalProvider2[Rdf<: RDF, DATASET] extends RDFOpsModule with RDFStoreLocalProvider
+{
+  // NOTE: same design pattern as for XXXModule in Banana
+  implicit val rdfStore: RDFStore[Rdf, Try, DATASET]
+  type DATASET
+  val dataset: DATASET
+}
+
+// TODO remove
 trait RDFStoreLocalProvider {
-  type DATASET // = Dataset
+  type DATASET
   val dataset: DATASET
 }
 

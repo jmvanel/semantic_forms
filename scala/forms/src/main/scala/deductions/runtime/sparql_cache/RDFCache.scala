@@ -13,7 +13,7 @@ import deductions.runtime.jena.JenaHelpers
 import org.w3.banana.GraphStore
 import org.w3.banana.RDFStore
 import org.w3.banana.jena.JenaDatasetStore
-import deductions.runtime.jena.RDFStoreLocalProvider
+//import deductions.runtime.jena.RDFStoreLocalProvider
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import scala.util.Try
 import scala.concurrent.Future

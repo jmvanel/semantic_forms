@@ -15,7 +15,7 @@ import deductions.runtime.jena.RDFStoreObject
 import scala.util.Try
 import scala.concurrent.Future
 import org.w3.banana._
-import deductions.runtime.jena.RDFStoreLocalProvider
+//import deductions.runtime.jena.RDFStoreLocalProvider
 
 class FormSaver[Rdf <: RDF]()(
     implicit ops: RDFOps[Rdf],

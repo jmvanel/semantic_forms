@@ -17,7 +17,9 @@ class TestFormSaver
     with RDFOpsModule
     with SparqlGraphModule
     with SparqlOpsModule
-    with RDFStoreLocalProvider {
+//    with RDFStoreLocalProvider2[Rdf, DATASET]
+    with RDFStoreLocalProvider
+{
   import ops._
 
   lazy val fs = new FormSaver()
