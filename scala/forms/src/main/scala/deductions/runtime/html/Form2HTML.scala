@@ -19,24 +19,22 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
     actionURI: String = "/save"): Elem = {
 
     val htmlForm =
-      <div class="container">
+      <div class="form">
         <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
-        <div class="form">
-          {
-            for (field <- form.fields) yield {
-              <div class="form-group">
-                <div class="row">
-                  <label class="col-md-4 control-label" title={ field.comment }>{ field.label }</label>
-                  <div class="col-md-8">
-                    {
-                      createHTMLField(field, editable, hrefPrefix)
-                    }
-                  </div>
+        {
+          for (field <- form.fields) yield {
+            <div class="form-group">
+              <div class="row">
+                <label class="col-md-4 control-label" title={ field.comment }>{ field.label }</label>
+                <div class="col-md-8">
+                  {
+                    createHTMLField(field, editable, hrefPrefix)
+                  }
                 </div>
               </div>
-            }
+            </div>
           }
-        </div>
+        }
       </div>
 
     if (editable)
