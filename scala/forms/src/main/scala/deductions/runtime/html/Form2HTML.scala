@@ -58,8 +58,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
       case l: LiteralEntry =>
         {
           if (editable) {
-            <input class="form-control" value={ l.value } name={ "LIT-" + urlEncode(l.property) } data-type={ l.type_.toString() }/>
-            <input value={ l.value } name={ "ORIG-LIT-" + urlEncode(l.property) } type="hidden"/>
+            createHTMLiteralEditableLField(l)
           } else {
             <div>{ l.value }</div>
           }
@@ -105,6 +104,19 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
   private def makeHTMLId(re: Entry) = {
     "RES-" + urlEncode(re.property)
   }
+
+  /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
+  def createHTMLiteralEditableLField(lit: LiteralEntry): xml.NodeSeq = {
+    val elem = lit.type_.toString() match {
+      case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
+        <input class="form-control" value={ lit.value } name={ "LIT-" + urlEncode(lit.property) } data-type={ lit.type_.toString() } type="number" min="1" max="5"/>
+      case _ =>
+        <input class="form-control" value={ lit.value } name={ "LIT-" + urlEncode(lit.property) }/>
+    }
+    elem ++
+      <input value={ lit.value } name={ "ORIG-LIT-" + urlEncode(lit.property) } type="hidden"/>
+  }
+
   private def makeHTMLIdForDatalist(re: Entry) = {
     "possibleValues-" + (
       re match {
@@ -113,6 +125,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
         case bn: BlankNodeEntry => (bn.property + "--" + bn.value).hashCode().toString()
       })
   }
+
   private def formatPossibleValues(field: fm#Entry): Elem = {
     field match {
       case re: ResourceEntry =>
@@ -126,6 +139,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
       case _ => <span/>
     }
   }
+
   def addDBPediaLookup(r: ResourceEntry): Elem = {
     <script>
       installDbpediaComplete( "{ makeHTMLId(r) }
