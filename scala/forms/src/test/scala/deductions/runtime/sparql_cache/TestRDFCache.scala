@@ -1,7 +1,7 @@
 package deductions.runtime.sparql_cache
 import deductions.runtime.jena.RDFStoreObject
 import org.scalatest.FunSuite
-import deductions.runtime.utils.Fil‍eUtils
+import deductions.runtime.utils.FileUtils
 import org.w3.banana.SparqlOpsModule
 
 class TestRDFCache extends FunSuite with RDFCache
@@ -11,7 +11,7 @@ class TestRDFCache extends FunSuite with RDFCache
   import ops._
   import sparqlOps._
 
-  Fil‍eUtils.deleteLocalSPARL
+  FileUtils.deleteLocalSPARL
 
   test("save to enpoint cache and check with SPARQL that endpoint is populated.") {
     val uriNode = makeUri(uri)

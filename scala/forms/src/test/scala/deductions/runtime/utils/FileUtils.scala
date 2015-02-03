@@ -8,7 +8,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 
-object Fil‍eUtils {
+object FileUtils {
 
   def deleteLocalSPARL() = {
     deleteRecursive("TDB")

@@ -7,7 +7,7 @@ import org.w3.banana.RDF
 import org.w3.banana._
 import org.w3.banana.syntax._
 import org.w3.banana.diesel._
-import deductions.runtime.utils.Fil‍eUtils
+import deductions.runtime.utils.FileUtils
 import java.nio.file.Files
 import java.nio.file.Paths
 import scala.xml.Elem
@@ -16,7 +16,7 @@ import scala.xml.Elem
 class TestCreationForm extends FunSuite with CreationForm with GraphTestEnum {
 
   test("display form") {
-    Fil‍eUtils.deleteLocalSPARL()
+    FileUtils.deleteLocalSPARL()
     val classUri = // "http://usefulinc.com/ns/doap#Project"
       // foaf.Organization
       foaf.Person
@@ -34,7 +34,7 @@ class TestCreationForm extends FunSuite with CreationForm with GraphTestEnum {
   }
 
   test("display form with owl:oneOf") {
-    Fil‍eUtils.deleteLocalSPARL()
+    FileUtils.deleteLocalSPARL()
     import ops._
     //    println( vocab )
     rdfStore.rw(dataset, {

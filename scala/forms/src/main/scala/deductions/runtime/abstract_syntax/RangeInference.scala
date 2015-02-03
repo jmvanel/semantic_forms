@@ -21,7 +21,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
     val gr = graph
     val rdfh = new RDFHelpers[Rdf] { val graph = gr }
 
-    /* modify entry to populate possibleValues,
+    /** modify entry to populate possibleValues,
      * by taking ?LIST from triples:
      * ?RANGE owl:oneOf ?LIST */
     def populateFromOwlOneOf(entry: ResourceEntry): ResourceEntry = {
@@ -30,11 +30,11 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
         val enumerated = ops.getObjects(graph, range, owl.oneOf)
         fillPossibleValuesFromList(enumerated, possibleValues)
       }
-      //      entry.copy(possibleValues = possibleValues)
-
       entry.setPossibleValues(possibleValues ++ entry.possibleValues)
     }
 
+    /** fill Possible Values From given List, which typically comes
+     *  from existing triples with relevant rdf:type */
     def fillPossibleValuesFromList(enumerated: Iterable[Rdf#Node],
       possibleValues: mutable.ArrayBuffer[(Rdf#URI, String)]) =
       for (enum <- enumerated)
@@ -57,7 +57,6 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
     /** modify entry to populate possible Values From Instances */
     def populateFromInstances(entry: ResourceEntry): Entry = {
       val possibleValues = mutable.ArrayBuffer[(Rdf#URI, String)]()
-
       // debug
       //      val personURI = ops.URI("http://xmlns.com/foaf/0.1/Person")
       //      if (ranges.contains(personURI)) {
@@ -92,14 +91,10 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
           },
           x => (), x => ())
 
-    //    val res = rdfStore.r(RDFStoreObject.dataset, {
     entryField match {
       case r: ResourceEntry =>
         populateFromInstances(populateFromOwlOneOf(r))
-      //        populateFromOwlOneOf(r)
       case _ => entryField
     }
-    //    })
-    //    res.getOrElse(entry)
   }
 }

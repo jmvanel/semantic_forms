@@ -11,7 +11,7 @@ import org.w3.banana.TurtleWriterModule
 import org.w3.banana.diesel.toPointedGraphW
 import org.w3.banana.jena.JenaModule
 
-import deductions.runtime.utils.Fil‍eUtils
+import deductions.runtime.utils.FileUtils
 
 /** Test Creation Form with form specification */
 class TestCreationForm2 extends FunSuite
@@ -19,7 +19,7 @@ class TestCreationForm2 extends FunSuite
   println(ops.__xsdString) // TODO debug !!!!!!!!
 
   test("display form custom") {
-    Fil‍eUtils.deleteLocalSPARL()
+    FileUtils.deleteLocalSPARL()
     val uri = "http://xmlns.com/foaf/0.1/Person"
     retrieveURI(ops.makeUri(uri), dataset)
     //    PopulateRDFCache.loadCommonFormSpecifications
@@ -40,7 +40,7 @@ class TestCreationForm2 extends FunSuite
 
 trait GraphTest extends RDFOpsModule {
   import ops._
-//  import syntax._
+  //  import syntax._
   println(ops) // TODO debug !!!!!!!!
   //    println( classOf[Rdf#URI] ) // debug !!!!!!!!
   val form = Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#")
