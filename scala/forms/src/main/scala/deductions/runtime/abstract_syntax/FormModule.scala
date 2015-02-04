@@ -53,14 +53,14 @@ trait FormModule[NODE, URI <: NODE] {
   class ResourceEntry(label: String, comment: String,
     property: ObjectProperty = nullURI, validator: ResourceValidator,
     val value: URI = nullURI, val alreadyInDatabase: Boolean = true,
-    val possibleValues: Seq[(URI, String)] = Seq(),
+    val possibleValues: Seq[(NODE, String)] = Seq(),
     val valueLabel: String = "",
     type_ : URI = nullURI)
       extends Entry(label, comment, property, type_ = type_) {
     override def toString(): String = {
       super.toString + s""" : <$value>, "$valueLabel" possibleValues count:${possibleValues.size} """
     }
-    def setPossibleValues(newPossibleValues: Seq[(URI, String)]) = {
+    def setPossibleValues(newPossibleValues: Seq[(NODE, String)]) = {
       new ResourceEntry(label, comment,
         property, validator,
         value, alreadyInDatabase,

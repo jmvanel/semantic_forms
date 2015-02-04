@@ -21,11 +21,13 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
     val gr = graph
     val rdfh = new RDFHelpers[Rdf] { val graph = gr }
 
-    /** modify entry to populate possibleValues,
+    /**
+     * modify entry to populate possibleValues,
      * by taking ?LIST from triples:
-     * ?RANGE owl:oneOf ?LIST */
+     * ?RANGE owl:oneOf ?LIST
+     */
     def populateFromOwlOneOf(entry: ResourceEntry): ResourceEntry = {
-      val possibleValues = mutable.ArrayBuffer[(Rdf#URI, String)]()
+      val possibleValues = mutable.ArrayBuffer[(Rdf#Node, String)]()
       for (range <- ranges) {
         val enumerated = ops.getObjects(graph, range, owl.oneOf)
         fillPossibleValuesFromList(enumerated, possibleValues)
@@ -33,10 +35,12 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
       entry.setPossibleValues(possibleValues ++ entry.possibleValues)
     }
 
-    /** fill Possible Values From given List, which typically comes
-     *  from existing triples with relevant rdf:type */
+    /**
+     * fill Possible Values From given List, which typically comes
+     *  from existing triples with relevant rdf:type
+     */
     def fillPossibleValuesFromList(enumerated: Iterable[Rdf#Node],
-      possibleValues: mutable.ArrayBuffer[(Rdf#URI, String)]) =
+      possibleValues: mutable.ArrayBuffer[(Rdf#Node, String)]) =
       for (enum <- enumerated)
         ops.foldNode(enum)(
           uri => {
@@ -47,7 +51,8 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
           },
           x => {
             println(s"bnode $x")
-            val list = rdfh.nodeSeqToURISeq(rdfh.rdfListToSeq(Some(x)))
+            //            val list = rdfh.nodeSeqToURISeq(rdfh.rdfListToSeq(Some(x)))
+            val list = rdfh.rdfListToSeq(Some(x))
             possibleValues.appendAll(
               list zip instanceLabels(list)
             )
@@ -56,7 +61,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
 
     /** modify entry to populate possible Values From Instances */
     def populateFromInstances(entry: ResourceEntry): Entry = {
-      val possibleValues = mutable.ArrayBuffer[(Rdf#URI, String)]()
+      val possibleValues = mutable.ArrayBuffer[(Rdf#Node, String)]()
       // debug
       //      val personURI = ops.URI("http://xmlns.com/foaf/0.1/Person")
       //      if (ranges.contains(personURI)) {
@@ -81,7 +86,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
     }
 
     def fillPossibleValues(enumerated: Iterable[Rdf#Node],
-      possibleValues: mutable.ArrayBuffer[(Rdf#URI, String)]) =
+      possibleValues: mutable.ArrayBuffer[(Rdf#Node, String)]) =
       for (enum <- enumerated)
         ops.foldNode(enum)(
           uri => {

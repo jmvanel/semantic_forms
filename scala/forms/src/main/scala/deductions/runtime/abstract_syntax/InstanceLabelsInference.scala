@@ -19,7 +19,7 @@ trait InstanceLabelsInference[Rdf <: RDF] {
   import ops._
   val foaf = FOAFPrefix[Rdf]
 
-  def instanceLabels(list: Seq[Rdf#URI]): Seq[String] = list.map(instanceLabel)
+  def instanceLabels(list: Seq[Rdf#Node]): Seq[String] = list.map(instanceLabel)
 
   /**
    * display a summary of the resource (rdfs:label, foaf:name, etc,
@@ -28,7 +28,7 @@ trait InstanceLabelsInference[Rdf <: RDF] {
    *  ../forms/form_specs/foaf.form.ttl ,
    *  by taking the first one or two first literal properties.
    */
-  def instanceLabel(uri: Rdf#URI): String = {
+  def instanceLabel(uri: Rdf#Node): String = {
     val pgraph = PointedGraph(uri, graph)
 
     val firstName = (pgraph / foaf.firstName).as[String].getOrElse("")

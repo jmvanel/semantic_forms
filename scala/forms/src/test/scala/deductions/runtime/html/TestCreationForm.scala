@@ -36,7 +36,6 @@ class TestCreationForm extends FunSuite with CreationForm with GraphTestEnum {
   test("display form with owl:oneOf") {
     FileUtils.deleteLocalSPARL()
     import ops._
-    //    println( vocab )
     rdfStore.rw(dataset, {
       rdfStore.appendToGraph(dataset, URI("Person"), vocab)
     })
@@ -48,6 +47,7 @@ class TestCreationForm extends FunSuite with CreationForm with GraphTestEnum {
 
     assert(rawForm.toString().contains("style"))
     assert(rawForm.toString().contains("evil"))
+    assert(rawForm.toString().contains("Dilbert"))
   }
 }
 
@@ -57,10 +57,18 @@ trait GraphTestEnum extends RDFOpsModule {
   val foaf = FOAFPrefix[Rdf]
   val owl = OWLPrefix[Rdf]
   val rdfs = RDFSPrefix[Rdf]
+
   val vocab1 = (
     URI("PersonType")
     -- rdf.typ ->- owl.Class
-    -- owl.oneOf ->- List(URI("hero"), URI("evil"), URI("wise"))).graph
+    -- owl.oneOf ->- List(URI("hero"), URI("evil"), URI("wise"))
+  ).graph
+  val vocab11 = (
+    URI("WorkType")
+    -- rdf.typ ->- owl.Class
+    -- owl.oneOf ->- List(BNode("Dilbert"), BNode("Alice"), BNode("Wally"))
+  ).graph
+
   val vocab2 = (
     URI("Person") -- rdf.typ ->- owl.Class).graph
   val vocab3 = (
@@ -70,7 +78,14 @@ trait GraphTestEnum extends RDFOpsModule {
     -- rdfs.range ->- URI("PersonType")
     -- rdfs.label ->- "style de personne"
   ).graph
-  val vocab = vocab1 union vocab2 union vocab3
+    val vocab31 = (
+    URI("workStyle")
+    -- rdf.typ ->- owl.ObjectProperty
+    -- rdfs.domain ->- URI("Person")
+    -- rdfs.range ->- URI("WorkType")
+    -- rdfs.label ->- "style de travail"
+  ).graph
+  val vocab = vocab1 union vocab11 union vocab2 union vocab3 union vocab31
 }
 
 object TestCreationForm {

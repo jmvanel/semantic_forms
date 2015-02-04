@@ -14,8 +14,7 @@ import org.w3.banana.jena.JenaModule
 
 class FormSyntaxFactoryTestJena extends FunSuite
     with JenaModule
-    with FormSyntaxFactoryTest // [Jena]
-    {
+    with FormSyntaxFactoryTest  {
   test("form contains label and data") {
     val form = createForm
     println("form:\n" + form)
@@ -35,19 +34,21 @@ trait FormSyntaxFactoryTest // [Rdf <: RDF]
     extends RDFOpsModule
     with TurtleReaderModule {
 
-  def createForm() = {
-    import ops._
+  import ops._
+  val foaf = FOAFPrefix[Rdf]
 
-    val foaf = FOAFPrefix[Rdf]
-    val graph1 = (
-      URI("betehess")
+  def makeFOAFsample: Rdf#Graph = {
+    (URI("betehess")
       -- foaf.name ->- "Alexandre".lang("fr")
       -- foaf.title ->- "Mr"
       -- foaf.knows ->- (
         URI("http://bblfish.net/#hjs")
         -- foaf.name ->- "Henry Story"
-        -- foaf.currentProject ->- URI("http://webid.info/"))).graph
+        -- foaf.currentProject ->- URI("http://webid.info/"))).graph      
+  }
 
+  def createForm() = {
+    val graph1 = makeFOAFsample
     val resource = new FileInputStream("src/test/resources/foaf.n3")
     val graph2 = turtleReader.read(resource, "http://xmlns.com/foaf/0.1/").get
     val graph = union(Seq(graph1, graph2))

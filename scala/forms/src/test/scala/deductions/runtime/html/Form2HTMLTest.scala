@@ -13,7 +13,6 @@ import java.nio.file.Paths
 import org.w3.banana.jena.JenaModule
 import org.scalatest.FunSuite
 
-/** will only run in eclipse, not stb, as sbt will not run App's in src/test */
 class Form2HTMLTestJena extends Form2HTMLTest
 
 class Form2HTMLTest
