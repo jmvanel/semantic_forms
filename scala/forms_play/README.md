@@ -77,6 +77,10 @@ and type in Activator:
 
 - build and run this project with [latest play activator from typesafe.com](http://typesafe.com/platform/getstarted) , and type in activator : `~ run`
 
+The default port is 9000, so you can direct your browser to [http://localhost:9000](http://localhost:9000) .
+To run on another port than 9000 :
+    run 9053
+
 To package to run on a server that has Java only: type in activator : `dist`
 
 Then the archive is found here :
@@ -134,6 +138,11 @@ Tips:
 ```
     eclipse with-source=true
 ```
+
+# How to debug
+
+Start Activator or SBT with -jvm-debug argument; then type run. Then start a remove debug in eclipse or another IDE with port 9999.
+    ./activator -jvm-debug
 
 # Vocabulary for forms
 

@@ -64,20 +64,24 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     editable: Boolean = false): FormSyntax[Rdf#Node, Rdf#URI] = {
     val propsFromSubject = fieldsFromSubject(subject, graph)
     val classs = classFromSubject(subject) // TODO several classes
-    val propsFromClass = if (editable) {
-      fieldsFromClass(classs, graph)
-    } else Seq()
-    createForm(subject, propsFromSubject ++ propsFromClass, classs)
+    val propsFromClass =
+      if (editable) {
+        fieldsFromClass(classs, graph)
+      } else Seq()
+    createForm(subject, (propsFromSubject ++ propsFromClass).distinct, classs)
   }
 
   /**
+   * create Form With Given Properties;
    * For each given property (props)
    *  look at its rdfs:range ?D
    *  see if ?D is a datatype or an OWL or RDFS class
    *  ( used for creating an empty Form from a class URI )
    */
   def createForm(subject: Rdf#Node,
-    props: Seq[Rdf#URI], classs: Rdf#URI): FormSyntax[Rdf#Node, Rdf#URI] = {
+    // 
+    //    props: Seq[Rdf#URI], classs: Rdf#URI): FormSyntax[Rdf#Node, Rdf#URI] = {
+    props: Iterable[Rdf#URI], classs: Rdf#URI): FormSyntax[Rdf#Node, Rdf#URI] = {
     Logger.getRootLogger().info(s"createForm subject $subject, props $props")
 
     val entries = for (prop <- props) yield {
@@ -126,13 +130,14 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
   }
 
   def addTypeTriple(subject: Rdf#Node, classs: Rdf#URI,
-    fields: Seq[Entry]): Seq[Entry] = {
+    fields: Iterable[Entry]): Seq[Entry] = {
     val formEntry = new ResourceEntry(
       // TODO not I18N:
       "type", "class",
       rdf.typ, ResourceValidator(Set(owl.Class)), classs,
       alreadyInDatabase = false)
-    fields :+ formEntry
+    (fields ++ Seq(formEntry)).toSeq
+    //    fields :+ formEntry
   }
 
   /** find fields from given Instance subject */
