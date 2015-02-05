@@ -25,8 +25,8 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
           for (field <- form.fields) yield {
             <div class="form-group">
               <div class="row">
-                <label class="col-md-4 control-label" title={ field.comment }>{ field.label }</label>
-                <div class="col-md-8">
+                <label class="control-label" title={ field.comment }>{ field.label }</label>
+                <div class="input">
                   {
                     createHTMLField(field, editable, hrefPrefix)
                   }
@@ -109,7 +109,10 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
   def createHTMLiteralEditableLField(lit: LiteralEntry): xml.NodeSeq = {
     val elem = lit.type_.toString() match {
       case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
-        <input class="form-control" value={ lit.value } name={ "LIT-" + urlEncode(lit.property) } data-type={ lit.type_.toString() } type="number" min="1" max="5"/>
+        (for (n <- Range(0, 6)) yield (
+          <input type="radio" name={ "LIT-" + urlEncode(lit.property) } id={ "LIT-" + urlEncode(lit.property) } checked={ if (n.toString.equals(lit.value)) "checked" else null } value={ n.toString }/>
+          <label for={ "LIT-" + urlEncode(lit.property) }>{ n }</label>
+        )).flatten
       case _ =>
         <input class="form-control" value={ lit.value } name={ "LIT-" + urlEncode(lit.property) }/>
     }
