@@ -9,7 +9,7 @@ import org.w3.banana.SparqlOpsModule
 import org.w3.banana.PointedGraph
 import org.w3.banana.diesel._
 import org.scalatest.FunSuite
-import deductions.runtime.jena.RDFStoreLocalProvider
+//import deductions.runtime.jena.RDFStoreLocalProvider
 
 class TestFormSaver
     extends FunSuite
@@ -18,7 +18,8 @@ class TestFormSaver
     with SparqlGraphModule
     with SparqlOpsModule
     //    with RDFStoreLocalProvider2[Rdf, DATASET]
-    with RDFStoreLocalProvider {
+//    with RDFStoreLocalProvider 
+    {
   import ops._
 
   lazy val fs = new FormSaver()

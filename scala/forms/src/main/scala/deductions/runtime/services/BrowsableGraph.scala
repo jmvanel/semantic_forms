@@ -54,7 +54,7 @@ class BrowsableGraph[Rdf <: RDF]( //[Rdf <: RDF, Store](
   }
 
   /**
-   * all triples in graph <$search> , plus "reverse" triples everywhere
+   * all triples in graph <search> , plus "reverse" triples everywhere
    *  used in Play! app : NON blocking !
    */
   def search_only(search: String): Future[Rdf#Graph] = {

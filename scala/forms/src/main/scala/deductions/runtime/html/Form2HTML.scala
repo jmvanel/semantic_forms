@@ -108,11 +108,14 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   def createHTMLiteralEditableLField(lit: LiteralEntry): xml.NodeSeq = {
     val elem = lit.type_.toString() match {
+
+      // TODO match graph pattern for interval datatype ; see issue #17
       case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
         (for (n <- Range(0, 6)) yield (
           <input type="radio" name={ "LIT-" + urlEncode(lit.property) } id={ "LIT-" + urlEncode(lit.property) } checked={ if (n.toString.equals(lit.value)) "checked" else null } value={ n.toString }/>
           <label for={ "LIT-" + urlEncode(lit.property) }>{ n }</label>
         )).flatten
+
       case _ =>
         <input class="form-control" value={ lit.value } name={ "LIT-" + urlEncode(lit.property) }/>
     }
