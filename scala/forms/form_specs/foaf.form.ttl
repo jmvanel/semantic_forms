@@ -22,6 +22,7 @@
 
 <topic_interest>
 	:fieldAppliesToForm <personForm> ;
+	:fieldAppliesToForm <organizationForm> ;
 	:fieldAppliesToProperty foaf:topic_interest ;
 	:widgetClass form:DBPediaLookup .
 
@@ -39,6 +40,23 @@
 	foaf:age
 	dc:subject
   ) .
+
+<organizationForm>
+  form:classDomain foaf:Organization ;
+  form:showProperties (
+	rdfs:label rdfs:comment
+	foaf:homepage
+	foaf:maker
+	foaf:mbox
+	foaf:fundedBy
+	foaf:isPrimaryTopicOf
+	foaf:depiction
+	foaf:holdsAccount
+	foaf:age
+	dc:subject
+	foaf:topic_interest
+  ) .
+
 
 <dc_subject>
 	:fieldAppliesToForm <projectForm> ;

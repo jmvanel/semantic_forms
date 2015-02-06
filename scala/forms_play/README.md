@@ -64,7 +64,7 @@ plus a textbox to enter a URL semantics, eg a FOAF profile or DBpedia URI :
 
 # How to run
 
-Dependencies to install : Java 7 (Scala is not ready for Java 8), [SBT](http://www.scala-sbt.org/)
+Dependencies to install : Java 7 or 8 (Scala is now also ready for Java 8), [SBT](http://www.scala-sbt.org/)
 or [Typesafe Activator](http://typesafe.com/platform/getstarted) .
 Then SBT or Activator donwload the rest.
 
@@ -106,6 +106,8 @@ Please read explanations on the Banana-RDF project:
 - Preloading common vocabularies, and preloading some pre-defined form specifications ( currently FOAF ) : in activator shell type:
 ```
     runMain deductions.runtime.sparql_cache.PopulateRDFCache
+    // or, just the forms specs:
+    runMain tdb.tdbloader --loc=TDB --graph=form_specs ../forms/form_specs/foaf.form.ttl
 ```
 - Preloading a local file: in activator shell type: for example:
 

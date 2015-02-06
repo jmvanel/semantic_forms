@@ -96,6 +96,8 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
           },
           x => (), x => ())
 
+    // ==== body of function addPossibleValues ====
+
     entryField match {
       case r: ResourceEntry =>
         populateFromInstances(populateFromOwlOneOf(r))

@@ -137,8 +137,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
       case re: ResourceEntry =>
         <datalist id={ makeHTMLIdForDatalist(re) }>
           {
-            for (value <- re.possibleValues) yield <option data-uri={ value._1.toString() } data-label={ value._2 }>
-                                                     { value._1 }
+            for (value <- re.possibleValues) yield <option label={ value._2 } value={ value._1.toString() }>
                                                    </option>
           }
         </datalist>
