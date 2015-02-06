@@ -37,8 +37,10 @@ package global {
     lazy val fs = new FormSaver()
     lazy val cf = new CreationForm { actionURI = "/save" }
 
+    // TODO use inverse Play's URI API
     val hrefDisplayPrefix = "/display?displayuri="
     val hrefDownloadPrefix = "/download?url="
+    val hrefEditPrefix ="/edit?url="
 
     //  override def onStart(app: Application) {
     //    val uri = "http://jmvanel.free.fr/jmv.rdf#me"
@@ -55,14 +57,16 @@ package global {
       <div class="container">
         <div class="container">
           <div class="row">
-            <h3>Properties for URI <b>{ uri }</b></h3>
+            <h3>Properties for URI 
+              <b><a href={ hrefEditPrefix + URLEncoder.encode(uri, "utf-8") }>{ uri }</a></b></h3>
           </div>
           <div class="row">
             <div class="col-md-6">
               <a href={ uri } title="Download from original URI">Download from original URI</a>
             </div>
             <div class="col-md-6">
-              <a href={ hrefDownloadPrefix + URLEncoder.encode(uri, "utf-8") } title="Download Turtle from database (augmented by users' edits)">Triples</a>
+              <a href={ hrefDownloadPrefix + URLEncoder.encode(uri, "utf-8") }
+                 title="Download Turtle from database (augmented by users' edits)">Triples</a>
             </div>
           </div>
         </div>
@@ -215,6 +219,6 @@ package global {
         { dl.sparqlConstructQuery(query) /* TODO Future !!!!!!!!!!!!!!!!!!! */ }
       </p>
     }
-//    def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
+    def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
   }
 }

@@ -1,3 +1,4 @@
+Welcome=Bienvenue à Semantic forms
 Display=Afficher
 Edit=Éditer
 Search=Chercher
