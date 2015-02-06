@@ -14,7 +14,7 @@ import org.w3.banana.jena.JenaModule
 
 class FormSyntaxFactoryTestJena extends FunSuite
     with JenaModule
-    with FormSyntaxFactoryTest  {
+    with FormSyntaxFactoryTest {
 
   test("form contains label and data") {
     val form = createFormWithGivenProps
@@ -61,7 +61,7 @@ trait FormSyntaxFactoryTest // [Rdf <: RDF]
       -- foaf.knows ->- (
         URI("http://bblfish.net/#hjs")
         -- foaf.name ->- "Henry Story"
-        -- foaf.currentProject ->- URI("http://webid.info/"))).graph      
+        -- foaf.currentProject ->- URI("http://webid.info/"))).graph
   }
 
   def createFormWithGivenProps() = {
@@ -79,15 +79,15 @@ trait FormSyntaxFactoryTest // [Rdf <: RDF]
       URI(""))
     form
   }
- 
+
   def createFormWithInferredProps() = {
-	  val graph1 = makeFOAFsample
+    val graph1 = makeFOAFsample
     val resource = new FileInputStream("src/test/resources/foaf.n3")
     val graph2 = turtleReader.read(resource, "http://xmlns.com/foaf/0.1/").get
     val graph = union(Seq(graph1, graph2))
 
     val fact = new FormSyntaxFactory[Rdf](graph)
-    fact.createForm( URI("betehess"), editable=true)
+    fact.createForm(URI("betehess"), editable = true)
   }
 
 }

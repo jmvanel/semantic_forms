@@ -16,9 +16,8 @@ class TestFormSaver
     with RDFCache
     with RDFOpsModule
     with SparqlGraphModule
-    with SparqlOpsModule
-    //    with RDFStoreLocalProvider2[Rdf, DATASET]
-//    with RDFStoreLocalProvider 
+    with SparqlOpsModule //    with RDFStoreLocalProvider[Rdf, DATASET]
+    //    with RDFStoreLocalProvider 
     {
   import ops._
 

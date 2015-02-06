@@ -7,6 +7,8 @@ import org.w3.banana.URIOps
 import org.w3.banana.RDF
 import org.w3.banana.PointedGraph
 import org.w3.banana.diesel._
+import org.w3.banana.syntax._
+import scala.util._
 
 /**
  * use with :
@@ -15,6 +17,7 @@ import org.w3.banana.diesel._
 abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf]) {
   val graph: Rdf#Graph
   val rdf = RDFPrefix[Rdf]
+  import ops._
 
   /** recursively iterate on the Rdf#Node through rdf:first and rdf:rest */
   def rdfListToSeq(listOp: Option[Rdf#Node], result: Seq[Rdf#Node] = Seq()): Seq[Rdf#Node] = {

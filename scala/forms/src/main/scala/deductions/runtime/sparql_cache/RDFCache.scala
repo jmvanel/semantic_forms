@@ -3,6 +3,11 @@ package deductions.runtime.sparql_cache
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.util.Failure
+import scala.util.Success
+import scala.util.Try
 import org.apache.http.impl.cookie.DateUtils
 import org.w3.banana.RDFModule
 import org.w3.banana.RDFOpsModule
@@ -10,15 +15,10 @@ import org.w3.banana.RDFXMLReaderModule
 import org.w3.banana.TurtleReaderModule
 import org.w3.banana.XSDPrefix
 import deductions.runtime.jena.JenaHelpers
-import org.w3.banana.GraphStore
-import org.w3.banana.RDFStore
-import org.w3.banana.jena.JenaDatasetStore
-//import deductions.runtime.jena.RDFStoreLocalProvider
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import scala.util.Try
-import scala.concurrent.Future
-import scala.util.Success
-import scala.util.Failure
+import deductions.runtime.dataset.RDFStoreLocalProvider
+import org.w3.banana.jena.Jena
+import com.hp.hpl.jena.query.Dataset
 
 /** */
 trait RDFCacheDependencies
@@ -28,8 +28,10 @@ trait RDFCacheDependencies
   with RDFXMLReaderModule
 
 /** depends on generic Rdf but, through RDFStoreLocalJena1Provider and JenaHelpers, on Jena :( TODO remove Jena */
-trait RDFCache extends RDFStoreLocalJena1Provider
-    with RDFCacheDependencies with JenaHelpers {
+trait RDFCache extends //RDFStoreLocalProvider[Jena, Dataset] 
+RDFStoreLocalJena1Provider
+    with RDFCacheDependencies
+    with JenaHelpers {
 
   val timestampGraphURI = "http://deductions-software.com/timestampGraph"
   val xsd = XSDPrefix[Rdf]

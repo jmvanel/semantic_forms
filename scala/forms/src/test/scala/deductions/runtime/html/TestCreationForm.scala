@@ -78,7 +78,7 @@ trait GraphTestEnum extends RDFOpsModule {
     -- rdfs.range ->- URI("PersonType")
     -- rdfs.label ->- "style de personne"
   ).graph
-    val vocab31 = (
+  val vocab31 = (
     URI("workStyle")
     -- rdf.typ ->- owl.ObjectProperty
     -- rdfs.domain ->- URI("Person")

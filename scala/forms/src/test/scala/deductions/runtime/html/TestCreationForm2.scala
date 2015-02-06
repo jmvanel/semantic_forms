@@ -8,7 +8,7 @@ import org.w3.banana.FOAFPrefix
 import org.w3.banana.Prefix
 import org.w3.banana.RDFOpsModule
 import org.w3.banana.TurtleWriterModule
-import org.w3.banana.diesel.toPointedGraphW
+import org.w3.banana.diesel._
 import org.w3.banana.jena.JenaModule
 
 import deductions.runtime.utils.FileUtils
