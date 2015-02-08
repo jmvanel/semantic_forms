@@ -15,7 +15,11 @@ import deductions.runtime.jena.RDFStoreObject
 import scala.util.Try
 import scala.concurrent.Future
 import org.w3.banana._
+import org.w3.banana.jena.Jena
 //import deductions.runtime.jena.RDFStoreLocalProvider
+
+object FormSaverObject extends FormSaver[Jena]
+//class Test1 { FormSaverObject.saveTriples(Map()) }
 
 class FormSaver[Rdf <: RDF]()(
     implicit ops: RDFOps[Rdf],
