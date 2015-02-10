@@ -37,7 +37,7 @@ trait CreationForm extends RDFOpsModule
         val factory = new UnfilledFormFactory[Rdf](allNamedGraphs, preferedLanguage = lang)
         val form = factory.createFormFromClass(URI(classUri))
         println(form)
-        val htmlForm = generateHTML(form, hrefPrefix = "", editable = true, actionURI)
+        val htmlForm = generateHTML(form, hrefPrefix = "", editable = true, actionURI = actionURI)
         htmlForm
       }
     })

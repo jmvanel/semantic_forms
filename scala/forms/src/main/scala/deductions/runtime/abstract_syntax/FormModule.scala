@@ -20,7 +20,8 @@ trait FormModule[NODE, URI <: NODE] {
   case class FormSyntax[NODE, URI <: NODE](
       val subject: NODE,
       val fields: Seq[Entry],
-      classs: URI = nullURI) {
+      classs: URI = nullURI //     , graphURI: URI = nullURI
+      ) {
     override def toString(): String = {
       s"""FormSyntax:
         subject: $subject

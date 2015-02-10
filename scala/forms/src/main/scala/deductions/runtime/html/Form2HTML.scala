@@ -16,7 +16,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
   def generateHTML(form: fm#FormSyntax[NODE, URI],
     hrefPrefix: String = "",
     editable: Boolean = false,
-    actionURI: String = "/save"): Elem = {
+    actionURI: String = "/save", graphURI: String = ""): Elem = {
 
     val htmlForm =
       <div class="form">
@@ -43,6 +43,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
           <input value="SAVE" type="submit" class="btn btn-primary btn-lg"/>
         </p>
         <input type="hidden" name="url" value={ urlEncode(form.subject) }/>
+        <input type="hidden" name="graphURI" value={ urlEncode(graphURI) }/>
         { htmlForm }
         <p class="text-right">
           <input value="SAVE" type="submit" class="btn btn-primary btn-lg pull-right"/>

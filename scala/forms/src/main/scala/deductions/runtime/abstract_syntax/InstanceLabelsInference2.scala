@@ -17,8 +17,8 @@ import org.w3.banana.RDFOpsModule
 trait InstanceLabelsInference2[Rdf <: RDF] extends RDFOpsModule {
 
   import ops._
-  val foaf = FOAFPrefix[Rdf]
-  val rdfs = RDFSPrefix[Rdf]
+  lazy val foaf = FOAFPrefix[Rdf]
+  lazy val rdfs = RDFSPrefix[Rdf]
 
   def instanceLabels(list: Seq[Rdf#URI])(implicit graph: Rdf#Graph): Seq[String] = list.map(instanceLabel)
 

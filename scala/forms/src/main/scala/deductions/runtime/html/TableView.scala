@@ -36,11 +36,16 @@ trait TableViewModule
   val nullURI: Rdf#URI = ops.URI("")
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  /** create a form for given URI with background knowledge in RDFStoreObject.store  */
+  /**
+   * create a form for given URI with background knowledge in RDFStoreObject.store;
+   *  by default user inputs will be saved in named graph uri, except if given graphURIarg
+   */
   def htmlForm(uri: String, hrefPrefix: String = "", blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",
-    lang: String = "en"): Try[Elem] = {
+    lang: String = "en", graphURI: String = ""): Try[Elem] = {
+
+    val graphURIActual = if (graphURI == "") uri else graphURI
     val dataset = RDFStoreObject.dataset
     if (blankNode != "true") {
       retrieveURI(makeUri(uri), dataset)
@@ -50,7 +55,7 @@ trait TableViewModule
       for (
         // TODO use allNamedGraphs from RDFStoreObject
         allNamedGraphs <- rdfStore.getGraph(dataset, makeUri("urn:x-arq:UnionGraph"))
-      ) yield graf2form(allNamedGraphs, uri, hrefPrefix, blankNode, editable, actionURI, lang)
+      ) yield graf2form(allNamedGraphs, uri, hrefPrefix, blankNode, editable, actionURI, lang, graphURIActual)
     })
     //    MonadicHelpers.tryToFutureFlat(r)
     r.flatMap { identity }
@@ -77,7 +82,8 @@ trait TableViewModule
     hrefPrefix: String = "", blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",
-    lang: String = "en"): Elem = {
+    lang: String = "en", graphURI: String): Elem = {
+
     val factory = new FormSyntaxFactory[Rdf](graph, preferedLanguage = lang)
     val form = factory.createForm(
       if (blankNode == "true")
@@ -89,20 +95,20 @@ trait TableViewModule
     )
     println("form:\n" + form)
     val htmlForm = generateHTML(
-      form, hrefPrefix, editable, actionURI)
+      form, hrefPrefix, editable, actionURI, graphURI)
     htmlForm
   }
 
   def htmlFormString(uri: String,
     editable: Boolean = false,
-    actionURI: String = "/save"): String = {
+    actionURI: String = "/save", graphURI: String): String = {
     val f = htmlFormElem(uri, editable = editable, actionURI = actionURI)
     val pp = new PrettyPrinter(80, 2)
     pp.format(f)
   }
 
-  def graf2formString(graph1: Rdf#Graph, uri: String): String = {
-    graf2form(graph1, uri).toString
+  def graf2formString(graph1: Rdf#Graph, uri: String, graphURI: String): String = {
+    graf2form(graph1, uri, graphURI = graphURI).toString
   }
 
   /**

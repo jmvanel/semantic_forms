@@ -144,7 +144,14 @@ Tips:
 # How to debug
 
 Start Activator or SBT with -jvm-debug argument; then type run. Then start a remove debug in eclipse or another IDE with port 9999.
+```
     ./activator -jvm-debug
+```
+
+or:
+```
+    sbt  -jvm-debug 9999
+```
 
 # Vocabulary for forms
 

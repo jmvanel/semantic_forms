@@ -173,9 +173,9 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     }
 
     def addOneEntry(object_ : Rdf#Node) = {
-
+      val literalPlaceHolder = "..empty.."
       def literalEntry = new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
-        getStringOrElse(object_, "..empty.."),
+        getStringOrElse(object_, literalPlaceHolder),
         type_ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI))
       def resourceEntry = {
         ops.foldNode(object_)(
@@ -184,9 +184,10 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
             type_ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI)),
           object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_, typ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI)
           ),
-          object_ => new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
-            getStringOrElse(object_, "..empty.."),
-            type_ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI))
+          object_ => literalEntry
+        // new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
+        // getStringOrElse(object_, literalPlaceHolder ),
+        // type_ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI))
         )
       }
       val xsdPrefix = XSDPrefix[Rdf].prefixIri
