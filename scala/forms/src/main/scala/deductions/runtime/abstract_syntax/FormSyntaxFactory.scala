@@ -84,15 +84,16 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
 
     val entries = for (prop <- props) yield {
       Logger.getRootLogger().info(s"createForm subject $subject, prop $prop")
-      //      val ranges = extractURIs(objectsQuery(prop, rdfs.range))
-      val ranges = nodeSeqToURISet(objectsQuery(prop, rdfs.range))
+      //      val ranges = nodeSeqToURISet(objectsQuery(prop, rdfs.range))
+      val ranges = objectsQuery(prop, rdfs.range)
       val rangesSize = ranges.size
-      val mess = if (rangesSize > 1) {
-        "WARNING: ranges " + ranges + " for property " + prop + " are multiple."
-      } else if (rangesSize == 0) {
-        "WARNING: There is no range for property " + prop
-      } else ""
-      println(mess, System.err)
+      println(
+        if (rangesSize > 1) {
+          "WARNING: ranges " + ranges + " for property " + prop + " are multiple."
+        } else if (rangesSize == 0) {
+          "WARNING: There is no range for property " + prop
+        } else "",
+        System.err)
       makeEntries(subject, prop, ranges)
     }
     val fields = entries.flatMap { s => s }
@@ -135,7 +136,6 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
       rdf.typ, ResourceValidator(Set(owl.Class)), classs,
       alreadyInDatabase = false)
     (fields ++ Seq(formEntry)).toSeq
-    //    fields :+ formEntry
   }
 
   /** find fields from given Instance subject */
@@ -148,7 +148,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
    * or else display terminal Part of URI as label;
    *  taking in account multi-valued properties
    */
-  private def makeEntries(subject: Rdf#Node, prop: Rdf#URI, ranges: Set[Rdf#URI]): Seq[Entry] = {
+  private def makeEntries(subject: Rdf#Node, prop: Rdf#URI, ranges: Set[Rdf#Node]): Seq[Entry] = {
     Logger.getRootLogger().info(s"makeEntry subject $subject, prop $prop")
     val label = getHeadStringOrElse(prop, rdfs.label, terminalPart(prop))
     val comment = getHeadStringOrElse(prop, rdfs.comment, "")

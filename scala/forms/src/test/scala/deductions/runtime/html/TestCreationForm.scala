@@ -11,14 +11,16 @@ import deductions.runtime.utils.FileUtils
 import java.nio.file.Files
 import java.nio.file.Paths
 import scala.xml.Elem
+import deductions.runtime.jena.RDFGraphPrinter
+import java.io.PrintStream
 
 /** Test Creation Form from class URI, without form specification */
 class TestCreationForm extends FunSuite with CreationForm with GraphTestEnum {
 
-  test("display form") {
+  test("display form from instance") {
     FileUtils.deleteLocalSPARL()
     val classUri = // "http://usefulinc.com/ns/doap#Project"
-      // foaf.Organization
+      //       foaf.Organization
       foaf.Person
     retrieveURI(classUri, dataset)
     // to test possible values generation:
@@ -33,7 +35,7 @@ class TestCreationForm extends FunSuite with CreationForm with GraphTestEnum {
     assert(rawForm.toString().contains("homepage"))
   }
 
-  test("display form with owl:oneOf") {
+  test("display form from vocab' with owl:oneOf") {
     FileUtils.deleteLocalSPARL()
     import ops._
     rdfStore.rw(dataset, {
@@ -51,7 +53,7 @@ class TestCreationForm extends FunSuite with CreationForm with GraphTestEnum {
   }
 }
 
-trait GraphTestEnum extends RDFOpsModule {
+trait GraphTestEnum extends RDFOpsModule with TurtleWriterModule {
   import ops._
   import syntax._
   val foaf = FOAFPrefix[Rdf]
@@ -63,12 +65,34 @@ trait GraphTestEnum extends RDFOpsModule {
     -- rdf.typ ->- owl.Class
     -- owl.oneOf ->- List(URI("hero"), URI("evil"), URI("wise"))
   ).graph
-  val vocab11 = (
+  
+  val alexs = Seq(
+      bnode("a") -- foaf.name ->- "Alexandre".lang("fr"),
+      bnode("b") -- foaf.name ->- "Alexander".lang("en")
+    )
+
+   val vocab11 = (
     URI("WorkType")
     -- rdf.typ ->- owl.Class
-    -- owl.oneOf ->- List(BNode("Dilbert"), BNode("Alice"), BNode("Wally"))
+    -- owl.oneOf ->- ( BNode("Dilbert") -- rdfs.label ->- "" )      
+    -- owl.oneOf ->- List(
+         ( BNode("DilbertBN") -- rdfs.label ->- "Dilbert" ),
+         ( BNode("AliceBN") -- rdfs.label ->- "Alice" ),
+         ( BNode("WallyBN") -- rdfs.label ->- "Wally" )
+        )  
   ).graph
 
+  val vocab11bn = (
+    BNode("WorkTypeBN")
+    -- rdf.typ ->- owl.Class
+    -- owl.oneOf ->- ( BNode("Dilbert") -- rdfs.label ->- "" )      
+    -- owl.oneOf ->- List(
+         ( BNode("DilbertBN") -- rdfs.label ->- "Dilbert" ),
+         ( BNode("AliceBN") -- rdfs.label ->- "Alice" ),
+         ( BNode("WallyBN") -- rdfs.label ->- "Wally" )
+        )  
+  ).graph
+  
   val vocab2 = (
     URI("Person") -- rdf.typ ->- owl.Class).graph
   val vocab3 = (
@@ -85,7 +109,18 @@ trait GraphTestEnum extends RDFOpsModule {
     -- rdfs.range ->- URI("WorkType")
     -- rdfs.label ->- "style de travail"
   ).graph
-  val vocab = vocab1 union vocab11 union vocab2 union vocab3 union vocab31
+  val vocab31bn = (
+    URI("workStyleBN")
+    -- rdf.typ ->- owl.ObjectProperty
+    -- rdfs.domain ->- URI("Person")
+    -- rdfs.range ->- BNode("WorkTypeBN")
+    -- rdfs.label ->- "style de travail"
+  ).graph
+  val vocab = vocab1 union vocab11 union vocab11bn union vocab2 union vocab3 /* union vocab31 */ union vocab31bn
+  
+  println("==== vocab ====")
+  val os = new PrintStream( System.out )
+  turtleWriter.write( vocab, os, "" )
 }
 
 object TestCreationForm {

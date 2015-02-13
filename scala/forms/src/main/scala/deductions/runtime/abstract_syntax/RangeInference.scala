@@ -16,7 +16,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
 
   import ops._
 
-  def addPossibleValues(entryField: Entry, ranges: Set[Rdf#URI]): Entry = {
+  def addPossibleValues(entryField: Entry, ranges: Set[Rdf#Node]): Entry = {
     val owl = OWLPrefix[Rdf]
     val gr = graph
     val rdfh = new RDFHelpers[Rdf] { val graph = gr }

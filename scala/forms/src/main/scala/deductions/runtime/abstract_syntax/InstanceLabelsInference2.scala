@@ -14,7 +14,7 @@ import org.w3.banana.RDFOpsModule
  * populate Fields in form by inferring possible values from given rdfs:range's URI,
  *  through owl:oneOf and know instances
  */
-trait InstanceLabelsInference2[Rdf <: RDF] extends RDFOpsModule {
+trait InstanceLabelsInference2 /*[Rdf <: RDF]*/ extends RDFOpsModule {
 
   import ops._
   lazy val foaf = FOAFPrefix[Rdf]

@@ -85,8 +85,8 @@ trait FormModule[NODE, URI <: NODE] {
     }
   }
 
-  case class ResourceValidator(typ: Set[URI])
-  case class DatatypeValidator(typ: Set[URI])
+  case class ResourceValidator(typ: Set[NODE]) // URI])
+  case class DatatypeValidator(typ: Set[NODE]) // URI])
 
   sealed class WidgetType
   object Text extends WidgetType
