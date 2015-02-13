@@ -50,7 +50,7 @@ class FormSaver[Rdf <: RDF]()(
       case _ =>
     }
 
-    // end of body of saveTriples
+    // ==== end of body of saveTriples ====
 
     def saveTriplesForProperty(uri: String, prop: String, objects: Seq[String], map: Map[String, Seq[String]]) = {
       objects.map(object_ => saveTriple(uri, prop, object_))
@@ -76,8 +76,8 @@ class FormSaver[Rdf <: RDF]()(
           makeUri(obj)
         case prop if (prop startsWith ("BLA-")) =>
           makeBNodeLabel(obj)
-        case _ => makeLiteral("CASE NOT COVERED: "
-          + prop.substring(4) + ", "
+        case _ => makeLiteral("FormSaver.decodeHTTPParam: CASE NOT COVERED: "
+          + prop + " , "
           + obj, xsd.string)
       }
     }
@@ -87,6 +87,7 @@ class FormSaver[Rdf <: RDF]()(
       println("saveTriple: " + prop + " \"" + obj + "\"")
       if (prop != "url" &&
         prop != "uri" &&
+        prop != "graphURI" &&
         !prop.startsWith("ORIG-")) {
         val (changed, originalValue) = processChange(uri, prop, obj)
         if (changed) {
