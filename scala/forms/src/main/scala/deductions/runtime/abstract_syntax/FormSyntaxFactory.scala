@@ -79,8 +79,6 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
    *  ( used for creating an empty Form from a class URI )
    */
   def createForm(subject: Rdf#Node,
-    // 
-    //    props: Seq[Rdf#URI], classs: Rdf#URI): FormSyntax[Rdf#Node, Rdf#URI] = {
     props: Iterable[Rdf#URI], classs: Rdf#URI): FormSyntax[Rdf#Node, Rdf#URI] = {
     Logger.getRootLogger().info(s"createForm subject $subject, props $props")
 
@@ -159,7 +157,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     val result = scala.collection.mutable.ArrayBuffer[Entry]()
     val rangeClasses = objectsQueries(ranges, RDFPrefix[Rdf].typ)
 
-    for (obj <- objects) addOneEntry(obj)
+    for (obj <- objects) if (prop != rdf.typ) addOneEntry(obj)
     if (objects isEmpty) addOneEntry(nullURI)
 
     def makeBN(label: String, comment: String,
@@ -185,9 +183,6 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
           object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_, typ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI)
           ),
           object_ => literalEntry
-        // new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
-        // getStringOrElse(object_, literalPlaceHolder ),
-        // type_ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI))
         )
       }
       val xsdPrefix = XSDPrefix[Rdf].prefixIri

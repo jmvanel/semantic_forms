@@ -63,6 +63,7 @@ plus a textbox to enter a URL semantics, eg a FOAF profile or DBpedia URI :
 [example.form.foaf.html](http://htmlpreview.github.io/?https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/example.form.foaf.html)
 
 # How to run
+## Run locally from sources
 
 Dependencies to install : Java 7 or 8 (Scala is now also ready for Java 8), [SBT](http://www.scala-sbt.org/)
 or [Typesafe Activator](http://typesafe.com/platform/getstarted) .
@@ -80,6 +81,8 @@ and type in Activator:
 The default port is 9000, so you can direct your browser to [http://localhost:9000](http://localhost:9000) .
 To run on another port than 9000 :
     run 9053
+
+## Run on a server without development environment
 
 To package to run on a server that has Java only: type in activator : `dist`
 
@@ -112,11 +115,9 @@ Please read explanations on the Banana-RDF project:
 - Preloading a local file: in activator shell type: for example:
 
 ```
-    runMain tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me \
-      /home/jmv/data/foaf/jmv.rdf
+    runMain tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me /home/jmv/data/foaf/jmv.rdf
     # With Jena it is possible to directly load from Internet:
-    runMain tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me \
-       http://jmvanel.free.fr/jmv.rdf#me 
+    runMain tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me http://jmvanel.free.fr/jmv.rdf#me 
 ```
 
 - dumping all database:
