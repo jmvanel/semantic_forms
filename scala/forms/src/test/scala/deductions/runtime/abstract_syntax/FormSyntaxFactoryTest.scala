@@ -1,7 +1,7 @@
 package deductions.runtime.abstract_syntax
 
 import java.io.FileInputStream
-
+import java.io.FileOutputStream
 import org.hamcrest.BaseMatcher
 import org.junit.Assert
 import org.scalatest.FunSuite
@@ -11,6 +11,7 @@ import org.w3.banana.RDFOpsModule
 import org.w3.banana.TurtleReaderModule
 import org.w3.banana.diesel._
 import org.w3.banana.jena.JenaModule
+import org.w3.banana.TurtleWriterModule
 
 class FormSyntaxFactoryTestJena extends FunSuite
     with JenaModule
@@ -45,11 +46,18 @@ class FormSyntaxFactoryTestJena extends FunSuite
         def describeTo(x$1: org.hamcrest.Description): Unit = {}
       })
   }
+
+  test("form from Class") {
+    val form = createFormFromClass
+    println("form:\n" + form)
+  }
+  
 }
 
 trait FormSyntaxFactoryTest // [Rdf <: RDF]
     extends RDFOpsModule
-    with TurtleReaderModule {
+    with TurtleReaderModule
+    with TurtleWriterModule {
 
   import ops._
   val foaf = FOAFPrefix[Rdf]
@@ -67,7 +75,7 @@ trait FormSyntaxFactoryTest // [Rdf <: RDF]
   def createFormWithGivenProps() = {
     val graph1 = makeFOAFsample
     val resource = new FileInputStream("src/test/resources/foaf.n3")
-    val graph2 = turtleReader.read(resource, "http://xmlns.com/foaf/0.1/").get
+    val graph2 = turtleReader.read(resource, foaf.prefixIri).get
     val graph = union(Seq(graph1, graph2))
 
     val fact = new FormSyntaxFactory[Rdf](graph)
@@ -83,11 +91,24 @@ trait FormSyntaxFactoryTest // [Rdf <: RDF]
   def createFormWithInferredProps() = {
     val graph1 = makeFOAFsample
     val resource = new FileInputStream("src/test/resources/foaf.n3")
-    val graph2 = turtleReader.read(resource, "http://xmlns.com/foaf/0.1/").get
+    val graph2 = turtleReader.read(resource, foaf.prefixIri).get
     val graph = union(Seq(graph1, graph2))
 
     val fact = new FormSyntaxFactory[Rdf](graph)
     fact.createForm(URI("betehess"), editable = true)
+  }
+
+  def createFormFromClass() = {
+	  val resource = new FileInputStream("src/test/resources/foaf.n3")
+    val graph2 = turtleReader.read(resource, foaf.prefixIri).get
+    val formspec = new FileInputStream("form_specs/foaf.form.ttl" )
+    val graph1 = turtleReader.read( formspec, "").get
+    val graph = union(Seq(graph1, graph2))
+//  val fact = new UnfilledFormFactory[Rdf](graph)
+    val fact = new FormSyntaxFactory[Rdf](graph)
+    val os = new FileOutputStream("/tmp/graph.nt")
+    turtleWriter.write(graph, os, "")
+    fact.createForm(URI("betehess"), Seq(foaf.topic_interest), foaf.Person )
   }
 
 }

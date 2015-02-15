@@ -107,22 +107,30 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
   /**
    * update given Form,
    * looking up for Form Configuration within RDF graph in this class
-   * e g in :
+   * eg in :
    *  <pre>
-   *  <topic_interest>
-   * :fieldAppliesToForm <personForm> ;
-   * :fieldAppliesToProperty foaf:topic_interest ;
-   * :widgetClass form:DBPediaLookup .
+   *  &lt;topic_interest> :fieldAppliesToForm &lt;personForm> ;
+   *   :fieldAppliesToProperty foaf:topic_interest ;
+   *   :widgetClass form:DBPediaLookup .
    *  <pre>
    */
   def updateFormForClass(formSyntax: AbstractForm): AbstractForm = {
     val updatedFields = for (field <- formSyntax.fields) yield {
       val fieldSpecs = formConfiguration.lookFieldSpecInConfiguration(field.property)
+      println("updateFormForClass")
+      fieldSpecs.map { println }
       fieldSpecs.map {
         fieldSpec =>
-          val triples = find(graph, fieldSpec.subject, ANY, ANY)
-          for (t <- triples)
+          val triples = find(graph, fieldSpec.subject, ANY, ANY).toSeq
+          for (t <- triples) {
+            println("updateFormForClass " + t)
             field.addTriple(t.subject, t.predicate, t.objectt)
+          }
+          // TODO each feature should be in a different file
+          for (t <- triples) {
+            if (t.predicate == formPrefix("widgetClass"))
+              field.widgetType = DBPediaLookup
+          }
       }
     }
     formSyntax

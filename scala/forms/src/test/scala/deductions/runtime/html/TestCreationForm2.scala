@@ -20,8 +20,10 @@ class TestCreationForm2 extends FunSuite
 
   test("display form custom") {
     FileUtils.deleteLocalSPARL()
+    
     val uri = "http://xmlns.com/foaf/0.1/Person"
     retrieveURI(ops.makeUri(uri), dataset)
+    retrieveURI(ops.makeUri("form_specs/foaf.form.ttl"), dataset)
     //    PopulateRDFCache.loadCommonFormSpecifications
 
     rdfStore.appendToGraph(dataset, ops.makeUri("test"), graphTest.personFormSpec)
@@ -46,7 +48,8 @@ trait GraphTest extends RDFOpsModule {
   val form = Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#")
   println(form) // TODO debug !!!!!!!!
   val foaf = FOAFPrefix[Rdf]
-  val personFormSpec = (
+  
+  val personFormSpec0 = (
     URI("personForm")
     -- form("classDomain") ->- foaf.Person
     -- form("showProperties") ->- ( // list
@@ -54,4 +57,13 @@ trait GraphTest extends RDFOpsModule {
       -- rdf.rest ->- (
         bnode("p2") -- rdf.first ->- foaf.lastName
         -- rdf.rest ->- rdf.nil))).graph
+
+   val personFormSpec = (
+    URI("personForm")
+    -- form("classDomain") ->- foaf.Person
+    -- form("showProperties") ->- List(
+       foaf.firstName,
+       foaf.lastName,
+       foaf.topic_interest
+    		)).graph
 }

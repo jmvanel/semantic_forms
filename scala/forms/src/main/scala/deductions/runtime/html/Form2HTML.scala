@@ -5,6 +5,7 @@ import deductions.runtime.abstract_syntax.FormModule
 import java.net.URLEncoder
 import Form2HTML._
 import scala.xml.NodeSeq
+import deductions.runtime.abstract_syntax.DBPediaLookup
 
 /**
  * different modes: display or edit;
@@ -147,10 +148,13 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
   }
 
   def addDBPediaLookup(r: ResourceEntry): Elem = {
-    <script>
-      installDbpediaComplete( "{ makeHTMLId(r) }
-      " );
-    </script>
+    // format: OFF    <-- for scalariform
+    if (r.widgetType == DBPediaLookup)
+      <script>
+        installDbpediaComplete( '{ makeHTMLId(r) }' );
+      </script>
+    else <div/>
+    // format: ON    <-- for scalariform
   }
 }
 

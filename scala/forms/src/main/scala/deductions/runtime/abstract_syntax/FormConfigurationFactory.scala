@@ -59,15 +59,16 @@ class FormConfigurationFactory[Rdf <: RDF](graph: Rdf#Graph)(implicit ops: RDFOp
    * return e g :  <topic_interest>
    *  in :
    *  <pre>
-   *  &lt;topic_interest&gt;
-   * :fieldAppliesToForm <personForm> ;
-   * :fieldAppliesToProperty foaf:topic_interest ;
-   * :widgetClass form:DBPediaLookup .
+   *  &lt;topic_interest&gt; :fieldAppliesToForm &lt;personForm> ;
+   *   :fieldAppliesToProperty foaf:topic_interest ;
+   *   :widgetClass form:DBPediaLookup .
    *  <pre>
+   *  that is, query:
+   *  ?S form:fieldAppliesToProperty prop .
    */
   def lookFieldSpecInConfiguration(
     //      classs: Rdf#URI, 
     prop: Rdf#URI) = {
-    find(graph, ANY, formPrefix("fieldAppliesToProperty"), prop)
+    find(graph, ANY, formPrefix("fieldAppliesToProperty"), prop).toSeq
   }
 }

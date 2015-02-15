@@ -25,7 +25,8 @@ trait FormModule[NODE, URI <: NODE] {
     override def toString(): String = {
       s"""FormSyntax:
         subject: $subject
-      """ + fields.mkString("\n")
+        ${fields.mkString("\n")}
+      """
     }
   }
 
@@ -39,11 +40,11 @@ trait FormModule[NODE, URI <: NODE] {
       val label: String, val comment: String,
       val property: URI = nullURI,
       val mandatory: Boolean = false,
-      val type_ : URI = nullURI //      widgetType: WidgetType = Text
-      ) {
+      val type_ : URI = nullURI,
+      var widgetType: WidgetType = Text) {
     private val triples: mutable.Buffer[Triple] = mutable.ListBuffer[Triple]()
     override def toString(): String = {
-      s""" "$label", "$comment" """
+      s""" "$label", "$comment" $widgetType """
     }
     def addTriple(s: NODE, p: URI, o: NODE) = {
       val t = Triple(s, p, o)
@@ -88,11 +89,13 @@ trait FormModule[NODE, URI <: NODE] {
   case class ResourceValidator(typ: Set[NODE]) // URI])
   case class DatatypeValidator(typ: Set[NODE]) // URI])
 
-  sealed class WidgetType
-  object Text extends WidgetType
-  object Textarea extends WidgetType
-  object Checkbox extends WidgetType
-  object Choice extends WidgetType
-  object Collection extends WidgetType
-  object DBPediaLookup extends WidgetType
 }
+
+sealed class WidgetType
+object Text extends WidgetType { override def toString() = "Text WidgetType" }
+object Textarea extends WidgetType
+object Checkbox extends WidgetType
+object Choice extends WidgetType
+object Collection extends WidgetType
+object DBPediaLookup extends WidgetType { override def toString() = "DBPediaLookup WidgetType" }
+
