@@ -73,11 +73,18 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
         {
           if (editable) {
             <div>
-              <input class="form-control" value={ r.value.toString } name={ makeHTMLId(r) } list={ makeHTMLIdForDatalist(r) } data-type={ r.type_.toString() }/>
+              <input class="form-control" value={ r.value.toString } name={ makeHTMLId(r) } list={ makeHTMLIdForDatalist(r) } data-type={ r.type_.toString() } placeholder={ s"Enter or paste a resource URI: URL, IRI, etc of type ${r.type_.toString()}" }/>
+              {
+                if (!r.possibleValues.isEmpty)
+                  <select value={ r.value.toString } name={ makeHTMLId(r) }>
+                    { formatPossibleValues(field) }
+                  </select>
+                else Seq()
+              }
               {
                 Seq(
                   addDBPediaLookup(r),
-                  formatPossibleValues(field),
+                  //                    formatPossibleValues(field, inDatalist=true),
                   if (r.alreadyInDatabase) {
                     { println("r.alreadyInDatabase " + r) }
                     <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden"/>
@@ -119,7 +126,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
         )).flatten
 
       case _ =>
-        <input class="form-control" value={ lit.value } name={ "LIT-" + urlEncode(lit.property) }/>
+        <input class="form-control" value={ lit.value } name={ "LIT-" + urlEncode(lit.property) } placeholder={ s"Enter or paste a string of type ${lit.type_.toString()}" }/>
     }
     elem ++
       <input value={ lit.value } name={ "ORIG-LIT-" + urlEncode(lit.property) } type="hidden"/>
@@ -134,15 +141,17 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
       })
   }
 
-  private def formatPossibleValues(field: fm#Entry): Elem = {
+  private def formatPossibleValues(field: fm#Entry, inDatalist: Boolean = false): NodeSeq = {
     field match {
       case re: ResourceEntry =>
-        <datalist id={ makeHTMLIdForDatalist(re) }>
-          {
-            for (value <- re.possibleValues) yield <option label={ value._2 } value={ value._1.toString() }>
-                                                   </option>
-          }
-        </datalist>
+        val options = Seq(<option label="Choose a value or leave like it is." value=""/>) ++
+          (for (value <- re.possibleValues) yield <option label={ value._2 } value={ value._1.toString() }>
+                                                  </option>)
+        if (inDatalist)
+          <datalist id={ makeHTMLIdForDatalist(re) }>
+            { options }
+          </datalist>
+        else options
       case _ => <span/>
     }
   }
