@@ -22,13 +22,30 @@ function installDbpediaComplete( inputElement) {
     if (req.readyState == 4) {
      console.log( "req.response " + req.response );
      var response= eval( '(' + req.responseText + ')' ); // TODO eval not secure!
-     element.text = response.results.uri; // TODO populate pulldown menu with string responses, while keeping associated URI's
+     populate_pulldown_menu( element, response.results );
     };
   };
   console.log( "inputElement " + inputElement );
   console.log( "getElementByName(inputElement " + document.getElementsByName(inputElement) );
   var element = document.getElementsByName(inputElement)[0];
   element.onkeyup = function() { dbpediaComplete( element, dbpedia_callback); };
+};
+
+/** populate pulldown menu with string responses, while keeping associated URI's */
+function populate_pulldown_menu( element, results ) {
+  var datalist = $(element.list);
+  datalist.empty()
+  console.log( "datalist " + datalist );
+  for (var i in results) {
+    var response = results[i];
+    // console.log( "response " + response );
+    console.log( "response label " + response.label );
+    // 	add an option tag to datalist with label=response.label and value=response.uri
+    datalist.append(
+      jQuery('<option/>', {
+        label: response.label,
+        value: response.uri } ))
+  }
 };
 
 function test_callback(aEvt) {

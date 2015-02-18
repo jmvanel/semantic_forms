@@ -84,7 +84,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
               {
                 Seq(
                   addDBPediaLookup(r),
-                  //                    formatPossibleValues(field, inDatalist=true),
+                  // formatPossibleValues(field, inDatalist=true),
                   if (r.alreadyInDatabase) {
                     { println("r.alreadyInDatabase " + r) }
                     <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden"/>
@@ -156,13 +156,15 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
     }
   }
 
-  def addDBPediaLookup(r: ResourceEntry): Elem = {
+  def addDBPediaLookup(r: ResourceEntry): NodeSeq = {
+    import scala.xml._
     // format: OFF    <-- for scalariform
-    if (r.widgetType == DBPediaLookup)
+    if (r.widgetType == DBPediaLookup) {
+      formatPossibleValues(r, inDatalist = true) ++
       <script>
         installDbpediaComplete( '{ makeHTMLId(r) }' );
       </script>
-    else <div/>
+    } else <div/>
     // format: ON    <-- for scalariform
   }
 }
