@@ -84,8 +84,7 @@ trait SPARQLHelper extends SPARQLHelperDependencies {
     for (varia <- vars) {
       val variables: Iterator[Rdf#URI] = answers.iterator map { row =>
         /* row is an Rdf#Solution, we can get an Rdf#Node from the variable name */
-        /* both the #Rdf#Node projection and the transformation to Rdf#URI can fail in the Try type,
-    	 * hence the flatMap */
+        /* both the #Rdf#Node projection and the transformation to Rdf#URI can fail in the Try type */
         row(varia).get.as[Rdf#URI].get
       }
       println(variables.to[List].mkString("\n"))

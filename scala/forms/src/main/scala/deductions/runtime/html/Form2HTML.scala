@@ -67,32 +67,15 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
         }
       case r: ResourceEntry =>
         /* link to a known resource of the right type,
-           * or create a sub-form for a blank node of an ancillary type (like a street address),
+           * or (TODO) create a sub-form for a blank node of an ancillary type (like a street address),
            * or just create a new resource with its type, given by range, or derived
            * (like in N3Form in EulerGUI ) */
         {
           if (editable) {
-            <div>
-              <input class="form-control" value={ r.value.toString } name={ makeHTMLId(r) } list={ makeHTMLIdForDatalist(r) } data-type={ r.type_.toString() } placeholder={ s"Enter or paste a resource URI: URL, IRI, etc of type ${r.type_.toString()}" }/>
-              {
-                if (!r.possibleValues.isEmpty)
-                  <select value={ r.value.toString } name={ makeHTMLId(r) }>
-                    { formatPossibleValues(field) }
-                  </select>
-                else Seq()
-              }
-              {
-                Seq(
-                  addDBPediaLookup(r),
-                  // formatPossibleValues(field, inDatalist=true),
-                  if (r.alreadyInDatabase) {
-                    { println("r.alreadyInDatabase " + r) }
-                    <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden"/>
-                  })
-              }
-            </div>
+        	  createHTMLResourceEditableLField(r)
           } else
             <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }>{
+              // TODO show label
               r.valueLabel
             }</a>
         }
@@ -114,8 +97,31 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
     "RES-" + urlEncode(re.property)
   }
 
+    /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
+  def createHTMLResourceEditableLField(r: ResourceEntry): NodeSeq = {
+                <div>
+              <input class="form-control" value={ r.value.toString } name={ makeHTMLId(r) } list={ makeHTMLIdForDatalist(r) } data-type={ r.type_.toString() } placeholder={ s"Enter or paste a resource URI: URL, IRI, etc of type ${r.type_.toString()}" }/>
+              {
+                if (!r.possibleValues.isEmpty)
+                  <select value={ r.value.toString } name={ makeHTMLId(r) }>
+                    { formatPossibleValues(r) }
+                  </select>
+                else Seq()
+              }
+              {
+                Seq(
+                  addDBPediaLookup(r),
+                  // formatPossibleValues(field, inDatalist=true),
+                  if (r.alreadyInDatabase) {
+                    { println("r.alreadyInDatabase " + r) }
+                    <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden"/>
+                  })
+              }
+            </div>
+  }
+  
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
-  def createHTMLiteralEditableLField(lit: LiteralEntry): xml.NodeSeq = {
+  def createHTMLiteralEditableLField(lit: LiteralEntry): NodeSeq = {
     val elem = lit.type_.toString() match {
 
       // TODO match graph pattern for interval datatype ; see issue #17
@@ -157,7 +163,6 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
   }
 
   def addDBPediaLookup(r: ResourceEntry): NodeSeq = {
-    import scala.xml._
     // format: OFF    <-- for scalariform
     if (r.widgetType == DBPediaLookup) {
       formatPossibleValues(r, inDatalist = true) ++
