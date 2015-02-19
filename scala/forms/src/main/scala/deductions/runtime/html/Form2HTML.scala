@@ -13,6 +13,7 @@ import deductions.runtime.abstract_syntax.DBPediaLookup
  */
 trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
   type fm = FormModule[NODE, URI]
+  val openChoice = false  // TODO should be configurable and set in FormSyntaxFactory
 
   def generateHTML(form: fm#FormSyntax[NODE, URI],
     hrefPrefix: String = "",
@@ -72,7 +73,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
            * (like in N3Form in EulerGUI ) */
         {
           if (editable) {
-        	  createHTMLResourceEditableLField(r)
+            createHTMLResourceEditableLField(r)
           } else
             <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }>{
               // TODO show label
@@ -97,29 +98,31 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
     "RES-" + urlEncode(re.property)
   }
 
-    /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
+  /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   def createHTMLResourceEditableLField(r: ResourceEntry): NodeSeq = {
-                <div>
-              <input class="form-control" value={ r.value.toString } name={ makeHTMLId(r) } list={ makeHTMLIdForDatalist(r) } data-type={ r.type_.toString() } placeholder={ s"Enter or paste a resource URI: URL, IRI, etc of type ${r.type_.toString()}" }/>
-              {
-                if (!r.possibleValues.isEmpty)
-                  <select value={ r.value.toString } name={ makeHTMLId(r) }>
-                    { formatPossibleValues(r) }
-                  </select>
-                else Seq()
-              }
-              {
-                Seq(
-                  addDBPediaLookup(r),
-                  // formatPossibleValues(field, inDatalist=true),
-                  if (r.alreadyInDatabase) {
-                    { println("r.alreadyInDatabase " + r) }
-                    <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden"/>
-                  })
-              }
-            </div>
+    <div>
+			{ if( openChoice )
+      <input class="form-control" value={ r.value.toString } name={ makeHTMLId(r) } list={ makeHTMLIdForDatalist(r) } data-type={ r.type_.toString() } placeholder={ s"Enter or paste a resource URI: URL, IRI, etc of type ${r.type_.toString()}" }/>
+      }
+      {
+        if (!r.possibleValues.isEmpty)
+          <select value={ r.value.toString } name={ makeHTMLId(r) }>
+            { formatPossibleValues(r) }
+          </select>
+        else Seq()
+      }
+      {
+        Seq(
+          addDBPediaLookup(r),
+          // formatPossibleValues(field, inDatalist=true),
+          if (r.alreadyInDatabase) {
+            { println("r.alreadyInDatabase " + r) }
+            <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden"/>
+          })
+      }
+    </div>
   }
-  
+
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   def createHTMLiteralEditableLField(lit: LiteralEntry): NodeSeq = {
     val elem = lit.type_.toString() match {
@@ -150,9 +153,9 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
   private def formatPossibleValues(field: fm#Entry, inDatalist: Boolean = false): NodeSeq = {
     field match {
       case re: ResourceEntry =>
-        val options = Seq(<option label="Choose a value or leave like it is." value=""/>) ++
-          (for (value <- re.possibleValues) yield <option label={ value._2 } value={ value._1.toString() }>
-                                                  </option>)
+//        val options = Seq(<option label="Choose a value or leave like it is." value=""></option>) ++
+        val options = Seq(<option value=""></option>) ++
+          (for (value <- re.possibleValues) yield <option value={ value._1.toString() }>{ value._2 }</option>)
         if (inDatalist)
           <datalist id={ makeHTMLIdForDatalist(re) }>
             { options }
@@ -169,7 +172,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
       <script>
         installDbpediaComplete( '{ makeHTMLId(r) }' );
       </script>
-    } else <div/>
+    } else <div></div>
     // format: ON    <-- for scalariform
   }
 }

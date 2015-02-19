@@ -38,7 +38,8 @@ trait TableViewModule
 
   /**
    * create a form for given URI with background knowledge in RDFStoreObject.store;
-   *  by default user inputs will be saved in named graph uri, except if given graphURIarg
+   *  by default user inputs will be saved in named graph uri, except if given graphURI argument;
+   *  TRANSACTIONAL
    */
   def htmlForm(uri: String, hrefPrefix: String = "", blankNode: String = "",
     editable: Boolean = false,
@@ -61,12 +62,14 @@ trait TableViewModule
     r.flatMap { identity }
   }
 
+  /** wrapper for htmlForm that shows Failure's */
   def htmlFormElem(uri: String, hrefPrefix: String = "", blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",
-    lang: String = "en"): Elem = {
+    lang: String = "en",
+    graphURI: String = ""): Elem = {
     //    Await.result(
-    htmlForm(uri, hrefPrefix, blankNode, editable, actionURI, lang) match {
+    htmlForm(uri, hrefPrefix, blankNode, editable, actionURI, lang, graphURI) match {
       case Success(e) => e
       case Failure(e) => <p>Exception occured: { e }</p>
     }
