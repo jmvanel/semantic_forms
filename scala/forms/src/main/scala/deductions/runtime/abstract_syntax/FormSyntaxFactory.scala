@@ -243,7 +243,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     }
   }
 
-  /** get Prefered Language value From Values */
+  /** get preferred Language value From RDF Values that are language marked or not */
   private def getPreferedLanguageFromValues(values: Iterable[Rdf#Node]): String = {
     def computeValues(): (String, String, String) = {
       var preferedLanguageValue = ""
@@ -267,7 +267,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
           }
         )
       }
-      println(s"preferedLanguageValue: $preferedLanguageValue , enValue $enValue, noLanguageValue $noLanguageValue")
+      //      println(s"preferedLanguageValue: $preferedLanguageValue , enValue $enValue, noLanguageValue $noLanguageValue")
       (preferedLanguageValue, enValue, noLanguageValue)
     }
     val (preferedLanguageValue, enValue, noLanguageValue) = computeValues
@@ -275,6 +275,9 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
       case _ if (preferedLanguageValue != "") => preferedLanguageValue
       case _ if (enValue != "") => enValue
       case _ if (noLanguageValue != "") => noLanguageValue
+      case _ =>
+        val mess = s"preferedLanguageValue $preferedLanguageValue, enValue $enValue, noLanguageValue $noLanguageValue"
+        println(s"getPreferedLanguageFromValues: case not expected in values ${values.mkString(", ")}: $mess"); "en"
     }
   }
 

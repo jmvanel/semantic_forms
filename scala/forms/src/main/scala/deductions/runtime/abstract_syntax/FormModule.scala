@@ -35,8 +35,10 @@ trait FormModule[NODE, URI <: NODE] {
   case class Triple(val s: NODE, val p: URI, val o: NODE)
 
   val nullURI: URI
-  /** openChoice allows user in form to choose a value not in suggested values
-   *  TODO somehow factor value: Any ? */
+  /**
+   * openChoice allows user in form to choose a value not in suggested values
+   *  TODO somehow factor value: Any ?
+   */
   sealed abstract class Entry(
       val label: String, val comment: String,
       val property: URI = nullURI,

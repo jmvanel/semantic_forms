@@ -13,7 +13,7 @@ import deductions.runtime.abstract_syntax.DBPediaLookup
  */
 trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
   type fm = FormModule[NODE, URI]
-//  val openChoice = false // TODO should be configurable and set in FormSyntaxFactory
+  //  val openChoice = false // TODO should be configurable and set in FormSyntaxFactory
 
   def generateHTML(form: fm#FormSyntax[NODE, URI],
     hrefPrefix: String = "",
