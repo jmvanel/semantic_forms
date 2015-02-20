@@ -13,7 +13,7 @@ import deductions.runtime.abstract_syntax.DBPediaLookup
  */
 trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
   type fm = FormModule[NODE, URI]
-  val openChoice = false  // TODO should be configurable and set in FormSyntaxFactory
+  val openChoice = false // TODO should be configurable and set in FormSyntaxFactory
 
   def generateHTML(form: fm#FormSyntax[NODE, URI],
     hrefPrefix: String = "",
@@ -101,8 +101,9 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   def createHTMLResourceEditableLField(r: ResourceEntry): NodeSeq = {
     <div>
-			{ if( openChoice )
-      <input class="form-control" value={ r.value.toString } name={ makeHTMLId(r) } list={ makeHTMLIdForDatalist(r) } data-type={ r.type_.toString() } placeholder={ s"Enter or paste a resource URI: URL, IRI, etc of type ${r.type_.toString()}" }/>
+      {
+        if (openChoice)
+          <input class="form-control" value={ r.value.toString } name={ makeHTMLId(r) } list={ makeHTMLIdForDatalist(r) } data-type={ r.type_.toString() } placeholder={ s"Enter or paste a resource URI: URL, IRI, etc of type ${r.type_.toString()}" }/>
       }
       {
         if (!r.possibleValues.isEmpty)
@@ -153,7 +154,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
   private def formatPossibleValues(field: fm#Entry, inDatalist: Boolean = false): NodeSeq = {
     field match {
       case re: ResourceEntry =>
-//        val options = Seq(<option label="Choose a value or leave like it is." value=""></option>) ++
+        //        val options = Seq(<option label="Choose a value or leave like it is." value=""></option>) ++
         val options = Seq(<option value=""></option>) ++
           (for (value <- re.possibleValues) yield <option value={ value._1.toString() }>{ value._2 }</option>)
         if (inDatalist)
