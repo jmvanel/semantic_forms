@@ -13,7 +13,7 @@ import deductions.runtime.abstract_syntax.DBPediaLookup
  */
 trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
   type fm = FormModule[NODE, URI]
-  val openChoice = false // TODO should be configurable and set in FormSyntaxFactory
+//  val openChoice = false // TODO should be configurable and set in FormSyntaxFactory
 
   def generateHTML(form: fm#FormSyntax[NODE, URI],
     hrefPrefix: String = "",
@@ -102,7 +102,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
   def createHTMLResourceEditableLField(r: ResourceEntry): NodeSeq = {
     <div>
       {
-        if (openChoice)
+        if (r.openChoice)
           <input class="form-control" value={ r.value.toString } name={ makeHTMLId(r) } list={ makeHTMLIdForDatalist(r) } data-type={ r.type_.toString() } placeholder={ s"Enter or paste a resource URI: URL, IRI, etc of type ${r.type_.toString()}" }/>
       }
       {
