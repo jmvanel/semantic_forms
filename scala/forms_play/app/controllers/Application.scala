@@ -25,15 +25,15 @@ object Application extends Controller with TableView {
     }
   }
 
-  def displayURI2(uri: String) = {
-    Action.async { implicit request =>
-      println("displayURI2: " + request)
-      //      Ok.chunked( glob.displayURI2(uri) )
-      glob.displayURI2(uri) map { x =>
-        Ok(x.mkString).as("text/html")
-      }
-    }
-  }
+//  def displayURI2(uri: String) = {
+//    Action.async { implicit request =>
+//      println("displayURI2: " + request)
+//      //      Ok.chunked( glob.displayURI2(uri) )
+//      glob.displayURI2(uri) map { x =>
+//        Ok(x.mkString).as("text/html")
+//      }
+//    }
+//  }
 
   def wordsearch(q: String = "") = wordsearchNEW(q)
 

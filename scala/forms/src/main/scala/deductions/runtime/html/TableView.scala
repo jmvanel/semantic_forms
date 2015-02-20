@@ -1,26 +1,18 @@
 package deductions.runtime.html
 
+import scala.util.Failure
+import scala.util.Success
+import scala.util.Try
 import scala.xml.Elem
+import scala.xml.PrettyPrinter
+
 import org.apache.log4j.Logger
-import org.w3.banana.FOAFPrefix
 import org.w3.banana.RDFModule
 import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaModule
+
 import deductions.runtime.abstract_syntax.FormSyntaxFactory
 import deductions.runtime.jena.RDFStoreObject
 import deductions.runtime.sparql_cache.RDFCache
-import scala.xml.PrettyPrinter
-import deductions.runtime.uri_classify.SemanticURIGuesser
-import scala.concurrent.Future
-import deductions.runtime.utils.MonadicHelpers
-import scala.concurrent.Await
-import scala.concurrent.duration._
-import scala.util.Try
-import scala.util.Success
-import scala.util.Failure
-import org.w3.banana.RDFOps
-import org.w3.banana.RDF
-import deductions.runtime.abstract_syntax.FormModule
 
 /** Form for a subject URI with existing triples; transactional */
 trait TableView extends TableViewModule
@@ -114,48 +106,4 @@ trait TableViewModule
     graf2form(graph1, uri, graphURI = graphURI).toString
   }
 
-  /**
-   * From the list of ?O such that uri ?P ?O ,
-   *  return the list of their SemanticURIType as a Future
-   */
-  def getSemanticURItypes(uri: String): Future[Iterator[(Rdf#Node, SemanticURIGuesser.SemanticURIType)]] = {
-    // get the list of ?O such that uri ?P ?O .
-    import scala.concurrent.ExecutionContext.Implicits.global
-    val dataset = RDFStoreObject.dataset
-    //  TODO val graphFuture =  RDFStoreObject.allNamedGraphsFuture
-
-    val r = rdfStore.r(dataset, {
-      for (
-        // TODO use allNamedGraphs from RDFStoreObject
-        allNamedGraphs <- rdfStore.getGraph(dataset, ops.makeUri("urn:x-arq:UnionGraph"))
-      ) yield {
-        val triples: Iterator[Rdf#Triple] = ops.find(allNamedGraphs,
-          ops.makeUri(uri), ANY, ANY)
-        val semanticURItypes =
-          for (triple <- triples) yield {
-            val node = triple.getObject
-            val semanticURItype = if (isDereferenceableURI(node)) {
-              SemanticURIGuesser.guessSemanticURIType(node.toString())
-            } else
-              Future.successful(SemanticURIGuesser.Unknown) // TODO NONE
-            semanticURItype.map { st => (node, st) }
-          }
-        Future sequence semanticURItypes
-      }
-    })
-    val r1 = r.flatMap(identity)
-    val rr = MonadicHelpers.tryToFuture(r1)
-    rr.flatMap(identity)
-  }
-
-  def isDereferenceableURI(node: Rdf#Node) = {
-    if (isURI(node)) {
-      val uri = node.toString()
-      uri.startsWith("http:") ||
-        uri.startsWith("https:") ||
-        uri.startsWith("ftp:")
-    } else false
-  }
-
-  private def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
 }

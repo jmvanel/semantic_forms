@@ -14,4 +14,5 @@ trait RDFStoreLocalProvider[Rdf <: RDF, DATASET] extends RDFOpsModule {
   implicit val rdfStore: RDFStore[Rdf, Try, DATASET]
   type DATASET
   val dataset: DATASET
+  val allNamedGraph: Rdf#Graph
 }

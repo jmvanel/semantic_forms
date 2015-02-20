@@ -19,15 +19,22 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
 /** singleton  hosting a Jena TDB database in directory "TDB" */
 object RDFStoreObject extends JenaModule with RDFStoreLocalJena1Provider {
   // TODO remove allNamedGraphs elsewhere
-  lazy val allNamedGraphs = rdfStore.getGraph(dataset, ops.makeUri("urn:x-arq:UnionGraph"))
-  import MonadicHelpers._
-  lazy val allNamedGraphsFuture = tryToFuture(allNamedGraphs)
+  //  /*override*/ lazy val allNamedGraphs = rdfStore.getGraph(dataset, ops.makeUri("urn:x-arq:UnionGraph"))
+  //  override lazy val allNamedGraph = allNamedGraphs.get
+  //  import MonadicHelpers._
+  //  lazy val allNamedGraphsFuture = tryToFuture(allNamedGraphs)
 }
 
 /** sets a default location for the Jena TDB store directory : ./TDB/ */
 trait RDFStoreLocalJena1Provider extends RDFStoreLocalProvider[Jena, Dataset] with JenaModule {
   override type DATASET = Dataset
   lazy val dataset: DATASET = TDBFactory.createDataset("TDB")
+  override val allNamedGraph: Rdf#Graph = {
+    val g = rdfStore.r(dataset, {
+      rdfStore.getGraph(dataset, ops.makeUri("urn:x-arq:UnionGraph")).get
+    }).get
+    g
+  }
 }
 
 /**

@@ -29,10 +29,11 @@ package global {
   object Global extends Controller // play.api.GlobalSettings
       with RDFCache
       with RDFOpsModule
-      with TurtleWriterModule  {
+      with TurtleWriterModule
+      with StringSearchSPARQL[Jena, RDFStoreObject.DATASET] {
     var form: Elem = <p>initial value</p>
     lazy val tableView = new TableView {}
-    lazy val search = new StringSearchSPARQL()
+    lazy val search = this; // new StringSearchSPARQL2[Rdf, RDFStoreObject.DATASET]{}
     lazy val dl = new BrowsableGraph()
     lazy val fs = new FormSaver()
     lazy val cf = new CreationForm { actionURI = "/save" }
@@ -90,40 +91,40 @@ package global {
       </div>
     }
 
-    def displayURI2(uriSubject: String) //  : Enumerator[scala.xml.Elem] 
-    = {
-      import ops._
-      val graphFuture = RDFStoreObject.allNamedGraphsFuture
-      import scala.concurrent.ExecutionContext.Implicits.global
-
-      type URIPair = (Rdf#Node, SemanticURIGuesser.SemanticURIType)
-      val semanticURItypesFuture = tableView.getSemanticURItypes(uriSubject)
-      // TODO get rid of mutable, but did not found out with yield
-      val elems: Future[Iterator[Elem]] = semanticURItypesFuture map {
-        semanticURItypes =>
-          {
-            semanticURItypes.
-              filter { p => isURI(p._1) }.
-              map {
-                semanticURItype =>
-                  val uri = semanticURItype._1
-                  val semanticType = semanticURItype._2
-                  <p>
-                    <div>{ uri }</div>
-                    <div>{ semanticType }</div>
-                  </p>
-              }
-          }
-      }
-      //    def makeEnumerator[E, A]( f: Future[Iterator[A]] ) : Enumerator[A] = new Enumerator[A] {
-      //      def apply[A]( i : Iteratee[A, Iterator[A]]): Future[Iteratee[A, Iterator[A]]]
-      //      = {
-      //        Future(i) // ?????
-      //      }
-      //    }
-      //    val enum = makeEnumerator(elems) // [ , ]
-      elems
-    }
+//    def displayURI2(uriSubject: String) //  : Enumerator[scala.xml.Elem] 
+//    = {
+//      import ops._
+//      val graphFuture = RDFStoreObject.allNamedGraphsFuture
+//      import scala.concurrent.ExecutionContext.Implicits.global
+//
+//      type URIPair = (Rdf#Node, SemanticURIGuesser.SemanticURIType)
+//      val semanticURItypesFuture = tableView.getSemanticURItypes(uriSubject)
+//      // TODO get rid of mutable, but did not found out with yield
+//      val elems: Future[Iterator[Elem]] = semanticURItypesFuture map {
+//        semanticURItypes =>
+//          {
+//            semanticURItypes.
+//              filter { p => isURI(p._1) }.
+//              map {
+//                semanticURItype =>
+//                  val uri = semanticURItype._1
+//                  val semanticType = semanticURItype._2
+//                  <p>
+//                    <div>{ uri }</div>
+//                    <div>{ semanticType }</div>
+//                  </p>
+//              }
+//          }
+//      }
+//      //    def makeEnumerator[E, A]( f: Future[Iterator[A]] ) : Enumerator[A] = new Enumerator[A] {
+//      //      def apply[A]( i : Iteratee[A, Iterator[A]]): Future[Iteratee[A, Iterator[A]]]
+//      //      = {
+//      //        Future(i) // ?????
+//      //      }
+//      //    }
+//      //    val enum = makeEnumerator(elems) // [ , ]
+//      elems
+//    }
 
     def printTrace(e: Exception): String = {
       var s = ""
@@ -219,6 +220,6 @@ package global {
         { dl.sparqlConstructQuery(query) /* TODO Future !!!!!!!!!!!!!!!!!!! */ }
       </p>
     }
-    def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
+//    def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
   }
 }

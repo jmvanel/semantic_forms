@@ -56,10 +56,11 @@ object SemanticURIGuesser extends RDFCache {
 
   def guessSemanticURIType(url: String): Future[SemanticURIType] = {
     if (isGraphInUse(url)) Future.successful(SemanticURI)
-
-    val response: Future[HttpResponse] = HttpClient.makeRequest(url, HEAD)
-    println("response " + response)
-    response.map { resp => semanticURITypeFromHeaders(resp, url) }
+    else {
+      val response: Future[HttpResponse] = HttpClient.makeRequest(url, HEAD)
+      println("response " + response)
+      response.map { resp => semanticURITypeFromHeaders(resp, url) }
+    }
   }
 
   private def semanticURITypeFromHeaders(
