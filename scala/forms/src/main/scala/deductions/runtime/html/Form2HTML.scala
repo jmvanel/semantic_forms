@@ -75,8 +75,8 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
           if (editable) {
             createHTMLResourceEditableLField(r)
           } else
-            <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }>{
-              // TODO show label
+            <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }
+            title={"Value of type " + r.type_.toString()}> {
               r.valueLabel
             }</a>
         }
@@ -128,7 +128,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
   def createHTMLiteralEditableLField(lit: LiteralEntry): NodeSeq = {
     val elem = lit.type_.toString() match {
 
-      // TODO match graph pattern for interval datatype ; see issue #17
+      // TODO in FormSyntaxFactory match graph pattern for interval datatype ; see issue #17
       case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
         (for (n <- Range(0, 6)) yield (
           <input type="radio" name={ "LIT-" + urlEncode(lit.property) } id={ "LIT-" + urlEncode(lit.property) } checked={ if (n.toString.equals(lit.value)) "checked" else null } value={ n.toString }/>

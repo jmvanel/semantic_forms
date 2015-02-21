@@ -1,51 +1,39 @@
 package deductions.runtime.jena
 
-import com.hp.hpl.jena.tdb.TDBFactory
-import org.w3.banana.jena.JenaModule
+import scala.collection.JavaConversions.asScalaIterator
+
 import org.apache.log4j.Logger
-import scala.collection.JavaConversions._
-import org.w3.banana.RDFStore
 import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaDatasetStore
-import org.w3.banana.SparqlUpdate
-import org.w3.banana.Transactor
+import org.w3.banana.jena.JenaModule
+
 import com.hp.hpl.jena.query.Dataset
-import org.w3.banana.RDF
-import scala.util.Try
-import deductions.runtime.utils.MonadicHelpers
-import org.w3.banana.RDFOpsModule
+import com.hp.hpl.jena.tdb.TDBFactory
+
 import deductions.runtime.dataset.RDFStoreLocalProvider
 
 /** singleton  hosting a Jena TDB database in directory "TDB" */
 object RDFStoreObject extends JenaModule with RDFStoreLocalJena1Provider {
-  // TODO remove allNamedGraphs elsewhere
-  //  /*override*/ lazy val allNamedGraphs = rdfStore.getGraph(dataset, ops.makeUri("urn:x-arq:UnionGraph"))
-  //  override lazy val allNamedGraph = allNamedGraphs.get
-  //  import MonadicHelpers._
-  //  lazy val allNamedGraphsFuture = tryToFuture(allNamedGraphs)
 }
 
-/** sets a default location for the Jena TDB store directory : ./TDB/ */
-trait RDFStoreLocalJena1Provider extends RDFStoreLocalProvider[Jena, Dataset] with JenaModule {
+/** For user data and RDF cache, sets a default location for the Jena TDB store directory : ./TDB/ */
+trait RDFStoreLocalJena1Provider extends RDFStoreLocalJenaProvider {
+  override lazy val dataset: DATASET = TDBFactory.createDataset("TDB")
+}
+
+/** For application data (timestamps, URI types, ...), sets a default location for the Jena TDB store directory : ./TDBapp/ */
+trait RDFStoreLocalJena2Provider extends RDFStoreLocalJenaProvider {
+  override lazy val dataset: DATASET = TDBFactory.createDataset("TDBapp")
+}
+
+trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Dataset] with JenaModule {
   override type DATASET = Dataset
-  lazy val dataset: DATASET = TDBFactory.createDataset("TDB")
   override val allNamedGraph: Rdf#Graph = {
-    val g = rdfStore.r(dataset, {
+    val graph = rdfStore.r(dataset, {
       rdfStore.getGraph(dataset, ops.makeUri("urn:x-arq:UnionGraph")).get
     }).get
-    g
+    graph
   }
 }
-
-/**
- * abstract RDFStore Local Provider
- */
-//trait RDFStoreLocalProvider2[Rdf <: RDF, DATASET] extends RDFOpsModule {
-//  // NOTE: same design pattern as for XXXModule in Banana
-//  implicit val rdfStore: RDFStore[Rdf, Try, DATASET]
-//  type DATASET
-//  val dataset: DATASET
-//}
 
 /** TODO implement independently of Jena */
 trait RDFGraphPrinter extends RDFStoreLocalJena1Provider {

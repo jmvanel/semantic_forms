@@ -1,15 +1,13 @@
 package deductions.runtime.abstract_syntax
 
-import org.w3.banana.RDF
-import org.w3.banana.OWLPrefix
+import scala.collection.Seq
+
 import org.w3.banana.FOAFPrefix
-import deductions.runtime.utils.RDFHelpers
-import scala.collection._
 import org.w3.banana.PointedGraph
-import org.w3.banana.diesel._
-import org.w3.banana.RDFSPrefix
+import org.w3.banana.RDF
 import org.w3.banana.RDFOpsModule
 import org.w3.banana.RDFPrefix
+import org.w3.banana.RDFSPrefix
 
 /**
  * populate Fields in form by inferring possible values from given rdfs:range's URI,

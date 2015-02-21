@@ -99,7 +99,13 @@ sealed class WidgetType
 object Text extends WidgetType { override def toString() = "Text WidgetType" }
 object Textarea extends WidgetType
 object Checkbox extends WidgetType
-object Choice extends WidgetType
+
+abstract class Choice extends WidgetType
+/** Can be Radio Button or checkboxes for multiple choices, depending on Entry.openChoice */
+object Buttons extends Choice
+object Slider extends Choice
+object PulldownMenu extends Choice
+
 object Collection extends WidgetType
 object DBPediaLookup extends WidgetType { override def toString() = "DBPediaLookup WidgetType" }
 

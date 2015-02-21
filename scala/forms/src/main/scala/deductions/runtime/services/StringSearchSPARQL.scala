@@ -1,23 +1,16 @@
 package deductions.runtime.services
 
-import org.w3.banana.SparqlEngine
-import org.w3.banana.RDF
-import org.w3.banana.RDFOps
-import org.w3.banana.SparqlOps
-import org.w3.banana.RDFStore
-import scala.xml.Elem
-import scala.concurrent._
-import scala.concurrent.util._
 import scala.concurrent.ExecutionContext.Implicits.global
-import deductions.runtime.html.Form2HTML
-import scala.concurrent.duration._
-import org.apache.log4j.Logger
-import deductions.runtime.jena.RDFStoreObject
-import scala.util.Try
-import org.w3.banana._
-import org.w3.banana.syntax._
+import scala.concurrent.Future
+import scala.xml.Elem
+
+import org.w3.banana.RDF
+import org.w3.banana.SparqlOpsModule
+import org.w3.banana.TryW
+
 import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.html.Form2HTML
 
 /** String Search with simple SPARQL */
 trait StringSearchSPARQL[Rdf <: RDF, DATASET]

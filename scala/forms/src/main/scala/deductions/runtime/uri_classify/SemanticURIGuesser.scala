@@ -1,32 +1,16 @@
 package deductions.runtime.uri_classify
 
 import java.net.URL
-import akka.http.model._
-import akka.actor.ActorSystem
-import HttpMethods._
-import scala.concurrent.Future
+import java.net.URLConnection
+import java.nio.file.Paths
+
 import scala.concurrent.ExecutionContext.Implicits.global
-import akka.http.engine.parsing.HttpHeaderParser
-import akka.http.model.HttpHeader
 import scala.concurrent.Future
-import scala.concurrent.duration._
-import scala.async.Async.{ async, await }
-import akka.io.IO
-import akka.util.Timeout
-import akka.http.Http
-import akka.actor.{ ActorSystem }
-import akka.http.model.{ HttpMethods, HttpEntity, HttpRequest, HttpResponse, Uri }
-import akka.stream.{ FlowMaterializer }
-import akka.stream.scaladsl.Flow
-import akka.pattern.ask
-import HttpEntity._
-import com.typesafe.config.ConfigFactory
-import com.typesafe.config.Config
-import akka.stream.scaladsl.Source
-import akka.stream.scaladsl.Sink
-import akka.http.model._
-import akka.http.model.HttpMethods._
-import java.net.URL
+
+import akka.http.model.HttpHeader
+import akka.http.model.HttpMethods.HEAD
+import akka.http.model.HttpResponse
+import akka.http.model.MediaType
 import deductions.runtime.sparql_cache.RDFCache
 
 /* classify URI (non-blocking): leveraging on MIME types in HTTP headers.

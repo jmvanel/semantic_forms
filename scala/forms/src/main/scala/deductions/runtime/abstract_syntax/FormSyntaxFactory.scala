@@ -180,9 +180,13 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
 
     def addOneEntry(object_ : Rdf#Node) = {
       val literalPlaceHolder = "..empty.."
-      def literalEntry = new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
+      def literalEntry = {
+    		  // TODO match graph pattern for interval datatype ; see issue #17
+    		  // case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
+        new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
         getStringOrElse(object_, literalPlaceHolder),
         type_ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI))
+      }
       def resourceEntry = {
         ops.foldNode(object_)(
           object_ => new ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_,

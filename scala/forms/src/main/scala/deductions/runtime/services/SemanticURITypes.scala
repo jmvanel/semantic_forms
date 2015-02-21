@@ -31,31 +31,31 @@ trait SemanticURITypesTrait[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[R
    */
   def getSemanticURItypes(uri: String): Future[Iterator[(Rdf#Node, SemanticURIGuesser.SemanticURIType)]] = {
     Future.successful(Seq[(Rdf#Node, SemanticURIGuesser.SemanticURIType)]().toIterator)
-        import scala.concurrent.ExecutionContext.Implicits.global
-    
-        val r = rdfStore.r(dataset, {
-          for (
-            // TODO use allNamedGraphs from RDFStoreObject
-            allNamedGraphs <- rdfStore.getGraph(dataset, ops.makeUri("urn:x-arq:UnionGraph"))
-          ) yield {
-            // get the list of ?O such that uri ?P ?O .
-            val triples: Iterator[Rdf#Triple] = ops.find(allNamedGraphs,
-              ops.makeUri(uri), ANY, ANY)
-            val semanticURItypes =
-              for (triple <- triples) yield {
-                val node = triple.objectt // getObject
-                val semanticURItype = if (isDereferenceableURI(node)) {
-                  SemanticURIGuesser.guessSemanticURIType(node.toString())
-                } else
-                  Future.successful(SemanticURIGuesser.Unknown)
-                semanticURItype.map { st => (node, st) }
-              }
-            Future sequence semanticURItypes
+    import scala.concurrent.ExecutionContext.Implicits.global
+
+    val r = rdfStore.r(dataset, {
+      for (
+        // TODO use allNamedGraphs from RDFStoreObject
+        allNamedGraphs <- rdfStore.getGraph(dataset, ops.makeUri("urn:x-arq:UnionGraph"))
+      ) yield {
+        // get the list of ?O such that uri ?P ?O .
+        val triples: Iterator[Rdf#Triple] = ops.find(allNamedGraphs,
+          ops.makeUri(uri), ANY, ANY)
+        val semanticURItypes =
+          for (triple <- triples) yield {
+            val node = triple.objectt // getObject
+            val semanticURItype = if (isDereferenceableURI(node)) {
+              SemanticURIGuesser.guessSemanticURIType(node.toString())
+            } else
+              Future.successful(SemanticURIGuesser.Unknown)
+            semanticURItype.map { st => (node, st) }
           }
-        })
-        val r1 = r.flatMap(identity)
-        val rr = MonadicHelpers.tryToFuture(r1)
-        rr.flatMap(identity)
+        Future sequence semanticURItypes
+      }
+    })
+    val r1 = r.flatMap(identity)
+    val rr = MonadicHelpers.tryToFuture(r1)
+    rr.flatMap(identity)
   }
 
   def isDereferenceableURI(node: Rdf#Node) = {
