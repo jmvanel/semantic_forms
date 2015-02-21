@@ -28,21 +28,12 @@ trait CreationForm extends RDFOpsModule
    */
   def create(classUri: String, lang: String = "en"): Try[Elem] = {
     import scala.concurrent.ExecutionContext.Implicits.global
-    val dataset = RDFStoreObject.dataset
-    val r = rdfStore.r(dataset, {
-      for (
-        // TODO use allNamedGraphs from RDFStoreObject
-        allNamedGraphs <- rdfStore.getGraph(dataset, makeUri("urn:x-arq:UnionGraph"))
-      ) yield {
-        val factory = new UnfilledFormFactory[Rdf](allNamedGraphs, preferedLanguage = lang)
-        val form = factory.createFormFromClass(URI(classUri))
-        println(form)
-        val htmlForm = generateHTML(form, hrefPrefix = "", editable = true, actionURI = actionURI)
-        htmlForm
-      }
+    rdfStore.r(dataset, {
+      val factory = new UnfilledFormFactory[Rdf](allNamedGraph, preferedLanguage = lang)
+      val form = factory.createFormFromClass(URI(classUri))
+//      println(form)
+      generateHTML(form, hrefPrefix = "", editable = true, actionURI = actionURI)
     })
-    //    MonadicHelpers.tryToFutureFlat(r)
-    r.flatMap { identity }
   }
 
   def createElem(uri: String, lang: String = "en"): Elem = {

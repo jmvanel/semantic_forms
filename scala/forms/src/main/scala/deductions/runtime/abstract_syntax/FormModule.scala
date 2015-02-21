@@ -25,6 +25,7 @@ trait FormModule[NODE, URI <: NODE] {
     override def toString(): String = {
       s"""FormSyntax:
         subject: $subject
+        classs: $classs
         ${fields.mkString("\n")}
       """
     }

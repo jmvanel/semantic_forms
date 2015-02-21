@@ -44,14 +44,9 @@ trait TableViewModule
       retrieveURI(makeUri(uri), dataset)
       Logger.getRootLogger().info(s"After retrieveURI(makeUri($uri), store)")
     }
-    val r = rdfStore.r(dataset, {
-      for (
-        // TODO use allNamedGraphs from RDFStoreObject
-        allNamedGraphs <- rdfStore.getGraph(dataset, makeUri("urn:x-arq:UnionGraph"))
-      ) yield graf2form(allNamedGraphs, uri, hrefPrefix, blankNode, editable, actionURI, lang, graphURIActual)
+    rdfStore.r(dataset, {
+      graf2form(allNamedGraph, uri, hrefPrefix, blankNode, editable, actionURI, lang, graphURIActual)
     })
-    //    MonadicHelpers.tryToFutureFlat(r)
-    r.flatMap { identity }
   }
 
   /** wrapper for htmlForm that shows Failure's */

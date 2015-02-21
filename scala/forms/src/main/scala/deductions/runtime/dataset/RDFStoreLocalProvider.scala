@@ -14,6 +14,5 @@ trait RDFStoreLocalProvider[Rdf <: RDF, DATASET] extends RDFOpsModule {
   implicit val rdfStore: RDFStore[Rdf, Try, DATASET]
   type DATASET
   val dataset: DATASET
-  // TODO remove allNamedGraphs elsewhere
   val allNamedGraph: Rdf#Graph
 }

@@ -75,8 +75,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
           if (editable) {
             createHTMLResourceEditableLField(r)
           } else
-            <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }
-            title={"Value of type " + r.type_.toString()}> {
+            <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) } title={ "Value of type " + r.type_.toString() }> {
               r.valueLabel
             }</a>
         }
