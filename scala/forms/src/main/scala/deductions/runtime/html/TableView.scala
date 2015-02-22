@@ -33,13 +33,13 @@ trait TableViewModule
    *  by default user inputs will be saved in named graph uri, except if given graphURI argument;
    *  TRANSACTIONAL
    */
-  def htmlForm(uri: String, hrefPrefix: String = "", blankNode: String = "",
+  private def htmlForm(uri: String, hrefPrefix: String = "", blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",
     lang: String = "en", graphURI: String = ""): Try[Elem] = {
 
     val graphURIActual = if (graphURI == "") uri else graphURI
-    val dataset = RDFStoreObject.dataset
+    //    val dataset = RDFStoreObject.dataset
     if (blankNode != "true") {
       retrieveURI(makeUri(uri), dataset)
       Logger.getRootLogger().info(s"After retrieveURI(makeUri($uri), store)")

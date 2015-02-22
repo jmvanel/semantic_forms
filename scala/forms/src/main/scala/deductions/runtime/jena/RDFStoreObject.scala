@@ -1,15 +1,13 @@
 package deductions.runtime.jena
 
 import scala.collection.JavaConversions.asScalaIterator
-
 import org.apache.log4j.Logger
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
-
 import com.hp.hpl.jena.query.Dataset
 import com.hp.hpl.jena.tdb.TDBFactory
-
 import deductions.runtime.dataset.RDFStoreLocalProvider
+import org.w3.banana.jena.JenaDatasetStore
 
 /** singleton  hosting a Jena TDB database in directory "TDB" */
 object RDFStoreObject extends JenaModule with RDFStoreLocalJena1Provider {
@@ -27,11 +25,17 @@ trait RDFStoreLocalJena2Provider extends RDFStoreLocalJenaProvider {
 
 trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Dataset] with JenaModule {
   override type DATASET = Dataset
-  override val allNamedGraph: Rdf#Graph = {
-    val graph = rdfStore.r(dataset, {
-      rdfStore.getGraph(dataset, ops.makeUri("urn:x-arq:UnionGraph")).get
-    }).get
-    graph
+  override val rdfStore = new JenaDatasetStore(false)
+  /**
+   * NOTES:
+   *  - no need of a transaction here, as getting Union Graph is anyway part of a transaction
+   *  - Union Graph in Jena should be re-done for each use (not 100% sure, but safer anyway)
+   */
+  override def allNamedGraph: Rdf#Graph = {
+    //    val graph = rdfStore.r(dataset, {
+    rdfStore.getGraph(dataset, ops.makeUri("urn:x-arq:UnionGraph")).get
+    //    }).get
+    //    graph
   }
 }
 

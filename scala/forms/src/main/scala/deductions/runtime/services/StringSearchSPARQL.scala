@@ -33,20 +33,18 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
       val res = res0.toSeq
       println(s"displayResults : ${res.mkString("\n")}")
 
-      implicit val graph: Rdf#Graph = allNamedGraph
-      //        val all = ops.find( allNamedGraph, ANY, ANY, ANY)
-      //        println( all.mkString("\n") )
-
-      res.map(uri => {
-        val uriString = uri.toString
-        val blanknode = !isURI(uri)
-        <div title=""><a href={ Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode) }>
-                        {
-                          //                        	  uriString
-                          instanceLabel(uri)
-                        }
-                      </a><br/></div>
-      })
+      rdfStore.r(dataset, {
+        implicit val graph: Rdf#Graph = allNamedGraph
+        //        val all = ops.find( allNamedGraph, ANY, ANY, ANY)
+        //        println( all.mkString("\n") )
+        res.map(uri => {
+          val uriString = uri.toString
+          val blanknode = !isURI(uri)
+          <div title=""><a href={ Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode) }>
+                          { instanceLabel(uri) }
+                        </a><br/></div>
+        })
+      }).get
     }</p>
   }
 
@@ -54,6 +52,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
    * NOTE: this stuff is pretty generic;
    *  just add these arguments :
    *  queryString:String, vars:Seq[String]
+   *  transactional
    */
   private def search_only(search: String): Future[Iterator[Rdf#Node]] = {
     val queryString =
@@ -66,7 +65,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
          |}""".stripMargin
 
     val transaction =
-      rdfStore.rw(dataset, {
+      rdfStore.r(dataset, {
         var i = 0
         val result = for {
           query <- parseSelect(queryString)

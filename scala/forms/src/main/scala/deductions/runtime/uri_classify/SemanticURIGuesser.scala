@@ -13,14 +13,15 @@ import akka.http.model.HttpResponse
 import akka.http.model.MediaType
 import deductions.runtime.sparql_cache.RDFCache
 
-/** classify URI (non-blocking): leveraging on MIME types in HTTP headers.
-MIME categories :
-text (including HTML), 
-image,
-sound, 
-video,
-xml, and other machine processable stuff
-rdf, Json-LD, Turtle and other semantic content 
+/**
+ * classify URI (non-blocking): leveraging on MIME types in HTTP headers.
+ * MIME categories :
+ * text (including HTML),
+ * image,
+ * sound,
+ * video,
+ * xml, and other machine processable stuff
+ * rdf, Json-LD, Turtle and other semantic content
  */
 object SemanticURIGuesser extends RDFCache {
 
