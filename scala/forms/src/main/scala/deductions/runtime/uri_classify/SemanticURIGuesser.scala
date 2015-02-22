@@ -13,7 +13,7 @@ import akka.http.model.HttpResponse
 import akka.http.model.MediaType
 import deductions.runtime.sparql_cache.RDFCache
 
-/* classify URI (non-blocking): leveraging on MIME types in HTTP headers.
+/** classify URI (non-blocking): leveraging on MIME types in HTTP headers.
 MIME categories :
 text (including HTML), 
 image,
@@ -38,6 +38,20 @@ object SemanticURIGuesser extends RDFCache {
   object Data extends SemanticURIType
   object Unknown extends SemanticURIType
 
+  def makeSemanticURIType(s: String): SemanticURIType = {
+    s match {
+      case _ if (s.endsWith("SemanticURI")) => SemanticURI
+      case _ if (s.endsWith("Application")) => Application
+      case _ if (s.endsWith("Audio")) => Audio
+      case _ if (s.endsWith("Image")) => Image
+      case _ if (s.endsWith("Message")) => Message
+      case _ if (s.endsWith("Multipart")) => Multipart
+      case _ if (s.endsWith("Text")) => Text
+      case _ if (s.endsWith("Video")) => Video
+      case _ if (s.endsWith("Data")) => Data
+      case _ => Unknown
+    }
+  }
   def guessSemanticURIType(url: String): Future[SemanticURIType] = {
     if (isGraphInUse(url)) Future.successful(SemanticURI)
     else {
