@@ -41,7 +41,7 @@ object HttpClient {
     val host = u.getHost()
     val prot = u.getProtocol
     val urlPrefix = prot + "://" + host
-    val uri = url.stripPrefix(urlPrefix)
+    val uri = url.trim.stripPrefix(urlPrefix)
 
     println(s"Fetching from HTTP server of host `$host` and URI $uri ...")
     def sendRequest(request: HttpRequest, connection: Http.OutgoingConnection): Future[HttpResponse] = {
@@ -55,8 +55,10 @@ object HttpClient {
       connection ← IO(Http).ask(Http.Connect(host)).mapTo[Http.OutgoingConnection]
       response ← sendRequest(HttpRequest(method, uri = uri,
         headers = immutable.Seq(
-          headers.Accept(MediaRange.custom("text/turtle")),
-          headers.Accept(MediaRange.custom("application/rdf+xml", qValue = 0.8f)),
+          //          headers.Accept(MediaRange.custom("text/turtle", qValue = 1.0f)),
+          //          headers.Accept(MediaRange.custom("application/rdf+xml", qValue = 0.8f)),
+          headers.Accept(MediaRange.custom("application/rdf+xml", qValue = 1.0f)),
+          headers.Accept(MediaRange.custom("text/turtle", qValue = 0.8f)),
           headers.Accept(MediaRange.custom("application/text", qValue = 0.5f))
         )), connection)
     } yield response // .header[headers.Server]

@@ -23,6 +23,7 @@ import scala.util.Try
 import org.w3.banana.TurtleWriterModule
 import play.api.libs.iteratee.Enumeratee
 import play.api.libs.iteratee.Iteratee
+import deductions.runtime.html.TableViewModule
 
 package global {
 
@@ -30,9 +31,10 @@ package global {
       with RDFCache
       with RDFOpsModule
       with TurtleWriterModule
+      with TableViewModule
       with StringSearchSPARQL[Jena, RDFStoreObject.DATASET] {
     var form: Elem = <p>initial value</p>
-    lazy val tableView = new TableView {}
+    lazy val tableView = this // new TableView {}
     lazy val search = this; // new StringSearchSPARQL2[Rdf, RDFStoreObject.DATASET]{}
     lazy val dl = new BrowsableGraph()
     lazy val fs = new FormSaver()
@@ -74,8 +76,8 @@ package global {
         {
           if (uri != null && uri != "")
             try {
-              tableView.htmlForm(uri, hrefDisplayPrefix, blankNode, editable = editable,
-                lang = lang).get
+              tableView.htmlFormElem(uri, hrefDisplayPrefix, blankNode, editable = editable,
+                lang = lang)
             } catch {
               case e: Exception => // e.g. org.apache.jena.riot.RiotException
                 <p style="color:red">

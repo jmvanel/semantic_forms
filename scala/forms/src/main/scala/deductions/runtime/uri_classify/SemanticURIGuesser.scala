@@ -57,7 +57,7 @@ object SemanticURIGuesser extends RDFCache {
     if (isGraphInUse(url)) Future.successful(SemanticURI)
     else {
       val response: Future[HttpResponse] = HttpClient.makeRequest(url, HEAD)
-      println("response " + response)
+      println(s"response $url " + response)
       response.map { resp => semanticURITypeFromHeaders(resp, url) }
     }
   }
@@ -66,7 +66,7 @@ object SemanticURIGuesser extends RDFCache {
     resp: HttpResponse,
     url: String): SemanticURIType = {
     val headers: Seq[HttpHeader] = resp.headers
-    println("headers " + headers)
+    println(s"HttpResponse headers ${headers.mkString("\t\n")}")
     type ContentType = akka.http.model.headers.`Content-Type`
     val contentType = resp.header[ContentType]
     println("semanticURITypeFromHeaders: contentType " + contentType)
@@ -81,7 +81,7 @@ object SemanticURIGuesser extends RDFCache {
           else semanticURIType
         case None => makeSemanticURITypeFromSuffix(url)
       }
-    println("semanticURITypeFromHeaders: semanticURIType " + semanticURIType)
+    println(s"semanticURITypeFromHeaders: semanticURIType $url " + semanticURIType)
     semanticURIType
   }
 

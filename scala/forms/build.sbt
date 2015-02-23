@@ -12,7 +12,9 @@ javacOptions ++= Seq("-source","1.7", "-target","1.7")
 libraryDependencies += "org.w3" %%  "jena" % "0.7.2.radical" 
 // "0.7.1" // 
 
-libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "0.10"
+// libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "0.10"
+libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "0.11"
+// libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "1.0-M3"
 // See more at: https://typesafe.com/blog/akka-http-preview#sthash.IZR1O9fx.dpuf
 
 libraryDependencies += "org.scala-lang.modules" %% "scala-async" % "0.9.2"

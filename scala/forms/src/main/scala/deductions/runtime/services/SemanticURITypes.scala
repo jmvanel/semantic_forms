@@ -33,7 +33,7 @@ trait SemanticURITypesTrait[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[R
   import scala.concurrent.ExecutionContext.Implicits.global
   import ops._
   val appDataStore: RDFStoreLocalProvider[Rdf, DATASET]
-  val appDataPrefix = Prefix[Rdf]("appdata", "http://TODO/appdata") // TODO
+  val appDataPrefix = Prefix[Rdf]("appdata", "http://appdata/semanticURIType") // TODO
 
   /**
    * get Semantic URI types From triple store or Internet,

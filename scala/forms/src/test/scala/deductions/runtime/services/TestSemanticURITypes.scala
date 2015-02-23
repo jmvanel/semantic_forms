@@ -16,34 +16,49 @@ import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.jena.RDFStoreLocalJena2Provider
 import org.w3.banana.SparqlHttpModule
 import org.w3.banana.RDFXMLReaderModule
+import deductions.runtime.uri_classify.SemanticURIGuesser
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
+import scala.concurrent.duration._
 
 trait TestSemanticURITypesTrait[Rdf <: RDF, DATASET] extends FunSuite
 with SemanticURITypesTrait[Rdf, DATASET]
-with RDFXMLReaderModule
-{
-  test("check some small FOAF profile") {
-    import ops._
-    val base = "http://www.agfa.com/w3c/jdroo/card.rdf"
-    val profile = base + "#me"
-    rdfStore.rw(dataset, {
-      val is = new java.net.URL(base).openStream()
-      val graph = rdfXMLReader.read(is, base = base).get
-      rdfStore.appendToGraph(dataset, URI(profile), graph)
-    })
-    println(s"Loaded $profile in TDB")
-    val r = getSemanticURItypesFromStoreOrInternet(profile)
-    import scala.concurrent.ExecutionContext.Implicits.global
-    import scala.concurrent.Await
-    import scala.concurrent.duration.Duration
-    import scala.concurrent.duration._
+with RDFXMLReaderModule {
+  
+  test("check 1 URI") {
+    val r = SemanticURIGuesser.guessSemanticURIType(
+//        "http://xmlns.com/foaf/0.1/Person")
+        "http://xmlns.com/foaf/0.1/")
     r onComplete {
-        case Success(it) => println( it.mkString("\n") )
+        case Success(t) => println( t )
         case Failure(x) =>  println(x)
     }
-    val dur = 10000
+    val dur = 10000 // 1000000
     Await.ready( r, Duration( dur, MILLISECONDS))
     Thread.sleep(dur+ 2000)
   }
+
+//  test("check some small FOAF profile") {
+//    import ops._
+//    val base = "http://www.agfa.com/w3c/jdroo/card.rdf"
+//    val profile = base + "#me"
+//    rdfStore.rw(dataset, {
+//      val is = new java.net.URL(base).openStream()
+//      val graph = rdfXMLReader.read(is, base = base).get
+//      rdfStore.appendToGraph(dataset, URI(profile), graph)
+//    })
+//    println(s"Loaded $profile in TDB")
+//    val r = getSemanticURItypesFromStoreOrInternet(profile)
+//    r onComplete {
+//        case Success(it) => println( it.mkString("\n") )
+//        case Failure(x) =>  println(x)
+//    }
+//    val dur = 10000
+//    Await.ready( r, Duration( dur, MILLISECONDS))
+//    Thread.sleep(dur+ 2000)
+//  }
 }
 
 class TestSemanticURITypes extends FunSuite
