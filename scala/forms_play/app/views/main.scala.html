@@ -43,9 +43,9 @@
 				        <div class="col-md-6"> 
 							<input class="form-control" type="text" name='displayuri' list="start_uris" />
 					        <datalist id="start_uris" >
-					          <option> http://jmvanel.free.fr/jmv.rdf#me </option>
-					          <option> http://dbpedia.org/resource/Paris </option>
-					          <option> http://bblfish.net/people/henry/card#me </option>
+					          <option label="J.M. Vanel FOAF profile"> http://jmvanel.free.fr/jmv.rdf#me </option>
+					          <option label="Paris dbpedia.org"> http://dbpedia.org/resource/Paris </option>
+					          <option label="H. Story FOAF profile"> http://bblfish.net/people/henry/card#me </option>
 					        </datalist>
 						</div>
 						<div class="col-md-4">
@@ -77,15 +77,22 @@
 		      	<div class="form-group">
 			      	<label class="col-md-2 control-label" for="uri">@Messages("Create_instance_of")</label>
 			        <div class="col-md-6">
-			        	<input class="form-control" type="text" name='uri' list="class_uris" />
-				        <datalist id="class_uris" >
-				          <option> http://xmlns.com/foaf/0.1/Person </option>
-				          <option> http://usefulinc.com/ns/doap#Project </option>
-				          <option> http://xmlns.com/foaf/0.1/Organization </option>
-				        </datalist>
-				        <!-- preDefinedClasses
-				          http://www.w3.org/2002/12/cal/ical#Vevent" // "cal:Vevent" 
-				         -->
+			        
+			        	<input class="form-control" type="text" name='uri' placeholder="@Messages("Paste_ontology")"></input>
+			        	<select class="form-control" type="text" name='uri' list="class_uris">
+			        	 <optgroup label="Assemblée Virtuelle">     
+				          <option label="av:Project" title="Projet dans ontologie de l'Assemblée Virtuelle"> http://www.assemblee-virtuelle.org/ontologies/v1.owl#Project </option>
+				          <option label="av:Actor"> http://www.assemblee-virtuelle.org/ontologies/v1.owl#Actor </option>
+				          <option label="av:Idea"> http://www.assemblee-virtuelle.org/ontologies/v1.owl#Idea </option>
+				          <option label="av:Resource"> http://www.assemblee-virtuelle.org/ontologies/v1.owl#Resource </option>
+				         </optgroup>
+				         <optgroup label="@Messages("Other_vocabs")">
+				          <option label="foaf:Person"> http://xmlns.com/foaf/0.1/Person </option>
+				          <option label="doap:Project"> http://usefulinc.com/ns/doap#Project </option>
+				          <option label="foaf:Organization"> http://xmlns.com/foaf/0.1/Organization </option>
+				          <!-- http://www.w3.org/2002/12/cal/ical#Vevent" // "cal:Vevent" -->
+				         </optgroup>
+				        </select>
 				    </div>
 				    <div class="col-md-4">
 			        	<input class="btn btn-primary" type="submit" value=@Messages("Create") />

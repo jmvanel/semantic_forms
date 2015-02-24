@@ -34,6 +34,8 @@ import org.w3.banana.LocalNameException
  *  same as loading
  *  http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/examples/defaultVocabularies.n3p.n3
  *  but without any dependency to EulerGUI.
+ *
+ *  TODO use prefix.cc web service to load from prefix short names (see implementation in EulerGUI)
  */
 object PopulateRDFCache extends RDFCache
     with App {
@@ -44,7 +46,7 @@ object PopulateRDFCache extends RDFCache
 
   def loadCommonVocabularies() {
     // most used vocab's
-    val vocabs0 = List(
+    val basicVocabs = List(
       RDFPrefix[Rdf],
       RDFSPrefix[Rdf],
       DCPrefix[Rdf],
@@ -53,23 +55,36 @@ object PopulateRDFCache extends RDFCache
       //    LDPPrefix[Rdf],
       //    IANALinkPrefix[Rdf],
       WebACLPrefix[Rdf],
-      CertPrefix[Rdf], OWLPrefix[Rdf])
+      CertPrefix[Rdf],
+      OWLPrefix[Rdf])
     import ops._
-    val vocabs1 = vocabs0 map { p => p.apply("") }
-    val vocabs2 =
+    val basicVocabsAsURI = basicVocabs map { p => p.apply("") }
+    val largerVocabs =
       makeUri("http://usefulinc.com/ns/doap#") ::
         makeUri("http://rdfs.org/sioc/ns#") ::
-        //     makeUri("http://schema.rdfs.org/all.ttl") :: // is still broken ( asked to Richard & Michael )
-        makeUri("http://downloads.dbpedia.org/3.9/dbpedia_3.9.owl") :: // OK with Jena 2.11.1 !!!
+        makeUri("http://schema.rdfs.org/all.nt") :: // NOTE .ttl is still broken ( asked on https://github.com/mhausenblas/schema-org-rdf/issues/63 )
+        makeUri("http://downloads.dbpedia.org/3.9/dbpedia_3.9.owl") ::
+        /* geo: , con: , <foaf_fr.n3>  TODO */
+        makeUri("http://www.w3.org/2003/01/geo/wgs84_pos#") ::
+        makeUri("http://www.w3.org/2000/10/swap/pim/contact#") ::
+        // TODO use code to load all languages from github.com/jmvanel/rdf-i18n (see implementation in EulerGUI)
+        makeUri("https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/foaf/foaf.fr.ttl") ::
+        makeUri("https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/foaf/foaf.it.ttl") ::
+        makeUri("https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/rdfs/rdfs.fr.ttl") ::
+        makeUri("https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/rdfs/rdfs.it.ttl") ::
         Nil
 
-    val vocabs = vocabs1 ::: vocabs2
-    /* geo: , con: , <foaf_fr.n3>  TODO */
+    val vocabs = basicVocabsAsURI ::: largerVocabs
 
     Logger.getRootLogger().info(vocabs)
-    //    vocabs1 map { storeURI(_, store) }
-    // vocab ????????????????????? TODO
-    vocabs1 map { storeURI(_, dataset) }
+    vocabs map {
+      voc =>
+        try {
+          storeURI(voc, dataset)
+        } catch {
+          case e: Exception => println("Error " + voc + " " + e)
+        }
+    }
   }
 
   /** load CommonForm Specifications from a well know place */
