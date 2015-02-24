@@ -48,10 +48,9 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
 
   lazy val nullURI = ops.URI("http://null.com#") // TODO better : "" ????????????
   val rdfs = RDFSPrefix[Rdf]
-
   val owl = OWLPrefix[Rdf]
-  val owlThing = owl.prefixIri + "Thing"
   val rdf = RDFPrefix[Rdf]
+
   import FormSyntaxFactory._
   val formPrefix: Prefix[Rdf] = Prefix("form", formVocabPrefix)
   val gr = graph
