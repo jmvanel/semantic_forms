@@ -40,9 +40,16 @@ import org.w3.banana.LocalNameException
 object PopulateRDFCache extends RDFCache
     with App {
 
-  loadCommonVocabularies
-  loadCommonFormSpecifications()
-  RDFI18NLoader.loadFromGitHubRDFI18NTranslations()
+    loadCommonVocabularies
+    loadCommonFormSpecifications()
+    RDFI18NLoader.loadFromGitHubRDFI18NTranslations()
+
+  val githubcontent = "https://raw.githubusercontent.com"
+
+//  storeURI(
+//    //    ops.makeUri("file:///home/jmv/bizz/AFFAIRES_EN_COURS/assemblee-virtuelle/rdf/av.owl.ttl"),
+//    ops.makeUri(githubcontent + "/assemblee-virtuelle/pair/master/av.owl.ttl"),
+//    dataset)
 
   def loadCommonVocabularies() {
     // most used vocab's
@@ -64,14 +71,9 @@ object PopulateRDFCache extends RDFCache
         makeUri("http://rdfs.org/sioc/ns#") ::
         makeUri("http://schema.rdfs.org/all.nt") :: // NOTE .ttl is still broken ( asked on https://github.com/mhausenblas/schema-org-rdf/issues/63 )
         makeUri("http://downloads.dbpedia.org/3.9/dbpedia_3.9.owl") ::
-        /* geo: , con: , <foaf_fr.n3>  TODO */
+        /* geo: , con: */
         makeUri("http://www.w3.org/2003/01/geo/wgs84_pos#") ::
         makeUri("http://www.w3.org/2000/10/swap/pim/contact#") ::
-        // TODO use code to load all languages from github.com/jmvanel/rdf-i18n (see implementation in EulerGUI)
-        makeUri("https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/foaf/foaf.fr.ttl") ::
-        makeUri("https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/foaf/foaf.it.ttl") ::
-        makeUri("https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/rdfs/rdfs.fr.ttl") ::
-        makeUri("https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/rdfs/rdfs.it.ttl") ::
         Nil
 
     val vocabs = basicVocabsAsURI ::: largerVocabs
@@ -89,7 +91,7 @@ object PopulateRDFCache extends RDFCache
 
   /** load CommonForm Specifications from a well know place */
   def loadCommonFormSpecifications() {
-    val all_form_specs = "https://raw.githubusercontent.com/jmvanel/semantic_forms/master/scala/forms/form_specs/specs.ttl"
+    val all_form_specs = githubcontent + "/jmvanel/semantic_forms/master/scala/forms/form_specs/specs.ttl"
     val from = new java.net.URL(all_form_specs).openStream()
     val form_specs_graph: Rdf#Graph = turtleReader.read(from, base = all_form_specs) getOrElse sys.error(s"couldn't read $all_form_specs")
     import deductions.runtime.abstract_syntax.FormSyntaxFactory._

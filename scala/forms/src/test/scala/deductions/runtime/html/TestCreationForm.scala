@@ -57,7 +57,7 @@ trait GraphTestEnum extends RDFOpsModule with TurtleWriterModule {
   import ops._
   import syntax._
   val foaf = FOAFPrefix[Rdf]
-  val owl = OWLPrefix[Rdf]
+  private val owl = OWLPrefix[Rdf]
   val rdfs = RDFSPrefix[Rdf]
 
   val vocab1 = (

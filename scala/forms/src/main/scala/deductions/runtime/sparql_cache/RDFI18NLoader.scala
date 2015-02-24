@@ -5,8 +5,10 @@ object RDFI18NLoader extends RDFCache with App {
 
   def loadFromGitHubRDFI18NTranslations() {
 
-    /* TODO : do not hardcode the URL's but read
-     * https://raw.githubusercontent.com/jmvanel/rdf-i18n/blob/master/translations_list.ttl */
+    /* TODO : do not hardcode the URL's but read:
+     * https://raw.githubusercontent.com/jmvanel/rdf-i18n/blob/master/translations_list.ttl
+     * TODO use code to load all languages from rdf-i18n (see implementation in EulerGUI)
+     * */
     val translations0 = List(
       "https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/foaf/foaf.fr.ttl",
       "https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/foaf/foaf.it.ttl",

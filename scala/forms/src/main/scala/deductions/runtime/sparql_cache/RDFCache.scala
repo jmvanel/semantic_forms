@@ -19,6 +19,7 @@ import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import org.w3.banana.jena.Jena
 import com.hp.hpl.jena.query.Dataset
+import org.w3.banana.OWLPrefix
 
 /** */
 trait RDFCacheDependencies
@@ -34,6 +35,8 @@ trait RDFCache extends RDFStoreLocalJena1Provider
 
   val timestampGraphURI = "http://deductions-software.com/timestampGraph"
   val xsd = XSDPrefix[Rdf]
+  val owl = OWLPrefix[Rdf]
+
   import ops._
   import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -108,14 +111,27 @@ trait RDFCache extends RDFStoreLocalJena1Provider
   }
 
   /**
-   * TODO rename storeURIInNamedGraph
    * download and store URI, with transaction, in a graph named by its URI minus the # part,
-   *  and store the timestamp from HTTP HEAD request
+   *  and store the timestamp from HTTP HEAD request;
+   * transactional,
+   * load also the direct owl:imports , but not recursively ( as EulerGUI IDE does )
    *
-   *  TODO: URI minus the # part
+   * TODO rename storeURIInNamedGraph
    */
   def storeURI(uri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
     val model = storeURI(uri, uri, dataset)
+    val r = rdfStore.rw(dataset, {
+      val it = find(model, uri, owl.imports, ANY)
+      for (importedOntology <- it) {
+        try {
+          println(s"Loading imported Ontology $importedOntology")
+          foldNode(importedOntology.objectt)(onto => storeURINoTransaction(onto, onto, dataset),
+            identity, identity)
+        } catch {
+          case e: Throwable => println(e)
+        }
+      }
+    })
     addTimestampToDataset(uri, dataset)
     model
   }
@@ -125,14 +141,8 @@ trait RDFCache extends RDFStoreLocalJena1Provider
    *  with transaction
    */
   private def addTimestampToDataset(uri: Rdf#URI, dataset: DATASET) = {
-    //    val time = lastModified(uri.getURI(), 1000)
     rdfStore.rw(dataset, {
       addTimestampToDatasetNoTransaction(uri, dataset)
-      //      rdfStore.appendToGraph(dataset, makeUri(timestampGraphURI),
-      //        makeGraph(Seq(makeTriple(
-      //          uri,
-      //          makeUri(timestampGraphURI),
-      //          makeLiteral(time._2.toString, xsd.integer)))))
     })
   }
 

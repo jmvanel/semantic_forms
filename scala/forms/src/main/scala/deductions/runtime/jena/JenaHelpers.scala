@@ -35,7 +35,7 @@ trait JenaHelpers extends JenaModule {
 
   /**
    * store URI in a named graph,
-   * with transaction,
+   * transactional,
    * using Jena's RDFDataMgr
    * with Jena Riot for smart reading of any format,
    * (use content-type or else file extension)
@@ -53,10 +53,14 @@ trait JenaHelpers extends JenaModule {
     }
   }
 
+  /**
+   * read from uri no matter what the syntax is;
+   *  probably can also load an URI with the # part
+   */
   def storeURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: Store): Rdf#Graph = {
-    Logger.getRootLogger().info(s"storeURI uri $uri graphUri $graphUri")
+    Logger.getRootLogger().info(s"Before storeURI uri $uri graphUri $graphUri")
     val gForStore = rdfStore.getGraph(dataset, graphUri)
-    // read from uri no matter what the syntax is:
+    Logger.getRootLogger().info(s"Before loadModel uri $uri")
     val graph = RDFDataMgr.loadModel(uri.toString()).getGraph
     // val graph = anyRDFReader.readAnyRDFSyntax(uri.toString()) . get // TODO after proposing anyRDFReader to Banana
     rdfStore.appendToGraph(dataset, uri, graph)
