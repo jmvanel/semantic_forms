@@ -40,16 +40,14 @@ import org.w3.banana.LocalNameException
 object PopulateRDFCache extends RDFCache
     with App {
 
-    loadCommonVocabularies
-    loadCommonFormSpecifications()
-    RDFI18NLoader.loadFromGitHubRDFI18NTranslations()
-
   val githubcontent = "https://raw.githubusercontent.com"
 
-//  storeURI(
-//    //    ops.makeUri("file:///home/jmv/bizz/AFFAIRES_EN_COURS/assemblee-virtuelle/rdf/av.owl.ttl"),
-//    ops.makeUri(githubcontent + "/assemblee-virtuelle/pair/master/av.owl.ttl"),
-//    dataset)
+  loadCommonVocabularies
+  loadCommonFormSpecifications()
+  RDFI18NLoader.loadFromGitHubRDFI18NTranslations()
+
+  // test OK:
+  //    storeURI( ops.makeUri( "http://purl.org/ontology/mo/" ), dataset  )
 
   def loadCommonVocabularies() {
     // most used vocab's
@@ -74,6 +72,7 @@ object PopulateRDFCache extends RDFCache
         /* geo: , con: */
         makeUri("http://www.w3.org/2003/01/geo/wgs84_pos#") ::
         makeUri("http://www.w3.org/2000/10/swap/pim/contact#") ::
+        makeUri(githubcontent + "/assemblee-virtuelle/pair/master/av.owl.ttl") ::
         Nil
 
     val vocabs = basicVocabsAsURI ::: largerVocabs

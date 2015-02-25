@@ -20,6 +20,7 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
 import org.w3.banana.jena.Jena
 import com.hp.hpl.jena.query.Dataset
 import org.w3.banana.OWLPrefix
+import org.apache.log4j.Logger
 
 /** */
 trait RDFCacheDependencies
@@ -121,12 +122,16 @@ trait RDFCache extends RDFStoreLocalJena1Provider
   def storeURI(uri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
     val model = storeURI(uri, uri, dataset)
     val r = rdfStore.rw(dataset, {
-      val it = find(model, uri, owl.imports, ANY)
+      val it = find(model, ANY, owl.imports, ANY)
       for (importedOntology <- it) {
         try {
-          println(s"Loading imported Ontology $importedOntology")
-          foldNode(importedOntology.objectt)(onto => storeURINoTransaction(onto, onto, dataset),
-            identity, identity)
+          Logger.getRootLogger().info(s"Before Loading imported Ontology $importedOntology")
+          foldNode(importedOntology.subject)(ontoMain => Some(ontoMain), x => None, x => None) match {
+            case Some(ontoMain) =>
+              foldNode(importedOntology.objectt)(onto => storeURINoTransaction(onto, onto, dataset),
+                identity, identity)
+            case None =>
+          }
         } catch {
           case e: Throwable => println(e)
         }
