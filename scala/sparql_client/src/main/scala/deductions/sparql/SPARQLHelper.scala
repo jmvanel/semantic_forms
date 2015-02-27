@@ -24,19 +24,19 @@ trait SPARQLHelper extends SPARQLHelperDependencies {
   import sparqlOps._
   import sparqlHttp.sparqlEngineSyntax._
 
-//  runSparqlSelect("""
-//    PREFIX ont: <http://dbpedia.org/ontology/>
-//
-//    SELECT DISTINCT ?language WHERE {
-//    ?language a ont:ProgrammingLanguage .
-//    ?language ont:influencedBy ?other .
-//    ?other ont:influencedBy ?language .
-//    } LIMIT 100
-//    """,
-//    Seq("language"))
-  
+  //  runSparqlSelect("""
+  //    PREFIX ont: <http://dbpedia.org/ontology/>
+  //
+  //    SELECT DISTINCT ?language WHERE {
+  //    ?language a ont:ProgrammingLanguage .
+  //    ?language ont:influencedBy ?other .
+  //    ?other ont:influencedBy ?language .
+  //    } LIMIT 100
+  //    """,
+  //    Seq("language"))
+
   val foaf = FOAFPrefix[Rdf]
-  runSparqlContruct( s"""
+  runSparqlContruct(s"""
     PREFIX foaf: <${foaf.prefixIri}>   
     CONSTRUCT {
       ?P <${foaf.familyName}> ?FN .
@@ -44,37 +44,36 @@ trait SPARQLHelper extends SPARQLHelperDependencies {
     WHERE {
       ?P <${foaf.familyName}> ?FN .
     } LIMIT 100
-    """ )
-  
-  def runSparqlContruct( queryString:String,
-        endpoint:String="http://dbpedia.org/sparql/" ) {
-    
-	  /* gets a SparqlEngine out of a Sparql endpoint */
-    val endpointURL = new URL("http://dbpedia.org/sparql/")
+    """)
 
-    /* creates a Sparql Select query */
-    println( s"sparqlOps $sparqlOps" )
-    val ps = parseConstruct(queryString)
-    val query0 = ps.asFuture
-    val query : Rdf#ConstructQuery = parseConstruct(queryString).get
-    val answer : Rdf#Graph = endpointURL.executeConstruct(query).getOrFail()
-    println( answer )
-    val os = new ByteArrayOutputStream
-    val r = jsonldCompactedWriter.write(answer, os, endpoint )  
-    os.close()
-    println( os.toString("utf-8") )
-  }
-  
-  def runSparqlSelect(
-      queryString:String, vars:Seq[String],
-      endpoint:String="http://dbpedia.org/sparql/"
-      ) {
-    
+  def runSparqlContruct(queryString: String,
+    endpoint: String = "http://dbpedia.org/sparql/") {
+
     /* gets a SparqlEngine out of a Sparql endpoint */
     val endpointURL = new URL("http://dbpedia.org/sparql/")
 
     /* creates a Sparql Select query */
-    println( s"sparqlOps $sparqlOps" )
+    println(s"sparqlOps $sparqlOps")
+    val ps = parseConstruct(queryString)
+    val query0 = ps.asFuture
+    val query: Rdf#ConstructQuery = parseConstruct(queryString).get
+    val answer: Rdf#Graph = endpointURL.executeConstruct(query).getOrFail()
+    println(answer)
+    val os = new ByteArrayOutputStream
+    val r = jsonldCompactedWriter.write(answer, os, endpoint)
+    os.close()
+    println(os.toString("utf-8"))
+  }
+
+  def runSparqlSelect(
+    queryString: String, vars: Seq[String],
+    endpoint: String = "http://dbpedia.org/sparql/") {
+
+    /* gets a SparqlEngine out of a Sparql endpoint */
+    val endpointURL = new URL("http://dbpedia.org/sparql/")
+
+    /* creates a Sparql Select query */
+    println(s"sparqlOps $sparqlOps")
     val query = parseSelect(queryString).get
 
     /* executes the query */
@@ -90,7 +89,7 @@ trait SPARQLHelper extends SPARQLHelperDependencies {
       println(variables.to[List].mkString("\n"))
     }
   }
-  
+
 }
 
 //object SPARQLAppWithSesame
@@ -99,7 +98,11 @@ trait SPARQLHelper extends SPARQLHelperDependencies {
 //with SPARQLHelper
 
 object SPARQLAppWithJena
-extends JenaModule 
-with App
-with SPARQLHelper
- 
+    extends JenaModule
+    with App
+    with SPARQLHelper {
+  implicit override val jsonldExpandedWriter: org.w3.banana.io.RDFWriter[deductions.sparql.SPARQLAppWithJena.Rdf, scala.util.Try, org.w3.banana.io.JsonLdExpanded] = ???
+  implicit override val jsonldFlattenedWriter: org.w3.banana.io.RDFWriter[deductions.sparql.SPARQLAppWithJena.Rdf, scala.util.Try, org.w3.banana.io.JsonLdFlattened] = ???
+
+}
+
