@@ -27,6 +27,10 @@ class FormSaver[Rdf <: RDF]()(
   import ops._
   import sparqlOps._
 
+  /**
+   * @param map a raw map of HTTP response parameters
+   *  TODO refactor : split 1) dedoding of the response 2) update of RDF database
+   */
   def saveTriples(map: Map[String, Seq[String]]) = {
     println("FormSaver.saveTriples")
     val uriOption = map.getOrElse("uri", Seq()).headOption
