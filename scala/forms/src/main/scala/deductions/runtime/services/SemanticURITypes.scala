@@ -30,10 +30,13 @@ object SemanticURITypes extends RDFCache
 }
 
 trait SemanticURITypesTrait[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET] {
+
   import scala.concurrent.ExecutionContext.Implicits.global
   import ops._
+  import rdfStore.transactorSyntax._
+
   val appDataStore: RDFStoreLocalProvider[Rdf, DATASET]
-  val appDataPrefix = Prefix[Rdf]("appdata", "http://appdata/semanticURIType") // TODO
+  val appDataPrefix = Prefix[Rdf]("appdata", "http://appdata/semanticURIType") // TODO better URI
 
   /**
    * get Semantic URI types From triple store or Internet,
@@ -44,7 +47,7 @@ trait SemanticURITypesTrait[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[R
    * meant to be called in background
    */
   def getSemanticURItypesFromStoreOrInternet(uri: String): Future[Iterator[(Rdf#Node, SemanticURIGuesser.SemanticURIType)]] = {
-    val res = rdfStore.r(dataset, {
+    val res = dataset.r({
       val triples: Iterator[Rdf#Triple] = ops.find(allNamedGraph,
         ops.makeUri(uri), ANY, ANY)
       val semanticURItypes =
@@ -68,7 +71,7 @@ trait SemanticURITypesTrait[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[R
   }
 
   def getSemanticURItypesFromStore(uri: String): Seq[(Rdf#Node, SemanticURIGuesser.SemanticURIType)] = {
-    val res = rdfStore.r(dataset, {
+    val res = dataset.r({
       val triples: Iterator[Rdf#Triple] = ops.find(allNamedGraph,
         ops.makeUri(uri), ANY, ANY)
       val semanticURItypes =

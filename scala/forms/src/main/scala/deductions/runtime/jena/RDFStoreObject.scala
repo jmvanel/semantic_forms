@@ -24,25 +24,25 @@ trait RDFStoreLocalJena2Provider extends RDFStoreLocalJenaProvider {
 }
 
 trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Dataset] with JenaModule {
-  override type DATASET = Dataset
+  //  override 
+  type DATASET = Dataset
   override val rdfStore = new JenaDatasetStore(false)
+  import rdfStore.graphStoreSyntax._
   /**
    * NOTES:
    *  - no need of a transaction here, as getting Union Graph is anyway part of a transaction
    *  - Union Graph in Jena should be re-done for each use (not 100% sure, but safer anyway)
    */
   override def allNamedGraph: Rdf#Graph = {
-    //    val graph = rdfStore.r(dataset, {
-    rdfStore.getGraph(dataset, ops.makeUri("urn:x-arq:UnionGraph")).get
-    //    }).get
-    //    graph
+    dataset.getGraph(ops.makeUri("urn:x-arq:UnionGraph")).get
   }
 }
 
 /** TODO implement independently of Jena */
 trait RDFGraphPrinter extends RDFStoreLocalJena1Provider {
+  import rdfStore.transactorSyntax._
   def printGraphList {
-    rdfStore.r(dataset, {
+    dataset.r({
       val lgn = dataset.asDatasetGraph().listGraphNodes()
       Logger.getRootLogger().info(s"listGraphNodes size ${lgn.size}")
       for (gn <- lgn) {

@@ -25,6 +25,8 @@ trait TableViewModule
     with Form2HTML[Jena#Node, Jena#URI] // TODO remove Jena !!!!!!!!!!!!!!
     {
   import ops._
+  import rdfStore.transactorSyntax._
+
   val nullURI: Rdf#URI = ops.URI("")
   import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -39,12 +41,11 @@ trait TableViewModule
     lang: String = "en", graphURI: String = ""): Try[Elem] = {
 
     val graphURIActual = if (graphURI == "") uri else graphURI
-    //    val dataset = RDFStoreObject.dataset
     if (blankNode != "true") {
       retrieveURI(makeUri(uri), dataset)
       Logger.getRootLogger().info(s"After retrieveURI(makeUri($uri), store)")
     }
-    rdfStore.r(dataset, {
+    dataset.r({
       graf2form(allNamedGraph, uri, hrefPrefix, blankNode, editable, actionURI, lang, graphURIActual)
     })
   }

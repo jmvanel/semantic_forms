@@ -3,14 +3,14 @@ package deductions.runtime.services
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.xml.Elem
-
 import org.w3.banana.RDF
 import org.w3.banana.SparqlOpsModule
 import org.w3.banana.TryW
-
+import org.w3.banana.syntax._
 import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.html.Form2HTML
+import org.w3.banana.Transactor
 
 /** String Search with simple SPARQL */
 trait StringSearchSPARQL[Rdf <: RDF, DATASET]
@@ -19,6 +19,8 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
 
   import ops._
   import sparqlOps._
+  import rdfStore.transactorSyntax._
+  import rdfStore.sparqlEngineSyntax._
 
   def search(search: String, hrefPrefix: String = ""): Future[Elem] = {
     val uris = search_only(search)
@@ -32,8 +34,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
     <p>{
       val res = res0.toSeq
       println(s"displayResults : ${res.mkString("\n")}")
-
-      rdfStore.r(dataset, {
+      dataset.r({
         implicit val graph: Rdf#Graph = allNamedGraph
         //        val all = ops.find( allNamedGraph, ANY, ANY, ANY)
         //        println( all.mkString("\n") )
@@ -65,11 +66,11 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
          |}""".stripMargin
 
     val transaction =
-      rdfStore.r(dataset, {
+      dataset.r({
         var i = 0
         val result = for {
           query <- parseSelect(queryString)
-          solutions <- rdfStore.executeSelect(dataset, query, Map())
+          solutions <- dataset.executeSelect(query, Map())
         } yield {
           solutions.toIterable.map {
             row =>

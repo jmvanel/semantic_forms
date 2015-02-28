@@ -19,6 +19,8 @@ trait CreationForm extends RDFOpsModule
     with Form2HTML[Jena#Node, Jena#URI]
     with RDFCache {
   import ops._
+  import rdfStore.transactorSyntax._
+
   val nullURI: Rdf#URI = ops.URI("")
   var actionURI = "/save"
 
@@ -28,7 +30,7 @@ trait CreationForm extends RDFOpsModule
    */
   def create(classUri: String, lang: String = "en"): Try[Elem] = {
     import scala.concurrent.ExecutionContext.Implicits.global
-    rdfStore.r(dataset, {
+    dataset.r({
       val factory = new UnfilledFormFactory[Rdf](allNamedGraph, preferedLanguage = lang)
       val form = factory.createFormFromClass(URI(classUri))
       //      println(form)

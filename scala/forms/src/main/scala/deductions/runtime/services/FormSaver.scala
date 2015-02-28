@@ -24,8 +24,12 @@ class FormSaver[Rdf <: RDF]()(
     sparqlOps: SparqlOps[Rdf],
     writer: RDFWriter[Rdf, Try, Turtle],
     rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET]) {
+
   import ops._
   import sparqlOps._
+  import rdfStore.transactorSyntax._
+  import rdfStore.graphStoreSyntax._
+  val dataset = RDFStoreObject.dataset
 
   /**
    * @param map a raw map of HTTP response parameters
@@ -114,9 +118,9 @@ class FormSaver[Rdf <: RDF]()(
     def doSave(graphURI: String) {
       import ops._
       val transaction =
-        rdfStore.rw(RDFStoreObject.dataset, {
-          rdfStore.removeTriples(RDFStoreObject.dataset, makeUri(graphURI), triplesToRemove.toIterable)
-          rdfStore.appendToGraph(RDFStoreObject.dataset, makeUri(graphURI), makeGraph(triples))
+        dataset.rw({
+          dataset.removeTriples(makeUri(graphURI), triplesToRemove.toIterable)
+          dataset.appendToGraph(makeUri(graphURI), makeGraph(triples))
         }).flatMap { identity }
 
       val f = transaction.asFuture
@@ -124,7 +128,7 @@ class FormSaver[Rdf <: RDF]()(
       f onSuccess {
         case _ =>
           println("Successfully stored triples in store")
-          rdfStore.getGraph(RDFStoreObject.dataset, makeUri(graphURI)).asFuture.
+          dataset.getGraph(makeUri(graphURI)).asFuture.
             onSuccess {
               case gr =>
                 if (triplesToRemove.size > 0 ||

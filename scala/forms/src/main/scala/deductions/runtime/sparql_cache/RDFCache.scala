@@ -39,6 +39,9 @@ trait RDFCache extends RDFStoreLocalJena1Provider
   val owl = OWLPrefix[Rdf]
 
   import ops._
+  import rdfStore.transactorSyntax._
+  import rdfStore.graphStoreSyntax._
+  import rdfStore.sparqlEngineSyntax._
   import scala.concurrent.ExecutionContext.Implicits.global
 
   /** with transaction */
@@ -48,9 +51,8 @@ trait RDFCache extends RDFStoreLocalJena1Provider
 
   /** with transaction */
   def isGraphInUse(uri: Rdf#URI) = {
-    // TODO ? test : rdfStore.r(
-    rdfStore.rw(dataset, {
-      for (graph <- rdfStore.getGraph(dataset, uri)) yield {
+    dataset.rw({
+      for (graph <- dataset.getGraph(uri)) yield {
         val uriGraphIsEmpty = graph.isEmpty()
         println("uriGraphIsEmpty " + uriGraphIsEmpty)
         !uriGraphIsEmpty
@@ -65,8 +67,8 @@ trait RDFCache extends RDFStoreLocalJena1Provider
    * TODO save timestamp in another Dataset
    */
   def retrieveURI(uri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
-    rdfStore.rw(dataset, {
-      for (graph <- rdfStore.getGraph(dataset, uri)) yield {
+    dataset.rw({
+      for (graph <- dataset.getGraph(uri)) yield {
         val uriGraphIsEmpty = graph.isEmpty()
         println("uriGraphIsEmpty " + uriGraphIsEmpty)
         if (uriGraphIsEmpty) {
@@ -88,7 +90,7 @@ trait RDFCache extends RDFStoreLocalJena1Provider
    */
   def updateLocalVersion(uri: Rdf#URI, dataset: DATASET) = {
     val future = Future {
-      rdfStore.rw(dataset, {
+      dataset.rw({
         val localTimestamp = getTimestampFromDataset(uri, dataset)
         localTimestamp match {
           case Success(long) =>
@@ -121,7 +123,7 @@ trait RDFCache extends RDFStoreLocalJena1Provider
    */
   def storeURI(uri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
     val model = storeURI(uri, uri, dataset)
-    val r = rdfStore.rw(dataset, {
+    val r = dataset.rw({
       val it = find(model, ANY, owl.imports, ANY)
       for (importedOntology <- it) {
         try {
@@ -146,14 +148,14 @@ trait RDFCache extends RDFStoreLocalJena1Provider
    *  with transaction
    */
   private def addTimestampToDataset(uri: Rdf#URI, dataset: DATASET) = {
-    rdfStore.rw(dataset, {
+    dataset.rw({
       addTimestampToDatasetNoTransaction(uri, dataset)
     })
   }
 
   def addTimestampToDatasetNoTransaction(uri: Rdf#URI, dataset: DATASET) = {
     val time = lastModified(uri.getURI(), 1000)
-    rdfStore.appendToGraph(dataset, makeUri(timestampGraphURI),
+    dataset.appendToGraph(makeUri(timestampGraphURI),
       makeGraph(Seq(makeTriple(
         uri,
         makeUri(timestampGraphURI),
@@ -174,7 +176,7 @@ trait RDFCache extends RDFStoreLocalJena1Provider
          |}""".stripMargin
     val result = for {
       query <- sparqlOps.parseSelect(queryString)
-      solutions <- rdfStore.executeSelect(dataset, query, Map())
+      solutions <- dataset.executeSelect(query, Map())
     } yield {
       solutions.toIterable.map {
         row => row("ts") getOrElse sys.error("getTimestampFromDataset: " + row)

@@ -12,7 +12,7 @@ import org.w3.banana.RDFStore
  */
 trait RDFStoreLocalProvider[Rdf <: RDF, DATASET] extends RDFOpsModule {
   implicit val rdfStore: RDFStore[Rdf, Try, DATASET]
-  type DATASET
+  //  type DATASET
   val dataset: DATASET
   def allNamedGraph: Rdf#Graph
 }

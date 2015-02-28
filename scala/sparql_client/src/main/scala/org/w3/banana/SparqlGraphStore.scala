@@ -33,7 +33,7 @@ class SparqlGraphStore[Rdf <: RDF, M[+_], SE](sparqlEngine: SparqlQueryUpdateEng
     runUpdate(s"""INSERT DATA
     		{ GRAPH <$uri> {
           $tripless
-          }""", a)
+          } }""", a)
   }
 
   def getGraph(a: SE, uri: Rdf#URI): M[Rdf#Graph] = {
@@ -49,7 +49,7 @@ class SparqlGraphStore[Rdf <: RDF, M[+_], SE](sparqlEngine: SparqlQueryUpdateEng
     runUpdate(s"""DELETE DATA
     		{ GRAPH  <$uri>  {
           $tripless
-          }""", a)
+          } }""", a)
   }
 
   private def runUpdate(query: String, a: SE) = {

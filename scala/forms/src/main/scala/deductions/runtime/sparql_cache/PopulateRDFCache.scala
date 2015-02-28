@@ -40,6 +40,9 @@ import org.w3.banana.LocalNameException
 object PopulateRDFCache extends RDFCache
     with App {
 
+  import rdfStore.transactorSyntax._
+  import rdfStore.graphStoreSyntax._
+
   val githubcontent = "https://raw.githubusercontent.com"
 
   loadCommonVocabularies
@@ -105,8 +108,8 @@ object PopulateRDFCache extends RDFCache
       val from = new java.net.URL(obj.toString()).openStream()
       val form_spec_graph: Rdf#Graph = turtleReader.read(from, base = obj.toString()) getOrElse sys.error(
         s"couldn't read ${obj.toString()}")
-      val r = rdfStore.rw(dataset, {
-        rdfStore.appendToGraph(dataset, ops.makeUri("form_specs"), form_spec_graph)
+      val r = dataset.rw({
+        dataset.appendToGraph(ops.makeUri("form_specs"), form_spec_graph)
       })
       println("Added form_spec " + obj)
     }

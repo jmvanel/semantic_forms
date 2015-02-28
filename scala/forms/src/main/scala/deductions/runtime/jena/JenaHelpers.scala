@@ -30,6 +30,8 @@ import scala.util.Failure
 
 trait JenaHelpers extends JenaModule {
   import ops._
+  import rdfStore.transactorSyntax._
+  import rdfStore.graphStoreSyntax._
 
   type Store = RDFStoreObject.DATASET
 
@@ -42,7 +44,7 @@ trait JenaHelpers extends JenaModule {
    * cf https://github.com/w3c/banana-rdf/issues/105
    */
   def storeURI(uri: Rdf#URI, graphUri: Rdf#URI, dataset: Store): Rdf#Graph = {
-    val r = rdfStore.rw(dataset, {
+    val r = dataset.rw({
       storeURINoTransaction(uri, graphUri, dataset)
     })
     r match {
@@ -59,11 +61,11 @@ trait JenaHelpers extends JenaModule {
    */
   def storeURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: Store): Rdf#Graph = {
     Logger.getRootLogger().info(s"Before storeURI uri $uri graphUri $graphUri")
-    val gForStore = rdfStore.getGraph(dataset, graphUri)
+    val gForStore = dataset.getGraph(graphUri)
     Logger.getRootLogger().info(s"Before loadModel uri $uri")
     val graph = RDFDataMgr.loadModel(uri.toString()).getGraph
     // val graph = anyRDFReader.readAnyRDFSyntax(uri.toString()) . get // TODO after proposing anyRDFReader to Banana
-    rdfStore.appendToGraph(dataset, uri, graph)
+    dataset.appendToGraph(uri, graph)
     Logger.getRootLogger().info(s"storeURI uri $uri : stored")
     graph
   }
