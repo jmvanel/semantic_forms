@@ -46,7 +46,8 @@ trait FormModule[NODE, URI <: NODE] {
       val mandatory: Boolean = false,
       val type_ : URI = nullURI,
       var widgetType: WidgetType = Text,
-      var openChoice: Boolean = true) {
+      var openChoice: Boolean = true,
+      var possibleValues: Seq[(NODE, String)] = Seq()) {
     private val triples: mutable.Buffer[Triple] = mutable.ListBuffer[Triple]()
     override def toString(): String = {
       s""" "$label", "$comment" $widgetType """
@@ -57,13 +58,14 @@ trait FormModule[NODE, URI <: NODE] {
     }
   }
 
+  /** @param possibleValues a couple of an RDF node id and the label to display, see trait RangeInference */
   class ResourceEntry(label: String, comment: String,
     property: ObjectProperty = nullURI, validator: ResourceValidator,
     val value: URI = nullURI, val alreadyInDatabase: Boolean = true,
-    val possibleValues: Seq[(NODE, String)] = Seq(),
+    possibleValues: Seq[(NODE, String)] = Seq(),
     val valueLabel: String = "",
     type_ : URI = nullURI)
-      extends Entry(label, comment, property, type_ = type_) {
+      extends Entry(label, comment, property, type_ = type_, possibleValues = possibleValues) {
     override def toString(): String = {
       super.toString + s""" : <$value>, "$valueLabel" possibleValues count:${possibleValues.size} """
     }
@@ -85,7 +87,8 @@ trait FormModule[NODE, URI <: NODE] {
   class LiteralEntry(l: String, c: String,
       property: DatatypeProperty = nullURI, validator: DatatypeValidator,
       val value: String = "",
-      type_ : URI = nullURI) extends Entry(l, c, property, type_ = type_) {
+      type_ : URI = nullURI,
+      possibleValues: Seq[(NODE, String)] = Seq()) extends Entry(l, c, property, type_ = type_, possibleValues = possibleValues) {
     override def toString(): String = {
       super.toString + s""" := "$value" """
     }

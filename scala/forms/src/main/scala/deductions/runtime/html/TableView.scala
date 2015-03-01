@@ -39,8 +39,7 @@ trait TableViewModule
     editable: Boolean = false,
     actionURI: String = "/save",
     lang: String = "en", graphURI: String = "",
-    actionURI2: String = "/save"
-		  ): Try[Elem] = {
+    actionURI2: String = "/save"): Try[Elem] = {
 
     val graphURIActual = if (graphURI == "") uri else graphURI
     if (blankNode != "true") {
@@ -49,7 +48,7 @@ trait TableViewModule
     }
     dataset.r({
       graf2form(allNamedGraph, uri, hrefPrefix, blankNode, editable,
-          actionURI, lang, graphURIActual, actionURI2)
+        actionURI, lang, graphURIActual, actionURI2)
     })
   }
 
@@ -59,14 +58,13 @@ trait TableViewModule
     actionURI: String = "/save",
     lang: String = "en",
     graphURI: String = "",
-    actionURI2: String = "/save"
-		  ): Elem = {
+    actionURI2: String = "/save"): Elem = {
     //    Await.result(
     htmlForm(uri, hrefPrefix, blankNode, editable, actionURI,
-        lang, graphURI, actionURI2) match {
-      case Success(e) => e
-      case Failure(e) => <p>Exception occured: { e }</p>
-    }
+      lang, graphURI, actionURI2) match {
+        case Success(e) => e
+        case Failure(e) => <p>Exception occured: { e }</p>
+      }
     //      , 5 seconds)
   }
 
@@ -80,8 +78,7 @@ trait TableViewModule
     editable: Boolean = false,
     actionURI: String = "/save",
     lang: String = "en", graphURI: String,
-    actionURI2: String = "/save"
-		  ): Elem = {
+    actionURI2: String = "/save"): Elem = {
 
     val factory = new FormSyntaxFactory[Rdf](graph, preferedLanguage = lang)
     val form = factory.createForm(

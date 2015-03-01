@@ -6,14 +6,16 @@ import org.w3.banana.XSDPrefix
 
 object HTML5Types extends JenaModule with HTML5TypesTrait
 
-/** HTML5 input type correspondence to XML Schema (XSD) datatypes
- *  TODO : intervals */
+/**
+ * HTML5 input type correspondence to XML Schema (XSD) datatypes
+ *  TODO : intervals
+ */
 trait HTML5TypesTrait extends RDFOpsModule {
   import ops._
   lazy val xsd = XSDPrefix[Rdf]
 
-  def xsd2html5TnputType(xsdDatatype:String):String = xsd2html5.getOrElse( URI(xsdDatatype), "text")
-  
+  def xsd2html5TnputType(xsdDatatype: String): String = xsd2html5.getOrElse(URI(xsdDatatype), "text")
+
   /** see http://www.w3.org/TR/html-markup/input.html */
   val xsd2html5 = Map[Rdf#URI, String](
     xsd.integer -> "number",
@@ -26,12 +28,12 @@ trait HTML5TypesTrait extends RDFOpsModule {
     xsd.nonPositiveInteger -> "number",
     xsd.negativeInteger -> "number",
     xsd.positiveInteger -> "number",
-    
+
     xsd.dateTime -> "datetime-local",
     xsd.dateTimeStamp -> "datetime-local",
     xsd.anyURI -> "url",
     xsd.boolean -> "radio"
-    /* ⓘ input type=text
+  /* ⓘ input type=text
 ⓘ input type=password
 ⓘ input type=checkbox
 ⓘ input type=radio

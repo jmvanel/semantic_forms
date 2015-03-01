@@ -14,6 +14,7 @@ import deductions.runtime.abstract_syntax.DBPediaLookup
 trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
   type fm = FormModule[NODE, URI]
 
+  val radioForIntervals = false // TODO the choice should be moved to FormSyntaxFactory
   /**
    * render the given Form Syntax as HTML;
    *  @param hrefPrefix URL prefix pre-pendended to created ID's for Hyperlink
@@ -96,9 +97,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
     }
   }
 
-  private def makeHTMLId(re: Entry) = {
-    "RES-" + urlEncode(re.property)
-  }
+  private def makeHTMLId(re: Entry) = "RES-" + urlEncode(re.property)
 
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   def createHTMLResourceEditableLField(r: ResourceEntry): NodeSeq = {
@@ -126,38 +125,52 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
     </div>
   }
 
-
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   def createHTMLiteralEditableLField(lit: LiteralEntry): NodeSeq = {
-    val placeholder=s"Enter or paste a string of type ${lit.type_.toString()}"
+    val placeholder = s"Enter or paste a string of type ${lit.type_.toString()}"
     val elem = lit.type_.toString() match {
 
       // TODO in FormSyntaxFactory match graph pattern for interval datatype ; see issue #17
       case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
-        (for (n <- Range(0, 6)) yield (
-          <input type="radio" name={ "LIT-" + urlEncode(lit.property) } id={ "LIT-" + urlEncode(lit.property) } checked={ if (n.toString.equals(lit.value)) "checked" else null } value={ n.toString }/>
-          <label for={ "LIT-" + urlEncode(lit.property) }>{ n }</label>
-        )).flatten
+        if (radioForIntervals)
+          (for (n <- Range(0, 6)) yield (
+            <input type="radio" name={ makeHTMLIdForLiteral(lit) } id={ makeHTMLIdForLiteral(lit) } checked={ if (n.toString.equals(lit.value)) "checked" else null } value={ n.toString }/>
+            <label for={ makeHTMLIdForLiteral(lit) }>{ n }</label>
+          )).flatten
+        else {
+          <select name={ makeHTMLIdForLiteral(lit) }>
+            {
+              val pv = for (n <- Range(0, 6)) yield {
+                <option value={ n.toString() }>{ n }</option>
+                //                ( n, n )
+              }
+              //              lit.possibleValues = pv
+              //              formatPossibleValues(lit)
+            }
+          </select>
+        }
 
       case _ =>
-        <input class="form-control" value={ lit.value } name={ "LIT-" + urlEncode(lit.property) } type={HTML5Types.xsd2html5TnputType(lit.type_.toString())} placeholder={ placeholder }/>
+        <input class="form-control" value={ lit.value } name={ makeHTMLIdForLiteral(lit) } type={ HTML5Types.xsd2html5TnputType(lit.type_.toString()) } placeholder={ placeholder }/>
     }
     elem ++
       <input value={ lit.value } name={ "ORIG-LIT-" + urlEncode(lit.property) } type="hidden"/>
   }
 
-  private def makeHTMLIdForDatalist(re: Entry) = {
+  private def makeHTMLIdForLiteral(lit: LiteralEntry) = "LIT-" + urlEncode(lit.property)
+
+  private def makeHTMLIdForDatalist(re: fm#Entry) = {
     "possibleValues-" + (
       re match {
-        case re: ResourceEntry => (re.property + "--" + re.value).hashCode().toString()
-        case lit: LiteralEntry => (lit.property + "--" + lit.value).hashCode().toString()
-        case bn: BlankNodeEntry => (bn.property + "--" + bn.value).hashCode().toString()
+        case re: fm#ResourceEntry => (re.property + "--" + re.value).hashCode().toString()
+        case lit: fm#LiteralEntry => (lit.property + "--" + lit.value).hashCode().toString()
+        case bn: fm#BlankNodeEntry => (bn.property + "--" + bn.value).hashCode().toString()
       })
   }
 
   private def formatPossibleValues(field: fm#Entry, inDatalist: Boolean = false): NodeSeq = {
     field match {
-      case re: ResourceEntry =>
+      case re @ (_: fm#ResourceEntry | _: fm#LiteralEntry) =>
         //        val options = Seq(<option label="Choose a value or leave like it is." value=""></option>) ++
         val options = Seq(<option value=""></option>) ++
           (for (value <- re.possibleValues) yield <option value={ value._1.toString() }>{ value._2 }</option>)
@@ -166,7 +179,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
             { options }
           </datalist>
         else options
-      case _ => <span/>
+      case _ => <span></span>
     }
   }
 
