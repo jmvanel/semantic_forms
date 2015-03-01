@@ -11,8 +11,8 @@ import com.hp.hpl.jena.query.Dataset
 import com.hp.hpl.jena.query.DatasetFactory
 
 abstract class TestSparqlGraphStore[Rdf <: RDF, M[+_], SE] extends FunSuite
-  with RDFOpsModule
-  with SparqlOpsModule {
+    with RDFOpsModule
+    with SparqlOpsModule {
   val sEngine: SparqlQueryUpdateEngine[Rdf, M, SE]
   val se: SE
   val gs = new SparqlGraphStore[Rdf, M, SE](sEngine)

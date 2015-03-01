@@ -23,16 +23,15 @@ trait SPARQLExampleDependencies
  *   project examples
  *   run-main org.w3.banana.examples.SPARQLExampleWithJena
  */
-trait SPARQLExample extends SPARQLExampleDependencies 
-{
-//  self =>
+trait SPARQLExample extends SPARQLExampleDependencies {
+  //  self =>
 
   import ops._
   import sparqlOps._
   import sparqlHttp.sparqlEngineSyntax._
 
   def main(args: Array[String]): Unit = {
-    
+
     /* gets a SparqlEngine out of a Sparql endpoint */
     val endpoint = new URL("http://dbpedia.org/sparql/")
 
@@ -59,7 +58,7 @@ SELECT DISTINCT ?language WHERE {
     }
     println(languages.to[List].mkString("\n"))
   }
-  
+
 }
 
 /* Here is how you instantiate your modules. Note that this is using

@@ -38,7 +38,9 @@ trait TableViewModule
   private def htmlForm(uri: String, hrefPrefix: String = "", blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",
-    lang: String = "en", graphURI: String = ""): Try[Elem] = {
+    lang: String = "en", graphURI: String = "",
+    actionURI2: String = "/save"
+		  ): Try[Elem] = {
 
     val graphURIActual = if (graphURI == "") uri else graphURI
     if (blankNode != "true") {
@@ -46,7 +48,8 @@ trait TableViewModule
       Logger.getRootLogger().info(s"After retrieveURI(makeUri($uri), store)")
     }
     dataset.r({
-      graf2form(allNamedGraph, uri, hrefPrefix, blankNode, editable, actionURI, lang, graphURIActual)
+      graf2form(allNamedGraph, uri, hrefPrefix, blankNode, editable,
+          actionURI, lang, graphURIActual, actionURI2)
     })
   }
 
@@ -55,9 +58,12 @@ trait TableViewModule
     editable: Boolean = false,
     actionURI: String = "/save",
     lang: String = "en",
-    graphURI: String = ""): Elem = {
+    graphURI: String = "",
+    actionURI2: String = "/save"
+		  ): Elem = {
     //    Await.result(
-    htmlForm(uri, hrefPrefix, blankNode, editable, actionURI, lang, graphURI) match {
+    htmlForm(uri, hrefPrefix, blankNode, editable, actionURI,
+        lang, graphURI, actionURI2) match {
       case Success(e) => e
       case Failure(e) => <p>Exception occured: { e }</p>
     }
@@ -73,7 +79,9 @@ trait TableViewModule
     hrefPrefix: String = "", blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",
-    lang: String = "en", graphURI: String): Elem = {
+    lang: String = "en", graphURI: String,
+    actionURI2: String = "/save"
+		  ): Elem = {
 
     val factory = new FormSyntaxFactory[Rdf](graph, preferedLanguage = lang)
     val form = factory.createForm(
@@ -86,7 +94,7 @@ trait TableViewModule
     )
     println("form:\n" + form)
     val htmlForm = generateHTML(
-      form, hrefPrefix, editable, actionURI, graphURI)
+      form, hrefPrefix, editable, actionURI, graphURI, actionURI2)
     htmlForm
   }
 

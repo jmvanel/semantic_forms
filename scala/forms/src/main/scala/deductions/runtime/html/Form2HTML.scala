@@ -13,12 +13,17 @@ import deductions.runtime.abstract_syntax.DBPediaLookup
  */
 trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
   type fm = FormModule[NODE, URI]
-  //  val openChoice = false // TODO should be configurable and set in FormSyntaxFactory
 
+  /**
+   * render the given Form Syntax as HTML;
+   *  @param hrefPrefix URL prefix pre-pendended to created ID's for Hyperlink
+   *  @param actionURI, actionURI2 HTML actions for the 2 submit buttons
+   */
   def generateHTML(form: fm#FormSyntax[NODE, URI],
     hrefPrefix: String = "",
     editable: Boolean = false,
-    actionURI: String = "/save", graphURI: String = ""): Elem = {
+    actionURI: String = "/save", graphURI: String = "",
+    actionURI2: String = "/save"): Elem = {
 
     val htmlForm =
       <div class="form">
@@ -29,9 +34,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
               <div class="row">
                 <label class="control-label" title={ field.comment }>{ field.label }</label>
                 <div class="input">
-                  {
-                    createHTMLField(field, editable, hrefPrefix)
-                  }
+                  { createHTMLField(field, editable, hrefPrefix) }
                 </div>
               </div>
             </div>
@@ -48,7 +51,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
         <input type="hidden" name="graphURI" value={ urlEncode(graphURI) }/>
         { htmlForm }
         <p class="text-right">
-          <input value="SAVE" type="submit" class="btn btn-primary btn-lg pull-right"/>
+          <input value="SAVE" type="submit" formaction={ actionURI2 } class="btn btn-primary btn-lg pull-right"/>
         </p>
       </form>
     else
