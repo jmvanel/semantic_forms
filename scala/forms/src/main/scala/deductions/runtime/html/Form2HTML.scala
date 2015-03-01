@@ -126,8 +126,10 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
     </div>
   }
 
+
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   def createHTMLiteralEditableLField(lit: LiteralEntry): NodeSeq = {
+    val placeholder=s"Enter or paste a string of type ${lit.type_.toString()}"
     val elem = lit.type_.toString() match {
 
       // TODO in FormSyntaxFactory match graph pattern for interval datatype ; see issue #17
@@ -138,7 +140,7 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
         )).flatten
 
       case _ =>
-        <input class="form-control" value={ lit.value } name={ "LIT-" + urlEncode(lit.property) } placeholder={ s"Enter or paste a string of type ${lit.type_.toString()}" }/>
+        <input class="form-control" value={ lit.value } name={ "LIT-" + urlEncode(lit.property) } type={HTML5Types.xsd2html5TnputType(lit.type_.toString())} placeholder={ placeholder }/>
     }
     elem ++
       <input value={ lit.value } name={ "ORIG-LIT-" + urlEncode(lit.property) } type="hidden"/>
