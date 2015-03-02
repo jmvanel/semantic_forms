@@ -26,6 +26,7 @@ import org.w3.banana.LocalNameException
 import org.w3.banana.RDFStore
 import deductions.runtime.jena.RDFStoreObject
 import deductions.runtime.utils.RDFHelpers
+import org.w3.banana.SparqlEngine
 
 object FormSyntaxFactory {
   /** vocabulary for form specifications */
@@ -38,7 +39,8 @@ object FormSyntaxFactory {
  * NON transactional
  */
 class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: String = "en")(implicit val ops: RDFOps[Rdf],
-  val uriOps: URIOps[Rdf])
+  val uriOps: URIOps[Rdf] //  , val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]
+  )
 
     extends FormModule[Rdf#Node, Rdf#URI]
     with FieldsInference[Rdf]
@@ -57,17 +59,19 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
   val rdfh = new RDFHelpers[Rdf] { val graph = gr }
   import rdfh._
   println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
+  type AbstractForm = FormSyntax[Rdf#Node, Rdf#URI]
 
   /** create Form from an instance (subject) URI */
   def createForm(subject: Rdf#Node,
-    editable: Boolean = false): FormSyntax[Rdf#Node, Rdf#URI] = {
+    editable: Boolean = false,
+    formGroup: Rdf#URI = nullURI): AbstractForm = {
     val propsFromSubject = fieldsFromSubject(subject, graph)
     val classs = classFromSubject(subject) // TODO several classes
     val propsFromClass =
       if (editable) {
         fieldsFromClass(classs, graph)
       } else Seq()
-    createForm(subject, (propsFromSubject ++ propsFromClass).distinct, classs)
+    createFormDetailed(subject, (propsFromSubject ++ propsFromClass).distinct, classs) // , formGroup)
   }
 
   /**
@@ -77,8 +81,9 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
    *  see if ?D is a datatype or an OWL or RDFS class
    *  ( used for creating an empty Form from a class URI )
    */
-  def createForm(subject: Rdf#Node,
-    props: Iterable[Rdf#URI], classs: Rdf#URI): FormSyntax[Rdf#Node, Rdf#URI] = {
+  def createFormDetailed(subject: Rdf#Node,
+    props: Iterable[Rdf#URI], classs: Rdf#URI //    formGroup: Rdf#URI = nullURI   
+    ): AbstractForm = {
     Logger.getRootLogger().info(s"createForm subject $subject, props $props")
 
     val entries = for (prop <- props) yield {
@@ -97,11 +102,11 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     }
     val fields = entries.flatMap { s => s }
     val fields2 = addTypeTriple(subject, classs, fields)
+    //    val formSyntax = FormSyntax(subject, fields2, classs, formGroup) // TODO
     val formSyntax = FormSyntax(subject, fields2, classs)
     updateFormForClass(formSyntax)
   }
 
-  type AbstractForm = FormSyntax[Rdf#Node, Rdf#URI]
   val formConfiguration = new FormConfigurationFactory[Rdf](graph)
   /**
    * update given Form,

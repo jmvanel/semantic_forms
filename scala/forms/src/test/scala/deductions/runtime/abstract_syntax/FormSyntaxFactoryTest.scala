@@ -80,7 +80,7 @@ trait FormSyntaxFactoryTest // [Rdf <: RDF]
 
     val fact = new FormSyntaxFactory[Rdf](graph)
     println((graph.triples).mkString("\n"))
-    val form = fact.createForm(
+    val form = fact.createFormDetailed(
       URI("betehess"),
       Seq(foaf.title,
         foaf.name, foaf.knows),
@@ -108,7 +108,7 @@ trait FormSyntaxFactoryTest // [Rdf <: RDF]
     val fact = new FormSyntaxFactory[Rdf](graph)
     val os = new FileOutputStream("/tmp/graph.nt")
     turtleWriter.write(graph, os, "")
-    fact.createForm(URI("betehess"), Seq(foaf.topic_interest), foaf.Person )
+    fact.createFormDetailed(URI("betehess"), Seq(foaf.topic_interest), foaf.Person )
   }
 
 }

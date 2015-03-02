@@ -11,7 +11,9 @@ import deductions.runtime.abstract_syntax.DBPediaLookup
  * different modes: display or edit;
  *  take in account datatype
  */
-trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
+trait Form2HTML[NODE, URI <: NODE]
+    // TODO test without extends FormModule:
+    extends FormModule[NODE, URI] {
   type fm = FormModule[NODE, URI]
 
   val radioForIntervals = false // TODO the choice should be moved to FormSyntaxFactory
@@ -140,12 +142,10 @@ trait Form2HTML[NODE, URI <: NODE] extends FormModule[NODE, URI] {
         else {
           <select name={ makeHTMLIdForLiteral(lit) }>
             {
-              val pv = for (n <- Range(0, 6)) yield {
-                <option value={ n.toString() }>{ n }</option>
-                //                ( n, n )
-              }
-              //              lit.possibleValues = pv
-              //              formatPossibleValues(lit)
+              //              val pv = for (n <- Range(0, 6)) yield {
+              //                <option value={ n.toString() }>{ n }</option>
+              //              }
+              formatPossibleValues(lit)
             }
           </select>
         }

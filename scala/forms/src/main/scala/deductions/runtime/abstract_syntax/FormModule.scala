@@ -20,8 +20,8 @@ trait FormModule[NODE, URI <: NODE] {
   case class FormSyntax[NODE, URI <: NODE](
       val subject: NODE,
       val fields: Seq[Entry],
-      classs: URI = nullURI //     , graphURI: URI = nullURI
-      ) {
+      classs: URI = nullURI,
+      formGroup: URI = nullURI) {
     override def toString(): String = {
       s"""FormSyntax:
         subject: $subject
@@ -49,6 +49,7 @@ trait FormModule[NODE, URI <: NODE] {
       var openChoice: Boolean = true,
       var possibleValues: Seq[(NODE, String)] = Seq()) {
     private val triples: mutable.Buffer[Triple] = mutable.ListBuffer[Triple]()
+    def setPossibleValues(newPossibleValues: Seq[(NODE, String)]): Entry
     override def toString(): String = {
       s""" "$label", "$comment" $widgetType """
     }
@@ -83,6 +84,10 @@ trait FormModule[NODE, URI <: NODE] {
       super.toString + ", " + value
     }
     def getId: String = value.toString
+    def setPossibleValues(newPossibleValues: Seq[(NODE, String)]) = {
+      new BlankNodeEntry(label, comment,
+        property, validator, value)
+    }
   }
   class LiteralEntry(l: String, c: String,
       property: DatatypeProperty = nullURI, validator: DatatypeValidator,
@@ -91,6 +96,12 @@ trait FormModule[NODE, URI <: NODE] {
       possibleValues: Seq[(NODE, String)] = Seq()) extends Entry(l, c, property, type_ = type_, possibleValues = possibleValues) {
     override def toString(): String = {
       super.toString + s""" := "$value" """
+    }
+    def setPossibleValues(newPossibleValues: Seq[(NODE, String)]) = {
+      new LiteralEntry(label, comment,
+        property, validator,
+        value, type_,
+        newPossibleValues)
     }
   }
 

@@ -5,14 +5,13 @@
 package deductions.runtime.abstract_syntax
 
 import scala.util.Try
-
 import org.w3.banana.RDF
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFStore
 import org.w3.banana.URIOps
-
 import UnfilledFormFactory.defaultInstanceURIPrefix
 import deductions.runtime.jena.RDFStoreObject
+import org.w3.banana.SparqlGraphModule
 
 /**
  * @author j.m. Vanel
@@ -32,7 +31,8 @@ class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
   instanceURIPrefix: String = defaultInstanceURIPrefix)(implicit ops: RDFOps[Rdf],
     uriOps: URIOps[Rdf],
     rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET])
-    extends FormSyntaxFactory[Rdf](graph: Rdf#Graph, preferedLanguage) {
+    extends FormSyntaxFactory[Rdf](graph: Rdf#Graph, preferedLanguage) //    with SparqlGraphModule
+    {
 
   //  val gr = graph
   //  val rdfh = new RDFHelpers[Rdf] { val graph = gr }
@@ -47,9 +47,9 @@ class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
     val formConfig = lookPropertieslistFormInConfiguration(classs)
     if (formConfig.isEmpty) {
       val props = fieldsFromClass(classs, graph)
-      createForm(ops.makeUri(makeId), props toSeq, classs)
+      createFormDetailed(ops.makeUri(makeId), props toSeq, classs)
     } else
-      createForm(ops.makeUri(makeId), formConfig.toSeq, classs)
+      createFormDetailed(ops.makeUri(makeId), formConfig.toSeq, classs)
   }
 
   def makeId: String = {

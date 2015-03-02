@@ -6,12 +6,15 @@ import org.w3.banana.FOAFPrefix
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.jena.RDFStoreObject
 import scala.collection._
+import org.w3.banana.SparqlGraphModule
 
 /**
  * populate Fields in form by inferring possible values from given rdfs:range's URI,
  *  through owl:oneOf and know instances
  */
-trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
+trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] //(  implicit val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph])
+//with SparqlGraphModule
+{
   self: FormSyntaxFactory[Rdf] =>
 
   import ops._
@@ -26,7 +29,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
      * by taking ?LIST from triples:
      * ?RANGE owl:oneOf ?LIST
      */
-    def populateFromOwlOneOf(entry: ResourceEntry): ResourceEntry = {
+    def populateFromOwlOneOf(entry: Entry): Entry = {
       val possibleValues = mutable.ArrayBuffer[(Rdf#Node, String)]()
       for (range <- ranges) {
         val enumerated = ops.getObjects(graph, range, owl.oneOf)
@@ -61,7 +64,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
           x => { println(s"lit $x"); () })
 
     /** modify entry to populate possible Values From Instances */
-    def populateFromInstances(entry: ResourceEntry): Entry = {
+    def populateFromInstances(entry: Entry): Entry = {
       val possibleValues = mutable.ArrayBuffer[(Rdf#Node, String)]()
       // debug
       //      val personURI = ops.URI("http://xmlns.com/foaf/0.1/Person")
@@ -97,12 +100,27 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
           },
           x => (), x => ())
 
+    def populateFromTDB(entry: Entry): Entry = {
+      val possibleValues = mutable.ArrayBuffer[(Rdf#Node, String)]()
+      // TODO read config. from TDB
+      //      val q = s"""${entry.formGroup}
+      //        """
+      entry.openChoice = false
+      entry.setPossibleValues(possibleValues ++ entry.possibleValues)
+    }
+
     // ==== body of function addPossibleValues ====
 
-    entryField match {
-      case r: ResourceEntry =>
-        populateFromInstances(populateFromOwlOneOf(r))
-      case _ => entryField
-    }
+    populateFromTDB(
+      populateFromInstances(
+        populateFromOwlOneOf(entryField)))
+
+    //    entryField match {
+    //      case r: ResourceEntry =>
+    //        populateFromTDB(
+    //            populateFromInstances(
+    //                populateFromOwlOneOf(r)))
+    //      case _ => entryField
+    //    }
   }
 }
