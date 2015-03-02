@@ -14,19 +14,19 @@ import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import org.w3.banana.RDF
 
 trait TestStringSearchTrait[Rdf <: RDF, DATASET] extends FunSuite
-      with RDFOpsModule
-      with StringSearchSPARQL[Rdf, DATASET] {
+    with RDFOpsModule
+    with StringSearchSPARQL[Rdf, DATASET] {
 
-    lazy val search // : StringSearchSPARQL2[Rdf, DATASET]
-    		= this;
-    val res = search.search("Jean")
-    import scala.concurrent.ExecutionContext.Implicits.global
-    res.onSuccess {
-        case r => println(r) }
-    Thread.sleep(2000) // TODO tests
+  lazy val search // : StringSearchSPARQL2[Rdf, DATASET]
+  = this;
+  val res = search.search("Jean")
+  import scala.concurrent.ExecutionContext.Implicits.global
+  res.onSuccess {
+    case r => println(r)
+  }
+  Thread.sleep(2000) // TODO tests
 }
 
-class TestStringSearch extends  FunSuite
-with RDFStoreLocalJena1Provider // CAUTION : should be first !
-with TestStringSearchTrait[Jena, Dataset] 
- 
+class TestStringSearch extends FunSuite
+  with RDFStoreLocalJena1Provider // CAUTION : should be first !
+  with TestStringSearchTrait[Jena, Dataset]

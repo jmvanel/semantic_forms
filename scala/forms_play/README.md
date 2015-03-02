@@ -99,6 +99,13 @@ vi myconf.properties
 nohup bin/semantic_forms_play -Dlog4j.configuration=myconf.properties -mem 50 &
 ```
 
+## Debug
+See 
+[playframework documentation/2.3.x/IDE](https://www.playframework.com/documentation/2.3.x/IDE)
+
+Apparently Activator, not SBT, is needed:
+    activator -jvm-debug 9999 run
+
 # Setting a IDE project ( eclipse ...)
 
 Please read explanations on the Banana-RDF project:

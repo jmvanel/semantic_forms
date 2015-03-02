@@ -12,6 +12,8 @@ import org.w3.banana.URIOps
 import UnfilledFormFactory.defaultInstanceURIPrefix
 import deductions.runtime.jena.RDFStoreObject
 import org.w3.banana.SparqlGraphModule
+import org.w3.banana.SparqlEngine
+import org.w3.banana.SparqlOps
 
 /**
  * @author j.m. Vanel
@@ -30,7 +32,9 @@ class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
   preferedLanguage: String = "en",
   instanceURIPrefix: String = defaultInstanceURIPrefix)(implicit ops: RDFOps[Rdf],
     uriOps: URIOps[Rdf],
-    rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET])
+    rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET],
+    sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph],
+    sparqlOps: SparqlOps[Rdf])
     extends FormSyntaxFactory[Rdf](graph: Rdf#Graph, preferedLanguage) //    with SparqlGraphModule
     {
 

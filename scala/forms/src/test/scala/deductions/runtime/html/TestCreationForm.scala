@@ -65,34 +65,34 @@ trait GraphTestEnum extends RDFOpsModule with TurtleWriterModule {
     -- rdf.typ ->- owl.Class
     -- owl.oneOf ->- List(URI("hero"), URI("evil"), URI("wise"))
   ).graph
-  
-  val alexs = Seq(
-      bnode("a") -- foaf.name ->- "Alexandre".lang("fr"),
-      bnode("b") -- foaf.name ->- "Alexander".lang("en")
-    )
 
-   val vocab11 = (
+  val alexs = Seq(
+    bnode("a") -- foaf.name ->- "Alexandre".lang("fr"),
+    bnode("b") -- foaf.name ->- "Alexander".lang("en")
+  )
+
+  val vocab11 = (
     URI("WorkType")
     -- rdf.typ ->- owl.Class
-    -- owl.oneOf ->- ( BNode("Dilbert") -- rdfs.label ->- "" )      
+    -- owl.oneOf ->- (BNode("Dilbert") -- rdfs.label ->- "")
     -- owl.oneOf ->- List(
-         ( BNode("DilbertBN") -- rdfs.label ->- "Dilbert" ),
-         ( BNode("AliceBN") -- rdfs.label ->- "Alice" ),
-         ( BNode("WallyBN") -- rdfs.label ->- "Wally" )
-        )  
+      (BNode("DilbertBN") -- rdfs.label ->- "Dilbert"),
+      (BNode("AliceBN") -- rdfs.label ->- "Alice"),
+      (BNode("WallyBN") -- rdfs.label ->- "Wally")
+    )
   ).graph
 
   val vocab11bn = (
     BNode("WorkTypeBN")
     -- rdf.typ ->- owl.Class
-    -- owl.oneOf ->- ( BNode("Dilbert") -- rdfs.label ->- "" )      
+    -- owl.oneOf ->- (BNode("Dilbert") -- rdfs.label ->- "")
     -- owl.oneOf ->- List(
-         ( BNode("DilbertBN") -- rdfs.label ->- "Dilbert" ),
-         ( BNode("AliceBN") -- rdfs.label ->- "Alice" ),
-         ( BNode("WallyBN") -- rdfs.label ->- "Wally" )
-        )  
+      (BNode("DilbertBN") -- rdfs.label ->- "Dilbert"),
+      (BNode("AliceBN") -- rdfs.label ->- "Alice"),
+      (BNode("WallyBN") -- rdfs.label ->- "Wally")
+    )
   ).graph
-  
+
   val vocab2 = (
     URI("Person") -- rdf.typ ->- owl.Class).graph
   val vocab3 = (
@@ -117,10 +117,10 @@ trait GraphTestEnum extends RDFOpsModule with TurtleWriterModule {
     -- rdfs.label ->- "style de travail"
   ).graph
   val vocab = vocab1 union vocab11 union vocab11bn union vocab2 union vocab3 /* union vocab31 */ union vocab31bn
-  
+
   println("==== vocab ====")
-  val os = new PrintStream( System.out )
-  turtleWriter.write( vocab, os, "" )
+  val os = new PrintStream(System.out)
+  turtleWriter.write(vocab, os, "")
 }
 
 object TestCreationForm {

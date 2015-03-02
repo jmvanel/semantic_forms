@@ -12,6 +12,8 @@ import org.w3.banana.TurtleReaderModule
 import org.w3.banana.diesel._
 import org.w3.banana.jena.JenaModule
 import org.w3.banana.TurtleWriterModule
+import org.w3.banana.SparqlOpsModule
+import org.w3.banana.SparqlGraphModule
 
 class FormSyntaxFactoryTestJena extends FunSuite
     with JenaModule
@@ -51,13 +53,15 @@ class FormSyntaxFactoryTestJena extends FunSuite
     val form = createFormFromClass
     println("form:\n" + form)
   }
-  
+
 }
 
 trait FormSyntaxFactoryTest // [Rdf <: RDF]
     extends RDFOpsModule
     with TurtleReaderModule
-    with TurtleWriterModule {
+    with TurtleWriterModule
+    with SparqlOpsModule
+    with SparqlGraphModule {
 
   import ops._
   val foaf = FOAFPrefix[Rdf]
@@ -99,16 +103,16 @@ trait FormSyntaxFactoryTest // [Rdf <: RDF]
   }
 
   def createFormFromClass() = {
-	  val resource = new FileInputStream("src/test/resources/foaf.n3")
+    val resource = new FileInputStream("src/test/resources/foaf.n3")
     val graph2 = turtleReader.read(resource, foaf.prefixIri).get
-    val formspec = new FileInputStream("form_specs/foaf.form.ttl" )
-    val graph1 = turtleReader.read( formspec, "").get
+    val formspec = new FileInputStream("form_specs/foaf.form.ttl")
+    val graph1 = turtleReader.read(formspec, "").get
     val graph = union(Seq(graph1, graph2))
-//  val fact = new UnfilledFormFactory[Rdf](graph)
+    //  val fact = new UnfilledFormFactory[Rdf](graph)
     val fact = new FormSyntaxFactory[Rdf](graph)
     val os = new FileOutputStream("/tmp/graph.nt")
     turtleWriter.write(graph, os, "")
-    fact.createFormDetailed(URI("betehess"), Seq(foaf.topic_interest), foaf.Person )
+    fact.createFormDetailed(URI("betehess"), Seq(foaf.topic_interest), foaf.Person)
   }
 
 }

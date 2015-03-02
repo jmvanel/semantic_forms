@@ -18,6 +18,7 @@ import org.w3.banana.URIOps
 import org.w3.banana.XSDPrefix
 import org.w3.banana.diesel._
 import org.w3.banana.Prefix
+import org.w3.banana.SparqlOps
 import org.w3.banana.syntax._
 import scala.util.Try
 import scala.util.Failure
@@ -39,8 +40,9 @@ object FormSyntaxFactory {
  * NON transactional
  */
 class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: String = "en")(implicit val ops: RDFOps[Rdf],
-  val uriOps: URIOps[Rdf] //  , val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]
-  )
+  val uriOps: URIOps[Rdf] //  
+  , val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph],
+  val sparqlOps: SparqlOps[Rdf])
 
     extends FormModule[Rdf#Node, Rdf#URI]
     with FieldsInference[Rdf]
@@ -65,13 +67,14 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
   def createForm(subject: Rdf#Node,
     editable: Boolean = false,
     formGroup: Rdf#URI = nullURI): AbstractForm = {
+
     val propsFromSubject = fieldsFromSubject(subject, graph)
     val classs = classFromSubject(subject) // TODO several classes
     val propsFromClass =
       if (editable) {
         fieldsFromClass(classs, graph)
       } else Seq()
-    createFormDetailed(subject, (propsFromSubject ++ propsFromClass).distinct, classs) // , formGroup)
+    createFormDetailed(subject, (propsFromSubject ++ propsFromClass).distinct, classs, formGroup)
   }
 
   /**
@@ -82,10 +85,10 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
    *  ( used for creating an empty Form from a class URI )
    */
   def createFormDetailed(subject: Rdf#Node,
-    props: Iterable[Rdf#URI], classs: Rdf#URI //    formGroup: Rdf#URI = nullURI   
-    ): AbstractForm = {
-    Logger.getRootLogger().info(s"createForm subject $subject, props $props")
+    props: Iterable[Rdf#URI], classs: Rdf#URI,
+    formGroup: Rdf#URI = nullURI): AbstractForm = {
 
+    Logger.getRootLogger().info(s"createForm subject $subject, props $props")
     val entries = for (prop <- props) yield {
       Logger.getRootLogger().info(s"createForm subject $subject, prop $prop")
       //      val ranges = nodeSeqToURISet(objectsQuery(prop, rdfs.range))
@@ -98,7 +101,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
           "WARNING: There is no range for property " + prop
         } else "",
         System.err)
-      makeEntries(subject, prop, ranges)
+      makeEntries(subject, prop, ranges, formGroup)
     }
     val fields = entries.flatMap { s => s }
     val fields2 = addTypeTriple(subject, classs, fields)
@@ -160,7 +163,8 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
    * or else display terminal Part of URI as label;
    *  taking in account multi-valued properties
    */
-  private def makeEntries(subject: Rdf#Node, prop: Rdf#URI, ranges: Set[Rdf#Node]): Seq[Entry] = {
+  private def makeEntries(subject: Rdf#Node, prop: Rdf#URI, ranges: Set[Rdf#Node],
+    formGroup: Rdf#URI): Seq[Entry] = {
     Logger.getRootLogger().info(s"makeEntry subject $subject, prop $prop")
     val label = getHeadStringOrElse(prop, rdfs.label, terminalPart(prop))
     val comment = getHeadStringOrElse(prop, rdfs.comment, "")
@@ -169,8 +173,8 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     val result = scala.collection.mutable.ArrayBuffer[Entry]()
     val rangeClasses = objectsQueries(ranges, RDFPrefix[Rdf].typ)
 
-    for (obj <- objects) if (prop != rdf.typ) addOneEntry(obj)
-    if (objects isEmpty) addOneEntry(nullURI)
+    for (obj <- objects) if (prop != rdf.typ) addOneEntry(obj, formGroup)
+    if (objects isEmpty) addOneEntry(nullURI, formGroup)
 
     def makeBN(label: String, comment: String,
       property: ObjectProperty, validator: ResourceValidator,
@@ -182,7 +186,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
       }
     }
 
-    def addOneEntry(object_ : Rdf#Node) = {
+    def addOneEntry(object_ : Rdf#Node, formGroup: Rdf#URI) = {
       val literalPlaceHolder = "..empty.."
       def literalEntry = {
         // TODO match graph pattern for interval datatype ; see issue #17
@@ -218,7 +222,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
         case _ if object_.toString.startsWith("_:") => resourceEntry
         case _ => literalEntry
       }
-      result += addPossibleValues(entry, ranges)
+      result += addPossibleValues(entry, ranges, formGroup)
     }
     result
   }

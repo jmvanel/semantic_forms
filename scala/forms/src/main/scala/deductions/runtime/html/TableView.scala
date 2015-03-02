@@ -39,7 +39,8 @@ trait TableViewModule
     editable: Boolean = false,
     actionURI: String = "/save",
     lang: String = "en", graphURI: String = "",
-    actionURI2: String = "/save"): Try[Elem] = {
+    actionURI2: String = "/save",
+    formGroup: Rdf#URI = nullURI): Try[Elem] = {
 
     val graphURIActual = if (graphURI == "") uri else graphURI
     if (blankNode != "true") {
@@ -48,7 +49,7 @@ trait TableViewModule
     }
     dataset.r({
       graf2form(allNamedGraph, uri, hrefPrefix, blankNode, editable,
-        actionURI, lang, graphURIActual, actionURI2)
+        actionURI, lang, graphURIActual, actionURI2, formGroup)
     })
   }
 
@@ -58,10 +59,11 @@ trait TableViewModule
     actionURI: String = "/save",
     lang: String = "en",
     graphURI: String = "",
-    actionURI2: String = "/save"): Elem = {
+    actionURI2: String = "/save",
+    formGroup: String = fromUri(nullURI)): Elem = {
     //    Await.result(
     htmlForm(uri, hrefPrefix, blankNode, editable, actionURI,
-      lang, graphURI, actionURI2) match {
+      lang, graphURI, actionURI2, URI(formGroup)) match {
         case Success(e) => e
         case Failure(e) => <p>Exception occured: { e }</p>
       }
@@ -78,7 +80,8 @@ trait TableViewModule
     editable: Boolean = false,
     actionURI: String = "/save",
     lang: String = "en", graphURI: String,
-    actionURI2: String = "/save"): Elem = {
+    actionURI2: String = "/save",
+    formGroup: Rdf#URI = nullURI): Elem = {
 
     val factory = new FormSyntaxFactory[Rdf](graph, preferedLanguage = lang)
     val form = factory.createForm(
@@ -87,8 +90,8 @@ trait TableViewModule
            * Jena supports "concrete bnodes" in SPARQL syntax as pseudo URIs in the "_" URI scheme
            * (it's an illegal name for a URI scheme) */
         BNode(uri)
-      else URI(uri), editable
-    )
+      else URI(uri),
+      editable, formGroup)
     println("form:\n" + form)
     val htmlForm = generateHTML(
       form, hrefPrefix, editable, actionURI, graphURI, actionURI2)
