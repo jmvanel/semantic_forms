@@ -85,14 +85,23 @@ object Application extends Controller with TableView {
     }
   }
 
-  def create(uri: String) = {
+  def create
+//  (uri: String )
+  = {
     Action { implicit request =>
       println("create: " + request)
+      val uri = getFirstNonEmptyInMap(request.queryString) . get
       println("create: " + uri)
       Ok(views.html.index(glob.create(uri, chooseLanguage(request))))
     }
   }
 
+  /** TODO move to FormSaver */
+  def getFirstNonEmptyInMap(map: Map[String, Seq[String]]): Option[String] = {
+    val uriArgs = map.getOrElse("uri", Seq())
+    uriArgs.find { uri => uri != "" }
+  }
+  
   def sparql(query: String) = {
     Action { implicit request =>
       println("sparql: " + request)

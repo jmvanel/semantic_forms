@@ -24,6 +24,7 @@ import org.w3.banana.TurtleWriterModule
 import play.api.libs.iteratee.Enumeratee
 import play.api.libs.iteratee.Iteratee
 import deductions.runtime.html.TableViewModule
+import org.apache.log4j.Logger
 
 package global {
 
@@ -33,6 +34,8 @@ package global {
       with TurtleWriterModule
       with TableViewModule
       with StringSearchSPARQL[Jena, RDFStoreObject.DATASET] {
+    Logger.getRootLogger().info(s"in Global")
+    
     var form: Elem = <p>initial value</p>
     lazy val tableView = this // new TableView {}
     lazy val search = this; // new StringSearchSPARQL2[Rdf, RDFStoreObject.DATASET]{}
