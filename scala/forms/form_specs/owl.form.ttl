@@ -1,0 +1,27 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix dc: <http://purl.org/dc/elements/1.1/>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#> .
+@prefix     : <http://deductions-software.com/ontologies/forms.owl.ttl#> .
+
+# form specifications for FOAF
+
+<owl-ClassForm>
+  form:classDomain owl:Class ;
+  form:showProperties (
+	rdfs:label rdfs:comment
+	dc:subject
+  ) ;
+  # to implement in semforms: "reverse" properties :
+  form:showReverseProperties (
+	rdfs:domain rdfs:range
+	form:classDomain
+  )
+.
+
+<topic_interest>
+	:fieldAppliesToForm <owl-ClassForm> ;
+	:fieldAppliesToProperty dc:subject ;
+	:widgetClass form:DBPediaLookup .
+

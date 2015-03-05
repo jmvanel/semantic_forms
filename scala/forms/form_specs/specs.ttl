@@ -5,4 +5,5 @@
 # list of form specifications for various classes in common vocabularies
 
 foaf: form:ontologyHasFormSpecification <foaf.form.ttl> .
+owl: form:ontologyHasFormSpecification <owl.form.ttl> .
 av: form:ontologyHasFormSpecification <https://raw.githubusercontent.com/assemblee-virtuelle/pair/master/form.ttl> .
