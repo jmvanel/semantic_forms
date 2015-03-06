@@ -64,7 +64,7 @@ trait FormSyntaxFactoryTest // [Rdf <: RDF]
     with SparqlGraphModule {
 
   import ops._
-  val foaf = FOAFPrefix[Rdf]
+  lazy val foaf = FOAFPrefix[Rdf]
 
   def makeFOAFsample: Rdf#Graph = {
     (URI("betehess")

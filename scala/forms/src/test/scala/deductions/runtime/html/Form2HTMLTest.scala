@@ -13,7 +13,7 @@ import java.nio.file.Paths
 import org.w3.banana.jena.JenaModule
 import org.scalatest.FunSuite
 
-class Form2HTMLTestJena extends Form2HTMLTest
+//class Form2HTMLTestJena extends Form2HTMLTest
 
 class Form2HTMLTest
     extends FunSuite with FormSyntaxFactoryTest

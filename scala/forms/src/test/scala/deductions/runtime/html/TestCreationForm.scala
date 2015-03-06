@@ -14,6 +14,7 @@ import scala.xml.Elem
 import deductions.runtime.jena.RDFGraphPrinter
 import java.io.PrintStream
 
+
 /** Test Creation Form from class URI, without form specification */
 class TestCreationForm extends FunSuite with CreationForm with GraphTestEnum {
 
@@ -41,7 +42,7 @@ class TestCreationForm extends FunSuite with CreationForm with GraphTestEnum {
     rdfStore.rw(dataset, {
       rdfStore.appendToGraph(dataset, URI("Person"), vocab)
     })
-    val rawForm = createElem(("Person"), lang = "fr")
+    val rawForm = createElem("Person", lang = "fr")
     val form = TestCreationForm.wrapWithHTML(rawForm)
     val file = "example.creation.form2.html"
     Files.write(Paths.get(file), form.toString().getBytes);

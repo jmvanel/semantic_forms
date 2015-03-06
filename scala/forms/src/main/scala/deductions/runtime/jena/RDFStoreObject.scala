@@ -15,7 +15,12 @@ object RDFStoreObject extends JenaModule with RDFStoreLocalJena1Provider {
 
 /** For user data and RDF cache, sets a default location for the Jena TDB store directory : ./TDB/ */
 trait RDFStoreLocalJena1Provider extends RDFStoreLocalJenaProvider {
-  override lazy val dataset: DATASET = TDBFactory.createDataset("TDB")
+  override lazy val dataset: DATASET = {
+    val dts = TDBFactory.createDataset("TDB")
+    Logger.getRootLogger.info(s"RDFStoreLocalJena1Provider dataset created $dts")
+    println(s"RDFStoreLocalJena1Provider dataset created $dts")
+    dts
+  }
 }
 
 /** For application data (timestamps, URI types, ...), sets a default location for the Jena TDB store directory : ./TDBapp/ */
@@ -34,6 +39,7 @@ trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Dataset] wit
    *  - Union Graph in Jena should be re-done for each use (not 100% sure, but safer anyway)
    */
   override def allNamedGraph: Rdf#Graph = {
+    Logger.getRootLogger.info(s"allNamedGraph dataset $dataset")
     dataset.getGraph(ops.makeUri("urn:x-arq:UnionGraph")).get
   }
 }

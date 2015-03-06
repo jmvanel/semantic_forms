@@ -33,7 +33,6 @@ trait CreationForm extends RDFOpsModule
     dataset.r({
       val factory = new UnfilledFormFactory[Rdf](allNamedGraph, preferedLanguage = lang)
       val form = factory.createFormFromClass(URI(classUri))
-      //      println(form)
       generateHTML(form, hrefPrefix = "", editable = true, actionURI = actionURI)
     })
   }

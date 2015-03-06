@@ -11,6 +11,7 @@ trait FieldsInference[Rdf <: RDF] {
     /** retrieve rdfs:domain's From given Class */
     def domainsFromClass(classs: Rdf#Node) = {
       val relevantPredicates = getSubjects(graph, rdfs.domain, classs).toSet
+      println(s"""domainsFromClass <$classs> size ${relevantPredicates.size}""")
       rdfh.nodeSeqToURISet(relevantPredicates)
     }
 
@@ -19,6 +20,7 @@ trait FieldsInference[Rdf <: RDF] {
     /** recursively process super-classes and owl:equivalentClass until reaching owl:Thing */
     def processSuperClasses(classs: Rdf#URI) {
       result ++= domainsFromClass(classs)
+      println(s"processSuperClasses <$classs> size ${result.size}")
       if (classs != owl.Thing) {
         val superClasses = getObjects(graph, classs, rdfs.subClassOf)
         superClasses foreach (sc => result ++= domainsFromClass(sc))
@@ -51,6 +53,7 @@ trait FieldsInference[Rdf <: RDF] {
      *  ( use case : DOAP )
      */
     def addDomainlessProperties(uri: Rdf#URI) {
+      val graphURI = getGraphURI(uri)
       val props1 = find(graph, ANY, toConcreteNodeMatch(rdf.typ), toConcreteNodeMatch(rdf.Property))
       val props2 = find(graph, ANY, toConcreteNodeMatch(rdf.typ), toConcreteNodeMatch(owl.ObjectProperty))
       val props3 = find(graph, ANY, toConcreteNodeMatch(rdf.typ), toConcreteNodeMatch(owl.DatatypeProperty))
@@ -59,12 +62,11 @@ trait FieldsInference[Rdf <: RDF] {
         val (prop, _, _) = fromTriple(t)
         //        if( prop.toString.contains("doap") && prop.toString.contains("name"))
         //          println("doap") // debug <<<<<
-        val graphURI = getGraphURI(uri)
         if (prop.toString().startsWith(graphURI)) {
           val doms = find(graph, toConcreteNodeMatch(prop), toConcreteNodeMatch(rdfs.domain), ANY)
           if (doms.size == 0) {
             result += prop.asInstanceOf[Rdf#URI]
-            println("addDomainlessProperties: add " + prop)
+            println(s"addDomainlessProperties: <$uri> add <$prop>")
           }
         }
       }
