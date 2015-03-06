@@ -11,24 +11,33 @@ import org.w3.banana.SparqlEngine
 import scala.util.Try
 import org.w3.banana.SparqlOps
 import org.apache.log4j.Logger
+import java.net.URL
+import deductions.runtime.dataset.RDFStoreLocalProvider
 
 /**
  * populate Fields in form by inferring possible values from given rdfs:range's URI,
  *  through owl:oneOf and know instances
  */
-trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
+trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] //with RDFStoreLocalProvider[Rdf, DATASET]
+{
   self: FormSyntaxFactory[Rdf] =>
 
   implicit val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]
   implicit val sparqlOps: SparqlOps[Rdf]
 
   import ops._
+  import sparqlOps._
+  import sparqlGraph._
+  import sparqlGraph.sparqlEngineSyntax._
 
   def addPossibleValues(entryField: Entry, ranges: Set[Rdf#Node],
-    formGroup: Rdf#URI): Entry = {
+    valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)] //    formGroup: Rdf#URI
+    ): Entry = {
     val owl = OWLPrefix[Rdf]
-    val gr = graph
-    val rdfh = new RDFHelpers[Rdf] { val graph = gr }
+    val rdfh = {
+      val gr = graph
+      new RDFHelpers[Rdf] { val graph = gr }
+    }
 
     /**
      * modify entry to populate possibleValues,
@@ -36,7 +45,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
      * ?RANGE owl:oneOf ?LIST
      */
     def populateFromOwlOneOf(entry: Entry): Entry = {
-      val possibleValues = mutable.ArrayBuffer[(Rdf#Node, String)]()
+      val possibleValues = mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]()
       for (range <- ranges) {
         val enumerated = ops.getObjects(graph, range, owl.oneOf)
         fillPossibleValuesFromList(enumerated, possibleValues)
@@ -50,28 +59,26 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
      *  from existing triples with relevant rdf:type
      */
     def fillPossibleValuesFromList(enumerated: Iterable[Rdf#Node],
-      possibleValues: mutable.ArrayBuffer[(Rdf#Node, String)]) =
+      possibleValues: mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]) =
       for (enum <- enumerated)
         ops.foldNode(enum)(
           uri => {
             val list = rdfh.nodeSeqToURISeq(rdfh.rdfListToSeq(Some(uri)))
             possibleValues.appendAll(
-              list zip instanceLabels(list)
-            )
+              list zip instanceLabels(list).map { s => makeLiteral(s, xsd.string) })
           },
           x => {
             println(s"bnode $x")
             //            val list = rdfh.nodeSeqToURISeq(rdfh.rdfListToSeq(Some(x)))
             val list = rdfh.rdfListToSeq(Some(x))
             possibleValues.appendAll(
-              list zip instanceLabels(list)
-            )
+              list zip instanceLabels(list).map { s => makeLiteral(s, xsd.string) })
           },
           x => { println(s"lit $x"); () })
 
     /** modify entry to populate possible Values From Instances */
     def populateFromInstances(entry: Entry): Entry = {
-      val possibleValues = mutable.ArrayBuffer[(Rdf#Node, String)]()
+      val possibleValues = mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]()
       // debug      //      val personURI = ops.URI("http://xmlns.com/foaf/0.1/Person")
       //      if (ranges.contains(personURI)) {
       //        println(s"populateFromInstances: entry $entry")
@@ -94,49 +101,31 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
     }
 
     def fillPossibleValues(enumerated: Iterable[Rdf#Node],
-      possibleValues: mutable.ArrayBuffer[(Rdf#Node, String)]) =
+      possibleValues: mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]) =
       for (enum <- enumerated)
         ops.foldNode(enum)(
           uri => {
             possibleValues.append(
-              (uri, instanceLabel(uri))
-            )
+              (uri, makeLiteral(instanceLabel(uri), xsd.string)))
           },
           x => (), x => ())
 
     /**
      * populate From configuration in TDB
-     *  TODO move this SPARQL query outside of a loop on form fields
+     *  TODO ? merge given possibleValues with existing ones
      */
     def populateFromTDB(entry: Entry): Entry = {
-      if (formGroup != nullURI) {
-        val q = s"""
-              prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#>
-              prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-              SELECT ?VALUE ?LABEL
-              WHERE {
-              GRAPH ?GR {
-              <${formGroup}> form:labelsForFormGroup ?LABELS .
-              ?LABELS form:labelsForValues ?BN .
-              ?BN form:value ?VALUE ; rdfs:label ?LABEL . 
-              } }
-              """
-        info(s"populateFromTDB $q")
-        val query = sparqlOps.parseSelect(q, Seq()).get
-        val solutions = sparqlGraph.executeSelect(graph, query,
-          scala.collection.immutable.Map()).get
-        val vars = Seq("VALUE", "LABEL")
-        val res = solutions.toIterable map {
-          row =>
-            (row("VALUE").get.as[Rdf#Node].get,
-              row("LABEL").get.as[String].get)
-        }
-        val possibleValues = res.toSeq
-        info(s"populateFromTDB ${possibleValues.mkString("\n")}")
-
+      //      if (formGroup != nullURI) {
+      //        val possibleValues = possibleValuesFromFormGroup(formGroup, graph)
+      //
+      //        entry.openChoice = false
+      //        entry.setPossibleValues(possibleValues ++ entry.possibleValues)
+      //      } else 
+      if (!valuesFromFormGroup.isEmpty) {
         entry.openChoice = false
-        entry.setPossibleValues(possibleValues ++ entry.possibleValues)
-      } else entry
+        entry.setPossibleValues(valuesFromFormGroup ++ entry.possibleValues)
+      } else
+        entry
     }
 
     // ==== body of function addPossibleValues ====
@@ -147,4 +136,65 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
   }
 
   def info(s: String) = Logger.getRootLogger().info(s)
+
+  import sparqlGraph.sparqlEngineSyntax._
+
+  def possibleValuesFromFormGroup(formGroup: Rdf#URI,
+    graph1: Rdf#Graph): Seq[(Rdf#Node, Rdf#Node)] = {
+    val q = s"""
+                prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#>
+                prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                SELECT ?VALUE ?LABEL
+                WHERE {
+                # GRAPH ?GR {
+                <${formGroup}> form:labelsForFormGroup ?LABELS .
+                ?LABELS form:labelsForValues ?BN .
+                ?BN form:value ?VALUE ; rdfs:label ?LABEL . 
+                # }
+                }
+                """
+    info(s"populateFromTDB $q")
+
+    val query = parseSelect(q, Seq()).get
+    val solutions: Rdf#Solutions = graph.executeSelect(query).get
+    import ops._
+
+    val res = solutions.iterator() map {
+      row =>
+        info(s""" populateFromTDB iter ${row}""")
+        (row("VALUE").get.as[Rdf#Node].get,
+          row("LABEL").get.as[Rdf#Node].get)
+    }
+    val possibleValues = res.to[List] // Rdf#Node,String]]
+    info(s""" populateFromTDB  size ${possibleValues.size}
+             ${possibleValues.mkString("\n")}""")
+    possibleValues
+  }
+
+  /** TODO put it in util class or use SPARQLHelper in project sparql_client */
+  def runSparqlSelect(
+    queryString: String, variables: Seq[String],
+    graph: Rdf#Graph): List[Seq[Rdf#URI]] = {
+    val query = parseSelect(queryString).get
+    val answers: Rdf#Solutions = graph.executeSelect(query).get
+    val results: Iterator[Seq[Rdf#URI]] = answers.toIterable map {
+      row =>
+        for (variable <- variables) yield row(variable).get.as[Rdf#URI].get
+    }
+    results.to[List]
+  }
+
+  def dumpGraph() = {
+    val selectAll = """
+              # CONSTRUCT { ?S ?P ?O . }
+              SELECT ?S ?P ?O
+              WHERE {
+                GRAPH ?GR {
+                ?S ?P ?O .
+                } }
+            """
+    val res2 = runSparqlSelect(selectAll, Seq("S", "P", "O"), graph)
+    info(s""" populateFromTDB selectAll size ${res2.size}
+             ${res2.mkString("\n")}""")
+  }
 }

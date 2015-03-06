@@ -47,9 +47,9 @@ trait FormModule[NODE, URI <: NODE] {
       val type_ : URI = nullURI,
       var widgetType: WidgetType = Text,
       var openChoice: Boolean = true,
-      var possibleValues: Seq[(NODE, String)] = Seq()) {
+      var possibleValues: Seq[(NODE, NODE)] = Seq()) {
     private val triples: mutable.Buffer[Triple] = mutable.ListBuffer[Triple]()
-    def setPossibleValues(newPossibleValues: Seq[(NODE, String)]): Entry
+    def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]): Entry
     override def toString(): String = {
       s""" "$label", "$comment" $widgetType """
     }
@@ -63,14 +63,14 @@ trait FormModule[NODE, URI <: NODE] {
   class ResourceEntry(label: String, comment: String,
     property: ObjectProperty = nullURI, validator: ResourceValidator,
     val value: URI = nullURI, val alreadyInDatabase: Boolean = true,
-    possibleValues: Seq[(NODE, String)] = Seq(),
+    possibleValues: Seq[(NODE, NODE)] = Seq(),
     val valueLabel: String = "",
     type_ : URI = nullURI)
       extends Entry(label, comment, property, type_ = type_, possibleValues = possibleValues) {
     override def toString(): String = {
       super.toString + s""" : <$value>, "$valueLabel" possibleValues count:${possibleValues.size} """
     }
-    def setPossibleValues(newPossibleValues: Seq[(NODE, String)]) = {
+    def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = {
       new ResourceEntry(label, comment,
         property, validator,
         value, alreadyInDatabase,
@@ -84,7 +84,7 @@ trait FormModule[NODE, URI <: NODE] {
       super.toString + ", " + value
     }
     def getId: String = value.toString
-    def setPossibleValues(newPossibleValues: Seq[(NODE, String)]) = {
+    def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = {
       new BlankNodeEntry(label, comment,
         property, validator, value)
     }
@@ -93,11 +93,11 @@ trait FormModule[NODE, URI <: NODE] {
       property: DatatypeProperty = nullURI, validator: DatatypeValidator,
       val value: String = "",
       type_ : URI = nullURI,
-      possibleValues: Seq[(NODE, String)] = Seq()) extends Entry(l, c, property, type_ = type_, possibleValues = possibleValues) {
+      possibleValues: Seq[(NODE, NODE)] = Seq()) extends Entry(l, c, property, type_ = type_, possibleValues = possibleValues) {
     override def toString(): String = {
       super.toString + s""" := "$value" """
     }
-    def setPossibleValues(newPossibleValues: Seq[(NODE, String)]) = {
+    def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = {
       new LiteralEntry(label, comment,
         property, validator,
         value, type_,

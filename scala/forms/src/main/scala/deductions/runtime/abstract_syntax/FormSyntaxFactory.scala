@@ -89,19 +89,19 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     formGroup: Rdf#URI = nullURI): AbstractForm = {
 
     Logger.getRootLogger().info(s"createForm subject $subject, props $props")
+    val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
     val entries = for (prop <- props) yield {
       Logger.getRootLogger().info(s"createForm subject $subject, prop $prop")
       //      val ranges = nodeSeqToURISet(objectsQuery(prop, rdfs.range))
       val ranges = objectsQuery(prop, rdfs.range)
       val rangesSize = ranges.size
-      println(
+      System.err.println(
         if (rangesSize > 1) {
           "WARNING: ranges " + ranges + " for property " + prop + " are multiple."
         } else if (rangesSize == 0) {
           "WARNING: There is no range for property " + prop
-        } else "",
-        System.err)
-      makeEntries(subject, prop, ranges, formGroup)
+        } else "")
+      makeEntries(subject, prop, ranges, valuesFromFormGroup) // formGroup)
     }
     val fields = entries.flatMap { s => s }
     val fields2 = addTypeTriple(subject, classs, fields)
@@ -164,7 +164,8 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
    *  taking in account multi-valued properties
    */
   private def makeEntries(subject: Rdf#Node, prop: Rdf#URI, ranges: Set[Rdf#Node],
-    formGroup: Rdf#URI): Seq[Entry] = {
+    valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)] //    formGroup: Rdf#URI
+    ): Seq[Entry] = {
     Logger.getRootLogger().info(s"makeEntry subject $subject, prop $prop")
     val label = getHeadStringOrElse(prop, rdfs.label, terminalPart(prop))
     val comment = getHeadStringOrElse(prop, rdfs.comment, "")
@@ -173,8 +174,8 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     val result = scala.collection.mutable.ArrayBuffer[Entry]()
     val rangeClasses = objectsQueries(ranges, RDFPrefix[Rdf].typ)
 
-    for (obj <- objects) if (prop != rdf.typ) addOneEntry(obj, formGroup)
-    if (objects isEmpty) addOneEntry(nullURI, formGroup)
+    for (obj <- objects) if (prop != rdf.typ) addOneEntry(obj, valuesFromFormGroup)
+    if (objects isEmpty) addOneEntry(nullURI, valuesFromFormGroup)
 
     def makeBN(label: String, comment: String,
       property: ObjectProperty, validator: ResourceValidator,
@@ -186,7 +187,9 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
       }
     }
 
-    def addOneEntry(object_ : Rdf#Node, formGroup: Rdf#URI) = {
+    def addOneEntry(object_ : Rdf#Node,
+      valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)] //        formGroup: Rdf#URI
+      ) = {
       val literalPlaceHolder = "..empty.."
       def literalEntry = {
         // TODO match graph pattern for interval datatype ; see issue #17
@@ -222,7 +225,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
         case _ if object_.toString.startsWith("_:") => resourceEntry
         case _ => literalEntry
       }
-      result += addPossibleValues(entry, ranges, formGroup)
+      result += addPossibleValues(entry, ranges, valuesFromFormGroup)
     }
     result
   }

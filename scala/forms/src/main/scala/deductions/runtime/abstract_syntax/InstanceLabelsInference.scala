@@ -44,4 +44,6 @@ trait InstanceLabelsInference[Rdf <: RDF] {
               // TODO : return RDF prefix
               uri.toString()))
   }
+
+  //  .map{s=>makeLiteral( s, xsd.string)})
 }

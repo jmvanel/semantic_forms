@@ -16,7 +16,7 @@ trait Form2HTML[NODE, URI <: NODE]
     extends FormModule[NODE, URI] {
   type fm = FormModule[NODE, URI]
 
-  val radioForIntervals = true // false // TODO the choice should be moved to FormSyntaxFactory
+  val radioForIntervals = false // TODO the choice should be moved to FormSyntaxFactory
   /**
    * render the given Form Syntax as HTML;
    *  @param hrefPrefix URL prefix pre-pendended to created ID's for Hyperlink
