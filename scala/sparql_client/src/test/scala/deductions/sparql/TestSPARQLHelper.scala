@@ -4,10 +4,10 @@ import org.scalatest.FunSuite
 import org.w3.banana.FOAFPrefix
 import org.w3.banana.jena.JenaModule
 
-trait TestSPARQLHelper extends SPARQLHelper {
+trait TestSPARQLHelper extends SPARQLHelper with TestFixtureRDF {
   self: FunSuite =>
 
-  test("SPARQL select") {
+  test("SPARQL HTTP select") {
     val select = """
     PREFIX dbpedia: <http://dbpedia.org/resource/>
     select ?P
@@ -15,10 +15,19 @@ trait TestSPARQLHelper extends SPARQLHelper {
       dbpedia:Reyrieux ?P ?O.
     } """
     val result = runSparqlSelect(select, Seq("P"))
-    println(result.mkString("\n"))
+    println(result.take(10) mkString("\n"))
   }
 
-  test("SPARQL CONSTRUCT") {
+  test("SPARQL graph select") {
+    val select = """
+    select ?S ?P ?O
+    WHERE {?S ?P ?O .
+    } """
+      val result = runSparqlSelect(select, Seq("P"), graph)
+      println("SPARQL graph select\n" + result.mkString("\n"))
+  }
+
+  test("SPARQL HTTP CONSTRUCT") {
     val foaf = FOAFPrefix[Rdf]
     val construct = s"""
       PREFIX foaf: <${foaf.prefixIri}>   
@@ -31,7 +40,6 @@ trait TestSPARQLHelper extends SPARQLHelper {
     println(runSparqlContruct(construct))
   }
 }
-
-object TestSPARQLHelperWithJena
-    extends FunSuite with JenaModule
-    with TestSPARQLHelper
+class TestSPARQLHelperWithJena
+  extends FunSuite with JenaModule
+  with TestSPARQLHelper

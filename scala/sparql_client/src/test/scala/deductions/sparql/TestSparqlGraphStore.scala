@@ -10,22 +10,20 @@ import org.w3.banana.jena._
 import com.hp.hpl.jena.query.Dataset
 import com.hp.hpl.jena.query.DatasetFactory
 
-abstract class TestSparqlGraphStore[Rdf <: RDF, M[+_], SE] extends FunSuite
+abstract class TestSparqlGraphStore[Rdf <: RDF, M[+_], SE]
+extends FunSuite
     with RDFOpsModule
-    with SparqlOpsModule {
+    with SparqlOpsModule
+    with TestFixtureRDF {
   val sEngine: SparqlQueryUpdateEngine[Rdf, M, SE]
   val se: SE
   val gs = new SparqlGraphStore[Rdf, M, SE](sEngine)
   import ops._
 
   test("display form") {
-    val triples = List(makeTriple(
-      makeUri("#i"),
-      makeUri("knows"),
-      makeUri("#me")))
-    val gr = makeGraph(triples)
+
     val graphURI = makeUri("g")
-    gs.appendToGraph(se, graphURI, gr)
+    gs.appendToGraph(se, graphURI, graph)
     val res = gs.getGraph(se, graphURI)
     println(res)
     //    assert(???)

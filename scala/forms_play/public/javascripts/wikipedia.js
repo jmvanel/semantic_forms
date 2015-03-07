@@ -43,7 +43,7 @@ function populate_pulldown_menu( element, results ) {
     // 	add an option tag to datalist with label=response.label and value=response.uri
     datalist.append(
       jQuery('<option/>', {
-        label: response.label,
+        label: response.label + " - " + response.description,
         value: response.uri } ))
   }
 };
