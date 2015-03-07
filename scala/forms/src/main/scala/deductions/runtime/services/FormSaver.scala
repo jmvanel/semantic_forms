@@ -50,20 +50,22 @@ class FormSaver[Rdf <: RDF]()(
       case Some(uri0) =>
         //        val graphURI = URLDecoder.decode(uri0, "utf-8")
         val uri = URLDecoder.decode(uri0, "utf-8")
-        val graphURI = URLDecoder.decode(graphURIOption.getOrElse(uri0), "utf-8")
+        val graphURI =
+          if (graphURIOption == Some("")) uri
+          else URLDecoder.decode(graphURIOption.getOrElse(uri0), "utf-8")
         val v = map.map {
           case (prop0, obj) =>
             val prop = URLDecoder.decode(prop0, "utf-8")
             saveTriplesForProperty(uri, prop, obj, map)
         }
-        doSave(graphURI: String)
+        doSave(graphURI)
       case _ =>
     }
 
     // ==== end of body of saveTriples ====
 
     def saveTriplesForProperty(uri: String, prop: String, objects: Seq[String], map: Map[String, Seq[String]]) = {
-      objects.map(object_ => saveTriple(uri, prop, object_))
+      objects.map(object_ => setTripleChanges(uri, prop, object_))
       println("triplesToRemove " + triplesToRemove)
       println("triples To add " + triples)
     }
@@ -92,7 +94,8 @@ class FormSaver[Rdf <: RDF]()(
       }
     }
 
-    def saveTriple(uri: String, prop: String, obj0: String): Unit = {
+    /** populate lists of triples to add and remove */
+    def setTripleChanges(uri: String, prop: String, obj0: String): Unit = {
       val obj = URLDecoder.decode(obj0, "utf-8")
       println("saveTriple: " + prop + " \"" + obj + "\"")
       if (prop != "url" &&
@@ -101,7 +104,7 @@ class FormSaver[Rdf <: RDF]()(
         !prop.startsWith("ORIG-")) {
         val (changed, originalValue) = processChange(uri, prop, obj)
         if (changed) {
-          println("saveTriple: changed")
+          println(s"""saveTriple: $prop changed from $originalValue to "$obj" """)
           triples +=
             makeTriple(
               makeUri(uri),
