@@ -45,6 +45,7 @@ trait FormModule[NODE, URI <: NODE] {
       val property: URI = nullURI,
       val mandatory: Boolean = false,
       val type_ : URI = nullURI,
+      val value: Any = "",
       var widgetType: WidgetType = Text,
       var openChoice: Boolean = true,
       var possibleValues: Seq[(NODE, NODE)] = Seq()) {
@@ -62,7 +63,7 @@ trait FormModule[NODE, URI <: NODE] {
   /** @param possibleValues a couple of an RDF node id and the label to display, see trait RangeInference */
   class ResourceEntry(label: String, comment: String,
     property: ObjectProperty = nullURI, validator: ResourceValidator,
-    val value: URI = nullURI, val alreadyInDatabase: Boolean = true,
+    override val value: URI = nullURI, val alreadyInDatabase: Boolean = true,
     possibleValues: Seq[(NODE, NODE)] = Seq(),
     val valueLabel: String = "",
     type_ : URI = nullURI)
@@ -79,7 +80,7 @@ trait FormModule[NODE, URI <: NODE] {
   }
   class BlankNodeEntry(label: String, comment: String,
       property: ObjectProperty = nullURI, validator: ResourceValidator,
-      val value: NODE, type_ : URI = nullURI) extends Entry(label, comment, property, type_ = type_) {
+      override val value: NODE, type_ : URI = nullURI) extends Entry(label, comment, property, type_ = type_) {
     override def toString(): String = {
       super.toString + ", " + value
     }
@@ -91,7 +92,8 @@ trait FormModule[NODE, URI <: NODE] {
   }
   class LiteralEntry(l: String, c: String,
       property: DatatypeProperty = nullURI, validator: DatatypeValidator,
-      val value: String = "",
+      override val value: String = "",
+      val lang: String = "",
       type_ : URI = nullURI,
       possibleValues: Seq[(NODE, NODE)] = Seq()) extends Entry(l, c, property, type_ = type_, possibleValues = possibleValues) {
     override def toString(): String = {
@@ -100,7 +102,7 @@ trait FormModule[NODE, URI <: NODE] {
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = {
       new LiteralEntry(label, comment,
         property, validator,
-        value, type_,
+        value, lang, type_,
         newPossibleValues)
     }
   }

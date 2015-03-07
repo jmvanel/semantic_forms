@@ -32,8 +32,8 @@ trait InstanceLabelsInference2[Rdf <: RDF] extends RDFOpsModule {
    */
   def instanceLabel(uri: Rdf#Node)(implicit graph: Rdf#Graph): String = {
     val pgraph = PointedGraph(uri, graph)
-
-    // TODO 4 expressions should be computed if necessary 
+    // println(s"instanceLabel pgraph ${pgraph.pointer} ${pgraph.graph}")
+    // TODO 4 expressions should be computed only if necessary 
     val firstName = (pgraph / foaf.firstName).as[String].getOrElse("")
     val lastName = (pgraph / foaf.lastName).as[String].getOrElse("")
     val classe = (pgraph / rdf.typ).as[Rdf#URI].getOrElse(URI(""))

@@ -35,7 +35,7 @@ trait Form2HTML[NODE, URI <: NODE]
           for (field <- form.fields) yield {
             <div class="form-group">
               <div class="row">
-                <label class="control-label" title={ field.comment }>{ field.label }</label>
+                <label class="control-label" title={ field.comment + " - " + field.property }>{ field.label }</label>
                 <div class="input">
                   { createHTMLField(field, editable, hrefPrefix) }
                 </div>

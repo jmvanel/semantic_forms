@@ -29,21 +29,24 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
     elem
   }
 
-  /** CAUTION: It is of particular importance to note that, unless stated otherwise, one should never use an iterator after calling a method on it. */
+  /**
+   * CAUTION: It is of particular importance to note that, unless stated otherwise,
+   *  one should never use an iterator after calling a method on it.
+   */
   private def displayResults(res0: Iterable[Rdf#Node], hrefPrefix: String) = {
     <p>{
       val res = res0.toSeq
       println(s"displayResults : ${res.mkString("\n")}")
       dataset.r({
         implicit val graph: Rdf#Graph = allNamedGraph
-        //        val all = ops.find( allNamedGraph, ANY, ANY, ANY)
-        //        println( all.mkString("\n") )
+        // val all = ops.find( allNamedGraph, ANY, ANY, ANY) ; println( all.mkString("\n") )
         res.map(uri => {
           val uriString = uri.toString
           val blanknode = !isURI(uri)
-          <div title=""><a href={ Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode) }>
-                          { instanceLabel(uri) }
-                        </a><br/></div>
+          // TODO : show named graph
+          <div title={ uri.toString() }><a href={ Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode) }>
+                                          { instanceLabel(uri) }
+                                        </a><br/></div>
         })
       }).get
     }</p>
