@@ -19,9 +19,35 @@
 	form:classDomain
   )
 .
-
-<topic_interest>
+<topic_interest1>
 	:fieldAppliesToForm <owl-ClassForm> ;
 	:fieldAppliesToProperty dc:subject ;
 	:widgetClass form:DBPediaLookup .
 
+<owl-DatatypePropertyForm>
+  form:classDomain owl:DatatypeProperty ;
+  form:showProperties (
+	rdfs:label rdfs:comment
+	# TODO implement in semforms: constraint that rdfs:range is a literal type
+	rdfs:domain rdfs:range
+	dc:subject
+  )
+.
+<topic_interest2>
+	:fieldAppliesToForm <owl-DatatypePropertyForm> ;
+	:fieldAppliesToProperty dc:subject ;
+	:widgetClass form:DBPediaLookup .
+
+<owl-ObjectPropertyForm>
+  form:classDomain owl:ObjectProperty ;
+  form:showProperties (
+	rdfs:label rdfs:comment
+	# TODO implement in semforms: constraint that rdfs:range is a reference type
+	rdfs:domain rdfs:range
+	dc:subject
+  )
+.
+<topic_interest3>
+	:fieldAppliesToForm <owl-ObjectPropertyForm> ;
+	:fieldAppliesToProperty dc:subject ;
+	:widgetClass form:DBPediaLookup .
