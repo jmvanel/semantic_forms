@@ -48,13 +48,13 @@ trait Form2HTML[NODE, URI <: NODE]
     if (editable)
       <form action={ actionURI } method="POST">
         <p class="text-right">
-          <input value="SAVE" type="submit" class="btn btn-primary btn-lg"/>
+          <input value="SAVE" name="SAVE1" type="submit" class="btn btn-primary btn-lg"/>
         </p>
         <input type="hidden" name="url" value={ urlEncode(form.subject) }/>
         <input type="hidden" name="graphURI" value={ urlEncode(graphURI) }/>
         { htmlForm }
         <p class="text-right">
-          <input value="SAVE" type="submit" formaction={ actionURI2 } class="btn btn-primary btn-lg pull-right"/>
+          <input value="SAVE" name="SAVE2" type="submit" formaction={ actionURI2 } class="btn btn-primary btn-lg pull-right"/>
         </p>
       </form>
     else
