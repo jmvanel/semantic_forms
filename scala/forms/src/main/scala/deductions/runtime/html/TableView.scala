@@ -110,4 +110,13 @@ trait TableViewModule
     graf2form(graph1, uri, graphURI = graphURI).toString
   }
 
+  override def toPlainString(n: Rdf#Node): String = {
+    val v = foldNode(n)(
+      uri => fromUri(uri),
+      bn => fromBNode(bn),
+      lit => { val (v, typ, langOption) = fromLiteral(lit); v }
+    )
+    v
+  }
+
 }

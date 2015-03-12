@@ -16,7 +16,11 @@ trait Form2HTML[NODE, URI <: NODE]
     extends FormModule[NODE, URI] {
   type fm = FormModule[NODE, URI]
 
-  val radioForIntervals = false // TODO the choice should be moved to FormSyntaxFactory
+  val radioForIntervals = true // false // TODO the choice should be moved to FormSyntaxFactory
+
+  //  def f( x:{ def toPlainString(n:NODE) })
+  def toPlainString(n: NODE): String = ???
+
   /**
    * render the given Form Syntax as HTML;
    *  @param hrefPrefix URL prefix pre-pendended to created ID's for Hyperlink
@@ -173,7 +177,11 @@ trait Form2HTML[NODE, URI <: NODE]
       case re @ (_: fm#ResourceEntry | _: fm#LiteralEntry) =>
         //        val options = Seq(<option label="Choose a value or leave like it is." value=""></option>) ++
         val options = Seq(<option value=""></option>) ++
-          (for (value <- re.possibleValues) yield <option value={ value._1.toString() }>{ value._2 }</option>)
+          //          (for (value <- re.possibleValues) yield <option value={ value._1.toString() }>{ value._2 }</option>)
+          (for (value <- re.possibleValues) yield <option value={ toPlainString(value._1) }>
+                                                    { value._2 }
+                                                  </option>)
+        // 
         if (inDatalist)
           <datalist id={ makeHTMLIdForDatalist(re) }>
             { options }
