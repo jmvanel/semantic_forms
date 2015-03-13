@@ -142,17 +142,15 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] //with RDF
   def possibleValuesFromFormGroup(formGroup: Rdf#URI,
     graph1: Rdf#Graph): Seq[(Rdf#Node, Rdf#Node)] = {
     val q = s"""
-                prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#>
-                prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-                SELECT ?VALUE ?LABEL
-                WHERE {
-                # GRAPH ?GR {
+              prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#>
+              prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+              SELECT ?VALUE ?LABEL
+              WHERE {
                 <${formGroup}> form:labelsForFormGroup ?LABELS .
                 ?LABELS form:labelsForValues ?BN .
                 ?BN form:value ?VALUE ; rdfs:label ?LABEL . 
-                # }
-                }
-                """
+              }
+              """
     info(s"populateFromTDB $q")
 
     val query = parseSelect(q, Seq()).get

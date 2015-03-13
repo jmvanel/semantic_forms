@@ -63,11 +63,11 @@ trait FormModule[NODE, URI <: NODE] {
   /** @param possibleValues a couple of an RDF node id and the label to display, see trait RangeInference */
   class ResourceEntry(label: String, comment: String,
     property: ObjectProperty = nullURI, validator: ResourceValidator,
-    override val value: URI = nullURI, val alreadyInDatabase: Boolean = true,
+    value: URI = nullURI, val alreadyInDatabase: Boolean = true,
     possibleValues: Seq[(NODE, NODE)] = Seq(),
     val valueLabel: String = "",
     type_ : URI = nullURI)
-      extends Entry(label, comment, property, type_ = type_, possibleValues = possibleValues) {
+      extends Entry(label, comment, property, type_ = type_, value = value, possibleValues = possibleValues) {
     override def toString(): String = {
       super.toString + s""" : <$value>, "$valueLabel" possibleValues count:${possibleValues.size} """
     }
@@ -80,7 +80,7 @@ trait FormModule[NODE, URI <: NODE] {
   }
   class BlankNodeEntry(label: String, comment: String,
       property: ObjectProperty = nullURI, validator: ResourceValidator,
-      override val value: NODE, type_ : URI = nullURI) extends Entry(label, comment, property, type_ = type_) {
+      value: NODE, type_ : URI = nullURI) extends Entry(label, comment, property, type_ = type_, value = value) {
     override def toString(): String = {
       super.toString + ", " + value
     }
@@ -92,10 +92,10 @@ trait FormModule[NODE, URI <: NODE] {
   }
   class LiteralEntry(l: String, c: String,
       property: DatatypeProperty = nullURI, validator: DatatypeValidator,
-      override val value: String = "",
+      value: String = "",
       val lang: String = "",
       type_ : URI = nullURI,
-      possibleValues: Seq[(NODE, NODE)] = Seq()) extends Entry(l, c, property, type_ = type_, possibleValues = possibleValues) {
+      possibleValues: Seq[(NODE, NODE)] = Seq()) extends Entry(l, c, property, type_ = type_, value = value, possibleValues = possibleValues) {
     override def toString(): String = {
       super.toString + s""" := "$value" """
     }

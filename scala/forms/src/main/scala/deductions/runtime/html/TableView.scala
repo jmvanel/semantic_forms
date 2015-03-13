@@ -61,13 +61,11 @@ trait TableViewModule
     graphURI: String = "",
     actionURI2: String = "/save",
     formGroup: String = fromUri(nullURI)): Elem = {
-    //    Await.result(
     htmlForm(uri, hrefPrefix, blankNode, editable, actionURI,
       lang, graphURI, actionURI2, URI(formGroup)) match {
         case Success(e) => e
         case Failure(e) => <p>Exception occured: { e }</p>
       }
-    //      , 5 seconds)
   }
 
   /**

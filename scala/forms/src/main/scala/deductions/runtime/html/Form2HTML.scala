@@ -16,10 +16,9 @@ trait Form2HTML[NODE, URI <: NODE]
     extends FormModule[NODE, URI] {
   type fm = FormModule[NODE, URI]
 
-  val radioForIntervals = true // false // TODO the choice should be moved to FormSyntaxFactory
+  val radioForIntervals = false // TODO the choice should be moved to FormSyntaxFactory
 
-  //  def f( x:{ def toPlainString(n:NODE) })
-  def toPlainString(n: NODE): String = ???
+  def toPlainString(n: NODE): String = n.toString()
 
   /**
    * render the given Form Syntax as HTML;
@@ -65,6 +64,32 @@ trait Form2HTML[NODE, URI <: NODE]
       htmlForm
   }
 
+  def generateHTMLJustFields(form: fm#FormSyntax[NODE, URI],
+		  hrefPrefix: String = "",
+		  editable: Boolean = false,
+		  graphURI: String = ""
+		  ) = {
+	  if (editable) {
+		  <input type="hidden" name="url" value={ urlEncode(form.subject) }/>
+		  <input type="hidden" name="graphURI" value={ urlEncode(graphURI) }/>
+	  }
+	  <div class="form">
+	  <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
+	  {
+		  for (field <- form.fields) yield {
+			  <div class="form-group">
+			  <div class="row">
+			  <label class="control-label" title={ field.comment + " - " + field.property }>{ field.label }</label>
+			  <div class="input">
+			  { createHTMLField(field, editable, hrefPrefix) }
+			  </div>
+			  </div>
+			  </div>
+		  }
+	  }
+	  </div>
+  }
+        
   private def createHTMLField(field: fm#Entry, editable: Boolean,
     hrefPrefix: String = ""): xml.NodeSeq = {
     field match {
@@ -145,20 +170,15 @@ trait Form2HTML[NODE, URI <: NODE]
           )).flatten
         else {
           <select name={ makeHTMLIdForLiteral(lit) }>
-            {
-              //              val pv = for (n <- Range(0, 6)) yield {
-              //                <option value={ n.toString() }>{ n }</option>
-              //              }
-              formatPossibleValues(lit)
-            }
+            { formatPossibleValues(lit) }
           </select>
         }
 
       case _ =>
-        <input class="form-control" value={ lit.value } name={ makeHTMLIdForLiteral(lit) } type={ HTML5Types.xsd2html5TnputType(lit.type_.toString()) } placeholder={ placeholder }/>
+        <input class="form-control" value={ lit.value.toString() } name={ makeHTMLIdForLiteral(lit) } type={ HTML5Types.xsd2html5TnputType(lit.type_.toString()) } placeholder={ placeholder }/>
     }
     elem ++
-      <input value={ lit.value } name={ "ORIG-LIT-" + urlEncode(lit.property) } type="hidden"/>
+      <input value={ lit.value.toString() } name={ "ORIG-LIT-" + urlEncode(lit.property) } type="hidden"/>
   }
 
   private def makeHTMLIdForLiteral(lit: LiteralEntry) = "LIT-" + urlEncode(lit.property)
@@ -173,15 +193,19 @@ trait Form2HTML[NODE, URI <: NODE]
   }
 
   private def formatPossibleValues(field: fm#Entry, inDatalist: Boolean = false): NodeSeq = {
+    def makeHTMPOption(value: (NODE, NODE), field: fm#Entry): Elem = {
+      // selected Or Not
+      if (field.value.toString() == toPlainString(value._1))
+        <option value={ toPlainString(value._1) } selected="">{ value._2 }</option>
+      else
+        <option value={ toPlainString(value._1) }>{ value._2 }</option>
+    }
     field match {
       case re @ (_: fm#ResourceEntry | _: fm#LiteralEntry) =>
         //        val options = Seq(<option label="Choose a value or leave like it is." value=""></option>) ++
         val options = Seq(<option value=""></option>) ++
           //          (for (value <- re.possibleValues) yield <option value={ value._1.toString() }>{ value._2 }</option>)
-          (for (value <- re.possibleValues) yield <option value={ toPlainString(value._1) }>
-                                                    { value._2 }
-                                                  </option>)
-        // 
+          (for (value <- re.possibleValues) yield makeHTMPOption(value, field))
         if (inDatalist)
           <datalist id={ makeHTMLIdForDatalist(re) }>
             { options }
