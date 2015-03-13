@@ -64,32 +64,32 @@ trait Form2HTML[NODE, URI <: NODE]
       htmlForm
   }
 
+  /** TODO call generateHTMLJustFields within generateHTML */
   def generateHTMLJustFields(form: fm#FormSyntax[NODE, URI],
-		  hrefPrefix: String = "",
-		  editable: Boolean = false,
-		  graphURI: String = ""
-		  ) = {
-	  if (editable) {
-		  <input type="hidden" name="url" value={ urlEncode(form.subject) }/>
-		  <input type="hidden" name="graphURI" value={ urlEncode(graphURI) }/>
-	  }
-	  <div class="form">
-	  <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
-	  {
-		  for (field <- form.fields) yield {
-			  <div class="form-group">
-			  <div class="row">
-			  <label class="control-label" title={ field.comment + " - " + field.property }>{ field.label }</label>
-			  <div class="input">
-			  { createHTMLField(field, editable, hrefPrefix) }
-			  </div>
-			  </div>
-			  </div>
-		  }
-	  }
-	  </div>
+    hrefPrefix: String = "",
+    editable: Boolean = false,
+    graphURI: String = "") = {
+    if (editable) {
+      <input type="hidden" name="url" value={ urlEncode(form.subject) }/>
+      <input type="hidden" name="graphURI" value={ urlEncode(graphURI) }/>
+    }
+    <div class="form">
+      <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
+      {
+        for (field <- form.fields) yield {
+          <div class="form-group">
+            <div class="row">
+              <label class="control-label" title={ field.comment + " - " + field.property }>{ field.label }</label>
+              <div class="input">
+                { createHTMLField(field, editable, hrefPrefix) }
+              </div>
+            </div>
+          </div>
+        }
+      }
+    </div>
   }
-        
+
   private def createHTMLField(field: fm#Entry, editable: Boolean,
     hrefPrefix: String = ""): xml.NodeSeq = {
     field match {

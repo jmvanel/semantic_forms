@@ -48,6 +48,9 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     with FieldsInference[Rdf]
     with RangeInference[Rdf] {
 
+  /** TODO displaying rdf:type fields should be configurable for editing, and displayed unconditionally for non editing */
+  val displayRdfType = false
+
   import ops._
 
   lazy val nullURI = ops.URI("http://null.com#") // TODO better : "" ????????????
@@ -104,8 +107,9 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
       makeEntries(subject, prop, ranges, valuesFromFormGroup) // formGroup)
     }
     val fields = entries.flatMap { s => s }
-    val fields2 = addTypeTriple(subject, classs, fields)
-    //    val formSyntax = FormSyntax(subject, fields2, classs, formGroup) // TODO
+    val fields2 = if (displayRdfType)
+      addTypeTriple(subject, classs, fields)
+    else fields.toSeq
     val formSyntax = FormSyntax(subject, fields2, classs)
     updateFormForClass(formSyntax)
   }
