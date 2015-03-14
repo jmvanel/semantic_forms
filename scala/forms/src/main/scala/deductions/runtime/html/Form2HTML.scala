@@ -33,34 +33,16 @@ trait Form2HTML[NODE, URI <: NODE]
     actionURI2: String = "/save"): Elem = {
 
     val htmlForm = generateHTMLJustFields(form, hrefPrefix, editable, graphURI)
-    /*    val htmlForm =
-      <div class="form">
-        <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
-        {
-          for (field <- form.fields) yield {
-            <div class="form-group">
-              <div class="row">
-                <label class="control-label" title={ field.comment + " - " + field.property }>{ field.label }</label>
-                <div class="input">
-                  { createHTMLField(field, editable, hrefPrefix) }
-                </div>
-              </div>
-            </div>
-          }
-        }
-      </div> */
 
     if (editable)
       <form action={ actionURI } method="POST">
         <p class="text-right">
-          <!--input value="SAVE" name="SAVE1" type="submit" class="btn btn-primary btn-lg"/-->
           <input value="SAVE" type="submit" class="btn btn-primary btn-lg"/>
         </p>
-        <!-- input type="hidden" name="url" value={ urlEncode(form.subject) }/>
-        <input type="hidden" name="graphURI" value={ urlEncode(graphURI) }/ -->
+
         { htmlForm }
+        
         <p class="text-right">
-          <!--input value="SAVE" name="SAVE2" type="submit" formaction={ actionURI2 } class="btn btn-primary btn-lg pull-right"/-->
           <input value="SAVE" type="submit" formaction={ actionURI2 } class="btn btn-primary btn-lg pull-right"/>
         </p>
       </form>
@@ -68,7 +50,10 @@ trait Form2HTML[NODE, URI <: NODE]
       htmlForm
   }
 
-  /** generate HTML, but Just Fields; this lets application developers create their own submit button(s) and <form> tag */
+  /**
+   * generate HTML, but Just Fields;
+   *  this lets application developers create their own submit button(s) and <form> tag
+   */
   def generateHTMLJustFields(form: fm#FormSyntax[NODE, URI],
     hrefPrefix: String = "",
     editable: Boolean = false,

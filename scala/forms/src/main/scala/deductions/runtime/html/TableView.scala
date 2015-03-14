@@ -14,7 +14,14 @@ import deductions.runtime.abstract_syntax.FormSyntaxFactory
 import deductions.runtime.jena.RDFStoreObject
 import deductions.runtime.sparql_cache.RDFCache
 
-/** Form for a subject URI with existing triples; transactional */
+/**
+ * Form for a subject URI with existing triples;
+ *  a facade that blends:
+ *  - the RDF cache [[RDFCache]],
+ *  - the generic Form Factory [[FormSyntaxFactory]],
+ *  - the HTML renderer [[Form2HTML]];
+ *  transactional
+ */
 trait TableView extends TableViewModule
 
 /** Form; transactional */
@@ -33,24 +40,30 @@ trait TableViewModule
   /**
    * create a form for given URI with background knowledge in RDFStoreObject.store;
    *  by default user inputs will be saved in named graph uri, except if given graphURI argument;
+   *  @param blankNode if "true" given uri is a blanknode
    *  TRANSACTIONAL
    */
   private def htmlForm(uri: String, hrefPrefix: String = "", blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",
-    lang: String = "en", graphURI: String = "",
+    lang: String = "en",
+    graphURI: String = "",
     actionURI2: String = "/save",
     formGroup: Rdf#URI = nullURI): Try[Elem] = {
-
-    val graphURIActual = if (graphURI == "") uri else graphURI
-    if (blankNode != "true") {
-      retrieveURI(makeUri(uri), dataset)
-      Logger.getRootLogger().info(s"After retrieveURI(makeUri($uri), store)")
-    }
+    val graphURIActual = doRetrieveURI(uri, blankNode, graphURI)
     dataset.r({
       graf2form(allNamedGraph, uri, hrefPrefix, blankNode, editable,
         actionURI, lang, graphURIActual, actionURI2, formGroup)
     })
+  }
+
+  /** @return Actual graph URI: given graph URI or else given uri */
+  private def doRetrieveURI(uri: String, blankNode: String, graphURI: String) = {
+    if (blankNode != "true") {
+      retrieveURI(makeUri(uri), dataset)
+      Logger.getRootLogger().info(s"After retrieveURI(makeUri($uri), store)")
+    }
+    if (graphURI == "") uri else graphURI
   }
 
   /** wrapper for htmlForm that shows Failure's */
@@ -69,6 +82,27 @@ trait TableViewModule
   }
 
   /**
+   * wrapper for htmlForm, but Just Fields; shows Failure's;
+   *  see [[deductions.runtime.html.Form2HTML.generateHTMLJustFields()]]
+   */
+  def htmlFormElemJustFields(uri: String, hrefPrefix: String = "", blankNode: String = "",
+    editable: Boolean = false,
+    lang: String = "en",
+    graphURI: String = "",
+    formGroup: String = fromUri(nullURI)): Elem = {
+
+    val graphURIActual = doRetrieveURI(uri, blankNode, graphURI)
+    val htmlFormTry = dataset.r({
+      val form = createAbstractForm(allNamedGraph, uri, editable, lang, blankNode, URI(formGroup))
+      generateHTMLJustFields(form, hrefPrefix, editable, graphURIActual)
+    })
+    htmlFormTry match {
+      case Success(e) => e
+      case Failure(e) => <p>Exception occured: { e }</p>
+    }
+  }
+
+  /**
    * create a form for given URI resource (instance) with background knowledge
    *  in given graph
    *  TODO non blocking
@@ -80,7 +114,13 @@ trait TableViewModule
     lang: String = "en", graphURI: String,
     actionURI2: String = "/save",
     formGroup: Rdf#URI = nullURI): Elem = {
+    val form = createAbstractForm(graph, uri, editable, lang, blankNode, formGroup)
+    val htmlForm = generateHTML(form, hrefPrefix, editable, actionURI, graphURI,
+      actionURI2)
+    htmlForm
+  }
 
+  private def createAbstractForm(graph: Rdf#Graph, uri: String, editable: Boolean, lang: String, blankNode: String, formGroup: Rdf#URI) = {
     val factory = new FormSyntaxFactory[Rdf](graph, preferedLanguage = lang)
     val form = factory.createForm(
       if (blankNode == "true")
@@ -91,9 +131,7 @@ trait TableViewModule
       else URI(uri),
       editable, formGroup)
     println("form:\n" + form)
-    val htmlForm = generateHTML(
-      form, hrefPrefix, editable, actionURI, graphURI, actionURI2)
-    htmlForm
+    form
   }
 
   def htmlFormString(uri: String,
