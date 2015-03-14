@@ -22,8 +22,9 @@ trait Form2HTML[NODE, URI <: NODE]
 
   /**
    * render the given Form Syntax as HTML;
-   *  @param hrefPrefix URL prefix pre-pendended to created ID's for Hyperlink
+   *  @param hrefPrefix URL prefix pre-pended to created ID's for Hyperlink
    *  @param actionURI, actionURI2 HTML actions for the 2 submit buttons
+   *  @param graphURI URI for named graph to save user inputs
    */
   def generateHTML(form: fm#FormSyntax[NODE, URI],
     hrefPrefix: String = "",
@@ -31,7 +32,8 @@ trait Form2HTML[NODE, URI <: NODE]
     actionURI: String = "/save", graphURI: String = "",
     actionURI2: String = "/save"): Elem = {
 
-    val htmlForm =
+    val htmlForm = generateHTMLJustFields(form, hrefPrefix, editable, graphURI)
+    /*    val htmlForm =
       <div class="form">
         <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
         {
@@ -46,25 +48,27 @@ trait Form2HTML[NODE, URI <: NODE]
             </div>
           }
         }
-      </div>
+      </div> */
 
     if (editable)
       <form action={ actionURI } method="POST">
         <p class="text-right">
-          <input value="SAVE" name="SAVE1" type="submit" class="btn btn-primary btn-lg"/>
+          <!--input value="SAVE" name="SAVE1" type="submit" class="btn btn-primary btn-lg"/-->
+          <input value="SAVE" type="submit" class="btn btn-primary btn-lg"/>
         </p>
-        <input type="hidden" name="url" value={ urlEncode(form.subject) }/>
-        <input type="hidden" name="graphURI" value={ urlEncode(graphURI) }/>
+        <!-- input type="hidden" name="url" value={ urlEncode(form.subject) }/>
+        <input type="hidden" name="graphURI" value={ urlEncode(graphURI) }/ -->
         { htmlForm }
         <p class="text-right">
-          <input value="SAVE" name="SAVE2" type="submit" formaction={ actionURI2 } class="btn btn-primary btn-lg pull-right"/>
+          <!--input value="SAVE" name="SAVE2" type="submit" formaction={ actionURI2 } class="btn btn-primary btn-lg pull-right"/-->
+          <input value="SAVE" type="submit" formaction={ actionURI2 } class="btn btn-primary btn-lg pull-right"/>
         </p>
       </form>
     else
       htmlForm
   }
 
-  /** TODO call generateHTMLJustFields within generateHTML */
+  /** generate HTML, but Just Fields; this lets application developers create their own submit button(s) and <form> tag */
   def generateHTMLJustFields(form: fm#FormSyntax[NODE, URI],
     hrefPrefix: String = "",
     editable: Boolean = false,
@@ -193,19 +197,14 @@ trait Form2HTML[NODE, URI <: NODE]
   }
 
   private def formatPossibleValues(field: fm#Entry, inDatalist: Boolean = false): NodeSeq = {
-    def makeHTMPOption(value: (NODE, NODE), field: fm#Entry): Elem = {
+    def makeHTMLOption(value: (NODE, NODE), field: fm#Entry): Elem = {
       // selected Or Not
-      if (field.value.toString() == toPlainString(value._1))
-        <option value={ toPlainString(value._1) } selected="">{ value._2 }</option>
-      else
-        <option value={ toPlainString(value._1) }>{ value._2 }</option>
+      <option value={ toPlainString(value._1) } selected={ if (field.value.toString() == toPlainString(value._1)) "selected" else null }>{ value._2 }</option>
     }
     field match {
       case re @ (_: fm#ResourceEntry | _: fm#LiteralEntry) =>
-        //        val options = Seq(<option label="Choose a value or leave like it is." value=""></option>) ++
         val options = Seq(<option value=""></option>) ++
-          //          (for (value <- re.possibleValues) yield <option value={ value._1.toString() }>{ value._2 }</option>)
-          (for (value <- re.possibleValues) yield makeHTMPOption(value, field))
+          (for (value <- re.possibleValues) yield makeHTMLOption(value, field))
         if (inDatalist)
           <datalist id={ makeHTMLIdForDatalist(re) }>
             { options }
