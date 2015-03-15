@@ -52,7 +52,7 @@ trait FormModule[NODE, URI <: NODE] {
     private val triples: mutable.Buffer[Triple] = mutable.ListBuffer[Triple]()
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]): Entry
     override def toString(): String = {
-      s""" "$label", "$comment" $widgetType """
+      s"""Entry "$label", "$comment" $widgetType openChoice $openChoice"""
     }
     def addTriple(s: NODE, p: URI, o: NODE) = {
       val t = Triple(s, p, o)
@@ -72,10 +72,13 @@ trait FormModule[NODE, URI <: NODE] {
       super.toString + s""" : <$value>, "$valueLabel" possibleValues count:${possibleValues.size} """
     }
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = {
-      new ResourceEntry(label, comment,
+      val ret = new ResourceEntry(label, comment,
         property, validator,
         value, alreadyInDatabase,
         newPossibleValues, valueLabel, type_)
+      ret.openChoice = this.openChoice
+      ret.widgetType = this.widgetType
+      ret
     }
   }
   class BlankNodeEntry(label: String, comment: String,
@@ -86,8 +89,11 @@ trait FormModule[NODE, URI <: NODE] {
     }
     def getId: String = value.toString
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = {
-      new BlankNodeEntry(label, comment,
+      val ret = new BlankNodeEntry(label, comment,
         property, validator, value)
+      ret.openChoice = this.openChoice
+      ret.widgetType = this.widgetType
+      ret
     }
   }
   class LiteralEntry(l: String, c: String,
@@ -100,10 +106,13 @@ trait FormModule[NODE, URI <: NODE] {
       super.toString + s""" := "$value" """
     }
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = {
-      new LiteralEntry(label, comment,
+      val ret = new LiteralEntry(label, comment,
         property, validator,
         value, lang, type_,
         newPossibleValues)
+      ret.openChoice = this.openChoice
+      ret.widgetType = this.widgetType
+      ret
     }
   }
 

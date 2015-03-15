@@ -39,9 +39,7 @@ trait Form2HTML[NODE, URI <: NODE]
         <p class="text-right">
           <input value="SAVE" type="submit" class="btn btn-primary btn-lg"/>
         </p>
-
         { htmlForm }
-        
         <p class="text-right">
           <input value="SAVE" type="submit" formaction={ actionURI2 } class="btn btn-primary btn-lg pull-right"/>
         </p>

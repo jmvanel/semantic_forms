@@ -115,12 +115,6 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] //with RDF
      *  TODO ? merge given possibleValues with existing ones
      */
     def populateFromTDB(entry: Entry): Entry = {
-      //      if (formGroup != nullURI) {
-      //        val possibleValues = possibleValuesFromFormGroup(formGroup, graph)
-      //
-      //        entry.openChoice = false
-      //        entry.setPossibleValues(possibleValues ++ entry.possibleValues)
-      //      } else 
       if (!valuesFromFormGroup.isEmpty) {
         entry.openChoice = false
         entry.setPossibleValues(valuesFromFormGroup ++ entry.possibleValues)

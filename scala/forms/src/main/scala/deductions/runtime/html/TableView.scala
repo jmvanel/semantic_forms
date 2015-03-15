@@ -17,7 +17,7 @@ import deductions.runtime.sparql_cache.RDFCache
 /**
  * Form for a subject URI with existing triples;
  *  a facade that blends:
- *  - the RDF cache [[RDFCache]],
+ *  - the RDF cache [[deductions.runtime.sparql_cache.RDFCache]],
  *  - the generic Form Factory [[FormSyntaxFactory]],
  *  - the HTML renderer [[Form2HTML]];
  *  transactional
