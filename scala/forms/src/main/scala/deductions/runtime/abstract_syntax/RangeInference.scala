@@ -50,7 +50,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] //with RDF
         val enumerated = ops.getObjects(graph, range, owl.oneOf)
         fillPossibleValuesFromList(enumerated, possibleValues)
       }
-      entry.openChoice = false
+      if (!possibleValues.isEmpty) entry.openChoice = false
       entry.setPossibleValues(possibleValues ++ entry.possibleValues)
     }
 
