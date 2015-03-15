@@ -83,7 +83,7 @@ trait TableViewModule
 
   /**
    * wrapper for htmlForm, but Just Fields; shows Failure's;
-   *  see [[deductions.runtime.html.Form2HTML.generateHTMLJustFields()]]
+   *  see [[deductions.runtime.html.Form2HTML]] .generateHTMLJustFields()
    */
   def htmlFormElemJustFields(uri: String, hrefPrefix: String = "", blankNode: String = "",
     editable: Boolean = false,

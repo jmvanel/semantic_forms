@@ -20,12 +20,9 @@ import scala.util.Failure
 
 /**
  * Helpers for RDF Store
- *  In Banana 0.7 :
- *  - JenaStore is not existing anymore
- *  - generic API for transactions
  *
  * TODO rename RDFStoreHelpers
- * TODO remove dependency to Jena after anyRDFReader is introduced in Banana
+ * TODO remove dependency to Jena after AnyRDFReader is introduced in Banana
  */
 
 trait JenaHelpers extends JenaModule {
