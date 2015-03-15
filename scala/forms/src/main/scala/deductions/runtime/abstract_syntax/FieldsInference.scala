@@ -5,27 +5,33 @@ import org.w3.banana.RDF
 /** populate Fields in form by inferencing from class(es) of given instance URI */
 trait FieldsInference[Rdf <: RDF] {
   self: FormSyntaxFactory[Rdf] =>
+  val domainlessProperties = false
+
   import ops._
 
   def fieldsFromClass(classs: Rdf#URI, graph: Rdf#Graph): Set[Rdf#URI] = {
     /** retrieve rdfs:domain's From given Class */
     def domainsFromClass(classs: Rdf#Node) = {
-      val relevantPredicates = getSubjects(graph, rdfs.domain, classs).toSet
-      println(s"""domainsFromClass <$classs> size ${relevantPredicates.size}""")
-      rdfh.nodeSeqToURISet(relevantPredicates)
+      if (classs != owl.Thing) {
+        val relevantPredicates = getSubjects(graph, rdfs.domain, classs).toSet
+        println(s"""domainsFromClass <$classs> size ${relevantPredicates.size}  ; ${relevantPredicates.mkString(", ")}""")
+        rdfh.nodeSeqToURISet(relevantPredicates)
+      } else Set()
     }
 
     val result = scala.collection.mutable.Set[Rdf#URI]()
 
     /** recursively process super-classes and owl:equivalentClass until reaching owl:Thing */
-    def processSuperClasses(classs: Rdf#URI) {
-      result ++= domainsFromClass(classs)
-      println(s"processSuperClasses <$classs> size ${result.size}")
+    //    def processSuperClasses(classs: Rdf#URI) {
+    def processSuperClasses(classs: Rdf#Node) {
       if (classs != owl.Thing) {
+        result ++= domainsFromClass(classs)
         val superClasses = getObjects(graph, classs, rdfs.subClassOf)
+        println(s"processSuperClasses of <$classs> size ${superClasses.size} ; ${superClasses.mkString(", ")}")
         superClasses foreach (sc => result ++= domainsFromClass(sc))
         val equivalentClasses = getObjects(graph, classs, owl.equivalentClass)
         equivalentClasses foreach (sc => result ++= domainsFromClass(sc))
+        superClasses foreach (sc => processSuperClasses(sc))
       }
     }
 
@@ -73,7 +79,7 @@ trait FieldsInference[Rdf <: RDF] {
     }
 
     processSuperClasses(classs)
-    addDomainlessProperties(classs)
+    if (domainlessProperties) addDomainlessProperties(classs)
     result.toSet
   }
 }

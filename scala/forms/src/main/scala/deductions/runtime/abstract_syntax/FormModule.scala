@@ -52,7 +52,7 @@ trait FormModule[NODE, URI <: NODE] {
     private val triples: mutable.Buffer[Triple] = mutable.ListBuffer[Triple]()
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]): Entry
     override def toString(): String = {
-      s"""Entry "$label", "$comment" $widgetType openChoice $openChoice"""
+      s"""${getClass.getSimpleName} "$label", "$comment" $widgetType openChoice $openChoice"""
     }
     def addTriple(s: NODE, p: URI, o: NODE) = {
       val t = Triple(s, p, o)
