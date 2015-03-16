@@ -14,6 +14,7 @@ import scala.util.Try
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import deductions.runtime.utils.MonadicHelpers
+import scala.xml.NodeSeq
 
 trait CreationForm extends RDFOpsModule
     with Form2HTML[Jena#Node, Jena#URI]
@@ -28,7 +29,7 @@ trait CreationForm extends RDFOpsModule
    * create an XHTML input form for a new instance from a class URI;
    *  transactional
    */
-  def create(classUri: String, lang: String = "en"): Try[Elem] = {
+  def create(classUri: String, lang: String = "en"): Try[NodeSeq] = {
     import scala.concurrent.ExecutionContext.Implicits.global
     dataset.r({
       val factory = new UnfilledFormFactory[Rdf](allNamedGraph, preferedLanguage = lang)
@@ -37,7 +38,7 @@ trait CreationForm extends RDFOpsModule
     })
   }
 
-  def createElem(uri: String, lang: String = "en"): Elem = {
+  def createElem(uri: String, lang: String = "en"): NodeSeq = {
     //	  Await.result(
     create(uri, lang).getOrElse(
       <p>Problem occured when creating an XHTML input form from a class URI.</p>)

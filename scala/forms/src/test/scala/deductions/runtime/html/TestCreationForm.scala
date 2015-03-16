@@ -13,6 +13,7 @@ import java.nio.file.Paths
 import scala.xml.Elem
 import deductions.runtime.jena.RDFGraphPrinter
 import java.io.PrintStream
+import scala.xml.NodeSeq
 
 
 /** Test Creation Form from class URI, without form specification */
@@ -125,7 +126,7 @@ trait GraphTestEnum extends RDFOpsModule with TurtleWriterModule {
 }
 
 object TestCreationForm {
-  def wrapWithHTML(e: Elem): Elem =
+  def wrapWithHTML(e: NodeSeq): Elem =
     <html>
       <head>
         <style type="text/css">

@@ -5,14 +5,13 @@ import scala.util.Success
 import scala.util.Try
 import scala.xml.Elem
 import scala.xml.PrettyPrinter
-
 import org.apache.log4j.Logger
 import org.w3.banana.RDFModule
 import org.w3.banana.jena.Jena
-
 import deductions.runtime.abstract_syntax.FormSyntaxFactory
 import deductions.runtime.jena.RDFStoreObject
 import deductions.runtime.sparql_cache.RDFCache
+import scala.xml.NodeSeq
 
 /**
  * Form for a subject URI with existing triples;
@@ -49,7 +48,7 @@ trait TableViewModule
     lang: String = "en",
     graphURI: String = "",
     actionURI2: String = "/save",
-    formGroup: Rdf#URI = nullURI): Try[Elem] = {
+    formGroup: Rdf#URI = nullURI): Try[NodeSeq] = {
     val graphURIActual = doRetrieveURI(uri, blankNode, graphURI)
     dataset.r({
       graf2form(allNamedGraph, uri, hrefPrefix, blankNode, editable,
@@ -73,7 +72,7 @@ trait TableViewModule
     lang: String = "en",
     graphURI: String = "",
     actionURI2: String = "/save",
-    formGroup: String = fromUri(nullURI)): Elem = {
+    formGroup: String = fromUri(nullURI)): NodeSeq = {
     htmlForm(uri, hrefPrefix, blankNode, editable, actionURI,
       lang, graphURI, actionURI2, URI(formGroup)) match {
         case Success(e) => e
@@ -89,7 +88,7 @@ trait TableViewModule
     editable: Boolean = false,
     lang: String = "en",
     graphURI: String = "",
-    formGroup: String = fromUri(nullURI)): Elem = {
+    formGroup: String = fromUri(nullURI)): NodeSeq = {
 
     val graphURIActual = doRetrieveURI(uri, blankNode, graphURI)
     val htmlFormTry = dataset.r({
@@ -113,7 +112,7 @@ trait TableViewModule
     actionURI: String = "/save",
     lang: String = "en", graphURI: String,
     actionURI2: String = "/save",
-    formGroup: Rdf#URI = nullURI): Elem = {
+    formGroup: Rdf#URI = nullURI): NodeSeq = {
     val form = createAbstractForm(graph, uri, editable, lang, blankNode, formGroup)
     val htmlForm = generateHTML(form, hrefPrefix, editable, actionURI, graphURI,
       actionURI2)
@@ -139,7 +138,7 @@ trait TableViewModule
     actionURI: String = "/save", graphURI: String): String = {
     val f = htmlFormElem(uri, editable = editable, actionURI = actionURI)
     val pp = new PrettyPrinter(80, 2)
-    pp.format(f)
+    pp.formatNodes(f)
   }
 
   def graf2formString(graph1: Rdf#Graph, uri: String, graphURI: String): String = {
