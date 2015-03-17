@@ -145,7 +145,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] //with RDF
                 ?BN form:value ?VALUE ; rdfs:label ?LABEL . 
               }
               """
-    info(s"populateFromTDB $q")
+    //    info(s"populateFromTDB $q")
 
     val query = parseSelect(q, Seq()).get
     val solutions: Rdf#Solutions = graph.executeSelect(query).get
@@ -153,7 +153,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] //with RDF
 
     val res = solutions.iterator() map {
       row =>
-        info(s""" populateFromTDB iter ${row}""")
+        //        info(s""" populateFromTDB iter ${row}""")
         (row("VALUE").get.as[Rdf#Node].get,
           row("LABEL").get.as[Rdf#Node].get)
     }

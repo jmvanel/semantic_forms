@@ -17,7 +17,7 @@ import scala.xml.NodeSeq
  * Form for a subject URI with existing triples;
  *  a facade that blends:
  *  - the RDF cache [[deductions.runtime.sparql_cache.RDFCache]],
- *  - the generic Form Factory [[FormSyntaxFactory]],
+ *  - the generic Form Factory [[deductions.runtime.abstract_syntax.FormSyntaxFactory]],
  *  - the HTML renderer [[Form2HTML]];
  *  transactional
  */

@@ -74,8 +74,8 @@ class FormSaver[Rdf <: RDF]()(
       val originalValue = map.getOrElse(
         "ORIG-" + URLEncoder.encode(prop, "utf-8"), Seq("")).headOption.getOrElse("")
       val userValue = obj
-      println("processChange " + uri + " " + prop + " " + obj +
-        " userValue " + userValue + " originalValue " + originalValue)
+      println(s"""processChange $uri $prop $obj +
+        userValue "$userValue" originalValue "originalValue" """)
       (userValue != originalValue, originalValue)
     }
 
@@ -103,7 +103,7 @@ class FormSaver[Rdf <: RDF]()(
         prop != "graphURI" &&
         !prop.startsWith("ORIG-")) {
         val (changed, originalValue) = processChange(uri, prop, obj)
-        if (changed) {
+        if (changed && obj != "") {
           println(s"""saveTriple: $prop changed from $originalValue to "$obj" """)
           triples +=
             makeTriple(
