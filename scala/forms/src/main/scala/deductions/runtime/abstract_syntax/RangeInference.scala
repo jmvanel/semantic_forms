@@ -31,8 +31,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] //with RDF
   import sparqlGraph.sparqlEngineSyntax._
 
   def addPossibleValues(entryField: Entry, ranges: Set[Rdf#Node],
-    valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)] //    formGroup: Rdf#URI
-    ): Entry = {
+    valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)]): Entry = {
     val owl = OWLPrefix[Rdf]
     val rdfh = {
       val gr = graph
@@ -50,7 +49,10 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] //with RDF
         val enumerated = ops.getObjects(graph, range, owl.oneOf)
         fillPossibleValuesFromList(enumerated, possibleValues)
       }
-      if (!possibleValues.isEmpty) entry.openChoice = false
+      if (!possibleValues.isEmpty) {
+        println(s"populateFromOwlOneOf size ${possibleValues.size}")
+        entry.openChoice = false
+      }
       entry.setPossibleValues(possibleValues ++ entry.possibleValues)
     }
 

@@ -95,7 +95,6 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
     val entries = for (prop <- props) yield {
       Logger.getRootLogger().info(s"createForm subject $subject, prop $prop")
-      //      val ranges = nodeSeqToURISet(objectsQuery(prop, rdfs.range))
       val ranges = objectsQuery(prop, rdfs.range)
       val rangesSize = ranges.size
       System.err.println(
@@ -104,9 +103,9 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
         } else if (rangesSize == 0) {
           "WARNING: There is no range for property " + prop
         } else "")
-      makeEntries(subject, prop, ranges, valuesFromFormGroup) // formGroup)
+      makeEntries(subject, prop, ranges, valuesFromFormGroup)
     }
-    val fields = entries.flatMap { s => s }
+    val fields = entries.flatMap { identity }
     val fields2 = if (displayRdfType)
       addTypeTriple(subject, classs, fields)
     else fields.toSeq
@@ -168,8 +167,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
    *  taking in account multi-valued properties
    */
   private def makeEntries(subject: Rdf#Node, prop: Rdf#URI, ranges: Set[Rdf#Node],
-    valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)] //    formGroup: Rdf#URI
-    ): Seq[Entry] = {
+    valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)]): Seq[Entry] = {
     Logger.getRootLogger().info(s"makeEntry subject $subject, prop $prop")
     val label = getHeadStringOrElse(prop, rdfs.label, terminalPart(prop))
     val comment = getHeadStringOrElse(prop, rdfs.comment, "")
@@ -184,12 +182,14 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     def makeBN(label: String, comment: String,
       property: ObjectProperty, validator: ResourceValidator,
       value: Rdf#BNode,
-      typ: Rdf#URI = nullURI) = {
+      typ: Rdf#Node = nullURI) = {
       new BlankNodeEntry(label, comment, prop, ResourceValidator(ranges), value,
         type_ = typ) {
         override def getId: String = ops.fromBNode(value.asInstanceOf[Rdf#BNode])
       }
     }
+
+    def firstType = firstNodeOrElseNullURI(ranges)
 
     def addOneEntry(object_ : Rdf#Node,
       valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)] //        formGroup: Rdf#URI
@@ -200,15 +200,21 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
         // case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
         new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
           getStringOrElse(object_, literalPlaceHolder),
-          type_ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI))
+          type_ = firstType)
       }
       def resourceEntry = {
         ops.foldNode(object_)(
-          object_ => new ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_,
-            alreadyInDatabase = true, valueLabel = instanceLabel(object_),
-            type_ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI)),
-          object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_, typ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI)
-          ),
+          object_ =>
+            if (isBN(firstType)) {
+              println(s""" resourceEntry makeBN "$label" """)
+              makeBN(label, comment, prop, ResourceValidator(ranges), toBN(object_),
+                typ = firstType)
+            } else
+              new ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_,
+                alreadyInDatabase = true, valueLabel = instanceLabel(object_),
+                type_ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI)),
+          object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_,
+            typ = firstType),
           object_ => literalEntry
         )
       }
@@ -224,8 +230,8 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
         case _ if rangeClasses.contains(owl.Class) => resourceEntry
         case _ if rangeClasses.contains(rdf.Property) => resourceEntry
         case _ if ranges.contains(owl.Thing) => resourceEntry
-        //        case _ if ops.isURI(object_ ) => resourceEntry
-        case _ if (isURIorBN(object_)) => resourceEntry
+        case _ if isURI(object_) => resourceEntry
+        case _ if isBN(object_) => makeBN(label, comment, prop, ResourceValidator(ranges), toBN(object_), firstType)
         case _ if object_.toString.startsWith("_:") => resourceEntry
         case _ => literalEntry
       }
@@ -234,8 +240,11 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     result
   }
 
-  def isURIorBN(node: Rdf#Node) = ops.foldNode(node)(identity, identity, x => None) != None
-  def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
+  def isURIorBN(node: Rdf#Node) = foldNode(node)(identity, identity, x => None) != None
+  def isURI(node: Rdf#Node) = foldNode(node)(identity, x => None, x => None) != None
+  def isBN(node: Rdf#Node) = foldNode(node)(x => None, identity, x => None) != None
+  def toBN(node: Rdf#Node): Rdf#BNode = foldNode(node)(x => BNode(""), identity, x => BNode(""))
+  def firstNodeOrElseNullURI(set: Set[Rdf#Node]): Rdf#Node = set.headOption.getOrElse(nullURI)
 
   /**
    * compute terminal Part of URI, eg

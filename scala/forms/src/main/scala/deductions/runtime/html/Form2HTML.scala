@@ -105,8 +105,16 @@ trait Form2HTML[NODE, URI <: NODE]
       case r: BlankNodeEntry =>
         {
           if (editable) {
-            <input class="form-control" value={ r.value.toString } name={ "BLA-" + urlEncode(r.property) } data-type={ r.type_.toString() }/>
+            if (r.openChoice) {
+              <input class="form-control" value={ r.value.toString } name={ makeHTMLIdBN(r) } data-type={ r.type_.toString() }/>
+            }
             <input value={ r.value.toString } name={ "ORIG-BLA-" + urlEncode(r.property) } type="hidden"/>
+            if (!r.possibleValues.isEmpty)
+              <select value={ r.value.toString } name={ makeHTMLIdBN(r) }>
+                { formatPossibleValues(r) }
+              </select>
+            else Seq()
+
           } else
             <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString, true) }>{
               r.getId
@@ -117,6 +125,8 @@ trait Form2HTML[NODE, URI <: NODE]
   }
 
   private def makeHTMLId(re: Entry) = "RES-" + urlEncode(re.property)
+  private def makeHTMLIdBN(re: Entry) = "BLA-" + urlEncode(re.property)
+  private def makeHTMLIdForLiteral(lit: LiteralEntry) = "LIT-" + urlEncode(lit.property)
 
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   def createHTMLResourceEditableLField(r: ResourceEntry): NodeSeq = {
@@ -169,8 +179,6 @@ trait Form2HTML[NODE, URI <: NODE]
       <input value={ lit.value.toString() } name={ "ORIG-LIT-" + urlEncode(lit.property) } type="hidden"/>
   }
 
-  private def makeHTMLIdForLiteral(lit: LiteralEntry) = "LIT-" + urlEncode(lit.property)
-
   private def makeHTMLIdForDatalist(re: fm#Entry) = {
     "possibleValues-" + (
       re match {
@@ -186,7 +194,8 @@ trait Form2HTML[NODE, URI <: NODE]
       <option value={ toPlainString(value._1) } selected={ if (field.value.toString() == toPlainString(value._1)) "selected" else null }>{ value._2 }</option>
     }
     field match {
-      case re @ (_: fm#ResourceEntry | _: fm#LiteralEntry) =>
+      case re // @ (_: fm#ResourceEntry | _: fm#LiteralEntry) 
+      =>
         val options = Seq(<option value=""></option>) ++
           (for (value <- re.possibleValues) yield makeHTMLOption(value, field))
         if (inDatalist)
@@ -194,7 +203,7 @@ trait Form2HTML[NODE, URI <: NODE]
             { options }
           </datalist>
         else options
-      case _ => <span></span>
+      //      case _ => <span></span>
     }
   }
 

@@ -44,7 +44,7 @@ trait FormModule[NODE, URI <: NODE] {
       val label: String, val comment: String,
       val property: URI = nullURI,
       val mandatory: Boolean = false,
-      val type_ : URI = nullURI,
+      val type_ : NODE = nullURI,
       val value: Any = "",
       var widgetType: WidgetType = Text,
       var openChoice: Boolean = true,
@@ -83,14 +83,15 @@ trait FormModule[NODE, URI <: NODE] {
   }
   class BlankNodeEntry(label: String, comment: String,
       property: ObjectProperty = nullURI, validator: ResourceValidator,
-      value: NODE, type_ : URI = nullURI) extends Entry(label, comment, property, type_ = type_, value = value) {
+      value: NODE, type_ : NODE = nullURI,
+      possibleValues: Seq[(NODE, NODE)] = Seq()) extends Entry(label, comment, property, type_ = type_, value = value, possibleValues = possibleValues) {
     override def toString(): String = {
-      super.toString + ", " + value
+      super.toString + s", $value , possibleValues count:${possibleValues.size}"
     }
     def getId: String = value.toString
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = {
       val ret = new BlankNodeEntry(label, comment,
-        property, validator, value)
+        property, validator, value, type_, newPossibleValues)
       ret.openChoice = this.openChoice
       ret.widgetType = this.widgetType
       ret
@@ -100,7 +101,7 @@ trait FormModule[NODE, URI <: NODE] {
       property: DatatypeProperty = nullURI, validator: DatatypeValidator,
       value: String = "",
       val lang: String = "",
-      type_ : URI = nullURI,
+      type_ : NODE = nullURI,
       possibleValues: Seq[(NODE, NODE)] = Seq()) extends Entry(l, c, property, type_ = type_, value = value, possibleValues = possibleValues) {
     override def toString(): String = {
       super.toString + s""" := "$value" """
