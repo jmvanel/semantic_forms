@@ -129,7 +129,7 @@ trait Form2HTML[NODE, URI <: NODE]
   }
 
   def createAddRemoveWidgets(field: fm#Entry, editable: Boolean): Elem = {
-    if (editable && (field.defaults.multivalue || field.openChoice)) {
+    if (editable && (field.defaults.multivalue && field.openChoice)) {
       // button with an action to duplicate the original HTML widget with (TODO) an empty content
       val widgetName = makeHTMLId(field)
       <input value="+" class="btn-primary" size="1" title={ "Add another value for " + field.label } onClick={
