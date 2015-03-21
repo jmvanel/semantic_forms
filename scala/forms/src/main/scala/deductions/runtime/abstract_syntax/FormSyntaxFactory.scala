@@ -53,7 +53,9 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
 
   import ops._
 
-  lazy val nullURI = ops.URI("http://null.com#") // TODO better : "" ????????????
+  lazy val nullURI = ops.URI("") // http://null.com#")
+  val literalInitialValue = "" // ..empty.."
+
   val rdfs = RDFSPrefix[Rdf]
   val owl = OWLPrefix[Rdf]
   val rdf = RDFPrefix[Rdf]
@@ -194,12 +196,11 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     def addOneEntry(object_ : Rdf#Node,
       valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)] //        formGroup: Rdf#URI
       ) = {
-      val literalPlaceHolder = "..empty.."
       def literalEntry = {
         // TODO match graph pattern for interval datatype ; see issue #17
         // case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
         new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
-          getStringOrElse(object_, literalPlaceHolder),
+          getStringOrElse(object_, literalInitialValue),
           type_ = firstType)
       }
       def resourceEntry = {
