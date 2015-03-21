@@ -10,6 +10,15 @@ import org.w3.banana.diesel._
 import org.w3.banana.syntax._
 import scala.collection.mutable
 
+object FormModule {
+  val formDefaults = FormDefaults(true, false)
+}
+
+case class FormDefaults(
+  multivalue: Boolean = true,
+  /** displaying rdf:type fields is configurable for editing, and displayed unconditionally for non editing */
+  val displayRdfType: Boolean = true)
+
 trait FormModule[NODE, URI <: NODE] {
 
   /**
@@ -22,8 +31,8 @@ trait FormModule[NODE, URI <: NODE] {
       val subject: NODE,
       val fields: Seq[Entry],
       classs: URI = nullURI,
-      formGroup: URI = nullURI,
-      val defaults: FormDefaults = FormDefaults(true)) {
+      formGroup: URI = nullURI //      val defaults: FormDefaults = FormModule.formDefaults
+      ) {
     override def toString(): String = {
       s"""FormSyntax:
         subject: $subject
@@ -32,8 +41,6 @@ trait FormModule[NODE, URI <: NODE] {
       """
     }
   }
-
-  case class FormDefaults(multivalue: Boolean = true) {}
 
   type DatatypeProperty = URI
   type ObjectProperty = URI
@@ -53,7 +60,7 @@ trait FormModule[NODE, URI <: NODE] {
       var widgetType: WidgetType = Text,
       var openChoice: Boolean = true,
       var possibleValues: Seq[(NODE, NODE)] = Seq(),
-      val defaults: FormDefaults = FormDefaults(true)) {
+      val defaults: FormDefaults = FormModule.formDefaults) {
     private val triples: mutable.Buffer[Triple] = mutable.ListBuffer[Triple]()
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]): Entry
     override def toString(): String = {

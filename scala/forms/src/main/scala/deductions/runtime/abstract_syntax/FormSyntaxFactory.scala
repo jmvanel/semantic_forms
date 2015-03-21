@@ -39,17 +39,18 @@ object FormSyntaxFactory {
  * the main class here;
  * NON transactional
  */
-class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: String = "en")(implicit val ops: RDFOps[Rdf],
-  val uriOps: URIOps[Rdf] //  
-  , val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph],
-  val sparqlOps: SparqlOps[Rdf])
+class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: String = "en",
+  val defaults: FormDefaults = FormModule.formDefaults)(implicit val ops: RDFOps[Rdf],
+    val uriOps: URIOps[Rdf] //  
+    , val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph],
+    val sparqlOps: SparqlOps[Rdf])
 
     extends FormModule[Rdf#Node, Rdf#URI]
     with FieldsInference[Rdf]
     with RangeInference[Rdf] {
 
-  /** TODO displaying rdf:type fields should be configurable for editing, and displayed unconditionally for non editing */
-  val displayRdfType = false
+  //  /** TODO displaying rdf:type fields should be configurable for editing, and displayed unconditionally for non editing */
+  //  val displayRdfType = false
 
   import ops._
 
@@ -108,9 +109,9 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
       makeEntries(subject, prop, ranges, valuesFromFormGroup)
     }
     val fields = entries.flatMap { identity }
-    val fields2 = if (displayRdfType)
+    val fields2 = // if (displayRdfType)
       addTypeTriple(subject, classs, fields)
-    else fields.toSeq
+    //    else fields.toSeq
     val formSyntax = FormSyntax(subject, fields2, classs)
     updateFormForClass(formSyntax)
   }
@@ -148,14 +149,18 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     formSyntax
   }
 
+  /** @return augmented fields argument */
   def addTypeTriple(subject: Rdf#Node, classs: Rdf#URI,
     fields: Iterable[Entry]): Seq[Entry] = {
-    val formEntry = new ResourceEntry(
-      // TODO not I18N:
-      "type", "class",
-      rdf.typ, ResourceValidator(Set(owl.Class)), classs,
-      alreadyInDatabase = false)
-    (fields ++ Seq(formEntry)).toSeq
+    val alreadyInDatabase = !find(graph, subject, rdf.typ, ANY).isEmpty
+    if (defaults.displayRdfType || !alreadyInDatabase) {
+      val classFormEntry = new ResourceEntry(
+        // TODO not I18N:
+        "type", "class",
+        rdf.typ, ResourceValidator(Set(owl.Class)), classs,
+        alreadyInDatabase = alreadyInDatabase)
+      (fields ++ Seq(classFormEntry)).toSeq
+    } else fields.toSeq
   }
 
   /** find fields from given Instance subject */
