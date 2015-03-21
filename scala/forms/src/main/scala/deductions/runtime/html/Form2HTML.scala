@@ -68,9 +68,8 @@ trait Form2HTML[NODE, URI <: NODE]
             <div class="form-group">
               <div class="row">
                 <label class="control-label" title={ field.comment + " - " + field.property }>{ field.label }</label>
-                <div class="input">
-                  { createHTMLField(field, editable, hrefPrefix) }
-                </div>
+                <!-- div class="input" -->
+                { createHTMLField(field, editable, hrefPrefix) }
               </div>
             </div>
           }
@@ -80,7 +79,8 @@ trait Form2HTML[NODE, URI <: NODE]
 
   private def createHTMLField(field: fm#Entry, editable: Boolean,
     hrefPrefix: String = ""): xml.NodeSeq = {
-    field match {
+
+    val xmlField = field match {
       case l: LiteralEntry =>
         {
           if (editable) {
@@ -106,9 +106,11 @@ trait Form2HTML[NODE, URI <: NODE]
         {
           if (editable) {
             if (r.openChoice) {
-              <input class="form-control" value={ r.value.toString } name={ makeHTMLIdBN(r) } data-type={ r.type_.toString() }/>
+              <input class="form-control" value={ r.value.toString } name={ makeHTMLIdBN(r) } data-type={ r.type_.toString() }>
+              </input>
             }
-            <input value={ r.value.toString } name={ "ORIG-BLA-" + urlEncode(r.property) } type="hidden"/>
+            <input value={ r.value.toString } name={ "ORIG-BLA-" + urlEncode(r.property) } type="hidden">
+            </input>
             if (!r.possibleValues.isEmpty)
               <select value={ r.value.toString } name={ makeHTMLIdBN(r) }>
                 { formatPossibleValues(r) }
@@ -122,22 +124,40 @@ trait Form2HTML[NODE, URI <: NODE]
         }
       case _ => <p>Should not happen! createHTMLField({ field })</p>
     }
+
+    Seq(createAddRemoveWidgets(field, editable)) ++ xmlField
   }
 
-  private def makeHTMLId(re: Entry) = "RES-" + urlEncode(re.property)
-  private def makeHTMLIdBN(re: Entry) = "BLA-" + urlEncode(re.property)
-  private def makeHTMLIdForLiteral(lit: LiteralEntry) = "LIT-" + urlEncode(lit.property)
+  def createAddRemoveWidgets(field: fm#Entry, editable: Boolean): Elem = {
+    if (editable && (field.defaults.multivalue || field.openChoice)) {
+      // button with an action to duplicate the original HTML widget with (TODO) an empty content
+      val widgetName = makeHTMLId(field)
+      <input value="+" class="btn-primary" size="1" title={ "Add another value for " + field.label } onClick={
+        s""" cloneWidget( "$widgetName" ); """
+      }></input>
+    } else <span></span>
+  }
+
+  private def makeHTMLId(ent: fm#Entry) = ent match {
+    case ent: fm#ResourceEntry => makeHTMLIdResource(ent)
+    case ent: fm#LiteralEntry => makeHTMLIdForLiteral(ent)
+    case ent: fm#BlankNodeEntry => makeHTMLIdBN(ent)
+  }
+  private def makeHTMLIdResource(re: fm#Entry) = "RES-" + urlEncode(re.property)
+  private def makeHTMLIdBN(re: fm#Entry) = "BLA-" + urlEncode(re.property)
+  private def makeHTMLIdForLiteral(lit: fm#LiteralEntry) = "LIT-" + urlEncode(lit.property)
 
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   def createHTMLResourceEditableLField(r: ResourceEntry): NodeSeq = {
     <div>
       {
         if (r.openChoice)
-          <input class="form-control" value={ r.value.toString } name={ makeHTMLId(r) } list={ makeHTMLIdForDatalist(r) } data-type={ r.type_.toString() } placeholder={ s"Enter or paste a resource URI: URL, IRI, etc of type ${r.type_.toString()}" }/>
+          <input class="form-control" value={ r.value.toString } name={ makeHTMLIdResource(r) } list={ makeHTMLIdForDatalist(r) } data-type={ r.type_.toString() } placeholder={ s"Enter or paste a resource URI: URL, IRI, etc of type ${r.type_.toString()}" }>
+          </input>
       }
       {
         if (!r.possibleValues.isEmpty)
-          <select value={ r.value.toString } name={ makeHTMLId(r) }>
+          <select value={ r.value.toString } name={ makeHTMLIdResource(r) }>
             { formatPossibleValues(r) }
           </select>
         else Seq()
@@ -148,7 +168,8 @@ trait Form2HTML[NODE, URI <: NODE]
           // formatPossibleValues(field, inDatalist=true),
           if (r.alreadyInDatabase) {
             { println("r.alreadyInDatabase " + r) }
-            <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden"/>
+            <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden">
+            </input>
           })
       }
     </div>
@@ -163,7 +184,8 @@ trait Form2HTML[NODE, URI <: NODE]
       case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
         if (radioForIntervals)
           (for (n <- Range(0, 6)) yield (
-            <input type="radio" name={ makeHTMLIdForLiteral(lit) } id={ makeHTMLIdForLiteral(lit) } checked={ if (n.toString.equals(lit.value)) "checked" else null } value={ n.toString }/>
+            <input type="radio" name={ makeHTMLIdForLiteral(lit) } id={ makeHTMLIdForLiteral(lit) } checked={ if (n.toString.equals(lit.value)) "checked" else null } value={ n.toString }>
+            </input>
             <label for={ makeHTMLIdForLiteral(lit) }>{ n }</label>
           )).flatten
         else {
@@ -173,10 +195,12 @@ trait Form2HTML[NODE, URI <: NODE]
         }
 
       case _ =>
-        <input class="form-control" value={ lit.value.toString() } name={ makeHTMLIdForLiteral(lit) } type={ HTML5Types.xsd2html5TnputType(lit.type_.toString()) } placeholder={ placeholder }/>
+        <input class="form-control" value={ lit.value.toString() } name={ makeHTMLIdForLiteral(lit) } type={ HTML5Types.xsd2html5TnputType(lit.type_.toString()) } placeholder={ placeholder }>
+        </input>
     }
     elem ++
-      <input value={ lit.value.toString() } name={ "ORIG-LIT-" + urlEncode(lit.property) } type="hidden"/>
+      <input value={ lit.value.toString() } name={ "ORIG-LIT-" + urlEncode(lit.property) } type="hidden">
+      </input>
   }
 
   private def makeHTMLIdForDatalist(re: fm#Entry) = {
@@ -212,7 +236,7 @@ trait Form2HTML[NODE, URI <: NODE]
     if (r.widgetType == DBPediaLookup) {
       formatPossibleValues(r, inDatalist = true) ++
       <script>
-        installDbpediaComplete( '{ makeHTMLId(r) }' );
+        installDbpediaComplete( '{ makeHTMLIdResource(r) }' );
       </script>
     } else <div></div>
     // format: ON    <-- for scalariform

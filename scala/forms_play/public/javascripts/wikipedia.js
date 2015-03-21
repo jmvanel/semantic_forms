@@ -26,7 +26,7 @@ function installDbpediaComplete( inputElement) {
     };
   };
   console.log( "inputElement " + inputElement );
-  console.log( "getElementByName(inputElement " + document.getElementsByName(inputElement) );
+  console.log( "getElementsByName(inputElement " + document.getElementsByName(inputElement) );
   var element = document.getElementsByName(inputElement)[0];
   element.onkeyup = function() { dbpediaComplete( element, dbpedia_callback); };
 };

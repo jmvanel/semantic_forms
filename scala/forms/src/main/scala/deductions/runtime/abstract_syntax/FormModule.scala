@@ -11,6 +11,7 @@ import org.w3.banana.syntax._
 import scala.collection.mutable
 
 trait FormModule[NODE, URI <: NODE] {
+
   /**
    * abstract_syntax for a semantic form , called FA (Abstract Form) :
    *  - generated from a list of URI's for properties, and a triple store
@@ -21,7 +22,8 @@ trait FormModule[NODE, URI <: NODE] {
       val subject: NODE,
       val fields: Seq[Entry],
       classs: URI = nullURI,
-      formGroup: URI = nullURI) {
+      formGroup: URI = nullURI,
+      val defaults: FormDefaults = FormDefaults(true)) {
     override def toString(): String = {
       s"""FormSyntax:
         subject: $subject
@@ -30,6 +32,8 @@ trait FormModule[NODE, URI <: NODE] {
       """
     }
   }
+
+  case class FormDefaults(multivalue: Boolean = true) {}
 
   type DatatypeProperty = URI
   type ObjectProperty = URI
@@ -40,7 +44,7 @@ trait FormModule[NODE, URI <: NODE] {
    * openChoice allows user in form to choose a value not in suggested values
    *  TODO somehow factor value: Any ?
    */
-  sealed abstract class Entry(
+  sealed abstract case class Entry(
       val label: String, val comment: String,
       val property: URI = nullURI,
       val mandatory: Boolean = false,
@@ -48,7 +52,8 @@ trait FormModule[NODE, URI <: NODE] {
       val value: Any = "",
       var widgetType: WidgetType = Text,
       var openChoice: Boolean = true,
-      var possibleValues: Seq[(NODE, NODE)] = Seq()) {
+      var possibleValues: Seq[(NODE, NODE)] = Seq(),
+      val defaults: FormDefaults = FormDefaults(true)) {
     private val triples: mutable.Buffer[Triple] = mutable.ListBuffer[Triple]()
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]): Entry
     override def toString(): String = {
