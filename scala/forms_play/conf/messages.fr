@@ -4,9 +4,10 @@ Edit=Éditer
 Search=Chercher
 Create=Créer
 Properties_for_URI=Propriétés de l''URI
+Properties_for=Propriétés de 
 
 URI_to_display=URI à afficher
 String_to_search=Chercher
 Create_instance_of=Créer instance de 
-Paste_ontology=Coller ou taper l''URI d''une ontologie.
+Paste_ontology=Coller ou taper l''URI d''une classe dans une ontologie.
 Other_vocabs=Autres vocabulaires

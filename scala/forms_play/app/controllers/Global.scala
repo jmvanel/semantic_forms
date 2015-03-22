@@ -25,6 +25,7 @@ import play.api.libs.iteratee.Enumeratee
 import play.api.libs.iteratee.Iteratee
 import deductions.runtime.html.TableViewModule
 import org.apache.log4j.Logger
+import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 
 package global {
 
@@ -33,7 +34,8 @@ package global {
       with RDFOpsModule
       with TurtleWriterModule
       with TableViewModule
-      with StringSearchSPARQL[Jena, RDFStoreObject.DATASET] {
+      with StringSearchSPARQL[Jena, RDFStoreObject.DATASET]
+    	with InstanceLabelsInference2[Jena] {
     Logger.getRootLogger().info(s"in Global")
     
     var form: Elem = <p>initial value</p>
@@ -48,12 +50,8 @@ package global {
     val hrefDownloadPrefix = "/download?url="
     val hrefEditPrefix ="/edit?url="
 
-    //  override def onStart(app: Application) {
-    //    val uri = "http://jmvanel.free.fr/jmv.rdf#me"
-    //    PopulateRDFCache.loadCommonVocabularies
-    //    form = htmlForm(uri)
-    //  }
 
+    /** TODO move some formatting to views or separate function */
     def htmlForm(uri0: String, blankNode: String = "",
       editable: Boolean = false,
       lang: String = "en"): Elem = {
@@ -63,8 +61,18 @@ package global {
       <div class="container">
         <div class="container">
           <div class="row">
-            <h3>Properties for URI 
-              <b><a href={ hrefEditPrefix + URLEncoder.encode(uri, "utf-8") }>{ uri }</a></b></h3>
+            <h3>{ import play.api.i18n._;
+            Messages("Properties_for")(Lang("fr"))
+           // NOTE: works also: implicit val lang = Lang("fr") ; Messages("Properties_for")
+            }  
+              <b><a href={ hrefEditPrefix + URLEncoder.encode(uri, "utf-8")
+        }>{
+          rdfStore.r( dataset, {
+        	implicit val graph: Rdf#Graph = allNamedGraph;
+          instanceLabel(ops.URI(uri))
+          } ).getOrElse(uri)
+          }</a>
+        , URI : {uri} </b></h3>
           </div>
           <div class="row">
             <div class="col-md-6">
