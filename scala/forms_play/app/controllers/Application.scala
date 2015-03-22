@@ -21,7 +21,8 @@ object Application extends Controller with TableView {
       println("displayURI: " + request)
       println("displayURI: " + Edit)
       Ok(views.html.index(glob.htmlForm(uri, blanknode, editable = Edit != "",
-        lang = chooseLanguage(request))))
+        lang = chooseLanguage(request)))).
+        withHeaders( "Access-Control-Allow-Origin" -> "*" ) // TODO dbpedia only
     }
   }
 
@@ -74,7 +75,8 @@ object Application extends Controller with TableView {
           url,
           editable = true,
           lang = chooseLanguage(request)
-        )))
+        ))).
+        withHeaders( "Access-Control-Allow-Origin" -> "*" ) // TODO dbpedia only
     }
   }
 

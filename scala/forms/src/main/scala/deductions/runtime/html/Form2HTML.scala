@@ -161,21 +161,32 @@ trait Form2HTML[NODE, URI <: NODE]
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   def createHTMLResourceEditableLField(r: ResourceEntry): NodeSeq = {
     <div>
-      {
+      { // format: OFF
+        Seq(
         if (r.openChoice)
-          <input class="form-control" value={ r.value.toString } name={ makeHTMLIdResource(r) } list={ makeHTMLIdForDatalist(r) } data-type={ r.type_.toString() } placeholder={ s"Enter or paste a resource URI: URL, IRI, etc of type ${r.type_.toString()}" }>
-          </input>
+          <input class="form-control" value={ r.value.toString }
+            name={ makeHTMLIdResource(r) }
+            list={ makeHTMLIdForDatalist(r) }
+            data-type={ r.type_.toString() }
+            placeholder={ s"Enter or paste a resource URI, URL, IRI, etc of type ${r.type_.toString()}" }
+            onkeyup="onkeyupComplete(this);">
+          </input> else <span></span> // format: ON
+          ,
+          if (r.widgetType == DBPediaLookup)
+            formatPossibleValues(r, inDatalist = true)
+          else <span></span>
+        )
       }
       {
-        if (!r.possibleValues.isEmpty)
-          <select value={ r.value.toString } name={ makeHTMLIdResource(r) }>
-            { formatPossibleValues(r) }
-          </select>
-        else Seq()
+        //        if (!r.possibleValues.isEmpty)
+        <select value={ r.value.toString } name={ makeHTMLIdResource(r) }>
+          { formatPossibleValues(r) }
+        </select>
+        //        else Seq()
       }
       {
         Seq(
-          addDBPediaLookup(r),
+          //          addDBPediaLookup(r),
           /* if Resource is alreadyInDatabase, send original value to later save 
            * if there is a change */
           if (r.alreadyInDatabase) {
@@ -243,16 +254,26 @@ trait Form2HTML[NODE, URI <: NODE]
     }
   }
 
-  def addDBPediaLookup(r: ResourceEntry): NodeSeq = {
-    // format: OFF    <-- for scalariform
-    if (r.widgetType == DBPediaLookup) {
-      formatPossibleValues(r, inDatalist = true) ++
-      <script>
-        installDbpediaComplete( '{ makeHTMLIdResource(r) }' );
-      </script>
-    } else <div></div>
-    // format: ON    <-- for scalariform
-  }
+//  def addDBPediaLookup(r: ResourceEntry): NodeSeq = {
+//    // format: OFF    <-- for scalariform
+//    if (r.widgetType == DBPediaLookup) {
+//      formatPossibleValues(r, inDatalist = true) ++
+//      <script>
+//        installDbpediaComplete( '{ makeHTMLIdResource(r) }' );
+//      </script>
+//    } else <div></div>
+//    // format: ON    <-- for scalariform
+//  }
+//  def addDBPediaLookupLocal(r: ResourceEntry): NodeSeq = {
+//    // format: OFF    <-- for scalariform
+//    if (r.widgetType == DBPediaLookup) {
+//      formatPossibleValues(r, inDatalist = true) ++
+//      <script>
+//        installDbpediaLocal();
+//      </script>
+//    } else <div></div>
+//    // format: ON    <-- for scalariform
+//  }
 }
 
 object Form2HTML {

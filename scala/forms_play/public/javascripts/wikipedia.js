@@ -17,18 +17,30 @@ function dbpediaComplete( inputElement, callback ) {
   console.log( "dbpediaComplete req sent!" );
 };
 
-function installDbpediaComplete( inputElement) {
+// function installDbpediaComplete( inputElement) {
+//   function dbpedia_callback(aEvt) {
+//     if (req.readyState == 4) {
+//      console.log( "req.response " + req.response );
+//      var response= eval( '(' + req.responseText + ')' ); // TODO eval not secure!
+//      populate_pulldown_menu( element, response.results );
+//     };
+//   };
+//   console.log( "inputElement " + inputElement );
+//   console.log( "getElementsByName(inputElement " + document.getElementsByName(inputElement) );
+//   var element = document.getElementsByName(inputElement)[0];
+//   element.onkeyup = function() { dbpediaComplete( element, dbpedia_callback); };
+// };
+
+function onkeyupComplete( element ) {
   function dbpedia_callback(aEvt) {
     if (req.readyState == 4) {
-     console.log( "req.response " + req.response );
+     console.log( "req.response length " + Object.keys(req.response).length );
      var response= eval( '(' + req.responseText + ')' ); // TODO eval not secure!
      populate_pulldown_menu( element, response.results );
     };
   };
-  console.log( "inputElement " + inputElement );
-  console.log( "getElementsByName(inputElement " + document.getElementsByName(inputElement) );
-  var element = document.getElementsByName(inputElement)[0];
-  element.onkeyup = function() { dbpediaComplete( element, dbpedia_callback); };
+  console.log( "onkeyupComplete " + this );
+  dbpediaComplete( element, dbpedia_callback);
 };
 
 /** populate pulldown menu with string responses, while keeping associated URI's */
