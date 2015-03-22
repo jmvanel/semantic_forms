@@ -69,7 +69,15 @@ trait Form2HTML[NODE, URI <: NODE]
               <div class="row">
                 <label class="control-label" title={ field.comment + " - " + field.property }>{ field.label }</label>
                 <!-- div class="input" -->
-                { createHTMLField(field, editable, hrefPrefix) }
+                {
+                  if (shouldAddAddRemoveWidgets(field, editable))
+                    createHTMLField(field, editable, hrefPrefix)
+                  else
+                    // that's for corporate_risk:
+                    <div class="input">
+                      { createHTMLField(field, editable, hrefPrefix) }
+                    </div>
+                }
               </div>
             </div>
           }
@@ -128,8 +136,11 @@ trait Form2HTML[NODE, URI <: NODE]
     Seq(createAddRemoveWidgets(field, editable)) ++ xmlField
   }
 
+  def shouldAddAddRemoveWidgets(field: fm#Entry, editable: Boolean): Boolean = {
+    editable && (field.defaults.multivalue && field.openChoice)
+  }
   def createAddRemoveWidgets(field: fm#Entry, editable: Boolean): Elem = {
-    if (editable && (field.defaults.multivalue && field.openChoice)) {
+    if (shouldAddAddRemoveWidgets(field, editable)) {
       // button with an action to duplicate the original HTML widget with (TODO) an empty content
       val widgetName = makeHTMLId(field)
       <input value="+" class="btn-primary" size="1" title={ "Add another value for " + field.label } onClick={
