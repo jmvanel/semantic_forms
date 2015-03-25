@@ -70,20 +70,17 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
 
     val transaction =
       dataset.r({
-        var i = 0
+        //        var i = 0
         val result = for {
           query <- parseSelect(queryString)
           solutions <- dataset.executeSelect(query, Map())
         } yield {
           solutions.toIterable.map {
             row =>
-              i = i + 1
-              println(s"search_only : $i $row")
-              row("thing") getOrElse sys.error("")
+              //              i = i + 1 ; println(s"search_only : $i $row")
+              row("thing") getOrElse sys.error(s"search_only($search) : no ?thing in row")
           }
         }
-        //        println( """result.get.mkString("")""" ) 
-        //        println( result.get.mkString("") ) 
         result
       })
     val tryIteratorRdfNode = transaction.flatMap { identity }

@@ -81,7 +81,8 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] //with RDF
     /** modify entry to populate possible Values From Instances */
     def populateFromInstances(entry: Entry): Entry = {
       val possibleValues = mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]()
-      // debug      //      val personURI = ops.URI("http://xmlns.com/foaf/0.1/Person")
+      // debug      
+      val personURI = ops.URI("http://xmlns.com/foaf/0.1/Person")
       //      if (ranges.contains(personURI)) {
       //        println(s"populateFromInstances: entry $entry")
       //        val triples = ops.find(graph, ANY, rdf.typ, personURI)
@@ -92,18 +93,31 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] //with RDF
         // TODO also take in account subClassOf inference
         // TODO limit number of possible values; later implement Comet on demand access to possible Values
         val enumerated = ops.getSubjects(graph, rdf.typ, range)
-        // debug        //        if (range == personURI) {
-        //          println(s"populateFromInstances: enumerated ${enumerated.mkString("; ")}")
-        //        }
+        // debug        
+        if (range == personURI)
+          println(s"populateFromInstances: enumerated ${enumerated.mkString("; ")}")
         fillPossibleValues(enumerated, possibleValues)
-        // debug
-        //        if (range == personURI) println(s"possibleValues $possibleValues")
+        // debug  if (range == personURI) println(s"possibleValues $possibleValues")
       }
       entry.setPossibleValues(possibleValues ++ entry.possibleValues)
     }
 
     def fillPossibleValues(enumerated: Iterable[Rdf#Node],
-      possibleValues: mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]) =
+      possibleValues: mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]) = {
+      //      val r = enumerated.toSeq.map {
+      //        enum =>
+      //          ops.foldNode(enum)(
+      //            uri => {
+      //              (uri, instanceLabel(uri))
+      //            },
+      //            x => (x, instanceLabel(x) ), x => (x, ""))
+      //      }
+      //      val sortedInstanceLabels = r.toSeq.sortBy { e => e._2 }
+      //      //      println(s"sortedInstanceLabels ${sortedInstanceLabels.takeRight(5).mkString(", ")}")
+      //      possibleValues ++ (sortedInstanceLabels.map {
+      //        c => (c._1, makeLiteral(c._2, xsd.string))
+      //      })
+
       for (enum <- enumerated)
         ops.foldNode(enum)(
           uri => {
@@ -111,6 +125,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] //with RDF
               (uri, makeLiteral(instanceLabel(uri), xsd.string)))
           },
           x => (), x => ())
+    }
 
     /**
      * populate From configuration in TDB
