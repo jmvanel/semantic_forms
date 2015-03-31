@@ -150,6 +150,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] //with RDF
 
   import sparqlGraph.sparqlEngineSyntax._
 
+  /** @return list of VALUE & LABEL */
   def possibleValuesFromFormGroup(formGroup: Rdf#URI,
     graph1: Rdf#Graph): Seq[(Rdf#Node, Rdf#Node)] = {
     val q = s"""

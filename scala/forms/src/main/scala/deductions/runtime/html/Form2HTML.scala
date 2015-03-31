@@ -238,7 +238,10 @@ trait Form2HTML[NODE, URI <: NODE]
   private def formatPossibleValues(field: fm#Entry, inDatalist: Boolean = false): NodeSeq = {
     def makeHTMLOption(value: (NODE, NODE), field: fm#Entry): Elem = {
       // selected Or Not
-      <option value={ toPlainString(value._1) } selected={ if (field.value.toString() == toPlainString(value._1)) "selected" else null }>{ value._2 }</option>
+      <option value={ toPlainString(value._1) } selected={
+        if (field.value.toString() ==
+          toPlainString(value._1)) "selected" else null
+      }>{ toPlainString(value._2) }</option>
     }
     field match {
       case re // @ (_: fm#ResourceEntry | _: fm#LiteralEntry) 
