@@ -8,6 +8,8 @@ import com.hp.hpl.jena.query.Dataset
 import com.hp.hpl.jena.tdb.TDBFactory
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import org.w3.banana.jena.JenaDatasetStore
+import org.w3.banana._
+import org.w3.banana.diesel._
 
 /** singleton  hosting a Jena TDB database in directory "TDB" */
 object RDFStoreObject extends JenaModule with RDFStoreLocalJena1Provider {
@@ -29,7 +31,7 @@ trait RDFStoreLocalJena2Provider extends RDFStoreLocalJenaProvider {
 }
 
 trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Dataset] with JenaModule {
-  //  override 
+  import ops._
   type DATASET = Dataset
   override val rdfStore = new JenaDatasetStore(false)
   import rdfStore.graphStoreSyntax._
@@ -40,7 +42,9 @@ trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Dataset] wit
    */
   override def allNamedGraph: Rdf#Graph = {
     Logger.getRootLogger.info(s"allNamedGraph dataset $dataset")
-    dataset.getGraph(ops.makeUri("urn:x-arq:UnionGraph")).get
+    val unionGraph = dataset.getGraph(makeUri("urn:x-arq:UnionGraph")).get
+    //    union(dataset.getDefaultModel.getGraph :: unionGraph :: Nil)
+    unionGraph
   }
 }
 

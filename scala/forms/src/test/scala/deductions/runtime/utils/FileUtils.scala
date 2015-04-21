@@ -14,11 +14,12 @@ object FileUtils {
     deleteRecursive("TDB")
   }
 
-  /** TODO: use:
-    def deleteLocalSPARL() = {
-    val path: Path = Path("TDB")
-    Try(path.deleteRecursively()) // continueOnFailure = false))
-  }
+  /**
+   * TODO: use:
+   * def deleteLocalSPARL() = {
+   * val path: Path = Path("TDB")
+   * Try(path.deleteRecursively()) // continueOnFailure = false))
+   * }
    */
   def deleteRecursive(dir: String) = {
     val path = FileSystems.getDefault.getPath(dir)

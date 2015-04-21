@@ -18,15 +18,16 @@ class TestCreationForm2 extends FunSuite
     with CreationForm with TurtleWriterModule {
 
   import ops._
-  
+
   test("display form custom") {
     FileUtils.deleteLocalSPARL()
 
     val uri = "http://xmlns.com/foaf/0.1/Person"
     retrieveURI(makeUri(uri), dataset)
     // NOTE: without form_specs/foaf.form.ttl
-    rdfStore.rw( dataset, {
-    	rdfStore.appendToGraph(dataset, makeUri("test"), graphTest.personFormSpec) })
+    rdfStore.rw(dataset, {
+      rdfStore.appendToGraph(dataset, makeUri("test"), graphTest.personFormSpec)
+    })
 
     val form = create(uri, lang = "fr")
     val file = "creation.form.2.html"

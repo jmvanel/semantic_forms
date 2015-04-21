@@ -82,7 +82,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] //with RDF
     def populateFromInstances(entry: Entry): Entry = {
       val possibleValues = mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]()
       // debug      
-      val personURI = ops.URI("http://xmlns.com/foaf/0.1/Person")
+      //      val personURI = ops.URI("http://xmlns.com/foaf/0.1/Person")
       //      if (ranges.contains(personURI)) {
       //        println(s"populateFromInstances: entry $entry")
       //        val triples = ops.find(graph, ANY, rdf.typ, personURI)
@@ -94,8 +94,8 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] //with RDF
         // TODO limit number of possible values; later implement Comet on demand access to possible Values
         val enumerated = ops.getSubjects(graph, rdf.typ, range)
         // debug        
-        if (range == personURI)
-          println(s"populateFromInstances: enumerated ${enumerated.mkString("; ")}")
+        //        if (range == personURI)
+        //          println(s"populateFromInstances: enumerated ${enumerated.mkString("; ")}")
         fillPossibleValues(enumerated, possibleValues)
         // debug  if (range == personURI) println(s"possibleValues $possibleValues")
       }

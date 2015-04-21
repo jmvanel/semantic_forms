@@ -63,8 +63,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
 
   import FormSyntaxFactory._
   val formPrefix: Prefix[Rdf] = Prefix("form", formVocabPrefix)
-  val gr = graph
-  val rdfh = new RDFHelpers[Rdf] { val graph = gr }
+  val rdfh = { val gr = graph; new RDFHelpers[Rdf] { val graph = gr } }
   import rdfh._
   println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
   type AbstractForm = FormSyntax[Rdf#Node, Rdf#URI]
@@ -84,7 +83,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
   }
 
   /**
-   * create Form With Given Properties;
+   * create Form With Detailed arguments: Given Properties;
    * For each given property (props)
    *  look at its rdfs:range ?D
    *  see if ?D is a datatype or an OWL or RDFS class
@@ -111,7 +110,6 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     val fields = entries.flatMap { identity }
     val fields2 = // if (displayRdfType)
       addTypeTriple(subject, classs, fields)
-    //    else fields.toSeq
     val formSyntax = FormSyntax(subject, fields2, classs)
     updateFormForClass(formSyntax)
   }
