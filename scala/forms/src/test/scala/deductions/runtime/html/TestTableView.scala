@@ -3,7 +3,9 @@ package deductions.runtime.html
 import org.scalatest.FunSuite
 import java.nio.file.Files
 import java.nio.file.Paths
+import org.scalatest.Ignore
 
+// @Ignore
 class TestTableView extends FunSuite with TableView {
 
   test("display form") {

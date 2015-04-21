@@ -17,6 +17,7 @@ import scala.concurrent.duration.DurationInt
 import org.scalatest.BeforeAndAfterAll
 import org.w3.banana.RDFXMLReaderModule
 import deductions.runtime.utils.FileUtils
+import org.scalatest.Ignore
 
 trait TestStringSearchTrait[Rdf <: RDF, DATASET] extends FunSuite
     with BeforeAndAfterAll
@@ -37,7 +38,7 @@ trait TestStringSearchTrait[Rdf <: RDF, DATASET] extends FunSuite
   }
 
   override def afterAll {
-    FileUtils.deleteLocalSPARL()
+    FileUtils.deleteLocalSPARQL()
   }
 
   test("search 1") {
@@ -57,6 +58,7 @@ trait TestStringSearchTrait[Rdf <: RDF, DATASET] extends FunSuite
   }
 }
 
+//@Ignore
 class TestStringSearch extends FunSuite
   with TestStringSearchTrait[Jena, Dataset]
   with RDFStoreLocalJena1Provider

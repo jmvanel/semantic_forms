@@ -14,17 +14,22 @@ import scala.xml.Elem
 import deductions.runtime.jena.RDFGraphPrinter
 import java.io.PrintStream
 import scala.xml.NodeSeq
+import org.scalatest.BeforeAndAfterAll
 
 /** Test Creation Form from class URI, without form specification */
-class TestCreationForm extends FunSuite with CreationForm with GraphTestEnum {
+class TestCreationForm extends FunSuite with CreationForm with GraphTestEnum
+    with BeforeAndAfterAll {
+
+  override def afterAll {
+    FileUtils.deleteLocalSPARQL()
+  }
 
   test("display form from instance") {
-    FileUtils.deleteLocalSPARL()
     val classUri = // "http://usefulinc.com/ns/doap#Project"
       //       foaf.Organization
       foaf.Person
     retrieveURI(classUri, dataset)
-    // to test possible values generation:
+    // to test possible values generation with foaf:knows :
     retrieveURI(ops.makeUri("http://jmvanel.free.fr/jmv.rdf#me"), dataset)
 
     val rawForm = createElem(classUri.toString(), lang = "fr")
@@ -33,11 +38,13 @@ class TestCreationForm extends FunSuite with CreationForm with GraphTestEnum {
     Files.write(Paths.get(file), form.toString().getBytes);
     println(s"file created $file")
 
-    assert(rawForm.toString().contains("homepage"))
+    assert(rawForm.toString().contains("topic_interest"))
+    assert(rawForm.toString().contains("firstName"))
+    // NOTE: homepage is not present, because it has rdfs:domain owl:Thing
   }
 
   test("display form from vocab' with owl:oneOf") {
-    FileUtils.deleteLocalSPARL()
+    FileUtils.deleteLocalSPARQL()
     import ops._
     rdfStore.rw(dataset, {
       rdfStore.appendToGraph(dataset, URI("Person"), vocab)

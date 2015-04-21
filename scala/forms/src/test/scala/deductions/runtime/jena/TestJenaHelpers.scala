@@ -2,11 +2,13 @@ package deductions.runtime.jena
 
 import org.scalatest.FunSuite
 import com.hp.hpl.jena.tdb.TDBFactory
+import org.scalatest.Ignore
 
 object TestJenaHelpersApp extends App with TestJenaHelpersRaw {
   test()
 }
 
+//@Ignore
 class TestJenaHelpers extends FunSuite with TestJenaHelpersRaw {
   test("JenaHelpers.storeURI") { test() }
 }

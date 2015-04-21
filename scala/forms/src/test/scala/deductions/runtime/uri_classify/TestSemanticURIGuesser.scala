@@ -5,7 +5,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import SemanticURIGuesser._
+import org.scalatest.Ignore
 
+@Ignore
 class TestSemanticURIGuesser extends FunSuite {
   test("TestSemanticURIGuesser") {
     for (
@@ -20,7 +22,7 @@ class TestSemanticURIGuesser extends FunSuite {
       )
     ) {
       val fut = SemanticURIGuesser.guessSemanticURIType(uri)
-      Await.result(fut, 1000000 millis)
+      Await.result(fut, 1000000 millis) // TODO <<<<<<<<<<<<<<<<<<
 
       fut onSuccess {
         case t =>

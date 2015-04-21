@@ -28,16 +28,16 @@ trait TestSemanticURITypesTrait[Rdf <: RDF, DATASET] extends FunSuite
     with RDFXMLReaderModule {
 
   test("check 1 URI") {
-    val r = SemanticURIGuesser.guessSemanticURIType(
-      //        "http://xmlns.com/foaf/0.1/Person")
-      "http://xmlns.com/foaf/0.1/")
-    r onComplete {
-      case Success(t) => println(t)
-      case Failure(x) => println(x)
-    }
-    val dur = 10000 // 1000000
-    Await.ready(r, Duration(dur, MILLISECONDS))
-    Thread.sleep(dur + 2000)
+    //    val r = SemanticURIGuesser.guessSemanticURIType(
+    //      //        "http://xmlns.com/foaf/0.1/Person")
+    //      "http://xmlns.com/foaf/0.1/")
+    //    r onComplete {
+    //      case Success(t) => println(t)
+    //      case Failure(x) => println(x)
+    //    }
+    //    val dur = 10000 // 1000000
+    //    Await.ready(r, Duration(dur, MILLISECONDS))
+    //    Thread.sleep(dur + 2000)
   }
 
   //  test("check some small FOAF profile") {

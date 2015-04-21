@@ -11,6 +11,7 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
 import org.w3.banana.SparqlEngine
 import org.w3.banana.SparqlOps
 import scala.util.Try
+import org.scalatest.Ignore
 
 trait TestRDFStoreObject[Rdf <: RDF, DATASET]
     extends FunSuite with RDFOpsModule
@@ -78,7 +79,8 @@ trait TestRDFStoreObject[Rdf <: RDF, DATASET]
       ${values.take(10).mkString("\n")} """)
   }
 }
-// @Ignore
+
+//@Ignore
 class TestRDFStoreObjectJena extends TestRDFStoreObject[Jena, Dataset]
     with RDFStoreLocalJena1Provider with JenaModule {
   def makeGraph(): Rdf#Graph = {

@@ -6,7 +6,6 @@ import org.w3.banana.SparqlGraphModule
 import org.w3.banana.SparqlOpsModule
 import deductions.runtime.jena.RDFStoreObject
 import deductions.runtime.sparql_cache.RDFCache
-//import deductions.runtime.jena.RDFStoreLocalProvider
 import org.w3.banana.SparqlHttpModule
 import org.w3.banana.RDFOps
 import org.w3.banana.io.RDFReader
@@ -19,7 +18,9 @@ import org.w3.banana.RDF
 import org.w3.banana.SparqlOps
 import deductions.runtime.jena.RDFStoreObject
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import org.scalatest.Ignore
 
+//@Ignore
 class TestBrowsableGraph[Rdf <: RDF, Store]
     extends FunSuite
     with RDFCache

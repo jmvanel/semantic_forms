@@ -4,12 +4,14 @@ import org.scalatest.FunSuite
 import com.hp.hpl.jena.tdb.TDBFactory
 import org.apache.log4j.Logger
 import org.apache.jena.riot.RDFDataMgr
+import org.scalatest.Ignore
 
 // deductions.runtime.jena.TestJenaRDFDataApp
 object TestJenaRDFDataApp extends App with TestJenaRDFDataMgrRaw {
   test()
 }
 
+//@Ignore
 class TestJenaRDFDataMgr extends FunSuite with TestJenaRDFDataMgrRaw {
   test("JenaHelpers.storeURI") { test() }
 }

@@ -2,7 +2,6 @@ package deductions.runtime.html
 
 import java.nio.file.Files
 import java.nio.file.Paths
-
 import org.scalatest.FunSuite
 import org.w3.banana.FOAFPrefix
 import org.w3.banana.Prefix
@@ -10,17 +9,21 @@ import org.w3.banana.RDFOpsModule
 import org.w3.banana.TurtleWriterModule
 import org.w3.banana.diesel._
 import org.w3.banana.jena.JenaModule
-
 import deductions.runtime.utils.FileUtils
+import org.scalatest.BeforeAndAfterAll
 
 /** Test Creation Form with form specification */
 class TestCreationForm2 extends FunSuite
-    with CreationForm with TurtleWriterModule {
+    with CreationForm with TurtleWriterModule
+    with BeforeAndAfterAll {
 
   import ops._
 
+  override def afterAll {
+    FileUtils.deleteLocalSPARQL()
+  }
+
   test("display form custom") {
-    FileUtils.deleteLocalSPARL()
 
     val uri = "http://xmlns.com/foaf/0.1/Person"
     retrieveURI(makeUri(uri), dataset)

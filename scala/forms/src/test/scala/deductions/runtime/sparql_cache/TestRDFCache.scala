@@ -3,15 +3,21 @@ import deductions.runtime.jena.RDFStoreObject
 import org.scalatest.FunSuite
 import deductions.runtime.utils.FileUtils
 import org.w3.banana.SparqlOpsModule
+import org.scalatest.Ignore
+import org.scalatest.BeforeAndAfterAll
 
+//@Ignore
 class TestRDFCache extends FunSuite with RDFCache
-    with SparqlOpsModule {
+    with SparqlOpsModule
+    with BeforeAndAfterAll {
   val uri = "http://jmvanel.free.fr/jmv.rdf#me"
   //  src/test/resources/foaf.n3
   import ops._
   import sparqlOps._
 
-  FileUtils.deleteLocalSPARL
+  override def afterAll {
+    FileUtils.deleteLocalSPARQL()
+  }
 
   test("save to enpoint cache and check with SPARQL that endpoint is populated.") {
     val uriNode = makeUri(uri)
