@@ -28,9 +28,8 @@ trait IOExample extends IOExampleDependencies {
 
   import ops._
 
-// !!!! currently crashes when uncommenting due to Banana !!!!!!!
+  // !!!! currently crashes when uncommenting due to Banana !!!!!!!
   //  val owl = OWLPrefix[Rdf]()
-
 
   /* not enough arguments for method apply: (implicit ops: org.w3.banana.RDFOps[IOExample.this.Rdf])org.w3.banana.OWLPrefix[IOExample.this.Rdf] in object OWLPrefix.
 [error] Unspecified value parameter ops.

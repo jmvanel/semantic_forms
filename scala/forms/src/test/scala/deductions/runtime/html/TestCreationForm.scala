@@ -15,7 +15,6 @@ import deductions.runtime.jena.RDFGraphPrinter
 import java.io.PrintStream
 import scala.xml.NodeSeq
 
-
 /** Test Creation Form from class URI, without form specification */
 class TestCreationForm extends FunSuite with CreationForm with GraphTestEnum {
 

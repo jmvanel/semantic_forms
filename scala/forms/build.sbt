@@ -18,7 +18,19 @@ libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "0
 
 libraryDependencies += "org.scala-lang.modules" %% "scala-async" % "0.9.2"
 
+libraryDependencies += "com.typesafe.play" %% "play-json" % "2.3.4"
+
 // libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.2"
+
+
+
+// for debugging the SBT test suite:
+//required for the javaOptions to be passed in (??)
+// fork := true
+
+// javaOptions in test ++= Seq( "-Xdebug" , "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9999" )
+
+
 
 libraryDependencies += "junit" % "junit" % "4.8.1" % Test
 

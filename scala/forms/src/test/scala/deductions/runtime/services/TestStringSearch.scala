@@ -19,10 +19,10 @@ import org.w3.banana.RDFXMLReaderModule
 import deductions.runtime.utils.FileUtils
 
 trait TestStringSearchTrait[Rdf <: RDF, DATASET] extends FunSuite
-  with BeforeAndAfterAll
-  with RDFOpsModule
-  with RDFXMLReaderModule
-  with StringSearchSPARQL[Rdf, DATASET] {
+    with BeforeAndAfterAll
+    with RDFOpsModule
+    with RDFXMLReaderModule
+    with StringSearchSPARQL[Rdf, DATASET] {
 
   /** populate TDB with a FOAF profile */
   override def beforeAll {

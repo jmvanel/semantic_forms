@@ -51,7 +51,7 @@ trait RDFCache extends RDFStoreLocalJena1Provider
 
   /** with transaction */
   def isGraphInUse(uri: Rdf#URI) = {
-    dataset.rw({
+    dataset.r({
       for (graph <- dataset.getGraph(uri)) yield {
         val uriGraphIsEmpty = graph.isEmpty()
         println("uriGraphIsEmpty " + uriGraphIsEmpty)

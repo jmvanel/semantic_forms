@@ -14,7 +14,8 @@ import scala.util.Try
 
 trait TestRDFStoreObject[Rdf <: RDF, DATASET]
     extends FunSuite with RDFOpsModule
-    with SparqlGraphModule {
+    with SparqlGraphModule
+    with RDFStoreLocalProvider[Rdf, DATASET] {
   import ops._
   implicit val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]
   implicit val sparqlOps: SparqlOps[Rdf]
@@ -29,17 +30,16 @@ trait TestRDFStoreObject[Rdf <: RDF, DATASET]
 
   test("SPARQL queries on RDFStoreObject.allNamedGraph") {
     println("Entering SPARQL queries on RDFStoreObject.allNamedGraph")
-    //    val store: RDFStoreLocalProvider[Rdf, DATASET] = makeRDFStore()
-    //    val graph = store.allNamedGraph
-    val graph = makeGraph()
-    val queryWithoutGRAPH = s"""
+    rdfStore.r(dataset, {
+      val graph = makeGraph()
+      val queryWithoutGRAPH = s"""
                 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
                 SELECT *
                 WHERE {
                   ?S ?P ?O . 
                 }
                 """
-    val queryWithGRAPH = s"""
+      val queryWithGRAPH = s"""
                 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
                 SELECT *
                 WHERE {
@@ -48,20 +48,21 @@ trait TestRDFStoreObject[Rdf <: RDF, DATASET]
                   }
                 }
                 """
-    println("\nresult Without GRAPH {}")
-    val query = parseSelect(queryWithoutGRAPH, Seq()).get
-    val solutions: Rdf#Solutions = graph.executeSelect(query).get
-    //    val solutions: Rdf#Solutions = sparqlGraph.executeSelect(graph, query, Map()).get
-    printSolutions(solutions)
+      println("\nresult Without GRAPH {}")
+      val query = parseSelect(queryWithoutGRAPH, Seq()).get
+      val solutions: Rdf#Solutions = graph.executeSelect(query).get
+      //    val solutions: Rdf#Solutions = sparqlGraph.executeSelect(graph, query, Map()).get
+      printSolutions(solutions)
 
-    println("\nresult With GRAPH {} : EMPTY !!!")
-    val query2 = parseSelect(queryWithGRAPH, Seq()).get
-    printSolutions(graph.executeSelect(query2).get)
-    // EMPTY !!!
+      println("\nresult With GRAPH {} : EMPTY !!!")
+      val query2 = parseSelect(queryWithGRAPH, Seq()).get
+      printSolutions(graph.executeSelect(query2).get)
+      // EMPTY !!!
 
-    val resFind = find(graph, ANY, ANY, ANY)
-    println(s"""result of Find
+      val resFind = find(graph, ANY, ANY, ANY)
+      println(s"""result of Find
       ${resFind.take(10).mkString("\n")} """)
+    })
   }
 
   def printSolutions(solutions: Rdf#Solutions) = {
@@ -77,8 +78,9 @@ trait TestRDFStoreObject[Rdf <: RDF, DATASET]
       ${values.take(10).mkString("\n")} """)
   }
 }
-
-class TestRDFStoreObjectJena extends TestRDFStoreObject[Jena, Dataset] with RDFStoreLocalJena1Provider with JenaModule {
+// @Ignore
+class TestRDFStoreObjectJena extends TestRDFStoreObject[Jena, Dataset]
+    with RDFStoreLocalJena1Provider with JenaModule {
   def makeGraph(): Rdf#Graph = {
     println(s"""dataset $dataset """)
     allNamedGraph
