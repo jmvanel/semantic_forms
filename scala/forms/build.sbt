@@ -48,4 +48,6 @@ resolvers += "betehess" at  "http://dl.bintray.com/banana-rdf/banana-rdf"
 // banana-rdf still has some dependencies that are not yet on Maven Central
 resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
 
+resolvers += "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/"
+
 scalariformSettings
