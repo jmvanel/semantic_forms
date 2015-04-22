@@ -61,8 +61,11 @@ package global {
       <div class="container">
         <div class="container">
           <div class="row">
-            <h3>{ import play.api.i18n._;
-            Messages("Properties_for")(Lang("fr"))
+            <h3>{
+            import play.api.i18n._;
+            import play.api.i18n.Messages.Implicits._;
+            import play.api.Play.current;
+            Messages("Properties_for")
            // NOTE: works also: implicit val lang = Lang("fr") ; Messages("Properties_for")
             }  
               <b><a href={ hrefEditPrefix + URLEncoder.encode(uri, "utf-8")

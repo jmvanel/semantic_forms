@@ -8,6 +8,7 @@ import play.api.libs.iteratee.Enumerator
 import play.api.libs.iteratee.Iteratee
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import play.api.i18n.Messages.Implicits._
 
 object Application extends Controller with TableView {
   val glob = _root_.global.Global
