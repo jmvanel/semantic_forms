@@ -4,3 +4,4 @@ target
 project/target
 .cache
 .classpath
+*.log

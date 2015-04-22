@@ -1,4 +1,12 @@
+.history
+
+.classpath
+.project
+
+*.prefs
+
 /bin
+
 **/target
 **/TDB
 **/.cache
