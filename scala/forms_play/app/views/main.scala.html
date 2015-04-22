@@ -1,10 +1,11 @@
+@import play.i18n.Messages
 @(title: String)(content: Html)
 
 <!DOCTYPE html>
 
 <html>
     <head>
-        <title>@Messages("Welcome")</title>
+        <title>@Messages.get("Welcome")</title>
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
         
         <script src="@routes.Assets.at("javascripts/jquery-1.11.2.min.js")" type="text/javascript"></script>
@@ -31,13 +32,13 @@
     <body>
     	<div class="container">
     		<div class="row">
-    			<h2>@Messages("Welcome")</h2>
+    			<h2>@Messages.get("Welcome")</h2>
     		</div>
     		<div class="row">
     			<div class="col-md-12">
 			      <form role="form" action="/display">
 			      	<div class="form-group">
-				        <label class="col-md-2 control-label" for="Display">@Messages("URI_to_display")</label>
+				        <label class="col-md-2 control-label" for="Display">@Messages.get("URI_to_display")</label>
 				        <div class="col-md-6"> 
 							<input class="form-control" type="text" name='displayuri' list="start_uris" />
 					        <datalist id="start_uris" >
@@ -47,8 +48,8 @@
 					        </datalist>
 						</div>
 						<div class="col-md-4">
-					        <input class="btn btn-primary" type="submit" name="Display" value=@Messages("Display") />
-				        	<input class="btn btn-primary" type="submit" name="Edit" value=@Messages("Edit") />
+					        <input class="btn btn-primary" type="submit" name="Display" value=@Messages.get("Display") />
+				        	<input class="btn btn-primary" type="submit" name="Edit" value=@Messages.get("Edit") />
 			        	</div>
 		        	</div>
 		      	</form>
@@ -58,12 +59,12 @@
 	      	<div class="col-md-12">
 		      <form role="form" action="/wordsearch">
 		      	<div class="form-group">
-		      		<label class="col-md-2 control-label" for="q">@Messages("String_to_search")</label>			      
+		      		<label class="col-md-2 control-label" for="q">@Messages.get("String_to_search")</label>			      
 			        <div class="col-md-6">
 			        	<input class="form-control" type="text" name='q' />
 			        </div>
 			        <div class="col-md-4"> 
-			        	<input class="btn btn-primary" type="submit" value=@Messages("Search") />
+			        	<input class="btn btn-primary" type="submit" value=@Messages.get("Search") />
 			        </div>
 			  	</div>
 			  </form>
@@ -73,10 +74,10 @@
 	      	<div class="col-md-12">
 		      <form role="form" action="/create">
 		      	<div class="form-group">
-			      	<label class="col-md-2 control-label" for="uri">@Messages("Create_instance_of")</label>
+			      	<label class="col-md-2 control-label" for="uri">@Messages.get("Create_instance_of")</label>
 			        <div class="col-md-6">
 			        
-			        	<input class="form-control" type="text" name='uri' placeholder="@Messages("Paste_ontology")"></input>
+			        	<input class="form-control" type="text" name='uri' placeholder="@Messages.get("Paste_ontology")"></input>
 			        	<select class="form-control" type="text" name='uri' list="class_uris">
 			        	 <optgroup label="Assemblée Virtuelle">     
 				          <option label="av:Project" title="Projet dans ontologie de l'Assemblée Virtuelle"> http://www.assemblee-virtuelle.org/ontologies/v1.owl#Project </option>
@@ -84,7 +85,7 @@
 				          <option label="av:Idea"> http://www.assemblee-virtuelle.org/ontologies/v1.owl#Idea </option>
 				          <option label="av:Resource"> http://www.assemblee-virtuelle.org/ontologies/v1.owl#Resource </option>
 				         </optgroup>
-				         <optgroup label="@Messages("Other_vocabs")">
+				         <optgroup label="@Messages.get("Other_vocabs")">
 				          <option label="foaf:Person" selected="selected"> http://xmlns.com/foaf/0.1/Person </option>
 				          <option label="doap:Project"> http://usefulinc.com/ns/doap#Project </option>
 				          <option label="foaf:Organization"> http://xmlns.com/foaf/0.1/Organization </option>
@@ -93,7 +94,7 @@
 				        </select>
 				    </div>
 				    <div class="col-md-4">
-			        	<input class="btn btn-primary" type="submit" value=@Messages("Create") />
+			        	<input class="btn btn-primary" type="submit" value=@Messages.get("Create") />
 			        </div>
 		      	</div>
 		      </form>

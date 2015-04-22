@@ -27,6 +27,8 @@ import deductions.runtime.html.TableViewModule
 import org.apache.log4j.Logger
 import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 
+//import play.api.i18n.Messages.Implicits._
+
 package global {
 
   object Global extends Controller // play.api.GlobalSettings
