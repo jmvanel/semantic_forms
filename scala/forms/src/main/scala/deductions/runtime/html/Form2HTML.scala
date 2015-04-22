@@ -178,15 +178,13 @@ trait Form2HTML[NODE, URI <: NODE]
         )
       }
       {
-        //        if (!r.possibleValues.isEmpty)
-        <select value={ r.value.toString } name={ makeHTMLIdResource(r) }>
-          { formatPossibleValues(r) }
-        </select>
-        //        else Seq()
+        if (!r.possibleValues.isEmpty)
+          <select value={ r.value.toString } name={ makeHTMLIdResource(r) }>
+            { formatPossibleValues(r) }
+          </select>
       }
       {
         Seq(
-          //          addDBPediaLookup(r),
           /* if Resource is alreadyInDatabase, send original value to later save 
            * if there is a change */
           if (r.alreadyInDatabase) {
@@ -235,6 +233,7 @@ trait Form2HTML[NODE, URI <: NODE]
       })
   }
 
+  /** @return a list of option tags or a datalist tag */
   private def formatPossibleValues(field: fm#Entry, inDatalist: Boolean = false): NodeSeq = {
     def makeHTMLOption(value: (NODE, NODE), field: fm#Entry): Elem = {
       // selected Or Not
@@ -243,19 +242,15 @@ trait Form2HTML[NODE, URI <: NODE]
           toPlainString(value._1)) "selected" else null
       }>{ toPlainString(value._2) }</option>
     }
-    field match {
-      case re // @ (_: fm#ResourceEntry | _: fm#LiteralEntry) 
-      =>
-        val options = Seq(<option value=""></option>) ++
-          (for (value <- re.possibleValues) yield makeHTMLOption(value, field))
-        if (inDatalist)
-          <datalist id={ makeHTMLIdForDatalist(re) }>
-            { options }
-          </datalist>
-        else options
-      //      case _ => <span></span>
-    }
+    val options = Seq(<option value=""></option>) ++
+      (for (value <- field.possibleValues) yield makeHTMLOption(value, field))
+    if (inDatalist)
+      <datalist id={ makeHTMLIdForDatalist(field) }>
+        { options }
+      </datalist>
+    else options
   }
+}
 
 //  def addDBPediaLookup(r: ResourceEntry): NodeSeq = {
 //    // format: OFF    <-- for scalariform
@@ -277,7 +272,6 @@ trait Form2HTML[NODE, URI <: NODE]
 //    } else <div></div>
 //    // format: ON    <-- for scalariform
 //  }
-}
 
 object Form2HTML {
   def urlEncode(node: Any) = { URLEncoder.encode(node.toString, "utf-8") }
