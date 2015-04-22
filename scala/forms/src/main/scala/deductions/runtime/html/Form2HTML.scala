@@ -178,7 +178,7 @@ trait Form2HTML[NODE, URI <: NODE]
         )
       }
       {
-        if (!r.possibleValues.isEmpty)
+        if (!r.possibleValues.isEmpty && r.widgetType != DBPediaLookup)
           <select value={ r.value.toString } name={ makeHTMLIdResource(r) }>
             { formatPossibleValues(r) }
           </select>
