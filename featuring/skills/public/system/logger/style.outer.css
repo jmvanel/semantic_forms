@@ -1,0 +1,7 @@
+@import url(common.css);
+
+#logger {
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+}

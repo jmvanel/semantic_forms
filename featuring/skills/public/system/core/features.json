@@ -1,0 +1,5 @@
+{
+  "logger"       : false,
+  "routing"      : true,  
+  "screenSaver"  : false
+}

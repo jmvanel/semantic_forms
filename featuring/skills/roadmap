@@ -1,0 +1,31 @@
+======================================================================================================
+1) use new Function for lambda object
+2) attach several event listeners to slave
+3) context refactoring
+4) make use of Shadow Dom & Template
+5) ? head and tail for context
+======================================================================================================
+<system></system> et <user></user>
+pouvoir expliciter un récepteur pour un message: "spinner:off"
+embedded worker and Blob...
+! 404 router handler
+
+! check unused feature and undeclared feature
+? ensure feature fragment is a child element
+    
+  Screensaver Feature
+  
+  Pouvoir jouer un scénario de messages
+  Demo mode		
+  Tests
+  
+  Offline mode
+  Caching app
+  Compact app
+  
+  Deploy to repository
+  Fetch from repository
+  
+? mouseover on a feature could decorate it
+? double click on a feature could maximize it
+? worker to load a feature => ajax request => (response: string) || (head:String, body:String)

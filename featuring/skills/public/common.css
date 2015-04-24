@@ -1,0 +1,48 @@
+@import url(http://fonts.googleapis.com/css?family=Ubuntu);
+
+body {
+	margin: 0 auto;
+	padding: 0;
+	font-family: 'Ubuntu', sans-serif;
+	font-size: 150%;
+	color: rgb(0, 72, 126);
+	background-color: rgb(191, 209, 227);
+	overflow: auto;
+	overflow-x: hidden;
+}
+
+section,div {
+	margin: 0 auto;
+	overflow-x: hidden;
+	overflow: hidden;
+}
+
+p {
+	margin: 0;
+}
+
+a:link {
+	text-decoration: none;
+	color: rgb(0, 72, 126);
+}
+
+a:visited {
+	text-decoration: none;
+	color: rgb(0, 72, 126);
+}
+
+a:active {
+	text-decoration: underline;
+	color: rgb(0, 72, 126);
+}
+
+a:hover {
+	text-decoration: underline;
+	color: rgb(0, 72, 126);
+}
+
+.middle {
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+}

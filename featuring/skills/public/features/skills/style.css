@@ -1,0 +1,11 @@
+@import url(//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-rc.2/css/select2.min.css);
+
+.skills .self {
+	/*
+	text-align: center;
+	*/
+}
+
+#input-tags {
+	width: 100%;
+}
