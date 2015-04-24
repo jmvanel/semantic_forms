@@ -5,20 +5,27 @@ Form generators leveraging semantic web standards RDF(S), OWL, SPARQL , JSON-LD 
 
 Under GNU Public Licence version 3 [GPL v3](http://www.gnu.org/copyleft/gpl.html)
 
-This will be a building block for web application frameworks,
-like Play! Framework, Ruby on Rails, Drupal, etc, but not SQL based.
+This is a building block for web application frameworks,
+like Play! Framework, Ruby on Rails, Django, Drupal, etc, but not SQL based.
 
-These web application frameworks all provide tools to facilitate the creation of forms with storage in database, data validation, etc. We want this feature, but no SQL, SPARQL instead. And no SQL or business (domain) objects in Object Oriented language at the origin of design flow, but RDF and OWL vocabularies. More precisely, a form should be made up of RDF properties in the spirit of Fresnel (a Display Vocabulary for RDF).
+These web application frameworks all provide tools to facilitate the creation of forms connected with database storage, data validation, etc. We want this feature, but we want no SQL, we want SPARQL instead.
+At the origin of design flow, we want RDF and OWL vocabularies.
+No SQL or business (domain) objects in Object Oriented language.
+
+More precisely, a form should be made up of RDF properties in the spirit of Fresnel (a Display Vocabulary for RDF).
 
 
-I foresee 3 kinds of implementations, each of which can be deployed as web application, or a stand alone application:
+ 3 kinds of implementations, each of which can be deployed as web application, or a stand alone application:
 
 * rules in N3 ; could leverage on Fresnel vocab' , see  [Forms generated from a resource or a class](http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/html/documentation.html#L6973)
-
 * in Scala generating HTML ; code here [./scala](./scala/README.md)
-
 * pure JavaScript implementation ; see [./js](./js/README.md)
 
+
+Here is the OWL vocabulary for ontolgy aware forms, currently used in the Scala application:
+[vocabulary/forms.owl.ttl](../../vocabulary/forms.owl.ttl)
+
+I
 
 I developed in Scala with Swing semantic Web aware Forms; they are described here:
 [Swing semantic Web aware Forms](http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/html/documentation.html#Data1)

@@ -24,7 +24,7 @@
 #### displaying or editing ####
 
 form:TriplesDisplay a owl:Class ;
-	rdfs:label "Triple Display specification"@en ;
+	rdfs:label "Triples Display specification"@en ;
 	rdfs:comment """a specification for Displaying Triples, typically for a form."""@en ;
 	owl:sameClassAs fresnel:Lens
 .
@@ -61,6 +61,10 @@ form:cardinality a owl:ObjectProperty ;
 	rdfs:domain form:TripleEdit ;
 	rdfs:range form:Cardinality .
 
+form:defaultCardinality a owl:ObjectProperty ;
+	rdfs:domain form:TriplesDisplay ;
+	rdfs:range form:Cardinality .
+
 form:Cardinality a owl:Class ;
 	owl:oneOf (
 		form:zeroOrMore	
@@ -90,6 +94,7 @@ form:WidgetClass a owl:Class ;
 		form:Choice
 		form:Collection
 		form:DBPediaLookup
+		form:Upload
         ) .
         
 

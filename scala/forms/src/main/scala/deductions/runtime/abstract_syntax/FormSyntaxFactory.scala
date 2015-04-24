@@ -91,7 +91,8 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
    */
   def createFormDetailed(subject: Rdf#Node,
     props: Iterable[Rdf#URI], classs: Rdf#URI,
-    formGroup: Rdf#URI = nullURI): AbstractForm = {
+    formGroup: Rdf#URI = nullURI,
+    formConfig: Rdf#Node = URI("")): AbstractForm = {
 
     Logger.getRootLogger().info(s"createForm subject $subject, props $props")
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
@@ -111,7 +112,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     val fields2 = // if (displayRdfType)
       addTypeTriple(subject, classs, fields)
     val formSyntax = FormSyntax(subject, fields2, classs)
-    updateFormForClass(formSyntax)
+    updateFormFromConfig(formSyntax, formConfig)
   }
 
   val formConfiguration = new FormConfigurationFactory[Rdf](graph)
@@ -125,7 +126,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
    *   :widgetClass form:DBPediaLookup .
    *  <pre>
    */
-  def updateFormForClass(formSyntax: AbstractForm): AbstractForm = {
+  private def updateFormFromConfig(formSyntax: AbstractForm, formConfig: Rdf#Node): AbstractForm = {
     val updatedFields = for (field <- formSyntax.fields) yield {
       val fieldSpecs = formConfiguration.lookFieldSpecInConfiguration(field.property)
       println("updateFormForClass")
@@ -142,6 +143,20 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
             if (t.predicate == formPrefix("widgetClass"))
               field.widgetType = DBPediaLookup
           }
+      }
+    }
+    val triples = find(graph, formConfig, ANY, ANY).toSeq
+    // TODO try the Object - semantic mapping of Banana-RDF
+    val uriToCardinalities = Map[Rdf#Node, Cardinality] {
+      formPrefix("zeroOrMore") -> zeroOrMore;
+      formPrefix("oneOrMore") -> oneOrMore;
+      formPrefix("zeroOrOne") -> zeroOrOne;
+      formPrefix("exactlyOne") -> exactlyOne
+    }
+    for (t <- triples) {
+      println("updateFormForClass formConfig " + t)
+      if (t.predicate == formPrefix("defaultCardinality")) {
+        formSyntax.defaults.defaultCardinality = uriToCardinalities.getOrElse(t.objectt, zeroOrOne)
       }
     }
     formSyntax

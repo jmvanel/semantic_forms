@@ -48,12 +48,12 @@ class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
    *  looking up for Form Configuration within RDF graph in this class
    */
   def createFormFromClass(classs: Rdf#URI): FormSyntax[Rdf#Node, Rdf#URI] = {
-    val formConfig = lookPropertieslistFormInConfiguration(classs)
-    if (formConfig.isEmpty) {
+    val (propsListInFormConfig, formConfig) = lookPropertieslistFormInConfiguration(classs)
+    if (propsListInFormConfig.isEmpty) {
       val props = fieldsFromClass(classs, graph)
       createFormDetailed(ops.makeUri(makeId), props toSeq, classs)
     } else
-      createFormDetailed(ops.makeUri(makeId), formConfig.toSeq, classs)
+      createFormDetailed(ops.makeUri(makeId), propsListInFormConfig.toSeq, classs, formConfig = formConfig)
   }
 
   def makeId: String = {

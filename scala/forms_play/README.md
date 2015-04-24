@@ -163,11 +163,14 @@ or:
 
 # Vocabulary for forms
 
-It will be useful to introduce upstream of the FA (Abstract Form) in class FormModule.FormSyntax an RDF vocabulary for forms, perhaps reusing Fresnel;
-see a first attempt :
+
+Here is the OWL vocabulary for ontolgy aware forms, currently used in this application:
 [vocabulary/forms.owl.ttl](../../vocabulary/forms.owl.ttl)
 
-See (in french) :
+It is useful to have, upstream of the FA (Abstract Form) in defined class FormModule.FormSyntax, an RDF vocabulary for forms.
+It is not reusing Fresnel, but it could be aligned to Fresnel is necessary.
+
+See also (in french) :
 [doc/fr/formulaires.html](http://htmlpreview.github.io/?https://github.com/jmvanel/semantic_forms/blob/master/doc/fr/formulaires.html)
 
 

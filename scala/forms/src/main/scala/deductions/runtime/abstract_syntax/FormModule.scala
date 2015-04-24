@@ -11,13 +11,17 @@ import org.w3.banana.syntax._
 import scala.collection.mutable
 
 object FormModule {
-  val formDefaults = FormDefaults(true, false)
+  val formDefaults = FormDefaults()
 }
 
+/** Default values for the whole Form or for an `Entry` */
 case class FormDefaults(
-  multivalue: Boolean = true,
-  /** displaying rdf:type fields is configurable for editing, and displayed unconditionally for non editing */
-  val displayRdfType: Boolean = true)
+    var defaultCardinality: Cardinality = zeroOrOne,
+    /** displaying rdf:type fields is configurable for editing, and displayed unconditionally for non editing */
+    val displayRdfType: Boolean = true) {
+  def multivalue: Boolean = defaultCardinality == zeroOrMore ||
+    defaultCardinality == oneOrMore
+}
 
 trait FormModule[NODE, URI <: NODE] {
 
@@ -31,8 +35,9 @@ trait FormModule[NODE, URI <: NODE] {
       val subject: NODE,
       val fields: Seq[Entry],
       classs: URI = nullURI,
-      formGroup: URI = nullURI //      val defaults: FormDefaults = FormModule.formDefaults
-      ) {
+      formGroup: URI = nullURI,
+      //      var defaultCardinality: Cardinality = zeroOrOne,
+      val defaults: FormDefaults = FormModule.formDefaults) {
     override def toString(): String = {
       s"""FormSyntax:
         subject: $subject
@@ -147,4 +152,11 @@ object PulldownMenu extends Choice
 
 object Collection extends WidgetType
 object DBPediaLookup extends WidgetType { override def toString() = "DBPediaLookup WidgetType" }
+object UpLoad extends WidgetType
+
+sealed class Cardinality
+object zeroOrMore extends Cardinality
+object oneOrMore extends Cardinality
+object zeroOrOne extends Cardinality
+object exactlyOne extends Cardinality
 

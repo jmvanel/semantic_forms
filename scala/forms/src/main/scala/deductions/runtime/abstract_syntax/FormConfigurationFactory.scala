@@ -32,19 +32,20 @@ class FormConfigurationFactory[Rdf <: RDF](graph: Rdf#Graph)(implicit ops: RDFOp
    * lookup for form:showProperties (ordered list of fields) in Form Configuration within RDF graph in this class
    *  usable for unfilled and filled Forms
    */
-  def lookPropertieslistFormInConfiguration(classs: Rdf#URI): Seq[Rdf#URI] = {
+  def lookPropertieslistFormInConfiguration(classs: Rdf#URI): (Seq[Rdf#URI], Rdf#Node) = {
     val formSpecOption = lookFormSpecInConfiguration(classs)
     formSpecOption match {
-      case None => Seq()
-      case Some(f) =>
+      case None => (Seq(), URI(""))
+      case Some(formConfiguration) =>
         // val props = ops.getObjects(graph, f, form("showProperties"))
-        val props = objectsQuery(f, formPrefix("showProperties"))
+        val props = objectsQuery(formConfiguration, formPrefix("showProperties"))
         for (p <- props) { println("showProperties " + p) }
         val p = props.headOption
-        rdfh.nodeSeqToURISeq(rdfh.rdfListToSeq(p))
+        (rdfh.nodeSeqToURISeq(rdfh.rdfListToSeq(p)), formConfiguration)
     }
   }
 
+  /** lookup Form Spec from OWL class in In Configuration */
   private def lookFormSpecInConfiguration(classs: Rdf#URI): Option[Rdf#Node] = {
     val forms = ops.getSubjects(graph, formPrefix("classDomain"), classs)
     val debugString = new StringBuilder; Logger.getRootLogger().debug("forms " + forms.addString(debugString, "; "))
