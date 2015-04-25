@@ -67,9 +67,9 @@ plus a textbox to enter a URL semantics, eg a FOAF profile or DBpedia URI :
 
 Dependencies to install : Java 7 or 8 (Scala is now also ready for Java 8), [SBT](http://www.scala-sbt.org/)
 or [Typesafe Activator](http://typesafe.com/platform/getstarted) .
-Then SBT or Activator donwload the rest.
+Then SBT or Activator download the rest.
 
-<!---
+<!--
 *Temporarily* there is a dependency to Banana-RDF 0.7.1-SNAPSHOT, so one must also build Banana-RDF; see
 [how-to-start-geeking](https://github.com/w3c/banana-rdf/#how-to-start-geeking) ,
 and type in Activator:
@@ -126,6 +126,9 @@ Please read explanations on the Banana-RDF project:
     # With Jena it is possible to directly load from Internet:
     runMain tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me http://jmvanel.free.fr/jmv.rdf#me 
 ```
+The typical pattern for data is to load in a graph named after the URI source, so that the cache feature works using the URI source timestamp.
+
+CAUTION: do not load data or configuration into the un-named (default) graph. It would not be taken in account by the framework.
 
 - dumping all database:
 
