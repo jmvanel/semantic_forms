@@ -162,7 +162,10 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     formSyntax
   }
 
-  /** @return augmented fields argument */
+  /**
+   * add Triple: <subject> rdf:type <classs>
+   *  @return augmented fields argument
+   */
   def addTypeTriple(subject: Rdf#Node, classs: Rdf#URI,
     fields: Iterable[Entry]): Seq[Entry] = {
     val alreadyInDatabase = !find(graph, subject, rdf.typ, ANY).isEmpty

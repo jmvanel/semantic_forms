@@ -11,7 +11,8 @@ javacOptions ++= Seq("-source","1.7", "-target","1.7")
 
 
 
-libraryDependencies += "org.w3" %%  "jena" % "0.7.2.radical" 
+// libraryDependencies += "org.w3" %%  "jena" % "0.7.2.radical" 
+libraryDependencies += "org.w3" %%  "banana-jena" % "0.8.1"
 
 libraryDependencies += "org.apache.jena" % "apache-jena-libs" % "2.13.0"
 // libraryDependencies += "org.apache.jena" % "apache-jena-libs" % "2.12.1"
@@ -47,8 +48,9 @@ resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + 
 // resolvers += "spray repo" at "http://repo.spray.io"
 // resolvers += Resolver.mavenLocal
 
-// outdated:
-resolvers += "betehess" at  "http://dl.bintray.com/banana-rdf/banana-rdf"
+resolvers += Resolver.url("inthenow-releases", url("http://dl.bintray.com/inthenow/releases"))(Resolver.ivyStylePatterns)
+
+// outdated:  resolvers += "betehess" at  "http://dl.bintray.com/banana-rdf/banana-rdf"
 
 // banana-rdf still has some dependencies that are not yet on Maven Central
 resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
