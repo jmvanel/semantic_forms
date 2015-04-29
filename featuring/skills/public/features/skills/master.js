@@ -57,11 +57,18 @@
 				},
 				success : function(res) {
 				    // callback();
+
+				    var json = res.results;
+				    for ( var entry in json) {
+					json[entry]["query"] = query;
+					console.log(json[entry]);
+				    }
+
 				    callback(res.results);
 				}
 			    });
 			};
-			
+
 			// TODO handle selection from arrow keys
 			// TODO persist selection
 
@@ -77,11 +84,14 @@
 			var options = {
 			    onInitialize : onInitializeFunction,
 			    plugins : [ "remove_button", "drag_drop" ],
-			    openOnFocus : false,
 			    delimiter : ",",
 			    create : true,
+			    highlight : false,
+			    persist : false,
+			    // hideSelected : true
 			    valueField : "uri",
 			    labelField : "label",
+			    searchField : "query",
 			    load : loadFunction,
 			    render : {
 				option_create : function(data, escape) {
@@ -91,6 +101,14 @@
 				    return "<div>" + data.label + "</div>";
 				}
 			    },
+			// score : function(search) {
+			// //var score = this.getScoreFunction(search);
+			// return function(item) {
+			// //return score(item) * (1 + Math.min(item.watchers /
+			// 100, 1));
+			// return 0;
+			// };
+			// },
 			}
 
 			var select = $("#input-tags");
@@ -104,7 +122,7 @@
 				    label : data[option].label
 				});
 			    }
-			     selectize.refreshOptions(true);
+			    selectize.refreshOptions(true);
 			});
 
 			// selectize.on("dropdown_open", function() {
@@ -118,10 +136,12 @@
 			// selectize.on("type", function(data) {
 			// console.log("you are typing : " + data);
 			// selectize.refreshOptions();
-			//			});
+			// });
 
 			var delayFunction = function() {
-			    this.clearOptions();
+			    console.warn("items : " + this.items);
+			    // this.clearOptions();
+			    this.setTextboxValue($("#input-proxy").val());
 			    console.log("will query : " + $("#input-proxy").val());
 			    var fn = this.settings.load;
 			    // TODO break on empty string
@@ -148,6 +168,10 @@
 			})
 
 			$("#input-proxy").focus();
+
+			// var selectProxy = $("#input-proxy");
+			// selectizeProxy =
+			// selectProxy.selectize(options)[0].selectize;
 
 		    }, function() {
 		    });
