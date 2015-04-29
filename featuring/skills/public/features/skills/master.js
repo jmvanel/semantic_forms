@@ -70,7 +70,7 @@
 			};
 
 			// TODO handle selection from arrow keys
-			// TODO persist selection
+			// TODO use score function to avoid partial matching ?
 
 			var onInitializeFunction = function(data) {
 			    console.log("selectize.js is initialized");
