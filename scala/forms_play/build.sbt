@@ -8,6 +8,8 @@ version := "1.0-SNAPSHOT"
 
 lazy val semantic_forms =  RootProject(file("../forms"))
 
+// addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.3.8")
+
 lazy val semantic_forms_play = (project in file("."))
         .dependsOn(semantic_forms)
 	.enablePlugins(PlayScala)
@@ -22,4 +24,5 @@ javacOptions ++= Seq("-source","1.7", "-target","1.7")
 // resolvers += Resolver.mavenLocal
 resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
 // cf http://stackoverflow.com/questions/16400877/local-dependencies-resolved-by-sbt-but-not-by-play-framework
+
 

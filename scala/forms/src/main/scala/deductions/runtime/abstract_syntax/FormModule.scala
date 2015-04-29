@@ -16,7 +16,7 @@ object FormModule {
 
 /** Default values for the whole Form or for an `Entry` */
 case class FormDefaults(
-    var defaultCardinality: Cardinality = zeroOrOne,
+    var defaultCardinality: Cardinality = zeroOrMore,
     /** displaying rdf:type fields is configurable for editing, and displayed unconditionally for non editing */
     val displayRdfType: Boolean = true) {
   def multivalue: Boolean = defaultCardinality == zeroOrMore ||
@@ -155,8 +155,8 @@ object DBPediaLookup extends WidgetType { override def toString() = "DBPediaLook
 object UpLoad extends WidgetType
 
 sealed class Cardinality
-object zeroOrMore extends Cardinality
-object oneOrMore extends Cardinality
-object zeroOrOne extends Cardinality
-object exactlyOne extends Cardinality
+object zeroOrMore extends Cardinality { override def toString() = "0 Or More" }
+object oneOrMore extends Cardinality { override def toString() = "1 Or More" }
+object zeroOrOne extends Cardinality { override def toString() = "0 Or 1" }
+object exactlyOne extends Cardinality { override def toString() = "exactly 1" }
 

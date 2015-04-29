@@ -20,6 +20,8 @@ import scala.xml.NodeSeq
  *  - the generic Form Factory [[deductions.runtime.abstract_syntax.FormSyntaxFactory]],
  *  - the HTML renderer [[Form2HTML]];
  *  transactional
+ *
+ * named TableView because originally it was an HTML table.
  */
 trait TableView extends TableViewModule
 

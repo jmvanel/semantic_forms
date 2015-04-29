@@ -68,7 +68,6 @@ trait Form2HTML[NODE, URI <: NODE]
             <div class="form-group">
               <div class="row">
                 <label class="control-label" title={ field.comment + " - " + field.property }>{ field.label }</label>
-                <!-- div class="input" -->
                 {
                   if (shouldAddAddRemoveWidgets(field, editable))
                     createHTMLField(field, editable, hrefPrefix)
@@ -136,10 +135,10 @@ trait Form2HTML[NODE, URI <: NODE]
     Seq(createAddRemoveWidgets(field, editable)) ++ xmlField
   }
 
-  def shouldAddAddRemoveWidgets(field: fm#Entry, editable: Boolean): Boolean = {
+  private def shouldAddAddRemoveWidgets(field: fm#Entry, editable: Boolean): Boolean = {
     editable && (field.defaults.multivalue && field.openChoice)
   }
-  def createAddRemoveWidgets(field: fm#Entry, editable: Boolean): Elem = {
+  private def createAddRemoveWidgets(field: fm#Entry, editable: Boolean): Elem = {
     if (shouldAddAddRemoveWidgets(field, editable)) {
       // button with an action to duplicate the original HTML widget with (TODO) an empty content
       val widgetName = makeHTMLId(field)
@@ -159,10 +158,10 @@ trait Form2HTML[NODE, URI <: NODE]
   private def makeHTMLIdForLiteral(lit: fm#LiteralEntry) = "LIT-" + urlEncode(lit.property)
 
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
-  def createHTMLResourceEditableLField(r: ResourceEntry): NodeSeq = {
+  private def createHTMLResourceEditableLField(r: ResourceEntry): NodeSeq = {
     <div>
-      { // format: OFF
-        Seq(
+      {
+        Seq( // format: OFF
         if (r.openChoice)
           <input class="form-control" value={ r.value.toString }
             name={ makeHTMLIdResource(r) }
@@ -197,7 +196,7 @@ trait Form2HTML[NODE, URI <: NODE]
   }
 
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
-  def createHTMLiteralEditableLField(lit: LiteralEntry): NodeSeq = {
+  private def createHTMLiteralEditableLField(lit: LiteralEntry): NodeSeq = {
     val placeholder = s"Enter or paste a string of type ${lit.type_.toString()}"
     val elem = lit.type_.toString() match {
 
@@ -233,14 +232,13 @@ trait Form2HTML[NODE, URI <: NODE]
       })
   }
 
-  /** @return a list of option tags or a datalist tag */
+  /** @return a list of option tags or a datalist tag (with the option tags inside) */
   private def formatPossibleValues(field: fm#Entry, inDatalist: Boolean = false): NodeSeq = {
-    def makeHTMLOption(value: (NODE, NODE), field: fm#Entry): Elem = {
-      // selected Or Not
-      <option value={ toPlainString(value._1) } selected={
+    def makeHTMLOption(values: (NODE, NODE), field: fm#Entry): Elem = {
+      <option value={ toPlainString(values._1) } selected={
         if (field.value.toString() ==
-          toPlainString(value._1)) "selected" else null
-      }>{ toPlainString(value._2) }</option>
+          toPlainString(values._1)) "selected" else null
+      }>{ toPlainString(values._2) }</option>
     }
     val options = Seq(<option value=""></option>) ++
       (for (value <- field.possibleValues) yield makeHTMLOption(value, field))
@@ -251,27 +249,6 @@ trait Form2HTML[NODE, URI <: NODE]
     else options
   }
 }
-
-//  def addDBPediaLookup(r: ResourceEntry): NodeSeq = {
-//    // format: OFF    <-- for scalariform
-//    if (r.widgetType == DBPediaLookup) {
-//      formatPossibleValues(r, inDatalist = true) ++
-//      <script>
-//        installDbpediaComplete( '{ makeHTMLIdResource(r) }' );
-//      </script>
-//    } else <div></div>
-//    // format: ON    <-- for scalariform
-//  }
-//  def addDBPediaLookupLocal(r: ResourceEntry): NodeSeq = {
-//    // format: OFF    <-- for scalariform
-//    if (r.widgetType == DBPediaLookup) {
-//      formatPossibleValues(r, inDatalist = true) ++
-//      <script>
-//        installDbpediaLocal();
-//      </script>
-//    } else <div></div>
-//    // format: ON    <-- for scalariform
-//  }
 
 object Form2HTML {
   def urlEncode(node: Any) = { URLEncoder.encode(node.toString, "utf-8") }
