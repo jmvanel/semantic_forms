@@ -1,0 +1,22 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+GET     /form/display      controllers.semforms.services.ApplicationCRUD.display(uri, blanknode:String ?= "")
+
+GET     /form/edit         controllers.semforms.services.ApplicationCRUD.edit( uri )
+
+POST    /form/save         controllers.semforms.services.ApplicationCRUD.save()
+
+GET     /form/create       controllers.semforms.services.ApplicationCRUD.create()
+
+
+
+GET     /form/wordsearch   controllers.semforms.services.ApplicationQueries.wordsearch(q:String ?= "")
+
+GET     /form/download     controllers.semforms.services.ApplicationQueries.download( uri:String )
+
+GET     /form/sparql       controllers.semforms.services.ApplicationQueries.sparql( query:String )
+
+POST    /form/sparql       controllers.semforms.services.ApplicationQueries.sparql( query:String )
+

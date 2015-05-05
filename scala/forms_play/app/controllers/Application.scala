@@ -22,7 +22,7 @@ object Application extends Controller with TableView {
       println("displayURI: " + Edit)
       Ok(views.html.index(glob.htmlForm(uri, blanknode, editable = Edit != "",
         lang = chooseLanguage(request)))).
-        withHeaders( "Access-Control-Allow-Origin" -> "*" ) // TODO dbpedia only
+        withHeaders( "Access-Control-Allow-Origin" -> "*" ) // for dbpedia lookup
     }
   }
 
@@ -36,32 +36,21 @@ object Application extends Controller with TableView {
 //    }
 //  }
 
-  def wordsearch(q: String = "") = wordsearchNEW(q)
-
-  def wordsearchOLD(q: String = "") = {
-    Action { Ok(views.html.index(glob.wordsearch(q))) }
-  }
-
-  /** TODO !!!!!!!!!!!!!!!!!!!! */
-  def wordsearchNEW(q: String = "") = Action.async {
+  def wordsearch(q: String = "") = Action.async {
     val f = glob.wordsearchFuture(q)
-    val res = f.map(r => Ok(views.html.index(r)))
-    res
+    f.map(r => Ok(views.html.index(r)))
   }
 
-  def download0(url: String) = {
+  def download(url: String) = {
     Action { Ok(glob.downloadAsString(url)).as("text/turtle") }
   }
 
   /** cf https://www.playframework.com/documentation/2.3.x/ScalaStream */
-  def download(url: String) = {
+  def download_chunked(url: String) = {
     Action { Ok.chunked(glob.download(url)).as("text/turtle") }
-    //    Action { Ok.stream( glob.download(url) ).as("text/turtle") }
   }
 
-  /* Ok.stream(enumerator >>> Enumerator.eof */
   def chooseLanguage(request: Request[_]): String = {
-    //     val l1 = request.headers.get("Accept-Language")
     val languages = request.acceptLanguages
     val res = if (languages.length > 0) languages(0).language else "en"
     println("chooseLanguage: " + request + "\n\t" + res)
@@ -69,8 +58,7 @@ object Application extends Controller with TableView {
   }
 
   def edit(url: String) = {
-    Action {
-      request =>
+    Action { request =>
         Ok(views.html.index(glob.htmlForm(
           url,
           editable = true,
@@ -82,14 +70,11 @@ object Application extends Controller with TableView {
 
   def save() = {
     Action { implicit request =>
-      Ok(views.html.index(glob.save(request))) // .as("text/html")
-      // Ok( views.html.index(glob.htmlForm(uri, blanknode)) )
+      Ok(views.html.index(glob.save(request)))
     }
   }
 
-  def create
-//  (uri: String )
-  = {
+  def create() = {
     Action { implicit request =>
       println("create: " + request)
       val uri = getFirstNonEmptyInMap(request.queryString) . get
