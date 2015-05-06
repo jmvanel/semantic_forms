@@ -33,6 +33,7 @@ class FormSaver[Rdf <: RDF]()(
 
   /**
    * @param map a raw map of HTTP response parameters
+   * transactional
    *  TODO refactor : split 1) decoding of the response 2) update of RDF database
    */
   def saveTriples(map: Map[String, Seq[String]]) = {
@@ -120,13 +121,13 @@ class FormSaver[Rdf <: RDF]()(
       }
     }
 
+    /** transactional */
     def doSave(graphURI: String) {
       import ops._
-      val transaction =
-        dataset.rw({
-          dataset.removeTriples(makeUri(graphURI), triplesToRemove.toIterable)
-          dataset.appendToGraph(makeUri(graphURI), makeGraph(triples))
-        }).flatMap { identity }
+      val transaction = dataset.rw({
+        dataset.removeTriples(makeUri(graphURI), triplesToRemove.toIterable)
+        dataset.appendToGraph(makeUri(graphURI), makeGraph(triples))
+      }).flatMap { identity }
 
       val f = transaction.asFuture
 

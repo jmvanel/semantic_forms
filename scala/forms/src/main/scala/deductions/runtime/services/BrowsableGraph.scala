@@ -32,25 +32,32 @@ class BrowsableGraph[Rdf <: RDF]()(
   import ops._
   import sparqlOps._
   import rdfStore.sparqlEngineSyntax._
+  import rdfStore.transactorSyntax._
+
   val dataset = RDFStoreObject.dataset
 
   /**
-   * all triples in graph <search> , plus "reverse" triples everywhere
+   * all triples <search> ?p ?o   ,
+   * plus optionally all triples in graph <search> , plus "reverse" triples everywhere
+   *
    *  used in Play! app : NON blocking !
    */
   def search_only(search: String): Future[Rdf#Graph] = {
     val queryString =
       s"""
          |CONSTRUCT {
+         |  <$search> ?p ?o .
          |  ?thing ?p ?o .
-         |  ?s ?p1 ?thing .     
+         |  ?s ?p1 <$search> .     
          |}
          |WHERE {
-         |  { graph <$search>
-         |    { ?thing ?p ?o . }
-         |  } OPTIONAL {
          |  graph ?GRAPH
-         |   { ?s ?p1 ?thing . }
+         |  { <$search> ?p ?o . }
+         |  OPTIONAL {
+         |    graph <$search>
+         |    { ?thing ?p ?o . }
+         |    graph ?GRAPH2
+         |    { ?s ?p1 <$search> . } # "reverse" triples
          |  }
          |}""".stripMargin
     println("search_only " + queryString)
@@ -65,10 +72,13 @@ class BrowsableGraph[Rdf <: RDF]()(
     r.asFuture
   }
 
-  /** not used in Play! app : blocking ! */
+  /** used in Play! app , but blocking ! */
   def focusOnURI(uri: String): String = {
-    val triples = search_only(uri)
-    futureGraph2String(triples, uri)
+    val transaction = dataset.r({
+      val triples = search_only(uri)
+      triples
+    })
+    futureGraph2String(transaction.get, uri)
   }
 
   private def futureGraph2String(triples: Future[Rdf#Graph], uri: String): String = {
