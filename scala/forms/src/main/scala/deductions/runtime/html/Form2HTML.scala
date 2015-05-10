@@ -168,7 +168,7 @@ trait Form2HTML[NODE, URI <: NODE]
             list={ makeHTMLIdForDatalist(r) }
             data-type={ r.type_.toString() }
             placeholder={ s"Enter or paste a resource URI, URL, IRI, etc of type ${r.type_.toString()}" }
-            onkeyup="onkeyupComplete(this);">
+            onkeyup={if (r.widgetType == DBPediaLookup) "onkeyupComplete(this);" else null}>
           </input> else <span></span> // format: ON
           ,
           if (r.widgetType == DBPediaLookup)

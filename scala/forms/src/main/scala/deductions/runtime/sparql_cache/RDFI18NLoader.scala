@@ -14,7 +14,9 @@ object RDFI18NLoader extends RDFCache with App {
       "https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/foaf/foaf.it.ttl",
       "https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/foaf/foaf.tr.ttl",
       "https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/rdfs/rdfs.fr.ttl",
-      "https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/rdfs/rdfs.it.ttl")
+      "https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/rdfs/rdfs.it.ttl",
+      "https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/rdf/rdf.fr.ttl"
+      )
     import ops._
     val translations = translations0 map { p => URI(p) }
     translations map { storeURI(_, dataset) }

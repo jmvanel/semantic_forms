@@ -45,7 +45,7 @@ object PopulateRDFCache extends RDFCache
 
   val githubcontent = "https://raw.githubusercontent.com"
 
-  loadCommonVocabularies
+  loadCommonVocabularies()
   loadCommonFormSpecifications()
   RDFI18NLoader.loadFromGitHubRDFI18NTranslations()
 
@@ -93,7 +93,8 @@ object PopulateRDFCache extends RDFCache
 
   /** load CommonForm Specifications from a well know place */
   def loadCommonFormSpecifications() {
-    val all_form_specs = githubcontent + "/jmvanel/semantic_forms/master/scala/forms/form_specs/specs.ttl"
+    val all_form_specs = githubcontent +
+      "/jmvanel/semantic_forms/master/scala/forms/form_specs/specs.ttl"
     val from = new java.net.URL(all_form_specs).openStream()
     val form_specs_graph: Rdf#Graph = turtleReader.read(from, base = all_form_specs) getOrElse sys.error(s"couldn't read $all_form_specs")
     import deductions.runtime.abstract_syntax.FormSyntaxFactory._
