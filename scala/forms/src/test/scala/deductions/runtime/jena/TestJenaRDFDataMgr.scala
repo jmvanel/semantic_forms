@@ -5,6 +5,7 @@ import com.hp.hpl.jena.tdb.TDBFactory
 import org.apache.log4j.Logger
 import org.apache.jena.riot.RDFDataMgr
 import org.scalatest.Ignore
+import org.w3.banana.jena.JenaModule
 
 // deductions.runtime.jena.TestJenaRDFDataApp
 object TestJenaRDFDataApp extends App with TestJenaRDFDataMgrRaw {
@@ -16,7 +17,7 @@ class TestJenaRDFDataMgr extends FunSuite with TestJenaRDFDataMgrRaw {
   test("JenaHelpers.storeURI") { test() }
 }
 
-trait TestJenaRDFDataMgrRaw extends JenaHelpers {
+trait TestJenaRDFDataMgrRaw extends JenaModule {
   import ops._
 
   def test() {
