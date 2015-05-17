@@ -1,0 +1,120 @@
+<html>
+
+<head>
+  <style>
+    @import url(http://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.1/css/selectize.min.css);
+    #input-tags {
+      width: 100%;
+    }
+  </style>
+  <script src="jquery.js"></script>
+  <script src="jquery-ui.min.js"></script>
+  <script src="selectize.js"></script>
+</head>
+
+<body>
+
+  <section class="skills">
+    <div class="self">
+      <input type="text" id="input-proxy" />
+      <input type="text" id="input-tags" />
+    </div>
+  </section>
+
+  <script>
+    var loadFunction = function(query, callback) {
+      console.log("query:" + query);
+      $.ajax({
+        type: "GET",
+        dataType: "json",
+        url: "http://lookup.dbpedia.org/api/search.asmx/KeywordSearch",
+        data: {
+          QueryString: query
+        },
+        beforeSend: function(xhr) {
+          xhr.setRequestHeader("Accept", "application/json");
+        },
+        error: function() {
+          callback();
+        },
+        success: function(res) {
+          var json = res.results;
+          for (var entry in json) {
+            json[entry]["query"] = query;
+            console.log(json[entry]);
+          }
+          callback(res.results);
+        }
+      });
+    };
+    // TODO handle selection from arrow keys
+    // TODO use score function to avoid partial matching ?
+    var onInitializeFunction = function(data) {
+      console.log("selectize.js is initialized");
+    };
+
+    var options = {
+      onInitialize: onInitializeFunction,
+      plugins: ["remove_button" /*, "drag_drop"*/],
+      delimiter: ",",
+      create: true,
+      highlight: false,
+      persist: false,
+      valueField: "uri",
+      labelField: "label",
+      searchField: "query",
+      load: loadFunction,
+      render: {
+        option_create: function(data, escape) {
+          return "";
+        },
+        option: function(data, escape) {
+          return "<div>" + data.label + "</div>";
+        }
+      },
+    }
+
+    var select = $("#input-tags");
+    var tmp = (select.selectize(options)[0])
+    console.log(tmp);
+    var selectize = (select.selectize(options)[0]).selectize;
+    selectize.on("load", function(data) {
+      console.log("loaded");
+      for (var option in data) {
+        console.log(data[option]);
+        selectize.addOption({
+          uri: data[option].uri,
+          label: data[option].label
+        });
+      }
+      selectize.refreshOptions(true);
+    });
+
+    var delayFunction = function() {
+      console.warn("items : " + this.items);
+      this.setTextboxValue($("#input-proxy").val());
+      console.log("will query : " + $("#input-proxy").val());
+      var fn = this.settings.load;
+      // TODO break on empty string
+      this.load(function(callback) {
+        fn.apply(self, [$("#input-proxy").val(), callback]);
+      });
+      this.refreshOptions(true);
+    }.bind(selectize);
+    var timer = timer || 0;
+    $("#input-proxy").keydown(function(e) {
+      clearInterval(timer);
+    });
+    $("#input-proxy").keyup(function(e) {
+      timer = window.setTimeout(delayFunction, 333);
+    });
+    // TODO à revoir
+    $("#input-proxy").on("blur", function() {
+      this.focus();
+    })
+    $("#input-proxy").focus();
+  </script>
+
+</body>
+
+</html>
