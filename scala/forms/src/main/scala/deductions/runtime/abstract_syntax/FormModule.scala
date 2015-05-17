@@ -31,7 +31,7 @@ trait FormModule[NODE, URI <: NODE] {
    *  - used in conjunction with HTML5 forms and Banana-RDF
    *  - could be used with N3Form(Swing) in EulerGUI,
    */
-  case class FormSyntax[NODE, URI <: NODE](
+  case class FormSyntax(
       val subject: NODE,
       val fields: Seq[Entry],
       classs: URI = nullURI,

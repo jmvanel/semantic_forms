@@ -47,7 +47,7 @@ class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
    * create Form from a class URI,
    *  looking up for Form Configuration within RDF graph in this class
    */
-  def createFormFromClass(classs: Rdf#URI): FormSyntax[Rdf#Node, Rdf#URI] = {
+  def createFormFromClass(classs: Rdf#URI): FormSyntax = {
     val (propsListInFormConfig, formConfig) = lookPropertieslistFormInConfiguration(classs)
     if (propsListInFormConfig.isEmpty) {
       val props = fieldsFromClass(classs, graph)
