@@ -12,8 +12,8 @@ import deductions.runtime.abstract_syntax.DBPediaLookup
  *  take in account datatype
  */
 trait Form2HTML[NODE, URI <: NODE]
-    // TODO test without extends FormModule:
-    extends FormModule[NODE, URI] {
+//    extends FormModule[NODE, URI]
+{
   type fm = FormModule[NODE, URI]
 
   val radioForIntervals = false // TODO the choice should be moved to FormSyntaxFactory
@@ -88,7 +88,7 @@ trait Form2HTML[NODE, URI <: NODE]
     hrefPrefix: String = ""): xml.NodeSeq = {
 
     val xmlField = field match {
-      case l: LiteralEntry =>
+      case l: fm#LiteralEntry =>
         {
           if (editable) {
             createHTMLiteralEditableLField(l)
@@ -96,7 +96,7 @@ trait Form2HTML[NODE, URI <: NODE]
             <div>{ l.value }</div>
           }
         }
-      case r: ResourceEntry =>
+      case r: fm#ResourceEntry =>
         /* link to a known resource of the right type,
            * or (TODO) create a sub-form for a blank node of an ancillary type (like a street address),
            * or just create a new resource with its type, given by range, or derived
@@ -109,7 +109,7 @@ trait Form2HTML[NODE, URI <: NODE]
               r.valueLabel
             }</a>
         }
-      case r: BlankNodeEntry =>
+      case r: fm#BlankNodeEntry =>
         {
           if (editable) {
             if (r.openChoice) {
@@ -158,7 +158,7 @@ trait Form2HTML[NODE, URI <: NODE]
   private def makeHTMLIdForLiteral(lit: fm#LiteralEntry) = "LIT-" + urlEncode(lit.property)
 
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
-  private def createHTMLResourceEditableLField(r: ResourceEntry): NodeSeq = {
+  private def createHTMLResourceEditableLField(r: fm#ResourceEntry): NodeSeq = {
     <div>
       {
         Seq( // format: OFF
@@ -196,7 +196,7 @@ trait Form2HTML[NODE, URI <: NODE]
   }
 
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
-  private def createHTMLiteralEditableLField(lit: LiteralEntry): NodeSeq = {
+  private def createHTMLiteralEditableLField(lit: fm#LiteralEntry): NodeSeq = {
     val placeholder = s"Enter or paste a string of type ${lit.type_.toString()}"
     val elem = lit.type_.toString() match {
 
