@@ -66,7 +66,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
   val rdfh = { val gr = graph; new RDFHelpers[Rdf] { val graph = gr } }
   import rdfh._
   println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
-  type AbstractForm = FormSyntax[Rdf#Node, Rdf#URI]
+  type AbstractForm = FormSyntax
 
   /** create Form from an instance (subject) URI */
   def createForm(subject: Rdf#Node,
