@@ -3,15 +3,15 @@ package deductions.runtime.uri_classify
 import java.net.URL
 import java.net.URLConnection
 import java.nio.file.Paths
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
 import akka.http.model.HttpHeader
 import akka.http.model.HttpMethods.HEAD
 import akka.http.model.HttpResponse
 import akka.http.model.MediaType
 import deductions.runtime.sparql_cache.RDFCache
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import deductions.runtime.jena.JenaHelpers
 
 /**
  * classify URI (non-blocking): leveraging on MIME types in HTTP headers.
@@ -23,7 +23,9 @@ import deductions.runtime.sparql_cache.RDFCache
  * xml, and other machine processable stuff
  * rdf, Json-LD, Turtle and other semantic content
  */
-object SemanticURIGuesser extends RDFCache {
+object SemanticURIGuesser extends RDFCache
+    with RDFStoreLocalJena1Provider
+    with JenaHelpers {
 
   sealed abstract class SemanticURIType {
     override def toString = getClass.getSimpleName

@@ -26,24 +26,48 @@ import play.api.libs.iteratee.Iteratee
 import deductions.runtime.html.TableViewModule
 import org.apache.log4j.Logger
 import deductions.runtime.abstract_syntax.InstanceLabelsInference2
+import com.hp.hpl.jena.query.Dataset
+import org.w3.banana.RDF
+import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.jena.JenaHelpers
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import deductions.runtime.html.CreationFormAlgo
+
+import org.w3.banana.jena.JenaModule
+import org.w3.banana.SparqlOpsModule
 
 package global {
 
-  object Global extends Controller // play.api.GlobalSettings
-      with RDFCache
+  /** NOTE: important that JenaModule is first; otherwise ops may be null */
+  object Global extends JenaModule
+  with AbstractApplication[Jena, Dataset]
+  with JenaHelpers
+  with RDFStoreLocalJena1Provider
+//   JenaModule
+  
+  trait AbstractApplication[Rdf <: RDF, DATASET] extends Controller
       with RDFOpsModule
+      with SparqlOpsModule 
+      with RDFCacheAlgo[Rdf, DATASET]
       with TurtleWriterModule
-      with TableViewModule
-      with StringSearchSPARQL[Jena, RDFStoreObject.DATASET]
-    	with InstanceLabelsInference2[Jena] {
+      with TableViewModule[Rdf, DATASET]
+      with StringSearchSPARQL[Rdf, DATASET]
+      with InstanceLabelsInference2[Rdf] 
+      with RDFStoreLocalProvider[Rdf, DATASET]
+  with BrowsableGraph[Rdf, DATASET]
+  with FormSaver[Rdf, DATASET]
+  with CreationFormAlgo[Rdf, DATASET]
+{
+
     Logger.getRootLogger().info(s"in Global")
     
     var form: Elem = <p>initial value</p>
     lazy val tableView = this // new TableView {}
     lazy val search = this; // new StringSearchSPARQL2[Rdf, RDFStoreObject.DATASET]{}
-    lazy val dl = new BrowsableGraph()
-    lazy val fs = new FormSaver()
-    lazy val cf = new CreationForm { actionURI = "/save" }
+    lazy val dl = this; // new BrowsableGraph[Rdf, DATASET]{}
+    lazy val fs = this; // new FormSaver[Rdf, DATASET]{}
+    lazy val cf = this; // new CreationForm { actionURI = "/save" }
 
     // TODO use inverse Play's URI API
     val hrefDisplayPrefix = "/display?displayuri="
@@ -68,7 +92,7 @@ package global {
               <b><a href={ hrefEditPrefix + URLEncoder.encode(uri, "utf-8")
         }>{
           rdfStore.r( dataset, {
-        	implicit val graph: Rdf#Graph = allNamedGraph;
+          implicit val graph: Rdf#Graph = allNamedGraph;
           instanceLabel(ops.URI(uri))
           } ).getOrElse(uri)
           }</a>
@@ -177,11 +201,12 @@ package global {
       // cf https://www.playframework.com/documentation/2.3.x/ScalaStream
       // and http://greweb.me/2012/11/play-framework-enumerator-outputstream/
       Enumerator.outputStream { os =>
-        val graph = dl.search_only(url)
+//        val dl = new BrowsableGraph[Rdf, DATASET]{}
+        val graph = search_only(url)
         graph.map { graph =>
           /* non blocking */
-          val writer: RDFWriter[Jena, Try, Turtle] = turtleWriter
-          val ret = writer.write(graph, os, base = url)
+          val writer: RDFWriter[Rdf, Try, Turtle] = turtleWriter
+          val ret = writer.write(graph.asInstanceOf[Rdf#Graph], os, base = url)
           os.close()
         }
       }
@@ -215,13 +240,13 @@ package global {
       }
     }
 
-    def create(uri0: String, lang: String = "en"): Elem = {
+    def createElem2(uri0: String, lang: String = "en"): Elem = {
       Logger.getRootLogger().info("Global.htmlForm uri " + uri0)
       val uri = uri0.trim()
 
       <div class="container">
         <h2>Creating an instance of Class <strong>{ uri }</strong></h2>
-        { cf.create(uri, lang).get }
+        { cf.create(uri, lang) }
       </div>
     }
 
@@ -234,5 +259,31 @@ package global {
       </p>
     }
 //    def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
+
+    
   }
+  
+//  object Global extends Controller // play.api.GlobalSettings
+//      with RDFCache
+//      with RDFOpsModule
+//      with TurtleWriterModule
+//      with TableViewModule[Jena, Dataset]
+//      with StringSearchSPARQL[Jena, RDFStoreObject.DATASET]
+//    	with InstanceLabelsInference2[Jena] {
+//    Logger.getRootLogger().info(s"in Global")
+//    
+//    var form: Elem = <p>initial value</p>
+//    lazy val tableView = this // new TableView {}
+//    lazy val search = this; // new StringSearchSPARQL2[Rdf, RDFStoreObject.DATASET]{}
+//    lazy val dl = new BrowsableGraph()
+//    lazy val fs = new FormSaver()
+//    lazy val cf = new CreationForm { actionURI = "/save" }
+//
+//    // TODO use inverse Play's URI API
+//    val hrefDisplayPrefix = "/display?displayuri="
+//    val hrefDownloadPrefix = "/download?url="
+//    val hrefEditPrefix ="/edit?url="
+//
+//
+
 }

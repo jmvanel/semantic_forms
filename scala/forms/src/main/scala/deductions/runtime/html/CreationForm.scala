@@ -15,14 +15,23 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import deductions.runtime.utils.MonadicHelpers
 import scala.xml.NodeSeq
+import org.w3.banana.SparqlGraphModule
+import deductions.runtime.sparql_cache.RDFCacheAlgo
+import org.w3.banana.RDF
+import com.hp.hpl.jena.query.Dataset
+import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.abstract_syntax.FormModule
 
-trait CreationForm extends RDFOpsModule
-    with Form2HTML[Jena#Node, Jena#URI]
-    with RDFCache {
+trait CreationForm extends CreationFormAlgo[Jena, Dataset]
+
+trait CreationFormAlgo[Rdf <: RDF, DATASET] extends RDFOpsModule
+    with SparqlGraphModule
+    with RDFCacheAlgo[Rdf, DATASET]
+    with RDFStoreLocalProvider[Rdf, DATASET] {
   import ops._
   import rdfStore.transactorSyntax._
 
-  val nullURI: Rdf#URI = ops.URI("")
+  private val nullURI: Rdf#URI = ops.URI("")
   var actionURI = "/save"
 
   /**
@@ -32,9 +41,10 @@ trait CreationForm extends RDFOpsModule
   def create(classUri: String, lang: String = "en"): Try[NodeSeq] = {
     import scala.concurrent.ExecutionContext.Implicits.global
     dataset.r({
-      val factory = new UnfilledFormFactory[Rdf](allNamedGraph, preferedLanguage = lang)
+      val factory = new UnfilledFormFactory[Rdf, DATASET](allNamedGraph, preferedLanguage = lang)
       val form = factory.createFormFromClass(URI(classUri))
-      generateHTML(form, hrefPrefix = "", editable = true, actionURI = actionURI)
+      new Form2HTML[Rdf#Node, Rdf#URI] {}.
+        generateHTML(form, hrefPrefix = "", editable = true, actionURI = actionURI)
     })
   }
 

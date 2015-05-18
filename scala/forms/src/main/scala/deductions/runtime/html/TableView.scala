@@ -12,6 +12,13 @@ import deductions.runtime.abstract_syntax.FormSyntaxFactory
 import deductions.runtime.jena.RDFStoreObject
 import deductions.runtime.sparql_cache.RDFCache
 import scala.xml.NodeSeq
+import org.w3.banana.SparqlGraphModule
+import org.w3.banana.RDF
+import deductions.runtime.sparql_cache.RDFCacheAlgo
+import com.hp.hpl.jena.query.Dataset
+import deductions.runtime.abstract_syntax.FormModule
+import org.w3.banana.jena.JenaModule
+import org.w3.banana.RDFOpsModule
 
 /**
  * Form for a subject URI with existing triples;
@@ -23,14 +30,13 @@ import scala.xml.NodeSeq
  *
  * named TableView because originally it was an HTML table.
  */
-trait TableView extends TableViewModule
+trait TableView extends JenaModule with TableViewModule[Jena, Dataset]
 
 /** Form; transactional */
-trait TableViewModule
-    extends RDFModule
-    with RDFCache
-    //  with Form2HTML[Rdf#Node, Rdf#URI]
-    with Form2HTML[Jena#Node, Jena#URI] // TODO remove Jena !!!!!!!!!!!!!!
+trait TableViewModule[Rdf <: RDF, DATASET]
+    extends RDFOpsModule
+    with RDFCacheAlgo[Rdf, DATASET]
+    with SparqlGraphModule // with Form2HTML[Rdf#Node, Rdf#URI] //with FormSyntaxFactoryTrait[Rdf]
     {
   import ops._
   import rdfStore.transactorSyntax._
@@ -94,8 +100,14 @@ trait TableViewModule
 
     val graphURIActual = doRetrieveURI(uri, blankNode, graphURI)
     val htmlFormTry = dataset.r({
-      val form = createAbstractForm(allNamedGraph, uri, editable, lang, blankNode, URI(formGroup))
-      generateHTMLJustFields(form, hrefPrefix, editable, graphURIActual)
+      val form = createAbstractForm(allNamedGraph, uri, editable, lang, blankNode,
+        URI(formGroup))
+      // .asInstanceOf[FormModule[Rdf#Node, Rdf#URI]#FormSyntax]
+      new Form2HTML[Rdf#Node, Rdf#URI] {}.
+        generateHTMLJustFields(form,
+          //        asInstanceOf[FormModule[this.Rdf#Node, this.Rdf#URI]#FormSyntax],
+          //        asInstanceOf[FormModule[Rdf#Node, Rdf#URI]#FormSyntax],
+          hrefPrefix, editable, graphURIActual)
     })
     htmlFormTry match {
       case Success(e) => e
@@ -116,23 +128,27 @@ trait TableViewModule
     actionURI2: String = "/save",
     formGroup: Rdf#URI = nullURI): NodeSeq = {
     val form = createAbstractForm(graph, uri, editable, lang, blankNode, formGroup)
-    val htmlForm = generateHTML(form, hrefPrefix, editable, actionURI, graphURI,
-      actionURI2)
+    val htmlForm =
+      new Form2HTML[Rdf#Node, Rdf#URI] {}.
+        generateHTML(form, hrefPrefix, editable, actionURI, graphURI,
+          actionURI2)
     htmlForm
   }
 
-  private def createAbstractForm(graph: Rdf#Graph, uri: String, editable: Boolean, lang: String, blankNode: String, formGroup: Rdf#URI) = {
-    val factory = new FormSyntaxFactory[Rdf](graph, preferedLanguage = lang)
-    val form = factory.createForm(
-      if (blankNode == "true")
-        /* TDB specific:
+  private def createAbstractForm(graph: Rdf#Graph, uri: String, editable: Boolean,
+    lang: String, blankNode: String, formGroup: Rdf#URI): FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
+    val subjectNnode = if (blankNode == "true")
+      /* TDB specific:
            * Jena supports "concrete bnodes" in SPARQL syntax as pseudo URIs in the "_" URI scheme
            * (it's an illegal name for a URI scheme) */
-        BNode(uri)
-      else URI(uri),
+      BNode(uri)
+    else URI(uri)
+    //    createForm( subjectNnode, editable, formGroup, graph)
+    val factory = new FormSyntaxFactory[Rdf](graph, preferedLanguage = lang)
+    val form = factory.createForm(subjectNnode,
       editable, formGroup)
     println("form:\n" + form)
-    form
+    form // .asInstanceOf[fm#FormSyntax]
   }
 
   def htmlFormString(uri: String,
@@ -147,7 +163,8 @@ trait TableViewModule
     graf2form(graph1, uri, graphURI = graphURI).toString
   }
 
-  override def toPlainString(n: Rdf#Node): String = {
+  //  override 
+  def toPlainString(n: Rdf#Node): String = {
     val v = foldNode(n)(
       uri => fromUri(uri),
       bn => fromBNode(bn),

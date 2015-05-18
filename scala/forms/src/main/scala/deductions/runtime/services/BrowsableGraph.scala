@@ -1,13 +1,11 @@
 package deductions.runtime.services
 
 import java.io.ByteArrayOutputStream
-
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationInt
 import scala.util.Try
-
 import org.apache.log4j.Logger
 import org.w3.banana.RDF
 import org.w3.banana.RDFOps
@@ -17,24 +15,28 @@ import org.w3.banana.SparqlOps
 import org.w3.banana.TryW
 import org.w3.banana.io.RDFWriter
 import org.w3.banana.io.Turtle
-
 import deductions.runtime.jena.RDFStoreObject
+import deductions.runtime.dataset.RDFStoreLocalProvider
+import org.w3.banana.TurtleWriterModule
 
 /**
  * Browsable Graph implementation, in the sense of
  *  http://www.w3.org/DesignIssues/LinkedData.html
  */
-class BrowsableGraph[Rdf <: RDF]()(
-    implicit ops: RDFOps[Rdf],
-    sparqlOps: SparqlOps[Rdf],
-    turtleWriter: RDFWriter[Rdf, Try, Turtle], rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET]) {
+trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
+    with TurtleWriterModule //(
+    //    implicit ops: RDFOps[Rdf],
+    //    sparqlOps: SparqlOps[Rdf],
+    //    turtleWriter: RDFWriter[Rdf, Try, Turtle],
+    //    rdfStore: RDFStore[Rdf, Try, DATASET])
+    {
 
   import ops._
   import sparqlOps._
   import rdfStore.sparqlEngineSyntax._
   import rdfStore.transactorSyntax._
 
-  val dataset = RDFStoreObject.dataset
+  //  val dataset = RDFStoreObject.dataset
 
   /**
    * all triples <search> ?p ?o   ,

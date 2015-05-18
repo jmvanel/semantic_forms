@@ -15,10 +15,17 @@ import deductions.runtime.jena.RDFGraphPrinter
 import java.io.PrintStream
 import scala.xml.NodeSeq
 import org.scalatest.BeforeAndAfterAll
+import org.w3.banana.jena.JenaModule
+import deductions.runtime.jena.JenaHelpers
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
 
 /** Test Creation Form from class URI, without form specification */
-class TestCreationForm extends FunSuite with CreationForm with GraphTestEnum
-    with BeforeAndAfterAll {
+class TestCreationForm extends FunSuite
+    with JenaModule
+    with CreationForm with GraphTestEnum
+    with BeforeAndAfterAll
+    with JenaHelpers
+    with RDFStoreLocalJena1Provider {
 
   override def afterAll {
     FileUtils.deleteLocalSPARQL()

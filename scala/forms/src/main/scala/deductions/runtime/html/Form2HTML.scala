@@ -11,8 +11,7 @@ import deductions.runtime.abstract_syntax.DBPediaLookup
  * different modes: display or edit;
  *  take in account datatype
  */
-trait Form2HTML[NODE, URI <: NODE]
-//    extends FormModule[NODE, URI]
+trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
 {
   type fm = FormModule[NODE, URI]
 
@@ -26,7 +25,7 @@ trait Form2HTML[NODE, URI <: NODE]
    *  @param actionURI, actionURI2 HTML actions for the 2 submit buttons
    *  @param graphURI URI for named graph to save user inputs
    */
-  def generateHTML(form: fm#FormSyntax,
+  def generateHTML(form: FormModule[NODE, URI]#FormSyntax,
     hrefPrefix: String = "",
     editable: Boolean = false,
     actionURI: String = "/save", graphURI: String = "",
@@ -52,7 +51,7 @@ trait Form2HTML[NODE, URI <: NODE]
    * generate HTML, but Just Fields;
    *  this lets application developers create their own submit button(s) and <form> tag
    */
-  def generateHTMLJustFields(form: fm#FormSyntax,
+  def generateHTMLJustFields(form: FormModule[NODE, URI]#FormSyntax,
     hrefPrefix: String = "",
     editable: Boolean = false,
     graphURI: String = ""): NodeSeq = {

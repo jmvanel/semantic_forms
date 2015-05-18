@@ -10,7 +10,7 @@ import org.w3.banana.RDFOps
 import org.w3.banana.RDFStore
 import org.w3.banana.URIOps
 import UnfilledFormFactory.defaultInstanceURIPrefix
-import deductions.runtime.jena.RDFStoreObject
+//import deductions.runtime.jena.RDFStoreObject
 import org.w3.banana.SparqlGraphModule
 import org.w3.banana.SparqlEngine
 import org.w3.banana.SparqlOps
@@ -28,11 +28,11 @@ object UnfilledFormFactory {
 }
 
 /** Factory for an Unfilled Form */
-class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
+class UnfilledFormFactory[Rdf <: RDF, DATASET](graph: Rdf#Graph,
   preferedLanguage: String = "en",
   instanceURIPrefix: String = defaultInstanceURIPrefix)(implicit ops: RDFOps[Rdf],
     uriOps: URIOps[Rdf],
-    rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET],
+    rdfStore: RDFStore[Rdf, Try, DATASET],
     sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph],
     sparqlOps: SparqlOps[Rdf])
     extends FormSyntaxFactory[Rdf](graph: Rdf#Graph, preferedLanguage) //    with SparqlGraphModule
@@ -47,7 +47,7 @@ class UnfilledFormFactory[Rdf <: RDF](graph: Rdf#Graph,
    * create Form from a class URI,
    *  looking up for Form Configuration within RDF graph in this class
    */
-  def createFormFromClass(classs: Rdf#URI): FormSyntax = {
+  def createFormFromClass(classs: Rdf#URI): FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
     val (propsListInFormConfig, formConfig) = lookPropertieslistFormInConfiguration(classs)
     if (propsListInFormConfig.isEmpty) {
       val props = fieldsFromClass(classs, graph)

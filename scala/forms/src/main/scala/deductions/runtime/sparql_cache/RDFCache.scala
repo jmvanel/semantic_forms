@@ -21,6 +21,8 @@ import org.w3.banana.jena.Jena
 import com.hp.hpl.jena.query.Dataset
 import org.w3.banana.OWLPrefix
 import org.apache.log4j.Logger
+import org.w3.banana.RDF
+import org.w3.banana.jena.JenaModule
 
 /** */
 trait RDFCacheDependencies
@@ -29,20 +31,23 @@ trait RDFCacheDependencies
   with TurtleReaderModule
   with RDFXMLReaderModule
 
-/** depends on generic Rdf but, through RDFStoreLocalJena1Provider and JenaHelpers, on Jena :( TODO remove Jena */
-trait RDFCache extends RDFStoreLocalJena1Provider
-    with RDFCacheDependencies
-    with JenaHelpers {
+// TODO move to jena
+trait RDFCache extends RDFCacheAlgo[Jena, Dataset] // with JenaModule
 
-  val timestampGraphURI = "http://deductions-software.com/timestampGraph"
-  val xsd = XSDPrefix[Rdf]
-  val owl = OWLPrefix[Rdf]
+/** depends on generic Rdf but, through RDFStoreLocalJena1Provider and JenaHelpers, on Jena :( TODO remove Jena */
+trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
+    with RDFCacheDependencies
+    with RDFStoreHelpers[Rdf, DATASET] {
 
   import ops._
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._
   import rdfStore.sparqlEngineSyntax._
   import scala.concurrent.ExecutionContext.Implicits.global
+
+  val timestampGraphURI = "http://deductions-software.com/timestampGraph"
+  lazy val xsd = XSDPrefix[Rdf]
+  lazy val owl = OWLPrefix[Rdf]
 
   /** with transaction */
   def isGraphInUse(uri: String): Boolean = {
@@ -53,7 +58,7 @@ trait RDFCache extends RDFStoreLocalJena1Provider
   def isGraphInUse(uri: Rdf#URI) = {
     dataset.r({
       for (graph <- dataset.getGraph(uri)) yield {
-        val uriGraphIsEmpty = graph.isEmpty()
+        val uriGraphIsEmpty = graph.size == 0
         println("uriGraphIsEmpty " + uriGraphIsEmpty)
         !uriGraphIsEmpty
       }
@@ -69,7 +74,7 @@ trait RDFCache extends RDFStoreLocalJena1Provider
   def retrieveURI(uri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
     dataset.rw({
       for (graph <- dataset.getGraph(uri)) yield {
-        val uriGraphIsEmpty = graph.isEmpty()
+        val uriGraphIsEmpty = graph.size == 0
         println("uriGraphIsEmpty " + uriGraphIsEmpty)
         if (uriGraphIsEmpty) {
           val g = storeURINoTransaction(uri, uri, dataset)
@@ -154,7 +159,7 @@ trait RDFCache extends RDFStoreLocalJena1Provider
   }
 
   def addTimestampToDatasetNoTransaction(uri: Rdf#URI, dataset: DATASET) = {
-    val time = lastModified(uri.getURI(), 1000)
+    val time = lastModified(fromUri(uri), 1000)
     dataset.appendToGraph(makeUri(timestampGraphURI),
       makeGraph(Seq(makeTriple(
         uri,

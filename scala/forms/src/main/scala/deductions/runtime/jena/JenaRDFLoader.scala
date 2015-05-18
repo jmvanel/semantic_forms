@@ -9,6 +9,7 @@ import org.w3.banana.io._
 import org.w3.banana.jena.{ Jena, JenaOps }
 import scala.util._
 
+/** >>>> temporarily added this, pending Banana RDf pull request */
 trait JenaRDFLoader {
 
   //  def makeRDFLoader() = new RDFLoader[Jena, Try] {

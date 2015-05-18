@@ -22,10 +22,12 @@ import deductions.runtime.uri_classify.SemanticURIGuesser.SemanticURIType
 import org.w3.banana.Prefix
 import deductions.runtime.jena.RDFStoreLocalJenaProvider
 import deductions.runtime.sparql_cache.RDFCache
+import deductions.runtime.jena.JenaHelpers
 
 /** Banana principle: refer to concrete implementation only in blocks without code */
 object SemanticURITypes extends RDFCache
-    with SemanticURITypesTrait[Jena, Dataset] {
+    with SemanticURITypesTrait[Jena, Dataset] with JenaHelpers
+    with RDFStoreLocalJena1Provider {
   val appDataStore = new RDFStoreLocalJena2Provider {}
 }
 

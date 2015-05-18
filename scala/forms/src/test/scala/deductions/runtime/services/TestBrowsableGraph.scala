@@ -19,20 +19,25 @@ import org.w3.banana.SparqlOps
 import deductions.runtime.jena.RDFStoreObject
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import org.scalatest.Ignore
+import deductions.runtime.jena.JenaHelpers
+import org.w3.banana.jena.Jena
+import com.hp.hpl.jena.query.Dataset
 
 //@Ignore
-class TestBrowsableGraph[Rdf <: RDF, Store]
+class TestBrowsableGraph
     extends FunSuite
     with RDFCache
     with RDFOpsModule
     with SparqlGraphModule
     with SparqlOpsModule
     with SparqlHttpModule
-    with RDFStoreLocalJena1Provider {
+    with RDFStoreLocalJena1Provider
+    with JenaHelpers
+    with BrowsableGraph[Jena, Dataset] {
   import ops._
 
   def test {
-    lazy val bg = new BrowsableGraph()
+    lazy val bg = this // new BrowsableGraph[Rdf, Store] {}
 
     val uri = "http://jmvanel.free.fr/jmv.rdf#me"
     retrieveURI(makeUri(uri), dataset)

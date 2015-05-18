@@ -11,10 +11,22 @@ import org.w3.banana.diesel._
 import org.w3.banana.jena.JenaModule
 import deductions.runtime.utils.FileUtils
 import org.scalatest.BeforeAndAfterAll
+import org.w3.banana.RDF
+import org.w3.banana.jena.Jena
+import deductions.runtime.jena.JenaHelpers
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import com.hp.hpl.jena.query.Dataset
+
+class TestCreationForm2Jena extends FunSuite with TestForJena with TestCreationForm2[Jena, Dataset]
+
+trait TestForJena extends JenaModule with JenaHelpers
+  with RDFStoreLocalJena1Provider
 
 /** Test Creation Form with form specification */
-class TestCreationForm2 extends FunSuite
-    with CreationForm with TurtleWriterModule
+trait TestCreationForm2[Rdf <: RDF, DATASET] extends FunSuite
+    with TurtleWriterModule
+    with CreationFormAlgo[Rdf, DATASET]
+    with GraphTest[Rdf]
     with BeforeAndAfterAll {
 
   import ops._
@@ -29,7 +41,7 @@ class TestCreationForm2 extends FunSuite
     retrieveURI(makeUri(uri), dataset)
     // NOTE: without form_specs/foaf.form.ttl
     rdfStore.rw(dataset, {
-      rdfStore.appendToGraph(dataset, makeUri("test"), graphTest.personFormSpec)
+      rdfStore.appendToGraph(dataset, makeUri("test"), personFormSpec)
     })
 
     val form = create(uri, lang = "fr")
@@ -41,11 +53,10 @@ class TestCreationForm2 extends FunSuite
     assert(form.toString().contains("lastName"))
   }
 
-  val graphTest = new AnyRef with JenaModule with GraphTest
-  println(turtleWriter.asString(graphTest.personFormSpec, "blabla"))
+  println(turtleWriter.asString(personFormSpec, "blabla"))
 }
 
-trait GraphTest extends RDFOpsModule {
+trait GraphTest[Rdf <: RDF] extends RDFOpsModule {
   import ops._
   val form = Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#")
   val foaf = FOAFPrefix[Rdf]

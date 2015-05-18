@@ -8,12 +8,17 @@ import play.api.libs.iteratee.Enumerator
 import play.api.libs.iteratee.Iteratee
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import deductions.runtime.jena.JenaHelpers
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
 
-object Application extends Controller with TableView {
+object Application extends Controller with TableView
+with JenaHelpers
+with RDFStoreLocalJena1Provider {
   val glob = _root_.global.Global
 
   def index = {
     Action { Ok(views.html.index(glob.form)) }
+//    Action { Ok( "OK !!!!!!!!!!!!!!!!") }
   }
 
   def displayURI(uri: String, blanknode: String = "", Edit: String = "") = {
@@ -79,7 +84,7 @@ object Application extends Controller with TableView {
       println("create: " + request)
       val uri = getFirstNonEmptyInMap(request.queryString) . get
       println("create: " + uri)
-      Ok(views.html.index(glob.create(uri, chooseLanguage(request))))
+      Ok(views.html.index(glob.createElem2(uri, chooseLanguage(request))))
     }
   }
 

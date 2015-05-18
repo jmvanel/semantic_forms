@@ -16,20 +16,27 @@ import scala.util.Try
 import scala.concurrent.Future
 import org.w3.banana._
 import org.w3.banana.jena.Jena
+import deductions.runtime.dataset.RDFStoreLocalProvider
+import org.w3.banana.jena.JenaModule
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import com.hp.hpl.jena.query.Dataset
 
-object FormSaverObject extends FormSaver[Jena]
+object FormSaverObject extends FormSaver[Jena, Dataset] with JenaModule with RDFStoreLocalJena1Provider
 
-class FormSaver[Rdf <: RDF]()(
-    implicit ops: RDFOps[Rdf],
-    sparqlOps: SparqlOps[Rdf],
-    writer: RDFWriter[Rdf, Try, Turtle],
-    rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET]) {
+trait FormSaver[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
+    with TurtleWriterModule
+    with SparqlGraphModule //(
+    //    implicit ops: RDFOps[Rdf],
+    //    sparqlOps: SparqlOps[Rdf],
+    //    writer: RDFWriter[Rdf, Try, Turtle],
+    //    rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET])
+    {
 
   import ops._
   import sparqlOps._
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._
-  val dataset = RDFStoreObject.dataset
+  //  val dataset = RDFStoreObject.dataset
 
   /**
    * @param map a raw map of HTTP response parameters
@@ -139,6 +146,7 @@ class FormSaver[Rdf <: RDF]()(
               case gr =>
                 if (triplesToRemove.size > 0 ||
                   triples.size > 0) {
+                  val writer: RDFWriter[Rdf, Try, Turtle] = turtleWriter
                   val graphAsString = writer.asString(gr, base = graphURI) getOrElse sys.error(
                     "coudn't serialize the graph")
                   println("Graph with modifications:\n" + graphAsString)

@@ -9,6 +9,11 @@ import org.w3.banana.SparqlOpsModule
 import org.w3.banana.PointedGraph
 import org.w3.banana.diesel._
 import org.scalatest.FunSuite
+import org.w3.banana.jena.JenaModule
+import deductions.runtime.jena.JenaHelpers
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import org.w3.banana.jena.Jena
+import com.hp.hpl.jena.query.Dataset
 //import deductions.runtime.jena.RDFStoreLocalProvider
 
 class TestFormSaver
@@ -17,11 +22,13 @@ class TestFormSaver
     with RDFOpsModule
     with SparqlGraphModule
     with SparqlOpsModule //    with RDFStoreLocalProvider[Rdf, DATASET]
-    //    with RDFStoreLocalProvider 
-    {
+    with JenaModule //    with RDFStoreLocalProvider 
+    with JenaHelpers
+    with RDFStoreLocalJena1Provider
+    with FormSaver[Jena, Dataset] {
   import ops._
 
-  lazy val fs = new FormSaver()
+  lazy val fs = this // new FormSaver[Jena, Dataset] {}
 
   val uri = "http://jmvanel.free.fr/jmv.rdf#me"
   retrieveURI(makeUri(uri), dataset)

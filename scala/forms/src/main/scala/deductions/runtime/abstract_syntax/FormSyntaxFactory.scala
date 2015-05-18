@@ -66,12 +66,12 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
   val rdfh = { val gr = graph; new RDFHelpers[Rdf] { val graph = gr } }
   import rdfh._
   println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
-  type AbstractForm = FormSyntax
+  //  type AbstractForm = FormSyntax
 
   /** create Form from an instance (subject) URI */
   def createForm(subject: Rdf#Node,
     editable: Boolean = false,
-    formGroup: Rdf#URI = nullURI): AbstractForm = {
+    formGroup: Rdf#URI = nullURI): FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
 
     val propsFromSubject = fieldsFromSubject(subject, graph)
     val classs = classFromSubject(subject) // TODO several classes
@@ -92,7 +92,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
   def createFormDetailed(subject: Rdf#Node,
     props: Iterable[Rdf#URI], classs: Rdf#URI,
     formGroup: Rdf#URI = nullURI,
-    formConfig: Rdf#Node = URI("")): AbstractForm = {
+    formConfig: Rdf#Node = URI("")): FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
 
     Logger.getRootLogger().info(s"createForm subject $subject, props $props")
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
@@ -126,7 +126,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
    *   :widgetClass form:DBPediaLookup .
    *  <pre>
    */
-  private def updateFormFromConfig(formSyntax: AbstractForm, formConfig: Rdf#Node): AbstractForm = {
+  private def updateFormFromConfig(formSyntax: FormSyntax, formConfig: Rdf#Node): FormSyntax = {
     val updatedFields = for (field <- formSyntax.fields) yield {
       val fieldSpecs = formConfiguration.lookFieldSpecInConfiguration(field.property)
       println("updateFormForClass")

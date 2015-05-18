@@ -18,7 +18,7 @@ import org.w3.banana.Prefix
  * Factory for populating Form from graph
  */
 class FormConfigurationFactory[Rdf <: RDF](graph: Rdf#Graph)(implicit ops: RDFOps[Rdf],
-    uriOps: URIOps[Rdf] //    rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET]
+    uriOps: URIOps[Rdf] //    rdfStore: RDFStore[Rdf, Try, DATASET]
     ) {
 
   val formPrefix: Prefix[Rdf] = Prefix("form", FormSyntaxFactory.formVocabPrefix)

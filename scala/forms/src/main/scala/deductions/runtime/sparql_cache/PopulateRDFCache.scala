@@ -26,6 +26,8 @@ import scala.util.Failure
 import scala.util.Try
 import scala.util.Success
 import org.w3.banana.LocalNameException
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import deductions.runtime.jena.JenaHelpers
 
 /**
  * Populate RDF Cache with commonly used vocabularies;
@@ -38,8 +40,12 @@ import org.w3.banana.LocalNameException
  *  TODO use prefix.cc web service to load from prefix short names (see implementation in EulerGUI)
  */
 object PopulateRDFCache extends RDFCache
+    with RDFOpsModule
+    with RDFStoreLocalJena1Provider
+    with JenaHelpers
     with App {
 
+  import ops._
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._
 
@@ -103,7 +109,7 @@ object PopulateRDFCache extends RDFCache
      * foaf: form:ontologyHasFormSpecification <foaf.form.ttl> . */
     val triples: Iterator[Rdf#Triple] = ops.find(form_specs_graph, ops.ANY, formPrefix("ontologyHasFormSpecification"), ops.ANY)
     val objects = for (triple <- triples) yield {
-      triple.getObject
+      triple._3 // getObject
     }
     for (obj <- objects) {
       val from = new java.net.URL(obj.toString()).openStream()

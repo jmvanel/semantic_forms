@@ -4,9 +4,14 @@ import org.scalatest.FunSuite
 import java.nio.file.Files
 import java.nio.file.Paths
 import org.scalatest.Ignore
+import deductions.runtime.jena.JenaHelpers
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
 
 // @Ignore
-class TestTableView extends FunSuite with TableView {
+class TestTableView extends FunSuite
+    with JenaHelpers
+    with TableView
+    with RDFStoreLocalJena1Provider {
 
   test("display form") {
     val uri = "http://jmvanel.free.fr/jmv.rdf#me"
