@@ -16,12 +16,17 @@
 
   <section class="skills">
     <div class="self">
+      <!-- for pull-down menu with completion -->
       <input type="text" id="input-proxy" />
+      <!-- for tags with delete cross -->
       <input type="text" id="input-tags" />
     </div>
   </section>
 
   <script>
+    /** callback for calling the web service (dbpedia lookup)
+     * arguments: query: the (partial) keyword for dbpedia
+     * callback: inner selectize function  */
     var loadFunction = function(query, callback) {
       console.log("query:" + query);
       $.ajax({
@@ -40,6 +45,7 @@
         success: function(res) {
           var json = res.results;
           for (var entry in json) {
+            // hack to filter options displayed on dropdown; see searchField below
             json[entry]["query"] = query;
             console.log(json[entry]);
           }
@@ -47,12 +53,16 @@
         }
       });
     };
+
     // TODO handle selection from arrow keys
     // TODO use score function to avoid partial matching ?
+
+    // DEBUG:
     var onInitializeFunction = function(data) {
       console.log("selectize.js is initialized");
     };
 
+    // selectize options
     var options = {
       onInitialize: onInitializeFunction,
       plugins: ["remove_button" /*, "drag_drop"*/],
@@ -74,9 +84,9 @@
       },
     }
 
+    /** tell selectize to do its job on this HTML element */
     var select = $("#input-tags");
-    var tmp = (select.selectize(options)[0])
-    console.log(tmp);
+    // DEBUG : var tmp = (select.selectize(options)[0]); console.log(tmp);
     var selectize = (select.selectize(options)[0]).selectize;
     selectize.on("load", function(data) {
       console.log("loaded");
@@ -90,17 +100,19 @@
       selectize.refreshOptions(true);
     });
 
+    /** wait some delay to send the characters typed */
     var delayFunction = function() {
       console.warn("items : " + this.items);
       this.setTextboxValue($("#input-proxy").val());
       console.log("will query : " + $("#input-proxy").val());
       var fn = this.settings.load;
-      // TODO break on empty string
+      // TODO do nothing on empty string
       this.load(function(callback) {
         fn.apply(self, [$("#input-proxy").val(), callback]);
       });
       this.refreshOptions(true);
     }.bind(selectize);
+
     var timer = timer || 0;
     $("#input-proxy").keydown(function(e) {
       clearInterval(timer);

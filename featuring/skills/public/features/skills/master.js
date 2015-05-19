@@ -28,6 +28,7 @@
 		    loadScript("/selectize.js", function() {
 			console.log("selectize loaded");
 
+////////////>>>>>>>>>>
 			var loadFunction = function(query, callback) {
 
 			    // if (!query.length) return callback();
@@ -172,6 +173,7 @@
 			// var selectProxy = $("#input-proxy");
 			// selectizeProxy =
 			// selectProxy.selectize(options)[0].selectize;
+////>>>>>>>>>>>>>>>>>>>
 
 		    }, function() {
 		    });
