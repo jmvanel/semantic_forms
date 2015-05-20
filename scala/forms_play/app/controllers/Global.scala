@@ -246,7 +246,7 @@ package global {
 
       <div class="container">
         <h2>Creating an instance of Class <strong>{ uri }</strong></h2>
-        { cf.create(uri, lang) }
+        { cf.create(uri, lang).get }
       </div>
     }
 

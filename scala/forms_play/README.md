@@ -82,6 +82,9 @@ The default port is 9000, so you can direct your browser to [http://localhost:90
 To run on another port than 9000 :
     run 9053
 
+To raise the memory, set this environment variable:
+    export SBT_OPTS="-Xmx2G"
+
 ## Run on a server without development environment
 
 To package to run on a server that has Java only: type in activator : `dist`

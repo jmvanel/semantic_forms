@@ -15,7 +15,10 @@ import org.w3.banana.RDFModule
 import org.w3.banana._
 import org.w3.banana.diesel._
 
-/** unused */
+/**
+ * unused
+ * populate Fields in form by inferencing from given instance URI
+ */
 trait FormFromInstance[Rdf <: RDF]
     extends RDFOpsModule {
   /** find fields from given Instance subject */
