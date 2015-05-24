@@ -56,6 +56,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
 
   lazy val nullURI = ops.URI("") // http://null.com#")
   val literalInitialValue = "" // ..empty.."
+  override def makeURI(n: Rdf#Node): Rdf#URI = URI(n.toString())
 
   val rdfs = RDFSPrefix[Rdf]
   val owl = OWLPrefix[Rdf]
@@ -127,21 +128,28 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
    *  <pre>
    */
   private def updateFormFromConfig(formSyntax: FormSyntax, formConfig: Rdf#Node): FormSyntax = {
-    val updatedFields = for (field <- formSyntax.fields) yield {
+    for (field <- formSyntax.fields) yield {
       val fieldSpecs = formConfiguration.lookFieldSpecInConfiguration(field.property)
-      println("updateFormForClass")
-      fieldSpecs.map { println }
+      println(s"""updateFormFromConfig field $field -- fieldSpecs size ${fieldSpecs.size}
+        $fieldSpecs""")
       fieldSpecs.map {
         fieldSpec =>
           val triples = find(graph, fieldSpec.subject, ANY, ANY).toSeq
           for (t <- triples) {
-            println("updateFormForClass " + t)
+            println(s"updateFormFromConfig fieldSpec $fieldSpec -- triple $t")
             field.addTriple(t.subject, t.predicate, t.objectt)
           }
           // TODO each feature should be in a different file
           for (t <- triples) {
-            if (t.predicate == formPrefix("widgetClass"))
-              field.widgetType = DBPediaLookup
+            if (t.predicate == formPrefix("widgetClass")
+              && t.objectt == formPrefix("DBPediaLookup")) {
+              def replace[T](s: Seq[T], occurence: T, replacement: T): Seq[T] = {
+                s.map { i => if (i == occurence) replacement else i }
+              }
+              val rep = field.asResource
+              rep.widgetType = DBPediaLookup
+              formSyntax.fields = replace(formSyntax.fields, field, rep)
+            }
           }
       }
     }
@@ -221,7 +229,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
         // TODO match graph pattern for interval datatype ; see issue #17
         // case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
         new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
-          getStringOrElse(object_, literalInitialValue),
+          getNodeOrElse(object_, literalInitialValue),
           type_ = firstType)
       }
       def resourceEntry = {

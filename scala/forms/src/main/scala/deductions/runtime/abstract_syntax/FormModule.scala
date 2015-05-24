@@ -33,7 +33,7 @@ trait FormModule[NODE, URI <: NODE] {
    */
   case class FormSyntax(
       val subject: NODE,
-      val fields: Seq[Entry],
+      var fields: Seq[Entry],
       classs: URI = nullURI,
       formGroup: URI = nullURI,
       //      var defaultCardinality: Cardinality = zeroOrOne,
@@ -52,6 +52,8 @@ trait FormModule[NODE, URI <: NODE] {
   case class Triple(val s: NODE, val p: URI, val o: NODE)
 
   val nullURI: URI
+  def makeURI(n: NODE): URI = nullURI
+
   /**
    * openChoice allows user in form to choose a value not in suggested values
    *  TODO somehow factor value: Any ?
@@ -61,7 +63,7 @@ trait FormModule[NODE, URI <: NODE] {
       val property: URI = nullURI,
       val mandatory: Boolean = false,
       val type_ : NODE = nullURI,
-      val value: Any = "",
+      val value: NODE = nullURI, // Any = "",
       var widgetType: WidgetType = Text,
       var openChoice: Boolean = true,
       var possibleValues: Seq[(NODE, NODE)] = Seq(),
@@ -74,6 +76,10 @@ trait FormModule[NODE, URI <: NODE] {
     def addTriple(s: NODE, p: URI, o: NODE) = {
       val t = Triple(s, p, o)
       triples :+ t
+    }
+
+    def asResource(): Entry = {
+      this
     }
   }
 
@@ -97,7 +103,19 @@ trait FormModule[NODE, URI <: NODE] {
       ret.widgetType = this.widgetType
       ret
     }
+
+    def this(e: Entry, validator: ResourceValidator,
+      alreadyInDatabase: Boolean,
+      valueLabel: String) = this(
+      e.label: String, e.comment: String,
+      e.property, validator,
+      makeURI(e.value),
+      alreadyInDatabase,
+      e.possibleValues,
+      valueLabel,
+      makeURI(e.type_))
   }
+
   class BlankNodeEntry(label: String, comment: String,
       property: ObjectProperty = nullURI, validator: ResourceValidator,
       value: NODE, type_ : NODE = nullURI,
@@ -115,11 +133,12 @@ trait FormModule[NODE, URI <: NODE] {
     }
   }
   class LiteralEntry(l: String, c: String,
-      property: DatatypeProperty = nullURI, validator: DatatypeValidator,
-      value: String = "",
-      val lang: String = "",
-      type_ : NODE = nullURI,
-      possibleValues: Seq[(NODE, NODE)] = Seq()) extends Entry(l, c, property, type_ = type_, value = value, possibleValues = possibleValues) {
+    property: DatatypeProperty = nullURI, validator: DatatypeValidator,
+    value: NODE = nullURI, // String = "",
+    val lang: String = "",
+    type_ : NODE = nullURI,
+    possibleValues: Seq[(NODE, NODE)] = Seq()) extends Entry(l, c, property, type_ = type_,
+    value = value, possibleValues = possibleValues) {
     override def toString(): String = {
       super.toString + s""" := "$value" """
     }
@@ -132,6 +151,15 @@ trait FormModule[NODE, URI <: NODE] {
       ret.widgetType = this.widgetType
       ret
     }
+
+    override def asResource(): Entry = {
+      new ResourceEntry(this,
+        validator = null,
+        alreadyInDatabase = true,
+        valueLabel = ""
+      )
+    }
+
   }
 
   case class ResourceValidator(typ: Set[NODE]) // URI])
