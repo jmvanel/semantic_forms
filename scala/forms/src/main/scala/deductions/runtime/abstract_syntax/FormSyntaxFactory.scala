@@ -56,7 +56,8 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
 
   lazy val nullURI = ops.URI("") // http://null.com#")
   val literalInitialValue = "" // ..empty.."
-  override def makeURI(n: Rdf#Node): Rdf#URI = URI(n.toString())
+  override def makeURI(n: Rdf#Node): Rdf#URI = URI(ops.foldNode(n)(
+    fromUri(_), fromBNode(_), fromLiteral(_)._1))
 
   val rdfs = RDFSPrefix[Rdf]
   val owl = OWLPrefix[Rdf]
@@ -67,20 +68,22 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
   val rdfh = { val gr = graph; new RDFHelpers[Rdf] { val graph = gr } }
   import rdfh._
   println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
-  //  type AbstractForm = FormSyntax
 
   /** create Form from an instance (subject) URI */
   def createForm(subject: Rdf#Node,
     editable: Boolean = false,
     formGroup: Rdf#URI = nullURI): FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
 
-    val propsFromSubject = fieldsFromSubject(subject, graph)
     val classs = classFromSubject(subject) // TODO several classes
+
+    val propsFromConfig = formConfiguration.lookPropertieslistFormInConfiguration(classs)._1
+    val propsFromSubject = fieldsFromSubject(subject, graph)
     val propsFromClass =
       if (editable) {
         fieldsFromClass(classs, graph)
       } else Seq()
-    createFormDetailed(subject, (propsFromSubject ++ propsFromClass).distinct, classs, formGroup)
+
+    createFormDetailed(subject, (propsFromConfig ++ propsFromSubject ++ propsFromClass).distinct, classs, formGroup)
   }
 
   /**
@@ -117,6 +120,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
   }
 
   val formConfiguration = new FormConfigurationFactory[Rdf](graph)
+
   /**
    * update given Form,
    * looking up for Form Configuration within RDF graph in this class
@@ -128,7 +132,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
    *  <pre>
    */
   private def updateFormFromConfig(formSyntax: FormSyntax, formConfig: Rdf#Node): FormSyntax = {
-    for (field <- formSyntax.fields) yield {
+    for (field <- formSyntax.fields) {
       val fieldSpecs = formConfiguration.lookFieldSpecInConfiguration(field.property)
       println(s"""updateFormFromConfig field $field -- fieldSpecs size ${fieldSpecs.size}
         $fieldSpecs""")

@@ -9,20 +9,20 @@ trait FieldsInference[Rdf <: RDF] {
 
   import ops._
 
-  def fieldsFromClass(classs: Rdf#URI, graph: Rdf#Graph): Set[Rdf#URI] = {
+  def fieldsFromClass(classs: Rdf#URI, graph: Rdf#Graph): Seq[Rdf#URI] = {
+
     /** retrieve rdfs:domain's From given Class */
-    def domainsFromClass(classs: Rdf#Node) = {
+    def domainsFromClass(classs: Rdf#Node): List[Rdf#URI] = {
       if (classs != owl.Thing) {
-        val relevantPredicates = getSubjects(graph, rdfs.domain, classs).toSet
+        val relevantPredicates = getSubjects(graph, rdfs.domain, classs).toSeq
         println(s"""domainsFromClass <$classs> size ${relevantPredicates.size}  ; ${relevantPredicates.mkString(", ")}""")
-        rdfh.nodeSeqToURISet(relevantPredicates)
-      } else Set()
+        rdfh.nodeSeqToURISeq(relevantPredicates).distinct.toList
+      } else List()
     }
 
-    val result = scala.collection.mutable.Set[Rdf#URI]()
+    val result = scala.collection.mutable.ListBuffer[Rdf#URI]()
 
     /** recursively process super-classes and owl:equivalentClass until reaching owl:Thing */
-    //    def processSuperClasses(classs: Rdf#URI) {
     def processSuperClasses(classs: Rdf#Node) {
       if (classs != owl.Thing) {
         result ++= domainsFromClass(classs)
@@ -80,6 +80,6 @@ trait FieldsInference[Rdf <: RDF] {
 
     processSuperClasses(classs)
     if (domainlessProperties) addDomainlessProperties(classs)
-    result.toSet
+    result.distinct
   }
 }

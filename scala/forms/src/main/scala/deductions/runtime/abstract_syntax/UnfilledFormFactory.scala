@@ -10,7 +10,6 @@ import org.w3.banana.RDFOps
 import org.w3.banana.RDFStore
 import org.w3.banana.URIOps
 import UnfilledFormFactory.defaultInstanceURIPrefix
-//import deductions.runtime.jena.RDFStoreObject
 import org.w3.banana.SparqlGraphModule
 import org.w3.banana.SparqlEngine
 import org.w3.banana.SparqlOps
@@ -20,7 +19,9 @@ import org.w3.banana.SparqlOps
  *
  */
 object UnfilledFormFactory {
+  /** TODO put in config. */
   var defaultInstanceURIPrefix = "http://assemblee-virtuelle.org/resource/"
+
   /** make a unique Id with given prefix, currentTimeMillis() and nanoTime() */
   def makeId(instanceURIPrefix: String): String = {
     instanceURIPrefix + System.currentTimeMillis() + "-" + System.nanoTime() // currentId = currentId + 1
@@ -35,12 +36,8 @@ class UnfilledFormFactory[Rdf <: RDF, DATASET](graph: Rdf#Graph,
     rdfStore: RDFStore[Rdf, Try, DATASET],
     sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph],
     sparqlOps: SparqlOps[Rdf])
-    extends FormSyntaxFactory[Rdf](graph: Rdf#Graph, preferedLanguage) //    with SparqlGraphModule
-    {
+    extends FormSyntaxFactory[Rdf](graph: Rdf#Graph, preferedLanguage) {
 
-  //  val gr = graph
-  //  val rdfh = new RDFHelpers[Rdf] { val graph = gr }
-  //  val formConfiguration = new FormConfigurationFactory[Rdf](graph)
   import formConfiguration._
 
   /**
@@ -57,7 +54,6 @@ class UnfilledFormFactory[Rdf <: RDF, DATASET](graph: Rdf#Graph,
   }
 
   def makeId: String = {
-    //      instanceURIPrefix + System.currentTimeMillis() + "-" + System.nanoTime() // currentId = currentId + 1
     UnfilledFormFactory.makeId(instanceURIPrefix)
   }
 }

@@ -18,15 +18,13 @@ import org.w3.banana.Prefix
  * Factory for populating Form from graph
  */
 class FormConfigurationFactory[Rdf <: RDF](graph: Rdf#Graph)(implicit ops: RDFOps[Rdf],
-    uriOps: URIOps[Rdf] //    rdfStore: RDFStore[Rdf, Try, DATASET]
-    ) {
+    uriOps: URIOps[Rdf]) {
 
   val formPrefix: Prefix[Rdf] = Prefix("form", FormSyntaxFactory.formVocabPrefix)
   val gr = graph
   val rdfh = new RDFHelpers[Rdf] { val graph = gr }
   import rdfh._
   import ops._
-  //    val rdf = RDFPrefix[Rdf]
 
   /**
    * lookup for form:showProperties (ordered list of fields) in Form Configuration within RDF graph in this class
@@ -37,7 +35,6 @@ class FormConfigurationFactory[Rdf <: RDF](graph: Rdf#Graph)(implicit ops: RDFOp
     formSpecOption match {
       case None => (Seq(), URI(""))
       case Some(formConfiguration) =>
-        // val props = ops.getObjects(graph, f, form("showProperties"))
         val props = objectsQuery(formConfiguration, formPrefix("showProperties"))
         for (p <- props) { println("showProperties " + p) }
         val p = props.headOption
