@@ -183,17 +183,19 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
 
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   private def createHTMLResourceEditableLField(r: fm#ResourceEntry): NodeSeq = {
-    Seq( 
-//    val y: NodeSeq  =
-    
-          // format: OFF
+    val lookup = r.widgetType == DBPediaLookup
+    Seq(     
+    		// format: OFF
         if (r.openChoice)
           <input class={ cssClasses.formInputCSSClass } value={ r.value.toString }
             name={ makeHTMLIdResource(r) }
             list={ makeHTMLIdForDatalist(r) }
             data-type={ r.type_.toString() }
-            placeholder={ s"Enter or paste a resource URI, URL, IRI, etc of type ${r.type_.toString()}" }
-            onkeyup={if (r.widgetType == DBPediaLookup) "onkeyupComplete(this);" else null}
+            placeholder={ if (lookup)
+              s"Enter a word; completion with Wikipedia lookup"
+              else
+              s"Enter or paste a resource URI, URL, IRI, etc of type ${r.type_.toString()}" }
+            onkeyup={if (lookup) "onkeyupComplete(this);" else null}
             size={inputSize.toString()} >
           </input> else new Text("") // format: ON
           ,

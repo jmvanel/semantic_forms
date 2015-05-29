@@ -1,0 +1,26 @@
+@prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#> .
+@prefix cob: <http://cobusiness.fr/ontologies/barter.owl.n3#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+
+
+<cob-User-Form>
+  form:classDomain cob:User ;
+  form:showProperties (
+	foaf:firstName foaf:lastName
+	cob:network
+	cob:socialNetworks
+	foaf:mbox
+	foaf:phone
+
+	foaf:img
+	foaf:topic_interest
+	dc:subject
+	foaf:knows
+) .
+
+<topic_interest1>
+	:fieldAppliesToForm <owl-ClassForm> ;
+	:fieldAppliesToProperty dc:subject ;
+	:widgetClass form:DBPediaLookup .
+
