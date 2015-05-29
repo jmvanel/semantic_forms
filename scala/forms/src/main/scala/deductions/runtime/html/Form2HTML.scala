@@ -6,6 +6,7 @@ import java.net.URLEncoder
 import Form2HTML._
 import scala.xml.NodeSeq
 import deductions.runtime.abstract_syntax.DBPediaLookup
+import scala.xml.Text
 
 /**
  * different modes: display or edit;
@@ -16,6 +17,7 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
   type fm = FormModule[NODE, URI]
 
   val radioForIntervals = false // TODO the choice should be moved to FormSyntaxFactory
+  val inputSize = 90
 
   def toPlainString(n: NODE): String = n.toString()
 
@@ -47,6 +49,30 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
       htmlForm
   }
 
+  /** default is bootstrap classes */
+  case class CSSClasses(
+    val formRootCSSClass: String = "form",
+    val formFieldCSSClass: String = "form-group",
+    val formLabelAndInputCSSClass: String = "row",
+    val formLabelCSSClass: String = "control-label",
+    val formInputCSSClass: String = "input")
+
+  val tableCSSClasses = CSSClasses(
+    formRootCSSClass = "form-root",
+    formFieldCSSClass = "",
+    formLabelAndInputCSSClass = "form-row",
+    formLabelCSSClass = "form-cell",
+    formInputCSSClass = "form-input")
+
+  val localCSS = <script>
+                   .form-row{{ display: table-row; }}
+                   .form-cell{{ display: table-cell; }}
+                   .form-input{{ display: table-cell; width: 500px; }}
+                   .button-add{{ width: 200px; }}
+                 </script>
+
+  val cssClasses = tableCSSClasses
+
   /**
    * generate HTML, but Just Fields;
    *  this lets application developers create their own submit button(s) and <form> tag
@@ -60,23 +86,22 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
       <input type="hidden" name="graphURI" value={ urlEncode(graphURI) }/>
     } else Seq()
     hidden ++
-      <div class="form">
+      localCSS ++
+      <div class={ cssClasses.formRootCSSClass }>
         <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
         {
           for (field <- form.fields) yield {
-            <div class="form-group">
-              <div class="row">
-                <label class="control-label" title={ field.comment + " - " + field.property }>{ field.label }</label>
-                {
-                  if (shouldAddAddRemoveWidgets(field, editable))
-                    createHTMLField(field, editable, hrefPrefix)
-                  else
-                    // that's for corporate_risk:
-                    <div class="input">
-                      { createHTMLField(field, editable, hrefPrefix) }
-                    </div>
-                }
-              </div>
+            <div class={ cssClasses.formLabelAndInputCSSClass }>
+              <label class={ cssClasses.formLabelCSSClass } title={ field.comment + " - " + field.property }>{ field.label }</label>
+              {
+                if (shouldAddAddRemoveWidgets(field, editable))
+                  createHTMLField(field, editable, hrefPrefix)
+                else
+                  // that's for corporate_risk:
+                  <div class={ cssClasses.formInputCSSClass }>
+                    { createHTMLField(field, editable, hrefPrefix) }
+                  </div>
+              }
             </div>
           }
         }
@@ -112,7 +137,7 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
         {
           if (editable) {
             if (r.openChoice) {
-              <input class="form-control" value={ r.value.toString } name={ makeHTMLIdBN(r) } data-type={ r.type_.toString() }>
+              <input class={ cssClasses.formInputCSSClass } value={ r.value.toString } name={ makeHTMLIdBN(r) } data-type={ r.type_.toString() } size={ inputSize.toString() }>
               </input>
             }
             <input value={ r.value.toString } name={ "ORIG-BLA-" + urlEncode(r.property) } type="hidden">
@@ -141,7 +166,7 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
     if (shouldAddAddRemoveWidgets(field, editable)) {
       // button with an action to duplicate the original HTML widget with (TODO) an empty content
       val widgetName = makeHTMLId(field)
-      <input value="+" class="btn-primary" size="1" title={ "Add another value for " + field.label } onClick={
+      <input value="+" class="button-add btn-primary" readonly="yes" size="1" title={ "Add another value for " + field.label } onClick={
         s""" cloneWidget( "$widgetName" ); """
       }></input>
     } else <span></span>
@@ -158,40 +183,37 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
 
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   private def createHTMLResourceEditableLField(r: fm#ResourceEntry): NodeSeq = {
-    <div>
-      {
-        Seq( // format: OFF
+    Seq( 
+//    val y: NodeSeq  =
+    
+          // format: OFF
         if (r.openChoice)
-          <input class="form-control" value={ r.value.toString }
+          <input class={ cssClasses.formInputCSSClass } value={ r.value.toString }
             name={ makeHTMLIdResource(r) }
             list={ makeHTMLIdForDatalist(r) }
             data-type={ r.type_.toString() }
             placeholder={ s"Enter or paste a resource URI, URL, IRI, etc of type ${r.type_.toString()}" }
-            onkeyup={if (r.widgetType == DBPediaLookup) "onkeyupComplete(this);" else null}>
-          </input> else <span></span> // format: ON
+            onkeyup={if (r.widgetType == DBPediaLookup) "onkeyupComplete(this);" else null}
+            size={inputSize.toString()} >
+          </input> else new Text("") // format: ON
           ,
-          if (r.widgetType == DBPediaLookup)
-            formatPossibleValues(r, inDatalist = true)
-          else <span></span>
-        )
-      }
-      {
-        if (!r.possibleValues.isEmpty && r.widgetType != DBPediaLookup)
-          <select value={ r.value.toString } name={ makeHTMLIdResource(r) }>
-            { formatPossibleValues(r) }
-          </select>
-      }
-      {
-        Seq(
-          /* if Resource is alreadyInDatabase, send original value to later save 
+      if (r.widgetType == DBPediaLookup)
+        formatPossibleValues(r, inDatalist = true)
+      else new Text(""),
+
+      if (!r.possibleValues.isEmpty && r.widgetType != DBPediaLookup)
+        <select value={ r.value.toString } name={ makeHTMLIdResource(r) }>
+          { formatPossibleValues(r) }
+        </select>
+      else new Text(""),
+      /* if Resource is alreadyInDatabase, send original value to later save 
            * if there is a change */
-          if (r.alreadyInDatabase) {
-            { println("r.alreadyInDatabase " + r) }
-            <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden">
-            </input>
-          })
-      }
-    </div>
+      if (r.alreadyInDatabase) {
+        { println("r.alreadyInDatabase " + r) }
+        <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden">
+        </input>
+      } else new Text("")
+    ).flatMap { identity }
   }
 
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
@@ -214,7 +236,7 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
         }
 
       case _ =>
-        <input class="form-control" value={ lit.value.toString() } name={ makeHTMLIdForLiteral(lit) } type={ HTML5Types.xsd2html5TnputType(lit.type_.toString()) } placeholder={ placeholder }>
+        <input class={ cssClasses.formInputCSSClass } value={ lit.value.toString() } name={ makeHTMLIdForLiteral(lit) } type={ HTML5Types.xsd2html5TnputType(lit.type_.toString()) } placeholder={ placeholder } size={ inputSize.toString() }>
         </input>
     }
     elem ++

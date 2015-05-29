@@ -36,8 +36,7 @@ trait TableView extends JenaModule with TableViewModule[Jena, Dataset]
 trait TableViewModule[Rdf <: RDF, DATASET]
     extends RDFOpsModule
     with RDFCacheAlgo[Rdf, DATASET]
-    with SparqlGraphModule // with Form2HTML[Rdf#Node, Rdf#URI] //with FormSyntaxFactoryTrait[Rdf]
-    {
+    with SparqlGraphModule {
   import ops._
   import rdfStore.transactorSyntax._
 
@@ -129,7 +128,10 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     formGroup: Rdf#URI = nullURI): NodeSeq = {
     val form = createAbstractForm(graph, uri, editable, lang, blankNode, formGroup)
     val htmlForm =
-      new Form2HTML[Rdf#Node, Rdf#URI] {}.
+      new Form2HTML[Rdf#Node, Rdf#URI] {
+        override def toPlainString(n: Rdf#Node): String =
+          ops.foldNode(n)(fromUri(_), fromBNode(_), fromLiteral(_)._1)
+      }.
         generateHTML(form, hrefPrefix, editable, actionURI, graphURI,
           actionURI2)
     htmlForm
