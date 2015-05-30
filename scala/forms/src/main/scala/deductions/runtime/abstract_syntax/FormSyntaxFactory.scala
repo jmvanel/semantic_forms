@@ -134,13 +134,14 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
   private def updateFormFromConfig(formSyntax: FormSyntax, formConfig: Rdf#Node): FormSyntax = {
     for (field <- formSyntax.fields) {
       val fieldSpecs = formConfiguration.lookFieldSpecInConfiguration(field.property)
-      println(s"""updateFormFromConfig field $field -- fieldSpecs size ${fieldSpecs.size}
+      if (!fieldSpecs.isEmpty)
+        println(s"""updateFormFromConfig field $field -- fieldSpecs size ${fieldSpecs.size}
         $fieldSpecs""")
       fieldSpecs.map {
         fieldSpec =>
           val triples = find(graph, fieldSpec.subject, ANY, ANY).toSeq
           for (t <- triples) {
-            println(s"updateFormFromConfig fieldSpec $fieldSpec -- triple $t")
+//            println(s"updateFormFromConfig fieldSpec $fieldSpec -- triple $t")
             field.addTriple(t.subject, t.predicate, t.objectt)
           }
           // TODO each feature should be in a different file
@@ -204,8 +205,8 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
   private def makeEntries(subject: Rdf#Node, prop: Rdf#URI, ranges: Set[Rdf#Node],
     valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)]): Seq[Entry] = {
     Logger.getRootLogger().info(s"makeEntry subject $subject, prop $prop")
-    val label = getHeadStringOrElse(prop, rdfs.label, terminalPart(prop))
-    val comment = getHeadStringOrElse(prop, rdfs.comment, "")
+    val label = getPreferedLanguageFromSubjectAndPredicate(prop, rdfs.label, terminalPart(prop))
+    val comment = getPreferedLanguageFromSubjectAndPredicate(prop, rdfs.comment, "")
     val propClasses = objectsQuery(prop, RDFPrefix[Rdf].typ)
     val objects = objectsQuery(subject, prop)
     val result = scala.collection.mutable.ArrayBuffer[Entry]()
@@ -294,11 +295,11 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
   }
 
   /**
-   * get "first" String value (RDF object) Or Else given default;
+   * get value in preferred Language From Values Or Else given default;
    *  use application language
    */
-  private def getHeadStringOrElse(subject: Rdf#URI, predicate: Rdf#URI, default: String): String = {
-    //    println("getHeadStringOrElse: " + subject + " " + predicate) // debug
+  private def getPreferedLanguageFromSubjectAndPredicate(subject: Rdf#URI, predicate: Rdf#URI, default: String): String = {
+    //    println("getPreferedLanguageFromSubjectAndPredicate: " + subject + " " + predicate) // debug
     objectsQuery(subject, predicate) match {
       case ll if ll == Set.empty => default
       case ll => getPreferedLanguageFromValues(ll)

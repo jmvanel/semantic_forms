@@ -15,7 +15,7 @@ trait FieldsInference[Rdf <: RDF] {
     def domainsFromClass(classs: Rdf#Node): List[Rdf#URI] = {
       if (classs != owl.Thing) {
         val relevantPredicates = getSubjects(graph, rdfs.domain, classs).toSeq
-        println(s"""domainsFromClass <$classs> size ${relevantPredicates.size}  ; ${relevantPredicates.mkString(", ")}""")
+        println(s"""Predicates with domain = Class <$classs> , relevant Predicates size ${relevantPredicates.size}  ; ${relevantPredicates.mkString(", ")}""")
         rdfh.nodeSeqToURISeq(relevantPredicates).distinct.toList
       } else List()
     }
@@ -27,7 +27,7 @@ trait FieldsInference[Rdf <: RDF] {
       if (classs != owl.Thing) {
         result ++= domainsFromClass(classs)
         val superClasses = getObjects(graph, classs, rdfs.subClassOf)
-        println(s"processSuperClasses of <$classs> size ${superClasses.size} ; ${superClasses.mkString(", ")}")
+        println(s"process Super Classes of <$classs> size ${superClasses.size} ; ${superClasses.mkString(", ")}")
         superClasses foreach (sc => result ++= domainsFromClass(sc))
         val equivalentClasses = getObjects(graph, classs, owl.equivalentClass)
         equivalentClasses foreach (sc => result ++= domainsFromClass(sc))

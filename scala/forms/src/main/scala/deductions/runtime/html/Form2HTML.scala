@@ -211,7 +211,7 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
       /* if Resource is alreadyInDatabase, send original value to later save 
            * if there is a change */
       if (r.alreadyInDatabase) {
-        { println("r.alreadyInDatabase " + r) }
+        //        { println("r.alreadyInDatabase " + r) }
         <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden">
         </input>
       } else new Text("")
