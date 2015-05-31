@@ -141,7 +141,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
         fieldSpec =>
           val triples = find(graph, fieldSpec.subject, ANY, ANY).toSeq
           for (t <- triples) {
-//            println(s"updateFormFromConfig fieldSpec $fieldSpec -- triple $t")
+            //            println(s"updateFormFromConfig fieldSpec $fieldSpec -- triple $t")
             field.addTriple(t.subject, t.predicate, t.objectt)
           }
           // TODO each feature should be in a different file
