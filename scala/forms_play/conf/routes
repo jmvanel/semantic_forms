@@ -21,6 +21,10 @@ GET     /sparql             controllers.Application.sparql( query:String )
 
 POST    /sparql             controllers.Application.sparql( query:String )
 
+GET     /select             controllers.Application.select( query:String )
+
+POST    /select             controllers.Application.select( query:String )
+
 # Home page
 GET     /                   controllers.Application.index
 

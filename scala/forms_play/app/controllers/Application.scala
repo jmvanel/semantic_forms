@@ -101,4 +101,12 @@ with RDFStoreLocalJena1Provider {
       Ok(views.html.index(glob.sparql(query, chooseLanguage(request))))
     }
   }
+    
+  def select(query: String) = {
+    Action { implicit request =>
+      println("sparql: " + request)
+      println("sparql: " + query)
+      Ok(views.html.index(glob.select(query, chooseLanguage(request))))
+    }
+  }
 }

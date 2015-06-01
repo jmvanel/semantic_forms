@@ -74,6 +74,27 @@ trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DAT
     r.asFuture
   }
 
+  def sparqlSelectQuery(queryString: String): Try[List[Set[Rdf#Node]]] = {
+    val solutionsTry = for {
+      query <- parseSelect(queryString)
+      es <- dataset.executeSelect(query, Map())
+    } yield es
+
+    //    val answers: Rdf#Solutions = 
+    val res = solutionsTry.map {
+      solutions =>
+        val results = solutions.iterator map {
+          row =>
+            val variables = row.varnames()
+            //    		println(variables.mkString(", "))
+            //    		println(row)
+            for (variable <- variables) yield row(variable).get.as[Rdf#Node].get
+        }
+        results.to[List]
+    }
+    res
+  }
+
   /** used in Play! app , but blocking ! */
   def focusOnURI(uri: String): String = {
     val transaction = dataset.r({

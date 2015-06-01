@@ -33,9 +33,10 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.html.CreationFormAlgo
-
 import org.w3.banana.jena.JenaModule
 import org.w3.banana.SparqlOpsModule
+import scala.util.Success
+import scala.util.Failure
 
 package global {
 
@@ -171,8 +172,7 @@ package global {
 
     def wordsearch(q: String = ""): Elem = {
       <p>
-        Searched for "{ q }
-        " :<br/>
+        Searched for "{ q }" :<br/>
         { search.search(q, hrefDisplayPrefix) }
       </p>
     }
@@ -182,8 +182,7 @@ package global {
       val f = search.search(q, hrefDisplayPrefix)
       val xml = f.map { v =>
         <p>
-          Searched for "{ q }
-          " :<br/>
+          Searched for "{ q }" :<br/>
           { v }
         </p>
       }
@@ -255,12 +254,59 @@ package global {
       <p>
         SPARQL query:<br/>{ query }
         <br/>
-        { dl.sparqlConstructQuery(query) /* TODO Future !!!!!!!!!!!!!!!!!!! */ }
+<pre>
+        { try {
+dl.sparqlConstructQuery(query)
+        } catch {
+          case t: Throwable => t.printStackTrace() // TODO: handle error
+        }
+          /* TODO Future !!!!!!!!!!!!!!!!!!! */
+        }
+</pre>
       </p>
     }
+
+    def select(query: String, lang: String = "en"): Elem = {
+    		Logger.getRootLogger().info("Global.sparql query  " + query)
+    		<p>
+    		SPARQL query:<pre>{ query }</pre>
+    		<br></br>
+        <script type="text/css">
+table {{
+ border-collapse:collapse;
+ width:90%;
+ }}
+th, td {{
+ border:1px solid black;
+ width:20%;
+ }}
+td {{
+ text-align:center;
+ }}
+caption {{
+ font-weight:bold
+ }}
+        </script>
+    		<table>
+    		{
+    			val rowsTry = dl.sparqlSelectQuery(query)
+    					rowsTry match {
+    					case Success(rows) =>
+    					val printedRows = for (row <- rows) yield {
+    						<tr>
+    						{ for (cell <- row) yield <td> {cell} </td> }
+                </tr>
+              }
+    					printedRows
+    					case Failure(e) => e.toString()
+    			}
+    		}
+    		</table>
+    		</p>
+    }
+    
 //    def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
 
-    
   }
   
 //  object Global extends Controller // play.api.GlobalSettings

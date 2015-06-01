@@ -2,8 +2,12 @@ Play! framework implementations
 ---
 
 # Introduction
-Here is a web application with Play! framework around the [form generator](../forms/README.md).
+Here is a web application with Play! framework around the [form generator](../forms/README.md) that does:
+- navigation on the LOD (Linked Open Data) cloud,
+- CRUD (CReate, Update, Delete) editing,
+- search
 
+## The features 
 The features are listed here for convenience, but from now on, we manage features on 
 [Github issues](https://github.com/jmvanel/semantic_forms/issues).
 
@@ -102,6 +106,16 @@ vi myconf.properties
 nohup bin/semantic_forms_play -Dlog4j.configuration=myconf.properties -mem 50 &
 ```
 
+Tips:
+
+- in case of troubles delete target/ directory
+- create eclipse configurations with the "eclipse" command in sbt or activator:
+
+```
+    eclipse with-source=true
+```
+
+
 ## Debug
 See 
 [playframework documentation/2.3.x/IDE](https://www.playframework.com/documentation/2.3.x/IDE)
@@ -119,7 +133,7 @@ Please read explanations on the Banana-RDF project:
 - Preloading common vocabularies, and preloading some pre-defined form specifications ( currently FOAF ) : in activator shell type:
 ```
     runMain deductions.runtime.sparql_cache.PopulateRDFCache
-    // or, just the forms specs:
+    // or, just some forms specs:
     runMain tdb.tdbloader --loc=TDB --graph=form_specs ../forms/form_specs/foaf.form.ttl
 ```
 - Preloading a local file: in activator shell type: for example:
@@ -145,15 +159,23 @@ java -cp $JARS tdb.tdbdump --loc=TDB > dump.nt
 ```
 ( we cannot use activator here, as it does not allow output redirect)
 
+## Updading RDF content
 
-Tips:
+Take inspiration from these scripts in [forms\_play](https://github.com/jmvanel/semantic_forms/tree/master/scala/forms_play)
+    dump.sh       graphload.sh	 graphremove.sh     populateRDFCache.sh  tdbsearch.sh
+    graphdump.sh  graphnamedlist.sh  populate_db_av.sh  tdbquery.sh		 update_server.sh
 
-- in case of troubles delete target/ directory
-- create eclipse configurations with the "eclipse" command in sbt or activator:
+For example, to update the I18N translations:
+    GRAPH=rdf-i18n
+    echo "DROP GRAPH <$GRAPH>" > /tmp/delete_graph.rq    
+    java -cp $JARS tdb.tdbupdate --loc=TDB --update=/tmp/delete_graph.rq
+    java -cp $JARS deductions.runtime.sparql_cache.RDFI18NLoader
 
-```
-    eclipse with-source=true
-```
+To update the Common Form Specifications :
+    GRAPH=form_specs
+    echo "DROP GRAPH <$GRAPH>" > /tmp/delete_graph.rq    
+    java -cp $JARS tdb.tdbupdate --loc=TDB --update=/tmp/delete_graph.rq
+    java -cp $JARS deductions.runtime.sparql_cache.PopulateRDFCache
 
 # How to debug
 

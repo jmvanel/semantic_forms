@@ -97,7 +97,7 @@ object PopulateRDFCache extends RDFCache
     }
   }
 
-  /** load CommonForm Specifications from a well know place */
+  /** load Common Form Specifications from a well know place */
   def loadCommonFormSpecifications() {
     val all_form_specs = githubcontent +
       "/jmvanel/semantic_forms/master/scala/forms/form_specs/specs.ttl"
