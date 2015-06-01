@@ -1,17 +1,13 @@
 package deductions.runtime.sparql_cache
 
 import org.apache.log4j.Logger
-
 import java.net.URL
 import org.w3.banana.diesel._
-
 import org.w3.banana.RDF
 import org.w3.banana.io.RDFLoader
-
 import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
-
 import deductions.runtime.dataset.RDFStoreLocalProvider
 
 /**
@@ -48,17 +44,17 @@ trait RDFStoreHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DA
 
   /**
    * read from uri no matter what the syntax is;
-   *  probably can also load an URI with the # part
+   *  probably can also load an URI with the # part ???
    */
   def storeURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
     Logger.getRootLogger().info(s"Before storeURI uri $uri graphUri $graphUri")
-    val gForStore = dataset.getGraph(graphUri)
-    Logger.getRootLogger().info(s"Before loadModel uri $uri")
+    //    val gForStore = dataset.getGraph(graphUri)
+    Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
     val graph: Rdf#Graph =
       load(new java.net.URL(uri.toString())).get.
         asInstanceOf[Rdf#Graph]
-    dataset.appendToGraph(uri, graph)
-    Logger.getRootLogger().info(s"storeURI uri $uri : stored")
+    dataset.appendToGraph(graphUri, graph)
+    Logger.getRootLogger().info(s"storeURI uri $uri : stored into graphUri $graphUri")
     graph
   }
 

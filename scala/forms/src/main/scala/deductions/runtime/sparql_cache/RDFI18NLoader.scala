@@ -8,6 +8,7 @@ object RDFI18NLoader extends RDFCache with App
     with JenaHelpers {
   loadFromGitHubRDFI18NTranslations
 
+  /** load RDF I18N Translations From GitHub, into named graph "rdf-i18n" */
   def loadFromGitHubRDFI18NTranslations() {
 
     /* TODO : do not hardcode the URL's but read:
@@ -25,6 +26,6 @@ object RDFI18NLoader extends RDFCache with App
     )
     import ops._
     val translations = translations0 map { p => URI(p) }
-    translations map { storeURI(_, dataset) }
+    translations map { storeURI(_, URI("rdf-i18n"), dataset) }
   }
 }

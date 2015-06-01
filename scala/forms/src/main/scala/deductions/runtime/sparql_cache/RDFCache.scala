@@ -128,6 +128,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    */
   def storeURI(uri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
     val model = storeURI(uri, uri, dataset)
+    println("RDFCacheAlgo.storeURI " + uri + " size: " + model.size)
     val r = dataset.rw({
       val it = find(model, ANY, owl.imports, ANY)
       for (importedOntology <- it) {
@@ -210,7 +211,9 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
         val dateString = connection.getHeaderField(headerName)
         if (dateString != null) {
           val date: java.util.Date = DateUtils.parseDate(dateString) // from apache http-components
-          println("responseCode: " + responseCode + " date " + date)
+          println("RDFCacheAlgo.lastModified: responseCode: " + responseCode +
+            ", date " + date +
+            "; url " + url)
           (true, 200 <= responseCode && responseCode <= 399, date.getTime())
         } else (false, false, Long.MaxValue)
       }

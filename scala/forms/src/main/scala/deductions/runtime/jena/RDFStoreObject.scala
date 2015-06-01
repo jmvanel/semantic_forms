@@ -20,7 +20,7 @@ trait RDFStoreLocalJena1Provider extends RDFStoreLocalJenaProvider {
   override lazy val dataset: DATASET = {
     val dts = TDBFactory.createDataset("TDB")
     Logger.getRootLogger.info(s"RDFStoreLocalJena1Provider dataset created $dts")
-    println(s"RDFStoreLocalJena1Provider dataset created $dts")
+    //    println(s"RDFStoreLocalJena1Provider dataset created $dts")
     dts
   }
 }

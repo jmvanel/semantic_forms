@@ -1,5 +1,5 @@
 package deductions.runtime.sparql_cache
-import deductions.runtime.jena.RDFStoreObject
+//import deductions.runtime.jena.RDFStoreObject
 import org.scalatest.FunSuite
 import deductions.runtime.utils.FileUtils
 import org.w3.banana.SparqlOpsModule
@@ -17,11 +17,16 @@ class TestRDFCache extends FunSuite with RDFCache
     with JenaHelpers
     with RDFStoreLocalJena1Provider {
   val uri = "http://jmvanel.free.fr/jmv.rdf#me"
+//  val uri2 = "http://live.dbpedia.org/page/Taraxacum_japonicum"
+//  val uri2 = uri 
+   val uri2 = "https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/foaf/foaf.fr.ttl"
   //  src/test/resources/foaf.n3
+  
   import ops._
   import sparqlOps._
 
   override def afterAll {
+    println("afterAll: deleteLocalSPARQL")
     FileUtils.deleteLocalSPARQL()
   }
 
@@ -29,33 +34,44 @@ class TestRDFCache extends FunSuite with RDFCache
     val uriNode = makeUri(uri)
     val g = retrieveURI(uriNode, dataset)
     println("graph from " + uri + " size " + g.get.size)
-    val r = rdfStore.rw(RDFStoreObject.dataset, {
+    val r = rdfStore.rw(dataset, {
       val g = rdfStore.getGraph(dataset, uriNode)
       g
     })
     println("rdfStore.getGraph( dataset, uriNode).get " + g.get)
+    checkNamedGraph(uri)
+  }
+  
+  test("save to enpoint cache with storeURI() and check with SPARQL.") {
+	  val uriNode = makeUri(uri2)
+    storeURI(uriNode, dataset)
+	  checkNamedGraph(uri2)
+    println("In this case only the 2 triples for the timestamp")
+  }
 
-    val queryString = s"""
+  /** check with SPARQL that endpoint is populated. */
+  def checkNamedGraph(uri: String) = {
+        val queryString = s"""
       # PREFIX foaf:
       CONSTRUCT {
         <$uri> ?P ?V .
         <$uri> <is:in> ?G .
       }
       WHERE {
-        GRAPH ?G { 
-          <$uri> ?P ?V .
-        }
-      }
-    """
-    rdfStore.r(RDFStoreObject.dataset, {
+        GRAPH ?G { <$uri> ?P ?V . }
+      }"""
+//    println("queryString\n"+ queryString)
+    rdfStore.r(dataset, {
       val result = for {
         query <- parseConstruct(queryString)
-        es <- rdfStore.executeConstruct(RDFStoreObject.dataset, query, Map())
-      } yield es.size()
+        es <- rdfStore.executeConstruct(dataset, query, Map())
+      } yield es
 
       val r = result.get
-      println("size " + r)
-      assert(r > 0) // TODO
+      val size = r.size()
+      println("size " + size)
+      println(r)
+      assert(size > 0)
     })
   }
 }
