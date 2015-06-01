@@ -86,18 +86,21 @@ package global {
       <div class="container">
         <div class="container">
           <div class="row">
-            <h3>{ import play.api.i18n._;
-            Messages("Properties_for")(Lang("fr"))
-           // NOTE: works also: implicit val lang = Lang("fr") ; Messages("Properties_for")
-            }  
-              <b><a href={ hrefEditPrefix + URLEncoder.encode(uri, "utf-8")
-        }>{
-          rdfStore.r( dataset, {
-          implicit val graph: Rdf#Graph = allNamedGraph;
-          instanceLabel(ops.URI(uri))
-          } ).getOrElse(uri)
-          }</a>
-        , URI : {uri} </b></h3>
+            <h3>
+              { import play.api.i18n._;
+              Messages("Properties_for")(Lang(lang)) }  
+              <b>
+                <a href={ hrefEditPrefix + URLEncoder.encode(uri, "utf-8") } title="edit this URI">
+                {
+                	rdfStore.r( dataset, {
+                		implicit val graph: Rdf#Graph = allNamedGraph;
+                	instanceLabel(ops.URI(uri))
+                	} ).getOrElse(uri)
+                }</a>
+                , URI :
+                <a href={ hrefDisplayPrefix + URLEncoder.encode(uri, "utf-8") } title="display this URI">{uri}</a>
+              </b>
+            </h3>
           </div>
           <div class="row">
             <div class="col-md-6">
