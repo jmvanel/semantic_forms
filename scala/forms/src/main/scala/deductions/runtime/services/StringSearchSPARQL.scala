@@ -30,7 +30,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
   }
 
   /**
-   * CAUTION: It is of particular importance to note that, unless stated otherwise,
+   * CAUTION: It is of particular importance to note that
    *  one should never use an iterator after calling a method on it.
    */
   private def displayResults(res0: Iterable[Rdf#Node], hrefPrefix: String) = {
@@ -39,7 +39,6 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
       println(s"displayResults : ${res.mkString("\n")}")
       dataset.r({
         implicit val graph: Rdf#Graph = allNamedGraph
-        // val all = ops.find( allNamedGraph, ANY, ANY, ANY) ; println( all.mkString("\n") )
         res.map(uri => {
           val uriString = uri.toString
           val blanknode = !isURI(uri)
@@ -56,7 +55,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
    * NOTE: this stuff is pretty generic;
    *  just add these arguments :
    *  queryString:String, vars:Seq[String]
-   *  transactional
+   *  ; transactional
    */
   private def search_only(search: String): Future[Iterator[Rdf#Node]] = {
     val queryString =
@@ -77,7 +76,6 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
         } yield {
           solutions.toIterable.map {
             row =>
-              //              i = i + 1 ; println(s"search_only : $i $row")
               row("thing") getOrElse sys.error(s"search_only($search) : no ?thing in row")
           }
         }

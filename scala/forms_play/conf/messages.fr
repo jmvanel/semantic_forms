@@ -11,3 +11,5 @@ String_to_search=Chercher
 Create_instance_of=Créer instance de 
 Paste_ontology=Coller ou taper l''URI d''une classe dans une ontologie.
 Other_vocabs=Autres vocabulaires
+
+Search_placeholder=Entrer terme de recherche (en fait une expression regulière) qui correspond aux valeurs (objects des triplets)

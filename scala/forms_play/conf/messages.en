@@ -11,3 +11,5 @@ String_to_search=String to search
 Create_instance_of=Create instance of 
 Paste_ontology=Paste URI of a class in an ontology
 Other_vocabs=Other vocabularies
+
+Search_placeholder=Enter search term (actually regular expression) for which value (object triple) match

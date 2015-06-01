@@ -150,7 +150,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     val form = factory.createForm(subjectNnode,
       editable, formGroup)
     println("form:\n" + form)
-    form // .asInstanceOf[fm#FormSyntax]
+    form
   }
 
   def htmlFormString(uri: String,

@@ -58,9 +58,10 @@
 	      	<div class="col-md-12">
 		      <form role="form" action="/wordsearch">
 		      	<div class="form-group">
-		      		<label class="col-md-2 control-label" for="q">@Messages("String_to_search")</label>			      
+		      		<label class="col-md-2 control-label" for="q" title="Search URI whose value (object triple) match given regular expression">@Messages("String_to_search")</label>			      
 			        <div class="col-md-6">
-			        	<input class="form-control" type="text" name='q' />
+			        	<input class="form-control" type="text" name='q'
+			        	placeholder="@Messages("Search_placeholder")"/>
 			        </div>
 			        <div class="col-md-4"> 
 			        	<input class="btn btn-primary" type="submit" value=@Messages("Search") />

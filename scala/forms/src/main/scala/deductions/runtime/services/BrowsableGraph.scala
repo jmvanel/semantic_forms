@@ -36,13 +36,12 @@ trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DAT
   import rdfStore.sparqlEngineSyntax._
   import rdfStore.transactorSyntax._
 
-  //  val dataset = RDFStoreObject.dataset
-
   /**
    * all triples <search> ?p ?o   ,
    * plus optionally all triples in graph <search> , plus "reverse" triples everywhere
    *
    *  used in Play! app : NON blocking !
+   * NON transactional
    */
   def search_only(search: String): Future[Rdf#Graph] = {
     val queryString =
@@ -66,6 +65,7 @@ trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DAT
     sparqlConstructQueryFuture(queryString)
   }
 
+  /** NON transactional */
   def sparqlConstructQueryFuture(queryString: String): Future[Rdf#Graph] = {
     val r = for {
       query <- parseConstruct(queryString) // .asFuture
@@ -74,28 +74,32 @@ trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DAT
     r.asFuture
   }
 
+  /** NON transactional */
   def sparqlSelectQuery(queryString: String): Try[List[Set[Rdf#Node]]] = {
-    val solutionsTry = for {
-      query <- parseSelect(queryString)
-      es <- dataset.executeSelect(query, Map())
-    } yield es
+    val transaction = dataset.r({
+      val solutionsTry = for {
+        query <- parseSelect(queryString)
+        es <- dataset.executeSelect(query, Map())
+      } yield es
 
-    //    val answers: Rdf#Solutions = 
-    val res = solutionsTry.map {
-      solutions =>
-        val results = solutions.iterator map {
-          row =>
-            val variables = row.varnames()
-            //    		println(variables.mkString(", "))
-            //    		println(row)
-            for (variable <- variables) yield row(variable).get.as[Rdf#Node].get
-        }
-        results.to[List]
-    }
-    res
+      //    val answers: Rdf#Solutions = 
+      val res = solutionsTry.map {
+        solutions =>
+          val results = solutions.iterator map {
+            row =>
+              val variables = row.varnames()
+              //    		println(variables.mkString(", "))
+              //    		println(row)
+              for (variable <- variables) yield row(variable).get.as[Rdf#Node].get
+          }
+          results.to[List]
+      }
+      res
+    })
+    transaction.get
   }
 
-  /** used in Play! app , but blocking ! */
+  /** used in Play! app , but blocking ! transactional */
   def focusOnURI(uri: String): String = {
     val transaction = dataset.r({
       val triples = search_only(uri)
@@ -112,9 +116,13 @@ trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DAT
     to.toString
   }
 
+  /** transactional */
   def sparqlConstructQuery(queryString: String): String = {
-    val r = sparqlConstructQueryFuture(queryString)
-    futureGraph2String(r, "")
+    val transaction = dataset.r({
+      val r = sparqlConstructQueryFuture(queryString)
+      futureGraph2String(r, "")
+    })
+    transaction.get
   }
 
 }
