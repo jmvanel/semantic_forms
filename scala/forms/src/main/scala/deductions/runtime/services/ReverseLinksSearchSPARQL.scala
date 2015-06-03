@@ -12,8 +12,8 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.html.Form2HTML
 import org.w3.banana.Transactor
 
-/** String Search with simple SPARQL */
-trait StringSearchSPARQL[Rdf <: RDF, DATASET]
+/** Reverse Links Search with simple SPARQL */
+trait ReverseLinksSearchSPARQL[Rdf <: RDF, DATASET]
     extends GenericSearchSPARQL[Rdf, DATASET] {
 
   import ops._
@@ -25,8 +25,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
     s"""
          |SELECT DISTINCT ?thing WHERE {
          |  graph ?g {
-         |    ?thing ?p ?string .
-         |    FILTER regex( ?string, "$search", 'i')
+         |    ?thing ?p <$search> .
          |  }
          |}""".stripMargin
 

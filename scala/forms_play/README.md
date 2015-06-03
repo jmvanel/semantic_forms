@@ -128,7 +128,8 @@ Apparently Activator, not SBT, is needed:
 Please read explanations on the Banana-RDF project:
 [ide-setup](https://github.com/w3c/banana-rdf/#ide-setup)
 
-# Preloading RDF content
+#Database Administration
+## Preloading RDF content
 
 - Preloading common vocabularies, and preloading some pre-defined form specifications ( currently FOAF ) : in activator shell type:
 ```
@@ -162,21 +163,40 @@ java -cp $JARS tdb.tdbdump --loc=TDB > dump.nt
 ## Updading RDF content
 
 Take inspiration from these scripts in [forms\_play](https://github.com/jmvanel/semantic_forms/tree/master/scala/forms_play)
+
     dump.sh       graphload.sh	 graphremove.sh     populateRDFCache.sh  tdbsearch.sh
     graphdump.sh  graphnamedlist.sh  populate_db_av.sh  tdbquery.sh		 update_server.sh
 
 For example, to update the I18N translations:
+
     GRAPH=rdf-i18n
     echo "DROP GRAPH <$GRAPH>" > /tmp/delete_graph.rq    
     java -cp $JARS tdb.tdbupdate --loc=TDB --update=/tmp/delete_graph.rq
     java -cp $JARS deductions.runtime.sparql_cache.RDFI18NLoader
 
 To update the Common Form Specifications :
+
     GRAPH=form_specs
     echo "DROP GRAPH <$GRAPH>" > /tmp/delete_graph.rq    
     java -cp $JARS tdb.tdbupdate --loc=TDB --update=/tmp/delete_graph.rq
     java -cp $JARS deductions.runtime.sparql_cache.PopulateRDFCache
 
+## SPARQL queries
+There is a web service for SPARQL queries, not a SPARL endpoint yet :( , and not an HTML page for entering queries yet .
+Here are some example showing some queries that you can paste into your browser:
+
+http://localhost:9000/sparql?query=CONSTRUCT { ?x ?p ?v } where {  GRAPH ?G { ?x ?p ?v } } limit 20
+http://localhost:9000/select?query=SELECT * where { GRAPH ?G { ?x ?p ?v }} limit 10
+
+The service
+<code>/sparql?query=</code>
+is only for CONSTRUCT queries.
+
+and the service
+<code>/select?query=</code>
+is only for SELECT queries.
+
+ 
 # How to debug
 
 Start Activator or SBT with -jvm-debug argument; then type run. Then start a remove debug in eclipse or another IDE with port 9999.
@@ -212,6 +232,8 @@ Please read how-to on the Banana-RDF project:
 # Community
 
 For discussions that don't fit in the issues tracker, you may try 
-the #eulergui IRC channel on freenode using a dedicated IRC client like XChat connecting to irc://irc.freenode.net:6667/eulergui,
+the #eulergui IRC channel on freenode using a dedicated IRC client like XChat connecting to 
+[irc://irc.freenode.net:6667/eulergui](irc://irc.freenode.net:6667/eulergui)
+,
  or using the freenode HTML interface, for quick real time socializing.
 
