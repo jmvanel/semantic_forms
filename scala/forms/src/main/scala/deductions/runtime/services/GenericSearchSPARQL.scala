@@ -12,8 +12,15 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.html.Form2HTML
 import org.w3.banana.Transactor
 
-/** Generic SPARQL Search with single parameter,
- *  and showing in HTML a column of hyperlinked results with instance Labels */
+
+trait SPARQLQueryMaker {
+  def makeQueryString(search: String): String
+}
+
+/**
+ * Generic SPARQL Search with single parameter,
+ *  and showing in HTML a column of hyperlinked results with instance Labels
+ */
 trait GenericSearchSPARQL[Rdf <: RDF, DATASET]
     extends InstanceLabelsInference2[Rdf] with SparqlOpsModule
     with RDFStoreLocalProvider[Rdf, DATASET] {
@@ -23,7 +30,10 @@ trait GenericSearchSPARQL[Rdf <: RDF, DATASET]
   import rdfStore.transactorSyntax._
   import rdfStore.sparqlEngineSyntax._
 
-  def search(search: String, hrefPrefix: String = ""): Future[Elem] = {
+  val queryMaker: SPARQLQueryMaker
+
+    
+  private[services] def search(search: String, hrefPrefix: String = ""): Future[Elem] = {
     val uris = search_only(search)
     val elem = uris.map(
       u => displayResults(u.toIterable, hrefPrefix))
@@ -52,7 +62,7 @@ trait GenericSearchSPARQL[Rdf <: RDF, DATASET]
     }</p>
   }
 
-  def makeQueryString(search: String): String
+  private[services] def makeQueryString(search: String): String = queryMaker.makeQueryString(search)
 
   /**
    * NOTE: this stuff is pretty generic;
@@ -65,7 +75,6 @@ trait GenericSearchSPARQL[Rdf <: RDF, DATASET]
 
     val transaction =
       dataset.r({
-        //        var i = 0
         val result = for {
           query <- parseSelect(queryString)
           solutions <- dataset.executeSelect(query, Map())

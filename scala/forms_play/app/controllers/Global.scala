@@ -37,6 +37,7 @@ import org.w3.banana.jena.JenaModule
 import org.w3.banana.SparqlOpsModule
 import scala.util.Success
 import scala.util.Failure
+import deductions.runtime.services.ReverseLinksSearchSPARQL
 
 package global {
 
@@ -45,8 +46,7 @@ package global {
   with AbstractApplication[Jena, Dataset]
   with JenaHelpers
   with RDFStoreLocalJena1Provider
-//   JenaModule
-  
+    
   trait AbstractApplication[Rdf <: RDF, DATASET] extends Controller
       with RDFOpsModule
       with SparqlOpsModule 
@@ -54,21 +54,23 @@ package global {
       with TurtleWriterModule
       with TableViewModule[Rdf, DATASET]
       with StringSearchSPARQL[Rdf, DATASET]
+      with ReverseLinksSearchSPARQL[Rdf, DATASET]
       with InstanceLabelsInference2[Rdf] 
       with RDFStoreLocalProvider[Rdf, DATASET]
   with BrowsableGraph[Rdf, DATASET]
   with FormSaver[Rdf, DATASET]
   with CreationFormAlgo[Rdf, DATASET]
 {
-
+    
     Logger.getRootLogger().info(s"in Global")
     
     var form: Elem = <p>initial value</p>
-    lazy val tableView = this // new TableView {}
-    lazy val search = this; // new StringSearchSPARQL2[Rdf, RDFStoreObject.DATASET]{}
-    lazy val dl = this; // new BrowsableGraph[Rdf, DATASET]{}
-    lazy val fs = this; // new FormSaver[Rdf, DATASET]{}
-    lazy val cf = this; // new CreationForm { actionURI = "/save" }
+    lazy val tableView = this
+    lazy val search = this
+    
+    lazy val dl = this
+    lazy val fs = this
+    lazy val cf = this
 
     // TODO use inverse Play's URI API
     val hrefDisplayPrefix = "/display?displayuri="
@@ -176,13 +178,13 @@ package global {
     def wordsearch(q: String = ""): Elem = {
       <p>
         Searched for "{ q }" :<br/>
-        { search.search(q, hrefDisplayPrefix) }
+        { searchString(q) }
       </p>
     }
 
     import scala.concurrent.ExecutionContext.Implicits.global
     def wordsearchFuture(q: String = ""): Future[Elem] = {
-      val f = search.search(q, hrefDisplayPrefix)
+      val f = searchString(q)
       val xml = f.map { v =>
         <p>
           Searched for "{ q }" :<br/>
@@ -308,6 +310,18 @@ caption {{
     		</p>
     }
     
+    def backlinksFuture(q: String = ""): Future[Elem] = {
+      val f = // Future.successful(<p/>) 
+        backlinks(q)
+      val xml = f.map { v =>
+        <p>
+          Searched for "{ q }" :<br/>
+          { v }
+        </p>
+      }
+      xml
+    }
+        
 //    def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
 
   }

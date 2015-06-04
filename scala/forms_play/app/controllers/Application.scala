@@ -109,4 +109,9 @@ with RDFStoreLocalJena1Provider {
       Ok(views.html.index(glob.select(query, chooseLanguage(request))))
     }
   }
+  
+  def backlinks(q:String = "") = Action.async {
+    val f = glob.backlinksFuture(q)
+    f.map(r => Ok(views.html.index(r)))
+  }
 }
