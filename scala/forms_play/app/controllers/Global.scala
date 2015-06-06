@@ -184,7 +184,7 @@ package global {
 
     import scala.concurrent.ExecutionContext.Implicits.global
     def wordsearchFuture(q: String = ""): Future[Elem] = {
-      val f = searchString(q)
+      val f = searchString(q, hrefDisplayPrefix)
       val xml = f.map { v =>
         <p>
           Searched for "{ q }" :<br/>
@@ -312,7 +312,7 @@ caption {{
     
     def backlinksFuture(q: String = ""): Future[Elem] = {
       val f = // Future.successful(<p/>) 
-        backlinks(q)
+        backlinks(q, hrefDisplayPrefix)
       val xml = f.map { v =>
         <p>
           Searched for "{ q }" :<br/>

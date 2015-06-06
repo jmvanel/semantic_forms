@@ -2,7 +2,7 @@ echo "==== install and run semantic_forms on an empty user account ===="
 
 EMAIL="jeanmarc.vanel@gmail.com"
 
-mkdir src apps deploy
+mkdir src apps deploy data
 
 echo "==== install  key for github ===="
 # cf https://github.com/jmvanel/semantic_forms/tree/master/scala/forms_play/#how-to-run

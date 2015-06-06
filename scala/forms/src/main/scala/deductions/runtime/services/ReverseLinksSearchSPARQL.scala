@@ -6,11 +6,12 @@ import scala.xml.Elem
 
 /** Reverse Links Search with simple SPARQL */
 trait ReverseLinksSearchSPARQL[Rdf <: RDF, DATASET]
-    extends GenericSearchSPARQL[Rdf, DATASET] {
+    extends ParameterizedSPARQL[Rdf, DATASET] {
 
-  def backlinks(search: String): Future[Elem] = this.search(search)
+  def backlinks(uri: String, hrefPrefix: String = ""): Future[Elem] =
+    search(uri, hrefPrefix)
 
-  val queryMaker = new SPARQLQueryMaker {
+  private implicit val queryMaker = new SPARQLQueryMaker {
     override def makeQueryString(search: String): String =
       s"""
          |SELECT DISTINCT ?thing WHERE {

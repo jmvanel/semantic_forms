@@ -6,9 +6,11 @@ import scala.xml.Elem
 
 /** String Search with simple SPARQL */
 trait StringSearchSPARQL[Rdf <: RDF, DATASET]
-    extends ParameterizedSPARQL[Rdf, DATASET] {
+    extends GenericSearchSPARQL[Rdf, DATASET] {
 
-  private implicit val searchStringQueryMaker = new SPARQLQueryMaker {
+  def searchString(search: String): Future[Elem] = this.search(search)
+
+  val queryMaker = new SPARQLQueryMaker {
     override def makeQueryString(search: String): String =
       s"""
          |SELECT DISTINCT ?thing WHERE {
@@ -18,8 +20,4 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
          |  }
          |}""".stripMargin
   }
-
-  def searchString(searchString: String, hrefPrefix: String = ""): Future[Elem] =
-    search(searchString, hrefPrefix)
-
 }
