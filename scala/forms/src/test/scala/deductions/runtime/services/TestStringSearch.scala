@@ -42,7 +42,7 @@ trait TestStringSearchTrait[Rdf <: RDF, DATASET] extends FunSuite
   }
 
   test("search 1") {
-    val res = search("Jean")
+    val res = searchString("Jean")
     import scala.concurrent.ExecutionContext.Implicits.global
     res.onSuccess {
       case r =>

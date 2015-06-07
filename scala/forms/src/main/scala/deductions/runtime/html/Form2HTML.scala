@@ -64,13 +64,16 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
     formLabelCSSClass = "form-cell",
     formInputCSSClass = "form-input")
 
-  val localCSS = <script>
+  val localCSS = <script language="application/css">
                    .form-row{{ display: table-row; }}
                    .form-cell{{ display: table-cell; }}
                    .form-input{{ display: table-cell; width: 500px; }}
                    .button-add{{ width: 200px; }}
                  </script>
 
+  val localJS = <script language="application/javascript">
+                  // function backlinks(uri) {{ }}
+                </script>
   val cssClasses = tableCSSClasses
 
   /**
@@ -87,6 +90,7 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
     } else Seq()
     hidden ++
       localCSS ++
+      localJS ++
       <div class={ cssClasses.formRootCSSClass }>
         <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
         {
@@ -129,9 +133,18 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
           if (editable) {
             createHTMLResourceEditableLField(r)
           } else
-            <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) } title={ "Value of type " + r.type_.toString() }> {
+        	  // format: OFF
+            <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }
+            title={ "Value of type " + r.type_.toString() }> {
               r.valueLabel
             }</a>
+            <button type="button"
+            class="btn-primary" readonly="yes"
+            title={ "Reverse links for " + field.label + " " + field.value} 
+            data-value={ r.value.toString }
+            onClick={ s"backlinks('${r.value}')" } 
+            id={ "BACK-" + r.value }>o --></button>
+            // format: ON
         }
       case r: fm#BlankNodeEntry =>
         {
