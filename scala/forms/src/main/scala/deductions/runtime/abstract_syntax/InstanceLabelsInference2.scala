@@ -37,19 +37,24 @@ trait InstanceLabelsInference2[Rdf <: RDF] extends RDFOpsModule {
     val firstName = (pgraph / foaf.firstName).as[String].getOrElse("")
     val lastName = (pgraph / foaf.lastName).as[String].getOrElse("")
     val classe = (pgraph / rdf.typ).as[Rdf#URI].getOrElse(URI(""))
-    //    val classLabel = classe / rdfs.label
     val classLabel = (pgraph / rdf.typ / rdfs.label).as[String].getOrElse("")
 
     val n = firstName + " " + lastName
     if (n.size > 1) n
-    else
-      (pgraph / rdfs.label).as[String].
-        getOrElse(
-          (pgraph / foaf.name).as[String].
-            getOrElse(
-              if (classLabel != "") classLabel
-              else
-                // TODO : return RDF prefix
-                uri.toString()))
+    else {
+      val givenName = (pgraph / foaf.givenName).as[String].getOrElse("")
+      val familyName = (pgraph / foaf.familyName).as[String].getOrElse("")
+      val n = givenName + " " + familyName
+      if (n.size > 1) n
+      else
+        (pgraph / rdfs.label).as[String].
+          getOrElse(
+            (pgraph / foaf.name).as[String].
+              getOrElse(
+                if (classLabel != "") classLabel
+                else
+                  // TODO : return RDF prefix
+                  uri.toString()))
+    }
   }
 }
