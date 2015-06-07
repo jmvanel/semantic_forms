@@ -20,7 +20,11 @@ function backlinks(uri) {
         window.document.documentElement.innerHTML = req.responseText;
     } else {
         console.log('req.status ' + req.status);
-        window.alert('backlinks( ' + uri + ') failed: status ' + req.status);
+        window.alert('backlinks( ' + uri + ') failed: status ' + req.status +
+            '\n\t' + url +
+            '\n\t' + req.statusText +
+            '\n\t' + req.getAllResponseHeaders()
+            );
     }
 }
 

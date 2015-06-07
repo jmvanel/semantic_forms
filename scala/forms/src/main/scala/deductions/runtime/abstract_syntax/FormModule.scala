@@ -92,7 +92,7 @@ trait FormModule[NODE, URI <: NODE] {
     type_ : URI = nullURI)
       extends Entry(label, comment, property, type_ = type_, value = value, possibleValues = possibleValues) {
     override def toString(): String = {
-      super.toString + s""" : <$value>, "$valueLabel" possibleValues count:${possibleValues.size} """
+      super.toString + s""" : <$value>, valueLabel "$valueLabel" possibleValues count:${possibleValues.size} """
     }
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = {
       val ret = new ResourceEntry(label, comment,
@@ -156,7 +156,7 @@ trait FormModule[NODE, URI <: NODE] {
       new ResourceEntry(this,
         validator = null,
         alreadyInDatabase = true,
-        valueLabel = ""
+        valueLabel = this.value.toString()
       )
     }
 

@@ -134,17 +134,25 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
             createHTMLResourceEditableLField(r)
           } else
         	  // format: OFF
-            <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }
-            title={ "Value of type " + r.type_.toString() }> {
-              r.valueLabel
-            }</a>
-            <button type="button"
-            class="btn-primary" readonly="yes"
-            title={ "Reverse links for " + field.label + " " + field.value} 
-            data-value={ r.value.toString }
-            onClick={ s"backlinks('${r.value}')" } 
-            id={ "BACK-" + r.value }>o --></button>
-            // format: ON
+            Seq(
+              <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }
+              title={ "Value of type " + r.type_.toString() }> {
+                r.valueLabel
+              }</a> ,
+              if( field.value.toString().size > 0 ) {
+//                if( field.label . contains("ubject") ) println( s"""subject
+//                    ${field.value}
+//                    ${r.valueLabel}
+//                    $field""")
+            	  <button type="button"
+            	  class="btn-primary" readonly="yes"
+            	  title={ "Reverse links for " + field.label + " " + field.value} 
+            	  data-value={ r.value.toString }
+            	  onClick={ s"backlinks('${r.value}')" } 
+            	  id={ "BACK-" + r.value }>o --></button>
+              } else new Text("")
+            )
+          // format: ON
         }
       case r: fm#BlankNodeEntry =>
         {
