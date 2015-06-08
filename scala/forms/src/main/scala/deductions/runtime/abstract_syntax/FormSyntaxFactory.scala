@@ -298,7 +298,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
    * get value in preferred Language From Values Or Else given default;
    *  use application language
    */
-  private def getPreferedLanguageFromSubjectAndPredicate(subject: Rdf#URI, predicate: Rdf#URI, default: String): String = {
+  private[abstract_syntax] def getPreferedLanguageFromSubjectAndPredicate(subject: Rdf#Node, predicate: Rdf#URI, default: String): String = {
     //    println("getPreferedLanguageFromSubjectAndPredicate: " + subject + " " + predicate) // debug
     objectsQuery(subject, predicate) match {
       case ll if ll == Set.empty => default

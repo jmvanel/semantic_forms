@@ -36,13 +36,12 @@ trait InstanceLabelsInference[Rdf <: RDF] {
     val lastName = (pgraph / foaf.lastName).as[String].getOrElse("")
     val n = firstName + " " + lastName
     if (n.size > 1) n
-    else
-      (pgraph / rdfs.label).as[String].
-        getOrElse(
-          (pgraph / foaf.name).as[String].
-            getOrElse(
-              // TODO : return RDF prefix
-              uri.toString()))
+    else {
+      getPreferedLanguageFromSubjectAndPredicate(uri, rdfs.label,
+        getPreferedLanguageFromSubjectAndPredicate(uri, foaf.name,
+          uri.toString()))
+      //  TODO : display RDF prefix
+    }
   }
 
   //  .map{s=>makeLiteral( s, xsd.string)})
