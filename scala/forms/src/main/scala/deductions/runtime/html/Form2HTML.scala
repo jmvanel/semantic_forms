@@ -136,9 +136,11 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
         	  // format: OFF
             Seq(
               <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }
-              title={ "Value of type " + r.type_.toString() }> {
+              title={ s"""Value ${if(r.value.toString != r.valueLabel) r.value.toString else ""}
+              of type ${r.type_.toString()}""" }> {
                 r.valueLabel
               }</a> ,
+              Text(" "),
               if( field.value.toString().size > 0 ) {
 //                if( field.label . contains("ubject") ) println( s"""subject
 //                    ${field.value}
