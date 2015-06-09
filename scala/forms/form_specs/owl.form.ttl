@@ -1,5 +1,7 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#>.
 @prefix dc: <http://purl.org/dc/elements/1.1/>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix dcterms: <http://purl.org/dc/terms/>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 @prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#> .
@@ -11,7 +13,7 @@
   form:classDomain owl:Class ;
   form:showProperties (
 	rdfs:label rdfs:comment
-	dc:subject
+	dct:subject
   ) ;
   # to implement in semforms: "reverse" properties :
   form:showReverseProperties (
@@ -19,23 +21,22 @@
 	form:classDomain
   )
 .
-<topic_interest1>
+<owl-dct-subject1>
 	:fieldAppliesToForm <owl-ClassForm> ;
-	:fieldAppliesToProperty dc:subject ;
+	:fieldAppliesToProperty dct:subject ;
 	:widgetClass form:DBPediaLookup .
 
 <owl-DatatypePropertyForm>
   form:classDomain owl:DatatypeProperty ;
   form:showProperties (
 	rdfs:label rdfs:comment
-	# TODO implement in semforms: constraint that rdfs:range is a literal type
 	rdfs:domain rdfs:range
-	dc:subject
+	dct:subject
   )
 .
-<topic_interest2>
+<owl-dct-subject2>
 	:fieldAppliesToForm <owl-DatatypePropertyForm> ;
-	:fieldAppliesToProperty dc:subject ;
+	:fieldAppliesToProperty dct:subject ;
 	:widgetClass form:DBPediaLookup .
 
 <owl-ObjectPropertyForm>
@@ -44,10 +45,10 @@
 	rdfs:label rdfs:comment
 	# TODO implement in semforms: constraint that rdfs:range is a reference type
 	rdfs:domain rdfs:range
-	dc:subject
+	dct:subject
   )
 .
-<topic_interest3>
+<owl-dct-subject3>
 	:fieldAppliesToForm <owl-ObjectPropertyForm> ;
-	:fieldAppliesToProperty dc:subject ;
+	:fieldAppliesToProperty dct:subject ;
 	:widgetClass form:DBPediaLookup .

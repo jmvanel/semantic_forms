@@ -82,6 +82,7 @@ object PopulateRDFCache extends RDFCache
         makeUri("http://www.w3.org/2003/01/geo/wgs84_pos#") ::
         makeUri("http://www.w3.org/2000/10/swap/pim/contact#") ::
         makeUri(githubcontent + "/assemblee-virtuelle/pair/master/av.owl.ttl") ::
+        makeUri("http://purl.org/ontology/cco/cognitivecharacteristics.n3") ::
         Nil
 
     val vocabs = basicVocabsAsURI ::: largerVocabs

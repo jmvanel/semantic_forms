@@ -99,6 +99,11 @@ Download this zip on the server, unzip and type:
 ```
 nohup bin/semantic_forms_play -mem 50 &
 ```
+
+There is a script that does this, and more: it stops the server, updates the application from sources, and restarts the server :
+
+    ./update_server.sh
+
 If you want to change the log settings:
 ```
 cp conf/log4j.properties myconf.properties
@@ -131,6 +136,8 @@ Please read explanations on the Banana-RDF project:
 #Database Administration
 ## Preloading RDF content
 
+The server must not be started, because Jena TDB does not allow acces to the database on disk from 2 processes.
+
 - Preloading common vocabularies, and preloading some pre-defined form specifications ( currently FOAF ) : in activator shell type:
 ```
     runMain deductions.runtime.sparql_cache.PopulateRDFCache
@@ -162,6 +169,8 @@ java -cp $JARS tdb.tdbdump --loc=TDB > dump.nt
 
 ## Updading RDF content
 
+The server must not be started, because Jena TDB does not allow acces to the database on disk from 2 processes.
+
 Take inspiration from these scripts in [forms\_play](https://github.com/jmvanel/semantic_forms/tree/master/scala/forms_play)
 
     dump.sh       graphload.sh	 graphremove.sh     populateRDFCache.sh  tdbsearch.sh
@@ -174,7 +183,7 @@ For example, to update the I18N translations:
     java -cp $JARS tdb.tdbupdate --loc=TDB --update=/tmp/delete_graph.rq
     java -cp $JARS deductions.runtime.sparql_cache.RDFI18NLoader
 
-To update the Common Form Specifications :
+To update the Common Form Specifications ( and also the Common vocabularies, and the I18N translations ) :
 
     GRAPH=form_specs
     echo "DROP GRAPH <$GRAPH>" > /tmp/delete_graph.rq    
