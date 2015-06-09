@@ -183,12 +183,17 @@ For example, to update the I18N translations:
     java -cp $JARS tdb.tdbupdate --loc=TDB --update=/tmp/delete_graph.rq
     java -cp $JARS deductions.runtime.sparql_cache.RDFI18NLoader
 
-To update the Common Form Specifications ( and also the Common vocabularies, and the I18N translations ) :
+To update the Common Form Specifications :
 
     GRAPH=form_specs
     echo "DROP GRAPH <$GRAPH>" > /tmp/delete_graph.rq    
     java -cp $JARS tdb.tdbupdate --loc=TDB --update=/tmp/delete_graph.rq
+    java -cp $JARS deductions.runtime.sparql_cache.FormSpecificationsLoader
+
+To update everything (but better delete some named graph before , like above :
+
     java -cp $JARS deductions.runtime.sparql_cache.PopulateRDFCache
+
 
 ## SPARQL queries
 There is a web service for SPARQL queries, not a SPARL endpoint yet :( , and not an HTML page for entering queries yet .

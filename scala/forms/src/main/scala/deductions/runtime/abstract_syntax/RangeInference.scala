@@ -50,7 +50,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] //with RDF
         fillPossibleValuesFromList(enumerated, possibleValues)
       }
       if (!possibleValues.isEmpty) {
-        println(s"populateFromOwlOneOf size ${possibleValues.size}")
+        println(s"populateFromOwlOneOf size ${possibleValues.size} ranges $ranges - $entry")
         entry.openChoice = false
       }
       entry.setPossibleValues(possibleValues ++ entry.possibleValues)
@@ -70,8 +70,8 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] //with RDF
               list zip instanceLabels(list).map { s => makeLiteral(s, xsd.string) })
           },
           x => {
-            println(s"bnode $x")
-            //            val list = rdfh.nodeSeqToURISeq(rdfh.rdfListToSeq(Some(x)))
+            println(s"fillPossibleValuesFromList bnode $x")
+            // val list = rdfh.nodeSeqToURISeq(rdfh.rdfListToSeq(Some(x)))
             val list = rdfh.rdfListToSeq(Some(x))
             possibleValues.appendAll(
               list zip instanceLabels(list).map { s => makeLiteral(s, xsd.string) })
