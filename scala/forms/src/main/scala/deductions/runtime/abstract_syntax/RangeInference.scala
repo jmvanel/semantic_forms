@@ -103,28 +103,19 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] //with RDF
     }
 
     def fillPossibleValues(enumerated: Iterable[Rdf#Node],
-      possibleValues: mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]) = {
-      //      val r = enumerated.toSeq.map {
-      //        enum =>
-      //          ops.foldNode(enum)(
-      //            uri => {
-      //              (uri, instanceLabel(uri))
-      //            },
-      //            x => (x, instanceLabel(x) ), x => (x, ""))
-      //      }
-      //      val sortedInstanceLabels = r.toSeq.sortBy { e => e._2 }
-      //      //      println(s"sortedInstanceLabels ${sortedInstanceLabels.takeRight(5).mkString(", ")}")
-      //      possibleValues ++ (sortedInstanceLabels.map {
-      //        c => (c._1, makeLiteral(c._2, xsd.string))
-      //      })
-
-      for (enum <- enumerated)
-        ops.foldNode(enum)(
-          uri => {
-            possibleValues.append(
-              (uri, makeLiteral(instanceLabel(uri), xsd.string)))
-          },
-          x => (), x => ())
+      possibleValues: mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]): Unit = {
+      val r = enumerated.toSeq.map {
+        enum =>
+          ops.foldNode(enum)(
+            uri => (uri, instanceLabel(uri)),
+            x => (x, instanceLabel(x)),
+            x => (x, ""))
+      }
+      val sortedInstanceLabels = r.toSeq.sortBy { e => e._2 }
+      // println(s"sortedInstanceLabels ${sortedInstanceLabels.takeRight(5).mkString(", ")}")
+      possibleValues ++= (sortedInstanceLabels.map {
+        c => (c._1, makeLiteral(c._2, xsd.string))
+      })
     }
 
     /**
