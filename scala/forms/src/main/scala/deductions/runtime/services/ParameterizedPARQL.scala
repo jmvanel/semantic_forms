@@ -46,13 +46,15 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
       println(s"displayResults : ${res.mkString("\n")}")
       dataset.r({
         implicit val graph: Rdf#Graph = allNamedGraph
-        res. sortBy( x => instanceLabel(x) ) . map(uri => {
+        res.sortBy(x => instanceLabel(x)).map(uri => {
           val uriString = uri.toString
           val blanknode = !isURI(uri)
           // TODO : show named graph
-          <div title={ uri.toString() }><a href={ Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode) }>
-                                          { instanceLabel(uri) }
-                                        </a><br/></div>
+          <div title={ uri.toString() }>
+            <a href={ Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode) }>
+              { instanceLabel(uri) }
+            </a><br/>
+          </div>
         })
       }).get
     }</p>

@@ -15,7 +15,7 @@ object FormSpecificationsLoader extends RDFCache with App
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._
 
-  val githubcontent = "https://raw.githubusercontent.com"
+  lazy val githubcontent = "https://raw.githubusercontent.com"
   loadCommonFormSpecifications()
 
   def loadCommonFormSpecifications() {

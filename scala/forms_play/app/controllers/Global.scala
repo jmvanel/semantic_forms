@@ -311,9 +311,8 @@ caption {{
     }
     
     def backlinksFuture(q: String = ""): Future[Elem] = {
-      val f = // Future.successful(<p/>) 
-        backlinks(q, hrefDisplayPrefix)
-      val xml = f.map { v =>
+      val fut = backlinks(q, hrefDisplayPrefix)
+      val xml = fut.map { v =>
         <p>
           Searched for "{ q }" :<br/>
           { v }

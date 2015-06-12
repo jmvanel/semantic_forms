@@ -10,6 +10,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import scala.xml.NodeSeq
 
 object Application extends Controller with TableView
 with JenaHelpers
@@ -112,6 +113,18 @@ with RDFStoreLocalJena1Provider {
   
   def backlinks(q:String = "") = Action.async {
     val f = glob.backlinksFuture(q)
-    f.map(r => Ok(views.html.index(r)))
+//    f ++ Future.successful( <p/> )
+    val extendedSearchLink = <p>
+    <a href={"/esearch?q="+q}>
+    Extended Search for &lt;{q}&gt;</a>
+    </p>
+    f.map(r => Ok(views.html.index( NodeSeq fromSeq Seq(extendedSearchLink, r))))
   }
+
+  // TODO : ReverseLinksSearchSPARQL
+  def esearch(q:String = "") = // Action.async
+    {
+       Ok(views.html.index("TODO !!!!!!!!!!"))
+  }
+
 }
