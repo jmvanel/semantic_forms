@@ -38,8 +38,13 @@ import org.w3.banana.SparqlOpsModule
 import scala.util.Success
 import scala.util.Failure
 import deductions.runtime.services.ReverseLinksSearchSPARQL
+import deductions.runtime.services.ExtendedSearchSPARQL
+import scala.concurrent.ExecutionContext.Implicits.global
 
-package global {
+/** NOTE: was obliged to rename global to global1
+ *  because of Scala compiler bug:
+ *  https://issues.scala-lang.org/browse/SI-9346 */
+package global1 {
 
   /** NOTE: important that JenaModule is first; otherwise ops may be null */
   object Global extends JenaModule
@@ -55,6 +60,7 @@ package global {
       with TableViewModule[Rdf, DATASET]
       with StringSearchSPARQL[Rdf, DATASET]
       with ReverseLinksSearchSPARQL[Rdf, DATASET]
+      with ExtendedSearchSPARQL[Rdf, DATASET]
       with InstanceLabelsInference2[Rdf] 
       with RDFStoreLocalProvider[Rdf, DATASET]
   with BrowsableGraph[Rdf, DATASET]
@@ -175,23 +181,17 @@ package global {
       s
     }
 
-    def wordsearch(q: String = ""): Elem = {
-      <p>
-        Searched for "{ q }" :<br/>
-        { searchString(q) }
-      </p>
-    }
+//    def wordsearch(q: String = ""): Elem = {
+//      <p>
+//        Searched for "{ q }" :<br/>
+//        { searchString(q) }
+//      </p>
+//    }
 
-    import scala.concurrent.ExecutionContext.Implicits.global
     def wordsearchFuture(q: String = ""): Future[Elem] = {
-      val f = searchString(q, hrefDisplayPrefix)
-      val xml = f.map { v =>
-        <p>
-          Searched for "{ q }" :<br/>
-          { v }
-        </p>
-      }
-      xml
+      val fut = 
+        searchString(q, hrefDisplayPrefix)
+      wrapSearchResults(fut, q)
     }
 
     def downloadAsString(url: String): String = {
@@ -291,7 +291,7 @@ td {{
 caption {{
  font-weight:bold
  }}
-        </script>
+    		</script>
     		<table>
     		{
     			val rowsTry = dl.sparqlSelectQuery(query)
@@ -311,41 +311,26 @@ caption {{
     }
     
     def backlinksFuture(q: String = ""): Future[Elem] = {
-      val fut = backlinks(q, hrefDisplayPrefix)
-      val xml = fut.map { v =>
-        <p>
-          Searched for "{ q }" :<br/>
+      val fut = 
+        backlinks(q, hrefDisplayPrefix)
+      wrapSearchResults(fut, q)
+    }
+  
+  def wrapSearchResults( fut: Future[Elem], q: String ): Future[Elem] =
+		  fut.map { v =>
+        <p> Searched for "{ q }" :<br/>
           { v }
         </p>
-      }
-      xml
-    }
-        
+  }
+  
+  def esearchFuture(q:String = ""): Future[Elem] = {
+		 val fut = 
+       extendedSearch(q)
+		 wrapSearchResults( fut, q )
+  }
+    
 //    def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
 
   }
-  
-//  object Global extends Controller // play.api.GlobalSettings
-//      with RDFCache
-//      with RDFOpsModule
-//      with TurtleWriterModule
-//      with TableViewModule[Jena, Dataset]
-//      with StringSearchSPARQL[Jena, RDFStoreObject.DATASET]
-//    	with InstanceLabelsInference2[Jena] {
-//    Logger.getRootLogger().info(s"in Global")
-//    
-//    var form: Elem = <p>initial value</p>
-//    lazy val tableView = this // new TableView {}
-//    lazy val search = this; // new StringSearchSPARQL2[Rdf, RDFStoreObject.DATASET]{}
-//    lazy val dl = new BrowsableGraph()
-//    lazy val fs = new FormSaver()
-//    lazy val cf = new CreationForm { actionURI = "/save" }
-//
-//    // TODO use inverse Play's URI API
-//    val hrefDisplayPrefix = "/display?displayuri="
-//    val hrefDownloadPrefix = "/download?url="
-//    val hrefEditPrefix ="/edit?url="
-//
-//
 
 }

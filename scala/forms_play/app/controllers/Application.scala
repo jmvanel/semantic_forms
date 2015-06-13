@@ -15,7 +15,7 @@ import scala.xml.NodeSeq
 object Application extends Controller with TableView
 with JenaHelpers
 with RDFStoreLocalJena1Provider {
-  val glob = _root_.global.Global
+  val glob = _root_.global1.Global
 
   def index = {
     Action { Ok(views.html.index(glob.form)) }
@@ -43,8 +43,8 @@ with RDFStoreLocalJena1Provider {
 //  }
 
   def wordsearch(q: String = "") = Action.async {
-    val f = glob.wordsearchFuture(q)
-    f.map(r => Ok(views.html.index(r)))
+    val fut = glob.wordsearchFuture(q)
+    fut.map(r => Ok(views.html.index(r)))
   }
 
   def download(url: String) = {
@@ -112,19 +112,19 @@ with RDFStoreLocalJena1Provider {
   }
   
   def backlinks(q:String = "") = Action.async {
-    val f = glob.backlinksFuture(q)
-//    f ++ Future.successful( <p/> )
+    val fut = glob.backlinksFuture(q)
     val extendedSearchLink = <p>
     <a href={"/esearch?q="+q}>
     Extended Search for &lt;{q}&gt;</a>
     </p>
-    f.map(r => Ok(views.html.index( NodeSeq fromSeq Seq(extendedSearchLink, r))))
+    fut.map{ res => Ok(views.html.index( NodeSeq
+        fromSeq Seq(extendedSearchLink, res))) }
+
   }
 
-  // TODO : ReverseLinksSearchSPARQL
-  def esearch(q:String = "") = // Action.async
-    {
-       Ok(views.html.index("TODO !!!!!!!!!!"))
+  def extSearch(q:String = "") = Action.async {
+    val fut = glob.esearchFuture(q)
+    fut.map(r => Ok(views.html.index(r)))
   }
 
 }

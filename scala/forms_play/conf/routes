@@ -27,6 +27,8 @@ POST    /select             controllers.Application.select( query:String )
 
 GET     /backlinks         controllers.Application.backlinks(q:String ?= "")
 
+GET     /esearch           controllers.Application.extSearch(q:String ?= "")
+
 # Home page
 GET     /                   controllers.Application.index
 
