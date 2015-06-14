@@ -1,5 +1,6 @@
 #!/bin/bash
 
+function graphload {
 URI=$1
 GRAPH=$2
 
@@ -12,3 +13,6 @@ runMain tdb.tdbupdate --loc=TDB --verbose --update=/tmp/load_graph.rq
 EOF
 
 echo "Local SPARQL database in TDB/ : chargé $MESS."
+}
+
+# graphload $1, $2 

@@ -10,6 +10,11 @@ function cloneWidget(widgetName) {
 }
 
 function backlinks(uri) {
+    var url = window.document.location.origin + '/backlinks?q=' + uri;
+    window.document.location.assign( url );
+}
+
+function backlinks_old(uri) {
     var req = new XMLHttpRequest(),
         url = window.document.location.origin + '/backlinks?q=' + uri;
     req.open('GET', url, false);
