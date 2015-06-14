@@ -8,6 +8,7 @@ import org.scalatest.BeforeAndAfterAll
 import org.w3.banana.jena.JenaModule
 import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import deductions.runtime.jena.RDFCache
 
 //@Ignore
 class TestRDFCache extends FunSuite with RDFCache

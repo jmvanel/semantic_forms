@@ -17,7 +17,6 @@ import org.w3.banana.io.RDFWriter
 import org.w3.banana.jena.Jena
 import org.w3.banana.io.Turtle
 import deductions.runtime.uri_classify.SemanticURIGuesser
-import deductions.runtime.sparql_cache.RDFCache
 import org.w3.banana.RDFOpsModule
 import scala.util.Try
 import org.w3.banana.TurtleWriterModule

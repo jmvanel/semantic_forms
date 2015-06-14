@@ -9,7 +9,7 @@ import akka.http.model.HttpHeader
 import akka.http.model.HttpMethods.HEAD
 import akka.http.model.HttpResponse
 import akka.http.model.MediaType
-import deductions.runtime.sparql_cache.RDFCache
+import deductions.runtime.jena.RDFCache
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.jena.JenaHelpers
 

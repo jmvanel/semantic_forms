@@ -10,7 +10,6 @@ import org.w3.banana.RDFModule
 import org.w3.banana.jena.Jena
 import deductions.runtime.abstract_syntax.FormSyntaxFactory
 import deductions.runtime.jena.RDFStoreObject
-import deductions.runtime.sparql_cache.RDFCache
 import scala.xml.NodeSeq
 import org.w3.banana.SparqlGraphModule
 import org.w3.banana.RDF
@@ -23,12 +22,13 @@ import org.w3.banana.RDFOpsModule
 /**
  * Form for a subject URI with existing triples;
  *  a facade that blends:
- *  - the RDF cache [[deductions.runtime.sparql_cache.RDFCache]],
+ *  - the RDF cache [[deductions.runtime.sparql_cache.RDFCacheAlgo]],
  *  - the generic Form Factory [[deductions.runtime.abstract_syntax.FormSyntaxFactory]],
  *  - the HTML renderer [[Form2HTML]];
  *  transactional
  *
  * named TableView because originally it was an HTML table.
+ * TODO : move to package jena
  */
 trait TableView extends JenaModule with TableViewModule[Jena, Dataset]
 

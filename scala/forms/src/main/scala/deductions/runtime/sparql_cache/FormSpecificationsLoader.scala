@@ -3,6 +3,7 @@ package deductions.runtime.sparql_cache
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.jena.JenaHelpers
 import org.w3.banana.Prefix
+import deductions.runtime.jena.RDFCache
 
 /**
  * @author jmv

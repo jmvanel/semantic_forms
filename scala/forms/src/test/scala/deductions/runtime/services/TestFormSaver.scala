@@ -3,7 +3,6 @@ package deductions.runtime.services
 import java.net.URLEncoder
 import org.w3.banana.RDFOpsModule
 import deductions.runtime.jena.RDFStoreObject
-import deductions.runtime.sparql_cache.RDFCache
 import org.w3.banana.SparqlGraphModule
 import org.w3.banana.SparqlOpsModule
 import org.w3.banana.PointedGraph
@@ -14,6 +13,7 @@ import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import org.w3.banana.jena.Jena
 import com.hp.hpl.jena.query.Dataset
+import deductions.runtime.jena.RDFCache
 //import deductions.runtime.jena.RDFStoreLocalProvider
 
 class TestFormSaver

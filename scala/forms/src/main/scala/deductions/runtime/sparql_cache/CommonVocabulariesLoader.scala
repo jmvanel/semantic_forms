@@ -16,6 +16,7 @@ import org.w3.banana.TurtleReaderModule
 import org.w3.banana.WebACLPrefix
 import org.w3.banana.OWLPrefix
 import org.apache.log4j.Logger
+import deductions.runtime.jena.RDFCache
 
 /**
  * @author jmv

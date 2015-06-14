@@ -1,9 +1,7 @@
 package deductions.runtime.sparql_cache
 
 import org.apache.jena.riot.RDFDataMgr
-
 import org.w3.banana.RDFOpsModule
-
 import org.w3.banana.jena.JenaModule
 import org.w3.banana.RDFStore
 import org.w3.banana.GraphStore
@@ -18,6 +16,7 @@ import scala.util.Success
 import org.w3.banana.LocalNameException
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.jena.JenaHelpers
+import deductions.runtime.jena.RDFCache
 
 /**
  * Populate RDF Cache with commonly used vocabularies;

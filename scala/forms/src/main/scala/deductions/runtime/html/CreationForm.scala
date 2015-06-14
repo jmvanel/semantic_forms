@@ -2,7 +2,6 @@ package deductions.runtime.html
 
 import org.w3.banana.RDFModule
 import org.w3.banana.jena.Jena
-import deductions.runtime.sparql_cache.RDFCache
 import deductions.runtime.jena.RDFStoreObject
 import scala.xml.Elem
 import deductions.runtime.abstract_syntax.UnfilledFormFactory

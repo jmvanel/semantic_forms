@@ -21,7 +21,7 @@ import deductions.runtime.jena.RDFStoreLocalJena2Provider
 import deductions.runtime.uri_classify.SemanticURIGuesser.SemanticURIType
 import org.w3.banana.Prefix
 import deductions.runtime.jena.RDFStoreLocalJenaProvider
-import deductions.runtime.sparql_cache.RDFCache
+import deductions.runtime.jena.RDFCache
 import deductions.runtime.jena.JenaHelpers
 
 /** Banana principle: refer to concrete implementation only in blocks without code */

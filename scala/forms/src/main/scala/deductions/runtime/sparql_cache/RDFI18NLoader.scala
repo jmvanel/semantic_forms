@@ -2,6 +2,7 @@ package deductions.runtime.sparql_cache
 
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.jena.JenaHelpers
+import deductions.runtime.jena.RDFCache
 
 object RDFI18NLoader extends RDFCache with App
     with RDFStoreLocalJena1Provider

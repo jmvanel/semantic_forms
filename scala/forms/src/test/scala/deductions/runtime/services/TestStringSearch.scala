@@ -2,7 +2,6 @@ package deductions.runtime.services
 
 import org.w3.banana.RDFOpsModule
 import deductions.runtime.jena.RDFStoreObject
-import deductions.runtime.sparql_cache.RDFCache
 import org.w3.banana.SparqlGraphModule
 import org.w3.banana.SparqlOpsModule
 import org.w3.banana.PointedGraph
