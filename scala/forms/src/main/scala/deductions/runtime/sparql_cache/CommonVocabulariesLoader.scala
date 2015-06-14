@@ -17,20 +17,31 @@ import org.w3.banana.WebACLPrefix
 import org.w3.banana.OWLPrefix
 import org.apache.log4j.Logger
 import deductions.runtime.jena.RDFCache
+import org.w3.banana.RDF
+import deductions.runtime.dataset.RDFStoreLocalProvider
+import org.w3.banana.jena.Jena
+import com.hp.hpl.jena.query.Dataset
 
 /**
  * @author jmv
  */
 object CommonVocabulariesLoader extends RDFCache with App
+with CommonVocabulariesLoaderTrait[Jena, Dataset]
     with RDFStoreLocalJena1Provider
     with JenaHelpers {
+  loadCommonVocabularies()
+}
 
+trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
+extends RDFCacheAlgo[Rdf, DATASET]
+    with RDFStoreHelpers[Rdf, DATASET]
+    with SitesURLForDownload {
+  
   import ops._
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._
 
-  val githubcontent = "https://raw.githubusercontent.com"
-  loadCommonVocabularies()
+//  val githubcontent = "https://raw.githubusercontent.com"
 
   def loadCommonVocabularies() {
     // most used vocab's

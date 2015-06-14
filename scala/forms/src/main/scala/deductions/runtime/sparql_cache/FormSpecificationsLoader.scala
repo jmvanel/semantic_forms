@@ -4,20 +4,27 @@ import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.jena.JenaHelpers
 import org.w3.banana.Prefix
 import deductions.runtime.jena.RDFCache
+import com.hp.hpl.jena.query.Dataset
+import org.w3.banana.jena.Jena
+import org.w3.banana.RDF
 
 /**
  * @author jmv
  */
 object FormSpecificationsLoader extends RDFCache with App
+    with FormSpecificationsLoaderTrait[Jena, Dataset]
     with RDFStoreLocalJena1Provider
     with JenaHelpers {
+  loadCommonFormSpecifications()
+}
 
+trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
+extends RDFCacheAlgo[Rdf, DATASET]
+    with RDFStoreHelpers[Rdf, DATASET]
+    with SitesURLForDownload {
   import ops._
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._
-
-  lazy val githubcontent = "https://raw.githubusercontent.com"
-  loadCommonFormSpecifications()
 
   def loadCommonFormSpecifications() {
     val all_form_specs = githubcontent +

@@ -17,8 +17,6 @@ import org.w3.banana.XSDPrefix
 import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.dataset.RDFStoreLocalProvider
-//import org.w3.banana.jena.Jena
-//import com.hp.hpl.jena.query.Dataset
 import org.w3.banana.OWLPrefix
 import org.apache.log4j.Logger
 import org.w3.banana.RDF
@@ -31,7 +29,6 @@ trait RDFCacheDependencies
   with TurtleReaderModule
   with RDFXMLReaderModule
 
-//trait RDFCache extends RDFCacheAlgo[Jena, Dataset] // with JenaModule
 
 /** depends on generic Rdf but, through RDFStoreLocalJena1Provider and JenaHelpers, on Jena :( TODO remove Jena */
 trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
