@@ -25,18 +25,12 @@ object FormSaverObject extends FormSaver[Jena, Dataset] with JenaModule with RDF
 
 trait FormSaver[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
     with TurtleWriterModule
-    with SparqlGraphModule //(
-    //    implicit ops: RDFOps[Rdf],
-    //    sparqlOps: SparqlOps[Rdf],
-    //    writer: RDFWriter[Rdf, Try, Turtle],
-    //    rdfStore: RDFStore[Rdf, Try, RDFStoreObject.DATASET])
-    {
+    with SparqlGraphModule {
 
   import ops._
   import sparqlOps._
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._
-  //  val dataset = RDFStoreObject.dataset
 
   /**
    * @param map a raw map of HTTP response parameters

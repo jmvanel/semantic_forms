@@ -21,7 +21,7 @@ import org.w3.banana.jena.Jena
 import com.hp.hpl.jena.query.Dataset
 
 trait SitesURLForDownload {
-  val githubcontent:String = "https://raw.githubusercontent.com"  
+  val githubcontent: String = "https://raw.githubusercontent.com"
 }
 
 /**
@@ -34,7 +34,7 @@ trait SitesURLForDownload {
  *
  *  TODO use prefix.cc web service to load from prefix short names (see implementation in EulerGUI)
  */
-object PopulateRDFCache extends CommonVocabulariesLoaderTrait[ Jena, Dataset ]
+object PopulateRDFCache extends CommonVocabulariesLoaderTrait[Jena, Dataset]
     with RDFI18NLoaderTrait[Jena, Dataset]
     with FormSpecificationsLoaderTrait[Jena, Dataset]
     with RDFOpsModule
@@ -46,11 +46,11 @@ object PopulateRDFCache extends CommonVocabulariesLoaderTrait[ Jena, Dataset ]
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._
 
-//  CommonVocabulariesLoader.
+  //  CommonVocabulariesLoader.
   loadCommonVocabularies()
-//  FormSpecificationsLoader.
+  //  FormSpecificationsLoader.
   loadCommonFormSpecifications()
-//  RDFI18NLoader.
+  //  RDFI18NLoader.
   loadFromGitHubRDFI18NTranslations()
 
   // test OK:

@@ -8,6 +8,4 @@ import deductions.runtime.sparql_cache.RDFCacheAlgo
 /**
  * @author jmv
  */
-trait RDFCache extends RDFCacheAlgo[Jena, Dataset] // with JenaModule
-{
-}
+trait RDFCache extends RDFCacheAlgo[Jena, Dataset]

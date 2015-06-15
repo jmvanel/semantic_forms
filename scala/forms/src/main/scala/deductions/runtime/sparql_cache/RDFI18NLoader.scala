@@ -8,17 +8,16 @@ import org.w3.banana.jena.Jena
 import com.hp.hpl.jena.query.Dataset
 
 object RDFI18NLoader extends RDFCache with App
-with RDFI18NLoaderTrait[Jena, Dataset]
+    with RDFI18NLoaderTrait[Jena, Dataset]
     with RDFStoreLocalJena1Provider
     with JenaHelpers {
   loadFromGitHubRDFI18NTranslations()
 }
 
 trait RDFI18NLoaderTrait[Rdf <: RDF, DATASET]
-extends RDFCacheAlgo[Rdf, DATASET]
+    extends RDFCacheAlgo[Rdf, DATASET]
     with RDFStoreHelpers[Rdf, DATASET]
-    with SitesURLForDownload
-{
+    with SitesURLForDownload {
 
   /** load RDF I18N Translations From GitHub, into named graph "rdf-i18n" */
   def loadFromGitHubRDFI18NTranslations() {

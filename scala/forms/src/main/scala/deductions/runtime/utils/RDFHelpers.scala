@@ -9,14 +9,16 @@ import org.w3.banana.PointedGraph
 import org.w3.banana.diesel._
 import org.w3.banana.syntax._
 import scala.util._
+import org.w3.banana.MGraphOps
 
 /**
  * use with :
  *  val rdfh = new RDFHelpers[Rdf] { val graph = gr }
  */
-abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf]) {
+abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf],
+    mGraphOps: MGraphOps[Rdf]) {
   val graph: Rdf#Graph
-  val rdf = RDFPrefix[Rdf]
+  //  val rdf = RDFPrefix[Rdf]
   import ops._
 
   /** recursively iterate on the Rdf#Node through rdf:first and rdf:rest */
@@ -97,6 +99,32 @@ abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf]) {
     for (t <- iterable) {
       println(t)
       val (subj, pred, obj) = ops.fromTriple(t)
+    }
+  }
+
+  def replaceSameLanguageTriple(triple: Rdf#Triple) = {
+    val NL = makeLang("No_language")
+    def getLang(node: Rdf#Node): Rdf#Lang = {
+      foldNode(node)(
+        l => NL,
+        l => NL,
+        l => fromLiteral(l)._3 match {
+          case Some(lang) => lang
+          case _ => NL
+        })
+    }
+
+    val language = getLang(triple.objectt)
+
+    if (language != NL) {
+      val mgraph = graph.makeMGraph()
+      val objects = objectsQuery(triple.subject, triple.predicate)
+      objects.filter { n => getLang(n) == language } map {
+        lit => {
+            removeTriple(mgraph, Triple(triple.subject, triple.predicate, lit))
+            addTriple(mgraph, triple)
+          }
+      }
     }
   }
 }

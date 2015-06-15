@@ -19,7 +19,7 @@ object FormSpecificationsLoader extends RDFCache with App
 }
 
 trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
-extends RDFCacheAlgo[Rdf, DATASET]
+    extends RDFCacheAlgo[Rdf, DATASET]
     with RDFStoreHelpers[Rdf, DATASET]
     with SitesURLForDownload {
   import ops._

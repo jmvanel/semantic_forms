@@ -10,6 +10,4 @@ package deductions.runtime.dataset
  *  NOTE: Dataset could become a type within RDF, which would be used instead of A in
  *  trait GraphStore[Rdf <: RDF, M[+_], A]
  */
-trait Dataset {
-
-}
+trait Dataset
