@@ -17,8 +17,10 @@ trait DataSourceManager[Rdf <: RDF, DATASET]
     with RDFOps[Rdf]
     with MGraphOps[Rdf] {
 
-  /** replace Same Language Triples from given URL 
-   *  into current graph */
+  /**
+   * replace Same Language Triples from given URL
+   *  into current graph
+   */
   def replaceSameLanguageTriples(url: URL): Unit = {
     val graf = load(url).get
     val triples = getTriples(graf)

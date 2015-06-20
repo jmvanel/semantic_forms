@@ -120,7 +120,8 @@ abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf],
       val mgraph = graph.makeMGraph()
       val objects = objectsQuery(triple.subject, triple.predicate)
       objects.filter { n => getLang(n) == language } map {
-        lit => {
+        lit =>
+          {
             removeTriple(mgraph, Triple(triple.subject, triple.predicate, lit))
             addTriple(mgraph, triple)
           }
