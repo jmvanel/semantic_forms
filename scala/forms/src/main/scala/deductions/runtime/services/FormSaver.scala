@@ -37,53 +37,52 @@ trait FormSaver[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
    * transactional
    *  TODO refactor : split 1) decoding of the response 2) update of RDF database
    */
-  def saveTriples(map: Map[String, Seq[String]]) = {
-    println(s"FormSaver.saveTriples $map")
-    val uriArgs = map.getOrElse("uri", Seq())
-    val uriOption = uriArgs.find { uri => uri != "" }
-    //    val uriOption = map.getOrElse("uri", Seq()).headOption
-    val graphURIOption = map.getOrElse("graphURI", Seq()).headOption
-    println(s"FormSaver.saveTriples uri $uriOption, graphURI $graphURIOption")
+  def saveTriples(httpParamsMap: Map[String, Seq[String]]) = {
+    println(s"FormSaver.saveTriples $httpParamsMap")
+    val uriArgs = httpParamsMap.getOrElse("uri", Seq())
+    val subjectUriOption = uriArgs.find { uri => uri != "" }
+    val graphURIOption = httpParamsMap.getOrElse("graphURI", Seq()).headOption
+    println(s"FormSaver.saveTriples uri $subjectUriOption, graphURI $graphURIOption")
 
     val triples = ArrayBuffer[Rdf#Triple]()
     val triplesToRemove = ArrayBuffer[Rdf#Triple]()
 
-    uriOption match {
+    subjectUriOption match {
       case Some(uri0) =>
-        //        val graphURI = URLDecoder.decode(uri0, "utf-8")
-        val uri = URLDecoder.decode(uri0, "utf-8")
+        val subjectUri = URLDecoder.decode(uri0, "utf-8")
         val graphURI =
-          if (graphURIOption == Some("")) uri
+          if (graphURIOption == Some("")) subjectUri
           else URLDecoder.decode(graphURIOption.getOrElse(uri0), "utf-8")
-        val v = map.map {
-          case (prop0, obj) =>
+        httpParamsMap.map {
+          case (prop0, objects) =>
             val prop = URLDecoder.decode(prop0, "utf-8")
-            saveTriplesForProperty(uri, prop, obj, map)
+            saveTriplesForProperty(subjectUri, prop, objects, httpParamsMap)
         }
+        println("triplesToRemove " + triplesToRemove)
+        println("triples To add " + triples)
         doSave(graphURI)
       case _ =>
     }
 
     // ==== end of body of saveTriples ====
 
-    def saveTriplesForProperty(uri: String, prop: String, objects: Seq[String], map: Map[String, Seq[String]]) = {
-      objects.map(object_ => setTripleChanges(uri, prop, object_))
-      println("triplesToRemove " + triplesToRemove)
-      println("triples To add " + triples)
+    def saveTriplesForProperty(uri: String, prop: String, objects: Seq[String],
+      httpParamsMap: Map[String, Seq[String]]) = {
+      objects.map(objectt => setTripleChanges(uri, prop, objectt))
     }
 
     def processChange(uri: String, prop: String, obj: String): (Boolean, String) = {
-      val originalValue = map.getOrElse(
+      val originalValue = httpParamsMap.getOrElse(
         "ORIG-" + URLEncoder.encode(prop, "utf-8"), Seq("")).headOption.getOrElse("")
       val userValue = obj
       println(s"""processChange $uri $prop $obj +
-        userValue "$userValue" originalValue "originalValue" """)
+        userValue "$userValue" originalValue "$originalValue" """)
       (userValue != originalValue, originalValue)
     }
 
     /** obj is literal, URI, or BN ? */
-    def decodeHTTPParam(prop: String, obj: String): Rdf#Node = {
-      prop match {
+    def decodeHTTPParam(propParam: String, obj: String): Rdf#Node = {
+      propParam match {
         case prop if (prop startsWith ("LIT-")) =>
           makeLiteral(obj, xsd.string)
         case prop if (prop startsWith ("RES-")) =>
@@ -91,27 +90,27 @@ trait FormSaver[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
         case prop if (prop startsWith ("BLA-")) =>
           makeBNodeLabel(obj)
         case _ => makeLiteral("FormSaver.decodeHTTPParam: CASE NOT COVERED: "
-          + prop + " , "
+          + propParam + " , "
           + obj, xsd.string)
       }
     }
 
     /** populate lists of triples to add and remove */
     def setTripleChanges(uri: String, prop: String, obj0: String): Unit = {
-      val obj = URLDecoder.decode(obj0, "utf-8")
-      println("saveTriple: " + prop + " \"" + obj + "\"")
+      val objectt = URLDecoder.decode(obj0, "utf-8")
+      if (objectt != "") println("save Triple? prop " + prop + ", obj \"" + objectt + "\"")
       if (prop != "url" &&
         prop != "uri" &&
         prop != "graphURI" &&
         !prop.startsWith("ORIG-")) {
-        val (changed, originalValue) = processChange(uri, prop, obj)
-        if (changed && obj != "") {
-          println(s"""saveTriple: $prop changed from $originalValue to "$obj" """)
+        val (changed, originalValue) = processChange(uri, prop, objectt)
+        if (changed && objectt != "") {
+          println(s"""save Triple: $prop changed from $originalValue to "$objectt" """)
           triples +=
             makeTriple(
               makeUri(uri),
               makeUri(prop.substring(4)),
-              decodeHTTPParam(prop, obj)
+              decodeHTTPParam(prop, objectt)
             )
           triplesToRemove +=
             makeTriple(
@@ -134,7 +133,11 @@ trait FormSaver[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
 
       f onSuccess {
         case _ =>
-          println("Successfully stored triples in store")
+          println(s""" Successfully stored ${triples.size} triples
+            ${triples.mkString(", ")}
+            and removed ${triplesToRemove.size}
+            ${triplesToRemove.mkString(", ")}
+          in graph $graphURI""")
           dataset.getGraph(makeUri(graphURI)).asFuture.
             onSuccess {
               case gr =>
@@ -147,6 +150,7 @@ trait FormSaver[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
                 }
             }
       }
+      f.onFailure { case t => println(s"doSave: Failure $t") }
     }
   }
 
