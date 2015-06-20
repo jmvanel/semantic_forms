@@ -9,6 +9,7 @@ Properties_for=Properties for
 URI_to_display=URI to display   
 String_to_search=String to search
 Create_instance_of=Create instance of 
+Creating_instance=Creating an instance of class
 Paste_ontology=Paste URI of a class in an ontology
 Other_vocabs=Other vocabularies
 

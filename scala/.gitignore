@@ -11,3 +11,6 @@
 **/TDB
 **/.cache
 **/.classpath
+
+logfile.log*
+

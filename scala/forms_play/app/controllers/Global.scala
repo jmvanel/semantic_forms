@@ -39,6 +39,7 @@ import scala.util.Failure
 import deductions.runtime.services.ReverseLinksSearchSPARQL
 import deductions.runtime.services.ExtendedSearchSPARQL
 import scala.concurrent.ExecutionContext.Implicits.global
+import play.api.i18n._
 
 /** NOTE: was obliged to rename global to global1
  *  because of Scala compiler bug:
@@ -94,16 +95,10 @@ package global1 {
         <div class="container">
           <div class="row">
             <h3>
-              { import play.api.i18n._;
-              Messages("Properties_for")(Lang(lang)) }  
+              { Messages("Properties_for")(Lang(lang)) }  
               <b>
                 <a href={ hrefEditPrefix + URLEncoder.encode(uri, "utf-8") } title="edit this URI">
-                {
-                	rdfStore.r( dataset, {
-                		implicit val graph: Rdf#Graph = allNamedGraph;
-                	instanceLabel(ops.URI(uri))
-                	} ).getOrElse(uri)
-                }</a>
+                { labelForURI(uri) }</a>
                 , URI :
                 <a href={ hrefDisplayPrefix + URLEncoder.encode(uri, "utf-8") } title="display this URI">{uri}</a>
               </b>
@@ -139,6 +134,13 @@ package global1 {
       </div>
     }
 
+    def labelForURI(uri: String): String = {
+      rdfStore.r(dataset, {
+        implicit val graph: Rdf#Graph = allNamedGraph;
+        instanceLabel(ops.URI(uri))
+      }).getOrElse(uri)
+    }
+    
 //    def displayURI2(uriSubject: String) //  : Enumerator[scala.xml.Elem] 
 //    = {
 //      import ops._
@@ -248,7 +250,8 @@ package global1 {
       val uri = uri0.trim()
 
       <div class="container">
-        <h2>Creating an instance of Class <strong>{ uri }</strong></h2>
+        <h4>{ Messages("Creating_instance")(Lang(lang)) }  
+        <strong title={uri}>{ labelForURI(uri) }</strong></h4>
         { cf.create(uri, lang).get }
       </div>
     }
