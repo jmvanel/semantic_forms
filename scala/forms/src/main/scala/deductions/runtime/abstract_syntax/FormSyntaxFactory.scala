@@ -234,7 +234,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
         // TODO match graph pattern for interval datatype ; see issue #17
         // case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
         new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
-          getNodeOrElse(object_, literalInitialValue),
+          getLiteralNodeOrElse(object_, literalInitialValue),
           type_ = firstType)
       }
       def resourceEntry = {

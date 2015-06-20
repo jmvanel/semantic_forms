@@ -121,7 +121,7 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
           if (editable) {
             createHTMLiteralEditableLField(l)
           } else {
-            <div>{ l.value }</div>
+            <div>{ toPlainString(l.value) }</div>
           }
         }
       case r: fm#ResourceEntry =>
@@ -261,7 +261,10 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
         }
 
       case _ =>
-        <input class={ cssClasses.formInputCSSClass } value={ lit.value.toString() } name={ makeHTMLIdForLiteral(lit) } type={ HTML5Types.xsd2html5TnputType(lit.type_.toString()) } placeholder={ placeholder } size={ inputSize.toString() }>
+        <input class={ cssClasses.formInputCSSClass } value={
+          //          lit.value.toString()
+          toPlainString(lit.value)
+        } name={ makeHTMLIdForLiteral(lit) } type={ HTML5Types.xsd2html5TnputType(lit.type_.toString()) } placeholder={ placeholder } size={ inputSize.toString() }>
         </input>
     }
     elem ++

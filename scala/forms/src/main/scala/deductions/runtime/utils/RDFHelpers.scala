@@ -89,7 +89,7 @@ abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf],
     })
   }
 
-  def getNodeOrElse(n: Rdf#Node, default: String): Rdf#Node = {
+  def getLiteralNodeOrElse(n: Rdf#Node, default: String): Rdf#Node = {
     val d = ops.Literal(default)
     ops.foldNode(n)(_ => d, _ => d, l => l)
   }
