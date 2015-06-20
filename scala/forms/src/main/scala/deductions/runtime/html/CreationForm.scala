@@ -42,7 +42,13 @@ trait CreationFormAlgo[Rdf <: RDF, DATASET] extends RDFOpsModule
     dataset.r({
       val factory = new UnfilledFormFactory[Rdf, DATASET](allNamedGraph, preferedLanguage = lang)
       val form = factory.createFormFromClass(URI(classUri))
-      new Form2HTML[Rdf#Node, Rdf#URI] {}.
+      
+      // TODO code duplicated in trait TableViewModule.graf2form() 
+      new Form2HTML[Rdf#Node, Rdf#URI] {
+        import ops._
+        override def toPlainString(n: Rdf#Node): String =
+          foldNode(n)(fromUri(_), fromBNode(_), fromLiteral(_)._1)
+      }.
         generateHTML(form, hrefPrefix = "", editable = true, actionURI = actionURI)
     })
   }
