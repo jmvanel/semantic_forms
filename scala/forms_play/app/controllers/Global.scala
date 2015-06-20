@@ -250,8 +250,8 @@ package global1 {
       val uri = uri0.trim()
 
       <div class="container">
-        <h4>{ Messages("Creating_instance")(Lang(lang)) }  
-        <strong title={uri}>{ labelForURI(uri) }</strong></h4>
+        <h3>{ Messages("Creating_instance")(Lang(lang)) }  
+        <strong title={uri}>{ labelForURI(uri) }</strong></h3>
         { cf.create(uri, lang).get }
       </div>
     }

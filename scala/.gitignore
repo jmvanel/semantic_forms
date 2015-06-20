@@ -13,4 +13,5 @@
 **/.classpath
 
 logfile.log*
-
+.cache-main
+*.log
