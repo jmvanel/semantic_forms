@@ -128,7 +128,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     formGroup: Rdf#URI = nullURI): NodeSeq = {
     val form = createAbstractForm(graph, uri, editable, lang, blankNode, formGroup)
     val htmlForm =
-    // TODO code duplicated in trait CreationFormAlgo.create() 
+      // TODO code duplicated in trait CreationFormAlgo.create() 
       new Form2HTML[Rdf#Node, Rdf#URI] {
         override def toPlainString(n: Rdf#Node): String =
           ops.foldNode(n)(fromUri(_), fromBNode(_), fromLiteral(_)._1)

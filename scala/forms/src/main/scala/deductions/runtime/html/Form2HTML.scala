@@ -284,7 +284,7 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
       <option value={ toPlainString(values._1) } selected={
         if (field.value.toString() ==
           toPlainString(values._1)) "selected" else null
-      }>{ toPlainString(values._2) }</option>
+      } title={ toPlainString(values._1) } label={ toPlainString(values._2) }>{ toPlainString(values._2) }</option>
     }
     val options = Seq(<option value=""></option>) ++
       (for (value <- field.possibleValues) yield makeHTMLOption(value, field))
