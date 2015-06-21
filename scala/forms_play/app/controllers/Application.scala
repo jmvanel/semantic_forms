@@ -11,15 +11,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import scala.xml.NodeSeq
+import play.api.i18n.Lang
 
 object Application extends Controller with TableView
 with JenaHelpers
 with RDFStoreLocalJena1Provider {
   val glob = _root_.global1.Global
 
-  def index = {
-    Action { Ok(views.html.index(glob.form)) }
-//    Action { Ok( "OK !!!!!!!!!!!!!!!!") }
+  def index() = {
+    Action { implicit request =>
+      Ok(views.html.index(glob.form)(lang = chooseLanguageObject(request))) }
   }
 
   def displayURI(uri: String, blanknode: String = "", Edit: String = "") = {
@@ -57,8 +58,11 @@ with RDFStoreLocalJena1Provider {
   }
 
   def chooseLanguage(request: Request[_]): String = {
+    chooseLanguageObject(request).language
+  }
+  def chooseLanguageObject(request: Request[_]): Lang = {
     val languages = request.acceptLanguages
-    val res = if (languages.length > 0) languages(0).language else "en"
+    val res = if (languages.length > 0) languages(0) else Lang("en")
     println("chooseLanguage: " + request + "\n\t" + res)
     res
   }
