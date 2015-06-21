@@ -58,8 +58,8 @@ trait FormSaver[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
             val prop = URLDecoder.decode(prop0, "utf-8")
             saveTriplesForProperty(subjectUri, prop, objects, httpParamsMap)
         }
-        println("triplesToRemove " + triplesToRemove)
-        println("triples To add " + triples)
+        //        println("triplesToRemove " + triplesToRemove)
+        //        println("triples To add " + triples)
         doSave(graphURI)
       case _ =>
     }
@@ -71,13 +71,22 @@ trait FormSaver[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
       objects.map(objectt => setTripleChanges(uri, prop, objectt))
     }
 
+    /**
+     * process Change
+     *  @return whether subject uri has changed, and the original Value
+     */
     def processChange(uri: String, prop: String, obj: String): (Boolean, String) = {
-      val originalValue = httpParamsMap.getOrElse(
-        "ORIG-" + URLEncoder.encode(prop, "utf-8"), Seq("")).headOption.getOrElse("")
+      val originals = httpParamsMap.getOrElse(
+        "ORIG-" + URLEncoder.encode(prop, "utf-8"), Seq(""))
+      val originalValue = if (originals.size == 1)
+        originals.headOption.getOrElse("")
+      else ""
       val userValue = obj
-      println(s"""processChange $uri $prop $obj +
+      if (userValue != "" && originalValue != "")
+        println(s"""processChange $uri $prop
         userValue "$userValue" originalValue "$originalValue" """)
-      (userValue != originalValue, originalValue)
+      val changed = userValue != originalValue
+      (changed, originalValue)
     }
 
     /** obj is literal, URI, or BN ? */
@@ -112,11 +121,12 @@ trait FormSaver[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
               makeUri(prop.substring(4)),
               decodeHTTPParam(prop, objectt)
             )
-          triplesToRemove +=
-            makeTriple(
-              makeUri(uri),
-              makeUri(prop.substring(4)),
-              decodeHTTPParam(prop, originalValue))
+          if (originalValue != "")
+            triplesToRemove +=
+              makeTriple(
+                makeUri(uri),
+                makeUri(prop.substring(4)),
+                decodeHTTPParam(prop, originalValue))
         }
       }
     }
@@ -125,7 +135,7 @@ trait FormSaver[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
     def doSave(graphURI: String) {
       import ops._
       val transaction = dataset.rw({
-        dataset.removeTriples(makeUri(graphURI), triplesToRemove.toIterable)
+        //        dataset.removeTriples(makeUri(graphURI), triplesToRemove.toIterable)
         dataset.appendToGraph(makeUri(graphURI), makeGraph(triples))
       }).flatMap { identity }
 
