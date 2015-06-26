@@ -18,11 +18,11 @@ class TestRDFCache extends FunSuite with RDFCache
     with JenaHelpers
     with RDFStoreLocalJena1Provider {
   val uri = "http://jmvanel.free.fr/jmv.rdf#me"
-//  val uri2 = "http://live.dbpedia.org/page/Taraxacum_japonicum"
-//  val uri2 = uri 
-   val uri2 = "https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/foaf/foaf.fr.ttl"
+  //  val uri2 = "http://live.dbpedia.org/page/Taraxacum_japonicum"
+  //  val uri2 = uri 
+  val uri2 = "https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/foaf/foaf.fr.ttl"
   //  src/test/resources/foaf.n3
-  
+
   import ops._
   import sparqlOps._
 
@@ -42,17 +42,17 @@ class TestRDFCache extends FunSuite with RDFCache
     println("rdfStore.getGraph( dataset, uriNode).get " + g.get)
     checkNamedGraph(uri)
   }
-  
+
   test("save to enpoint cache with storeURI() and check with SPARQL.") {
-	  val uriNode = makeUri(uri2)
+    val uriNode = makeUri(uri2)
     storeURI(uriNode, dataset)
-	  checkNamedGraph(uri2)
+    checkNamedGraph(uri2)
     println("In this case only the 2 triples for the timestamp")
   }
 
   /** check with SPARQL that endpoint is populated. */
   def checkNamedGraph(uri: String) = {
-        val queryString = s"""
+    val queryString = s"""
       # PREFIX foaf:
       CONSTRUCT {
         <$uri> ?P ?V .
@@ -61,7 +61,7 @@ class TestRDFCache extends FunSuite with RDFCache
       WHERE {
         GRAPH ?G { <$uri> ?P ?V . }
       }"""
-//    println("queryString\n"+ queryString)
+    //    println("queryString\n"+ queryString)
     rdfStore.r(dataset, {
       val result = for {
         query <- parseConstruct(queryString)

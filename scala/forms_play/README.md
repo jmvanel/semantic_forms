@@ -41,7 +41,10 @@ nohup bin/semantic_forms_play -mem 50 &
 
 There is a script that does this, and more: it stops the server, updates the application from sources, and restarts the server :
 
-    ./update_server.sh
+    ./scripts/update_server.sh
+
+It is advised to deactivate the automatic formatting on a server machine. Just comment out the line `scalariformSettings` in 
+scala/forms/build.sbt . 
 
 If you want to change the log settings:
 ```
