@@ -19,6 +19,19 @@ trait RDFI18NLoaderTrait[Rdf <: RDF, DATASET]
     with RDFStoreHelpers[Rdf, DATASET]
     with SitesURLForDownload {
 
+  import ops._
+  import rdfStore.transactorSyntax._
+  import rdfStore.graphStoreSyntax._
+
+  val I18NGraph = URI("rdf-i18n")
+
+  /** TRANSACTIONAL */
+  def resetRDFI18NTranslations() {
+    val r = dataset.rw({
+      dataset.removeGraph(I18NGraph)
+    })
+  }
+
   /** load RDF I18N Translations From GitHub, into named graph "rdf-i18n" */
   def loadFromGitHubRDFI18NTranslations() {
 
@@ -38,6 +51,6 @@ trait RDFI18NLoaderTrait[Rdf <: RDF, DATASET]
     )
     import ops._
     val translations = translations0 map { p => URI(p) }
-    translations map { storeURI(_, URI("rdf-i18n"), dataset) }
+    translations map { storeURI(_, I18NGraph, dataset) }
   }
 }

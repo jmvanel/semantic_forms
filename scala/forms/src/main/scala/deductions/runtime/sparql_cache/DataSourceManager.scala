@@ -42,7 +42,7 @@ trait DataSourceManager[Rdf <: RDF, DATASET]
         val r = triples.map {
           t => rdfh.replaceSameLanguageTriple(t)
         }
-        r.fold(0)(_ + _) 
+        r.fold(0)(_ + _)
       }
     })
     r1.get.get

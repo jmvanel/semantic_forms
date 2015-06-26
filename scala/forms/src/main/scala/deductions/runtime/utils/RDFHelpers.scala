@@ -125,7 +125,7 @@ abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf],
           {
             removeTriple(mgraph, Triple(triple.subject, triple.predicate, lit))
             addTriple(mgraph, triple)
-            println( triple )
+            println(triple)
           }
       }
       objectsMatchingLanguage.size

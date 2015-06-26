@@ -33,8 +33,11 @@ trait SitesURLForDownload {
  *  but without any dependency to EulerGUI.
  *
  *  TODO use prefix.cc web service to load from prefix short names (see implementation in EulerGUI)
+ *
+ *  TODO move in jena package ( and update README )
  */
-object PopulateRDFCache extends CommonVocabulariesLoaderTrait[Jena, Dataset]
+object PopulateRDFCache extends JenaModule
+    with CommonVocabulariesLoaderTrait[Jena, Dataset]
     with RDFI18NLoaderTrait[Jena, Dataset]
     with FormSpecificationsLoaderTrait[Jena, Dataset]
     with RDFOpsModule
@@ -46,13 +49,7 @@ object PopulateRDFCache extends CommonVocabulariesLoaderTrait[Jena, Dataset]
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._
 
-  //  CommonVocabulariesLoader.
   loadCommonVocabularies()
-  //  FormSpecificationsLoader.
   loadCommonFormSpecifications()
-  //  RDFI18NLoader.
   loadFromGitHubRDFI18NTranslations()
-
-  // test OK:
-  //    storeURI( ops.makeUri( "http://purl.org/ontology/mo/" ), dataset  )
 }

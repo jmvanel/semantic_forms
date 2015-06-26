@@ -41,46 +41,65 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._
 
-  //  val githubcontent = "https://raw.githubusercontent.com"
+  /** most used vocab's */
+  val basicVocabs: List[Prefix[Rdf]] = List(
+    RDFPrefix[Rdf],
+    RDFSPrefix[Rdf],
+    DCPrefix[Rdf],
+    DCTPrefix[Rdf],
+    FOAFPrefix[Rdf],
+    //    LDPPrefix[Rdf],
+    //    IANALinkPrefix[Rdf],
+    WebACLPrefix[Rdf],
+    CertPrefix[Rdf],
+    OWLPrefix[Rdf])
 
+  /** larger and less known vocab's */
+  val largerVocabs: List[Rdf#URI] =
+    makeUri("http://usefulinc.com/ns/doap#") ::
+      makeUri("http://rdfs.org/sioc/ns#") ::
+      makeUri("http://schema.rdfs.org/all.nt") :: // NOTE .ttl is still broken ( asked on https://github.com/mhausenblas/schema-org-rdf/issues/63 )
+      makeUri("http://downloads.dbpedia.org/3.9/dbpedia_3.9.owl") ::
+      /* geo: , con: */
+      makeUri("http://www.w3.org/2003/01/geo/wgs84_pos#") ::
+      makeUri("http://www.w3.org/2000/10/swap/pim/contact#") ::
+      makeUri(githubcontent + "/assemblee-virtuelle/pair/master/av.owl.ttl") ::
+      makeUri("http://purl.org/ontology/cco/cognitivecharacteristics.n3") ::
+      Nil
+
+  /**
+   * TRANSACTIONAL
+   *  basicVocabs are not supposed to change often ..
+   */
+  def resetCommonVocabularies() {
+    val r = dataset.rw({
+      largerVocabs map {
+        voc =>
+          try {
+            dataset.removeGraph(voc)
+          } catch {
+            case e: Exception => println("Error in resetCommonVocabularies " + voc + " " + e)
+          }
+      }
+    })
+  }
+
+  /** TRANSACTIONAL */
   def loadCommonVocabularies() {
-    // most used vocab's
-    val basicVocabs = List(
-      RDFPrefix[Rdf],
-      RDFSPrefix[Rdf],
-      DCPrefix[Rdf],
-      DCTPrefix[Rdf],
-      FOAFPrefix[Rdf],
-      //    LDPPrefix[Rdf],
-      //    IANALinkPrefix[Rdf],
-      WebACLPrefix[Rdf],
-      CertPrefix[Rdf],
-      OWLPrefix[Rdf])
     import ops._
     val basicVocabsAsURI = basicVocabs map { p => p.apply("") }
-    val largerVocabs =
-      makeUri("http://usefulinc.com/ns/doap#") ::
-        makeUri("http://rdfs.org/sioc/ns#") ::
-        makeUri("http://schema.rdfs.org/all.nt") :: // NOTE .ttl is still broken ( asked on https://github.com/mhausenblas/schema-org-rdf/issues/63 )
-        makeUri("http://downloads.dbpedia.org/3.9/dbpedia_3.9.owl") ::
-        /* geo: , con: */
-        makeUri("http://www.w3.org/2003/01/geo/wgs84_pos#") ::
-        makeUri("http://www.w3.org/2000/10/swap/pim/contact#") ::
-        makeUri(githubcontent + "/assemblee-virtuelle/pair/master/av.owl.ttl") ::
-        makeUri("http://purl.org/ontology/cco/cognitivecharacteristics.n3") ::
-        Nil
-
     val vocabs = basicVocabsAsURI ::: largerVocabs
-
     Logger.getRootLogger().info(vocabs)
     vocabs map {
       voc =>
         try {
           storeURI(voc, dataset)
         } catch {
-          case e: Exception => println("Error " + voc + " " + e)
+          case e: Exception => println("Error in loadCommonVocabularies" + voc + " " + e)
         }
     }
+    // test OK:
+    //    storeURI( ops.makeUri( "http://purl.org/ontology/mo/" ), dataset  )
   }
 
 }

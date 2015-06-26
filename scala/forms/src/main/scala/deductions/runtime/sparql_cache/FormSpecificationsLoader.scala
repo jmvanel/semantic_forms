@@ -22,10 +22,21 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
     with RDFStoreHelpers[Rdf, DATASET]
     with SitesURLForDownload {
+
   import ops._
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._
 
+  val FormSpecificationsGraph = URI("form_specs")
+
+  /** TRANSACTIONAL */
+  def resetCommonFormSpecifications() {
+    val r = dataset.rw({
+      dataset.removeGraph(FormSpecificationsGraph)
+    })
+  }
+
+  /** TRANSACTIONAL */
   def loadCommonFormSpecifications() {
     val all_form_specs = githubcontent +
       "/jmvanel/semantic_forms/master/scala/forms/form_specs/specs.ttl"
@@ -44,7 +55,7 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
       val form_spec_graph: Rdf#Graph = turtleReader.read(from, base = obj.toString()) getOrElse sys.error(
         s"couldn't read ${obj.toString()}")
       val r = dataset.rw({
-        dataset.appendToGraph(ops.makeUri("form_specs"), form_spec_graph)
+        dataset.appendToGraph(FormSpecificationsGraph, form_spec_graph)
       })
       println("Added form_spec " + obj)
     }

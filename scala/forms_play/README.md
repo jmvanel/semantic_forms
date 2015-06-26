@@ -130,7 +130,7 @@ To update the Common Form Specifications :
     java -cp $JARS tdb.tdbupdate --loc=TDB --update=/tmp/delete_graph.rq
     java -cp $JARS deductions.runtime.sparql_cache.FormSpecificationsLoader
 
-To update everything (but better delete some named graph before , like above :
+To update everything (but better delete some named graph before, like above, or below) :
 
     java -cp $JARS deductions.runtime.sparql_cache.PopulateRDFCache
 
@@ -139,6 +139,11 @@ In the case when one wants to override some triples that are already loaded in g
     java -cp $JARS deductions.runtime.jena.DataSourceManagerApp file:///home/user/newTriples.tll G
 
 For each triple `?S ?P "val"@lang.` in newTriples.tll , this will remove the existing triple:  `?S ?P "old val"@lang.` , and add the new triple: `?S ?P "val"@lang.` 
+
+To delete named graph related to common vocabularies, default form specifications, and IN18 translations, run this:
+
+    java -cp $JARS deductions.runtime.jena.ResetRDFCache
+
 
 ## SPARQL queries
 There is a web service for SPARQL queries, not a SPARL endpoint yet :( , and not an HTML page for entering queries yet .
