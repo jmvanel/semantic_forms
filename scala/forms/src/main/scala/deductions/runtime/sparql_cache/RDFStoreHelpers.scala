@@ -51,6 +51,8 @@ trait RDFStoreHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DA
     //    val gForStore = dataset.getGraph(graphUri)
     Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
     val graph: Rdf#Graph =
+      /* TODO check new versions of Scala > 2.11.6 that this asInstanceOf is 
+        still necessary */
       load(new java.net.URL(uri.toString())).get.
         asInstanceOf[Rdf#Graph]
     dataset.appendToGraph(graphUri, graph)
