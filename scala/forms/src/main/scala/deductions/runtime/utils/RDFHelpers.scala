@@ -120,15 +120,17 @@ abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf],
     val count =
       if (language != NL) {
         val objects = objectsQuery(triple.subject, triple.predicate)
-        val objectsMatchingLanguage = objects.filter { n => getLang(n) == language }
+        val objectsMatchingLanguage = objects.filter {
+          n => getLang(n) == language
+        }
         objectsMatchingLanguage map {
           lit =>
             {
               removeTriple(mgraph, Triple(triple.subject, triple.predicate, lit))
-              addTriple(mgraph, triple)
               println(triple)
             }
         }
+        addTriple(mgraph, triple)
         objectsMatchingLanguage.size
       } else 0
     count
