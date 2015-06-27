@@ -66,6 +66,7 @@ package global1 {
   with BrowsableGraph[Rdf, DATASET]
   with FormSaver[Rdf, DATASET]
   with CreationFormAlgo[Rdf, DATASET]
+  with controllers.LanguageManagement
 {
     
     Logger.getRootLogger().info(s"in Global")
@@ -238,7 +239,8 @@ package global1 {
           uriOption match {
             case Some(url1) => htmlForm(
               URLDecoder.decode(url1, "utf-8"),
-              editable = false)
+              editable = false,
+              lang = chooseLanguage(request) )
             case _ => <p>Save: not normal: { uriOption }</p>
           }
         case _ => <p>Save: not normal: { form.getClass() }</p>

@@ -15,7 +15,8 @@ import play.api.i18n.Lang
 
 object Application extends Controller with TableView
 with JenaHelpers
-with RDFStoreLocalJena1Provider {
+with RDFStoreLocalJena1Provider
+with LanguageManagement {
   val glob = _root_.global1.Global
 
   def index() = {
@@ -57,15 +58,15 @@ with RDFStoreLocalJena1Provider {
     Action { Ok.chunked(glob.download(url)).as("text/turtle, charset=utf-8") }
   }
 
-  def chooseLanguage(request: Request[_]): String = {
-    chooseLanguageObject(request).language
-  }
-  def chooseLanguageObject(request: Request[_]): Lang = {
-    val languages = request.acceptLanguages
-    val res = if (languages.length > 0) languages(0) else Lang("en")
-    println("chooseLanguage: " + request + "\n\t" + res)
-    res
-  }
+//  def chooseLanguage(request: Request[_]): String = {
+//    chooseLanguageObject(request).language
+//  }
+//  def chooseLanguageObject(request: Request[_]): Lang = {
+//    val languages = request.acceptLanguages
+//    val res = if (languages.length > 0) languages(0) else Lang("en")
+//    println("chooseLanguage: " + request + "\n\t" + res)
+//    res
+//  }
 
   def edit(url: String) = {
     Action { request =>
