@@ -55,7 +55,7 @@ nohup bin/semantic_forms_play -Dlog4j.configuration=myconf.properties -mem 50 &
 
 ## Troubleshooting & tips
 
-- FAILED DOWNLOADS messages for the first SBT build: retry later. With all these dependency managers (SBT, Maven, NMP), given the large amount of downloading from multiple sources, it is often the case that the first time, not everything is there.
+- FAILED DOWNLOADS messages for the first SBT build: retry later. With SBT, as with all these dependency managers ( Maven, NMP), given the large amount of downloading from multiple sources, it is often the case that the first time, not everything is there.
 - in case of troubles in build, delete `target/` directory
 - create eclipse configurations with the "eclipse" command in sbt or activator:
 

@@ -29,6 +29,7 @@ trait InstanceLabelsInference2[Rdf <: RDF] extends RDFOpsModule {
    *  TODO : this could use existing specifications of properties in form by class :
    *  ../forms/form_specs/foaf.form.ttl ,
    *  by taking the first one or two first literal properties.
+   *  TODO : take in account a preferred language like getPreferedLanguageFromSubjectAndPredicate does,
    */
   def instanceLabel(uri: Rdf#Node)(implicit graph: Rdf#Graph): String = {
     val pgraph = PointedGraph(uri, graph)
@@ -37,24 +38,29 @@ trait InstanceLabelsInference2[Rdf <: RDF] extends RDFOpsModule {
     val lastName = (pgraph / foaf.lastName).as[String].getOrElse("")
 
     val n = firstName + " " + lastName
-    if (n.size > 1) n
+    val r = if (n.size > 1) Literal(n)
     else {
       val givenName = (pgraph / foaf.givenName).as[String].getOrElse("")
       val familyName = (pgraph / foaf.familyName).as[String].getOrElse("")
       val n = givenName + " " + familyName
-      if (n.size > 1) n
-      else
-        (pgraph / rdfs.label).as[String].
-          getOrElse(
-            (pgraph / foaf.name).as[String].
+      if (n.size > 1) Literal(n)
+      else {
+        val rr = (pgraph / rdfs.label).as[Rdf#Literal].
+          getOrElse {
+            (pgraph / foaf.name).as[Rdf#Literal].
               getOrElse {
-                val classLabel = (pgraph / rdf.typ / rdfs.label).as[String].getOrElse("")
-                if (classLabel != "") "a " + classLabel
+                val classLabel = (pgraph / rdf.typ / rdfs.label).as[Rdf#Literal].
+                  getOrElse(Literal(""))
+                if (classLabel != Literal(""))
+                  Literal("a " + classLabel)
                 else
                   // TODO : return Turtle prefix
-                  uri.toString()
+                  Literal("uri.toString()")
               }
-          )
+          }
+        rr
+      }
     }
+    r.lexicalForm
   }
 }

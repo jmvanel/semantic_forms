@@ -16,8 +16,7 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
 trait DataSourceManager[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
     with RDFLoader[Rdf, Try]
-    with RDFOpsModule //    with MGraphOps[Rdf]
-    {
+    with RDFOpsModule {
   import ops._
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._
