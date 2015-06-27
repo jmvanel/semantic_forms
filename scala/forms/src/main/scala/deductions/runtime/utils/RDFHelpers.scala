@@ -102,7 +102,9 @@ abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf],
     }
   }
 
-  def replaceSameLanguageTriple(triple: Rdf#Triple): Int = {
+  def replaceSameLanguageTriple(triple: Rdf#Triple,
+    mgraph: Rdf#MGraph): Int = {
+
     val NL = makeLang("No_language")
     def getLang(node: Rdf#Node): Rdf#Lang = {
       foldNode(node)(
@@ -115,20 +117,20 @@ abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf],
     }
 
     val language = getLang(triple.objectt)
-
-    if (language != NL) {
-      val mgraph = graph.makeMGraph()
-      val objects = objectsQuery(triple.subject, triple.predicate)
-      val objectsMatchingLanguage = objects.filter { n => getLang(n) == language }
-      objectsMatchingLanguage map {
-        lit =>
-          {
-            removeTriple(mgraph, Triple(triple.subject, triple.predicate, lit))
-            addTriple(mgraph, triple)
-            println(triple)
-          }
-      }
-      objectsMatchingLanguage.size
-    } else 0
+    val count =
+      if (language != NL) {
+        val objects = objectsQuery(triple.subject, triple.predicate)
+        val objectsMatchingLanguage = objects.filter { n => getLang(n) == language }
+        objectsMatchingLanguage map {
+          lit =>
+            {
+              removeTriple(mgraph, Triple(triple.subject, triple.predicate, lit))
+              addTriple(mgraph, triple)
+              println(triple)
+            }
+        }
+        objectsMatchingLanguage.size
+      } else 0
+    count
   }
 }

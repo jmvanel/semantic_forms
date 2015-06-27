@@ -29,20 +29,25 @@ trait DataSourceManager[Rdf <: RDF, DATASET]
    *  with the triples coming from given `url`
    *  @return number of triples changed
    */
-  def replaceSameLanguageTriples(url: URL, graphURI: String): Int = {
+  def replaceSameLanguageTriples(url: URL, graphURIString: String): Int = {
     val r1 = dataset.rw({
-      for (givenGraph <- dataset.getGraph(URI(graphURI))) yield {
+      val graphURI = URI(graphURIString)
+      for (givenGraph <- dataset.getGraph(graphURI)) yield {
         val rdfh: RDFHelpers[Rdf] = new RDFHelpers[Rdf] { val graph = givenGraph }
-
+        val mgraph = givenGraph.makeMGraph()
         /* TODO check new versions of Scala > 2.11.6 that this asInstanceOf is 
         still necessary */
         val loadedGraph: Rdf#Graph = load(url).get.
           asInstanceOf[Rdf#Graph]
         val triples = ops.getTriples(loadedGraph)
         val r = triples.map {
-          t => rdfh.replaceSameLanguageTriple(t)
+          t => rdfh.replaceSameLanguageTriple(t, mgraph)
         }
-        r.fold(0)(_ + _)
+        val total = r.fold(0)(_ + _)
+        val modifiedGraph = mgraph.makeIGraph()
+        dataset.removeGraph(graphURI)
+        dataset.appendToGraph(graphURI, modifiedGraph)
+        total
       }
     })
     r1.get.get
