@@ -52,7 +52,7 @@ trait InstanceLabelsInference2[Rdf <: RDF] extends RDFOpsModule {
                 val classLabel = (pgraph / rdf.typ / rdfs.label).as[Rdf#Literal].
                   getOrElse(Literal(""))
                 if (classLabel != Literal(""))
-                  Literal("a " + classLabel)
+                  Literal("a " + classLabel.lexicalForm)
                 else
                   // TODO : return Turtle prefix
                   Literal("uri.toString()")

@@ -261,6 +261,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
         case _ if rangeClasses.exists { c => c.toString startsWith (xsdPrefix) } => literalEntry
         case _ if rangeClasses.contains(rdfs.Literal) => literalEntry
         case _ if propClasses.contains(owl.DatatypeProperty) => literalEntry
+        case _ if ranges.contains(rdfs.Literal) => literalEntry
         case _ if propClasses.contains(owl.ObjectProperty) => resourceEntry
         case _ if rangeClasses.contains(owl.Class) => resourceEntry
         case _ if rangeClasses.contains(rdf.Property) => resourceEntry
