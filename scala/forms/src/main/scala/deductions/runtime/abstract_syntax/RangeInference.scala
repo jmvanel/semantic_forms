@@ -93,11 +93,18 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] //with RDF
         // TODO also take in account subClassOf inference
         // TODO limit number of possible values; later implement Comet on demand access to possible Values
         if (range != owl.Thing) {
-          val enumerated = ops.getSubjects(graph, rdf.typ, range)
+          val enumerated = getSubjects(graph, rdf.typ, range)
           // debug        
           //        if (range == personURI)
           //          println(s"populateFromInstances: enumerated ${enumerated.mkString("; ")}")
+
           fillPossibleValues(enumerated, possibleValues)
+
+          val subClasses = getSubjects(graph, rdfs.subClassOf, range)
+          for (subClass <- subClasses) {
+            val subClassesValues = getSubjects(graph, rdf.typ, subClass)
+            fillPossibleValues(subClassesValues, possibleValues)
+          }
           // debug  if (range == personURI) println(s"possibleValues $possibleValues")
         }
       }

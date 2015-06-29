@@ -106,7 +106,7 @@ trait FormSaver[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
 
     /** populate lists of triples to add and remove */
     def setTripleChanges(uri: String, prop: String, obj0: String): Unit = {
-      val objectt = URLDecoder.decode(obj0, "utf-8") . trim()
+      val objectt = URLDecoder.decode(obj0, "utf-8").trim()
       if (objectt != "") println("save Triple? prop " + prop + ", obj \"" + objectt + "\"")
       if (prop != "url" &&
         prop != "uri" &&
