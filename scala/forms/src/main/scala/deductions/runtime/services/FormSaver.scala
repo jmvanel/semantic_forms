@@ -71,7 +71,7 @@ trait FormSaver[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
       objects.map(objectt => setTripleChanges(uri, prop, objectt))
     }
 
-    /**
+    /*
      * process Change
      *  @return whether subject uri has changed, and the original Value
      */

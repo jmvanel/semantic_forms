@@ -1,9 +1,7 @@
 package controllers.semforms.services
 
 import scala.xml.Elem
-
 import org.apache.log4j.Logger
-
 import deductions.runtime.html.CreationForm
 import deductions.runtime.html.TableView
 import deductions.runtime.services.FormSaver
@@ -11,11 +9,32 @@ import play.api.mvc.Action
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.mvc.Controller
 import play.api.mvc.Request
+import org.w3.banana.RDF
+import deductions.runtime.html.TableViewModule
+import org.w3.banana.jena.JenaModule
+import deductions.runtime.jena.JenaHelpers
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import org.w3.banana.jena.Jena
+import com.hp.hpl.jena.query.Dataset
+import deductions.runtime.html.CreationFormAlgo
+import play.api.mvc.AnyContent
 
-object ApplicationCRUD extends Controller with TableView with ApplicationCommons {
+  /** NOTE: important that JenaModule is first; otherwise ops may be null */
+  object ApplicationCRUD extends JenaModule
+  with ApplicationCRUDTrait[Jena, Dataset]
+  with JenaHelpers
+  with RDFStoreLocalJena1Provider
+  
+trait ApplicationCRUDTrait[Rdf <: RDF, DATASET] extends Controller
+  with TableViewModule[Rdf, DATASET]
+  // with controllers.LanguageManagement
+  with ApplicationCommons
+  with FormSaver[Rdf, DATASET]
+  with CreationFormAlgo[Rdf, DATASET]
+{
 
-	lazy val fs = new FormSaver()
-  lazy val cf = new CreationForm { actionURI = "/save" }
+	lazy val fs = this
+  lazy val cf = this // new CreationForm { actionURI = "/save" }
 
   def display(uri: String, blanknode: String = "" ) = {
     Action { implicit request =>
@@ -66,7 +85,7 @@ object ApplicationCRUD extends Controller with TableView with ApplicationCommons
       }
     }
       
-  def create() = {
+  def create(): Action[AnyContent] = {
     Action { implicit request =>
       println("create: " + request)
       val uri0 = getFirstNonEmptyURIInMap(request.queryString) . get

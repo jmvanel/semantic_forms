@@ -50,6 +50,10 @@ trait RDFStoreHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DA
     Logger.getRootLogger().info(s"Before storeURI uri $uri graphUri $graphUri")
     //    val gForStore = dataset.getGraph(graphUri)
     Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
+
+    System.setProperty("sun.net.client.defaultReadTimeout", "30000")
+    System.setProperty("sun.net.client.defaultConnectTimeout", "30000")
+
     val graph: Rdf#Graph =
       /* TODO check new versions of Scala > 2.11.6 that this asInstanceOf is 
         still necessary */

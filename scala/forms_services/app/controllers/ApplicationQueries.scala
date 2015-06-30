@@ -1,26 +1,38 @@
 package controllers.semforms.services
 
 import scala.concurrent.ExecutionContext.Implicits.global
-
 import org.w3.banana.jena.Jena
-
 import deductions.runtime.jena.RDFStoreObject
 import deductions.runtime.services.BrowsableGraph
 import deductions.runtime.services.StringSearchSPARQL
-import deductions.runtime.sparql_cache.RDFCache
 import play.api.mvc.Action
 import play.api.mvc.Controller
+import org.w3.banana.RDF
+import deductions.runtime.sparql_cache.RDFCacheAlgo
+import com.hp.hpl.jena.query.Dataset
+import org.w3.banana.jena.JenaModule
+import deductions.runtime.jena.JenaHelpers
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
 
-object ApplicationQueries extends Controller with ApplicationCommons
-      with RDFCache
-      with StringSearchSPARQL[Jena, RDFStoreObject.DATASET] {
+object ApplicationQueries extends JenaModule
+  with JenaHelpers
+  with RDFStoreLocalJena1Provider
+  with ApplicationQueriesTrait[Jena, Dataset]
 
-	lazy val dl = new BrowsableGraph()
+
+trait ApplicationQueriesTrait[Rdf <: RDF, DATASET] extends Controller
+  with ApplicationCommons
+  with RDFCacheAlgo[Rdf, DATASET]
+  with StringSearchSPARQL[Rdf, DATASET]
+  with BrowsableGraph[Rdf, DATASET]
+{
+
+	lazy val dl =  this // new BrowsableGraph()
 	// TODO use inverse Play's URI API
 	val hrefDisplayPrefix = "/display?displayuri="
     
 	def wordsearch(q: String = "") = Action.async {
-    val resFuture = search(q, hrefDisplayPrefix)
+    val resFuture = searchString(q, hrefDisplayPrefix)
     resFuture .map { res => Ok( res ) }
   }
 
