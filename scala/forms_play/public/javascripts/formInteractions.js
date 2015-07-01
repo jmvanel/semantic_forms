@@ -12,13 +12,13 @@ function cloneWidget(widgetName) {
 }
 
 function backlinks(uri) {
-    var url = window.document.location.origin + '/backlinks?q=' + uri;
+    var url = window.document.location.origin + '/backlinks?q=' + encodeURIComponent(uri);
     window.document.location.assign( url );
 }
 
 function backlinks_old(uri) {
     var req = new XMLHttpRequest(),
-        url = window.document.location.origin + '/backlinks?q=' + uri;
+        url = window.document.location.origin + '/backlinks?q=' + encodeURIComponent(uri);
     req.open('GET', url, false);
     req.setRequestHeader('Accept', 'text/html');
     console.log('Sending backlinks HTTP req ' + url);
