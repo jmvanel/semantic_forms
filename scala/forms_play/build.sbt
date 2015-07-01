@@ -8,13 +8,11 @@ version := "1.0-SNAPSHOT"
 
 lazy val semantic_forms =  RootProject(file("../forms"))
 
-// addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.3.8")
-
 lazy val semantic_forms_play = (project in file("."))
         .dependsOn(semantic_forms)
 	.enablePlugins(PlayScala)
 
-scalaVersion := "2.11.7" // 6"
+scalaVersion := "2.11.7"
 
 libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.0" % Test
 

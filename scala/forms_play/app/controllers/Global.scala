@@ -183,13 +183,6 @@ package global1 {
       s
     }
 
-//    def wordsearch(q: String = ""): Elem = {
-//      <p>
-//        Searched for "{ q }" :<br/>
-//        { searchString(q) }
-//      </p>
-//    }
-
     def wordsearchFuture(q: String = ""): Future[Elem] = {
       val fut = 
         searchString(q, hrefDisplayPrefix)

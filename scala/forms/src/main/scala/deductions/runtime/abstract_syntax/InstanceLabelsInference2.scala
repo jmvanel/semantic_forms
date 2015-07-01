@@ -55,7 +55,7 @@ trait InstanceLabelsInference2[Rdf <: RDF] extends RDFOpsModule {
                   Literal("a " + classLabel.lexicalForm)
                 else
                   // TODO : return Turtle prefix
-                  Literal("uri.toString()")
+                  Literal(uri.toString())
               }
           }
         rr
