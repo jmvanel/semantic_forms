@@ -61,15 +61,17 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
     formRootCSSClass = "form-root",
     formFieldCSSClass = "",
     formLabelAndInputCSSClass = "form-row",
-    formLabelCSSClass = "form-cell",
+    formLabelCSSClass = "form-label",
     formInputCSSClass = "form-input")
 
-  val localCSS = <script language="application/css">
-                   .form-row{{ display: table-row; }}
+  val localCSS =
+    <style type='text/css'>
+      .form-row{{ display: table-row; }}
                    .form-cell{{ display: table-cell; }}
                    .form-input{{ display: table-cell; width: 500px; }}
-                   .button-add{{ width: 200px; }}
-                 </script>
+                   .button-add{{ width: 25px; }}
+                   .form-label{{ display: table-cell; width: 160px; }}
+    </style>
 
   val localJS = <script language="application/javascript">
                   // function backlinks(uri) {{ }}
@@ -89,8 +91,11 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
       <input type="hidden" name="graphURI" value={ urlEncode(graphURI) }/>
     } else Seq()
     hidden ++
+      Text("\n") ++
       localCSS ++
+      Text("\n") ++
       localJS ++
+      Text("\n") ++
       <div class={ cssClasses.formRootCSSClass }>
         <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
         {
