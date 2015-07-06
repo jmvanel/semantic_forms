@@ -20,6 +20,11 @@ import org.w3.banana.jena.JenaModule
 import org.w3.banana.RDFOpsModule
 
 /**
+ * TODO : move to package jena
+ */
+trait TableView extends JenaModule with TableViewModule[Jena, Dataset]
+
+/**
  * Form for a subject URI with existing triples;
  *  a facade that blends:
  *  - the RDF cache [[deductions.runtime.sparql_cache.RDFCacheAlgo]],
@@ -28,11 +33,7 @@ import org.w3.banana.RDFOpsModule
  *  transactional
  *
  * named TableView because originally it was an HTML table.
- * TODO : move to package jena
  */
-trait TableView extends JenaModule with TableViewModule[Jena, Dataset]
-
-/** Form; transactional */
 trait TableViewModule[Rdf <: RDF, DATASET]
     extends RDFOpsModule
     with RDFCacheAlgo[Rdf, DATASET]

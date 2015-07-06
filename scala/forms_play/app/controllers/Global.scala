@@ -102,6 +102,7 @@ package global1 {
                 { labelForURI(uri) }</a>
                 , URI :
                 <a href={ hrefDisplayPrefix + URLEncoder.encode(uri, "utf-8") } title="display this URI">{uri}</a>
+                <a href={ s"/backlinks?q=${URLEncoder.encode(uri, "utf-8")}" } title="links towards this URI">o--></a>
               </b>
             </h3>
           </div>
