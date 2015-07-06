@@ -19,6 +19,8 @@ import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFCache
 import org.w3.banana.jena.Jena
 import com.hp.hpl.jena.query.Dataset
+import deductions.runtime.dataset.RDFStoreLocalProvider
+import org.w3.banana.RDF
 
 trait SitesURLForDownload {
   val githubcontent: String = "https://raw.githubusercontent.com"
@@ -37,12 +39,17 @@ trait SitesURLForDownload {
  *  TODO move in jena package ( and update README )
  */
 object PopulateRDFCache extends JenaModule
-    with CommonVocabulariesLoaderTrait[Jena, Dataset]
-    with RDFI18NLoaderTrait[Jena, Dataset]
-    with FormSpecificationsLoaderTrait[Jena, Dataset]
-    with RDFOpsModule
-    with RDFStoreLocalJena1Provider
-    with JenaHelpers
+  with JenaHelpers
+  with RDFStoreLocalJena1Provider
+  with PopulateRDFCacheTrait[Jena, Dataset]
+
+trait PopulateRDFCacheTrait[Rdf <: RDF, DATASET]
+    extends RDFOpsModule
+    with CommonVocabulariesLoaderTrait[Rdf, DATASET]
+    with RDFI18NLoaderTrait[Rdf, DATASET]
+    with FormSpecificationsLoaderTrait[Rdf, DATASET]
+    //    with RDFStoreLocalProvider[Rdf, DATASET]
+    //    with JenaHelpers
     with App {
 
   import ops._
