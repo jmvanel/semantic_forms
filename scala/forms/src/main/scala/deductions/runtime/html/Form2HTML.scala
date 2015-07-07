@@ -99,19 +99,33 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
       <div class={ cssClasses.formRootCSSClass }>
         <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
         {
-          for (field <- form.fields) yield {
-            <div class={ cssClasses.formLabelAndInputCSSClass }>
-              <label class={ cssClasses.formLabelCSSClass } title={ field.comment + " - " + field.property }>{ field.label }</label>
-              {
-                if (shouldAddAddRemoveWidgets(field, editable))
-                  createHTMLField(field, editable, hrefPrefix)
-                else
-                  // that's for corporate_risk:
-                  <div class={ cssClasses.formInputCSSClass }>
-                    { createHTMLField(field, editable, hrefPrefix) }
-                  </div>
-              }
-            </div>
+          //      	scala> for (( preceding, current) <- ( (0::xs) zip xs ) ) println( "preceding " +preceding +" - current "  + current )
+          //          for (field <- form.fields) yield {
+          val fields = form.fields
+          if (!fields.isEmpty) {
+            val lastEntry = fields.last
+            //            val seq = ( firstEntry +: fields) zip fields
+            //            seq.filter{ e => e._1 ; false}
+            for ((preceding, field) <- (lastEntry +: fields) zip fields) yield {
+              <div class={ cssClasses.formLabelAndInputCSSClass }>
+                {
+                  // display field label only if different from preceding
+                  if (preceding.label != field.label)
+                    <label class={ cssClasses.formLabelCSSClass } title={ field.comment + " - " + field.property }>{ field.label }</label>
+                  else
+                    <label class={ cssClasses.formLabelCSSClass } title={ field.comment + " - " + field.property }> -- </label>
+                }
+                {
+                  if (shouldAddAddRemoveWidgets(field, editable))
+                    createHTMLField(field, editable, hrefPrefix)
+                  else
+                    // that's for corporate_risk:
+                    <div class={ cssClasses.formInputCSSClass }>
+                      { createHTMLField(field, editable, hrefPrefix) }
+                    </div>
+                }
+              </div>
+            }
           }
         }
       </div>
@@ -136,7 +150,7 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
            * (like in N3Form in EulerGUI ) */
         {
           if (editable) {
-            createHTMLResourceEditableLField(r)
+            createHTMLResourceEditableField(r)
           } else
         	  // format: OFF
             Seq(
@@ -210,7 +224,7 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
   private def makeHTMLIdForLiteral(lit: fm#LiteralEntry) = "LIT-" + urlEncode(lit.property)
 
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
-  private def createHTMLResourceEditableLField(r: fm#ResourceEntry): NodeSeq = {
+  private def createHTMLResourceEditableField(r: fm#ResourceEntry): NodeSeq = {
     val lookup = r.widgetType == DBPediaLookup
     Seq(     
     		// format: OFF
@@ -235,7 +249,7 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
         <select value={ r.value.toString } name={ makeHTMLIdResource(r) }>
           { formatPossibleValues(r) }
         </select>
-      else new Text(""),
+      else new Text("\n"),
       /* if Resource is alreadyInDatabase, send original value to later save 
            * if there is a change */
       if (r.alreadyInDatabase) {
@@ -243,6 +257,9 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
         <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden">
         </input>
       } else new Text("")
+    /* TODO web service to create the new instance while keeping the current page with its own modifications
+       * , <button type="button" class="btn-primary" readonly="yes" title={ s"Create a new instance of ${r.type_.toString()} in this database." } onClick="window.document.location.assign( /create?uri=${urlEncode(r.type_.toString())} )" id="???">CREATE</button>
+       * */
     ).flatMap { identity }
   }
 
