@@ -18,8 +18,7 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
  * populate Fields in form by inferring possible values from given rdfs:range's URI,
  *  through owl:oneOf and know instances
  */
-trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] //with RDFStoreLocalProvider[Rdf, DATASET]
-{
+trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
   self: FormSyntaxFactory[Rdf] =>
 
   implicit val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]

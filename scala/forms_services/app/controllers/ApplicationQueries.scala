@@ -14,6 +14,7 @@ import org.w3.banana.jena.JenaModule
 import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 
+/** NOTE: important that JenaModule is first; otherwise ops may be null */
 object ApplicationQueries extends JenaModule
   with JenaHelpers
   with RDFStoreLocalJena1Provider

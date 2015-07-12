@@ -19,7 +19,9 @@ import org.w3.banana.XSDPrefix
 import org.w3.banana.diesel._
 import org.w3.banana.Prefix
 import org.w3.banana.SparqlOps
+import org.w3.banana.RDFOpsModule
 import org.w3.banana.syntax._
+
 import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
@@ -39,15 +41,15 @@ object FormSyntaxFactory {
  * the main class here;
  * NON transactional
  */
-class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: String = "en",
+class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: String = "en",
   val defaults: FormDefaults = FormModule.formDefaults)(implicit val ops: RDFOps[Rdf],
-    val uriOps: URIOps[Rdf] //  
-    , val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph],
+    val uriOps: URIOps[Rdf], val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph],
     val sparqlOps: SparqlOps[Rdf])
 
     extends FormModule[Rdf#Node, Rdf#URI]
     with FieldsInference[Rdf]
-    with RangeInference[Rdf] {
+    with RangeInference[Rdf]
+    with PreferredLanguageLiteral[Rdf] {
 
   //  /** TODO displaying rdf:type fields should be configurable for editing, and displayed unconditionally for non editing */
   //  val displayRdfType = false
@@ -205,6 +207,8 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
   private def makeEntries(subject: Rdf#Node, prop: Rdf#URI, ranges: Set[Rdf#Node],
     valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)]): Seq[Entry] = {
     Logger.getRootLogger().info(s"makeEntry subject $subject, prop $prop")
+    implicit val gr = graph
+    implicit val prlng = preferedLanguage
     val label = getPreferedLanguageFromSubjectAndPredicate(prop, rdfs.label, terminalPart(prop))
     val comment = getPreferedLanguageFromSubjectAndPredicate(prop, rdfs.comment, "")
     val propClasses = objectsQuery(prop, RDFPrefix[Rdf].typ)
@@ -292,56 +296,6 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, preferedLanguage: Stri
     uriOps.getFragment(uri) match {
       case None => uriOps.lastSegment(uri)
       case Some(frag) => frag
-    }
-  }
-
-  /**
-   * get value in preferred Language From Values Or Else given default;
-   *  use application language
-   */
-  private[abstract_syntax] def getPreferedLanguageFromSubjectAndPredicate(subject: Rdf#Node, predicate: Rdf#URI, default: String): String = {
-    //    println("getPreferedLanguageFromSubjectAndPredicate: " + subject + " " + predicate) // debug
-    objectsQuery(subject, predicate) match {
-      case ll if ll == Set.empty => default
-      case ll => getPreferedLanguageFromValues(ll)
-    }
-  }
-
-  /** get preferred Language value From RDF Values that are language marked or not */
-  private def getPreferedLanguageFromValues(values: Iterable[Rdf#Node]): String = {
-    def computeValues(): (String, String, String) = {
-      var preferedLanguageValue = ""
-      var enValue = ""
-      var noLanguageValue = ""
-      for (value <- values) {
-        foldNode(value)(
-          x => (), x => (),
-          value => {
-            val tt = fromLiteral(value)
-            val (raw, uri, langOption) = fromLiteral(value)
-            // println("getPreferedLanguageFromValues: " + (raw, uri, langOption) )
-            langOption match {
-              case Some(language) =>
-                if (language == preferedLanguage) preferedLanguageValue = raw
-                else if (language == "en")
-                  enValue = raw
-              case None => noLanguageValue = raw
-              case _ =>
-            }
-          }
-        )
-      }
-      //      println(s"preferedLanguageValue: $preferedLanguageValue , enValue $enValue, noLanguageValue $noLanguageValue")
-      (preferedLanguageValue, enValue, noLanguageValue)
-    }
-    val (preferedLanguageValue, enValue, noLanguageValue) = computeValues
-    (preferedLanguageValue, enValue, noLanguageValue) match {
-      case _ if (preferedLanguageValue != "") => preferedLanguageValue
-      case _ if (enValue != "") => enValue
-      case _ if (noLanguageValue != "") => noLanguageValue
-      case _ =>
-        val mess = s"preferedLanguageValue $preferedLanguageValue, enValue $enValue, noLanguageValue $noLanguageValue"
-        println(s"getPreferedLanguageFromValues: case not expected in values ${values.mkString(", ")}: $mess"); "en"
     }
   }
 

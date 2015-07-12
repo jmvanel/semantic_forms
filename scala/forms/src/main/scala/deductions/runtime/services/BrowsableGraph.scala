@@ -22,6 +22,8 @@ import org.w3.banana.TurtleWriterModule
 /**
  * Browsable Graph implementation, in the sense of
  *  http://www.w3.org/DesignIssues/LinkedData.html
+ *
+ *  (used for Turtle export)
  */
 trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
     with TurtleWriterModule //(

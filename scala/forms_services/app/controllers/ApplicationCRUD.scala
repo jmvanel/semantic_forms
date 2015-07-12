@@ -19,8 +19,8 @@ import com.hp.hpl.jena.query.Dataset
 import deductions.runtime.html.CreationFormAlgo
 import play.api.mvc.AnyContent
 
-  /** NOTE: important that JenaModule is first; otherwise ops may be null */
-  object ApplicationCRUD extends JenaModule
+/** NOTE: important that JenaModule is first; otherwise ops may be null */
+object ApplicationCRUD extends JenaModule
   with ApplicationCRUDTrait[Jena, Dataset]
   with JenaHelpers
   with RDFStoreLocalJena1Provider

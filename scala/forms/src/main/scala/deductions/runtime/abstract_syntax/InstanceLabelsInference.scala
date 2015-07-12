@@ -37,6 +37,8 @@ trait InstanceLabelsInference[Rdf <: RDF] {
     val n = firstName + " " + lastName
     if (n.size > 1) n
     else {
+      implicit val gr = graph
+      implicit val prlng = preferedLanguage
       getPreferedLanguageFromSubjectAndPredicate(uri, rdfs.label,
         getPreferedLanguageFromSubjectAndPredicate(uri, foaf.name,
           uri.toString()))
