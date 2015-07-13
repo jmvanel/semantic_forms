@@ -102,11 +102,8 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     val htmlFormTry = dataset.r({
       val form = createAbstractForm(allNamedGraph, uri, editable, lang, blankNode,
         URI(formGroup))
-      // .asInstanceOf[FormModule[Rdf#Node, Rdf#URI]#FormSyntax]
       new Form2HTML[Rdf#Node, Rdf#URI] {}.
         generateHTMLJustFields(form,
-          //        asInstanceOf[FormModule[this.Rdf#Node, this.Rdf#URI]#FormSyntax],
-          //        asInstanceOf[FormModule[Rdf#Node, Rdf#URI]#FormSyntax],
           hrefPrefix, editable, graphURIActual)
     })
     htmlFormTry match {

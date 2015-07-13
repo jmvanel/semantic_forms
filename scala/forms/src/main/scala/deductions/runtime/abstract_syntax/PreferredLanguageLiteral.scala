@@ -7,10 +7,8 @@ import org.w3.banana.RDFOps
 /**
  * @author jmv
  */
-trait PreferredLanguageLiteral[Rdf <: RDF] //extends RDFOpsModule
-{
+trait PreferredLanguageLiteral[Rdf <: RDF] {
   implicit val ops: RDFOps[Rdf]
-  //  self: RDFOpsModule =>
 
   import ops._
 

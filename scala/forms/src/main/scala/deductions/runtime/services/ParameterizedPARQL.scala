@@ -11,6 +11,8 @@ import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.html.Form2HTML
 import org.w3.banana.Transactor
+import org.w3.banana.RDFOpsModule
+import org.w3.banana.RDFOps
 
 trait SPARQLQueryMaker {
   def makeQueryString(search: String): String
@@ -22,14 +24,18 @@ trait SPARQLQueryMaker {
  *  and showing in HTML a column of hyperlinked results with instance Labels
  */
 trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
-    extends InstanceLabelsInference2[Rdf] with SparqlOpsModule
+    extends InstanceLabelsInference2[Rdf]
+    with SparqlOpsModule
     with RDFStoreLocalProvider[Rdf, DATASET] {
+
+  //	implicit val ops: RDFOps[Rdf]
 
   import ops._
   import sparqlOps._
   import rdfStore.transactorSyntax._
   import rdfStore.sparqlEngineSyntax._
 
+  /** search and display results as an XHTML element */
   def search(search: String, hrefPrefix: String = "")(implicit queryMaker: SPARQLQueryMaker): Future[Elem] = {
     val uris = search_only(search)
     val elem = uris.map(
@@ -37,6 +43,7 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     elem
   }
 
+  //  type N <: Rdf#Node
   /**
    * CAUTION: It is of particular importance to note that
    *  one should never use an iterator after calling a method on it.
@@ -47,16 +54,20 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
       println(s"displayResults : ${res.mkString("\n")}")
       dataset.r({
         implicit val graph: Rdf#Graph = allNamedGraph
-        res.sortBy(x => instanceLabel(x)).map(uri => {
-          val uriString = uri.toString
-          val blanknode = !isURI(uri)
-          // TODO : show named graph
-          <div title={ uri.toString() }>
-            <a href={ Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode) }>
-              { instanceLabel(uri) }
-            </a><br/>
-          </div>
-        })
+        res.sortBy(x => instanceLabel(x)).
+          map(uri => {
+            val uriString = uri.toString
+            val blanknode = !isURI(uri)
+            // TODO : show named graph
+            <div title={ uri.toString() }>
+              <a href={ Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode) }>
+                {
+                  implicit val graph: Rdf#Graph = allNamedGraph
+                  instanceLabel(uri)
+                }
+              </a><br/>
+            </div>
+          })
       }).get
     }</p>
   }

@@ -1,20 +1,24 @@
 package deductions.runtime.abstract_syntax
 
 import scala.collection.Seq
-
 import org.w3.banana.FOAFPrefix
 import org.w3.banana.PointedGraph
 import org.w3.banana.RDF
 import org.w3.banana.RDFOpsModule
 import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
+import org.w3.banana.RDFOps
 
 /**
  * populate Fields in form by inferring possible values from given rdfs:range's URI,
  *  through owl:oneOf and know instances
  *  TODO : duplicated code with InstanceLabelsInference
  */
-trait InstanceLabelsInference2[Rdf <: RDF] extends RDFOpsModule {
+trait InstanceLabelsInference2[Rdf <: RDF]
+    extends RDFOpsModule //    extends PreferredLanguageLiteral[Rdf]
+    {
+
+  //  implicit val ops: RDFOps[Rdf]
 
   import ops._
   lazy val foaf = FOAFPrefix[Rdf]
