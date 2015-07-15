@@ -15,7 +15,6 @@ GET     /edit               controllers.Application.edit( url:String )
 POST    /save               controllers.Application.save()
 
 GET     /create             controllers.Application.create()
-# ( uri: String )
 
 GET     /sparql             controllers.Application.sparql( query:String )
 
@@ -34,3 +33,10 @@ GET     /                   controllers.Application.index
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
+
+# LDP
+GET     /ldp/*uri              controllers.Application.ldp(uri: String)
+
+POST    /ldp/*uri              controllers.Application.ldpPOST(uri: String)
+
+GET     /lookup                controllers.Application.lookupService(q:String)

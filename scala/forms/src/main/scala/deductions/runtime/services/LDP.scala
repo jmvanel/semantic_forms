@@ -65,7 +65,7 @@ trait LDP[Rdf <: RDF, DATASET]
   }
 
   /** for LDP PUT */
-  def putTriples(uri: String, link: String, contentType: String, slug: Option[String],
+  def putTriples(uri: String, link: Option[String], contentType: Option[String], slug: Option[String],
       content:String ): Try[String] = {
 		  val putURI = uri + slug.getOrElse("unnamed")
     dataset.rw {

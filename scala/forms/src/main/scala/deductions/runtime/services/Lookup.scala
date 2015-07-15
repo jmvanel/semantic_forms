@@ -88,8 +88,9 @@ trait Lookup[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
     sparqlConstructQuery(queryString)
   }
 
-  /** NON transactional */
-  def sparqlConstructQuery(queryString: String): Try[Rdf#Graph] = {
+  /** NON transactional
+   *  TODO copied */
+  private def sparqlConstructQuery(queryString: String): Try[Rdf#Graph] = {
     val r = for {
       query <- parseConstruct(queryString)
       es <- dataset.executeConstruct(query, Map())

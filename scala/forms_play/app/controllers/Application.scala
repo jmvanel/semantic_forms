@@ -12,11 +12,18 @@ import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import scala.xml.NodeSeq
 import play.api.i18n.Lang
+import deductions.runtime.services.LDP
+import org.w3.banana.jena.Jena
+import com.hp.hpl.jena.query.Dataset
+import deductions.runtime.services.Lookup
 
 object Application extends Controller with TableView
 with JenaHelpers
 with RDFStoreLocalJena1Provider
-with LanguageManagement {
+with LanguageManagement
+with LDP[Jena, Dataset]
+with Lookup[Jena, Dataset] {
+  
   val glob = _root_.global1.Global
 
   def index() = {
@@ -130,6 +137,32 @@ with LanguageManagement {
   def extSearch(q:String = "") = Action.async {
     val fut = glob.esearchFuture(q)
     fut.map(r => Ok(views.html.index(r)))
+  }
+
+  def ldp(uri: String) = {
+    Action { implicit request =>
+      println("LDP: " + request)
+      Ok( getTriples(uri, "text/turtle")).
+        as("text/turtle, charset=utf-8")
+    }
+  }
+  
+  def ldpPOST(uri: String) = {
+    Action { implicit request =>
+      println("LDP: " + request)
+      val content = request.body.toString()
+      val slug = request.getQueryString("Slug")
+      val link = request.getQueryString("Link")
+      val contentType = request.contentType
+      Ok( putTriples(uri, link, contentType, slug, content) .getOrElse("default") )
+    }
+  }
+  
+  def lookupService( search: String) = {
+       Action { implicit request =>
+      println("Lookup: " + request)
+      Ok(lookup(search)).as("text/json-ld, charset=utf-8")
+    }
   }
 
 }
