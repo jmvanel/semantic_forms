@@ -29,7 +29,7 @@ import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 trait Lookup[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
     //    with PreferredLanguageLiteral[Rdf]
     with InstanceLabelsInference2[Rdf]
-    with TurtleWriterModule  {
+    with TurtleWriterModule {
   //  implicit val ops: RDFOps[Rdf]
 
   import ops._
@@ -88,8 +88,10 @@ trait Lookup[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
     sparqlConstructQuery(queryString)
   }
 
-  /** NON transactional
-   *  TODO copied */
+  /**
+   * NON transactional
+   *  TODO copied
+   */
   private def sparqlConstructQuery(queryString: String): Try[Rdf#Graph] = {
     val r = for {
       query <- parseConstruct(queryString)

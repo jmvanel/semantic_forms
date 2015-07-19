@@ -16,7 +16,7 @@ scalaVersion := "2.11.7"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.4" % Test
 
-libraryDependencies += specs2 % Test
+// libraryDependencies += specs2 % Test
 
 resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 

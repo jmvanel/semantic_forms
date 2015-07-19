@@ -147,12 +147,22 @@ with Lookup[Jena, Dataset] {
     }
   }
   
+  /** TODO: this is blocking code !!! */
   def ldpPOST(uri: String) = {
     Action { implicit request =>
       println("LDP: " + request)
-      val content = request.body.toString()
-      val slug = request.getQueryString("Slug")
-      val link = request.getQueryString("Link")
+      val content = {
+        val asText = request.body.asText
+        if( asText != None ) asText
+        else {
+          val raw = request.body.asRaw.get
+          raw.asBytes(raw.size.toInt) . map {
+            arr => new String( arr, "UTF-8" )
+          }
+        }
+      }
+      val slug = request.headers.get("Slug")
+      val link = request.headers.get("Link")
       val contentType = request.contentType
       Ok( putTriples(uri, link, contentType, slug, content) .getOrElse("default") )
     }

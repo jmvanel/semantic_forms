@@ -10,7 +10,7 @@ import java.io.StringReader
 import scala.util.Success
 
 /**
- * A simple (partial) LDP implementation backed by SPARQL  
+ * A simple (partial) LDP implementation backed by SPARQL
  * http://www.w3.org/TR/ldp-primer/#creating-an-rdf-resource-post-an-rdf-resource-to-an-ldp-bc
  *
  * POST /alice/ HTTP/1.1
@@ -47,13 +47,13 @@ trait LDP[Rdf <: RDF, DATASET]
 
   /** for LDP GET */
   def getTriples(uri: String, accept: String): String = {
-    val r = dataset.r{
-        for {
+    val r = dataset.r {
+      for {
         graph <- sparqlConstructQuery(makeQueryString(uri))
         s <- turtleWriter.asString(graph, uri)
       } yield s
     }
-    r . get . get
+    r.get.get
   }
 
   /** NON transactional */
@@ -65,14 +65,20 @@ trait LDP[Rdf <: RDF, DATASET]
   }
 
   /** for LDP PUT */
-  def putTriples(uri: String, link: Option[String], contentType: Option[String], slug: Option[String],
-      content:String ): Try[String] = {
-		  val putURI = uri + slug.getOrElse("unnamed")
+  def putTriples(uri: String, link: Option[String], contentType: Option[String],
+    slug: Option[String],
+    content: Option[String]): Try[String] = {
+    val putURI = uri + slug.getOrElse("unnamed")
+    println(s"content: ${content.get}")
+    println(s"contentType: ${contentType}")
     dataset.rw {
       for {
-      	graph <- turtleReader.read(new StringReader(content),	putURI )
-        res <- rdfStore.removeGraph(dataset, URI(uri))
-        res2 <- rdfStore.appendToGraph(dataset, URI(uri), graph )
+        graph <- turtleReader.read(new StringReader(content.get), putURI)
+        res <- {
+          println("graph: " + graph);
+          rdfStore.removeGraph(dataset, URI(putURI))
+        }
+        res2 <- rdfStore.appendToGraph(dataset, URI(putURI), graph)
       } yield res2
     }
     Success(putURI)
