@@ -19,7 +19,7 @@ trait PreferredLanguageLiteral[Rdf <: RDF] {
   def getPreferedLanguageFromSubjectAndPredicate(subject: Rdf#Node, predicate: Rdf#URI, default: String)(implicit graph: Rdf#Graph, preferedLanguage: String = "en"): String = {
     //    println("getPreferedLanguageFromSubjectAndPredicate: " + subject + " " + predicate) // debug
     ops.getObjects(graph, subject, predicate) match {
-      case ll if ll == Set.empty => default
+      case ll if ll isEmpty => default
       case ll => getPreferedLanguageLiteral(ll)
     }
   }
@@ -58,7 +58,9 @@ trait PreferredLanguageLiteral[Rdf <: RDF] {
       case _ if (noLanguageValue != "") => noLanguageValue
       case _ =>
         val mess = s"preferedLanguageValue $preferedLanguageValue, enValue $enValue, noLanguageValue $noLanguageValue"
-        println(s"getPreferedLanguageFromValues: case not expected in values ${values.mkString(", ")}: $mess"); "en"
+        println(
+          s"getPreferedLanguageFromValues: case not expected in values ${values.mkString(", ")}: $mess");
+        "no value"
     }
   }
 }

@@ -40,7 +40,7 @@ parallelExecution in Test := false
 
 libraryDependencies += "junit" % "junit" % "4.8.1" % Test
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.0" % Test
+libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.4" % Test
 
 
 

@@ -14,8 +14,11 @@ lazy val semantic_forms_play = (project in file("."))
 
 scalaVersion := "2.11.7"
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.0" % Test
+libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.4" % Test
 
+libraryDependencies += specs2 % Test
+
+resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
 
