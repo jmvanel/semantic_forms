@@ -57,12 +57,12 @@ with Lookup[Jena, Dataset] {
   }
 
   def download(url: String) = {
-    Action { Ok(glob.downloadAsString(url)).as("text/turtle, charset=utf-8") }
+    Action { Ok(glob.downloadAsString(url)).as("text/turtle; charset=utf-8") }
   }
 
   /** cf https://www.playframework.com/documentation/2.3.x/ScalaStream */
   def download_chunked(url: String) = {
-    Action { Ok.chunked(glob.download(url)).as("text/turtle, charset=utf-8") }
+    Action { Ok.chunked(glob.download(url)).as("text/turtle; charset=utf-8") }
   }
 
 //  def chooseLanguage(request: Request[_]): String = {
@@ -142,8 +142,9 @@ with Lookup[Jena, Dataset] {
   def ldp(uri: String) = {
     Action { implicit request =>
       println("LDP: " + request)
+      // TODO : JSON-LD too
       Ok( getTriples(uri, "text/turtle")).
-        as("text/turtle, charset=utf-8")
+        as("text/turtle; charset=utf-8")
     }
   }
   
@@ -151,27 +152,30 @@ with Lookup[Jena, Dataset] {
   def ldpPOST(uri: String) = {
     Action { implicit request =>
       println("LDP: " + request)
+      val slug = request.headers.get("Slug")
+      val link = request.headers.get("Link")
+      val contentType = request.contentType
       val content = {
         val asText = request.body.asText
         if( asText != None ) asText
         else {
           val raw = request.body.asRaw.get
+          println( s"""LDP: raw: "$raw" size ${raw.size}""" )
           raw.asBytes(raw.size.toInt) . map {
             arr => new String( arr, "UTF-8" )
           }
         }
       }
-      val slug = request.headers.get("Slug")
-      val link = request.headers.get("Link")
-      val contentType = request.contentType
-      Ok( putTriples(uri, link, contentType, slug, content) .getOrElse("default") )
-    }
+      println( s"LDP: content: $content" )
+      val serviceCalled =
+          putTriples(uri, link, contentType, slug, content) .getOrElse("default")
+      Ok( serviceCalled ).as("text/plain; charset=utf-8") }
   }
   
   def lookupService( search: String) = {
        Action { implicit request =>
       println("Lookup: " + request)
-      Ok(lookup(search)).as("text/json-ld, charset=utf-8")
+      Ok(lookup(search)).as("text/json-ld; charset=utf-8")
     }
   }
 

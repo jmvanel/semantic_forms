@@ -8,6 +8,7 @@ import org.w3.banana.TurtleWriterModule
 import org.w3.banana.TurtleReaderModule
 import java.io.StringReader
 import scala.util.Success
+import scala.util.Failure
 
 /**
  * A simple (partial) LDP implementation backed by SPARQL
@@ -39,7 +40,7 @@ trait LDP[Rdf <: RDF, DATASET]
 
   def makeQueryString(search: String): String =
     s"""
-         |SELECT DISTINCT ?thing WHERE {
+         |CONSTRUCT { ?s ?p ?o } WHERE {
          |  graph <$search> {
          |    ?s ?p ?o .
          |  }
@@ -47,6 +48,7 @@ trait LDP[Rdf <: RDF, DATASET]
 
   /** for LDP GET */
   def getTriples(uri: String, accept: String): String = {
+    println( makeQueryString(uri) )
     val r = dataset.r {
       for {
         graph <- sparqlConstructQuery(makeQueryString(uri))
@@ -71,7 +73,7 @@ trait LDP[Rdf <: RDF, DATASET]
     val putURI = uri + slug.getOrElse("unnamed")
     println(s"content: ${content.get}")
     println(s"contentType: ${contentType}")
-    dataset.rw {
+    val r = dataset.rw {
       for {
         graph <- turtleReader.read(new StringReader(content.get), putURI)
         res <- {
@@ -81,6 +83,9 @@ trait LDP[Rdf <: RDF, DATASET]
         res2 <- rdfStore.appendToGraph(dataset, URI(putURI), graph)
       } yield res2
     }
+    println("putTriples: " + r)
+    //    r.flatMap{ res:Failure[ Try[Unit]](err) => Success(putURI)}
+    //    r.flatMap{ case res:Failure[Try[Unit]](err) => Success(putURI)}
     Success(putURI)
   }
 }

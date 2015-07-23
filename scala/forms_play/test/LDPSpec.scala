@@ -18,12 +18,12 @@ import akka.util.Timeout
 import scala.concurrent.duration._
 
 /** 
-  wget --post-data=':s :p "Salut!".' \
+  wget --post-data='<s> <p> "Salut!".' \
     --header='Slug: test1.ttl' http://localhost:9000/ldp/test1/
     
     Or
     
-  curl --request POST --data ':s :p "Salut!".' --header 'Slug: test1.ttl' \
+  curl --request POST --data '<s> <p> "Salut!".' --header 'Slug: test1.ttl' \
     --header 'Content-type: text/turtle' http://localhost:9000/ldp/test1/  
  */
 class LDPSpec extends FunSuite // Specification 
@@ -31,34 +31,55 @@ with JenaModule
     with RDFStoreLocalJena1Provider
     with RDFOpsModule
     with SparqlGraphModule
-    with TurtleWriterModule 
+    with TurtleWriterModule
     {
 
-  val uri = "test1/"
+  val ldpContainerURI = "test1/"
   val file = "test1.ttl"
   val bodyTTL = """
+    @prefix : <http://test#> .
     :s :p "Salut!".
     """
-  val url = "ldp/" + uri
+  val appURL = "ldp/" + ldpContainerURI
+  val timeout: Timeout = Timeout( DurationInt(240) seconds )
   
   test( "respond to the ldpPOST and ldp Actions" ) {
-    val request = FakeRequest( Helpers.POST, url ).
+    post()
+    get()
+  }
+  
+  /** cf http://www.w3.org/TR/ldp-primer/#creating-an-rdf-resource-post-an-rdf-resource-to-an-ldp-bc
+   *  
+Link: <http://www.w3.org/ns/ldp#Resource>; rel="type"
+Slug: foaf
+Content-Type: text/turtle
+
+* */
+  def post() {
+    val request = FakeRequest( Helpers.POST, appURL ).
       withHeaders(
           ("Slug", file),
-    		  ("Content-type", "text/turtle")
-      ).
-      withBody(bodyTTL)
-    val result0 = controllers.Application.ldpPOST(uri)(request)
-    val result = result0.run
+          ("Content-Type", "text/turtle")
+      ). withTextBody(bodyTTL)
+    val result = controllers.Application.ldpPOST(ldpContainerURI)(request)
 
-    val timeout: Timeout = Timeout( DurationInt(240) seconds )
-    println( status(result)(timeout) ) // must equalTo(OK)
+    info( "status: " + status(result)(timeout) ) // must equalTo(OK)
     println( contentType(result)(timeout) ) // must beSome("text/plain")
-    println( charset(result)(timeout) ) // must beSome("utf-8")
+    info( "charset: " + charset(result)(timeout) ) // must beSome("utf-8")
     println( contentAsString(result)(timeout) ) // must contain(uri) 
-    val g = getGraph(uri + file)
-    println( s"""getGraph($uri + $file):
-      $g""" )
+    val graph = getGraph(ldpContainerURI + file)
+    info( s"""POST: getGraph($ldpContainerURI + $file):
+      $graph""" )
+    assert( graph.contains("Salut!") )
+  }
+
+  def get() {
+	  val request = FakeRequest( Helpers.GET, appURL + file ).
+    withHeaders(( "Accept", "text/turtle")) // , application/ld+json") )
+    val result = controllers.Application.ldp(ldpContainerURI)(request)
+    val content = contentAsString(result)(timeout)
+    info( "GET: contentAsString: " + content )
+    assert( content.contains("Salut!") )
   }
 
   import ops._
