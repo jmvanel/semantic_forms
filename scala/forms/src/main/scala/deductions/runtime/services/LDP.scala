@@ -9,6 +9,7 @@ import org.w3.banana.TurtleReaderModule
 import java.io.StringReader
 import scala.util.Success
 import scala.util.Failure
+import org.w3.banana.JsonLDWriterModule
 
 /**
  * A simple (partial) LDP implementation backed by SPARQL
@@ -31,6 +32,7 @@ trait LDP[Rdf <: RDF, DATASET]
     extends SparqlOpsModule
     with RDFStoreLocalProvider[Rdf, DATASET]
     with TurtleWriterModule
+    with JsonLDWriterModule
     with TurtleReaderModule {
 
   import ops._
@@ -47,15 +49,18 @@ trait LDP[Rdf <: RDF, DATASET]
          |}""".stripMargin
 
   /** for LDP GET */
-  def getTriples(uri: String, accept: String): String = {
-    println( makeQueryString(uri) )
+  def getTriples(uri: String, accept: String): Try[String] = {
+    println(makeQueryString(uri))
     val r = dataset.r {
       for {
         graph <- sparqlConstructQuery(makeQueryString(uri))
-        s <- turtleWriter.asString(graph, uri)
+        s <- if (accept == "text/turtle")
+          turtleWriter.asString(graph, uri)
+        else
+          jsonldCompactedWriter.asString(graph, uri)
       } yield s
     }
-    r.get.get
+    r.flatten
   }
 
   /** NON transactional */
@@ -73,6 +78,7 @@ trait LDP[Rdf <: RDF, DATASET]
     val putURI = uri + slug.getOrElse("unnamed")
     println(s"content: ${content.get}")
     println(s"contentType: ${contentType}")
+    println(s"put URI: ${putURI}")
     val r = dataset.rw {
       for {
         graph <- turtleReader.read(new StringReader(content.get), putURI)

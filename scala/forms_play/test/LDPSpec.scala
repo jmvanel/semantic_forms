@@ -76,7 +76,7 @@ Content-Type: text/turtle
   def get() {
 	  val request = FakeRequest( Helpers.GET, appURL + file ).
     withHeaders(( "Accept", "text/turtle")) // , application/ld+json") )
-    val result = controllers.Application.ldp(ldpContainerURI)(request)
+    val result = controllers.Application.ldp(ldpContainerURI + file)(request)
     val content = contentAsString(result)(timeout)
     info( "GET: contentAsString: " + content )
     assert( content.contains("Salut!") )

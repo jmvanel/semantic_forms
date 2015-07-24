@@ -16,19 +16,21 @@ import deductions.runtime.services.LDP
 import org.w3.banana.jena.Jena
 import com.hp.hpl.jena.query.Dataset
 import deductions.runtime.services.Lookup
+import play.api.libs.json.Json
 
 object Application extends Controller with TableView
-with JenaHelpers
-with RDFStoreLocalJena1Provider
-with LanguageManagement
-with LDP[Jena, Dataset]
-with Lookup[Jena, Dataset] {
-  
+    with JenaHelpers
+    with RDFStoreLocalJena1Provider
+    with LanguageManagement
+    with LDP[Jena, Dataset]
+    with Lookup[Jena, Dataset] {
+
   val glob = _root_.global1.Global
 
   def index() = {
     Action { implicit request =>
-      Ok(views.html.index(glob.form)(lang = chooseLanguageObject(request))) }
+      Ok(views.html.index(glob.form)(lang = chooseLanguageObject(request)))
+    }
   }
 
   def displayURI(uri: String, blanknode: String = "", Edit: String = "") = {
@@ -37,19 +39,19 @@ with Lookup[Jena, Dataset] {
       println("displayURI: " + Edit)
       Ok(views.html.index(glob.htmlForm(uri, blanknode, editable = Edit != "",
         lang = chooseLanguage(request)))).
-        withHeaders( "Access-Control-Allow-Origin" -> "*" ) // for dbpedia lookup
+        withHeaders("Access-Control-Allow-Origin" -> "*") // for dbpedia lookup
     }
   }
 
-//  def displayURI2(uri: String) = {
-//    Action.async { implicit request =>
-//      println("displayURI2: " + request)
-//      //      Ok.chunked( glob.displayURI2(uri) )
-//      glob.displayURI2(uri) map { x =>
-//        Ok(x.mkString).as("text/html")
-//      }
-//    }
-//  }
+  //  def displayURI2(uri: String) = {
+  //    Action.async { implicit request =>
+  //      println("displayURI2: " + request)
+  //      //      Ok.chunked( glob.displayURI2(uri) )
+  //      glob.displayURI2(uri) map { x =>
+  //        Ok(x.mkString).as("text/html")
+  //      }
+  //    }
+  //  }
 
   def wordsearch(q: String = "") = Action.async {
     val fut = glob.wordsearchFuture(q)
@@ -65,24 +67,23 @@ with Lookup[Jena, Dataset] {
     Action { Ok.chunked(glob.download(url)).as("text/turtle; charset=utf-8") }
   }
 
-//  def chooseLanguage(request: Request[_]): String = {
-//    chooseLanguageObject(request).language
-//  }
-//  def chooseLanguageObject(request: Request[_]): Lang = {
-//    val languages = request.acceptLanguages
-//    val res = if (languages.length > 0) languages(0) else Lang("en")
-//    println("chooseLanguage: " + request + "\n\t" + res)
-//    res
-//  }
+  //  def chooseLanguage(request: Request[_]): String = {
+  //    chooseLanguageObject(request).language
+  //  }
+  //  def chooseLanguageObject(request: Request[_]): Lang = {
+  //    val languages = request.acceptLanguages
+  //    val res = if (languages.length > 0) languages(0) else Lang("en")
+  //    println("chooseLanguage: " + request + "\n\t" + res)
+  //    res
+  //  }
 
   def edit(url: String) = {
     Action { request =>
-        Ok(views.html.index(glob.htmlForm(
-          url,
-          editable = true,
-          lang = chooseLanguage(request)
-        ))).
-        withHeaders( "Access-Control-Allow-Origin" -> "*" ) // TODO dbpedia only
+      Ok(views.html.index(glob.htmlForm(
+        url,
+        editable = true,
+        lang = chooseLanguage(request)))).
+        withHeaders("Access-Control-Allow-Origin" -> "*") // TODO dbpedia only
     }
   }
 
@@ -95,7 +96,7 @@ with Lookup[Jena, Dataset] {
   def create() = {
     Action { implicit request =>
       println("create: " + request)
-      val uri = getFirstNonEmptyInMap(request.queryString) . get
+      val uri = getFirstNonEmptyInMap(request.queryString).get
       println("create: " + uri)
       Ok(views.html.index(glob.createElem2(uri, chooseLanguage(request))))
     }
@@ -106,7 +107,7 @@ with Lookup[Jena, Dataset] {
     val uriArgs = map.getOrElse("uri", Seq())
     uriArgs.find { uri => uri != "" }
   }
-  
+
   def sparql(query: String) = {
     Action { implicit request =>
       println("sparql: " + request)
@@ -114,7 +115,7 @@ with Lookup[Jena, Dataset] {
       Ok(views.html.index(glob.sparql(query, chooseLanguage(request))))
     }
   }
-    
+
   def select(query: String) = {
     Action { implicit request =>
       println("sparql: " + request)
@@ -122,32 +123,43 @@ with Lookup[Jena, Dataset] {
       Ok(views.html.index(glob.select(query, chooseLanguage(request))))
     }
   }
-  
-  def backlinks(q:String = "") = Action.async {
+
+  def backlinks(q: String = "") = Action.async {
     val fut = glob.backlinksFuture(q)
     val extendedSearchLink = <p>
-    <a href={"/esearch?q="+q}>
-    Extended Search for &lt;{q}&gt;</a>
-    </p>
-    fut.map{ res => Ok(views.html.index( NodeSeq
-        fromSeq Seq(extendedSearchLink, res))) }
+                               <a href={ "/esearch?q=" + q }>
+                                 Extended Search for &lt;{ q }
+                                 &gt;
+                               </a>
+                             </p>
+    fut.map { res =>
+      Ok(views.html.index(NodeSeq
+        fromSeq Seq(extendedSearchLink, res)))
+    }
 
   }
 
-  def extSearch(q:String = "") = Action.async {
+  def extSearch(q: String = "") = Action.async {
     val fut = glob.esearchFuture(q)
     fut.map(r => Ok(views.html.index(r)))
   }
 
   def ldp(uri: String) = {
     Action { implicit request =>
-      println("LDP: " + request)
-      // TODO : JSON-LD too
-      Ok( getTriples(uri, "text/turtle")).
-        as("text/turtle; charset=utf-8")
+      println("LDP GET: " + request)
+      val AcceptsTurtle = Accepting("text/turtle")
+      render {
+        case AcceptsTurtle() =>
+          val turtle = AcceptsTurtle.mimeType
+          val r = getTriples(uri, turtle)
+          println("LDP: GET: " + r)
+          Ok(r.get).as( turtle + "; charset=utf-8")
+          // TODO : JSON-LD too
+        case Accepts.Json() => Ok(Json.toJson("???"))
+      }
     }
   }
-  
+
   /** TODO: this is blocking code !!! */
   def ldpPOST(uri: String) = {
     Action { implicit request =>
@@ -157,23 +169,24 @@ with Lookup[Jena, Dataset] {
       val contentType = request.contentType
       val content = {
         val asText = request.body.asText
-        if( asText != None ) asText
+        if (asText != None) asText
         else {
           val raw = request.body.asRaw.get
-          println( s"""LDP: raw: "$raw" size ${raw.size}""" )
-          raw.asBytes(raw.size.toInt) . map {
-            arr => new String( arr, "UTF-8" )
+          println(s"""LDP: raw: "$raw" size ${raw.size}""")
+          raw.asBytes(raw.size.toInt).map {
+            arr => new String(arr, "UTF-8")
           }
         }
       }
-      println( s"LDP: content: $content" )
+      println(s"LDP: content: $content")
       val serviceCalled =
-          putTriples(uri, link, contentType, slug, content) .getOrElse("default")
-      Ok( serviceCalled ).as("text/plain; charset=utf-8") }
+        putTriples(uri, link, contentType, slug, content).getOrElse("default")
+      Ok(serviceCalled).as("text/plain; charset=utf-8")
+    }
   }
-  
-  def lookupService( search: String) = {
-       Action { implicit request =>
+
+  def lookupService(search: String) = {
+    Action { implicit request =>
       println("Lookup: " + request)
       Ok(lookup(search)).as("text/json-ld; charset=utf-8")
     }
