@@ -10,6 +10,7 @@ import java.io.StringReader
 import scala.util.Success
 import scala.util.Failure
 import org.w3.banana.JsonLDWriterModule
+import org.w3.banana.JsonLDReaderModule
 
 /**
  * A simple (partial) LDP implementation backed by SPARQL
@@ -33,7 +34,8 @@ trait LDP[Rdf <: RDF, DATASET]
     with RDFStoreLocalProvider[Rdf, DATASET]
     with TurtleWriterModule
     with JsonLDWriterModule
-    with TurtleReaderModule {
+    with TurtleReaderModule
+    with JsonLDReaderModule {
 
   import ops._
   import sparqlOps._
@@ -81,7 +83,10 @@ trait LDP[Rdf <: RDF, DATASET]
     println(s"put URI: ${putURI}")
     val r = dataset.rw {
       for {
-        graph <- turtleReader.read(new StringReader(content.get), putURI)
+        graph <- if (contentType.get.contains("text/turtle"))
+          turtleReader.read(new StringReader(content.get), putURI)
+        else
+          jsonldReader.read(new StringReader(content.get), putURI)
         res <- {
           println("graph: " + graph);
           rdfStore.removeGraph(dataset, URI(putURI))

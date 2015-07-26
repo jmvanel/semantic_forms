@@ -17,13 +17,27 @@ import org.w3.banana.jena.Jena
 import com.hp.hpl.jena.query.Dataset
 import deductions.runtime.services.Lookup
 import play.api.libs.json.Json
+import org.w3.banana.jena.JenaModule
 
-object Application extends Controller with TableView
+object Application extends Controller
+    with JenaModule
+with TableView
     with JenaHelpers
     with RDFStoreLocalJena1Provider
     with LanguageManagement
     with LDP[Jena, Dataset]
-    with Lookup[Jena, Dataset] {
+    with Lookup[Jena, Dataset]
+    {
+
+  // PENDING Banana 0.8.2 with my PR
+  
+  import scala.util.Try
+  // Members declared in org.w3.banana.JsonLDReaderModule
+  implicit val jsonldReader: org.w3.banana.io.RDFReader[Rdf,Try,org.w3.banana.io.JsonLd] = ???
+  // Members declared in org.w3.banana.JsonLDWriterModule
+  implicit val jsonldExpandedWriter: org.w3.banana.io.RDFWriter[Rdf,scala.util.Try,org.w3.banana.io.JsonLdExpanded] = ???
+  implicit val jsonldFlattenedWriter: org.w3.banana.io.RDFWriter[Rdf,scala.util.Try,org.w3.banana.io.JsonLdFlattened] = ???
+
 
   val glob = _root_.global1.Global
 
@@ -147,15 +161,16 @@ object Application extends Controller with TableView
   def ldp(uri: String) = {
     Action { implicit request =>
       println("LDP GET: " + request)
+      val contentType = request.contentType
       val AcceptsTurtle = Accepting("text/turtle")
+      val turtle = AcceptsTurtle.mimeType
+      val accepts = Accepting(contentType.getOrElse(turtle))
+      val r = getTriples(uri, accepts.mimeType)
+      println("LDP: GET: " + r)
       render {
         case AcceptsTurtle() =>
-          val turtle = AcceptsTurtle.mimeType
-          val r = getTriples(uri, turtle)
-          println("LDP: GET: " + r)
           Ok(r.get).as( turtle + "; charset=utf-8")
-          // TODO : JSON-LD too
-        case Accepts.Json() => Ok(Json.toJson("???"))
+        case Accepts.Json() => Ok(Json.toJson(r.get))
       }
     }
   }
