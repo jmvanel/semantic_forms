@@ -25,7 +25,12 @@ import scala.concurrent.duration._
     
   curl --request POST --data '<s> <p> "Salut!".' --header 'Slug: test1.ttl' \
     --header 'Content-type: text/turtle' http://localhost:9000/ldp/test1/  
- */
+
+ * For GET:
+
+  wget --header 'Accept: text/turtle' http://localhost:9000/ldp/test1/test1.ttl
+
+ * */
 class LDPSpec extends FunSuite // Specification 
 with JenaModule
     with RDFStoreLocalJena1Provider
