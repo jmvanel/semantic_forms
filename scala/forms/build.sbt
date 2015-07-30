@@ -12,7 +12,8 @@ javacOptions ++= Seq("-source","1.7", "-target","1.7")
 
 
 // libraryDependencies += "org.w3" %%  "jena" % "0.7.2.radical" 
-libraryDependencies += "org.w3" %%  "banana-jena" % "0.8.1"
+libraryDependencies += "org.w3" %%  "banana-jena" % // "0.8.1"
+"0.8.2-SNAPSHOT"
 
 libraryDependencies += "org.apache.jena" % "apache-jena-libs" % "2.13.0"
 // libraryDependencies += "org.apache.jena" % "apache-jena-libs" % "2.12.1"

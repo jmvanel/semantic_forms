@@ -22,7 +22,8 @@ Dependencies to install :
 Then SBT or Activator downloads the rest.
 
 - install dependencies above
-- build and run this project with SBT or Activator: change directory to `scala\forms_play` ; type in the activator console : `~ run`
+- download the source from [github](https://github.com/jmvanel/semantic_forms/)
+- build and run this project with SBT or Activator: change directory to `scala/forms_play` ; type in the activator console : `~ run`
 
 The default port is 9000, so you can direct your browser to [http://localhost:9000](http://localhost:9000) .
 To run on another port than 9000 :

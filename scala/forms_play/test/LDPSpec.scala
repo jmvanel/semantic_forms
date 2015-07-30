@@ -18,8 +18,17 @@ import akka.util.Timeout
 import scala.concurrent.duration._
 
 /** 
+ * For POST:
+
   wget --post-data='<s> <p> "Salut!".' \
-    --header='Slug: test1.ttl' http://localhost:9000/ldp/test1/
+    --header='Content-Type: text/turtle' \
+    --header='Slug: test1.ttl' \
+    http://localhost:9000/ldp/test1/
+
+  wget --post-data='{ "@id": "urn:a12", "message": "Salut!" }' \
+    --header='Content-Type: text/json-ld' \
+    --header='Slug: test1.json' \
+    http://localhost:9000/ldp/test1/
     
     Or
     
@@ -29,6 +38,7 @@ import scala.concurrent.duration._
  * For GET:
 
   wget --header 'Accept: text/turtle' http://localhost:9000/ldp/test1/test1.ttl
+  wget --header 'Accept: text/json-ld' http://localhost:9000/ldp/test1/test1.json
 
  * */
 class LDPSpec extends FunSuite // Specification 

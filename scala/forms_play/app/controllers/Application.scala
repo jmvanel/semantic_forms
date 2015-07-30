@@ -29,7 +29,7 @@ import java.io.OutputStream
 
 object Application extends Controller
     with JenaModule
-with TableView
+    with TableView
     with JenaHelpers
     with RDFStoreLocalJena1Provider
     with LanguageManagement
@@ -38,11 +38,6 @@ with TableView
     {
 
   import scala.util.Try
-  // Members declared in org.w3.banana.JsonLDReaderModule
-  implicit val jsonldReader = new  RDFReader[Rdf, Try,JsonLd] {
-	  override def read(is: InputStream, base: String): Try[Rdf#Graph] = ???
-  	override def read(reader: Reader, base: String): Try[Rdf#Graph] = ???
-  }
   // Members declared in org.w3.banana.JsonLDWriterModule
   implicit val jsonldExpandedWriter = new RDFWriter[Rdf,scala.util.Try,JsonLdExpanded] {
     override def write(graph: Rdf#Graph, os: OutputStream, base: String): Try[Unit] = ???
