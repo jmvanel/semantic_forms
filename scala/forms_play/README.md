@@ -14,12 +14,15 @@ plus a textbox to enter a URL semantics, eg a FOAF profile or DBpedia URI :
 # How to run
 ## Run locally from sources
 
-Dependencies to install : Java 7 or 8 (Scala is now also ready for Java 8), [SBT](http://www.scala-sbt.org/)
-or [Typesafe Activator](http://typesafe.com/platform/getstarted) .
+Dependencies to install :
+
+- Java 7 or 8 (Scala is now also ready for Java 8),
+- [SBT](http://www.scala-sbt.org/) or [Typesafe Activator](http://typesafe.com/platform/getstarted) .
+
 Then SBT or Activator downloads the rest.
 
-
-- build and run this project with [latest play activator from typesafe.com](http://typesafe.com/platform/getstarted) , and type in activator : `~ run`
+- install dependencies above
+- build and run this project with SBT or Activator: change directory to `scala\forms_play` ; type in the activator console : `~ run`
 
 The default port is 9000, so you can direct your browser to [http://localhost:9000](http://localhost:9000) .
 To run on another port than 9000 :

@@ -184,8 +184,8 @@ with TableView
       println("LDP: GET: " + r)
       render {
         case AcceptsTurtle() =>
-          Ok(r.get).as( turtle + "; charset=utf-8")
-        case Accepts.Json() => Ok(Json.toJson(r.get))
+          Ok(r).as( turtle + "; charset=utf-8")
+        case Accepts.Json() => Ok(Json.toJson(r))
       }
     }
   }

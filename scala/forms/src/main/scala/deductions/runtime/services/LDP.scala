@@ -42,17 +42,11 @@ trait LDP[Rdf <: RDF, DATASET]
   import rdfStore.transactorSyntax._
   import rdfStore.sparqlEngineSyntax._
 
-  def makeQueryString(search: String): String =
-    s"""
-         |CONSTRUCT { ?s ?p ?o } WHERE {
-         |  graph <$search> {
-         |    ?s ?p ?o .
-         |  }
-         |}""".stripMargin
+  val schemeName = "lpd"
 
   /** for LDP GET */
-  def getTriples(uri: String, accept: String): Try[String] = {
-    println(makeQueryString(uri))
+  def getTriples(uri: String, accept: String): String = {
+    println("GET:\n" + makeQueryString(uri))
     val r = dataset.r {
       for {
         graph <- sparqlConstructQuery(makeQueryString(uri))
@@ -62,8 +56,17 @@ trait LDP[Rdf <: RDF, DATASET]
           jsonldCompactedWriter.asString(graph, uri)
       } yield s
     }
-    r.flatten
+    r.get.get
+    //    r.flatten
   }
+
+  def makeQueryString(search: String): String =
+    s"""
+         |CONSTRUCT { ?s ?p ?o } WHERE {
+         |  graph <$schemeName:$search> {
+         |    ?s ?p ?o .
+         |  }
+         |}""".stripMargin
 
   /** NON transactional */
   def sparqlConstructQuery(queryString: String): Try[Rdf#Graph] = {
@@ -77,10 +80,10 @@ trait LDP[Rdf <: RDF, DATASET]
   def putTriples(uri: String, link: Option[String], contentType: Option[String],
     slug: Option[String],
     content: Option[String]): Try[String] = {
-    val putURI = uri + slug.getOrElse("unnamed")
+    val putURI = schemeName + ":" + uri + slug.getOrElse("unnamed")
+
     println(s"content: ${content.get}")
     println(s"contentType: ${contentType}")
-    println(s"put URI: ${putURI}")
     val r = dataset.rw {
       for {
         graph <- if (contentType.get.contains("text/turtle"))
