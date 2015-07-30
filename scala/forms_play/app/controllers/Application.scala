@@ -18,6 +18,14 @@ import com.hp.hpl.jena.query.Dataset
 import deductions.runtime.services.Lookup
 import play.api.libs.json.Json
 import org.w3.banana.jena.JenaModule
+import org.w3.banana.io.JsonLd
+import org.w3.banana.io.JsonLdExpanded
+import org.w3.banana.io.JsonLdFlattened
+import java.io.InputStream
+import java.io.Reader
+import org.w3.banana.io.RDFReader
+import org.w3.banana.io.RDFWriter
+import java.io.OutputStream
 
 object Application extends Controller
     with JenaModule
@@ -29,14 +37,21 @@ with TableView
     with Lookup[Jena, Dataset]
     {
 
-  // PENDING Banana 0.8.2 with my PR
-  
   import scala.util.Try
   // Members declared in org.w3.banana.JsonLDReaderModule
-  implicit val jsonldReader: org.w3.banana.io.RDFReader[Rdf,Try,org.w3.banana.io.JsonLd] = ???
+  implicit val jsonldReader = new  RDFReader[Rdf, Try,JsonLd] {
+	  override def read(is: InputStream, base: String): Try[Rdf#Graph] = ???
+  	override def read(reader: Reader, base: String): Try[Rdf#Graph] = ???
+  }
   // Members declared in org.w3.banana.JsonLDWriterModule
-  implicit val jsonldExpandedWriter: org.w3.banana.io.RDFWriter[Rdf,scala.util.Try,org.w3.banana.io.JsonLdExpanded] = ???
-  implicit val jsonldFlattenedWriter: org.w3.banana.io.RDFWriter[Rdf,scala.util.Try,org.w3.banana.io.JsonLdFlattened] = ???
+  implicit val jsonldExpandedWriter = new RDFWriter[Rdf,scala.util.Try,JsonLdExpanded] {
+    override def write(graph: Rdf#Graph, os: OutputStream, base: String): Try[Unit] = ???
+    override def asString(graph: Rdf#Graph, base: String): Try[String]= ???
+  }
+  implicit val jsonldFlattenedWriter = new RDFWriter[Rdf,scala.util.Try,JsonLdFlattened] {
+    override def write(graph: Rdf#Graph, os: OutputStream, base: String): Try[Unit] = ???
+    override def asString(graph: Rdf#Graph, base: String): Try[String]= ???
+  }
 
 
   val glob = _root_.global1.Global
