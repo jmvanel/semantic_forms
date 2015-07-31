@@ -25,7 +25,7 @@ import scala.concurrent.duration._
     --header='Slug: test1.ttl' \
     http://localhost:9000/ldp/test1/
 
-  wget --post-data='{ "@id": "urn:a12", "message": "Salut!" }' \
+  wget --post-data='{ "@id": "urn:a12", "urn:message": "Salut!" }' \
     --header='Content-Type: text/json-ld' \
     --header='Slug: test1.json' \
     http://localhost:9000/ldp/test1/
