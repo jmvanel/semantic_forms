@@ -48,8 +48,6 @@ trait PopulateRDFCacheTrait[Rdf <: RDF, DATASET]
     with CommonVocabulariesLoaderTrait[Rdf, DATASET]
     with RDFI18NLoaderTrait[Rdf, DATASET]
     with FormSpecificationsLoaderTrait[Rdf, DATASET]
-    //    with RDFStoreLocalProvider[Rdf, DATASET]
-    //    with JenaHelpers
     with App {
 
   import ops._
