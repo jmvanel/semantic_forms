@@ -16,20 +16,25 @@ import com.hp.hpl.jena.query.Dataset
 object TypeAdditionApp extends App with JenaModule with RDFStoreLocalJena1Provider
     with TypeAddition[Jena, Dataset] {
   import ops._
-  val uris = args map { p => URI(p) }
+  import sparqlOps._
+  import rdfStore.transactorSyntax._
+  import rdfStore.sparqlEngineSyntax._
 
-  if (uris isEmpty) {
-//    val tr = find(allNamedGraph, ANY, ANY, ANY)
-    val tr = ops.getTriples(allNamedGraph)
-    add_types(tr.toIterator)
-  } else {
-    uris map { uri =>
-      {
-        val tr = find(allNamedGraph, uri, ANY, ANY)
-        add_types(tr)
+  val uris = args map { p => URI(p) }
+  dataset.rw({
+    if (uris isEmpty) {
+      //		  val tr = find(allNamedGraph, ANY, ANY, ANY)
+      val tr = ops.getTriples(allNamedGraph)
+      add_types(tr.toIterator)
+    } else {
+      uris map { uri =>
+        {
+          val triples = find(allNamedGraph, uri, ANY, ANY)
+          add_types(triples)
+        }
       }
     }
-  }
+  })
 
   private def add_types(tr: Iterator[Rdf#Triple]) {
     println(s"""Types added for
