@@ -33,8 +33,9 @@ trait TypeAdditionAppTrait[Rdf <: RDF, DATASET]
   import sparqlOps._
   import rdfStore.transactorSyntax._
   import rdfStore.sparqlEngineSyntax._
+//<<<<<<< HEAD
 
-  val uris: ArraySeq[Rdf#URI] // = args map { p => URI(p) }
+  val uris: ArraySeq[Rdf#URI]
 
   def run() {
     println(s"""Types added for URI's $uris""")
@@ -56,6 +57,24 @@ trait TypeAdditionAppTrait[Rdf <: RDF, DATASET]
       }
 //    })
   }
+//=======
+//
+//  val uris = args map { p => URI(p) }
+//  dataset.rw({
+//    if (uris isEmpty) {
+//      //		  val tr = find(allNamedGraph, ANY, ANY, ANY)
+//      val tr = ops.getTriples(allNamedGraph)
+//      add_types(tr.toIterator)
+//    } else {
+//      uris map { uri =>
+//        {
+//          val triples = find(allNamedGraph, uri, ANY, ANY)
+//          add_types(triples)
+//        }
+//      }
+//    }
+//  })
+//>>>>>>> dbc059aec8e7ce17a7da9362160a57e173bbb0b6
 
   private def add_types(tr: Iterator[Rdf#Triple]) {
     println(s"""Types added for

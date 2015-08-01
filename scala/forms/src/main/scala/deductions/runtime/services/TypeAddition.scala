@@ -55,13 +55,13 @@ trait TypeAddition[Rdf <: RDF, DATASET]
     }
 
     def addRDFSLabelValue() = {
-      val existingValues = (pgObjectt / rdfs.label).nodes
+      val existingValues  = (pgObjectt / rdfs.label).nodes
       val existingValues2 = (pgObjectt / foaf.lastName).nodes
       val existingValues3 = (pgObjectt / foaf.familyName).nodes
       if (existingValues.isEmpty &&
-        existingValues2.isEmpty &&
-        existingValues3.isEmpty &&
-        !objectt.toString().contains(":")) {
+          existingValues2.isEmpty &&
+          existingValues3.isEmpty &&
+          !objectt.toString().contains(":")) {
         val labelTriple = makeTriple(objectt, rdfs.label, Literal(objectt.toString()))
         dataset.appendToGraph(makeGraphForSaving(), ops.makeGraph(Seq(labelTriple)))
       }
