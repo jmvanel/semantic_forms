@@ -73,9 +73,27 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
                    .form-label{{ display: table-cell; width: 160px; }}
     </style>
 
-  val localJS = <script language="application/javascript">
-                  // function backlinks(uri) {{ }}
-                </script>
+  val localJS =
+    <script type="text/javascript" async="true" src="https://rawgit.com/sofish/pen/master/src/pen.js"></script> ++
+      <script type="text/javascript" async="true" src="https://rawgit.com/sofish/pen/master/src/markdown.js"></script> ++
+      <script type="text/javascript" async="true">
+        // function backlinks(uri) {{ }}
+                  function launchEditorWindow(elem) {{
+  var popupWindow = window.open('', 'windowName', 'height=300,width=300');
+  var options = {{
+    editor: popupWindow.document.body,
+    class: 'pen',
+    list: // editor menu list
+    [ 'insertimage', 'blockquote', 'h2', 'h3', 'p', 'code', 'insertorderedlist', 'insertunorderedlist', 'inserthorizontalrule',
+      'indent', 'outdent', 'bold', 'italic', 'underline', 'createlink' ]
+  }}
+  popupWindow.document.body.innerHTML = elem.value
+  var editor = new Pen( options );
+  popupWindow.onbeforeunload = function() {{
+    elem.value = editor.toMd(); // return a markdown string
+  }};
+                  }}
+      </script>
   val cssClasses = tableCSSClasses
 
   /**
@@ -91,12 +109,13 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
       <input type="hidden" name="graphURI" value={ urlEncode(graphURI) }/>
     } else Seq()
     hidden ++
-      Text("\n") ++
-      localCSS ++
-      Text("\n") ++
-      localJS ++
-      Text("\n") ++
       <div class={ cssClasses.formRootCSSClass }>
+        {
+          localCSS ++
+            Text("\n") ++
+            localJS ++
+            Text("\n")
+        }
         <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
         {
           //      	scala> for (( preceding, current) <- ( (0::xs) zip xs ) ) println( "preceding " +preceding +" - current "  + current )
@@ -284,9 +303,12 @@ trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
 
       case _ =>
         <input class={ cssClasses.formInputCSSClass } value={
-          //          lit.value.toString()
           toPlainString(lit.value)
-        } name={ makeHTMLIdForLiteral(lit) } type={ HTML5Types.xsd2html5TnputType(lit.type_.toString()) } placeholder={ placeholder } size={ inputSize.toString() }>
+        } name={ makeHTMLIdForLiteral(lit) } type={
+          HTML5Types.xsd2html5TnputType(lit.type_.toString())
+        } placeholder={ placeholder } size={
+          inputSize.toString()
+        } ondblclick="launchEditorWindow(this);">
         </input>
     }
     elem ++
