@@ -138,8 +138,11 @@ trait FormSaver[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
       val transaction = dataset.rw({
         // dataset.removeTriples(makeUri(graphURI), triplesToRemove.toIterable)
         val res = dataset.appendToGraph(makeUri(graphURI), makeGraph(triples))
-        // TODO add a hook here :
-        println(Try { addTypes(triples, Some(URI(graphURI))) })
+
+        /* TODO
+         * add a hook here
+         * return the future to print later that it gas been done */
+        Future { dataset.rw({ addTypes(triples, Some(URI(graphURI))) }) }
         res
       }).flatMap { identity }
 
