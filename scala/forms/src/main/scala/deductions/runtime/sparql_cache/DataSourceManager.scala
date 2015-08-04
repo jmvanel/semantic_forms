@@ -26,6 +26,8 @@ trait DataSourceManager[Rdf <: RDF, DATASET]
   /**
    * replace Same Language Triples in named graph `graphURI`
    *  with the triples coming from given `url`
+   *  USE CASE: replace some rdfs:label's of an ontology,
+   *  to change the generated forms.
    *  @return number of triples changed
    */
   def replaceSameLanguageTriples(url: URL, graphURIString: String): Int = {

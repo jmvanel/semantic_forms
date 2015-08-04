@@ -36,12 +36,23 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
     })
   }
 
-  /** TRANSACTIONAL */
+  /**
+   * load Common Form Specifications from scala/forms/form_specs/specs.ttl
+   *  in project jmvanel/semantic_forms on github;
+   *  TRANSACTIONAL
+   */
   def loadCommonFormSpecifications() {
     val all_form_specs = githubcontent +
       "/jmvanel/semantic_forms/master/scala/forms/form_specs/specs.ttl"
-    val from = new java.net.URL(all_form_specs).openStream()
-    val form_specs_graph: Rdf#Graph = turtleReader.read(from, base = all_form_specs) getOrElse sys.error(s"couldn't read $all_form_specs")
+    loadFormSpecifications(all_form_specs)
+  }
+
+  /** TRANSACTIONAL */
+  def loadFormSpecifications(form_specs: String) {
+    val from = new java.net.URL(form_specs).openStream()
+    val form_specs_graph: Rdf#Graph =
+      turtleReader.read(from, base = form_specs) getOrElse sys.error(
+        s"couldn't read $form_specs")
     import deductions.runtime.abstract_syntax.FormSyntaxFactory._
     val formPrefix = Prefix("form", formVocabPrefix)
     /* Retrieving triple :

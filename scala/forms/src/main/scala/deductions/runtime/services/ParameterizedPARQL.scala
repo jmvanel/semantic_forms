@@ -46,7 +46,9 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
   //  type N <: Rdf#Node
   /**
    * CAUTION: It is of particular importance to note that
-   *  one should never use an iterator after calling a method on it.
+   *  one should never use an iterator after calling a method on it;
+   *  
+   *  TRANSACTIONAL
    */
   private def displayResults(res0: Iterable[Rdf#Node], hrefPrefix: String) = {
     <p>{
@@ -76,7 +78,7 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    * NOTE: this stuff is pretty generic;
    *  just add these arguments :
    *  queryString:String, vars:Seq[String]
-   *  ; transactional
+   *  ; TRANSACTIONAL
    */
   private def search_only(search: String)(implicit queryMaker: SPARQLQueryMaker): Future[Iterator[Rdf#Node]] = {
     val queryString = queryMaker.makeQueryString(search)

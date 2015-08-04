@@ -1,13 +1,15 @@
 Scala implementations for HTML or other backends;
 Play! framework application for generic semantic data manipulation and navigation
 
+semantic\_forms is a framework for building all sorts of applications backed by a SPARQL database, and whose data model is specified by a sumple OWL ontology.
+   
 # Choice of applications and libraries
 
 - generic web application in [forms\_play](forms_play) : usable both by semantic web aware users and non computer skilled users
 - web services callable from JavaScript in browser for all features in [forms\_services](forms_services)
 - an application for managing questions about entreprise practices, with simple login and user management, in [corporate\_risk](https://github.com/jmvanel/corporate_risk)
-- an application for connecting Projects, Actors, Ideas, and Resources for [virtual assembly organization](http://www.virtual-assembly.org), in [](https://github.com/assemblee-virtuelle/semforms); similar to the generic application, but geared towards non computer skilled users
-- a skills management application in [](https://github.com/deductions/skills)
+- an application for connecting Projects, Actors, Ideas, and Resources for [virtual assembly organization](http://www.virtual-assembly.org), in [github/assemblee-virtuelle/semforms](https://github.com/assemblee-virtuelle/semforms); similar to the generic application, but geared towards non computer skilled users
+- a skills management application in [github/deductions/skills](https://github.com/deductions/skills)
 
 
 # Features
