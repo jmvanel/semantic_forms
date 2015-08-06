@@ -45,7 +45,7 @@ class TestRDFCache extends FunSuite with RDFCache
 
   test("save to enpoint cache with storeURI() and check with SPARQL.") {
     val uriNode = makeUri(uri2)
-    storeURI(uriNode, dataset)
+    storeUriInNamedGraph(uriNode)
     checkNamedGraph(uri2)
     println("In this case only the 2 triples for the timestamp")
   }

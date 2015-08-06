@@ -114,14 +114,21 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   }
 
   /**
-   * download and store URI, with transaction, in a graph named by its URI minus the # part,
+   * download and store URI content, with transaction, in a graph named by its URI minus the # part,
    *  and store the timestamp from HTTP HEAD request;
    * transactional,
    * load also the direct owl:imports , but not recursively ( as EulerGUI IDE does )
-   *
-   * TODO rename storeURIInNamedGraph
    */
-  def storeURI(uri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
+  def storeContentInNamedGraph(uri: String): Rdf#Graph = {
+    storeUriInNamedGraph(URI(uri))
+  }
+
+  def storeUriInNamedGraph(uri: Rdf#URI): Rdf#Graph = {
+    storeURI(uri)
+  }
+
+  /** NOTE: the dataset is provided by the parent trait */
+  private def storeURI(uri: Rdf#URI): Rdf#Graph = {
     val model = storeURI(uri, uri, dataset)
     println("RDFCacheAlgo.storeURI " + uri + " size: " + model.size)
     val r = dataset.rw({

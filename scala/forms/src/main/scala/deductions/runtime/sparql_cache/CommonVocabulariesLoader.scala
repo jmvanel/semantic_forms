@@ -97,7 +97,7 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
     vocabs map {
       voc =>
         try {
-          storeURI(voc, dataset)
+          storeUriInNamedGraph(voc)
         } catch {
           case e: Exception => println("Error in loadCommonVocabularies" + voc + " " + e)
         }
