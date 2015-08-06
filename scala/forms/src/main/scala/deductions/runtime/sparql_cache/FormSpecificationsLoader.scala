@@ -15,7 +15,10 @@ object FormSpecificationsLoader extends RDFCache with App
     with FormSpecificationsLoaderTrait[Jena, Dataset]
     with RDFStoreLocalJena1Provider
     with JenaHelpers {
-  loadCommonFormSpecifications()
+  if (args.size == 0)
+    loadCommonFormSpecifications()
+  else
+    loadFormSpecifications(args(0))
 }
 
 trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]

@@ -47,7 +47,7 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
   /**
    * CAUTION: It is of particular importance to note that
    *  one should never use an iterator after calling a method on it;
-   *  
+   *
    *  TRANSACTIONAL
    */
   private def displayResults(res0: Iterable[Rdf#Node], hrefPrefix: String) = {
@@ -64,7 +64,7 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
             <div title={ uri.toString() }>
               <a href={ Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode) }>
                 {
-                  implicit val graph: Rdf#Graph = allNamedGraph
+                  //                  implicit val graph: Rdf#Graph = allNamedGraph
                   instanceLabel(uri)
                 }
               </a><br/>

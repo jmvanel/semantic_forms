@@ -10,10 +10,9 @@ import scala.xml.Text
 
 /**
  * different modes: display or edit;
- *  take in account datatype
+ *  takes in account datatype
  */
-trait Form2HTML[NODE, URI <: NODE] //    extends FormModule[NODE, URI]
-{
+trait Form2HTML[NODE, URI <: NODE] {
   type fm = FormModule[NODE, URI]
 
   val radioForIntervals = false // TODO the choice should be moved to FormSyntaxFactory

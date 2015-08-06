@@ -57,6 +57,11 @@ vi myconf.properties
 nohup bin/semantic_forms_play -Dlog4j.configuration=myconf.properties -mem 50 &
 ```
 
+To download Java from the server with no browser (see http://stackoverflow.com/questions/10268583/downloading-java-jdk-on-linux-via-wget-is-shown-license-page-instead):
+    VERSION=51
+    wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" \
+    http://download.oracle.com/otn-pub/java/jdk/8u$VERSION-b16/jdk-8u$VERSION-linux-arm-vfp-hflt.tar.gz
+
 ## Troubleshooting & tips
 
 - FAILED DOWNLOADS messages for the first SBT build: retry later. With SBT, as with all these dependency managers ( Maven, NMP), given the large amount of downloading from multiple sources, it is often the case that the first time, not everything is there.
@@ -94,6 +99,7 @@ The server must not be started, because Jena TDB does not allow acces to the dat
 - Preloading a local file: in activator shell type: for example:
 
 ```
+    # load a FOAF profile from a local file :
     runMain tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me /home/jmv/data/foaf/jmv.rdf
     # With Jena it is possible to directly load from Internet:
     runMain tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me http://jmvanel.free.fr/jmv.rdf#me 
@@ -110,9 +116,15 @@ do
   JARS=$JARS:$f
 done
 echo java -cp $JARS
-java -cp $JARS tdb.tdbdump --loc=TDB > dump.nt
+java -cp $JARS tdb.tdbdump --loc=TDB > dump.nq
 ```
-( we cannot use activator here, as it does not allow output redirect)
+Or with sbt or activator:
+
+    sbt "runMain tdb.tdbdump --loc=TDB" > dump.nq
+
+To re-load the database from N-Triples format (possibly delete the TDB directory before) :
+
+    sbt "runMain tdb.tdbloader --loc=TDB dump.nq"
 
 ## Updading RDF content
 
@@ -121,7 +133,7 @@ The server must not be started, because Jena TDB does not allow acces to the dat
 Take inspiration from these scripts in [forms\_play](https://github.com/jmvanel/semantic_forms/tree/master/scala/forms_play)
 
     dump.sh       graphload.sh	 graphremove.sh     populateRDFCache.sh  tdbsearch.sh
-    graphdump.sh  graphnamedlist.sh  populate_db_av.sh  tdbquery.sh		 update_server.sh
+    graphdump.sh  graphnamedlist.sh  tdbquery.sh
 
 For example, to update the I18N translations:
 
