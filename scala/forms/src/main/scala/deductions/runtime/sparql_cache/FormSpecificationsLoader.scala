@@ -7,11 +7,15 @@ import deductions.runtime.jena.RDFCache
 import com.hp.hpl.jena.query.Dataset
 import org.w3.banana.jena.Jena
 import org.w3.banana.RDF
+import org.w3.banana.jena.JenaModule
 
 /**
  * @author jmv
  */
-object FormSpecificationsLoader extends RDFCache with App
+
+/** TODO put in package jena */
+object FormSpecificationsLoader extends JenaModule
+    with RDFCache with App
     with FormSpecificationsLoaderTrait[Jena, Dataset]
     with RDFStoreLocalJena1Provider
     with JenaHelpers {

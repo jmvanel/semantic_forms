@@ -6,8 +6,11 @@ import deductions.runtime.jena.RDFCache
 import org.w3.banana.RDF
 import org.w3.banana.jena.Jena
 import com.hp.hpl.jena.query.Dataset
+import org.w3.banana.jena.JenaModule
 
-object RDFI18NLoader extends RDFCache with App
+/** TODO put in package jena */
+object RDFI18NLoader extends JenaModule
+    with RDFCache with App
     with RDFI18NLoaderTrait[Jena, Dataset]
     with RDFStoreLocalJena1Provider
     with JenaHelpers {

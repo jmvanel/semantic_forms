@@ -21,11 +21,15 @@ import org.w3.banana.RDF
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import org.w3.banana.jena.Jena
 import com.hp.hpl.jena.query.Dataset
+import org.w3.banana.jena.JenaModule
 
 /**
  * @author jmv
  */
-object CommonVocabulariesLoader extends RDFCache with App
+
+/** TODO put in package jena */
+object CommonVocabulariesLoader extends JenaModule
+    with RDFCache with App
     with CommonVocabulariesLoaderTrait[Jena, Dataset]
     with RDFStoreLocalJena1Provider
     with JenaHelpers {
@@ -99,7 +103,7 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
         }
     }
     // test OK:
-    //    storeURI( ops.makeUri( "http://purl.org/ontology/mo/" ), dataset  )
+    //    storeURI( ops.makeUri( "http://purl.org/ontology/mo/" ), dataset  ))))))))
   }
 
 }

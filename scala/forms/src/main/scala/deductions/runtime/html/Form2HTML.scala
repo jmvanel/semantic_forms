@@ -117,17 +117,12 @@ trait Form2HTML[NODE, URI <: NODE] {
         }
         <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
         {
-          //      	scala> for (( preceding, current) <- ( (0::xs) zip xs ) ) println( "preceding " +preceding +" - current "  + current )
-          //          for (field <- form.fields) yield {
           val fields = form.fields
           if (!fields.isEmpty) {
             val lastEntry = fields.last
-            //            val seq = ( firstEntry +: fields) zip fields
-            //            seq.filter{ e => e._1 ; false}
             for ((preceding, field) <- (lastEntry +: fields) zip fields) yield {
               <div class={ cssClasses.formLabelAndInputCSSClass }>
-                {
-                  // display field label only if different from preceding
+                { // display field label only if different from preceding
                   if (preceding.label != field.label)
                     <label class={ cssClasses.formLabelCSSClass } title={ field.comment + " - " + field.property }>{ field.label }</label>
                   else
@@ -151,6 +146,9 @@ trait Form2HTML[NODE, URI <: NODE] {
 
   private def createHTMLField(field: fm#Entry, editable: Boolean,
     hrefPrefix: String = ""): xml.NodeSeq = {
+
+    // hack instead of true form separator:
+    if (field.label.contains("----")) return Text("----")
 
     val xmlField = field match {
       case l: fm#LiteralEntry =>
