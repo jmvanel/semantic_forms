@@ -7,6 +7,7 @@ import Form2HTML._
 import scala.xml.NodeSeq
 import deductions.runtime.abstract_syntax.DBPediaLookup
 import scala.xml.Text
+import scala.xml.XML
 
 /**
  * different modes: display or edit;
@@ -77,8 +78,9 @@ trait Form2HTML[NODE, URI <: NODE] {
       <script type="text/javascript" async="true" src="https://rawgit.com/sofish/pen/master/src/markdown.js"></script> ++
       <script type="text/javascript" async="true">
         // function backlinks(uri) {{ }}
-                  function launchEditorWindow(elem) {{
-  var popupWindow = window.open('', 'windowName', 'height=300,width=300');
+        function launchEditorWindow(elem) {{
+  var popupWindow = window.open('', 'Edit Markdown text for semantic_forms',
+    'height=300, width=300');
   var options = {{
     editor: popupWindow.document.body,
     class: 'pen',
@@ -90,8 +92,9 @@ trait Form2HTML[NODE, URI <: NODE] {
   var editor = new Pen( options );
   popupWindow.onbeforeunload = function() {{
     elem.value = editor.toMd(); // return a markdown string
+    return void(0)
   }};
-                  }}
+        }}
       </script>
   val cssClasses = tableCSSClasses
 
@@ -124,9 +127,19 @@ trait Form2HTML[NODE, URI <: NODE] {
               <div class={ cssClasses.formLabelAndInputCSSClass }>
                 { // display field label only if different from preceding
                   if (preceding.label != field.label)
-                    <label class={ cssClasses.formLabelCSSClass } title={ field.comment + " - " + field.property }>{ field.label }</label>
+                    <label class={ cssClasses.formLabelCSSClass } title={
+                      field.comment + " - " + field.property
+                    }>{
+                      val label = field.label
+                      // hack before real separators
+                      if (label.contains("----"))
+                        label.substring(1).replaceAll("-(-)+", "")
+                      else label
+                    }</label>
                   else
-                    <label class={ cssClasses.formLabelCSSClass } title={ field.comment + " - " + field.property }> -- </label>
+                    <label class={ cssClasses.formLabelCSSClass } title={
+                      field.comment + " - " + field.property
+                    }> -- </label>
                 }
                 {
                   if (shouldAddAddRemoveWidgets(field, editable))
@@ -148,7 +161,8 @@ trait Form2HTML[NODE, URI <: NODE] {
     hrefPrefix: String = ""): xml.NodeSeq = {
 
     // hack instead of true form separator:
-    if (field.label.contains("----")) return Text("----")
+    if (field.label.contains("----"))
+      return <hr style="background:#F87431; border:0; height:4px"/> // Text("----")
 
     val xmlField = field match {
       case l: fm#LiteralEntry =>
@@ -156,7 +170,7 @@ trait Form2HTML[NODE, URI <: NODE] {
           if (editable) {
             createHTMLiteralEditableLField(l)
           } else {
-            <div>{ toPlainString(l.value) }</div>
+            <div>{ scala.xml.Unparsed(toPlainString(l.value)) }</div>
           }
         }
       case r: fm#ResourceEntry =>
@@ -305,7 +319,7 @@ trait Form2HTML[NODE, URI <: NODE] {
           HTML5Types.xsd2html5TnputType(lit.type_.toString())
         } placeholder={ placeholder } size={
           inputSize.toString()
-        } ondblclick="launchEditorWindow(this);">
+        } ondblclick="launchEditorWindow(this);" title="Double click to edit text in popup window as Markdown text">
         </input>
     }
     elem ++
