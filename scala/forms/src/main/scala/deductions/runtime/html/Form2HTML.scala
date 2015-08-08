@@ -106,6 +106,8 @@ trait Form2HTML[NODE, URI <: NODE] {
     hrefPrefix: String = "",
     editable: Boolean = false,
     graphURI: String = ""): NodeSeq = {
+    implicit val formImpl: FormModule[NODE, URI]#FormSyntax = form
+
     val hidden = if (editable) {
       <input type="hidden" name="url" value={ urlEncode(form.subject) }/>
       <input type="hidden" name="graphURI" value={ urlEncode(graphURI) }/>
@@ -158,7 +160,7 @@ trait Form2HTML[NODE, URI <: NODE] {
   }
 
   private def createHTMLField(field: fm#Entry, editable: Boolean,
-    hrefPrefix: String = ""): xml.NodeSeq = {
+    hrefPrefix: String = "")(implicit form: FormModule[NODE, URI]#FormSyntax): xml.NodeSeq = {
 
     // hack instead of true form separator:
     if (field.label.contains("----"))
@@ -212,8 +214,6 @@ trait Form2HTML[NODE, URI <: NODE] {
               <input class={ cssClasses.formInputCSSClass } value={ r.value.toString } name={ makeHTMLIdBN(r) } data-type={ r.type_.toString() } size={ inputSize.toString() }>
               </input>
             }
-            <input value={ r.value.toString } name={ "ORIG-BLA-" + urlEncode(r.property) } type="hidden">
-            </input>
             if (!r.possibleValues.isEmpty)
               <select value={ r.value.toString } name={ makeHTMLIdBN(r) }>
                 { formatPossibleValues(r) }
@@ -234,9 +234,9 @@ trait Form2HTML[NODE, URI <: NODE] {
   private def shouldAddAddRemoveWidgets(field: fm#Entry, editable: Boolean): Boolean = {
     editable && (field.defaults.multivalue && field.openChoice)
   }
-  private def createAddRemoveWidgets(field: fm#Entry, editable: Boolean): Elem = {
+  private def createAddRemoveWidgets(field: fm#Entry, editable: Boolean)(implicit form: FormModule[NODE, URI]#FormSyntax): Elem = {
     if (shouldAddAddRemoveWidgets(field, editable)) {
-      // button with an action to duplicate the original HTML widget with (TODO) an empty content
+      // button with an action to duplicate the original HTML widget with an empty content
       val widgetName = makeHTMLId(field)
       <input value="+" class="button-add btn-primary" readonly="yes" size="1" title={ "Add another value for " + field.label } onClick={
         s""" cloneWidget( "$widgetName" ); """
@@ -244,19 +244,33 @@ trait Form2HTML[NODE, URI <: NODE] {
     } else <span></span>
   }
 
-  private def makeHTMLId(ent: fm#Entry) = ent match {
-    case ent: fm#ResourceEntry => makeHTMLIdResource(ent)
-    case ent: fm#LiteralEntry => makeHTMLIdForLiteral(ent)
-    case ent: fm#BlankNodeEntry => makeHTMLIdBN(ent)
+  private def makeHTMLId(ent: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = {
+    val rawResult = {
+      def makeTTLURI(s: NODE) = s"<$s>"
+      def makeTTLAnyTerm(value: NODE, ent: fm#Entry) = {
+        ent match {
+          case lit: fm#LiteralEntry => value
+          case _ => makeTTLURI(value)
+        }
+      }
+      makeTTLURI(form.subject) + " " +
+        makeTTLURI(ent.property) + " " +
+        makeTTLAnyTerm(ent.value, ent) + " .\n"
+    }
+    println(s"""makeHTMLId: $rawResult
+       ent.value "${ent.value}" """)
+    urlEncode(rawResult)
   }
-  private def makeHTMLIdResource(re: fm#Entry) = "RES-" + urlEncode(re.property)
-  private def makeHTMLIdBN(re: fm#Entry) = "BLA-" + urlEncode(re.property)
-  private def makeHTMLIdForLiteral(lit: fm#LiteralEntry) = "LIT-" + urlEncode(lit.property)
+  private def makeHTMLIdResource(re: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = makeHTMLId(re)
+  private def makeHTMLIdBN(re: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = makeHTMLId(re)
+  private def makeHTMLIdForLiteral(lit: fm#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax) =
+    makeHTMLId(lit)
 
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
-  private def createHTMLResourceEditableField(r: fm#ResourceEntry): NodeSeq = {
+  private def createHTMLResourceEditableField(r: fm#ResourceEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     val lookup = r.widgetType == DBPediaLookup
-    Seq(     
+    Seq(
+      Text("\n"),
     		// format: OFF
         if (r.openChoice)
           <input class={ cssClasses.formInputCSSClass } value={ r.value.toString }
@@ -266,7 +280,7 @@ trait Form2HTML[NODE, URI <: NODE] {
             placeholder={ if (lookup)
               s"Enter a word; completion with Wikipedia lookup"
               else
-              s"Enter or paste a resource URI, URL, IRI, etc of type ${r.type_.toString()}" }
+              s"Enter or paste a resource URI of type ${r.type_.toString()}" }
             onkeyup={if (lookup) "onkeyupComplete(this);" else null}
             size={inputSize.toString()} >
           </input> else new Text("") // format: ON
@@ -279,30 +293,33 @@ trait Form2HTML[NODE, URI <: NODE] {
         <select value={ r.value.toString } name={ makeHTMLIdResource(r) }>
           { formatPossibleValues(r) }
         </select>
-      else new Text("\n"),
-      /* if Resource is alreadyInDatabase, send original value to later save 
+      else new Text("\n")
+    /* if Resource is alreadyInDatabase, send original value to later save 
            * if there is a change */
-      if (r.alreadyInDatabase) {
-        //        { println("r.alreadyInDatabase " + r) }
-        <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden">
-        </input>
-      } else new Text("")
-    /* TODO web service to create the new instance while keeping the current page with its own modifications
-       * , <button type="button" class="btn-primary" readonly="yes" title={ s"Create a new instance of ${r.type_.toString()} in this database." } onClick="window.document.location.assign( /create?uri=${urlEncode(r.type_.toString())} )" id="???">CREATE</button>
-       * */
+    //      if (r.alreadyInDatabase) {
+    //        <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden">
+    //        </input>
+    //      } else new Text("")
+
+    //    /* maybe TODO: web service to create the new instance while keeping the current page with its own modifications
+    //       * , <button type="button" class="btn-primary" readonly="yes" title={ s"Create a new instance of ${r.type_.toString()} in this database." } onClick="window.document.location.assign( /create?uri=${urlEncode(r.type_.toString())} )" id="???">CREATE</button>
+    //       * */
     ).flatMap { identity }
   }
 
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
-  private def createHTMLiteralEditableLField(lit: fm#LiteralEntry): NodeSeq = {
+  private def createHTMLiteralEditableLField(lit: fm#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     val placeholder = s"Enter or paste a string of type ${lit.type_.toString()}"
+
     val elem = lit.type_.toString() match {
 
       // TODO in FormSyntaxFactory match graph pattern for interval datatype ; see issue #17
       case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
         if (radioForIntervals)
           (for (n <- Range(0, 6)) yield (
-            <input type="radio" name={ makeHTMLIdForLiteral(lit) } id={ makeHTMLIdForLiteral(lit) } checked={ if (n.toString.equals(lit.value)) "checked" else null } value={ n.toString }>
+            <input type="radio" name={ makeHTMLIdForLiteral(lit) } id={ makeHTMLIdForLiteral(lit) } checked={
+              if (n.toString.equals(lit.value)) "checked" else null
+            } value={ n.toString }>
             </input>
             <label for={ makeHTMLIdForLiteral(lit) }>{ n }</label>
           )).flatten
@@ -322,9 +339,7 @@ trait Form2HTML[NODE, URI <: NODE] {
         } ondblclick="launchEditorWindow(this);" title="Double click to edit text in popup window as Markdown text">
         </input>
     }
-    elem ++
-      <input value={ lit.value.toString() } name={ "ORIG-LIT-" + urlEncode(lit.property) } type="hidden">
-      </input>
+    elem
   }
 
   private def makeHTMLIdForDatalist(re: fm#Entry) = {
