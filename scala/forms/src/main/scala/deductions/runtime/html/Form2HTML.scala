@@ -257,8 +257,8 @@ trait Form2HTML[NODE, URI <: NODE] {
         makeTTLURI(ent.property) + " " +
         makeTTLAnyTerm(ent.value, ent) + " .\n"
     }
-    println(s"""makeHTMLId: $rawResult
-       ent.value "${ent.value}" """)
+    //    println(s"""makeHTMLId: $rawResult
+    //       ent.value "${ent.value}" """)
     urlEncode(rawResult)
   }
   private def makeHTMLIdResource(re: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = makeHTMLId(re)
@@ -339,7 +339,7 @@ trait Form2HTML[NODE, URI <: NODE] {
         } ondblclick="launchEditorWindow(this);" title="Double click to edit text in popup window as Markdown text">
         </input>
     }
-    elem
+    Text("\n") ++ elem
   }
 
   private def makeHTMLIdForDatalist(re: fm#Entry) = {

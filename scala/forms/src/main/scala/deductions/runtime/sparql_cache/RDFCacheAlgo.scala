@@ -21,6 +21,7 @@ import org.w3.banana.OWLPrefix
 import org.apache.log4j.Logger
 import org.w3.banana.RDF
 import org.w3.banana.jena.JenaModule
+import java.math.BigInteger
 
 /** */
 trait RDFCacheDependencies
@@ -175,6 +176,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    *  No Transaction
    */
   private def getTimestampFromDataset(uri: Rdf#URI, dataset: DATASET): Try[Long] = {
+    import org.w3.banana.binder._
+    import java.math.BigInteger
     val queryString =
       s"""
          |SELECT DISTINCT ?ts WHERE {
@@ -187,11 +190,22 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       solutions <- dataset.executeSelect(query, Map())
     } yield {
       solutions.toIterable.map {
-        row => row("ts") getOrElse sys.error("getTimestampFromDataset: " + row)
+        row =>
+          {
+            val node = row("ts").get
+            val r1 = foldNode(node)(
+              _ => Success(new BigInteger("0")),
+              _ => Success(new BigInteger("0")),
+              lit => {
+                FromLiteral.BigIntFromLiteral[Rdf].fromLiteral(lit)
+              }
+            )
+            r1.get
+            // getOrElse sys.error("getTimestampFromDataset: " + row)
+          }
       }
     }
-    //    val r = 
-    result.map { x => java.lang.Long.valueOf(x.next.toString()) }
+    result.map { x => x.next.longValue() }
   }
 
   /**

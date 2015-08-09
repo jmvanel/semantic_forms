@@ -7,6 +7,7 @@ package deductions.runtime.abstract_syntax
 
 import scala.collection.mutable
 import org.apache.log4j.Logger
+import org.apache.log4j.Level
 import org.w3.banana.OWLPrefix
 import org.w3.banana.PointedGraph
 import org.w3.banana.RDF
@@ -58,6 +59,8 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
 
   lazy val nullURI = ops.URI("") // http://null.com#")
   val literalInitialValue = "" // ..empty.."
+  val logger = Logger.getRootLogger()
+
   override def makeURI(n: Rdf#Node): Rdf#URI = URI(ops.foldNode(n)(
     fromUri(_), fromBNode(_), fromLiteral(_)._1))
 
@@ -100,10 +103,10 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
     formGroup: Rdf#URI = nullURI,
     formConfig: Rdf#Node = URI("")): FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
 
-    Logger.getRootLogger().info(s"createForm subject $subject, props $props")
+    logger.info(s"createForm subject $subject, props $props")
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
     val entries = for (prop <- props) yield {
-      Logger.getRootLogger().info(s"createForm subject $subject, prop $prop")
+      logger.info(s"createForm subject $subject, prop $prop")
       val ranges = objectsQuery(prop, rdfs.range)
       val rangesSize = ranges.size
       System.err.println(
@@ -136,14 +139,15 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
   private def updateFormFromConfig(formSyntax: FormSyntax, formConfig: Rdf#Node): FormSyntax = {
     for (field <- formSyntax.fields) {
       val fieldSpecs = formConfiguration.lookFieldSpecInConfiguration(field.property)
+      //    	val DEBUG2 = new Level( 5000, "DEBUG2", 7);
       if (!fieldSpecs.isEmpty)
-        println(s"""updateFormFromConfig field $field -- fieldSpecs size ${fieldSpecs.size}
+        logger.log(Level.OFF, s"""updateFormFromConfig field $field -- fieldSpecs size ${fieldSpecs.size}
         $fieldSpecs""")
       fieldSpecs.map {
         fieldSpec =>
           val triples = find(graph, fieldSpec.subject, ANY, ANY).toSeq
           for (t <- triples) {
-            //            println(s"updateFormFromConfig fieldSpec $fieldSpec -- triple $t")
+            // println(s"updateFormFromConfig fieldSpec $fieldSpec -- triple $t")
             field.addTriple(t.subject, t.predicate, t.objectt)
           }
           // TODO each feature should be in a different file
@@ -169,7 +173,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
       formPrefix("exactlyOne") -> exactlyOne
     }
     for (t <- triples) {
-      println("updateFormForClass formConfig " + t)
+      logger.log(Level.OFF, "updateFormForClass formConfig " + t)
       if (t.predicate == formPrefix("defaultCardinality")) {
         formSyntax.defaults.defaultCardinality = uriToCardinalities.getOrElse(t.objectt, zeroOrOne)
       }
@@ -206,7 +210,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
    */
   private def makeEntries(subject: Rdf#Node, prop: Rdf#URI, ranges: Set[Rdf#Node],
     valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)]): Seq[Entry] = {
-    Logger.getRootLogger().info(s"makeEntry subject $subject, prop $prop")
+    logger.info(s"makeEntry subject $subject, prop $prop")
     implicit val gr = graph
     implicit val prlng = preferedLanguage
     val label = getPreferedLanguageFromSubjectAndPredicate(prop, rdfs.label, terminalPart(prop))

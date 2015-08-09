@@ -27,19 +27,21 @@ trait TypeAddition[Rdf <: RDF, DATASET]
 
   /** NON transactional */
   def addTypes(triples: Seq[Rdf#Triple], graphURI: Option[Rdf#URI]) = {
-    val v = for (triple <- triples) yield addType(triple, graphURI)
+    val graph = allNamedGraph
+    val v = for (triple <- triples) yield addType(triple, graphURI, graph)
     v.flatten
   }
 
   /** NON transactional */
-  def addType(triple: Rdf#Triple, graphURI: Option[Rdf#URI]): Iterable[Rdf#Triple] = {
+  def addType(triple: Rdf#Triple, graphURI: Option[Rdf#URI],
+    graph: Rdf#Graph = allNamedGraph): Iterable[Rdf#Triple] = {
     val objectt = triple.objectt
-    val pgObjectt = PointedGraph[Rdf](objectt, allNamedGraph)
+    val pgObjectt = PointedGraph[Rdf](objectt, graph)
 
     def addTypeValue() = {
       val existingTypes = (pgObjectt / rdf.typ).nodes
       if (existingTypes isEmpty) {
-        val pgPredicate = PointedGraph[Rdf](triple.predicate, allNamedGraph)
+        val pgPredicate = PointedGraph[Rdf](triple.predicate, graph)
         val cls = pgPredicate / rdfs.range
         val classes = cls.nodes
         val typeTriples = for (classe <- classes)
@@ -76,7 +78,7 @@ trait TypeAddition[Rdf <: RDF, DATASET]
     }
 
     val result = if (objectt.isURI) {
-      val pgObjectt = PointedGraph[Rdf](objectt, allNamedGraph)
+      val pgObjectt = PointedGraph[Rdf](objectt, graph)
       val existingTypes = (pgObjectt / rdf.typ).nodes
       if (existingTypes isEmpty) {
         addRDFSLabelValue()

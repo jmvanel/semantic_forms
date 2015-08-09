@@ -20,6 +20,7 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
 import org.w3.banana.jena.JenaModule
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import com.hp.hpl.jena.query.Dataset
+import org.apache.log4j.Logger
 
 object FormSaverObject extends FormSaver[Jena, Dataset] with JenaModule with RDFStoreLocalJena1Provider
 
@@ -35,12 +36,14 @@ trait FormSaver[Rdf <: RDF, DATASET]
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._
 
+  val logger = Logger.getRootLogger()
+
   /**
    * @param map a raw map of HTTP response parameters
    * transactional
    */
   def saveTriples(httpParamsMap: Map[String, Seq[String]]) = {
-    println(s"FormSaver.saveTriples $httpParamsMap")
+    logger.debug(s"FormSaver.saveTriples httpParamsMap $httpParamsMap")
     val uriArgs = httpParamsMap.getOrElse("uri", Seq())
     val subjectUriOption = uriArgs.find { uri => uri != "" }
     val graphURIOption = httpParamsMap.getOrElse("graphURI", Seq()).headOption
@@ -58,13 +61,13 @@ trait FormSaver[Rdf <: RDF, DATASET]
         httpParamsMap.map {
           case (param0, objects) =>
             val param = URLDecoder.decode(param0, "utf-8")
-            println(s"saveTriples: httpParam decoded: $param")
+            logger.debug(s"saveTriples: httpParam decoded: $param")
             if (param != "url" &&
               param != "uri" &&
               param != "graphURI") {
               Try {
                 val triple = httpParam2Triple(param)
-                println(s"saveTriples: triple from httpParam: $triple")
+                logger.debug(s"saveTriples: triple from httpParam: $triple")
                 computeDatabaseChanges(triple, objects)
               }
             }
@@ -87,31 +90,42 @@ trait FormSaver[Rdf <: RDF, DATASET]
                 objectFromUser)
           if (originalTriple.objectt.toString() != "")
             triplesToRemove += originalTriple
-          println("computeDatabaseChanges: predicate " + originalTriple.predicate + ", originalTriple.objectt: \"" +
+          logger.debug("computeDatabaseChanges: predicate " + originalTriple.predicate + ", originalTriple.objectt: \"" +
             originalTriple.objectt.toString() + "\"" +
             ", objectStringFromUser \"" + objectStringFromUser + "\"")
         }
       }
     }
 
+    def time(mess: String, sourceCode: => Any) = {
+      val start = System.currentTimeMillis()
+      val res = sourceCode
+      val end = System.currentTimeMillis()
+      println(s"Time elapsed: $mess: ${end - start}")
+      res
+    }
+
     /** transactional */
     def doSave(graphURI: String) {
       val transaction = dataset.rw({
-        dataset.removeTriples(makeUri(graphURI), triplesToRemove.toIterable)
-        val res = dataset.appendToGraph(makeUri(graphURI), makeGraph(triples))
+        time("removeTriples",
+          dataset.removeTriples(makeUri(graphURI), triplesToRemove.toIterable))
+        val res =
+          time("appendToGraph",
+            dataset.appendToGraph(makeUri(graphURI), makeGraph(triples)))
 
         /* TODO
          * add a hook here
          * return the future to print later that it has been done */
         Future { dataset.rw({ addTypes(triples, Some(URI(graphURI))) }) }
         res
-      }).flatMap { identity }
+      }) // .flatMap { identity }
 
       val f = transaction.asFuture
 
       f onSuccess {
         case _ =>
-          println(s""" Successfully stored ${triples.size} triples
+          logger.info(s""" Successfully stored ${triples.size} triples
             ${triples.mkString(", ")}
             and removed ${triplesToRemove.size}
             ${triplesToRemove.mkString(", ")}
