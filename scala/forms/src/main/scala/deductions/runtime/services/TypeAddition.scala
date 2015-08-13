@@ -64,7 +64,7 @@ trait TypeAddition[Rdf <: RDF, DATASET]
         existingValues2.isEmpty &&
         existingValues3.isEmpty &&
         !objectt.toString().contains(":")) {
-        val labelTriple = makeTriple(objectt, rdfs.label, Literal(objectt.toString()))
+        val labelTriple = makeTriple(objectt, rdfs.label, Literal(objectt.toString().replace("_", " ")))
         dataset.appendToGraph(makeGraphForSaving(), ops.makeGraph(Seq(labelTriple)))
       }
     }

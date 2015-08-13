@@ -21,6 +21,7 @@ import com.hp.hpl.jena.query.Dataset
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.abstract_syntax.FormModule
 
+// TODO move to jena
 trait CreationForm extends CreationFormAlgo[Jena, Dataset]
 
 trait CreationFormAlgo[Rdf <: RDF, DATASET] extends RDFOpsModule

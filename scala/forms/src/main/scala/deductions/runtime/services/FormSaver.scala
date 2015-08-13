@@ -21,6 +21,7 @@ import org.w3.banana.jena.JenaModule
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import com.hp.hpl.jena.query.Dataset
 import org.apache.log4j.Logger
+import scala.util.Failure
 
 object FormSaverObject extends FormSaver[Jena, Dataset] with JenaModule with RDFStoreLocalJena1Provider
 
@@ -54,21 +55,25 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
     subjectUriOption match {
       case Some(uri0) =>
-        val subjectUri = URLDecoder.decode(uri0, "utf-8")
+        val subjectUri = URLDecoder.decode(uri0, "utf-8") // TODO uri0
         val graphURI =
           if (graphURIOption == Some("")) subjectUri
-          else URLDecoder.decode(graphURIOption.getOrElse(uri0), "utf-8")
+          else URLDecoder.decode(graphURIOption.getOrElse(uri0), "utf-8") // TODO no decode
         httpParamsMap.map {
           case (param0, objects) =>
-            val param = URLDecoder.decode(param0, "utf-8")
+            val param = URLDecoder.decode(param0, "utf-8") // TODO no decode
             logger.debug(s"saveTriples: httpParam decoded: $param")
             if (param != "url" &&
               param != "uri" &&
               param != "graphURI") {
-              Try {
+              val try_ = Try {
                 val triple = httpParam2Triple(param)
                 logger.debug(s"saveTriples: triple from httpParam: $triple")
                 computeDatabaseChanges(triple, objects)
+              }
+              try_ match {
+                case f: Failure[_] => logger.error("saveTriples: " + f)
+                case _ =>
               }
             }
         }
@@ -77,11 +82,14 @@ trait FormSaver[Rdf <: RDF, DATASET]
     }
 
     def computeDatabaseChanges(originalTriple: Rdf#Triple, objectsFromUser: Seq[String]) {
+      val foaf = FOAFPrefix[Rdf]
+      if (originalTriple.predicate == foaf.firstName)
+        println(foaf.firstName)
       objectsFromUser.map { objectStringFromUser =>
         // NOTE: a single element in objects
         val objectFromUser = foldNode(originalTriple.objectt)(
-          _ => URI(objectStringFromUser),
-          _ => BNode(objectStringFromUser), // ?? really do this ?
+          _ => URI(objectStringFromUser.replaceAll(" ", "_")),
+          _ => BNode(objectStringFromUser.replaceAll(" ", "_")), // ?? really do this ?
           _ => Literal(objectStringFromUser))
         if (originalTriple.objectt != objectStringFromUser) {
           if (objectStringFromUser != "")
@@ -130,17 +138,17 @@ trait FormSaver[Rdf <: RDF, DATASET]
             and removed ${triplesToRemove.size}
             ${triplesToRemove.mkString(", ")}
           in graph $graphURI""")
-          dataset.getGraph(makeUri(graphURI)).asFuture.
-            onSuccess {
-              case gr =>
-                if (triplesToRemove.size > 0 ||
-                  triples.size > 0) {
-                  val writer: RDFWriter[Rdf, Try, Turtle] = turtleWriter
-                  val graphAsString = writer.asString(gr, base = graphURI) getOrElse sys.error(
-                    "coudn't serialize the graph")
-                  println("Graph with modifications:\n" + graphAsString)
-                }
-            }
+        //          dataset.getGraph(makeUri(graphURI)).asFuture.
+        //            onSuccess {
+        //              case gr =>
+        //                if (triplesToRemove.size > 0 ||
+        //                  triples.size > 0) {
+        //                  val writer: RDFWriter[Rdf, Try, Turtle] = turtleWriter
+        //                  val graphAsString = writer.asString(gr, base = graphURI) getOrElse sys.error(
+        //                    "coudn't serialize the graph")
+        //                  println("Graph with modifications:\n" + graphAsString)
+        //                }
+        //            }
       }
       f.onFailure { case t => println(s"doSave: Failure $t") }
     }
