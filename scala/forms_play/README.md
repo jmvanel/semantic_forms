@@ -88,7 +88,7 @@ Please read explanations on the Banana-RDF project:
 #Database Administration
 ## Preloading RDF content
 
-The server must not be started, because Jena TDB does not allow acces to the database on disk from 2 processes.
+The server must not be started, because Jena TDB does not allow access to the database on disk from 2 different processes.
 
 - Preloading common vocabularies, and preloading some pre-defined form specifications ( currently FOAF ) : in activator shell type:
 ```
