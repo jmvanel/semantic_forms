@@ -35,11 +35,17 @@ class FormConfigurationFactory[Rdf <: RDF](graph: Rdf#Graph)(implicit ops: RDFOp
     formSpecOption match {
       case None => (Seq(), URI(""))
       case Some(formConfiguration) =>
-        val props = objectsQuery(formConfiguration, formPrefix("showProperties"))
-        for (p <- props) { println("showProperties " + p) }
-        val p = props.headOption
-        (rdfh.nodeSeqToURISeq(rdfh.rdfListToSeq(p)), formConfiguration)
+        val propertiesList = propertiesListFromFormConfiguration(formConfiguration)
+        (propertiesList, formConfiguration)
     }
+  }
+
+  def propertiesListFromFormConfiguration(formConfiguration: Rdf#Node): Seq[Rdf#URI] = {
+    val props = objectsQuery(formConfiguration, formPrefix("showProperties"))
+    for (p <- props) { println("showProperties " + p) }
+    val p = props.headOption
+    val propertiesList = rdfh.nodeSeqToURISeq(rdfh.rdfListToSeq(p))
+    propertiesList
   }
 
   /** lookup Form Spec from OWL class in In Configuration */

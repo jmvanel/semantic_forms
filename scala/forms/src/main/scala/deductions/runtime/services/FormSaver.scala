@@ -88,6 +88,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
       objectsFromUser.map { objectStringFromUser =>
         // NOTE: a single element in objects
         val objectFromUser = foldNode(originalTriple.objectt)(
+          // TODO other forbidden character in URI
           _ => URI(objectStringFromUser.replaceAll(" ", "_")),
           _ => BNode(objectStringFromUser.replaceAll(" ", "_")), // ?? really do this ?
           _ => Literal(objectStringFromUser))

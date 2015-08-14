@@ -3,7 +3,9 @@
 // http://stackoverflow.com/questions/148901/is-there-a-better-way-to-do-optional-function-parameters-in-javascript
 // wget "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=10&QueryString=berl" --header='Accept: application/json'
 
-var urlReqPrefix = "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=10&QueryString=" ;
+var resultsCount=20;
+var urlReqPrefix = "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=" +
+      resultsCount + "&QueryString=" ;
 var req = new XMLHttpRequest();
 
 function dbpediaComplete( inputElement, callback ) {

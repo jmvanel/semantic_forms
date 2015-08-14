@@ -38,11 +38,14 @@ trait CreationFormAlgo[Rdf <: RDF, DATASET] extends RDFOpsModule
    * create an XHTML input form for a new instance from a class URI;
    *  transactional
    */
-  def create(classUri: String, lang: String = "en"): Try[NodeSeq] = {
+  def create(classUri: String, lang: String = "en",
+    formSpecURI: String = ""): Try[NodeSeq] = {
     import scala.concurrent.ExecutionContext.Implicits.global
     dataset.r({
       val factory = new UnfilledFormFactory[Rdf, DATASET](allNamedGraph, preferedLanguage = lang)
-      val form = factory.createFormFromClass(URI(classUri))
+      val form = factory.createFormFromClass(
+        URI(classUri),
+        formSpecURI)
 
       // TODO code duplicated in trait TableViewModule.graf2form() 
       new Form2HTML[Rdf#Node, Rdf#URI] {

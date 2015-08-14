@@ -10,52 +10,61 @@
         <p class="text-right">
           <input value="SAVE" type="submit" class="btn btn-primary btn-lg"/>
         </p>
-        <input type="hidden" name="url" value="http%3A%2F%2Fassemblee-virtuelle.org%2Fresource%2F1429646052665-5939162116607"/><input type="hidden" name="graphURI" value=""/><div class="form">
-        <input type="hidden" name="uri" value="http%3A%2F%2Fassemblee-virtuelle.org%2Fresource%2F1429646052665-5939162116607"/>
-        <div class="form-group">
-              <div class="row">
-                <label class="control-label" title="The first name of a person. - http://xmlns.com/foaf/0.1/firstName">firstName</label>
-                <!-- div class="input" -->
-                <input value="+" class="btn-primary" size="1" title="Add another value for firstName" onClick=" cloneWidget( &quot;LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FfirstName&quot; ); "></input><input class="form-control" value="" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FfirstName" type="text" placeholder="Enter or paste a string of type http://www.w3.org/2000/01/rdf-schema#Literal">
-        </input><input value="" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FfirstName" type="hidden">
-      </input>
+        <input type="hidden" name="url" value="http%3A%2F%2Fassemblee-virtuelle.org%2Fresource%2F1439565887836-12872958314718"/><input type="hidden" name="graphURI" value=""/><div class="form-root">
+        <style type="text/css">
+      .form-row{ display: table-row; }
+                   .form-cell{ display: table-cell; }
+                   .form-input{ display: table-cell; width: 500px; }
+                   .button-add{ width: 25px; }
+                   .form-label{ display: table-cell; width: 160px; }
+    </style>
+<script type="text/javascript" async="true" src="https://rawgit.com/sofish/pen/master/src/pen.js"></script><script type="text/javascript" async="true" src="https://rawgit.com/sofish/pen/master/src/markdown.js"></script><script type="text/javascript" async="true">
+        // function backlinks(uri) { }
+        function launchEditorWindow(elem) {
+  var popupWindow = window.open('', 'Edit Markdown text for semantic_forms',
+    'height=300, width=300');
+  var options = {
+    editor: popupWindow.document.body,
+    class: 'pen',
+    list: // editor menu list
+    [ 'insertimage', 'blockquote', 'h2', 'h3', 'p', 'code', 'insertorderedlist', 'insertunorderedlist', 'inserthorizontalrule',
+      'indent', 'outdent', 'bold', 'italic', 'underline', 'createlink' ]
+  }
+  popupWindow.document.body.innerHTML = elem.value
+  var editor = new Pen( options );
+  popupWindow.onbeforeunload = function() {
+    elem.value = editor.toMd(); // return a markdown string
+    return void(0)
+  };
+        }
+      </script>
+
+        <input type="hidden" name="uri" value="http%3A%2F%2Fassemblee-virtuelle.org%2Fresource%2F1439565887836-12872958314718"/>
+        <div class="form-row">
+                <label class="form-label" title="Le prénom d'une personne . - http://xmlns.com/foaf/0.1/firstName">prénom</label>
+                <input value="+" class="button-add btn-primary" readonly="yes" size="1" title="Add another value for prénom" onClick=" cloneWidget( &quot;%3Chttp%3A%2F%2Fassemblee-virtuelle.org%2Fresource%2F1439565887836-12872958314718%3E+%3Chttp%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FfirstName%3E+%22%22+.%0A&quot; ); "></input>
+<input class="form-input" value="" name="%3Chttp%3A%2F%2Fassemblee-virtuelle.org%2Fresource%2F1439565887836-12872958314718%3E+%3Chttp%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FfirstName%3E+%22%22+.%0A" type="text" placeholder="Enter or paste a string of type http://www.w3.org/2000/01/rdf-schema#Literal" size="90" ondblclick="launchEditorWindow(this);" title="Double click to edit text in popup window as Markdown text">
+        </input>
+              </div><div class="form-row">
+                <label class="form-label" title="Le nom en dernière position d'une personne (préférer foaf:familyName). - http://xmlns.com/foaf/0.1/lastName">nom de famille</label>
+                <input value="+" class="button-add btn-primary" readonly="yes" size="1" title="Add another value for nom de famille" onClick=" cloneWidget( &quot;%3Chttp%3A%2F%2Fassemblee-virtuelle.org%2Fresource%2F1439565887836-12872958314718%3E+%3Chttp%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FlastName%3E+%22%22+.%0A&quot; ); "></input>
+<input class="form-input" value="" name="%3Chttp%3A%2F%2Fassemblee-virtuelle.org%2Fresource%2F1439565887836-12872958314718%3E+%3Chttp%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FlastName%3E+%22%22+.%0A" type="text" placeholder="Enter or paste a string of type http://www.w3.org/2000/01/rdf-schema#Literal" size="90" ondblclick="launchEditorWindow(this);" title="Double click to edit text in popup window as Markdown text">
+        </input>
+              </div><div class="form-row">
+                <label class="form-label" title="Un sujet d'intérêt pour cette personne . - http://xmlns.com/foaf/0.1/topic_interest">sujet d'intérêt</label>
+                <input value="+" class="button-add btn-primary" readonly="yes" size="1" title="Add another value for sujet d'intérêt" onClick=" cloneWidget( &quot;%3Chttp%3A%2F%2Fassemblee-virtuelle.org%2Fresource%2F1439565887836-12872958314718%3E+%3Chttp%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ftopic_interest%3E+%3C%3E+.%0A&quot; ); "></input>
+<input class="form-input" value="" name="%3Chttp%3A%2F%2Fassemblee-virtuelle.org%2Fresource%2F1439565887836-12872958314718%3E+%3Chttp%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ftopic_interest%3E+%3C%3E+.%0A" list="possibleValues-379990021" data-type="http://www.w3.org/2002/07/owl#Thing" placeholder="Enter a word; completion with Wikipedia lookup" onkeyup="onkeyupComplete(this);" size="90">
+          </input><datalist id="possibleValues-379990021">
+        <option value=""></option>
+      </datalist>
+
+              </div><div class="form-row">
+                <label class="form-label" title="class - http://www.w3.org/1999/02/22-rdf-syntax-ns#type">type</label>
+                <input value="+" class="button-add btn-primary" readonly="yes" size="1" title="Add another value for type" onClick=" cloneWidget( &quot;%3Chttp%3A%2F%2Fassemblee-virtuelle.org%2Fresource%2F1439565887836-12872958314718%3E+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type%3E+%3Chttp%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FPerson%3E+.%0A&quot; ); "></input>
+<input class="form-input" value="http://xmlns.com/foaf/0.1/Person" name="%3Chttp%3A%2F%2Fassemblee-virtuelle.org%2Fresource%2F1439565887836-12872958314718%3E+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type%3E+%3Chttp%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FPerson%3E+.%0A" list="possibleValues--1507624614" data-type="" placeholder="Enter or paste a resource URI of type " size="90">
+          </input>
+
               </div>
-            </div><div class="form-group">
-              <div class="row">
-                <label class="control-label" title="The last name of a person. - http://xmlns.com/foaf/0.1/lastName">lastName</label>
-                <!-- div class="input" -->
-                <input value="+" class="btn-primary" size="1" title="Add another value for lastName" onClick=" cloneWidget( &quot;LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FlastName&quot; ); "></input><input class="form-control" value="" name="LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FlastName" type="text" placeholder="Enter or paste a string of type http://www.w3.org/2000/01/rdf-schema#Literal">
-        </input><input value="" name="ORIG-LIT-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2FlastName" type="hidden">
-      </input>
-              </div>
-            </div><div class="form-group">
-              <div class="row">
-                <label class="control-label" title="A thing of interest to this person. - http://xmlns.com/foaf/0.1/topic_interest">topic_interest</label>
-                <!-- div class="input" -->
-                <input value="+" class="btn-primary" size="1" title="Add another value for topic_interest" onClick=" cloneWidget( &quot;RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ftopic_interest&quot; ); "></input><div>
-      <input class="form-control" value="" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ftopic_interest" list="possibleValues-379990021" data-type="http://www.w3.org/2002/07/owl#Thing" placeholder="Enter or paste a resource URI, URL, IRI, etc of type http://www.w3.org/2002/07/owl#Thing" onkeyup="onkeyupComplete(this);">
-          </input><span></span>
-      <select value="" name="RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ftopic_interest">
-          <option value=""></option>
-        </select>
-      <input value="" name="ORIG-RES-http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2Ftopic_interest" type="hidden">
-            </input>
-    </div>
-              </div>
-            </div><div class="form-group">
-              <div class="row">
-                <label class="control-label" title="class - http://www.w3.org/1999/02/22-rdf-syntax-ns#type">type</label>
-                <!-- div class="input" -->
-                <input value="+" class="btn-primary" size="1" title="Add another value for type" onClick=" cloneWidget( &quot;RES-http%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type&quot; ); "></input><div>
-      <input class="form-control" value="http://xmlns.com/foaf/0.1/Person" name="RES-http%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type" list="possibleValues--1507624614" data-type="" placeholder="Enter or paste a resource URI, URL, IRI, etc of type " onkeyup="onkeyupComplete(this);">
-          </input><span></span>
-      <select value="http://xmlns.com/foaf/0.1/Person" name="RES-http%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type">
-          <option value=""></option>
-        </select>
-      
-    </div>
-              </div>
-            </div>
       </div>
         <p class="text-right">
           <input value="SAVE" type="submit" formaction="/save" class="btn btn-primary btn-lg pull-right"/>

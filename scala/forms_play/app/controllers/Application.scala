@@ -120,17 +120,18 @@ object Application extends Controller
   def create() = {
     Action { implicit request =>
       println("create: " + request)
-      val uri = getFirstNonEmptyInMap(request.queryString).get
+      val uri = request.queryString.get("uri").get(0)
+      val formSpecURI = request.queryString.get("formspec").get(0)
       println("create: " + uri)
-      Ok(views.html.index(glob.createElem2(uri, chooseLanguage(request))))
+      println("formSpecURI: " + formSpecURI)
+      Ok(views.html.index(glob.createElem2(uri, chooseLanguage(request)), formSpecURI) )
     }
   }
 
-  /** TODO move to FormSaver */
-  def getFirstNonEmptyInMap(map: Map[String, Seq[String]]): Option[String] = {
-    val uriArgs = map.getOrElse("uri", Seq())
-    uriArgs.find { uri => uri != "" }
-  }
+//  def getFirstNonEmptyInMap(map: Map[String, Seq[String]]): Option[String] = {
+//    val uriArgs = map.getOrElse("uri", Seq())
+//    uriArgs.find { uri => uri != "" }
+//  }
 
   def sparql(query: String) = {
     Action { implicit request =>

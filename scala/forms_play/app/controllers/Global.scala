@@ -241,14 +241,15 @@ package global1 {
       }
     }
 
-    def createElem2(uri0: String, lang: String = "en"): Elem = {
+    def createElem2(uri0: String, lang: String = "en",
+        formSpecURI:String="" ): Elem = {
       Logger.getRootLogger().info("Global.htmlForm uri " + uri0)
       val uri = uri0.trim()
 
       <div class="container">
         <h3>{ Messages("Creating_instance")(Lang(lang)) }  
         <strong title={uri}>{ labelForURI(uri) }</strong></h3>
-        { cf.create(uri, lang).get }
+        { cf.create(uri, lang, formSpecURI).get }
       </div>
     }
 

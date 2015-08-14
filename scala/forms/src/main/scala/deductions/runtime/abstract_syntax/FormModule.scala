@@ -60,8 +60,11 @@ trait FormModule[NODE, URI <: NODE] {
    */
   sealed abstract case class Entry(
       val label: String, val comment: String,
+      // val subject: NODE = nullURI,
       val property: URI = nullURI,
+      /** unused yet :( */
       val mandatory: Boolean = false,
+      /** TODO : several types */
       val type_ : NODE = nullURI,
       val value: NODE = nullURI, // Any = "",
       var widgetType: WidgetType = Text,

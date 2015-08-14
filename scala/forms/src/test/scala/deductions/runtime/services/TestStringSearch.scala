@@ -53,7 +53,7 @@ trait TestStringSearchTrait[Rdf <: RDF, DATASET] extends FunSuite
         println(e)
         fail(s"onFailure $e")
     }
-    Await.ready(res, 2 seconds)
+    Await.ready(res, 5 seconds)
   }
 }
 

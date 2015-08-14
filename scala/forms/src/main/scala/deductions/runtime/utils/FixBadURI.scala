@@ -27,7 +27,7 @@ import scala.collection.mutable.ArrayBuffer
  *  <bad URI> <p> <bad Object> .
  *  To:
  *  <bad_URI> <p> <bad_Object> .
- *  
+ *
  *  TODO: reuse a single function for fixing URI,
  *  common to TypeAddition
  */
@@ -79,7 +79,7 @@ trait FixBadURI[Rdf <: RDF, Dataset] extends RDFCacheAlgo[Rdf, Dataset]
   def fixGraph(graphURI: Rdf#URI) {
     fixGraph(graphURI, graphURI)
   }
-  
+
   def fixGraph(graphURI: Rdf#URI, newGraphURI: Rdf#URI) {
     dataset.rw {
       val gr = dataset.getGraph(graphURI).get
@@ -99,7 +99,7 @@ trait FixBadURI[Rdf <: RDF, Dataset] extends RDFCacheAlgo[Rdf, Dataset]
         dataset.removeTriples(newGraphURI, triplesToRemove.toIterable)
       } catch {
         case t: Throwable =>
-          System.err.println( "Could not remove Triples from " + s"<$newGraphURI>")
+          System.err.println("Could not remove Triples from " + s"<$newGraphURI>")
       }
       dataset.appendToGraph(newGraphURI, makeGraph(triples))
     }
