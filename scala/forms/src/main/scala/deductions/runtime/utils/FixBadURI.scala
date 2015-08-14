@@ -27,6 +27,9 @@ import scala.collection.mutable.ArrayBuffer
  *  <bad URI> <p> <bad Object> .
  *  To:
  *  <bad_URI> <p> <bad_Object> .
+ *  
+ *  TODO: reuse a single function for fixing URI,
+ *  common to TypeAddition
  */
 object FixBadURIApp extends JenaModule
     with FixBadURI[Jena, Dataset]
@@ -44,6 +47,7 @@ trait FixBadURI[Rdf <: RDF, Dataset] extends RDFCacheAlgo[Rdf, Dataset]
   //  val corrections = scala.collection.mutable.Buffer[(Rdf#Triple, Rdf#Triple)]()
   val triples = ArrayBuffer[Rdf#Triple]()
   val triplesToRemove = ArrayBuffer[Rdf#Triple]()
+  var corrections = 0
 
   import ops._
   import rdfStore.transactorSyntax._
@@ -58,34 +62,49 @@ trait FixBadURI[Rdf <: RDF, Dataset] extends RDFCacheAlgo[Rdf, Dataset]
       }.get.toIterable
     System.err.println("names size " + names.size)
 
-    var corrections = 0
     for (uri <- names) {
       System.err.println("Graph name " + uri)
       val graphURI = URI(uri)
       if (fixURI(graphURI) == graphURI) {
-        dataset.rw {
-          val gr = dataset.getGraph(URI(uri)).get
-          val trs = gr.triples
-          for (tr <- trs) {
-            val newTriple = fixTriple(tr)
-            //            System.err.println(tr)
-            //            System.err.println( "NEW " + newTriple)
-            if (newTriple != tr) {
-              System.err.println(newTriple)
-              triplesToRemove += tr
-              triples += newTriple
-              corrections = corrections + 1
-            }
-          }
-          dataset.removeTriples(graphURI, triplesToRemove.toIterable)
-          dataset.appendToGraph(graphURI, makeGraph(triples))
-        }
-      } else
+        fixGraph(graphURI)
+      } else {
         System.err.println("  Bad graph URI: " + graphURI)
+        fixGraph(graphURI, fixURI(graphURI))
+        dataset.removeGraph(graphURI)
+      }
     }
-      System.err.println("" + corrections + " corrections")
+    System.err.println("" + corrections + " corrections")
   }
 
+  def fixGraph(graphURI: Rdf#URI) {
+    fixGraph(graphURI, graphURI)
+  }
+  
+  def fixGraph(graphURI: Rdf#URI, newGraphURI: Rdf#URI) {
+    dataset.rw {
+      val gr = dataset.getGraph(graphURI).get
+      val trs = gr.triples
+      for (tr <- trs) {
+        val newTriple = fixTriple(tr)
+        // System.err.println(tr)
+        // System.err.println( "NEW " + newTriple)
+        if (newTriple != tr) {
+          System.err.println(newTriple)
+          triplesToRemove += tr
+          triples += newTriple
+          corrections = corrections + 1
+        }
+      }
+      try {
+        dataset.removeTriples(newGraphURI, triplesToRemove.toIterable)
+      } catch {
+        case t: Throwable =>
+          System.err.println( "Could not remove Triples from " + s"<$newGraphURI>")
+      }
+      dataset.appendToGraph(newGraphURI, makeGraph(triples))
+    }
+
+  }
   def fixTriple(tr: Rdf#Triple): Rdf#Triple = {
     val subject = tr.subject
     val predicate = tr.predicate
@@ -106,10 +125,8 @@ trait FixBadURI[Rdf <: RDF, Dataset] extends RDFCacheAlgo[Rdf, Dataset]
     URI(uri.toString().replaceAll(" ", underscore))
   }
 
-  
-  
   //// unused below
-  
+
   def readJena2 = {
     val ds = RDFDataMgr.loadDataset(fileNameOrUri)
     println("Dataset " + ds)
