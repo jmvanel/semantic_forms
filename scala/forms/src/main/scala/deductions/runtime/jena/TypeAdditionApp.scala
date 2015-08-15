@@ -27,7 +27,7 @@ object TypeAdditionApp extends JenaModule
 }
 
 trait TypeAdditionAppTrait[Rdf <: RDF, DATASET]
-    extends TypeAddition[Jena, Dataset] {
+    extends TypeAddition[Rdf, DATASET] {
 
   import ops._
   import sparqlOps._
@@ -36,13 +36,13 @@ trait TypeAdditionAppTrait[Rdf <: RDF, DATASET]
 
   val uris: ArraySeq[Rdf#URI]
 
+  /** non TRANSACTIONAL */
   def run() {
     println(s"""Types added for URI's $uris""")
-    //    dataset.rw({
     Try {
       if (uris isEmpty) {
         //  val tr = find(allNamedGraph, ANY, ANY, ANY)
-        val tr = ops.getTriples(allNamedGraph)
+        val tr = getTriples(allNamedGraph)
         add_types(tr.toIterator)
       } else {
         uris map { uri =>
@@ -54,7 +54,6 @@ trait TypeAdditionAppTrait[Rdf <: RDF, DATASET]
         }
       }
     }
-    //    })
   }
 
   private def add_types(tr: Iterator[Rdf#Triple]) {

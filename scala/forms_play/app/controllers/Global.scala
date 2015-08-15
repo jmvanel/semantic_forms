@@ -25,6 +25,7 @@ import play.api.libs.iteratee.Iteratee
 import deductions.runtime.html.TableViewModule
 import org.apache.log4j.Logger
 import deductions.runtime.abstract_syntax.InstanceLabelsInference2
+import deductions.runtime.abstract_syntax.InstanceLabelsInference
 import com.hp.hpl.jena.query.Dataset
 import org.w3.banana.RDF
 import deductions.runtime.sparql_cache.RDFCacheAlgo
@@ -39,7 +40,7 @@ import scala.util.Failure
 import deductions.runtime.services.ReverseLinksSearchSPARQL
 import deductions.runtime.services.ExtendedSearchSPARQL
 import scala.concurrent.ExecutionContext.Implicits.global
-import play.api.i18n._
+import play.api.i18n.{ Lang => PlayLang, _ }
 
 /** NOTE: was obliged to rename global to global1
  *  because of Scala compiler bug:
@@ -50,24 +51,30 @@ package global1 {
   object Global extends JenaModule
   with AbstractApplication[Jena, Dataset]
   with JenaHelpers
-  with RDFStoreLocalJena1Provider
+  with RDFStoreLocalJena1Provider {
+    val graph: org.w3.banana.jena.Jena#Graph = allNamedGraph
+    val preferedLanguage: String = "fr"
+  }
     
   trait AbstractApplication[Rdf <: RDF, DATASET] extends Controller
-      with RDFOpsModule
-      with SparqlOpsModule 
+//      with RDFOpsModule
+//      with SparqlOpsModule 
       with RDFCacheAlgo[Rdf, DATASET]
-      with TurtleWriterModule
+//      with TurtleWriterModule
       with TableViewModule[Rdf, DATASET]
       with StringSearchSPARQL[Rdf, DATASET]
       with ReverseLinksSearchSPARQL[Rdf, DATASET]
       with ExtendedSearchSPARQL[Rdf, DATASET]
-      with InstanceLabelsInference2[Rdf] 
+      with InstanceLabelsInference[Rdf] 
       with RDFStoreLocalProvider[Rdf, DATASET]
   with BrowsableGraph[Rdf, DATASET]
   with FormSaver[Rdf, DATASET]
   with CreationFormAlgo[Rdf, DATASET]
   with controllers.LanguageManagement
 {
+	  implicit val turtleWriter: RDFWriter[Rdf, Try, Turtle]
+
+    import ops._
     
     Logger.getRootLogger().info(s"in Global")
     
@@ -96,7 +103,7 @@ package global1 {
         <div class="container">
           <div class="row">
             <h3>
-              { Messages("Properties_for")(Lang(lang)) }  
+              { Messages("Properties_for")(PlayLang(lang)) }  
               <b>
                 <a href={ hrefEditPrefix + URLEncoder.encode(uri, "utf-8") } title="edit this URI">
                 { labelForURI(uri) }</a>
@@ -137,9 +144,11 @@ package global1 {
     }
 
     def labelForURI(uri: String): String = {
+//      uri
       rdfStore.r(dataset, {
-        implicit val graph: Rdf#Graph = allNamedGraph;
-        instanceLabel(ops.URI(uri))
+//        implicit val graph: Rdf#Graph = allNamedGraph;
+//        instanceLabel(URI(uri), graph, "" )
+        instanceLabel(URI(uri) )
       }).getOrElse(uri)
     }
     
@@ -185,9 +194,9 @@ package global1 {
     }
 
     def wordsearchFuture(q: String = ""): Future[Elem] = {
-      val fut = 
-        searchString(q, hrefDisplayPrefix)
+      val fut = searchString(q, hrefDisplayPrefix)
       wrapSearchResults(fut, q)
+//        Future.successful{ <p>TODO</p> }
     }
 
     def downloadAsString(url: String): String = {
@@ -205,8 +214,11 @@ package global1 {
         val graph = search_only(url)
         graph.map { graph =>
           /* non blocking */
-          val writer: RDFWriter[Rdf, Try, Turtle] = turtleWriter
-          val ret = writer.write(graph.asInstanceOf[Rdf#Graph], os, base = url)
+          val writer
+//          : RDFWriter[Rdf, Try, Turtle]
+          = turtleWriter
+//          val ret = writer.write(graph.asInstanceOf[Rdf#Graph], os, base = url)
+          val ret = writer.write(graph, os, base = url)
           os.close()
         }
       }
@@ -247,7 +259,7 @@ package global1 {
       val uri = uri0.trim()
 
       <div class="container">
-        <h3>{ Messages("Creating_instance")(Lang(lang)) }  
+        <h3>{ Messages("Creating_instance")(PlayLang(lang)) }  
         <strong title={uri}>{ labelForURI(uri) }</strong></h3>
         { cf.create(uri, lang, formSpecURI).get }
       </div>
@@ -310,8 +322,7 @@ caption {{
     }
     
     def backlinksFuture(q: String = ""): Future[Elem] = {
-      val fut = 
-        backlinks(q, hrefDisplayPrefix)
+      val fut = backlinks(q, hrefDisplayPrefix)
       wrapSearchResults(fut, q)
     }
   
@@ -323,8 +334,7 @@ caption {{
   }
   
   def esearchFuture(q:String = ""): Future[Elem] = {
-		 val fut = 
-       extendedSearch(q)
+		 val fut = extendedSearch(q)
 		 wrapSearchResults( fut, q )
   }
     

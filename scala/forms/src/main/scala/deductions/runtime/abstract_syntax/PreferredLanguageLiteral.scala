@@ -16,7 +16,9 @@ trait PreferredLanguageLiteral[Rdf <: RDF] {
    * get value in preferred Language From values (objects of triples) Or Else given default;
    *  use application language
    */
-  def getPreferedLanguageFromSubjectAndPredicate(subject: Rdf#Node, predicate: Rdf#URI, default: String)(implicit graph: Rdf#Graph, preferedLanguage: String = "en"): String = {
+  def getLiteralInPreferedLanguageFromSubjectAndPredicate(subject: Rdf#Node,
+    predicate: Rdf#URI, default: String)(implicit graph: Rdf#Graph,
+      preferedLanguage: String = "en"): String = {
     //    println("getPreferedLanguageFromSubjectAndPredicate: " + subject + " " + predicate) // debug
     ops.getObjects(graph, subject, predicate) match {
       case ll if ll isEmpty => default

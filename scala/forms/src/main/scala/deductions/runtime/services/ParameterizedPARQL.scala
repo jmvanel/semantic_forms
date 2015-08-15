@@ -10,6 +10,7 @@ import org.w3.banana.syntax._
 import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.html.Form2HTML
+import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
 import org.w3.banana.Transactor
 import org.w3.banana.RDFOpsModule
 import org.w3.banana.RDFOps
@@ -24,9 +25,10 @@ trait SPARQLQueryMaker {
  *  and showing in HTML a column of hyperlinked results with instance Labels
  */
 trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
-    extends InstanceLabelsInference2[Rdf]
-    with SparqlOpsModule
-    with RDFStoreLocalProvider[Rdf, DATASET] {
+    extends RDFStoreLocalProvider[Rdf, DATASET]
+    with InstanceLabelsInference2[Rdf]
+    with PreferredLanguageLiteral[Rdf] {
+  //  self: RDFStoreLocalProvider[Rdf, DATASET] with InstanceLabelsInference2[Rdf] =>
 
   //	implicit val ops: RDFOps[Rdf]
 
@@ -55,8 +57,9 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
       val res = res0.toSeq
       println(s"displayResults : ${res.mkString("\n")}")
       dataset.r({
-        implicit val graph: Rdf#Graph = allNamedGraph
-        res.sortBy(x => instanceLabel(x)).
+        val graph: Rdf#Graph = allNamedGraph
+        //        res.sortBy(x => instanceLabel(x)).
+        res.sortBy(uri => instanceLabel(uri, graph, "" /* TODO lang*/ )).
           map(uri => {
             val uriString = uri.toString
             val blanknode = !isURI(uri)
@@ -64,8 +67,7 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
             <div title={ uri.toString() }>
               <a href={ Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode) }>
                 {
-                  //                  implicit val graph: Rdf#Graph = allNamedGraph
-                  instanceLabel(uri)
+                  instanceLabel(uri, graph, "")
                 }
               </a><br/>
             </div>

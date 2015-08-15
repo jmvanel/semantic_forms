@@ -14,8 +14,7 @@ import org.w3.banana.FOAFPrefix
  *  so that the form for V will be correctly populated.
  */
 trait TypeAddition[Rdf <: RDF, DATASET]
-    extends RDFStoreLocalProvider[Rdf, DATASET]
-    with SparqlGraphModule {
+    extends RDFStoreLocalProvider[Rdf, DATASET] {
 
   import ops._
   import sparqlOps._

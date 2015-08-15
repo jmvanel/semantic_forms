@@ -11,6 +11,11 @@ import scala.util.Success
 import scala.util.Failure
 import org.w3.banana.JsonLDWriterModule
 import org.w3.banana.JsonLDReaderModule
+import org.w3.banana.io.RDFWriter
+import org.w3.banana.io.Turtle
+import org.w3.banana.io.JsonLdCompacted
+import org.w3.banana.io.RDFReader
+import org.w3.banana.io.JsonLd
 
 /**
  * A simple (partial) LDP implementation backed by SPARQL
@@ -30,12 +35,18 @@ import org.w3.banana.JsonLDReaderModule
  * @author jmv
  */
 trait LDP[Rdf <: RDF, DATASET]
-    extends SparqlOpsModule
-    with RDFStoreLocalProvider[Rdf, DATASET]
-    with TurtleWriterModule
-    with JsonLDWriterModule
-    with TurtleReaderModule
-    with JsonLDReaderModule {
+    extends //    SparqlOpsModule
+    //    with 
+    RDFStoreLocalProvider[Rdf, DATASET] //    with TurtleWriterModule
+    //    with JsonLDWriterModule
+    //    with TurtleReaderModule
+    //    with JsonLDReaderModule 
+    {
+
+  val turtleWriter: RDFWriter[Rdf, Try, Turtle]
+  implicit val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]
+  implicit val turtleReader: RDFReader[Rdf, Try, Turtle]
+  implicit val jsonldReader: RDFReader[Rdf, Try, JsonLd]
 
   import ops._
   import sparqlOps._

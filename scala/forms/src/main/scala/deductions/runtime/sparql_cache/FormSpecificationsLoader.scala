@@ -27,7 +27,7 @@ object FormSpecificationsLoader extends JenaModule
 
 trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
-    with RDFStoreHelpers[Rdf, DATASET]
+    //    with RDFStoreHelpers[Rdf, DATASET]
     with SitesURLForDownload {
 
   import ops._

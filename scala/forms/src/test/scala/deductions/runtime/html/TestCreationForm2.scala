@@ -16,6 +16,10 @@ import org.w3.banana.jena.Jena
 import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import com.hp.hpl.jena.query.Dataset
+import org.w3.banana.io.RDFWriter
+import scala.util.Try
+import org.w3.banana.io.Turtle
+import org.w3.banana.RDFOps
 
 class TestCreationForm2Jena extends FunSuite with TestForJena with TestCreationForm2[Jena, Dataset]
 
@@ -24,10 +28,12 @@ trait TestForJena extends JenaModule with JenaHelpers
 
 /** Test Creation Form with form specification */
 trait TestCreationForm2[Rdf <: RDF, DATASET] extends FunSuite
-    with TurtleWriterModule
+    //    with TurtleWriterModule
     with CreationFormAlgo[Rdf, DATASET]
     with GraphTest[Rdf]
     with BeforeAndAfterAll {
+
+  implicit val turtleWriter: RDFWriter[Rdf, Try, Turtle]
 
   import ops._
 
@@ -56,7 +62,10 @@ trait TestCreationForm2[Rdf <: RDF, DATASET] extends FunSuite
   println(turtleWriter.asString(personFormSpec, "blabla"))
 }
 
-trait GraphTest[Rdf <: RDF] extends RDFOpsModule {
+trait GraphTest[Rdf <: RDF] //extends RDFOpsModule
+{
+  implicit val ops: RDFOps[Rdf]
+
   import ops._
   val form = Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#")
   val foaf = FOAFPrefix[Rdf]

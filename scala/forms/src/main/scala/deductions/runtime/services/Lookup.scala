@@ -26,10 +26,14 @@ import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 /**
  * API for a lookup web service similar to dbPedia lookup
  */
-trait Lookup[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
-    //    with PreferredLanguageLiteral[Rdf]
+trait Lookup[Rdf <: RDF, DATASET]
+    extends RDFStoreLocalProvider[Rdf, DATASET]
     with InstanceLabelsInference2[Rdf]
-    with TurtleWriterModule {
+    with PreferredLanguageLiteral[Rdf] //extends RDFStoreLocalProvider[Rdf, DATASET]
+    //    //    with PreferredLanguageLiteral[Rdf]
+    //    with InstanceLabelsInference2[Rdf]
+    //    with TurtleWriterModule 
+    {
   //  implicit val ops: RDFOps[Rdf]
 
   import ops._
@@ -55,7 +59,7 @@ trait Lookup[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
     val triples = ops.getTriples(graph.asInstanceOf[Rdf#Graph])
     val subjects = triples.map { _.subject }
     val r1 = for (subject <- subjects) yield {
-      val label = instanceLabel(subject)
+      val label = instanceLabel(subject, graph, "")
       s"""
         label: "$label""
         uri: "${subject}"

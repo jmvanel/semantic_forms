@@ -17,12 +17,19 @@ import org.scalatest.BeforeAndAfterAll
 import org.w3.banana.RDFXMLReaderModule
 import deductions.runtime.utils.FileUtils
 import org.scalatest.Ignore
+import deductions.runtime.dataset.RDFStoreLocalProvider
+import org.w3.banana.io.RDFReader
+import org.w3.banana.io.RDFXML
+import scala.util.Try
 
 trait TestStringSearchTrait[Rdf <: RDF, DATASET] extends FunSuite
     with BeforeAndAfterAll
-    with RDFOpsModule
-    with RDFXMLReaderModule
+    //    with RDFOpsModule
+    //    with RDFXMLReaderModule
+    with RDFStoreLocalProvider[Rdf, DATASET]
     with StringSearchSPARQL[Rdf, DATASET] {
+
+  val rdfXMLReader: RDFReader[Rdf, Try, RDFXML]
 
   /** populate TDB with a FOAF profile */
   override def beforeAll {

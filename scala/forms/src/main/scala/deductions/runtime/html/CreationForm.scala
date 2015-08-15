@@ -24,9 +24,10 @@ import deductions.runtime.abstract_syntax.FormModule
 // TODO move to jena
 trait CreationForm extends CreationFormAlgo[Jena, Dataset]
 
-trait CreationFormAlgo[Rdf <: RDF, DATASET] extends RDFOpsModule
-    with SparqlGraphModule
-    with RDFCacheAlgo[Rdf, DATASET]
+trait CreationFormAlgo[Rdf <: RDF, DATASET] extends //RDFOpsModule
+//    with SparqlGraphModule
+//    with 
+RDFCacheAlgo[Rdf, DATASET]
     with RDFStoreLocalProvider[Rdf, DATASET] {
   import ops._
   import rdfStore.transactorSyntax._

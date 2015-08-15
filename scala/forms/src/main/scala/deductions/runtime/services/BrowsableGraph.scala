@@ -25,13 +25,13 @@ import org.w3.banana.TurtleWriterModule
  *
  *  (used for Turtle export)
  */
-trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
-    with TurtleWriterModule //(
-    //    implicit ops: RDFOps[Rdf],
-    //    sparqlOps: SparqlOps[Rdf],
-    //    turtleWriter: RDFWriter[Rdf, Try, Turtle],
-    //    rdfStore: RDFStore[Rdf, Try, DATASET])
-    {
+trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET] //    with TurtleWriterModule //(
+//    implicit ops: RDFOps[Rdf],
+//    sparqlOps: SparqlOps[Rdf],
+//    turtleWriter: RDFWriter[Rdf, Try, Turtle],
+//    rdfStore: RDFStore[Rdf, Try, DATASET])
+{
+  val turtleWriter: RDFWriter[Rdf, Try, Turtle]
 
   import ops._
   import sparqlOps._

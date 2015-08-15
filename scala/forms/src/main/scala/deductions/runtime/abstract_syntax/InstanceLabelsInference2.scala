@@ -14,18 +14,20 @@ import org.w3.banana.RDFOps
  *  through owl:oneOf and know instances
  *  TODO : duplicated code with InstanceLabelsInference
  */
-trait InstanceLabelsInference2[Rdf <: RDF]
-    extends RDFOpsModule //    extends PreferredLanguageLiteral[Rdf]
-    {
+trait InstanceLabelsInference2[Rdf <: RDF] //        extends RDFOpsModule //    
+//    extends PreferredLanguageLiteral[Rdf]
+{
+  self: PreferredLanguageLiteral[Rdf] =>
 
   //  implicit val ops: RDFOps[Rdf]
 
   import ops._
-  lazy val foaf = FOAFPrefix[Rdf]
+  private lazy val foaf = FOAFPrefix[Rdf]
   lazy val rdfs = RDFSPrefix[Rdf]
   lazy val rdf = RDFPrefix[Rdf]
 
-  def instanceLabels(list: Seq[Rdf#URI])(implicit graph: Rdf#Graph): Seq[String] = list.map(instanceLabel)
+  def instanceLabels(list: Seq[Rdf#URI], lang: String = "")(implicit graph: Rdf#Graph): Seq[String] =
+    list.map { uri => instanceLabel(uri, graph, lang) }
 
   /**
    * display a summary of the resource (rdfs:label, foaf:name, etc,
@@ -35,36 +37,43 @@ trait InstanceLabelsInference2[Rdf <: RDF]
    *  by taking the first one or two first literal properties.
    *  TODO : take in account a preferred language like getPreferedLanguageFromSubjectAndPredicate does,
    */
-  def instanceLabel(uri: Rdf#Node)(implicit graph: Rdf#Graph): String = {
+  def instanceLabel(uri: Rdf#Node, graph: Rdf#Graph, lang: String = ""): String = {
+    //  def instanceLabel(uri: Rdf#Node, lang: String = "")(implicit graph: Rdf#Graph): String = {
     val pgraph = PointedGraph(uri, graph)
     // println(s"instanceLabel pgraph ${pgraph.pointer} ${pgraph.graph}")
     val firstName = (pgraph / foaf.firstName).as[String].getOrElse("")
     val lastName = (pgraph / foaf.lastName).as[String].getOrElse("")
 
     val n = firstName + " " + lastName
-    val r = if (n.size > 1) Literal(n)
+    val r = if (n.size > 1) n // Literal(n)
     else {
       val givenName = (pgraph / foaf.givenName).as[String].getOrElse("")
       val familyName = (pgraph / foaf.familyName).as[String].getOrElse("")
       val n = givenName + " " + familyName
-      if (n.size > 1) Literal(n)
+      if (n.size > 1) n // Literal(n)
       else {
-        val rr = (pgraph / rdfs.label).as[Rdf#Literal].
-          getOrElse {
-            (pgraph / foaf.name).as[Rdf#Literal].
-              getOrElse {
-                val classLabel = (pgraph / rdf.typ / rdfs.label).as[Rdf#Literal].
-                  getOrElse(Literal(""))
-                if (classLabel != Literal(""))
-                  Literal("a " + classLabel.lexicalForm)
-                else
-                  // TODO : return Turtle prefix
-                  Literal(uri.toString())
-              }
-          }
-        rr
+        implicit val gr = graph
+        implicit val prlng = lang
+        getLiteralInPreferedLanguageFromSubjectAndPredicate(uri, rdfs.label,
+          getLiteralInPreferedLanguageFromSubjectAndPredicate(uri, foaf.name,
+            //        val rr = (pgraph / rdfs.label).as[Rdf#Literal].
+            //          getOrElse {
+            //            (pgraph / foaf.name).as[Rdf#Literal].
+            //              getOrElse
+            {
+              val classLabel = (pgraph / rdf.typ / rdfs.label).as[Rdf#Literal].
+                getOrElse(Literal(""))
+              if (classLabel != Literal(""))
+                ("a " + classLabel.lexicalForm)
+              else
+                // TODO : return Turtle prefix
+                (uri.toString())
+            }
+          ))
       }
+      //        rr
     }
-    r.lexicalForm
+    //    }
+    r // .lexicalForm
   }
 }

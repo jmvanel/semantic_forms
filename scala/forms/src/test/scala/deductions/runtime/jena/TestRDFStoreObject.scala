@@ -14,8 +14,9 @@ import scala.util.Try
 import org.scalatest.Ignore
 
 trait TestRDFStoreObject[Rdf <: RDF, DATASET]
-    extends FunSuite with RDFOpsModule
-    with SparqlGraphModule
+    extends FunSuite
+    //    with RDFOpsModule
+    //    with SparqlGraphModule
     with RDFStoreLocalProvider[Rdf, DATASET] {
   import ops._
   implicit val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]

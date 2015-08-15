@@ -8,17 +8,25 @@ import scala.collection._
 import org.w3.banana.PointedGraph
 import org.w3.banana.diesel._
 import org.w3.banana.RDFSPrefix
+import org.w3.banana.RDFOpsModule
 
 /**
  * populate Fields in form by inferring possible values from given rdfs:range's URI,
  *  through owl:oneOf and know instances
  *  TODO : duplicated code with InstanceLabelsInference2
  */
-trait InstanceLabelsInference[Rdf <: RDF] {
-  self: FormSyntaxFactory[Rdf] =>
+trait InstanceLabelsInference[Rdf <: RDF] // extends //RDFOpsModule with 
+//PreferredLanguageLiteral[Rdf]
+{
+  self: PreferredLanguageLiteral[Rdf] =>
+  val graph: Rdf#Graph
+  val preferedLanguage: String
+
+  //  self: FormSyntaxFactory[Rdf] =>
 
   import ops._
   val foaf = FOAFPrefix[Rdf]
+  private val rdfs = RDFSPrefix[Rdf]
 
   def instanceLabels(list: Seq[Rdf#Node]): Seq[String] = list.map(instanceLabel)
 
@@ -39,12 +47,10 @@ trait InstanceLabelsInference[Rdf <: RDF] {
     else {
       implicit val gr = graph
       implicit val prlng = preferedLanguage
-      getPreferedLanguageFromSubjectAndPredicate(uri, rdfs.label,
-        getPreferedLanguageFromSubjectAndPredicate(uri, foaf.name,
+      getLiteralInPreferedLanguageFromSubjectAndPredicate(uri, rdfs.label,
+        getLiteralInPreferedLanguageFromSubjectAndPredicate(uri, foaf.name,
           uri.toString()))
       //  TODO : display RDF prefix
     }
   }
-
-  //  .map{s=>makeLiteral( s, xsd.string)})
 }

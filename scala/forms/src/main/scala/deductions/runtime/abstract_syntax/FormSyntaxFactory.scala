@@ -214,8 +214,8 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
     logger.info(s"makeEntry subject $subject, prop $prop")
     implicit val gr = graph
     implicit val prlng = preferedLanguage
-    val label = getPreferedLanguageFromSubjectAndPredicate(prop, rdfs.label, terminalPart(prop))
-    val comment = getPreferedLanguageFromSubjectAndPredicate(prop, rdfs.comment, "")
+    val label = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.label, terminalPart(prop))
+    val comment = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.comment, "")
     val propClasses = objectsQuery(prop, RDFPrefix[Rdf].typ)
     val objects = objectsQuery(subject, prop)
     val result = scala.collection.mutable.ArrayBuffer[Entry]()

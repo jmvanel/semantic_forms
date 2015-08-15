@@ -22,18 +22,32 @@ import org.apache.log4j.Logger
 import org.w3.banana.RDF
 import org.w3.banana.jena.JenaModule
 import java.math.BigInteger
+import org.w3.banana.RDFStore
+import org.w3.banana.RDFOps
+import org.w3.banana.SparqlOps
+import org.w3.banana.io.RDFReader
+import org.w3.banana.io.Turtle
+import org.w3.banana.io.RDFXML
+import org.w3.banana.io.RDFLoader
 
 /** */
-trait RDFCacheDependencies
-  extends RDFModule
-  with RDFOpsModule
-  with TurtleReaderModule
-  with RDFXMLReaderModule
+trait RDFCacheDependencies[Rdf <: RDF, DATASET] //  extends RDFModule
+//  with RDFOpsModule
+//  extends TurtleReaderModule
+//  with RDFXMLReaderModule
+{
+  implicit val turtleReader: RDFReader[Rdf, Try, Turtle]
+  implicit val rdfXMLReader: RDFReader[Rdf, Try, RDFXML]
+  //  implicit val rdfStore: RDFStore[Rdf, Try, DATASET]
+  //  implicit val ops: RDFOps[Rdf]
+  //  implicit val sparqlOps: SparqlOps[Rdf]
+}
 
-/** depends on generic Rdf but, through RDFStoreLocalJena1Provider and JenaHelpers, on Jena :( TODO remove Jena */
+/** depends on generic Rdf */
 trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
-    with RDFCacheDependencies
-    with RDFStoreHelpers[Rdf, DATASET] {
+    with RDFCacheDependencies[Rdf, DATASET]
+    with RDFLoader[Rdf, Try] //    with RDFStoreHelpers[Rdf, DATASET]
+    {
 
   import ops._
   import rdfStore.transactorSyntax._
@@ -249,17 +263,47 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       case e: Throwable => throw e
     }
   }
+
+  /**
+   * store URI in a named graph,
+   * transactional,
+   * using Jena's RDFDataMgr
+   * with Jena Riot for smart reading of any format,
+   * (use content-type or else file extension)
+   * cf https://github.com/w3c/banana-rdf/issues/105
+   */
+  def storeURI(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
+    val r = dataset.rw({
+      storeURINoTransaction(uri, graphUri, dataset)
+    })
+    r match {
+      case Success(g) => g
+      case Failure(e) =>
+        Logger.getRootLogger().error("ERROR: " + e)
+        throw e
+    }
+  }
+
+  /**
+   * read from uri no matter what the syntax is;
+   *  probably can also load an URI with the # part ???
+   */
+  def storeURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
+    Logger.getRootLogger().info(s"Before storeURI uri $uri graphUri $graphUri")
+    //    val gForStore = dataset.getGraph(graphUri)
+    Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
+
+    System.setProperty("sun.net.client.defaultReadTimeout", "30000")
+    System.setProperty("sun.net.client.defaultConnectTimeout", "30000")
+
+    val graph: Rdf#Graph =
+      /* TODO check new versions of Scala > 2.11.6 that this asInstanceOf is 
+        still necessary */
+      load(new java.net.URL(uri.toString())).get.
+        asInstanceOf[Rdf#Graph]
+    dataset.appendToGraph(graphUri, graph)
+    Logger.getRootLogger().info(s"storeURI uri $uri : stored into graphUri $graphUri")
+    graph
+  }
 }
 
-//object RDFCache extends RDFModule
-//  with RDFOpsModule {
-//   /** unused currently ... */
-//  def getGraphURI(classs: Rdf#URI) : String = {
-//    Ops.getFragment(classs) match {
-//      case Some(frag) =>
-////        classs.getURI().substring(frag.length() + 1)
-//        classs.toString().substring(frag.length() + 1)
-//      case None => ""
-//    }
-//  }
-//}

@@ -27,10 +27,10 @@ object FormSaverObject extends FormSaver[Jena, Dataset] with JenaModule with RDF
 
 trait FormSaver[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
-    with TurtleWriterModule
-    with SparqlGraphModule
+    //    with TurtleWriterModule
+    //    with SparqlGraphModule
     with TypeAddition[Rdf, DATASET]
-    with HttpParamsManager {
+    with HttpParamsManager[Rdf] {
 
   import ops._
   import sparqlOps._
@@ -118,15 +118,25 @@ trait FormSaver[Rdf <: RDF, DATASET]
     def doSave(graphURI: String) {
       val transaction = dataset.rw({
         time("removeTriples",
-          dataset.removeTriples(makeUri(graphURI), triplesToRemove.toIterable))
+          dataset.removeTriples(
+            URI(graphURI),
+            triplesToRemove.toIterable))
         val res =
           time("appendToGraph",
-            dataset.appendToGraph(makeUri(graphURI), makeGraph(triples)))
+            dataset.appendToGraph(
+              URI(graphURI),
+              makeGraph(triples)))
 
         /* TODO
          * add a hook here
          * return the future to print later that it has been done */
-        Future { dataset.rw({ addTypes(triples, Some(URI(graphURI))) }) }
+
+        Future {
+          dataset.rw({
+            addTypes(triples.toSeq,
+              Some(URI(graphURI)))
+          })
+        }
         res
       }) // .flatMap { identity }
 

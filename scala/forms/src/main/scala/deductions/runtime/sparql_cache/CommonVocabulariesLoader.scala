@@ -38,7 +38,7 @@ object CommonVocabulariesLoader extends JenaModule
 
 trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
-    with RDFStoreHelpers[Rdf, DATASET]
+    //    with RDFStoreHelpers[Rdf, DATASET]
     with SitesURLForDownload {
 
   import ops._

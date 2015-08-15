@@ -19,7 +19,7 @@ object RDFI18NLoader extends JenaModule
 
 trait RDFI18NLoaderTrait[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
-    with RDFStoreHelpers[Rdf, DATASET]
+    //    with RDFStoreHelpers[Rdf, DATASET]
     with SitesURLForDownload {
 
   import ops._

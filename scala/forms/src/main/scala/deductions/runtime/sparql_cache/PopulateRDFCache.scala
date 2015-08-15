@@ -44,8 +44,9 @@ object PopulateRDFCache extends JenaModule
   with PopulateRDFCacheTrait[Jena, Dataset]
 
 trait PopulateRDFCacheTrait[Rdf <: RDF, DATASET]
-    extends RDFOpsModule
-    with CommonVocabulariesLoaderTrait[Rdf, DATASET]
+    extends //    RDFOpsModule
+    //    with
+    CommonVocabulariesLoaderTrait[Rdf, DATASET]
     with RDFI18NLoaderTrait[Rdf, DATASET]
     with FormSpecificationsLoaderTrait[Rdf, DATASET]
     with App {

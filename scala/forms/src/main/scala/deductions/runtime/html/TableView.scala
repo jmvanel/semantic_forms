@@ -35,9 +35,10 @@ trait TableView extends JenaModule with TableViewModule[Jena, Dataset]
  * named TableView because originally it was an HTML table.
  */
 trait TableViewModule[Rdf <: RDF, DATASET]
-    extends RDFOpsModule
-    with RDFCacheAlgo[Rdf, DATASET]
-    with SparqlGraphModule {
+    extends //    RDFOpsModule
+    //    with 
+    RDFCacheAlgo[Rdf, DATASET] //    with SparqlGraphModule
+    {
   import ops._
   import rdfStore.transactorSyntax._
 
