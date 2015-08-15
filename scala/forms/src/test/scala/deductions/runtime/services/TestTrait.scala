@@ -9,17 +9,17 @@ import org.w3.banana.SparqlOps
 import org.w3.banana.syntax._
 import org.w3.banana.SparqlOpsModule
 
+/** example of boilerplate trait */
 trait RDFStoreLocalProvider [Rdf <: RDF, DATASET] {
   implicit val ops: RDFOps[Rdf]
   implicit val rdfStore: RDFStore[Rdf, Try, DATASET]
+	implicit val sparqlOps: SparqlOps[Rdf]
   val dataset: DATASET
 }
 
-trait TestTrait[Rdf <: RDF, DATASET]
-    extends RDFStoreLocalProvider[Rdf, DATASET]
-    with SparqlOpsModule {
-
-  implicit val ops: RDFOps[Rdf]
+trait ExampleTrait[Rdf <: RDF, DATASET]
+    extends RDFStoreLocalProvider[Rdf, DATASET] {
+  
   val queryString = s"""
          |CONSTRUCT { ?thing ?p ?o } WHERE {
          |  graph ?g {
@@ -36,8 +36,8 @@ trait TestTrait[Rdf <: RDF, DATASET]
     val graph =
       for {
         query <- parseConstruct(queryString)
-        es <- dataset.executeConstruct(query, Map()) // ERROR
+        es <- dataset.executeConstruct(query, Map())
       } yield es
-    val triples = ops.getTriples(graph) // ERROR
+    getTriples(graph)  
   }
 }
