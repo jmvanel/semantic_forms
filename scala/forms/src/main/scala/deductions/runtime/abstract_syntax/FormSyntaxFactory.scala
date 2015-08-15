@@ -52,16 +52,13 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
     with RangeInference[Rdf]
     with PreferredLanguageLiteral[Rdf] {
 
-  //  /** TODO displaying rdf:type fields should be configurable for editing, and displayed unconditionally for non editing */
-  //  val displayRdfType = false
-
   import ops._
 
-  lazy val nullURI = ops.URI("") // http://null.com#")
+  lazy val nullURI = URI("") // http://null.com#")
   val literalInitialValue = "" // ..empty.."
   val logger = Logger.getRootLogger()
 
-  override def makeURI(n: Rdf#Node): Rdf#URI = URI(ops.foldNode(n)(
+  override def makeURI(n: Rdf#Node): Rdf#URI = URI(foldNode(n)(
     fromUri(_), fromBNode(_), fromLiteral(_)._1))
 
   val rdfs = RDFSPrefix[Rdf]
@@ -83,12 +80,15 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
 
     val propsFromConfig = formConfiguration.lookPropertieslistFormInConfiguration(classs)._1
     val propsFromSubject = fieldsFromSubject(subject, graph)
+    //    println("createForm: propsFromSubject: " +
+    //      propsFromSubject.mkString(", "))
     val propsFromClass =
       if (editable) {
         fieldsFromClass(classs, graph)
       } else Seq()
-
-    createFormDetailed(subject, (propsFromConfig ++ propsFromSubject ++ propsFromClass).distinct, classs, formGroup)
+    createFormDetailed(subject,
+      (propsFromConfig ++ propsFromSubject ++ propsFromClass).distinct, classs,
+      formGroup)
   }
 
   /**
@@ -103,10 +103,10 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
     formGroup: Rdf#URI = nullURI,
     formConfig: Rdf#Node = URI("")): FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
 
-    logger.info(s"createForm subject $subject, props $props")
+    logger.trace(s"createForm subject $subject, props $props")
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
     val entries = for (prop <- props) yield {
-      logger.info(s"createForm subject $subject, prop $prop")
+      logger.trace(s"createForm subject $subject, prop $prop")
       val ranges = objectsQuery(prop, rdfs.range)
       val rangesSize = ranges.size
       System.err.println(
@@ -118,8 +118,8 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
       makeEntries(subject, prop, ranges, valuesFromFormGroup)
     }
     val fields = entries.flatMap { identity }
-    val fields2 = // if (displayRdfType)
-      addTypeTriple(subject, classs, fields)
+    val fields2 = addTypeTriple(subject, classs, fields)
+    //    val fields2 = fields.toSeq
     val formSyntax = FormSyntax(subject, fields2, classs)
     updateFormFromConfig(formSyntax, formConfig)
   }
@@ -188,7 +188,8 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
   def addTypeTriple(subject: Rdf#Node, classs: Rdf#URI,
     fields: Iterable[Entry]): Seq[Entry] = {
     val alreadyInDatabase = !find(graph, subject, rdf.typ, ANY).isEmpty
-    if (defaults.displayRdfType || !alreadyInDatabase) {
+    if ( // defaults.displayRdfType ||
+    !alreadyInDatabase) {
       val classFormEntry = new ResourceEntry(
         // TODO not I18N:
         "type", "class",
@@ -200,7 +201,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
 
   /** find fields from given Instance subject */
   private def fieldsFromSubject(subject: Rdf#Node, graph: Rdf#Graph): Seq[Rdf#URI] = {
-    ops.getPredicates(graph, subject).toSet.toSeq
+    getPredicates(graph, subject).toSeq.distinct
   }
 
   /**
@@ -220,7 +221,9 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
     val result = scala.collection.mutable.ArrayBuffer[Entry]()
     val rangeClasses = objectsQueries(ranges, RDFPrefix[Rdf].typ)
 
-    for (obj <- objects) if (prop != rdf.typ) addOneEntry(obj, valuesFromFormGroup)
+    for (obj <- objects)
+      //      if (prop != rdf.typ)
+      addOneEntry(obj, valuesFromFormGroup)
     if (objects isEmpty) addOneEntry(nullURI, valuesFromFormGroup)
 
     def makeBN(label: String, comment: String,
@@ -229,7 +232,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
       typ: Rdf#Node = nullURI) = {
       new BlankNodeEntry(label, comment, prop, ResourceValidator(ranges), value,
         type_ = typ) {
-        override def getId: String = ops.fromBNode(value.asInstanceOf[Rdf#BNode])
+        override def getId: String = fromBNode(value.asInstanceOf[Rdf#BNode])
       }
     }
 
@@ -246,7 +249,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
           type_ = firstType)
       }
       def resourceEntry = {
-        ops.foldNode(object_)(
+        foldNode(object_)(
           object_ =>
             if (isBN(firstType)) {
               println(s""" resourceEntry makeBN "$label" """)
@@ -264,6 +267,9 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
       val xsdPrefix = XSDPrefix[Rdf].prefixIri
       val rdf = RDFPrefix[Rdf]
       val rdfs = RDFSPrefix[Rdf]
+
+      //      if (prop.toString().contains("type"))
+      //        println(prop)
 
       val entry = rangeClasses match {
         case _ if rangeClasses.exists { c => c.toString startsWith (xsdPrefix) } => literalEntry

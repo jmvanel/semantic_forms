@@ -91,16 +91,6 @@ object Application extends Controller
     Action { Ok.chunked(glob.download(url)).as("text/turtle; charset=utf-8") }
   }
 
-  //  def chooseLanguage(request: Request[_]): String = {
-  //    chooseLanguageObject(request).language
-  //  }
-  //  def chooseLanguageObject(request: Request[_]): Lang = {
-  //    val languages = request.acceptLanguages
-  //    val res = if (languages.length > 0) languages(0) else Lang("en")
-  //    println("chooseLanguage: " + request + "\n\t" + res)
-  //    res
-  //  }
-
   def edit(url: String) = {
     Action { request =>
       Ok(views.html.index(glob.htmlForm(
@@ -120,18 +110,20 @@ object Application extends Controller
   def create() = {
     Action { implicit request =>
       println("create: " + request)
-      val uri = request.queryString.get("uri").get(0)
-      val formSpecURI = request.queryString.get("formspec").get(0)
+      val uri = getFirstNonEmptyInMap( request.queryString, "uri" )
+      val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formspec")
       println("create: " + uri)
       println("formSpecURI: " + formSpecURI)
-      Ok(views.html.index(glob.createElem2(uri, chooseLanguage(request)), formSpecURI) )
+      Ok(views.html.index(glob.createElem2(uri, chooseLanguage(request),
+          formSpecURI) ) )
     }
   }
 
-//  def getFirstNonEmptyInMap(map: Map[String, Seq[String]]): Option[String] = {
-//    val uriArgs = map.getOrElse("uri", Seq())
-//    uriArgs.find { uri => uri != "" }
-//  }
+  def getFirstNonEmptyInMap(map: Map[String, Seq[String]],
+      uri:String): String = {
+    val uriArgs = map.getOrElse(uri, Seq())
+    uriArgs.find { uri => uri != "" }.getOrElse("")
+  }
 
   def sparql(query: String) = {
     Action { implicit request =>
