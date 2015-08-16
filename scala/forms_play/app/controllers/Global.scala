@@ -1,45 +1,45 @@
 import java.net.URLDecoder
 import java.net.URLEncoder
-import scala.xml.Elem
-import org.apache.log4j.Logger
-import deductions.runtime.html.TableView
-import deductions.runtime.jena.RDFStoreObject
-import deductions.runtime.services.BrowsableGraph
-import deductions.runtime.services.FormSaver
-import deductions.runtime.services.StringSearchSPARQL
-import play.api.mvc.AnyContentAsFormUrlEncoded
-import play.api.mvc.Controller
-import play.api.mvc.Request
-import deductions.runtime.html.CreationForm
+
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import play.api.libs.iteratee.Enumerator
-import org.w3.banana.io.RDFWriter
-import org.w3.banana.jena.Jena
-import org.w3.banana.io.Turtle
-import deductions.runtime.uri_classify.SemanticURIGuesser
-import org.w3.banana.RDFOpsModule
+import scala.util.Failure
+import scala.util.Success
 import scala.util.Try
-import org.w3.banana.TurtleWriterModule
-import play.api.libs.iteratee.Enumeratee
-import play.api.libs.iteratee.Iteratee
-import deductions.runtime.html.TableViewModule
+import scala.xml.Elem
+
 import org.apache.log4j.Logger
-import deductions.runtime.abstract_syntax.InstanceLabelsInference2
-import com.hp.hpl.jena.query.Dataset
+import org.apache.log4j.Logger
 import org.w3.banana.RDF
-import deductions.runtime.sparql_cache.RDFCacheAlgo
+import org.w3.banana.RDFOpsModule
+import org.w3.banana.SparqlOpsModule
+import org.w3.banana.TurtleWriterModule
+import org.w3.banana.io.RDFWriter
+import org.w3.banana.io.Turtle
+import org.w3.banana.jena.Jena
+import org.w3.banana.jena.JenaModule
+
+import com.hp.hpl.jena.query.Dataset
+
+import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.html.CreationForm
+import deductions.runtime.html.CreationFormAlgo
+import deductions.runtime.html.TableView
+import deductions.runtime.html.TableViewModule
 import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.html.CreationFormAlgo
-import org.w3.banana.jena.JenaModule
-import org.w3.banana.SparqlOpsModule
-import scala.util.Success
-import scala.util.Failure
-import deductions.runtime.services.ReverseLinksSearchSPARQL
+import deductions.runtime.services.BrowsableGraph
 import deductions.runtime.services.ExtendedSearchSPARQL
-import scala.concurrent.ExecutionContext.Implicits.global
+import deductions.runtime.services.FormSaver
+import deductions.runtime.services.ReverseLinksSearchSPARQL
+import deductions.runtime.services.StringSearchSPARQL
+import deductions.runtime.sparql_cache.RDFCacheAlgo
+
 import play.api.i18n.{ Lang => PlayLang, _ }
+import play.api.libs.iteratee.Enumerator
+import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.mvc.Request
 
 /** NOTE: was obliged to rename global to global1
  *  because of Scala compiler bug:
@@ -52,8 +52,8 @@ package global1 {
   with JenaHelpers
   with RDFStoreLocalJena1Provider
     
-  trait AbstractApplication[Rdf <: RDF, DATASET] extends Controller
-      with RDFCacheAlgo[Rdf, DATASET]
+  trait AbstractApplication[Rdf <: RDF, DATASET] extends
+      RDFCacheAlgo[Rdf, DATASET]
       with TableViewModule[Rdf, DATASET]
       with StringSearchSPARQL[Rdf, DATASET]
       with ReverseLinksSearchSPARQL[Rdf, DATASET]
@@ -187,7 +187,6 @@ package global1 {
     def wordsearchFuture(q: String = ""): Future[Elem] = {
       val fut = searchString(q, hrefDisplayPrefix)
       wrapSearchResults(fut, q)
-//        Future.successful{ <p>TODO</p> }
     }
 
     def downloadAsString(url: String): String = {
@@ -205,10 +204,7 @@ package global1 {
         val graph = search_only(url)
         graph.map { graph =>
           /* non blocking */
-          val writer
-//          : RDFWriter[Rdf, Try, Turtle]
-          = turtleWriter
-//          val ret = writer.write(graph.asInstanceOf[Rdf#Graph], os, base = url)
+          val writer: RDFWriter[Rdf, Try, Turtle] = turtleWriter
           val ret = writer.write(graph, os, base = url)
           os.close()
         }

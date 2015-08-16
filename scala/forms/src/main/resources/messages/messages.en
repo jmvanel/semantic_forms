@@ -1,0 +1,16 @@
+Welcome=Welcome to Semantic forms
+Display=Display
+Edit=Edit
+Search=Search
+Create=Create
+Properties_for_URI=Properties for URI
+Properties_for=Properties for
+
+URI_to_display=URI to display   
+String_to_search=String to search
+Create_instance_of=Create instance of 
+Creating_instance=Creating an instance of class
+Paste_ontology=Paste URI of a class in an ontology
+Other_vocabs=Other vocabularies
+
+Search_placeholder=Enter search term (actually regular expression) for which value (object triple) match
