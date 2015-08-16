@@ -25,7 +25,7 @@ libraryDependencies += "org.scala-lang.modules" %% "scala-async" % "0.9.2"
 
 libraryDependencies += "com.typesafe.play" %% "play-json" % "2.3.4"
 
-// libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.2"
+// libraryDependencies += "com.netaporter" %% "scala-i18n" % "0.1"
 
 
 
@@ -57,5 +57,7 @@ resolvers += Resolver.url("inthenow-releases", url("http://dl.bintray.com/inthen
 resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
 
 resolvers += "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/"
+
+// for i18n resolvers += "bintray" at "http://jcenter.bintray.com"
 
 scalariformSettings

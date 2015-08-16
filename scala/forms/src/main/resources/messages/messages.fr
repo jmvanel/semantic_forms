@@ -1,0 +1,16 @@
+Welcome=Bienvenue à Semantic forms
+Display=Afficher
+Edit=Éditer
+Search=Chercher
+Create=Créer
+Properties_for_URI=Propriétés de l''URI
+Properties_for=Propriétés de 
+
+URI_to_display=URI à afficher
+String_to_search=Chercher
+Create_instance_of=Créer instance de 
+Creating_instance=Création d''une instance de la classe
+Paste_ontology=Coller ou taper l''URI d''une classe dans une ontologie.
+Other_vocabs=Autres vocabulaires
+
+Search_placeholder=Entrer terme de recherche (en fait une expression régulière) qui correspond aux valeurs (objets des triplets)
