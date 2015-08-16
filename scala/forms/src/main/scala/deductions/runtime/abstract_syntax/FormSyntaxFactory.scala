@@ -141,28 +141,28 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
       val fieldSpecs = formConfiguration.lookFieldSpecInConfiguration(field.property)
       //    	val DEBUG2 = new Level( 5000, "DEBUG2", 7);
       if (!fieldSpecs.isEmpty)
-        logger.log(Level.OFF, s"""updateFormFromConfig field $field -- fieldSpecs size ${fieldSpecs.size}
-        $fieldSpecs""")
-      fieldSpecs.map {
-        fieldSpec =>
-          val triples = find(graph, fieldSpec.subject, ANY, ANY).toSeq
-          for (t <- triples) {
-            // println(s"updateFormFromConfig fieldSpec $fieldSpec -- triple $t")
-            field.addTriple(t.subject, t.predicate, t.objectt)
-          }
-          // TODO each feature should be in a different file
-          for (t <- triples) {
-            if (t.predicate == formPrefix("widgetClass")
-              && t.objectt == formPrefix("DBPediaLookup")) {
-              def replace[T](s: Seq[T], occurence: T, replacement: T): Seq[T] = {
-                s.map { i => if (i == occurence) replacement else i }
-              }
-              val rep = field.asResource
-              rep.widgetType = DBPediaLookup
-              formSyntax.fields = replace(formSyntax.fields, field, rep)
+        //        logger.log(Level.OFF, s"""updateFormFromConfig field $field -- fieldSpecs size ${fieldSpecs.size}
+        //        $fieldSpecs""")
+        fieldSpecs.map {
+          fieldSpec =>
+            val triples = find(graph, fieldSpec.subject, ANY, ANY).toSeq
+            for (t <- triples) {
+              // println(s"updateFormFromConfig fieldSpec $fieldSpec -- triple $t")
+              field.addTriple(t.subject, t.predicate, t.objectt)
             }
-          }
-      }
+            // TODO each feature should be in a different file
+            for (t <- triples) {
+              if (t.predicate == formPrefix("widgetClass")
+                && t.objectt == formPrefix("DBPediaLookup")) {
+                def replace[T](s: Seq[T], occurence: T, replacement: T): Seq[T] = {
+                  s.map { i => if (i == occurence) replacement else i }
+                }
+                val rep = field.asResource
+                rep.widgetType = DBPediaLookup
+                formSyntax.fields = replace(formSyntax.fields, field, rep)
+              }
+            }
+        }
     }
     val triples = find(graph, formConfig, ANY, ANY).toSeq
     // TODO try the Object - semantic mapping of Banana-RDF
@@ -257,7 +257,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
                 typ = firstType)
             } else
               new ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_,
-                alreadyInDatabase = true, valueLabel = instanceLabel(object_),
+                alreadyInDatabase = true, valueLabel = instanceLabel(object_, graph, preferedLanguage),
                 type_ = rdfh.nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI)),
           object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_,
             typ = firstType),

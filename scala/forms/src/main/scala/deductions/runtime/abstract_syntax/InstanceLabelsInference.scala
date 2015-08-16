@@ -13,16 +13,11 @@ import org.w3.banana.RDFOpsModule
 /**
  * populate Fields in form by inferring possible values from given rdfs:range's URI,
  *  through owl:oneOf and know instances
- *  TODO : duplicated code with InstanceLabelsInference2
  */
-trait InstanceLabelsInference[Rdf <: RDF] // extends //RDFOpsModule with 
-//PreferredLanguageLiteral[Rdf]
-{
+trait InstanceLabelsInference_Dupl[Rdf <: RDF] {
   self: PreferredLanguageLiteral[Rdf] =>
   val graph: Rdf#Graph
   val preferedLanguage: String
-
-  //  self: FormSyntaxFactory[Rdf] =>
 
   import ops._
   val foaf = FOAFPrefix[Rdf]

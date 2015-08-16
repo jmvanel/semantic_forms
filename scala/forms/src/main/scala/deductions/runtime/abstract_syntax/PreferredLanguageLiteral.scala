@@ -36,7 +36,6 @@ trait PreferredLanguageLiteral[Rdf <: RDF] {
         foldNode(value)(
           x => (), x => (),
           value => {
-            val tt = fromLiteral(value)
             val (raw, uri, langOption) = fromLiteral(value)
             // println("getPreferedLanguageFromValues: " + (raw, uri, langOption) )
             langOption match {

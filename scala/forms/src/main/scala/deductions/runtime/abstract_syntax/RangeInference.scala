@@ -18,11 +18,12 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
  * populate Fields in form by inferring possible values from given rdfs:range's URI,
  *  through owl:oneOf and know instances
  */
-trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
+trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf] {
   self: FormSyntaxFactory[Rdf] =>
 
   implicit val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]
   implicit val sparqlOps: SparqlOps[Rdf]
+  implicit private val graphImplicit = graph
 
   import ops._
   import sparqlOps._
@@ -70,7 +71,6 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
           },
           x => {
             println(s"fillPossibleValuesFromList bnode $x")
-            // val list = rdfh.nodeSeqToURISeq(rdfh.rdfListToSeq(Some(x)))
             val list = rdfh.rdfListToSeq(Some(x))
             possibleValues.appendAll(
               list zip instanceLabels(list).map { s => makeLiteral(s, xsd.string) })
@@ -115,8 +115,8 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference[Rdf] {
       val r = enumerated.toSeq.map {
         enum =>
           ops.foldNode(enum)(
-            uri => (uri, instanceLabel(uri)),
-            x => (x, instanceLabel(x)),
+            uri => (uri, instanceLabel(uri, graph, "")),
+            x => (x, instanceLabel(x, graph, "")),
             x => (x, ""))
       }
       val sortedInstanceLabels = r.toSeq.sortBy { e => e._2 }

@@ -25,7 +25,6 @@ import play.api.libs.iteratee.Iteratee
 import deductions.runtime.html.TableViewModule
 import org.apache.log4j.Logger
 import deductions.runtime.abstract_syntax.InstanceLabelsInference2
-import deductions.runtime.abstract_syntax.InstanceLabelsInference
 import com.hp.hpl.jena.query.Dataset
 import org.w3.banana.RDF
 import deductions.runtime.sparql_cache.RDFCacheAlgo
@@ -51,21 +50,15 @@ package global1 {
   object Global extends JenaModule
   with AbstractApplication[Jena, Dataset]
   with JenaHelpers
-  with RDFStoreLocalJena1Provider {
-    val graph: org.w3.banana.jena.Jena#Graph = allNamedGraph
-    val preferedLanguage: String = "fr"
-  }
+  with RDFStoreLocalJena1Provider
     
   trait AbstractApplication[Rdf <: RDF, DATASET] extends Controller
-//      with RDFOpsModule
-//      with SparqlOpsModule 
       with RDFCacheAlgo[Rdf, DATASET]
-//      with TurtleWriterModule
       with TableViewModule[Rdf, DATASET]
       with StringSearchSPARQL[Rdf, DATASET]
       with ReverseLinksSearchSPARQL[Rdf, DATASET]
       with ExtendedSearchSPARQL[Rdf, DATASET]
-      with InstanceLabelsInference[Rdf] 
+      with InstanceLabelsInference2[Rdf]
       with RDFStoreLocalProvider[Rdf, DATASET]
   with BrowsableGraph[Rdf, DATASET]
   with FormSaver[Rdf, DATASET]
@@ -85,6 +78,7 @@ package global1 {
     lazy val dl = this
     lazy val fs = this
     lazy val cf = this
+    lazy val allNamedGraphs = allNamedGraph
 
     // TODO use inverse Play's URI API
     val hrefDisplayPrefix = "/display?displayuri="
@@ -106,7 +100,7 @@ package global1 {
               { Messages("Properties_for")(PlayLang(lang)) }  
               <b>
                 <a href={ hrefEditPrefix + URLEncoder.encode(uri, "utf-8") } title="edit this URI">
-                { labelForURI(uri) }</a>
+                { labelForURI(uri, lang) }</a>
                 , URI :
                 <a href={ hrefDisplayPrefix + URLEncoder.encode(uri, "utf-8") } title="display this URI">{uri}</a>
                 <a href={ s"/backlinks?q=${URLEncoder.encode(uri, "utf-8")}" } title="links towards this URI">o--></a>
@@ -143,12 +137,9 @@ package global1 {
       </div>
     }
 
-    def labelForURI(uri: String): String = {
-//      uri
+    def labelForURI(uri: String, language:String): String = {
       rdfStore.r(dataset, {
-//        implicit val graph: Rdf#Graph = allNamedGraph;
-//        instanceLabel(URI(uri), graph, "" )
-        instanceLabel(URI(uri) )
+        instanceLabel(URI(uri), allNamedGraphs, language)
       }).getOrElse(uri)
     }
     
@@ -260,7 +251,7 @@ package global1 {
 
       <div class="container">
         <h3>{ Messages("Creating_instance")(PlayLang(lang)) }  
-        <strong title={uri}>{ labelForURI(uri) }</strong></h3>
+        <strong title={uri}>{ labelForURI(uri, lang) }</strong></h3>
         { cf.create(uri, lang, formSpecURI).get }
       </div>
     }

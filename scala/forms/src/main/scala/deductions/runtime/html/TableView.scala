@@ -145,12 +145,8 @@ trait TableViewModule[Rdf <: RDF, DATASET]
            * (it's an illegal name for a URI scheme) */
       BNode(uri)
     else URI(uri)
-    //    createForm( subjectNnode, editable, formGroup, graph)
     val factory = new FormSyntaxFactory[Rdf](graph, preferedLanguage = lang)
-    val form = factory.createForm(subjectNnode,
-      editable, formGroup)
-    println("form:\n" + form)
-    form
+    factory.createForm(subjectNnode, editable, formGroup)
   }
 
   def htmlFormString(uri: String,
