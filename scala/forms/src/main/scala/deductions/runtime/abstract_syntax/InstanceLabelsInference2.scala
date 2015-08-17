@@ -8,6 +8,7 @@ import org.w3.banana.RDFOpsModule
 import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
 import org.w3.banana.RDFOps
+import scala.util.Try
 
 /**
  * populate Fields in form by inferring possible values from given rdfs:range's URI,
@@ -22,7 +23,7 @@ trait InstanceLabelsInference2[Rdf <: RDF] {
   private lazy val rdf = RDFPrefix[Rdf]
 
   def instanceLabels(list: Seq[Rdf#Node], lang: String = "")(implicit graph: Rdf#Graph): Seq[String] =
-    list.map { uri => instanceLabel(uri, graph, lang) }
+    list.map { node => instanceLabel(node, graph, lang) }
 
   /**
    * display a summary of the resource (rdfs:label, foaf:name, etc,
@@ -31,8 +32,8 @@ trait InstanceLabelsInference2[Rdf <: RDF] {
    *  ../forms/form_specs/foaf.form.ttl ,
    *  by taking the first one or two first literal properties.
    */
-  def instanceLabel(uri: Rdf#Node, graph: Rdf#Graph, lang: String = ""): String = {
-    val pgraph = PointedGraph(uri, graph)
+  def instanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String = ""): String = {
+    val pgraph = PointedGraph(node, graph)
     val firstName = (pgraph / foaf.firstName).as[String].getOrElse("")
     val lastName = (pgraph / foaf.lastName).as[String].getOrElse("")
 
@@ -44,20 +45,34 @@ trait InstanceLabelsInference2[Rdf <: RDF] {
       val n = givenName + " " + familyName
       if (n.size > 1) n
       else {
+        def last_segment(node: Rdf#Node) =
+          try {
+            foldNode(node)(
+              uri => lastSegment(uri),
+              x => instanceClassLabel(x, graph, lang),
+              x => x.toString())
+          } catch {
+            case t: Throwable => node.toString()
+          }
+
+        def instanceClassLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String = ""): String = {
+          val pgraph = PointedGraph(node, graph)
+          val noption = (pgraph / rdf.typ).nodes.headOption
+          noption match {
+            case Some(classs) =>
+              implicit val gr = graph
+              implicit val prlng = lang
+              getLiteralInPreferedLanguageFromSubjectAndPredicate(classs,
+                rdfs.label, last_segment(node))
+            case None => last_segment(node)
+          }
+        }
+
         implicit val gr = graph
         implicit val prlng = lang
-        getLiteralInPreferedLanguageFromSubjectAndPredicate(uri, rdfs.label,
-          getLiteralInPreferedLanguageFromSubjectAndPredicate(uri, foaf.name,
-            {
-              val classLabel = (pgraph / rdf.typ / rdfs.label).as[Rdf#Literal].
-                getOrElse(Literal(""))
-              if (classLabel != Literal(""))
-                ("a " + classLabel.lexicalForm)
-              else
-                // TODO : return Turtle prefix
-                (uri.toString())
-            }
-          ))
+        getLiteralInPreferedLanguageFromSubjectAndPredicate(node, rdfs.label,
+          getLiteralInPreferedLanguageFromSubjectAndPredicate(node, foaf.name,
+            last_segment(node)))
       }
     }
   }
