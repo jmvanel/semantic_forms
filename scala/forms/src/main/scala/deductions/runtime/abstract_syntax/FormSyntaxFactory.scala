@@ -231,7 +231,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
       value: Rdf#BNode,
       typ: Rdf#Node = nullURI) = {
       new BlankNodeEntry(label, comment, prop, ResourceValidator(ranges), value,
-        type_ = typ) {
+        type_ = typ, valueLabel = instanceLabel(value, graph, preferedLanguage)) {
         override def getId: String = fromBNode(value.asInstanceOf[Rdf#BNode])
       }
     }

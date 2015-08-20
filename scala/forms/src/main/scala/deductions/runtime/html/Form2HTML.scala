@@ -186,7 +186,11 @@ trait Form2HTML[NODE, URI <: NODE] {
           if (editable) {
             createHTMLResourceEditableField(r)
           } else {
-            val normalNavigationButton = <a href={ r.value.toString() }> LINK</a>
+            val stringValue = r.value.toString()
+            val normalNavigationButton = if (stringValue == "")
+              Text("")
+            else
+              <a href={ stringValue } title={ s"Normal HTTP link to ${r.value}" }> LINK</a>
         	  // format: OFF
             Seq(
               <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }
@@ -214,11 +218,15 @@ trait Form2HTML[NODE, URI <: NODE] {
         {
           if (editable) {
             if (r.openChoice) {
-              <input class={ cssClasses.formInputCSSClass } value={ r.value.toString } name={ makeHTMLIdBN(r) } data-type={ r.type_.toString() } size={ inputSize.toString() }>
+              <input class={ cssClasses.formInputCSSClass } value={
+                r.value.toString
+              } name={ makeHTMLIdBN(r) } data-type={
+                r.type_.toString()
+              } size={ inputSize.toString() }>
               </input>
             }
             if (!r.possibleValues.isEmpty)
-              <select value={ r.value.toString } name={ makeHTMLIdBN(r) }>
+              <select value={ r.valueLabel } name={ makeHTMLIdBN(r) }>
                 { formatPossibleValues(r) }
               </select>
             else Seq()

@@ -20,6 +20,8 @@ import org.w3.banana.Prefix
 class FormConfigurationFactory[Rdf <: RDF](graph: Rdf#Graph)(implicit ops: RDFOps[Rdf],
     uriOps: URIOps[Rdf]) {
 
+  import ops._
+
   val formPrefix: Prefix[Rdf] = Prefix("form", FormSyntaxFactory.formVocabPrefix)
   val gr = graph
   val rdfh = new RDFHelpers[Rdf] { val graph = gr }
@@ -41,7 +43,8 @@ class FormConfigurationFactory[Rdf <: RDF](graph: Rdf#Graph)(implicit ops: RDFOp
   }
 
   def propertiesListFromFormConfiguration(formConfiguration: Rdf#Node): Seq[Rdf#URI] = {
-    val props = objectsQuery(formConfiguration, formPrefix("showProperties"))
+    //    val props = objectsQuery(formConfiguration, formPrefix("showProperties"))
+    val props = getObjects(graph, formConfiguration, formPrefix("showProperties"))
     for (p <- props) { println("showProperties " + p) }
     val p = props.headOption
     val propertiesList = rdfh.nodeSeqToURISeq(rdfh.rdfListToSeq(p))
@@ -50,11 +53,12 @@ class FormConfigurationFactory[Rdf <: RDF](graph: Rdf#Graph)(implicit ops: RDFOp
 
   /** lookup Form Spec from OWL class in In Configuration */
   private def lookFormSpecInConfiguration(classs: Rdf#URI): Option[Rdf#Node] = {
-    val forms = ops.getSubjects(graph, formPrefix("classDomain"), classs)
+    val forms = getSubjects(graph, formPrefix("classDomain"), classs)
     val debugString = new StringBuilder; Logger.getRootLogger().debug("forms " + forms.addString(debugString, "; "))
     val formSpecOption = forms.flatMap {
       form => ops.foldNode(form)(uri => Some(uri), bn => Some(bn), lit => None)
     }.headOption
+    Logger.getRootLogger().warn(s"WARNING: several form specs for $classs")
     Logger.getRootLogger().debug("formNodeOption " + formSpecOption)
     formSpecOption
   }

@@ -120,9 +120,12 @@ trait FormModule[NODE, URI <: NODE] {
   }
 
   class BlankNodeEntry(label: String, comment: String,
-      property: ObjectProperty = nullURI, validator: ResourceValidator,
-      value: NODE, type_ : NODE = nullURI,
-      possibleValues: Seq[(NODE, NODE)] = Seq()) extends Entry(label, comment, property, type_ = type_, value = value, possibleValues = possibleValues) {
+    property: ObjectProperty = nullURI, validator: ResourceValidator,
+    value: NODE, type_ : NODE = nullURI,
+    possibleValues: Seq[(NODE, NODE)] = Seq(),
+    val valueLabel: String = "")
+      extends Entry(label, comment, property, type_ = type_, value = value,
+        possibleValues = possibleValues) {
     override def toString(): String = {
       super.toString + s", $value , possibleValues count:${possibleValues.size}"
     }
