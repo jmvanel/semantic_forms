@@ -2,34 +2,32 @@ package deductions.runtime.services
 
 import java.net.URLDecoder
 import java.net.URLEncoder
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
 import scala.xml.Elem
-import org.apache.log4j.Logger
+
 import org.apache.log4j.Logger
 import org.w3.banana.RDF
-import org.w3.banana.RDFOpsModule
-import org.w3.banana.SparqlOpsModule
-import org.w3.banana.TurtleWriterModule
 import org.w3.banana.io.RDFWriter
 import org.w3.banana.io.Turtle
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
+
 import com.hp.hpl.jena.query.Dataset
+
 import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.html.CreationForm
 import deductions.runtime.html.CreationFormAlgo
-import deductions.runtime.html.TableView
 import deductions.runtime.html.TableViewModule
 import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.sparql_cache.RDFCacheAlgo
-import play.api.libs.iteratee.Enumerator
 import deductions.runtime.utils.I18NMessages
+import play.api.libs.iteratee.Enumerator
 
 /**
  * API for Web Application, so that:

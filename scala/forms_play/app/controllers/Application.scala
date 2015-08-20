@@ -1,36 +1,31 @@
 package controllers
 
-import play.api._
-import play.api.mvc._
-import play.api.mvc.Request
-import deductions.runtime.html.TableView
-import play.api.libs.iteratee.Enumerator
-import play.api.libs.iteratee.Iteratee
-import scala.concurrent.Future
+import java.io.OutputStream
+
 import scala.concurrent.ExecutionContext.Implicits.global
-import deductions.runtime.jena.JenaHelpers
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import scala.util.Try
 import scala.xml.NodeSeq
-import play.api.i18n.Lang
-import deductions.runtime.services.LDP
-import org.w3.banana.jena.Jena
-import com.hp.hpl.jena.query.Dataset
-import deductions.runtime.services.Lookup
-import play.api.libs.json.Json
-import org.w3.banana.jena.JenaModule
-import org.w3.banana.io.JsonLd
+
 import org.w3.banana.io.JsonLdExpanded
 import org.w3.banana.io.JsonLdFlattened
-import java.io.InputStream
-import java.io.Reader
-import org.w3.banana.io.RDFReader
 import org.w3.banana.io.RDFWriter
-import java.io.OutputStream
+import org.w3.banana.jena.Jena
+import org.w3.banana.jena.JenaModule
+
+import com.hp.hpl.jena.query.Dataset
+
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import deductions.runtime.services.LDP
+import deductions.runtime.services.Lookup
+import play.api.libs.json.Json
+import play.api.mvc.Accepting
+import play.api.mvc.Action
+import play.api.mvc.Controller
+
 
 object Application extends Controller
     with JenaModule
-    with TableView
-    with JenaHelpers
+//    with JenaHelpers
     with RDFStoreLocalJena1Provider
     with LanguageManagement
     with LDP[Jena, Dataset]

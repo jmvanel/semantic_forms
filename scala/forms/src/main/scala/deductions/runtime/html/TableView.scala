@@ -3,26 +3,17 @@ package deductions.runtime.html
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
-import scala.xml.Elem
-import scala.xml.PrettyPrinter
-import org.apache.log4j.Logger
-import org.w3.banana.RDFModule
-import org.w3.banana.jena.Jena
-import deductions.runtime.abstract_syntax.FormSyntaxFactory
-import deductions.runtime.jena.RDFStoreObject
 import scala.xml.NodeSeq
-import org.w3.banana.SparqlGraphModule
-import org.w3.banana.RDF
-import deductions.runtime.sparql_cache.RDFCacheAlgo
-import com.hp.hpl.jena.query.Dataset
-import deductions.runtime.abstract_syntax.FormModule
-import org.w3.banana.jena.JenaModule
-import org.w3.banana.RDFOpsModule
+import scala.xml.PrettyPrinter
 
-/**
- * TODO : move to package jena
- */
-trait TableView extends JenaModule with TableViewModule[Jena, Dataset]
+import org.apache.log4j.Logger
+import org.w3.banana.RDF
+
+import deductions.runtime.abstract_syntax.FormSyntaxFactory
+import deductions.runtime.abstract_syntax.FormModule
+import deductions.runtime.sparql_cache.RDFCacheAlgo
+
+//trait TableView extends JenaModule with TableViewModule[Jena, Dataset]
 
 /**
  * Form for a subject URI with existing triples;

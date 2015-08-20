@@ -49,7 +49,6 @@ trait PreferredLanguageLiteral[Rdf <: RDF] {
           }
         )
       }
-      //      println(s"preferedLanguageValue: $preferedLanguageValue , enValue $enValue, noLanguageValue $noLanguageValue")
       (preferedLanguageValue, enValue, noLanguageValue)
     }
     val (preferedLanguageValue, enValue, noLanguageValue) = computeValues
@@ -58,7 +57,7 @@ trait PreferredLanguageLiteral[Rdf <: RDF] {
       case _ if (enValue != "") => enValue
       case _ if (noLanguageValue != "") => noLanguageValue
       case _ =>
-        val mess = s"preferedLanguageValue $preferedLanguageValue, enValue $enValue, noLanguageValue $noLanguageValue"
+        val mess = s"""preferedLanguageValue "$preferedLanguageValue", enValue "$enValue"", noLanguageValue "$noLanguageValue""""
         println(
           s"getPreferedLanguageFromValues: case not expected in values ${values.mkString(", ")}: $mess");
         "no value"

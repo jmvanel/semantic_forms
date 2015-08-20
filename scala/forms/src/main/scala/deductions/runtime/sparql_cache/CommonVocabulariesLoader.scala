@@ -1,27 +1,24 @@
 package deductions.runtime.sparql_cache
 
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.jena.JenaHelpers
-import org.w3.banana.Prefix
+import org.apache.log4j.Logger
 import org.w3.banana.CertPrefix
 import org.w3.banana.DCPrefix
 import org.w3.banana.DCTPrefix
 import org.w3.banana.FOAFPrefix
-import org.w3.banana.RDFModule
-import org.w3.banana.RDFOpsModule
+import org.w3.banana.OWLPrefix
+import org.w3.banana.Prefix
+import org.w3.banana.RDF
 import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
-import org.w3.banana.RDFXMLReaderModule
-import org.w3.banana.TurtleReaderModule
 import org.w3.banana.WebACLPrefix
-import org.w3.banana.OWLPrefix
-import org.apache.log4j.Logger
-import deductions.runtime.jena.RDFCache
-import org.w3.banana.RDF
-import deductions.runtime.dataset.RDFStoreLocalProvider
 import org.w3.banana.jena.Jena
-import com.hp.hpl.jena.query.Dataset
 import org.w3.banana.jena.JenaModule
+
+import com.hp.hpl.jena.query.Dataset
+
+import deductions.runtime.jena.JenaHelpers
+import deductions.runtime.jena.RDFCache
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
 
 /**
  * @author jmv
@@ -103,7 +100,7 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
         }
     }
     // test OK:
-    //    storeURI( ops.makeUri( "http://purl.org/ontology/mo/" ), dataset  ))))))))
+    //    storeURI( ops.makeUri( "http://purl.org/ontology/mo/" ), dataset  )))))))))))))))
   }
 
 }

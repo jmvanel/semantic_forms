@@ -24,13 +24,3 @@ trait RDFStoreLocalProvider[Rdf <: RDF, DATASET] //    extends // TODO remove XX
   val dataset: DATASET
   def allNamedGraph: Rdf#Graph
 }
-
-//trait RDFStoreProvider[Rdf <: RDF, DATASET] {
-//  /** NOTE: same design pattern as for XXXModule in Banana */
-//  implicit val rdfStore: RDFStore[Rdf, Try, DATASET]
-//  implicit val ops: RDFOps[Rdf]
-//  implicit val sparqlOps: SparqlOps[Rdf]
-//
-//  val dataset: DATASET
-//  def allNamedGraph: Rdf#Graph
-//}

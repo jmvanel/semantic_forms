@@ -1,13 +1,15 @@
 package deductions.runtime.html
 
 import scala.xml.Elem
-import deductions.runtime.abstract_syntax.FormModule
-import java.net.URLEncoder
-import Form2HTML._
 import scala.xml.NodeSeq
-import deductions.runtime.abstract_syntax.DBPediaLookup
 import scala.xml.Text
 import scala.xml.XML
+
+import java.net.URLEncoder
+
+import Form2HTML._
+import deductions.runtime.abstract_syntax.FormModule
+import deductions.runtime.abstract_syntax.DBPediaLookup
 
 /**
  * different modes: display or edit;

@@ -1,28 +1,15 @@
 package deductions.runtime.html
 
-import org.w3.banana.RDFModule
-import org.w3.banana.jena.Jena
-import deductions.runtime.jena.RDFStoreObject
-import scala.xml.Elem
-import deductions.runtime.abstract_syntax.UnfilledFormFactory
-import org.w3.banana.RDFOpsModule
-import scala.util.Success
-import scala.util.Failure
-import scala.concurrent.Future
 import scala.util.Try
-import scala.concurrent.Await
-import scala.concurrent.duration._
-import deductions.runtime.utils.MonadicHelpers
 import scala.xml.NodeSeq
-import org.w3.banana.SparqlGraphModule
-import deductions.runtime.sparql_cache.RDFCacheAlgo
-import org.w3.banana.RDF
-import com.hp.hpl.jena.query.Dataset
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.abstract_syntax.FormModule
 
-// TODO move to jena
-trait CreationForm extends CreationFormAlgo[Jena, Dataset]
+import org.w3.banana.RDF
+
+import deductions.runtime.abstract_syntax.UnfilledFormFactory
+import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.sparql_cache.RDFCacheAlgo
+
+//trait CreationForm extends CreationFormAlgo[Jena, Dataset]
 
 trait CreationFormAlgo[Rdf <: RDF, DATASET] extends //RDFOpsModule
 //    with SparqlGraphModule

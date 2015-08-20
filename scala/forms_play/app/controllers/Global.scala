@@ -23,9 +23,7 @@ import com.hp.hpl.jena.query.Dataset
 
 import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.html.CreationForm
 import deductions.runtime.html.CreationFormAlgo
-import deductions.runtime.html.TableView
 import deductions.runtime.html.TableViewModule
 import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider

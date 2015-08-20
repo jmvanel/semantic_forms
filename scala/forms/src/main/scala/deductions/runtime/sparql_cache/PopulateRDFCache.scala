@@ -1,26 +1,13 @@
 package deductions.runtime.sparql_cache
 
-import org.apache.jena.riot.RDFDataMgr
-import org.w3.banana.RDFOpsModule
-import org.w3.banana.jena.JenaModule
-import org.w3.banana.RDFStore
-import org.w3.banana.GraphStore
-import deductions.runtime.jena.RDFStoreObject
-import org.w3.banana.Prefix
-import org.w3.banana.SparqlUpdate
-import org.w3.banana.RDFOps
-import org.w3.banana.RDFDSL
-import scala.util.Failure
-import scala.util.Try
-import scala.util.Success
-import org.w3.banana.LocalNameException
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.jena.JenaHelpers
-import deductions.runtime.jena.RDFCache
-import org.w3.banana.jena.Jena
-import com.hp.hpl.jena.query.Dataset
-import deductions.runtime.dataset.RDFStoreLocalProvider
 import org.w3.banana.RDF
+import org.w3.banana.jena.Jena
+import org.w3.banana.jena.JenaModule
+
+import com.hp.hpl.jena.query.Dataset
+
+import deductions.runtime.jena.JenaHelpers
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
 
 trait SitesURLForDownload {
   val githubcontent: String = "https://raw.githubusercontent.com"

@@ -1,14 +1,12 @@
 package deductions.runtime.abstract_syntax
 
 import scala.collection.Seq
+
 import org.w3.banana.FOAFPrefix
 import org.w3.banana.PointedGraph
 import org.w3.banana.RDF
-import org.w3.banana.RDFOpsModule
 import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
-import org.w3.banana.RDFOps
-import scala.util.Try
 
 /**
  * populate Fields in form by inferring possible values from given rdfs:range's URI,
@@ -45,6 +43,9 @@ trait InstanceLabelsInference2[Rdf <: RDF] {
       val n = givenName + " " + familyName
       if (n.size > 1) n
       else {
+        implicit val gr = graph
+        implicit val prlng = lang
+
         def last_segment(node: Rdf#Node) =
           try {
             foldNode(node)(
@@ -60,16 +61,14 @@ trait InstanceLabelsInference2[Rdf <: RDF] {
           val noption = (pgraph / rdf.typ).nodes.headOption
           noption match {
             case Some(classs) =>
-              implicit val gr = graph
-              implicit val prlng = lang
+              //              implicit val gr = graph
+              //              implicit val prlng = lang
               getLiteralInPreferedLanguageFromSubjectAndPredicate(classs,
                 rdfs.label, last_segment(node))
             case None => last_segment(node)
           }
         }
 
-        implicit val gr = graph
-        implicit val prlng = lang
         getLiteralInPreferedLanguageFromSubjectAndPredicate(node, rdfs.label,
           getLiteralInPreferedLanguageFromSubjectAndPredicate(node, foaf.name,
             last_segment(node)))

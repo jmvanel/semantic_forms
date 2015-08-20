@@ -6,11 +6,13 @@ import java.nio.file.Paths
 import org.scalatest.Ignore
 import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import org.w3.banana.jena.Jena
+import com.hp.hpl.jena.query.Dataset
 
 // @Ignore
 class TestTableView extends FunSuite
     with JenaHelpers
-    with TableView
+    with TableViewModule[Jena, Dataset]
     with RDFStoreLocalJena1Provider {
 
   test("display form") {
