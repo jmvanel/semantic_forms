@@ -26,10 +26,7 @@ import deductions.runtime.sparql_cache.RDFCacheAlgo
  * named TableView because originally it was an HTML table.
  */
 trait TableViewModule[Rdf <: RDF, DATASET]
-    extends //    RDFOpsModule
-    //    with 
-    RDFCacheAlgo[Rdf, DATASET] //    with SparqlGraphModule
-    {
+    extends RDFCacheAlgo[Rdf, DATASET] {
   import ops._
   import rdfStore.transactorSyntax._
 

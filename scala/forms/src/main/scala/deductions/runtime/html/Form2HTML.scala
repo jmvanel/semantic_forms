@@ -133,7 +133,7 @@ trait Form2HTML[NODE, URI <: NODE] {
                   if (preceding.label != field.label)
                     <label class={ cssClasses.formLabelCSSClass } title={
                       field.comment + " - " + field.property
-                    }>{
+                    } for={ makeHTMLIdResource(field) }>{
                       val label = field.label
                       // hack before real separators
                       if (label.contains("----"))
@@ -185,7 +185,8 @@ trait Form2HTML[NODE, URI <: NODE] {
         {
           if (editable) {
             createHTMLResourceEditableField(r)
-          } else
+          } else {
+            val normalNavigationButton = <a href={ r.value.toString() }> LINK</a>
         	  // format: OFF
             Seq(
               <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }
@@ -194,19 +195,19 @@ trait Form2HTML[NODE, URI <: NODE] {
                 r.valueLabel
               }</a> ,
               Text(" "),
-              if( field.value.toString().size > 0 ) {
-//                if( field.label . contains("ubject") ) println( s"""subject
-//                    ${field.value}
-//                    ${r.valueLabel}
-//                    $field""")
+
+              (if( field.value.toString().size > 0 ) {
             	  <button type="button"
             	  class="btn-primary" readonly="yes"
             	  title={ "Reverse links for " + field.label + " " + field.value} 
             	  data-value={ r.value.toString }
             	  onClick={ s"backlinks('${r.value}')" } 
-            	  id={ "BACK-" + r.value }>o --></button>
-              } else new Text("")
+                id={ "BACK-" + r.value }>? --> o</button>
+              } else new Text("") )
+
+              , normalNavigationButton
             )
+          }
           // format: ON
         }
       case r: fm#BlankNodeEntry =>
@@ -294,16 +295,6 @@ trait Form2HTML[NODE, URI <: NODE] {
           { formatPossibleValues(r) }
         </select>
       else new Text("\n")
-    /* if Resource is alreadyInDatabase, send original value to later save 
-           * if there is a change */
-    //      if (r.alreadyInDatabase) {
-    //        <input value={ r.value.toString } name={ "ORIG-RES-" + urlEncode(r.property) } type="hidden">
-    //        </input>
-    //      } else new Text("")
-
-    //    /* maybe TODO: web service to create the new instance while keeping the current page with its own modifications
-    //       * , <button type="button" class="btn-primary" readonly="yes" title={ s"Create a new instance of ${r.type_.toString()} in this database." } onClick="window.document.location.assign( /create?uri=${urlEncode(r.type_.toString())} )" id="???">CREATE</button>
-    //       * */
     ).flatMap { identity }
   }
 

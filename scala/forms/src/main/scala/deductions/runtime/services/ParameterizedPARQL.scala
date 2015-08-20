@@ -30,8 +30,6 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     with PreferredLanguageLiteral[Rdf] {
   //  self: RDFStoreLocalProvider[Rdf, DATASET] with InstanceLabelsInference2[Rdf] =>
 
-  //	implicit val ops: RDFOps[Rdf]
-
   import ops._
   import sparqlOps._
   import rdfStore.transactorSyntax._
