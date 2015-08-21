@@ -27,7 +27,9 @@ trait PreferredLanguageLiteral[Rdf <: RDF] {
   }
 
   /** get preferred Language value From RDF Values that are language marked or not */
-  private def getPreferedLanguageLiteral(values: Iterable[Rdf#Node])(implicit graph: Rdf#Graph, preferedLanguage: String = "en"): String = {
+  private def getPreferedLanguageLiteral(values: Iterable[Rdf#Node])(implicit graph: Rdf#Graph,
+    preferedLanguage: String = "en"): String = {
+
     def computeValues(): (String, String, String) = {
       var preferedLanguageValue = ""
       var enValue = ""
@@ -51,6 +53,12 @@ trait PreferredLanguageLiteral[Rdf <: RDF] {
       }
       (preferedLanguageValue, enValue, noLanguageValue)
     }
+
+    if (values.size == 1)
+      return foldNode(values.head)(
+        _ => "", _ => "",
+        lit => fromLiteral(lit)._1)
+
     val (preferedLanguageValue, enValue, noLanguageValue) = computeValues
     (preferedLanguageValue, enValue, noLanguageValue) match {
       case _ if (preferedLanguageValue != "") => preferedLanguageValue
