@@ -22,15 +22,15 @@ import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import com.hp.hpl.jena.query.Dataset
 import org.apache.log4j.Logger
 import scala.util.Failure
+import deductions.runtime.utils.Timer
 
 object FormSaverObject extends FormSaver[Jena, Dataset] with JenaModule with RDFStoreLocalJena1Provider
 
 trait FormSaver[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
-    //    with TurtleWriterModule
-    //    with SparqlGraphModule
     with TypeAddition[Rdf, DATASET]
-    with HttpParamsManager[Rdf] {
+    with HttpParamsManager[Rdf]
+    with Timer {
 
   import ops._
   import sparqlOps._
@@ -104,14 +104,6 @@ trait FormSaver[Rdf <: RDF, DATASET]
             ", objectStringFromUser \"" + objectStringFromUser + "\"")
         }
       }
-    }
-
-    def time(mess: String, sourceCode: => Any) = {
-      val start = System.currentTimeMillis()
-      val res = sourceCode
-      val end = System.currentTimeMillis()
-      println(s"Time elapsed: $mess: ${end - start}")
-      res
     }
 
     /** transactional */

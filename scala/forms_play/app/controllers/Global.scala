@@ -76,7 +76,7 @@ package global1 {
     lazy val dl = this
     lazy val fs = this
     lazy val cf = this
-    lazy val allNamedGraphs = allNamedGraph
+    lazy implicit val allNamedGraphs = allNamedGraph
 
     // TODO use inverse Play's URI API
     val hrefDisplayPrefix = "/display?displayuri="
@@ -97,11 +97,14 @@ package global1 {
             <h3>
               { Messages("Properties_for")(PlayLang(lang)) }  
               <b>
-                <a href={ hrefEditPrefix + URLEncoder.encode(uri, "utf-8") } title="edit this URI">
+                <a href={ hrefEditPrefix + URLEncoder.encode(uri, "utf-8") }
+                title="edit this URI">
                 { labelForURI(uri, lang) }</a>
                 , URI :
-                <a href={ hrefDisplayPrefix + URLEncoder.encode(uri, "utf-8") } title="display this URI">{uri}</a>
-                <a href={ s"/backlinks?q=${URLEncoder.encode(uri, "utf-8")}" } title="links towards this URI">o--></a>
+                <a href={ hrefDisplayPrefix + URLEncoder.encode(uri, "utf-8") }
+                title="display this URI">{uri}</a>.
+                <a href={ s"/backlinks?q=${URLEncoder.encode(uri, "utf-8")}" }
+                title="links towards this URI">? --> o</a>
               </b>
             </h3>
           </div>
@@ -143,7 +146,6 @@ package global1 {
     
 //    def displayURI2(uriSubject: String) //  : Enumerator[scala.xml.Elem] 
 //    = {
-//      import ops._
 //      val graphFuture = RDFStoreObject.allNamedGraphsFuture
 //      import scala.concurrent.ExecutionContext.Implicits.global
 //

@@ -10,10 +10,10 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
 import org.w3.banana.jena.JenaDatasetStore
 import org.w3.banana._
 import org.w3.banana.diesel._
+import deductions.runtime.utils.Timer
 
 /** singleton  hosting a Jena TDB database in directory "TDB" */
-object RDFStoreObject extends JenaModule with RDFStoreLocalJena1Provider {
-}
+object RDFStoreObject extends JenaModule with RDFStoreLocalJena1Provider
 
 /** For user data and RDF cache, sets a default location for the Jena TDB store directory : ./TDB/ */
 trait RDFStoreLocalJena1Provider extends RDFStoreLocalJenaProvider {
@@ -31,7 +31,8 @@ trait RDFStoreLocalJena2Provider extends RDFStoreLocalJenaProvider {
 }
 
 trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Dataset]
-    with JenaModule with JenaRDFLoader {
+    with JenaModule with JenaRDFLoader
+    with Timer {
   import ops._
   type DATASET = Dataset
   override val rdfStore = new JenaDatasetStore(false)
@@ -42,10 +43,10 @@ trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Dataset]
    *  - Union Graph in Jena should be re-done for each use (not 100% sure, but safer anyway)
    */
   override def allNamedGraph: Rdf#Graph = {
-    Logger.getRootLogger.info(s"allNamedGraph dataset $dataset")
-    val unionGraph = dataset.getGraph(makeUri("urn:x-arq:UnionGraph")).get
+    time(s"allNamedGraph dataset $dataset",
+      dataset.getGraph(makeUri("urn:x-arq:UnionGraph")).get
+    )
     //    union(dataset.getDefaultModel.getGraph :: unionGraph :: Nil)
-    unionGraph
   }
 }
 

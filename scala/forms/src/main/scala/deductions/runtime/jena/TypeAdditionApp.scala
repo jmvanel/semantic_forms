@@ -41,7 +41,6 @@ trait TypeAdditionAppTrait[Rdf <: RDF, DATASET]
     println(s"""Types added for URI's $uris""")
     Try {
       if (uris isEmpty) {
-        //  val tr = find(allNamedGraph, ANY, ANY, ANY)
         val tr = getTriples(allNamedGraph)
         add_types(tr.toIterator)
       } else {

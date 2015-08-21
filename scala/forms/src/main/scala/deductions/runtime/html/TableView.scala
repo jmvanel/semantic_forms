@@ -33,35 +33,6 @@ trait TableViewModule[Rdf <: RDF, DATASET]
   val nullURI: Rdf#URI = ops.URI("")
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  /**
-   * create a form for given URI with background knowledge in RDFStoreObject.store;
-   *  by default user inputs will be saved in named graph uri, except if given graphURI argument;
-   *  @param blankNode if "true" given uri is a blanknode
-   *  TRANSACTIONAL
-   */
-  private def htmlForm(uri: String, hrefPrefix: String = "", blankNode: String = "",
-    editable: Boolean = false,
-    actionURI: String = "/save",
-    lang: String = "en",
-    graphURI: String = "",
-    actionURI2: String = "/save",
-    formGroup: Rdf#URI = nullURI): Try[NodeSeq] = {
-    val graphURIActual = doRetrieveURI(uri, blankNode, graphURI)
-    dataset.r({
-      graf2form(allNamedGraph, uri, hrefPrefix, blankNode, editable,
-        actionURI, lang, graphURIActual, actionURI2, formGroup)
-    })
-  }
-
-  /** @return Actual graph URI: given graph URI or else given uri */
-  private def doRetrieveURI(uri: String, blankNode: String, graphURI: String) = {
-    if (blankNode != "true") {
-      retrieveURI(makeUri(uri), dataset)
-      Logger.getRootLogger().info(s"After retrieveURI(makeUri($uri), store)")
-    }
-    if (graphURI == "") uri else graphURI
-  }
-
   /** wrapper for htmlForm that shows Failure's */
   def htmlFormElem(uri: String, hrefPrefix: String = "", blankNode: String = "",
     editable: Boolean = false,
@@ -69,7 +40,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     lang: String = "en",
     graphURI: String = "",
     actionURI2: String = "/save",
-    formGroup: String = fromUri(nullURI)): NodeSeq = {
+    formGroup: String = fromUri(nullURI))(implicit allNamedGraphs: Rdf#Graph): NodeSeq = {
     htmlForm(uri, hrefPrefix, blankNode, editable, actionURI,
       lang, graphURI, actionURI2, URI(formGroup)) match {
         case Success(e) => e
@@ -99,6 +70,35 @@ trait TableViewModule[Rdf <: RDF, DATASET]
       case Success(e) => e
       case Failure(e) => <p>Exception occured: { e }</p>
     }
+  }
+
+  /**
+   * create a form for given URI with background knowledge in RDFStoreObject.store;
+   *  by default user inputs will be saved in named graph uri, except if given graphURI argument;
+   *  @param blankNode if "true" given uri is a blanknode
+   *  TRANSACTIONAL
+   */
+  private def htmlForm(uri: String, hrefPrefix: String = "", blankNode: String = "",
+    editable: Boolean = false,
+    actionURI: String = "/save",
+    lang: String = "en",
+    graphURI: String = "",
+    actionURI2: String = "/save",
+    formGroup: Rdf#URI = nullURI)(implicit allNamedGraphs: Rdf#Graph): Try[NodeSeq] = {
+    val graphURIActual = doRetrieveURI(uri, blankNode, graphURI)
+    dataset.r({
+      graf2form(allNamedGraphs, uri, hrefPrefix, blankNode, editable,
+        actionURI, lang, graphURIActual, actionURI2, formGroup)
+    })
+  }
+
+  /** @return Actual graph URI: given graph URI or else given uri */
+  private def doRetrieveURI(uri: String, blankNode: String, graphURI: String) = {
+    if (blankNode != "true") {
+      retrieveURI(makeUri(uri), dataset)
+      Logger.getRootLogger().info(s"After retrieveURI(makeUri($uri), store)")
+    }
+    if (graphURI == "") uri else graphURI
   }
 
   /**
@@ -139,7 +139,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
 
   def htmlFormString(uri: String,
     editable: Boolean = false,
-    actionURI: String = "/save", graphURI: String): String = {
+    actionURI: String = "/save", graphURI: String)(implicit allNamedGraphs: Rdf#Graph): String = {
     val f = htmlFormElem(uri, editable = editable, actionURI = actionURI)
     val pp = new PrettyPrinter(80, 2)
     pp.formatNodes(f)
