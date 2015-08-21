@@ -18,7 +18,7 @@ import org.w3.banana.SparqlOps
 import deductions.runtime.jena.RDFStoreObject
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import org.scalatest.Ignore
-import deductions.runtime.jena.JenaHelpers
+//import deductions.runtime.jena.JenaHelpers
 import org.w3.banana.jena.Jena
 import com.hp.hpl.jena.query.Dataset
 import deductions.runtime.jena.RDFCache
@@ -32,7 +32,7 @@ class TestBrowsableGraph
     with SparqlOpsModule
     with SparqlHttpModule
     with RDFStoreLocalJena1Provider
-    with JenaHelpers
+//    with JenaHelpers
     with BrowsableGraph[Jena, Dataset] {
   import ops._
 

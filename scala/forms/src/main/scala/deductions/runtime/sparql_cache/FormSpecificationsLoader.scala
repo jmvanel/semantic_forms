@@ -1,7 +1,7 @@
 package deductions.runtime.sparql_cache
 
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.jena.JenaHelpers
+//import deductions.runtime.jena.JenaHelpers
 import org.w3.banana.Prefix
 import deductions.runtime.jena.RDFCache
 import com.hp.hpl.jena.query.Dataset
@@ -17,8 +17,8 @@ import org.w3.banana.jena.JenaModule
 object FormSpecificationsLoader extends JenaModule
     with RDFCache with App
     with FormSpecificationsLoaderTrait[Jena, Dataset]
-    with RDFStoreLocalJena1Provider
-    with JenaHelpers {
+    with RDFStoreLocalJena1Provider //    with JenaHelpers
+    {
   if (args.size == 0)
     loadCommonFormSpecifications()
   else
@@ -64,7 +64,7 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
     val formPrefix = Prefix("form", formVocabPrefix)
     /* Retrieving triple :
      * foaf: form:ontologyHasFormSpecification <foaf.form.ttl> . */
-    val triples: Iterator[Rdf#Triple] = ops.find(form_specs_graph, ops.ANY, formPrefix("ontologyHasFormSpecification"), ops.ANY)
+    val triples: Iterator[Rdf#Triple] = find(form_specs_graph, ANY, formPrefix("ontologyHasFormSpecification"), ANY)
     val objects = for (triple <- triples) yield {
       triple._3 // getObject
     }

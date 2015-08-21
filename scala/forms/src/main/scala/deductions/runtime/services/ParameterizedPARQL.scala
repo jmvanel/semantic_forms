@@ -43,11 +43,7 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     elem
   }
 
-  //  type N <: Rdf#Node
   /**
-   * CAUTION: It is of particular importance to note that
-   *  one should never use an iterator after calling a method on it;
-   *
    *  TRANSACTIONAL
    */
   private def displayResults(res0: Iterable[Rdf#Node], hrefPrefix: String) = {
@@ -78,7 +74,11 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    * NOTE: this stuff is pretty generic;
    *  just add these arguments :
    *  queryString:String, vars:Seq[String]
-   *  ; TRANSACTIONAL
+   *
+   * CAUTION: It is of particular importance to note that
+   * one should never use an Iterator after calling a method on it;
+   * cf http://stackoverflow.com/questions/18420995/scala-iterator-one-should-never-use-an-iterator-after-calling-a-method-on-it
+   * TRANSACTIONAL
    */
   private def search_only(search: String)(implicit queryMaker: SPARQLQueryMaker): Future[Iterator[Rdf#Node]] = {
     val queryString = queryMaker.makeQueryString(search)
@@ -100,6 +100,6 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     tryIteratorRdfNode.asFuture
   }
 
-  def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
+  def isURI(node: Rdf#Node) = foldNode(node)(identity, x => None, x => None) != None
 
 }

@@ -30,7 +30,8 @@ trait RDFStoreLocalJena2Provider extends RDFStoreLocalJenaProvider {
   override lazy val dataset: DATASET = TDBFactory.createDataset("TDBapp")
 }
 
-trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Dataset] with JenaModule {
+trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Dataset]
+    with JenaModule with JenaRDFLoader {
   import ops._
   type DATASET = Dataset
   override val rdfStore = new JenaDatasetStore(false)

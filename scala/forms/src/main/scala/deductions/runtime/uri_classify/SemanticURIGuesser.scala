@@ -11,7 +11,7 @@ import akka.http.model.HttpResponse
 import akka.http.model.MediaType
 import deductions.runtime.jena.RDFCache
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.jena.JenaHelpers
+//import deductions.runtime.jena.JenaHelpers
 
 /**
  * classify URI (non-blocking): leveraging on MIME types in HTTP headers.
@@ -24,8 +24,8 @@ import deductions.runtime.jena.JenaHelpers
  * rdf, Json-LD, Turtle and other semantic content
  */
 object SemanticURIGuesser extends RDFCache
-    with RDFStoreLocalJena1Provider
-    with JenaHelpers {
+    with RDFStoreLocalJena1Provider //    with JenaHelpers 
+    {
 
   sealed abstract class SemanticURIType {
     override def toString = getClass.getSimpleName

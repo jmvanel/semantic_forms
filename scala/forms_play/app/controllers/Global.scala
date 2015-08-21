@@ -25,7 +25,7 @@ import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.html.CreationFormAlgo
 import deductions.runtime.html.TableViewModule
-import deductions.runtime.jena.JenaHelpers
+//import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.services.BrowsableGraph
 import deductions.runtime.services.ExtendedSearchSPARQL
@@ -47,7 +47,7 @@ package global1 {
   /** NOTE: important that JenaModule is first; otherwise ops may be null */
   object Global extends JenaModule
   with AbstractApplication[Jena, Dataset]
-  with JenaHelpers
+//  with JenaHelpers
   with RDFStoreLocalJena1Provider
     
   trait AbstractApplication[Rdf <: RDF, DATASET] extends

@@ -25,7 +25,6 @@ import play.api.mvc.Controller
 
 object Application extends Controller
     with JenaModule
-//    with JenaHelpers
     with RDFStoreLocalJena1Provider
     with LanguageManagement
     with LDP[Jena, Dataset]

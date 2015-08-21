@@ -24,7 +24,7 @@ object ResetRDFCache extends JenaModule
     with FormSpecificationsLoaderTrait[Jena, Dataset]
     with RDFOpsModule
     with RDFStoreLocalJena1Provider
-    with JenaHelpers
+    //    with JenaHelpers
     with App {
 
   import ops._

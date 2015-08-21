@@ -23,7 +23,7 @@ import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.html.CreationFormAlgo
 import deductions.runtime.html.TableViewModule
-import deductions.runtime.jena.JenaHelpers
+//import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.I18NMessages
@@ -39,7 +39,7 @@ import play.api.libs.iteratee.Enumerator
  */
 trait ApplicationFacadeJena extends JenaModule
   with ApplicationFacadeImpl[Jena, Dataset]
-  with JenaHelpers
+  //  with JenaHelpers
   with RDFStoreLocalJena1Provider
 
 /**

@@ -21,38 +21,16 @@ import org.w3.banana.syntax._
 
 import com.hp.hpl.jena.query.Dataset
 
-import deductions.runtime.jena.JenaHelpers
+//import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.utils.FileUtils
-
-//import org.scalatest.FunSuite
-//import deductions.runtime.jena.RDFStoreObject
-//import org.w3.banana.Prefix
-//import org.w3.banana.GraphStore
-//import org.w3.banana.RDF
-//import org.w3.banana._
-//import org.w3.banana.syntax._
-//import org.w3.banana.diesel._
-//import deductions.runtime.utils.FileUtils
-//import java.nio.file.Files
-//import java.nio.file.Paths
-//import scala.xml.Elem
-//import deductions.runtime.jena.RDFGraphPrinter
-//import java.io.PrintStream
-//import scala.xml.NodeSeq
-//import org.scalatest.BeforeAndAfterAll
-//import org.w3.banana.jena.JenaModule
-//import deductions.runtime.jena.JenaHelpers
-//import deductions.runtime.jena.RDFStoreLocalJena1Provider
-//import org.w3.banana.jena.Jena
-//import com.hp.hpl.jena.query.Dataset
 
 /** Test Creation Form from class URI, without form specification */
 class TestCreationForm extends FunSuite
     with JenaModule
     with CreationFormAlgo[Jena, Dataset] with GraphTestEnum
     with BeforeAndAfterAll
-    with JenaHelpers
+//    with JenaHelpers
     with RDFStoreLocalJena1Provider {
 
   override def afterAll {

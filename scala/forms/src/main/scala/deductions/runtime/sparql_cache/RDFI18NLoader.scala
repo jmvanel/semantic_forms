@@ -1,7 +1,7 @@
 package deductions.runtime.sparql_cache
 
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.jena.JenaHelpers
+//import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFCache
 import org.w3.banana.RDF
 import org.w3.banana.jena.Jena
@@ -12,8 +12,8 @@ import org.w3.banana.jena.JenaModule
 object RDFI18NLoader extends JenaModule
     with RDFCache with App
     with RDFI18NLoaderTrait[Jena, Dataset]
-    with RDFStoreLocalJena1Provider
-    with JenaHelpers {
+    with RDFStoreLocalJena1Provider //    with JenaHelpers
+    {
   loadFromGitHubRDFI18NTranslations()
 }
 

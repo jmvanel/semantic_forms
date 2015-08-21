@@ -18,7 +18,7 @@ import scala.util.Try
  * @author jmv
  */
 object TypeAdditionApp extends JenaModule
-    with JenaHelpers
+    //    with JenaHelpers
     with App
     with RDFStoreLocalJena1Provider
     with TypeAdditionAppTrait[Jena, Dataset] {

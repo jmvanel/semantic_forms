@@ -6,7 +6,7 @@ import org.w3.banana.jena.JenaModule
 
 import com.hp.hpl.jena.query.Dataset
 
-import deductions.runtime.jena.JenaHelpers
+//import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 
 trait SitesURLForDownload {
@@ -26,7 +26,7 @@ trait SitesURLForDownload {
  *  TODO move in jena package ( and update README )
  */
 object PopulateRDFCache extends JenaModule
-  with JenaHelpers
+  //  with JenaHelpers
   with RDFStoreLocalJena1Provider
   with PopulateRDFCacheTrait[Jena, Dataset]
 

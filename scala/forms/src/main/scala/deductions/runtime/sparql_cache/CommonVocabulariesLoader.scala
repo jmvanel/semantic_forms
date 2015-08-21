@@ -16,7 +16,7 @@ import org.w3.banana.jena.JenaModule
 
 import com.hp.hpl.jena.query.Dataset
 
-import deductions.runtime.jena.JenaHelpers
+//import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFCache
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 
@@ -28,8 +28,8 @@ import deductions.runtime.jena.RDFStoreLocalJena1Provider
 object CommonVocabulariesLoader extends JenaModule
     with RDFCache with App
     with CommonVocabulariesLoaderTrait[Jena, Dataset]
-    with RDFStoreLocalJena1Provider
-    with JenaHelpers {
+    with RDFStoreLocalJena1Provider //    with JenaHelpers
+    {
   loadCommonVocabularies()
 }
 

@@ -22,11 +22,12 @@ import deductions.runtime.uri_classify.SemanticURIGuesser.SemanticURIType
 import org.w3.banana.Prefix
 import deductions.runtime.jena.RDFStoreLocalJenaProvider
 import deductions.runtime.jena.RDFCache
-import deductions.runtime.jena.JenaHelpers
+//import deductions.runtime.jena.JenaHelpers
 
 /** Banana principle: refer to concrete implementation only in blocks without code */
 object SemanticURITypes extends RDFCache
-    with SemanticURITypesTrait[Jena, Dataset] with JenaHelpers
+    with SemanticURITypesTrait[Jena, Dataset]
+    //with JenaHelpers
     with RDFStoreLocalJena1Provider {
   val appDataStore = new RDFStoreLocalJena2Provider {}
 }
@@ -50,8 +51,8 @@ trait SemanticURITypesTrait[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[R
    */
   def getSemanticURItypesFromStoreOrInternet(uri: String): Future[Iterator[(Rdf#Node, SemanticURIGuesser.SemanticURIType)]] = {
     val res = dataset.r({
-      val triples: Iterator[Rdf#Triple] = ops.find(allNamedGraph,
-        ops.makeUri(uri), ANY, ANY)
+      val triples: Iterator[Rdf#Triple] = find(allNamedGraph,
+        makeUri(uri), ANY, ANY)
       val semanticURItypes =
         for (triple <- triples) yield {
           val node = triple.objectt
@@ -74,8 +75,8 @@ trait SemanticURITypesTrait[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[R
 
   def getSemanticURItypesFromStore(uri: String): Seq[(Rdf#Node, SemanticURIGuesser.SemanticURIType)] = {
     val res = dataset.r({
-      val triples: Iterator[Rdf#Triple] = ops.find(allNamedGraph,
-        ops.makeUri(uri), ANY, ANY)
+      val triples: Iterator[Rdf#Triple] = find(allNamedGraph,
+        makeUri(uri), ANY, ANY)
       val semanticURItypes =
         for (triple <- triples) yield {
           val node = triple.objectt
@@ -88,7 +89,7 @@ trait SemanticURITypesTrait[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[R
   }
 
   private def getSemanticURItypeFromAppDataStore(node: Rdf#Node): (Boolean, SemanticURIType) = {
-    val triples: Iterator[Rdf#Triple] = ops.find(
+    val triples: Iterator[Rdf#Triple] = find(
       // TODO : why asInstanceOf is needed ?
       appDataStore.allNamedGraph.asInstanceOf[Rdf#Graph],
       node, appDataPrefix("semanticURIType"), ANY)
@@ -106,5 +107,5 @@ trait SemanticURITypesTrait[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[R
     } else false
   }
 
-  private def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
+  private def isURI(node: Rdf#Node) = foldNode(node)(identity, x => None, x => None) != None
 }

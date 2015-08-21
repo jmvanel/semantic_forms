@@ -14,7 +14,7 @@ import org.w3.banana.RDF
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import org.w3.banana.jena.Jena
 import com.hp.hpl.jena.query.Dataset
-import deductions.runtime.jena.JenaHelpers
+//import deductions.runtime.jena.JenaHelpers
 import scala.collection.mutable.ArrayBuffer
 
 /**
@@ -34,7 +34,8 @@ import scala.collection.mutable.ArrayBuffer
 object FixBadURIApp extends JenaModule
     with FixBadURI[Jena, Dataset]
     with RDFStoreLocalJena1Provider
-    with JenaHelpers with App {
+    //    with JenaHelpers 
+    with App {
   fix
   def listGraphNames() = dataset.listNames()
 }

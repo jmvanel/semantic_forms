@@ -14,7 +14,7 @@ import org.w3.banana.RDFOpsModule
 import org.w3.banana.RDFXMLReaderModule
 import org.w3.banana.TurtleReaderModule
 import org.w3.banana.XSDPrefix
-import deductions.runtime.jena.JenaHelpers
+//import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import org.w3.banana.OWLPrefix
@@ -31,11 +31,7 @@ import org.w3.banana.io.RDFXML
 import org.w3.banana.io.RDFLoader
 
 /** */
-trait RDFCacheDependencies[Rdf <: RDF, DATASET] //  extends RDFModule
-//  with RDFOpsModule
-//  extends TurtleReaderModule
-//  with RDFXMLReaderModule
-{
+trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
   implicit val turtleReader: RDFReader[Rdf, Try, Turtle]
   implicit val rdfXMLReader: RDFReader[Rdf, Try, RDFXML]
   //  implicit val rdfStore: RDFStore[Rdf, Try, DATASET]
@@ -46,8 +42,7 @@ trait RDFCacheDependencies[Rdf <: RDF, DATASET] //  extends RDFModule
 /** depends on generic Rdf */
 trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
     with RDFCacheDependencies[Rdf, DATASET]
-    with RDFLoader[Rdf, Try] //    with RDFStoreHelpers[Rdf, DATASET]
-    {
+    with RDFLoader[Rdf, Try] {
 
   import ops._
   import rdfStore.transactorSyntax._

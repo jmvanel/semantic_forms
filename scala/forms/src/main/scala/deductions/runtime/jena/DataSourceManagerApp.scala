@@ -10,7 +10,8 @@ import org.w3.banana.jena.JenaMGraphOps
 /** deductions.runtime.jena.DataSourceManagerApp */
 object DataSourceManagerApp extends JenaModule
     with DataSourceManager[Jena, Dataset] with App
-    with RDFStoreLocalJena1Provider with JenaHelpers {
+    with RDFStoreLocalJena1Provider //    with JenaHelpers
+    {
 
   import ops._
   val url: URL = new URL(args(0))

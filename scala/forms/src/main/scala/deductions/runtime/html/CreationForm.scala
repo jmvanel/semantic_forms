@@ -11,10 +11,7 @@ import deductions.runtime.sparql_cache.RDFCacheAlgo
 
 //trait CreationForm extends CreationFormAlgo[Jena, Dataset]
 
-trait CreationFormAlgo[Rdf <: RDF, DATASET] extends //RDFOpsModule
-//    with SparqlGraphModule
-//    with 
-RDFCacheAlgo[Rdf, DATASET]
+trait CreationFormAlgo[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
     with RDFStoreLocalProvider[Rdf, DATASET] {
   import ops._
   import rdfStore.transactorSyntax._
@@ -37,7 +34,6 @@ RDFCacheAlgo[Rdf, DATASET]
 
       // TODO code duplicated in trait TableViewModule.graf2form() 
       new Form2HTML[Rdf#Node, Rdf#URI] {
-        import ops._
         override def toPlainString(n: Rdf#Node): String =
           foldNode(n)(fromUri(_), fromBNode(_), fromLiteral(_)._1)
       }.

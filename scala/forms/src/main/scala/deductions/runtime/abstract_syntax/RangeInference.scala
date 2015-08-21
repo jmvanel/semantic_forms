@@ -46,7 +46,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf] {
     def populateFromOwlOneOf(entry: Entry): Entry = {
       val possibleValues = mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]()
       for (range <- ranges) {
-        val enumerated = ops.getObjects(graph, range, owl.oneOf)
+        val enumerated = getObjects(graph, range, owl.oneOf)
         fillPossibleValuesFromList(enumerated, possibleValues)
       }
       if (!possibleValues.isEmpty) {
@@ -63,7 +63,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf] {
     def fillPossibleValuesFromList(enumerated: Iterable[Rdf#Node],
       possibleValues: mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]) =
       for (enum <- enumerated)
-        ops.foldNode(enum)(
+        foldNode(enum)(
           uri => {
             val list = rdfh.nodeSeqToURISeq(rdfh.rdfListToSeq(Some(uri)))
             possibleValues.appendAll(
@@ -81,10 +81,10 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf] {
     def populateFromInstances(entry: Entry): Entry = {
       val possibleValues = mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]()
       // debug      
-      //      val personURI = ops.URI("http://xmlns.com/foaf/0.1/Person")
+      //      val personURI = URI("http://xmlns.com/foaf/0.1/Person")
       //      if (ranges.contains(personURI)) {
       //        println(s"populateFromInstances: entry $entry")
-      //        val triples = ops.find(graph, ANY, rdf.typ, personURI)
+      //        val triples = find(graph, ANY, rdf.typ, personURI)
       //        println(s"populateFromInstances: triples size ${triples.size}")
       //        for (t <- triples) println(t._1)
       //      }
@@ -114,7 +114,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf] {
       possibleValues: mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]): Unit = {
       val r = enumerated.toSeq.map {
         enum =>
-          ops.foldNode(enum)(
+          foldNode(enum)(
             uri => (uri, instanceLabel(uri, graph, "")),
             x => (x, instanceLabel(x, graph, "")),
             x => (x, ""))
@@ -166,7 +166,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf] {
 
     val query = parseSelect(q, Seq()).get
     val solutions: Rdf#Solutions = graph.executeSelect(query).get
-    import ops._
+    //    import ops._
 
     val res = solutions.iterator() map {
       row =>
