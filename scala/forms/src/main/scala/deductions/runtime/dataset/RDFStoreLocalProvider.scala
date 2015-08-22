@@ -12,10 +12,7 @@ import org.w3.banana.SparqlEngine
 /**
  * abstract RDFStore Local Provider
  */
-trait RDFStoreLocalProvider[Rdf <: RDF, DATASET] //    extends // TODO remove XXXModule
-//    RDFOpsModule with SparqlOpsModule /* TODO use only abstract implicit val:
-//   * with RDFStoreProvider[Rdf, DATASET] */ 
-{
+trait RDFStoreLocalProvider[Rdf <: RDF, DATASET] {
   /** NOTE: same design pattern as for XXXModule in Banana */
   implicit val rdfStore: RDFStore[Rdf, Try, DATASET]
   implicit val ops: RDFOps[Rdf]
