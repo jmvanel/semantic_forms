@@ -6,7 +6,6 @@ import org.w3.banana.SparqlOpsModule
 import org.scalatest.Ignore
 import org.scalatest.BeforeAndAfterAll
 import org.w3.banana.jena.JenaModule
-//import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.jena.RDFCache
 
@@ -15,7 +14,6 @@ class TestRDFCache extends FunSuite with RDFCache
     with SparqlOpsModule
     with BeforeAndAfterAll
     with JenaModule
-//    with JenaHelpers
     with RDFStoreLocalJena1Provider {
   val uri = "http://jmvanel.free.fr/jmv.rdf#me"
   //  val uri2 = "http://live.dbpedia.org/page/Taraxacum_japonicum"

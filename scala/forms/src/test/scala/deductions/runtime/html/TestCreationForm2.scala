@@ -13,7 +13,6 @@ import deductions.runtime.utils.FileUtils
 import org.scalatest.BeforeAndAfterAll
 import org.w3.banana.RDF
 import org.w3.banana.jena.Jena
-//import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import com.hp.hpl.jena.query.Dataset
 import org.w3.banana.io.RDFWriter
@@ -24,7 +23,6 @@ import org.w3.banana.RDFOps
 class TestCreationForm2Jena extends FunSuite with TestForJena with TestCreationForm2[Jena, Dataset]
 
 trait TestForJena extends JenaModule
-//with JenaHelpers
   with RDFStoreLocalJena1Provider
 
 /** Test Creation Form with form specification */

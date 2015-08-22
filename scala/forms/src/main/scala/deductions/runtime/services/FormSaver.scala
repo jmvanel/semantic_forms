@@ -2,8 +2,13 @@ package deductions.runtime.services
 
 import java.net.URLDecoder
 import java.net.URLEncoder
+
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.Try
+import scala.concurrent.Future
+import scala.util.Failure
+
 import org.w3.banana.RDF
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFStore
@@ -11,20 +16,12 @@ import org.w3.banana.io.RDFWriter
 import org.w3.banana.SparqlEngine
 import org.w3.banana.SparqlOps
 import org.w3.banana.io.Turtle
-import deductions.runtime.jena.RDFStoreObject
-import scala.util.Try
-import scala.concurrent.Future
 import org.w3.banana._
-import org.w3.banana.jena.Jena
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import org.w3.banana.jena.JenaModule
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import com.hp.hpl.jena.query.Dataset
-import org.apache.log4j.Logger
-import scala.util.Failure
-import deductions.runtime.utils.Timer
 
-object FormSaverObject extends FormSaver[Jena, Dataset] with JenaModule with RDFStoreLocalJena1Provider
+import org.apache.log4j.Logger
+
+import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.Timer
 
 trait FormSaver[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]

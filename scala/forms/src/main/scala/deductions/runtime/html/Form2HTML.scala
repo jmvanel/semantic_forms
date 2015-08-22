@@ -15,12 +15,15 @@ import deductions.runtime.abstract_syntax.DBPediaLookup
  * different modes: display or edit;
  *  takes in account datatype
  */
-trait Form2HTML[NODE, URI <: NODE] {
+trait Form2HTML[NODE, URI <: NODE] // TODO: extends HTML5TypesTrait
+{
+  import HTML5Types._
   type fm = FormModule[NODE, URI]
 
   val radioForIntervals = false // TODO the choice should be moved to FormSyntaxFactory
   val inputSize = 90
 
+  //  def toPlainString[NODE](n: NODE): String = n.toString()
   def toPlainString(n: NODE): String = n.toString()
 
   /**
@@ -332,7 +335,7 @@ trait Form2HTML[NODE, URI <: NODE] {
         <input class={ cssClasses.formInputCSSClass } value={
           toPlainString(lit.value)
         } name={ makeHTMLIdForLiteral(lit) } type={
-          HTML5Types.xsd2html5TnputType(lit.type_.toString())
+          xsd2html5TnputType(lit.type_.toString())
         } placeholder={ placeholder } size={
           inputSize.toString()
         } ondblclick="launchEditorWindow(this);" title="Double click to edit text in popup window as Markdown text">

@@ -28,7 +28,6 @@ import scala.util.Failure
 import scala.util.Success
 import org.w3.banana.LocalNameException
 import org.w3.banana.RDFStore
-import deductions.runtime.jena.RDFStoreObject
 import deductions.runtime.utils.RDFHelpers
 import org.w3.banana.SparqlEngine
 

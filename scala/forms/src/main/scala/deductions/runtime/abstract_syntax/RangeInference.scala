@@ -4,7 +4,6 @@ import org.w3.banana.RDF
 import org.w3.banana.OWLPrefix
 import org.w3.banana.FOAFPrefix
 import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.jena.RDFStoreObject
 import scala.collection._
 import org.w3.banana.SparqlGraphModule
 import org.w3.banana.SparqlEngine

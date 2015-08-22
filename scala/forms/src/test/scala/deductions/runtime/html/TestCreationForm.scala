@@ -21,7 +21,6 @@ import org.w3.banana.syntax._
 
 import com.hp.hpl.jena.query.Dataset
 
-//import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.utils.FileUtils
 
@@ -30,7 +29,6 @@ class TestCreationForm extends FunSuite
     with JenaModule
     with CreationFormAlgo[Jena, Dataset] with GraphTestEnum
     with BeforeAndAfterAll
-//    with JenaHelpers
     with RDFStoreLocalJena1Provider {
 
   override def afterAll {

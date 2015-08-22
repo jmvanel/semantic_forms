@@ -2,17 +2,15 @@ package deductions.runtime.html
 
 import scala.util.Try
 import scala.xml.NodeSeq
-
 import org.w3.banana.RDF
-
 import deductions.runtime.abstract_syntax.UnfilledFormFactory
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.sparql_cache.RDFCacheAlgo
-
-//trait CreationForm extends CreationFormAlgo[Jena, Dataset]
+import org.w3.banana.RDFOps
 
 trait CreationFormAlgo[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
-    with RDFStoreLocalProvider[Rdf, DATASET] {
+    with RDFStoreLocalProvider[Rdf, DATASET] //    with Form2HTMLBanana[Rdf]
+    {
   import ops._
   import rdfStore.transactorSyntax._
 
@@ -30,9 +28,8 @@ trait CreationFormAlgo[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
       val factory = new UnfilledFormFactory[Rdf, DATASET](allNamedGraph, preferedLanguage = lang)
       val form = factory.createFormFromClass(
         URI(classUri),
-        formSpecURI)
-
-      // TODO code duplicated in trait TableViewModule.graf2form() 
+        formSpecURI);
+      //        new Form2HTMLBanana[Rdf] {}.
       new Form2HTML[Rdf#Node, Rdf#URI] {
         override def toPlainString(n: Rdf#Node): String =
           foldNode(n)(fromUri(_), fromBNode(_), fromLiteral(_)._1)

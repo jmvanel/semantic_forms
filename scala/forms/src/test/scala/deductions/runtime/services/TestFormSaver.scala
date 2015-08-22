@@ -9,7 +9,6 @@ import org.w3.banana.PointedGraph
 import org.w3.banana.diesel._
 import org.scalatest.FunSuite
 import org.w3.banana.jena.JenaModule
-//import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import org.w3.banana.jena.Jena
 import com.hp.hpl.jena.query.Dataset
@@ -23,7 +22,6 @@ class TestFormSaver
     with SparqlGraphModule
     with SparqlOpsModule
     with JenaModule
-//    with JenaHelpers
     with RDFStoreLocalJena1Provider
     with FormSaver[Jena, Dataset] {
   import ops._

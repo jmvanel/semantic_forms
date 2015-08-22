@@ -4,7 +4,6 @@ import org.w3.banana.RDF
 import org.w3.banana.RDFOps
 import org.w3.banana.URIOps
 import org.w3.banana.RDFStore
-import deductions.runtime.jena.RDFStoreObject
 import org.w3.banana.OWLPrefix
 import UnfilledFormFactory._
 import org.w3.banana.RDFPrefix

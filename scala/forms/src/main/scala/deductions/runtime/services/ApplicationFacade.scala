@@ -14,8 +14,6 @@ import org.apache.log4j.Logger
 import org.w3.banana.RDF
 import org.w3.banana.io.RDFWriter
 import org.w3.banana.io.Turtle
-import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaModule
 
 import com.hp.hpl.jena.query.Dataset
 
@@ -23,28 +21,14 @@ import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.html.CreationFormAlgo
 import deductions.runtime.html.TableViewModule
-//import deductions.runtime.jena.JenaHelpers
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.I18NMessages
 import play.api.libs.iteratee.Enumerator
 
-/**
- * API for Web Application, so that:
- * - client has no dependence on Banana
- * - 90% of the application is already done here, and there is no dependence
- *   to a particular Web framework
- *
- *  NOTE: important that JenaModule is first; otherwise ops may be null
- */
-trait ApplicationFacadeJena extends JenaModule
-  with ApplicationFacadeImpl[Jena, Dataset]
-  //  with JenaHelpers
-  with RDFStoreLocalJena1Provider
 
 /**
- * Web Application Facade
- *  TODO wrapper so that client has no dependence on Banana
+ * a Web Application Facade,
+ *  that still exposes to client all dependences on semantic_forms implementations and Banana
  */
 trait ApplicationFacadeImpl[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
     with TableViewModule[Rdf, DATASET]
@@ -78,8 +62,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATAS
 
   /** TODO move some formatting to views or separate function */
   def htmlForm(uri0: String, blankNode: String = "",
-    editable: Boolean = false,
-    lang: String = "en")(implicit allNamedGraphs: Rdf#Graph): Elem = {
+               editable: Boolean = false,
+               lang: String = "en")(implicit allNamedGraphs: Rdf#Graph): Elem = {
     Logger.getRootLogger().info(s"""Global.htmlForm uri $uri0 blankNode "$blankNode" lang=$lang """)
     val uri = uri0.trim()
 
@@ -127,6 +111,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATAS
     </div>
   }
 
+  /** NOTE this creates a transaction; do not use it too often */
   def labelForURI(uri: String, language: String): String = {
     rdfStore.r(dataset, {
       instanceLabel(URI(uri), allNamedGraphs, language)
@@ -236,7 +221,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATAS
           try {
             dl.sparqlConstructQuery(query)
           } catch {
-            case t: Throwable => t.printStackTrace() // TODO: handle error
+            case t: Throwable=> t.printStackTrace() // TODO: handle error
           }
           /* TODO Future !!!!!!!!!!!!!!!!!!! */
         }
@@ -276,7 +261,7 @@ caption {{
                 </tr>
               }
               printedRows
-            case Failure(e) => e.toString()
+            case Failure(e)=> e.toString()
           }
         }
       </table>
@@ -288,7 +273,7 @@ caption {{
     wrapSearchResults(fut, q)
   }
 
-  def wrapSearchResults(fut: Future[Elem], q: String): Future[Elem] =
+  private def wrapSearchResults(fut: Future[Elem], q: String): Future[Elem] =
     fut.map { v =>
       <p>
         Searched for "{ q }
@@ -301,7 +286,5 @@ caption {{
     val fut = extendedSearch(q)
     wrapSearchResults(fut, q)
   }
-
-  //    def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
 
 }

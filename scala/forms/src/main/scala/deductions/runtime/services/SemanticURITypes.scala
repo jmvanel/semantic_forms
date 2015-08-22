@@ -1,36 +1,31 @@
 package deductions.runtime.services
 
-import org.w3.banana.jena.JenaModule
 import org.w3.banana.RDFOpsModule
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import org.w3.banana.RDF
-import org.w3.banana.jena.Jena
-import com.hp.hpl.jena.query.Dataset
+import org.w3.banana.Prefix
+import org.w3.banana.RDFOps
+import org.w3.banana.RDF
+
 import scala.concurrent.Future
-import deductions.runtime.utils.MonadicHelpers
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
-import org.w3.banana.RDFOps
-import org.w3.banana.RDF
+
 import deductions.runtime.uri_classify.SemanticURIGuesser
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.jena.RDFStoreLocalJena2Provider
 import deductions.runtime.uri_classify.SemanticURIGuesser.SemanticURIType
-import org.w3.banana.Prefix
-import deductions.runtime.jena.RDFStoreLocalJenaProvider
-import deductions.runtime.jena.RDFCache
-//import deductions.runtime.jena.JenaHelpers
+//import deductions.runtime.jena.RDFStoreLocalJenaProvider
+//import deductions.runtime.jena.RDFCache
+import deductions.runtime.utils.MonadicHelpers
 
 /** Banana principle: refer to concrete implementation only in blocks without code */
-object SemanticURITypes extends RDFCache
-    with SemanticURITypesTrait[Jena, Dataset]
-    //with JenaHelpers
-    with RDFStoreLocalJena1Provider {
-  val appDataStore = new RDFStoreLocalJena2Provider {}
-}
+//object SemanticURITypes extends RDFCache
+//    with SemanticURITypesTrait[Jena, Dataset]
+//    with RDFStoreLocalJena1Provider {
+//  val appDataStore = new RDFStoreLocalJena2Provider {}
+//}
 
 trait SemanticURITypesTrait[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET] {
 

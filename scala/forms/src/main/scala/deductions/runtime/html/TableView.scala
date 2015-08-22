@@ -13,8 +13,6 @@ import deductions.runtime.abstract_syntax.FormSyntaxFactory
 import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 
-//trait TableView extends JenaModule with TableViewModule[Jena, Dataset]
-
 /**
  * Form for a subject URI with existing triples;
  *  a facade that blends:
@@ -30,9 +28,8 @@ trait TableViewModule[Rdf <: RDF, DATASET]
   import ops._
   import rdfStore.transactorSyntax._
 
-  val nullURI: Rdf#URI = ops.URI("")
+  val nullURI: Rdf#URI = URI("")
   import scala.concurrent.ExecutionContext.Implicits.global
-
   /** wrapper for htmlForm that shows Failure's */
   def htmlFormElem(uri: String, hrefPrefix: String = "", blankNode: String = "",
     editable: Boolean = false,
@@ -62,7 +59,11 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     val htmlFormTry = dataset.r({
       val form = createAbstractForm(allNamedGraph, uri, editable, lang, blankNode,
         URI(formGroup))
-      new Form2HTML[Rdf#Node, Rdf#URI] {}.
+      // new Form2HTMLBanana[Rdf] {}. // TODO
+      new Form2HTML[Rdf#Node, Rdf#URI] {
+        override def toPlainString(n: Rdf#Node): String =
+          foldNode(n)(fromUri(_), fromBNode(_), fromLiteral(_)._1)
+      }.
         generateHTMLJustFields(form,
           hrefPrefix, editable, graphURIActual)
     })
@@ -115,10 +116,10 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     formGroup: Rdf#URI = nullURI): NodeSeq = {
     val form = createAbstractForm(graph, uri, editable, lang, blankNode, formGroup)
     val htmlForm =
-      // TODO code duplicated in trait CreationFormAlgo.create() 
+      // new Form2HTMLBanana[Rdf] {}. // TODO
       new Form2HTML[Rdf#Node, Rdf#URI] {
         override def toPlainString(n: Rdf#Node): String =
-          ops.foldNode(n)(fromUri(_), fromBNode(_), fromLiteral(_)._1)
+          foldNode(n)(fromUri(_), fromBNode(_), fromLiteral(_)._1)
       }.
         generateHTML(form, hrefPrefix, editable, actionURI, graphURI,
           actionURI2)
