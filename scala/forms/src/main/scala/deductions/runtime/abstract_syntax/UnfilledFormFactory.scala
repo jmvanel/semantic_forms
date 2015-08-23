@@ -13,6 +13,7 @@ import UnfilledFormFactory.defaultInstanceURIPrefix
 import org.w3.banana.SparqlGraphModule
 import org.w3.banana.SparqlEngine
 import org.w3.banana.SparqlOps
+import deductions.runtime.abstract_syntax.FormSyntaxFactory.CreationMode
 
 /**
  * @author j.m. Vanel
@@ -57,9 +58,10 @@ class UnfilledFormFactory[Rdf <: RDF, DATASET](graph: Rdf#Graph,
     val newId = makeId
     if (propsListInFormConfig.isEmpty) {
       val props = fieldsFromClass(classs, graph)
-      createFormDetailed(makeUri(newId), props toSeq, classs)
+      createFormDetailed(makeUri(newId), props toSeq, classs, CreationMode)
     } else
-      createFormDetailed(makeUri(newId), propsListInFormConfig.toSeq, classs, formConfig = formConfig)
+      createFormDetailed(makeUri(newId), propsListInFormConfig.toSeq, classs,
+        CreationMode, formConfig = formConfig)
   }
 
   def makeId: String = {

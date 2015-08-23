@@ -12,24 +12,29 @@ import org.w3.banana.SparqlOps
 import org.apache.log4j.Logger
 import java.net.URL
 import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.Timer
 
 /**
  * populate Fields in form by inferring possible values from given rdfs:range's URI,
  *  through owl:oneOf and know instances
  */
-trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf] {
+trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf]
+    with Timer {
   self: FormSyntaxFactory[Rdf] =>
 
   implicit val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]
   implicit val sparqlOps: SparqlOps[Rdf]
   implicit private val graphImplicit = graph
 
+  //  import FormSyntaxFactory._
   import ops._
   import sparqlOps._
   import sparqlGraph._
   import sparqlGraph.sparqlEngineSyntax._
 
-  def addPossibleValues(entryField: Entry, ranges: Set[Rdf#Node],
+  def addPossibleValues(
+    entryField: Entry,
+    ranges: Set[Rdf#Node],
     valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)]): Entry = {
     val owl = OWLPrefix[Rdf]
     val rdfh = {
@@ -59,7 +64,8 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf] {
      * fill Possible Values From given List, which typically comes
      *  from existing triples with relevant rdf:type
      */
-    def fillPossibleValuesFromList(enumerated: Iterable[Rdf#Node],
+    def fillPossibleValuesFromList(
+      enumerated: Iterable[Rdf#Node],
       possibleValues: mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]) =
       for (enum <- enumerated)
         foldNode(enum)(
@@ -87,25 +93,29 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf] {
       //        println(s"populateFromInstances: triples size ${triples.size}")
       //        for (t <- triples) println(t._1)
       //      }
-      for (range <- ranges) {
-        // TODO also take in account subClassOf inference
-        // TODO limit number of possible values; later implement Comet on demand access to possible Values
-        if (range != owl.Thing) {
-          val enumerated = getSubjects(graph, rdf.typ, range)
-          // debug        
-          //        if (range == personURI)
-          //          println(s"populateFromInstances: enumerated ${enumerated.mkString("; ")}")
+      if (entry.label == "knows")
+        println("knows")
+      time(s"populateFromInstances ${entry.label}",
+        for (range <- ranges) {
+          // TODO also take in account subClassOf inference
+          // TODO limit number of possible values; later implement Comet on demand access to possible Values
+          if (range != owl.Thing) {
+            val enumerated = getSubjects(graph, rdf.typ, range)
+            // debug        
+            //        if (range == personURI)
+            //          println(s"populateFromInstances: enumerated ${enumerated.mkString("; ")}")
 
-          fillPossibleValues(enumerated, possibleValues)
+            fillPossibleValues(enumerated, possibleValues)
 
-          val subClasses = getSubjects(graph, rdfs.subClassOf, range)
-          for (subClass <- subClasses) {
-            val subClassesValues = getSubjects(graph, rdf.typ, subClass)
-            fillPossibleValues(subClassesValues, possibleValues)
+            val subClasses = getSubjects(graph, rdfs.subClassOf, range)
+            for (subClass <- subClasses) {
+              val subClassesValues = getSubjects(graph, rdf.typ, subClass)
+              fillPossibleValues(subClassesValues, possibleValues)
+            }
+            // debug  if (range == personURI) println(s"possibleValues $possibleValues")
           }
-          // debug  if (range == personURI) println(s"possibleValues $possibleValues")
         }
-      }
+      )
       entry.setPossibleValues(possibleValues ++ entry.possibleValues)
     }
 
@@ -179,6 +189,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf] {
     possibleValues
   }
 
+  //// DEBUG (unused) ////
   /** TODO put it in util class or use SPARQLHelper in project sparql_client */
   def runSparqlSelect(
     queryString: String, variables: Seq[String],

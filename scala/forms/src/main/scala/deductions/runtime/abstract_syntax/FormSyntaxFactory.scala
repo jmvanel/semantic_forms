@@ -30,10 +30,16 @@ import org.w3.banana.LocalNameException
 import org.w3.banana.RDFStore
 import deductions.runtime.utils.RDFHelpers
 import org.w3.banana.SparqlEngine
+import deductions.runtime.utils.Timer
 
 object FormSyntaxFactory {
   /** vocabulary for form specifications */
   val formVocabPrefix = "http://deductions-software.com/ontologies/forms.owl.ttl#"
+  /** one of EditionMode, DisplayMode, CreationMode */
+  abstract sealed class FormMode
+  object EditionMode extends FormMode { override def toString() = "EditionMode" }
+  object DisplayMode extends FormMode { override def toString() = "DisplayMode" }
+  object CreationMode extends FormMode { override def toString() = "CreationMode" }
 }
 
 /**
@@ -49,7 +55,8 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
     extends FormModule[Rdf#Node, Rdf#URI]
     with FieldsInference[Rdf]
     with RangeInference[Rdf]
-    with PreferredLanguageLiteral[Rdf] {
+    with PreferredLanguageLiteral[Rdf]
+    with Timer {
 
   import ops._
 
@@ -87,6 +94,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
       } else Seq()
     createFormDetailed(subject,
       (propsFromConfig ++ propsFromSubject ++ propsFromClass).distinct, classs,
+      if (editable) EditionMode else DisplayMode,
       formGroup)
   }
 
@@ -99,11 +107,13 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
    */
   def createFormDetailed(subject: Rdf#Node,
     props: Iterable[Rdf#URI], classs: Rdf#URI,
+    formMode: FormMode,
     formGroup: Rdf#URI = nullURI,
     formConfig: Rdf#Node = URI("")): FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
 
     logger.trace(s"createForm subject $subject, props $props")
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
+
     val entries = for (prop <- props) yield {
       logger.trace(s"createForm subject $subject, prop $prop")
       val ranges = objectsQuery(prop, rdfs.range)
@@ -114,13 +124,15 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
         } else if (rangesSize == 0) {
           "WARNING: There is no range for property " + prop
         } else "")
-      makeEntries(subject, prop, ranges, valuesFromFormGroup)
+      time(s"makeEntries(${prop})",
+        makeEntries(subject, prop, ranges, formMode, valuesFromFormGroup))
     }
     val fields = entries.flatMap { identity }
     val fields2 = addTypeTriple(subject, classs, fields)
     //    val fields2 = fields.toSeq
     val formSyntax = FormSyntax(subject, fields2, classs)
-    updateFormFromConfig(formSyntax, formConfig)
+    time(s"updateFormFromConfig()",
+      updateFormFromConfig(formSyntax, formConfig))
   }
 
   val formConfiguration = new FormConfigurationFactory[Rdf](graph)
@@ -209,7 +221,9 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
    *  taking in account multi-valued properties
    */
   private def makeEntries(subject: Rdf#Node, prop: Rdf#URI, ranges: Set[Rdf#Node],
+    formMode: FormMode,
     valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)]): Seq[Entry] = {
+
     logger.info(s"makeEntry subject $subject, prop $prop")
     implicit val gr = graph
     implicit val prlng = preferedLanguage
@@ -222,8 +236,9 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
 
     for (obj <- objects)
       //      if (prop != rdf.typ)
-      addOneEntry(obj, valuesFromFormGroup)
-    if (objects isEmpty) addOneEntry(nullURI, valuesFromFormGroup)
+      addOneEntry(obj, formMode, valuesFromFormGroup)
+
+    if (objects isEmpty) addOneEntry(nullURI, formMode, valuesFromFormGroup)
 
     def makeBN(label: String, comment: String,
       property: ObjectProperty, validator: ResourceValidator,
@@ -238,8 +253,10 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
     def firstType = firstNodeOrElseNullURI(ranges)
 
     def addOneEntry(object_ : Rdf#Node,
+      formMode: FormMode,
       valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)] //        formGroup: Rdf#URI
       ) = {
+
       def literalEntry = {
         // TODO match graph pattern for interval datatype ; see issue #17
         // case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
@@ -267,8 +284,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
       val rdf = RDFPrefix[Rdf]
       val rdfs = RDFSPrefix[Rdf]
 
-      //      if (prop.toString().contains("type"))
-      //        println(prop)
+      // if (prop.toString().contains("type")) println(prop)
 
       val entry = rangeClasses match {
         case _ if rangeClasses.exists { c => c.toString startsWith (xsdPrefix) } => literalEntry
@@ -284,7 +300,10 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
         case _ if object_.toString.startsWith("_:") => resourceEntry
         case _ => literalEntry
       }
-      result += addPossibleValues(entry, ranges, valuesFromFormGroup)
+      if (formMode != DisplayMode)
+        result += addPossibleValues(entry, ranges, valuesFromFormGroup)
+      else
+        result += entry
     }
     result
   }

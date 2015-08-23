@@ -4,19 +4,19 @@ import scala.xml.Elem
 import scala.xml.NodeSeq
 import scala.xml.Text
 import scala.xml.XML
-
 import java.net.URLEncoder
-
 import Form2HTML._
 import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.abstract_syntax.DBPediaLookup
+import deductions.runtime.utils.Timer
 
 /**
  * different modes: display or edit;
  *  takes in account datatype
  */
-trait Form2HTML[NODE, URI <: NODE] // TODO: extends HTML5TypesTrait
-{
+trait Form2HTML[NODE, URI <: NODE]
+    extends Timer // TODO: extends HTML5TypesTrait
+    {
   import HTML5Types._
   type fm = FormModule[NODE, URI]
 
@@ -38,7 +38,8 @@ trait Form2HTML[NODE, URI <: NODE] // TODO: extends HTML5TypesTrait
     actionURI: String = "/save", graphURI: String = "",
     actionURI2: String = "/save"): NodeSeq = {
 
-    val htmlForm = generateHTMLJustFields(form, hrefPrefix, editable, graphURI)
+    val htmlForm = time("generateHTMLJustFields",
+      generateHTMLJustFields(form, hrefPrefix, editable, graphURI))
 
     if (editable)
       <form action={ actionURI } method="POST">
@@ -111,6 +112,7 @@ trait Form2HTML[NODE, URI <: NODE] // TODO: extends HTML5TypesTrait
     hrefPrefix: String = "",
     editable: Boolean = false,
     graphURI: String = ""): NodeSeq = {
+
     implicit val formImpl: FormModule[NODE, URI]#FormSyntax = form
 
     val hidden = if (editable) {
@@ -131,36 +133,49 @@ trait Form2HTML[NODE, URI <: NODE] // TODO: extends HTML5TypesTrait
           if (!fields.isEmpty) {
             val lastEntry = fields.last
             for ((preceding, field) <- (lastEntry +: fields) zip fields) yield {
+
               <div class={ cssClasses.formLabelAndInputCSSClass }>
-                { // display field label only if different from preceding
-                  if (preceding.label != field.label)
-                    <label class={ cssClasses.formLabelCSSClass } title={
-                      field.comment + " - " + field.property
-                    } for={ makeHTMLIdResource(field) }>{
-                      val label = field.label
-                      // hack before real separators
-                      if (label.contains("----"))
-                        label.substring(1).replaceAll("-(-)+", "")
-                      else label
-                    }</label>
-                  else
-                    <label class={ cssClasses.formLabelCSSClass } title={
-                      field.comment + " - " + field.property
-                    }> -- </label>
+                {
+                  //                  time(s"makeFieldLabel( ${field.label})",
+                  makeFieldLabel(preceding, field)
                 }
                 {
-                  if (shouldAddAddRemoveWidgets(field, editable))
-                    createHTMLField(field, editable, hrefPrefix)
-                  else
-                    // that's for corporate_risk:
-                    <div class={ cssClasses.formInputCSSClass }>
-                      { createHTMLField(field, editable, hrefPrefix) }
-                    </div>
+                  //                  time(s"makeFieldInput( ${field.label})",
+                  makeFieldInput(field, hrefPrefix, editable)
                 }
               </div>
             }
           }
         }
+      </div>
+  }
+
+  private def makeFieldLabel(preceding: fm#Entry, field: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = {
+    // display field label only if different from preceding
+    if (preceding.label != field.label)
+      <label class={ cssClasses.formLabelCSSClass } title={
+        field.comment + " - " + field.property
+      } for={ makeHTMLIdResource(field) }>{
+        val label = field.label
+        // hack before real separators
+        if (label.contains("----"))
+          label.substring(1).replaceAll("-(-)+", "")
+        else label
+      }</label>
+    else
+      <label class={ cssClasses.formLabelCSSClass } title={
+        field.comment + " - " + field.property
+      }> -- </label>
+  }
+
+  private def makeFieldInput(field: fm#Entry, hrefPrefix: String,
+    editable: Boolean)(implicit form: FormModule[NODE, URI]#FormSyntax) = {
+    if (shouldAddAddRemoveWidgets(field, editable))
+      createHTMLField(field, editable, hrefPrefix)
+    else
+      // that's for corporate_risk:
+      <div class={ cssClasses.formInputCSSClass }>
+        { createHTMLField(field, editable, hrefPrefix) }
       </div>
   }
 

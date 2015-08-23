@@ -25,7 +25,6 @@ import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.I18NMessages
 import play.api.libs.iteratee.Enumerator
 
-
 /**
  * a Web Application Facade,
  *  that still exposes to client all dependences on semantic_forms implementations and Banana
@@ -62,8 +61,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATAS
 
   /** TODO move some formatting to views or separate function */
   def htmlForm(uri0: String, blankNode: String = "",
-               editable: Boolean = false,
-               lang: String = "en")(implicit allNamedGraphs: Rdf#Graph): Elem = {
+    editable: Boolean = false,
+    lang: String = "en")(implicit allNamedGraphs: Rdf#Graph): Elem = {
     Logger.getRootLogger().info(s"""Global.htmlForm uri $uri0 blankNode "$blankNode" lang=$lang """)
     val uri = uri0.trim()
 
@@ -221,7 +220,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATAS
           try {
             dl.sparqlConstructQuery(query)
           } catch {
-            case t: Throwable=> t.printStackTrace() // TODO: handle error
+            case t: Throwable => t.printStackTrace() // TODO: handle error
           }
           /* TODO Future !!!!!!!!!!!!!!!!!!! */
         }
@@ -261,7 +260,7 @@ caption {{
                 </tr>
               }
               printedRows
-            case Failure(e)=> e.toString()
+            case Failure(e) => e.toString()
           }
         }
       </table>

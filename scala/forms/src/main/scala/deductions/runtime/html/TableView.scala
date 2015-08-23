@@ -5,13 +5,12 @@ import scala.util.Success
 import scala.util.Try
 import scala.xml.NodeSeq
 import scala.xml.PrettyPrinter
-
 import org.apache.log4j.Logger
 import org.w3.banana.RDF
-
 import deductions.runtime.abstract_syntax.FormSyntaxFactory
 import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.utils.Timer
 
 /**
  * Form for a subject URI with existing triples;
@@ -24,13 +23,17 @@ import deductions.runtime.sparql_cache.RDFCacheAlgo
  * named TableView because originally it was an HTML table.
  */
 trait TableViewModule[Rdf <: RDF, DATASET]
-    extends RDFCacheAlgo[Rdf, DATASET] {
+    extends RDFCacheAlgo[Rdf, DATASET]
+    with Timer {
   import ops._
   import rdfStore.transactorSyntax._
 
   val nullURI: Rdf#URI = URI("")
   import scala.concurrent.ExecutionContext.Implicits.global
-  /** wrapper for htmlForm that shows Failure's */
+  /**
+   * wrapper for htmlForm that shows Failure's ;
+   *  TRANSACTIONAL
+   */
   def htmlFormElem(uri: String, hrefPrefix: String = "", blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",
@@ -86,14 +89,18 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     graphURI: String = "",
     actionURI2: String = "/save",
     formGroup: Rdf#URI = nullURI)(implicit allNamedGraphs: Rdf#Graph): Try[NodeSeq] = {
-    val graphURIActual = doRetrieveURI(uri, blankNode, graphURI)
+    val graphURIActual = time("doRetrieveURI", doRetrieveURI(uri, blankNode, graphURI))
     dataset.r({
       graf2form(allNamedGraphs, uri, hrefPrefix, blankNode, editable,
         actionURI, lang, graphURIActual, actionURI2, formGroup)
     })
   }
 
-  /** @return Actual graph URI: given graph URI or else given uri */
+  /**
+   * with transaction
+   *
+   *  @return Actual graph URI: given graph URI or else given uri
+   */
   private def doRetrieveURI(uri: String, blankNode: String, graphURI: String) = {
     if (blankNode != "true") {
       retrieveURI(makeUri(uri), dataset)
@@ -114,15 +121,18 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     lang: String = "en", graphURI: String,
     actionURI2: String = "/save",
     formGroup: Rdf#URI = nullURI): NodeSeq = {
-    val form = createAbstractForm(graph, uri, editable, lang, blankNode, formGroup)
-    val htmlForm =
+    val form = time("createAbstractForm",
+      createAbstractForm(graph, uri, editable, lang, blankNode, formGroup))
+    val htmlFormGen = time("new Form2HTML",
       // new Form2HTMLBanana[Rdf] {}. // TODO
       new Form2HTML[Rdf#Node, Rdf#URI] {
         override def toPlainString(n: Rdf#Node): String =
           foldNode(n)(fromUri(_), fromBNode(_), fromLiteral(_)._1)
-      }.
-        generateHTML(form, hrefPrefix, editable, actionURI, graphURI,
-          actionURI2)
+      }
+    )
+    val htmlForm = htmlFormGen.
+      generateHTML(form, hrefPrefix, editable, actionURI, graphURI,
+        actionURI2)
     htmlForm
   }
 

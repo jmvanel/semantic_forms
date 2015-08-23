@@ -22,16 +22,18 @@ class TestTableView extends FunSuite
     val fo = htmlFormElem(uri, editable = true)
     val f = TestCreationForm.wrapWithHTML(fo)
     val result = f.toString()
-    Assert.assertTrue("", result.contains("Jean-Marc"))
-    Files.write(Paths.get("example.form.foaf.html"), result.getBytes)
+    val correct = result.contains("Jean-Marc")
+//    if(correct)
+      Files.write(Paths.get("example.form.foaf.html"), result.getBytes)
+    Assert.assertTrue("""result.contains("Jean-Marc")""", correct)
   }
 
-  test("display form dbpedia") {
-    val uri = "http://dbpedia.org/resource/The_Lord_of_the_Rings"
-    val fo = htmlFormElem(uri)
-    val f = TestCreationForm.wrapWithHTML(fo)
-    val result = f.toString()
-    Assert.assertTrue("", result.contains("Tolkien"))
-    Files.write(Paths.get("example.form.dbpedia.html"), result.getBytes);
-  }
+  //  test("display form dbpedia") {
+  //    val uri = "http://dbpedia.org/resource/The_Lord_of_the_Rings"
+  //    val fo = htmlFormElem(uri)
+  //    val f = TestCreationForm.wrapWithHTML(fo)
+  //    val result = f.toString()
+  //    Assert.assertTrue("", result.contains("Tolkien"))
+  //    Files.write(Paths.get("example.form.dbpedia.html"), result.getBytes);
+  //  }
 }

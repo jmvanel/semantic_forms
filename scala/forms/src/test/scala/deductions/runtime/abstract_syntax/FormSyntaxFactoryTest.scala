@@ -64,6 +64,7 @@ trait FormSyntaxFactoryTest // [Rdf <: RDF]
     with SparqlGraphModule {
 
   import ops._
+  import FormSyntaxFactory._
   lazy val foaf = FOAFPrefix[Rdf]
 
   def makeFOAFsample: Rdf#Graph = {
@@ -88,7 +89,8 @@ trait FormSyntaxFactoryTest // [Rdf <: RDF]
       URI("betehess"),
       Seq(foaf.title,
         foaf.name, foaf.knows),
-      URI(""))
+      URI(""),
+      EditionMode )
     form
   }
 
@@ -112,7 +114,8 @@ trait FormSyntaxFactoryTest // [Rdf <: RDF]
     val fact = new FormSyntaxFactory[Rdf](graph)
     val os = new FileOutputStream("/tmp/graph.nt")
     turtleWriter.write(graph, os, "")
-    fact.createFormDetailed(URI("betehess"), Seq(foaf.topic_interest), foaf.Person)
+    fact.createFormDetailed(URI("betehess"), Seq(foaf.topic_interest), foaf.Person,
+        DisplayMode)
   }
 
 }
