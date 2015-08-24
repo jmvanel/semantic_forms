@@ -36,6 +36,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf]
     entryField: Entry,
     ranges: Set[Rdf#Node],
     valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)]): Entry = {
+
     val owl = OWLPrefix[Rdf]
     val rdfh = {
       val gr = graph
@@ -47,7 +48,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf]
      * by taking ?LIST from triples:
      * ?RANGE owl:oneOf ?LIST
      */
-    def populateFromOwlOneOf(entry: Entry): Entry = {
+    def populateFromOwlOneOf(entry: Entry): Seq[ResourceWithLabel[Rdf]] = {
       val possibleValues = mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]()
       for (range <- ranges) {
         val enumerated = getObjects(graph, range, owl.oneOf)
@@ -57,54 +58,45 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf]
         println(s"populateFromOwlOneOf size ${possibleValues.size} ranges $ranges - $entry")
         entry.openChoice = false
       }
-      entry.setPossibleValues(possibleValues ++ entry.possibleValues)
+      //      entry.setPossibleValues(possibleValues ++ entry.possibleValues)
+      /**
+       * fill Possible Values into `possibleValues`
+       * from given RDF List `enumerated`, which typically comes
+       *  from existing triples with relevant rdf:type
+       */
+      def fillPossibleValuesFromList(
+        enumerated: Iterable[Rdf#Node],
+        possibleValues: mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]) =
+        for (enum <- enumerated)
+          foldNode(enum)(
+            uri => {
+              val list = rdfh.nodeSeqToURISeq(rdfh.rdfListToSeq(Some(uri)))
+              possibleValues.appendAll(
+                list zip instanceLabels(list).map { s => makeLiteral(s, xsd.string) })
+            },
+            x => {
+              println(s"fillPossibleValuesFromList bnode $x")
+              val list = rdfh.rdfListToSeq(Some(x))
+              possibleValues.appendAll(
+                list zip instanceLabels(list).map { s => makeLiteral(s, xsd.string) })
+            },
+            x => { println(s"lit $x"); () })
+
+      possibleValues.map { (couple: (Rdf#Node, Rdf#Node)) =>
+        new ResourceWithLabel(couple._1, couple._2)
+      }
     }
 
-    /**
-     * fill Possible Values From given List, which typically comes
-     *  from existing triples with relevant rdf:type
-     */
-    def fillPossibleValuesFromList(
-      enumerated: Iterable[Rdf#Node],
-      possibleValues: mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]) =
-      for (enum <- enumerated)
-        foldNode(enum)(
-          uri => {
-            val list = rdfh.nodeSeqToURISeq(rdfh.rdfListToSeq(Some(uri)))
-            possibleValues.appendAll(
-              list zip instanceLabels(list).map { s => makeLiteral(s, xsd.string) })
-          },
-          x => {
-            println(s"fillPossibleValuesFromList bnode $x")
-            val list = rdfh.rdfListToSeq(Some(x))
-            possibleValues.appendAll(
-              list zip instanceLabels(list).map { s => makeLiteral(s, xsd.string) })
-          },
-          x => { println(s"lit $x"); () })
-
     /** modify entry to populate possible Values From Instances */
-    def populateFromInstances(entry: Entry): Entry = {
+    def populateFromInstances(entry: Entry): Seq[ResourceWithLabel[Rdf]] = {
       val possibleValues = mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]()
-      // debug      
-      //      val personURI = URI("http://xmlns.com/foaf/0.1/Person")
-      //      if (ranges.contains(personURI)) {
-      //        println(s"populateFromInstances: entry $entry")
-      //        val triples = find(graph, ANY, rdf.typ, personURI)
-      //        println(s"populateFromInstances: triples size ${triples.size}")
-      //        for (t <- triples) println(t._1)
-      //      }
-      if (entry.label == "knows")
-        println("knows")
+      //      if (entry.label == "knows") println("knows")
       time(s"populateFromInstances ${entry.label}",
         for (range <- ranges) {
           // TODO also take in account subClassOf inference
           // TODO limit number of possible values; later implement Comet on demand access to possible Values
           if (range != owl.Thing) {
             val enumerated = getSubjects(graph, rdf.typ, range)
-            // debug        
-            //        if (range == personURI)
-            //          println(s"populateFromInstances: enumerated ${enumerated.mkString("; ")}")
-
             fillPossibleValues(enumerated, possibleValues)
 
             val subClasses = getSubjects(graph, rdfs.subClassOf, range)
@@ -112,47 +104,83 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf]
               val subClassesValues = getSubjects(graph, rdf.typ, subClass)
               fillPossibleValues(subClassesValues, possibleValues)
             }
-            // debug  if (range == personURI) println(s"possibleValues $possibleValues")
           }
+        })
+      /**
+       * fill Possible Values into `possibleValues`
+       * from given list `enumerated`, which typically comes
+       *  from existing triples with relevant rdf:type
+       */
+      def fillPossibleValues(enumerated: Iterable[Rdf#Node],
+        possibleValues: mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]): Unit = {
+        val r = enumerated.toSeq.map {
+          enum =>
+            foldNode(enum)(
+              uri => (uri, instanceLabel(uri, graph, "")),
+              x => (x, instanceLabel(x, graph, "")),
+              x => (x, ""))
         }
-      )
-      entry.setPossibleValues(possibleValues ++ entry.possibleValues)
-    }
-
-    def fillPossibleValues(enumerated: Iterable[Rdf#Node],
-      possibleValues: mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]): Unit = {
-      val r = enumerated.toSeq.map {
-        enum =>
-          foldNode(enum)(
-            uri => (uri, instanceLabel(uri, graph, "")),
-            x => (x, instanceLabel(x, graph, "")),
-            x => (x, ""))
+        val sortedInstanceLabels = r.toSeq.sortBy { e => e._2 }
+        // println(s"sortedInstanceLabels ${sortedInstanceLabels.takeRight(5).mkString(", ")}")
+        possibleValues ++= (sortedInstanceLabels.map {
+          c => (c._1, makeLiteral(c._2, xsd.string))
+        })
       }
-      val sortedInstanceLabels = r.toSeq.sortBy { e => e._2 }
-      // println(s"sortedInstanceLabels ${sortedInstanceLabels.takeRight(5).mkString(", ")}")
-      possibleValues ++= (sortedInstanceLabels.map {
-        c => (c._1, makeLiteral(c._2, xsd.string))
-      })
+      println("  possibleValues.size " + possibleValues.size)
+      possibleValues.map { (couple: (Rdf#Node, Rdf#Node)) =>
+        new ResourceWithLabel(couple._1, couple._2)
+      }
+      //      entry.setPossibleValues(possibleValues ++ entry.possibleValues)
     }
 
     /**
      * populate From configuration in TDB
      *  TODO ? merge given possibleValues with existing ones
      */
-    def populateFromTDB(entry: Entry): Entry = {
+    def populateFromTDB(entry: Entry): Seq[ResourceWithLabel[Rdf]] = {
       if (!valuesFromFormGroup.isEmpty) {
         entry.openChoice = false
-        entry.setPossibleValues(valuesFromFormGroup ++ entry.possibleValues)
-      } else
-        entry
+        //        entry.setPossibleValues(valuesFromFormGroup ++ entry.possibleValues)
+      }
+      //      else entry
+      valuesFromFormGroup.map { (couple: (Rdf#Node, Rdf#Node)) =>
+        new ResourceWithLabel(couple._1, couple._2)
+      }
+    }
+
+    def setPossibleValues() = {
+      //      println("addPossibleValues " + entryField)
+      val fieldType = entryField.type_
+      //      println("addPossibleValues fieldType " + fieldType)
+      val possibleValues = {
+        //        if (entryField.property.toString().contains("knows")
+        //          || entryField.property.toString().contains("interest"))
+        //          println("entryField") // >>>>>>>>>> DEBUG
+        if (isDefined(fieldType)) {
+          getPossibleValuesAsTuple(fieldType)
+        } else {
+          val resourcesWithLabel =
+            populateFromTDB(entryField) ++
+              populateFromInstances(entryField) ++
+              populateFromOwlOneOf(entryField)
+          val res = addPossibleValues(fieldType, resourcesWithLabel)
+          //          println(s"addPossibleValues(fieldType, $resourcesWithLabel)")
+          res
+        }
+      }
+      entryField.setPossibleValues(possibleValues)
     }
 
     // ==== body of function addPossibleValues ====
 
-    populateFromTDB(
-      populateFromInstances(
-        populateFromOwlOneOf(entryField)))
+    entryField match {
+      case entryField: ResourceEntry => setPossibleValues
+      case entryField: BlankNodeEntry => setPossibleValues
+      case entryField: LiteralEntry => entryField
+    }
   }
+
+  //// DEBUG (unused) ////
 
   def info(s: String) = Logger.getRootLogger().info(s)
 
@@ -189,7 +217,6 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf]
     possibleValues
   }
 
-  //// DEBUG (unused) ////
   /** TODO put it in util class or use SPARQLHelper in project sparql_client */
   def runSparqlSelect(
     queryString: String, variables: Seq[String],

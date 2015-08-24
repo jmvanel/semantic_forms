@@ -90,7 +90,7 @@ trait FormSyntaxFactoryTest // [Rdf <: RDF]
       Seq(foaf.title,
         foaf.name, foaf.knows),
       URI(""),
-      EditionMode )
+      EditionMode)
     form
   }
 
@@ -115,7 +115,7 @@ trait FormSyntaxFactoryTest // [Rdf <: RDF]
     val os = new FileOutputStream("/tmp/graph.nt")
     turtleWriter.write(graph, os, "")
     fact.createFormDetailed(URI("betehess"), Seq(foaf.topic_interest), foaf.Person,
-        DisplayMode)
+      DisplayMode)
   }
 
 }

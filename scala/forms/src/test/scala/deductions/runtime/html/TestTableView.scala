@@ -23,8 +23,8 @@ class TestTableView extends FunSuite
     val f = TestCreationForm.wrapWithHTML(fo)
     val result = f.toString()
     val correct = result.contains("Jean-Marc")
-//    if(correct)
-      Files.write(Paths.get("example.form.foaf.html"), result.getBytes)
+    //    if(correct)
+    Files.write(Paths.get("example.form.foaf.html"), result.getBytes)
     Assert.assertTrue("""result.contains("Jean-Marc")""", correct)
   }
 

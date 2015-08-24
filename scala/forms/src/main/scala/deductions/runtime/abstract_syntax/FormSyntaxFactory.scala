@@ -42,6 +42,33 @@ object FormSyntaxFactory {
   object CreationMode extends FormMode { override def toString() = "CreationMode" }
 }
 
+class ResourceWithLabel[Rdf <: RDF](val resource: Rdf#Node, val label: Rdf#Node) {
+  def this(couple: (Rdf#Node, Rdf#Node)) =
+    this(couple._1, couple._2)
+  override def toString() = "" + resource + " : " + label
+}
+//object ResourceWithLabel {
+//   def apply[Rdf <: RDF](couple: (Rdf#Node, Rdf#Node) ) = new ResourceWithLabel(couple)
+//}
+
+trait PossibleValues[Rdf <: RDF] {
+  private var possibleValues = Map[Rdf#Node, Seq[ResourceWithLabel[Rdf]]]()
+
+  def isDefined(uri: Rdf#Node): Boolean = possibleValues.contains(uri)
+  def addPossibleValues(uri: Rdf#Node, values: Seq[ResourceWithLabel[Rdf]]) = {
+    possibleValues = possibleValues + (uri -> values)
+    resourcesWithLabel2Tuples(values)
+  }
+  //  def getPossibleValues( uri: Rdf#Node): Seq[ResourceWithLabel[Rdf]] = {
+  //    ???
+  //  }
+  def getPossibleValuesAsTuple(uri: Rdf#Node): Seq[(Rdf#Node, Rdf#Node)] = {
+    resourcesWithLabel2Tuples(possibleValues.getOrElse(uri, Seq()))
+  }
+  private def resourcesWithLabel2Tuples(values: Seq[ResourceWithLabel[Rdf]]) =
+    values.map { r => (r.resource, r.label) }
+}
+
 /**
  * Factory for an abstract Form Syntax;
  * the main class here;
@@ -56,6 +83,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
     with FieldsInference[Rdf]
     with RangeInference[Rdf]
     with PreferredLanguageLiteral[Rdf]
+    with PossibleValues[Rdf]
     with Timer {
 
   import ops._
@@ -111,11 +139,11 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
     formGroup: Rdf#URI = nullURI,
     formConfig: Rdf#Node = URI("")): FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
 
-    logger.trace(s"createForm subject $subject, props $props")
+    logger.info(s"createForm subject $subject, props $props")
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
 
     val entries = for (prop <- props) yield {
-      logger.trace(s"createForm subject $subject, prop $prop")
+      logger.info(s"createForm subject $subject, prop $prop")
       val ranges = objectsQuery(prop, rdfs.range)
       val rangesSize = ranges.size
       System.err.println(
@@ -131,8 +159,11 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
     val fields2 = addTypeTriple(subject, classs, fields)
     //    val fields2 = fields.toSeq
     val formSyntax = FormSyntax(subject, fields2, classs)
-    time(s"updateFormFromConfig()",
+    logger.info(s"createForm " + this)
+    val res = time(s"updateFormFromConfig()",
       updateFormFromConfig(formSyntax, formConfig))
+    logger.info(s"createForm 2 " + this)
+    res
   }
 
   val formConfiguration = new FormConfigurationFactory[Rdf](graph)
@@ -224,7 +255,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
     formMode: FormMode,
     valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)]): Seq[Entry] = {
 
-    logger.info(s"makeEntry subject $subject, prop $prop")
+    logger.info(s"makeEntries subject $subject, prop $prop")
     implicit val gr = graph
     implicit val prlng = preferedLanguage
     val label = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.label, terminalPart(prop))
@@ -284,8 +315,6 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
       val rdf = RDFPrefix[Rdf]
       val rdfs = RDFSPrefix[Rdf]
 
-      // if (prop.toString().contains("type")) println(prop)
-
       val entry = rangeClasses match {
         case _ if rangeClasses.exists { c => c.toString startsWith (xsdPrefix) } => literalEntry
         case _ if rangeClasses.contains(rdfs.Literal) => literalEntry
@@ -300,11 +329,13 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
         case _ if object_.toString.startsWith("_:") => resourceEntry
         case _ => literalEntry
       }
-      if (formMode != DisplayMode)
-        result += addPossibleValues(entry, ranges, valuesFromFormGroup)
-      else
+      if (formMode != DisplayMode) {
+        val pv = addPossibleValues(entry, ranges, valuesFromFormGroup)
+        result += pv
+      } else
         result += entry
     }
+    logger.info("result: Entry's " + result)
     result
   }
 

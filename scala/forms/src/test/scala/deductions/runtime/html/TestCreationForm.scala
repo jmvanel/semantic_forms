@@ -3,13 +3,12 @@ package deductions.runtime.html
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.io.PrintStream
-
 import scala.xml.Elem
 import scala.xml.NodeSeq
-
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.Finders
 import org.scalatest.FunSuite
+import org.junit.Assert
 import org.w3.banana.FOAFPrefix
 import org.w3.banana.OWLPrefix
 import org.w3.banana.RDFOpsModule
@@ -18,30 +17,39 @@ import org.w3.banana.TurtleWriterModule
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
 import org.w3.banana.syntax._
-
 import com.hp.hpl.jena.query.Dataset
-
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.utils.FileUtils
+import org.scalatest.BeforeAndAfter
 
 /** Test Creation Form from class URI, without form specification */
 class TestCreationForm extends FunSuite
     with JenaModule
     with CreationFormAlgo[Jena, Dataset] with GraphTestEnum
     with BeforeAndAfterAll
+    with BeforeAndAfter
     with RDFStoreLocalJena1Provider {
 
+  import ops._
+  
   override def afterAll {
     FileUtils.deleteLocalSPARQL()
   }
 
-  test("display form from instance") {
+  def before {
+	  println("!!!!!!!!!!!!!!!!!!!!!! before")
+  }
+  def after {
+	  println("!!!!!!!!!!!!!!!!!!!!!! after")
+  }
+  
+  test("display form from class with instance for possible values") {
     val classUri = // "http://usefulinc.com/ns/doap#Project"
       //       foaf.Organization
       foaf.Person
-    retrieveURI(classUri, dataset)
+    retrieveURI(URI(foaf.prefixIri), dataset)
     // to test possible values generation with foaf:knows :
-    retrieveURI(ops.makeUri("http://jmvanel.free.fr/jmv.rdf#me"), dataset)
+//    retrieveURI(URI("http://jmvanel.free.fr/jmv.rdf#me"), dataset)
 
     val rawForm = createElem(classUri.toString(), lang = "fr")
     val form = TestCreationForm.wrapWithHTML(rawForm)
@@ -51,6 +59,7 @@ class TestCreationForm extends FunSuite
 
     assert(rawForm.toString().contains("topic_interest"))
     assert(rawForm.toString().contains("firstName"))
+    assert(rawForm.toString().contains("knows"))
     // NOTE: homepage is not present, because it has rdfs:domain owl:Thing
   }
 
@@ -70,6 +79,16 @@ class TestCreationForm extends FunSuite
     assert(rawForm.toString().contains("evil"))
     assert(rawForm.toString().contains("Dilbert"))
   }
+
+//  test("create form from class URI") {
+//    val fo = createElem(ops.fromUri(foaf.Person), "en")
+//    val f = TestCreationForm.wrapWithHTML(fo)
+//    val result = f.toString()
+//    val correct = result.contains("knows")
+//    Files.write(Paths.get("/tmp/create.form.foaf.html"), result.getBytes)
+//    Assert.assertTrue("""result.contains("knows")""", correct)
+//  }
+
 }
 
 trait GraphTestEnum extends RDFOpsModule with TurtleWriterModule {
