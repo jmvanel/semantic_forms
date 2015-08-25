@@ -8,9 +8,7 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import org.w3.banana.RDFOps
 
-trait CreationFormAlgo[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
-    with RDFStoreLocalProvider[Rdf, DATASET] //    with Form2HTMLBanana[Rdf]
-    {
+trait CreationFormAlgo[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
   import ops._
   import rdfStore.transactorSyntax._
 

@@ -34,9 +34,6 @@ import org.w3.banana.io.RDFLoader
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
   implicit val turtleReader: RDFReader[Rdf, Try, Turtle]
   implicit val rdfXMLReader: RDFReader[Rdf, Try, RDFXML]
-  //  implicit val rdfStore: RDFStore[Rdf, Try, DATASET]
-  //  implicit val ops: RDFOps[Rdf]
-  //  implicit val sparqlOps: SparqlOps[Rdf]
 }
 
 /** depends on generic Rdf */
