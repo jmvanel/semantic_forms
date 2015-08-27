@@ -20,7 +20,6 @@ trait RDFStoreLocalJena1Provider extends RDFStoreLocalJenaProvider {
   override lazy val dataset: DATASET = {
     val dts = TDBFactory.createDataset("TDB")
     Logger.getRootLogger.info(s"RDFStoreLocalJena1Provider dataset created $dts")
-    //    println(s"RDFStoreLocalJena1Provider dataset created $dts")
     dts
   }
 }
@@ -37,8 +36,7 @@ trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Dataset]
   type DATASET = Dataset
   override val rdfStore = new JenaDatasetStore(false)
   import rdfStore.graphStoreSyntax._
-  /**
-   * NOTES:
+  /** NOTES:
    *  - no need of a transaction here, as getting Union Graph is anyway part of a transaction
    *  - Union Graph in Jena should be re-done for each use (not 100% sure, but safer anyway)
    */

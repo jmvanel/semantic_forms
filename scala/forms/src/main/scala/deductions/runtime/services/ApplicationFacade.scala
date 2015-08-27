@@ -14,7 +14,7 @@ import play.api.libs.iteratee.Enumerator
  * - 95% of the application is already done here, and there is no dependence
  *   to a particular Web framework
  */
-trait ApplicationFacade[Rdf <: RDF, DATASET] {
+trait ApplicationFacade[Rdf <: RDF, DATASET] extends ApplicationFacadeInterface {
 
   val facade: ApplicationFacadeImpl[Rdf, DATASET]
 

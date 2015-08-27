@@ -31,7 +31,14 @@ import play.api.libs.iteratee.Enumerator
 
 /**
  * a Web Application Facade,
- *  that still exposes to client all dependences on semantic_forms implementations and Banana
+ *  that still exposes to client all dependences on semantic_forms implementations
+ *   and Banana
+ *
+ * API Functions already implemented by inheritance :
+   *  def lookup(search: String): String
+   *  def login(loginName: String, password: String): Option[String]
+   *  def ldpGET(uri: String, accept: String): String = getTriples(uri, accept)
+   *
  */
 trait ApplicationFacadeImpl[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
     with TableViewModule[Rdf, DATASET]
@@ -44,7 +51,10 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATAS
     with FormSaver[Rdf, DATASET]
     with CreationFormAlgo[Rdf, DATASET]
     with LDP[Rdf, DATASET]
-    with Lookup[Rdf, DATASET] {
+    with Lookup[Rdf, DATASET]
+    with Authentication[Rdf, DATASET]
+//with ApplicationFacadeInterface
+{
 
   implicit val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   import ops._
@@ -291,12 +301,6 @@ caption {{
     val fut = extendedSearch(q)
     wrapSearchResults(fut, q)
   }
-
-  //  override def lookup(search: String): String = {
-  //      this.asInstanceOf[Lookup[Rdf, DATASET]].lookup(search)
-  //  }
-
-  def ldpGET(uri: String, accept: String): String = getTriples(uri, accept)
 
   def ldpPUT(uri: String, link: Option[String], contentType: Option[String],
     slug: Option[String],

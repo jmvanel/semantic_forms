@@ -21,7 +21,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
   val passwordPred = URI("urn:password")
 
   /** compare password with database; @return user URI if success */
-  def login(loginName: String, password: String): Option[Rdf#URI] = {
+  def login(loginName: String, password: String): Option[String] = {
 
     // query for a resource having foaf:mbox loginName
     val mboxTriples = find(allNamedGraph, ANY, foaf.mbox, URI(loginName))
@@ -38,7 +38,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
         val databasePassword = pwdsl(0).subject
         if (databasePassword == password) {
           foldNode(userURI)(
-            u => Some(u), b => None, l => None)
+            u => Some(fromUri(u)), b => None, l => None)
         } else None
       } else None
     } else None
