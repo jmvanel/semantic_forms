@@ -35,10 +35,10 @@ import play.api.libs.iteratee.Enumerator
  *   and Banana
  *
  * API Functions already implemented by inheritance :
-   *  def lookup(search: String): String
-   *  def login(loginName: String, password: String): Option[String]
-   *  def ldpGET(uri: String, accept: String): String = getTriples(uri, accept)
-   *
+ *  def lookup(search: String): String
+ *  def login(loginName: String, password: String): Option[String]
+ *  def ldpGET(uri: String, accept: String): String = getTriples(uri, accept)
+ *
  */
 trait ApplicationFacadeImpl[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
     with TableViewModule[Rdf, DATASET]
@@ -52,9 +52,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATAS
     with CreationFormAlgo[Rdf, DATASET]
     with LDP[Rdf, DATASET]
     with Lookup[Rdf, DATASET]
-    with Authentication[Rdf, DATASET]
-//with ApplicationFacadeInterface
-{
+    with Authentication[Rdf, DATASET] //with ApplicationFacadeInterface
+    {
 
   implicit val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   import ops._

@@ -50,4 +50,17 @@ trait ApplicationFacade[Rdf <: RDF, DATASET] extends ApplicationFacadeInterface 
   /** NOTE this creates a transaction; do not use it too often */
   def labelForURI(uri: String, language: String): String =
     facade.labelForURI(uri, language)
+
+  def ldpGET(uri: String, accept: String): String =
+    facade.getTriples(uri, accept)
+
+  def ldpPUT(uri: String, link: Option[String], contentType: Option[String], slug: Option[String],
+    content: Option[String]): scala.util.Try[String] =
+    facade.ldpPUT(uri, link, contentType, slug, content)
+
+  def login(loginName: String, password: String): Option[String] =
+    facade.login(loginName, password)
+
+  def signin(agentURI: String, password: String): scala.util.Try[String] =
+    signin(agentURI, password)
 }

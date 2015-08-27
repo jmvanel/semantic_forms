@@ -61,8 +61,6 @@ trait InstanceLabelsInference2[Rdf <: RDF] {
           val noption = (pgraph / rdf.typ).nodes.headOption
           noption match {
             case Some(classs) =>
-              //              implicit val gr = graph
-              //              implicit val prlng = lang
               getLiteralInPreferedLanguageFromSubjectAndPredicate(classs,
                 rdfs.label, last_segment(node))
             case None => last_segment(node)

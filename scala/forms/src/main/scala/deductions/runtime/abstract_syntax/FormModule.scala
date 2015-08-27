@@ -60,6 +60,7 @@ trait FormModule[NODE, URI <: NODE] {
    */
   sealed abstract case class Entry(
       val label: String, val comment: String,
+      // TODO for multi-subject forms:
       // val subject: NODE = nullURI,
       val property: URI = nullURI,
       /** unused yet :( */
@@ -143,8 +144,10 @@ trait FormModule[NODE, URI <: NODE] {
     value: NODE = nullURI, // String = "",
     val lang: String = "",
     type_ : NODE = nullURI,
-    possibleValues: Seq[(NODE, NODE)] = Seq()) extends Entry(l, c, property, type_ = type_,
-    value = value, possibleValues = possibleValues) {
+    possibleValues: Seq[(NODE, NODE)] = Seq())
+
+      extends Entry(l, c, property, type_ = type_,
+        value = value, possibleValues = possibleValues) {
     override def toString(): String = {
       super.toString + s""" := "$value" """
     }

@@ -1,19 +1,15 @@
 package controllers
 
 import java.io.OutputStream
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Try
 import scala.xml.NodeSeq
-
 import org.w3.banana.io.JsonLdExpanded
 import org.w3.banana.io.JsonLdFlattened
 import org.w3.banana.io.RDFWriter
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
-
 import com.hp.hpl.jena.query.Dataset
-
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.services.LDP
 import deductions.runtime.services.Lookup
@@ -21,6 +17,22 @@ import play.api.libs.json.Json
 import play.api.mvc.Accepting
 import play.api.mvc.Action
 import play.api.mvc.Controller
+import deductions.runtime.jena.ApplicationFacadeJena
+
+/** WIP : use ApplicationFacade, not Global.scala */
+object Application2 extends Controller
+with ApplicationFacadeJena
+with LanguageManagement {
+    def displayURI(uri: String, blanknode: String = "", Edit: String = "") = {
+    Action { implicit request =>
+      println("displayURI: " + request)
+      println("displayURI: " + Edit)
+      Ok(views.html.index(htmlForm(uri, blanknode, editable = Edit != "",
+        lang = chooseLanguage(request)))).
+        withHeaders("Access-Control-Allow-Origin" -> "*") // for dbpedia lookup
+    }
+  }
+}
 
 
 object Application extends Controller

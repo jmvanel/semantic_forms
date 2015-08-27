@@ -4,6 +4,8 @@
 
 GET     /display            controllers.Application.displayURI(displayuri:String, blanknode:String ?= "", Edit:String?="")
 
+GET     /display2            controllers.Application2.displayURI(displayuri:String, blanknode:String ?= "", Edit:String?="")
+
 # GET     /display2            controllers.Application.displayURI2(displayuri:String)
 
 GET     /wordsearch         controllers.Application.wordsearch(q:String ?= "")
