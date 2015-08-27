@@ -1,21 +1,18 @@
 package deductions.runtime.services
 
-import scala.util.Try
-import org.w3.banana.RDF
-import org.w3.banana.SparqlOpsModule
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import org.w3.banana.TurtleWriterModule
-import org.w3.banana.TurtleReaderModule
 import java.io.StringReader
+
 import scala.util.Success
-import scala.util.Failure
-import org.w3.banana.JsonLDWriterModule
-import org.w3.banana.JsonLDReaderModule
-import org.w3.banana.io.RDFWriter
-import org.w3.banana.io.Turtle
+import scala.util.Try
+
+import org.w3.banana.RDF
+import org.w3.banana.io.JsonLd
 import org.w3.banana.io.JsonLdCompacted
 import org.w3.banana.io.RDFReader
-import org.w3.banana.io.JsonLd
+import org.w3.banana.io.RDFWriter
+import org.w3.banana.io.Turtle
+
+import deductions.runtime.dataset.RDFStoreLocalProvider
 
 /**
  * A simple (partial) LDP implementation backed by SPARQL
@@ -35,13 +32,8 @@ import org.w3.banana.io.JsonLd
  * @author jmv
  */
 trait LDP[Rdf <: RDF, DATASET]
-    extends //    SparqlOpsModule
-    //    with 
-    RDFStoreLocalProvider[Rdf, DATASET] //    with TurtleWriterModule
-    //    with JsonLDWriterModule
-    //    with TurtleReaderModule
-    //    with JsonLDReaderModule 
-    {
+    extends RDFStoreLocalProvider[Rdf, DATASET]
+    with SPARQLHelpers[Rdf, DATASET] {
 
   val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   implicit val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]
@@ -68,24 +60,15 @@ trait LDP[Rdf <: RDF, DATASET]
       } yield s
     }
     r.get.get
-    //    r.flatten
   }
 
-  def makeQueryString(search: String): String =
+  private def makeQueryString(search: String): String =
     s"""
          |CONSTRUCT { ?s ?p ?o } WHERE {
          |  graph <$schemeName:$search> {
          |    ?s ?p ?o .
          |  }
          |}""".stripMargin
-
-  /** NON transactional */
-  def sparqlConstructQuery(queryString: String): Try[Rdf#Graph] = {
-    for {
-      query <- parseConstruct(queryString) // .asFuture
-      es <- dataset.executeConstruct(query, Map())
-    } yield es
-  }
 
   /** for LDP PUT */
   def putTriples(uri: String, link: Option[String], contentType: Option[String],

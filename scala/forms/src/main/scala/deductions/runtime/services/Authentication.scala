@@ -1,12 +1,13 @@
 package deductions.runtime.services
 
-import org.w3.banana.PointedGraph
-import org.w3.banana.RDF
-import deductions.runtime.sparql_cache.RDFCacheAlgo
-import org.w3.banana.FOAFPrefix
-import scala.util.Try
-import scala.util.Success
 import scala.util.Failure
+import scala.util.Success
+import scala.util.Try
+
+import org.w3.banana.FOAFPrefix
+import org.w3.banana.RDF
+
+import deductions.runtime.sparql_cache.RDFCacheAlgo
 
 /**
  * @author jmv
@@ -60,6 +61,6 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
         makeLiteral(password, xsd.string))
       Success(userId)
     } else Failure(new Exception(
-        s"""There is no email (foaf:mbox) associated to "$agentURI""""))
+      s"""There is no email (foaf:mbox) associated to "$agentURI""""))
   }
 }

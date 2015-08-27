@@ -14,12 +14,8 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
 trait Lookup[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
     with InstanceLabelsInference2[Rdf]
-    with PreferredLanguageLiteral[Rdf] //extends RDFStoreLocalProvider[Rdf, DATASET]
-    //    //    with PreferredLanguageLiteral[Rdf]
-    //    with InstanceLabelsInference2[Rdf]
-    //    with TurtleWriterModule 
-    {
-  //  implicit val ops: RDFOps[Rdf]
+    with PreferredLanguageLiteral[Rdf]
+    with SPARQLHelpers[Rdf, DATASET] {
 
   import ops._
   import sparqlOps._
@@ -75,18 +71,6 @@ trait Lookup[Rdf <: RDF, DATASET]
          |}""".stripMargin
     println("search_only " + queryString)
     sparqlConstructQuery(queryString)
-  }
-
-  /**
-   * NON transactional
-   *  TODO copied
-   */
-  private def sparqlConstructQuery(queryString: String): Try[Rdf#Graph] = {
-    val r = for {
-      query <- parseConstruct(queryString)
-      es <- dataset.executeConstruct(query, Map())
-    } yield es
-    r
   }
 
 }
