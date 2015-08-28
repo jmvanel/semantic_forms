@@ -14,7 +14,6 @@ import org.w3.banana.RDFOpsModule
 import org.w3.banana.RDFXMLReaderModule
 import org.w3.banana.TurtleReaderModule
 import org.w3.banana.XSDPrefix
-//import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import org.w3.banana.OWLPrefix
@@ -228,27 +227,29 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       connection.setConnectTimeout(timeout);
       connection.setReadTimeout(timeout);
       connection.setRequestMethod("HEAD");
-      val responseCode = connection.getResponseCode();
+      val responseCode = connection.getResponseCode()
+
       def tryHeaderField(headerName: String): (Boolean, Boolean, Long) = {
         val dateString = connection.getHeaderField(headerName)
         if (dateString != null) {
           val date: java.util.Date = DateUtils.parseDate(dateString) // from apache http-components
           println("RDFCacheAlgo.lastModified: responseCode: " + responseCode +
-            ", date " + date +
-            "; url " + url)
+            ", date: " + date +
+            "; url: " + url)
           (true, 200 <= responseCode && responseCode <= 399, date.getTime())
         } else (false, false, Long.MaxValue)
       }
-      // TODO should be a better way in Scala:
+
       val lm = tryHeaderField("Last-Modified")
       val r = if (lm._1) {
         (lm._2, lm._3)
-      } else {
-        val lm2 = tryHeaderField("Date")
-        if (lm2._1) {
-          (lm2._2, lm2._3)
-        } else (false, Long.MaxValue)
-      }
+      } else (false, Long.MaxValue)
+      //      else {
+      //        val lm2 = tryHeaderField("Date")
+      //        if (lm2._1) {
+      //          (lm2._2, lm2._3)
+      //        } else (false, Long.MaxValue)
+      //      }
       return r
     } catch {
       case exception: IOException => (false, Long.MinValue)
