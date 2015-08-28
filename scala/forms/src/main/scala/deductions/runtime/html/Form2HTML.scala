@@ -136,12 +136,12 @@ trait Form2HTML[NODE, URI <: NODE]
 
               <div class={ cssClasses.formLabelAndInputCSSClass }>
                 {
-                  //                  time(s"makeFieldLabel( ${field.label})",
+                  // time(s"makeFieldLabel( ${field.label})",
                   makeFieldLabel(preceding, field)
                 }
                 {
-                  //                  time(s"makeFieldInput( ${field.label})",
-                  makeFieldInput(field, hrefPrefix, editable)
+                  // time(s"makeFieldInput( ${field.label})",
+                  makeFieldDataOrInput(field, hrefPrefix, editable)
                 }
               </div>
             }
@@ -168,7 +168,7 @@ trait Form2HTML[NODE, URI <: NODE]
       }> -- </label>
   }
 
-  private def makeFieldInput(field: fm#Entry, hrefPrefix: String,
+  private def makeFieldDataOrInput(field: fm#Entry, hrefPrefix: String,
     editable: Boolean)(implicit form: FormModule[NODE, URI]#FormSyntax) = {
     if (shouldAddAddRemoveWidgets(field, editable))
       createHTMLField(field, editable, hrefPrefix)
@@ -251,7 +251,7 @@ trait Form2HTML[NODE, URI <: NODE]
 
           } else
             <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString, true) }>{
-              r.getId
+              r.valueLabel
             }</a>
         }
       case _ => <p>Should not happen! createHTMLField({ field })</p>

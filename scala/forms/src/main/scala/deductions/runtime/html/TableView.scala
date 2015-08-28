@@ -95,7 +95,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     formGroup: Rdf#URI = nullURI) // (implicit allNamedGraphs: Rdf#Graph)
     : Try[NodeSeq] = {
 
-	for {
+    for {
       (graphURIActual, tryGraph) <- Try { time("doRetrieveURI", doRetrieveURI(uri, blankNode, graphURI)) }
       graphDownloaded <- tryGraph
       form <- dataset.r({
