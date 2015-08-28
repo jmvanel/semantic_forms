@@ -11,6 +11,7 @@ import deductions.runtime.abstract_syntax.FormSyntaxFactory
 import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.Timer
+import scala.util.Success
 
 /**
  * Form for a subject URI with existing triples;
@@ -41,15 +42,16 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     graphURI: String = "",
     actionURI2: String = "/save",
     formGroup: String = fromUri(nullURI))(implicit allNamedGraphs: Rdf#Graph): NodeSeq = {
+
     htmlForm(uri, hrefPrefix, blankNode, editable, actionURI,
       lang, graphURI, actionURI2, URI(formGroup)) match {
         case Success(e) => e
-        case Failure(e) => <p>Exception occured: { e }</p>
+        case Failure(e) => <p>htmlFormElem: Exception occured: { e }</p>
       }
   }
 
   /**
-   * wrapper for htmlForm, but Just Fields; shows Failure's;
+   * wrapper for htmlForm, but generates Just Fields; also shows Failure's;
    *  see [[deductions.runtime.html.Form2HTML]] .generateHTMLJustFields()
    */
   def htmlFormElemJustFields(uri: String, hrefPrefix: String = "", blankNode: String = "",
@@ -58,7 +60,9 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     graphURI: String = "",
     formGroup: String = fromUri(nullURI)): NodeSeq = {
 
-    val graphURIActual = doRetrieveURI(uri, blankNode, graphURI)
+    // TODO for comprehension like in htmlForm()
+
+    val (graphURIActual, _) = doRetrieveURI(uri, blankNode, graphURI)
     val htmlFormTry = dataset.r({
       val form = createAbstractForm(allNamedGraph, uri, editable, lang, blankNode,
         URI(formGroup))
@@ -72,7 +76,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     })
     htmlFormTry match {
       case Success(e) => e
-      case Failure(e) => <p>Exception occured: { e }</p>
+      case Failure(e) => <p class="error">htmlFormElemJustFields: Exception occured: { e }</p>
     }
   }
 
@@ -88,12 +92,17 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     lang: String = "en",
     graphURI: String = "",
     actionURI2: String = "/save",
-    formGroup: Rdf#URI = nullURI)(implicit allNamedGraphs: Rdf#Graph): Try[NodeSeq] = {
-    val graphURIActual = time("doRetrieveURI", doRetrieveURI(uri, blankNode, graphURI))
-    dataset.r({
-      graf2form(allNamedGraphs, uri, hrefPrefix, blankNode, editable,
-        actionURI, lang, graphURIActual, actionURI2, formGroup)
-    })
+    formGroup: Rdf#URI = nullURI) // (implicit allNamedGraphs: Rdf#Graph)
+    : Try[NodeSeq] = {
+
+	for {
+      (graphURIActual, tryGraph) <- Try { time("doRetrieveURI", doRetrieveURI(uri, blankNode, graphURI)) }
+      graphDownloaded <- tryGraph
+      form <- dataset.r({
+        graf2form(allNamedGraph, uri, hrefPrefix, blankNode, editable,
+          actionURI, lang, graphURIActual, actionURI2, formGroup)
+      })
+    } yield form
   }
 
   /**
@@ -101,12 +110,14 @@ trait TableViewModule[Rdf <: RDF, DATASET]
    *
    *  @return Actual graph URI: given graph URI or else given uri
    */
-  private def doRetrieveURI(uri: String, blankNode: String, graphURI: String) = {
-    if (blankNode != "true") {
-      retrieveURI(makeUri(uri), dataset)
+  private def doRetrieveURI(uri: String, blankNode: String, graphURI: String): (String, Try[Rdf#Graph]) = {
+    val tryGraph = if (blankNode != "true") {
+      val res = retrieveURI(makeUri(uri), dataset)
       Logger.getRootLogger().info(s"After retrieveURI(makeUri($uri), store)")
-    }
-    if (graphURI == "") uri else graphURI
+      res
+    } else Success(emptyGraph)
+    val graphURIActual = if (graphURI == "") uri else graphURI
+    (graphURIActual, tryGraph)
   }
 
   /**
@@ -121,6 +132,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     lang: String = "en", graphURI: String,
     actionURI2: String = "/save",
     formGroup: Rdf#URI = nullURI): NodeSeq = {
+
     val form = time("createAbstractForm",
       createAbstractForm(graph, uri, editable, lang, blankNode, formGroup))
     val htmlFormGen = time("new Form2HTML",

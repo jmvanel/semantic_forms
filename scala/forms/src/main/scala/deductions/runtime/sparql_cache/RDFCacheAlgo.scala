@@ -76,7 +76,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     dataset.rw({
       for (graph <- dataset.getGraph(uri)) yield {
         val uriGraphIsEmpty = graph.size == 0
-        println("uriGraphIsEmpty " + uriGraphIsEmpty)
+        println(s"uriGraphIsEmpty: $uri : $uriGraphIsEmpty")
         if (uriGraphIsEmpty) {
           val g = storeURINoTransaction(uri, uri, dataset)
           println("Graph at URI was downloaded, new addition: " + uri + " , size " + g.size)
