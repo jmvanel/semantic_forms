@@ -4,19 +4,17 @@
 
 GET     /display            controllers.Application.displayURI(displayuri:String, blanknode:String ?= "", Edit:String?="")
 
-GET     /display2            controllers.Application2.displayURI(displayuri:String, blanknode:String ?= "", Edit:String?="")
-
 # GET     /display2            controllers.Application.displayURI2(displayuri:String)
 
-GET     /wordsearch         controllers.Application.wordsearch(q:String ?= "")
+GET     /wordsearch         controllers.Application.wordsearchAction(q:String ?= "")
 
-GET     /download           controllers.Application.download( url:String )
+GET     /download           controllers.Application.downloadAction( url:String )
 
 GET     /edit               controllers.Application.edit( url:String )
 
-POST    /save               controllers.Application.save()
+POST    /save               controllers.Application.saveAction()
 
-GET     /create             controllers.Application.create()
+GET     /create             controllers.Application.createAction()
 
 GET     /sparql             controllers.Application.sparql( query:String )
 
@@ -26,7 +24,7 @@ GET     /select             controllers.Application.select( query:String )
 
 POST    /select             controllers.Application.select( query:String )
 
-GET     /backlinks         controllers.Application.backlinks(q:String ?= "")
+GET     /backlinks         controllers.Application.backlinksAction(q:String ?= "")
 
 GET     /esearch           controllers.Application.extSearch(q:String ?= "")
 
@@ -39,6 +37,6 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 # LDP
 GET     /ldp/*uri              controllers.Application.ldp(uri: String)
 
-POST    /ldp/*uri              controllers.Application.ldpPOST(uri: String)
+POST    /ldp/*uri              controllers.Application.ldpPOSTAction(uri: String)
 
 GET     /lookup                controllers.Application.lookupService(q:String)

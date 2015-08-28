@@ -2,6 +2,7 @@ package deductions.runtime.services
 
 import scala.concurrent.Future
 import scala.xml.Elem
+import scala.xml.NodeSeq
 
 import org.w3.banana.RDF
 
@@ -18,13 +19,19 @@ trait ApplicationFacade[Rdf <: RDF, DATASET] extends ApplicationFacadeInterface 
 
   val facade: ApplicationFacadeImpl[Rdf, DATASET]
 
-  private implicit val allNamedGraphs2 = facade.allNamedGraphs
+  private lazy implicit val allNamedGraphs2 = facade.allNamedGraphs
 
   def htmlForm(uri: String, blankNode: String = "",
     editable: Boolean = false,
     lang: String = "en") =
     facade.htmlForm(uri: String, blankNode,
       editable, lang)
+
+  def create(classUri: String, lang: String, formSpecURI: String): NodeSeq =
+    facade.create(classUri, lang, formSpecURI).get
+
+  def lookup(search: String): String =
+    facade.lookup(search)
 
   def wordsearch(q: String = ""): Future[Elem] =
     facade.wordsearchFuture(q)
@@ -54,13 +61,15 @@ trait ApplicationFacade[Rdf <: RDF, DATASET] extends ApplicationFacadeInterface 
   def ldpGET(uri: String, accept: String): String =
     facade.getTriples(uri, accept)
 
-  def ldpPUT(uri: String, link: Option[String], contentType: Option[String], slug: Option[String],
-    content: Option[String]): scala.util.Try[String] =
-    facade.ldpPUT(uri, link, contentType, slug, content)
+  def ldpPOST(uri: String, link: Option[String], contentType: Option[String],
+    slug: Option[String], content: Option[String]): scala.util.Try[String] =
+    facade.ldpPOST(uri, link, contentType, slug, content)
 
   def login(loginName: String, password: String): Option[String] =
     facade.login(loginName, password)
 
   def signin(agentURI: String, password: String): scala.util.Try[String] =
     signin(agentURI, password)
+
+  // TODO ? def checkLogin(loginName: String): Boolean
 }

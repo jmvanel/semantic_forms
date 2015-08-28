@@ -76,7 +76,7 @@ Content-Type: text/turtle
           ("Slug", file),
           ("Content-Type", "text/turtle")
       ). withTextBody(bodyTTL)
-    val result = controllers.Application.ldpPOST(ldpContainerURI)(request)
+    val result = controllers.Application.ldpPOSTAction(ldpContainerURI)(request)
 
     info( "status: " + status(result)(timeout) ) // must equalTo(OK)
     println( contentType(result)(timeout) ) // must beSome("text/plain")

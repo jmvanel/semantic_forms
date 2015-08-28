@@ -17,13 +17,25 @@ trait ApplicationFacadeJena
     extends ApplicationFacadeInterface
     with ApplicationFacade[Jena, Dataset] {
 
-  /**  NOTE: important that JenaModule is first; otherwise ops may be null */
-  class ApplicationFacadeImplJena extends ApplicationFacadeImpl[Jena, Dataset]
-      with JenaModule with RDFStoreLocalJena1Provider {
+  val facade = try {
+    /**
+     * NOTES:
+     * - mandatory that JenaModule is first; otherwise ops may be null
+     * - mandatory that RDFStoreLocalJena1Provider is before ApplicationFacadeImpl;
+     *   otherwise allNamedGraph may be null
+     */
+    class ApplicationFacadeImplJena extends JenaModule
+        with ApplicationFacadeImpl[Jena, Dataset]
+        with RDFStoreLocalJena1Provider {
 
-    val rdfStoreApp = new RDFStoreLocalJena2Provider {}
-    import ops._
-    val passwordsGraph = rdfStoreApp.rdfStore.getGraph(rdfStoreApp.dataset, URI("urn:users")).get
+      val rdfStoreApp = new RDFStoreLocalJena2Provider {}
+      import ops._
+      val passwordsGraph = rdfStoreApp.rdfStore.getGraph(rdfStoreApp.dataset, URI("urn:users")).get
+    }
+    new ApplicationFacadeImplJena
+  } catch {
+    case t: Throwable =>
+      t.printStackTrace()
+      throw t
   }
-  val facade = new ApplicationFacadeImplJena
 }

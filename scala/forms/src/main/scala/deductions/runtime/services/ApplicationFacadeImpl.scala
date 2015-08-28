@@ -2,32 +2,27 @@ package deductions.runtime.services
 
 import java.net.URLDecoder
 import java.net.URLEncoder
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
 import scala.xml.Elem
-
 import org.apache.log4j.Logger
-
 import org.w3.banana.RDF
 import org.w3.banana.io.RDFWriter
 import org.w3.banana.io.Turtle
-
 import com.hp.hpl.jena.query.Dataset
-
 import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.html.CreationFormAlgo
 import deductions.runtime.html.TableViewModule
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.I18NMessages
-
-//import deductions.runtime.services.Lookup{ lookup => lookup0 }
-
 import play.api.libs.iteratee.Enumerator
+import org.w3.banana.io.JsonLdExpanded
+import java.io.OutputStream
+import org.w3.banana.io.JsonLdFlattened
 
 /**
  * a Web Application Facade,
@@ -57,6 +52,17 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATAS
 
   implicit val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   import ops._
+
+  import scala.util.Try
+  // Members declared in org.w3.banana.JsonLDWriterModule
+  implicit val jsonldExpandedWriter = new RDFWriter[Rdf, scala.util.Try, JsonLdExpanded] {
+    override def write(graph: Rdf#Graph, os: OutputStream, base: String): Try[Unit] = ???
+    override def asString(graph: Rdf#Graph, base: String): Try[String] = ???
+  }
+  implicit val jsonldFlattenedWriter = new RDFWriter[Rdf, scala.util.Try, JsonLdFlattened] {
+    override def write(graph: Rdf#Graph, os: OutputStream, base: String): Try[Unit] = ???
+    override def asString(graph: Rdf#Graph, base: String): Try[String] = ???
+  }
 
   Logger.getRootLogger().info(s"in Global")
 
@@ -189,7 +195,6 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATAS
     // cf https://www.playframework.com/documentation/2.3.x/ScalaStream
     // and http://greweb.me/2012/11/play-framework-enumerator-outputstream/
     Enumerator.outputStream { os =>
-      //        val dl = new BrowsableGraph[Rdf, DATASET]{}
       val graph = search_only(url)
       graph.map { graph =>
         /* non blocking */
@@ -301,7 +306,7 @@ caption {{
     wrapSearchResults(fut, q)
   }
 
-  def ldpPUT(uri: String, link: Option[String], contentType: Option[String],
+  def ldpPOST(uri: String, link: Option[String], contentType: Option[String],
     slug: Option[String],
     content: Option[String]): Try[String] =
     putTriples(uri, link, contentType,

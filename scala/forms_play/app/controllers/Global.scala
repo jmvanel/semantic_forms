@@ -44,10 +44,11 @@ import play.api.mvc.Request
  *  https://issues.scala-lang.org/browse/SI-9346 */
 package global1 {
 
-  /** NOTE: important that JenaModule is first; otherwise ops may be null */
+  /** UNUSED as of Fri Aug 28 18:52:32 CEST 2015
+   *  
+   *  NOTE: important that JenaModule is first; otherwise ops may be null */
   object Global extends JenaModule
   with AbstractApplication[Jena, Dataset]
-//  with JenaHelpers
   with RDFStoreLocalJena1Provider
     
   trait AbstractApplication[Rdf <: RDF, DATASET] extends
@@ -200,7 +201,6 @@ package global1 {
       // cf https://www.playframework.com/documentation/2.3.x/ScalaStream
       // and http://greweb.me/2012/11/play-framework-enumerator-outputstream/
       Enumerator.outputStream { os =>
-//        val dl = new BrowsableGraph[Rdf, DATASET]{}
         val graph = search_only(url)
         graph.map { graph =>
           /* non blocking */
