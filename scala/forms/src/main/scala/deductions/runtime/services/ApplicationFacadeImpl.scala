@@ -85,7 +85,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATAS
   /** TODO move some formatting to views or separate function */
   def htmlForm(uri0: String, blankNode: String = "",
     editable: Boolean = false,
-    lang: String = "en")(implicit allNamedGraphs: Rdf#Graph): Elem = {
+    lang: String = "en") // (implicit allNamedGraphs: Rdf#Graph)
+    : Elem = {
     Logger.getRootLogger().info(s"""Global.htmlForm uri $uri0 blankNode "$blankNode" lang=$lang """)
     val uri = uri0.trim()
 
@@ -207,11 +208,13 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATAS
     }
   }
 
-  def edit(url: String)(implicit allNamedGraphs: Rdf#Graph): Elem = {
+  def edit(url: String) // (implicit allNamedGraphs: Rdf#Graph)
+  : Elem = {
     htmlForm(url, editable = true)
   }
 
-  def saveForm(request: Map[String, Seq[String]], lang: String = "")(implicit allNamedGraphs: Rdf#Graph): Elem = {
+  def saveForm(request: Map[String, Seq[String]], lang: String = "") // (implicit allNamedGraphs: Rdf#Graph)
+  : Elem = {
     println("ApplicationFacade.save: map " + request)
     try {
       fs.saveTriples(request)

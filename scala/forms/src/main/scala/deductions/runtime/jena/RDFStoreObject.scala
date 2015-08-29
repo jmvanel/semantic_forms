@@ -42,8 +42,11 @@ trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Dataset]
    *  - Union Graph in Jena should be re-done for each use (not 100% sure, but safer anyway)
    */
   override def allNamedGraph: Rdf#Graph = {
-    time(s"allNamedGraph dataset $dataset",
-      dataset.getGraph(makeUri("urn:x-arq:UnionGraph")).get
+    time(s"allNamedGraph dataset $dataset", {
+      val ang = dataset.getGraph(makeUri("urn:x-arq:UnionGraph")).get
+      println(s"Union Graph: $ang")
+      ang
+    }
     )
     //    union(dataset.getDefaultModel.getGraph :: unionGraph :: Nil)
   }
