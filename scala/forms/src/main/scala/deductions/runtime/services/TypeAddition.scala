@@ -6,6 +6,7 @@ import org.w3.banana.RDFSPrefix
 import org.w3.banana.SparqlGraphModule
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import org.w3.banana.FOAFPrefix
+import scala.language.postfixOps
 
 /**
  * ensure that types inferred from ontologies are added to objects of given triples

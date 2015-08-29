@@ -31,6 +31,7 @@ import org.w3.banana.RDFStore
 import deductions.runtime.utils.RDFHelpers
 import org.w3.banana.SparqlEngine
 import deductions.runtime.utils.Timer
+import scala.language.postfixOps
 
 object FormSyntaxFactory {
   /** vocabulary for form specifications */

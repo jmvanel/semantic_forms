@@ -14,6 +14,7 @@ import org.w3.banana.SparqlGraphModule
 import org.w3.banana.SparqlEngine
 import org.w3.banana.SparqlOps
 import deductions.runtime.abstract_syntax.FormSyntaxFactory.CreationMode
+import scala.language.postfixOps
 
 /**
  * @author j.m. Vanel

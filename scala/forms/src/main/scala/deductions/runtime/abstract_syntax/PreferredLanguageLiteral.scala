@@ -3,6 +3,7 @@ package deductions.runtime.abstract_syntax
 import org.w3.banana.RDF
 import org.w3.banana.RDFOpsModule
 import org.w3.banana.RDFOps
+import scala.language.postfixOps
 
 /**
  * @author jmv

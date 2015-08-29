@@ -2,15 +2,19 @@ package deductions.runtime.services
 
 import org.w3.banana.RDF
 import org.w3.banana.TryW
+import org.w3.banana.io.RDFWriter
+import org.w3.banana.io.Turtle
+
 import scala.util.Try
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationInt
+import scala.language.postfixOps
+
 import deductions.runtime.dataset.RDFStoreLocalProvider
+
 import java.io.ByteArrayOutputStream
-import org.w3.banana.io.RDFWriter
-import org.w3.banana.io.Turtle
 
 import org.apache.log4j.Logger
 

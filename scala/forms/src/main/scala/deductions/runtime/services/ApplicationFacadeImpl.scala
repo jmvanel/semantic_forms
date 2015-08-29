@@ -73,7 +73,9 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATAS
   lazy val dl = this
   lazy val fs = this
   lazy val cf = this
-  lazy val allNamedGraphs = allNamedGraph
+
+  import rdfStore.transactorSyntax._
+  lazy val allNamedGraphs = dataset.r({ allNamedGraph }).get
 
   // TODO use inverse Play's URI API
   val hrefDisplayPrefix = "/display?displayuri="
@@ -292,13 +294,13 @@ caption {{
     wrapSearchResults(fut, q)
   }
 
+  /** TODO should be in package hmtl */
   private def wrapSearchResults(fut: Future[Elem], q: String): Future[Elem] =
     fut.map { v =>
-      <p>
-        Searched for "{ q }
-        " :<br/>
-        { v }
-      </p>
+      <section class="label-search-results">
+        <p class="label-search-header">Searched for "{ q }" :</p>
+        <div>{ v }</div>
+      </section>
     }
 
   def esearchFuture(q: String = ""): Future[Elem] = {
