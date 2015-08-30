@@ -1,6 +1,8 @@
 semantic forms
 ==============
 
+[![Join the chat at https://gitter.im/jmvanel/semantic_forms](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jmvanel/semantic_forms?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Form generators leveraging semantic web standards RDF(S), OWL, SPARQL , JSON-LD , ...
 
 Under GNU Public Licence version 3 [GPL v3](http://www.gnu.org/copyleft/gpl.html)
