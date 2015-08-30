@@ -1,13 +1,17 @@
 package deductions.runtime.jena
 
 import org.w3.banana.jena.JenaModule
-import deductions.runtime.services.TypeAddition
 import org.w3.banana.jena.Jena
-import com.hp.hpl.jena.query.Dataset
 import org.w3.banana.RDF
 import org.w3.banana.RDFOpsModule
+
+import deductions.runtime.services.TypeAddition
+
+import com.hp.hpl.jena.query.Dataset
+
 import scala.collection.mutable.ArraySeq
 import scala.util.Try
+import scala.language.postfixOps
 
 /**
  * deductions.runtime.jenaTypeAdditionApp
@@ -18,7 +22,6 @@ import scala.util.Try
  * @author jmv
  */
 object TypeAdditionApp extends JenaModule
-    //    with JenaHelpers
     with App
     with RDFStoreLocalJena1Provider
     with TypeAdditionAppTrait[Jena, Dataset] {

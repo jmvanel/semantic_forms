@@ -31,25 +31,25 @@ class TestCreationForm extends FunSuite
     with RDFStoreLocalJena1Provider {
 
   import ops._
-  
+
   override def afterAll {
     FileUtils.deleteLocalSPARQL()
   }
 
   def before {
-	  println("!!!!!!!!!!!!!!!!!!!!!! before")
+    println("!!!!!!!!!!!!!!!!!!!!!! before")
   }
   def after {
-	  println("!!!!!!!!!!!!!!!!!!!!!! after")
+    println("!!!!!!!!!!!!!!!!!!!!!! after")
   }
-  
+
   test("display form from class with instance for possible values") {
     val classUri = // "http://usefulinc.com/ns/doap#Project"
       //       foaf.Organization
       foaf.Person
     retrieveURI(URI(foaf.prefixIri), dataset)
     // to test possible values generation with foaf:knows :
-//    retrieveURI(URI("http://jmvanel.free.fr/jmv.rdf#me"), dataset)
+    //    retrieveURI(URI("http://jmvanel.free.fr/jmv.rdf#me"), dataset)
 
     val rawForm = createElem(classUri.toString(), lang = "fr")
     val form = TestCreationForm.wrapWithHTML(rawForm)
@@ -80,14 +80,14 @@ class TestCreationForm extends FunSuite
     assert(rawForm.toString().contains("Dilbert"))
   }
 
-//  test("create form from class URI") {
-//    val fo = createElem(ops.fromUri(foaf.Person), "en")
-//    val f = TestCreationForm.wrapWithHTML(fo)
-//    val result = f.toString()
-//    val correct = result.contains("knows")
-//    Files.write(Paths.get("/tmp/create.form.foaf.html"), result.getBytes)
-//    Assert.assertTrue("""result.contains("knows")""", correct)
-//  }
+  //  test("create form from class URI") {
+  //    val fo = createElem(ops.fromUri(foaf.Person), "en")
+  //    val f = TestCreationForm.wrapWithHTML(fo)
+  //    val result = f.toString()
+  //    val correct = result.contains("knows")
+  //    Files.write(Paths.get("/tmp/create.form.foaf.html"), result.getBytes)
+  //    Assert.assertTrue("""result.contains("knows")""", correct)
+  //  }
 
 }
 

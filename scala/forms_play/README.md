@@ -11,6 +11,9 @@ For now, the display looks like this,
 plus a textbox to enter a URL semantics, eg a FOAF profile or DBpedia URI : 
 [example.form.foaf.html](http://htmlpreview.github.io/?https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/example.form.foaf.html)
 
+See the [wiki](https://github.com/jmvanel/semantic_forms/wiki) for User manual and Developer manual.
+This README is like an administrator Manual. 
+
 # How to run
 ## Run locally from sources
 

@@ -6,6 +6,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import SemanticURIGuesser._
 import org.scalatest.Ignore
+import scala.language.postfixOps
 
 @Ignore
 class TestSemanticURIGuesser extends FunSuite {

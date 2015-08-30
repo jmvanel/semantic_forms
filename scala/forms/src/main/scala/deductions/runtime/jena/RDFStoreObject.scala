@@ -17,16 +17,13 @@ object RDFStoreObject extends JenaModule with RDFStoreLocalJena1Provider
 
 /** For user data and RDF cache, sets a default location for the Jena TDB store directory : ./TDB/ */
 trait RDFStoreLocalJena1Provider extends RDFStoreLocalJenaProvider {
-  override lazy val dataset: DATASET = {
-    val dts = TDBFactory.createDataset("TDB")
-    Logger.getRootLogger.info(s"RDFStoreLocalJena1Provider dataset created $dts")
-    dts
-  }
+  val databaseLocation = "TDB"
+  //		  override lazy val dataset: DATASET = createDatabase(databaseLocation)
 }
 
 /** For application data (timestamps, URI types, ...), sets a default location for the Jena TDB store directory : ./TDBapp/ */
 trait RDFStoreLocalJena2Provider extends RDFStoreLocalJenaProvider {
-  override lazy val dataset: DATASET = TDBFactory.createDataset("TDBapp")
+  val databaseLocation = "TDBapp"
 }
 
 trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Dataset]
@@ -36,6 +33,13 @@ trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Dataset]
   type DATASET = Dataset
   override val rdfStore = new JenaDatasetStore(false)
   import rdfStore.graphStoreSyntax._
+
+  override def createDatabase(database_location: String) = {
+    val dts = TDBFactory.createDataset(databaseLocation)
+    Logger.getRootLogger.info(s"RDFStoreLocalJena1Provider dataset created $dts")
+    dts
+  }
+
   /**
    * NOTES:
    *  - no need of a transaction here, as getting Union Graph is anyway part of a transaction

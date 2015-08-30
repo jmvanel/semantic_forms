@@ -20,7 +20,9 @@ import org.scalatest.Ignore
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import org.w3.banana.io.RDFReader
 import org.w3.banana.io.RDFXML
+
 import scala.util.Try
+import scala.language.postfixOps
 
 trait TestStringSearchTrait[Rdf <: RDF, DATASET] extends FunSuite
     with BeforeAndAfterAll

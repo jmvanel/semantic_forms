@@ -2,12 +2,11 @@ package deductions.runtime.jena
 
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
-
 import com.hp.hpl.jena.query.Dataset
-
 import deductions.runtime.services.ApplicationFacade
 import deductions.runtime.services.ApplicationFacadeImpl
 import deductions.runtime.services.ApplicationFacadeInterface
+import deductions.runtime.dataset.RDFStoreLocalUserManagement
 
 /**
  * ApplicationFacade for Jena
@@ -26,11 +25,12 @@ trait ApplicationFacadeJena
      */
     class ApplicationFacadeImplJena extends JenaModule
         with ApplicationFacadeImpl[Jena, Dataset]
-        with RDFStoreLocalJena1Provider {
+        with RDFStoreLocalJena1Provider
+        with RDFStoreLocalUserManagement[Jena, Dataset] {
 
-      val rdfStoreApp = new RDFStoreLocalJena2Provider {}
-      import ops._
-      val passwordsGraph = rdfStoreApp.rdfStore.getGraph(rdfStoreApp.dataset, URI("urn:users")).get
+      //      val rdfStoreApp = new RDFStoreLocalJena2Provider {}
+      //      import ops._
+      //      val passwordsGraph = rdfStoreApp.rdfStore.getGraph(rdfStoreApp.dataset, URI("urn:users")).get
     }
     new ApplicationFacadeImplJena
   } catch {
@@ -39,3 +39,10 @@ trait ApplicationFacadeJena
       throw t
   }
 }
+
+//trait RDFStoreLocalJenaUserManagement extends JenaModule
+//    with RDFStoreLocalJena1Provider {
+//  private val rdfStoreApp = new RDFStoreLocalJena2Provider {}
+//  import ops._
+//  val passwordsGraph = rdfStoreApp.rdfStore.getGraph(rdfStoreApp.dataset, URI("urn:users")).get
+//}

@@ -3,30 +3,27 @@
 # ~~~~
 
 GET     /display            controllers.Application.displayURI(displayuri:String, blanknode:String ?= "", Edit:String?="")
-
 # GET     /display2            controllers.Application.displayURI2(displayuri:String)
-
-GET     /wordsearch         controllers.Application.wordsearchAction(q:String ?= "")
+GET     /edit               controllers.Application.edit( url:String )
+POST    /save               controllers.Application.saveAction()
+GET     /create             controllers.Application.createAction()
 
 GET     /download           controllers.Application.downloadAction( url:String )
 
-GET     /edit               controllers.Application.edit( url:String )
-
-POST    /save               controllers.Application.saveAction()
-
-GET     /create             controllers.Application.createAction()
-
 GET     /sparql             controllers.Application.sparql( query:String )
-
 POST    /sparql             controllers.Application.sparql( query:String )
-
 GET     /select             controllers.Application.select( query:String )
-
 POST    /select             controllers.Application.select( query:String )
 
+GET     /wordsearch         controllers.Application.wordsearchAction(q:String ?= "")
 GET     /backlinks         controllers.Application.backlinksAction(q:String ?= "")
-
 GET     /esearch           controllers.Application.extSearch(q:String ?= "")
+
+# authentication
+# GET     /login                      controllers.Auth.login
+# POST    /login                      controllers.Auth.authenticate
+# POST    /register                   controllers.Auth.register
+# GET     /logout                     controllers.Auth.logout
 
 # Home page
 GET     /                   controllers.Application.index
@@ -36,7 +33,5 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 # LDP
 GET     /ldp/*uri              controllers.Application.ldp(uri: String)
-
 POST    /ldp/*uri              controllers.Application.ldpPOSTAction(uri: String)
-
 GET     /lookup                controllers.Application.lookupService(q:String)

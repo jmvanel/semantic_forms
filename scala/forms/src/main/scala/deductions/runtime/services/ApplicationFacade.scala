@@ -65,8 +65,8 @@ trait ApplicationFacade[Rdf <: RDF, DATASET] extends ApplicationFacadeInterface 
     slug: Option[String], content: Option[String]): scala.util.Try[String] =
     facade.ldpPOST(uri, link, contentType, slug, content)
 
-  def login(loginName: String, password: String): Option[String] =
-    facade.login(loginName, password)
+  def checkLogin(loginName: String, password: String): Option[String] =
+    facade.checkLogin(loginName, password)
 
   def signin(agentURI: String, password: String): scala.util.Try[String] =
     signin(agentURI, password)

@@ -35,7 +35,8 @@ import org.w3.banana.io.JsonLdFlattened
  *  def ldpGET(uri: String, accept: String): String = getTriples(uri, accept)
  *
  */
-trait ApplicationFacadeImpl[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
+trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
+    extends RDFCacheAlgo[Rdf, DATASET]
     with TableViewModule[Rdf, DATASET]
     with StringSearchSPARQL[Rdf, DATASET]
     with ReverseLinksSearchSPARQL[Rdf, DATASET]
