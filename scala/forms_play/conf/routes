@@ -20,10 +20,10 @@ GET     /backlinks         controllers.Application.backlinksAction(q:String ?= "
 GET     /esearch           controllers.Application.extSearch(q:String ?= "")
 
 # authentication
-# GET     /login                      controllers.Auth.login
-# POST    /login                      controllers.Auth.authenticate
-# POST    /register                   controllers.Auth.register
-# GET     /logout                     controllers.Auth.logout
+GET     /login                      controllers.Auth.login
+POST    /login                      controllers.Auth.authenticate
+POST    /register                   controllers.Auth.register
+GET     /logout                     controllers.Auth.logout
 
 # Home page
 GET     /                   controllers.Application.index

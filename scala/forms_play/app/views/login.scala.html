@@ -1,0 +1,31 @@
+@(loginForm: Form[(String, String)], registerForm: Form[(String, String, String)])
+
+@main("Connexion") {
+	<p> Semantic Forms </p>
+    <div class="contentform">
+	    <div class="btn btn-blue" data-toggle="collapse" href="#collapseLogin" aria-expanded="false" 
+	    	aria-controls="#collapseLogin">Déjà membre</div>
+	    <div class="collapse" id="collapseLogin">
+		    @helper.form(action = routes.Auth.authenticate) {
+		    	@loginForm.globalError.map { error => <p class="error">@error.message</p>}
+		    	
+		    	@helper.inputText(loginForm("email"), 'placeholder -> "email", '_label -> null)
+		    	@helper.inputPassword(loginForm("password"), 'placeholder -> "mot de passe", '_label -> null)
+		    	<input type="submit" class="btn" value="Se connecter">
+		    }
+		</div>
+	    
+	    <div class="btn btn-blue" data-toggle="collapse" href="#collapseRegister" aria-expanded="false" 
+	    	aria-controls="collapseRegister">Nouveau membre</div>
+	    <div class="collapse" id="collapseRegister">
+		    @helper.form(action = routes.Auth.register) {
+		    	@registerForm.globalError.map { error => <p class="error">@error.message</p>}
+		    	
+		    	@helper.inputText(registerForm("email"), 'placeholder -> "email", '_label -> null)
+		    	@helper.inputPassword(registerForm("password"), 'placeholder -> "mot de passe", '_label -> null)
+		    	@helper.inputPassword(registerForm("confirmPassword"), 'placeholder -> "confirmez le mot de passe", '_label -> null)
+		    	<input type="submit" class="btn" value="S'inscrire">
+		    }
+		</div>
+    </div>
+}

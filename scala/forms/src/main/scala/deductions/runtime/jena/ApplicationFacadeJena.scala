@@ -24,25 +24,15 @@ trait ApplicationFacadeJena
      *   otherwise allNamedGraph may be null
      */
     class ApplicationFacadeImplJena extends JenaModule
-        with ApplicationFacadeImpl[Jena, Dataset]
-        with RDFStoreLocalJena1Provider
-        with RDFStoreLocalUserManagement[Jena, Dataset] {
+      with ApplicationFacadeImpl[Jena, Dataset]
+      with RDFStoreLocalJena1Provider
+      with RDFStoreLocalUserManagement[Jena, Dataset]
 
-      //      val rdfStoreApp = new RDFStoreLocalJena2Provider {}
-      //      import ops._
-      //      val passwordsGraph = rdfStoreApp.rdfStore.getGraph(rdfStoreApp.dataset, URI("urn:users")).get
-    }
     new ApplicationFacadeImplJena
+
   } catch {
     case t: Throwable =>
       t.printStackTrace()
       throw t
   }
 }
-
-//trait RDFStoreLocalJenaUserManagement extends JenaModule
-//    with RDFStoreLocalJena1Provider {
-//  private val rdfStoreApp = new RDFStoreLocalJena2Provider {}
-//  import ops._
-//  val passwordsGraph = rdfStoreApp.rdfStore.getGraph(rdfStoreApp.dataset, URI("urn:users")).get
-//}
