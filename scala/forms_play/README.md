@@ -21,19 +21,26 @@ Dependencies to install :
 
 - Java 7 or 8 (Scala is now also ready for Java 8),
 - [SBT](http://www.scala-sbt.org/) or [Typesafe Activator](http://typesafe.com/platform/getstarted) .
-
 Then SBT or Activator downloads the rest.
 
 - install dependencies above
-- download the source from [github](https://github.com/jmvanel/semantic_forms/)
+- download the source from [Banana-RDf fork on github](https://github.com/deductions/banana-rdf) (temporary, until my Pull Request in Banana-RDF is accepted)
+- build this project with SBT or Activator: change directory to `banana-rdf` ; type in the activator console : `publishLocal`
+- download the source from [semantic\_forms on github](https://github.com/jmvanel/semantic_forms/)
 - build and run this project with SBT or Activator: change directory to `scala/forms_play` ; type in the activator console : `~ run`
 
 The default port is 9000, so you can direct your browser to [http://localhost:9000](http://localhost:9000) .
 To run on another port than 9000 :
+
     run 9053
 
 To raise the memory, set this environment variable:
+
     export SBT_OPTS="-Xmx2G"
+
+To load some common vocabularies (FOAF, ...) and form specifications, see below "Preloading RDF content".
+To understand the user interface, see the [User manual wiki](https://github.com/jmvanel/semantic_forms/wiki).
+
 
 ## Run on a server without development environment
 
@@ -42,7 +49,7 @@ To package to run on a server that has Java only: type in activator : `dist`
 Then the archive is found here :
 `target/universal/semantic_forms_play-1.0-SNAPSHOT.zip`
 Download this zip on the server, unzip and type:
-```
+```shell
 nohup bin/semantic_forms_play -mem 50 &
 ```
 
