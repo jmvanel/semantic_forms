@@ -41,7 +41,7 @@ import scala.concurrent.duration._
   wget --header 'Accept: text/json-ld' http://localhost:9000/ldp/test1/test1.json
 
  * */
-class LDPSpec extends FunSuite // Specification 
+class LDPSpec extends FunSuite
 with JenaModule
     with RDFStoreLocalJena1Provider
     with RDFOpsModule

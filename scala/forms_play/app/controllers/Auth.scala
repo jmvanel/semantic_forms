@@ -16,8 +16,10 @@ import com.hp.hpl.jena.query.Dataset
 
 
 object Auth extends JenaModule
-with Auth[Jena, Dataset]
 with RDFStoreLocalJena1Provider
+with Auth[Jena, Dataset] {
+  println(s"object Auth")
+}
 
 trait Auth[Rdf <: RDF, DATASET]
 extends ApplicationFacadeImpl[Rdf, DATASET]
@@ -52,10 +54,15 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
             //          newUser.save(newUser)
           }))
 
+println(s"loginForm $loginForm")
 
   /** page for login or signin */
   def login = Action { implicit request =>
-    Ok(views.html.login(loginForm, registerForm))
+    println( s"def login" )
+    val lf = views.html.login(loginForm, registerForm)
+    println( s"lf : $lf" )
+    Ok(lf)
+//    Ok(views.html.login(loginForm, registerForm))
   }
 
   /** start a session after login if user Id & password are OK
