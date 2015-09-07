@@ -1,21 +1,17 @@
-package deductions.test
+package controllers
 
-/**
- * 
- * @author jmv
- */
+import scala.concurrent.duration._
 
-import play.api.test._
-import play.api.test.Helpers._
-import deductions.runtime.jena.RDFCache
+import org.scalatest.FunSuite
 import org.w3.banana.RDFOpsModule
 import org.w3.banana.SparqlGraphModule
-import org.w3.banana.jena.JenaModule
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import org.w3.banana.TurtleWriterModule
-import org.scalatest.FunSuite
+import org.w3.banana.jena.JenaModule
+
 import akka.util.Timeout
-import scala.concurrent.duration._
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import play.api.test._
+import play.api.test.Helpers._
 
 /** 
  * For POST:
@@ -42,12 +38,7 @@ import scala.concurrent.duration._
 
  * */
 class LDPSpec extends FunSuite
-with JenaModule
-    with RDFStoreLocalJena1Provider
-    with RDFOpsModule
-    with SparqlGraphModule
-    with TurtleWriterModule
-    {
+    with WhiteBoxTestdependencies {
 
   val ldpContainerURI = "test1/"
   val file = "test1.ttl"

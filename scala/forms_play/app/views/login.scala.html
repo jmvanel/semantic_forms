@@ -8,7 +8,7 @@
 		    @helper.form(action = routes.Auth.authenticate) {
 		    	@loginForm.globalError.map { error => <p class="error">@error.message</p>}
 		    	
-		    	@helper.inputText(loginForm("email"), 'placeholder -> "email", '_label -> null)
+		    	@helper.inputText(loginForm("userid"), 'placeholder -> "userid", '_label -> null)
 		    	@helper.inputPassword(loginForm("password"), 'placeholder -> "mot de passe", '_label -> null)
 		    	<input type="submit" class="btn" value="Se connecter">
 		    }
@@ -20,7 +20,7 @@
 		    @helper.form(action = routes.Auth.register) {
 		    	@registerForm.globalError.map { error => <p class="error">@error.message</p>}
 		    	
-		    	@helper.inputText(registerForm("email"), 'placeholder -> "email", '_label -> null)
+		    	@helper.inputText(registerForm("userid"), 'placeholder -> "userid", '_label -> null)
 		    	@helper.inputPassword(registerForm("password"), 'placeholder -> "mot de passe", '_label -> null)
 		    	@helper.inputPassword(registerForm("confirmPassword"), 'placeholder -> "confirmez le mot de passe", '_label -> null)
 		    	<input type="submit" class="btn" value="S'inscrire">

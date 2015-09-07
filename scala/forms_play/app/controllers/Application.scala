@@ -24,10 +24,11 @@ import play.api.mvc.AnyContentAsFormUrlEncoded
 import java.net.URLDecoder
 import scala.concurrent.Future
 
-/** WIP : use ApplicationFacade, not Global.scala */
+/** main controller */
 object Application extends Controller
     with ApplicationFacadeJena
-    with LanguageManagement {
+    with LanguageManagement
+    with Secured {
 
   def index() = {
     Action { implicit request =>
@@ -69,14 +70,15 @@ object Application extends Controller
     Action { Ok.chunked(download(url)).as("text/turtle; charset=utf-8") }
   }
 
-  def edit(url: String) = {
-    Action { request =>
+  def edit(url: String) =
+    withUser {
+    implicit user =>
+    implicit request =>
       Ok(views.html.index(htmlForm(
         url,
         editable = true,
         lang = chooseLanguage(request)))).
         withHeaders("Access-Control-Allow-Origin" -> "*") // TODO dbpedia only
-    }
   }
 
   def saveAction() = {

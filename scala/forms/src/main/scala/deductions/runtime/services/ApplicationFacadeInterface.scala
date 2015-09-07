@@ -50,7 +50,7 @@ trait ApplicationFacadeInterface {
     slug: Option[String],
     content: Option[String]): Try[String]
 
-  def checkLogin(loginName: String, password: String): Option[String]
+  def checkLogin(loginName: String, password: String): Boolean
 
   def signin(agentURI: String, password: String): Try[String]
 

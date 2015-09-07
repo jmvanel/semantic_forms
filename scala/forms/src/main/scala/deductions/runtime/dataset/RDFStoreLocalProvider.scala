@@ -34,5 +34,12 @@ trait RDFStoreLocalProvider[Rdf <: RDF, DATASET] {
 
 trait RDFStoreLocalUserManagement[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET] {
   import ops._
-  val passwordsGraph = rdfStore.getGraph(dataset, URI("urn:users")).get
+  /**
+   * NOTE:
+   *  - no need of a transaction here, as getting Union Graph is anyway part of a transaction
+   *  TODO : want to put User Management in another database
+   */
+  def passwordsGraph: Rdf#Graph = {
+    rdfStore.getGraph(dataset, URI("urn:users")).get
+  }
 }

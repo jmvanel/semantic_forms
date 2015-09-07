@@ -18,7 +18,7 @@ import com.hp.hpl.jena.query.Dataset
 object Auth extends JenaModule
 with RDFStoreLocalJena1Provider
 with Auth[Jena, Dataset] {
-  println(s"object Auth")
+//  println(s"object Auth")
 }
 
 trait Auth[Rdf <: RDF, DATASET]
@@ -28,30 +28,29 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
   
 	/** checks user password in RDF database */
   val loginForm = Form(
-    tuple("email" -> text, "password" -> text)
+    tuple("userid" -> text, "password" -> text)
       verifying
-      ("Invalid email or password",
+      ("Invalid userid or password",
         result => result match {
-          case (email, password) => checkLogin(email, password) match {
-            case Some(uri) => true
-            case None => false
-          }
+          case (userid, password) => checkLogin(userid, password)
         }))
 
   /** save user instance in RDF database */        
   val registerForm = Form(
-    tuple("email" -> text, "password" -> text, "confirmPassword" -> text)
+    tuple("userid" -> text, "password" -> text, "confirmPassword" -> text)
       verifying
       ("Passwords do not match",
         result => result match {
-          case (email, password, confirmPassword) => password == confirmPassword
+          case (userid, password, confirmPassword) => password == confirmPassword
         })
         verifying
-        ("User already exists",
+        (s"User already exists, or no email with this id",
           result => result match {
-            case (email, password, confirmPassword) => true // ??
-            //          val newUser = new User(email, password)
-            //          newUser.save(newUser)
+            case (userid, password, confirmPassword) =>
+              println( s"""case $userid, $password, $confirmPassword""")
+              val si = signin( userid, password )
+              println( s"""For this ID <$userid> , URI associated is: "$si".""" )
+              si.isSuccess
           }))
 
 println(s"loginForm $loginForm")
@@ -60,18 +59,26 @@ println(s"loginForm $loginForm")
   def login = Action { implicit request =>
     println( s"def login" )
     val lf = views.html.login(loginForm, registerForm)
-    println( s"lf : $lf" )
     Ok(lf)
-//    Ok(views.html.login(loginForm, registerForm))
   }
 
   /** start a session after login if user Id & password are OK
-   * this is the action of form `loginForm`
+   * this is the action of form `loginForm`;
+   * actual recording in database declared in Form() registerForm
    */
   def authenticate = Action { implicit request =>
     loginForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(views.html.login(formWithErrors, registerForm)),
-      user => Redirect(routes.Application.index).withSession(Security.username -> user._1)
+      formWithErrors =>
+        BadRequest(views.html.login(formWithErrors, registerForm)),
+      user => {
+      // Redirect to URL before login
+        val previousURL = request.headers.get("referer")
+        val call = previousURL match {
+          case Some(url) => Call("GET", url)
+          case None => routes.Application.index
+        }
+        Redirect(call).withSession(Security.username -> user._1)
+      }
     )
   }
 
@@ -79,8 +86,14 @@ println(s"loginForm $loginForm")
    *  this is the action of form `registerForm`
    */
   def register = Action { implicit request =>
-    registerForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(views.html.login(loginForm, formWithErrors)),
+    val bfr = registerForm.bindFromRequest
+    println(s"register = Action: bindFromRequest:\n\t$bfr")
+    bfr.fold(
+      formWithErrors => {
+        println(s"register = Action: BadRequest:\n\t$bfr")
+        BadRequest(views.html.login(loginForm, formWithErrors))
+        },
+        // TODO also Redirect to URL before login
       user => Redirect(routes.Application.index).withSession(Security.username -> user._1)
     )
   }
