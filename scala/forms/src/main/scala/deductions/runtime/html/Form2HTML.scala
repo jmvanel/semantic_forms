@@ -4,6 +4,8 @@ import scala.xml.Elem
 import scala.xml.NodeSeq
 import scala.xml.Text
 import scala.xml.XML
+import scala.xml.Unparsed
+
 import java.net.URLEncoder
 import Form2HTML._
 import deductions.runtime.abstract_syntax.FormModule
@@ -192,7 +194,7 @@ trait Form2HTML[NODE, URI <: NODE]
           if (editable) {
             createHTMLiteralEditableLField(l)
           } else {
-            <div>{ scala.xml.Unparsed(toPlainString(l.value)) }</div>
+            <div>{ Unparsed(toPlainString(l.value)) }</div>
           }
         }
       case r: fm#ResourceEntry =>
@@ -208,12 +210,13 @@ trait Form2HTML[NODE, URI <: NODE]
             val normalNavigationButton = if (stringValue == "")
               Text("")
             else
-              <a href={ stringValue } title={ s"Normal HTTP link to ${r.value}" }> LINK</a>
+              <a href={ stringValue } title={ s"Normal HTTP link to ${r.value}" } draggable="true"> LINK</a>
         	  // format: OFF
             Seq(
               <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }
               title={ s"""Value ${if(r.value.toString != r.valueLabel) r.value.toString else ""}
-              of type ${r.type_.toString()}""" }> {
+              of type ${r.type_.toString()}""" }
+               draggable="true"> {
                 r.valueLabel
               }</a> ,
               Text(" "),
@@ -309,7 +312,8 @@ trait Form2HTML[NODE, URI <: NODE]
               else
               s"Enter or paste a resource URI of type ${r.type_.toString()}" }
             onkeyup={if (lookup) "onkeyupComplete(this);" else null}
-            size={inputSize.toString()} >
+            size={inputSize.toString()}
+						dropzone="copy">
           </input> else new Text("") // format: ON
           ,
       if (r.widgetType == DBPediaLookup)
@@ -353,7 +357,7 @@ trait Form2HTML[NODE, URI <: NODE]
           xsd2html5TnputType(lit.type_.toString())
         } placeholder={ placeholder } size={
           inputSize.toString()
-        } ondblclick="launchEditorWindow(this);" title="Double click to edit text in popup window as Markdown text">
+        } ondblclick="launchEditorWindow(this);" title="Double click to edit text in popup window as Markdown text" dropzone="copy">
         </input>
     }
     Text("\n") ++ elem
