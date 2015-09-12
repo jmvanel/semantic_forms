@@ -16,7 +16,11 @@ trait ApplicationFacadeJena
     extends ApplicationFacadeInterface
     with ApplicationFacade[Jena, Dataset] {
 
-  val facade = try {
+  // cf http://stackoverflow.com/questions/5477096/how-can-i-delegate-to-a-member-in-scala
+//  implicit def facade2Impl(f: ApplicationFacade[Jena, Dataset]) //   : ApplicationFacadeInterface =
+//  : ApplicationFacadeImpl[Jena, Dataset] = f.impl
+
+  val impl = try {
     /**
      * NOTES:
      * - mandatory that JenaModule is first; otherwise ops may be null
@@ -29,7 +33,6 @@ trait ApplicationFacadeJena
       with RDFStoreLocalUserManagement[Jena, Dataset]
 
     new ApplicationFacadeImplJena
-
   } catch {
     case t: Throwable =>
       t.printStackTrace()

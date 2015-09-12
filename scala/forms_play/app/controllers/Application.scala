@@ -23,16 +23,28 @@ import play.api.mvc.Request
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import java.net.URLDecoder
 import scala.concurrent.Future
+import views.MainXml
+import deductions.runtime.user.RegisterPage
 
 /** main controller */
 object Application extends Controller
     with ApplicationFacadeJena
     with LanguageManagement
-    with Secured {
-
-  def index() = {
-    Action { implicit request =>
-      Ok(views.html.index(<p>...</p>)(lang = chooseLanguageObject(request)))
+    with Secured
+//    with RegisterPage[Jena, Dataset]
+    with MainXml {
+  
+  def index() =
+//    { Action { implicit request =>   
+        withUser {
+    implicit userid =>
+    implicit request => {
+//      Ok(views.html.index(<p>...</p>)(lang = chooseLanguageObject(request)))
+      val lang = chooseLanguageObject(request).language
+//      val userInfo = displayUser(userid, "pageURI", "pageLabel", lang) // TODO
+      val userInfo = <bold>userInfo</bold>
+      Ok( "<!DOCTYPE html>\n" + mainPage(<p>...</p>, userInfo, lang))
+            .as("text/html; charset=utf-8")
     }
   }
 

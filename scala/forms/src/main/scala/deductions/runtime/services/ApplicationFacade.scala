@@ -17,61 +17,61 @@ import play.api.libs.iteratee.Enumerator
  */
 trait ApplicationFacade[Rdf <: RDF, DATASET] extends ApplicationFacadeInterface {
 
-  val facade: ApplicationFacadeImpl[Rdf, DATASET]
+  val impl: ApplicationFacadeImpl[Rdf, DATASET]
 
-  private lazy implicit val allNamedGraphs2 = facade.allNamedGraphs
+  private lazy implicit val allNamedGraphs2 = impl.allNamedGraphs
 
   def htmlForm(uri: String, blankNode: String = "",
     editable: Boolean = false,
     lang: String = "en") =
-    facade.htmlForm(uri: String, blankNode,
+    impl.htmlForm(uri: String, blankNode,
       editable, lang)
 
   def create(classUri: String, lang: String, formSpecURI: String): NodeSeq =
-    facade.create(classUri, lang, formSpecURI).get
+    impl.create(classUri, lang, formSpecURI).get
 
   def lookup(search: String): String =
-    facade.lookup(search)
+    impl.lookup(search)
 
   def wordsearch(q: String = ""): Future[Elem] =
-    facade.wordsearchFuture(q)
+    impl.wordsearchFuture(q)
 
   def download(url: String): Enumerator[Array[Byte]] =
-    facade.download(url)
+    impl.download(url)
 
   def saveForm(request: Map[String, Seq[String]], lang: String = ""): Elem =
-    facade.saveForm(request, lang)
+    impl.saveForm(request, lang)
 
   def sparqlConstructQuery(query: String, lang: String = "en"): Elem =
-    facade.sparqlConstructQuery(query, lang)
+    impl.sparqlConstructQuery(query, lang)
 
   def sparqlSelectQuery(query: String, lang: String = "en"): Elem =
-    facade.selectSPARQL(query, lang)
+    impl.selectSPARQL(query, lang)
 
   def backlinks(q: String = ""): Future[Elem] =
-    facade.backlinksFuture(q)
+    impl.backlinksFuture(q)
 
   def esearch(q: String = ""): Future[Elem] =
-    facade.esearchFuture(q)
+    impl.esearchFuture(q)
 
   /** NOTE this creates a transaction; do not use it too often */
   def labelForURI(uri: String, language: String): String =
-    facade.labelForURI(uri, language)
+    impl.labelForURI(uri, language)
 
   def ldpGET(uri: String, accept: String): String =
-    facade.getTriples(uri, accept)
+    impl.getTriples(uri, accept)
 
   def ldpPOST(uri: String, link: Option[String], contentType: Option[String],
     slug: Option[String], content: Option[String]): scala.util.Try[String] =
-    facade.ldpPOST(uri, link, contentType, slug, content)
+    impl.ldpPOST(uri, link, contentType, slug, content)
 
   def checkLogin(loginName: String, password: String): Boolean =
-    facade.checkLogin(loginName, password)
+    impl.checkLogin(loginName, password)
 
   def signin(agentURI: String, password: String): scala.util.Try[String] =
-    facade.signin(agentURI, password)
+    impl.signin(agentURI, password)
 
   def findUser(loginName: String): Option[String] =
-    facade.findUser(loginName)
+    impl.findUser(loginName)
 
 }

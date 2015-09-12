@@ -41,8 +41,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     lang: String = "en",
     graphURI: String = "",
     actionURI2: String = "/save",
-    formGroup: String = fromUri(nullURI)) // (implicit allNamedGraphs: Rdf#Graph)
-    : NodeSeq = {
+    formGroup: String = fromUri(nullURI)): NodeSeq = {
 
     htmlForm(uri, hrefPrefix, blankNode, editable, actionURI,
       lang, graphURI, actionURI2, URI(formGroup)) match {
