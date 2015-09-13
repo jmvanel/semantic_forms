@@ -279,24 +279,25 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
 
   /**
    * read from uri no matter what the syntax is;
-   *  probably can also load an URI with the # part ???
+   * can also load an URI with the # part
    */
   def storeURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
-    Logger.getRootLogger().info(s"Before storeURI uri $uri graphUri $graphUri")
-    //    val gForStore = dataset.getGraph(graphUri)
     Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
-
-    System.setProperty("sun.net.client.defaultReadTimeout", "30000")
-    System.setProperty("sun.net.client.defaultConnectTimeout", "30000")
-
-    val graph: Rdf#Graph =
-      /* TODO check new versions of Scala > 2.11.6 that this asInstanceOf is 
-        still necessary */
-      load(new java.net.URL(uri.toString())).get.
-        asInstanceOf[Rdf#Graph]
-    dataset.appendToGraph(graphUri, graph)
-    Logger.getRootLogger().info(s"storeURI uri $uri : stored into graphUri $graphUri")
-    graph
+    if (fromUri(uri).startsWith("http") ||
+      fromUri(uri).startsWith("ftp:")) {
+      System.setProperty("sun.net.client.defaultReadTimeout", "30000")
+      System.setProperty("sun.net.client.defaultConnectTimeout", "30000")
+      val graph: Rdf#Graph =
+        load(new java.net.URL(uri.toString())).get
+      Logger.getRootLogger().info(s"Before storeURI uri $uri graphUri $graphUri")
+      dataset.appendToGraph(graphUri, graph)
+      Logger.getRootLogger().info(s"storeURI uri $uri : stored into graphUri $graphUri")
+      graph
+    } else {
+      val message = s"Load uri $uri is not possible, not a downloadable URI."
+      Logger.getRootLogger().warn(message)
+      throw new Exception(message)
+    }
   }
 }
 
