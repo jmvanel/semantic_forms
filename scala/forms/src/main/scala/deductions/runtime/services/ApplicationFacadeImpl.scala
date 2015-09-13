@@ -23,6 +23,7 @@ import play.api.libs.iteratee.Enumerator
 import org.w3.banana.io.JsonLdExpanded
 import java.io.OutputStream
 import org.w3.banana.io.JsonLdFlattened
+import deductions.runtime.user.RegisterPage
 
 /**
  * a Web Application Facade,
@@ -49,7 +50,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with LDP[Rdf, DATASET]
     with Lookup[Rdf, DATASET]
     with Authentication[Rdf, DATASET] //with ApplicationFacadeInterface
-    {
+    with RegisterPage[Rdf, DATASET] {
 
   implicit val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   import ops._
@@ -76,7 +77,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   lazy val cf = this
 
   import rdfStore.transactorSyntax._
-  lazy val allNamedGraphs = dataset.r({ allNamedGraph }).get
+  //  lazy val allNamedGraphs = dataset.r({ allNamedGraph }).get
 
   // TODO use inverse Play's URI API
   val hrefDisplayPrefix = "/display?displayuri="
@@ -88,33 +89,11 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     editable: Boolean = false,
     lang: String = "en") // (implicit allNamedGraphs: Rdf#Graph)
     : Elem = {
-    Logger.getRootLogger().info(s"""Global.htmlForm uri $uri0 blankNode "$blankNode" lang=$lang """)
+    Logger.getRootLogger().info(s"""Global.htmlForm URI $uri0 blankNode "$blankNode" lang=$lang """)
     val uri = uri0.trim()
 
     <div class="container">
-      <div class="container">
-        <div class="row">
-          <h3>
-            { I18NMessages.get("Properties_for", lang) }
-            <b>
-              <a href={ hrefEditPrefix + URLEncoder.encode(uri, "utf-8") } title="edit this URI">
-                { labelForURI(uri, lang) }
-              </a>
-              , URI :
-              <a href={ hrefDisplayPrefix + URLEncoder.encode(uri, "utf-8") } title="display this URI">{ uri }</a>
-              <a href={ s"/backlinks?q=${URLEncoder.encode(uri, "utf-8")}" } title="links towards this URI">o--></a>
-            </b>
-          </h3>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            <a href={ uri } title="Download from original URI">Download from original URI</a>
-          </div>
-          <div class="col-md-6">
-            <a href={ hrefDownloadPrefix + URLEncoder.encode(uri, "utf-8") } title="Download Turtle from database (augmented by users' edits)">Triples</a>
-          </div>
-        </div>
-      </div>
+      { titleEditDisplayDownloadLinks(uri, lang) }
       {
         if (uri != null && uri != "")
           try {
@@ -135,10 +114,36 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     </div>
   }
 
+  /** title and links on top of the form */
+  private def titleEditDisplayDownloadLinks(uri: String, lang: String) =
+    <div class="container">
+      <div class="row">
+        <h3>
+          { I18NMessages.get("Properties_for", lang) }
+          <b>
+            <a href={ hrefEditPrefix + URLEncoder.encode(uri, "utf-8") } title="edit this URI">
+              { labelForURI(uri, lang) }
+            </a>
+            , URI :
+            <a href={ hrefDisplayPrefix + URLEncoder.encode(uri, "utf-8") } title="display this URI">{ uri }</a>
+            <a href={ s"/backlinks?q=${URLEncoder.encode(uri, "utf-8")}" } title="links towards this URI">o--></a>
+          </b>
+        </h3>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <a href={ uri } title="Download from original URI">Download from original URI</a>
+        </div>
+        <div class="col-md-6">
+          <a href={ hrefDownloadPrefix + URLEncoder.encode(uri, "utf-8") } title="Download Turtle from database (augmented by users' edits)">Triples</a>
+        </div>
+      </div>
+    </div>
+
   /** NOTE this creates a transaction; do not use it too often */
   def labelForURI(uri: String, language: String): String = {
     rdfStore.r(dataset, {
-      instanceLabel(URI(uri), allNamedGraphs, language)
+      instanceLabel(URI(uri), allNamedGraph, language)
     }).getOrElse(uri)
   }
 

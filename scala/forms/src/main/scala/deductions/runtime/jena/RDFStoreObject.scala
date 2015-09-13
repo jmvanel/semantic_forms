@@ -48,7 +48,7 @@ trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Dataset]
   override def allNamedGraph: Rdf#Graph = {
     time(s"allNamedGraph dataset $dataset", {
       val ang = dataset.getGraph(makeUri("urn:x-arq:UnionGraph")).get
-      println(s"Union Graph: $ang")
+      println(s"Union Graph: size ${ang.size}")
       ang
     }
     )

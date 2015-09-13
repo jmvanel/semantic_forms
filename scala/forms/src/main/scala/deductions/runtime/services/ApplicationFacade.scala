@@ -19,7 +19,7 @@ trait ApplicationFacade[Rdf <: RDF, DATASET] extends ApplicationFacadeInterface 
 
   val impl: ApplicationFacadeImpl[Rdf, DATASET]
 
-  private lazy implicit val allNamedGraphs2 = impl.allNamedGraphs
+  //  private lazy implicit val allNamedGraphs2 = impl.allNamedGraphs
 
   def htmlForm(uri: String, blankNode: String = "",
     editable: Boolean = false,
@@ -74,4 +74,17 @@ trait ApplicationFacade[Rdf <: RDF, DATASET] extends ApplicationFacadeInterface 
   def findUser(loginName: String): Option[String] =
     impl.findUser(loginName)
 
+  def displayUser(userid: String, pageURI: String, pageLabel: String, lang: String = "en") =
+    impl.displayUser(userid, pageURI, pageLabel, lang)
+
+  def claimIdentityAction(uri: String) =
+    impl.claimIdentityAction(uri)
+
+  /**
+   * action="register"
+   *  register from scratch;
+   *  new account: foaf:Person creation + entering password
+   */
+  def registerAction(uri: String) =
+    impl.registerAction(uri)
 }
