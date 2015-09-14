@@ -97,7 +97,10 @@ trait TableViewModule[Rdf <: RDF, DATASET]
 
     for {
       (graphURIActual, tryGraph) <- Try { time("doRetrieveURI", doRetrieveURI(uri, blankNode, graphURI)) }
-      graphDownloaded <- tryGraph
+
+      // TODO find another way of reporting download failures: 
+      //      graphDownloaded <- tryGraph
+      
       form <- dataset.r({
         graf2form(allNamedGraph, uri, hrefPrefix, blankNode, editable,
           actionURI, lang, graphURIActual, actionURI2, formGroup)
