@@ -88,7 +88,7 @@ trait Form2HTML[NODE, URI <: NODE]
         // function backlinks(uri) {{ }}
         function launchEditorWindow(elem) {{
   var popupWindow = window.open('', 'Edit Markdown text for semantic_forms',
-    'height=300, width=300');
+    'height=500, width=500');
   var options = {{
     editor: popupWindow.document.body,
     class: 'pen',
@@ -98,7 +98,7 @@ trait Form2HTML[NODE, URI <: NODE]
   }}
   popupWindow.document.body.innerHTML = elem.value
   var editor = new Pen( options );
-  popupWindow.onbeforeunload = function() {{
+  popupWindow.onunload = function() {{
     elem.value = editor.toMd(); // return a markdown string
     return void(0)
   }};
@@ -332,6 +332,7 @@ trait Form2HTML[NODE, URI <: NODE]
   private def createHTMLiteralEditableLField(lit: fm#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     val placeholder = s"Enter or paste a string of type ${lit.type_.toString()}"
 
+    val htmlId = "f" + form.fields.indexOf(lit)
     val elem = lit.type_.toString() match {
 
       // TODO in FormSyntaxFactory match graph pattern for interval datatype ; see issue #17
@@ -357,7 +358,11 @@ trait Form2HTML[NODE, URI <: NODE]
           xsd2html5TnputType(lit.type_.toString())
         } placeholder={ placeholder } size={
           inputSize.toString()
-        } ondblclick="launchEditorWindow(this);" title="Double click to edit text in popup window as Markdown text" dropzone="copy">
+        } dropzone="copy" id={ htmlId }>
+        </input>
+        <input type="button" value="EDIT" onClick={
+          s"""launchEditorWindow( document.getElementById( "$htmlId" ));"""
+        } title="Click to edit text in popup window as Markdown text">
         </input>
     }
     Text("\n") ++ elem
