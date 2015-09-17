@@ -195,6 +195,7 @@ trait Form2HTML[NODE, URI <: NODE]
             createHTMLiteralEditableLField(l)
           } else {
             <div>{ Unparsed(toPlainString(l.value)) }</div>
+            <div>{ if (l.lang != "" && l.lang != "No_language") " > " + l.lang }</div>
           }
         }
       case r: fm#ResourceEntry =>

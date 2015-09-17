@@ -102,19 +102,19 @@ abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf],
     }
   }
 
+  val NL = makeLang("No_language")
+  def getLang(node: Rdf#Node): Rdf#Lang = {
+    foldNode(node)(
+      l => NL,
+      l => NL,
+      l => fromLiteral(l)._3 match {
+        case Some(lang) => lang
+        case _ => NL
+      })
+  }
+
   def replaceSameLanguageTriple(triple: Rdf#Triple,
     mgraph: Rdf#MGraph): Int = {
-
-    val NL = makeLang("No_language")
-    def getLang(node: Rdf#Node): Rdf#Lang = {
-      foldNode(node)(
-        l => NL,
-        l => NL,
-        l => fromLiteral(l)._3 match {
-          case Some(lang) => lang
-          case _ => NL
-        })
-    }
 
     val language = getLang(triple.objectt)
     val count =

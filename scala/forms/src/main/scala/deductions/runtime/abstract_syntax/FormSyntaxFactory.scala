@@ -294,7 +294,7 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
         // case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
         new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
           getLiteralNodeOrElse(object_, literalInitialValue),
-          type_ = firstType)
+          type_ = firstType, lang = getLang(object_).toString())
       }
       def resourceEntry = {
         foldNode(object_)(
@@ -384,4 +384,5 @@ class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: 
   def classFromSubject(subject: Rdf#Node) = {
     getHeadOrElse(subject, rdf.typ)
   }
+
 }
