@@ -25,12 +25,33 @@ import scala.util.Success
  */
 trait TableViewModule[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
+    with FormSyntaxFactory[Rdf, DATASET]
     with Timer {
   import ops._
   import rdfStore.transactorSyntax._
 
-  val nullURI: Rdf#URI = URI("")
+//  val nullURI: Rdf#URI = URI("")
   import scala.concurrent.ExecutionContext.Implicits.global
+
+  /**
+   * wrapper for htmlForm that shows Failure's ;
+   *  non TRANSACTIONAL
+   */
+  def htmlFormElemRaw(uri: String, unionGraph: Rdf#Graph=allNamedGraph, hrefPrefix: String = "", blankNode: String = "",
+    editable: Boolean = false,
+    actionURI: String = "/save",
+    lang: String = "en",
+    graphURI: String = "",
+    actionURI2: String = "/save",
+    formGroup: String = fromUri(nullURI)): NodeSeq = {
+
+    htmlFormRaw(uri, unionGraph, hrefPrefix, blankNode, editable, actionURI,
+      lang, graphURI, actionURI2, URI(formGroup)) match {
+        case Success(e) => e
+        case Failure(e) => <p>htmlFormElem: Exception occured: { e }</p>
+      }
+  }
+  
   /**
    * wrapper for htmlForm that shows Failure's ;
    *  TRANSACTIONAL
@@ -58,7 +79,9 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     editable: Boolean = false,
     lang: String = "en",
     graphURI: String = "",
-    formGroup: String = fromUri(nullURI)): NodeSeq = {
+    formGroup: String = fromUri(nullURI))
+    (implicit graph: Rdf#Graph)
+    : NodeSeq = {
 
     // TODO for comprehension like in htmlForm()
 
@@ -84,6 +107,32 @@ trait TableViewModule[Rdf <: RDF, DATASET]
    * create a form for given URI with background knowledge in RDFStoreObject.store;
    *  by default user inputs will be saved in named graph uri, except if given graphURI argument;
    *  @param blankNode if "true" given uri is a blanknode
+   *  NON TRANSACTIONAL
+   */
+  private def htmlFormRaw(uri: String, unionGraph: Rdf#Graph=allNamedGraph, hrefPrefix: String = "", blankNode: String = "",
+    editable: Boolean = false,
+    actionURI: String = "/save",
+    lang: String = "en",
+    graphURI: String = "",
+    actionURI2: String = "/save",
+    formGroup: Rdf#URI = nullURI)
+    : Try[NodeSeq] = {
+
+    println( s"htmlFormRaw dataset $dataset" )
+    val tryGraph = if (blankNode != "true") {
+    	val res = retrieveURINoTransaction(makeUri(uri), dataset)
+      Logger.getRootLogger().info(s"After retrieveURI(makeUri($uri), store)")
+      res
+    } else Success(emptyGraph)
+    val graphURIActual = if (graphURI == "") uri else graphURI
+    Success(graf2form( unionGraph, uri, hrefPrefix, blankNode, editable,
+          actionURI, lang, graphURIActual, actionURI2, formGroup))
+  }
+  
+  /**
+   * create a form for given URI with background knowledge in RDFStoreObject.store;
+   *  by default user inputs will be saved in named graph uri, except if given graphURI argument;
+   *  @param blankNode if "true" given uri is a blanknode
    *  TRANSACTIONAL
    */
   private def htmlForm(uri: String, hrefPrefix: String = "", blankNode: String = "",
@@ -92,16 +141,18 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     lang: String = "en",
     graphURI: String = "",
     actionURI2: String = "/save",
-    formGroup: Rdf#URI = nullURI) // (implicit allNamedGraphs: Rdf#Graph)
+    formGroup: Rdf#URI = nullURI)
     : Try[NodeSeq] = {
+
+    println( s"htmlForm dataset $dataset" )
 
     for {
       (graphURIActual, tryGraph) <- Try { time("doRetrieveURI", doRetrieveURI(uri, blankNode, graphURI)) }
 
       // TODO find another way of reporting download failures: 
       //      graphDownloaded <- tryGraph
-
-      form <- dataset.r({
+      
+      form <- dataset.rw({
         graf2form(allNamedGraph, uri, hrefPrefix, blankNode, editable,
           actionURI, lang, graphURIActual, actionURI2, formGroup)
       })
@@ -128,14 +179,17 @@ trait TableViewModule[Rdf <: RDF, DATASET]
    *  in given graph
    *  TODO non blocking
    */
-  private def graf2form(graph: Rdf#Graph, uri: String,
+  private def graf2form(graphe: Rdf#Graph, uri: String,
     hrefPrefix: String = "", blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",
     lang: String = "en", graphURI: String,
     actionURI2: String = "/save",
-    formGroup: Rdf#URI = nullURI): NodeSeq = {
+    formGroup: Rdf#URI = nullURI)
+    : NodeSeq = {
 
+    implicit val graph: Rdf#Graph = graphe
+    println(s"graf2form(graph: graph size: ${graph.size}")
     val form = time("createAbstractForm",
       createAbstractForm(graph, uri, editable, lang, blankNode, formGroup))
     val htmlFormGen = time("new Form2HTML",
@@ -151,15 +205,21 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     htmlForm
   }
 
-  private def createAbstractForm(graph: Rdf#Graph, uri: String, editable: Boolean,
-    lang: String, blankNode: String, formGroup: Rdf#URI): FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
+  private def createAbstractForm(graphArg: Rdf#Graph, uri: String, editable: Boolean,
+    lang: String, blankNode: String, formGroup: Rdf#URI)
+    (implicit graph: Rdf#Graph)
+    : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
     val subjectNnode = if (blankNode == "true")
       /* TDB specific:
            * Jena supports "concrete bnodes" in SPARQL syntax as pseudo URIs in the "_" URI scheme
            * (it's an illegal name for a URI scheme) */
       BNode(uri)
     else URI(uri)
-    val factory = new FormSyntaxFactory[Rdf](graph, preferedLanguage = lang)
+    val factory = this
+//      new FormSyntaxFactory[Rdf, DATASET] {
+//     val graph=graphArg
+//     val preferedLanguage = lang }
+    preferedLanguage = lang
     factory.createForm(subjectNnode, editable, formGroup)
   }
 

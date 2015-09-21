@@ -23,13 +23,13 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
       displayLabelsIt.toIterable match {
         case it if (!it.isEmpty) =>
           // recover displayLabel from TDB
-          println( "recover displayLabel from TDB" )
+//          println( s"recover displayLabel from TDB: $node" )
           val tr = it.head
           val label = tr.objectt
           foldNode(label)(_ => "", _ => "", lit => fromLiteral(lit)._1)
         case _ =>
           // compute displayLabel
-          println( "compute displayLabel" )
+          println( s"compute displayLabel for $node" )
           val label = super.instanceLabel(node, graph, lang)
           val computedDisplayLabel = (node -- displayLabelPred ->- Literal(label)).graph
           dataset.appendToGraph(labelsGraphUri, computedDisplayLabel)

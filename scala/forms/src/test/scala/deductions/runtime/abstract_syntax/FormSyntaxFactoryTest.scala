@@ -64,7 +64,7 @@ trait FormSyntaxFactoryTest // [Rdf <: RDF]
     with SparqlGraphModule {
 
   import ops._
-  import FormSyntaxFactory._
+//  import FormSyntaxFactory._
   lazy val foaf = FOAFPrefix[Rdf]
 
   def makeFOAFsample: Rdf#Graph = {
@@ -76,6 +76,9 @@ trait FormSyntaxFactoryTest // [Rdf <: RDF]
         -- foaf.name ->- "Henry Story"
         -- foaf.currentProject ->- URI("http://webid.info/"))).graph
   }
+
+  //  val tx =((URI("betehess")
+  //      -- foaf.name ->- <s></s> )
 
   def createFormWithGivenProps() = {
     val graph1 = makeFOAFsample

@@ -1,7 +1,9 @@
 package deductions.runtime.services
 
 trait Configuration {
-  // Configuration
+  /** vocabulary for form specifications */
+  val formVocabPrefix = "http://deductions-software.com/ontologies/forms.owl.ttl#"
+
   def needLoginForEditing: Boolean = false // true
   def needLoginForDisplaying: Boolean = false
 

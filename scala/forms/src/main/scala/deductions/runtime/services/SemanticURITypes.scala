@@ -44,9 +44,11 @@ trait SemanticURITypesTrait[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[R
    *
    * meant to be called in background
    */
-  def getSemanticURItypesFromStoreOrInternet(uri: String): Future[Iterator[(Rdf#Node, SemanticURIGuesser.SemanticURIType)]] = {
+  def getSemanticURItypesFromStoreOrInternet(uri: String)
+  (implicit graph: Rdf#Graph)
+  : Future[Iterator[(Rdf#Node, SemanticURIGuesser.SemanticURIType)]] = {
     val res = dataset.r({
-      val triples: Iterator[Rdf#Triple] = find(allNamedGraph,
+      val triples: Iterator[Rdf#Triple] = find(graph,
         makeUri(uri), ANY, ANY)
       val semanticURItypes =
         for (triple <- triples) yield {
@@ -68,9 +70,11 @@ trait SemanticURITypesTrait[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[R
     res.get
   }
 
-  def getSemanticURItypesFromStore(uri: String): Seq[(Rdf#Node, SemanticURIGuesser.SemanticURIType)] = {
+  def getSemanticURItypesFromStore(uri: String)
+  (implicit graph: Rdf#Graph)
+  : Seq[(Rdf#Node, SemanticURIGuesser.SemanticURIType)] = {
     val res = dataset.r({
-      val triples: Iterator[Rdf#Triple] = find(allNamedGraph,
+      val triples: Iterator[Rdf#Triple] = find(graph,
         makeUri(uri), ANY, ANY)
       val semanticURItypes =
         for (triple <- triples) yield {
@@ -83,10 +87,11 @@ trait SemanticURITypesTrait[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[R
     res.map { iter => iter.toSeq }.getOrElse(Seq())
   }
 
-  private def getSemanticURItypeFromAppDataStore(node: Rdf#Node): (Boolean, SemanticURIType) = {
+  private def getSemanticURItypeFromAppDataStore(node: Rdf#Node)
+  (implicit graph: Rdf#Graph)
+  : (Boolean, SemanticURIType) = {
     val triples: Iterator[Rdf#Triple] = find(
-      // TODO : why asInstanceOf is needed ?
-      appDataStore.allNamedGraph.asInstanceOf[Rdf#Graph],
+      graph,
       node, appDataPrefix("semanticURIType"), ANY)
     if (!triples.isEmpty) (true,
       SemanticURIGuesser.makeSemanticURIType(triples.next().objectt.toString()))

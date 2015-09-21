@@ -24,6 +24,8 @@ import org.w3.banana.io.JsonLdExpanded
 import java.io.OutputStream
 import org.w3.banana.io.JsonLdFlattened
 import deductions.runtime.user.RegisterPage
+import scala.util.Try
+import scala.xml.NodeSeq
 
 /**
  * a Web Application Facade,
@@ -51,11 +53,12 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with Lookup[Rdf, DATASET]
     with Authentication[Rdf, DATASET] //with ApplicationFacadeInterface
     with RegisterPage[Rdf, DATASET] {
+ 
+  val logger = Logger.getRootLogger()
 
   implicit val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   import ops._
 
-  import scala.util.Try
   // Members declared in org.w3.banana.JsonLDWriterModule
   implicit val jsonldExpandedWriter = new RDFWriter[Rdf, scala.util.Try, JsonLdExpanded] {
     override def write(graph: Rdf#Graph, os: OutputStream, base: String): Try[Unit] = ???
@@ -77,28 +80,61 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   lazy val cf = this
 
   import rdfStore.transactorSyntax._
-  //  lazy val allNamedGraphs = dataset.r({ allNamedGraph }).get
 
   // TODO use inverse Play's URI API
   val hrefDisplayPrefix = "/display?displayuri="
   val hrefDownloadPrefix = "/download?url="
   val hrefEditPrefix = "/edit?url="
 
-  /** TODO move some formatting to views or separate function */
+  /** TRANSACTIONAL */
   def htmlForm(uri0: String, blankNode: String = "",
+               editable: Boolean = false,
+               lang: String = "en"): NodeSeq = {
+    Logger.getRootLogger().info(s"""Global.htmlForm URI $uri0 blankNode "$blankNode" lang=$lang """)
+    val uri = uri0.trim()
+    if (uri != null && uri != "")
+      try {
+        val res = dataset.rw({
+          implicit val graph = allNamedGraph;
+          Seq(
+            titleEditDisplayDownloadLinks(uri, lang),
+            tableView.htmlFormElemRaw(uri, graph, hrefDisplayPrefix, blankNode, editable = editable,
+              lang = lang)).flatMap { identity }
+        })
+        res.get
+      } catch {
+        case e: Exception => // e.g. org.apache.jena.riot.RiotException
+          <p style="color:red">
+            {
+              e.getLocalizedMessage() + " " + printTrace(e)
+            }<br/>
+            Cause:{ if (e.getCause() != null) e.getCause().getLocalizedMessage() }
+          </p>
+      }
+    else
+      <div class="row">Enter an URI</div>
+  }
+
+  private def htmlFormOLD(uri0: String, blankNode: String = "",
     editable: Boolean = false,
-    lang: String = "en") // (implicit allNamedGraphs: Rdf#Graph)
+    lang: String = "en")
     : Elem = {
     Logger.getRootLogger().info(s"""Global.htmlForm URI $uri0 blankNode "$blankNode" lang=$lang """)
     val uri = uri0.trim()
 
     <div class="container">
-      { titleEditDisplayDownloadLinks(uri, lang) }
+      { //titleEditDisplayDownloadLinks(uri, lang)
+      }
       {
         if (uri != null && uri != "")
           try {
-            tableView.htmlFormElem(uri, hrefDisplayPrefix, blankNode, editable = editable,
-              lang = lang)
+//        	  tableView.htmlFormElem(uri, hrefDisplayPrefix, blankNode, editable = editable,
+//        			  lang = lang)
+        	  val res = dataset.rw({
+        		  tableView.htmlFormElemRaw(uri, allNamedGraph, hrefDisplayPrefix, blankNode, editable = editable,
+        				  lang = lang)
+        	  })
+        	  res.get
           } catch {
             case e: Exception => // e.g. org.apache.jena.riot.RiotException
               <p style="color:red">
@@ -115,7 +151,9 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   }
 
   /** title and links on top of the form */
-  private def titleEditDisplayDownloadLinks(uri: String, lang: String) =
+  private def titleEditDisplayDownloadLinks(uri: String, lang: String)
+    (implicit graph: Rdf#Graph)
+  : Elem =
     <div class="container">
       <div class="row">
         <h3>
@@ -140,8 +178,16 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       </div>
     </div>
 
-  /** NOTE this creates a transaction; do not use it too often */
-  def labelForURI(uri: String, language: String): String = {
+  /** NON transactional */
+  def labelForURI(uri: String, language: String)
+  (implicit graph: Rdf#Graph)
+    : String = {
+      instanceLabel(URI(uri), graph, language)
+  }
+  /** NOTE this creates a transaction; do not use it too often;
+   * will not be used */
+  def labelForURITransaction(uri: String, language: String)
+  : String = {
     rdfStore.r(dataset, {
       instanceLabel(URI(uri), allNamedGraph, language)
     }).getOrElse(uri)
@@ -205,22 +251,26 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     // and http://greweb.me/2012/11/play-framework-enumerator-outputstream/
     Enumerator.outputStream { os =>
       val graph = search_only(url)
-      graph.map { graph =>
+      println(s"after search_only($url)")
+      val r = graph.map { graph =>
         /* non blocking */
         val writer: RDFWriter[Rdf, Try, Turtle] = turtleWriter
+        println("before writer.write()")
         val ret = writer.write(graph, os, base = url)
+        println("after writer.write()")
         os.close()
       }
+      println("after graph.map()")
     }
   }
 
   def edit(url: String) // (implicit allNamedGraphs: Rdf#Graph)
-  : Elem = {
+  : NodeSeq = {
     htmlForm(url, editable = true)
   }
 
   def saveForm(request: Map[String, Seq[String]], lang: String = "") // (implicit allNamedGraphs: Rdf#Graph)
-  : Elem = {
+  : NodeSeq = {
     println("ApplicationFacade.save: map " + request)
     try {
       fs.saveTriples(request)

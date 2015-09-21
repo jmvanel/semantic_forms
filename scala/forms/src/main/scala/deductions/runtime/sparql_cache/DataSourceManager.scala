@@ -15,8 +15,8 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
  */
 trait DataSourceManager[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
-    with RDFLoader[Rdf, Try] //    with RDFOpsModule
-    {
+    with RDFHelpers[Rdf]
+    with RDFLoader[Rdf, Try] {
   import ops._
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._
@@ -30,11 +30,15 @@ trait DataSourceManager[Rdf <: RDF, DATASET]
    *  to change the generated forms.
    *  @return number of triples changed
    */
-  def replaceSameLanguageTriples(url: URL, graphURIString: String): Int = {
+  def replaceSameLanguageTriples(url: URL, graphURIString: String)
+    (implicit graph: Rdf#Graph)
+    : Int = {
     val r1 = dataset.rw({
       val graphURI = URI(graphURIString)
       for (givenGraph <- dataset.getGraph(graphURI)) yield {
-        val rdfh: RDFHelpers[Rdf] = new RDFHelpers[Rdf] { val graph = givenGraph }
+        val ops1: RDFOps[Rdf]= ops
+        val rdfh1 = this
+        val rdfh: RDFHelpers[Rdf] = this
         val mgraph = givenGraph.makeMGraph()
         /* TODO check new versions of Scala > 2.11.6 that this asInstanceOf is 
         still necessary */

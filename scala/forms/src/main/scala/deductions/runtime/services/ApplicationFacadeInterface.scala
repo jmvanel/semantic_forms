@@ -20,7 +20,7 @@ trait ApplicationFacadeInterface {
 
   def htmlForm(uri: String, blankNode: String = "",
     editable: Boolean = false,
-    lang: String = "en"): Elem
+    lang: String = "en"): NodeSeq
 
   def saveForm(request: Map[String, Seq[String]], lang: String = ""): NodeSeq
 
@@ -53,5 +53,14 @@ trait ApplicationFacadeInterface {
   def checkLogin(loginName: String, password: String): Boolean
 
   def signin(agentURI: String, password: String): Try[String]
+
+  def claimIdentityAction(uri: String)
+
+  /**
+   * action="register"
+   *  register from scratch;
+   *  new account: foaf:Person creation + entering password
+   */
+  def registerAction(uri: String)
 
 }

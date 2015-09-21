@@ -7,12 +7,15 @@ import deductions.runtime.abstract_syntax.UnfilledFormFactory
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import org.w3.banana.RDFOps
+import deductions.runtime.services.Configuration
 
-trait CreationFormAlgo[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
+trait CreationFormAlgo[Rdf <: RDF, DATASET]
+extends RDFCacheAlgo[Rdf, DATASET]
+with UnfilledFormFactory[Rdf, DATASET]
+with Configuration {
   import ops._
   import rdfStore.transactorSyntax._
 
-  private val nullURI: Rdf#URI = ops.URI("")
   var actionURI = "/save"
 
   /**
@@ -20,14 +23,16 @@ trait CreationFormAlgo[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
    *  transactional
    */
   def create(classUri: String, lang: String = "en",
-    formSpecURI: String = ""): Try[NodeSeq] = {
+    formSpecURI: String = "")
+      : Try[NodeSeq] = {
     import scala.concurrent.ExecutionContext.Implicits.global
-    dataset.r({
-      val factory = new UnfilledFormFactory[Rdf, DATASET](allNamedGraph, preferedLanguage = lang)
+    dataset.rw({
+      val factory = this
+      preferedLanguage = lang
+      implicit val graph: Rdf#Graph = allNamedGraph
       val form = factory.createFormFromClass(
         URI(classUri),
         formSpecURI);
-      //        new Form2HTMLBanana[Rdf] {}.
       new Form2HTML[Rdf#Node, Rdf#URI] {
         override def toPlainString(n: Rdf#Node): String =
           foldNode(n)(fromUri(_), fromBNode(_), fromLiteral(_)._1)
@@ -36,7 +41,9 @@ trait CreationFormAlgo[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
     })
   }
 
-  def createElem(uri: String, lang: String = "en"): NodeSeq = {
+  def createElem(uri: String, lang: String = "en")
+  (implicit graph: Rdf#Graph)
+  : NodeSeq = {
     //	  Await.result(
     create(uri, lang).getOrElse(
       <p>Problem occured when creating an XHTML input form from a class URI.</p>)

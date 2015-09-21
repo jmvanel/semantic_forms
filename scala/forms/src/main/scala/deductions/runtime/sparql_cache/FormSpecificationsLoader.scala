@@ -1,13 +1,13 @@
 package deductions.runtime.sparql_cache
 
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
-//import deductions.runtime.jena.JenaHelpers
 import org.w3.banana.Prefix
 import deductions.runtime.jena.RDFCache
 import com.hp.hpl.jena.query.Dataset
 import org.w3.banana.jena.Jena
 import org.w3.banana.RDF
 import org.w3.banana.jena.JenaModule
+import deductions.runtime.services.Configuration
 
 /**
  * @author jmv
@@ -28,7 +28,8 @@ object FormSpecificationsLoader extends JenaModule
 trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
     //    with RDFStoreHelpers[Rdf, DATASET]
-    with SitesURLForDownload {
+    with SitesURLForDownload
+    with Configuration {
 
   import ops._
   import rdfStore.transactorSyntax._
@@ -60,7 +61,7 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
     val form_specs_graph: Rdf#Graph =
       turtleReader.read(from, base = form_specs) getOrElse sys.error(
         s"couldn't read $form_specs")
-    import deductions.runtime.abstract_syntax.FormSyntaxFactory._
+//    import deductions.runtime.abstract_syntax.FormSyntaxFactory._
     val formPrefix = Prefix("form", formVocabPrefix)
     /* Retrieving triple :
      * foaf: form:ontologyHasFormSpecification <foaf.form.ttl> . */

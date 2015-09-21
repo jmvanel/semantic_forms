@@ -13,19 +13,27 @@ import org.apache.log4j.Logger
 import java.net.URL
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.utils.Timer
+import deductions.runtime.dataset.RDFOPerationsDB
+
+import org.w3.banana.RDFSPrefix
 
 /**
  * populate Fields in form by inferring possible values from given rdfs:range's URI,
  *  through owl:oneOf and know instances
  */
-trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf]
+trait RangeInference[Rdf <: RDF, DATASET]
+extends RDFOPerationsDB[Rdf, DATASET]
+    with RDFHelpers[Rdf]
+with InstanceLabelsInferenceMemory[Rdf, DATASET]
+//with InstanceLabelsInference2[Rdf]
+with FormModule[Rdf#Node, Rdf#URI]
+with PossibleValues[Rdf]
     with Timer {
-  self: FormSyntaxFactory[Rdf] =>
-
+//  val graph: Rdf#Graph
   implicit val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]
   implicit val sparqlOps: SparqlOps[Rdf]
-  implicit private val graphImplicit = graph
-
+//  implicit private val graphImplicit = graph
+  private val rdfs = RDFSPrefix[Rdf]
   import ops._
   import sparqlOps._
   import sparqlGraph._
@@ -34,13 +42,12 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf]
   def addPossibleValues(
     entryField: Entry,
     ranges: Set[Rdf#Node],
-    valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)]): Entry = {
+    valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)])
+  (implicit graph: Rdf#Graph)
+  : Entry = {
 
     val owl = OWLPrefix[Rdf]
-    val rdfh = {
-      val gr = graph
-      new RDFHelpers[Rdf] { val graph = gr }
-    }
+    val rdfh: RDFHelpers[Rdf] = this
 
     /**
      * modify entry to populate possibleValues,
@@ -69,7 +76,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf]
         for (enum <- enumerated)
           foldNode(enum)(
             uri => {
-              val list = rdfh.nodeSeqToURISeq(rdfh.rdfListToSeq(Some(uri)))
+              val list = nodeSeqToURISeq(rdfh.rdfListToSeq(Some(uri)))
               possibleValues.appendAll(
                 list zip instanceLabels(list).map { s => makeLiteral(s, xsd.string) })
             },
@@ -187,7 +194,9 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf]
 
   /** @return list of VALUE & LABEL */
   def possibleValuesFromFormGroup(formGroup: Rdf#URI,
-    graph1: Rdf#Graph): Seq[(Rdf#Node, Rdf#Node)] = {
+    graph1: Rdf#Graph)
+    (implicit graph: Rdf#Graph)
+    : Seq[(Rdf#Node, Rdf#Node)] = {
     val q = s"""
               prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#>
               prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -229,7 +238,7 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf]
     results.to[List]
   }
 
-  def dumpGraph() = {
+  def dumpGraph( implicit graph: Rdf#Graph) = {
     val selectAll = """
               # CONSTRUCT { ?S ?P ?O . }
               SELECT ?S ?P ?O

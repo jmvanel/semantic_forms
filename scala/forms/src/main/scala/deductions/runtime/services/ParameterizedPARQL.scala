@@ -7,13 +7,13 @@ import org.w3.banana.RDF
 import org.w3.banana.SparqlOpsModule
 import org.w3.banana.TryW
 import org.w3.banana.syntax._
-import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.html.Form2HTML
 import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
 import org.w3.banana.Transactor
 import org.w3.banana.RDFOpsModule
 import org.w3.banana.RDFOps
+import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 
 trait SPARQLQueryMaker {
   def makeQueryString(search: String): String
@@ -26,7 +26,7 @@ trait SPARQLQueryMaker {
  */
 trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
-    with InstanceLabelsInference2[Rdf]
+    with InstanceLabelsInferenceMemory[Rdf, DATASET]
     with PreferredLanguageLiteral[Rdf] {
   //  self: RDFStoreLocalProvider[Rdf, DATASET] with InstanceLabelsInference2[Rdf] =>
 
@@ -38,6 +38,7 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
   /** search and display results as an XHTML element */
   def search(search: String, hrefPrefix: String = "")(implicit queryMaker: SPARQLQueryMaker): Future[Elem] = {
     val uris = search_only(search)
+    println(s"after search_only uris $uris")
     val elem = uris.map(
       u => displayResults(u.toIterable, hrefPrefix))
     elem
@@ -52,17 +53,16 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
       println(s"displayResults : ${res.mkString("\n")}")
       dataset.r({
         val graph: Rdf#Graph = allNamedGraph
-        //        res.sortBy(x => instanceLabel(x)).
-        res.sortBy(uri => instanceLabel(uri, graph, "" /* TODO lang*/ )).
-          map(uri => {
+        val couples = res.map(uri => (uri, instanceLabel(uri, graph, "" /* TODO lang*/ )))
+        couples.sortBy( c => c._2) .
+        map( c => { val uri = c._1
             val uriString = uri.toString
             val blanknode = !isURI(uri)
             // TODO : show named graph
             <div title={ uri.toString() }>
-              <a href={ Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode) }>
-                {
-                  instanceLabel(uri, graph, "")
-                }
+              <a href={
+                Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode) }>
+                { c._2 }
               </a><br/>
             </div>
           })
@@ -74,15 +74,16 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    * NOTE: this stuff is pretty generic;
    *  just add these arguments :
    *  queryString:String, vars:Seq[String]
+   * TRANSACTIONAL
    *
    * CAUTION: It is of particular importance to note that
    * one should never use an Iterator after calling a method on it;
    * cf http://stackoverflow.com/questions/18420995/scala-iterator-one-should-never-use-an-iterator-after-calling-a-method-on-it
-   * TRANSACTIONAL
    */
   private def search_only(search: String)(implicit queryMaker: SPARQLQueryMaker): Future[Iterator[Rdf#Node]] = {
     val queryString = queryMaker.makeQueryString(search)
 
+    println( s"search_only(search $search" )
     val transaction =
       dataset.r({
         val result = for {
@@ -96,10 +97,12 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
         }
         result
       })
+    println( s"after search_only(search $search" )
     val tryIteratorRdfNode = transaction.flatMap { identity }
+    println( s"after search_only(search tryIteratorRdfNode $tryIteratorRdfNode" )
     tryIteratorRdfNode.asFuture
   }
 
-  def isURI(node: Rdf#Node) = foldNode(node)(identity, x => None, x => None) != None
+  private def isURI(node: Rdf#Node) = foldNode(node)(identity, x => None, x => None) != None
 
 }

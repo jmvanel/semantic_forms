@@ -12,26 +12,33 @@ import org.w3.banana.RDFStore
 import scala.util.Try
 import org.apache.log4j.Logger
 import org.w3.banana.Prefix
+import deductions.runtime.services.Configuration
 
 /**
  * Factory for populating Form from graph
  */
-class FormConfigurationFactory[Rdf <: RDF](graph: Rdf#Graph)(implicit ops: RDFOps[Rdf],
-    uriOps: URIOps[Rdf]) {
+trait FormConfigurationFactory[Rdf <: RDF]
+//(graph: Rdf#Graph)(
+    extends Configuration
+    with RDFHelpers[Rdf] {
+  
+//  implicit val ops: RDFOps[Rdf]
 
   import ops._
 
-  val formPrefix: Prefix[Rdf] = Prefix("form", FormSyntaxFactory.formVocabPrefix)
-  val gr = graph
-  val rdfh = new RDFHelpers[Rdf] { val graph = gr }
-  import rdfh._
-  import ops._
+  val formPrefix: Prefix[Rdf] = Prefix("form", formVocabPrefix)
+//  val gr = graph
+//  val rdfh: RDFHelpersGraph[Rdf] = new RDFHelpersGraph[Rdf] { val graph = gr }
+//  val rdfh: RDFHelpers[Rdf] = new RDFHelpers[Rdf] { val graph = gr }
+//  import rdfh._
 
   /**
    * lookup for form:showProperties (ordered list of fields) in Form Configuration within RDF graph in this class
    *  usable for unfilled and filled Forms
    */
-  def lookPropertieslistFormInConfiguration(classs: Rdf#URI): (Seq[Rdf#URI], Rdf#Node) = {
+  def lookPropertieslistFormInConfiguration(classs: Rdf#URI)
+  (implicit graph: Rdf#Graph)
+  : (Seq[Rdf#URI], Rdf#Node) = {
     val formSpecOption = lookFormSpecInConfiguration(classs)
     formSpecOption match {
       case None => (Seq(), URI(""))
@@ -40,18 +47,23 @@ class FormConfigurationFactory[Rdf <: RDF](graph: Rdf#Graph)(implicit ops: RDFOp
         (propertiesList, formConfiguration)
     }
   }
-
-  def propertiesListFromFormConfiguration(formConfiguration: Rdf#Node): Seq[Rdf#URI] = {
+  
+  def propertiesListFromFormConfiguration(formConfiguration: Rdf#Node)
+  (implicit graph: Rdf#Graph)
+  : Seq[Rdf#URI] = {
     //    val props = objectsQuery(formConfiguration, formPrefix("showProperties"))
     val props = getObjects(graph, formConfiguration, formPrefix("showProperties"))
     for (p <- props) { println("showProperties " + p) }
     val p = props.headOption
-    val propertiesList = rdfh.nodeSeqToURISeq(rdfh.rdfListToSeq(p))
+    val rdfh = this
+    val propertiesList = nodeSeqToURISeq(rdfh.rdfListToSeq(p))
     propertiesList
   }
 
   /** lookup Form Spec from OWL class in In Configuration */
-  private def lookFormSpecInConfiguration(classs: Rdf#URI): Option[Rdf#Node] = {
+  private def lookFormSpecInConfiguration(classs: Rdf#URI)
+  (implicit graph: Rdf#Graph)
+  : Option[Rdf#Node] = {
     val forms = getSubjects(graph, formPrefix("classDomain"), classs)
     val debugString = new StringBuilder; Logger.getRootLogger().debug("forms " + forms.addString(debugString, "; "))
     val formSpecOption = forms.flatMap {
@@ -75,7 +87,14 @@ class FormConfigurationFactory[Rdf <: RDF](graph: Rdf#Graph)(implicit ops: RDFOp
    */
   def lookFieldSpecInConfiguration(
     //      classs: Rdf#URI, 
-    prop: Rdf#URI) = {
+    prop: Rdf#URI)
+    (implicit graph: Rdf#Graph)
+    = {
     find(graph, ANY, formPrefix("fieldAppliesToProperty"), prop).toSeq
   }
+  
+//  def makeRDFHelpersGraph(graph:Rdf#Graph): RDFHelpersGraph[Rdf] = {
+//    val gr = graph; val formSyntaxFactory=this; new RDFHelpersGraph[Rdf] {
+//    	val ops1: RDFOps[Rdf] = ops
+//      val graph = gr; val rdfh=formSyntaxFactory; val ops=ops1} }
 }

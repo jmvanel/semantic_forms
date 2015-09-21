@@ -19,15 +19,14 @@ trait ApplicationFacade[Rdf <: RDF, DATASET] extends ApplicationFacadeInterface 
 
   val impl: ApplicationFacadeImpl[Rdf, DATASET]
 
-  //  private lazy implicit val allNamedGraphs2 = impl.allNamedGraphs
-
   def htmlForm(uri: String, blankNode: String = "",
     editable: Boolean = false,
     lang: String = "en") =
     impl.htmlForm(uri: String, blankNode,
       editable, lang)
 
-  def create(classUri: String, lang: String, formSpecURI: String): NodeSeq =
+  def create(classUri: String, lang: String, formSpecURI: String)
+  : NodeSeq =
     impl.create(classUri, lang, formSpecURI).get
 
   def lookup(search: String): String =
@@ -39,7 +38,7 @@ trait ApplicationFacade[Rdf <: RDF, DATASET] extends ApplicationFacadeInterface 
   def download(url: String): Enumerator[Array[Byte]] =
     impl.download(url)
 
-  def saveForm(request: Map[String, Seq[String]], lang: String = ""): Elem =
+  def saveForm(request: Map[String, Seq[String]], lang: String = ""): NodeSeq =
     impl.saveForm(request, lang)
 
   def sparqlConstructQuery(query: String, lang: String = "en"): Elem =
@@ -56,7 +55,7 @@ trait ApplicationFacade[Rdf <: RDF, DATASET] extends ApplicationFacadeInterface 
 
   /** NOTE this creates a transaction; do not use it too often */
   def labelForURI(uri: String, language: String): String =
-    impl.labelForURI(uri, language)
+    impl.labelForURITransaction(uri, language)
 
   def ldpGET(uri: String, accept: String): String =
     impl.getTriples(uri, accept)
@@ -85,6 +84,7 @@ trait ApplicationFacade[Rdf <: RDF, DATASET] extends ApplicationFacadeInterface 
    *  register from scratch;
    *  new account: foaf:Person creation + entering password
    */
-  def registerAction(uri: String) =
-    impl.registerAction(uri)
+  def registerAction(uri: String)
+//    (implicit graph: Rdf#Graph)
+    = impl.registerAction(uri)
 }

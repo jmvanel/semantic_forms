@@ -7,6 +7,8 @@ import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
 import deductions.runtime.html.TableViewModule
 import deductions.runtime.html.CreationFormAlgo
 import deductions.runtime.services.Configuration
+import scala.xml.Text
+import deductions.runtime.utils.I18NMessages
 
 trait RegisterPage[Rdf <: RDF, DATASET]
     extends StringSearchSPARQL[Rdf, DATASET]
@@ -20,29 +22,33 @@ trait RegisterPage[Rdf <: RDF, DATASET]
 
   /** display User stuff in pages */
   def displayUser(userid: String, pageURI: String, pageLabel: String, lang: String = "en") = {
-    <div>
-      if( needLogin ){
-        if (userid != "")
-          instanceLabel(Literal(userid), allNamedGraph, lang) //  display user label
-        else {
+    <div class="userInfo"> {
+      if (needLogin) {
+        if (userid != "") {
+          instanceLabel(Literal(userid), allNamedGraph, lang)
+          // TODO link to User profile
+        } else {
           <div>
             Anonyme
-	    -<a href="/claimid?uri={URLEncode.encode(pageURI)}">
-        Revendiquer l'identité de cette page:{ pageLabel }
-      </a>
+        	-{
+              if (pageURI != "") {
+                <a href="/claimid?uri={URLEncode.encode(pageURI)}" title="il ne reste plus qu'à saisir un mot de passe">
+                  Revendiquer l'identité de cette page:{ pageLabel }
+                </a>
+                Text("- ou -")
+              }
+            }
+            <a href="/register" title="Nouveau compte à partir de zéro">
+              Nouveau compte
+            </a>
             - ou 
-	    -<a href="/register">
-        Nouveau compte
-      </a>
-            - ou 
-	    -<a href="/searchid">
-        Nouveau compte
-      </a>
+        	-<a href="/searchid" title="Peut-être votre identité est déjà enregistrée ici?">
+            Chercher mon identité sur ce site
+          </a>
           </div>
         }
-      }
-      else Text("All rights granted!")
-    </div>
+      } else Text(I18NMessages.get("All_rights", lang))
+    } </div>
   }
 
   /**
@@ -65,7 +71,10 @@ trait RegisterPage[Rdf <: RDF, DATASET]
    *  register from scratch;
    *  new account is made up of foaf:Person creation + entering password
    */
-  def registerAction(uri: String) = {
+  def registerAction(uri: String)
+//  (implicit graph: Rdf#Graph)
+  = {
+	  implicit val graph: Rdf#Graph = allNamedGraph
     val rawForm = create(uri //      , actionURI = "/saveuser", // TODO
     //      actionURI2 = "/saveuser"
     )
@@ -76,7 +85,7 @@ trait RegisterPage[Rdf <: RDF, DATASET]
     </p>
   }
 
-  val passWordField =
+  private val passWordField =
     <div>
       <label>Entrer un mot de passe</label>
       <input type="password" name="password"></input>

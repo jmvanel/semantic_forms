@@ -13,8 +13,8 @@ import UnfilledFormFactory.defaultInstanceURIPrefix
 import org.w3.banana.SparqlGraphModule
 import org.w3.banana.SparqlEngine
 import org.w3.banana.SparqlOps
-import deductions.runtime.abstract_syntax.FormSyntaxFactory.CreationMode
 import scala.language.postfixOps
+import deductions.runtime.services.Configuration
 
 /**
  * @author j.m. Vanel
@@ -31,16 +31,26 @@ object UnfilledFormFactory {
 }
 
 /** Factory for an Unfilled Form */
-class UnfilledFormFactory[Rdf <: RDF, DATASET](graph: Rdf#Graph,
-  preferedLanguage: String = "en",
-  instanceURIPrefix: String = defaultInstanceURIPrefix)(implicit ops: RDFOps[Rdf],
-    uriOps: URIOps[Rdf],
-    rdfStore: RDFStore[Rdf, Try, DATASET],
-    sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph],
-    sparqlOps: SparqlOps[Rdf])
-    extends FormSyntaxFactory[Rdf](graph: Rdf#Graph, preferedLanguage) {
+//abstract class
+trait UnfilledFormFactory[Rdf <: RDF, DATASET]
+//(graph: Rdf#Graph,
+//  preferedLanguage: String = "en",
+//  instanceURIPrefix: String = defaultInstanceURIPrefix)
+//  (implicit ops: RDFOps[Rdf],
+//    uriOps: URIOps[Rdf],
+//    rdfStore: RDFStore[Rdf, Try, DATASET],
+//    sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph],
+//    sparqlOps: SparqlOps[Rdf])
+    extends FormSyntaxFactory[Rdf, DATASET]
+   	with FormConfigurationFactory[Rdf]
+   			with Configuration
+{
 
-  import formConfiguration._
+//  val graph: Rdf#Graph
+//  val preferedLanguage: String = "en"
+  val instanceURIPrefix: String = defaultInstanceURIPrefix
+  
+//  import formConfiguration._
   import ops._
 
   /**
@@ -48,7 +58,12 @@ class UnfilledFormFactory[Rdf <: RDF, DATASET](graph: Rdf#Graph,
    *  looking up for Form Configuration within RDF graph in this class
    */
   def createFormFromClass(classs: Rdf#URI,
-    formSpecURI: String = ""): FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
+    formSpecURI: String = "")
+  	  (implicit graph: Rdf#Graph)
+  	  : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
+	  val formConfiguration = this // new FormConfigurationFactory[Rdf](graph)
+//	  import formConfiguration._
+
     val (propsListInFormConfig, formConfig) =
       if (formSpecURI != "") {
         (propertiesListFromFormConfiguration(URI(formSpecURI)),

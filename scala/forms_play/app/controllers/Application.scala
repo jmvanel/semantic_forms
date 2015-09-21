@@ -25,13 +25,13 @@ import java.net.URLDecoder
 import scala.concurrent.Future
 import views.MainXml
 import deductions.runtime.user.RegisterPage
+import play.api.libs.iteratee.Enumerator
 
 /** main controller */
 object Application extends Controller
     with ApplicationFacadeJena
     with LanguageManagement
     with Secured
-//    with RegisterPage[Jena, Dataset]
     with MainXml {
   
   def index() =
@@ -41,8 +41,7 @@ object Application extends Controller
     implicit request => {
 //      Ok(views.html.index(<p>...</p>)(lang = chooseLanguageObject(request)))
       val lang = chooseLanguageObject(request).language
-//      val userInfo = displayUser(userid, "pageURI", "pageLabel", lang) // TODO
-      val userInfo = <bold>userInfo</bold>
+      val userInfo = displayUser(userid, "", "", lang)
       Ok( "<!DOCTYPE html>\n" + mainPage(<p>...</p>, userInfo, lang))
             .as("text/html; charset=utf-8")
     }
@@ -52,22 +51,16 @@ object Application extends Controller
     Action { implicit request =>
       println("displayURI: " + request)
       println("displayURI: " + Edit)
+//      val lang = chooseLanguageObject(request).language
+//      val pageURI = uri
+//      val pageLabel = labelForURI(uri, lang)
+//      val userInfo = displayUser(userid, pageURI, pageLabel, lang)
       Ok(views.html.index(htmlForm(uri, blanknode, editable = Edit != "",
         lang = chooseLanguage(request)))).
         withHeaders("Access-Control-Allow-Origin" -> "*") // for dbpedia lookup
     }
   }
   
-  // TODO def displayURI2(uri: String) = {
-  //    Action.async { implicit request =>
-  //      println("displayURI2: " + request)
-  //      //      Ok.chunked( glob.displayURI2(uri) )
-  //      glob.displayURI2(uri) map { x =>
-  //        Ok(x.mkString).as("text/html")
-  //      }
-  //    }
-  //  }
-
   def wordsearchAction(q: String = "") = Action.async {
     val fut: Future[Elem] = wordsearch(q)
     fut.map(r => Ok(views.html.index(r)))
@@ -79,17 +72,26 @@ object Application extends Controller
 
   /** cf https://www.playframework.com/documentation/2.3.x/ScalaStream */
   def downloadAction(url: String) = {
-    Action { Ok.chunked(download(url)).as("text/turtle; charset=utf-8") }
+    Action {
+      Ok.chunked(download(url)).as("text/turtle; charset=utf-8")    
+//        Ok.stream(download(url) >>> Enumerator.eof).as("text/turtle; charset=utf-8") 
+    }
   }
 
-  def edit(url: String) =
+  def edit(uri: String) =
     withUser {
-    implicit user =>
+    implicit userid =>
     implicit request =>
-      Ok(views.html.index(htmlForm(
-        url,
-        editable = true,
-        lang = chooseLanguage(request)))).
+      val lang = chooseLanguageObject(request).language
+      val pageURI = uri
+      val pageLabel = labelForURI(uri, lang)
+      val userInfo = displayUser(userid, pageURI, pageLabel, lang)
+      println( s"userInfo $userInfo" )
+       val content = htmlForm(
+        uri, editable = true,
+        lang = chooseLanguage(request))
+      Ok( "<!DOCTYPE html>\n" + mainPage( content, userInfo, lang))
+            .as("text/html; charset=utf-8").
         withHeaders("Access-Control-Allow-Origin" -> "*") // TODO dbpedia only
   }
 
@@ -99,7 +101,7 @@ object Application extends Controller
     }
   }
 
-  def save(request: Request[_]): Elem = {
+  def save(request: Request[_]): NodeSeq = {
       val body = request.body
       body match {
         case form: AnyContentAsFormUrlEncoded =>
@@ -132,8 +134,11 @@ object Application extends Controller
       val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formspec")
       println("create: " + uri)
       println("formSpecURI: " + formSpecURI)
-      Ok(views.html.index(create(uri, chooseLanguage(request),
-        formSpecURI)))
+      Ok(views.html.index(
+          create(uri, chooseLanguage(request),
+        		  formSpecURI)
+//        		  ( allNamedGraph )
+      ))
     }
   }
 

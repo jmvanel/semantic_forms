@@ -34,7 +34,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._
 
-  val logger = Logger.getRootLogger()
+  val logger:Logger //  = Logger.getRootLogger()
 
   /**
    * @param map a raw map of HTTP response parameters

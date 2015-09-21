@@ -1,14 +1,31 @@
 package deductions.runtime.abstract_syntax
 
 import org.w3.banana.RDF
+import deductions.runtime.dataset.RDFOPerationsDB
+import org.w3.banana.Prefix
+import org.w3.banana.OWLPrefix
+import deductions.runtime.utils.RDFHelpers
+import org.w3.banana.RDFSPrefix
+import org.w3.banana.RDFPrefix
 
 /** populate Fields in form by inferencing from class(es) of given instance URI */
-trait FieldsInference[Rdf <: RDF] {
-  self: FormSyntaxFactory[Rdf] =>
+trait FieldsInference[Rdf <: RDF, DATASET]
+extends RDFHelpers[Rdf]
+with RDFOPerationsDB[Rdf, DATASET] {
+  
+  // TODO move in Configuration
   val showDomainlessProperties = false
 
   import ops._
-
+  private val rdfs = RDFSPrefix[Rdf]
+  private val owl = OWLPrefix[Rdf]
+  // private
+//  override val rdf = RDFPrefix[Rdf]
+  
+//  val rdfh = { val gr = graph; new RDFHelpers[Rdf]
+//  val rdfh : RDFHelpers[Rdf] = this
+//  import rdfh.{ graph => _, _ }
+    
   def fieldsFromClass(classs: Rdf#URI, graph: Rdf#Graph): Seq[Rdf#URI] = {
 
     /** retrieve rdfs:domain's From given Class */

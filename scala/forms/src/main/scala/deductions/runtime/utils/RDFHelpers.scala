@@ -15,14 +15,17 @@ import org.w3.banana.MGraphOps
  * use with :
  *  val rdfh = new RDFHelpers[Rdf] { val graph = gr }
  */
-abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf],
-    mGraphOps: MGraphOps[Rdf]) {
-  val graph: Rdf#Graph
-  //  val rdf = RDFPrefix[Rdf]
-  import ops._
+trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
+//  val graph: Rdf#Graph
+  implicit val ops: RDFOps[Rdf]
+  val rdfh: RDFHelpers[Rdf]  = this
+  import rdfh.{ops=>_, _}
+  import ops.{ rdf=>_, _}
 
   /** recursively iterate on the Rdf#Node through rdf:first and rdf:rest */
-  def rdfListToSeq(listOp: Option[Rdf#Node], result: Seq[Rdf#Node] = Seq()): Seq[Rdf#Node] = {
+  def rdfListToSeq(listOp: Option[Rdf#Node], result: Seq[Rdf#Node] = Seq())
+  (implicit graph: Rdf#Graph)
+  : Seq[Rdf#Node] = {
     listOp match {
       case None => result
       case Some(list) =>
@@ -35,6 +38,56 @@ abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf],
         }
     }
   }
+
+  /** Query for objects in triples, given subject & predicate */
+  def objectsQuery(subject: Rdf#Node, predicate: Rdf#URI)
+    (implicit graph: Rdf#Graph)
+    : Set[Rdf#Node] = {
+    val pg = PointedGraph[Rdf](subject, graph)
+    val objects = pg / predicate
+    objects.map(_.pointer).toSet
+  }
+
+  def objectsQueries[T <: Rdf#Node](subjects: Set[T], predicate: Rdf#URI)
+    (implicit graph: Rdf#Graph)
+    : Set[Rdf#Node] = {
+    val values = for (
+      subject <- subjects;
+      values <- objectsQuery(subject.asInstanceOf[Rdf#URI], predicate)
+    ) yield values
+    values
+  }
+  
+  def replaceSameLanguageTriple(triple: Rdf#Triple,
+                                mgraph: Rdf#MGraph)
+    (implicit graph: Rdf#Graph)
+    : Int = {
+    val language = getLang(triple.objectt)
+    val count =
+      if (language != NL) {
+        val objects = objectsQuery(triple.subject, triple.predicate)
+        val objectsMatchingLanguage = objects.filter {
+          n => getLang(n) == language
+        }
+        objectsMatchingLanguage map {
+          lit =>
+            {
+              removeTriple(mgraph, Triple(triple.subject, triple.predicate, lit))
+              println(triple)
+            }
+        }
+        addTriple(mgraph, triple)
+        objectsMatchingLanguage.size
+      } else 0
+    count
+  }
+}
+
+
+trait RDFHelpers0[Rdf <: RDF] {
+  implicit val ops: RDFOps[Rdf]
+  import ops._
+  val rdf = RDFPrefix[Rdf](ops)
 
   /** from given Set of Rdf#Node , extract rdf#URI */
   def nodeSeqToURISeq(s: Iterable[Rdf#Node]): Seq[Rdf#URI] = {
@@ -58,29 +111,13 @@ abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf],
     nodes.map {
       node =>
         ops.foldNode(node)(
-          identity, identity, x => None
-        )
+          identity, identity, x => None)
     }
       .filter(_ != None)
       .map { node => node.asInstanceOf[Rdf#URI] }
   }
 
   def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
-
-  /** Query for objects in triples, given subject & predicate */
-  def objectsQuery(subject: Rdf#Node, predicate: Rdf#URI): Set[Rdf#Node] = {
-    val pg = PointedGraph[Rdf](subject, graph)
-    val objects = pg / predicate
-    objects.map(_.pointer).toSet
-  }
-
-  def objectsQueries[T <: Rdf#Node](subjects: Set[T], predicate: Rdf#URI): Set[Rdf#Node] = {
-    val values = for (
-      subject <- subjects;
-      values <- objectsQuery(subject.asInstanceOf[Rdf#URI], predicate)
-    ) yield values
-    values
-  }
 
   def getStringOrElse(n: Rdf#Node, default: String): String = {
     ops.foldNode(n)(_ => default, _ => default, l => {
@@ -109,30 +146,7 @@ abstract class RDFHelpers[Rdf <: RDF](implicit ops: RDFOps[Rdf],
       l => NL,
       l => fromLiteral(l)._3 match {
         case Some(lang) => lang
-        case _ => NL
+        case _          => NL
       })
-  }
-
-  def replaceSameLanguageTriple(triple: Rdf#Triple,
-    mgraph: Rdf#MGraph): Int = {
-
-    val language = getLang(triple.objectt)
-    val count =
-      if (language != NL) {
-        val objects = objectsQuery(triple.subject, triple.predicate)
-        val objectsMatchingLanguage = objects.filter {
-          n => getLang(n) == language
-        }
-        objectsMatchingLanguage map {
-          lit =>
-            {
-              removeTriple(mgraph, Triple(triple.subject, triple.predicate, lit))
-              println(triple)
-            }
-        }
-        addTriple(mgraph, triple)
-        objectsMatchingLanguage.size
-      } else 0
-    count
   }
 }

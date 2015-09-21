@@ -5,16 +5,16 @@ import play.api.mvc._
 import deductions.runtime.services.Authentication
 import org.w3.banana.RDF
 import deductions.runtime.jena.ApplicationFacadeJena
-
+import deductions.runtime.services.Configuration
 /**
  * Trait for user/password secured controllers
  *  cf https://github.com/playframework/playframework/blob/master/framework/src/play/src/main/scala/play/api/mvc/Security.scala
  */
 trait Secured
-    extends ApplicationFacadeJena {
+    extends ApplicationFacadeJena
+   with Configuration {
 
-  // TODO loginActivated should be abstract
-  val loginActivated = false
+  val loginActivated = needLogin
 
 
 
