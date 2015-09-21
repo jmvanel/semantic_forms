@@ -26,7 +26,6 @@ trait RangeInference[Rdf <: RDF] extends InstanceLabelsInference2[Rdf]
   implicit val sparqlOps: SparqlOps[Rdf]
   implicit private val graphImplicit = graph
 
-  //  import FormSyntaxFactory._
   import ops._
   import sparqlOps._
   import sparqlGraph._

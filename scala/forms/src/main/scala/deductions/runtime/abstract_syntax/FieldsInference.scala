@@ -5,7 +5,7 @@ import org.w3.banana.RDF
 /** populate Fields in form by inferencing from class(es) of given instance URI */
 trait FieldsInference[Rdf <: RDF] {
   self: FormSyntaxFactory[Rdf] =>
-  val domainlessProperties = false
+  val showDomainlessProperties = false
 
   import ops._
 
@@ -79,7 +79,7 @@ trait FieldsInference[Rdf <: RDF] {
     }
 
     processSuperClasses(classs)
-    if (domainlessProperties) addDomainlessProperties(classs)
+    if (showDomainlessProperties) addDomainlessProperties(classs)
     result.distinct
   }
 }

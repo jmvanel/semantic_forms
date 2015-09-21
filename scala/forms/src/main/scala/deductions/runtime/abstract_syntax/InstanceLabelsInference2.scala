@@ -29,9 +29,12 @@ trait InstanceLabelsInference2[Rdf <: RDF] {
    *  TODO : this could use existing specifications of properties in form by class :
    *  ../forms/form_specs/foaf.form.ttl ,
    *  by taking the first one or two first literal properties.
+   *
+   *  NON transactional
    */
   def instanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String = ""): String = {
     val pgraph = PointedGraph(node, graph)
+
     val firstName = (pgraph / foaf.firstName).as[String].getOrElse("")
     val lastName = (pgraph / foaf.lastName).as[String].getOrElse("")
 
@@ -67,9 +70,11 @@ trait InstanceLabelsInference2[Rdf <: RDF] {
           }
         }
 
-        getLiteralInPreferedLanguageFromSubjectAndPredicate(node, rdfs.label,
-          getLiteralInPreferedLanguageFromSubjectAndPredicate(node, foaf.name,
-            last_segment(node)))
+        val l = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, rdfs.label, "")
+        if (l != "") return l
+        val n = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, foaf.name, "")
+        if (n != "") return n
+        last_segment(node)
       }
     }
   }

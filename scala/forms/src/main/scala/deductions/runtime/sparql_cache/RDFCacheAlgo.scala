@@ -129,16 +129,22 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     storeUriInNamedGraph(URI(uri))
   }
 
+  /**
+   * download and store URI content, with transaction, in a graph named by its URI minus the # part,
+   *  and store the timestamp from HTTP HEAD request;
+   * transactional,
+   * load also the direct owl:imports , but not recursively ( as EulerGUI IDE does )
+   */
   def storeUriInNamedGraph(uri: Rdf#URI): Rdf#Graph = {
     storeURI(uri)
   }
 
   /** NOTE: the dataset is provided by the parent trait */
   private def storeURI(uri: Rdf#URI): Rdf#Graph = {
-    val model = storeURI(uri, uri, dataset)
-    println("RDFCacheAlgo.storeURI " + uri + " size: " + model.size)
+    val graphFromURI = storeURI(uri, uri, dataset)
+    println("RDFCacheAlgo.storeURI " + uri + " size: " + graphFromURI.size)
     val r = dataset.rw({
-      val it = find(model, ANY, owl.imports, ANY)
+      val it = find(graphFromURI, ANY, owl.imports, ANY)
       for (importedOntology <- it) {
         try {
           Logger.getRootLogger().info(s"Before Loading imported Ontology $importedOntology")
@@ -154,7 +160,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       }
     })
     addTimestampToDataset(uri, dataset)
-    model
+    graphFromURI
   }
 
   /**
@@ -285,8 +291,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
     if (fromUri(uri).startsWith("http") ||
       fromUri(uri).startsWith("ftp:")) {
-      System.setProperty("sun.net.client.defaultReadTimeout", "30000")
-      System.setProperty("sun.net.client.defaultConnectTimeout", "30000")
+      System.setProperty("sun.net.client.defaultReadTimeout", "10000")
+      System.setProperty("sun.net.client.defaultConnectTimeout", "10000")
       val graph: Rdf#Graph =
         load(new java.net.URL(uri.toString())).get
       Logger.getRootLogger().info(s"Before storeURI uri $uri graphUri $graphUri")
