@@ -2,17 +2,17 @@ package deductions.runtime.user
 
 import org.w3.banana.RDF
 import deductions.runtime.services.StringSearchSPARQL
-import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
 import deductions.runtime.html.TableViewModule
 import deductions.runtime.html.CreationFormAlgo
 import deductions.runtime.services.Configuration
 import scala.xml.Text
 import deductions.runtime.utils.I18NMessages
+import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 
 trait RegisterPage[Rdf <: RDF, DATASET]
     extends StringSearchSPARQL[Rdf, DATASET]
-    with InstanceLabelsInference2[Rdf]
+    with InstanceLabelsInferenceMemory[Rdf, DATASET]
     with PreferredLanguageLiteral[Rdf]
     with TableViewModule[Rdf, DATASET]
     with CreationFormAlgo[Rdf, DATASET]

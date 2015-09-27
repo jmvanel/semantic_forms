@@ -12,7 +12,7 @@ import org.w3.banana.RDFSPrefix
  * populate Fields in form by inferring possible values from given rdfs:range's URI,
  *  through owl:oneOf and know instances
  */
-trait InstanceLabelsInference2[Rdf <: RDF] {
+private[abstract_syntax] trait InstanceLabelsInference2[Rdf <: RDF] {
   self: PreferredLanguageLiteral[Rdf] =>
 
   import ops._

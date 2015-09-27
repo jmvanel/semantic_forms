@@ -1,19 +1,17 @@
 package deductions.runtime.services
 
 import scala.util.Try
-
 import org.w3.banana.RDF
-
-import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
 import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 
 /**
  * API for a lookup web service similar to dbPedia lookup
  */
 trait Lookup[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
-    with InstanceLabelsInference2[Rdf]
+    with InstanceLabelsInferenceMemory[Rdf, DATASET]
     with PreferredLanguageLiteral[Rdf]
     with SPARQLHelpers[Rdf, DATASET] {
 

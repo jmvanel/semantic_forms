@@ -13,7 +13,6 @@ import org.w3.banana.RDF
 import org.w3.banana.io.RDFWriter
 import org.w3.banana.io.Turtle
 import com.hp.hpl.jena.query.Dataset
-import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.html.CreationFormAlgo
 import deductions.runtime.html.TableViewModule
@@ -26,6 +25,7 @@ import org.w3.banana.io.JsonLdFlattened
 import deductions.runtime.user.RegisterPage
 import scala.util.Try
 import scala.xml.NodeSeq
+import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 
 /**
  * a Web Application Facade,
@@ -44,7 +44,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with StringSearchSPARQL[Rdf, DATASET]
     with ReverseLinksSearchSPARQL[Rdf, DATASET]
     with ExtendedSearchSPARQL[Rdf, DATASET]
-    with InstanceLabelsInference2[Rdf]
+    with InstanceLabelsInferenceMemory[Rdf, DATASET]
     with SPARQLHelpers[Rdf, DATASET]
     with BrowsableGraph[Rdf, DATASET]
     with FormSaver[Rdf, DATASET]
