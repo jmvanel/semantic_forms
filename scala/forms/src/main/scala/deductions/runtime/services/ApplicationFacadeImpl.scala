@@ -26,6 +26,7 @@ import deductions.runtime.user.RegisterPage
 import scala.util.Try
 import scala.xml.NodeSeq
 import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
+import java.io.ByteArrayInputStream
 
 /**
  * a Web Application Facade,
@@ -242,11 +243,21 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   def downloadAsString(url: String): String = {
     println("download url " + url)
     val res = dl.focusOnURI(url)
-    println("download result " + res)
+    println(s"""download result "$res" """)
     res
   }
 
+  /** TODO should be non-blocking !!!!!!!!!!!!!
+   *  currently accumulates a string first !!!
+   *  not sure if Banana and Jena allow a non-blocking access to SPARQL query results */
   def download(url: String): Enumerator[Array[Byte]] = {
+	  val res = downloadAsString(url)
+	  val input = new ByteArrayInputStream(res.getBytes("utf-8"))
+	  Enumerator.fromStream(input, chunkSize=256*256)
+  }
+
+    /** TODO not working !!!!!!!!!!!!!  */
+  def downloadOK(url: String): Enumerator[Array[Byte]] = {
     // cf https://www.playframework.com/documentation/2.3.x/ScalaStream
     // and http://greweb.me/2012/11/play-framework-enumerator-outputstream/
     Enumerator.outputStream { os =>

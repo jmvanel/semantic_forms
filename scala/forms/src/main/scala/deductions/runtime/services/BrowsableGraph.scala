@@ -32,7 +32,7 @@ trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DAT
    *  used in Play! app : NON blocking !
    * NON transactional
    */
-  def search_only(search: String): Future[Rdf#Graph] = {
+  def search_only(search: String): Try[Rdf#Graph] = {
     val queryString =
       s"""
          |CONSTRUCT {
@@ -51,16 +51,24 @@ trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DAT
          |  }
          |}""".stripMargin
     println("search_only " + queryString)
-    sparqlConstructQueryFuture(queryString)
+    val res = sparqlConstructQuery(queryString)
+    println( "search_only: after sparqlConstructQuery" )
+    res
   }
 
   /** used in Play! app , but blocking ! transactional */
   def focusOnURI(uri: String): String = {
-    val transaction = dataset.r({
-      val triples = search_only(uri)
-      triples
-    })
-    futureGraph2String(transaction.get, uri)
+    try {
+      val transaction = dataset.r({
+        val triples = search_only(uri)
+        triples
+      })
+      graph2String(transaction.get, uri)
+    } catch {
+      case t: Throwable =>
+        t.printStackTrace()
+        throw t
+    }
   }
 
 }

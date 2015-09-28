@@ -35,8 +35,14 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATA
    */
   def sparqlConstructQuery(queryString: String): Try[Rdf#Graph] = {
     val r = for {
-      query <- parseConstruct(queryString)
-      es <- dataset.executeConstruct(query, Map())
+      query <- {
+    	  println( "sparqlConstructQuery: before parseConstruct" )
+    	  parseConstruct(queryString)
+      }
+      es <- {
+        println( "sparqlConstructQuery: before executeConstruct" )
+        dataset.executeConstruct(query, Map())
+      }
     } yield es
     r
   }
@@ -52,10 +58,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATA
 
   /** NON transactional */
   def sparqlConstructQueryFuture(queryString: String): Future[Rdf#Graph] = {
-    val r = for {
-      query <- parseConstruct(queryString) // .asFuture
-      es <- dataset.executeConstruct(query, Map())
-    } yield es
+    val r = sparqlConstructQuery( queryString )
     r.asFuture
   }
 
@@ -91,4 +94,10 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATA
     val ret = turtleWriter.write(graph, to, base = uri)
     to.toString
   }
+  
+  def graph2String(triples: Try[Rdf#Graph], uri: String): String = {
+    Logger.getRootLogger().info(s"uri $uri ${triples}")
+    val ret = turtleWriter.asString(triples.get, base = uri)
+    ret.get
+}
 }

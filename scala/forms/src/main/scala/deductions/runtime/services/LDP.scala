@@ -45,7 +45,7 @@ trait LDP[Rdf <: RDF, DATASET]
   import rdfStore.transactorSyntax._
   import rdfStore.sparqlEngineSyntax._
 
-  val schemeName = "lpd"
+  val schemeName = "lpd:"
 
   /** for LDP GET */
   def getTriples(uri: String, accept: String): String = {
@@ -74,10 +74,11 @@ trait LDP[Rdf <: RDF, DATASET]
   def putTriples(uri: String, link: Option[String], contentType: Option[String],
     slug: Option[String],
     content: Option[String]): Try[String] = {
-    val putURI = schemeName + ":" + uri + slug.getOrElse("unnamed")
+    val putURI = schemeName + uri + slug.getOrElse("unnamed")
 
-    println(s"content: ${content.get}")
-    println(s"contentType: ${contentType}")
+    println(s"putTriples: content: ${content.get}")
+    println(s"putTriples: contentType: ${contentType}")
+    println(s"putTriples: slug: ${slug}")
     val r = dataset.rw {
       for {
         graph <- if (contentType.get.contains("text/turtle"))
@@ -85,13 +86,18 @@ trait LDP[Rdf <: RDF, DATASET]
         else
           jsonldReader.read(new StringReader(content.get), putURI)
         res <- {
-          println("graph: " + graph);
+          println("putTriples: graph: " + graph);
           rdfStore.removeGraph(dataset, URI(putURI))
         }
-        res2 <- rdfStore.appendToGraph(dataset, URI(putURI), graph)
+        res2 <- {
+          println("putTriples: appendToGraph: " + putURI);
+          val res = rdfStore.appendToGraph(dataset, URI(putURI), graph)
+          println("putTriples: after appendToGraph: " + putURI)
+          res
+        }
       } yield res2
     }
-    println("putTriples: " + r)
+    println("putTriples: transaction result " + r)
     //    r.flatMap{ res:Failure[ Try[Unit]](err) => Success(putURI)}
     //    r.flatMap{ case res:Failure[Try[Unit]](err) => Success(putURI)}
     Success(putURI)
