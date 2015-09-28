@@ -27,6 +27,7 @@ import scala.util.Try
 import scala.xml.NodeSeq
 import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 import java.io.ByteArrayInputStream
+import scala.util.Failure
 
 /**
  * a Web Application Facade,
@@ -96,9 +97,15 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     if (uri != null && uri != "")
       try {
         val res = dataset.rw({
+        	val resRetrieve = retrieveURINoTransaction(makeUri(uri), dataset)
+        	val status = resRetrieve match {
+        	  case Failure(e) => e.getLocalizedMessage
+        	  case _ => ""
+        	}
           implicit val graph = allNamedGraph;
           Seq(
             titleEditDisplayDownloadLinks(uri, lang),
+            <div>{status}</div>,
             tableView.htmlFormElemRaw(uri, graph, hrefDisplayPrefix, blankNode, editable = editable,
               lang = lang)).flatMap { identity }
         })
@@ -256,8 +263,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 	  Enumerator.fromStream(input, chunkSize=256*256)
   }
 
-    /** TODO not working !!!!!!!!!!!!!  */
-  def downloadOK(url: String): Enumerator[Array[Byte]] = {
+  /** TODO not working !!!!!!!!!!!!!  */
+  def downloadKO(url: String): Enumerator[Array[Byte]] = {
     // cf https://www.playframework.com/documentation/2.3.x/ScalaStream
     // and http://greweb.me/2012/11/play-framework-enumerator-outputstream/
     Enumerator.outputStream { os =>
