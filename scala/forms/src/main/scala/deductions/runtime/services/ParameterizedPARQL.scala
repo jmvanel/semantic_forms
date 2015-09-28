@@ -36,24 +36,26 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
   import rdfStore.sparqlEngineSyntax._
 
   /** search and display results as an XHTML element */
-  def search(search: String, hrefPrefix: String = "")(implicit queryMaker: SPARQLQueryMaker): Future[Elem] = {
+  def search(search: String, hrefPrefix: String = "",
+      lang: String = "")(implicit queryMaker: SPARQLQueryMaker): Future[Elem] = {
     val uris = search_only(search)
     println(s"after search_only uris $uris")
     val elem = uris.map(
-      u => displayResults(u.toIterable, hrefPrefix))
+      u => displayResults(u.toIterable, hrefPrefix, lang))
     elem
   }
 
   /**
    *  TRANSACTIONAL
    */
-  private def displayResults(res0: Iterable[Rdf#Node], hrefPrefix: String) = {
+  private def displayResults(res0: Iterable[Rdf#Node], hrefPrefix: String,
+      lang: String = "") = {
     <p>{
       val res = res0.toSeq
       println(s"displayResults : ${res.mkString("\n")}")
       dataset.r({
         val graph: Rdf#Graph = allNamedGraph
-        val couples = res.map(uri => (uri, instanceLabel(uri, graph, "" /* TODO lang*/ )))
+        val couples = res.map(uri => (uri, instanceLabel(uri, graph, lang )))
         couples.sortBy( c => c._2) .
         map( c => { val uri = c._1
             val uriString = uri.toString

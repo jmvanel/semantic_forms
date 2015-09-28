@@ -40,7 +40,8 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
          |}""".stripMargin
   }
 
-  def searchString(searchString: String, hrefPrefix: String = ""): Future[Elem] =
-    search(searchString, hrefPrefix)
+  def searchString(searchString: String, hrefPrefix: String = "",
+      lang: String = ""): Future[Elem] =
+    search(searchString, hrefPrefix, lang)
 
 }

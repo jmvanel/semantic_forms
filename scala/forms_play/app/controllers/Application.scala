@@ -35,11 +35,9 @@ object Application extends Controller
     with MainXml {
   
   def index() =
-//    { Action { implicit request =>   
         withUser {
     implicit userid =>
     implicit request => {
-//      Ok(views.html.index(<p>...</p>)(lang = chooseLanguageObject(request)))
       val lang = chooseLanguageObject(request).language
       val userInfo = displayUser(userid, "", "", lang)
       Ok( "<!DOCTYPE html>\n" + mainPage(<p>...</p>, userInfo, lang))
@@ -51,31 +49,29 @@ object Application extends Controller
     Action { implicit request =>
       println("displayURI: " + request)
       println("displayURI: " + Edit)
-//      val lang = chooseLanguageObject(request).language
-//      val pageURI = uri
-//      val pageLabel = labelForURI(uri, lang)
-//      val userInfo = displayUser(userid, pageURI, pageLabel, lang)
-      Ok(views.html.index(htmlForm(uri, blanknode, editable = Edit != "",
-        lang = chooseLanguage(request)))).
-        withHeaders("Access-Control-Allow-Origin" -> "*") // for dbpedia lookup
+      //      val pageLabel = labelForURI(uri, lang)
+//      val userInfo = displayUser(userid, uri, pageLabel, lang)
+      val lang = chooseLanguage(request)
+      outputMainPage(
+        htmlForm(uri, blanknode, editable = Edit != "",
+        lang), lang )
     }
   }
   
-  def wordsearchAction(q: String = "") = Action.async {
-    val fut: Future[Elem] = wordsearch(q)
-    fut.map(r => Ok(views.html.index(r)))
+  private def outputMainPage( content: NodeSeq,
+      lang: String, userInfo: NodeSeq = <div/> )
+  (implicit request: Request[_]) = {
+      Ok( "<!DOCTYPE html>\n" +
+        mainPage( content, userInfo, lang )
+      ).withHeaders("Access-Control-Allow-Origin" -> "*") // for dbpedia lookup
+      .as("text/html; charset=utf-8")
   }
 
-//  def download(url: String): Action[_] = {
-//    Action { Ok(downloadAsString(url)).as("text/turtle; charset=utf-8") }
-//  }
-
-  /** cf https://www.playframework.com/documentation/2.3.x/ScalaStream */
-  def downloadAction(url: String) = {
-    Action {
-      Ok.chunked(download(url)).as("text/turtle; charset=utf-8")    
-//        Ok.stream(download(url) >>> Enumerator.eof).as("text/turtle; charset=utf-8") 
-    }
+  def wordsearchAction(q: String = "") = Action.async {
+    implicit request =>
+    val lang = chooseLanguageObject(request).language
+    val fut: Future[Elem] = wordsearch(q, lang)
+    fut.map( r => outputMainPage( r, lang ) )
   }
 
   def edit(uri: String) =
@@ -97,7 +93,8 @@ object Application extends Controller
 
   def saveAction() = {
     Action { implicit request =>
-      Ok(views.html.index(save(request)))
+      val lang = chooseLanguage(request)
+      outputMainPage(save(request), lang)
     }
   }
 
@@ -134,11 +131,22 @@ object Application extends Controller
       val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formspec")
       println("create: " + uri)
       println("formSpecURI: " + formSpecURI)
-      Ok(views.html.index(
-          create(uri, chooseLanguage(request),
-        		  formSpecURI)
-//        		  ( allNamedGraph )
-      ))
+      val lang = chooseLanguage(request)
+      outputMainPage(
+        create(uri, chooseLanguage(request),
+          formSpecURI), lang )
+    }
+  }
+
+//  def download(url: String): Action[_] = {
+//    Action { Ok(downloadAsString(url)).as("text/turtle; charset=utf-8") }
+//  }
+
+  /** cf https://www.playframework.com/documentation/2.3.x/ScalaStream */
+  def downloadAction(url: String) = {
+    Action {
+      Ok.chunked(download(url)).as("text/turtle; charset=utf-8")
+//        Ok.stream(download(url) >>> Enumerator.eof).as("text/turtle; charset=utf-8")
     }
   }
 
@@ -152,7 +160,8 @@ object Application extends Controller
     Action { implicit request =>
       println("sparql: " + request)
       println("sparql: " + query)
-      Ok(views.html.index(sparqlConstructQuery(query, chooseLanguage(request))))
+      val lang = chooseLanguage(request)
+      outputMainPage(sparqlConstructQuery(query, lang), lang)
     }
   }
 
@@ -160,12 +169,15 @@ object Application extends Controller
     Action { implicit request =>
       println("sparql: " + request)
       println("sparql: " + query)
-      Ok(views.html.index(sparqlSelectQuery(query, chooseLanguage(request))))
+      val lang = chooseLanguage(request)
+      outputMainPage(
+        sparqlSelectQuery(query, lang), lang)
     }
   }
 
   def backlinksAction(q: String = "") = Action.async {
-    val fut: Future[Elem] = backlinks(q)
+	  implicit request =>
+	  val fut: Future[Elem] = backlinks(q)
     val extendedSearchLink = <p>
                                <a href={ "/esearch?q=" + q }>
                                  Extended Search for &lt;{ q }
@@ -173,15 +185,18 @@ object Application extends Controller
                                </a>
                              </p>
     fut.map { res =>
-      Ok(views.html.index(NodeSeq
-        fromSeq Seq(extendedSearchLink, res)))
+    val lang = chooseLanguage(request)
+    outputMainPage(
+        NodeSeq fromSeq Seq(extendedSearchLink, res), lang)
     }
-
   }
 
   def extSearch(q: String = "") = Action.async {
+	  implicit request =>
+	  val lang = chooseLanguage(request)
     val fut = esearch(q)
-    fut.map(r => Ok(views.html.index(r)))
+    fut.map(r =>
+    outputMainPage(r, lang))
   }
 
   def ldp(uri: String) = {

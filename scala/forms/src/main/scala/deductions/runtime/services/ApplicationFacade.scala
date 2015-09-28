@@ -32,8 +32,8 @@ trait ApplicationFacade[Rdf <: RDF, DATASET] extends ApplicationFacadeInterface 
   def lookup(search: String): String =
     impl.lookup(search)
 
-  def wordsearch(q: String = ""): Future[Elem] =
-    impl.wordsearchFuture(q)
+  def wordsearch(q: String = "", lang: String = ""): Future[Elem] =
+    impl.wordsearchFuture(q, lang)
 
   def download(url: String): Enumerator[Array[Byte]] =
     impl.download(url)

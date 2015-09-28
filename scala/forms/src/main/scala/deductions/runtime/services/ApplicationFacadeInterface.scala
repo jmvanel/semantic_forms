@@ -27,7 +27,7 @@ trait ApplicationFacadeInterface {
   def create(uri: String, lang: String = "en",
     formSpecURI: String = ""): NodeSeq
 
-  def wordsearch(q: String = ""): Future[Elem]
+  def wordsearch(q: String = "", lang: String = ""): Future[Elem]
 
   def lookup(search: String): String
 
