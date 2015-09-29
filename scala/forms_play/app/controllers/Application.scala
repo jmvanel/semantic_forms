@@ -146,6 +146,7 @@ object Application extends Controller
   def downloadAction(url: String) = {
     Action {
       Ok.chunked(download(url)).as("text/turtle; charset=utf-8")
+      .withHeaders("Access-Control-Allow-Origin" -> "*")
 //        Ok.stream(download(url) >>> Enumerator.eof).as("text/turtle; charset=utf-8")
     }
   }
@@ -211,6 +212,7 @@ object Application extends Controller
       val contentType = accepts.mimeType + "; charset=utf-8"
       println( s"contentType $contentType" )
       Ok(r).as(contentType)
+      .withHeaders("Access-Control-Allow-Origin" -> "*")
     }
   }
 
@@ -236,6 +238,7 @@ object Application extends Controller
       val serviceCalled =
         ldpPOST(uri, link, contentType, slug, content).getOrElse("default")
       Ok(serviceCalled).as("text/plain; charset=utf-8")
+      .withHeaders("Access-Control-Allow-Origin" -> "*")
     }
   }
 
