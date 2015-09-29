@@ -65,7 +65,7 @@ trait LDP[Rdf <: RDF, DATASET]
   private def makeQueryString(search: String): String =
     s"""
          |CONSTRUCT { ?s ?p ?o } WHERE {
-         |  graph <$schemeName:$search> {
+         |  graph <$schemeName$search> {
          |    ?s ?p ?o .
          |  }
          |}""".stripMargin
