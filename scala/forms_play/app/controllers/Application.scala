@@ -201,18 +201,16 @@ object Application extends Controller
 
   def ldp(uri: String) = {
     Action { implicit request =>
-      println("LDP GET: " + request)
-      val contentType = request.contentType
-      val AcceptsTurtle = Accepting("text/turtle")
-      val turtle = AcceptsTurtle.mimeType
-      val accepts = Accepting(contentType.getOrElse(turtle))
+      println("LDP GET: request " + request)
+      val acceptedTypes = request.acceptedTypes // contentType
+      val acceptsTurtle = Accepting("text/turtle")
+      val turtle = acceptsTurtle.mimeType
+      val accepts = Accepting(acceptedTypes.headOption.getOrElse(turtle).toString())
       val r = ldpGET(uri, accepts.mimeType)
-      println("LDP: GET: " + r)
-      render {
-        case AcceptsTurtle() =>
-          Ok(r).as(turtle + "; charset=utf-8")
-        case Accepts.Json() => Ok(Json.toJson(r))
-      }
+      println("LDP: GET: result " + r)
+      val contentType = accepts.mimeType + "; charset=utf-8"
+      println( s"contentType $contentType" )
+      Ok(r).as(contentType)
     }
   }
 
