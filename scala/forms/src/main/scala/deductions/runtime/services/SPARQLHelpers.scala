@@ -50,6 +50,14 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATA
   /** transactional */
   def sparqlConstructQueryTR(queryString: String): String = {
     val transaction = dataset.r({
+      graph2String( sparqlConstructQuery(queryString), "" )
+    })
+    transaction.get
+  }
+  
+  /** transactional */
+  def sparqlConstructQueryTR_old(queryString: String): String = {
+    val transaction = dataset.r({
       val r = sparqlConstructQueryFuture(queryString)
       futureGraph2String(r, "")
     })
@@ -95,9 +103,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATA
     to.toString
   }
   
-  def graph2String(triples: Try[Rdf#Graph], uri: String): String = {
-    Logger.getRootLogger().info(s"uri $uri ${triples}")
-    val ret = turtleWriter.asString(triples.get, base = uri)
+  def graph2String(triples: Try[Rdf#Graph], baseURI: String): String = {
+    Logger.getRootLogger().info(s"base URI $baseURI ${triples}")
+    val ret = turtleWriter.asString(triples.get, base = baseURI)
     ret.get
 }
 }

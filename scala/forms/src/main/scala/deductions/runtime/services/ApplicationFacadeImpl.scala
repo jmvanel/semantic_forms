@@ -28,6 +28,8 @@ import scala.xml.NodeSeq
 import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 import java.io.ByteArrayInputStream
 import scala.util.Failure
+import deductions.runtime.views.FormHeader
+import deductions.runtime.views.ToolsPage
 
 /**
  * a Web Application Facade,
@@ -54,8 +56,15 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with LDP[Rdf, DATASET]
     with Lookup[Rdf, DATASET]
     with Authentication[Rdf, DATASET] //with ApplicationFacadeInterface
-    with RegisterPage[Rdf, DATASET] {
+    with RegisterPage[Rdf, DATASET]
+    with FormHeader[Rdf]
+    with ToolsPage {
  
+    // TODO use inverse Play's URI API
+  val hrefDisplayPrefix = "/display?displayuri="
+  val hrefDownloadPrefix = "/download?url="
+  val hrefEditPrefix = "/edit?url="
+  
   val logger = Logger.getRootLogger()
 
   implicit val turtleWriter: RDFWriter[Rdf, Try, Turtle]
@@ -83,10 +92,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
   import rdfStore.transactorSyntax._
 
-  // TODO use inverse Play's URI API
-  val hrefDisplayPrefix = "/display?displayuri="
-  val hrefDownloadPrefix = "/download?url="
-  val hrefEditPrefix = "/edit?url="
+
 
   /** TRANSACTIONAL */
   def htmlForm(uri0: String, blankNode: String = "",
@@ -158,33 +164,6 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     </div>
   }
 
-  /** title and links on top of the form */
-  private def titleEditDisplayDownloadLinks(uri: String, lang: String)
-    (implicit graph: Rdf#Graph)
-  : Elem =
-    <div class="container">
-      <div class="row">
-        <h3>
-          { I18NMessages.get("Properties_for", lang) }
-          <b>
-            <a href={ hrefEditPrefix + URLEncoder.encode(uri, "utf-8") } title="edit this URI">
-              { labelForURI(uri, lang) }
-            </a>
-            , URI :
-            <a href={ hrefDisplayPrefix + URLEncoder.encode(uri, "utf-8") } title="display this URI">{ uri }</a>
-            <a href={ s"/backlinks?q=${URLEncoder.encode(uri, "utf-8")}" } title="links towards this URI">o--></a>
-          </b>
-        </h3>
-      </div>
-      <div class="row">
-        <div class="col-md-6">
-          <a href={ uri } title="Download from original URI">Download from original URI</a>
-        </div>
-        <div class="col-md-6">
-          <a href={ hrefDownloadPrefix + URLEncoder.encode(uri, "utf-8") } title="Download Turtle from database (augmented by users' edits)">Triples</a>
-        </div>
-      </div>
-    </div>
 
   /** NON transactional */
   def labelForURI(uri: String, language: String)
@@ -312,12 +291,13 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   def sparqlConstructQuery(query: String, lang: String = "en"): Elem = {
     Logger.getRootLogger().info("Global.sparql query  " + query)
     <p>
-      SPARQL query:<br/>{ query }
-      <br/>
+		{ sparqlQueryForm(query, "/sparql",
+				"CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10" ) }
       <pre>
         {
           try {
-            dl.sparqlConstructQuery(query)
+        	  if( query != "" )
+        		  dl.sparqlConstructQueryTR(query)
           } catch {
             case t: Throwable => t.printStackTrace() // TODO: handle error
           }
@@ -327,29 +307,34 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     </p>
   }
 
+  /*
+  def sparqlQueryForm(query: String, action: String, sampleQuery: String): NodeSeq =
+    <form role="form" action={action}>
+    SPARQL query:
+    <textarea name="query" cols="80">
+      {if( query != "" )
+        query
+      else
+        "# " + sampleQuery }
+    </textarea>
+    <input type="submit" value="Submit"/>
+    </form>
+  */
+  
   def selectSPARQL(query: String, lang: String = "en"): Elem = {
     Logger.getRootLogger().info("sparql query  " + query)
     <p>
-      SPARQL query:<pre>{ query }</pre>
+		{ sparqlQueryForm(query, "/select",
+				"SELECT * WHERE {{ GRAPH ?G {{?S ?P ?O . }} }} LIMIT 10" ) }
       <br></br>
       <script type="text/css">
-        table {{
- border-collapse:collapse;
- width:90%;
- }}
-th, td {{
- border:1px solid black;
- width:20%;
- }}
-td {{
- text-align:center;
- }}
-caption {{
- font-weight:bold
- }}
+        table {{ border-collapse:collapse; width:90%; }}
+        th, td {{ border:1px solid black; width:20%; }}
+        td {{ text-align:center; }}
+       caption {{ font-weight:bold }}
       </script>
       <table>
-        {
+        { if( query != "" ) {
           val rowsTry = dl.sparqlSelectQuery(query)
           rowsTry match {
             case Success(rows) =>
@@ -360,6 +345,7 @@ caption {{
               }
               printedRows
             case Failure(e) => e.toString()
+          }
           }
         }
       </table>

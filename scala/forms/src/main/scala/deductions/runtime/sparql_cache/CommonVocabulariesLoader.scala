@@ -66,6 +66,7 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
       makeUri("http://www.w3.org/2000/10/swap/pim/contact#") ::
       makeUri(githubcontent + "/assemblee-virtuelle/pair/master/av.owl.ttl") ::
       makeUri("http://purl.org/ontology/cco/cognitivecharacteristics.n3") ::
+      makeUri("http://www.w3.org/2004/02/skos/core#") ::      
       Nil
 
   /**

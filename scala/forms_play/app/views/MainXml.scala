@@ -3,8 +3,9 @@ package views
 import deductions.runtime.utils.I18NMessages
 import controllers._
 import scala.xml.NodeSeq
+import deductions.runtime.views.ToolsPage
 
-trait MainXml {
+trait MainXml extends ToolsPage {
 
   def mainPage(content: NodeSeq, userInfo: NodeSeq, lang: String = "en") = {
     <html>
@@ -14,12 +15,17 @@ trait MainXml {
           Seq(
             userInfo,
             mainPageHeader(lang),
-            content)
+            content,
+            linkToToolsPage)
         }
       </body>
     </html>
   }
 
+  def linkToToolsPage = <p>
+                          <a href="/tools">Tools</a>
+                        </p>
+    
   def message(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
 
   /**
@@ -28,7 +34,7 @@ trait MainXml {
    */
   def mainPageHeader(implicit lang: String = "en"): NodeSeq = {
     val prefixAV = "http://www.assemblee-virtuelle.org/ontologies/v1.owl#"
-    
+
     <div><h3>{ message("Welcome") }</h3></div>
     <div class="row">
       <div class="col-md-12">
@@ -79,13 +85,14 @@ trait MainXml {
               <input class="form-control" type="text" name="uri" placeholder={ message("Paste_ontology") }></input>
               <select class="form-control" type="text" name="uri" list="class_uris">
                 <optgroup label="Assemblée Virtuelle">
-                  <option label="av:Person"> {prefixAV}Person </option>
-                  <option label="av:Organization"> {prefixAV}Organization </option>
+                  <option label="av:Person"> { prefixAV }Person </option>
+                  <option label="av:Organization"> { prefixAV }Organization </option>
                   <option label="av:Project" title="Projet dans ontologie de l'Assemblée Virtuelle">
-                    {prefixAV}Project
+                    { prefixAV }
+                    Project
                   </option>
-                  <option label="av:Idea"> {prefixAV}Idea </option>
-                  <option label="av:Resource"> {prefixAV}Resource </option>
+                  <option label="av:Idea"> { prefixAV }Idea </option>
+                  <option label="av:Resource"> { prefixAV }Resource </option>
                 </optgroup>
                 <optgroup label={ message("Other_vocabs") }>
                   <option label="foaf:Person" selected="selected"> http://xmlns.com/foaf/0.1/Person </option>
@@ -132,4 +139,5 @@ trait MainXml {
       </style>
     </head>
   }
+
 }

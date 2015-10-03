@@ -26,6 +26,7 @@ import scala.concurrent.Future
 import views.MainXml
 import deductions.runtime.user.RegisterPage
 import play.api.libs.iteratee.Enumerator
+import deductions.runtime.views.ToolsPage
 
 /** main controller */
 object Application extends Controller
@@ -248,4 +249,12 @@ object Application extends Controller
       Ok(lookup(search)).as("text/json-ld; charset=utf-8")
     }
   }
+
+  def toolsPage = {
+    Action { implicit request =>
+      Ok(new ToolsPage {}.getPage)
+        .as("text/html; charset=utf-8")
+    }
+  }
+
 }
