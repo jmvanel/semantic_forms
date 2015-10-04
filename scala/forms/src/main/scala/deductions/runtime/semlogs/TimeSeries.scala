@@ -13,37 +13,32 @@ trait TimeSeries[Rdf <: RDF, DATASET]
   import rdfStore.graphStoreSyntax._
   import rdfStore.sparqlEngineSyntax._
   import scala.concurrent.ExecutionContext.Implicits.global
-  
-  trait SaveDataEventListener extends SaveListener {
-    
-    /** save `addedTriples` to a specific new named graph,
-     *  and add timestamp metadata to default graph */
-    override def notifyDataEvent(addedTriples: Seq[Rdf#Triple], removedTriples: Seq[Rdf#Triple])
-    (implicit userURI: String)
-    = {
-      // TODO future
+
+  /**
+   * save `addedTriples` to a specific new named graph,
+   *  and add timestamp metadata to default graph
+   */
+  override def notifyDataEvent(addedTriples: Seq[Rdf#Triple],
+      removedTriples: Seq[Rdf#Triple])(implicit userURI: String) = {
+    // TODO future
+    if (!addedTriples.isEmpty)
       dataset2.rw({
-        val graphName = "" // TODO
-        val graphUri = URI(graphName)
+        val (graphUri, metadata ) = makeGraphURIAndMetadata(addedTriples, removedTriples)
+        dataset2.appendToGraph(URI(""), metadata)
+       
         val graph = makeGraph(addedTriples)
-        dataset2.appendToGraph(graphUri, graph)
-        
-        val timestamp = (new Date).getTime
-        val metadata = ( graphUri
-        -- URI("timestamp") ->- Literal( timestamp.toString() )
-        -- URI("user") ->- URI(userURI)
-        ) . graph
-        dataset2.appendToGraph( URI(""), metadata)
+        dataset2.appendToGraph(graphUri, graph)        
       })
-    }
   }
 
-  //    /** function arguments are like in notifyEditEvent():
-  //     * userURI: String, subjectURI: String, propURI: String, objectURI: String  */
-  //    def setSavedDataFunctionEditEvent(f:
-  //        (String, String, String, String) =>
-  //          PointedGraph[Rdf] =
-  //            // by default store reified triple
-  //          (u: String, s: String, p: String, o: String) => (
-  //        		  URI(s) -- URI(p) ->- Literal(o) ))
+  def makeGraphURIAndMetadata(addedTriples: Seq[Rdf#Triple],
+      removedTriples: Seq[Rdf#Triple])(implicit userURI: String) = {
+        	  val timestamp = (new Date).getTime
+        val graphName = addedTriples.head.subject.toString() + "#" + timestamp
+        val graphUri = URI(graphName)
+        val metadata = (graphUri
+          -- URI("timestamp") ->- Literal(timestamp.toString())
+          -- URI("user") ->- URI(userURI)).graph
+         ( graphUri, metadata ) 
+  }
 }

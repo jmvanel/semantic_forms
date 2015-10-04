@@ -11,10 +11,10 @@ trait LogAPI[Rdf <: RDF] {
   implicit val ops: RDFOps[Rdf]
   import ops._
 
-  trait SaveListener {
+//  trait SaveListener {
     def notifyDataEvent(addedTriples: Seq[Rdf#Triple], removedTriples: Seq[Rdf#Triple])
     (implicit userURI: String) 
-  }
+//  }
   
 //  trait DataEventListener {
 ////    def notifyCreateEvent(userURI: String, subjectURI: String, classURI: String)

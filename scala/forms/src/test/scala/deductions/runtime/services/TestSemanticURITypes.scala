@@ -64,5 +64,5 @@ trait TestSemanticURITypesTrait[Rdf <: RDF, DATASET] extends FunSuite
 class TestSemanticURITypes extends FunSuite
     with RDFStoreLocalJena1Provider
     with TestSemanticURITypesTrait[Jena, Dataset] {
-  val appDataStore = new RDFStoreLocalJena2Provider {}
+  val appDataStore = new RDFStoreLocalJena1Provider {}
 }

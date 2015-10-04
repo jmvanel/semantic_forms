@@ -7,6 +7,8 @@ trait Configuration {
   def needLoginForEditing: Boolean = false // true
   def needLoginForDisplaying: Boolean = false
 
+  val recordUserActions: Boolean = false
+
   // helper
   def needLogin = needLoginForEditing || needLoginForDisplaying
 }

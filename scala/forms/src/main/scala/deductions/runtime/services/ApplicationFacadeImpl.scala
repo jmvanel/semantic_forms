@@ -30,6 +30,7 @@ import java.io.ByteArrayInputStream
 import scala.util.Failure
 import deductions.runtime.views.FormHeader
 import deductions.runtime.views.ToolsPage
+import deductions.runtime.semlogs.TimeSeries
 
 /**
  * a Web Application Facade,
@@ -58,9 +59,12 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with Authentication[Rdf, DATASET] //with ApplicationFacadeInterface
     with RegisterPage[Rdf, DATASET]
     with FormHeader[Rdf]
+    with TimeSeries[Rdf, DATASET]
     with ToolsPage {
  
-    // TODO use inverse Play's URI API
+  addSaveListener(this)
+  
+	// TODO use inverse Play's URI API
   val hrefDisplayPrefix = "/display?displayuri="
   val hrefDownloadPrefix = "/download?url="
   val hrefEditPrefix = "/edit?url="
@@ -271,6 +275,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     println("ApplicationFacade.save: map " + request)
     try {
       fs.saveTriples(request)
+      ("noUserURI") // TODO get user ID when login activated
     } catch {
       case t: Throwable =>
         println("Exception in saveTriples: " + t)
