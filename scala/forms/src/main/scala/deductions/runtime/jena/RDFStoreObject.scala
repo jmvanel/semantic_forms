@@ -15,16 +15,14 @@ import deductions.runtime.utils.Timer
 /** singleton  hosting a Jena TDB database in directory "TDB" */
 object RDFStoreObject extends JenaModule with RDFStoreLocalJena1Provider
 
-/** For user data and RDF cache, sets a default location for the Jena TDB store directory : ./TDB/ */
+/** For user data and RDF cache, sets a default location for the Jena TDB store directory : TDB */
 trait RDFStoreLocalJena1Provider extends RDFStoreLocalJenaProvider {
-  val databaseLocation = "TDB"
-  //		  override lazy val dataset: DATASET = createDatabase(databaseLocation)
+  //  val databaseLocation = "TDB"
+  //  val databaseLocation2 = "TDB2"
+  //  val dataset2: DATASET = createDatabase(databaseLocation2)
 }
 
-/** For application data (timestamps, URI types, ...), sets a default location for the Jena TDB store directory : ./TDBapp/ */
-trait RDFStoreLocalJena2Provider extends RDFStoreLocalJenaProvider {
-  val databaseLocation = "TDBapp"
-}
+//trait RDFStoreLocalJena2Provider extends RDFStoreLocalJenaProvider {}
 
 trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Dataset]
     with JenaModule with JenaRDFLoader
