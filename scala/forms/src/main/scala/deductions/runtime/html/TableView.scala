@@ -73,7 +73,8 @@ trait TableViewModule[Rdf <: RDF, DATASET]
 
   /**
    * wrapper for htmlForm, but generates Just Fields; also shows Failure's;
-   *  see [[deductions.runtime.html.Form2HTML]] .generateHTMLJustFields()
+   * see [[deductions.runtime.html.Form2HTML]] .generateHTMLJustFields()
+   * TRANSACTIONAL
    */
   def htmlFormElemJustFields(uri: String, hrefPrefix: String = "", blankNode: String = "",
     editable: Boolean = false,
@@ -87,7 +88,9 @@ trait TableViewModule[Rdf <: RDF, DATASET]
 
     val (graphURIActual, _) = doRetrieveURI(uri, blankNode, graphURI)
     val htmlFormTry = dataset.r({
-      val form = createAbstractForm(allNamedGraph, uri, editable, lang, blankNode,
+      val form = createAbstractForm(
+//          graph, 
+          uri, editable, lang, blankNode,
         URI(formGroup))
       // new Form2HTMLBanana[Rdf] {}. // TODO
       new Form2HTML[Rdf#Node, Rdf#URI] {
@@ -191,7 +194,9 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     implicit val graph: Rdf#Graph = graphe
     println(s"graf2form(graph: graph size: ${graph.size}")
     val form = time("createAbstractForm",
-      createAbstractForm(graph, uri, editable, lang, blankNode, formGroup))
+      createAbstractForm(
+//          graph,
+          uri, editable, lang, blankNode, formGroup))
     val htmlFormGen = time("new Form2HTML",
       // new Form2HTMLBanana[Rdf] {}. // TODO
       new Form2HTML[Rdf#Node, Rdf#URI] {
@@ -205,7 +210,9 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     htmlForm
   }
 
-  private def createAbstractForm(graphArg: Rdf#Graph, uri: String, editable: Boolean,
+  private def createAbstractForm(
+//      graphArg: Rdf#Graph, 
+      uri: String, editable: Boolean,
     lang: String, blankNode: String, formGroup: Rdf#URI)
     (implicit graph: Rdf#Graph)
     : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {

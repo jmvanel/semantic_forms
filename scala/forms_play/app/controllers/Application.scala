@@ -1,32 +1,20 @@
 package controllers
 
-import java.io.OutputStream
+import java.net.URLDecoder
+
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.Try
+import scala.concurrent.Future
+import scala.xml.Elem
 import scala.xml.NodeSeq
-import org.w3.banana.io.JsonLdExpanded
-import org.w3.banana.io.JsonLdFlattened
-import org.w3.banana.io.RDFWriter
-import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaModule
-import com.hp.hpl.jena.query.Dataset
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.services.LDP
-import deductions.runtime.services.Lookup
-import play.api.libs.json.Json
+
+import deductions.runtime.jena.ApplicationFacadeJena
+import deductions.runtime.views.ToolsPage
 import play.api.mvc.Accepting
 import play.api.mvc.Action
-import play.api.mvc.Controller
-import deductions.runtime.jena.ApplicationFacadeJena
-import scala.xml.Elem
-import play.api.mvc.Request
 import play.api.mvc.AnyContentAsFormUrlEncoded
-import java.net.URLDecoder
-import scala.concurrent.Future
+import play.api.mvc.Controller
+import play.api.mvc.Request
 import views.MainXml
-import deductions.runtime.user.RegisterPage
-import play.api.libs.iteratee.Enumerator
-import deductions.runtime.views.ToolsPage
 
 /** main controller */
 object Application extends Controller

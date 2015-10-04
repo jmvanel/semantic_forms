@@ -9,7 +9,7 @@ import org.w3.banana.RDF
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFStore
 import org.w3.banana.URIOps
-import UnfilledFormFactory.defaultInstanceURIPrefix
+//import UnfilledFormFactory.defaultInstanceURIPrefix
 import org.w3.banana.SparqlGraphModule
 import org.w3.banana.SparqlEngine
 import org.w3.banana.SparqlOps
@@ -21,9 +21,6 @@ import deductions.runtime.services.Configuration
  *
  */
 object UnfilledFormFactory {
-  /** TODO put in config. */
-  var defaultInstanceURIPrefix = "http://assemblee-virtuelle.org/resource/"
-
   /** make a unique Id with given prefix, currentTimeMillis() and nanoTime() */
   def makeId(instanceURIPrefix: String): String = {
     instanceURIPrefix + System.currentTimeMillis() + "-" + System.nanoTime() // currentId = currentId + 1
@@ -43,8 +40,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
 //    sparqlOps: SparqlOps[Rdf])
     extends FormSyntaxFactory[Rdf, DATASET]
    	with FormConfigurationFactory[Rdf]
-   			with Configuration
-{
+    with Configuration {
 
 //  val graph: Rdf#Graph
 //  val preferedLanguage: String = "en"
