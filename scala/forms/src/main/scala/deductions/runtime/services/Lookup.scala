@@ -20,8 +20,16 @@ trait Lookup[Rdf <: RDF, DATASET]
   import rdfStore.sparqlEngineSyntax._
   import rdfStore.transactorSyntax._
 
-  /**
-   * <ArrayOfResult xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://lookup.dbpedia.org/">
+  /** Get simple JSON from a simple string search ( for completion in UI )
+   *  
+   * Tested with
+   *  http://localhost:9000/lookup?q=Jean-Marc
+   *
+   * This is dbPedia's output format, that could be used:
+   * 
+   * <ArrayOfResult xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   * xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   * xmlns="http://lookup.dbpedia.org/">
    * <Result>
    * <Label>Jimi Hendrix</Label>
    * <URI>http://dbpedia.org/resource/Jimi_Hendrix</URI>
@@ -39,6 +47,7 @@ trait Lookup[Rdf <: RDF, DATASET]
     val subjects = triples.map { _.subject }
     val r1 = for (subject <- subjects) yield {
       val label = instanceLabel(subject, graph, "")
+      // TODO output rdf:type also
       s"""
         label: "$label""
         uri: "${subject}"
@@ -61,7 +70,7 @@ trait Lookup[Rdf <: RDF, DATASET]
          |    ?thing ?p ?o .
          |    FILTER regex( ?o, "$search", 'i')
          |  }
-         |  } UNION {
+         |  } OPTIONAL {
          |  graph ?g0 {
          |    ?thing a ?CLASS .
          |  }
