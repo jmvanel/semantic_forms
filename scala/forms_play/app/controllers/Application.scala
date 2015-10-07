@@ -1,12 +1,10 @@
 package controllers
 
 import java.net.URLDecoder
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.xml.Elem
 import scala.xml.NodeSeq
-
 import deductions.runtime.jena.ApplicationFacadeJena
 import deductions.runtime.views.ToolsPage
 import play.api.mvc.Accepting
@@ -14,14 +12,15 @@ import play.api.mvc.Action
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.mvc.Controller
 import play.api.mvc.Request
-import views.MainXml
+import deductions.runtime.html.MainXml
+import views.MainXmlWithHead
 
 /** main controller */
 object Application extends Controller
     with ApplicationFacadeJena
     with LanguageManagement
     with Secured
-    with MainXml {
+    with MainXmlWithHead {
   
   def index() =
         withUser {

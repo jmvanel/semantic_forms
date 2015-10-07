@@ -1,12 +1,13 @@
-package views
+package deductions.runtime.html
 
 import deductions.runtime.utils.I18NMessages
-import controllers._
 import scala.xml.NodeSeq
 import deductions.runtime.views.ToolsPage
+import scala.xml.NodeSeq.seqToNodeSeq
 
 trait MainXml extends ToolsPage {
 
+  /** main Page with a single content (typically a form) */
   def mainPage(content: NodeSeq, userInfo: NodeSeq, lang: String = "en") = {
     <html>
       { head(lang) }
@@ -22,10 +23,12 @@ trait MainXml extends ToolsPage {
     </html>
   }
 
+  def head(implicit lang: String = "en") = <head></head>
+
   def linkToToolsPage = <p>
                           <a href="/tools">Tools</a>
                         </p>
-    
+
   def message(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
 
   /**
@@ -115,29 +118,29 @@ trait MainXml extends ToolsPage {
     </div>
   }
 
-  def head(implicit lang: String = "en") = {
-    <head>
-      <title>{ message("Welcome") }</title>
-      <meta http-equiv="Content-type" content="text/html; charset=UTF-8"></meta>
-      <link rel="shortcut icon" type="image/png" href={ routes.Assets.at("images/favicon.png").url }/>
-      <script src={ routes.Assets.at("javascripts/jquery-1.11.2.min.js").url } type="text/javascript"></script>
-      <!-- Latest compiled and minified CSS -->
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css"/>
-      <link rel="stylesheet" href={ routes.Assets.at("stylesheets/select2.css").url }/>
-      <!-- Optional theme -->
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css"/>
-      <!-- Latest compiled and minified JavaScript -->
-      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-      <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-beta.3/css/select2.min.css" rel="stylesheet"/>
-      <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-beta.3/js/select2.min.js"></script>
-      <script src={ routes.Assets.at("javascripts/select2.js").url } type="text/javascript"></script>
-      <script src={ routes.Assets.at("javascripts/wikipedia.js").url } type="text/javascript"></script>
-      <script src={ routes.Assets.at("javascripts/formInteractions.js").url } type="text/javascript"></script>
-      <style type="text/css">
-        .resize {{ resize: both; width: 100%; height: 100%; }}
-        .overflow {{ overflow: auto; width: 100%; height: 100%; }}
-      </style>
-    </head>
-  }
+  /**
+   * main Page with a content consisting of a left panel
+   * and a right panel (typically forms)
+   */
+  def mainPageMultipleContents(contentLeft: NodeSeq,
+    contentRight: NodeSeq,
+    userInfo: NodeSeq, lang: String = "en") = {
+    <html>
+      { head(lang) }
+      <body>
+        {
+          Seq(
+            userInfo,
+            mainPageHeader(lang),
 
+            <div class="content">
+              <div class="left-panel">{ contentLeft }</div>
+              <div class="right-panel">{ contentRight }</div>
+            </div>,
+
+            linkToToolsPage)
+        }
+      </body>
+    </html>
+  }
 }
