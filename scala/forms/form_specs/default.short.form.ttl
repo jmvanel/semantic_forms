@@ -1,0 +1,22 @@
+@prefix dc: <http://purl.org/dc/elements/1.1/>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#> .
+@prefix     : <http://deductions-software.com/ontologies/forms.owl.ttl#> .
+
+# Generic form specification with the main (non relational) properties for common classes 
+
+<main_properties_Form>
+  form:showProperties (
+	rdfs:label rdfs:comment
+	foaf:givenName foaf:familyName
+	foaf:name
+	foaf:homepage
+	foaf:mbox
+	foaf:phone
+  ) .
+
+
+
+

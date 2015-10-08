@@ -17,7 +17,6 @@
 	# literal or resource:
 	foaf:mbox
 	foaf:phone
-	foaf:phone
 	# resource, multi-valued:
 	foaf:img
 	foaf:topic_interest
