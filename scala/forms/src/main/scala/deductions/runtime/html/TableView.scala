@@ -1,17 +1,19 @@
 package deductions.runtime.html
 
+import scala.concurrent.ExecutionContext.Implicits
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
 import scala.xml.NodeSeq
 import scala.xml.PrettyPrinter
+
 import org.apache.log4j.Logger
 import org.w3.banana.RDF
-import deductions.runtime.abstract_syntax.FormSyntaxFactory
+
 import deductions.runtime.abstract_syntax.FormModule
+import deductions.runtime.abstract_syntax.FormSyntaxFactory
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.Timer
-import scala.util.Success
 
 /**
  * Form for a subject URI with existing triples;

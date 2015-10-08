@@ -1,22 +1,12 @@
 package deductions.runtime.utils
 
-import org.w3.banana.RDFOpsModule
-import org.w3.banana.RDFPrefix
-import org.w3.banana.RDFOps
-import org.w3.banana.URIOps
-import org.w3.banana.RDF
 import org.w3.banana.PointedGraph
-import org.w3.banana.diesel._
-import org.w3.banana.syntax._
-import scala.util._
-import org.w3.banana.MGraphOps
+import org.w3.banana.RDF
+import org.w3.banana.RDFOps
+import org.w3.banana.RDFPrefix
 
-/**
- * use with :
- *  val rdfh = new RDFHelpers[Rdf] { val graph = gr }
- */
+/** */
 trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
-//  val graph: Rdf#Graph
   implicit val ops: RDFOps[Rdf]
   val rdfh: RDFHelpers[Rdf]  = this
   import rdfh.{ops=>_, _}

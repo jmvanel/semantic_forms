@@ -18,6 +18,8 @@ libraryDependencies += "org.w3" %%  "banana-jena" % // "0.8.1"
 libraryDependencies += "org.apache.jena" % "apache-jena-libs" % "2.13.0"
 // libraryDependencies += "org.apache.jena" % "apache-jena-libs" % "2.12.1"
 
+// TODO: libraryDependencies += "org.apache.jena" % "jena-text" % "2.13.0"
+
 libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "0.11"
 // See more at: https://typesafe.com/blog/akka-http-preview#sthash.IZR1O9fx.dpuf
 

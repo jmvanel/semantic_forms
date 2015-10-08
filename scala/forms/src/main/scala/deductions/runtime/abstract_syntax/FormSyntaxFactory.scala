@@ -6,8 +6,15 @@ $Id$
 package deductions.runtime.abstract_syntax
 
 import scala.collection.mutable
+import scala.util.Try
+import scala.util.Failure
+import scala.util.Success
+import scala.language.postfixOps
+import scala.language.existentials
+
 import org.apache.log4j.Logger
 import org.apache.log4j.Level
+
 import org.w3.banana.OWLPrefix
 import org.w3.banana.PointedGraph
 import org.w3.banana.RDF
@@ -15,44 +22,31 @@ import org.w3.banana.RDFDSL
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
-import org.w3.banana.URIOps
 import org.w3.banana.XSDPrefix
 import org.w3.banana.diesel._
 import org.w3.banana.Prefix
 import org.w3.banana.SparqlOps
 import org.w3.banana.RDFOpsModule
 import org.w3.banana.syntax._
-import scala.util.Try
-import scala.util.Failure
-import scala.util.Success
-import org.w3.banana.LocalNameException
-import org.w3.banana.RDFStore
-import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.utils.RDFHelpers
 import org.w3.banana.SparqlEngine
-import deductions.runtime.utils.Timer
-import scala.language.postfixOps
-import deductions.runtime.services.Configuration
-import scala.language.existentials
+import org.w3.banana.LocalNameException
 
-//object FormSyntaxFactory {
-//  /** vocabulary for form specifications */
-//  val formVocabPrefix = "http://deductions-software.com/ontologies/forms.owl.ttl#"
-  /** one of EditionMode, DisplayMode, CreationMode */
-  abstract sealed class FormMode
-  object EditionMode extends FormMode { override def toString() = "EditionMode" }
-  object DisplayMode extends FormMode { override def toString() = "DisplayMode" }
-  object CreationMode extends FormMode { override def toString() = "CreationMode" }
-//}
+import deductions.runtime.utils.RDFHelpers
+import deductions.runtime.utils.Timer
+import deductions.runtime.services.Configuration
+
+/** one of EditionMode, DisplayMode, CreationMode */
+abstract sealed class FormMode
+object EditionMode extends FormMode { override def toString() = "EditionMode" }
+object DisplayMode extends FormMode { override def toString() = "DisplayMode" }
+object CreationMode extends FormMode { override def toString() = "CreationMode" }
 
 class ResourceWithLabel[Rdf <: RDF](val resource: Rdf#Node, val label: Rdf#Node) {
   def this(couple: (Rdf#Node, Rdf#Node)) =
     this(couple._1, couple._2)
   override def toString() = "" + resource + " : " + label
 }
-//object ResourceWithLabel {
 //   def apply[Rdf <: RDF](couple: (Rdf#Node, Rdf#Node) ) = new ResourceWithLabel(couple)
-//}
 
 
 trait PossibleValues[Rdf <: RDF] {
@@ -81,15 +75,7 @@ trait PossibleValues[Rdf <: RDF] {
  * the main class here;
  * NON transactional
  */
-//abstract class
-//class FormSyntaxFactory[Rdf <: RDF](val graph: Rdf#Graph, val preferedLanguage: String = "en",
 trait FormSyntaxFactory[Rdf <: RDF, DATASET]
-//(val graph: Rdf#Graph, val preferedLanguage: String = "en",
-//  val defaults: FormDefaults = FormModule.formDefaults)
-//  (implicit val ops: RDFOps[Rdf],
-//    val uriOps: URIOps[Rdf], val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph],
-//    val sparqlOps: SparqlOps[Rdf])
-
     extends FormModule[Rdf#Node, Rdf#URI]
     with RDFHelpers[Rdf]
     with FieldsInference[Rdf, DATASET]
@@ -100,7 +86,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     with Configuration
     with Timer {
 
-//  val graph: Rdf#Graph
   var preferedLanguage: String = "en"
   val defaults: FormDefaults = FormModule.formDefaults
   
@@ -114,44 +99,76 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     fromUri(_), fromBNode(_), fromLiteral(_)._1))
 
   val rdfs = RDFSPrefix[Rdf]
-//  override val owl = OWLPrefix[Rdf]
   override val rdf = RDFPrefix[Rdf]
-
-//  import FormSyntaxFactory._
-//  val formPrefix: Prefix[Rdf] = Prefix("form", formVocabPrefix)
-//  val rdfh = { val gr = graph; new RDFHelpers[Rdf] { val graph = gr } }
-//  import rdfh._
-
-  /** create Form from an instance (subject) URI */
+  
+  
+  /** create Form from an instance (subject) URI;
+   *  the Form Specification is inferred from the class of instance */
   def createForm(subject: Rdf#Node,
     editable: Boolean = false,
     formGroup: Rdf#URI = nullURI)
     (implicit graph: Rdf#Graph)
   : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
 
-    val classs = classFromSubject(subject) // TODO several classes
+    val s1 = new Step1(subject, editable)    
+//    val classs = classFromSubject(subject) // TODO several classes
+//    val propsFromConfig = lookPropertieslistFormInConfiguration(classs)._1
+//    val propsFromSubject = fieldsFromSubject(subject, graph)
+//    val propsFromClass =
+//      if (editable) {
+//        fieldsFromClass(classs, graph)
+//      } else Seq()
+//    val propertiesList = (propsFromConfig ++ propsFromSubject ++ propsFromClass).distinct
 
- 		val formConfiguration = this // new FormConfigurationFactory[Rdf](graph)
-    val propsFromConfig = formConfiguration.lookPropertieslistFormInConfiguration(classs)._1
-    val propsFromSubject = fieldsFromSubject(subject, graph)
-    //    println("createForm: propsFromSubject: " +
-    //      propsFromSubject.mkString(", "))
-    val propsFromClass =
-      if (editable) {
-        fieldsFromClass(classs, graph)
-      } else Seq()
-    createFormDetailed(subject,
-      (propsFromConfig ++ propsFromSubject ++ propsFromClass).distinct, classs,
+    createFormDetailed(subject, s1.propertiesList,
+      s1.classs,
       if (editable) EditionMode else DisplayMode,
       formGroup)
   }
 
+    /** create Form from an instance (subject) URI,
+     * and a Form Specification
+     * ( see form_specs/foaf.form.ttl for an example ) */
+  def createFormFromSpecification(
+    subject: Rdf#Node,
+    formSpecification: PointedGraph[Rdf],
+    editable: Boolean = false,
+    formGroup: Rdf#URI = nullURI)
+    (implicit graph: Rdf#Graph)
+  : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
+
+	  val s1 = new Step1(subject, editable) {
+		  override val propsFromConfig = propertiesListFromFormConfiguration(
+        formSpecification.pointer)(formSpecification.graph)
+	  }
+	  createFormDetailed(subject, s1.propertiesList,
+      s1.classs,
+      if (editable) EditionMode else DisplayMode,
+      formGroup)
+  }
+  
+  class Step1(subject: Rdf#Node,
+    editable: Boolean = false)
+    (implicit graph: Rdf#Graph) {
+    val classs = classFromSubject(subject) // TODO several classes
+    val propsFromConfig = lookPropertieslistFormInConfiguration(classs)._1
+    val propsFromSubject = fieldsFromSubject(subject, graph)
+    val propsFromClass =
+      if (editable) {
+        fieldsFromClass(classs, graph)
+      } else Seq()
+    val propertiesList = (propsFromConfig ++ propsFromSubject ++ propsFromClass).distinct
+  }
+
+
   /**
-   * create Form With Detailed arguments: Given Properties;
+   * create Form With Detailed arguments: RDF Properties;
    * For each given property (props)
    *  look at its rdfs:range ?D
-   *  see if ?D is a datatype or an OWL or RDFS class
-   *  ( used for creating an empty Form from a class URI )
+   *  see if ?D is a datatype or an OWL or RDFS class;
+   *  
+   * used directly for creating an empty Form from a class URI,
+   * and indirectly for other cases.
    */
   def createFormDetailed(subject: Rdf#Node,
     props: Iterable[Rdf#URI], classs: Rdf#URI,
@@ -163,8 +180,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
     logger.info(s"createForm subject $subject, props $props")
     println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
-    val rdfh = this // makeRDFHelpersGraph(graph)
-//    import rdfh.{ graph => _, _ }
+    val rdfh = this
     
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
 
@@ -192,14 +208,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     res
   }
 
-//  def makeRDFHelpersGraph(graph:Rdf#Graph):RDFHelpersGraph[Rdf] = {
-//    val gr = graph; val formSyntaxFactory=this; new RDFHelpersGraph[Rdf] {
-//    	val ops1: RDFOps[Rdf] = ops
-//      val graph = gr; val rdfh=formSyntaxFactory; val ops=ops1} }
-
   /**
    * update given Form,
-   * looking up for Form Configuration within RDF graph in this class
+   * looking up for Form Configuration within given RDF graph 
    * eg in :
    *  <pre>
    *  &lt;topic_interest> :fieldAppliesToForm &lt;personForm> ;
@@ -210,9 +221,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   private def updateFormFromConfig(formSyntax: FormSyntax, formConfig: Rdf#Node)
   (implicit graph: Rdf#Graph)
   : FormSyntax = {
-	  val formConfiguration = this // new FormConfigurationFactory[Rdf](graph)
+	  val formConfigFactory = this // new FormConfigurationFactory[Rdf](graph)
     for (field <- formSyntax.fields) {
-      val fieldSpecs = formConfiguration.lookFieldSpecInConfiguration(field.property)
+      val fieldSpecs = formConfigFactory.lookFieldSpecInConfiguration(field.property)
       //    	val DEBUG2 = new Level( 5000, "DEBUG2", 7);
       if (!fieldSpecs.isEmpty)
         //        logger.log(Level.OFF, s"""updateFormFromConfig field $field -- fieldSpecs size ${fieldSpecs.size}

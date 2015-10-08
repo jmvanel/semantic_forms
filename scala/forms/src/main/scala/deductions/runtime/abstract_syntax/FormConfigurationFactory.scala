@@ -1,36 +1,22 @@
 package deductions.runtime.abstract_syntax
 
-import org.w3.banana.RDF
-import org.w3.banana.RDFOps
-import org.w3.banana.URIOps
-import org.w3.banana.RDFStore
-import org.w3.banana.OWLPrefix
-import UnfilledFormFactory._
-import org.w3.banana.RDFPrefix
-import deductions.runtime.utils.RDFHelpers
-import org.w3.banana.RDFStore
-import scala.util.Try
 import org.apache.log4j.Logger
 import org.w3.banana.Prefix
+import org.w3.banana.RDF
+
 import deductions.runtime.services.Configuration
+import deductions.runtime.utils.RDFHelpers
 
 /**
  * Factory for populating Form from graph
  */
 trait FormConfigurationFactory[Rdf <: RDF]
-//(graph: Rdf#Graph)(
     extends Configuration
     with RDFHelpers[Rdf] {
   
-//  implicit val ops: RDFOps[Rdf]
-
   import ops._
 
   val formPrefix: Prefix[Rdf] = Prefix("form", formVocabPrefix)
-//  val gr = graph
-//  val rdfh: RDFHelpersGraph[Rdf] = new RDFHelpersGraph[Rdf] { val graph = gr }
-//  val rdfh: RDFHelpers[Rdf] = new RDFHelpers[Rdf] { val graph = gr }
-//  import rdfh._
 
   /**
    * lookup for form:showProperties (ordered list of fields) in Form Configuration within RDF graph in this class
@@ -51,12 +37,10 @@ trait FormConfigurationFactory[Rdf <: RDF]
   def propertiesListFromFormConfiguration(formConfiguration: Rdf#Node)
   (implicit graph: Rdf#Graph)
   : Seq[Rdf#URI] = {
-    //    val props = objectsQuery(formConfiguration, formPrefix("showProperties"))
     val props = getObjects(graph, formConfiguration, formPrefix("showProperties"))
     for (p <- props) { println("showProperties " + p) }
     val p = props.headOption
-    val rdfh = this
-    val propertiesList = nodeSeqToURISeq(rdfh.rdfListToSeq(p))
+    val propertiesList = nodeSeqToURISeq(rdfListToSeq(p))
     propertiesList
   }
 
@@ -86,15 +70,10 @@ trait FormConfigurationFactory[Rdf <: RDF]
    *  ?S form:fieldAppliesToProperty prop .
    */
   def lookFieldSpecInConfiguration(
-    //      classs: Rdf#URI, 
     prop: Rdf#URI)
     (implicit graph: Rdf#Graph)
     = {
     find(graph, ANY, formPrefix("fieldAppliesToProperty"), prop).toSeq
   }
-  
-//  def makeRDFHelpersGraph(graph:Rdf#Graph): RDFHelpersGraph[Rdf] = {
-//    val gr = graph; val formSyntaxFactory=this; new RDFHelpersGraph[Rdf] {
-//    	val ops1: RDFOps[Rdf] = ops
-//      val graph = gr; val rdfh=formSyntaxFactory; val ops=ops1} }
+
 }
