@@ -14,13 +14,15 @@ import play.api.mvc.Controller
 import play.api.mvc.Request
 import deductions.runtime.html.MainXml
 import views.MainXmlWithHead
+import deductions.runtime.services.CORS
 
 /** main controller */
 object Application extends Controller
     with ApplicationFacadeJena
     with LanguageManagement
     with Secured
-    with MainXmlWithHead {
+    with MainXmlWithHead
+    with CORS {
   
   def index() =
         withUser {
@@ -241,6 +243,15 @@ object Application extends Controller
     Action { implicit request =>
       Ok(new ToolsPage {}.getPage)
         .as("text/html; charset=utf-8")
+    }
+  }
+
+  def httpOptions(path: String) = {
+	  Action { implicit request =>
+      println("OPTIONS: " + request)
+      Ok("OPTIONS: " + request)
+        .as("text/html; charset=utf-8")
+        .withHeaders(corsHeaders.toList:_*)
     }
   }
 

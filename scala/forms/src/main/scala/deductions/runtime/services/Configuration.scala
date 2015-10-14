@@ -12,6 +12,9 @@ trait Configuration {
 
   val recordUserActions: Boolean = false
 
-  // helper
+  // CORS
+  val allow_Origin = "*"
+
+  // helper functions
   def needLogin = needLoginForEditing || needLoginForDisplaying
 }
