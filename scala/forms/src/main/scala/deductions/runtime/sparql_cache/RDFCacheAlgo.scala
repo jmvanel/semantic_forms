@@ -302,7 +302,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   def storeURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
     Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
     if (fromUri(uri).startsWith("http") ||
-      fromUri(uri).startsWith("ftp:")) {
+      fromUri(uri).startsWith("ftp:") ||
+      fromUri(uri).startsWith("file:")) {
       System.setProperty("sun.net.client.defaultReadTimeout", "10000")
       System.setProperty("sun.net.client.defaultConnectTimeout", "10000")
       val graph: Rdf#Graph =

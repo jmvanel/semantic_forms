@@ -11,7 +11,7 @@ trait MainXml extends ToolsPage {
   def mainPage(content: NodeSeq, userInfo: NodeSeq, lang: String = "en") = {
     <html>
       { head(lang) }
-      <body>
+      <body onmousedown="return false">
         {
           Seq(
             userInfo,
@@ -45,7 +45,7 @@ trait MainXml extends ToolsPage {
           <div class="form-group">
             <label class="col-md-2 control-label" for="Display">{ message("URI_to_display") }</label>
             <div class="col-md-6">
-              <input class="form-control" type="text" name="displayuri" list="start_uris"/>
+              <input class="form-control" type="text" name="displayuri" list="start_uris" dropzone="copy"/>
               <datalist id="start_uris">
                 <option label="J.M. Vanel FOAF profile"> http://jmvanel.free.fr/jmv.rdf#me </option>
                 <option label="Paris dbpedia.org"> http://dbpedia.org/resource/Paris </option>
@@ -69,7 +69,9 @@ trait MainXml extends ToolsPage {
               { message("String_to_search") }
             </label>
             <div class="col-md-6">
-              <input class="form-control" type="text" name="q" placeholder={ message("Search_placeholder") }/>
+              <input class="form-control" type="text" name="q" placeholder={
+                message("Search_placeholder")
+              } dropzone="copy"/>
             </div>
             <div class="col-md-4">
               <input class="btn btn-primary" type="submit" value={ message("Search") }/>
@@ -85,7 +87,9 @@ trait MainXml extends ToolsPage {
           <div class="form-group">
             <label class="col-md-2 control-label" for="uri">{ message("Create_instance_of") }</label>
             <div class="col-md-6">
-              <input class="form-control" type="text" name="uri" placeholder={ message("Paste_ontology") }></input>
+              <input class="form-control" type="text" name="uri" placeholder={
+                message("Paste_ontology")
+              } dropzone="copy"></input>
               <select class="form-control" type="text" name="uri" list="class_uris">
                 <optgroup label="Assemblée Virtuelle">
                   <option label="av:Person"> { prefixAV }Person </option>
