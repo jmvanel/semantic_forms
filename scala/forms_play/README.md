@@ -6,6 +6,7 @@ Here is a web application with Play! framework around the [form generator](../fo
 - navigation on the LOD (Linked Open Data) cloud,
 - CRUD (CReate, Update, Delete) editing,
 - search
+- semantic cache
 
 For now, the display looks like this, 
 plus a textbox to enter a URL semantics, eg a FOAF profile or DBpedia URI : 
@@ -17,17 +18,14 @@ This README is like an administrator Manual.
 # How to run
 ## Run locally from sources
 
-Dependencies to install :
-
-- Java 7 or 8 (Scala is now also ready for Java 8),
-- [SBT](http://www.scala-sbt.org/) or [Typesafe Activator](http://typesafe.com/platform/getstarted) .
-Then SBT or Activator downloads the rest.
-
-- install dependencies above
+- install dependencies:
+  - Java 8 ,
+  - [SBT](http://www.scala-sbt.org/) or [Typesafe Activator](http://typesafe.com/platform/getstarted) .
+Then SBT or Activator will download the rest.
 - download the source from [Banana-RDf fork on github](https://github.com/deductions/banana-rdf) (temporary, until my Pull Request in Banana-RDF is accepted)
-- build this project with SBT or Activator: change directory to `banana-rdf` ; type in the activator console : `publishLocal`
+  - build this project with SBT or Activator: change directory to `banana-rdf` ; type in the activator console : `publishLocal`
 - download the source from [semantic\_forms on github](https://github.com/jmvanel/semantic_forms/)
-- build and run this project with SBT or Activator: change directory to `scala/forms_play` ; type in the activator console : `~ run`
+- build and run the semantic\_forms project itself with SBT or Activator: change directory to `scala/forms_play` within the source downloaded from github; type in the activator console : `~ run`
 
 The default port is 9000, so you can direct your browser to [http://localhost:9000](http://localhost:9000) .
 To run on another port than 9000 :
@@ -100,7 +98,7 @@ Please read explanations on the Banana-RDF project:
 
 The server must not be started, because Jena TDB does not allow access to the database on disk from 2 different processes.
 
-- Preloading common vocabularies, and preloading some pre-defined form specifications ( currently FOAF ) : in activator shell type:
+- Preloading common vocabularies, and preloading some pre-defined form specifications ( currently FOAF ) : in activator (or sbt) shell, type:
 ```
     runMain deductions.runtime.sparql_cache.PopulateRDFCache
     // or, just some forms specs:
