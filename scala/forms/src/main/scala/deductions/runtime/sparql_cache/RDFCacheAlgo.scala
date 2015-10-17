@@ -35,7 +35,7 @@ trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
   implicit val rdfXMLReader: RDFReader[Rdf, Try, RDFXML]
 }
 
-/** depends on generic Rdf */
+/** */
 trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
     with RDFCacheDependencies[Rdf, DATASET]
     with RDFLoader[Rdf, Try] {
@@ -147,7 +147,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     storeURI(uri)
   }
 
-  /** NOTE: the dataset is provided by the parent trait */
+  /** NOTE: the dataset is provided by the parent trait;
+   *  with transaction */
   private def storeURI(uri: Rdf#URI): Rdf#Graph = {
     val graphFromURI = storeURI(uri, uri, dataset)
     println("RDFCacheAlgo.storeURI " + uri + " size: " + graphFromURI.size)
@@ -181,6 +182,9 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     })
   }
 
+  /**
+   * TODO replace Timestamp in Dataset
+   *  No Transaction */
   def addTimestampToDatasetNoTransaction(uri: Rdf#URI, dataset: DATASET) = {
     val time = lastModified(fromUri(uri), 1000)
     dataset.appendToGraph(makeUri(timestampGraphURI),

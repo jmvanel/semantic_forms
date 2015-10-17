@@ -48,20 +48,20 @@ class ResourceWithLabel[Rdf <: RDF](val resource: Rdf#Node, val label: Rdf#Node)
 }
 //   def apply[Rdf <: RDF](couple: (Rdf#Node, Rdf#Node) ) = new ResourceWithLabel(couple)
 
-
+/** store the "Possible Values" for each RDF class;
+ * by "Possible Values" one means the objets URI's whose class match the rdfs:range
+ * of a property in the form. */
 trait PossibleValues[Rdf <: RDF] {
   /** Correspondence between resource for a class and
-   *  instances of that class with a human readable label */
+   *  instances of that class with their human readable label */
   private var possibleValues = Map[Rdf#Node, Seq[ResourceWithLabel[Rdf]]]()
-
+  /** check if this (class) URI has already been computed */
   def isDefined(uri: Rdf#Node): Boolean = possibleValues.contains(uri)
   def addPossibleValues(uri: Rdf#Node, values: Seq[ResourceWithLabel[Rdf]]) = {
     possibleValues = possibleValues + (uri -> values)
     resourcesWithLabel2Tuples(values)
   }
-  //  def getPossibleValues( uri: Rdf#Node): Seq[ResourceWithLabel[Rdf]] = {
-  //    ???
-  //  }
+  //  def getPossibleValues( uri: Rdf#Node): Seq[ResourceWithLabel[Rdf]] = { ??? }
   def getPossibleValuesAsTuple(uri: Rdf#Node): Seq[(Rdf#Node, Rdf#Node)] = {
     resourcesWithLabel2Tuples(possibleValues.getOrElse(uri, Seq()))
   }

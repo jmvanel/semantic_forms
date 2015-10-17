@@ -105,6 +105,6 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     tryIteratorRdfNode.asFuture
   }
 
-  private def isURI(node: Rdf#Node) = foldNode(node)(identity, x => None, x => None) != None
+//  private def isURI(node: Rdf#Node) = foldNode(node)(identity, x => None, x => None) != None
 
 }

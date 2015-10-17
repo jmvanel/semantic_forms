@@ -15,10 +15,15 @@ import play.api.libs.iteratee.Enumerator
  * - 95% of the application is already done here, and there is no dependence
  *   to a particular Web framework
  */
-trait ApplicationFacade[Rdf <: RDF, DATASET] extends ApplicationFacadeInterface {
+trait ApplicationFacade[Rdf <: RDF, DATASET]
+		extends ApplicationFacadeInterface
+    with Configuration {
 
   val impl: ApplicationFacadeImpl[Rdf, DATASET]
-
+//{
+//    override val recordUserActions = recordUserActions
+//  }
+  
   def htmlForm(uri: String, blankNode: String = "",
     editable: Boolean = false,
     lang: String = "en") =

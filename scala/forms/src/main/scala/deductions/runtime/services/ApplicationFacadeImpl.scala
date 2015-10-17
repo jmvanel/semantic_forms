@@ -31,6 +31,7 @@ import scala.util.Failure
 import deductions.runtime.views.FormHeader
 import deductions.runtime.views.ToolsPage
 import deductions.runtime.semlogs.TimeSeries
+import deductions.runtime.semlogs.LogAPI
 
 /**
  * a Web Application Facade,
@@ -62,7 +63,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with TimeSeries[Rdf, DATASET]
     with ToolsPage {
  
-  addSaveListener(this)
+  addSaveListener(this) // for TimeSeries
   
 	// TODO use inverse Play's URI API
   val hrefDisplayPrefix = "/display?displayuri="
@@ -74,6 +75,17 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   implicit val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   import ops._
 
+//  val ops1 = ops
+//  addSaveListener(new LogAPI[Rdf] {
+//    implicit val ops = ops1
+//    def notifyDataEvent(addedTriples: Seq[Rdf#Triple],
+//    		removedTriples: Seq[Rdf#Triple])(implicit userURI: String): Unit = {
+//      addedTriples.headOption match {
+//        case Some(tr) => instanceLabel( tr.subject, graph, lang) 
+//      }
+//    }
+//  } )
+  
   // Members declared in org.w3.banana.JsonLDWriterModule
   implicit val jsonldExpandedWriter = new RDFWriter[Rdf, scala.util.Try, JsonLdExpanded] {
     override def write(graph: Rdf#Graph, os: OutputStream, base: String): Try[Unit] = ???
@@ -285,8 +297,13 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     val uriOption = (request).getOrElse("uri", Seq()).headOption
     println("Global.save: uriOption " + uriOption)
     uriOption match {
-      case Some(url1) => htmlForm(
-        URLDecoder.decode(url1, "utf-8"),
+      case Some(url1) =>
+      val uri = URLDecoder.decode(url1, "utf-8")
+      val res = dataset.rw({
+        replaceInstanceLabel( URI(uri), allNamedGraph, // TODO reuse allNamedGraph
+            lang )       
+    	})
+        htmlForm( uri,
         editable = false,
         lang = lang)
       case _ => <p>Save: not normal: { uriOption }</p>

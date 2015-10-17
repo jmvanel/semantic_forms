@@ -89,7 +89,9 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
 
   /**
    * record password in database; @return user Id if success
-   *  TODO check already existing account;
+   * TODO makeMGraph() just makes a modifiable copy of passwordsGraph
+   * but does not change it !!!!!!!!!!!!!!!!!
+   * TODO check already existing account;
    */
   def signin(agentURI: String, password: String): Try[String] = {
     println("userId " + agentURI)

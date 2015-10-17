@@ -29,7 +29,10 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
     }
   }
 
-  /** Query for objects in triples, given subject & predicate */
+  /** Query for objects in triples, given subject & predicate
+   *  NOTE: this function in core Banana does the job:
+   *  getObjects(graph: Rdf#Graph, subject: Rdf#Node, predicate: Rdf#URI): Iterable[Rdf#Node]
+   *  */
   def objectsQuery(subject: Rdf#Node, predicate: Rdf#URI)
     (implicit graph: Rdf#Graph)
     : Set[Rdf#Node] = {
@@ -47,7 +50,23 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
     ) yield values
     values
   }
-  
+
+//  /** replace all triples
+//   *  <subject> <predicate> ?O .
+//   *  (if any)
+//   *  with a single one:
+//   *  <subject> <predicate> <objet> .
+//   *  */
+//  def replaceObjects(graph: Rdf#Graph, subject: Rdf#Node, predicate: Rdf#URI,
+//      objet: Rdf#Node): Unit = {
+////	  val mgraph = graph.makeMGraph()
+//    val objectsToRemove = getObjects(graph, subject, predicate)
+//    for( obj <- objectsToRemove ) {
+//    	ops.removeTriple( mgraph, Triple(subject, predicate, obj) )
+//    }
+//    ops.addTriple( mgraph, Triple(subject, predicate, objet) )
+//  }
+
   def replaceSameLanguageTriple(triple: Rdf#Triple,
                                 mgraph: Rdf#MGraph)
     (implicit graph: Rdf#Graph)

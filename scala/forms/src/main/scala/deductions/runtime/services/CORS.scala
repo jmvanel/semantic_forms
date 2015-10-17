@@ -1,8 +1,9 @@
 package deductions.runtime.services
 
-/** tested with
+/**
+ * tested with
  * wget --method=OPTIONS --save-headers http://localhost:9000/bla
- * 
+ *
  * cf http://www.html5rocks.com/en/tutorials/cors/#toc-adding-cors-support-to-the-server
  *  https://developer.mozilla.org/fr/docs/HTTP/Access_control_CORS
  */

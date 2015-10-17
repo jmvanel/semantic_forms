@@ -6,6 +6,7 @@ import org.w3.banana.GraphStore
 import org.w3.banana.RDFOpsModule
 import scala.util.Success
 
+/** */
 trait DatasetUtils[Rdf <: RDF]
     extends DatasetFactory
     with RDFOpsModule {

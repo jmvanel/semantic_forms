@@ -1,21 +1,22 @@
 package deductions.runtime.abstract_syntax
 
-import org.w3.banana.RDF
-import org.w3.banana.OWLPrefix
-import org.w3.banana.FOAFPrefix
-import deductions.runtime.utils.RDFHelpers
-import scala.collection._
-import org.w3.banana.SparqlGraphModule
-import org.w3.banana.SparqlEngine
+import scala.collection.Iterable
+import scala.collection.Iterator
+import scala.collection.Seq
+import scala.collection.Set
+import scala.collection.mutable
 import scala.util.Try
-import org.w3.banana.SparqlOps
-import org.apache.log4j.Logger
-import java.net.URL
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.utils.Timer
-import deductions.runtime.dataset.RDFOPerationsDB
 
+import org.apache.log4j.Logger
+import org.w3.banana.OWLPrefix
+import org.w3.banana.RDF
 import org.w3.banana.RDFSPrefix
+import org.w3.banana.SparqlEngine
+import org.w3.banana.SparqlOps
+
+import deductions.runtime.dataset.RDFOPerationsDB
+import deductions.runtime.utils.RDFHelpers
+import deductions.runtime.utils.Timer
 
 /**
  * populate Fields in form by inferring possible values from given rdfs:range's URI,
@@ -29,10 +30,9 @@ with InstanceLabelsInferenceMemory[Rdf, DATASET]
 with FormModule[Rdf#Node, Rdf#URI]
 with PossibleValues[Rdf]
     with Timer {
-//  val graph: Rdf#Graph
+
   implicit val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]
   implicit val sparqlOps: SparqlOps[Rdf]
-//  implicit private val graphImplicit = graph
   private val rdfs = RDFSPrefix[Rdf]
   import ops._
   import sparqlOps._
