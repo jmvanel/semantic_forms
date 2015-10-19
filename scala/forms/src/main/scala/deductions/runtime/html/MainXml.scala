@@ -11,7 +11,7 @@ trait MainXml extends ToolsPage {
   def mainPage(content: NodeSeq, userInfo: NodeSeq, lang: String = "en") = {
     <html>
       { head(lang) }
-      <body onmousedown="return false">
+      <body>
         {
           Seq(
             userInfo,
@@ -45,7 +45,7 @@ trait MainXml extends ToolsPage {
           <div class="form-group">
             <label class="col-md-2 control-label" for="Display">{ message("URI_to_display") }</label>
             <div class="col-md-6">
-              <input class="form-control" type="text" name="displayuri" list="start_uris" dropzone="copy"/>
+              <input class="form-control" type="text" name="displayuri" list="start_uris" dropzone="copy string:text/plain"/>
               <datalist id="start_uris">
                 <option label="J.M. Vanel FOAF profile"> http://jmvanel.free.fr/jmv.rdf#me </option>
                 <option label="Paris dbpedia.org"> http://dbpedia.org/resource/Paris </option>
