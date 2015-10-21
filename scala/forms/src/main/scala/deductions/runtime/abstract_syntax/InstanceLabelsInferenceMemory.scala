@@ -4,6 +4,7 @@ import org.w3.banana.RDF
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.dataset.DatasetHelper
+import org.apache.log4j.Logger
 
 /** wraps InstanceLabelsInference to cache Instance Labels in TDB */
 trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
@@ -16,6 +17,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   import ops._
   import rdfStore.graphStoreSyntax._
   import rdfStore.transactorSyntax._
+  private val logger: Logger = Logger.getRootLogger()
 
   val dataset3 = dataset
   /* does not work because the transaction has been started on the other dataset ! 
@@ -50,7 +52,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   /** compute Instance Label and store it in TDB */
   def computeInstanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
     val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
-    println(s"compute displayLabel for $node")
+    logger.debug( s"compute displayLabel for $node" )
     val label = super.instanceLabel(node, graph, lang)
     val computedDisplayLabel = (node -- displayLabelPred ->- Literal(label)).graph
     dataset3.appendToGraph(labelsGraphUri, computedDisplayLabel)

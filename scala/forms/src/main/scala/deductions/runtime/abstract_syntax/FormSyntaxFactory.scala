@@ -178,14 +178,14 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     (implicit graph: Rdf#Graph)
   : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
 
-    logger.info(s"createForm subject $subject, props $props")
+    logger.debug(s"createForm subject $subject, props $props")
     println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
     val rdfh = this
     
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
 
     val entries = for (prop <- props) yield {
-      logger.info(s"createForm subject $subject, prop $prop")
+      logger.debug(s"createForm subject $subject, prop $prop")
       val ranges = objectsQuery(prop, rdfs.range)
       val rangesSize = ranges.size
       System.err.println(
@@ -201,7 +201,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val fields2 = addTypeTriple(subject, classs, fields)
     //    val fields2 = fields.toSeq
     val formSyntax = FormSyntax(subject, fields2, classs)
-    logger.info(s"createForm " + this)
+    logger.debug(s"createForm " + this)
     val res = time(s"updateFormFromConfig()",
       updateFormFromConfig(formSyntax, formConfig))
     logger.info(s"createForm 2 " + this)
