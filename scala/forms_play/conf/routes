@@ -36,6 +36,7 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 # LDP
 GET     /ldp/*uri              controllers.Application.ldp(uri: String)
 POST    /ldp/*uri              controllers.Application.ldpPOSTAction(uri: String)
+PUT     /ldp/*uri              controllers.Application.ldpPOSTAction(uri: String)
 
 OPTIONS /*path                         controllers.Application.httpOptions(path)
 
