@@ -3,10 +3,13 @@ package deductions.runtime.semlogs
 import org.w3.banana.RDF
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import java.util.Date
+import org.w3.banana.RDFSPrefix
+import deductions.runtime.services.SPARQLHelpers
 
 trait TimeSeries[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
-    with LogAPI[Rdf] {
+    with LogAPI[Rdf]
+    with SPARQLHelpers[Rdf, DATASET] {
 
   import ops._
   import rdfStore.transactorSyntax._
@@ -29,6 +32,7 @@ trait TimeSeries[Rdf <: RDF, DATASET]
         val graph = makeGraph(addedTriples)
         dataset2.appendToGraph(graphUri, graph)        
       })
+      Unit
   }
 
   def makeGraphURIAndMetadata(addedTriples: Seq[Rdf#Triple],
@@ -40,5 +44,43 @@ trait TimeSeries[Rdf <: RDF, DATASET]
           -- URI("timestamp") ->- Literal(timestamp.toString())
           -- URI("user") ->- URI(userURI)).graph
          ( graphUri, metadata ) 
+  }
+  
+  private val rdfs = RDFSPrefix[Rdf]
+  
+  /** get Time Series from accumulated values with timestamp */
+  def getTimeSeries()(implicit userURI: String):
+  Seq[( String, Map[Long, Float] )] = {
+    val query = s"""
+      SELECT ?TS ?AV ?LAB
+      WHERE {
+        ?GR <timestamp> ?TS ;
+            <user> <$userURI> .
+        GRAPH ?GR {
+         ?S <average> ?AV ;
+            ${rdfs.label} ?LAB .
+        }
+      }
+    """
+    // TODO dataset2
+    val res = sparqlSelectQuery( query ) . get
+    // res is a  List[Set[Rdf.Node]] each Set containing:
+    // Long, Float, String
+    val res2 = res.groupBy{ elem => foldNode(elem.toSeq(2))(
+        _=> "", _=> "", lit => fromLiteral(lit)._1 )
+    }
+    val res3 = for( (lab, values ) <- res2 ) yield {
+      val w = values . map {
+        v => val vv = v.toSeq ; ( vv(0), vv(1) )
+      }
+    }
+    ???
+  }
+  
+  private def makeStringFromLiteral(n: Rdf#Node): String = {
+    foldNode(n)(
+        _ => "",
+        _ => "",
+        literal => fromLiteral(literal)._1 )
   }
 }
