@@ -29,6 +29,7 @@ import org.w3.banana.io.Turtle
 import org.w3.banana.io.RDFXML
 import org.w3.banana.io.RDFLoader
 import java.io.File
+import deductions.runtime.services.SPARQLHelpers
 //import java.net.URI
 
 /** */
@@ -40,7 +41,8 @@ trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
 /** */
 trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
     with RDFCacheDependencies[Rdf, DATASET]
-    with RDFLoader[Rdf, Try] {
+    with RDFLoader[Rdf, Try]
+    with SPARQLHelpers[Rdf, DATASET] {
 
   import ops._
   import rdfStore.transactorSyntax._
@@ -110,14 +112,27 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
         val localTimestamp = getTimestampFromDataset(uri, dataset)
         localTimestamp match {
           case Success(long) =>
-            val l = lastModified(uri.toString(), 500)
-            println(s"$uri $localTimestamp: $localTimestamp; lastModified: $l.")
-            if (l._1) {
+            val lastModifiedTuple = lastModified(uri.toString(), 500)
+            println(s"$uri $localTimestamp: $localTimestamp; lastModified: $lastModifiedTuple.")
+            
+            if (lastModifiedTuple._1) {
               for (lts <- localTimestamp) {
-                if (l._2 > lts) {
+                if (lastModifiedTuple._2 > lts) {
                   storeURINoTransaction(uri, uri, dataset)
-                  println(s"$uri was outdated; downloaded.")
+                  println(s"$uri was outdated by timestamp; downloaded.")
                 }
+              }
+            } else if (! lastModifiedTuple._1 || lastModifiedTuple._2 == Long.MaxValue ) {
+              lastModifiedTuple._3 match {
+                case Some(connection) => 
+                val etag = headerField( fromUri(uri), "ETag": String, connection )
+                val etagFromDataset = getETagFromDataset(uri, dataset)
+                if(etag != etagFromDataset) {
+                	storeURINoTransaction(uri, uri, dataset)
+                  println(s"$uri was outdated by ETag; downloaded.")
+                }
+                case None =>
+                storeURINoTransaction(uri, uri, dataset)
               }
             }
           case Failure(fail) =>
@@ -196,6 +211,19 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
         makeLiteral(time._2.toString, xsd.integer)))))
   }
 
+  private def getETagFromDataset(uri: Rdf#URI, dataset: DATASET): String = {
+	  val queryString = s"""
+         |SELECT DISTINCT ?ts WHERE {
+         |  GRAPH <$timestampGraphURI> {
+         |    <$uri> <ETag> ?etag .
+         |  }
+         |}""".stripMargin
+    val list = sparqlSelectQuery(queryString, Seq("etag") )
+    val v = list.headOption.getOrElse(Seq())
+    val vv = v.headOption.getOrElse(Literal(""))
+    vv.toString()
+  }
+
   /**
    * get timestamp from dataset (actually a dedicated Graph timestampGraphURI ),
    *  No Transaction
@@ -203,8 +231,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   private def getTimestampFromDataset(uri: Rdf#URI, dataset: DATASET): Try[Long] = {
     import org.w3.banana.binder._
     import java.math.BigInteger
-    val queryString =
-      s"""
+    val queryString = s"""
          |SELECT DISTINCT ?ts WHERE {
          |  graph <$timestampGraphURI> {
          |    <$uri> <$timestampGraphURI> ?ts .
@@ -221,10 +248,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
             val r1 = foldNode(node)(
               _ => Success(new BigInteger("0")),
               _ => Success(new BigInteger("0")),
-              lit => {
-                FromLiteral.BigIntFromLiteral[Rdf].fromLiteral(lit)
-              }
-            )
+              lit => lit.as[BigInteger])
             r1.get
             // getOrElse sys.error("getTimestampFromDataset: " + row)
           }
@@ -236,14 +260,14 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   /**
    * @return pair:
    * _1 : true <=> no error
-   * _2 : timestamp from HTTP HEAD request
+   * _2 : timestamp from HTTP HEAD request or local file;
+   * return Long.MaxValue if no timestamp is available;
    *  NOTE elsewhere akka HTTP client is used
    */
-  private def lastModified(url0: String, timeout: Int): (Boolean, Long) = {
+  private def lastModified(url0: String, timeout: Int): (Boolean, Long, Option[HttpURLConnection]) = {
     val url = url0.replaceFirst("https", "http"); // Otherwise an exception may be thrown on invalid SSL certificates.
     try {
       val connection0 = new URL(url).openConnection()
-      val connection = connection0.asInstanceOf[HttpURLConnection]
       connection0 match {
         case connection: HttpURLConnection =>
           connection.setConnectTimeout(timeout);
@@ -252,36 +276,50 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
           val responseCode = connection.getResponseCode()
 
           def tryHeaderField(headerName: String): (Boolean, Boolean, Long) = {
-            val dateString = connection.getHeaderField(headerName)
-            if (dateString != null) {
+            val dateString = headerField(url, headerName, connection)
+            if (dateString != "") {
               val date: java.util.Date = DateUtils.parseDate(dateString) // from apache http-components
               println("RDFCacheAlgo.lastModified: responseCode: " + responseCode +
-                ", date: " + date +
-                "; url: " + url)
+                ", date: " + date )
               (true, 200 <= responseCode && responseCode <= 399, date.getTime())
             } else (false, false, Long.MaxValue)
           }
+          
           val lm = tryHeaderField("Last-Modified")
           val r = if (lm._1) {
-            (lm._2, lm._3)
-          } else (false, Long.MaxValue)
+            (lm._2, lm._3, Some(connection) )
+          } else (false, Long.MaxValue, Some(connection) )
           return r
 
         case _ if(url.startsWith("file:/") ) =>
           val f = new File( new java.net.URI(url) )
-          (true,  f.lastModified() )
+          (true,  f.lastModified(), None )
           
         case _ =>
-          println( s"Case not implemented: $url - $connection0")
-          (false, Long.MaxValue)
+          println( s"lastModified(): Case not implemented: $url - $connection0")
+          (false, Long.MaxValue, None )
 
       }
     } catch {
-      case exception: IOException => (false, Long.MinValue)
+      case exception: IOException =>
+        println(s"lastModified($url0")
+//        logger.warn("")
+        (false, Long.MaxValue, None)
       case e: Throwable           => throw e
     }
   }
 
+  private def headerField(url: String, headerName: String, connection: HttpURLConnection):
+  String = {
+    val headerString = connection.getHeaderField(headerName)
+    if (headerString != null) {
+      println("RDFCacheAlgo.tryHeaderField: " +
+        s", header: $headerName = " + headerString +
+        "; url: " + url)
+        headerString
+    } else ""
+  }
+  
   /**
    * store URI in a named graph,
    * transactional,

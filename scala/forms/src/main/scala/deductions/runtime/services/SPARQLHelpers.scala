@@ -64,13 +64,31 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATA
     transaction.get
   }
 
-  /** NON transactional */
+  /** transactional */
   def sparqlConstructQueryFuture(queryString: String): Future[Rdf#Graph] = {
     val r = sparqlConstructQuery( queryString )
     r.asFuture
   }
 
-  /** NON transactional */
+  /** transactional */
+  def sparqlSelectQuery(queryString: String, variables: Seq[String]):
+  List[Seq[Rdf#Node]] = {
+    val transaction = dataset.r({
+      val solutionsTry = for {
+        query <- parseSelect(queryString)
+        es <- dataset.executeSelect(query, Map())
+      } yield es
+      val answers: Rdf#Solutions = solutionsTry.get
+      val results: Iterator[Seq[Rdf#Node]] = answers.iterator map {
+        row =>
+          for (variable <- variables) yield row(variable).get.as[Rdf#Node].get
+      }
+      results.to[List]
+    })
+    transaction .get
+  }
+    
+  /** transactional */
   def sparqlSelectQuery(queryString: String): Try[List[Set[Rdf#Node]]] = {
     val transaction = dataset.r({
       val solutionsTry = for {
