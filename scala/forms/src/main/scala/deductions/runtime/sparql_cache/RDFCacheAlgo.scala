@@ -28,6 +28,8 @@ import org.w3.banana.io.RDFReader
 import org.w3.banana.io.Turtle
 import org.w3.banana.io.RDFXML
 import org.w3.banana.io.RDFLoader
+import java.io.File
+//import java.net.URI
 
 /** */
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
@@ -242,36 +244,41 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     try {
       val connection0 = new URL(url).openConnection()
       val connection = connection0.asInstanceOf[HttpURLConnection]
-      connection.setConnectTimeout(timeout);
-      connection.setReadTimeout(timeout);
-      connection.setRequestMethod("HEAD");
-      val responseCode = connection.getResponseCode()
+      connection0 match {
+        case connection: HttpURLConnection =>
+          connection.setConnectTimeout(timeout);
+          connection.setReadTimeout(timeout);
+          connection.setRequestMethod("HEAD");
+          val responseCode = connection.getResponseCode()
 
-      def tryHeaderField(headerName: String): (Boolean, Boolean, Long) = {
-        val dateString = connection.getHeaderField(headerName)
-        if (dateString != null) {
-          val date: java.util.Date = DateUtils.parseDate(dateString) // from apache http-components
-          println("RDFCacheAlgo.lastModified: responseCode: " + responseCode +
-            ", date: " + date +
-            "; url: " + url)
-          (true, 200 <= responseCode && responseCode <= 399, date.getTime())
-        } else (false, false, Long.MaxValue)
+          def tryHeaderField(headerName: String): (Boolean, Boolean, Long) = {
+            val dateString = connection.getHeaderField(headerName)
+            if (dateString != null) {
+              val date: java.util.Date = DateUtils.parseDate(dateString) // from apache http-components
+              println("RDFCacheAlgo.lastModified: responseCode: " + responseCode +
+                ", date: " + date +
+                "; url: " + url)
+              (true, 200 <= responseCode && responseCode <= 399, date.getTime())
+            } else (false, false, Long.MaxValue)
+          }
+          val lm = tryHeaderField("Last-Modified")
+          val r = if (lm._1) {
+            (lm._2, lm._3)
+          } else (false, Long.MaxValue)
+          return r
+
+        case _ if(url.startsWith("file:/") ) =>
+          val f = new File( new java.net.URI(url) )
+          (true,  f.lastModified() )
+          
+        case _ =>
+          println( s"Case not implemented: $url - $connection0")
+          (false, Long.MaxValue)
+
       }
-
-      val lm = tryHeaderField("Last-Modified")
-      val r = if (lm._1) {
-        (lm._2, lm._3)
-      } else (false, Long.MaxValue)
-      //      else {
-      //        val lm2 = tryHeaderField("Date")
-      //        if (lm2._1) {
-      //          (lm2._2, lm2._3)
-      //        } else (false, Long.MaxValue)
-      //      }
-      return r
     } catch {
       case exception: IOException => (false, Long.MinValue)
-      case e: Throwable => throw e
+      case e: Throwable           => throw e
     }
   }
 
