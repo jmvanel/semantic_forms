@@ -71,12 +71,13 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATA
   }
 
   /** transactional */
-  def sparqlSelectQuery(queryString: String, variables: Seq[String]):
+  def sparqlSelectQueryVariables(queryString: String, variables: Seq[String],
+      ds: DATASET=dataset):
   List[Seq[Rdf#Node]] = {
-    val transaction = dataset.r({
+    val transaction = ds.r({
       val solutionsTry = for {
         query <- parseSelect(queryString)
-        es <- dataset.executeSelect(query, Map())
+        es <- ds.executeSelect(query, Map())
       } yield es
       val answers: Rdf#Solutions = solutionsTry.get
       val results: Iterator[Seq[Rdf#Node]] = answers.iterator map {
@@ -89,11 +90,12 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATA
   }
     
   /** transactional */
-  def sparqlSelectQuery(queryString: String): Try[List[Set[Rdf#Node]]] = {
-    val transaction = dataset.r({
+  def sparqlSelectQuery(queryString: String,
+            ds: DATASET=dataset): Try[List[Set[Rdf#Node]]] = {
+    val transaction = ds.r({
       val solutionsTry = for {
         query <- parseSelect(queryString)
-        es <- dataset.executeSelect(query, Map())
+        es <- ds.executeSelect(query, Map())
       } yield es
 
       //    val answers: Rdf#Solutions = 

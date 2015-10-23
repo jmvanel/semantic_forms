@@ -218,7 +218,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
          |    <$uri> <ETag> ?etag .
          |  }
          |}""".stripMargin
-    val list = sparqlSelectQuery(queryString, Seq("etag") )
+    val list = sparqlSelectQueryVariables(queryString, Seq("etag") )
     val v = list.headOption.getOrElse(Seq())
     val vv = v.headOption.getOrElse(Literal(""))
     vv.toString()

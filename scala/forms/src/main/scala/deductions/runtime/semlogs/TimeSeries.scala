@@ -5,6 +5,7 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
 import java.util.Date
 import org.w3.banana.RDFSPrefix
 import deductions.runtime.services.SPARQLHelpers
+import java.math.BigInteger
 
 trait TimeSeries[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
@@ -50,7 +51,8 @@ trait TimeSeries[Rdf <: RDF, DATASET]
   
   /** get Time Series from accumulated values with timestamp */
   def getTimeSeries()(implicit userURI: String):
-  Seq[( String, Map[Long, Float] )] = {
+//  Seq[( String, Map[Long, Float] )] = {
+  Map[ String, Seq[(BigInteger, Double)] ] = {
     val query = s"""
       SELECT ?TS ?AV ?LAB
       WHERE {
@@ -58,25 +60,26 @@ trait TimeSeries[Rdf <: RDF, DATASET]
             <user> <$userURI> .
         GRAPH ?GR {
          ?S <average> ?AV ;
-            ${rdfs.label} ?LAB .
+            <${rdfs.label}> ?LAB .
         }
-      }
-    """
-    // TODO dataset2
-    val res = sparqlSelectQuery( query ) . get
+      }  """    
+    val res = sparqlSelectQuery( query, dataset2 ) . get
     // res is a  List[Set[Rdf.Node]] each Set containing:
     // Long, Float, String
     val res2 = res.groupBy{ elem => foldNode(elem.toSeq(2))(
         _=> "", _=> "", lit => fromLiteral(lit)._1 )
     }
-    val res3 = for( (lab, values ) <- res2 ) yield {
-      val w = values . map {
-        v => val vv = v.toSeq ; ( vv(0), vv(1) )
+    for( (label, values ) <- res2 ) yield {
+      val time2value = values . map {
+//        v => val vv = v.toSeq ; ( vv(0).as[Long], vv(1).as[Float] )
+        v => val vv = v.toSeq ; ( vv(0).as[BigInteger].get,
+            vv(1).as[Double].get )
       }
+      ( label, time2value )
     }
-    ???
   }
   
+  // TODO move to helper class  
   private def makeStringFromLiteral(n: Rdf#Node): String = {
     foldNode(n)(
         _ => "",
