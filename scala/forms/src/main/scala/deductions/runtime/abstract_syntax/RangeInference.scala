@@ -1,13 +1,11 @@
 package deductions.runtime.abstract_syntax
 
 import scala.collection.Iterable
-import scala.collection.Iterator
 import scala.collection.Seq
 import scala.collection.Set
 import scala.collection.mutable
 import scala.util.Try
 
-import org.apache.log4j.Logger
 import org.w3.banana.OWLPrefix
 import org.w3.banana.RDF
 import org.w3.banana.RDFSPrefix
@@ -15,6 +13,7 @@ import org.w3.banana.SparqlEngine
 import org.w3.banana.SparqlOps
 
 import deductions.runtime.dataset.RDFOPerationsDB
+import deductions.runtime.services.SPARQLHelpers
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.utils.Timer
 
@@ -23,17 +22,19 @@ import deductions.runtime.utils.Timer
  *  through owl:oneOf and know instances
  */
 trait RangeInference[Rdf <: RDF, DATASET]
-extends RDFOPerationsDB[Rdf, DATASET]
+    extends RDFOPerationsDB[Rdf, DATASET]
     with RDFHelpers[Rdf]
-with InstanceLabelsInferenceMemory[Rdf, DATASET]
-//with InstanceLabelsInference2[Rdf]
-with FormModule[Rdf#Node, Rdf#URI]
-with PossibleValues[Rdf]
+    with InstanceLabelsInferenceMemory[Rdf, DATASET]
+    //with InstanceLabelsInference2[Rdf]
+    with FormModule[Rdf#Node, Rdf#URI]
+    with PossibleValues[Rdf]
+    with SPARQLHelpers[Rdf, DATASET]
     with Timer {
 
   implicit val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]
   implicit val sparqlOps: SparqlOps[Rdf]
   private val rdfs = RDFSPrefix[Rdf]
+  
   import ops._
   import sparqlOps._
   import sparqlGraph._
@@ -186,9 +187,7 @@ with PossibleValues[Rdf]
     }
   }
 
-  //// DEBUG (unused) ////
-
-  def info(s: String) = Logger.getRootLogger().info(s)
+  // ========
 
   import sparqlGraph.sparqlEngineSyntax._
 
@@ -205,13 +204,11 @@ with PossibleValues[Rdf]
                 <${formGroup}> form:labelsForFormGroup ?LABELS .
                 ?LABELS form:labelsForValues ?BN .
                 ?BN form:value ?VALUE ; rdfs:label ?LABEL . 
-              }
-              """
+              } """
     //    info(s"populateFromTDB $q")
 
     val query = parseSelect(q, Seq()).get
     val solutions: Rdf#Solutions = graph.executeSelect(query).get
-    //    import ops._
 
     val res = solutions.iterator() map {
       row =>
@@ -219,36 +216,10 @@ with PossibleValues[Rdf]
         (row("VALUE").get.as[Rdf#Node].get,
           row("LABEL").get.as[Rdf#Node].get)
     }
-    val possibleValues = res.to[List] // Rdf#Node,String]]
+    val possibleValues = res.to[List]
     info(s""" populateFromTDB  size ${possibleValues.size}
              ${possibleValues.mkString("\n")}""")
     possibleValues
   }
-
-  /** TODO put it in util class or use SPARQLHelper in project sparql_client */
-  def runSparqlSelect(
-    queryString: String, variables: Seq[String],
-    graph: Rdf#Graph): List[Seq[Rdf#URI]] = {
-    val query = parseSelect(queryString).get
-    val answers: Rdf#Solutions = graph.executeSelect(query).get
-    val results: Iterator[Seq[Rdf#URI]] = answers.toIterable map {
-      row =>
-        for (variable <- variables) yield row(variable).get.as[Rdf#URI].get
-    }
-    results.to[List]
-  }
-
-  def dumpGraph( implicit graph: Rdf#Graph) = {
-    val selectAll = """
-              # CONSTRUCT { ?S ?P ?O . }
-              SELECT ?S ?P ?O
-              WHERE {
-                GRAPH ?GR {
-                ?S ?P ?O .
-                } }
-            """
-    val res2 = runSparqlSelect(selectAll, Seq("S", "P", "O"), graph)
-    info(s""" populateFromTDB selectAll size ${res2.size}
-             ${res2.mkString("\n")}""")
-  }
+  
 }
