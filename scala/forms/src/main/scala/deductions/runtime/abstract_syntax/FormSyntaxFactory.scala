@@ -55,8 +55,9 @@ trait PossibleValues[Rdf <: RDF] {
   /** Correspondence between resource for a class and
    *  instances of that class with their human readable label */
   private var possibleValues = Map[Rdf#Node, Seq[ResourceWithLabel[Rdf]]]()
-  /** check if this (class) URI has already been computed */
+  /** check if possible Values in this (class) URI have already been computed */
   def isDefined(uri: Rdf#Node): Boolean = possibleValues.contains(uri)
+  /** record given possible Values (ResourceWithLabel) for this class URI */
   def addPossibleValues(uri: Rdf#Node, values: Seq[ResourceWithLabel[Rdf]]) = {
     possibleValues = possibleValues + (uri -> values)
     resourcesWithLabel2Tuples(values)
@@ -352,19 +353,17 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         time(s"resourceEntry object_ $object_",
           foldNode(object_)(
             object_ =>
-              if (isBN(firstType)) {
-                println(s""" resourceEntry makeBN "$label" """)
-                makeBN(label, comment, prop, ResourceValidator(ranges), toBN(object_),
-                  typ = firstType)
-              } else
+//              if (isBN(firstType)) {
+//                println(s""" resourceEntry makeBN "$label" """)
+//                makeBN(label, comment, prop, ResourceValidator(ranges), toBN(object_),
+//                  typ = firstType)
+//              } else
                 new ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_,
                   alreadyInDatabase = true, valueLabel = instanceLabel(object_, graph, preferedLanguage),
                   type_ = nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI)),
             object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_,
               typ = firstType),
-            object_ => literalEntry
-          )
-        )
+            object_ => literalEntry))
       }
 
       val xsdPrefix = XSDPrefix[Rdf].prefixIri

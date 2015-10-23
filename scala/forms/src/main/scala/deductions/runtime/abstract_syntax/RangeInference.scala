@@ -94,6 +94,15 @@ trait RangeInference[Rdf <: RDF, DATASET]
       }
     }
 
+    def populateFromOwlUnion(entry: Entry): Map[ Rdf#URI, Seq[ResourceWithLabel[Rdf] ]] = {
+      val classes = processOwlUnion(entry)
+      Map() // TODO <<<<<<<<<
+    }
+    
+    def processOwlUnion(entry: Entry): Seq[Rdf#URI] = {
+    	Seq() // TODO <<<<<<<<<
+    }
+    
     /** modify entry to populate possible Values From Instances */
     def populateFromInstances(entry: Entry): Seq[ResourceWithLabel[Rdf]] = {
       val possibleValues = mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]()
@@ -155,22 +164,22 @@ trait RangeInference[Rdf <: RDF, DATASET]
       }
     }
 
-    def setPossibleValues() = {
+    /** this function does the job! */
+    def setPossibleValues(): Entry = {
       //      println("addPossibleValues " + entryField)
       val fieldType = entryField.type_
       //      println("addPossibleValues fieldType " + fieldType)
       val possibleValues = {
-        //        if (entryField.property.toString().contains("knows")
-        //          || entryField.property.toString().contains("interest"))
-        //          println("entryField") // >>>>>>>>>> DEBUG
         if (isDefined(fieldType)) {
           getPossibleValuesAsTuple(fieldType)
         } else {
+          val resourcesWithLabelFromOwlUnion = populateFromOwlUnion(entryField)
           val resourcesWithLabel =
             populateFromTDB(entryField) ++
               populateFromInstances(entryField) ++
               populateFromOwlOneOf(entryField)
-          val res = addPossibleValues(fieldType, resourcesWithLabel)
+//              resourcesWithLabelFromOwlUnion._1
+          val res = recordPossibleValues(resourcesWithLabel, resourcesWithLabelFromOwlUnion )
           //          println(s"addPossibleValues(fieldType, $resourcesWithLabel)")
           res
         }
@@ -178,6 +187,21 @@ trait RangeInference[Rdf <: RDF, DATASET]
       entryField.setPossibleValues(possibleValues)
     }
 
+    /** record Possible Values */
+    def recordPossibleValues(resourcesWithLabel: Seq[ResourceWithLabel[Rdf]],
+                             classesAndLabels:  Map[Rdf#URI, Seq[ ResourceWithLabel[Rdf]]] ):
+                             Seq[(Rdf#Node, Rdf#Node)] = {
+      val fieldType = entryField.type_
+      if (classesAndLabels isEmpty)
+        addPossibleValues(fieldType, resourcesWithLabel)
+      else {
+        for( (classe, rlabels ) <- classesAndLabels ) {
+        	addPossibleValues(classe, rlabels)
+        }
+        Seq() // TODO <<<<<<<<<<<<<<<<<<<<<
+      }
+    }
+    
     // ==== body of function addPossibleValues ====
 
     entryField match {
