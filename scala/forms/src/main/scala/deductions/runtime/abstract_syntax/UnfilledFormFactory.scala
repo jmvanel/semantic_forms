@@ -70,7 +70,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
     val newId = makeId
     if (propsListInFormConfig.isEmpty) {
       val props = fieldsFromClass(classs, graph)
-      createFormDetailed(makeUri(newId), props toSeq, classs, CreationMode)
+      createFormDetailed(makeUri(newId), addRDFSLabelComment(props), classs, CreationMode)
     } else
       createFormDetailed(makeUri(newId), propsListInFormConfig.toSeq, classs,
         CreationMode, formConfig = formConfig)

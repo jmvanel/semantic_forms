@@ -118,15 +118,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     (implicit graph: Rdf#Graph)
   : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
 
-    val s1 = new Step1(subject, editable)    
-//    val classs = classFromSubject(subject) // TODO several classes
-//    val propsFromConfig = lookPropertieslistFormInConfiguration(classs)._1
-//    val propsFromSubject = fieldsFromSubject(subject, graph)
-//    val propsFromClass =
-//      if (editable) {
-//        fieldsFromClass(classs, graph)
-//      } else Seq()
-//    val propertiesList = (propsFromConfig ++ propsFromSubject ++ propsFromClass).distinct
+    val s1 = new Step1(subject, editable)
 
     createFormDetailed(subject, s1.propertiesList,
       s1.classs,
@@ -155,6 +147,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       formGroup)
   }
   
+  /** Step1: compute properties List from Config, Subject, Class (in that order) */
   class Step1(subject: Rdf#Node,
     editable: Boolean = false)
     (implicit graph: Rdf#Graph) {
@@ -165,9 +158,16 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       if (editable) {
         fieldsFromClass(classs, graph)
       } else Seq()
-    val propertiesList = (propsFromConfig ++ propsFromSubject ++ propsFromClass).distinct
+    val propertiesList0 = (propsFromConfig ++ propsFromSubject ++ propsFromClass).distinct
+    val propertiesList = addRDFSLabelComment(propertiesList0)
   }
 
+  def addRDFSLabelComment(propertiesList: Seq[Rdf#URI]): Seq[Rdf#URI] = {
+    if (addRDFS_label_comment &&
+      !propertiesList.contains(rdfs.label)) {
+      Seq(rdfs.label, rdfs.comment) ++ propertiesList
+    } else propertiesList
+  }
 
   /**
    * create Form With Detailed arguments: RDF Properties;

@@ -11,6 +11,8 @@ trait Configuration {
   def needLoginForDisplaying: Boolean = false
 
   val recordUserActions: Boolean = false
+  val showDomainlessProperties = false
+  val addRDFS_label_comment = true
 
   // CORS
   val allow_Origin = "*"
