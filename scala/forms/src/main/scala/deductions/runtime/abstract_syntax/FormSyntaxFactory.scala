@@ -62,12 +62,19 @@ trait PossibleValues[Rdf <: RDF] {
     possibleValues = possibleValues + (uri -> values)
     resourcesWithLabel2Tuples(values)
   }
-  //  def getPossibleValues( uri: Rdf#Node): Seq[ResourceWithLabel[Rdf]] = { ??? }
+  def getPossibleValues( uri: Rdf#Node): Seq[ResourceWithLabel[Rdf]] = { possibleValues.getOrElse(uri, Seq()) }
   def getPossibleValuesAsTuple(uri: Rdf#Node): Seq[(Rdf#Node, Rdf#Node)] = {
-    resourcesWithLabel2Tuples(possibleValues.getOrElse(uri, Seq()))
+    resourcesWithLabel2Tuples( getPossibleValues(uri) )
   }
-  private def resourcesWithLabel2Tuples(values: Seq[ResourceWithLabel[Rdf]]) =
+  
+  def resourcesWithLabel2Tuples(values: Seq[ResourceWithLabel[Rdf]]) =
     values.map { r => (r.resource, r.label) }
+  
+  def tuples2ResourcesWithLabel(tuples: Seq[(Rdf#Node, Rdf#Node)]) = {
+	  tuples.map { (couple: (Rdf#Node, Rdf#Node)) =>
+	  new ResourceWithLabel(couple._1, couple._2)
+	  }
+  }
 }
 
 
@@ -353,11 +360,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         time(s"resourceEntry object_ $object_",
           foldNode(object_)(
             object_ =>
-//              if (isBN(firstType)) {
-//                println(s""" resourceEntry makeBN "$label" """)
-//                makeBN(label, comment, prop, ResourceValidator(ranges), toBN(object_),
-//                  typ = firstType)
-//              } else
                 new ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_,
                   alreadyInDatabase = true, valueLabel = instanceLabel(object_, graph, preferedLanguage),
                   type_ = nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI)),
