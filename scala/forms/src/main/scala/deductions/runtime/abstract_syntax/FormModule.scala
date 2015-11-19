@@ -48,7 +48,7 @@ trait FormModule[NODE, URI <: NODE] {
   }
 
   type DatatypeProperty = URI
-  type ObjectProperty = URI
+  type ObjectProperty = NODE // URI
   case class Triple(val s: NODE, val p: URI, val o: NODE)
 
   val nullURI: URI
@@ -62,7 +62,7 @@ trait FormModule[NODE, URI <: NODE] {
       val label: String, val comment: String,
       // TODO for multi-subject forms:
       // val subject: NODE = nullURI,
-      val property: URI = nullURI,
+      val property: NODE = nullURI,
       /** unused yet :( */
       val mandatory: Boolean = false,
       /** TODO : several types */
@@ -140,7 +140,10 @@ trait FormModule[NODE, URI <: NODE] {
     }
   }
   class LiteralEntry(l: String, c: String,
-    property: DatatypeProperty = nullURI, validator: DatatypeValidator,
+    property: NODE
+//    DatatypeProperty
+    = nullURI,
+    validator: DatatypeValidator,
     value: NODE = nullURI, // String = "",
     val lang: String = "",
     type_ : NODE = nullURI,

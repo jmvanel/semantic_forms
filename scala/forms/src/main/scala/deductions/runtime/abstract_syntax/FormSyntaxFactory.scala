@@ -162,7 +162,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val propertiesList = addRDFSLabelComment(propertiesList0)
   }
 
-  def addRDFSLabelComment(propertiesList: Seq[Rdf#URI]): Seq[Rdf#URI] = {
+  def addRDFSLabelComment(propertiesList: Seq[Rdf#Node]): Seq[Rdf#Node] = {
     if (addRDFS_label_comment &&
       !propertiesList.contains(rdfs.label)) {
       Seq(rdfs.label, rdfs.comment) ++ propertiesList
@@ -179,7 +179,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    * and indirectly for other cases.
    */
   def createFormDetailed(subject: Rdf#Node,
-    props: Iterable[Rdf#URI], classs: Rdf#URI,
+    props: Iterable[Rdf#Node], classs: Rdf#URI,
     formMode: FormMode,
     formGroup: Rdf#URI = nullURI,
     formConfig: Rdf#Node = URI(""))
@@ -304,7 +304,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    * or else display terminal Part of URI as label;
    *  taking in account multi-valued properties
    */
-  private def makeEntries(subject: Rdf#Node, prop: Rdf#URI, ranges: Set[Rdf#Node],
+  private def makeEntries(subject: Rdf#Node, prop: Rdf#Node, ranges: Set[Rdf#Node],
     formMode: FormMode,
     valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)])
 	  (implicit graph: Rdf#Graph)
@@ -320,7 +320,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val comment = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.comment, "")
       
     val propClasses = rdfh.objectsQuery(prop, RDFPrefix[Rdf].typ)
-    val objects = objectsQuery(subject, prop)
+    val objects = objectsQuery(subject, prop.asInstanceOf[Rdf#URI])
     val rangeClasses = objectsQueries(ranges, RDFPrefix[Rdf].typ)
     //    Timer.endTimer(s"makeEntries(${prop}: beginning)")
 
@@ -409,10 +409,14 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    *  Project from http://usefulinc.com/ns/doap#Project
    *  NOTE: code related for getting the ontology prefix
    */
-  def terminalPart(uri: Rdf#URI): String = {
-    getFragment(uri) match {
-      case None => lastSegment(uri)
-      case Some(frag) => frag
+  def terminalPart(n: Rdf#Node): String = {
+    n match {
+      case uri: Rdf#URI if (uri.isURI) =>
+        getFragment(uri) match {
+          case None       => lastSegment(uri)
+          case Some(frag) => frag
+        }
+      case _ => ""
     }
   }
 

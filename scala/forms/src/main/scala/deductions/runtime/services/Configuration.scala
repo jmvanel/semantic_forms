@@ -2,7 +2,12 @@ package deductions.runtime.services
 
 trait Configuration {
   /** URI Prefix prepended to newly created resource instances */
-  var defaultInstanceURIPrefix = "http://assemblee-virtuelle.org/resource/"
+  var defaultInstanceURIHostPrefix = "http://assemblee-virtuelle.org/"
+  /** otherwise use defaultInstanceURIHostPrefix */
+  var useLocalHostPrefixForURICreation = false
+
+  val relativeURIforCreatedResourcesByForm = "ldp/"
+  val relativeURIforCreatedResourcesByLDP = relativeURIforCreatedResourcesByForm
 
   /** vocabulary for form specifications */
   val formVocabPrefix = "http://deductions-software.com/ontologies/forms.owl.ttl#"

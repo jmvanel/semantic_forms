@@ -87,6 +87,22 @@ extends RDFStoreLocalProvider[Rdf, DATASET] {
     })
     transaction .get
   }
+
+  /** NOT transactional
+   *  TODO duplicate code with sparqlSelectQueryVariables() */
+  def sparqlSelectQueryVariablesNT(queryString: String, variables: Seq[String],
+                                   ds: DATASET = dataset): List[Seq[Rdf#Node]] = {
+    val solutionsTry = for {
+      query <- parseSelect(queryString)
+      es <- ds.executeSelect(query, Map())
+    } yield es
+    val answers: Rdf#Solutions = solutionsTry.get
+    val results: Iterator[Seq[Rdf#Node]] = answers.iterator map {
+      row =>
+        for (variable <- variables) yield row(variable).get.as[Rdf#Node].get
+    }
+    results.to[List]
+  }
   
   /** transactional */
   def sparqlSelectQuery(queryString: String,

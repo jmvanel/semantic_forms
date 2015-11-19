@@ -8,29 +8,60 @@ import deductions.runtime.utils.RDFHelpers
 import org.w3.banana.RDFSPrefix
 import org.w3.banana.RDFPrefix
 import deductions.runtime.services.Configuration
+import deductions.runtime.services.SPARQLHelpers
 
 /** populate Fields in form by inferencing from class(es) of given instance URI */
 trait FieldsInference[Rdf <: RDF, DATASET]
 extends RDFHelpers[Rdf]
 with RDFOPerationsDB[Rdf, DATASET]
+with SPARQLHelpers[Rdf, DATASET]
 with Configuration {
 
   import ops._
   private val rdfs = RDFSPrefix[Rdf]
   private val owl = OWLPrefix[Rdf]
 
-  def fieldsFromClass(classs: Rdf#URI, graph: Rdf#Graph): Seq[Rdf#URI] = {
+  def fieldsFromClass(classs: Rdf#URI, graph: Rdf#Graph): Seq[Rdf#Node] = {
+
+    val result = scala.collection.mutable.ListBuffer[Rdf#Node]()
 
     /** retrieve rdfs:domain's From given Class */
-    def domainsFromClass(classs: Rdf#Node): List[Rdf#URI] = {
+    def domainsFromClass(classs: Rdf#Node): List[Rdf#Node] = {
       if (classs != owl.Thing) {
         val relevantPredicates = getSubjects(graph, rdfs.domain, classs).toSeq
         println(s"""Predicates with domain = Class <$classs> , relevant Predicates size ${relevantPredicates.size}  ; ${relevantPredicates.mkString(", ")}""")
-        rdfh.nodeSeqToURISeq(relevantPredicates).distinct.toList
+//        rdfh.nodeSeqToURISeq(relevantPredicates).distinct.toList ++
+       relevantPredicates.distinct.toList ++
+        unionOfDomainsFromClass(classs)
       } else List()
     }
 
-    val result = scala.collection.mutable.ListBuffer[Rdf#URI]()
+    
+    /** retrieve rdfs:domain's being unionOf from given Class
+     *  NOTE: SPARQL query that covers also what domainsFromClass() does */
+    def unionOfDomainsFromClass(classe: Rdf#Node): List[Rdf#Node] = {
+      val queryString = s"""
+        ${declarePrefix(owl)}
+        ${declarePrefix(rdfs)}
+        prefix list: <http://jena.hpl.hp.com/ARQ/list#>
+        SELECT ?PRED
+        WHERE {
+          GRAPH ?G {
+            ?PRED rdfs:domain ?UCLASS .
+            ?UCLASS owl:unionOf ?UNION .
+            # NOTE: rdfs:member Jena ARQ specific :(
+            # rdfs:member
+            ?UNION
+            list:member
+            <$classe>
+          .
+        }
+        } """
+      println( s"unionOfDomainsFromClass queryString $queryString")
+      val res = sparqlSelectQueryVariablesNT(queryString, Seq("PRED"), dataset)
+      println( s"unionOfDomainsFromClass res $res")
+      res map { li => li.head }
+    }
 
     /** recursively process super-classes and owl:equivalentClass until reaching owl:Thing */
     def processSuperClasses(classs: Rdf#Node) {

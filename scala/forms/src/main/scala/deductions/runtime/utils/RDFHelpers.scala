@@ -4,18 +4,21 @@ import org.w3.banana.PointedGraph
 import org.w3.banana.RDF
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFPrefix
+import org.w3.banana.binder.PGBinder
+import org.w3.banana.OWLPrefix
+import scala.util.Success
+import scala.util.Failure
+import org.w3.banana.Prefix
 
 /** */
 trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
   implicit val ops: RDFOps[Rdf]
-  val rdfh: RDFHelpers[Rdf]  = this
-  import rdfh.{ops=>_, _}
-  import ops.{ rdf=>_, _}
+  val rdfh: RDFHelpers[Rdf] = this
+  import rdfh.{ ops => _, _ }
+  import ops.{ rdf => _, _ }
 
   /** recursively iterate on the Rdf#Node through rdf:first and rdf:rest */
-  def rdfListToSeq(listOp: Option[Rdf#Node], result: Seq[Rdf#Node] = Seq())
-  (implicit graph: Rdf#Graph)
-  : Seq[Rdf#Node] = {
+  def rdfListToSeq(listOp: Option[Rdf#Node], result: Seq[Rdf#Node] = Seq())(implicit graph: Rdf#Graph): Seq[Rdf#Node] = {
     listOp match {
       case None => result
       case Some(list) =>
@@ -29,21 +32,18 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
     }
   }
 
-  /** Query for objects in triples, given subject & predicate
+  /**
+   * Query for objects in triples, given subject & predicate
    *  NOTE: this function in core Banana does the job:
    *  getObjects(graph: Rdf#Graph, subject: Rdf#Node, predicate: Rdf#URI): Iterable[Rdf#Node]
-   *  */
-  def objectsQuery(subject: Rdf#Node, predicate: Rdf#URI)
-    (implicit graph: Rdf#Graph)
-    : Set[Rdf#Node] = {
+   */
+  def objectsQuery(subject: Rdf#Node, predicate: Rdf#URI)(implicit graph: Rdf#Graph): Set[Rdf#Node] = {
     val pg = PointedGraph[Rdf](subject, graph)
     val objects = pg / predicate
     objects.map(_.pointer).toSet
   }
 
-  def objectsQueries[T <: Rdf#Node](subjects: Set[T], predicate: Rdf#URI)
-    (implicit graph: Rdf#Graph)
-    : Set[Rdf#Node] = {
+  def objectsQueries[T <: Rdf#Node](subjects: Set[T], predicate: Rdf#URI)(implicit graph: Rdf#Graph): Set[Rdf#Node] = {
     val values = for (
       subject <- subjects;
       values <- objectsQuery(subject.asInstanceOf[Rdf#URI], predicate)
@@ -51,26 +51,24 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
     values
   }
 
-//  /** replace all triples
-//   *  <subject> <predicate> ?O .
-//   *  (if any)
-//   *  with a single one:
-//   *  <subject> <predicate> <objet> .
-//   *  */
-//  def replaceObjects(graph: Rdf#Graph, subject: Rdf#Node, predicate: Rdf#URI,
-//      objet: Rdf#Node): Unit = {
-////	  val mgraph = graph.makeMGraph()
-//    val objectsToRemove = getObjects(graph, subject, predicate)
-//    for( obj <- objectsToRemove ) {
-//    	ops.removeTriple( mgraph, Triple(subject, predicate, obj) )
-//    }
-//    ops.addTriple( mgraph, Triple(subject, predicate, objet) )
-//  }
+  //  /** replace all triples
+  //   *  <subject> <predicate> ?O .
+  //   *  (if any)
+  //   *  with a single one:
+  //   *  <subject> <predicate> <objet> .
+  //   *  */
+  //  def replaceObjects(graph: Rdf#Graph, subject: Rdf#Node, predicate: Rdf#URI,
+  //      objet: Rdf#Node): Unit = {
+  ////	  val mgraph = graph.makeMGraph()
+  //    val objectsToRemove = getObjects(graph, subject, predicate)
+  //    for( obj <- objectsToRemove ) {
+  //    	ops.removeTriple( mgraph, Triple(subject, predicate, obj) )
+  //    }
+  //    ops.addTriple( mgraph, Triple(subject, predicate, objet) )
+  //  }
 
   def replaceSameLanguageTriple(triple: Rdf#Triple,
-                                mgraph: Rdf#MGraph)
-    (implicit graph: Rdf#Graph)
-    : Int = {
+                                mgraph: Rdf#MGraph)(implicit graph: Rdf#Graph): Int = {
     val language = getLang(triple.objectt)
     val count =
       if (language != NL) {
@@ -91,7 +89,6 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
     count
   }
 }
-
 
 trait RDFHelpers0[Rdf <: RDF] {
   implicit val ops: RDFOps[Rdf]
@@ -157,5 +154,27 @@ trait RDFHelpers0[Rdf <: RDF] {
         case Some(lang) => lang
         case _          => NL
       })
+  }
+
+  def declarePrefix(pref: Prefix[Rdf]) = {
+    s"PREFIX ${pref.prefixName}: <${pref.prefixIri}> "
+  }
+  
+  import scala.language.postfixOps
+  
+  /** @return RDF list of URI's <l1> <l2> ,,, such that
+   * <classe> owl:unionOf ( <l1> <l2> ) . */
+  def processUnionOf(graph: Rdf#Graph, classe: Rdf#Node): Seq[Rdf#Node] = {
+    val owl = OWLPrefix[Rdf]
+    val rdfLists = getObjects(graph, classe, owl.unionOf)
+    val binder = PGBinder[Rdf, List[Rdf#Node]]
+    if (!(rdfLists isEmpty)) {
+      val rdfList = rdfLists.head
+      val classesTry = binder.fromPG(PointedGraph(rdfList, graph))
+      classesTry match {
+        case Success(classes) => classes.toSeq
+        case Failure(e)       => Seq()
+      }
+    } else Seq()
   }
 }

@@ -70,7 +70,7 @@ trait FormConfigurationFactory[Rdf <: RDF]
    *  ?S form:fieldAppliesToProperty prop .
    */
   def lookFieldSpecInConfiguration(
-    prop: Rdf#URI)
+    prop: Rdf#Node)
     (implicit graph: Rdf#Graph)
     = {
     find(graph, ANY, formPrefix("fieldAppliesToProperty"), prop).toSeq

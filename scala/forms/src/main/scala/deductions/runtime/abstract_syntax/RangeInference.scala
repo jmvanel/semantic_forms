@@ -118,7 +118,9 @@ trait RangeInference[Rdf <: RDF, DATASET]
      */
     def processOwlUnion(): Seq[Rdf#Node] = {
       if (!(ranges isEmpty)) {
-        val rangeClass = ranges.head // TODO several range values <<<<<<<<<<<
+        val rangeClass = ranges.head // TODO several range values <<<<<<<<
+        
+        // TODO call processUnionOf(graph, rangeClass): Seq[Rdf#Node]
         val rdfLists = getObjects(graph, rangeClass, owl.unionOf)
         val binder = PGBinder[Rdf, List[Rdf#Node]]
         if (!(rdfLists isEmpty)) {
@@ -129,6 +131,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
             case Failure(e)       => Seq()
           }
         } else Seq()
+        
       } else Seq()
     }
     

@@ -11,6 +11,7 @@ import org.w3.banana.SparqlEngine
 import org.w3.banana.SparqlUpdate
 import org.w3.banana.URIOps
 
+/** RDF OPerations on a DataBase */
 trait RDFOPerationsDB[Rdf <: RDF, DATASET] {
     /** NOTE: same design pattern as for XXXModule in Banana */
   implicit val rdfStore: RDFStore[Rdf, Try, DATASET] with SparqlUpdate[Rdf, Try, DATASET]
