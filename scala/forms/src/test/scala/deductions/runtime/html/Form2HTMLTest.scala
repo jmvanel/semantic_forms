@@ -12,12 +12,19 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import org.w3.banana.jena.JenaModule
 import org.scalatest.FunSuite
+import com.hp.hpl.jena.query.Dataset
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import org.apache.log4j.Logger
 
 //class Form2HTMLTestJena extends Form2HTMLTest
 
 class Form2HTMLTest
-    extends FunSuite with FormSyntaxFactoryTest
-    with JenaModule {
+    extends FunSuite
+    with RDFStoreLocalJena1Provider //    with JenaModule
+    with FormSyntaxFactoryTest[Jena, Dataset] {
+
+  val logger = Logger.getRootLogger()
+
   import ops._
   println("Entering Form2HTMLTest")
   val nullURI1 = makeUri("")

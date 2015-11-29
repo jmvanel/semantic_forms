@@ -13,6 +13,7 @@ import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import org.w3.banana.jena.Jena
 import com.hp.hpl.jena.query.Dataset
 import deductions.runtime.jena.RDFCache
+import org.apache.log4j.Logger
 //import deductions.runtime.jena.RDFStoreLocalProvider
 
 class TestFormSaver
@@ -25,7 +26,7 @@ class TestFormSaver
     with RDFStoreLocalJena1Provider
     with FormSaver[Jena, Dataset] {
   import ops._
-
+  val logger = Logger.getRootLogger()
   lazy val fs = this // new FormSaver[Jena, Dataset] {}
 
   val uri = "http://jmvanel.free.fr/jmv.rdf#me"

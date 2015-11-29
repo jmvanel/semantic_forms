@@ -68,5 +68,5 @@ trait TestStringSearchTrait[Rdf <: RDF, DATASET] extends FunSuite
 
 //@Ignore
 class TestStringSearch extends FunSuite
-  with TestStringSearchTrait[Jena, Dataset]
   with RDFStoreLocalJena1Provider
+  with TestStringSearchTrait[Jena, Dataset]

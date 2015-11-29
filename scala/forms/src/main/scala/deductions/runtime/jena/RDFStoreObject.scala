@@ -17,12 +17,7 @@ object RDFStoreObject extends JenaModule with RDFStoreLocalJena1Provider
 
 /** For user data and RDF cache, sets a default location for the Jena TDB store directory : TDB */
 trait RDFStoreLocalJena1Provider extends RDFStoreLocalJenaProvider {
-  //  val databaseLocation = "TDB"
-  //  val databaseLocation2 = "TDB2"
-  //  val dataset2: DATASET = createDatabase(databaseLocation2)
 }
-
-//trait RDFStoreLocalJena2Provider extends RDFStoreLocalJenaProvider {}
 
 trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Dataset]
     with JenaModule with JenaRDFLoader
@@ -33,8 +28,8 @@ trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Dataset]
   import rdfStore.graphStoreSyntax._
 
   override def createDatabase(database_location: String) = {
-    val dts = TDBFactory.createDataset(databaseLocation)
-    Logger.getRootLogger.info(s"RDFStoreLocalJena1Provider dataset created $dts")
+    val dts = TDBFactory.createDataset(database_location)
+    Logger.getRootLogger.info(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
     dts
   }
 

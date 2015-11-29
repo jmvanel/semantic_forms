@@ -24,7 +24,7 @@ trait TestJenaHelpersRaw
   def test() {
     lazy val dataset1 = TDBFactory.createDataset("TDB")
     val jh = new RDFCacheAlgo[Jena, Dataset] with RDFStoreLocalJenaProvider with JenaRDFLoader {
-      val databaseLocation = "TDB"
+      override val databaseLocation = "TDB"
       //      val dataset: com.hp.hpl.jena.query.Dataset = dataset1
     }
     val uri = ops.makeUri(s"file://${new File(".").getAbsolutePath}/src/test/resources/foaf.n3")

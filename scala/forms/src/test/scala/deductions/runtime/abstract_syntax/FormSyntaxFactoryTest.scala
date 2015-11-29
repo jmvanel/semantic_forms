@@ -14,11 +14,20 @@ import org.w3.banana.jena.JenaModule
 import org.w3.banana.TurtleWriterModule
 import org.w3.banana.SparqlOpsModule
 import org.w3.banana.SparqlGraphModule
+import org.w3.banana.RDF
+import com.hp.hpl.jena.query.Dataset
+import org.w3.banana.jena.Jena
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import org.apache.log4j.Logger
 
 class FormSyntaxFactoryTestJena extends FunSuite
-    with JenaModule
-    with FormSyntaxFactoryTest {
+with RDFStoreLocalJena1Provider
+with FormSyntaxFactoryTest[ Jena, Dataset ] {
 
+  val logger = Logger.getRootLogger()
+
+  // TODO <<<<<<<<<<<<<<<<<<<<<
+  //  ignore
   test("form contains label and data") {
     val form = createFormWithGivenProps
     println("form:\n" + form)
@@ -56,55 +65,66 @@ class FormSyntaxFactoryTestJena extends FunSuite
 
 }
 
-trait FormSyntaxFactoryTest // [Rdf <: RDF]
-    extends RDFOpsModule
-    with TurtleReaderModule
-    with TurtleWriterModule
-    with SparqlOpsModule
-    with SparqlGraphModule {
+///////////////////////
+
+/** NOTE: the TDB database is not used here, 
+ * the data and vocab' are passed by:
+ * implicit val graph */
+trait FormSyntaxFactoryTest[Rdf <: RDF, DATASET] extends FormSyntaxFactory[Rdf, DATASET] {
+// RDFOpsModule
+//    with TurtleReaderModule
+//    with TurtleWriterModule
+//    with SparqlOpsModule
+//    with SparqlGraphModule {
 
   import ops._
-//  import FormSyntaxFactory._
+  import rdfStore.transactorSyntax._
+
+  //  import FormSyntaxFactory._
   lazy val foaf = FOAFPrefix[Rdf]
 
   def makeFOAFsample: Rdf#Graph = {
     (URI("betehess")
       -- foaf.name ->- "Alexandre".lang("fr")
       -- foaf.title ->- "Mr"
+      -- rdf.typ ->- foaf.Person 
       -- foaf.knows ->- (
         URI("http://bblfish.net/#hjs")
         -- foaf.name ->- "Henry Story"
         -- foaf.currentProject ->- URI("http://webid.info/"))).graph
   }
 
-  //  val tx =((URI("betehess")
-  //      -- foaf.name ->- <s></s> )
-
+  def makeGraphwithFOAFvocabandData() = {
+		  val graph1 = makeFOAFsample
+		  val resource = new FileInputStream("src/test/resources/foaf.n3")
+		  val graph2 = turtleReader.read(resource, foaf.prefixIri).get
+		  union(Seq(graph1, graph2))
+  }
+  
   def createFormWithGivenProps() = {
-    val graph1 = makeFOAFsample
-    val resource = new FileInputStream("src/test/resources/foaf.n3")
-    val graph2 = turtleReader.read(resource, foaf.prefixIri).get
-    val graph = union(Seq(graph1, graph2))
-
-    val fact = new FormSyntaxFactory[Rdf](graph)
+    implicit val graph = // emptyGraph // 
+      makeGraphwithFOAFvocabandData()    
+    val factory = this
     println((graph.triples).mkString("\n"))
-    val form = fact.createFormDetailed(
-      URI("betehess"),
-      Seq(foaf.title,
-        foaf.name, foaf.knows),
-      URI(""),
-      EditionMode)
-    form
+    val res = dataset.r({
+      val form = factory.createFormDetailed(
+        URI("betehess"),
+        Seq(foaf.title,
+          foaf.name, foaf.knows),
+        URI(""),
+        EditionMode)
+      form
+    })
+    res.get
   }
 
-  def createFormWithInferredProps() = {
-    val graph1 = makeFOAFsample
-    val resource = new FileInputStream("src/test/resources/foaf.n3")
-    val graph2 = turtleReader.read(resource, foaf.prefixIri).get
-    val graph = union(Seq(graph1, graph2))
-
-    val fact = new FormSyntaxFactory[Rdf](graph)
-    fact.createForm(URI("betehess"), editable = true)
+  def createFormWithInferredProps() = {    
+    val factory = this
+    val res = dataset.r({
+    	implicit val graph = makeGraphwithFOAFvocabandData()
+      factory.createForm(URI("betehess"), editable = true)
+    })
+    res.get
   }
 
   def createFormFromClass() = {
@@ -112,13 +132,15 @@ trait FormSyntaxFactoryTest // [Rdf <: RDF]
     val graph2 = turtleReader.read(resource, foaf.prefixIri).get
     val formspec = new FileInputStream("form_specs/foaf.form.ttl")
     val graph1 = turtleReader.read(formspec, "").get
-    val graph = union(Seq(graph1, graph2))
+    implicit val graph = union(Seq(graph1, graph2))
     //  val fact = new UnfilledFormFactory[Rdf](graph)
-    val fact = new FormSyntaxFactory[Rdf](graph)
+    val fact = this // new FormSyntaxFactory[Rdf](graph)
     val os = new FileOutputStream("/tmp/graph.nt")
     turtleWriter.write(graph, os, "")
-    fact.createFormDetailed(URI("betehess"), Seq(foaf.topic_interest), foaf.Person,
-      DisplayMode)
+    val res = dataset.r({
+      fact.createFormDetailed(URI("betehess"), Seq(foaf.topic_interest), foaf.Person,
+        DisplayMode)
+    })
   }
 
 }

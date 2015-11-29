@@ -10,9 +10,10 @@ import java.nio.file.attribute.BasicFileAttributes
 
 object FileUtils {
 
+  /** delete Local TDB directory */
   def deleteLocalSPARQL() = {
-    // TODO reestablish
-    //    deleteRecursive("TDB")
+    deleteRecursive("TDB")
+    println("after deleteLocalSPARQL")
   }
 
   /**

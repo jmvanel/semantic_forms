@@ -41,6 +41,7 @@ with Configuration {
     })
   }
 
+  /** create an XHTML input form for a new instance from a class URI; transactional */
   def createElem(uri: String, lang: String = "en")
   (implicit graph: Rdf#Graph)
   : NodeSeq = {

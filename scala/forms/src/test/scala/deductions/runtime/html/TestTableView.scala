@@ -9,12 +9,14 @@ import org.w3.banana.jena.Jena
 import com.hp.hpl.jena.query.Dataset
 import org.w3.banana.jena.JenaModule
 import org.junit.Assert
+import org.apache.log4j.Logger
 
 class TestTableView extends FunSuite
     with JenaModule
     with TableViewModule[Jena, Dataset]
     with RDFStoreLocalJena1Provider {
 
+  val logger = Logger.getRootLogger()
   lazy implicit val allNamedGraphs = allNamedGraph
 
   test("display form FOAF editable") {

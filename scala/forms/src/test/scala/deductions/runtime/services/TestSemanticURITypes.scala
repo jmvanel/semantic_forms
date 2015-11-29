@@ -13,7 +13,7 @@ import org.w3.banana.RDF
 import org.w3.banana.jena.Jena
 import com.hp.hpl.jena.query.Dataset
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.jena.RDFStoreLocalJena2Provider
+//import deductions.runtime.jena.RDFStoreLocalJena2Provider
 import org.w3.banana.SparqlHttpModule
 import org.w3.banana.RDFXMLReaderModule
 import deductions.runtime.uri_classify.SemanticURIGuesser
