@@ -63,7 +63,7 @@ trait TestCreationForm2[Rdf <: RDF, DATASET] extends FunSuite
     assert(form.toString().contains("lastName"))
   }
 
-  println(turtleWriter.asString(personFormSpec, "blabla"))
+  println(turtleWriter.asString(personFormSpec, "base"))
 }
 
 trait GraphTest[Rdf <: RDF] //extends RDFOpsModule

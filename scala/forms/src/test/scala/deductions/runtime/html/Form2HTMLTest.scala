@@ -1,20 +1,18 @@
 package deductions.runtime.html
 
-import org.w3.banana.RDF
-import deductions.runtime.abstract_syntax.FormSyntaxFactoryTest
-import org.w3.banana.io.RDFReader
-import org.w3.banana.io.Turtle
-import org.w3.banana.RDFOps
-import org.w3.banana.jena.Jena
-import org.junit.Assert
-import org.junit.Test
 import java.nio.file.Files
 import java.nio.file.Paths
-import org.w3.banana.jena.JenaModule
-import org.scalatest.FunSuite
-import com.hp.hpl.jena.query.Dataset
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
+
 import org.apache.log4j.Logger
+import org.junit.Assert
+import org.scalatest.Finders
+import org.scalatest.FunSuite
+import org.w3.banana.jena.Jena
+
+import com.hp.hpl.jena.query.Dataset
+
+import deductions.runtime.abstract_syntax.FormSyntaxFactoryTest
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
 
 //class Form2HTMLTestJena extends Form2HTMLTest
 

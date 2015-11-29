@@ -1,14 +1,15 @@
 package deductions.runtime.html
 
+import java.io.PrintStream
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.io.PrintStream
 import scala.xml.Elem
 import scala.xml.NodeSeq
-import org.scalatest.BeforeAndAfterAll
+import scala.collection.JavaConversions._
+import org.apache.log4j.Logger
+import org.scalatest.BeforeAndAfter
 import org.scalatest.Finders
 import org.scalatest.FunSuite
-import org.junit.Assert
 import org.w3.banana.FOAFPrefix
 import org.w3.banana.OWLPrefix
 import org.w3.banana.RDFOpsModule
@@ -16,20 +17,22 @@ import org.w3.banana.RDFSPrefix
 import org.w3.banana.TurtleWriterModule
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
-import org.w3.banana.syntax._
 import com.hp.hpl.jena.query.Dataset
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.utils.FileUtils
-import org.scalatest.BeforeAndAfter
-import org.apache.log4j.Logger
+import deductions.runtime.services.SPARQLHelpers
 
-/** Test Creation Form from class URI, without form specification */
+/**
+ * Test Creation Form from class URI, without form specification
+ * NOTE: the TDB database is used here
+ */
 class TestCreationForm extends FunSuite
     with JenaModule
     with CreationFormAlgo[Jena, Dataset]
     with GraphTestEnum
     //    with BeforeAndAfterAll
     with RDFStoreLocalJena1Provider
+    with SPARQLHelpers[Jena, Dataset]
+    // [Rdf <: RDF, DATASET]
     with BeforeAndAfter {
 
   val logger = Logger.getRootLogger()
@@ -48,29 +51,47 @@ class TestCreationForm extends FunSuite
     println("!!!!!!!!!!!!!!!!!!!!!! after")
     rdfStore.rw(dataset, {
       dataset.removeNamedModel(foaf.prefixIri)
+      dataset.removeNamedModel("Person")
+      // NOTE: this named graph was added in  TestCreationForm2 :
+      dataset.removeNamedModel("test")
     })
+    println("""dataset.listNames().mkString("\n")""")
+    rdfStore.rw(dataset, {
+      println(dataset.listNames().mkString("\n"))
+    }).get
   }
 
-  // TODO test("display form from class with instance for possible values") {
   test("display form from class") {
+    val classUri = foaf.Person
+    retrieveURI(URI(foaf.prefixIri), dataset)
+    implicit val graph =
+      rdfStore.rw(dataset, { allNamedGraph }).get
+    val rawForm = createElem(classUri.toString(), lang = "fr")
+    TestCreationForm.printWrapedWithHTML(rawForm, "example.creation.form.html")
+
+    assert(rawForm.toString().contains("topic_interest"))
+    assert(rawForm.toString().contains("firstName"))
+    //    assert(rawForm.toString().contains("knows"))
+  }
+
+  test("display form from class with instance for possible values") {
     val classUri = // "http://usefulinc.com/ns/doap#Project"
       //       foaf.Organization
       foaf.Person
     retrieveURI(URI(foaf.prefixIri), dataset)
     // to test possible values generation with foaf:knows :
-    //    retrieveURI(URI("http://jmvanel.free.fr/jmv.rdf#me"), dataset)
+    retrieveURI(URI("http://jmvanel.free.fr/jmv.rdf#me"), dataset)
 
     implicit val graph =
       rdfStore.rw(dataset, { allNamedGraph }).get
     val rawForm = createElem(classUri.toString(), lang = "fr")
     val form = TestCreationForm.wrapWithHTML(rawForm)
-    val file = "example.creation.form.html"
-    Files.write(Paths.get(file), form.toString().getBytes);
-    println(s"file created $file")
-
+    TestCreationForm.printWrapedWithHTML(rawForm, "/tmp/example.creation.form.html")
     assert(rawForm.toString().contains("topic_interest"))
     assert(rawForm.toString().contains("firstName"))
-    //    assert(rawForm.toString().contains("knows"))
+    assert(rawForm.toString().contains("knows"))
+    // included in pull-down menu for knows
+    assert(rawForm.toString().contains("Jean-Marc"))
     // NOTE: homepage is not present, because it has rdfs:domain owl:Thing
   }
 
@@ -90,17 +111,7 @@ class TestCreationForm extends FunSuite
 
     assert(rawForm.toString().contains("style"))
     assert(rawForm.toString().contains("evil"))
-    //    assert(rawForm.toString().contains("Dilbert"))
   }
-
-  //  test("create form from class URI") {
-  //    val fo = createElem(ops.fromUri(foaf.Person), "en")
-  //    val f = TestCreationForm.wrapWithHTML(fo)
-  //    val result = f.toString()
-  //    val correct = result.contains("knows")
-  //    Files.write(Paths.get("/tmp/create.form.foaf.html"), result.getBytes)
-  //    Assert.assertTrue("""result.contains("knows")""", correct)
-  //  }
 
 }
 
@@ -174,6 +185,14 @@ trait GraphTestEnum extends RDFOpsModule with TurtleWriterModule {
 }
 
 object TestCreationForm {
+
+  //  printWrapedWithHTML(rawForm, "example.creation.form.html")
+  def printWrapedWithHTML(rawForm: NodeSeq, file: String) = {
+    val form = TestCreationForm.wrapWithHTML(rawForm)
+    Files.write(Paths.get(file), form.toString().getBytes);
+    println(s"file created $file")
+  }
+
   def wrapWithHTML(e: NodeSeq): Elem =
     <html>
       <head>

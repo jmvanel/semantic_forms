@@ -2,23 +2,19 @@ package deductions.runtime.abstract_syntax
 
 import java.io.FileInputStream
 import java.io.FileOutputStream
+
+import org.apache.log4j.Logger
 import org.hamcrest.BaseMatcher
 import org.junit.Assert
+import org.scalatest.Finders
 import org.scalatest.FunSuite
 import org.w3.banana.FOAFPrefix
-import org.w3.banana.RDFModule
-import org.w3.banana.RDFOpsModule
-import org.w3.banana.TurtleReaderModule
-import org.w3.banana.diesel._
-import org.w3.banana.jena.JenaModule
-import org.w3.banana.TurtleWriterModule
-import org.w3.banana.SparqlOpsModule
-import org.w3.banana.SparqlGraphModule
 import org.w3.banana.RDF
-import com.hp.hpl.jena.query.Dataset
 import org.w3.banana.jena.Jena
+
+import com.hp.hpl.jena.query.Dataset
+
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import org.apache.log4j.Logger
 
 class FormSyntaxFactoryTestJena extends FunSuite
 with RDFStoreLocalJena1Provider
@@ -26,8 +22,6 @@ with FormSyntaxFactoryTest[ Jena, Dataset ] {
 
   val logger = Logger.getRootLogger()
 
-  // TODO <<<<<<<<<<<<<<<<<<<<<
-  //  ignore
   test("form contains label and data") {
     val form = createFormWithGivenProps
     println("form:\n" + form)
@@ -71,12 +65,6 @@ with FormSyntaxFactoryTest[ Jena, Dataset ] {
  * the data and vocab' are passed by:
  * implicit val graph */
 trait FormSyntaxFactoryTest[Rdf <: RDF, DATASET] extends FormSyntaxFactory[Rdf, DATASET] {
-// RDFOpsModule
-//    with TurtleReaderModule
-//    with TurtleWriterModule
-//    with SparqlOpsModule
-//    with SparqlGraphModule {
-
   import ops._
   import rdfStore.transactorSyntax._
 

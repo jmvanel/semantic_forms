@@ -1,15 +1,18 @@
 package deductions.runtime.html
 
-import org.scalatest.FunSuite
 import java.nio.file.Files
 import java.nio.file.Paths
-import org.scalatest.Ignore
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import org.w3.banana.jena.Jena
-import com.hp.hpl.jena.query.Dataset
-import org.w3.banana.jena.JenaModule
-import org.junit.Assert
+
 import org.apache.log4j.Logger
+import org.junit.Assert
+import org.scalatest.Finders
+import org.scalatest.FunSuite
+import org.w3.banana.jena.Jena
+import org.w3.banana.jena.JenaModule
+
+import com.hp.hpl.jena.query.Dataset
+
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
 
 class TestTableView extends FunSuite
     with JenaModule
