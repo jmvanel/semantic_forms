@@ -58,6 +58,9 @@ There is a script that does this, and more: it stops the server, updates the app
 It is advised to deactivate the automatic formatting on a server machine. Just comment out the line `scalariformSettings` in 
 scala/forms/build.sbt . 
 
+If you want to change the HTTP ports, etc, look in the Play! documentation:
+https://www.playframework.com/documentation/2.3.x/ProductionConfiguration
+
 If you want to change the log settings:
 ```
 cp conf/log4j.properties myconf.properties
