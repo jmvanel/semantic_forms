@@ -42,12 +42,25 @@ trait RangeInference[Rdf <: RDF, DATASET]
   import sparqlGraph._
   import sparqlGraph.sparqlEngineSyntax._
 
+  /** add Possible Values to all entry Fields */
+  def addAllPossibleValues(formSyntax: FormSyntax,
+                           valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)])(implicit graph: Rdf#Graph) = {
+    for (field <- formSyntax.fields) {
+    	val ranges = objectsQuery( field.property, rdfs.range)
+      formSyntax.possibleValuesMap.put(field.property,
+        addPossibleValues(field, ranges, valuesFromFormGroup))
+    }
+  }
+
+  /** add Possible Values to given entry Field */
   def addPossibleValues(
     entryField: Entry,
     ranges: Set[Rdf#Node],
     valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)])
-  (implicit graph: Rdf#Graph)
-  : Entry = {
+  (implicit graph: Rdf#Graph )
+//  : Entry
+    : Seq[(Rdf#Node, Rdf#Node)]
+  = {
 
     val owl = OWLPrefix[Rdf]
     val rdfh: RDFHelpers[Rdf] = this
@@ -154,6 +167,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
           sortedInstanceLabels.map {
         	  c => (c._1, makeLiteral(c._2, xsd.string))
           }
+//          List()
       }
       
     /** populate possible Values From Instances */
@@ -204,7 +218,9 @@ trait RangeInference[Rdf <: RDF, DATASET]
     }
 
     /** this function does the job! */
-    def setPossibleValues(): Entry = {
+    def setPossibleValues()
+    // : Entry
+    = {
       //      println("addPossibleValues " + entryField)
       val fieldType = entryField.type_
       //      println("addPossibleValues fieldType " + fieldType)
@@ -221,7 +237,8 @@ trait RangeInference[Rdf <: RDF, DATASET]
           res
         }
       }
-      entryField.setPossibleValues(possibleValues)
+//      entryField.setPossibleValues(possibleValues)
+      possibleValues
     }
 
     /** record Possible Values */
@@ -242,11 +259,12 @@ trait RangeInference[Rdf <: RDF, DATASET]
     
     // ==== body of function addPossibleValues ====
 
-    entryField match {
-      case entryField: ResourceEntry => setPossibleValues
-      case entryField: BlankNodeEntry => setPossibleValues
-      case entryField: LiteralEntry => entryField
-    }
+//    entryField match {
+//      case entryField: ResourceEntry => setPossibleValues
+//      case entryField: BlankNodeEntry => setPossibleValues
+//      case entryField: LiteralEntry => entryField
+//    }
+    setPossibleValues
   }
 
   // ========

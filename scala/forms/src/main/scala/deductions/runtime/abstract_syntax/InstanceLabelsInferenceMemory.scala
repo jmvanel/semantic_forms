@@ -20,7 +20,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   private val logger: Logger = Logger.getRootLogger()
 
   val dataset3 = dataset
-  /* does not work because the transaction has been started on the other dataset ! 
+  /* TODO : does not work because the transaction has been started on the other dataset ! 
   val dataset3 = createDatabase("TDBlabels")
    */
   val labelsGraphUriPrefix = "urn:/semforms/labelsGraphUri/"

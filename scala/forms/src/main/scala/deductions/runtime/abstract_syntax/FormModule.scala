@@ -36,9 +36,13 @@ trait FormModule[NODE, URI <: NODE] {
       var fields: Seq[Entry],
       classs: URI = nullURI,
       formGroup: URI = nullURI,
-      //      var defaultCardinality: Cardinality = zeroOrOne,
-      val defaults: FormDefaults = FormModule.formDefaults) {
-    override def toString(): String = {
+      val defaults: FormDefaults = FormModule.formDefaults
+      ) {
+    
+	  val possibleValuesMap = scala.collection.mutable.Map[ NODE, Seq[(NODE, NODE)]]()
+//    def getPossibleValues( f: Entry) = possibleValuesMap.getOrElse( f.property, Seq() )
+    
+	  override def toString(): String = {
       s"""FormSyntax:
         subject: $subject
         classs: $classs

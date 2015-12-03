@@ -19,6 +19,8 @@ trait Configuration {
   val showDomainlessProperties = false
   val addRDFS_label_comment = true
 
+  val lookup_domain_unionOf = false
+
   // CORS
   val allow_Origin = "*"
 

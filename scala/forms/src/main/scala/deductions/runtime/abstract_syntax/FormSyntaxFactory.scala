@@ -41,14 +41,15 @@ object EditionMode extends FormMode { override def toString() = "EditionMode" }
 object DisplayMode extends FormMode { override def toString() = "DisplayMode" }
 object CreationMode extends FormMode { override def toString() = "CreationMode" }
 
+/** simple data class to hold an URI with its computed label (rdfs:label, foaf;name, etc) */
 class ResourceWithLabel[Rdf <: RDF](val resource: Rdf#Node, val label: Rdf#Node) {
   def this(couple: (Rdf#Node, Rdf#Node)) =
     this(couple._1, couple._2)
   override def toString() = "" + resource + " : " + label
+  // def apply[Rdf <: RDF](couple: (Rdf#Node, Rdf#Node) ) = new ResourceWithLabel(couple)
 }
-//   def apply[Rdf <: RDF](couple: (Rdf#Node, Rdf#Node) ) = new ResourceWithLabel(couple)
 
-/** store the "Possible Values" for each RDF class;
+/** store in memory the "Possible Values" for each RDF class;
  * by "Possible Values" one means the objets URI's whose class match the rdfs:range
  * of a property in the form. */
 trait PossibleValues[Rdf <: RDF] {
@@ -207,8 +208,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     }
     val fields = entries.flatMap { identity }
     val fields2 = addTypeTriple(subject, classs, fields)
-    //    val fields2 = fields.toSeq
     val formSyntax = FormSyntax(subject, fields2, classs)
+    addAllPossibleValues(formSyntax, valuesFromFormGroup)
     logger.debug(s"createForm " + this)
     val res = time(s"updateFormFromConfig()",
       updateFormFromConfig(formSyntax, formConfig))
@@ -387,8 +388,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         case _ => literalEntry
       }
       if (formMode != DisplayMode) {
-        val pv = addPossibleValues(entry, ranges, valuesFromFormGroup)
-        result += pv
+//        val pv = addPossibleValues(entry, ranges, valuesFromFormGroup)
+        result += entry // pv
       } else
         result += entry
     }

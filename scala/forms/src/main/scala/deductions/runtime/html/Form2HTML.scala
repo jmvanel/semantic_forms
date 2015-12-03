@@ -5,12 +5,13 @@ import scala.xml.NodeSeq
 import scala.xml.Text
 import scala.xml.XML
 import scala.xml.Unparsed
-
 import java.net.URLEncoder
 import Form2HTML._
 import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.abstract_syntax.DBPediaLookup
 import deductions.runtime.utils.Timer
+import org.w3.banana.binder.FromURI
+import deductions.runtime.utils.I18NMessages
 
 /**
  * different modes: display or edit;
@@ -18,10 +19,12 @@ import deductions.runtime.utils.Timer
  */
 trait Form2HTML[NODE, URI <: NODE]
     extends Timer // TODO: extends HTML5TypesTrait
+//    with FormModule[NODE, URI]
     {
   import HTML5Types._
   type fm = FormModule[NODE, URI]
-
+  type Entry = fm#Entry
+  
   val radioForIntervals = false // TODO the choice should be moved to FormSyntaxFactory
   val inputSize = 90
 
@@ -38,19 +41,20 @@ trait Form2HTML[NODE, URI <: NODE]
     hrefPrefix: String = "",
     editable: Boolean = false,
     actionURI: String = "/save", graphURI: String = "",
-    actionURI2: String = "/save"): NodeSeq = {
+    actionURI2: String = "/save", lang:String ): NodeSeq = {
 
     val htmlForm = time("generateHTMLJustFields",
       generateHTMLJustFields(form, hrefPrefix, editable, graphURI))
+    def mess(m: String) =  I18NMessages.get(m, lang)  
 
     if (editable)
       <form action={ actionURI } method="POST">
         <p class="text-right">
-          <input value="SAVE" type="submit" class="btn btn-primary btn-lg"/>
+          <input value={mess("SAVE")} type="submit" class="btn btn-primary btn-lg"/>
         </p>
         { htmlForm }
         <p class="text-right">
-          <input value="SAVE" type="submit" formaction={ actionURI2 } class="btn btn-primary btn-lg pull-right"/>
+          <input value={mess("SAVE")} type="submit" formaction={ actionURI2 } class="btn btn-primary btn-lg pull-right"/>
         </p>
       </form>
     else
@@ -110,12 +114,12 @@ trait Form2HTML[NODE, URI <: NODE]
    * generate HTML, but Just Fields;
    *  this lets application developers create their own submit button(s) and <form> tag
    */
-  def generateHTMLJustFields(form: FormModule[NODE, URI]#FormSyntax,
+  def generateHTMLJustFields(form: fm#FormSyntax,
     hrefPrefix: String = "",
     editable: Boolean = false,
     graphURI: String = ""): NodeSeq = {
 
-    implicit val formImpl: FormModule[NODE, URI]#FormSyntax = form
+    implicit val formImpl: fm#FormSyntax = form
 
     val hidden = if (editable) {
       <input type="hidden" name="url" value={ urlEncode(form.subject) }/>
@@ -134,19 +138,17 @@ trait Form2HTML[NODE, URI <: NODE]
           val fields = form.fields
           if (!fields.isEmpty) {
             val lastEntry = fields.last
-            for ((preceding, field) <- (lastEntry +: fields) zip fields) yield {
-
+            ( for ((preceding, field) <- (lastEntry +: fields) zip fields) yield {
               <div class={ cssClasses.formLabelAndInputCSSClass }>
-                {
-                  // time(s"makeFieldLabel( ${field.label})",
-                  makeFieldLabel(preceding, field)
-                }
-                {
-                  // time(s"makeFieldInput( ${field.label})",
-                  makeFieldDataOrInput(field, hrefPrefix, editable)
-                }
+                { makeFieldLabel(preceding, field) }
+                { makeFieldDataOrInput(field, hrefPrefix, editable) }
               </div>
             }
+            )
+//            ++
+//            ( for (field <- fields ) yield {
+//            	makeFieldDatalist(field)     
+//            } )
           }
         }
       </div>
@@ -277,7 +279,7 @@ trait Form2HTML[NODE, URI <: NODE]
     } else <span></span>
   }
 
-  private def makeHTMLId(ent: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = {
+  private def makeHTMLId(ent: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): String = {
     val rawResult = {
       def makeTTLURI(s: NODE) = s"<$s>"
       def makeTTLAnyTerm(value: NODE, ent: fm#Entry) = {
@@ -297,9 +299,12 @@ trait Form2HTML[NODE, URI <: NODE]
   private def makeHTMLIdForLiteral(lit: fm#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax) =
     makeHTMLId(lit)
 
+//  lazy private val propertySelectAlreadyDone = scala.collection.mutable.Set[NODE]()
+  lazy private val propertySelectAlreadyDone = scala.collection.mutable.Set[Any]()
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   private def createHTMLResourceEditableField(r: fm#ResourceEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     val lookup = r.widgetType == DBPediaLookup
+//    if( r.property . toString() . contains("knows")) println("knows")
     Seq(
       Text("\n"),
     		// format: OFF
@@ -317,18 +322,25 @@ trait Form2HTML[NODE, URI <: NODE]
 						dropzone="copy">
           </input> else new Text("") // format: ON
           ,
-      if (r.widgetType == DBPediaLookup)
+      if (lookup)
         formatPossibleValues(r, inDatalist = true)
       else new Text(""),
 
-      if (!r.possibleValues.isEmpty && r.widgetType != DBPediaLookup)
-        <select value={ r.value.toString } name={ makeHTMLIdResource(r) }>
-          { formatPossibleValues(r) }
-        </select>
-      else new Text("\n")
+//      if (!r.possibleValues.isEmpty && !lookup)
+      if ( hasPossibleValues(r) && !lookup)
+    	  if( ! propertySelectAlreadyDone.contains(r.property) ) {
+    		  propertySelectAlreadyDone.add(r.property)
+    		  <select value={ r.value.toString } name={ makeHTMLIdResource(r) } list={
+    			  makeDatalistIdForEntryProperty(r) }>
+    		  { formatPossibleValues(r) }
+    		  </select>
+    	  } else new Text("\n")
+    	  else new Text("\n")
     ).flatMap { identity }
   }
 
+  def makeDatalistIdForEntryProperty(r: fm#Entry) = urlEncode(r.property.toString()) + "__property"
+    
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   private def createHTMLiteralEditableLField(lit: fm#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     val placeholder = s"Enter or paste a string of type ${lit.type_.toString()}"
@@ -369,7 +381,11 @@ trait Form2HTML[NODE, URI <: NODE]
     Text("\n") ++ elem
   }
 
-  private def makeHTMLIdForDatalist(re: fm#Entry) = {
+//  private def makeHTMLIdForDatalist(uri: Rdf#URI): String = {
+//      uri.toString()
+//    }
+
+  private def makeHTMLIdForDatalist(re: fm#Entry): String = {
     "possibleValues-" + (
       re match {
         case re: fm#ResourceEntry => (re.property + "--" + re.value).hashCode().toString()
@@ -378,22 +394,47 @@ trait Form2HTML[NODE, URI <: NODE]
       })
   }
 
-  /** @return a list of option tags or a datalist tag (with the option tags inside) */
-  private def formatPossibleValues(field: fm#Entry, inDatalist: Boolean = false): NodeSeq = {
-    def makeHTMLOption(values: (NODE, NODE), field: fm#Entry): Elem = {
-      <option value={ toPlainString(values._1) } selected={
-        if (field.value.toString() ==
-          toPlainString(values._1)) "selected" else null
-      } title={ toPlainString(values._1) } label={ toPlainString(values._2) }>{ toPlainString(values._2) }</option>
-    }
+//  /** @return a list of option tags or a datalist tag (with the option tags inside) */
+  private def formatPossibleValues(field: Entry, inDatalist: Boolean = false)
+  (implicit form: fm#FormSyntax)
+  : NodeSeq = {
     val options = Seq(<option value=""></option>) ++
-      (for (value <- field.possibleValues) yield makeHTMLOption(value, field))
+//      (for (value <- field.possibleValues) yield makeHTMLOption(value, field))
+    		makeHTMLOptionsSequence(field)
     if (inDatalist)
       <datalist id={ makeHTMLIdForDatalist(field) }>
         { options }
       </datalist>
     else options
   }
+
+  def makeHTMLOptionsSequence(field: Entry)
+  (implicit form: fm#FormSyntax) = {
+	  def makeHTMLOption(values: (NODE, NODE), field: fm#Entry): Elem = {
+		  <option value={ toPlainString(values._1) } selected={
+			  if (field.value.toString() ==
+					  toPlainString(values._1)) "selected" else null
+		  } title={ toPlainString(values._1) } label={ toPlainString(values._2) }>{ toPlainString(values._2) }</option>
+	  }
+	  def getPossibleValues( f: Entry) = form.possibleValuesMap.getOrElse( f.property, Seq() )
+	  for (value <- getPossibleValues(field) ) yield makeHTMLOption(value, field)
+  }
+  
+  def hasPossibleValues( f: Entry)(implicit form: fm#FormSyntax) = form.possibleValuesMap.contains( f.property )
+
+  private val datalistsAlreadyDone = scala.collection.mutable.Set[NODE]()
+	def	makeFieldDatalist(field: Entry)
+		  (implicit form: fm#FormSyntax)
+		  : Elem
+		  = {
+	  if( ! datalistsAlreadyDone.contains(field.property) ) {
+		  datalistsAlreadyDone.add(field.property)
+		  <datalist id={ makeDatalistIdForEntryProperty(field) }>
+		  { makeHTMLOptionsSequence(field) }
+		  </datalist>
+	  } else <div></div>
+  }
+
 }
 
 object Form2HTML {

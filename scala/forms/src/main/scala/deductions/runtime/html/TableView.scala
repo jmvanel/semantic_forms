@@ -208,7 +208,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     )
     val htmlForm = htmlFormGen.
       generateHTML(form, hrefPrefix, editable, actionURI, graphURI,
-        actionURI2)
+        actionURI2, lang)
     htmlForm
   }
 

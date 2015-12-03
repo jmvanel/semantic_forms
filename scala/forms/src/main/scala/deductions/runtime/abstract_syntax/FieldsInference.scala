@@ -30,17 +30,18 @@ with Configuration {
       if (classs != owl.Thing) {
         val relevantPredicates = getSubjects(graph, rdfs.domain, classs).toSeq
         println(s"""Predicates with domain = Class <$classs> , relevant Predicates size ${relevantPredicates.size}  ; ${relevantPredicates.mkString(", ")}""")
-//        rdfh.nodeSeqToURISeq(relevantPredicates).distinct.toList ++
-       relevantPredicates.distinct.toList ++
+        relevantPredicates.distinct.toList ++
         unionOfDomainsFromClass(classs)
       } else List()
     }
 
-    
-    /** retrieve rdfs:domain's being unionOf from given Class
-     *  NOTE: SPARQL query that covers also what domainsFromClass() does */
+    /**
+     * retrieve rdfs:domain's being unionOf from given Class
+     *  NOTE: SPARQL query that covers also what domainsFromClass() does
+     */
     def unionOfDomainsFromClass(classe: Rdf#Node): List[Rdf#Node] = {
-      val queryString = s"""
+      if (lookup_domain_unionOf) {
+        val queryString = s"""
         ${declarePrefix(owl)}
         ${declarePrefix(rdfs)}
         prefix list: <http://jena.hpl.hp.com/ARQ/list#>
@@ -55,12 +56,13 @@ with Configuration {
             list:member
             <$classe>
           .
-        }
+          }
         } """
-      println( s"unionOfDomainsFromClass queryString $queryString")
-      val res = sparqlSelectQueryVariablesNT(queryString, Seq("PRED"), dataset)
-      println( s"unionOfDomainsFromClass res $res")
-      res map { li => li.head }
+        println(s"unionOfDomainsFromClass queryString $queryString")
+        val res = sparqlSelectQueryVariablesNT(queryString, Seq("PRED"), dataset)
+        println(s"unionOfDomainsFromClass res $res")
+        res map { li => li.head }
+      } else List()
     }
 
     /** recursively process super-classes and owl:equivalentClass until reaching owl:Thing */

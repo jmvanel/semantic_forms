@@ -37,7 +37,7 @@ with Configuration {
         override def toPlainString(n: Rdf#Node): String =
           foldNode(n)(fromUri(_), fromBNode(_), fromLiteral(_)._1)
       }.
-        generateHTML(form, hrefPrefix = "", editable = true, actionURI = actionURI)
+        generateHTML(form, hrefPrefix = "", editable = true, actionURI = actionURI, lang=lang)
     })
   }
 
