@@ -132,7 +132,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
                 if(etag != etagFromDataset) {
                 	storeURINoTransaction(uri, uri, dataset)
                   println(s"$uri was outdated by ETag; downloaded.")
-                  // TODO store etag in TDB
+                  addETagToDatasetNoTransaction(uri, etag, dataset)
                 }
                 case None =>
                 storeURINoTransaction(uri, uri, dataset)
@@ -203,9 +203,21 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     })
   }
 
+  private def addTimestampToDatasetNoTransaction(uri: Rdf#URI, dataset: DATASET) = {
+	  val time = lastModified(fromUri(uri), 1000)
+    replaceRDFTriple(
+      makeTriple(
+        uri,
+        makeUri(timestampGraphURI),
+        makeLiteral(time._2.toString, xsd.integer)),
+      URI(timestampGraphURI),
+      dataset)
+  }
+
+
   /** replace Timestamp for URI to Dataset
    *  No Transaction */
-  def addTimestampToDatasetNoTransaction(uri: Rdf#URI, dataset: DATASET) = {
+  private def addTimestampToDatasetNoTransaction_old(uri: Rdf#URI, dataset: DATASET) = {
         val queryString = s"""
          | DELETE {
          |   graph <$timestampGraphURI> {
@@ -239,6 +251,16 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     val v = list.headOption.getOrElse(Seq())
     val vv = v.headOption.getOrElse(Literal(""))
     vv.toString()
+  }
+
+  private def addETagToDatasetNoTransaction(uri: Rdf#URI, etag: String, dataset: DATASET) = {
+    replaceRDFTriple(
+      makeTriple(
+        uri,
+        makeUri("ETag"),
+        makeLiteral( etag, xsd.string )),
+      URI(timestampGraphURI),
+      dataset)
   }
 
   /**

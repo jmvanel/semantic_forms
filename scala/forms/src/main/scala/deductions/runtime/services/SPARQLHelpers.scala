@@ -29,6 +29,8 @@ extends RDFStoreLocalProvider[Rdf, DATASET] {
   import rdfStore.sparqlEngineSyntax._
   import rdfStore.transactorSyntax._
   import rdfStore.sparqlUpdateSyntax._
+  import rdfStore.transactorSyntax._
+  import rdfStore.graphStoreSyntax._
 
   /** sparql Construct Query;
    * NON transactional */
@@ -84,6 +86,34 @@ extends RDFStoreLocalProvider[Rdf, DATASET] {
     val r = sparqlConstructQuery( queryString )
     r.asFuture
   }
+
+  /**
+   * replace all triples having same subject and property in Dataset;
+   *  thus enforcing cardinality one
+   *  No Transaction
+   */
+  def replaceRDFTriple(triple: Rdf#Triple, graphURI: Rdf#URI, dataset: DATASET) = {
+    val uri = triple.subject
+    val property = triple.predicate
+    // TODO  WITH <g1> DELETE { a b c } INSERT { x y z } WHERE { ... }
+    val queryString = s"""
+         | DELETE {
+         |   graph <$graphURI> {
+         |     <$uri> <$property> ?ts .
+         |   }
+         | } WHERE {
+         |   graph <$graphURI> {
+         |     <$uri> <$property> ?ts .
+         |   }
+         | }""".stripMargin
+    println(s"replaceRDFnode: sparqlUpdate Query: $queryString")
+    val res = sparqlUpdateQuery(queryString)
+    println(s"replaceRDFnode: sparqlUpdateQuery: $res")
+
+    dataset.appendToGraph(graphURI, makeGraph(Seq(triple)))
+  }
+
+  //////////////// SELECT stuff //////////////////////////
 
   /** transactional */
   def sparqlSelectQueryVariables(queryString: String, variables: Seq[String],
