@@ -28,12 +28,12 @@ extends RDFStoreLocalProvider[Rdf, DATASET] {
   import sparqlOps._
   import rdfStore.sparqlEngineSyntax._
   import rdfStore.transactorSyntax._
+  import rdfStore.sparqlUpdateSyntax._
 
-  /**
-   * NON transactional
-   */
+  /** sparql Construct Query;
+   * NON transactional */
   def sparqlConstructQuery(queryString: String): Try[Rdf#Graph] = {
-    val r = for {
+    val result = for {
       query <- {
     	  println( "sparqlConstructQuery: before parseConstruct" )
     	  parseConstruct(queryString)
@@ -43,9 +43,25 @@ extends RDFStoreLocalProvider[Rdf, DATASET] {
         dataset.executeConstruct(query, Map())
       }
     } yield es
-    r
+    result
   }
 
+    /** sparql Update Query;
+   * NON transactional */
+  def sparqlUpdateQuery(queryString: String): Try[Unit] = {
+    val result = for {
+      query <- {
+    	  println( "sparqlUpdateQuery: before parseUpdate" )
+    	  parseUpdate( queryString )
+      }
+      es <- {
+        println( "sparqlUpdateQuery: before executeUpdate" )
+        dataset.executeUpdate( query, Map())
+      }
+    } yield es
+    result
+  }
+  
   /** transactional */
   def sparqlConstructQueryTR(queryString: String): String = {
     val transaction = dataset.r({
@@ -54,14 +70,14 @@ extends RDFStoreLocalProvider[Rdf, DATASET] {
     transaction.get
   }
   
-  /** transactional */
-  def sparqlConstructQueryTR_old(queryString: String): String = {
-    val transaction = dataset.r({
-      val r = sparqlConstructQueryFuture(queryString)
-      futureGraph2String(r, "")
-    })
-    transaction.get
-  }
+//  /** transactional */
+//  def sparqlConstructQueryTR_old(queryString: String): String = {
+//    val transaction = dataset.r({
+//      val r = sparqlConstructQueryFuture(queryString)
+//      futureGraph2String(r, "")
+//    })
+//    transaction.get
+//  }
 
   /** transactional */
   def sparqlConstructQueryFuture(queryString: String): Future[Rdf#Graph] = {

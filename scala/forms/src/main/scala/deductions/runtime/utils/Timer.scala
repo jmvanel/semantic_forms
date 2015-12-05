@@ -7,12 +7,14 @@ package deductions.runtime.utils
 trait Timer {
 
   /** wrap the block of code and returns the result */
-  def time[T](mess: String, sourceCode: => T): T = {
-    val start = System.currentTimeMillis()
-    val res = sourceCode
-    val end = System.currentTimeMillis()
-    println(s"""Time elapsed: "$mess": ${end - start}ms""")
-    res
+  def time[T](mess: String, sourceCode: => T, activate: Boolean = false): T = {
+    if (activate) {
+      val start = System.currentTimeMillis()
+      val res = sourceCode
+      val end = System.currentTimeMillis()
+      println(s"""Time elapsed: "$mess": ${end - start}ms""")
+      res
+    } else sourceCode
   }
 }
 

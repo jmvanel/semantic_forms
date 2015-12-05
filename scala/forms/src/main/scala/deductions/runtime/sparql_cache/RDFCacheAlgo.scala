@@ -30,6 +30,8 @@ import org.w3.banana.io.RDFXML
 import org.w3.banana.io.RDFLoader
 import java.io.File
 import deductions.runtime.services.SPARQLHelpers
+import java.util.Date
+
 //import java.net.URI
 
 /** */
@@ -111,17 +113,17 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       dataset.rw({
         val localTimestamp = getTimestampFromDataset(uri, dataset)
         localTimestamp match {
-          case Success(long) =>
+          case Success(longLocalTimestamp) => {
+            println(s"$uri localTimestamp: ${	new Date(longLocalTimestamp) } .")
             val lastModifiedTuple = lastModified(uri.toString(), 500)
-            println(s"$uri $localTimestamp: $localTimestamp; lastModified: $lastModifiedTuple.")
+            println(s"$uri lastModified: $lastModifiedTuple.")
             
             if (lastModifiedTuple._1) {
-              for (lts <- localTimestamp) {
-                if (lastModifiedTuple._2 > lts) {
-                  storeURINoTransaction(uri, uri, dataset)
-                  println(s"$uri was outdated by timestamp; downloaded.")
-                }
-              }
+            	if (lastModifiedTuple._2 > longLocalTimestamp ) {
+            		storeURINoTransaction(uri, uri, dataset)
+            		println(s"$uri was outdated by timestamp; downloaded.")
+            		addTimestampToDatasetNoTransaction(uri, dataset)
+            	}
             } else if (! lastModifiedTuple._1 || lastModifiedTuple._2 == Long.MaxValue ) {
               lastModifiedTuple._3 match {
                 case Some(connection) => 
@@ -130,11 +132,13 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
                 if(etag != etagFromDataset) {
                 	storeURINoTransaction(uri, uri, dataset)
                   println(s"$uri was outdated by ETag; downloaded.")
+                  // TODO store etag in TDB
                 }
                 case None =>
                 storeURINoTransaction(uri, uri, dataset)
               }
             }
+          }
           case Failure(fail) =>
             storeURINoTransaction(uri, uri, dataset)
             println(s"$uri had no localTimestamp ($fail); downloaded.")
@@ -199,10 +203,23 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     })
   }
 
-  /**
-   * TODO replace Timestamp in Dataset
+  /** replace Timestamp for URI to Dataset
    *  No Transaction */
   def addTimestampToDatasetNoTransaction(uri: Rdf#URI, dataset: DATASET) = {
+        val queryString = s"""
+         | DELETE {
+         |   graph <$timestampGraphURI> {
+         |     <$uri> <$timestampGraphURI> ?ts .
+         |   }
+         | } WHERE {
+         |   graph <$timestampGraphURI> {
+         |     <$uri> <$timestampGraphURI> ?ts .
+         |   }
+         | }""".stripMargin
+    println( s"sparqlUpdate Query: $queryString")
+    val res = sparqlUpdateQuery( queryString )
+    println( s"sparqlUpdateQuery: $res")
+    
     val time = lastModified(fromUri(uri), 1000)
     dataset.appendToGraph(makeUri(timestampGraphURI),
       makeGraph(Seq(makeTriple(
@@ -257,7 +274,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     result.map { x => x.next.longValue() }
   }
 
-  /**
+  /** get lastModified HTTP header
    * @return pair:
    * _1 : true <=> no error
    * _2 : timestamp from HTTP HEAD request or local file;

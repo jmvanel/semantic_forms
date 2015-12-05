@@ -41,7 +41,7 @@ trait Form2HTML[NODE, URI <: NODE]
     hrefPrefix: String = "",
     editable: Boolean = false,
     actionURI: String = "/save", graphURI: String = "",
-    actionURI2: String = "/save", lang:String ): NodeSeq = {
+    actionURI2: String = "/save", lang: String = "en" ): NodeSeq = {
 
     val htmlForm = time("generateHTMLJustFields",
       generateHTMLJustFields(form, hrefPrefix, editable, graphURI))

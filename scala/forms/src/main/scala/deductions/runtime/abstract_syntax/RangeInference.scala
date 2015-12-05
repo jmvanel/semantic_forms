@@ -181,7 +181,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
         rrrr.flatten
         }
       )
-      println("  possibleValues.size " + possibleValues.size)
+      println(s"  possibleValues.size ${entryField.property} ${possibleValues.size}" )
       val result = possibleValues.map {
         (couple: (Rdf#Node, Rdf#Node)) =>
         new ResourceWithLabel(couple._1, couple._2)
