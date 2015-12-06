@@ -164,15 +164,18 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     } yield form
   }
 
-  /**
+  /** Retrieve URI from Internet or triples cache;
    * with transaction
    *
-   *  @return Actual graph URI: given graph URI or else given uri
+   *  @return Actual graph URI: given graph URI or if not specified given uri
    */
   private def doRetrieveURI(uri: String, blankNode: String, graphURI: String): (String, Try[Rdf#Graph]) = {
     val tryGraph = if (blankNode != "true") {
       val res = retrieveURI(makeUri(uri), dataset)
-      Logger.getRootLogger().info(s"After retrieveURI(makeUri($uri), store)")
+      Logger.getRootLogger().info(s"After retrieveURI(makeUri($uri), dataset) isSuccess ${res.isSuccess}")
+
+//      println("Search duplicate graph rooted at blank node: size " + getTriples(res.get).size )
+//      manageBlankNodesReload(res.getOrElse(emptyGraph), URI(uri), dataset: DATASET)
       res
     } else Success(emptyGraph)
     val graphURIActual = if (graphURI == "") uri else graphURI

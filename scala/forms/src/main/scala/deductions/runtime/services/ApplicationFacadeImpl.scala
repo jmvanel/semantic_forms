@@ -119,11 +119,21 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     if (uri != null && uri != "")
       try {
         val res = dataset.rw({
-        	val resRetrieve = retrieveURINoTransaction(makeUri(uri), dataset)
-        	val status = resRetrieve match {
-        	  case Failure(e) => e.getLocalizedMessage
-        	  case _ => ""
-        	}
+          val status = if (blankNode != "true") {
+            val resRetrieve = retrieveURINoTransaction(
+              //        	    if( blankNode=="true") makeUri("_:" + uri ) else makeUri(uri),
+              makeUri(uri),
+              dataset)
+
+            println(s"Search in $uri duplicate graph rooted at blank node: size " + ops.getTriples(resRetrieve.get).size)
+            manageBlankNodesReload(resRetrieve.getOrElse(emptyGraph), URI(uri), dataset: DATASET)
+
+            val status = resRetrieve match {
+              case Failure(e) => e.getLocalizedMessage
+              case _          => ""
+            }
+            status
+          } else ""
           implicit val graph = allNamedGraph;
           Seq(
             titleEditDisplayDownloadLinks(uri, lang),
@@ -135,10 +145,12 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       } catch {
         case e: Exception => // e.g. org.apache.jena.riot.RiotException
           <p style="color:red">
+        <pre>
             {
-              e.getLocalizedMessage() + " " + printTrace(e)
+              e.getLocalizedMessage() + " " + printTrace(e).replaceAll( "\\)", ")\n")
             }<br/>
             Cause:{ if (e.getCause() != null) e.getCause().getLocalizedMessage() }
+            </pre>
           </p>
       }
     else
