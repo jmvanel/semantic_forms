@@ -111,27 +111,34 @@ trait TableViewModule[Rdf <: RDF, DATASET]
   /**
    * create a form for given URI with background knowledge in RDFStoreObject.store;
    *  by default user inputs will be saved in named graph uri, except if given graphURI argument;
+   *  NON TRANSACTIONAL;
+   *  
+   *  Note: first try to retrieve from Internet at given URI,
+   *  then eventually save in TDB,
+   *  then read again <uri> ?P ?O.	from TDB, in any named graph,
+   *  to catch 1) triples downloaded from URI, 2) triples preloaded,
+   *  3) triples coming from user edits
    *  @param blankNode if "true" given uri is a blanknode
-   *  NON TRANSACTIONAL
+   *  
    */
-  private def htmlFormRaw(uri: String, unionGraph: Rdf#Graph=allNamedGraph, hrefPrefix: String = "", blankNode: String = "",
-    editable: Boolean = false,
-    actionURI: String = "/save",
-    lang: String = "en",
-    graphURI: String = "",
-    actionURI2: String = "/save",
-    formGroup: Rdf#URI = nullURI)
-    : Try[NodeSeq] = {
+  private def htmlFormRaw(uri: String, unionGraph: Rdf#Graph = allNamedGraph,
+                          hrefPrefix: String = "", blankNode: String = "",
+                          editable: Boolean = false,
+                          actionURI: String = "/save",
+                          lang: String = "en",
+                          graphURI: String = "",
+                          actionURI2: String = "/save",
+                          formGroup: Rdf#URI = nullURI): Try[NodeSeq] = {
 
-    println( s"htmlFormRaw dataset $dataset" )
+    println(s"htmlFormRaw dataset $dataset")
     val tryGraph = if (blankNode != "true") {
-    	val res = retrieveURINoTransaction(makeUri(uri), dataset)
+      val res = retrieveURINoTransaction(makeUri(uri), dataset)
       Logger.getRootLogger().info(s"After retrieveURI(makeUri($uri), store)")
       res
     } else Success(emptyGraph)
     val graphURIActual = if (graphURI == "") uri else graphURI
-    Success(graf2form( unionGraph, uri, hrefPrefix, blankNode, editable,
-          actionURI, lang, graphURIActual, actionURI2, formGroup))
+    Success(graf2form(unionGraph, uri, hrefPrefix, blankNode, editable,
+      actionURI, lang, graphURIActual, actionURI2, formGroup))
   }
   
   /**

@@ -1,15 +1,16 @@
 package deductions.runtime.views
 
 import java.net.URLEncoder
-
 import scala.xml.Elem
-
 import org.w3.banana.RDF
-
 import deductions.runtime.services.ApplicationFacadeImpl
 import deductions.runtime.utils.I18NMessages
+import deductions.runtime.services.Configuration
+import deductions.runtime.services.ApplicationFacadeInterface
 
-trait FormHeader[Rdf <: RDF] {
+trait FormHeader[Rdf <: RDF] extends Configuration
+// with ApplicationFacadeInterface
+{
 self: ApplicationFacadeImpl[Rdf, _] =>
   
   /** title and links on top of the form */

@@ -61,14 +61,10 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with RegisterPage[Rdf, DATASET]
     with FormHeader[Rdf]
     with TimeSeries[Rdf, DATASET]
-    with ToolsPage {
+    with ToolsPage
+    with Configuration {
  
   addSaveListener(this) // for TimeSeries
-  
-	// TODO use inverse Play's URI API
-  val hrefDisplayPrefix = "/display?displayuri="
-  val hrefDownloadPrefix = "/download?url="
-  val hrefEditPrefix = "/edit?url="
   
   val logger = Logger.getRootLogger()
 
@@ -369,7 +365,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       </script>
       <table>
         { if( query != "" ) {
-          val rowsTry = dl.sparqlSelectQuery(query)
+          val rowsTry = dl.sparqlSelectQuery(query) // , dataset)
           rowsTry match {
             case Success(rows) =>
               val printedRows = for (row <- rows) yield {

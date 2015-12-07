@@ -24,6 +24,12 @@ trait Configuration {
   // CORS
   val allow_Origin = "*"
 
+  // relative URI's
+  // maybe TODO use inverse Play's URI API
+  val hrefDisplayPrefix = "/display?displayuri="
+  val hrefDownloadPrefix = "/download?url="
+  val hrefEditPrefix = "/edit?url="
+
   // helper functions
   def needLogin = needLoginForEditing || needLoginForDisplaying
 }

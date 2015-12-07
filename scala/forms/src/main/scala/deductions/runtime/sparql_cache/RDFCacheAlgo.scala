@@ -376,17 +376,21 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     }
   }
 
+  def isDownloadableURI(uri: Rdf#URI) = {
+    val u = fromUri(uri)
+    u.startsWith("http") ||
+      u.startsWith("ftp:") ||
+      u.startsWith("file:")
+//      u.startsWith("_:")
+  }
+      
   /**
    * read from uri no matter what the syntax is;
    * can also load an URI with the # part
    */
   def storeURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
     Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
-    if (fromUri(uri).startsWith("http") ||
-      fromUri(uri).startsWith("ftp:") ||
-      fromUri(uri).startsWith("file:") ||
-      fromUri(uri).startsWith("_:")
-      ) {
+    if (isDownloadableURI(uri)) {
       System.setProperty("sun.net.client.defaultReadTimeout", "10000")
       System.setProperty("sun.net.client.defaultConnectTimeout", "10000")
       val graph: Rdf#Graph =
@@ -398,7 +402,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     } else {
       val message = s"Load uri $uri is not possible, not a downloadable URI."
       Logger.getRootLogger().warn(message)
-      throw new Exception(message)
+      // throw new Exception(message)
+      emptyGraph
     }
   }
 
