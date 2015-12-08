@@ -20,6 +20,7 @@ GET     /backlinks         controllers.Application.backlinksAction(q:String ?= "
 GET     /esearch           controllers.Application.extSearch(q:String ?= "")
 
 GET     /tools			   controllers.Application.toolsPage
+GET     /showNamedGraphs   controllers.Application.showNamedGraphsAction
 
 # authentication
 GET     /login                      controllers.Auth.login

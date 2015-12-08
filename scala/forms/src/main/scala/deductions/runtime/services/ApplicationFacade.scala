@@ -40,6 +40,9 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
   def wordsearch(q: String = "", lang: String = ""): Future[Elem] =
     impl.wordsearchFuture(q, lang)
 
+  def showNamedGraphs(lang: String = ""): Future[Elem] =
+    impl.showNamedGraphs(lang)
+    
   def download(url: String): Enumerator[Array[Byte]] =
     impl.download(url)
 

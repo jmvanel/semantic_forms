@@ -61,6 +61,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with RegisterPage[Rdf, DATASET]
     with FormHeader[Rdf]
     with TimeSeries[Rdf, DATASET]
+    with RDFDashboardSPARQL[Rdf, DATASET]
     with ToolsPage
     with Configuration {
  
@@ -250,6 +251,11 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     wrapSearchResults(fut, q)
   }
 
+  def rdfDashboardFuture(q: String = "", lang: String = ""): Future[Elem] = {
+    val fut = showNamedGraphs(lang)
+    wrapSearchResults(fut, q)
+  }
+    
   def downloadAsString(url: String): String = {
     println("download url " + url)
     val res = dl.focusOnURI(url)

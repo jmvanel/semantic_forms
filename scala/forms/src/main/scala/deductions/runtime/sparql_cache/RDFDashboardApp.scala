@@ -4,7 +4,7 @@ import deductions.runtime.jena.RDFStoreLocalJena1Provider
 //import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFCache
 
-object RDFDashboard extends RDFCache with App
+object RDFDashboardApp extends RDFCache with App
     with RDFStoreLocalJena1Provider //    with JenaHelpers
     {
   import ops._

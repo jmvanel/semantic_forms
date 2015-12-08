@@ -64,6 +64,14 @@ object Application extends Controller
     fut.map( r => outputMainPage( r, lang ) )
   }
 
+  /** TODO pasted from above */
+  def showNamedGraphsAction() = Action.async {
+    implicit request =>
+    val lang = chooseLanguageObject(request).language
+    val fut: Future[Elem] = showNamedGraphs(lang)
+    fut.map( r => outputMainPage( r, lang ) )
+  }
+    
   def edit(uri: String) =
     withUser {
     implicit userid =>

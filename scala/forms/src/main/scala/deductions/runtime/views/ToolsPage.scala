@@ -20,17 +20,11 @@ trait ToolsPage extends EnterButtons {
           sparqlQueryForm("", "/sparql",
             "CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10")
         }
-        <p>
-          Graphs TODO
-        </p>
-        <p>
-          Dashboard TODO
-        </p>
-        { enterURItoDownloadAndDisplay() }
-        <p>
-          <a href="..">Back to Main page</a>
-        </p>
       </p>
+      <p> <a href="/showNamedGraphs">show Named Graphs</a> </p>
+      <p> Dashboard TODO </p>
+      { enterURItoDownloadAndDisplay() }
+      <p> <a href="..">Back to Main page</a> </p>
     </div>
   }
 

@@ -20,7 +20,7 @@ trait SPARQLQueryMaker {
 }
 
 /**
- * Generic SPARQL SELECT Search with single parameter,
+ * Generic SPARQL SELECT Search with single parameter (must be named "thing"),
  * and single return URI value,
  *  and showing in HTML a column of hyperlinked results with instance Labels
  */
