@@ -12,6 +12,8 @@ trait Configuration {
   /** vocabulary for form specifications */
   val formVocabPrefix = "http://deductions-software.com/ontologies/forms.owl.ttl#"
 
+  val prefixAVontology = "http://www.assemblee-virtuelle.org/ontologies/v1.owl#"
+
   def needLoginForEditing: Boolean = false // true
   def needLoginForDisplaying: Boolean = false
 

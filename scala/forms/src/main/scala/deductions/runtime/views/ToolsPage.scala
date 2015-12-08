@@ -1,8 +1,9 @@
 package deductions.runtime.views
 
 import scala.xml.NodeSeq
+import deductions.runtime.html.EnterButtons
 
-trait ToolsPage {
+trait ToolsPage extends EnterButtons {
 
   def getPage: NodeSeq = {
     <div>
@@ -23,8 +24,9 @@ trait ToolsPage {
           Graphs TODO
         </p>
         <p>
-          Dashboard  TODO
+          Dashboard TODO
         </p>
+        { enterURItoDownloadAndDisplay() }
         <p>
           <a href="..">Back to Main page</a>
         </p>
@@ -34,7 +36,7 @@ trait ToolsPage {
 
   def sparqlQueryForm(query: String, action: String, sampleQuery: String): NodeSeq =
     <form role="form" action={ action }>
-      SPARQL query:
+      query:
       <textarea name="query" cols="80">
         {
           if (query != "")
