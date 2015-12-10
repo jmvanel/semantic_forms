@@ -23,6 +23,9 @@ trait Configuration {
 
   val lookup_domain_unionOf = false
 
+  val use_dbpedia_lookup = false
+  val use_local_lookup = true
+
   // CORS
   val allow_Origin = "*"
 

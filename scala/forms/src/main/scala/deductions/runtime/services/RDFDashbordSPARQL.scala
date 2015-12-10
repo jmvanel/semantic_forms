@@ -3,6 +3,8 @@ package deductions.runtime.services
 import org.w3.banana.RDF
 import scala.concurrent.Future
 import scala.xml.Elem
+import scala.xml.NodeSeq
+import java.net.URLEncoder
 
 /** Show named graphs */
 trait RDFDashboardSPARQL[Rdf <: RDF, DATASET]
@@ -21,5 +23,11 @@ trait RDFDashboardSPARQL[Rdf <: RDF, DATASET]
 
   def showNamedGraphs( lang: String = ""): Future[Elem] =
     search("", "", lang)
-
+    
+  /** add columns in response */
+  override def columnsForURI( node: Rdf#Node, label: String): NodeSeq =
+    <a href={"/showTriplesInGraph?uri=" +
+    URLEncoder.encode(node.toString(), "UTF-8")} class="form-value">
+    Show Triples
+    </a>
 }

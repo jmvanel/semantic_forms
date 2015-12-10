@@ -28,17 +28,26 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
 
   /** NON transactional */
   override def instanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
+    val labelFromTDB = instanceLabelFromTDB(node, lang)
+    if (labelFromTDB == "")
+      computeInstanceLabel(node, graph, lang)
+    else labelFromTDB
+  }
+
+  def instanceLabelFromTDB(node: Rdf#Node, lang: String): String = {
+//	  println("instanceLabelFromTDB node " + node )
     val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
-    val labelsGraph = dataset3.getGraph(labelsGraphUri).get
+    val labelsGraph0 = dataset3.getGraph(labelsGraphUri)
+    val labelsGraph = labelsGraph0.get
     val displayLabelsIt = find(labelsGraph, node, displayLabelPred, ANY)
     displayLabelsIt.toIterable match {
       case it if (!it.isEmpty) =>
         // println( s"recover displayLabel from TDB: $node" )
         val tr = it.head
+//        println("instanceLabelFromTDB tr " + tr)
         val label = tr.objectt
         foldNode(label)(_ => "", _ => "", lit => fromLiteral(lit)._1)
-      case _ =>
-        computeInstanceLabel(node, graph, lang)
+      case _ => ""
     }
   }
 

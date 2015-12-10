@@ -16,13 +16,15 @@ GET     /select             controllers.Application.select( query:String )
 POST    /select             controllers.Application.select( query:String )
 
 GET     /wordsearch         controllers.Application.wordsearchAction(q:String ?= "")
-GET     /backlinks         controllers.Application.backlinksAction(q:String ?= "")
-GET     /esearch           controllers.Application.extSearch(q:String ?= "")
+GET     /backlinks          controllers.Application.backlinksAction(q:String ?= "")
+GET     /esearch            controllers.Application.extSearch(q:String ?= "")
 
-GET     /tools			   controllers.Application.toolsPage
-GET     /showNamedGraphs   controllers.Application.showNamedGraphsAction
+GET     /tools			    controllers.Application.toolsPage
+GET     /showNamedGraphs    controllers.Application.showNamedGraphsAction
+GET     /showTriplesInGraph controllers.Application.showTriplesInGraphAction(uri: String)
 
 # authentication
+
 GET     /login                      controllers.Auth.login
 POST    /login                      controllers.Auth.authenticate
 POST    /register                   controllers.Auth.register

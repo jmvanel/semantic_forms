@@ -43,6 +43,11 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
   def showNamedGraphs(lang: String = ""): Future[Elem] =
     impl.showNamedGraphs(lang)
     
+  def showTriplesInGraph(graphURI: String, lang: String = "")
+//  : Future[Elem] 
+  =
+    impl.showTriplesInGraph(graphURI: String, lang)
+    
   def download(url: String): Enumerator[Array[Byte]] =
     impl.download(url)
 

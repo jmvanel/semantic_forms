@@ -20,51 +20,52 @@ trait Lookup[Rdf <: RDF, DATASET]
   import rdfStore.sparqlEngineSyntax._
   import rdfStore.transactorSyntax._
 
-  /** Get simple JSON from a simple string search ( for completion in UI )
-   *  
+  /**
+   * Get simple JSON from a simple string search ( for completion in UI )
+   *
    * Tested with
    *  http://localhost:9000/lookup?q=Jean-Marc
    *
    * This is dbPedia's output format, that could be used:
-   * 
+   *
    * <ArrayOfResult xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    * xmlns:xsd="http://www.w3.org/2001/XMLSchema"
    * xmlns="http://lookup.dbpedia.org/">
-   * <Result>
-   * <Label>Jimi Hendrix</Label>
-   * <URI>http://dbpedia.org/resource/Jimi_Hendrix</URI>
-   * <Description> This article is about the guitarist. For the band, see The Jimi Hendrix Experience.</Description>
-   * <Classes>
-   * <Class>
-   * <Label>http://xmlns.com/foaf/0.1/ person</Label>
-   * <URI>http://xmlns.com/foaf/0.1/Person</URI>
-   * </Class>
+   *  <Result>
+   *   <Label>Jimi Hendrix</Label>
+   *    <URI>http://dbpedia.org/resource/Jimi_Hendrix</URI>
+   *    <Description> This article is about the guitarist. For the band, see The Jimi Hendrix Experience.</Description>
+   *   <Classes>
+   *    <Class>
+   *     <Label>http://xmlns.com/foaf/0.1/ person</Label>
+   *     <URI>http://xmlns.com/foaf/0.1/Person</URI>
+   *    </Class>
    */
   def lookup(search: String): String = {
-    implicit val graph = search_only(search).get
-
-    val triples = ops.getTriples(graph.asInstanceOf[Rdf#Graph])
-    val subjects = triples.map { _.subject }
-    val r1 = for (subject <- subjects) yield {
-      val label = instanceLabel(subject, graph, "")
-      // TODO output rdf:type also
-      s"""
+    val r1 = dataset.r({
+      implicit val listOfLists = search_only(search)
+      val subjects = listOfLists.map { l => l.head }
+      for (subject <- subjects) yield {
+        val label = instanceLabelFromTDB(subject, "")
+        // TODO output rdf:type also
+        s"""
         label: "$label""
         uri: "${subject}"
         description: ""
       """
-    }
+      }
+    })
     s"""{ result: [
-       ${r1}
+       ${r1.get}
     ]}"""
   }
 
   /**
    * NON transactional
    */
-  private def search_only(search: String): Try[Rdf#Graph] = {
+  private def search_only(search: String) = {
     val queryString = s"""
-         |CONSTRUCT { ?thing ?p ?o; a ?CLASS } WHERE {
+         |select distinct ?thing ?class WHERE {
          |  {
          |  graph ?g {
          |    ?thing ?p ?o .
@@ -72,12 +73,13 @@ trait Lookup[Rdf <: RDF, DATASET]
          |  }
          |  } OPTIONAL {
          |  graph ?g0 {
-         |    ?thing a ?CLASS .
+         |    ?thing a ?class .
          |  }
          |  }
          |}""".stripMargin
-    println("search_only " + queryString)
-    sparqlConstructQuery(queryString)
+//    println("search_only " + queryString)
+    sparqlSelectQueryVariablesNT(queryString, Seq("thing", "class") )
+//    sparqlSelectQuery(queryString)  
   }
 
 }

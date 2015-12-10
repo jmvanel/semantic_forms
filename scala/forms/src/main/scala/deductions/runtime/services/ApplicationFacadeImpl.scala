@@ -62,6 +62,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with FormHeader[Rdf]
     with TimeSeries[Rdf, DATASET]
     with RDFDashboardSPARQL[Rdf, DATASET]
+    with TriplesInGraphSPARQL[Rdf, DATASET]
     with ToolsPage
     with Configuration {
  
@@ -357,6 +358,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     </form>
   */
   
+  /** TODO the columns order may be wrong */
   def selectSPARQL(query: String, lang: String = "en"): Elem = {
     Logger.getRootLogger().info("sparql query  " + query)
     <p>

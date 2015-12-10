@@ -1,20 +1,19 @@
 package deductions.runtime.services
 
 import java.io.ByteArrayOutputStream
-
 import scala.concurrent.Await
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationInt
 import scala.language.postfixOps
 import scala.util.Try
-
 import org.apache.log4j.Logger
 import org.w3.banana.RDF
 import org.w3.banana.TryW
 import org.w3.banana.io.RDFWriter
 import org.w3.banana.io.Turtle
-
 import deductions.runtime.dataset.RDFStoreLocalProvider
+import scala.util.Success
+import scala.util.Failure
 
 /**
  * @author jmv
@@ -115,67 +114,82 @@ extends RDFStoreLocalProvider[Rdf, DATASET] {
 
   //////////////// SELECT stuff //////////////////////////
 
-  /** transactional */
+  /** run SPARQL on given dataset, knowing result variables; transactional */
   def sparqlSelectQueryVariables(queryString: String, variables: Seq[String],
       ds: DATASET=dataset):
   List[Seq[Rdf#Node]] = {
     val transaction = ds.r({
-      val solutionsTry = for {
-        query <- parseSelect(queryString)
-        es <- ds.executeSelect(query, Map())
-      } yield es
-      val answers: Rdf#Solutions = solutionsTry.get
-      val results: Iterator[Seq[Rdf#Node]] = answers.iterator map {
-        row =>
-          for (variable <- variables) yield row(variable).get.as[Rdf#Node].get
-      }
-      results.to[List]
+      sparqlSelectQueryVariablesNT(queryString, variables, ds)
     })
     transaction .get
   }
 
-  /** NOT transactional
-   *  TODO duplicate code with sparqlSelectQueryVariables() */
+  /** run SPARQL on given dataset, knowing result variables; NOT transactional */
   def sparqlSelectQueryVariablesNT(queryString: String, variables: Seq[String],
                                    ds: DATASET = dataset): List[Seq[Rdf#Node]] = {
     val solutionsTry = for {
       query <- parseSelect(queryString)
       es <- ds.executeSelect(query, Map())
     } yield es
+//    println( "solutionsTry.isSuccess " + solutionsTry.isSuccess )
     val answers: Rdf#Solutions = solutionsTry.get
-    val results: Iterator[Seq[Rdf#Node]] = answers.iterator map {
+    val results = answers.iterator.toIterable map {
       row =>
-        for (variable <- variables) yield row(variable).get.as[Rdf#Node].get
+//        println( row )
+        for (variable <- variables) yield {
+          val cell = row(variable)
+          cell match {
+            case Success(node) => row(variable).get.as[Rdf#Node].get
+            case Failure(f)    => Literal(".")
+          }
+        }
     }
     results.to[List]
   }
   
-  /** transactional */
-  def sparqlSelectQuery(queryString: String,
-            ds: DATASET=dataset): Try[List[Set[Rdf#Node]]] = {
+  /** run SPARQL on given dataset; transactional
+   * TODO the columns order may be wrong */
+def sparqlSelectQuery(queryString: String,
+            ds: DATASET=dataset): Try[List[List[Rdf#Node]]] = {
     val transaction = ds.r({
       val solutionsTry = for {
         query <- parseSelect(queryString)
         es <- ds.executeSelect(query, Map())
       } yield es
-
-      //    val answers: Rdf#Solutions = 
       val res = solutionsTry.map {
         solutions =>
-          val results = solutions.iterator map {
+          val results = solutions.iterator.toIterable map {
             row =>
-              val variables = row.varnames()
-              //        println(variables.mkString(", "))
-              //        println(row)
+              val variables = row.varnames().toList
+//              println( row )
               for (variable <- variables) yield row(variable).get.as[Rdf#Node].get
           }
+          println( "after results" )
           results.to[List]
       }
+      println( "before res" )
       res
+//      println( "after res" )
     })
+    println( "before transaction.get" )
     transaction.get
   }
+  
+  /** run SPARQL on given graph, knowing result variables */
+  def runSparqlSelect(
+    queryString: String, variables: Seq[String],
+    graph: Rdf#Graph): List[Seq[Rdf#URI]] = {
 
+    val query = parseSelect(queryString).get
+    val answers: Rdf#Solutions = sparqlGraph.executeSelect(graph, query,
+        Map() ).get
+    val results: Iterator[Seq[Rdf#URI]] = answers.toIterable map {
+      row =>
+        for (variable <- variables) yield row(variable).get.as[Rdf#URI].get
+    }
+    results.to[List]
+  }
+  
   def futureGraph2String(triples: Future[Rdf#Graph], uri: String): String = {
     val graph = Await.result(triples, 5000 millis)
     Logger.getRootLogger().info(s"uri $uri ${graph}")
@@ -206,21 +220,4 @@ extends RDFStoreLocalProvider[Rdf, DATASET] {
   
   def info(s: String) = Logger.getRootLogger().info(s)
 
-//	import sparqlGraph._
-  
-  /** run SPARQL on given graph */
-  def runSparqlSelect(
-    queryString: String, variables: Seq[String],
-    graph: Rdf#Graph): List[Seq[Rdf#URI]] = {
-
-    val query = parseSelect(queryString).get
-//    val answers: Rdf#Solutions = graph.executeSelect(query).get
-    val answers: Rdf#Solutions = sparqlGraph.executeSelect(graph, query,
-        Map() ).get
-    val results: Iterator[Seq[Rdf#URI]] = answers.toIterable map {
-      row =>
-        for (variable <- variables) yield row(variable).get.as[Rdf#URI].get
-    }
-    results.to[List]
-  }
 }

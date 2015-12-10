@@ -48,6 +48,7 @@ object Application extends Controller
     }
   }
   
+  /** generate a Main Page wrapping given XHTML content */
   private def outputMainPage( content: NodeSeq,
       lang: String, userInfo: NodeSeq = <div/> )
   (implicit request: Request[_]) = {
@@ -64,14 +65,23 @@ object Application extends Controller
     fut.map( r => outputMainPage( r, lang ) )
   }
 
-  /** TODO pasted from above */
+  /** pasted from above */
   def showNamedGraphsAction() = Action.async {
     implicit request =>
     val lang = chooseLanguageObject(request).language
     val fut: Future[Elem] = showNamedGraphs(lang)
-    fut.map( r => outputMainPage( r, lang ) )
+    val rr = fut.map( r => outputMainPage( r, lang ) )
+    rr
   }
-    
+
+  def showTriplesInGraphAction( uri: String) = {
+        Action { implicit request =>
+    Ok("showTriplesInGraphAction")
+  }
+  }
+  
+  /////////////////////////////////
+  
   def edit(uri: String) =
     withUser {
     implicit userid =>
