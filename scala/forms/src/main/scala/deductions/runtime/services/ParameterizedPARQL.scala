@@ -16,6 +16,7 @@ import org.w3.banana.RDFOps
 import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 import scala.xml.NodeSeq
 import scala.xml.Text
+import scala.util.Try
 
 trait SPARQLQueryMaker {
   def makeQueryString(search: String): String
@@ -37,15 +38,25 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
   import rdfStore.transactorSyntax._
   import rdfStore.sparqlEngineSyntax._
 
-  /** Generic SPARQL SELECT with single result columns (must be named "thing"),
-   *  search and display results as an XHTML element */
+  /**
+   * Generic SPARQL SELECT with single result columns (must be named "thing"),
+   *  search and display results as an XHTML element
+   */
   def search(search: String, hrefPrefix: String = "",
-      lang: String = "")(implicit queryMaker: SPARQLQueryMaker): Future[Elem] = {
-    val uris = search_only(search)
-    println(s"after search_only uris $uris")
-    val elem = uris.map(
-      u => displayResults(u.toIterable, hrefPrefix, lang))
-    elem
+             lang: String = "")(implicit queryMaker: SPARQLQueryMaker): Future[Elem] = {
+    println(s"search: starting TRANSACTION for dataset $dataset")
+    val elem0 = dataset.rw({
+    	val uris = search_onlyNT(search)
+      println(s"after search_only uris $uris")
+    	val graph: Rdf#Graph = allNamedGraph
+      println(s"displayResults : 1" + graph  ) // ZZZZZZZZZZZZZZZZZZZZZZ
+      val elem = uris.map(
+        u => displayResults(u.toIterable, hrefPrefix, lang, graph))
+      elem
+    })
+    println(s"search: leaving TRANSACTION for dataset $dataset")
+    val elem = elem0.get
+    elem.asFuture
   }
 
   /**
@@ -57,25 +68,29 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
   = {
     val uris = search_only2(search)
     println(s"after search_only uris $uris")
-    val elem =
-      dataset.r({
+    val elem0 =
+      dataset.rw({
+    	  val graph: Rdf#Graph = allNamedGraph
+    	 println(s"displayResults : 1") // ZZZZZZZZZZZZZZZZZZZZZZ
         uris.map(
             // TODO create table like HTML
-          u => displayResults(u.toIterable, hrefPrefix, lang))
-      }).get
+          u => displayResults(u.toIterable, hrefPrefix, lang, graph))
+      })
+    val elem = elem0.get
     elem
   }
   
   /** generate a column of HTML hyperlinks for given list of RDF Node;
-   *  TRANSACTIONAL
+   *  non TRANSACTIONAL
    */
   private def displayResults(res0: Iterable[Rdf#Node], hrefPrefix: String,
-      lang: String = "") = {
+      lang: String = "",
+      graph: Rdf#Graph ) = {
     <p>{
       val res = res0.toSeq
-      println(s"displayResults : ${res.mkString("\n")}")
-        val graph: Rdf#Graph = allNamedGraph
-        val uriLabelCouples = res.map(uri => (uri, instanceLabel(uri, graph, lang )))
+      println(s"displayResults :\n${res.mkString("\n")}")
+      val uriLabelCouples = res.map(uri => (uri, instanceLabel(uri, graph, lang )))
+      println(s"displayResults : 2") // ZZZZZZZZZZZZZZZZZZZZZZ
         uriLabelCouples.sortBy( c => c._2) .
         map( uriLabelCouple => { val uri = uriLabelCouple._1
             val uriString = uri.toString
@@ -105,10 +120,20 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    */
   private def search_only(search: String)
   (implicit queryMaker: SPARQLQueryMaker): Future[Iterator[Rdf#Node]] = {
-    val queryString = queryMaker.makeQueryString(search)
-    println( s"search_only(search $search" )
     val transaction =
       dataset.r({
+    	  search_onlyNT(search)
+      })
+    val tryIteratorRdfNode = transaction.flatMap { identity }
+    println( s"after search_only(search tryIteratorRdfNode $tryIteratorRdfNode" )
+    tryIteratorRdfNode.asFuture
+  }
+  
+  private def search_onlyNT(search: String)
+  (implicit queryMaker: SPARQLQueryMaker): Try[Iterator[Rdf#Node]] = {
+    val queryString = queryMaker.makeQueryString(search)
+    println( s"search_only(search $search" )
+        println(s"search_only: starting TRANSACTION for dataset $dataset")
         val result = for {
           query <- parseSelect(queryString)
           solutions <- dataset.executeSelect(query, Map())
@@ -118,12 +143,8 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
               row("thing") getOrElse sys.error(s"search_only($search) : no ?thing in row")
           }
         }
-        result
-      })
     println( s"after search_only(search $search" )
-    val tryIteratorRdfNode = transaction.flatMap { identity }
-    println( s"after search_only(search tryIteratorRdfNode $tryIteratorRdfNode" )
-    tryIteratorRdfNode.asFuture
+    result
   }
 
   private def search_only2(search: String)

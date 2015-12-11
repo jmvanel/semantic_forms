@@ -85,12 +85,13 @@ trait Form2HTML[NODE, URI <: NODE]
                    .form-label{{ display: table-cell; width: 160px; }}
     </style>
 
+  // TODO extract JS stuff; write in Scala.JS & compile
+  // See https://github.com/sofish/pen
   val localJS =
     <script type="text/javascript" async="true" src="https://rawgit.com/sofish/pen/master/src/pen.js"></script> ++
       <script type="text/javascript" async="true" src="https://rawgit.com/sofish/pen/master/src/markdown.js"></script> ++
       <script type="text/javascript" async="true">
-        // function backlinks(uri) {{ }}
-        function launchEditorWindow(elem) {{
+        function launchEditorWindow(elem/* :input */) {{
   var popupWindow = window.open('', 'Edit Markdown text for semantic_forms',
     'height=500, width=500');
   var options = {{
@@ -108,6 +109,7 @@ trait Form2HTML[NODE, URI <: NODE]
   }};
         }}
       </script>
+
   val cssClasses = tableCSSClasses
 
   /**
