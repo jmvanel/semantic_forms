@@ -69,14 +69,18 @@ object Application extends Controller
   def showNamedGraphsAction() = Action.async {
     implicit request =>
     val lang = chooseLanguageObject(request).language
-    val fut: Future[Elem] = showNamedGraphs(lang)
+    val fut = showNamedGraphs(lang)
     val rr = fut.map( r => outputMainPage( r, lang ) )
     rr
   }
 
   def showTriplesInGraphAction( uri: String) = {
-        Action { implicit request =>
-    Ok("showTriplesInGraphAction")
+        Action.async { implicit request =>
+          val lang = chooseLanguageObject(request).language
+          val fut = Future.successful( showTriplesInGraph( uri, lang) )
+          val rr = fut.map( r => outputMainPage( r, lang ) )
+//    Ok("showTriplesInGraphAction")
+          rr
   }
   }
   

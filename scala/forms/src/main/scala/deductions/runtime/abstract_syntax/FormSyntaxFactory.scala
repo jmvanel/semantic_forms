@@ -411,15 +411,14 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    *  NOTE: code related for getting the ontology prefix
    */
   def terminalPart(n: Rdf#Node): String = {
-    n match {
-      case uri: Rdf#URI if (uri.isURI) =>
-        getFragment(uri) match {
+    foldNode(n)(
+        uri =>         getFragment(uri) match {
           case None       => lastSegment(uri)
           case Some(frag) => frag
-        }
-      case _ => ""
+        },
+        bNode => "" ,
+        literal => "" )
     }
-  }
 
   /**
    * get first ?OBJ such that:

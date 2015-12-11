@@ -252,7 +252,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     wrapSearchResults(fut, q)
   }
 
-  def rdfDashboardFuture(q: String = "", lang: String = ""): Future[Elem] = {
+  def rdfDashboardFuture(q: String = "", lang: String = ""): Future[NodeSeq] = {
     val fut = showNamedGraphs(lang)
     wrapSearchResults(fut, q)
   }
@@ -396,7 +396,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   }
 
   /** TODO should be in package hmtl */
-  private def wrapSearchResults(fut: Future[Elem], q: String): Future[Elem] =
+  private def wrapSearchResults(fut: Future[NodeSeq], q: String): Future[Elem] =
     fut.map { v =>
       <section class="label-search-results">
         <p class="label-search-header">Searched for "{ q }" :</p>

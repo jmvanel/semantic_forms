@@ -21,8 +21,8 @@ trait RDFDashboardSPARQL[Rdf <: RDF, DATASET]
          |}""".stripMargin
   }
 
-  def showNamedGraphs( lang: String = ""): Future[Elem] =
-    search("", "", lang)
+  def showNamedGraphs( lang: String = ""): Future[NodeSeq] =
+    Future.successful( search2("", "", lang) )
     
   /** add columns in response */
   override def columnsForURI( node: Rdf#Node, label: String): NodeSeq =

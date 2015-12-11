@@ -40,7 +40,7 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
   def wordsearch(q: String = "", lang: String = ""): Future[Elem] =
     impl.wordsearchFuture(q, lang)
 
-  def showNamedGraphs(lang: String = ""): Future[Elem] =
+  def showNamedGraphs(lang: String = ""): Future[NodeSeq] =
     impl.showNamedGraphs(lang)
     
   def showTriplesInGraph(graphURI: String, lang: String = "")

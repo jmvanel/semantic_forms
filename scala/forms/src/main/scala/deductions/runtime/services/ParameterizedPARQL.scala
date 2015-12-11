@@ -20,6 +20,7 @@ import scala.util.Try
 
 trait SPARQLQueryMaker {
   def makeQueryString(search: String): String
+  def variables = Seq("thing")
 }
 
 /**
@@ -47,11 +48,11 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     println(s"search: starting TRANSACTION for dataset $dataset")
     val elem0 = dataset.rw({
     	val uris = search_onlyNT(search)
-      println(s"after search_only uris $uris")
+//      println(s"after search_only uris ${uris}")
     	val graph: Rdf#Graph = allNamedGraph
-      println(s"displayResults : 1" + graph  ) // ZZZZZZZZZZZZZZZZZZZZZZ
+//      println(s"displayResults : 1" + graph  )
       val elem = uris.map(
-        u => displayResults(u.toIterable, hrefPrefix, lang, graph))
+        u => displayResults(u.toIterable, hrefPrefix, lang, graph, true))
       elem
     })
     println(s"search: leaving TRANSACTION for dataset $dataset")
@@ -67,44 +68,59 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
               lang: String = "")(implicit queryMaker: SPARQLQueryMaker)
   = {
     val uris = search_only2(search)
-    println(s"after search_only uris $uris")
+//    println(s"after search_only uris $uris")
     val elem0 =
       dataset.rw({
     	  val graph: Rdf#Graph = allNamedGraph
-    	 println(s"displayResults : 1") // ZZZZZZZZZZZZZZZZZZZZZZ
+//    	 println(s"displayResults : 1")
         uris.map(
-            // TODO create table like HTML
+            // create table like HTML
           u => displayResults(u.toIterable, hrefPrefix, lang, graph))
       })
     val elem = elem0.get
     elem
   }
-  
-  /** generate a column of HTML hyperlinks for given list of RDF Node;
+
+  /**
+   * generate a column of HTML hyperlinks for given list of RDF Node;
    *  non TRANSACTIONAL
    */
   private def displayResults(res0: Iterable[Rdf#Node], hrefPrefix: String,
-      lang: String = "",
-      graph: Rdf#Graph ) = {
+                             lang: String = "",
+                             graph: Rdf#Graph,
+                             sort:Boolean = false ) = {
     <p>{
-      val res = res0.toSeq
-      println(s"displayResults :\n${res.mkString("\n")}")
-      val uriLabelCouples = res.map(uri => (uri, instanceLabel(uri, graph, lang )))
-      println(s"displayResults : 2") // ZZZZZZZZZZZZZZZZZZZZZZ
-        uriLabelCouples.sortBy( c => c._2) .
-        map( uriLabelCouple => { val uri = uriLabelCouple._1
-            val uriString = uri.toString
-            val blanknode = !isURI(uri)
-            // TODO : show named graph
-            <div title={ uri.toString() } class="form-row" >
-              <a href={
-                Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode) }
-              class="form-value" >
-                { uriLabelCouple._2 }
-              </a><br/>
-							{ columnsForURI( uriLabelCouple._1, uriLabelCouple._2) }
-            </div>
-          })
+      val res = res0.toList
+//      println(s"displayResults:\n${res.mkString("\n")}")
+      val uriLabelCouples = res.map(uri => (uri, instanceLabel(uri, graph, lang)))
+      val columnsFormResults = 
+        ( if( sort ) uriLabelCouples. sortBy(c => c._2)
+        else uriLabelCouples ) .
+        map(uriLabelCouple => {
+          val node = uriLabelCouple._1
+          val uriString = node.toString
+          val blanknode = !isURI(node)
+          // TODO : show named graph
+          <div title={ node.toString() } class="form-row">
+            {
+              val hyperlink = <a href={
+                Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode)
+              } class="form-value">
+                                {
+                                  uriLabelCouple._2
+                                }
+                              </a>
+              foldNode(node)(
+                x => hyperlink,
+                x => hyperlink,
+                x => Text( x.toString() ))
+            }
+            <br/>
+          </div>
+        })
+      val uri = res.head
+      val columns_for_URI = columnsForURI(uri, instanceLabel(uri, graph, lang))
+      columnsFormResults ++ columns_for_URI
     }</p>
   }
 
@@ -129,6 +145,7 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     tryIteratorRdfNode.asFuture
   }
   
+  /** non TRANSACTIONAL */
   private def search_onlyNT(search: String)
   (implicit queryMaker: SPARQLQueryMaker): Try[Iterator[Rdf#Node]] = {
     val queryString = queryMaker.makeQueryString(search)
@@ -147,13 +164,12 @@ trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     result
   }
 
+  /** with result variables specified; transactional */
   private def search_only2(search: String)
-  (implicit queryMaker: SPARQLQueryMaker): List[List[Rdf#Node]] = {
+  (implicit queryMaker: SPARQLQueryMaker): List[Seq[Rdf#Node]] = {
     val queryString = queryMaker.makeQueryString(search)
 	  println( s"search_only2( search $search" )
-    val res = sparqlSelectQuery(queryString)
-//            ds: DATASET=dataset): Try[List[Set[Rdf#Node]]]
-	  ???
+    sparqlSelectQueryVariables(queryString, queryMaker.variables )
   }
 
 }
