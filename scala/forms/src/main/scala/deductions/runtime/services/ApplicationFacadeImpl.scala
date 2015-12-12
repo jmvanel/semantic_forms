@@ -32,6 +32,7 @@ import deductions.runtime.views.FormHeader
 import deductions.runtime.views.ToolsPage
 import deductions.runtime.semlogs.TimeSeries
 import deductions.runtime.semlogs.LogAPI
+import deductions.runtime.html.CSS
 
 /**
  * a Web Application Facade,
@@ -64,7 +65,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with RDFDashboardSPARQL[Rdf, DATASET]
     with TriplesInGraphSPARQL[Rdf, DATASET]
     with ToolsPage
-    with Configuration {
+    with Configuration
+    with CSS {
  
   addSaveListener(this) // for TimeSeries
   
@@ -400,7 +402,10 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     fut.map { v =>
       <section class="label-search-results">
         <p class="label-search-header">Searched for "{ q }" :</p>
-        <div>{ v }</div>
+        <div>
+        { localCSS }
+        { v }
+        </div>
       </section>
     }
 

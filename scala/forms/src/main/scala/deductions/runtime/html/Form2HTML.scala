@@ -1,24 +1,29 @@
 package deductions.runtime.html
 
+import java.net.URLEncoder
+
+import scala.Range
 import scala.xml.Elem
 import scala.xml.NodeSeq
+import scala.xml.NodeSeq.seqToNodeSeq
 import scala.xml.Text
-import scala.xml.XML
 import scala.xml.Unparsed
-import java.net.URLEncoder
-import Form2HTML._
-import deductions.runtime.abstract_syntax.FormModule
+
+import Form2HTML.urlEncode
 import deductions.runtime.abstract_syntax.DBPediaLookup
-import deductions.runtime.utils.Timer
-import org.w3.banana.binder.FromURI
+import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.utils.I18NMessages
+import deductions.runtime.utils.Timer
 
 /**
  * different modes: display or edit;
  *  takes in account datatype
  */
 trait Form2HTML[NODE, URI <: NODE]
-    extends Timer // TODO: extends HTML5TypesTrait
+    extends Timer
+    with CSS
+    with JavaScript
+    // TODO: extends HTML5TypesTrait
 //    with FormModule[NODE, URI]
     {
   import HTML5Types._
@@ -60,57 +65,6 @@ trait Form2HTML[NODE, URI <: NODE]
     else
       htmlForm
   }
-
-  /** default is bootstrap classes */
-  case class CSSClasses(
-    val formRootCSSClass: String = "form",
-    val formFieldCSSClass: String = "form-group",
-    val formLabelAndInputCSSClass: String = "row",
-    val formLabelCSSClass: String = "control-label",
-    val formInputCSSClass: String = "input")
-
-  val tableCSSClasses = CSSClasses(
-    formRootCSSClass = "form-root",
-    formFieldCSSClass = "",
-    formLabelAndInputCSSClass = "form-row",
-    formLabelCSSClass = "form-label",
-    formInputCSSClass = "form-input")
-
-  val localCSS =
-    <style type='text/css'>
-      .form-row{{ display: table-row; }}
-                   .form-cell{{ display: table-cell; }}
-                   .form-input{{ display: table-cell; width: 500px; }}
-                   .button-add{{ width: 25px; }}
-                   .form-label{{ display: table-cell; width: 160px; }}
-    </style>
-
-  // TODO extract JS stuff; write in Scala.JS & compile
-  // See https://github.com/sofish/pen
-  val localJS =
-    <script type="text/javascript" async="true" src="https://rawgit.com/sofish/pen/master/src/pen.js"></script> ++
-      <script type="text/javascript" async="true" src="https://rawgit.com/sofish/pen/master/src/markdown.js"></script> ++
-      <script type="text/javascript" async="true">
-        function launchEditorWindow(elem/* :input */) {{
-  var popupWindow = window.open('', 'Edit Markdown text for semantic_forms',
-    'height=500, width=500');
-  var options = {{
-    editor: popupWindow.document.body,
-    class: 'pen',
-    list: // editor menu list
-    [ 'insertimage', 'blockquote', 'h2', 'h3', 'p', 'code', 'insertorderedlist', 'insertunorderedlist', 'inserthorizontalrule',
-      'indent', 'outdent', 'bold', 'italic', 'underline', 'createlink' ]
-  }}
-  popupWindow.document.body.innerHTML = elem.value
-  var editor = new Pen( options );
-  popupWindow.onunload = function() {{
-    elem.value = editor.toMd(); // return a markdown string
-    return void(0)
-  }};
-        }}
-      </script>
-
-  val cssClasses = tableCSSClasses
 
   /**
    * generate HTML, but Just Fields;

@@ -10,7 +10,7 @@ import scala.xml.Text
 trait TriplesInGraphSPARQL[Rdf <: RDF, DATASET]
     extends ParameterizedSPARQL[Rdf, DATASET] {
 
-  private implicit val searchStringQueryMaker = new SPARQLQueryMaker {
+  private implicit val searchStringQueryMaker = new SPARQLQueryMaker[Rdf] {
     override def makeQueryString( graphURI: String): String =
     s"""
          |SELECT DISTINCT ?thing ?p ?o WHERE {
@@ -20,12 +20,17 @@ trait TriplesInGraphSPARQL[Rdf <: RDF, DATASET]
          |}""".stripMargin
          
     override def variables = Seq("thing", "p", "o")
+    
+//    override def columnsForURI( node: Rdf#Node, label: String): NodeSeq =
+//      Text("test")    
   }
 
-  def showTriplesInGraph( graphURI: String, lang: String = "")
-//  : Future[Elem]
-  = search2( graphURI, "", lang)
-
-  override def columnsForURI( node: Rdf#Node, label: String): NodeSeq = Text("")
+  def showTriplesInGraph(graphURI: String, lang: String = "") //  : Future[Elem]
+  = {
+    <p>
+      <p> Triples in Graph &lt;{ graphURI }> </p>
+      { search2(graphURI, "", lang) }
+    </p>
+  }
 
 }

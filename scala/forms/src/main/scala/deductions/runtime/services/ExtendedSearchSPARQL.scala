@@ -3,6 +3,7 @@ package deductions.runtime.services
 import org.w3.banana.RDF
 import scala.concurrent.Future
 import scala.xml.Elem
+import scala.xml.NodeSeq
 
 /**
  * Broader "interest" search in simple search results page
@@ -12,10 +13,10 @@ import scala.xml.Elem
 trait ExtendedSearchSPARQL[Rdf <: RDF, DATASET]
     extends ParameterizedSPARQL[Rdf, DATASET] {
 
-  def extendedSearch(uri: String, hrefPrefix: String = ""): Future[Elem] =
+  def extendedSearch(uri: String, hrefPrefix: String = ""): Future[NodeSeq] =
     search(uri, hrefPrefix)
 
-  private implicit val queryMaker = new SPARQLQueryMaker {
+  private implicit val queryMaker = new SPARQLQueryMaker[Rdf] {
     override def makeQueryString(search: String): String = {
       val q = s"""
         prefix foaf: <http://xmlns.com/foaf/0.1/>
