@@ -20,5 +20,8 @@ mv ${APPVERS} ${APPVERS}_OLD
 unzip $SRC/target/universal/${APPVERS}.zip
 
 cd ${APPVERS}
-ln -s ../TDBsf TDB
-nohup bin/${APP} -mem 100 -J-server -Dhttp.port=9000 &
+ln -s ../TDBsandbox TDB
+
+PORT=9111
+echo starting the server on port $PORT
+nohup bin/${APP} -mem 100 -J-server -Dhttp.port=$PORT &

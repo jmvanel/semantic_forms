@@ -7,10 +7,9 @@ import org.w3.banana.RDFSPrefix
 import deductions.runtime.services.SPARQLHelpers
 import java.math.BigInteger
 
-trait TimeSeries[Rdf <: RDF, DATASET]
-    extends RDFStoreLocalProvider[Rdf, DATASET]
-    with LogAPI[Rdf]
-    with SPARQLHelpers[Rdf, DATASET] {
+trait TimeSeries[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET] 
+with LogAPI[Rdf] 
+with SPARQLHelpers[Rdf, DATASET] {
 
   import ops._
   import rdfStore.transactorSyntax._
@@ -18,9 +17,16 @@ trait TimeSeries[Rdf <: RDF, DATASET]
   import rdfStore.sparqlEngineSyntax._
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  /**
-   * save `addedTriples` to a specific new named graph,
-   *  and add timestamp metadata to default graph
+  val timestampURI = URI("urn:timestamp")
+  val userPredURI = URI("urn:user")
+
+  private val rdfs = RDFSPrefix[Rdf]
+  
+  /** reference implementation:
+   * save all `addedTriples` to a specific new named graph,
+   * and add timestamp metadata to default graph;
+   * another implementation could save other triples (typically an aggregated value), but always
+   * in the named graph whose name is computed by makeGraphURIAndMetadata()
    */
   override def notifyDataEvent(addedTriples: Seq[Rdf#Triple],
       removedTriples: Seq[Rdf#Triple])(implicit userURI: String) = {
@@ -28,7 +34,7 @@ trait TimeSeries[Rdf <: RDF, DATASET]
     if (!addedTriples.isEmpty)
       dataset2.rw({
         val (graphUri, metadata ) = makeGraphURIAndMetadata(addedTriples, removedTriples)
-        dataset2.appendToGraph(URI(""), metadata)
+        dataset2.appendToGraph(URI("urn:x-arq:DefaultGraph"), metadata)
        
         val graph = makeGraph(addedTriples)
         dataset2.appendToGraph(graphUri, graph)        
@@ -36,43 +42,47 @@ trait TimeSeries[Rdf <: RDF, DATASET]
       Unit
   }
 
-  def makeGraphURIAndMetadata(addedTriples: Seq[Rdf#Triple],
-      removedTriples: Seq[Rdf#Triple])(implicit userURI: String) = {
-        	  val timestamp = (new Date).getTime
-        val graphName = addedTriples.head.subject.toString() + "#" + timestamp
-        val graphUri = URI(graphName)
+  /** make Graph URI And associated Metadata for saving data at a current date & time */
+  def makeGraphURIAndMetadata(addedTriples: Seq[Rdf#Triple], 
+      removedTriples: Seq[Rdf#Triple])(implicit userURI: String): (Rdf#URI, Rdf#Graph)= {
+    
+	  val timestamp = (new Date).getTime
+			  val graphName = addedTriples.head.subject.toString() + "#" + timestamp
+			  val graphUri = URI(graphName)
         val metadata = (graphUri
-          -- URI("timestamp") ->- Literal(timestamp.toString())
-          -- URI("user") ->- URI(userURI)).graph
+          -- timestampURI ->- Literal(timestamp.toString(), xsd.integer )
+        -- userPredURI ->- URI(userURI)).graph
          ( graphUri, metadata ) 
   }
-  
-  private val rdfs = RDFSPrefix[Rdf]
-  
   /** get Time Series from accumulated values with timestamp */
-  def getTimeSeries()(implicit userURI: String):
+  def getTimeSeries( predicateURI: String = "average")(implicit userURI: String):
 //  Seq[( String, Map[Long, Float] )] = {
   Map[ String, Seq[(BigInteger, Double)] ] = {
     val query = s"""
       SELECT ?TS ?AV ?LAB
       WHERE {
-        ?GR <timestamp> ?TS ;
-            <user> <$userURI> .
+        ?GR <$timestampURI> ?TS ;
+            <$userPredURI> <$userURI> .
         GRAPH ?GR {
-         ?S <average> ?AV ;
+         ?S <$predicateURI> ?AV ;
             <${rdfs.label}> ?LAB .
         }
-      }  """    
-    val res = sparqlSelectQuery( query, dataset2 ) . get
+      }  """
+    println("query " + query)
+    val res = sparqlSelectQueryVariables( query, Seq("TS", "AV", "LAB"), dataset2 )
     // res is a  List[Set[Rdf.Node]] each Set containing:
     // Long, Float, String
+//    println("res " + res)
+
     val res2 = res.groupBy{ elem => foldNode(elem.toSeq(2))(
         _=> "", _=> "", lit => fromLiteral(lit)._1 )
     }
     for( (label, values ) <- res2 ) yield {
       val time2value = values . map {
-//        v => val vv = v.toSeq ; ( vv(0).as[Long], vv(1).as[Float] )
-        v => val vv = v.toSeq ; ( vv(0).as[BigInteger].get,
+        v =>
+//          println( "v " + v )
+          val vv = v.toSeq ; (
+            vv(0).as[BigInteger].get,
             vv(1).as[Double].get )
       }
       ( label, time2value )
