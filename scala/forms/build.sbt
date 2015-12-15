@@ -44,7 +44,8 @@ parallelExecution in Test := false
 libraryDependencies += "junit" % "junit" % "4.8.1" % Test
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.4" % Test
-
+// Gatling is an open-source load testing framework based on Scala, Akka and Netty
+// libraryDependencies += "io.gatling.highcharts" % "gatling-charts-highcharts" % "2.1.7" % Test
 
 
 resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)

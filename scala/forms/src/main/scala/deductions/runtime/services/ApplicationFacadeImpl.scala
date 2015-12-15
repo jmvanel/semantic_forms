@@ -68,7 +68,10 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with Configuration
     with CSS {
  
-  addSaveListener(this) // for TimeSeries
+//  val v = new TimeSeries[Rdf, DATASET]{}
+//  if( activateUserInputHistory )
+    addSaveListener(this) // for TimeSeries
+
   
   val logger = Logger.getRootLogger()
 

@@ -1,24 +1,21 @@
 package deductions.runtime.services
 
 import java.net.URLDecoder
-import java.net.URLEncoder
+
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.Try
 import scala.concurrent.Future
 import scala.util.Failure
-import org.w3.banana.RDF
-import org.w3.banana.RDFOps
-import org.w3.banana.RDFStore
-import org.w3.banana.io.RDFWriter
-import org.w3.banana.SparqlEngine
-import org.w3.banana.SparqlOps
-import org.w3.banana.io.Turtle
-import org.w3.banana._
+import scala.util.Try
+
 import org.apache.log4j.Logger
+import org.w3.banana.FOAFPrefix
+import org.w3.banana.RDF
+import org.w3.banana.TryW
+
 import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.utils.Timer
 import deductions.runtime.semlogs.LogAPI
+import deductions.runtime.utils.Timer
 
 trait FormSaver[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
@@ -26,6 +23,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
     with HttpParamsManager[Rdf]
     with LogAPI[Rdf]
     with Configuration
+    with SaveListenersManager[Rdf]
     with Timer {
 
   import ops._
@@ -116,9 +114,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
               URI(graphURI),
               makeGraph(triplesToAdd)))
 
-        /* TODO
-         * add a hook here: return the future to print later that it has been done */
-              
+        /* TODO maybe in the hook here: return the future to print later that it has been done */
         callSaveListeners(triplesToAdd, triplesToRemove)
         
         Future {
@@ -146,19 +142,19 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
   ///////////////
   
-  type SaveListener = LogAPI[Rdf]
-  val saveListeners = ArrayBuffer[SaveListener]()
-  
-  def addSaveListener( l: SaveListener) = {
-    saveListeners += l
-  }
-
-  def callSaveListeners(addedTriples: Seq[Rdf#Triple], removedTriples: Seq[Rdf#Triple])(implicit userURI: String) = {
-    if (recordUserActions)
-      saveListeners.map {
-        _.notifyDataEvent(addedTriples, removedTriples)
-      }
-  }
+//  type SaveListener = LogAPI[Rdf]
+//  val saveListeners = ArrayBuffer[SaveListener]()
+//  
+//  def addSaveListener( l: SaveListener) = {
+//    saveListeners += l
+//  }
+//
+//  def callSaveListeners(addedTriples: Seq[Rdf#Triple], removedTriples: Seq[Rdf#Triple])(implicit userURI: String) = {
+//    if (recordUserActions)
+//      saveListeners.map {
+//        _.notifyDataEvent(addedTriples, removedTriples)
+//      }
+//  }
 
 }
 

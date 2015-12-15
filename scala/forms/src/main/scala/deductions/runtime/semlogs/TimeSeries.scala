@@ -7,6 +7,8 @@ import org.w3.banana.RDFSPrefix
 import deductions.runtime.services.SPARQLHelpers
 import java.math.BigInteger
 
+/** swallow and regurgitate user input, to build a history;
+ *  a callback is installed in FormSaver via addSaveListener() in ApplicationFacadeImpl */
 trait TimeSeries[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET] 
 with LogAPI[Rdf] 
 with SPARQLHelpers[Rdf, DATASET] {
