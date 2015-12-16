@@ -56,8 +56,11 @@ with SPARQLHelpers[Rdf, DATASET] {
         -- userPredURI ->- URI(userURI)).graph
          ( graphUri, metadata ) 
   }
-  /** get Time Series from accumulated values with timestamp */
-  def getTimeSeries( predicateURI: String = "average")(implicit userURI: String):
+  /** get Time Series from accumulated values with timestamp;
+   *  @return a Map from label to a seq of time & value pairs;
+   *  the time is a Unix time obtained by Date.getTime,
+   *  the value is a double */
+  def getTimeSeries( predicateURI: String = "urn:average")(implicit userURI: String):
 //  Seq[( String, Map[Long, Float] )] = {
   Map[ String, Seq[(BigInteger, Double)] ] = {
     val query = s"""

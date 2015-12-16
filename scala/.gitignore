@@ -31,3 +31,7 @@ project/plugins/project/
 .classpath
 .project
 
+dump*.nq
+*__
+TDB*
+

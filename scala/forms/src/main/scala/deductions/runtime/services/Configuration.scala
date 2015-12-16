@@ -26,8 +26,8 @@ trait Configuration {
   val use_dbpedia_lookup = false
   val use_local_lookup = true
 
-//  val activateUserInputHistory = false
-  
+  //  val activateUserInputHistory = false
+
   // CORS
   val allow_Origin = "*"
 

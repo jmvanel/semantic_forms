@@ -102,7 +102,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
     /** transactional */
     def doSave(graphURI: String)
-    (implicit userURI: String= "" ) {
+    ( implicit userURI: String = graphURI ) {
       val transaction = dataset.rw({
         time("removeTriples",
           dataset.removeTriples(
