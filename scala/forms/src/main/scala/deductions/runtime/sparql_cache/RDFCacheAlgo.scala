@@ -111,12 +111,13 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
         val localTimestamp = getTimestampFromDataset(uri, dataset)
         localTimestamp match {
           case Success(longLocalTimestamp) => {
-            println(s"$uri localTimestamp: ${	new Date(longLocalTimestamp) } .")
+            println(s"$uri localTimestamp: ${	new Date(longLocalTimestamp) } - $longLocalTimestamp .")
             val lastModifiedTuple = lastModified(uri.toString(), 500)
-            println(s"$uri lastModified: $lastModifiedTuple.")
+            println(s"$uri lastModified: ${new Date(lastModifiedTuple._2)} $lastModifiedTuple .")
             
             if (lastModifiedTuple._1) {
-            	if (lastModifiedTuple._2 > longLocalTimestamp ) {
+            	if (lastModifiedTuple._2 > longLocalTimestamp
+            	    || longLocalTimestamp == Long.MaxValue ) {
             		storeURINoTransaction(uri, uri, dataset)
             		println(s"$uri was outdated by timestamp; downloaded.")
             		addTimestampToDatasetNoTransaction(uri, dataset)
@@ -165,7 +166,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     storeURI(uri)
   }
 
-  /** NOTE: the dataset is provided by the parent trait;
+  /** store given URI in self graph; also store imported Ontologies by owl:imports
+   *  NOTE: the dataset is provided by the parent trait;
    *  with transaction */
   private def storeURI(uri: Rdf#URI): Rdf#Graph = {
     val graphFromURI = storeURI(uri, uri, dataset)
@@ -200,8 +202,11 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     })
   }
 
+  /** replace Timestamp for URI to Dataset
+   *  No Transaction */
   private def addTimestampToDatasetNoTransaction(uri: Rdf#URI, dataset: DATASET) = {
 	  val time = lastModified(fromUri(uri), 1000)
+	  println("addTimestampToDatasetNoTransaction: " + time._2 )
     replaceRDFTriple(
       makeTriple(
         uri,
@@ -212,30 +217,30 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   }
 
 
-  /** replace Timestamp for URI to Dataset
-   *  No Transaction */
-  private def addTimestampToDatasetNoTransaction_old(uri: Rdf#URI, dataset: DATASET) = {
-        val queryString = s"""
-         | DELETE {
-         |   graph <$timestampGraphURI> {
-         |     <$uri> <$timestampGraphURI> ?ts .
-         |   }
-         | } WHERE {
-         |   graph <$timestampGraphURI> {
-         |     <$uri> <$timestampGraphURI> ?ts .
-         |   }
-         | }""".stripMargin
-    println( s"sparqlUpdate Query: $queryString")
-    val res = sparqlUpdateQuery( queryString )
-    println( s"sparqlUpdateQuery: $res")
-    
-    val time = lastModified(fromUri(uri), 1000)
-    dataset.appendToGraph(makeUri(timestampGraphURI),
-      makeGraph(Seq(makeTriple(
-        uri,
-        makeUri(timestampGraphURI),
-        makeLiteral(time._2.toString, xsd.integer)))))
-  }
+//  /** replace Timestamp for URI to Dataset
+//   *  No Transaction */
+//  private def addTimestampToDatasetNoTransaction_old(uri: Rdf#URI, dataset: DATASET) = {
+//        val queryString = s"""
+//         | DELETE {
+//         |   graph <$timestampGraphURI> {
+//         |     <$uri> <$timestampGraphURI> ?ts .
+//         |   }
+//         | } WHERE {
+//         |   graph <$timestampGraphURI> {
+//         |     <$uri> <$timestampGraphURI> ?ts .
+//         |   }
+//         | }""".stripMargin
+//    println( s"sparqlUpdate Query: $queryString")
+//    val res = sparqlUpdateQuery( queryString )
+//    println( s"sparqlUpdateQuery: $res")
+//    
+//    val time = lastModified(fromUri(uri), 1000)
+//    dataset.appendToGraph(makeUri(timestampGraphURI),
+//      makeGraph(Seq(makeTriple(
+//        uri,
+//        makeUri(timestampGraphURI),
+//        makeLiteral(time._2.toString, xsd.integer)))))
+//  }
 
   private def getETagFromDataset(uri: Rdf#URI, dataset: DATASET): String = {
 	  val queryString = s"""
@@ -316,7 +321,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
             if (dateString != "") {
               val date: java.util.Date = DateUtils.parseDate(dateString) // from apache http-components
               println("RDFCacheAlgo.lastModified: responseCode: " + responseCode +
-                ", date: " + date )
+                ", date: " + date + ", dateString " + dateString)
               (true, 200 <= responseCode && responseCode <= 399, date.getTime())
             } else (false, false, Long.MaxValue)
           }
