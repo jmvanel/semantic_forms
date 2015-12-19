@@ -39,15 +39,22 @@ object Application extends Controller
     Action { implicit request =>
       println("displayURI: " + request)
       println("displayURI: " + Edit)
-      //      val pageLabel = labelForURI(uri, lang)
-//      val userInfo = displayUser(userid, uri, pageLabel, lang)
       val lang = chooseLanguage(request)
       outputMainPage(
         htmlForm(uri, blanknode, editable = Edit != "",
         lang), lang )
     }
   }
-  
+
+  def form(uri: String, blankNode: String = "", Edit: String = "") = {
+    Action { implicit request =>
+      println("form: " + request + " displayURI: " + Edit)
+      val lang = chooseLanguage(request)
+      Ok(htmlFormElemJustFields(uri: String, hrefDisplayPrefix, blankNode,
+        editable = Edit != "", lang))
+    }
+  }
+    
   /** generate a Main Page wrapping given XHTML content */
   private def outputMainPage( content: NodeSeq,
       lang: String, userInfo: NodeSeq = <div/> )

@@ -37,8 +37,11 @@ trait FormSaver[Rdf <: RDF, DATASET]
    * @param map a raw map of HTTP response parameters
    * transactional
    */
-  def saveTriples(httpParamsMap: Map[String, Seq[String]]) = {
+  def saveTriples(httpParamsMap: Map[String, Seq[String]])
+      ( implicit userURI: String = "" )
+      = {
     logger.debug(s"FormSaver.saveTriples httpParamsMap $httpParamsMap")
+    println("saveTriples: userURI " + userURI )
     val uriArgs = httpParamsMap.getOrElse("uri", Seq())
     val subjectUriOption = uriArgs.find { uri => uri != "" }
     val graphURIOption = httpParamsMap.getOrElse("graphURI", Seq()).headOption

@@ -83,13 +83,13 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     lang: String = "en",
     graphURI: String = "",
     formGroup: String = fromUri(nullURI))
-    (implicit graph: Rdf#Graph)
     : NodeSeq = {
 
     // TODO for comprehension like in htmlForm()
 
     val (graphURIActual, _) = doRetrieveURI(uri, blankNode, graphURI)
-    val htmlFormTry = dataset.r({
+    val htmlFormTry = dataset.rw({
+      implicit val graph: Rdf#Graph = allNamedGraph
       val form = createAbstractForm(
 //          graph, 
           uri, editable, lang, blankNode,

@@ -9,6 +9,8 @@ POST    /save               controllers.Application.saveAction()
 GET     /create             controllers.Application.createAction()
 
 GET     /download           controllers.Application.downloadAction( url:String )
+GET     /form               controllers.Application.form(displayuri:String, blanknode:String ?= "", Edit:String?="")
+
 
 GET     /sparql             controllers.Application.sparql( query:String )
 POST    /sparql             controllers.Application.sparql( query:String )

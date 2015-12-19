@@ -20,7 +20,7 @@ class TestAuth extends FunSuite
 
   test("signin") {
     val request = FakeRequest(Helpers.POST,
-        s"register?userid=${java.net.URLEncoder.encode(loginName)}&password=$pw&confirmPassword=$pw")
+        s"register?userid=${java.net.URLEncoder.encode(loginName, "utf-8")}&password=$pw&confirmPassword=$pw")
     val result = controllers.Auth.register()(request)
     val content = contentAsString(result)(timeout)
     //    info("GET: contentAsString: " + content)

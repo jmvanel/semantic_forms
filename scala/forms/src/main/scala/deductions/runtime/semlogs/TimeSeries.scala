@@ -28,7 +28,8 @@ with SPARQLHelpers[Rdf, DATASET] {
    * save all `addedTriples` to a specific new named graph,
    * and add timestamp metadata to default graph;
    * another implementation could save other triples (typically an aggregated value), but always
-   * in the named graph whose name is computed by makeGraphURIAndMetadata()
+   * in the named graph whose name is computed by makeGraphURIAndMetadata();
+   * transactional
    */
   override def notifyDataEvent(addedTriples: Seq[Rdf#Triple],
       removedTriples: Seq[Rdf#Triple])(implicit userURI: String) = {
@@ -47,7 +48,6 @@ with SPARQLHelpers[Rdf, DATASET] {
   /** make Graph URI And associated Metadata for saving data at a current date & time */
   def makeGraphURIAndMetadata(addedTriples: Seq[Rdf#Triple], 
       removedTriples: Seq[Rdf#Triple])(implicit userURI: String): (Rdf#URI, Rdf#Graph)= {
-    
 	  val timestamp = (new Date).getTime
 			  val graphName = addedTriples.head.subject.toString() + "#" + timestamp
 			  val graphUri = URI(graphName)
@@ -56,10 +56,13 @@ with SPARQLHelpers[Rdf, DATASET] {
         -- userPredURI ->- URI(userURI)).graph
          ( graphUri, metadata ) 
   }
+
   /** get Time Series from accumulated values with timestamp;
    *  @return a Map from label to a seq of time & value pairs;
    *  the time is a Unix time obtained by Date.getTime,
-   *  the value is a double */
+   *  the value is a double;
+   * NON transactional
+   */
   def getTimeSeries( predicateURI: String = "urn:average")(implicit userURI: String):
 //  Seq[( String, Map[Long, Float] )] = {
   Map[ String, Seq[(BigInteger, Double)] ] = {
@@ -75,8 +78,7 @@ with SPARQLHelpers[Rdf, DATASET] {
       }  """
     println("query " + query)
     val res = sparqlSelectQueryVariables( query, Seq("TS", "AV", "LAB"), dataset2 )
-    // res is a  List[Set[Rdf.Node]] each Set containing:
-    // Long, Float, String
+    // res is a  List[Set[Rdf.Node]] each Set containing: Long, Float, String
 //    println("res " + res)
 
     val res2 = res.groupBy{ elem => foldNode(elem.toSeq(2))(

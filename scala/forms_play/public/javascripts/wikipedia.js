@@ -6,6 +6,7 @@
 var resultsCount=20;
 var urlReqPrefix = "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=" +
       resultsCount + "&QueryString=" ;
+//var urlReqPrefix = "/lookup?q=";
 var req = new XMLHttpRequest();
 
 function dbpediaComplete( inputElement, callback ) {

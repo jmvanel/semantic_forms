@@ -128,6 +128,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
               makeUri(uri),
               dataset)
 
+            // TODO should be done in FormSaver 
             println(s"Search in $uri duplicate graph rooted at blank node: size " + ops.getTriples(resRetrieve.get).size)
             manageBlankNodesReload(resRetrieve.getOrElse(emptyGraph), URI(uri), dataset: DATASET)
 
@@ -160,6 +161,13 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       <div class="row">Enter an URI</div>
   }
 
+  def htmlFormElemJustFieldsTR(uri: String, hrefPrefix: String = "", blankNode: String = "",
+                               editable: Boolean = false, lang: String): NodeSeq = {
+    dataset.rw({
+      htmlFormElemJustFields(uri, hrefPrefix, blankNode, editable, lang)
+    }) . get
+  }
+  
   private def htmlFormOLD(uri0: String, blankNode: String = "",
     editable: Boolean = false,
     lang: String = "en")
@@ -194,8 +202,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       }
     </div>
   }
-
-
+  
   /** NON transactional */
   def labelForURI(uri: String, language: String)
   (implicit graph: Rdf#Graph)
