@@ -163,9 +163,9 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
   def htmlFormElemJustFieldsTR(uri: String, hrefPrefix: String = "", blankNode: String = "",
                                editable: Boolean = false, lang: String): NodeSeq = {
-    dataset.rw({
+//    dataset.rw({
       htmlFormElemJustFields(uri, hrefPrefix, blankNode, editable, lang)
-    }) . get
+//    }) . get
   }
   
   private def htmlFormOLD(uri0: String, blankNode: String = "",
