@@ -197,7 +197,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
 
-    val entries = for (prop <- props) yield {
+    val entries = for (
+        prop <- props
+        if prop != displayLabelPred ) yield {
       logger.debug(s"createForm subject $subject, prop $prop")
       val ranges = objectsQuery(prop, rdfs.range)
       val rangesSize = ranges.size
