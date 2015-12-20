@@ -24,7 +24,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   val dataset3 = createDatabase("TDBlabels")
    */
   val labelsGraphUriPrefix = "urn:/semforms/labelsGraphUri/"
-  val displayLabelPred = URI("displayLabel")
+  val displayLabelPred = URI("urn:displayLabel")
 
   /** NON transactional, needs rw transaction */
   override def instanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
@@ -35,14 +35,14 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   }
 
   def instanceLabelFromTDB(node: Rdf#Node, lang: String): String = {
-//	  println("instanceLabelFromTDB node " + node )
+//	  println(s"""instanceLabelFromTDB node "$node" """ )
     val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
     val labelsGraph0 = dataset.getGraph(labelsGraphUri)
 //	  println( s"instanceLabelFromTDB after dataset3.getGraph(labelsGraphUri) $dataset3 $labelsGraph0" )
     val labelsGraph = labelsGraph0.get
-//	  println("instanceLabelFromTDB after labelsGraph.get" + labelsGraph)
+//	  println( s"instanceLabelFromTDB after labelsGraph.get $labelsGraphUri $labelsGraph")
     val displayLabelsIt = find(labelsGraph, node, displayLabelPred, ANY)
-//	  println("instanceLabelFromTDB after find(labelsGraph, node, displayLabelPred, ANY)" )
+//	  println(s"instanceLabelFromTDB after find(labelsGraph, node, displayLabelPred, ANY)" )
     displayLabelsIt.toIterable match {
       case it if (!it.isEmpty) =>
         // println( s"recover displayLabel from TDB: $node" )
@@ -54,6 +54,11 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     }
   }
 
+  override def instanceLabels(list: Seq[Rdf#Node], lang: String = "")
+  (implicit graph: Rdf#Graph): Seq[String] =
+    list.map { node => instanceLabelFromTDB(node, lang)
+  }
+    
   def replaceInstanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
     val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
     val label = computeInstanceLabel(node, graph, lang)

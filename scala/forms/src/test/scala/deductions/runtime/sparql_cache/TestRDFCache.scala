@@ -37,7 +37,7 @@ class TestRDFCache extends FunSuite with RDFCache
       val g = rdfStore.getGraph(dataset, uriNode)
       g
     })
-    println("rdfStore.getGraph( dataset, uriNode).get " + g.get)
+    //    println("rdfStore.getGraph( dataset, uriNode).get " + g.get)
     checkNamedGraph(uri)
   }
 
@@ -68,8 +68,7 @@ class TestRDFCache extends FunSuite with RDFCache
 
       val r = result.get
       val size = r.size()
-      println("size " + size)
-      println(r)
+      println("checkNamedGraph size " + size)
       assert(size > 0)
     })
   }

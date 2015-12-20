@@ -95,7 +95,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     with Configuration
     with Timer {
 
+  // TODO not thread safe: form is not rebuild for each HTTP request 
   var preferedLanguage: String = "en"
+  
   val defaults: FormDefaults = FormModule.formDefaults
   
   import ops._
@@ -189,6 +191,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
     logger.debug(s"createForm subject $subject, props $props")
     println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
+    implicit val lang = preferedLanguage
+    
     val rdfh = this
     
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
@@ -210,6 +214,11 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val fields2 = addTypeTriple(subject, classs, fields)
     val formSyntax = FormSyntax(subject, fields2, classs)
     addAllPossibleValues(formSyntax, valuesFromFormGroup)
+    
+    val foaf = org.w3.banana.FOAFPrefix[Rdf]
+//    println( "formSyntax.possibleValuesMap.get( foaf.knows )\n\t" +
+//        formSyntax.possibleValuesMap.get( foaf.knows ) )
+    
     logger.debug(s"createForm " + this)
     val res = time(s"updateFormFromConfig()",
       updateFormFromConfig(formSyntax, formConfig))
@@ -394,7 +403,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         result += entry
     }
 
-    logger.info("result: Entry's " + result)
+    logger.debug("result: Entry's " + result)
     result
   }
 

@@ -20,6 +20,8 @@ import org.w3.banana.jena.JenaModule
 import com.hp.hpl.jena.query.Dataset
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.services.SPARQLHelpers
+import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
+import deductions.runtime.services.Configuration
 
 /**
  * Test Creation Form from class URI, without form specification
@@ -32,8 +34,12 @@ class TestCreationForm extends FunSuite
     //    with BeforeAndAfterAll
     with RDFStoreLocalJena1Provider
     with SPARQLHelpers[Jena, Dataset]
-    // [Rdf <: RDF, DATASET]
-    with BeforeAndAfter {
+    with InstanceLabelsInferenceMemory[Jena, Dataset]
+    with BeforeAndAfter
+    with Configuration // [Rdf <: RDF, DATASET]
+    {
+
+  override val lookup_domain_unionOf = true
 
   val logger = Logger.getRootLogger()
   import ops._
@@ -75,16 +81,20 @@ class TestCreationForm extends FunSuite
   }
 
   test("display form from class with instance for possible values") {
-    val classUri = // "http://usefulinc.com/ns/doap#Project"
-      //       foaf.Organization
-      foaf.Person
+    val classUri = foaf.Person
+    // "http://usefulinc.com/ns/doap#Project"
+    //       foaf.Organization
     retrieveURI(URI(foaf.prefixIri), dataset)
     // to test possible values generation with foaf:knows :
-    retrieveURI(URI("http://jmvanel.free.fr/jmv.rdf#me"), dataset)
-
-    implicit val graph =
-      rdfStore.rw(dataset, { allNamedGraph }).get
-    val rawForm = createElem(classUri.toString(), lang = "fr")
+    val subjectURI = URI("http://jmvanel.free.fr/jmv.rdf#me")
+    retrieveURI(subjectURI, dataset)
+    val lang = "fr"
+    rdfStore.rw(dataset, {
+      replaceInstanceLabel(subjectURI, allNamedGraph, lang)
+    })
+    val rawForm = create(classUri.toString(), lang = lang).get
+    //    val rawForm = createElem(classUri.toString(), lang = "fr")
+    //    val rawForm = createFormFromClass(classUri )
     val form = TestCreationForm.wrapWithHTML(rawForm)
     TestCreationForm.printWrapedWithHTML(rawForm, "/tmp/example.creation.form.html")
     assert(rawForm.toString().contains("topic_interest"))
@@ -103,7 +113,8 @@ class TestCreationForm extends FunSuite
         allNamedGraph
       }).get
     //    implicit val graph = rdfStore.rw(dataset, { allNamedGraph }).get
-    val rawForm = createElem("Person", lang = "fr")
+    //    val rawForm = createElem("Person", lang = "fr")
+    val rawForm = create("Person", lang = "fr").get
     val form = TestCreationForm.wrapWithHTML(rawForm)
     val file = "example.creation.form2.html"
     Files.write(Paths.get(file), form.toString().getBytes);

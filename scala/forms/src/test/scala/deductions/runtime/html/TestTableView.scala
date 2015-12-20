@@ -2,22 +2,22 @@ package deductions.runtime.html
 
 import java.nio.file.Files
 import java.nio.file.Paths
-
 import org.apache.log4j.Logger
 import org.junit.Assert
 import org.scalatest.Finders
 import org.scalatest.FunSuite
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
-
 import com.hp.hpl.jena.query.Dataset
-
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import deductions.runtime.utils.FileUtils
+import org.scalatest.BeforeAndAfter
 
 class TestTableView extends FunSuite
     with JenaModule
     with TableViewModule[Jena, Dataset]
-    with RDFStoreLocalJena1Provider {
+    with RDFStoreLocalJena1Provider
+    with BeforeAndAfter {
 
   val logger = Logger.getRootLogger()
   lazy implicit val allNamedGraphs = allNamedGraph
@@ -31,6 +31,15 @@ class TestTableView extends FunSuite
     //    if(correct)
     Files.write(Paths.get("example.form.foaf.html"), result.getBytes)
     Assert.assertTrue("""result.contains("Jean-Marc")""", correct)
+  }
+
+  before {
+    println("!! before")
+    println("empty Local SPARQL")
+    rdfStore.rw(dataset, {
+      dataset.asDatasetGraph().clear()
+    })
+    //    FileUtils.deleteLocalSPARQL()
   }
 
   //  test("display form dbpedia") {

@@ -14,7 +14,7 @@ trait CSS {
                    background-color: lightcoral; }
       .form-input{ display: table-cell; width: 500px;
                    border-collapse: separate;
-                   border-width: 10px;}
+                   border-width: 2px;}
       .form-value{ display: table-cell; width: 500px;
                    border-collapse: separate;
                    border-width: 10px; }

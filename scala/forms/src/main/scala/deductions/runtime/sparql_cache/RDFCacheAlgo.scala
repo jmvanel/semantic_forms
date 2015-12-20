@@ -106,7 +106,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * with transaction, in a Future
    */
   def updateLocalVersion(uri: Rdf#URI, dataset: DATASET) = {
-    val future = Future {
+//    val future = Future {
       dataset.rw({
         val localTimestamp = getTimestampFromDataset(uri, dataset)
         localTimestamp match {
@@ -142,8 +142,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
             println(s"$uri had no localTimestamp ($fail); downloaded.")
         }
       })
-    }
-    future
+//    }
+//    future
   }
 
   /**

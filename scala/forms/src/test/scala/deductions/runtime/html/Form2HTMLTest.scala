@@ -33,7 +33,6 @@ class Form2HTMLTest
       val nullURI = nullURI1 // Ops.makeURI("")
     }
     val xhtml = fh.generateHTML(createFormWithGivenProps())
-    System.out.println(xhtml)
     Files.write(Paths.get("tmp.form.html"), xhtml.toString().getBytes);
     Assert.assertTrue(xhtml.toString().contains("Alexandre"))
   }

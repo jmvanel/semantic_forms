@@ -21,7 +21,7 @@ trait Configuration {
   val showDomainlessProperties = false
   val addRDFS_label_comment = true
 
-  val lookup_domain_unionOf = true // false
+  val lookup_domain_unionOf = false // is slow !!!
 
   val use_dbpedia_lookup = false
   val use_local_lookup = true

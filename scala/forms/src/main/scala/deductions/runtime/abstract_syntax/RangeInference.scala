@@ -27,7 +27,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
     extends RDFOPerationsDB[Rdf, DATASET]
     with RDFHelpers[Rdf]
     with InstanceLabelsInferenceMemory[Rdf, DATASET]
-    //with InstanceLabelsInference2[Rdf]
+//    with InstanceLabelsInference2[Rdf]
     with FormModule[Rdf#Node, Rdf#URI]
     with PossibleValues[Rdf]
     with SPARQLHelpers[Rdf, DATASET]
@@ -44,7 +44,9 @@ trait RangeInference[Rdf <: RDF, DATASET]
 
   /** add Possible Values to all entry Fields */
   def addAllPossibleValues(formSyntax: FormSyntax,
-                           valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)])(implicit graph: Rdf#Graph) = {
+                           valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)])(
+                               implicit graph: Rdf#Graph,
+                               lang: String = "en") = {
     for (field <- formSyntax.fields) {
     	val ranges = objectsQuery( field.property, rdfs.range)
       formSyntax.possibleValuesMap.put(field.property,
@@ -57,7 +59,8 @@ trait RangeInference[Rdf <: RDF, DATASET]
     entryField: Entry,
     ranges: Set[Rdf#Node],
     valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)])
-  (implicit graph: Rdf#Graph )
+  (implicit graph: Rdf#Graph,
+      lang: String = "en" )
 //  : Entry
     : Seq[(Rdf#Node, Rdf#Node)]
   = {
@@ -94,13 +97,13 @@ trait RangeInference[Rdf <: RDF, DATASET]
             uri => {
               val list = nodeSeqToURISeq(rdfh.rdfListToSeq(Some(uri)))
               possibleValues.appendAll(
-                list zip instanceLabels(list).map { s => makeLiteral(s, xsd.string) })
+                list zip instanceLabels(list, lang).map { s => makeLiteral(s, xsd.string) })
             },
             x => {
               println(s"fillPossibleValuesFromList bnode $x")
               val list = rdfh.rdfListToSeq(Some(x))
               possibleValues.appendAll(
-                list zip instanceLabels(list).map { s => makeLiteral(s, xsd.string) })
+                list zip instanceLabels(list, lang).map { s => makeLiteral(s, xsd.string) })
             },
             x => { println(s"lit $x"); () })
 
@@ -149,21 +152,24 @@ trait RangeInference[Rdf <: RDF, DATASET]
     }
     
     /**
-       * fill Possible Values into `possibleValues`
+       * return Possible Values into Seq of pairs (nodeId, label),
        * from given list `enumerated`, which typically comes
        *  from existing triples with relevant rdf:type
-       *  TODO should use a yield, not an ArrayBuffer
        */
       def fillPossibleValues(enumerated: Iterable[Rdf#Node] ):
         Seq[(Rdf#Node, Rdf#Node)] = {
         val uriAndInstanceLabels = enumerated.toSeq.map {
           enum =>
             foldNode(enum)(
-              uri => (uri, instanceLabel(uri, graph, "")),
-              x => (x, instanceLabel(x, graph, "")),
+//              uri => (uri, uri.toString() ),
+//              x => (x, x.toString() ),
+              uri => (uri, instanceLabelFromTDB(uri, lang)),
+              x => (x, instanceLabelFromTDB(x, lang)),
               x => (x, ""))
         }
-        val sortedInstanceLabels = uriAndInstanceLabels.toSeq.sortBy { e => e._2 }
+//        println(s"""fillPossibleValues uriAndInstanceLabels class ${uriAndInstanceLabels.getClass} size """ )
+//        println( uriAndInstanceLabels.size)
+        val sortedInstanceLabels = uriAndInstanceLabels.sortBy { e => e._2 }
           sortedInstanceLabels.map {
         	  c => (c._1, makeLiteral(c._2, xsd.string))
           }
@@ -191,11 +197,13 @@ trait RangeInference[Rdf <: RDF, DATASET]
 
     def getInstancesAndLabels(rangeClass: Rdf#Node): Seq[(Rdf#Node, Rdf#Node)] = {
       if (rangeClass != owl.Thing) {
-        val enumerated = getSubjects(graph, rdf.typ, rangeClass)
+        val enumerated = getSubjects(graph, rdf.typ, rangeClass).toSeq
+//        println( s"getInstancesAndLabels rangeClass $rangeClass size " + enumerated.size )
         val possibleValues2 = fillPossibleValues(enumerated)
         val subClasses = getSubjects(graph, rdfs.subClassOf, rangeClass)
         val r = for (subClass <- subClasses) yield {
-          val subClassesValues = getSubjects(graph, rdf.typ, subClass)
+          val subClassesValues = getSubjects(graph, rdf.typ, subClass).toSeq
+//          println( s"getInstancesAndLabels subClass $subClass size " + enumerated.size )
           val possibleValues3 = fillPossibleValues(subClassesValues)
           possibleValues3
         }
