@@ -26,7 +26,8 @@ function launchEditorWindow( elem /* input */ ) {
     editor: editorDiv,
     class: 'pen',
     list: // editor menu list
-    [ 'insertimage', 'blockquote', 'h2', 'h3', 'p', 'code', 'insertorderedlist', 'insertunorderedlist', 'inserthorizontalrule',
+    [ 'insertimage', 'blockquote', 'h2', 'h3', 'p', 'code',
+      'insertorderedlist', 'insertunorderedlist', 'inserthorizontalrule',
       'indent', 'outdent', 'bold', 'italic', 'underline', 'createlink' ]
   }
   editorDiv.innerHTML = elem.value;
