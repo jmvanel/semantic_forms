@@ -1,11 +1,14 @@
 package deductions.runtime.html
 
+import scala.io.Source
+
 trait JavaScript {
 
-  /** TODO write in Scala.JS & compile */
-  private val javascriptCode =
+  /** written now in Scala.JS */
+  private lazy val javascriptCode_native =
     // Prevent Scala from escaping double quotes in XML unnecessarily
-    scala.xml.Unparsed(
+    //    scala.xml.Unparsed
+    (
       """
 function launchEditorWindow( elem /* input */ ) {  
   var popupWindow = window.open('', 'Edit_Markdown_text_for_semantic_forms',
@@ -51,6 +54,22 @@ function launchEditorWindow( elem /* input */ ) {
   };
 };
   """)
+
+  /** compiled from Scala.js */
+  private val javascriptCode = {
+    val source = Source.fromURL(
+      getClass.getResource("/deductions/runtime/js/forms_js-fastopt.js"))
+    val result = source.mkString
+    source.close()
+    scala.xml.Unparsed(
+      result +
+        """
+        ////////////////////////////
+        deductions.runtime.js.PopupEditor().main();
+        function launchEditorWindow(input){
+          deductions.runtime.js.PopupEditor().launchEditorWindow(input); };
+      """)
+  }
 
   // See https://github.com/sofish/pen
   lazy val localJS =

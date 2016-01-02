@@ -15,63 +15,66 @@ object PopupEditor extends JSApp {
   def main() = ()
 
   @JSExport
-  def launchEditorWindow(elem: html.Input): Unit = {
-    val popupWindow = dom.window.open("", "Edit_Markdown_text_for_semantic_forms",
+  def launchEditorWindow(input: html.Input): Unit = {
+    val popupWindow = dom.window.open("",
+      "Edit_Markdown_text_for_semantic_forms",
       "height=500,width=500,resizable=yes,modal=yes")
-    val closeButton = popupWindow.document.createElement("button").
-      asInstanceOf[html.Button]
-    closeButton.innerHTML = "SAVE"
-    closeButton.textContent = "SAVE"
-    // TODO "DISMISS" button
+    val closeButton = makeButton(popupWindow, "SAVE")
+    val exitButton = makeButton(popupWindow, "DISMISS")
 
     val editorDiv = popupWindow.document.createElement("div")
-    val options = // Map
-      literal {
-        "editor" -> editorDiv;
-        "class" -> "pen";
-        "list" -> // editor menu list
-          js.Array("insertimage", "blockquote", "h2", "h3", "p", "code",
-            "insertorderedlist", "insertunorderedlist", "inserthorizontalrule",
-            "indent", "outdent", "bold", "italic", "underline", "createlink")
-      }
+    val body = popupWindow.document.body
+    body.appendChild(closeButton)
+    body.appendChild(exitButton)
+    body.appendChild(editorDiv)
     
-//    val document = js.Dynamic.global.document
-//    val playground = document.getElementById("playground")
-
-    // ochrons 15:16 as the docs say, 
-    //val today = js.Dynamic.newInstance(js.Dynamic.global.Date)()
+    val options = literal(
+      "editor" -> editorDiv,
+      "class" -> "pen",
+      "list" -> // editor menu list
+        js.Array("insertimage", "blockquote", "h2", "h3", "p", "code",
+          "insertorderedlist", "insertunorderedlist", "inserthorizontalrule",
+          "indent", "outdent", "bold", "italic", "underline", "createlink")
+    )
     val pen = js.Dynamic.global.Pen
     val editor = js.Dynamic.newInstance(pen)(options)
-    //  val editor = new Pen( options )
-    
-    popupWindow.document.body.appendChild(closeButton)
-    popupWindow.document.body.appendChild(editorDiv)
 
-    editorDiv.innerHTML = elem.value
-    if (elem.value == "")
+    editorDiv.innerHTML = input.value
+    if (input.value == "")
       editorDiv.innerHTML = "?"
 
     // to avoid message "data you have entered may not be saved."
-    dom.window.onbeforeunload = (_:BeforeUnloadEvent) => {
-      dom.console.log( "popupWindow.onbeforeunload")
+    dom.window.onbeforeunload = (_: BeforeUnloadEvent) => {
+      log("popupWindow.onbeforeunload")
     }
 
     def onClose() = {
-      dom.console.log("popupWindow.onunload")
+      log("popupWindow.onunload")
       val md = editor.toMd().toString() // return a markdown string
-      if (md != elem.value) {
-        dom.console.log("popupWindow.onunload: saving because " + md +
-          " != " + elem.value)
-        elem.value = md
+      if (md != input.value) {
+          log("popupWindow.onunload: saving because " + md +
+            " != " + input.value)
+          input.value = md
       } else {
-        dom.console.log("popupWindow.onunload: nothing to save")
+        log("popupWindow.onunload: nothing to save")
       }
-      popupWindow.document.body.innerHTML = ""
+      body.innerHTML = ""
     }
 
-    closeButton.onclick = ( _: dom.MouseEvent ) => {
-      onClose(); popupWindow.close()
+    closeButton.onclick = (_: dom.MouseEvent) => {
+      onClose();
+      popupWindow.close()
     }
+    exitButton.onclick = (_: dom.MouseEvent) => popupWindow.close()
   }
 
+  def makeButton(window: org.scalajs.dom.raw.Window, label: String): html.Button = {
+    val button = window.document.createElement("button").
+      asInstanceOf[html.Button]
+    button.innerHTML = label
+    button.textContent = label
+    button
+  }
+
+  def log(m: String) = dom.console.log(m)
 }

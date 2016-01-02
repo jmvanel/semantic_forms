@@ -48,7 +48,6 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % Test
 // libraryDependencies += "io.gatling.highcharts" % "gatling-charts-highcharts" % "2.1.7" % Test
 
 
-resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
 // resolvers += "spray repo" at "http://repo.spray.io"
 // resolvers += Resolver.mavenLocal
 
