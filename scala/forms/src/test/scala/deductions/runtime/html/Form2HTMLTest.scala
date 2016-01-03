@@ -28,10 +28,8 @@ class Form2HTMLTest
   val nullURI1 = makeUri("")
 
   test("Test HTML") {
-    val fh = new Form2HTML[Rdf#Node, Rdf#URI] {
-      //      override 
-      val nullURI = nullURI1 // Ops.makeURI("")
-    }
+    val ops1 = ops;
+    val fh = new Form2HTMLBanana[Rdf] { val ops = ops1 }
     val xhtml = fh.generateHTML(createFormWithGivenProps())
     Files.write(Paths.get("tmp.form.html"), xhtml.toString().getBytes);
     Assert.assertTrue(xhtml.toString().contains("Alexandre"))

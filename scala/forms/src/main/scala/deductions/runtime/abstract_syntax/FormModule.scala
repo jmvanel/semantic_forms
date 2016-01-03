@@ -64,8 +64,6 @@ trait FormModule[NODE, URI <: NODE] {
    */
   sealed abstract case class Entry(
       val label: String, val comment: String,
-      // TODO for multi-subject forms:
-      // val subject: NODE = nullURI,
       val property: NODE = nullURI,
       /** unused yet :( */
       val mandatory: Boolean = false,
@@ -75,7 +73,10 @@ trait FormModule[NODE, URI <: NODE] {
       var widgetType: WidgetType = Text,
       var openChoice: Boolean = true,
       var possibleValues: Seq[(NODE, NODE)] = Seq(),
-      val defaults: FormDefaults = FormModule.formDefaults) {
+      val defaults: FormDefaults = FormModule.formDefaults,
+      // for multi-subject forms:
+      val subject: NODE = nullURI
+	) {
     private val triples: mutable.Buffer[Triple] = mutable.ListBuffer[Triple]()
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]): Entry
     override def toString(): String = {

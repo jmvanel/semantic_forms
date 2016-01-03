@@ -90,15 +90,12 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     val (graphURIActual, _) = doRetrieveURI(uri, blankNode, graphURI)
     val htmlFormTry = dataset.rw({
       implicit val graph: Rdf#Graph = allNamedGraph
+      val ops1 = ops;
       val form = createAbstractForm(
 //          graph, 
           uri, editable, lang, blankNode,
         URI(formGroup))
-      // new Form2HTMLBanana[Rdf] {}. // TODO
-      new Form2HTML[Rdf#Node, Rdf#URI] {
-        override def toPlainString(n: Rdf#Node): String =
-          foldNode(n)(fromUri(_), fromBNode(_), fromLiteral(_)._1)
-      }.
+      new Form2HTMLBanana[Rdf] { val ops = ops1 } .
         generateHTMLJustFields(form,
           hrefPrefix, editable, graphURIActual)
     })
@@ -209,12 +206,9 @@ trait TableViewModule[Rdf <: RDF, DATASET]
       createAbstractForm(
 //          graph,
           uri, editable, lang, blankNode, formGroup))
+    val ops1 = ops;
     val htmlFormGen = time("new Form2HTML",
-      // new Form2HTMLBanana[Rdf] {}. // TODO
-      new Form2HTML[Rdf#Node, Rdf#URI] {
-        override def toPlainString(n: Rdf#Node): String =
-          foldNode(n)(fromUri(_), fromBNode(_), fromLiteral(_)._1)
-      }
+      new Form2HTMLBanana[Rdf] { val ops = ops1 }
     )
     val htmlForm = htmlFormGen.
       generateHTML(form, hrefPrefix, editable, actionURI, graphURI,

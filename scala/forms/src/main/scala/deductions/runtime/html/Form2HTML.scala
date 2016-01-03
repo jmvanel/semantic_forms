@@ -19,14 +19,14 @@ import deductions.runtime.utils.Timer
  * different modes: display or edit;
  *  takes in account datatype
  */
-trait Form2HTML[NODE, URI <: NODE]
+private [html] trait Form2HTML[NODE, URI <: NODE]
     extends Timer
     with CSS
     with JavaScript
-    // TODO: extends HTML5TypesTrait
 //    with FormModule[NODE, URI]
-    {
-  import HTML5Types._
+{
+  self: HTML5Types =>
+
   type fm = FormModule[NODE, URI]
   type Entry = fm#Entry
   

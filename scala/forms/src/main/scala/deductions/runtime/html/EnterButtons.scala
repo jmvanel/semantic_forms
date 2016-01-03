@@ -3,6 +3,7 @@ package deductions.runtime.html
 import deductions.runtime.services.Configuration
 import deductions.runtime.utils.I18NMessages
 
+/** Buttons for loading/display/edit, searh, and create */
 trait EnterButtons extends Configuration {
 
   def message(key: String)(implicit lang: String) = I18NMessages.get(key, lang)

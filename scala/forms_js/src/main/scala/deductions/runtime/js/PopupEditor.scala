@@ -31,6 +31,7 @@ object PopupEditor extends JSApp {
     val options = literal(
       "editor" -> editorDiv,
       "class" -> "pen",
+      "debug" -> true,
       "list" -> // editor menu list
         js.Array("insertimage", "blockquote", "h2", "h3", "p", "code",
           "insertorderedlist", "insertunorderedlist", "inserthorizontalrule",
@@ -50,11 +51,12 @@ object PopupEditor extends JSApp {
 
     def onClose() = {
       log("popupWindow.onunload")
-      val md = editor.toMd().toString() // return a markdown string
-      if (md != input.value) {
-          log("popupWindow.onunload: saving because " + md +
+      val stringToSave = editor.toMd().toString() // return a markdown string
+      log("popupWindow.onunload stringToSave " + stringToSave )
+      if (stringToSave != input.value) {
+          log("popupWindow.onunload: saving because " + stringToSave +
             " != " + input.value)
-          input.value = md
+          input.value = stringToSave
       } else {
         log("popupWindow.onunload: nothing to save")
       }

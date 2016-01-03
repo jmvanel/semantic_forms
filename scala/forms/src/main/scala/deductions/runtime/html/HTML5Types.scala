@@ -1,23 +1,33 @@
 package deductions.runtime.html
 
-import org.w3.banana.jena.JenaModule
+//import org.w3.banana.jena.JenaModule
 import org.w3.banana.RDFOpsModule
 import org.w3.banana.XSDPrefix
+import org.w3.banana.RDF
+//import org.w3.banana.jena.Jena
+import org.w3.banana.RDFOps
 
-object HTML5Types extends JenaModule with HTML5TypesTrait
+//object HTML5TypesJena extends JenaModule with HTML5TypesTrait[Jena]
+
+trait HTML5Types {
+    def xsd2html5TnputType(xsdDatatype: String): String
+}
 
 /**
  * HTML5 input type correspondence to XML Schema (XSD) datatypes
  *  TODO : intervals
  */
-trait HTML5TypesTrait extends RDFOpsModule {
+trait HTML5TypesTrait[Rdf <: RDF] extends HTML5Types {
+  implicit val ops: RDFOps[Rdf]
   import ops._
-  lazy val xsd = XSDPrefix[Rdf]
 
-  def xsd2html5TnputType(xsdDatatype: String): String = xsd2html5.getOrElse(URI(xsdDatatype), "text")
+  private lazy val xsd = XSDPrefix[Rdf]
+
+  def xsd2html5TnputType(xsdDatatype: String): String =
+    xsd2html5.getOrElse(URI(xsdDatatype), "text")
 
   /** see http://www.w3.org/TR/html-markup/input.html */
-  val xsd2html5 = Map[Rdf#URI, String](
+  lazy val xsd2html5 = Map[Rdf#URI, String](
     xsd.integer -> "number",
     xsd.int -> "number",
     xsd.float -> "number",

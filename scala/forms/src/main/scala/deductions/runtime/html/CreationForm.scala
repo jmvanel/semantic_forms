@@ -12,6 +12,7 @@ import deductions.runtime.services.Configuration
 trait CreationFormAlgo[Rdf <: RDF, DATASET]
 extends RDFCacheAlgo[Rdf, DATASET]
 with UnfilledFormFactory[Rdf, DATASET]
+with HTML5TypesTrait[Rdf]
 with Configuration {
   import ops._
   import rdfStore.transactorSyntax._
@@ -33,10 +34,8 @@ with Configuration {
       val form = factory.createFormFromClass(
         URI(classUri),
         formSpecURI);
-      new Form2HTML[Rdf#Node, Rdf#URI] {
-        override def toPlainString(n: Rdf#Node): String =
-          foldNode(n)(fromUri(_), fromBNode(_), fromLiteral(_)._1)
-      }.
+      val ops1 = ops;
+      new Form2HTMLBanana[Rdf] { val ops = ops1 } .
         generateHTML(form, hrefPrefix = "", editable = true, actionURI = actionURI, lang=lang)
     })
   }

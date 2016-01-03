@@ -1,5 +1,7 @@
 enablePlugins(ScalaJSPlugin)
 
+scalaJSOptimizerOptions ~= { _.withDisableOptimizer(true) }
+
 organization := "deductions"
 
 name := "forms_js"

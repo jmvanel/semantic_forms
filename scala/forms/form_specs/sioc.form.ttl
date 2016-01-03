@@ -1,0 +1,27 @@
+@prefix sioc: <http://rdfs.org/sioc/ns#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix dc: <http://purl.org/dc/elements/1.1/>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix dcterms: <http://purl.org/dc/terms/>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#> .
+@prefix     : <http://deductions-software.com/ontologies/forms.owl.ttl#> .
+
+# form specifications for SIOC
+
+<sioc-Post_Form>
+  form:classDomain sioc:Post ;
+  form:showProperties (
+	rdfs:label rdfs:comment
+	sioc:content
+	dct:subject
+  ) ;
+  # to implement in semforms: "reverse" properties :
+  form:showReverseProperties ()
+.
+<owl-dct-subject1>
+	:fieldAppliesToForm <sioc-Post_Form> ;
+	:fieldAppliesToProperty dct:subject ;
+	:widgetClass form:DBPediaLookup .
+
