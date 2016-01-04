@@ -20,21 +20,19 @@ import deductions.runtime.utils.Timer
  *  takes in account datatype
  */
 private [html] trait Form2HTML[NODE, URI <: NODE]
-    extends Timer
+    extends Form2HTMLBase[NODE, URI]
+    with Form2HTMLDisplay[NODE, URI]
+    with Form2HTMLEdit[NODE, URI]
+   with Timer
     with CSS
-    with JavaScript
-//    with FormModule[NODE, URI]
-{
+    with JavaScript {
   self: HTML5Types =>
 
-  type fm = FormModule[NODE, URI]
-  type Entry = fm#Entry
-  
-  val radioForIntervals = false // TODO the choice should be moved to FormSyntaxFactory
-  val inputSize = 90
+  //  type fm = FormModule[NODE, URI]
+  //  type Entry = fm#Entry
 
-  //  def toPlainString[NODE](n: NODE): String = n.toString()
-  def toPlainString(n: NODE): String = n.toString()
+  //  val radioForIntervals = false // TODO the choice should be moved to FormSyntaxFactory
+  //  val inputSize = 90
 
   /**
    * render the given Form Syntax as HTML;
@@ -43,29 +41,32 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
    *  @param graphURI URI for named graph to save user inputs
    */
   def generateHTML(form: FormModule[NODE, URI]#FormSyntax,
-    hrefPrefix: String = "",
-    editable: Boolean = false,
-    actionURI: String = "/save", graphURI: String = "",
-    actionURI2: String = "/save", lang: String = "en" ): NodeSeq = {
+                   hrefPrefix: String = "",
+                   editable: Boolean = false,
+                   actionURI: String = "/save", graphURI: String = "",
+                   actionURI2: String = "/save", lang: String = "en"): NodeSeq = {
 
-    val htmlForm = time("generateHTMLJustFields",
+    val htmlFormFields = time("generateHTMLJustFields",
       generateHTMLJustFields(form, hrefPrefix, editable, graphURI))
-    def mess(m: String) =  I18NMessages.get(m, lang)  
 
-    if (editable)
+    def wrapFieldsWithForm(htmlFormFields: NodeSeq): NodeSeq =
       <form action={ actionURI } method="POST">
         <p class="text-right">
-          <input value={mess("SAVE")} type="submit" class="btn btn-primary btn-lg"/>
+          <input value={ mess("SAVE") } type="submit" class="btn btn-primary btn-lg"/>
         </p>
-        { htmlForm }
+        { htmlFormFields }
         <p class="text-right">
-          <input value={mess("SAVE")} type="submit" formaction={ actionURI2 } class="btn btn-primary btn-lg pull-right"/>
+          <input value={ mess("SAVE") } type="submit" formaction={ actionURI2 } class="btn btn-primary btn-lg pull-right"/>
         </p>
       </form>
-    else
-      htmlForm
-  }
+    def mess(m: String): String = message(m, lang)
 
+    if (editable)
+      wrapFieldsWithForm(htmlFormFields)
+    else
+      htmlFormFields
+  }
+  
   /**
    * generate HTML, but Just Fields;
    *  this lets application developers create their own submit button(s) and <form> tag
@@ -110,24 +111,43 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
       </div>
   }
 
-  private def makeFieldLabel(preceding: fm#Entry, field: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = {
-    // display field label only if different from preceding
-    if (preceding.label != field.label)
-      <label class={ cssClasses.formLabelCSSClass } title={
-        field.comment + " - " + field.property
-      } for={ makeHTMLIdResource(field) }>{
-        val label = field.label
-        // hack before real separators
-        if (label.contains("----"))
-          label.substring(1).replaceAll("-(-)+", "")
-        else label
-      }</label>
-    else
-      <label class={ cssClasses.formLabelCSSClass } title={
-        field.comment + " - " + field.property
-      }> -- </label>
+
+  private def createHTMLField(field: fm#Entry, editable: Boolean,
+    hrefPrefix: String = "")(implicit form: FormModule[NODE, URI]#FormSyntax): xml.NodeSeq = {
+
+    // hack instead of true form separator in the form spec in RDF:
+    if (field.label.contains("----"))
+      return <hr style="background:#F87431; border:0; height:4px"/> // Text("----")
+
+    val xmlField = field match {
+      case l: fm#LiteralEntry =>
+          if (editable)
+            createHTMLiteralEditableLField(l)
+          else
+            createHTMLiteralReadonlyField(l)
+            
+      case r: fm#ResourceEntry =>
+        /* link to a known resource of the right type,
+           * or (TODO) create a sub-form for a blank node of an ancillary type (like a street address),
+           * or just create a new resource with its type, given by range, or derived
+           * (like in N3Form in EulerGUI ) */
+          if (editable)
+            createHTMLResourceEditableField(r)
+          else
+            createHTMLResourceReadonlyField(r, hrefPrefix)
+
+      case r: fm#BlankNodeEntry =>
+          if (editable)
+            createHTMLBlankNodeEditableField(r)
+          else
+            createHTMLBlankNodeReadonlyField(r, hrefPrefix)
+      case _ => <p>Should not happen! createHTMLField({ field })</p>
+    }
+
+    Seq(createAddRemoveWidgets(field, editable)) ++ xmlField
   }
 
+  /** make Field Data (display) Or Input (edit) */
   private def makeFieldDataOrInput(field: fm#Entry, hrefPrefix: String,
     editable: Boolean)(implicit form: FormModule[NODE, URI]#FormSyntax) = {
     if (shouldAddAddRemoveWidgets(field, editable))
@@ -138,259 +158,6 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
         { createHTMLField(field, editable, hrefPrefix) }
       </div>
   }
-
-  private def createHTMLField(field: fm#Entry, editable: Boolean,
-    hrefPrefix: String = "")(implicit form: FormModule[NODE, URI]#FormSyntax): xml.NodeSeq = {
-
-    // hack instead of true form separator:
-    if (field.label.contains("----"))
-      return <hr style="background:#F87431; border:0; height:4px"/> // Text("----")
-
-    val xmlField = field match {
-      case l: fm#LiteralEntry =>
-        {
-          if (editable) {
-            createHTMLiteralEditableLField(l)
-          } else {
-            <div>{ Unparsed(toPlainString(l.value)) }</div>
-            <div>{ if (l.lang != "" && l.lang != "No_language") " > " + l.lang }</div>
-          }
-        }
-      case r: fm#ResourceEntry =>
-        /* link to a known resource of the right type,
-           * or (TODO) create a sub-form for a blank node of an ancillary type (like a street address),
-           * or just create a new resource with its type, given by range, or derived
-           * (like in N3Form in EulerGUI ) */
-        {
-          if (editable) {
-            createHTMLResourceEditableField(r)
-          } else {
-            val stringValue = r.value.toString()
-            val normalNavigationButton = if (stringValue == "")
-              Text("")
-            else
-              <a href={ stringValue } title={ s"Normal HTTP link to ${r.value}" } draggable="true"> LINK</a>
-        	  // format: OFF
-            Seq(
-              <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }
-              title={ s"""Value ${if(r.value.toString != r.valueLabel) r.value.toString else ""}
-              of type ${r.type_.toString()}""" }
-               draggable="true"> {
-                r.valueLabel
-              }</a> ,
-              Text(" "),
-
-              (if( field.value.toString().size > 0 ) {
-            	  <button type="button"
-            	  class="btn-primary" readonly="yes"
-            	  title={ "Reverse links for " + field.label + " " + field.value} 
-            	  data-value={ r.value.toString }
-            	  onClick={ s"backlinks('${r.value}')" } 
-                id={ "BACK-" + r.value }>? --> o</button>
-              } else new Text("") )
-
-              , normalNavigationButton
-            )
-          }
-          // format: ON
-        }
-      case r: fm#BlankNodeEntry =>
-        {
-          if (editable) {
-            if (r.openChoice) {
-              <input class={ cssClasses.formInputCSSClass } value={
-                r.value.toString
-              } name={ makeHTMLIdBN(r) } data-type={
-                r.type_.toString()
-              } size={ inputSize.toString() }>
-              </input>
-            }
-            if (!r.possibleValues.isEmpty)
-              <select value={ r.valueLabel } name={ makeHTMLIdBN(r) }>
-                { formatPossibleValues(r) }
-              </select>
-            else Seq()
-
-          } else
-            <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString, true) }>{
-              r.valueLabel
-            }</a>
-        }
-      case _ => <p>Should not happen! createHTMLField({ field })</p>
-    }
-
-    Seq(createAddRemoveWidgets(field, editable)) ++ xmlField
-  }
-
-  private def shouldAddAddRemoveWidgets(field: fm#Entry, editable: Boolean): Boolean = {
-    editable && (field.defaults.multivalue && field.openChoice)
-  }
-  private def createAddRemoveWidgets(field: fm#Entry, editable: Boolean)(implicit form: FormModule[NODE, URI]#FormSyntax): Elem = {
-    if (shouldAddAddRemoveWidgets(field, editable)) {
-      // button with an action to duplicate the original HTML widget with an empty content
-      val widgetName = makeHTMLId(field)
-      <input value="+" class="button-add btn-primary" readonly="yes" size="1" title={ "Add another value for " + field.label } onClick={
-        s""" cloneWidget( "$widgetName" ); """
-      }></input>
-    } else <span></span>
-  }
-
-  private def makeHTMLId(ent: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): String = {
-    val rawResult = {
-      def makeTTLURI(s: NODE) = s"<$s>"
-      def makeTTLAnyTerm(value: NODE, ent: fm#Entry) = {
-        ent match {
-          case lit: fm#LiteralEntry => value
-          case _ => makeTTLURI(value)
-        }
-      }
-      makeTTLURI(form.subject) + " " +
-        makeTTLURI(ent.property) + " " +
-        makeTTLAnyTerm(ent.value, ent) + " .\n"
-    }
-    urlEncode(rawResult)
-  }
-  private def makeHTMLIdResource(re: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = makeHTMLId(re)
-  private def makeHTMLIdBN(re: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = makeHTMLId(re)
-  private def makeHTMLIdForLiteral(lit: fm#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax) =
-    makeHTMLId(lit)
-
-//  lazy private val propertySelectAlreadyDone = scala.collection.mutable.Set[NODE]()
-  lazy private val propertySelectAlreadyDone = scala.collection.mutable.Set[Any]()
-  /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
-  private def createHTMLResourceEditableField(r: fm#ResourceEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
-    val lookup = r.widgetType == DBPediaLookup
-//    if( r.property . toString() . contains("knows")) println("knows")
-    Seq(
-      Text("\n"),
-    		// format: OFF
-        if (r.openChoice)
-          <input class={ cssClasses.formInputCSSClass } value={ r.value.toString }
-            name={ makeHTMLIdResource(r) }
-            list={ makeHTMLIdForDatalist(r) }
-            data-type={ r.type_.toString() }
-            placeholder={ if (lookup)
-              s"Enter a word; completion with Wikipedia lookup"
-              else
-              s"Enter or paste a resource URI of type ${r.type_.toString()}" }
-            onkeyup={if (lookup) "onkeyupComplete(this);" else null}
-            size={inputSize.toString()}
-						dropzone="copy">
-          </input> else new Text("") // format: ON
-          ,
-      if (lookup)
-        formatPossibleValues(r, inDatalist = true)
-      else new Text(""),
-
-//      if (!r.possibleValues.isEmpty && !lookup)
-      if ( hasPossibleValues(r) && !lookup)
-    	  if( ! propertySelectAlreadyDone.contains(r.property) ) {
-    		  propertySelectAlreadyDone.add(r.property)
-    		  <select value={ r.value.toString } name={ makeHTMLIdResource(r) } list={
-    			  makeDatalistIdForEntryProperty(r) }>
-    		  { formatPossibleValues(r) }
-    		  </select>
-    	  } else new Text("\n")
-    	  else new Text("\n")
-    ).flatMap { identity }
-  }
-
-  def makeDatalistIdForEntryProperty(r: fm#Entry) = urlEncode(r.property.toString()) + "__property"
-    
-  /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
-  private def createHTMLiteralEditableLField(lit: fm#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
-    val placeholder = s"Enter or paste a string of type ${lit.type_.toString()}"
-
-    val htmlId = "f" + form.fields.indexOf(lit)
-    val elem = lit.type_.toString() match {
-
-      // TODO in FormSyntaxFactory match graph pattern for interval datatype ; see issue #17
-      case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
-        if (radioForIntervals)
-          (for (n <- Range(0, 6)) yield (
-            <input type="radio" name={ makeHTMLIdForLiteral(lit) } id={ makeHTMLIdForLiteral(lit) } checked={
-              if (n.toString.equals(lit.value)) "checked" else null
-            } value={ n.toString }>
-            </input>
-            <label for={ makeHTMLIdForLiteral(lit) }>{ n }</label>
-          )).flatten
-        else {
-          <select name={ makeHTMLIdForLiteral(lit) }>
-            { formatPossibleValues(lit) }
-          </select>
-        }
-
-      case _ =>
-        <input class={ cssClasses.formInputCSSClass } value={
-          toPlainString(lit.value)
-        } name={ makeHTMLIdForLiteral(lit) } type={
-          xsd2html5TnputType(lit.type_.toString())
-        } placeholder={ placeholder } size={
-          inputSize.toString()
-        } dropzone="copy" id={ htmlId }>
-        </input>
-        <input type="button" value="EDIT" onClick={
-          s"""launchEditorWindow( document.getElementById( "$htmlId" ));"""
-        } title="Click to edit text in popup window as Markdown text">
-        </input>
-    }
-    Text("\n") ++ elem
-  }
-
-//  private def makeHTMLIdForDatalist(uri: Rdf#URI): String = {
-//      uri.toString()
-//    }
-
-  private def makeHTMLIdForDatalist(re: fm#Entry): String = {
-    "possibleValues-" + (
-      re match {
-        case re: fm#ResourceEntry => (re.property + "--" + re.value).hashCode().toString()
-        case lit: fm#LiteralEntry => (lit.property + "--" + lit.value).hashCode().toString()
-        case bn: fm#BlankNodeEntry => (bn.property + "--" + bn.value).hashCode().toString()
-      })
-  }
-
-//  /** @return a list of option tags or a datalist tag (with the option tags inside) */
-  private def formatPossibleValues(field: Entry, inDatalist: Boolean = false)
-  (implicit form: fm#FormSyntax)
-  : NodeSeq = {
-    val options = Seq(<option value=""></option>) ++
-//      (for (value <- field.possibleValues) yield makeHTMLOption(value, field))
-    		makeHTMLOptionsSequence(field)
-    if (inDatalist)
-      <datalist id={ makeHTMLIdForDatalist(field) }>
-        { options }
-      </datalist>
-    else options
-  }
-
-  def makeHTMLOptionsSequence(field: Entry)
-  (implicit form: fm#FormSyntax) = {
-	  def makeHTMLOption(values: (NODE, NODE), field: fm#Entry): Elem = {
-		  <option value={ toPlainString(values._1) } selected={
-			  if (field.value.toString() ==
-					  toPlainString(values._1)) "selected" else null
-		  } title={ toPlainString(values._1) } label={ toPlainString(values._2) }>{ toPlainString(values._2) }</option>
-	  }
-	  def getPossibleValues( f: Entry) = form.possibleValuesMap.getOrElse( f.property, Seq() )
-	  for (value <- getPossibleValues(field) ) yield makeHTMLOption(value, field)
-  }
-  
-  def hasPossibleValues( f: Entry)(implicit form: fm#FormSyntax) = form.possibleValuesMap.contains( f.property )
-
-  private val datalistsAlreadyDone = scala.collection.mutable.Set[NODE]()
-	def	makeFieldDatalist(field: Entry)
-		  (implicit form: fm#FormSyntax)
-		  : Elem
-		  = {
-	  if( ! datalistsAlreadyDone.contains(field.property) ) {
-		  datalistsAlreadyDone.add(field.property)
-		  <datalist id={ makeDatalistIdForEntryProperty(field) }>
-		  { makeHTMLOptionsSequence(field) }
-		  </datalist>
-	  } else <div></div>
-  }
-
 }
 
 object Form2HTML {
