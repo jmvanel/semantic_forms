@@ -84,7 +84,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
         if (uriGraphIsEmpty) {
           val g = storeURINoTransaction(uri, uri, dataset)
           println("Graph at URI was downloaded, new addition: " + uri + " , size " + g.size)
-          addTimestampToDatasetNoTransaction(uri, dataset)
+          addTimestampToDataset(uri, dataset2)
+//          addTimestampToDatasetNoTransaction(uri, dataset)
           g
         } else {
           updateLocalVersion(uri, dataset)
@@ -100,7 +101,9 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   def updateLocalVersion(uri: Rdf#URI, dataset: DATASET) = {
 //    val future = Future {
       dataset.rw({
-        val localTimestamp = getTimestampFromDataset(uri, dataset)
+        val localTimestamp = dataset2.r{
+          getTimestampFromDataset(uri, dataset2)
+        } . get
         localTimestamp match {
           case Success(longLocalTimestamp) => {
             println(s"$uri localTimestamp: ${	new Date(longLocalTimestamp) } - $longLocalTimestamp .")
@@ -112,17 +115,18 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
             	    || longLocalTimestamp == Long.MaxValue ) {
             		storeURINoTransaction(uri, uri, dataset)
             		println(s"$uri was outdated by timestamp; downloaded.")
-            		addTimestampToDatasetNoTransaction(uri, dataset)
+//            		addTimestampToDatasetNoTransaction(uri, dataset)
+            		addTimestampToDataset(uri, dataset2)
             	}
             } else if (! lastModifiedTuple._1 || lastModifiedTuple._2 == Long.MaxValue ) {
               lastModifiedTuple._3 match {
                 case Some(connection) => 
                 val etag = headerField( fromUri(uri), "ETag": String, connection )
-                val etagFromDataset = getETagFromDataset(uri, dataset)
+                val etagFromDataset = dataset2.r{ getETagFromDataset(uri, dataset2) } .get
                 if(etag != etagFromDataset) {
                 	storeURINoTransaction(uri, uri, dataset)
                   println(s"$uri was outdated by ETag; downloaded.")
-                  addETagToDatasetNoTransaction(uri, etag, dataset)
+                  dataset2.rw{ addETagToDatasetNoTransaction(uri, etag, dataset2) }
                 }
                 case None =>
                 storeURINoTransaction(uri, uri, dataset)
@@ -180,7 +184,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
         }
       }
     })
-    addTimestampToDataset(uri, dataset)
+    addTimestampToDataset(uri, dataset2)
     graphFromURI
   }
   

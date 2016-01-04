@@ -28,7 +28,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
   import scala.concurrent.ExecutionContext.Implicits.global
 
   /**
-   * add timestamp to dataset (actually a dedicated Graph timestampGraphURI ),
+   * add or replace timestamp for URI in dataset (actually a dedicated Graph timestampGraphURI ),
    *  with transaction
    */
   def addTimestampToDataset(uri: Rdf#URI, dataset: DATASET) = {
@@ -37,7 +37,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
     })
   }
 
-  /** replace Timestamp for URI to Dataset
+  /** replace Timestamp for URI in Dataset
    *  No Transaction */
   def addTimestampToDatasetNoTransaction(uri: Rdf#URI, dataset: DATASET) = {
 	  val time = lastModified(fromUri(uri), 1000)
@@ -149,6 +149,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
 
   //// ETag ////
   
+  /** No Transaction */
   def getETagFromDataset(uri: Rdf#URI, dataset: DATASET): String = {
 	  val queryString = s"""
          |SELECT DISTINCT ?ts WHERE {
@@ -162,6 +163,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
     vv.toString()
   }
 
+  /** No Transaction */
   def addETagToDatasetNoTransaction(uri: Rdf#URI, etag: String, dataset: DATASET) = {
     replaceRDFTriple(
       makeTriple(
