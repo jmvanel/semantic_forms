@@ -1,14 +1,14 @@
 package deductions.runtime.html
 
 import scala.io.Source
+import scala.xml.Node
 
 trait JavaScript {
 
-  /** written now in Scala.JS */
-  private lazy val javascriptCode_native =
+  /** native javascript Code (written now in Scala.JS) */
+  private lazy val javascriptCode_native: Node =
     // Prevent Scala from escaping double quotes in XML unnecessarily
-    //    scala.xml.Unparsed
-    (
+    scala.xml.Unparsed(
       """
 function launchEditorWindow( elem /* input */ ) {  
   var popupWindow = window.open('', 'Edit_Markdown_text_for_semantic_forms',
@@ -18,12 +18,16 @@ function launchEditorWindow( elem /* input */ ) {
   closeButton.name = "SAVE";
   closeButton.innerHTML = "SAVE";
   closeButton.textContent = "SAVE";
-  // TODO "DISMISS" button
+
+  var exitButton = popupWindow.document.createElement( "button" );
+  exitButton.textContent = "DISMISS";
 
   var editorDiv = popupWindow.document.createElement( "div" ); 
   popupWindow.document.body.appendChild( closeButton );
+  popupWindow.document.body.appendChild( exitButton );
   popupWindow.document.body.appendChild( editorDiv );
   closeButton.onclick = function() { onClose(); popupWindow.close(); };
+  exitButton.onclick = function() { popupWindow.close(); };
 
   var options = {
     editor: editorDiv,
@@ -55,10 +59,19 @@ function launchEditorWindow( elem /* input */ ) {
 };
   """)
 
+  /**
+   * NOTE: with Scala 2.11.7, it is not possible to declare this private:
+   *  that triggers an AbstractMethodException
+   */
+  lazy val javascriptCode: Node = javascriptCode_native
+
   /** compiled from Scala.js */
-  private val javascriptCode = {
-    val source = Source.fromURL(
-      getClass.getResource("/deductions/runtime/js/forms_js-fastopt.js"))
+  lazy private val javascriptCodeScalaJS: Node = {
+    val compiledScalaJS =
+      getClass.getResource("/deductions/runtime/js/forms_js-fastopt.js")
+    val source = if (compiledScalaJS != null)
+      Source.fromURL(compiledScalaJS)
+    else Source.fromString("")
     val result = source.mkString
     source.close()
     scala.xml.Unparsed(
