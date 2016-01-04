@@ -361,6 +361,10 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)] //        formGroup: Rdf#URI
       ) = {
 
+      val xsdPrefix = XSDPrefix[Rdf].prefixIri
+      val rdf = RDFPrefix[Rdf]
+      val rdfs = RDFSPrefix[Rdf]
+
       def literalEntry = {
         // TODO match graph pattern for interval datatype ; see issue #17
         // case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
@@ -368,21 +372,20 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
           getLiteralNodeOrElse(object_, literalInitialValue),
           type_ = firstType, lang = getLang(object_).toString())
       }
+      val NullResourceEntry = new ResourceEntry("", "", nullURI, ResourceValidator(Set()) )
       def resourceEntry = {
-        time(s"resourceEntry object_ $object_",
-          foldNode(object_)(
-            object_ =>
+        if (showRDFtype || prop != rdf.typ)
+          time(s"resourceEntry object_ $object_",
+            foldNode(object_)(
+              object_ =>
                 new ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_,
                   alreadyInDatabase = true, valueLabel = instanceLabel(object_, graph, preferedLanguage),
                   type_ = nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI)),
-            object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_,
-              typ = firstType),
-            object_ => literalEntry))
+              object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_,
+                typ = firstType),
+              object_ => literalEntry))
+        else NullResourceEntry
       }
-
-      val xsdPrefix = XSDPrefix[Rdf].prefixIri
-      val rdf = RDFPrefix[Rdf]
-      val rdfs = RDFSPrefix[Rdf]
 
       val entry = rangeClasses match {
         case _ if rangeClasses.exists { c => c.toString startsWith (xsdPrefix) } => literalEntry

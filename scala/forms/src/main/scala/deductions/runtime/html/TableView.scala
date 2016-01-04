@@ -20,7 +20,7 @@ import deductions.runtime.utils.Timer
  *  a facade that blends:
  *  - the RDF cache [[deductions.runtime.sparql_cache.RDFCacheAlgo]],
  *  - the generic Form Factory [[deductions.runtime.abstract_syntax.FormSyntaxFactory]],
- *  - the HTML renderer [[Form2HTML]];
+ *  - the HTML renderer [[deductions.runtime.html.Form2HTML]];
  *  transactional
  *
  * named TableView because originally it was an HTML table.
@@ -75,7 +75,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
 
   /**
    * wrapper for htmlForm, but generates Just Fields; also shows Failure's;
-   * see [[deductions.runtime.html.Form2HTML]] .generateHTMLJustFields()
+   * see [[deductions.runtime.html.Form2HTML#generateHTMLJustFields]].
    * TRANSACTIONAL
    */
   def htmlFormElemJustFields(uri: String, hrefPrefix: String = "", blankNode: String = "",

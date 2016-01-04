@@ -25,6 +25,8 @@ trait Configuration {
 
   val use_dbpedia_lookup = false
   val use_local_lookup = true
+  /** show triples with rdf:type */
+  val showRDFtype = true
 
   //  val activateUserInputHistory = false
 

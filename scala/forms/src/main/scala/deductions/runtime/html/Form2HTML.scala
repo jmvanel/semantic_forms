@@ -95,7 +95,10 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
           val fields = form.fields
           if (!fields.isEmpty) {
             val lastEntry = fields.last
-            ( for ((preceding, field) <- (lastEntry +: fields) zip fields) yield {
+            ( for ((preceding, field) <- (lastEntry +: fields) zip fields
+                // do not display NullResourceEntry
+                if( field.property.toString != "" )
+            ) yield {
               <div class={ cssClasses.formLabelAndInputCSSClass }>
                 { makeFieldLabel(preceding, field) }
                 { makeFieldDataOrInput(field, hrefPrefix, editable) }
@@ -114,7 +117,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
 
   private def createHTMLField(field: fm#Entry, editable: Boolean,
     hrefPrefix: String = "")(implicit form: FormModule[NODE, URI]#FormSyntax): xml.NodeSeq = {
-
+    
     // hack instead of true form separator in the form spec in RDF:
     if (field.label.contains("----"))
       return <hr style="background:#F87431; border:0; height:4px"/> // Text("----")
@@ -122,7 +125,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
     val xmlField = field match {
       case l: fm#LiteralEntry =>
           if (editable)
-            createHTMLiteralEditableLField(l)
+            createHTMLiteralEditableField(l)
           else
             createHTMLiteralReadonlyField(l)
             

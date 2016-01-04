@@ -38,7 +38,8 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
 //  lazy private val propertySelectAlreadyDone = scala.collection.mutable.Set[NODE]()
   lazy private val propertySelectAlreadyDone = scala.collection.mutable.Set[Any]()
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
-  def createHTMLResourceEditableField(r: fm#ResourceEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
+  def createHTMLResourceEditableField(r: fm#ResourceEntry
+      )(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     val lookup = r.widgetType == DBPediaLookup
 //    if( r.property . toString() . contains("knows")) println("knows")
     Seq(
@@ -94,7 +95,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
   def makeDatalistIdForEntryProperty(r: fm#Entry) = urlEncode(r.property.toString()) + "__property"
     
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
-  def createHTMLiteralEditableLField(lit: fm#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
+  def createHTMLiteralEditableField(lit: fm#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     val placeholder = s"Enter or paste a string of type ${lit.type_.toString()}"
 
     val htmlId = "f" + form.fields.indexOf(lit)
