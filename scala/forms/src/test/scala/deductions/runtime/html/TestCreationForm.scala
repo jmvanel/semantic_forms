@@ -22,6 +22,7 @@ import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.services.SPARQLHelpers
 import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 import deductions.runtime.services.Configuration
+import deductions.runtime.services.DefaultConfiguration
 
 /**
  * Test Creation Form from class URI, without form specification
@@ -37,7 +38,7 @@ class TestCreationForm extends FunSuite
     with InstanceLabelsInferenceMemory[Jena, Dataset]
     with BeforeAndAfter
     with Configuration // [Rdf <: RDF, DATASET]
-    {
+    with DefaultConfiguration {
 
   override val lookup_domain_unionOf = true
 

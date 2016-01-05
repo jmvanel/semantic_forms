@@ -2,9 +2,7 @@ package deductions.runtime.html
 
 import java.nio.file.Files
 import java.nio.file.Paths
-
 import scala.util.Try
-
 import org.apache.log4j.Logger
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.Finders
@@ -17,13 +15,14 @@ import org.w3.banana.io.RDFWriter
 import org.w3.banana.io.Turtle
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
-
 import com.hp.hpl.jena.query.Dataset
-
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.utils.FileUtils
+import deductions.runtime.services.DefaultConfiguration
 
-class TestCreationForm2Jena extends FunSuite with TestForJena with TestCreationForm2[Jena, Dataset]
+class TestCreationForm2Jena extends FunSuite with TestForJena
+with TestCreationForm2[Jena, Dataset]
+with DefaultConfiguration
 
 trait TestForJena extends JenaModule
   with RDFStoreLocalJena1Provider
@@ -58,9 +57,10 @@ trait TestCreationForm2[Rdf <: RDF, DATASET] extends FunSuite
     val file = "creation.form.2.html"
     Files.write(Paths.get(file), form.toString().getBytes);
     println(s"file created $file")
-    assert(!form.toString().contains("homepage"))
     assert(form.toString().contains("firstName"))
     assert(form.toString().contains("lastName"))
+    // should not contain field homepage, because foaf:homepage rdfs:domain owl:Thing .
+    assert(!form.toString().contains(">homepage<"))
   }
 
   println(turtleWriter.asString(personFormSpec, "base"))

@@ -24,7 +24,9 @@ class TestFormSaver
     with SparqlOpsModule
     with JenaModule
     with RDFStoreLocalJena1Provider
-    with FormSaver[Jena, Dataset] {
+    with FormSaver[Jena, Dataset]
+    with DefaultConfiguration {
+
   import ops._
   val logger = Logger.getRootLogger()
   lazy val fs = this // new FormSaver[Jena, Dataset] {}

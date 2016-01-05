@@ -15,6 +15,7 @@ import play.api.mvc.Request
 import deductions.runtime.html.MainXml
 import views.MainXmlWithHead
 import deductions.runtime.services.CORS
+import deductions.runtime.services.DefaultConfiguration
 
 /** main controller */
 object Application extends Controller
@@ -22,7 +23,8 @@ object Application extends Controller
     with LanguageManagement
     with Secured
     with MainXmlWithHead
-    with CORS {
+    with CORS
+    with DefaultConfiguration {
   
   def index() =
         withUser {
@@ -270,7 +272,7 @@ object Application extends Controller
 
   def toolsPage = {
     Action { implicit request =>
-      Ok(new ToolsPage {}.getPage)
+      Ok(new ToolsPage with DefaultConfiguration {}.getPage)
         .as("text/html; charset=utf-8")
     }
   }

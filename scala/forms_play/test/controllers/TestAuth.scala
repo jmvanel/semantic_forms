@@ -7,11 +7,13 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers
 import play.api.test.Helpers.contentAsString
 import play.api.test.FakeApplication
+import deductions.runtime.services.DefaultConfiguration
 
 class TestAuth extends FunSuite
     //    with OneAppPerSuite
     with WhiteBoxTestdependencies
-    with Secured {
+    with Secured
+    with DefaultConfiguration {
 
   val loginName = "http://jmvanel.free.fr/jmv.rdf#me" // "devil@hell.com"
   val pw = "bla"

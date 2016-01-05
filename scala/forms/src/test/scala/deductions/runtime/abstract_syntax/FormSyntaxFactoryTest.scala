@@ -2,7 +2,6 @@ package deductions.runtime.abstract_syntax
 
 import java.io.FileInputStream
 import java.io.FileOutputStream
-
 import org.apache.log4j.Logger
 import org.hamcrest.BaseMatcher
 import org.junit.Assert
@@ -11,14 +10,14 @@ import org.scalatest.FunSuite
 import org.w3.banana.FOAFPrefix
 import org.w3.banana.RDF
 import org.w3.banana.jena.Jena
-
 import com.hp.hpl.jena.query.Dataset
-
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import deductions.runtime.services.DefaultConfiguration
 
 class FormSyntaxFactoryTestJena extends FunSuite
 with RDFStoreLocalJena1Provider
-with FormSyntaxFactoryTest[ Jena, Dataset ] {
+with FormSyntaxFactoryTest[ Jena, Dataset ]
+with DefaultConfiguration {
 
   val logger = Logger.getRootLogger()
 

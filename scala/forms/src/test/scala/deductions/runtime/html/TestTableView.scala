@@ -12,12 +12,14 @@ import com.hp.hpl.jena.query.Dataset
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.utils.FileUtils
 import org.scalatest.BeforeAndAfter
+import deductions.runtime.services.DefaultConfiguration
 
 class TestTableView extends FunSuite
     with JenaModule
     with TableViewModule[Jena, Dataset]
     with RDFStoreLocalJena1Provider
-    with BeforeAndAfter {
+    with BeforeAndAfter
+    with DefaultConfiguration {
 
   val logger = Logger.getRootLogger()
   lazy implicit val allNamedGraphs = allNamedGraph

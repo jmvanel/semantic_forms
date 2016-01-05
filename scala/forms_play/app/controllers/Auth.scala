@@ -13,11 +13,13 @@ import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import org.w3.banana.RDF
 import deductions.runtime.dataset.RDFStoreLocalUserManagement
 import com.hp.hpl.jena.query.Dataset
+import deductions.runtime.services.DefaultConfiguration
 
 
 object Auth extends JenaModule
 with RDFStoreLocalJena1Provider
-with Auth[Jena, Dataset] {
+with Auth[Jena, Dataset]
+with DefaultConfiguration {
 //  println(s"object Auth")
 }
 
