@@ -333,6 +333,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       
     val propClasses = rdfh.objectsQuery(prop, RDFPrefix[Rdf].typ)
     val objects = objectsQuery(subject, prop.asInstanceOf[Rdf#URI])
+    logger.info(s"makeEntries subject $subject, objects $objects")
     val rangeClasses = objectsQueries(ranges, RDFPrefix[Rdf].typ)
     //    Timer.endTimer(s"makeEntries(${prop}: beginning)")
 

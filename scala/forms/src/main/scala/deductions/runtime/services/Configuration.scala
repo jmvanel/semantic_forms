@@ -31,6 +31,8 @@ trait Configuration {
   /** show + Buttons for creating multi-valued */
   def showPlusButtons: Boolean // = true
 
+  //  def radioForIntervals = false // TODO
+
   //  def activateUserInputHistory = false
 
   // CORS

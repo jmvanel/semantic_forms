@@ -18,14 +18,13 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
   self: HTML5Types 
         with Configuration 
         =>
-//  import Configuration._
 
   val radioForIntervals = false // TODO the choice should be moved to FormSyntaxFactory
   val inputSize = 90
 
 
   def shouldAddAddRemoveWidgets(field: fm#Entry, editable: Boolean): Boolean = {
-    println( "showPlusButtons " + showPlusButtons)
+    // println( "showPlusButtons " + showPlusButtons)
     editable && field.defaults.multivalue && field.openChoice && showPlusButtons
   }
   def createAddRemoveWidgets(field: fm#Entry, editable: Boolean)(implicit form: FormModule[NODE, URI]#FormSyntax): Elem = {
@@ -156,7 +155,6 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
   (implicit form: fm#FormSyntax)
   : NodeSeq = {
     val options = Seq(<option value=""></option>) ++
-//      (for (value <- field.possibleValues) yield makeHTMLOption(value, field))
     		makeHTMLOptionsSequence(field)
     if (inDatalist)
       <datalist id={ makeHTMLIdForDatalist(field) }>
@@ -165,16 +163,22 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
     else options
   }
 
-  def makeHTMLOptionsSequence(field: Entry)
+  private def makeHTMLOptionsSequence(field: Entry)
   (implicit form: fm#FormSyntax) = {
-	  def makeHTMLOption(values: (NODE, NODE), field: fm#Entry): Elem = {
-		  <option value={ toPlainString(values._1) } selected={
-			  if (field.value.toString() ==
-					  toPlainString(values._1)) "selected" else null
-		  } title={ toPlainString(values._1) } label={ toPlainString(values._2) }>{ toPlainString(values._2) }</option>
+	  def makeHTMLOption(value: (NODE, NODE), field: fm#Entry): Elem = {
+		  <option value={ toPlainString(value._1) } selected={
+			  if (toPlainString(field.value) ==
+					  toPlainString(value._1))
+			    "selected"
+			  else
+			    null
+		  } title={ toPlainString(value._1) } label={ toPlainString(value._2) }>{
+		    toPlainString(value._2) }
+		  </option>
 	  }
 	  def getPossibleValues( f: Entry) = form.possibleValuesMap.getOrElse( f.property, Seq() )
-	  for (value <- getPossibleValues(field) ) yield makeHTMLOption(value, field)
+	  for (value <- getPossibleValues(field) )
+	    yield makeHTMLOption(value, field)
   }
   
   def hasPossibleValues( f: Entry)(implicit form: fm#FormSyntax) = form.possibleValuesMap.contains( f.property )

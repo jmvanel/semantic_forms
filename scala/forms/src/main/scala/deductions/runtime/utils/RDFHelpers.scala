@@ -36,6 +36,7 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
    * Query for objects in triples, given subject & predicate
    *  NOTE: this function in core Banana does the job:
    *  getObjects(graph: Rdf#Graph, subject: Rdf#Node, predicate: Rdf#URI): Iterable[Rdf#Node]
+   *  TODO : predicate should be a Node
    */
   def objectsQuery(subject: Rdf#Node, predicate: Rdf#URI)(implicit graph: Rdf#Graph): Set[Rdf#Node] = {
     val pg = PointedGraph[Rdf](subject, graph)
