@@ -9,6 +9,7 @@ import deductions.runtime.services.ApplicationFacadeImpl
 import deductions.runtime.services.ApplicationFacadeInterface
 import org.w3.banana.URIOps
 import deductions.runtime.abstract_syntax.FormSyntaxFactory
+import deductions.runtime.services.DefaultConfiguration
 
 /**
  * ApplicationFacade for Jena,
@@ -26,6 +27,7 @@ trait ApplicationFacadeJena
      */
     class ApplicationFacadeImplJena extends JenaModule
       with RDFStoreLocalJena1Provider
+      with DefaultConfiguration
       with ApplicationFacadeImpl[Jena, Dataset]
       with RDFStoreLocalUserManagement[Jena, Dataset]
 

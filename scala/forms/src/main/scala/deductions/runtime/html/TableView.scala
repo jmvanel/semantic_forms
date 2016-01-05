@@ -95,7 +95,10 @@ trait TableViewModule[Rdf <: RDF, DATASET]
 //          graph, 
           uri, editable, lang, blankNode,
         URI(formGroup))
-      new Form2HTMLBanana[Rdf] { val ops = ops1 } .
+      new Form2HTMLBanana[Rdf] {
+        val ops = ops1
+        override def showPlusButtons = TableViewModule.this.showPlusButtons
+      } .
         generateHTMLJustFields(form,
           hrefPrefix, editable, graphURIActual)
     })
@@ -208,7 +211,9 @@ trait TableViewModule[Rdf <: RDF, DATASET]
           uri, editable, lang, blankNode, formGroup))
     val ops1 = ops;
     val htmlFormGen = time("new Form2HTML",
-      new Form2HTMLBanana[Rdf] { val ops = ops1 }
+      new Form2HTMLBanana[Rdf] { val ops = ops1
+        override def showPlusButtons = TableViewModule.this.showPlusButtons   
+      }
     )
     val htmlForm = htmlFormGen.
       generateHTML(form, hrefPrefix, editable, actionURI, graphURI,

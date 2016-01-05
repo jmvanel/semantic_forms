@@ -8,6 +8,7 @@ import org.w3.banana.jena.Jena
 import org.w3.banana.RDF
 import org.w3.banana.jena.JenaModule
 import deductions.runtime.services.Configuration
+import deductions.runtime.services.DefaultConfiguration
 
 /**
  * @author jmv
@@ -15,6 +16,7 @@ import deductions.runtime.services.Configuration
 
 /** TODO put in package jena */
 object FormSpecificationsLoader extends JenaModule
+      with DefaultConfiguration
     with RDFCache with App
     with FormSpecificationsLoaderTrait[Jena, Dataset]
     with RDFStoreLocalJena1Provider //    with JenaHelpers

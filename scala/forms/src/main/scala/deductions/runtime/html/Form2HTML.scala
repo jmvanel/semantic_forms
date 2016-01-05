@@ -1,19 +1,18 @@
 package deductions.runtime.html
 
 import java.net.URLEncoder
-
 import scala.Range
 import scala.xml.Elem
 import scala.xml.NodeSeq
 import scala.xml.NodeSeq.seqToNodeSeq
 import scala.xml.Text
 import scala.xml.Unparsed
-
 import Form2HTML.urlEncode
 import deductions.runtime.abstract_syntax.DBPediaLookup
 import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.utils.I18NMessages
 import deductions.runtime.utils.Timer
+import deductions.runtime.services.Configuration
 
 /**
  * different modes: display or edit;
@@ -25,8 +24,13 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
     with Form2HTMLEdit[NODE, URI]
    with Timer
     with CSS
-    with JavaScript {
-  self: HTML5Types =>
+    with JavaScript
+    with Configuration
+    {
+  self: HTML5Types 
+//        with Configuration 
+        =>
+//  import Configuration._
 
   //  type fm = FormModule[NODE, URI]
   //  type Entry = fm#Entry

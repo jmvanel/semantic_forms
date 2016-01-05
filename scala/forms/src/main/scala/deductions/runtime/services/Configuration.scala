@@ -1,43 +1,46 @@
 package deductions.runtime.services
 
+//trait Configuration {
 trait Configuration {
   /** URI Prefix prepended to newly created resource instances */
-  var defaultInstanceURIHostPrefix = "http://assemblee-virtuelle.org/"
+  def defaultInstanceURIHostPrefix = "http://assemblee-virtuelle.org/"
   /** otherwise use defaultInstanceURIHostPrefix */
-  var useLocalHostPrefixForURICreation = false
+  def useLocalHostPrefixForURICreation = false
 
-  val relativeURIforCreatedResourcesByForm = "ldp/"
-  val relativeURIforCreatedResourcesByLDP = relativeURIforCreatedResourcesByForm
+  def relativeURIforCreatedResourcesByForm = "ldp/"
+  def relativeURIforCreatedResourcesByLDP = relativeURIforCreatedResourcesByForm
 
   /** vocabulary for form specifications */
-  val formVocabPrefix = "http://deductions-software.com/ontologies/forms.owl.ttl#"
+  def formVocabPrefix = "http://deductions-software.com/ontologies/forms.owl.ttl#"
 
-  val prefixAVontology = "http://www.assemblee-virtuelle.org/ontologies/v1.owl#"
+  def prefixAVontology = "http://www.assemblee-virtuelle.org/ontologies/v1.owl#"
 
   def needLoginForEditing: Boolean = false // true
   def needLoginForDisplaying: Boolean = false
 
-  val recordUserActions: Boolean = false
-  val showDomainlessProperties = false
-  val addRDFS_label_comment = true
+  def recordUserActions: Boolean = false
+  def showDomainlessProperties = false
+  def addRDFS_label_comment = true
 
-  val lookup_domain_unionOf = false // is slow !!!
+  def lookup_domain_unionOf = false // is slow !!!
 
-  val use_dbpedia_lookup = false
-  val use_local_lookup = true
+  def use_dbpedia_lookup = true
+  def use_local_lookup = false
   /** show triples with rdf:type */
-  val showRDFtype = true
+  def showRDFtype = true
+  /** show + Buttons for creating multi-valued */
+  def showPlusButtons: Boolean // = true
 
-  //  val activateUserInputHistory = false
+  //  def activateUserInputHistory = false
 
   // CORS
-  val allow_Origin = "*"
+  def allow_Origin = "*"
 
   // relative URI's
   // maybe TODO use inverse Play's URI API
-  val hrefDisplayPrefix = "/display?displayuri="
-  val hrefDownloadPrefix = "/download?url="
-  val hrefEditPrefix = "/edit?url="
+  def hrefDisplayPrefix = "/display?displayuri="
+  def hrefDownloadPrefix = "/download?url="
+  def hrefEditPrefix = "/edit?url="
 
   // helper functions
   def needLogin = needLoginForEditing || needLoginForDisplaying

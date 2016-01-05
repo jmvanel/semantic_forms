@@ -13,10 +13,11 @@ trait CreationFormAlgo[Rdf <: RDF, DATASET]
 extends RDFCacheAlgo[Rdf, DATASET]
 with UnfilledFormFactory[Rdf, DATASET]
 with HTML5TypesTrait[Rdf]
-with Configuration {
+with Configuration
+{
   import ops._
   import rdfStore.transactorSyntax._
-
+//  import Configuration._
   var actionURI = "/save"
 
   /**
@@ -35,7 +36,10 @@ with Configuration {
         URI(classUri),
         formSpecURI);
       val ops1 = ops;
-      new Form2HTMLBanana[Rdf] { val ops = ops1 } .
+      new Form2HTMLBanana[Rdf] {
+        val ops = ops1
+        override def showPlusButtons = CreationFormAlgo.this.showPlusButtons 
+      } .
         generateHTML(form, hrefPrefix = "", editable = true, actionURI = actionURI, lang=lang)
     })
   }

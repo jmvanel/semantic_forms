@@ -17,7 +17,7 @@ trait RDFOPerationsDB[Rdf <: RDF, DATASET] {
   implicit val rdfStore: RDFStore[Rdf, Try, DATASET] with SparqlUpdate[Rdf, Try, DATASET]
   implicit val ops: RDFOps[Rdf]
   implicit val sparqlOps: SparqlOps[Rdf]
-  implicit val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]
+  implicit val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]  
 }
 
 /**

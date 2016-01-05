@@ -7,6 +7,7 @@ import deductions.runtime.sparql_cache.CommonVocabulariesLoaderTrait
 import deductions.runtime.sparql_cache.FormSpecificationsLoaderTrait
 import deductions.runtime.sparql_cache.RDFI18NLoaderTrait
 import org.w3.banana.jena.JenaModule
+import deductions.runtime.services.DefaultConfiguration
 
 /**
  * Populate RDF Cache with commonly used vocabularies;
@@ -19,6 +20,7 @@ import org.w3.banana.jena.JenaModule
  *  TODO use prefix.cc web service to load from prefix short names (see implementation in EulerGUI)
  */
 object ResetRDFCache extends JenaModule
+    with DefaultConfiguration
     with CommonVocabulariesLoaderTrait[Jena, Dataset]
     with RDFI18NLoaderTrait[Jena, Dataset]
     with FormSpecificationsLoaderTrait[Jena, Dataset]

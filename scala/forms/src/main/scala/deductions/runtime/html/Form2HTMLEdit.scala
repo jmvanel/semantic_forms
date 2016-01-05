@@ -5,24 +5,28 @@ import scala.xml.Elem
 import scala.xml.NodeSeq
 import scala.xml.NodeSeq.seqToNodeSeq
 import scala.xml.Text
-
 import Form2HTML.urlEncode
 import deductions.runtime.abstract_syntax.DBPediaLookup
 import deductions.runtime.abstract_syntax.FormModule
+import deductions.runtime.services.Configuration
 
 
 /** generate HTML from abstract Form for Edition */
 trait Form2HTMLEdit[NODE, URI <: NODE]
     extends Form2HTMLBase[NODE, URI]
-{
-  self: HTML5Types =>
+        {
+  self: HTML5Types 
+        with Configuration 
+        =>
+//  import Configuration._
 
   val radioForIntervals = false // TODO the choice should be moved to FormSyntaxFactory
   val inputSize = 90
 
 
   def shouldAddAddRemoveWidgets(field: fm#Entry, editable: Boolean): Boolean = {
-    editable && (field.defaults.multivalue && field.openChoice)
+    println( "showPlusButtons " + showPlusButtons)
+    editable && field.defaults.multivalue && field.openChoice && showPlusButtons
   }
   def createAddRemoveWidgets(field: fm#Entry, editable: Boolean)(implicit form: FormModule[NODE, URI]#FormSyntax): Elem = {
     if (shouldAddAddRemoveWidgets(field, editable)) {

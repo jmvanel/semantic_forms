@@ -92,7 +92,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     with PreferredLanguageLiteral[Rdf]
     with PossibleValues[Rdf]
    	with FormConfigurationFactory[Rdf]
-    with Configuration
+//    with Configuration
     with Timer {
 
   // TODO not thread safe: form is not rebuild for each HTTP request 

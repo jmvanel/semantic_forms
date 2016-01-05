@@ -8,12 +8,13 @@ import scala.language.postfixOps
 import org.w3.banana.RDF
 import deductions.runtime.services.Configuration
 import java.net.InetAddress
+import deductions.runtime.services.DefaultConfiguration
 
 /**
  * @author j.m. Vanel
  *
  */
-object UnfilledFormFactory extends Configuration {
+object UnfilledFormFactory extends DefaultConfiguration {
   /** make a unique Id with given prefix, currentTimeMillis() and nanoTime() */
   def makeId(instanceURIPrefix: String): String = {
       instanceURIPrefix + System.currentTimeMillis() + "-" + System.nanoTime() // currentId = currentId + 1
