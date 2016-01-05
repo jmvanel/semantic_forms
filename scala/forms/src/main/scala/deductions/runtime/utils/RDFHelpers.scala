@@ -105,10 +105,10 @@ trait RDFHelpers0[Rdf <: RDF] {
     seq
   }
 
-  /** from given Set of Rdf#Node , extract rdf#URI */
-  def nodeSeqToURISet(s: Iterable[Rdf#Node]): Set[Rdf#URI] = {
-    nodeSeqToURISeq(s).toSet
-  }
+//  /** from given Set of Rdf#Node , extract rdf#URI */
+//  def nodeSeqToURISet(s: Iterable[Rdf#Node]): Set[Rdf#URI] = {
+//    nodeSeqToURISeq(s).toSet
+//  }
 
   /**
    * from given Set of Rdf#Node , extract rdf#URI

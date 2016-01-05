@@ -29,7 +29,7 @@ trait Configuration {
   /** show triples with rdf:type */
   def showRDFtype = true
   /** show + Buttons for creating multi-valued */
-  def showPlusButtons: Boolean // = true
+  def showPlusButtons: Boolean // TODO all members should be abstract!!!!!!!!! 
 
   //  def radioForIntervals = false // TODO
 

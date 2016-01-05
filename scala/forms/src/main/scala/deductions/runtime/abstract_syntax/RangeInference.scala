@@ -95,7 +95,8 @@ trait RangeInference[Rdf <: RDF, DATASET]
         for (enum <- enumerated)
           foldNode(enum)(
             uri => {
-              val list = nodeSeqToURISeq(rdfh.rdfListToSeq(Some(uri)))
+//              val list = nodeSeqToURISeq(rdfh.rdfListToSeq(Some(uri)))
+              val list = (rdfh.rdfListToSeq(Some(uri)))
               possibleValues.appendAll(
                 list zip instanceLabels(list, lang).map { s => makeLiteral(s, xsd.string) })
             },
@@ -112,6 +113,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
       }
     }
 
+    /** process owl:union appearing as rdfs:range of a property */
     def populateFromOwlUnion(): Map[ Rdf#Node, Seq[ResourceWithLabel[Rdf] ]] = {
       val classes = processOwlUnion()
       println( "populateFromOwlUnion: classes " + classes )
@@ -124,7 +126,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
     import org.w3.banana.binder._
     import org.w3.banana.syntax._
 
-    /**
+    /** process owl:union appearing as rdfs:range of a property
      * Typical declaration processed:
      *
      * :implies a owl:ObjectProperty ;

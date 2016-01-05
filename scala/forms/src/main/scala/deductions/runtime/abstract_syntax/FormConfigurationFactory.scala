@@ -34,6 +34,7 @@ trait FormConfigurationFactory[Rdf <: RDF]
     }
   }
   
+  /** TODO consider returning Seq[Rdf#Node] */
   def propertiesListFromFormConfiguration(formConfiguration: Rdf#Node)
   (implicit graph: Rdf#Graph)
   : Seq[Rdf#URI] = {

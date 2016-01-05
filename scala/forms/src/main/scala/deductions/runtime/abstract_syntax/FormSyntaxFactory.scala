@@ -376,12 +376,16 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       val NullResourceEntry = new ResourceEntry("", "", nullURI, ResourceValidator(Set()) )
       def resourceEntry = {
         if (showRDFtype || prop != rdf.typ)
-          time(s"resourceEntry object_ $object_",
+          time(s"""resourceEntry object_ "$object_" """,
             foldNode(object_)(
-              object_ =>
+              object_ => {
+//                // NOTE: typ same thing as firstType
+//                val typ = ranges.headOption.getOrElse(nullURI)
+//                assert( firstType == typ )
                 new ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_,
-                  alreadyInDatabase = true, valueLabel = instanceLabel(object_, graph, preferedLanguage),
-                  type_ = nodeSeqToURISeq(ranges).headOption.getOrElse(nullURI)),
+                  alreadyInDatabase = true,
+                  valueLabel = instanceLabel(object_, graph, preferedLanguage),
+                  type_ = firstType ) },
               object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_,
                 typ = firstType),
               object_ => literalEntry))
