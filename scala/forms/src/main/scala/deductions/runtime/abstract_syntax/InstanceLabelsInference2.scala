@@ -9,8 +9,14 @@ import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
 
 /**
- * populate Fields in form by inferring possible values from given rdfs:range's URI,
- *  through owl:oneOf and know instances
+ * populate Fields in form by inferring possible label from:
+ * FOAF Person properties
+ * foaf:name
+ * rdfs.label
+ * rdfs.label from class ( by rdf:type)
+ * 
+ * systematically trying to get the matching language form,
+ * and as last fallback, the last segment of the URI.
  */
 private[abstract_syntax] trait InstanceLabelsInference2[Rdf <: RDF] {
   self: PreferredLanguageLiteral[Rdf] =>
@@ -53,7 +59,8 @@ private[abstract_syntax] trait InstanceLabelsInference2[Rdf <: RDF] {
           try {
             foldNode(node)(
               uri => lastSegment(uri),
-              x => instanceClassLabel(x, graph, lang),
+//              bn => instanceClassLabel(bn, graph, lang),
+              bn => bn.toString(),
               x => x.toString())
           } catch {
             case t: Throwable => node.toString()
@@ -74,6 +81,8 @@ private[abstract_syntax] trait InstanceLabelsInference2[Rdf <: RDF] {
         if (l != "") return l
         val n = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, foaf.name, "")
         if (n != "") return n
+        val cl = instanceClassLabel( node, graph, lang)
+        if (cl != "") return cl
         last_segment(node)
       }
     }
