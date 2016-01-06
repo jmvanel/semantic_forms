@@ -95,7 +95,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 //    with Configuration
     with Timer {
 
-  // TODO not thread safe: form is not rebuild for each HTTP request 
+  // TODO not thread safe: form is not rebuilt for each HTTP request 
   var preferedLanguage: String = "en"
   
   val defaults: FormDefaults = FormModule.formDefaults

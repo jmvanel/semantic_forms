@@ -54,26 +54,68 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     }
   }
 
+//  override def instanceLabels(list: Seq[Rdf#Node], lang: String = "")
+//  (implicit graph: Rdf#Graph): Seq[String] =
+////    list.map { node => instanceLabelFromTDB(node, lang)
+//    list.toList map { node => instanceLabel(node, graph, lang) }
+
   override def instanceLabels(list: Seq[Rdf#Node], lang: String = "")
-  (implicit graph: Rdf#Graph): Seq[String] =
-    list.map { node => instanceLabelFromTDB(node, lang)
+  (implicit graph: Rdf#Graph): Seq[String] = {
+    val labelsFromTDB:Map[Rdf#Node, String] =
+      list.toList.map { node => node -> instanceLabelFromTDB(node, lang) } . toMap
+    var recomputeCount = 0
+    val labelsComputedOrFromTDB =
+      labelsFromTDB . map { (node_label)  =>
+        node_label._1 -> {
+          val recompute = node_label._2 == ""
+          (
+            (if (recompute) {
+              recomputeCount = recomputeCount + 1
+              super.instanceLabel(node_label._1, graph, lang)
+            } else node_label._2),
+            recompute)
+        }
+      }
+      println("labelsComputedOrFromTDB size " + list.size + ", recomputeCount "+recomputeCount)
+      labelsComputedOrFromTDB . map {
+        node_label_boolean  =>
+          if( node_label_boolean._2._2)
+            storeInstanceLabel(node_label_boolean._1,
+                node_label_boolean._2._1, graph, lang)
+      }
+      println("labelsComputedOrFromTDB 2")
+      val ret = labelsComputedOrFromTDB . map {
+        node_label_boolean  => node_label_boolean._2._1
+      } . toList
+      println("labelsComputedOrFromTDB 3")
+      println("labelsComputedOrFromTDB 3 " + ret )
+      ret
   }
     
   def replaceInstanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
-    val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
     val label = computeInstanceLabel(node, graph, lang)
+    
+    val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
     replaceObjects( labelsGraphUri, node, displayLabelPred, Literal(label), dataset3 )
     label
   }
 
   /** compute Instance Label and store it in TDB */
-  def computeInstanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
-    val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
+  private def computeInstanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
     logger.debug( s"compute displayLabel for $node" )
     val label = super.instanceLabel(node, graph, lang)
-    val computedDisplayLabel = (node -- displayLabelPred ->- Literal(label)).graph
-    dataset3.appendToGraph(labelsGraphUri, computedDisplayLabel)
+
+//    val computedDisplayLabel = (node -- displayLabelPred ->- Literal(label)).graph
+//    val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
+//    dataset3.appendToGraph(labelsGraphUri, computedDisplayLabel)
+    storeInstanceLabel(node, label, graph, lang)
     label
   }
-
+  
+  private def storeInstanceLabel(node: Rdf#Node, label: String,
+      graph: Rdf#Graph, lang: String) = {
+    val computedDisplayLabel = (node -- displayLabelPred ->- Literal(label)).graph
+    val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
+    dataset3.appendToGraph(labelsGraphUri, computedDisplayLabel)
+  }
 }

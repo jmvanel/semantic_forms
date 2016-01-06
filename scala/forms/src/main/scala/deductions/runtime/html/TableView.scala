@@ -104,7 +104,10 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     })
     htmlFormTry match {
       case Success(e) => e
-      case Failure(e) => <p class="error">htmlFormElemJustFields: Exception occured: { e }</p>
+      case Failure(e) => <p class="error">htmlFormElemJustFields: Exception occured: {
+        e.printStackTrace()
+      }</p>
+      throw e
     }
   }
 

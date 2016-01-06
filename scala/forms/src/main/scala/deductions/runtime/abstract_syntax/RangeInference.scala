@@ -90,23 +90,31 @@ trait RangeInference[Rdf <: RDF, DATASET]
        *  from existing triples with relevant rdf:type
        */
       def fillPossibleValuesFromList(
-        enumerated: Iterable[Rdf#Node],
-        possibleValues: mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]) =
+        enumerated0: Iterable[Rdf#Node],
+        possibleValues: mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]) = {
+        def combineNodesLabels( seq: Seq[Rdf#Node]) = {
+          val list = seq.toList
+          val il = instanceLabels(list, lang)
+          list zip ( il.map{ s => makeLiteral(s, xsd.string) })
+        }
+        val enumerated = enumerated0.toList
         for (enum <- enumerated)
           foldNode(enum)(
             uri => {
-//              val list = nodeSeqToURISeq(rdfh.rdfListToSeq(Some(uri)))
               val list = (rdfh.rdfListToSeq(Some(uri)))
               possibleValues.appendAll(
-                list zip instanceLabels(list, lang).map { s => makeLiteral(s, xsd.string) })
+                  combineNodesLabels( list ))
+//                list zip instanceLabels(list, lang).map { s => makeLiteral(s, xsd.string) })
             },
             x => {
               println(s"fillPossibleValuesFromList bnode $x")
               val list = rdfh.rdfListToSeq(Some(x))
               possibleValues.appendAll(
-                list zip instanceLabels(list, lang).map { s => makeLiteral(s, xsd.string) })
+                  combineNodesLabels( list ))
+//                list zip instanceLabels(list, lang).map { s => makeLiteral(s, xsd.string) })
             },
             x => { println(s"lit $x"); () })
+    }
 
       possibleValues.map { (couple: (Rdf#Node, Rdf#Node)) =>
         new ResourceWithLabel(couple._1, couple._2)
