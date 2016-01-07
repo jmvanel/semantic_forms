@@ -66,7 +66,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with TriplesInGraphSPARQL[Rdf, DATASET]
     with ToolsPage
     with Configuration
-    with CSS {
+//    with CSS
+    {
  
 //  val v = new TimeSeries[Rdf, DATASET]{}
 //  if( activateUserInputHistory )
@@ -413,7 +414,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       <section class="label-search-results">
         <p class="label-search-header">Searched for "{ q }" :</p>
         <div>
-        { localCSS }
+        { css.localCSS }
         { v }
         </div>
       </section>

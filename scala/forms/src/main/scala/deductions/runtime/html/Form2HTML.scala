@@ -22,8 +22,8 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
     extends Form2HTMLBase[NODE, URI]
     with Form2HTMLDisplay[NODE, URI]
     with Form2HTMLEdit[NODE, URI]
-   with Timer
-    with CSS
+    with Timer
+//    with CSS
     with JavaScript
     with Configuration
     {
@@ -79,11 +79,14 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
       <input type="hidden" name="graphURI" value={ urlEncode(graphURI) }/>
     } else Seq()
     hidden ++
-      <div class={ cssClasses.formRootCSSClass }>
+      <div class={ css.cssClasses.formRootCSSClass }>
         {
-          localCSS ++
+          css.localCSS ++
             Text("\n") ++
-            (if( inlineJavascriptInForm ) localJS else Text("")) ++
+            (if( inlineJavascriptInForm )
+               localJS
+//              css.cssRules
+            else Text("")) ++
             Text("\n")
         }
         <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
@@ -95,7 +98,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
                 // do not display NullResourceEntry
                 if( field.property.toString != "" )
             ) yield {
-              <div class={ cssClasses.formLabelAndInputCSSClass }>
+              <div class={ css.cssClasses.formLabelAndInputCSSClass }>
                 { makeFieldLabel(preceding, field) }
                 { makeFieldDataOrInput(field, hrefPrefix, editable) }
               </div>
@@ -153,7 +156,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
       createHTMLField(field, editable, hrefPrefix)
     else
       // that's for corporate_risk:
-      <div class={ cssClasses.formInputCSSClass }>
+      <div class={ css.cssClasses.formInputCSSClass }>
         { createHTMLField(field, editable, hrefPrefix) }
       </div>
   }

@@ -39,7 +39,9 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     with InstanceLabelsInferenceMemory[Rdf, DATASET]
     with PreferredLanguageLiteral[Rdf]
     with SPARQLHelpers[Rdf, DATASET]
-    with CSS {
+    with Configuration
+//    with CSS
+    {
 
   import ops._
   import sparqlOps._
@@ -61,8 +63,8 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     	val graph: Rdf#Graph = allNamedGraph
 //      println(s"displayResults : 1" + graph  )
       val elems =
-        <div class={tableCSSClasses.formRootCSSClass}> {
-    	    localCSS ++
+        <div class={css.tableCSSClasses.formRootCSSClass}> {
+    	    css.localCSS ++
         uris.map(
         u => displayResults(u.toIterable, hrefPrefix, lang, graph, true)) . get
     	}</div>
@@ -88,8 +90,8 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     val elem0 =
       dataset.rw({
     	  val graph: Rdf#Graph = allNamedGraph
-        <div class={tableCSSClasses.formRootCSSClass}> {
-    	    localCSS ++
+        <div class={css.tableCSSClasses.formRootCSSClass}> {
+    	    css.localCSS ++
     	    uris.map(
             // create table like HTML
           u => displayResults(u.toIterable, hrefPrefix, lang, graph))

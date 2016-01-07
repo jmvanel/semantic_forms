@@ -49,7 +49,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
       Text("\n"),
     		// format: OFF
         if (r.openChoice)
-          <input class={ cssClasses.formInputCSSClass } value={ r.value.toString }
+          <input class={ css.cssClasses.formInputCSSClass } value={ r.value.toString }
             name={ makeHTMLIdResource(r) }
             list={ makeHTMLIdForDatalist(r) }
             data-type={ r.type_.toString() }
@@ -83,7 +83,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
    *  maybe there is no necessary difference */
   def createHTMLBlankNodeEditableField(r: fm#BlankNodeEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     if (r.openChoice) {
-      <input class={ cssClasses.formInputCSSClass } value={
+      <input class={ css.cssClasses.formInputCSSClass } value={
         r.value.toString
       } name={ makeHTMLIdBN(r) } data-type={
         r.type_.toString()
@@ -123,7 +123,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
         }
 
       case _ =>
-        <input class={ cssClasses.formInputCSSClass } value={
+        <input class={ css.cssClasses.formInputCSSClass } value={
           toPlainString(lit.value)
         } name={ makeHTMLIdForLiteral(lit) } type={
           xsd2html5TnputType(lit.type_.toString())

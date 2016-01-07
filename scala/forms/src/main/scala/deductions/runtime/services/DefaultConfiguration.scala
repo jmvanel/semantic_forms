@@ -1,5 +1,7 @@
 package deductions.runtime.services
 
+import deductions.runtime.html.CSS
+
 //trait Configuration {
 trait DefaultConfiguration extends Configuration {
   /** URI Prefix prepended to newly created resource instances */
@@ -32,6 +34,8 @@ trait DefaultConfiguration extends Configuration {
   //  lazy override val showPlusButtons = true
   override val showPlusButtons = true
   override val inlineJavascriptInForm: Boolean = true
+
+  override val css: CSS = new CSS {}
 
   //  override val activateUserInputHistory = false
 

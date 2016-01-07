@@ -3,10 +3,13 @@ package deductions.runtime.html
 import Form2HTML.urlEncode
 import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.utils.I18NMessages
+import deductions.runtime.services.Configuration
 
 /** generate HTML from abstract Form : common parts for Display & edition */
 trait Form2HTMLBase[NODE, URI <: NODE]
-    extends CSS {
+    extends Configuration
+    // CSS
+    {
   
   type fm = FormModule[NODE, URI]
   type Entry = fm#Entry
@@ -15,17 +18,17 @@ trait Form2HTMLBase[NODE, URI <: NODE]
   (implicit form: FormModule[NODE, URI]#FormSyntax) = {
     // display field label only if different from preceding
     if (preceding.label != field.label)
-      <label class={ cssClasses.formLabelCSSClass } title={
+      <label class={ css.cssClasses.formLabelCSSClass } title={
         field.comment + " - " + field.property
       } for={ makeHTMLIdResource(field) }>{
         val label = field.label
-        // hack before real separators
+        // hack before implementing real separators
         if (label.contains("----"))
           label.substring(1).replaceAll("-(-)+", "")
         else label
       }</label>
     else
-      <label class={ cssClasses.formLabelCSSClass } title={
+      <label class={ css.cssClasses.formLabelCSSClass } title={
         field.comment + " - " + field.property
       }> -- </label>
   }

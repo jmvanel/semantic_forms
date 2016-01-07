@@ -77,7 +77,7 @@ To download Java from the server with no browser (see http://stackoverflow.com/q
 
 - FAILED DOWNLOADS messages for the first SBT build: retry later. With SBT, as with all these dependency managers ( Maven, NMP), given the large amount of downloading from multiple sources, it is often the case that the first time, not everything is there.
 - in case of troubles in build, delete `target/` directory
-- create eclipse configurations with the "eclipse" command in sbt or activator:
+- create eclipse configurations with the "eclipse" command in sbt or activator, in the project directory scala/forms\_play/ :
 
 ```
     eclipse with-source=true

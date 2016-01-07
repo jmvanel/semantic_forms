@@ -1,5 +1,7 @@
 package deductions.runtime.services
 
+import deductions.runtime.html.CSS
+
 /**
  * All Configuration flags and values for the library
  *  TODO should 100% abstract
@@ -36,6 +38,8 @@ trait Configuration {
   /** inline Javascript In Form; overwise app. developer must put it in <head> */
   def inlineJavascriptInForm: Boolean
 
+  def css: CSS // = new CSS{}
+
   //  def radioForIntervals = false // TODO
   //  def activateUserInputHistory = false
 
@@ -60,5 +64,6 @@ trait ConfigurationCopy extends Configuration {
   override def recordUserActions: Boolean = original.recordUserActions
   override val addRDFS_label_comment = original.addRDFS_label_comment
   override val showRDFtype = original.showRDFtype
+  override val css = original.css
 
 }
