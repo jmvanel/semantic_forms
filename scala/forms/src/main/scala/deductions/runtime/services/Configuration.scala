@@ -1,6 +1,9 @@
 package deductions.runtime.services
 
-//trait Configuration {
+/**
+ * All Configuration flags and values for the library
+ *  TODO should 100% abstract
+ */
 trait Configuration {
   /** URI Prefix prepended to newly created resource instances */
   def defaultInstanceURIHostPrefix = "http://assemblee-virtuelle.org/"
@@ -18,21 +21,22 @@ trait Configuration {
   def needLoginForEditing: Boolean = false // true
   def needLoginForDisplaying: Boolean = false
 
-  def recordUserActions: Boolean = false
+  def recordUserActions: Boolean
   def showDomainlessProperties = false
-  def addRDFS_label_comment = true
+  def addRDFS_label_comment: Boolean
 
   def lookup_domain_unionOf = false // is slow !!!
 
   def use_dbpedia_lookup = true
   def use_local_lookup = false
   /** show triples with rdf:type */
-  def showRDFtype = true
+  def showRDFtype: Boolean
   /** show + Buttons for creating multi-valued */
   def showPlusButtons: Boolean // TODO all members should be abstract!!!!!!!!! 
+  /** inline Javascript In Form; overwise app. developer must put it in <head> */
+  def inlineJavascriptInForm: Boolean
 
   //  def radioForIntervals = false // TODO
-
   //  def activateUserInputHistory = false
 
   // CORS
@@ -46,4 +50,15 @@ trait Configuration {
 
   // helper functions
   def needLogin = needLoginForEditing || needLoginForDisplaying
+}
+
+trait ConfigurationCopy extends Configuration {
+  val original: Configuration
+
+  override def showPlusButtons = original.showPlusButtons
+  override def inlineJavascriptInForm = original.inlineJavascriptInForm
+  override def recordUserActions: Boolean = original.recordUserActions
+  override val addRDFS_label_comment = original.addRDFS_label_comment
+  override val showRDFtype = original.showRDFtype
+
 }

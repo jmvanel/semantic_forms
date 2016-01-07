@@ -27,16 +27,8 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
     with JavaScript
     with Configuration
     {
-  self: HTML5Types 
-//        with Configuration 
-        =>
-//  import Configuration._
+  self: HTML5Types =>
 
-  //  type fm = FormModule[NODE, URI]
-  //  type Entry = fm#Entry
-
-  //  val radioForIntervals = false // TODO the choice should be moved to FormSyntaxFactory
-  //  val inputSize = 90
 
   /**
    * render the given Form Syntax as HTML;
@@ -91,7 +83,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
         {
           localCSS ++
             Text("\n") ++
-            localJS ++
+            (if( inlineJavascriptInForm ) localJS else Text("")) ++
             Text("\n")
         }
         <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>

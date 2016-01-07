@@ -6,14 +6,14 @@ import scala.util.Success
 import scala.util.Try
 import scala.xml.NodeSeq
 import scala.xml.PrettyPrinter
-
 import org.apache.log4j.Logger
 import org.w3.banana.RDF
-
 import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.abstract_syntax.FormSyntaxFactory
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.Timer
+import deductions.runtime.services.ConfigurationCopy
+import deductions.runtime.services.Configuration
 
 /**
  * Form for a subject URI with existing triples;
@@ -95,9 +95,10 @@ trait TableViewModule[Rdf <: RDF, DATASET]
 //          graph, 
           uri, editable, lang, blankNode,
         URI(formGroup))
-      new Form2HTMLBanana[Rdf] {
+      new Form2HTMLBanana[Rdf] with ConfigurationCopy {
         val ops = ops1
-        override def showPlusButtons = TableViewModule.this.showPlusButtons
+        lazy val original:Configuration = TableViewModule.this
+//        override def showPlusButtons = TableViewModule.this.showPlusButtons
       } .
         generateHTMLJustFields(form,
           hrefPrefix, editable, graphURIActual)
@@ -214,8 +215,10 @@ trait TableViewModule[Rdf <: RDF, DATASET]
           uri, editable, lang, blankNode, formGroup))
     val ops1 = ops;
     val htmlFormGen = time("new Form2HTML",
-      new Form2HTMLBanana[Rdf] { val ops = ops1
-        override def showPlusButtons = TableViewModule.this.showPlusButtons   
+      new Form2HTMLBanana[Rdf] with ConfigurationCopy {
+        val ops = ops1
+        lazy val original:Configuration = TableViewModule.this
+//        override def showPlusButtons = TableViewModule.this.showPlusButtons   
       }
     )
     val htmlForm = htmlFormGen.

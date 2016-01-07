@@ -31,6 +31,7 @@ trait DefaultConfiguration extends Configuration {
   /** show + Buttons for creating multi-valued */
   //  lazy override val showPlusButtons = true
   override val showPlusButtons = true
+  override val inlineJavascriptInForm: Boolean = true
 
   //  override val activateUserInputHistory = false
 
@@ -44,5 +45,5 @@ trait DefaultConfiguration extends Configuration {
   override val hrefEditPrefix = "/edit?url="
 
   // helper functions
-  override val needLogin = needLoginForEditing || needLoginForDisplaying
+  // override val needLogin = needLoginForEditing || needLoginForDisplaying
 }

@@ -8,6 +8,7 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import org.w3.banana.RDFOps
 import deductions.runtime.services.Configuration
+import deductions.runtime.services.ConfigurationCopy
 
 trait CreationFormAlgo[Rdf <: RDF, DATASET]
 extends RDFCacheAlgo[Rdf, DATASET]
@@ -36,9 +37,10 @@ with Configuration
         URI(classUri),
         formSpecURI);
       val ops1 = ops;
-      new Form2HTMLBanana[Rdf] {
+      new Form2HTMLBanana[Rdf] with ConfigurationCopy {
         val ops = ops1
-        override def showPlusButtons = CreationFormAlgo.this.showPlusButtons 
+        lazy val original:Configuration = CreationFormAlgo.this
+//        override def showPlusButtons = CreationFormAlgo.this.showPlusButtons 
       } .
         generateHTML(form, hrefPrefix = "", editable = true, actionURI = actionURI, lang=lang)
     })
