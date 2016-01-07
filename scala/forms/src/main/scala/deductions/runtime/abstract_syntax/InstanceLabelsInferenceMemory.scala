@@ -54,12 +54,16 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     }
   }
 
-//  override def instanceLabels(list: Seq[Rdf#Node], lang: String = "")
-//  (implicit graph: Rdf#Graph): Seq[String] =
-////    list.map { node => instanceLabelFromTDB(node, lang)
-//    list.toList map { node => instanceLabel(node, graph, lang) }
-
   override def instanceLabels(list: Seq[Rdf#Node], lang: String = "")
+  (implicit graph: Rdf#Graph): Seq[String] =
+    list.toList map { node => instanceLabel(node, graph, lang) }
+    // list.map { node => instanceLabelFromTDB(node, lang)
+
+  /** this was tried during trials to fix a ConcurrentModificationException,
+   *  but the solution was in calling levels:
+   *  https://github.com/jmvanel/semantic_forms/commit/6d1263530c337d69358670674de5178fd23d1765
+   *   */
+  private def instanceLabelsComplex(list: Seq[Rdf#Node], lang: String = "")
   (implicit graph: Rdf#Graph): Seq[String] = {
     val labelsFromTDB:Map[Rdf#Node, String] =
       list.toList.map { node => node -> instanceLabelFromTDB(node, lang) } . toMap

@@ -43,27 +43,28 @@ trait RangeInference[Rdf <: RDF, DATASET]
   import sparqlGraph.sparqlEngineSyntax._
 
   /** add Possible Values to all entry Fields */
-  def addAllPossibleValues(formSyntax: FormSyntax,
-                           valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)])(
+  def addAllPossibleValues(
+      formSyntax: FormSyntax,
+      valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)])(
                                implicit graph: Rdf#Graph,
                                lang: String = "en") = {
     for (field <- formSyntax.fields) {
     	val ranges = objectsQuery( field.property, rdfs.range)
+    	println( "> field before addPossibleValues" + field )
       formSyntax.possibleValuesMap.put(field.property,
         addPossibleValues(field, ranges, valuesFromFormGroup))
+      println( "> field after  addPossibleValues" + field )
     }
   }
 
   /** add Possible Values to given entry Field */
-  def addPossibleValues(
+  private def addPossibleValues(
     entryField: Entry,
     ranges: Set[Rdf#Node],
     valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)])
   (implicit graph: Rdf#Graph,
       lang: String = "en" )
-//  : Entry
-    : Seq[(Rdf#Node, Rdf#Node)]
-  = {
+    : Seq[(Rdf#Node, Rdf#Node)]  = {
 
     val owl = OWLPrefix[Rdf]
     val rdfh: RDFHelpers[Rdf] = this
@@ -74,16 +75,21 @@ trait RangeInference[Rdf <: RDF, DATASET]
      * ?RANGE owl:oneOf ?LIST
      */
     def populateFromOwlOneOf(): Seq[ResourceWithLabel[Rdf]] = {
-      val possibleValues = mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]()
+      // TODO: use yield instead in fillPossibleValuesFromList()
+      val possibleValuesFromOwlOneOf = mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]()
+      
       for (range <- ranges) {
         val enumerated = getObjects(graph, range, owl.oneOf)
-        fillPossibleValuesFromList(enumerated, possibleValues)
+        fillPossibleValuesFromList(enumerated, possibleValuesFromOwlOneOf)
       }
-      if (!possibleValues.isEmpty) {
-        println(s"populateFromOwlOneOf size ${possibleValues.size} ranges $ranges - $entryField")
+      println(s"populateFromOwlOneOf size ${possibleValuesFromOwlOneOf.size} ranges $ranges - $entryField")
+      if (!possibleValuesFromOwlOneOf.isEmpty) {
+        /* normally we have a non empty list of possible values to propose to user,
+         * and then there is no open Choice for her. */
+        println(s"populateFromOwlOneOf ${entryField.label} set openChoice = false")
         entryField.openChoice = false
       }
-      //      entry.setPossibleValues(possibleValues ++ entry.possibleValues)
+
       /**
        * fill Possible Values into `possibleValues`
        * from given RDF List `enumerated`, which typically comes
@@ -97,6 +103,8 @@ trait RangeInference[Rdf <: RDF, DATASET]
           val il = instanceLabels(list, lang)
           list zip ( il.map{ s => makeLiteral(s, xsd.string) })
         }
+        /* NOTE: Iterable are like kleenex: must NOT use them twice;
+         * in this case do a copy by toList. */
         val enumerated = enumerated0.toList
         for (enum <- enumerated)
           foldNode(enum)(
@@ -104,19 +112,17 @@ trait RangeInference[Rdf <: RDF, DATASET]
               val list = (rdfh.rdfListToSeq(Some(uri)))
               possibleValues.appendAll(
                   combineNodesLabels( list ))
-//                list zip instanceLabels(list, lang).map { s => makeLiteral(s, xsd.string) })
             },
             x => {
               println(s"fillPossibleValuesFromList bnode $x")
               val list = rdfh.rdfListToSeq(Some(x))
               possibleValues.appendAll(
                   combineNodesLabels( list ))
-//                list zip instanceLabels(list, lang).map { s => makeLiteral(s, xsd.string) })
             },
             x => { println(s"lit $x"); () })
-    }
+      }
 
-      possibleValues.map { (couple: (Rdf#Node, Rdf#Node)) =>
+      possibleValuesFromOwlOneOf.map { (couple: (Rdf#Node, Rdf#Node)) =>
         new ResourceWithLabel(couple._1, couple._2)
       }
     }
@@ -236,14 +242,12 @@ trait RangeInference[Rdf <: RDF, DATASET]
     }
 
     /** this function does the job! */
-    def setPossibleValues()
-    // : Entry
-    = {
-      //      println("addPossibleValues " + entryField)
+    def setPossibleValues() : Seq[(Rdf#Node, Rdf#Node)] = {
       val fieldType = entryField.type_
-      //      println("addPossibleValues fieldType " + fieldType)
       val possibleValues = {
         if (isDefined(fieldType) ) {
+          // to set openChoice = false - TODO this recomputes label already memorized 
+          populateFromOwlOneOf()
           getPossibleValuesAsTuple(fieldType)
         } else {
           val resourcesWithLabelFromOwlUnion = populateFromOwlUnion()
@@ -255,14 +259,13 @@ trait RangeInference[Rdf <: RDF, DATASET]
           res
         }
       }
-//      entryField.setPossibleValues(possibleValues)
       possibleValues
     }
 
     /** record Possible Values */
     def recordPossibleValues(resourcesWithLabel: Seq[ResourceWithLabel[Rdf]],
-                             classesAndLabels:  Map[Rdf#Node, Seq[ ResourceWithLabel[Rdf]]] ):
-                             Seq[(Rdf#Node, Rdf#Node)] = {
+                             classesAndLabels:  Map[Rdf#Node, Seq[ ResourceWithLabel[Rdf]]]
+    ): Seq[(Rdf#Node, Rdf#Node)] = {
       val fieldType = entryField.type_
       if (classesAndLabels isEmpty)
         addPossibleValues(fieldType, resourcesWithLabel)
@@ -277,11 +280,6 @@ trait RangeInference[Rdf <: RDF, DATASET]
     
     // ==== body of function addPossibleValues ====
 
-//    entryField match {
-//      case entryField: ResourceEntry => setPossibleValues
-//      case entryField: BlankNodeEntry => setPossibleValues
-//      case entryField: LiteralEntry => entryField
-//    }
     setPossibleValues
   }
 

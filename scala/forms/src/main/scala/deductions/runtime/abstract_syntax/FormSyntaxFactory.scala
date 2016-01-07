@@ -92,7 +92,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     with PreferredLanguageLiteral[Rdf]
     with PossibleValues[Rdf]
    	with FormConfigurationFactory[Rdf]
-//    with Configuration
     with Timer {
 
   // TODO not thread safe: form is not rebuilt for each HTTP request 
@@ -217,7 +216,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val formSyntax = FormSyntax(subject, fields2, classs)
     addAllPossibleValues(formSyntax, valuesFromFormGroup)
     
-    val foaf = org.w3.banana.FOAFPrefix[Rdf]
+//    val foaf = org.w3.banana.FOAFPrefix[Rdf]
 //    println( "formSyntax.possibleValuesMap.get( foaf.knows )\n\t" +
 //        formSyntax.possibleValuesMap.get( foaf.knows ) )
     
@@ -294,7 +293,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     fields: Iterable[Entry])
     (implicit graph: Rdf#Graph)
   : Seq[Entry] = {
-    val alreadyInDatabase = !find(graph, subject, rdf.typ, ANY).isEmpty
+    val alreadyInDatabase = ! find(graph, subject, rdf.typ, ANY).isEmpty
     if ( // defaults.displayRdfType ||
     !alreadyInDatabase) {
       val classFormEntry = new ResourceEntry(
@@ -307,35 +306,31 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   }
 
   /** find fields from given Instance subject */
-  private def fieldsFromSubject(subject: Rdf#Node, graph: Rdf#Graph): Seq[Rdf#URI] = {
+  private def fieldsFromSubject(subject: Rdf#Node, graph: Rdf#Graph): Seq[Rdf#URI] =
     getPredicates(graph, subject).toSeq.distinct
-  }
 
-  /**
+  /** make form Entries for given subject and property,
+   * thus taking in account multi-valued properties;
    * try to get rdfs:label, comment, rdf:type,
    * or else display terminal Part of URI as label;
-   *  taking in account multi-valued properties
    */
   private def makeEntries(subject: Rdf#Node, prop: Rdf#Node, ranges: Set[Rdf#Node],
     formMode: FormMode,
     valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)])
 	  (implicit graph: Rdf#Graph)
   : Seq[Entry] = {
-    //    Timer.startTimer
     logger.info(s"makeEntries subject $subject, prop $prop")
-//    implicit val gr = graph
     implicit val prlng = preferedLanguage
-    val rdfh = this // makeRDFHelpersGraph(graph)
-//    import rdfh.{ graph => _, ops=>_, _ }
+    val rdfh = this
     
     val label = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.label, terminalPart(prop))
     val comment = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.comment, "")
-      
-    val propClasses = rdfh.objectsQuery(prop, RDFPrefix[Rdf].typ)
+    
+    val rdf_type = RDFPrefix[Rdf].typ
+    val propClasses = rdfh.objectsQuery(prop, rdf_type)
     val objects = objectsQuery(subject, prop.asInstanceOf[Rdf#URI])
     logger.info(s"makeEntries subject $subject, objects $objects")
-    val rangeClasses = objectsQueries(ranges, RDFPrefix[Rdf].typ)
-    //    Timer.endTimer(s"makeEntries(${prop}: beginning)")
+    val rangeClasses = objectsQueries(ranges, rdf_type)
 
     val result = scala.collection.mutable.ArrayBuffer[Entry]()
     for (obj <- objects)
@@ -344,16 +339,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     if (objects isEmpty) addOneEntry(nullURI, formMode, valuesFromFormGroup)
 
     //////// end of populating result of makeEntries() ////////
-
-    def makeBN(label: String, comment: String,
-      property: ObjectProperty, validator: ResourceValidator,
-      value: Rdf#BNode,
-      typ: Rdf#Node = nullURI) = {
-      new BlankNodeEntry(label, comment, prop, ResourceValidator(ranges), value,
-        type_ = typ, valueLabel = instanceLabel(value, graph, preferedLanguage)) {
-        override def getId: String = fromBNode(value.asInstanceOf[Rdf#BNode])
-      }
-    }
 
     def firstType = firstNodeOrElseNullURI(ranges)
 
@@ -373,15 +358,13 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
           getLiteralNodeOrElse(object_, literalInitialValue),
           type_ = firstType, lang = getLang(object_).toString())
       }
+
       val NullResourceEntry = new ResourceEntry("", "", nullURI, ResourceValidator(Set()) )
       def resourceEntry = {
         if (showRDFtype || prop != rdf.typ)
           time(s"""resourceEntry object_ "$object_" """,
             foldNode(object_)(
               object_ => {
-//                // NOTE: typ same thing as firstType
-//                val typ = ranges.headOption.getOrElse(nullURI)
-//                assert( firstType == typ )
                 new ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_,
                   alreadyInDatabase = true,
                   valueLabel = instanceLabel(object_, graph, preferedLanguage),
@@ -390,6 +373,16 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
                 typ = firstType),
               object_ => literalEntry))
         else NullResourceEntry
+      }
+
+      def makeBN(label: String, comment: String,
+          property: ObjectProperty, validator: ResourceValidator,
+          value: Rdf#BNode,
+          typ: Rdf#Node = nullURI) = {
+        new BlankNodeEntry(label, comment, prop, ResourceValidator(ranges), value,
+            type_ = typ, valueLabel = instanceLabel(value, graph, preferedLanguage)) {
+          override def getId: String = fromBNode(value.asInstanceOf[Rdf#BNode])
+        }
       }
 
       val entry = rangeClasses match {
@@ -402,15 +395,12 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         case _ if rangeClasses.contains(rdf.Property) => resourceEntry
         case _ if ranges.contains(owl.Thing) => resourceEntry
         case _ if isURI(object_) => resourceEntry
-        case _ if isBN(object_) => makeBN(label, comment, prop, ResourceValidator(ranges), toBN(object_), firstType)
+        case _ if isBN(object_) => makeBN(label, comment, prop,
+            ResourceValidator(ranges), toBN(object_), firstType)
         case _ if object_.toString.startsWith("_:") => resourceEntry
         case _ => literalEntry
       }
-      if (formMode != DisplayMode) {
-//        val pv = addPossibleValues(entry, ranges, valuesFromFormGroup)
-        result += entry // pv
-      } else
-        result += entry
+      result += entry
     }
 
     logger.debug("result: Entry's " + result)

@@ -39,6 +39,7 @@ trait FormModule[NODE, URI <: NODE] {
       val defaults: FormDefaults = FormModule.formDefaults
       ) {
     
+    /** Map from property to possible Values  */
 	  val possibleValuesMap = scala.collection.mutable.Map[ NODE, Seq[(NODE, NODE)]]()
 //    def getPossibleValues( f: Entry) = possibleValuesMap.getOrElse( f.property, Seq() )
     
@@ -71,6 +72,7 @@ trait FormModule[NODE, URI <: NODE] {
       val type_ : NODE = nullURI,
       val value: NODE = nullURI, // Any = "",
       var widgetType: WidgetType = Text,
+      /** true <=> user has possibility to type any (valid) data */
       var openChoice: Boolean = true,
       var possibleValues: Seq[(NODE, NODE)] = Seq(),
       val defaults: FormDefaults = FormModule.formDefaults,
@@ -80,7 +82,7 @@ trait FormModule[NODE, URI <: NODE] {
     private val triples: mutable.Buffer[Triple] = mutable.ListBuffer[Triple]()
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]): Entry
     override def toString(): String = {
-      s"""${getClass.getSimpleName} "$label", "$comment" $widgetType openChoice $openChoice"""
+      s"""${getClass.getSimpleName} "$label", "$comment" $widgetType, openChoice: $openChoice"""
     }
     def addTriple(s: NODE, p: URI, o: NODE) = {
       val t = Triple(s, p, o)
@@ -99,9 +101,11 @@ trait FormModule[NODE, URI <: NODE] {
     possibleValues: Seq[(NODE, NODE)] = Seq(),
     val valueLabel: String = "",
     type_ : NODE = nullURI)
-      extends Entry(label, comment, property, type_ = type_, value = value, possibleValues = possibleValues) {
+      extends Entry(label, comment, property, type_ = type_, value = value,
+          possibleValues = possibleValues) {
     override def toString(): String = {
-      super.toString + s""" : <$value>, valueLabel "$valueLabel" possibleValues count:${possibleValues.size} """
+      "RES " + super.toString +
+      s""" : <$value>, valueLabel "$valueLabel" possibleValues count:${possibleValues.size} """
     }
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = {
       val ret = new ResourceEntry(label, comment,
@@ -133,7 +137,7 @@ trait FormModule[NODE, URI <: NODE] {
       extends Entry(label, comment, property, type_ = type_, value = value,
         possibleValues = possibleValues) {
     override def toString(): String = {
-      super.toString + s", $value , possibleValues count:${possibleValues.size}"
+      "BN: " + super.toString + s", $value , possibleValues count:${possibleValues.size}"
     }
     def getId: String = value.toString
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = {

@@ -79,6 +79,8 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
     ).flatMap { identity }
   }
 
+  /** TODO analyse differences with createHTMLResourceEditableField;
+   *  maybe there is no necessary difference */
   def createHTMLBlankNodeEditableField(r: fm#BlankNodeEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     if (r.openChoice) {
       <input class={ cssClasses.formInputCSSClass } value={
