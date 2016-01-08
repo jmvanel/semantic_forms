@@ -2,7 +2,6 @@ package deductions.runtime.jena
 
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
-import com.hp.hpl.jena.query.Dataset
 import deductions.runtime.dataset.RDFStoreLocalUserManagement
 import deductions.runtime.services.ApplicationFacade
 import deductions.runtime.services.ApplicationFacadeImpl
@@ -17,7 +16,8 @@ import deductions.runtime.services.DefaultConfiguration
  */
 trait ApplicationFacadeJena
     extends ApplicationFacadeInterface
-    with ApplicationFacade[Jena, Dataset] {
+    with ApplicationFacade[Jena, ImplementationSettings.DATASET]
+    with RDFStoreLocalJenaProvider {
   override val impl = try {
     /**
      * NOTES:
@@ -28,8 +28,8 @@ trait ApplicationFacadeJena
     class ApplicationFacadeImplJena extends JenaModule
       with RDFStoreLocalJena1Provider
       with DefaultConfiguration
-      with ApplicationFacadeImpl[Jena, Dataset]
-      with RDFStoreLocalUserManagement[Jena, Dataset]
+      with ApplicationFacadeImpl[Jena, DATASET]
+      with RDFStoreLocalUserManagement[Jena, DATASET]
 
     new ApplicationFacadeImplJena
   } catch {

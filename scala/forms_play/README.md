@@ -73,6 +73,19 @@ To download Java from the server with no browser (see http://stackoverflow.com/q
     wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" \
     http://download.oracle.com/otn-pub/java/jdk/8u$VERSION-b16/jdk-8u$VERSION-linux-arm-vfp-hflt.tar.gz
 
+# Setting a IDE project ( eclipse ...)
+
+Please read explanations on the Banana-RDF project:
+[ide-setup](https://github.com/w3c/banana-rdf/#ide-setup)
+
+Note that you run
+```
+sbt eclipse
+```
+just once in the directory scala/forms\_play/ ; this creates configuration for 2 eclipse projects: one in directory forms\_play/, one in directory forms.
+
+You may have to set by hand the dependency in project forms\_play/ towards the other. For this, go in Properties of project, Java Buld Path, Projects tab, and Add...
+
 ## Troubleshooting & tips
 
 - FAILED DOWNLOADS messages for the first SBT build: retry later. With SBT, as with all these dependency managers ( Maven, NMP), given the large amount of downloading from multiple sources, it is often the case that the first time, not everything is there.
@@ -82,7 +95,7 @@ To download Java from the server with no browser (see http://stackoverflow.com/q
 ```
     eclipse with-source=true
 ```
-
+- to remove the red errors in Play! project, apply this workaround: http://stackoverflow.com/posts/28551583/revisions
 
 ## Debug
 See 
@@ -90,11 +103,6 @@ See
 
 Apparently Activator, not SBT, is needed:
     activator -jvm-debug 9999 run
-
-# Setting a IDE project ( eclipse ...)
-
-Please read explanations on the Banana-RDF project:
-[ide-setup](https://github.com/w3c/banana-rdf/#ide-setup)
 
 #Database Administration
 ## Preloading RDF content

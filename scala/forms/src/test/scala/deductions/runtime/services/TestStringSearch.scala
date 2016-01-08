@@ -1,28 +1,21 @@
 package deductions.runtime.services
 
-import org.w3.banana.RDFOpsModule
-import deductions.runtime.jena.RDFStoreObject
-import org.w3.banana.SparqlGraphModule
-import org.w3.banana.SparqlOpsModule
-import org.w3.banana.PointedGraph
-import org.w3.banana.diesel._
-import org.scalatest.FunSuite
-import org.w3.banana.jena.Jena
-import com.hp.hpl.jena.query.Dataset
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import org.w3.banana.RDF
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits
 import scala.concurrent.duration.DurationInt
+import scala.language.postfixOps
+import scala.util.Try
 import org.scalatest.BeforeAndAfterAll
-import org.w3.banana.RDFXMLReaderModule
-import deductions.runtime.utils.FileUtils
-import org.scalatest.Ignore
-import deductions.runtime.dataset.RDFStoreLocalProvider
+import org.scalatest.Finders
+import org.scalatest.FunSuite
+import org.w3.banana.RDF
 import org.w3.banana.io.RDFReader
 import org.w3.banana.io.RDFXML
-
-import scala.util.Try
-import scala.language.postfixOps
+import org.w3.banana.jena.Jena
+import com.hp.hpl.jena.query.Dataset
+import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import deductions.runtime.utils.FileUtils
 
 trait TestStringSearchTrait[Rdf <: RDF, DATASET] extends FunSuite
     with BeforeAndAfterAll

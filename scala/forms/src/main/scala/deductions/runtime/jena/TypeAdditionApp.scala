@@ -7,8 +7,6 @@ import org.w3.banana.RDFOpsModule
 
 import deductions.runtime.services.TypeAddition
 
-import com.hp.hpl.jena.query.Dataset
-
 import scala.collection.mutable.ArraySeq
 import scala.util.Try
 import scala.language.postfixOps
@@ -24,7 +22,7 @@ import scala.language.postfixOps
 object TypeAdditionApp extends JenaModule
     with App
     with RDFStoreLocalJena1Provider
-    with TypeAdditionAppTrait[Jena, Dataset] {
+    with TypeAdditionAppTrait[Jena, ImplementationSettings.DATASET] {
   val uris: ArraySeq[Rdf#URI] = args map { p => ops.URI(p) }
   run()
 }

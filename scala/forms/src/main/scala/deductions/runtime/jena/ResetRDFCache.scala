@@ -2,11 +2,11 @@ package deductions.runtime.jena
 
 import org.w3.banana.RDFOpsModule
 import org.w3.banana.jena.Jena
-import com.hp.hpl.jena.query.Dataset
+import org.w3.banana.jena.JenaModule
+
 import deductions.runtime.sparql_cache.CommonVocabulariesLoaderTrait
 import deductions.runtime.sparql_cache.FormSpecificationsLoaderTrait
 import deductions.runtime.sparql_cache.RDFI18NLoaderTrait
-import org.w3.banana.jena.JenaModule
 import deductions.runtime.services.DefaultConfiguration
 
 /**
@@ -21,9 +21,9 @@ import deductions.runtime.services.DefaultConfiguration
  */
 object ResetRDFCache extends JenaModule
     with DefaultConfiguration
-    with CommonVocabulariesLoaderTrait[Jena, Dataset]
-    with RDFI18NLoaderTrait[Jena, Dataset]
-    with FormSpecificationsLoaderTrait[Jena, Dataset]
+    with CommonVocabulariesLoaderTrait[Jena, ImplementationSettings.DATASET]
+    with RDFI18NLoaderTrait[Jena, ImplementationSettings.DATASET]
+    with FormSpecificationsLoaderTrait[Jena, ImplementationSettings.DATASET]
     with RDFOpsModule
     with RDFStoreLocalJena1Provider
     //    with JenaHelpers

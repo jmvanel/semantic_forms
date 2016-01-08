@@ -13,12 +13,9 @@ import org.w3.banana.RDFSPrefix
 import org.w3.banana.WebACLPrefix
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
-
-import com.hp.hpl.jena.query.Dataset
-
-//import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFCache
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import deductions.runtime.jena.ImplementationSettings
 
 /**
  * @author jmv
@@ -27,7 +24,7 @@ import deductions.runtime.jena.RDFStoreLocalJena1Provider
 /** TODO put in package jena */
 object CommonVocabulariesLoader extends JenaModule
     with RDFCache with App
-    with CommonVocabulariesLoaderTrait[Jena, Dataset]
+    with CommonVocabulariesLoaderTrait[Jena, ImplementationSettings.DATASET]
     with RDFStoreLocalJena1Provider //    with JenaHelpers
     {
   loadCommonVocabularies()

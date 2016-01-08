@@ -13,10 +13,8 @@ import deductions.runtime.sparql_cache.RDFCacheAlgo
 import org.w3.banana.RDF
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import org.w3.banana.jena.Jena
-import com.hp.hpl.jena.query.Dataset
-//import deductions.runtime.jena.JenaHelpers
 import scala.collection.mutable.ArrayBuffer
-
+import deductions.runtime.jena.ImplementationSettings
 /**
  * @author jmv
  */
@@ -32,7 +30,7 @@ import scala.collection.mutable.ArrayBuffer
  *  common to TypeAddition
  */
 object FixBadURIApp extends JenaModule
-    with FixBadURI[Jena, Dataset]
+    with FixBadURI[Jena, ImplementationSettings.DATASET]
     with RDFStoreLocalJena1Provider
     //    with JenaHelpers 
     with App {
@@ -40,8 +38,8 @@ object FixBadURIApp extends JenaModule
   def listGraphNames() = dataset.listNames()
 }
 
-trait FixBadURI[Rdf <: RDF, Dataset] extends RDFCacheAlgo[Rdf, Dataset]
-    with RDFStoreLocalProvider[Rdf, Dataset] {
+trait FixBadURI[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
+    with RDFStoreLocalProvider[Rdf, DATASET] {
 
   val fileNameOrUri = "dump.nq";
   def listGraphNames(): Iterator[String]

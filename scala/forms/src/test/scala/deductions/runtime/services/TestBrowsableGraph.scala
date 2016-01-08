@@ -3,24 +3,14 @@ package deductions.runtime.services
 import org.scalatest.FunSuite
 import org.w3.banana.RDFOpsModule
 import org.w3.banana.SparqlGraphModule
-import org.w3.banana.SparqlOpsModule
-import deductions.runtime.jena.RDFStoreObject
 import org.w3.banana.SparqlHttpModule
-import org.w3.banana.RDFOps
-import org.w3.banana.io.RDFReader
-import org.w3.banana.io.RDFWriter
-import org.w3.banana.RDFStore
-import org.w3.banana.io.Turtle
-import org.w3.banana.io.RDFXML
-import scala.util.Try
-import org.w3.banana.RDF
-import org.w3.banana.SparqlOps
-import deductions.runtime.jena.RDFStoreObject
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import org.scalatest.Ignore
+import org.w3.banana.SparqlOpsModule
 import org.w3.banana.jena.Jena
+
 import com.hp.hpl.jena.query.Dataset
+
 import deductions.runtime.jena.RDFCache
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
 
 //@Ignore
 class TestBrowsableGraph

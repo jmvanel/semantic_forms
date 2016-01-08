@@ -12,7 +12,6 @@ import org.apache.log4j.Logger
 import org.w3.banana.RDF
 import org.w3.banana.io.RDFWriter
 import org.w3.banana.io.Turtle
-import com.hp.hpl.jena.query.Dataset
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.html.CreationFormAlgo
 import deductions.runtime.html.TableViewModule

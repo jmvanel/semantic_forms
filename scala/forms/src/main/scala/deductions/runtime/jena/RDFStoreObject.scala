@@ -4,7 +4,6 @@ import scala.collection.JavaConversions.asScalaIterator
 import org.apache.log4j.Logger
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
-import com.hp.hpl.jena.query.Dataset
 import com.hp.hpl.jena.tdb.TDBFactory
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import org.w3.banana.jena.JenaDatasetStore
@@ -12,18 +11,22 @@ import org.w3.banana._
 import org.w3.banana.diesel._
 import deductions.runtime.utils.Timer
 
-/** singleton  hosting a Jena TDB database in directory "TDB" */
-object RDFStoreObject extends JenaModule with RDFStoreLocalJena1Provider
-
-/** For user data and RDF cache, sets a default location for the Jena TDB store directory : TDB */
-trait RDFStoreLocalJena1Provider extends RDFStoreLocalJenaProvider {
+/** singleton for implementation settings */
+object ImplementationSettings {
+  // pave the way for migration to Jena 3 ( or BlazeGraph )
+  type DATASET = com.hp.hpl.jena.query.Dataset
 }
 
-trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Dataset]
+/** For user data and RDF cache, sets a default location for the Jena TDB store directory : TDB */
+trait RDFStoreLocalJena1Provider extends RDFStoreLocalJenaProvider
+
+trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, ImplementationSettings.DATASET]
+    //  Dataset]
     with JenaModule with JenaRDFLoader
     with Timer {
   import ops._
-  type DATASET = Dataset
+  type DATASET = // Dataset
+  ImplementationSettings.DATASET
   override val rdfStore = new JenaDatasetStore(false)
   import rdfStore.graphStoreSyntax._
 

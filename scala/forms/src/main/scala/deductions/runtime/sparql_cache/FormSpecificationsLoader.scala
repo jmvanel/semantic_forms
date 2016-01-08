@@ -3,12 +3,12 @@ package deductions.runtime.sparql_cache
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import org.w3.banana.Prefix
 import deductions.runtime.jena.RDFCache
-import com.hp.hpl.jena.query.Dataset
 import org.w3.banana.jena.Jena
 import org.w3.banana.RDF
 import org.w3.banana.jena.JenaModule
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.jena.ImplementationSettings
 
 /**
  * @author jmv
@@ -18,7 +18,7 @@ import deductions.runtime.services.DefaultConfiguration
 object FormSpecificationsLoader extends JenaModule
       with DefaultConfiguration
     with RDFCache with App
-    with FormSpecificationsLoaderTrait[Jena, Dataset]
+    with FormSpecificationsLoaderTrait[Jena, ImplementationSettings.DATASET]
     with RDFStoreLocalJena1Provider //    with JenaHelpers
     {
   if (args.size == 0)

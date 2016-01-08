@@ -1,19 +1,20 @@
 package deductions.runtime.services
 
 import java.net.URLEncoder
+
+import org.apache.log4j.Logger
+import org.scalatest.FunSuite
+import org.w3.banana.PointedGraph
 import org.w3.banana.RDFOpsModule
-import deductions.runtime.jena.RDFStoreObject
 import org.w3.banana.SparqlGraphModule
 import org.w3.banana.SparqlOpsModule
-import org.w3.banana.PointedGraph
-import org.w3.banana.diesel._
-import org.scalatest.FunSuite
-import org.w3.banana.jena.JenaModule
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import org.w3.banana.jena.Jena
+import org.w3.banana.jena.JenaModule
+
 import com.hp.hpl.jena.query.Dataset
+
 import deductions.runtime.jena.RDFCache
-import org.apache.log4j.Logger
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
 //import deductions.runtime.jena.RDFStoreLocalProvider
 
 class TestFormSaver

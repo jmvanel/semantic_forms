@@ -1,15 +1,14 @@
 package deductions.runtime.jena
 
 import org.w3.banana.jena.JenaModule
-import deductions.runtime.sparql_cache.DataSourceManager
 import org.w3.banana.jena.Jena
-import com.hp.hpl.jena.query.Dataset
 import java.net.URL
 import org.w3.banana.jena.JenaMGraphOps
+import deductions.runtime.sparql_cache.DataSourceManager
 
 /** deductions.runtime.jena.DataSourceManagerApp */
 object DataSourceManagerApp extends JenaModule
-    with DataSourceManager[Jena, Dataset] with App
+    with DataSourceManager[Jena, ImplementationSettings.DATASET] with App
     with RDFStoreLocalJena1Provider {
 
   import ops._
