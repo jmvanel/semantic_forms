@@ -4,6 +4,11 @@ name := "semantic_forms"
 
 version := "1.0-SNAPSHOT"
 
+lazy val forms_js =  RootProject(file("../forms_js"))
+
+lazy val semantic_forms = (project in file("."))
+        .dependsOn(forms_js)
+
 scalaVersion :=  "2.11.7"
 
 javacOptions ++= Seq("-source","1.7", "-target","1.7")

@@ -84,7 +84,7 @@ sbt eclipse
 ```
 just once in the directory scala/forms\_play/ ; this creates configuration for 2 eclipse projects: one in directory forms\_play/, one in directory forms.
 
-You may have to set by hand the dependency in project forms\_play/ towards the other. For this, go in Properties of project, Java Buld Path, Projects tab, and Add...
+You may have to set by hand the dependency in project forms\_play/ towards the other. For this, go in Properties of project, Java Build Path, Projects tab, and Add...
 
 ## Troubleshooting & tips
 
@@ -95,7 +95,7 @@ You may have to set by hand the dependency in project forms\_play/ towards the o
 ```
     eclipse with-source=true
 ```
-- to remove the red errors in Play! project, apply this workaround: http://stackoverflow.com/posts/28551583/revisions
+- to remove the red errors in eclipse in Play! project, apply this workaround: http://stackoverflow.com/posts/28551583/revisions
 
 ## Debug
 See 
@@ -224,13 +224,6 @@ See also (in french) :
 [doc/fr/formulaires.html](http://htmlpreview.github.io/?https://github.com/jmvanel/semantic_forms/blob/master/doc/fr/formulaires.html)
 
 
-# Contributing
-
-To ensure that all commits are formatted in a consistent way, it is strongly advised to use scalariform.
-
-Please read how-to on the Banana-RDF project:
-[ide-setup](https://github.com/w3c/banana-rdf/#contributions)
-
 # Community
 
 For discussions that don't fit in the issues tracker, you may try 
@@ -239,7 +232,17 @@ the #eulergui IRC channel on freenode using a dedicated IRC client like XChat co
 ,
  or using the freenode HTML interface, for quick real time socializing.
 
-## The features 
+Or [https://gitter.im/jmvanel/semantic\_forms](https://gitter.im/jmvanel/semantic_forms)
+
+## Contributing
+
+To ensure that all commits are formatted in a consistent way, it is strongly advised to use scalariform.
+
+Please read how-to on the Banana-RDF project:
+[ide-setup](https://github.com/w3c/banana-rdf/#contributions)
+
+
+# The features 
 The features are listed here for convenience, but from now on, we manage features on 
 [Github issues](https://github.com/jmvanel/semantic_forms/issues).
 
@@ -261,7 +264,7 @@ The features are listed here for convenience, but from now on, we manage feature
 - 12 Integrate non-blocking: Future, Iteratee Enumerator -WIP
 - 13 Migration to Banana 0.7  - DONE ( 0.8.1 )
 - 14 Migration to BigData(R) - TODO
-- 15 ScalaJS migration  - TODO
+- 15 ScalaJS migration  - WIP
 - 16 Dashboard : # of triples, # of of resources; # of resources of each type - TODO
 - 17 View SPARQL select & construct results : DONE but no button yet 
 - 17.1 add FlintSPARQLEditor, but this implies to launch SPARQL HTTP server like Fuseki, or BigData, or to use the SPARQL protocol in the semantic\_forms server
