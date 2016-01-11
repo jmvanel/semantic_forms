@@ -64,38 +64,42 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
       if (lookup)
         formatPossibleValues(r, inDatalist = true)
       else new Text(""),
+      if( !lookup ) renderPossibleValues(r) else new Text("\n")
 
-//      if (!r.possibleValues.isEmpty && !lookup)
-      if ( hasPossibleValues(r) && !lookup)
-    	  if( ! propertySelectAlreadyDone.contains(r.property) ) {
-    		  propertySelectAlreadyDone.add(r.property)
-    		  <select value={ r.value.toString } name={ makeHTMLIdResource(r) } list={
-    			  makeDatalistIdForEntryProperty(r) }>
-    		  { formatPossibleValues(r) }
-    		  </select>
-    	  } else new Text("\n")
-    	  else new Text("\n")
-    ).flatMap { identity }
+    ). flatten
   }
 
-  /** TODO analyse differences with createHTMLResourceEditableField;
-   *  maybe there is no necessary difference */
+  /**
+   * TODO analyse differences with createHTMLResourceEditableField;
+   *  maybe there is no necessary difference
+   */
   def createHTMLBlankNodeEditableField(r: fm#BlankNodeEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
-    if (r.openChoice) {
-      <input class={ css.cssClasses.formInputCSSClass } value={
-        r.value.toString
-      } name={ makeHTMLIdBN(r) } data-type={
-        r.type_.toString()
-      } size={ inputSize.toString() }>
-      </input>
-    }
-    if (!r.possibleValues.isEmpty)
-      <select value={ r.valueLabel } name={ makeHTMLIdBN(r) }>
-        { formatPossibleValues(r) }
-      </select>
-    else Seq()
+    Seq(
+      if (r.openChoice) {
+        <input class={ css.cssClasses.formInputCSSClass } value={
+          r.value.toString
+        } name={ makeHTMLIdBN(r) } data-type={
+          r.type_.toString()
+        } size={ inputSize.toString() }>
+        </input>
+      }else new Text("\n")
+      ,
+      renderPossibleValues(r)) . flatten
   }
-    
+
+  def renderPossibleValues(r: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
+    if (hasPossibleValues(r))
+      if (!propertySelectAlreadyDone.contains(r.property)) {
+        propertySelectAlreadyDone.add(r.property)
+        <select value={ r.value.toString } name={ makeHTMLIdResource(r) } list={
+          makeDatalistIdForEntryProperty(r)
+        }>
+          { formatPossibleValues(r) }
+        </select>
+      } else new Text("\n")
+    else new Text("\n")
+  }
+  
   def makeDatalistIdForEntryProperty(r: fm#Entry) = urlEncode(r.property.toString()) + "__property"
     
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
@@ -116,6 +120,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
             <label for={ makeHTMLIdForLiteral(lit) }>{ n }</label>
           )).flatten
         else {
+          // TODO maybe call re()nderPossibleValues
           <select name={ makeHTMLIdForLiteral(lit) }>
             { formatPossibleValues(lit) }
           </select>
