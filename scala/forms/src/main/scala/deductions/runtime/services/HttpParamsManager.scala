@@ -31,6 +31,8 @@ trait HttpParamsManager[Rdf <: RDF] //extends RDFOpsModule
     } else param
   }
 
+  /** leveraging on HTTP Parameter being the original triple from TDB,
+   * in N-Triple syntax, we recover here the original triple. */
   def httpParam2Triple(param: String): Rdf#Triple = {
     val gr = ntriplesReader.read(new StringReader(param), "").get
     gr.triples.head

@@ -34,6 +34,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     else labelFromTDB
   }
 
+  /** NON transactional, needs rw transaction */
   def instanceLabelFromTDB(node: Rdf#Node, lang: String): String = {
 //	  println(s"""instanceLabelFromTDB node "$node" """ )
     val labelsGraphUri = URI(labelsGraphUriPrefix + lang)

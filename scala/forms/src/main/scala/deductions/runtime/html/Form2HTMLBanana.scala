@@ -14,5 +14,5 @@ with HTML5TypesTrait[Rdf] {
   implicit val ops: RDFOps[Rdf]
   import ops._
   override def toPlainString(n: Rdf#Node): String =
-    foldNode(n)(fromUri(_), fromBNode(_), fromLiteral(_)._1)
+    foldNode(n)(fromUri(_), "_:" + fromBNode(_), fromLiteral(_)._1)
 }

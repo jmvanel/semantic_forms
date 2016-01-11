@@ -124,7 +124,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
         val res = dataset.rw({
           val status = if (blankNode != "true") {
             val resRetrieve = retrieveURINoTransaction(
-              //        	    if( blankNode=="true") makeUri("_:" + uri ) else makeUri(uri),
+              // if( blankNode=="true") makeUri("_:" + uri ) else makeUri(uri),
               makeUri(uri),
               dataset)
 

@@ -233,8 +233,8 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     lang: String, blankNode: String, formGroup: Rdf#URI)
     (implicit graph: Rdf#Graph)
     : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
-    val subjectNnode = if (blankNode == "true")
-      /* TDB specific:
+    val subjectNode = if (blankNode == "true")
+      /* Jena TDB specific:
            * Jena supports "concrete bnodes" in SPARQL syntax as pseudo URIs in the "_" URI scheme
            * (it's an illegal name for a URI scheme) */
       BNode(uri)
@@ -244,7 +244,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
 //     val graph=graphArg
 //     val preferedLanguage = lang }
     preferedLanguage = lang
-    factory.createForm(subjectNnode, editable, formGroup)
+    factory.createForm(subjectNode, editable, formGroup)
   }
 
   def htmlFormString(uri: String,
@@ -260,13 +260,13 @@ trait TableViewModule[Rdf <: RDF, DATASET]
   }
 
   //  override 
-  def toPlainString(n: Rdf#Node): String = {
-    val v = foldNode(n)(
-      uri => fromUri(uri),
-      bn => fromBNode(bn),
-      lit => { val (v, typ, langOption) = fromLiteral(lit); v }
-    )
-    v
-  }
+//  def toPlainString(n: Rdf#Node): String = {
+//    val v = foldNode(n)(
+//      uri => fromUri(uri),
+//      bn => fromBNode(bn),
+//      lit => { val (v, typ, langOption) = fromLiteral(lit); v }
+//    )
+//    v
+//  }
 
 }

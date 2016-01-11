@@ -38,12 +38,17 @@ trait Form2HTMLBase[NODE, URI <: NODE]
   
   def message(m: String,lang: String): String = I18NMessages.get(m, lang)
 
+    /** leveraging on HTTP parameter being the original triple from TDB,
+   * in N-Triple syntax, we generate here the HTTP parameter from the original triple;
+   * see HttpParamsManager#httpParam2Triple for the reverse operation */
   def makeHTMLId(ent: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): String = {
     val rawResult = {
       def makeTTLURI(s: NODE) = s"<$s>"
+      def makeTTLBN(s: NODE) = s"_:$s"
       def makeTTLAnyTerm(value: NODE, ent: fm#Entry) = {
         ent match {
           case lit: fm#LiteralEntry => value
+          case bn: fm#BlankNodeEntry => makeTTLBN(value)
           case _ => makeTTLURI(value)
         }
       }

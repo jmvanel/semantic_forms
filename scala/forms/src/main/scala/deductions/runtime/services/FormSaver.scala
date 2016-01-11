@@ -52,7 +52,8 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
     subjectUriOption match {
       case Some(uri0) =>
-        val subjectUri = URLDecoder.decode(uri0, "utf-8") // TODO uri0
+        val subjectUri = URLDecoder.decode(uri0, "utf-8") // TODO uri0 ?
+        // named graph in which to save:
         val graphURI =
           if (graphURIOption == Some("")) subjectUri
           else URLDecoder.decode(graphURIOption.getOrElse(uri0), "utf-8") // TODO no decode
@@ -64,9 +65,9 @@ trait FormSaver[Rdf <: RDF, DATASET]
               param != "uri" &&
               param != "graphURI") {
               val try_ = Try {
-                val triple = httpParam2Triple(param)
-                logger.debug(s"saveTriples: triple from httpParam: $triple")
-                computeDatabaseChanges(triple, objects)
+                val comingBackTriple = httpParam2Triple(param)
+                logger.debug(s"saveTriples: triple from httpParam: $comingBackTriple")
+                computeDatabaseChanges(comingBackTriple, objects)
               }
               try_ match {
                 case f: Failure[_] => logger.error("saveTriples: " + f)
@@ -85,8 +86,12 @@ trait FormSaver[Rdf <: RDF, DATASET]
       objectsFromUser.map { objectStringFromUser =>
         // NOTE: a single element in objects
         val objectFromUser = foldNode(originalTriple.objectt)(
-          // TODO other forbidden character in URI
-          _ => URI(objectStringFromUser.replaceAll(" ", "_")),
+          _ => { if( objectStringFromUser.startsWith("_:") )
+                BNode(objectStringFromUser.substring(2))
+              else
+                // TODO other forbidden character in URI
+                URI(objectStringFromUser.replaceAll(" ", "_"))
+                },
           _ => BNode(objectStringFromUser.replaceAll(" ", "_")), // ?? really do this ?
           _ => Literal(objectStringFromUser))
         if (originalTriple.objectt != objectStringFromUser) {

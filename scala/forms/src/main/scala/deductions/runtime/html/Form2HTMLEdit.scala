@@ -13,8 +13,7 @@ import deductions.runtime.services.Configuration
 
 /** generate HTML from abstract Form for Edition */
 trait Form2HTMLEdit[NODE, URI <: NODE]
-    extends Form2HTMLBase[NODE, URI]
-        {
+    extends Form2HTMLBase[NODE, URI] {
   self: HTML5Types 
         with Configuration 
         =>
