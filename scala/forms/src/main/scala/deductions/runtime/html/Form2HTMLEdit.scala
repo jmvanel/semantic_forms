@@ -36,9 +36,6 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
     } else <span></span>
   }
 
-
-//  lazy private val propertySelectAlreadyDone = scala.collection.mutable.Set[NODE]()
-  lazy private val propertySelectAlreadyDone = scala.collection.mutable.Set[Any]()
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   def createHTMLResourceEditableField(r: fm#ResourceEntry
       )(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
@@ -87,6 +84,8 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
       renderPossibleValues(r)) . flatten
   }
 
+//  lazy private val propertySelectAlreadyDone = scala.collection.mutable.Set[NODE]()
+  lazy private val propertySelectAlreadyDone = scala.collection.mutable.Set[Any]()
   def renderPossibleValues(r: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     if (hasPossibleValues(r))
       if (!propertySelectAlreadyDone.contains(r.property)) {

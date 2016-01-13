@@ -21,12 +21,14 @@ with SPARQLHelpers[Rdf, DATASET] {
 
   val timestampURI = URI("urn:timestamp")
   val userPredURI = URI("urn:user")
+  val metadataGraph = URI( "urn:semantic_forms/metadataGraph" ) // "urn:x-arq:DefaultGraph")
 
   private val rdfs = RDFSPrefix[Rdf]
   
   /** reference implementation:
    * save all `addedTriples` to a specific new named graph,
-   * and add timestamp metadata to default graph;
+   * and add timestamp metadata to metadata graph;
+   * this is just an example:
    * another implementation could save other triples (typically an aggregated value), but always
    * in the named graph whose name is computed by makeGraphURIAndMetadata();
    * transactional
@@ -37,15 +39,17 @@ with SPARQLHelpers[Rdf, DATASET] {
     if (!addedTriples.isEmpty)
       dataset2.rw({
         val (graphUri, metadata ) = makeGraphURIAndMetadata(addedTriples, removedTriples)
-        dataset2.appendToGraph(URI("urn:x-arq:DefaultGraph"), metadata)
+        dataset2.appendToGraph( metadataGraph, metadata)
        
         val graph = makeGraph(addedTriples)
-        dataset2.appendToGraph(graphUri, graph)        
+        dataset2.appendToGraph(graphUri, graph)
       })
       Unit
   }
 
-  /** make Graph URI And associated Metadata for saving data at a current date & time */
+  /** make Graph URI And associated metadata for saving data at a current date & time;
+   * the graph URI is for saving actual data in this named graph;
+   * the metadata has the graph URI as subject */
   def makeGraphURIAndMetadata(addedTriples: Seq[Rdf#Triple], 
       removedTriples: Seq[Rdf#Triple])(implicit userURI: String): (Rdf#URI, Rdf#Graph)= {
 	  val timestamp = (new Date).getTime
@@ -69,8 +73,10 @@ with SPARQLHelpers[Rdf, DATASET] {
     val query = s"""
       SELECT ?TS ?AV ?LAB
       WHERE {
-        ?GR <$timestampURI> ?TS ;
+        GRAPH <$metadataGraph> {
+          ?GR <$timestampURI> ?TS ;
             <$userPredURI> <$userURI> .
+        }
         GRAPH ?GR {
          ?S <$predicateURI> ?AV ;
             <${rdfs.label}> ?LAB .
