@@ -58,8 +58,13 @@ private[abstract_syntax] trait InstanceLabelsInference2[Rdf <: RDF] {
         def last_segment(node: Rdf#Node) =
           try {
             foldNode(node)(
-              uri => lastSegment(uri),
-//              bn => instanceClassLabel(bn, graph, lang),
+              uri => {
+                val ls = lastSegment(uri)
+                ls  match {
+                  case "" => fromUri(uri)
+                  case _ => ls
+                }
+              },
               bn => bn.toString(),
               x => x.toString())
           } catch {
