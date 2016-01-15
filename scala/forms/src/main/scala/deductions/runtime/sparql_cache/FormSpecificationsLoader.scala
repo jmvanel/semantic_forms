@@ -48,8 +48,8 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
 
   /**
    * load Common Form Specifications from scala/forms/form_specs/specs.ttl
-   *  in project jmvanel/semantic_forms on github;
-   *  TRANSACTIONAL
+   *  on in project jmvanel/semantic_forms on github;
+   *  non TRANSACTIONAL
    */
   def loadCommonFormSpecifications() {
     val all_form_specs = githubcontent +
@@ -57,7 +57,7 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
     loadFormSpecifications(all_form_specs)
   }
 
-  /** TRANSACTIONAL */
+  /** non TRANSACTIONAL */
   def loadFormSpecifications(form_specs: String) {
     val from = new java.net.URL(form_specs).openStream()
     val form_specs_graph: Rdf#Graph =

@@ -3,6 +3,7 @@
 @prefix av: <http://www.assemblee-virtuelle.org/ontologies/v1.owl#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix cob: <http://cobusiness.fr/ontologies/barter.owl.n3#> .
+@prefix sioc: <http://rdfs.org/sioc/ns#> .
 
 # list of form specifications for various classes in common vocabularies
 
@@ -10,4 +11,5 @@ foaf: form:ontologyHasFormSpecification <foaf.form.ttl> .
 owl:  form:ontologyHasFormSpecification <owl.form.ttl> .
 av:   form:ontologyHasFormSpecification <https://raw.githubusercontent.com/assemblee-virtuelle/pair/master/form.ttl> .
 cob:  form:ontologyHasFormSpecification <cob.form.ttl> .
+sioc: form:ontologyHasFormSpecification <sioc.form.ttl> .
 
