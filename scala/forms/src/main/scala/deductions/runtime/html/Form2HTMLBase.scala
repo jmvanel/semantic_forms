@@ -4,13 +4,14 @@ import Form2HTML.urlEncode
 import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.utils.I18NMessages
 import deductions.runtime.services.Configuration
+import scala.util.Try
 
 /** generate HTML from abstract Form : common parts for Display & edition */
 trait Form2HTMLBase[NODE, URI <: NODE]
     extends Configuration
     // CSS
     {
-  
+
   type fm = FormModule[NODE, URI]
   type Entry = fm#Entry
   
@@ -32,11 +33,22 @@ trait Form2HTMLBase[NODE, URI <: NODE]
         field.comment + " - " + field.property
       }> -- </label>
   }
-  
+
   //  def toPlainString[NODE](n: NODE): String = n.toString()
   def toPlainString(n: NODE): String = n.toString()
   
   def message(m: String,lang: String): String = I18NMessages.get(m, lang)
+
+  def isFirstFieldForProperty( field: fm#Entry )
+    (implicit form: FormModule[NODE, URI]#FormSyntax): Boolean = {
+    val ff = form.fields
+    val previous = Try(ff(ff.indexOf(field) - 1)).toOption
+    previous match {
+      case Some(fi) => fi.property != field.property
+      case None => true
+    }
+  }
+
 
     /** leveraging on HTTP parameter being the original triple from TDB,
    * in N-Triple syntax, we generate here the HTTP parameter from the original triple;
@@ -58,7 +70,10 @@ trait Form2HTMLBase[NODE, URI <: NODE]
     }
     urlEncode(rawResult)
   }
+
   def makeHTMLIdResource(re: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = makeHTMLId(re)
+  def makeHTMLIdResourceSelect(re: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): String =
+    toPlainString(re.property)
   def makeHTMLIdBN(re: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = makeHTMLId(re)
   def makeHTMLIdForLiteral(lit: fm#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax) =
     makeHTMLId(lit)

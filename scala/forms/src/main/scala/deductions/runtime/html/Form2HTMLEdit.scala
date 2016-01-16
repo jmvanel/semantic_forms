@@ -22,15 +22,19 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
   val inputSize = 90
 
 
-  def shouldAddAddRemoveWidgets(field: fm#Entry, editable: Boolean): Boolean = {
+  def shouldAddAddRemoveWidgets(field: fm#Entry, editable: Boolean)
+    (implicit form: FormModule[NODE, URI]#FormSyntax): Boolean = {
     // println( "showPlusButtons " + showPlusButtons)
-    editable && field.defaults.multivalue && field.openChoice && showPlusButtons
+    editable && field.defaults.multivalue && field.openChoice && showPlusButtons &&
+    isFirstFieldForProperty(field)
   }
-  def createAddRemoveWidgets(field: fm#Entry, editable: Boolean)(implicit form: FormModule[NODE, URI]#FormSyntax): Elem = {
+  def createAddRemoveWidgets(field: fm#Entry, editable: Boolean)
+  (implicit form: FormModule[NODE, URI]#FormSyntax): Elem = {
     if (shouldAddAddRemoveWidgets(field, editable)) {
       // button with an action to duplicate the original HTML widget with an empty content
       val widgetName = makeHTMLId(field)
-      <input value="+" class="button-add btn-primary" readonly="yes" size="1" title={ "Add another value for " + field.label } onClick={
+      <input value="+" class="button-add btn-primary" readonly="yes" size="1" title={
+        "Add another value for " + field.label } onClick={
         s""" cloneWidget( "$widgetName" ); """
       }></input>
     } else <span></span>
@@ -45,7 +49,8 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
       Text("\n"),
     		// format: OFF
         if (r.openChoice)
-          <input class={ css.cssClasses.formInputCSSClass } value={ r.value.toString }
+          <input class={ css.cssClasses.formInputCSSClass }
+      			value={ r.value.toString }
             name={ makeHTMLIdResource(r) }
             list={ makeHTMLIdForDatalist(r) }
             data-type={ r.type_.toString() }
@@ -84,19 +89,18 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
       renderPossibleValues(r)) . flatten
   }
 
-//  lazy private val propertySelectAlreadyDone = scala.collection.mutable.Set[NODE]()
-  lazy private val propertySelectAlreadyDone = scala.collection.mutable.Set[Any]()
   def renderPossibleValues(r: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
-    if (hasPossibleValues(r))
-      if (!propertySelectAlreadyDone.contains(r.property)) {
-        propertySelectAlreadyDone.add(r.property)
-        <select value={ r.value.toString } name={ makeHTMLIdResource(r) } list={
-          makeDatalistIdForEntryProperty(r)
-        }>
-          { formatPossibleValues(r) }
-        </select>
-      } else new Text("\n")
-    else new Text("\n")
+    if (hasPossibleValues(r) &&
+      isFirstFieldForProperty(r)) {
+      <select value={ r.value.toString } name={
+        makeHTMLIdResource(r) } id={
+        makeHTMLIdResourceSelect(r)
+      } list={
+        makeDatalistIdForEntryProperty(r)
+      }>
+        { formatPossibleValues(r) }
+      </select>
+    } else new Text("\n")
   }
   
   def makeDatalistIdForEntryProperty(r: fm#Entry) = urlEncode(r.property.toString()) + "__property"
