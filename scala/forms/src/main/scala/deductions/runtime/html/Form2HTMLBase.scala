@@ -21,7 +21,7 @@ trait Form2HTMLBase[NODE, URI <: NODE]
     if (preceding.label != field.label)
       <label class={ css.cssClasses.formLabelCSSClass } title={
         field.comment + " - " + field.property
-      } for={ makeHTMLIdResource(field) }>{
+      } for={ makeHTMLNameResource(field) }>{
         val label = field.label
         // hack before implementing real separators
         if (label.contains("----"))
@@ -49,11 +49,10 @@ trait Form2HTMLBase[NODE, URI <: NODE]
     }
   }
 
-
     /** leveraging on HTTP parameter being the original triple from TDB,
    * in N-Triple syntax, we generate here the HTTP parameter from the original triple;
    * see HttpParamsManager#httpParam2Triple for the reverse operation */
-  def makeHTMLId(ent: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): String = {
+  def makeHTMLName(ent: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): String = {
     val rawResult = {
       def makeTTLURI(s: NODE) = s"<$s>"
       def makeTTLBN(s: NODE) = s"_:$s"
@@ -71,11 +70,14 @@ trait Form2HTMLBase[NODE, URI <: NODE]
     urlEncode(rawResult)
   }
 
-  def makeHTMLIdResource(re: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = makeHTMLId(re)
+  def makeHTMLNameResource(re: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = makeHTMLName(re)
   def makeHTMLIdResourceSelect(re: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): String =
     toPlainString(re.property)
-  def makeHTMLIdBN(re: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = makeHTMLId(re)
-  def makeHTMLIdForLiteral(lit: fm#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax) =
-    makeHTMLId(lit)
-    
+  def makeHTMLNameBN(re: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = makeHTMLName(re)
+  def makeHTMNameLiteral(lit: fm#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax) = 
+    makeHTMLName(lit)
+   
+  def makeHTML_Id(entry: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) =
+    "f" + form.fields.indexOf(entry)
+
 }

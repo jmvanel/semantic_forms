@@ -32,7 +32,10 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
   (implicit form: FormModule[NODE, URI]#FormSyntax): Elem = {
     if (shouldAddAddRemoveWidgets(field, editable)) {
       // button with an action to duplicate the original HTML widget with an empty content
-      val widgetName = makeHTMLId(field)
+      val widgetName = field match {
+        case r: fm#ResourceEntry => makeHTMLIdResourceSelect(r)
+        case _ => makeHTML_Id(field)
+      }   
       <input value="+" class="button-add btn-primary" readonly="yes" size="1" title={
         "Add another value for " + field.label } onClick={
         s""" cloneWidget( "$widgetName" ); """
@@ -51,7 +54,8 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
         if (r.openChoice)
           <input class={ css.cssClasses.formInputCSSClass }
       			value={ r.value.toString }
-            name={ makeHTMLIdResource(r) }
+            name={ makeHTMLNameResource(r) }
+            id={ makeHTML_Id(r) }
             list={ makeHTMLIdForDatalist(r) }
             data-type={ r.type_.toString() }
             placeholder={ if (lookup)
@@ -80,7 +84,9 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
       if (r.openChoice) {
         <input class={ css.cssClasses.formInputCSSClass } value={
           r.value.toString
-        } name={ makeHTMLIdBN(r) } data-type={
+        } name={ makeHTMLNameBN(r) } id={
+          makeHTML_Id(r)
+        } data-type={
           r.type_.toString()
         } size={ inputSize.toString() }>
         </input>
@@ -93,7 +99,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
     if (hasPossibleValues(r) &&
       isFirstFieldForProperty(r)) {
       <select value={ r.value.toString } name={
-        makeHTMLIdResource(r) } id={
+        makeHTMLNameResource(r) } id={
         makeHTMLIdResourceSelect(r)
       } list={
         makeDatalistIdForEntryProperty(r)
@@ -109,22 +115,23 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
   def createHTMLiteralEditableField(lit: fm#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     val placeholder = s"Enter or paste a string of type ${lit.type_.toString()}"
 
-    val htmlId = "f" + form.fields.indexOf(lit)
+    val htmlId = makeHTML_Id(lit) // "f" + form.fields.indexOf(lit)
     val elem = lit.type_.toString() match {
 
       // TODO in FormSyntaxFactory match graph pattern for interval datatype ; see issue #17
       case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
         if (radioForIntervals)
           (for (n <- Range(0, 6)) yield (
-            <input type="radio" name={ makeHTMLIdForLiteral(lit) } id={ makeHTMLIdForLiteral(lit) } checked={
+            <input type="radio" name={ makeHTMNameLiteral(lit) } id={
+              makeHTMNameLiteral(lit) } checked={
               if (n.toString.equals(lit.value)) "checked" else null
             } value={ n.toString }>
             </input>
-            <label for={ makeHTMLIdForLiteral(lit) }>{ n }</label>
+            <label for={ makeHTMNameLiteral(lit) }>{ n }</label>
           )).flatten
         else {
           // TODO maybe call re()nderPossibleValues
-          <select name={ makeHTMLIdForLiteral(lit) }>
+          <select name={ makeHTMNameLiteral(lit) }>
             { formatPossibleValues(lit) }
           </select>
         }
@@ -132,7 +139,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
       case _ =>
         <input class={ css.cssClasses.formInputCSSClass } value={
           toPlainString(lit.value)
-        } name={ makeHTMLIdForLiteral(lit) } type={
+        } name={ makeHTMNameLiteral(lit) } type={
           xsd2html5TnputType(lit.type_.toString())
         } placeholder={ placeholder } size={
           inputSize.toString()
