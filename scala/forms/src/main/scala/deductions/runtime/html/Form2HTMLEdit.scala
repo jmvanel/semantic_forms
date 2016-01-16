@@ -33,6 +33,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
     if (shouldAddAddRemoveWidgets(field, editable)) {
       // button with an action to duplicate the original HTML widget with an empty content
       val widgetName = field match {
+        case r: fm#ResourceEntry if lookup(r) => makeHTML_Id(r)
         case r: fm#ResourceEntry => makeHTMLIdResourceSelect(r)
         case _ => makeHTML_Id(field)
       }   
@@ -43,10 +44,12 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
     } else <span></span>
   }
 
+  def lookup(r: fm#Entry) = r.widgetType == DBPediaLookup
+  
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   def createHTMLResourceEditableField(r: fm#ResourceEntry
       )(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
-    val lookup = r.widgetType == DBPediaLookup
+//    val lookup = r.widgetType == DBPediaLookup
 //    if( r.property . toString() . contains("knows")) println("knows")
     Seq(
       Text("\n"),
@@ -58,19 +61,19 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
             id={ makeHTML_Id(r) }
             list={ makeHTMLIdForDatalist(r) }
             data-type={ r.type_.toString() }
-            placeholder={ if (lookup)
+            placeholder={ if (lookup(r))
               s"Enter a word; completion with Wikipedia lookup"
               else
               s"Enter or paste a resource URI of type ${r.type_.toString()}" }
-            onkeyup={if (lookup) "onkeyupComplete(this);" else null}
+            onkeyup={if (lookup(r)) "onkeyupComplete(this);" else null}
             size={inputSize.toString()}
 						dropzone="copy">
           </input> else new Text("") // format: ON
           ,
-      if (lookup)
+      if (lookup(r))
         formatPossibleValues(r, inDatalist = true)
       else new Text(""),
-      if( !lookup ) renderPossibleValues(r) else new Text("\n")
+      if( !lookup(r) ) renderPossibleValues(r) else new Text("\n")
 
     ). flatten
   }
