@@ -55,7 +55,36 @@ private[abstract_syntax] trait InstanceLabelsInference2[Rdf <: RDF] {
         implicit val gr = graph
         implicit val prlng = lang
 
-        def last_segment(node: Rdf#Node) =
+        val l = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, rdfs.label, "")
+        if (l != "") return l
+        val n = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, foaf.name, "")
+        if (n != "") return n
+        val cl = instanceClassLabel( node, graph, lang)
+//        println( s"""instanceClassLabel $node "$cl" """ )
+        if (cl != "") return cl
+        last_segment(node)
+      }
+    }
+  }
+  
+  def instanceClassLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String = ""): String = {
+          val pgraph = PointedGraph(node, graph)
+          val noption = (pgraph / rdf.typ).nodes.headOption
+          val lsegment = last_segment(node)
+          noption match {
+            case Some(classs) =>
+              implicit val gr: Rdf#Graph = graph
+              val label = getLiteralInPreferedLanguageFromSubjectAndPredicate(classs,
+                rdfs.label, lsegment)
+              if( label == "Thing" )
+                ""
+              else 
+                label
+            case None => lsegment
+          }
+        }
+          
+  def last_segment(node: Rdf#Node) =
           try {
             foldNode(node)(
               uri => {
@@ -70,26 +99,4 @@ private[abstract_syntax] trait InstanceLabelsInference2[Rdf <: RDF] {
           } catch {
             case t: Throwable => node.toString()
           }
-
-        def instanceClassLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String = ""): String = {
-          val pgraph = PointedGraph(node, graph)
-          val noption = (pgraph / rdf.typ).nodes.headOption
-          noption match {
-            case Some(classs) =>
-              getLiteralInPreferedLanguageFromSubjectAndPredicate(classs,
-                rdfs.label, last_segment(node))
-            case None => last_segment(node)
-          }
-        }
-
-        val l = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, rdfs.label, "")
-        if (l != "") return l
-        val n = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, foaf.name, "")
-        if (n != "") return n
-        val cl = instanceClassLabel( node, graph, lang)
-        if (cl != "") return cl
-        last_segment(node)
-      }
-    }
-  }
 }
