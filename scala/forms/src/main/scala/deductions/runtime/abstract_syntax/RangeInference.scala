@@ -168,19 +168,20 @@ trait RangeInference[Rdf <: RDF, DATASET]
     }
     
     /**
-       * return Possible Values into Seq of pairs (nodeId, label),
+     * given a list of URI's,
+       * @return Possible Values into Seq of pairs (nodeId, label),
        * from given list `enumerated`, which typically comes
        *  from existing triples with relevant rdf:type
        */
       def fillPossibleValues(enumerated: Iterable[Rdf#Node] ):
         Seq[(Rdf#Node, Rdf#Node)] = {
-        val uriAndInstanceLabels = enumerated.toSeq.map {
+        val uriAndInstanceLabels = enumerated.toList.map {
           enum =>
             foldNode(enum)(
-//              uri => (uri, uri.toString() ),
-//              x => (x, x.toString() ),
-              uri => (uri, instanceLabelFromTDB(uri, lang)),
-              x => (x, instanceLabelFromTDB(x, lang)),
+//              uri => (uri, instanceLabelFromTDB(uri, lang)),
+//              x => (x, instanceLabelFromTDB(x, lang)),
+              uri => (uri, instanceLabel(uri, graph, lang)),
+              x => (x, instanceLabel(x, graph, lang)),
               x => (x, ""))
         }
 //        println(s"""fillPossibleValues uriAndInstanceLabels class ${uriAndInstanceLabels.getClass} size """ )
@@ -189,7 +190,6 @@ trait RangeInference[Rdf <: RDF, DATASET]
           sortedInstanceLabels.map {
         	  c => (c._1, makeLiteral(c._2, xsd.string))
           }
-//          List()
       }
       
     /** populate possible Values From Instances */
@@ -212,18 +212,18 @@ trait RangeInference[Rdf <: RDF, DATASET]
     }
 
     def getInstancesAndLabels(rangeClass: Rdf#Node): Seq[(Rdf#Node, Rdf#Node)] = {
-      if (rangeClass != owl.Thing) {
-        val enumerated = getSubjects(graph, rdf.typ, rangeClass).toSeq
+      if (rangeClass != owl.Thing && rangeClass != rdfs.Literal) {
+        val enumerated = getSubjects(graph, rdf.typ, rangeClass).toList
 //        println( s"getInstancesAndLabels rangeClass $rangeClass size " + enumerated.size )
         val possibleValues2 = fillPossibleValues(enumerated)
-        val subClasses = getSubjects(graph, rdfs.subClassOf, rangeClass)
+        val subClasses = getSubjects(graph, rdfs.subClassOf, rangeClass) . toList
         val r = for (subClass <- subClasses) yield {
-          val subClassesValues = getSubjects(graph, rdf.typ, subClass).toSeq
+          val subClassesValues = getSubjects(graph, rdf.typ, subClass).toList
 //          println( s"getInstancesAndLabels subClass $subClass size " + enumerated.size )
           val possibleValues3 = fillPossibleValues(subClassesValues)
           possibleValues3
         }
-        val rr = possibleValues2 ++ r.flatten.toSeq
+        val rr = possibleValues2 ++ r.flatten.toList
         rr
       } else Seq()
     }
@@ -245,11 +245,19 @@ trait RangeInference[Rdf <: RDF, DATASET]
     def setPossibleValues() : Seq[(Rdf#Node, Rdf#Node)] = {
       val fieldType = entryField.type_
       val possibleValues = {
-        if (isDefined(fieldType) ) {
-          // to set openChoice = false - TODO this recomputes label already memorized 
-          populateFromOwlOneOf()
-          getPossibleValuesAsTuple(fieldType)
-        } else {
+        
+        /* commented out to allow for re-computing each time 
+         * the possible values;
+         * use cases:
+         * - adding a new URI value
+         * - updating "label" properties of an URI */
+        
+//        if (isDefined(fieldType) ) {
+//          // to set openChoice = false - TODO this recomputes label already memorized 
+//          populateFromOwlOneOf()
+//          getPossibleValuesAsTuple(fieldType)
+//        } else
+        {
           val resourcesWithLabelFromOwlUnion = populateFromOwlUnion()
           val resourcesWithLabel =
             populateFromTDB() ++

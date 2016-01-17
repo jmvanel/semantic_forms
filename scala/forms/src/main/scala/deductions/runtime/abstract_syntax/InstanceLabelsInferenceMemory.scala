@@ -29,7 +29,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   /** NON transactional, needs rw transaction */
   override def instanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
     val labelFromTDB = instanceLabelFromTDB(node, lang)
-    if (labelFromTDB == "")
+    if (labelFromTDB == "" || labelFromTDB == "Thing")
       computeInstanceLabel(node, graph, lang)
     else labelFromTDB
   }
