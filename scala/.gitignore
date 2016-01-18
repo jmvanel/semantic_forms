@@ -9,6 +9,7 @@ TDB
 
 logfile.log*
 .cache-main
+.cache-tests
 *.log
 
 *.class

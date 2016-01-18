@@ -20,7 +20,7 @@ trait Form2HTMLBase[NODE, URI <: NODE]
     // display field label only if different from preceding
     if (preceding.label != field.label)
       <label class={ css.cssClasses.formLabelCSSClass } title={
-        field.comment + " - " + field.property
+        labelTooltip(field)
       } for={ makeHTMLNameResource(field) }>{
         val label = field.label
         // hack before implementing real separators
@@ -34,6 +34,15 @@ trait Form2HTMLBase[NODE, URI <: NODE]
       }> -- </label>
   }
 
+  def labelTooltip(field: fm#Entry) = {
+    val details = if( displayTechnicalSemWebDetails )
+        s"""
+          property: ${field.property} -
+          type: ${field.type_}"""
+          else ""
+      s"""${field.comment} - $details"""
+  }
+  
   //  def toPlainString[NODE](n: NODE): String = n.toString()
   def toPlainString(n: NODE): String = n.toString()
   

@@ -34,6 +34,7 @@ trait DefaultConfiguration extends Configuration {
   //  lazy override val showPlusButtons = true
   override val showPlusButtons = true
   override val inlineJavascriptInForm: Boolean = true
+  override def displayTechnicalSemWebDetails: Boolean = true
 
   override val css: CSS = new CSS {}
 
