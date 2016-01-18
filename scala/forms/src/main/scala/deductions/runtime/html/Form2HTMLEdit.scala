@@ -49,8 +49,8 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   def createHTMLResourceEditableField(r: fm#ResourceEntry
       )(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
-//    val lookup = r.widgetType == DBPediaLookup
-//    if( r.property . toString() . contains("knows")) println("knows")
+//  if( r.property . toString() . contains("knows")) println("knows")
+    val placeholder = resourcePlaceholder(r)
     Seq(
       Text("\n"),
     		// format: OFF
@@ -61,10 +61,8 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
             id={ makeHTML_Id(r) }
             list={ makeHTMLIdForDatalist(r) }
             data-type={ r.type_.toString() }
-            placeholder={ if (lookup(r))
-              s"Enter a word; completion with Wikipedia lookup"
-              else
-              s"Enter or paste a resource URI of type ${r.type_.toString()}" }
+            placeholder={ placeholder }
+            title={ placeholder }
             onkeyup={if (lookup(r)) "onkeyupComplete(this);" else null}
             size={inputSize.toString()}
 						dropzone="copy">
@@ -78,11 +76,26 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
     ). flatten
   }
 
+  private def resourcePlaceholder(r: fm#Entry) =
+    if (lookup(r))
+      s"Enter a word; completion with Wikipedia lookup"
+      else {
+        val typ0 = r.type_.toString()
+        val typ = if (
+            typ0 == "" ||
+            typ0.endsWith( "#Thing") )
+          ""
+        else
+          " of type <" + typ0 + ">"
+        s"Enter or paste a resource URI $typ"
+      }
+
   /**
    * TODO analyse differences with createHTMLResourceEditableField;
    *  maybe there is no necessary difference
    */
   def createHTMLBlankNodeEditableField(r: fm#BlankNodeEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
+    val placeholder = resourcePlaceholder(r)
     Seq(
       if (r.openChoice) {
         <input class={ css.cssClasses.formInputCSSClass } value={
@@ -91,7 +104,10 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
           makeHTML_Id(r)
         } data-type={
           r.type_.toString()
-        } size={ inputSize.toString() }>
+        } size={ inputSize.toString() }
+        placeholder={ placeholder }
+        title={ placeholder }
+        >
         </input>
       }else new Text("\n")
       ,
@@ -113,10 +129,25 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
   }
   
   def makeDatalistIdForEntryProperty(r: fm#Entry) = urlEncode(r.property.toString()) + "__property"
-    
+
+
+
+  //// stuff for Literal (string) data ////
+
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   def createHTMLiteralEditableField(lit: fm#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
-    val placeholder = s"Enter or paste a string of type ${lit.type_.toString()}"
+    val placeholder = {
+        val typ0 = lit.type_.toString()
+        val typ = if (
+            typ0 == ""
+            || typ0.endsWith( "#string")
+            || typ0.endsWith( "#Literal")
+        )
+          ""
+        else
+          " of type <" + typ0 + ">"
+        s"Enter or paste a string $typ"
+    }
 
     val htmlId = makeHTML_Id(lit) // "f" + form.fields.indexOf(lit)
     val elem = lit.type_.toString() match {
@@ -144,7 +175,10 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
           toPlainString(lit.value)
         } name={ makeHTMNameLiteral(lit) } type={
           xsd2html5TnputType(lit.type_.toString())
-        } placeholder={ placeholder } size={
+        }
+        placeholder={ placeholder }
+        title={ placeholder }
+        size={
           inputSize.toString()
         } dropzone="copy" id={ htmlId }>
         </input>
@@ -155,10 +189,6 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
     }
     Text("\n") ++ elem
   }
-
-//  private def makeHTMLIdForDatalist(uri: Rdf#URI): String = {
-//      uri.toString()
-//    }
 
   private def makeHTMLIdForDatalist(re: fm#Entry): String = {
     "possibleValues-" + (
