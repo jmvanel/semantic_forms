@@ -59,9 +59,9 @@ private[abstract_syntax] trait InstanceLabelsInference2[Rdf <: RDF] {
         if (l != "") return l
         val n = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, foaf.name, "")
         if (n != "") return n
-        val cl = instanceClassLabel( node, graph, lang)
-//        println( s"""instanceClassLabel $node "$cl" """ )
-        if (cl != "") return cl
+//        val cl = instanceClassLabel( node, graph, lang)
+////        println( s"""instanceClassLabel $node "$cl" """ )
+//        if (cl != "") return cl
         last_segment(node)
       }
     }

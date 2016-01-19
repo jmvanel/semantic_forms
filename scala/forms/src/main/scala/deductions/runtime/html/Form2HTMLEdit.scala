@@ -28,6 +28,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
     editable && field.defaults.multivalue && field.openChoice && showPlusButtons &&
     isFirstFieldForProperty(field)
   }
+  
   def createAddRemoveWidgets(field: fm#Entry, editable: Boolean)
   (implicit form: FormModule[NODE, URI]#FormSyntax): Elem = {
     if (shouldAddAddRemoveWidgets(field, editable)) {
@@ -39,7 +40,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
       }   
       <input value="+" class="button-add btn-primary" readonly="yes" size="1" title={
         "Add another value for " + field.label } onClick={
-        s""" cloneWidget( "$widgetName" ); """
+        s""" cloneWidget( "$widgetName" ); cloneWidget( "${ makeHTML_Id(field) }" ); """
       }></input>
     } else <span></span>
   }
