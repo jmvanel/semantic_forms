@@ -23,7 +23,7 @@ trait MainXml extends ToolsPage with EnterButtons {
     </html>
   }
 
-  def head(implicit lang: String = "en") = <head></head>
+  def head(implicit lang: String = "en"): NodeSeq = <head></head>
 
   def linkToToolsPage = <p>
                           ---<br/>

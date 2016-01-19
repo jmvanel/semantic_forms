@@ -2,6 +2,7 @@ package deductions.runtime.html
 
 import deductions.runtime.services.Configuration
 import deductions.runtime.utils.I18NMessages
+import scala.xml.NodeSeq
 
 /** Buttons for loading/display/edit, searh, and create */
 trait EnterButtons extends Configuration {
@@ -78,13 +79,7 @@ trait EnterButtons extends Configuration {
                   <option label="av:Resource"> { prefixAVontology }Resource </option>
                 </optgroup>
                 <optgroup label={ message("Other_vocabs") }>
-                  <option label="foaf:Person" selected="selected"> http://xmlns.com/foaf/0.1/Person </option>
-                  <option label="doap:Project"> http://usefulinc.com/ns/doap#Project </option>
-                  <option label="foaf:Organization"> http://xmlns.com/foaf/0.1/Organization </option>
-                  <!-- http://www.w3.org/2002/12/cal/ical#Vevent" // "cal:Vevent" -->
-                  <option label="owl:Class"> http://www.w3.org/2002/07/owl#Class </option>
-                  <option label="owl:DatatypeProperty"> http://www.w3.org/2002/07/owl#DatatypeProperty </option>
-                  <option label="owl:ObjectProperty"> http://www.w3.org/2002/07/owl#ObjectProperty </option>
+                  { suggestedClassesForCreation }
                 </optgroup>
               </select>
             </div>
@@ -97,4 +92,14 @@ trait EnterButtons extends Configuration {
       </div>
     </div>
 
+  def suggestedClassesForCreation: NodeSeq = {
+    <option label="foaf:Person" selected="selected"> http://xmlns.com/foaf/0.1/Person </option>
+    <option label="doap:Project"> http://usefulinc.com/ns/doap#Project </option>
+    <option label="foaf:Organization"> http://xmlns.com/foaf/0.1/Organization </option>
+    <option label="sioc:Post"> http://rdfs.org/sioc/ns#Post </option>
+    <!-- http://www.w3.org/2002/12/cal/ical#Vevent" // "cal:Vevent" -->
+    <option label="owl:Class"> http://www.w3.org/2002/07/owl#Class </option>
+    <option label="owl:DatatypeProperty"> http://www.w3.org/2002/07/owl#DatatypeProperty </option>
+    <option label="owl:ObjectProperty"> http://www.w3.org/2002/07/owl#ObjectProperty </option>
+  }
 }
