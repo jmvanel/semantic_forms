@@ -213,6 +213,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
     else options
   }
 
+  /** make sequence of HTML <option> */
   private def makeHTMLOptionsSequence(field: Entry)
   (implicit form: fm#FormSyntax) = {
 	  def makeHTMLOption(value: (NODE, NODE), field: fm#Entry): Elem = {

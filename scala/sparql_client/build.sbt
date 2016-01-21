@@ -4,7 +4,7 @@ name := "sparql"
 
 version := "1.1-SNAPSHOT"
 
-scalaVersion := "2.11.5"
+scalaVersion := "2.11.7"
 
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
 
@@ -13,7 +13,7 @@ libraryDependencies += "org.w3" %%  "jena" % "0.7.2.radical"
 
 libraryDependencies += "org.w3" %%  "sesame" %  "0.7.2.radical"
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.0" % Test
+libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test
 
 
 

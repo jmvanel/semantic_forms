@@ -28,6 +28,8 @@ trait MainXml extends ToolsPage with EnterButtons {
   def linkToToolsPage = <p>
                           ---<br/>
                           <a href="/tools">Tools</a>
+                          -
+                          <a href="https://github.com/jmvanel/semantic_forms/wiki/User_manual">User Manual</a>
                         </p>
 
   //  def message(key: String)(implicit lang: String) = I18NMessages.get(key, lang)

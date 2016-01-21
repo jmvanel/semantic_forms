@@ -12,7 +12,7 @@ lazy val semantic_forms_services = (project in file("."))
 
 scalaVersion := "2.11.7"
 
-libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.0" % Test
+libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.6" % Test
 
 
 javacOptions ++= Seq("-source","1.7", "-target","1.7")

@@ -8,7 +8,7 @@ scalaVersion := "2.11.7"
 
 libraryDependencies += "com.typesafe.play" %% "play-ws" % "2.3.9"
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.0" % Test
+libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test
 
 
 javacOptions ++= Seq("-source","1.7", "-target","1.7")

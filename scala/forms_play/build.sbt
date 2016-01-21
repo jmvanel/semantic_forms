@@ -14,7 +14,7 @@ lazy val semantic_forms_play = (project in file("."))
 
 scalaVersion := "2.11.7"
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % Test
+libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test
 
 // libraryDependencies += specs2 % Test
 
