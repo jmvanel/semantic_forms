@@ -32,6 +32,7 @@ import deductions.runtime.views.ToolsPage
 import deductions.runtime.semlogs.TimeSeries
 import deductions.runtime.semlogs.LogAPI
 import deductions.runtime.html.CSS
+import deductions.runtime.sparql_cache.BlankNodeCleaner
 
 /**
  * a Web Application Facade,
@@ -63,6 +64,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with TimeSeries[Rdf, DATASET]
     with RDFDashboardSPARQL[Rdf, DATASET]
     with TriplesInGraphSPARQL[Rdf, DATASET]
+    with BlankNodeCleaner [Rdf, DATASET]
     with ToolsPage
     with Configuration
 //    with CSS
@@ -129,8 +131,10 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
               dataset)
 
             // TODO should be done in FormSaver 
-            println(s"Search in $uri duplicate graph rooted at blank node: size " + ops.getTriples(resRetrieve.get).size)
-            manageBlankNodesReload(resRetrieve.getOrElse(emptyGraph), URI(uri), dataset: DATASET)
+            println(s"Search in $uri duplicate graph rooted at blank node: size " +
+                ops.getTriples(resRetrieve.get).size)
+            manageBlankNodesReload(resRetrieve.getOrElse(emptyGraph),
+                URI(uri), dataset: DATASET)
 
             val status = resRetrieve match {
               case Failure(e) => e.getLocalizedMessage
