@@ -1,21 +1,29 @@
 package deductions.runtime.sparql_cache
 
 import org.w3.banana.RDF
-
 import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.services.SPARQLHelpers
+import org.w3.banana.jena.JenaModule
+import deductions.runtime.jena.RDFStoreLocalJenaProvider
+import scala.language.postfixOps
+import org.w3.banana.RDFPrefix
+import deductions.runtime.utils.RDFHelpers
+import deductions.runtime.dataset.RDFOPerationsDB
 
+trait BlankNodeCleaner[Rdf <: RDF, DATASET]
+extends BlankNodeCleanerBatch[Rdf, DATASET]
+with BlankNodeCleanerIncremental[Rdf, DATASET]
 
-trait BlankNodeCleaner [Rdf <: RDF, DATASET]
-extends RDFStoreLocalProvider[Rdf, DATASET] {
-  
+trait BlankNodeCleanerBase [Rdf <: RDF, DATASET]
+extends RDFStoreLocalProvider[Rdf, DATASET]
+with SPARQLHelpers[Rdf, DATASET]
+
+trait BlankNodeCleanerIncremental[Rdf <: RDF, DATASET] extends BlankNodeCleanerBase[Rdf, DATASET] {
   import ops._
   import rdfStore.graphStoreSyntax._
-  
-  def main(args: Array[String]): Unit = {
-    // TODO
-  }
+  import rdfStore.transactorSyntax._
 
-    /**
+  /**
    * cf post on Jena list:
    * http://mail-archives.apache.org/mod_mbox/jena-users/201507.mbox/%3C55943D78.30307@apache.org%3E
    *
@@ -46,6 +54,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET] {
     println("Search duplicate graph rooted at blank node: input size " + getTriples(incomingGraph).size)
     val blanksIncomingGraphGroupedByPredicate = groupByPredicateThenObjectGraphs(incomingGraph, graphUri)
     val blanksLocalGraphGroupedByPredicate = {
+//      val localGraph = rdfStore.getGraph(dataset, graphUri).get // TODO : OrElse(emptyGraph)
       val localGraph = dataset.getGraph(graphUri).get // TODO : OrElse(emptyGraph)
       groupByPredicateThenObjectGraphs(localGraph, graphUri)
     }
@@ -79,6 +88,105 @@ extends RDFStoreLocalProvider[Rdf, DATASET] {
         }
       }
     }
+  }
+}
+
+trait BlankNodeCleanerBatch[Rdf <: RDF, DATASET]
+extends BlankNodeCleanerBase[Rdf, DATASET] {
+  import ops._
+  import rdfStore.graphStoreSyntax._
+  import rdfStore.transactorSyntax._
+
+  private lazy val rdf = RDFPrefix[Rdf]
+
+  /**
+   * Batch program to clean Unreachable Blank Node Sub-Graphs;
+   *
+   * for all Blank Nodes ?BN, if unreachable,
+   * then remove triples
+   * ?BN ?P ?O .
+   *
+   * Unreachable means:
+   * there is no triple:
+   * ?X ?P ?BN .
+   * and the triples
+   * ?BN ?P ?O .
+   * are such that ?O are all literal,
+   */
+  def cleanUnreachableBlankNodeSubGraph(): Unit = {
+    val triplesAll = find(allNamedGraph, ANY, ANY, ANY)
+    println("triples size " + triplesAll size)
+    val names = listNames().toList
+    var triplesRemoveCount = 0
+    
+    for (name <- names) {
+      val graphURI = URI(name)
+      dataset.rw({
+        val graph = dataset.getGraph(graphURI).get
+        println(s"graph <$graphURI> size ${graph.size}")
+
+        if (name == "http://bblfish.net/people/henry/card#me")
+          println("http://bblfish.net/people/henry/card#me")
+
+        val triples = find(graph, ANY, ANY, ANY).toList
+        var count = 0
+        val blankSubjects = triples.
+          map { t => t.subject }.
+          filter { s =>
+            count = count + 1
+            // if (s.isBNode) println(s"s.isBNode: # $count, $s")
+            s.isBNode
+          }.
+          filter { s =>
+            s != rdf.first &&
+              s != rdf.rest
+          }.
+          filter { s =>
+            val tt = find(graph, ANY, ANY, s).toList
+            // if (!tt.isEmpty) println("ANY, ANY, s: " + tt)
+            find(graph, ANY, ANY, s) isEmpty
+          }.
+          filter { s =>
+            val tt = find(graph, s, ANY, ANY)
+            tt.forall { tr => tr.objectt.isLiteral }
+          }
+
+       val bss = blankSubjects.toList
+       println(s"=========== blankSubjects size ${blankSubjects size}")
+       val mess = bss.map {
+          s =>
+            if (bss.size > 0) {    
+              val triples = find(graph, s, ANY, ANY).toList
+              println("TO REMOVE: " + triples)
+              triplesRemoveCount = triplesRemoveCount + bss.size
+              dataset.removeTriples(graphURI, triples) . get;
+              {
+              val triples = find(graph, s, ANY, ANY).toList
+              println("Verification " + triples)
+              s"Remaining size for <$graphURI> ($s): ${triples.size}"
+              }
+            } else "Nothing to remove."
+        }
+       println(mess)
+      })
+    }
+    println( s"\ntriplesRemoveCount $triplesRemoveCount" )
+    ()
+  }
+
+  def makeSPARQLremove(s: Rdf#Node, triples: List[Rdf#Triple]): String = {
+//    val buf = new StringBuilder
+//    for( tr <- triples ) {
+//      buf.append( s"""<${(tr.subject)}> <${(tr.predicate)}> "${
+//        foldNode(tr.objectt)( _ => "", _ => "", l => fromLiteral(l)._1 ) }".
+//        """ )
+//    }
+  val ret = s"DELETE GRAPH ?G { _:$s ?P ?O .} WHERE { GRAPH ?G { _:$s ?P ?O .} }"
+  println( ret )
+  ret
+}
+  def makeSPARQLselect(s: Rdf#Node): String = {
+    s"SELECT * WHERE { GRAPH ?G { _:$s ?P ?O .} }"
   }
   
 }

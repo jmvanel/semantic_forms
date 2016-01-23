@@ -15,6 +15,7 @@ import deductions.runtime.utils.Timer
 object ImplementationSettings {
   // pave the way for migration to Jena 3 ( or BlazeGraph )
   type DATASET = com.hp.hpl.jena.query.Dataset
+  type Rdf = Jena
 }
 
 /** For user data and RDF cache, sets a default location for the Jena TDB store directory : TDB */
@@ -43,16 +44,19 @@ trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Implementati
    */
   override def allNamedGraph: Rdf#Graph = {
     time(s"allNamedGraph dataset $dataset", {
-      println(s"Union Graph: entering for $dataset")
-      //      val ang = dataset.getGraph(makeUri("urn:x-arq:UnionGraph")).get
+      //      println(s"Union Graph: entering for $dataset")
+      // val ang = dataset.getGraph(makeUri("urn:x-arq:UnionGraph")).get
       // TODO:
       val ang = rdfStore.getGraph(dataset, makeUri("urn:x-arq:UnionGraph")).get
-      println(s"Union Graph: hashCode ${ang.hashCode()} : size ${ang.size}")
+      //      println(s"Union Graph: hashCode ${ang.hashCode()} : size ${ang.size}")
       ang
-    }
-    )
+    })
     //    union(dataset.getDefaultModel.getGraph :: unionGraph :: Nil)
   }
+
+  /** List the names of graphs */
+  def listNames(ds: DATASET): Iterator[String] = ds.listNames()
+
 }
 
 /** TODO implement independently of Jena */

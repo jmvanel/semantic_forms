@@ -10,6 +10,7 @@ version := "1.0-SNAPSHOT"
 //        .dependsOn(forms_js)
 
 scalaVersion :=  "2.11.7"
+// scalaVersion :=  "2.12.0-M3"
 
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
 

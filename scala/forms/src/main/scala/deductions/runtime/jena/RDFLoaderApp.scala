@@ -2,7 +2,8 @@ package deductions.runtime.jena
 
 import org.w3.banana.jena.JenaModule
 
-object RDFLoaderApp extends RDFCache with App with JenaModule
+object RDFLoaderApp extends RDFCache with App
+    //with JenaModule
     with RDFStoreLocalJena1Provider // with JenaHelpers
     {
   import ops._

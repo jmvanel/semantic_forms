@@ -37,6 +37,9 @@ trait RDFStoreLocalProvider[Rdf <: RDF, DATASET] extends RDFOPerationsDB[Rdf, DA
    *  sets a default location for the Jena TDB store directory : TDB2/ */
   val databaseLocation2 = "TDB2"
   lazy val dataset2: DATASET = createDatabase(databaseLocation2)
+  
+  /** List the names of graphs */
+  def listNames(ds: DATASET = dataset): Iterator[String]
 }
 
 trait RDFStoreLocalUserManagement[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET] {
