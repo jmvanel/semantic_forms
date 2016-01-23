@@ -25,12 +25,13 @@ trait MainXml extends ToolsPage with EnterButtons {
 
   def head(implicit lang: String = "en"): NodeSeq = <head></head>
 
-  def linkToToolsPage = <p>
-                          ---<br/>
-                          <a href="/tools">Tools</a>
-                          -
-                          <a href="https://github.com/jmvanel/semantic_forms/wiki/User_manual">User Manual</a>
-                        </p>
+  def linkToToolsPage =
+    <p>
+      ---<br/>
+      <a href="/tools">Tools</a>
+      - <a href="https://github.com/jmvanel/semantic_forms/wiki/User_manual">User Manual</a>
+      - <a href="https://github.com/jmvanel/semantic_forms/wiki/Manuel-utilisateur">Manuel utilisateur</a>
+    </p>
 
   //  def message(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
   //  val prefixAV = "http://www.assemblee-virtuelle.org/ontologies/v1.owl#"
