@@ -41,6 +41,7 @@ with SPARQLHelpers[Rdf, DATASET] {
         val (graphUri, metadata ) = makeGraphURIAndMetadata(addedTriples, removedTriples)
         dataset2.appendToGraph( metadataGraph, metadata)
        
+        // TODO: add only modified triples (configurable)
         val graph = makeGraph(addedTriples)
         dataset2.appendToGraph(graphUri, graph)
       })
@@ -61,7 +62,30 @@ with SPARQLHelpers[Rdf, DATASET] {
          ( graphUri, metadata ) 
   }
 
+  /**get Metadata for user updates:
+   * subject, timestamp, triple count */
+  def getMetadata()
+    (implicit userURI: String)
+        : List[Seq[Rdf#Node]] = {
+    val query = s"""  # DISTINCT
+      SELECT ?SUBJECT (max(?TS) as ?TIME ) (count(?O) AS ?COUNT)
+      WHERE {
+        GRAPH <urn:semantic_forms/metadataGraph> {
+          ?GR <urn:timestamp> ?TS . }
+        GRAPH ?GR {
+         ?SUBJECT ?P ?O . } }
+      GROUP BY ?SUBJECT
+      ORDER BY ?TS
+    """
+    println("getMetadata: query " + query)
+    val res = sparqlSelectQueryVariables( query, Seq("SUBJECT", "TIME", "COUNT"), dataset2 )
+    println("getMetadata: res " + res)
+    res
+  }
+
+
   /** get Time Series from accumulated values with timestamp;
+   *  used only in https://github.com/jmvanel/corporate_risk
    *  @return a Map from label to a seq of time & value pairs;
    *  the time is a Unix time obtained by Date.getTime,
    *  the value is a double;
@@ -103,7 +127,7 @@ with SPARQLHelpers[Rdf, DATASET] {
   }
   
   // TODO move to helper class  
-  private def makeStringFromLiteral(n: Rdf#Node): String = {
+  def makeStringFromLiteral(n: Rdf#Node): String = {
     foldNode(n)(
         _ => "",
         _ => "",

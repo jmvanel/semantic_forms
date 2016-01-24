@@ -148,21 +148,5 @@ trait FormSaver[Rdf <: RDF, DATASET]
     }
   }
 
-  ///////////////
-  
-//  type SaveListener = LogAPI[Rdf]
-//  val saveListeners = ArrayBuffer[SaveListener]()
-//  
-//  def addSaveListener( l: SaveListener) = {
-//    saveListeners += l
-//  }
-//
-//  def callSaveListeners(addedTriples: Seq[Rdf#Triple], removedTriples: Seq[Rdf#Triple])(implicit userURI: String) = {
-//    if (recordUserActions)
-//      saveListeners.map {
-//        _.notifyDataEvent(addedTriples, removedTriples)
-//      }
-//  }
-
 }
 

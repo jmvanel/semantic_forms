@@ -20,7 +20,7 @@ trait DefaultConfiguration extends Configuration {
   override val needLoginForEditing: Boolean = false // true
   override val needLoginForDisplaying: Boolean = false
 
-  override val recordUserActions: Boolean = false
+  override val recordUserActions: Boolean = true // false
   override val showDomainlessProperties = false
   override val addRDFS_label_comment = true
 
