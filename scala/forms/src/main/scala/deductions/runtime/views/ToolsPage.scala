@@ -10,15 +10,18 @@ trait ToolsPage extends EnterButtons {
       <p>
         SPARQL select
         {
-          sparqlQueryForm("", "/select",
-            "SELECT * WHERE {{ GRAPH ?G {{?S ?P ?O . }} }} LIMIT 10")
+          sparqlQueryForm("", "/select", Seq(
+            "SELECT * WHERE { GRAPH ?G {?S ?P ?O . } } LIMIT 100",
+            "SELECT DISTINCT ?CLASS WHERE { GRAPH ?G { [] a  ?CLASS . } } LIMIT 100",
+            "SELECT DISTINCT ?PROP WHERE { GRAPH ?G { [] ?PROP [] . } } LIMIT 100"
+          ))
         }
       </p>
       <p>
         SPARQL construct
         {
           sparqlQueryForm("", "/sparql",
-            "CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10")
+            Seq("CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10"))
         }
       </p>
       <p> <a href="/showNamedGraphs">show Named Graphs</a> </p>
@@ -28,16 +31,14 @@ trait ToolsPage extends EnterButtons {
     </div>
   }
 
-  def sparqlQueryForm(query: String, action: String, sampleQuery: String): NodeSeq =
+  def sparqlQueryForm(query: String, action: String, sampleQueries: Seq[String]): NodeSeq =
     <form role="form" action={ action }>
-      <textarea name="query" cols="80">
-        {
-          if (query != "")
-            query
-          else
-            "# " + sampleQuery
-        }
-      </textarea>
+      <textarea name="query" cols="80" rows="4" title="To get started, uncomment one of these lines.">{
+        if (query != "")
+          query
+        else
+          for (sampleQuery <- sampleQueries) yield "# " + sampleQuery + "\n"
+      }</textarea>
       <input type="submit" value="Submit"/>
     </form>
 }

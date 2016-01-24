@@ -304,7 +304,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     Logger.getRootLogger().info("Global.sparql query  " + query)
     <p>
 		{ sparqlQueryForm(query, "/sparql",
-				"CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10" ) }
+				Seq("CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10") ) }
       <pre>
         {
           try {
@@ -338,7 +338,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     Logger.getRootLogger().info("sparql query  " + query)
     <p>
 		{ sparqlQueryForm(query, "/select",
-				"SELECT * WHERE {{ GRAPH ?G {{?S ?P ?O . }} }} LIMIT 10" ) }
+				Seq("SELECT * WHERE {{ GRAPH ?G {{?S ?P ?O . }} }} LIMIT 10" )) }
       <br></br>
       <script type="text/css">
         table {{ border-collapse:collapse; width:90%; }}
