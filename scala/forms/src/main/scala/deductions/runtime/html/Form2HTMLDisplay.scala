@@ -22,9 +22,11 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     val normalNavigationButton = if (stringValue == "")
       Text("")
     else
-      <a href={ stringValue } title={ s"Normal HTTP link to ${r.value}" } draggable="true"> LINK</a>
+      <a href={ stringValue } title={ s"Normal HTTP link to ${r.value}" }
+      draggable="true">LINK</a>
     Seq(
-      <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) } title={
+      <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }
+      title={
         s"""Value ${if (r.value.toString != r.valueLabel) r.value.toString else ""}
               of type ${r.type_.toString()}"""
       } draggable="true"> {

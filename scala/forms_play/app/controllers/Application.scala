@@ -88,7 +88,6 @@ object Application extends Controller
           val lang = chooseLanguageObject(request).language
           val fut = Future.successful( showTriplesInGraph( uri, lang) )
           val rr = fut.map( r => outputMainPage( r, lang ) )
-//    Ok("showTriplesInGraphAction")
           rr
   }
   }
@@ -270,13 +269,6 @@ object Application extends Controller
     }
   }
 
-  def toolsPage = {
-    Action { implicit request =>
-      Ok(new ToolsPage with DefaultConfiguration {}.getPage)
-        .as("text/html; charset=utf-8")
-    }
-  }
-
   def httpOptions(path: String) = {
 	  Action { implicit request =>
       println("OPTIONS: " + request)
@@ -285,5 +277,18 @@ object Application extends Controller
         .withHeaders(corsHeaders.toList:_*)
     }
   }
+    
+  def toolsPage = {
+    Action { implicit request =>
+      Ok(new ToolsPage with DefaultConfiguration {}.getPage)
+        .as("text/html; charset=utf-8")
+    }
+  }
+
+  def makeHistoryUserActionsAction(userURI: String) =
+    Action { implicit request =>
+      val lang = chooseLanguage(request)
+      outputMainPage(makeHistoryUserActions(userURI), lang)
+    }
 
 }

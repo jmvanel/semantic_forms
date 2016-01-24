@@ -35,7 +35,7 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
     editable: Boolean = false,
     lang: String = "en" )
     : NodeSeq = {
-    impl.htmlFormElemJustFieldsTR(uri, hrefPrefix, blankNode, editable, lang)
+    impl.htmlFormElemJustFields(uri, hrefPrefix, blankNode, editable, lang)
   }
   
   def create(classUri: String, lang: String, formSpecURI: String)
@@ -73,7 +73,7 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
 
   def esearch(q: String = ""): Future[Elem] =
     impl.esearchFuture(q)
-
+    
   /** NOTE this creates a transaction; do not use it too often */
   def labelForURI(uri: String, language: String): String =
     impl.labelForURITransaction(uri, language)
@@ -108,4 +108,8 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
   def registerAction(uri: String)
 //    (implicit graph: Rdf#Graph)
     = impl.registerAction(uri)
+    
+  def makeHistoryUserActions(userURI: String): NodeSeq =
+    impl.makeHistoryUserActions(userURI)
+
 }

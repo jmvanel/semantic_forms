@@ -68,12 +68,11 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
             size={inputSize.toString()}
 						dropzone="copy">
           </input> else new Text("") // format: ON
-          ,
+      ,
       if (lookup(r))
         formatPossibleValues(r, inDatalist = true)
-      else new Text(""),
-      if( !lookup(r) ) renderPossibleValues(r) else new Text("\n")
-
+      else renderPossibleValues(r)
+      , Text("\n")
     ). flatten
   }
 

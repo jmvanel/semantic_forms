@@ -22,7 +22,7 @@ trait ToolsPage extends EnterButtons {
         }
       </p>
       <p> <a href="/showNamedGraphs">show Named Graphs</a> </p>
-      <p> Dashboard TODO </p>
+      <p> <a href="/history">Dashboard: history of user actions</a> </p>
       { enterURItoDownloadAndDisplay() }
       <p> <a href="..">Back to Main page</a> </p>
     </div>
@@ -30,7 +30,6 @@ trait ToolsPage extends EnterButtons {
 
   def sparqlQueryForm(query: String, action: String, sampleQuery: String): NodeSeq =
     <form role="form" action={ action }>
-      query:
       <textarea name="query" cols="80">
         {
           if (query != "")

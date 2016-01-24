@@ -32,7 +32,7 @@ import deductions.runtime.views.ToolsPage
 import deductions.runtime.semlogs.TimeSeries
 import deductions.runtime.semlogs.LogAPI
 import deductions.runtime.html.CSS
-import deductions.runtime.sparql_cache.BlankNodeCleaner
+import deductions.runtime.sparql_cache.BlankNodeCleanerIncremental
 
 /**
  * a Web Application Facade,
@@ -62,9 +62,10 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with RegisterPage[Rdf, DATASET]
     with FormHeader[Rdf]
     with TimeSeries[Rdf, DATASET]
-    with RDFDashboardSPARQL[Rdf, DATASET]
+    with NamedGraphsSPARQL[Rdf, DATASET]
     with TriplesInGraphSPARQL[Rdf, DATASET]
-    with BlankNodeCleaner [Rdf, DATASET]
+    with BlankNodeCleanerIncremental[Rdf, DATASET]
+    with DashboardHistoryUserActions[Rdf, DATASET]
     with ToolsPage
     with Configuration
 //    with CSS
@@ -163,48 +164,6 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       }
     else
       <div class="row">Enter an URI</div>
-  }
-
-  def htmlFormElemJustFieldsTR(uri: String, hrefPrefix: String = "", blankNode: String = "",
-                               editable: Boolean = false, lang: String): NodeSeq = {
-//    dataset.rw({
-      htmlFormElemJustFields(uri, hrefPrefix, blankNode, editable, lang)
-//    }) . get
-  }
-  
-  private def htmlFormOLD(uri0: String, blankNode: String = "",
-    editable: Boolean = false,
-    lang: String = "en")
-    : Elem = {
-    Logger.getRootLogger().info(s"""Global.htmlForm URI $uri0 blankNode "$blankNode" lang=$lang """)
-    val uri = uri0.trim()
-
-    <div class="container">
-      { //titleEditDisplayDownloadLinks(uri, lang)
-      }
-      {
-        if (uri != null && uri != "")
-          try {
-//        	  tableView.htmlFormElem(uri, hrefDisplayPrefix, blankNode, editable = editable,
-//        			  lang = lang)
-        	  val res = dataset.rw({
-        		  tableView.htmlFormElemRaw(uri, allNamedGraph, hrefDisplayPrefix, blankNode, editable = editable,
-        				  lang = lang)
-        	  })
-        	  res.get
-          } catch {
-            case e: Exception => // e.g. org.apache.jena.riot.RiotException
-              <p style="color:red">
-                {
-                  e.getLocalizedMessage() + " " + printTrace(e)
-                }<br/>
-                Cause:{ if (e.getCause() != null) e.getCause().getLocalizedMessage() }
-              </p>
-          }
-        else
-          <div class="row">Enter an URI</div>
-      }
-    </div>
   }
   
   /** NON transactional */
@@ -433,5 +392,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     content: Option[String]): Try[String] =
     putTriples(uri, link, contentType,
       slug, content)
+
+  def makeHistoryUserActions(userURI: String): NodeSeq =
+    makeTableHistoryUserActions(userURI)
 
 }

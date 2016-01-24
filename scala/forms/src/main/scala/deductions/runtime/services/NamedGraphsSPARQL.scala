@@ -7,7 +7,7 @@ import scala.xml.NodeSeq
 import java.net.URLEncoder
 
 /** Show named graphs */
-trait RDFDashboardSPARQL[Rdf <: RDF, DATASET]
+trait NamedGraphsSPARQL[Rdf <: RDF, DATASET]
     extends ParameterizedSPARQL[Rdf, DATASET] {
 
   private implicit val searchStringQueryMaker = new SPARQLQueryMaker[Rdf] {

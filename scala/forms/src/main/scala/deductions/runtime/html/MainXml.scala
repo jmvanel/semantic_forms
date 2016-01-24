@@ -29,8 +29,12 @@ trait MainXml extends ToolsPage with EnterButtons {
     <p>
       ---<br/>
       <a href="/tools">Tools</a>
-      - <a href="https://github.com/jmvanel/semantic_forms/wiki/User_manual">User Manual</a>
-      - <a href="https://github.com/jmvanel/semantic_forms/wiki/Manuel-utilisateur">Manuel utilisateur</a>
+      -<a href="https://github.com/jmvanel/semantic_forms/wiki/User_manual">User Manual</a>
+      -<a href="https://github.com/jmvanel/semantic_forms/wiki/Manuel-utilisateur">Manuel utilisateur</a>
+      - Powered by
+      <a href="https://github.com/jmvanel/semantic_forms/blob/master/scala/forms_play/README.md#play-framework-implementations">
+        semantic_forms
+      </a>
     </p>
 
   //  def message(key: String)(implicit lang: String) = I18NMessages.get(key, lang)

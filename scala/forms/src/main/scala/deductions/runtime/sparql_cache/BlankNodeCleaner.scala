@@ -125,21 +125,21 @@ extends BlankNodeCleanerBase[Rdf, DATASET] {
         val graph = dataset.getGraph(graphURI).get
         println(s"graph <$graphURI> size ${graph.size}")
 
-        if (name == "http://bblfish.net/people/henry/card#me")
-          println("http://bblfish.net/people/henry/card#me")
+//        if (name == "http://bblfish.net/people/henry/card#me") println("http://bblfish.net/people/henry/card#me")
 
         val triples = find(graph, ANY, ANY, ANY).toList
         var count = 0
         val blankSubjects = triples.
-          map { t => t.subject }.
+          map { t =>
+            val p = t.predicate
+            p != rdf.first &&
+            p != rdf.rest
+            t.subject
+          }.
           filter { s =>
             count = count + 1
             // if (s.isBNode) println(s"s.isBNode: # $count, $s")
             s.isBNode
-          }.
-          filter { s =>
-            s != rdf.first &&
-              s != rdf.rest
           }.
           filter { s =>
             val tt = find(graph, ANY, ANY, s).toList
