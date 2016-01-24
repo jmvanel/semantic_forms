@@ -393,7 +393,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     putTriples(uri, link, contentType,
       slug, content)
 
-  def makeHistoryUserActions(userURI: String): NodeSeq =
-    makeTableHistoryUserActions(userURI)
+  def makeHistoryUserActions(userURI: String, lang: String): NodeSeq =
+    makeTableHistoryUserActions(lang)(userURI)
 
 }

@@ -109,7 +109,7 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
 //    (implicit graph: Rdf#Graph)
     = impl.registerAction(uri)
     
-  def makeHistoryUserActions(userURI: String): NodeSeq =
-    impl.makeHistoryUserActions(userURI)
+  def makeHistoryUserActions(userURI: String, lang: String): NodeSeq =
+    impl.makeHistoryUserActions(userURI, lang)
 
 }
