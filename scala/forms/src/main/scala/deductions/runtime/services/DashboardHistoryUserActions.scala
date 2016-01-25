@@ -24,10 +24,7 @@ import java.util.Locale
 trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
     with TimeSeries[Rdf, DATASET]
-    with ParameterizedSPARQL[Rdf, DATASET]
-//with InstanceLabelsInferenceMemory[Rdf, DATASET]
-//    with SPARQLQueryMaker[Rdf]
-{
+    with ParameterizedSPARQL[Rdf, DATASET] {
 
   import ops._
   import sparqlOps._
@@ -39,7 +36,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     override def variables = Seq("SUBJECT", "TIME", "COUNT")
   }
 
-  /** leverage on Form2HTMLDisplay.createHTMLResourceReadonlyField() */
+  /** leverage on ParameterizedSPARQL.makeHyperlinkForURI() */
   def makeTableHistoryUserActions(lang: String="en")(implicit userURI: String): NodeSeq = {
     val met = getMetadata()
     implicit val queryMaker = qm

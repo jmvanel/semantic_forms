@@ -102,8 +102,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
 
   /**
    * generate a row of HTML hyperlinks for given list of RDF Node;
-   *  non TRANSACTIONAL
-   */
+   *  non TRANSACTIONAL */
   private def displayResults(res0: Iterable[Rdf#Node],
       hrefPrefix: String = hrefDisplayPrefix,
       lang: String = "",
@@ -121,33 +120,20 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
         else uriLabelCouples
       val columnsFormResults = uriLabelCouples2 .
         map(uriLabelCouple => {
-          val node = uriLabelCouple._1
-          val uriString = node.toString
-          val blanknode = !isURI(node)
-          <div title={ node.toString() } class={
-            if( sortAnd1rowPerElement ) "form-row" else "form-value"
-              }> {
-              def hyperlink = <a href={
-                Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode)
-              } class="form-value">
-                                { uriLabelCouple._2 } </a>
-              val nodeRendering = foldNode(node)(
-                x => hyperlink,
-                x => hyperlink,
-                x => Text( x.toString() ))
-                
-            	val columns_for_URI = queryMaker.columnsForURI( node, instanceLabel(node, graph, lang))
-//            	println( "displayResults " + node + columns_for_URI )
-            	
-            	nodeRendering ++ columns_for_URI // ++ <br/>
-            } </div><!-- end of row div -->
+          val node = uriLabelCouple._1  
+          makeHyperlinkForURI(
+              node, lang, graph,
+              hrefPrefix = hrefPrefix,
+              label = uriLabelCouple._2,
+              sortAnd1rowPerElement = sortAnd1rowPerElement )
         })
         columnsFormResults 
-    }</div><!-- end of wrapping div -->
+    }</div><!-- end of wrapping div displayResults -->
   }
 
   /** make HTML hyperlink For given URI;
-   *  this links to smeantic_forms page for diaplaying this URI */
+   *  this links to semantic_forms page for displaying this URI;
+   * NOTE: this duplicates code in Form2HTMLDisplay.createHTMLResourceReadonlyField() */
   def makeHyperlinkForURI( node: Rdf#Node, lang: String, graph: Rdf#Graph,
       hrefPrefix: String = hrefDisplayPrefix,
       label: String = "",
@@ -160,23 +146,22 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
           label
         else
           instanceLabel(node, graph, lang)
+
     <div title={ node.toString() } class={
-            if( sortAnd1rowPerElement ) "form-row" else "form-value"
-              }> {
-              def hyperlink =
+      if( sortAnd1rowPerElement ) "form-row" else "form-value"
+    }> {
+      def hyperlink =
                 <a href={
                 Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode)
               } class="form-value">
               { displayLabel } </a>
-              val nodeRendering = foldNode(node)(
+      val nodeRendering = foldNode(node)(
                 x => hyperlink,
                 x => hyperlink,
                 x => Text( x.toString() ))
                 
             	val columns_for_URI = queryMaker.columnsForURI( node,
-            	    displayLabel
-//            	    instanceLabel(node, graph, lang)
-            	    )
+            	    displayLabel )
 //            	println( "displayResults " + node + columns_for_URI )
             	
             	nodeRendering ++ columns_for_URI // ++ <br/> 
