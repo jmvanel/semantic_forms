@@ -63,7 +63,8 @@ with SPARQLHelpers[Rdf, DATASET] {
   }
 
   /**get Metadata for user updates:
-   * subject, timestamp, triple count */
+   * subject, timestamp, triple count;
+   * transactional */
   def getMetadata()
     (implicit userURI: String)
         : List[Seq[Rdf#Node]] = {

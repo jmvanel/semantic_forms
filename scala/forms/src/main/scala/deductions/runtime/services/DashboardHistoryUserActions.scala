@@ -24,32 +24,47 @@ import java.util.Locale
 trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
     with TimeSeries[Rdf, DATASET]
-with InstanceLabelsInferenceMemory[Rdf, DATASET]
-    {
+    with ParameterizedSPARQL[Rdf, DATASET]
+//with InstanceLabelsInferenceMemory[Rdf, DATASET]
+//    with SPARQLQueryMaker[Rdf]
+{
 
   import ops._
   import sparqlOps._
   import rdfStore.sparqlEngineSyntax._
   import rdfStore.transactorSyntax._
 
+  val qm = new SPARQLQueryMaker[Rdf] {
+    override def makeQueryString(search: String): String = ""
+    override def variables = Seq("SUBJECT", "TIME", "COUNT")
+  }
+
   /** leverage on Form2HTMLDisplay.createHTMLResourceReadonlyField() */
   def makeTableHistoryUserActions(lang: String="en")(implicit userURI: String): NodeSeq = {
     val met = getMetadata()
+    implicit val queryMaker = qm
     <table>
-      <tr><th>Resource</th> <th>Time</th> <th>Count</th> <th>User</th></tr>
+      <tr>
+        <th title="Resource URI visited by user">Resource</th> 
+        <th title="Time visited by user">Time</th>
+        <th title="Number of fields (triples) edited by user">Count</th> <th>User</th></tr>
       {
+      dataset.rw({ // for calling instanceLabel()
       for (row <- met) yield {
         val date = new Date( makeStringFromLiteral(row(1)).toLong )
         val dateFormat = new SimpleDateFormat(
             "EEEE dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
         <tr>{
-          <td>{row(0)}</td>
+          <td>{
+            makeHyperlinkForURI(row(0), lang, allNamedGraph )
+//            row(0)
+            }</td>
           <td>{ dateFormat.format(date) }</td>
           <td>{makeStringFromLiteral(row(2))}</td>
          <td>{ userURI }</td>
-          // for (cell <- row) yield { <td>{cell}</td> }
         }</tr>
       }
+      }) . get
     }
     </table>
   }

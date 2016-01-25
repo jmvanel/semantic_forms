@@ -42,7 +42,6 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     with Configuration
 //    with CSS
     {
-
   import ops._
   import sparqlOps._
   import rdfStore.transactorSyntax._
@@ -105,36 +104,33 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    * generate a row of HTML hyperlinks for given list of RDF Node;
    *  non TRANSACTIONAL
    */
-  private def displayResults(res0: Iterable[Rdf#Node], hrefPrefix: String,
-                             lang: String = "",
-                             graph: Rdf#Graph,
-                             sortAnd1rowPerElement:Boolean = false )
+  private def displayResults(res0: Iterable[Rdf#Node],
+      hrefPrefix: String = hrefDisplayPrefix,
+      lang: String = "",
+      graph: Rdf#Graph,
+      sortAnd1rowPerElement:Boolean = false )
   (implicit queryMaker: SPARQLQueryMaker[Rdf] )
-  : NodeSeq 
-  = {
+  : NodeSeq = {
     val wrappingClass = ""
     <div class={wrappingClass} >{
       val res = res0.toList
 //      println(s"displayResults:\n${res.mkString("\n")}")
       val uriLabelCouples = res.map(uri => (uri, instanceLabel(uri, graph, lang)))
-      val columnsFormResults = 
-        ( if( sortAnd1rowPerElement ) uriLabelCouples. sortBy(c => c._2)
-        else uriLabelCouples ) .
+      val uriLabelCouples2 = if( sortAnd1rowPerElement )
+        uriLabelCouples. sortBy(c => c._2)
+        else uriLabelCouples
+      val columnsFormResults = uriLabelCouples2 .
         map(uriLabelCouple => {
           val node = uriLabelCouple._1
           val uriString = node.toString
           val blanknode = !isURI(node)
           <div title={ node.toString() } class={
             if( sortAnd1rowPerElement ) "form-row" else "form-value"
-              }>
-            {
+              }> {
               def hyperlink = <a href={
                 Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode)
               } class="form-value">
-                                {
-                                  uriLabelCouple._2
-                                }
-                              </a>
+                                { uriLabelCouple._2 } </a>
               val nodeRendering = foldNode(node)(
                 x => hyperlink,
                 x => hyperlink,
@@ -144,15 +140,47 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
 //            	println( "displayResults " + node + columns_for_URI )
             	
             	nodeRendering ++ columns_for_URI // ++ <br/>
-            }
-          </div><!-- end of row div -->
+            } </div><!-- end of row div -->
         })
-        columnsFormResults
-//      val uri = res.head
-//      println( "displayResults " + uri )
-//      val columns_for_URI = queryMaker.columnsForURI(uri, instanceLabel(uri, graph, lang))
-//      columnsFormResults ++ columns_for_URI   
+        columnsFormResults 
     }</div><!-- end of wrapping div -->
+  }
+
+  /** make HTML hyperlink For given URI;
+   *  this links to smeantic_forms page for diaplaying this URI */
+  def makeHyperlinkForURI( node: Rdf#Node, lang: String, graph: Rdf#Graph,
+      hrefPrefix: String = hrefDisplayPrefix,
+      label: String = "",
+      sortAnd1rowPerElement:Boolean = false )
+    (implicit queryMaker: SPARQLQueryMaker[Rdf] ): NodeSeq = {
+    val uriString = node.toString
+    val blanknode = !isURI(node)
+    val displayLabel =
+      if( label != "" )
+          label
+        else
+          instanceLabel(node, graph, lang)
+    <div title={ node.toString() } class={
+            if( sortAnd1rowPerElement ) "form-row" else "form-value"
+              }> {
+              def hyperlink =
+                <a href={
+                Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode)
+              } class="form-value">
+              { displayLabel } </a>
+              val nodeRendering = foldNode(node)(
+                x => hyperlink,
+                x => hyperlink,
+                x => Text( x.toString() ))
+                
+            	val columns_for_URI = queryMaker.columnsForURI( node,
+            	    displayLabel
+//            	    instanceLabel(node, graph, lang)
+            	    )
+//            	println( "displayResults " + node + columns_for_URI )
+            	
+            	nodeRendering ++ columns_for_URI // ++ <br/> 
+    } </div><!-- end of row div -->   	
   }
 
   /**
