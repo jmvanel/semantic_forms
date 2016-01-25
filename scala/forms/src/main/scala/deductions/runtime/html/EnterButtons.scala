@@ -4,7 +4,10 @@ import deductions.runtime.services.Configuration
 import deductions.runtime.utils.I18NMessages
 import scala.xml.NodeSeq
 
-/** Buttons for loading/display/edit, searh, and create */
+/**
+ * Buttons for loading/display/edit, search, and create;
+ *  this the default HTML UI before the form
+ */
 trait EnterButtons extends Configuration {
 
   def message(key: String)(implicit lang: String) = I18NMessages.get(key, lang)

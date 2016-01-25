@@ -26,8 +26,8 @@ self: ApplicationFacadeImpl[Rdf, _] =>
             <a href={ hrefEditPrefix + URLEncoder.encode(uri, "utf-8") } title={ mess("edit_URI") }>
               { labelForURI(uri, lang) }
             </a>
-            , URI :
-            <a href={ hrefDisplayPrefix + URLEncoder.encode(uri, "utf-8") } title={ mess("display_URI") } >{ uri }</a>
+            { mess("Display") } :
+            <a href={ hrefDisplayPrefix + URLEncoder.encode(uri, "utf-8") } title={ mess("display_URI") } >{ uri }</a> )
             <a href={ s"/backlinks?q=${URLEncoder.encode(uri, "utf-8")}" } title={ mess("links_towards_URI") } >o--></a>
           </b>
         </h3>
