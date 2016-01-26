@@ -64,6 +64,7 @@ with SPARQLHelpers[Rdf, DATASET] {
 
   /**get Metadata for user updates:
    * subject, timestamp, triple count;
+   * ordered by recent first;
    * transactional */
   def getMetadata()
     (implicit userURI: String)
@@ -76,7 +77,7 @@ with SPARQLHelpers[Rdf, DATASET] {
         GRAPH ?GR {
          ?SUBJECT ?P ?O . } }
       GROUP BY ?SUBJECT
-      ORDER BY ?TS
+      ORDER BY DESC(?TS)
     """
     println("getMetadata: query " + query)
     val res = sparqlSelectQueryVariables( query, Seq("SUBJECT", "TIME", "COUNT"), dataset2 )
