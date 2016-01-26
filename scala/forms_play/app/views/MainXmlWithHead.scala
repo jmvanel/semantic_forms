@@ -31,6 +31,24 @@ trait MainXmlWithHead extends MainXml {
       <script src={ routes.Assets.at("javascripts/select2.js").url } type="text/javascript"></script>
       <script src={ routes.Assets.at("javascripts/wikipedia.js").url } type="text/javascript"></script>
       <script src={ routes.Assets.at("javascripts/formInteractions.js").url } type="text/javascript"></script>
+
+<script src="assets/fluidgraph/js/jquery-2.1.4.min.js"></script>
+<script src="assets/fluidgraph/js/d3.v3.min.js"></script>
+<script src="assets/fluidgraph/js/jquery.mockjax.min.js"></script>
+<script src="assets/fluidgraph/js/FileSaver.min.js"></script>
+<script src="assets/LDP-framework/mystore.js"></script>
+
+<script src="assets/fluidgraph/js/semantic2.1.2.js"></script>
+<link rel="stylesheet" href="assets/fluidgraph/css/semantic2.1.2.css" />
+
+<script src="assets/fluidgraph/js/mockdata.js"></script>
+<script src="assets/fluidgraph/js/init.js"></script>
+<script src="assets/fluidgraph/js/mygraph.js"></script>
+<script src="assets/fluidgraph/js/mynodes.js"></script>
+<script src="assets/fluidgraph/js/mylinks.js"></script>
+<script src="assets/fluidgraph/js/mybackground.js"></script>
+<script src="assets/fluidgraph/js/convert.js"></script>
+
       <style type="text/css">
         .resize {{ resize: both; width: 100%; height: 100%; }}
         .overflow {{ overflow: auto; width: 100%; height: 100%; }}
