@@ -42,9 +42,10 @@ object Application extends Controller
       println("displayURI: " + request)
       println("displayURI: " + Edit)
       val lang = chooseLanguage(request)
+      val title = labelForURITransaction(uri, lang)
       outputMainPage(
         htmlForm(uri, blanknode, editable = Edit != "",
-        lang), lang )
+        lang), lang, title=title)
     }
   }
 
@@ -59,10 +60,10 @@ object Application extends Controller
     
   /** generate a Main Page wrapping given XHTML content */
   private def outputMainPage( content: NodeSeq,
-      lang: String, userInfo: NodeSeq = <div/> )
+      lang: String, userInfo: NodeSeq = <div/>, title: String = "" )
   (implicit request: Request[_]) = {
       Ok( "<!DOCTYPE html>\n" +
-        mainPage( content, userInfo, lang )
+        mainPage( content, userInfo, lang, title )
       ).withHeaders("Access-Control-Allow-Origin" -> "*") // for dbpedia lookup
       .as("text/html; charset=utf-8")
   }

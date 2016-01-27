@@ -6,10 +6,10 @@ import deductions.runtime.html.MainXml
 trait MainXmlWithHead extends MainXml {
   
   /** HTML head */
-  override def head(implicit lang: String = "en") = {
+  override def head(title: String = "")(implicit lang: String = "en") = {
     val bootstrap = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1"
     <head>
-      <title>{ message("Welcome") }</title>
+      <title>{ val default = message("Welcome") ; if( title != "") title +" - "+default else default }</title>
       <meta http-equiv="Content-type" content="text/html; charset=UTF-8"></meta>
 
       <link rel="shortcut icon" type="image/png" href={ routes.Assets.at("images/favicon.png").url }/>
