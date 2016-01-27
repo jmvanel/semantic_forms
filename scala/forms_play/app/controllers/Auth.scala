@@ -15,14 +15,23 @@ import deductions.runtime.dataset.RDFStoreLocalUserManagement
 import com.hp.hpl.jena.query.Dataset
 import deductions.runtime.services.DefaultConfiguration
 
+import play.i18n.Messages
+import play.api.i18n.MessagesApi
+import play.api.i18n.Lang
+import play.api.i18n.I18nSupport
 
-object Auth extends JenaModule
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+
+object Auth extends Controller
+with JenaModule
 with RDFStoreLocalJena1Provider
 with Auth[Jena, Dataset]
 with DefaultConfiguration {
 //  println(s"object Auth")
 }
 
+//@Inject(val messagesApi: MessagesApi)
 trait Auth[Rdf <: RDF, DATASET]
 extends ApplicationFacadeImpl[Rdf, DATASET]
  with Controller
@@ -55,13 +64,18 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
               si.isSuccess
           }))
 
-println(s"loginForm $loginForm")
+  println(s"loginForm $loginForm")
 
   /** page for login or signin */
   def login = Action { implicit request =>
     println( s"def login" )
+//      implicit val messages: Messages = null
+//     new play.api.i18n.Messages(  (lang: play.api.i18n.Lang, messages: play.api.i18n.MessagesApi )
+      // Implicits.applicationMessages( Lang(lang), play.api.Play.current)
+
+//    implicit val messages: play.api.i18n.Messages = new play.api.i18n.Messages( Lang("en"), messagesApi )
     val lf = views.html.login(loginForm, registerForm)
-    Ok(lf)
+    Ok("<!DOCTYPE html>\n" + lf)
   }
 
   /** start a session after login if user Id & password are OK
@@ -71,7 +85,7 @@ println(s"loginForm $loginForm")
   def authenticate = Action { implicit request =>
     loginForm.bindFromRequest.fold(
       formWithErrors =>
-        BadRequest(views.html.login(formWithErrors, registerForm)),
+        BadRequest("<!DOCTYPE html>\n" + views.html.login(formWithErrors, registerForm)),
       user => {
       // Redirect to URL before login
         val previousURL = request.headers.get("referer")
@@ -93,7 +107,7 @@ println(s"loginForm $loginForm")
     bfr.fold(
       formWithErrors => {
         println(s"register = Action: BadRequest:\n\t$bfr")
-        BadRequest(views.html.login(loginForm, formWithErrors))
+        BadRequest("<!DOCTYPE html>\n" + views.html.login(loginForm, formWithErrors))
         },
         // TODO also Redirect to URL before login
       user => Redirect(routes.Application.index).withSession(Security.username -> user._1)
