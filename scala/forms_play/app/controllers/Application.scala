@@ -12,7 +12,6 @@ import play.api.mvc.Action
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.mvc.Controller
 import play.api.mvc.Request
-import deductions.runtime.html.MainXml
 import views.MainXmlWithHead
 import deductions.runtime.services.CORS
 import deductions.runtime.services.DefaultConfiguration
@@ -45,7 +44,7 @@ object Application extends Controller
       val title = labelForURITransaction(uri, lang)
       outputMainPage(
         htmlForm(uri, blanknode, editable = Edit != "",
-        lang), lang, title=title)
+        lang), lang, title=title )
     }
   }
 
@@ -278,7 +277,7 @@ object Application extends Controller
         .withHeaders(corsHeaders.toList:_*)
     }
   }
-    
+
   def toolsPage = {
     Action { implicit request =>
       Ok(new ToolsPage with DefaultConfiguration {}.getPage)
@@ -290,6 +289,6 @@ object Application extends Controller
     Action { implicit request =>
       val lang = chooseLanguage(request)
       outputMainPage(makeHistoryUserActions(userURI, lang), lang)
-    }
+  }
 
 }
