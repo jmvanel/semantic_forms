@@ -63,4 +63,5 @@ trait ApplicationFacadeInterface {
    */
   def registerAction(uri: String)
 
+  def labelForURITransaction(uri: String, language: String): String
 }

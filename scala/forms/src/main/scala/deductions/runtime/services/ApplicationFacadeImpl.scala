@@ -175,13 +175,15 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     : String = {
       instanceLabel(URI(uri), graph, language)
   }
-  /** NOTE this creates a transaction; do not use it too often;
-   * will not be used */
+  /** NOTE this creates a transaction; do not use it too often */
   def labelForURITransaction(uri: String, language: String)
   : String = {
-    rdfStore.r(dataset, {
+//    println( s"labelForURITransaction $uri, $language"  )
+    val res = rdfStore.r(dataset, {
       instanceLabel(URI(uri), allNamedGraph, language)
     }).getOrElse(uri)
+//    println( s"result $res"  )
+    res
   }
 
   //    def displayURI2(uriSubject: String) //  : Enumerator[scala.xml.Elem] 

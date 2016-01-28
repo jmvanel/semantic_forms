@@ -1,4 +1,10 @@
-@(loginForm: Form[(String, String)], registerForm: Form[(String, String, String)])
+@*
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.i18n.Messages._
+*@
+
+@(loginForm: Form[(String, String)], registerForm: Form[(String, String, String)])(implicit messages:  play.api.i18n.Messages)
 
 	<p> Semantic Forms </p>
     <div class="contentform">

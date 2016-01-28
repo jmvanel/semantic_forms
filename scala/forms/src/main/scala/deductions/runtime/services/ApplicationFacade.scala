@@ -112,4 +112,7 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
   def makeHistoryUserActions(userURI: String, lang: String): NodeSeq =
     impl.makeHistoryUserActions(userURI, lang)
 
+  def labelForURITransaction(uri: String, language: String) =
+   impl.labelForURITransaction(uri: String, language: String)
+
 }

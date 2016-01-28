@@ -8,9 +8,9 @@ import scala.xml.NodeSeq.seqToNodeSeq
 trait MainXml extends ToolsPage with EnterButtons {
 
   /** main Page with a single content (typically a form) */
-  def mainPage(content: NodeSeq, userInfo: NodeSeq, lang: String = "en") = {
+  def mainPage(content: NodeSeq, userInfo: NodeSeq, lang: String = "en", title: String = "") = {
     <html>
-      { head(lang) }
+      { head(title)(lang) }
       <body>
         {
           Seq(
@@ -23,7 +23,7 @@ trait MainXml extends ToolsPage with EnterButtons {
     </html>
   }
 
-  def head(implicit lang: String = "en"): NodeSeq = <head></head>
+  def head(title: String = "")(implicit lang: String = "en"): NodeSeq = <head></head>
 
   def linkToToolsPage =
     <p>
@@ -55,7 +55,10 @@ trait MainXml extends ToolsPage with EnterButtons {
 
   /**
    * main Page with a content consisting of a left panel
-   * and a right panel (typically forms)
+   * and a right panel (typically forms);
+   *
+   * for http://github.com/assemblee-virtuelle/semforms.git,
+   * not yet used :(
    */
   def mainPageMultipleContents(contentLeft: NodeSeq,
     contentRight: NodeSeq,
