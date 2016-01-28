@@ -116,7 +116,10 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
 
 
-  /** TRANSACTIONAL */
+  /** Add behavior (manageBlankNodesReload, Exception management) and
+   *  title and links on top of the form
+   *  to naked form from tableView
+   *  TRANSACTIONAL */
   def htmlForm(uri0: String, blankNode: String = "",
                editable: Boolean = false,
                lang: String = "en"): NodeSeq = {
