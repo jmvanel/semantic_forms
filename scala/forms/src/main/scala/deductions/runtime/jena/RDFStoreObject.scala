@@ -15,6 +15,12 @@ import org.apache.solr.client.solrj.impl.HttpClientUtil
 import org.apache.jena.query.text.EntityDefinition
 import org.apache.solr.client.solrj.SolrServer
 import org.apache.solr.client.solrj.impl.HttpSolrServer
+import deductions.runtime.services.Configuration
+import deductions.runtime.services.DefaultConfiguration
+import org.apache.lucene.store.NIOFSDirectory
+import java.io.File
+import org.apache.lucene.analysis.standard.StandardAnalyzer
+import org.apache.lucene.util.Version
 
 /** singleton for implementation settings */
 object ImplementationSettings {
@@ -26,10 +32,11 @@ object ImplementationSettings {
 /** For user data and RDF cache, sets a default location for the Jena TDB store directory : TDB */
 trait RDFStoreLocalJena1Provider extends RDFStoreLocalJenaProvider
 
-trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, ImplementationSettings.DATASET]
-    //  Dataset]
+trait RDFStoreLocalJenaProvider
+    extends RDFStoreLocalProvider[Jena, ImplementationSettings.DATASET]
     with JenaModule with JenaRDFLoader
-    with Timer {
+    with Timer
+    with DefaultConfiguration {
   import ops._
   type DATASET = // Dataset
   ImplementationSettings.DATASET
@@ -41,13 +48,21 @@ trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Implementati
     Logger.getRootLogger.info(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
 
     try {
-      val server: SolrServer = new HttpSolrServer("http://localhost:8983/solr/")
-      //      val pingResult = server.ping
-      //      println("pingResult.getStatus " + pingResult.getStatus)
-      val rdfs = RDFSPrefix[Rdf] // Jena]
-      val entDef = new EntityDefinition("uri", "text", rdfs.label)
-      val entMap = entDef
-      TextDatasetFactory.createSolrIndex(dts, server, entMap)
+      if (useTextQuery) {
+        val rdfs = RDFSPrefix[Rdf] // Jena]
+        val entDef = new EntityDefinition("uri", "text", rdfs.label)
+        val entMap = entDef
+        if (solrIndexing) {
+          val server: SolrServer = new HttpSolrServer("http://localhost:7983/new_core")
+          //      val pingResult = server.ping
+          //      println("pingResult.getStatus " + pingResult.getStatus) // 7983
+          TextDatasetFactory.createSolrIndex(dts, server, entMap)
+        } else {
+          val directory = new NIOFSDirectory(new File("LUCENE"))
+          TextDatasetFactory.createLucene(dts, directory, entMap, 
+              new StandardAnalyzer( Version.LUCENE_46 ) )
+        }
+      }
     } catch {
       case t: Throwable =>
         println(t.getLocalizedMessage)

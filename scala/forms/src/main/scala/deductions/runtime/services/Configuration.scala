@@ -45,6 +45,8 @@ trait Configuration {
   def displayTechnicalSemWebDetails: Boolean
 
   def useTextQuery: Boolean
+  /** considered if useTextQuery */
+  def solrIndexing: Boolean
 
   def css: CSS
 
@@ -75,4 +77,6 @@ trait ConfigurationCopy extends Configuration {
   override val css = original.css
   override val displayTechnicalSemWebDetails = original.displayTechnicalSemWebDetails
   override val useTextQuery = original.useTextQuery
+  override val solrIndexing = original.solrIndexing
+
 }
