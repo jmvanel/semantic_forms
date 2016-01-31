@@ -10,6 +10,11 @@ import org.w3.banana.jena.JenaDatasetStore
 import org.w3.banana._
 import org.w3.banana.diesel._
 import deductions.runtime.utils.Timer
+import org.apache.jena.query.text.TextDatasetFactory
+import org.apache.solr.client.solrj.impl.HttpClientUtil
+import org.apache.jena.query.text.EntityDefinition
+import org.apache.solr.client.solrj.SolrServer
+import org.apache.solr.client.solrj.impl.HttpSolrServer
 
 /** singleton for implementation settings */
 object ImplementationSettings {
@@ -34,6 +39,20 @@ trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Implementati
   override def createDatabase(database_location: String) = {
     val dts = TDBFactory.createDataset(database_location)
     Logger.getRootLogger.info(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
+
+    try {
+      val server: SolrServer = new HttpSolrServer("http://localhost:8983/solr/")
+      //      val pingResult = server.ping
+      //      println("pingResult.getStatus " + pingResult.getStatus)
+      val rdfs = RDFSPrefix[Rdf] // Jena]
+      val entDef = new EntityDefinition("uri", "text", rdfs.label)
+      val entMap = entDef
+      TextDatasetFactory.createSolrIndex(dts, server, entMap)
+    } catch {
+      case t: Throwable =>
+        println(t.getLocalizedMessage)
+        println(t.getCause)
+    }
     dts
   }
 
@@ -45,8 +64,8 @@ trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Implementati
   override def allNamedGraph: Rdf#Graph = {
     time(s"allNamedGraph dataset $dataset", {
       //      println(s"Union Graph: entering for $dataset")
-      // val ang = dataset.getGraph(makeUri("urn:x-arq:UnionGraph")).get
-      // TODO:
+
+      // NOTE: very important to use the properly configured rdfStore (with defensiveCopy=false)
       val ang = rdfStore.getGraph(dataset, makeUri("urn:x-arq:UnionGraph")).get
       //      println(s"Union Graph: hashCode ${ang.hashCode()} : size ${ang.size}")
       ang
