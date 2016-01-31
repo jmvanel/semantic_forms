@@ -87,7 +87,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
           ""
         else
           " of type <" + typ0 + ">"
-        s"Enter or paste a resource URI $typ"
+        s"Enter or paste a resource URI $typ; typing here creates a new resource; better look first in pulldown menu for an already existing resource."
       }
 
   /**
