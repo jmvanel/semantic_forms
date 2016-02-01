@@ -112,7 +112,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET] {
     val res = sparqlUpdateQuery(queryString)
     println(s"replaceRDFnode: sparqlUpdateQuery: $res")
 
-    dataset.appendToGraph(graphURI, makeGraph(Seq(triple)))
+    rdfStore.appendToGraph( dataset, graphURI, makeGraph(Seq(triple)))
   }
 
   //////////////// SELECT stuff //////////////////////////

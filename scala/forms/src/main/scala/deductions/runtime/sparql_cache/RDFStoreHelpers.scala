@@ -47,10 +47,7 @@ trait RDFStoreHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DA
    *  probably can also load an URI with the # part ???
    */
   def storeURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
-    Logger.getRootLogger().info(s"Before storeURI uri $uri graphUri $graphUri")
-    //    val gForStore = dataset.getGraph(graphUri)
     Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
-
     System.setProperty("sun.net.client.defaultReadTimeout", "30000")
     System.setProperty("sun.net.client.defaultConnectTimeout", "30000")
 
@@ -59,7 +56,7 @@ trait RDFStoreHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DA
         still necessary */
       load(new java.net.URL(uri.toString())).get.
         asInstanceOf[Rdf#Graph]
-    dataset.appendToGraph(graphUri, graph)
+    rdfStore.appendToGraph( dataset, graphUri, graph)
     Logger.getRootLogger().info(s"storeURI uri $uri : stored into graphUri $graphUri")
     graph
   }

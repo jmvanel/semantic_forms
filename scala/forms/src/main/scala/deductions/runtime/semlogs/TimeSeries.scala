@@ -39,11 +39,11 @@ with SPARQLHelpers[Rdf, DATASET] {
     if (!addedTriples.isEmpty)
       dataset2.rw({
         val (graphUri, metadata ) = makeGraphURIAndMetadata(addedTriples, removedTriples)
-        dataset2.appendToGraph( metadataGraph, metadata)
+        rdfStore.appendToGraph( dataset2, metadataGraph, metadata)
        
         // TODO: add only modified triples (configurable)
         val graph = makeGraph(addedTriples)
-        dataset2.appendToGraph(graphUri, graph)
+        rdfStore.appendToGraph( dataset2, graphUri, graph)
       })
       Unit
   }

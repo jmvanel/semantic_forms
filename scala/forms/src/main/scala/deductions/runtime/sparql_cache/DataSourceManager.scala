@@ -35,7 +35,7 @@ trait DataSourceManager[Rdf <: RDF, DATASET]
     : Int = {
     val r1 = dataset.rw({
       val graphURI = URI(graphURIString)
-      for (givenGraph <- dataset.getGraph(graphURI)) yield {
+      for (givenGraph <- rdfStore.getGraph( dataset, graphURI)) yield {
         val ops1: RDFOps[Rdf]= ops
         val rdfh1 = this
         val rdfh: RDFHelpers[Rdf] = this
@@ -50,8 +50,8 @@ trait DataSourceManager[Rdf <: RDF, DATASET]
         }
         val total = r.fold(0)(_ + _)
         val modifiedGraph = mgraph.makeIGraph()
-        dataset.removeGraph(graphURI)
-        dataset.appendToGraph(graphURI, modifiedGraph)
+        rdfStore.removeGraph( dataset, graphURI)
+        rdfStore.appendToGraph( dataset, graphURI, modifiedGraph)
         total
       }
     })
