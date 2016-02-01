@@ -38,8 +38,8 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   def instanceLabelFromTDB(node: Rdf#Node, lang: String): String = {
 //	  println(s"""instanceLabelFromTDB node "$node" """ )
     val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
-    val labelsGraph0 = dataset.getGraph(labelsGraphUri)
-//	  println( s"instanceLabelFromTDB after dataset3.getGraph(labelsGraphUri) $dataset3 $labelsGraph0" )
+    val labelsGraph0 = rdfStore.getGraph( dataset3, labelsGraphUri)
+//	  println( s"instanceLabelFromTDB after .getGraph( dataset3, labelsGraphUri) $dataset3 $labelsGraph0" )
     val labelsGraph = labelsGraph0.get
 //	  println( s"instanceLabelFromTDB after labelsGraph.get $labelsGraphUri $labelsGraph")
     val displayLabelsIt = find(labelsGraph, node, displayLabelPred, ANY)
@@ -112,7 +112,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
 
 //    val computedDisplayLabel = (node -- displayLabelPred ->- Literal(label)).graph
 //    val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
-//    dataset3.appendToGraph(labelsGraphUri, computedDisplayLabel)
+//    rdfStore.appendToGraph( dataset3, labelsGraphUri, computedDisplayLabel)
     storeInstanceLabel(node, label, graph, lang)
     label
   }
@@ -121,6 +121,6 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
       graph: Rdf#Graph, lang: String) = {
     val computedDisplayLabel = (node -- displayLabelPred ->- Literal(label)).graph
     val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
-    dataset3.appendToGraph(labelsGraphUri, computedDisplayLabel)
+    rdfStore.appendToGraph(dataset3, labelsGraphUri, computedDisplayLabel)
   }
 }

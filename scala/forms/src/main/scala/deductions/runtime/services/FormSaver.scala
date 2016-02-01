@@ -113,12 +113,12 @@ trait FormSaver[Rdf <: RDF, DATASET]
     ( implicit userURI: String = graphURI ) {
       val transaction = dataset.rw({
         time("removeTriples",
-          dataset.removeTriples(
+          rdfStore.removeTriples( dataset,
             URI(graphURI),
             triplesToRemove.toIterable))
         val res =
           time("appendToGraph",
-            dataset.appendToGraph(
+            rdfStore.appendToGraph( dataset,
               URI(graphURI),
               makeGraph(triplesToAdd)))
 

@@ -55,7 +55,7 @@ trait BlankNodeCleanerIncremental[Rdf <: RDF, DATASET] extends BlankNodeCleanerB
     val blanksIncomingGraphGroupedByPredicate = groupByPredicateThenObjectGraphs(incomingGraph, graphUri)
     val blanksLocalGraphGroupedByPredicate = {
 //      val localGraph = rdfStore.getGraph(dataset, graphUri).get // TODO : OrElse(emptyGraph)
-      val localGraph = dataset.getGraph(graphUri).get // TODO : OrElse(emptyGraph)
+      val localGraph = rdfStore.getGraph( dataset, graphUri).get // TODO : OrElse(emptyGraph)
       groupByPredicateThenObjectGraphs(localGraph, graphUri)
     }
     println("Search duplicate graph rooted at blank node: number of predicates Incoming " + blanksIncomingGraphGroupedByPredicate.size)
@@ -76,9 +76,9 @@ trait BlankNodeCleanerIncremental[Rdf <: RDF, DATASET] extends BlankNodeCleanerB
             !duplicates.contains(incomingSubGraph) &&
             incomingSubGraph.isIsomorphicWith(localGraph)) {
             // delete local graph
-            dataset.removeTriples(graphUri, getTriples(localGraph))
+            rdfStore.removeTriples( dataset, graphUri, getTriples(localGraph))
             if (localGraph.size > 0) {
-              dataset.removeTriples(graphUri, Seq(Triple(graphUri, pred,
+              rdfStore.removeTriples( dataset, graphUri, Seq(Triple(graphUri, pred,
                 getTriples(localGraph).iterator.next().subject)))
             }
             removed += localGraph
@@ -122,7 +122,7 @@ extends BlankNodeCleanerBase[Rdf, DATASET] {
     for (name <- names) {
       val graphURI = URI(name)
       dataset.rw({
-        val graph = dataset.getGraph(graphURI).get
+        val graph = rdfStore.getGraph( dataset, graphURI).get
         println(s"graph <$graphURI> size ${graph.size}")
 
 //        if (name == "http://bblfish.net/people/henry/card#me") println("http://bblfish.net/people/henry/card#me")
@@ -159,7 +159,7 @@ extends BlankNodeCleanerBase[Rdf, DATASET] {
               val triples = find(graph, s, ANY, ANY).toList
               println("TO REMOVE: " + triples)
               triplesRemoveCount = triplesRemoveCount + bss.size
-              dataset.removeTriples(graphURI, triples) . get;
+              rdfStore.removeTriples( dataset, graphURI, triples) . get;
               {
               val triples = find(graph, s, ANY, ANY).toList
               println("Verification " + triples)

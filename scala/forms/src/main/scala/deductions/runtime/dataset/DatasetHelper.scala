@@ -30,7 +30,7 @@ trait DatasetHelper[Rdf <: RDF, DATASET]
     val triplesToRemove = objectsToRemove . map {
       obj => Triple(subject, predicate, obj)
     }
-	  ds.removeTriples( graphURI, triplesToRemove )
-    ds.appendToGraph( graphURI, makeGraph(List(Triple(subject, predicate, objet))) )
+	  rdfStore.removeTriples( ds, graphURI, triplesToRemove )
+    rdfStore.appendToGraph( ds, graphURI, makeGraph(List(Triple(subject, predicate, objet))) )
   }
 }
