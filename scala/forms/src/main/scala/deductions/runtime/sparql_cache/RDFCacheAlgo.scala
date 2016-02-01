@@ -33,7 +33,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     with RDFCacheDependencies[Rdf, DATASET]
     with RDFLoader[Rdf, Try]
     with SPARQLHelpers[Rdf, DATASET]
-    with TimestampManagement[Rdf, DATASET] {
+    with TimestampManagement[Rdf, DATASET]
+    with MirrorManagement[Rdf, DATASET] {
 
   import ops._
   import rdfStore.transactorSyntax._
@@ -70,7 +71,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       retrieveURINoTransaction(uri: Rdf#URI, dataset: DATASET)
     }).flatMap { identity }
   }
-  
+
   /**
    * retrieve URI from a graph named by itself;
    * or download and store URI only if corresponding graph is empty,
@@ -78,20 +79,24 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * TODO save timestamp in another Dataset
    */
   def retrieveURINoTransaction(uri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
-      for (graph <- dataset.getGraph(uri)) yield {
-        val uriGraphIsEmpty = graph.size == 0
-        println(s"uriGraphIsEmpty: $uri : $uriGraphIsEmpty")
-        if (uriGraphIsEmpty) {
+    for (graph <- dataset.getGraph(uri)) yield {
+      val uriGraphIsEmpty = graph.size == 0
+      println(s"uriGraphIsEmpty: $uri : $uriGraphIsEmpty")
+      if (uriGraphIsEmpty) {
+        val mirrorURI = getMirrorURI(uri)
+        if( mirrorURI != "") {
           val g = storeURINoTransaction(uri, uri, dataset)
           println("Graph at URI was downloaded, new addition: " + uri + " , size " + g.size)
           addTimestampToDataset(uri, dataset2)
-//          addTimestampToDatasetNoTransaction(uri, dataset)
           g
-        } else {
-          updateLocalVersion(uri, dataset)
-          graph
-        }
+        } else
+          // TODO find in Mirror URI the relevant triples ( but currently AFAIK the resulting graph is not used )
+          emptyGraph
+      } else {
+        updateLocalVersion(uri, dataset)
+        graph
       }
+    }
   }
 
   /**
@@ -217,7 +222,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   }
       
   /**
-   * read from uri no matter what the syntax is;
+   * read from uri and store in TDB, no matter what the syntax is;
    * can also load an URI with the # part
    */
   def storeURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {

@@ -10,6 +10,7 @@ import org.w3.banana.jena.JenaDatasetStore
 import org.w3.banana._
 import org.w3.banana.diesel._
 import deductions.runtime.utils.Timer
+
 import org.apache.jena.query.text.TextDatasetFactory
 import org.apache.solr.client.solrj.impl.HttpClientUtil
 import org.apache.jena.query.text.EntityDefinition

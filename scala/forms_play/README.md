@@ -184,11 +184,9 @@ To delete named graph related to common vocabularies, default form specification
 
 
 ## SPARQL queries
-There is a web service for SPARQL queries, not a SPARL endpoint yet :( , and not an HTML page for entering queries yet .
-Here are some example showing some queries that you can paste into your browser:
-
-http://localhost:9000/sparql?query=CONSTRUCT { ?x ?p ?v } where {  GRAPH ?G { ?x ?p ?v } } limit 20
-http://localhost:9000/select?query=SELECT * where { GRAPH ?G { ?x ?p ?v }} limit 10
+There is a web service for SPARQL queries, not a real SPARL endpoint yet :( .
+But there is an HTML page for entering queries in the /tools page.
+There are some example showing some queries that you can paste into your browser:
 
 The service
 <code>/sparql?query=</code>

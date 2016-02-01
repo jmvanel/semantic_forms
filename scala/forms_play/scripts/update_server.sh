@@ -4,10 +4,11 @@ echo "update semantic_forms Play! server when code has changed"
 SRC=$HOME/src/semantic_forms/scala/forms_play/
 APP=semantic_forms_play
 APPVERS=${APP}-1.0-SNAPSHOT
+SBT=sbt
 
 cd $SRC
 git pull --verbose
-./activator dist
+$SBT dist
 echo "sofware recompiled!"
 
 cd ~/deploy
