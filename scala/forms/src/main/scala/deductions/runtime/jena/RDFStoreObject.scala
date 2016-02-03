@@ -17,6 +17,8 @@ import org.apache.jena.query.text.EntityDefinition
 import org.apache.solr.client.solrj.SolrServer
 import org.apache.solr.client.solrj.impl.HttpSolrServer
 
+// TODO rename RDFStoreLocalJenaProvider
+
 /** singleton for implementation settings */
 object ImplementationSettings {
   // pave the way for migration to Jena 3 ( or BlazeGraph )

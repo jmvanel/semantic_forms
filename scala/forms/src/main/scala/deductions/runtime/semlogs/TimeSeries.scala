@@ -34,7 +34,7 @@ with SPARQLHelpers[Rdf, DATASET] {
    * transactional
    */
   override def notifyDataEvent(addedTriples: Seq[Rdf#Triple],
-      removedTriples: Seq[Rdf#Triple])(implicit userURI: String) = {
+      removedTriples: Seq[Rdf#Triple], ipAdress: String, isCreation: Boolean)(implicit userURI: String) = {
     // TODO future
     if (!addedTriples.isEmpty)
       dataset2.rw({
@@ -73,7 +73,10 @@ with SPARQLHelpers[Rdf, DATASET] {
       SELECT ?SUBJECT (max(?TS) as ?TIME ) (count(?O) AS ?COUNT)
       WHERE {
         GRAPH <urn:semantic_forms/metadataGraph> {
-          ?GR <urn:timestamp> ?TS . }
+          ?GR <urn:timestamp> ?TS
+              # ; <urn:ip> ?IP ; <urn:action> ?ACTION
+              .
+        }
         GRAPH ?GR {
          ?SUBJECT ?P ?O . } }
       GROUP BY ?SUBJECT
