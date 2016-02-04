@@ -10,7 +10,6 @@ import org.w3.banana.jena.JenaDatasetStore
 import org.w3.banana._
 import org.w3.banana.diesel._
 import deductions.runtime.utils.Timer
-
 import org.apache.jena.query.text.TextDatasetFactory
 import org.apache.solr.client.solrj.impl.HttpClientUtil
 import org.apache.jena.query.text.EntityDefinition
@@ -22,6 +21,7 @@ import org.apache.lucene.store.NIOFSDirectory
 import java.io.File
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.util.Version
+import com.hp.hpl.jena.tdb.transaction.TransactionManager
 
 // TODO rename RDFStoreLocalJenaProvider
 
@@ -36,9 +36,7 @@ object ImplementationSettings {
 trait RDFStoreLocalJena1Provider extends RDFStoreLocalJenaProvider
 
 trait RDFStoreLocalJenaProvider
-    extends RDFStoreLocalProvider[
-      ImplementationSettings.Rdf,
-      ImplementationSettings.DATASET]
+    extends RDFStoreLocalProvider[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with JenaModule with JenaRDFLoader
     with Timer
     with DefaultConfiguration {
@@ -46,7 +44,9 @@ trait RDFStoreLocalJenaProvider
   type DATASET = ImplementationSettings.DATASET
   override val rdfStore = new JenaDatasetStore(false)
   import rdfStore.graphStoreSyntax._
-
+  TransactionManager.QueueBatchSize = 0
+//  override TransactionManager.DEBUG = true
+  
   override def createDatabase(database_location: String) = {
     val dts = TDBFactory.createDataset(database_location)
     Logger.getRootLogger.info(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
