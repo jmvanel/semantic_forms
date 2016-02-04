@@ -11,10 +11,16 @@ lazy val semantic_forms =  RootProject(file("../forms"))
 lazy val semantic_forms_play = (project in file("."))
         .dependsOn(semantic_forms)
 	.enablePlugins(PlayScala)
+	.enablePlugins(GatlingPlugin)
 
 scalaVersion := "2.11.7"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test
+
+// Gatling is an open-source load testing framework based on Scala, Akka and Netty
+libraryDependencies += "io.gatling.highcharts" % "gatling-charts-highcharts" % "2.1.7" % Test
+
+libraryDependencies += "io.gatling" % "gatling-test-framework" % "2.1.7" % Test
 
 // libraryDependencies += specs2 % Test
 

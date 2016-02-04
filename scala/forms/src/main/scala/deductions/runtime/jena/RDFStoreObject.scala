@@ -45,8 +45,8 @@ trait RDFStoreLocalJenaProvider
   override val rdfStore = new JenaDatasetStore(false)
   import rdfStore.graphStoreSyntax._
   TransactionManager.QueueBatchSize = 0
-//  override TransactionManager.DEBUG = true
-  
+  //  override TransactionManager.DEBUG = true
+
   override def createDatabase(database_location: String) = {
     val dts = TDBFactory.createDataset(database_location)
     Logger.getRootLogger.info(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
