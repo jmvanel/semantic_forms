@@ -43,9 +43,12 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     <table>
       <tr>
         <th title="Resource URI visited by user">Resource</th> 
+        <th title="Action (Create, Display, Update)">Action</th> 
         <th title="Time visited by user">Time</th>
         <th title="Number of fields (triples) edited by user">Count</th>
-        <th>User</th></tr>
+        <th>User</th>
+        <th>IP</th>
+</tr>
       {
       dataset.rw({ // for calling instanceLabel()
       for (row <- met) yield {
@@ -56,6 +59,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
                 "EEEE dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
               <tr>{
                 <td>{ makeHyperlinkForURI(row(0), lang, allNamedGraph) }</td>
+                <td>{ "action ..." }</td>
                 <td>{ dateFormat.format(date) }</td>
                 <td>{ makeStringFromLiteral(row(2)) }</td>
                 <td>{ userURI }</td>

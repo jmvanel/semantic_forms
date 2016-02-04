@@ -23,6 +23,8 @@ import java.io.File
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.util.Version
 
+// TODO rename RDFStoreLocalJenaProvider
+
 /** singleton for implementation settings */
 object ImplementationSettings {
   // pave the way for migration to Jena 3 ( or BlazeGraph )

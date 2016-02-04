@@ -2,6 +2,7 @@
 
 echo Have you downloaded DBPEDIA with script download-dbpedia.sh ?
 echo Beware: This script can take hours! You may have to start from a virgin database and use tdbloader2 instead of tdbloader, see https://jena.apache.org/documentation/tdb/commands.html#tdbloader
+echo Press RETURN
 read ZZ
 
 DBPEDIA_VERSION=2015-04
