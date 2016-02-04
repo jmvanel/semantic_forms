@@ -137,7 +137,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     println(s"htmlFormRaw dataset $dataset")
     val tryGraph = if (blankNode != "true") {
       val res = retrieveURINoTransaction(makeUri(uri), dataset)
-      Logger.getRootLogger().info(s"After retrieveURI(makeUri($uri), store)")
+      Logger.getRootLogger().info(s"After retrieveURINoTransaction(makeUri($uri), store)")
       res
     } else Success(emptyGraph)
     val graphURIActual = if (graphURI == "") uri else graphURI

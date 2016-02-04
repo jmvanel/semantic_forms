@@ -34,13 +34,14 @@ object ImplementationSettings {
 trait RDFStoreLocalJena1Provider extends RDFStoreLocalJenaProvider
 
 trait RDFStoreLocalJenaProvider
-    extends RDFStoreLocalProvider[Jena, ImplementationSettings.DATASET]
+    extends RDFStoreLocalProvider[
+      ImplementationSettings.Rdf,
+      ImplementationSettings.DATASET]
     with JenaModule with JenaRDFLoader
     with Timer
     with DefaultConfiguration {
   import ops._
-  type DATASET = // Dataset
-  ImplementationSettings.DATASET
+  type DATASET = ImplementationSettings.DATASET
   override val rdfStore = new JenaDatasetStore(false)
   import rdfStore.graphStoreSyntax._
 
@@ -50,7 +51,7 @@ trait RDFStoreLocalJenaProvider
 
     try {
       if (useTextQuery) {
-        val rdfs = RDFSPrefix[Rdf] // Jena]
+        val rdfs = RDFSPrefix[Rdf]
         val entDef = new EntityDefinition("uri", "text", rdfs.label)
         val entMap = entDef
         if (solrIndexing) {
@@ -60,8 +61,8 @@ trait RDFStoreLocalJenaProvider
           TextDatasetFactory.createSolrIndex(dts, server, entMap)
         } else {
           val directory = new NIOFSDirectory(new File("LUCENE"))
-          TextDatasetFactory.createLucene(dts, directory, entMap, 
-              new StandardAnalyzer( Version.LUCENE_46 ) )
+          TextDatasetFactory.createLucene(dts, directory, entMap,
+            new StandardAnalyzer(Version.LUCENE_46))
         }
       }
     } catch {

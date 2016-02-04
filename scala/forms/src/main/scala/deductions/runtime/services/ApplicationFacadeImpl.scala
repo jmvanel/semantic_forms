@@ -123,7 +123,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   def htmlForm(uri0: String, blankNode: String = "",
                editable: Boolean = false,
                lang: String = "en"): NodeSeq = {
-    Logger.getRootLogger().info(s"""Global.htmlForm URI $uri0 blankNode "$blankNode" lang=$lang """)
+    Logger.getRootLogger().info(
+        s"""ApplicationFacadeImpl.htmlForm URI $uri0 blankNode "$blankNode" editable=$editable lang=$lang """)
     val uri = uri0.trim()
     if (uri != null && uri != "")
       try {
