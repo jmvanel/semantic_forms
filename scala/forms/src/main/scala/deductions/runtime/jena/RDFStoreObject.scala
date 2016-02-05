@@ -44,7 +44,7 @@ trait RDFStoreLocalJenaProvider
   type DATASET = ImplementationSettings.DATASET
   override val rdfStore = new JenaDatasetStore(false)
   import rdfStore.graphStoreSyntax._
-  TransactionManager.QueueBatchSize = 0
+  // TransactionManager.QueueBatchSize = 0
   //  override TransactionManager.DEBUG = true
 
   override def createDatabase(database_location: String) = {
