@@ -36,7 +36,8 @@ object Application extends Controller
     }
   }
 
-  def displayURI(uri: String, blanknode: String = "", Edit: String = "") = {
+  def displayURI(uri: String, blanknode: String = "", Edit: String = "",
+      formuri: String="") = {
     Action { implicit request =>
       println("displayURI: " + request)
       println("displayURI: " + Edit)

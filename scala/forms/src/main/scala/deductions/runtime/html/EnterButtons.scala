@@ -104,5 +104,6 @@ trait EnterButtons extends Configuration {
     <option label="owl:Class"> http://www.w3.org/2002/07/owl#Class </option>
     <option label="owl:DatatypeProperty"> http://www.w3.org/2002/07/owl#DatatypeProperty </option>
     <option label="owl:ObjectProperty"> http://www.w3.org/2002/07/owl#ObjectProperty </option>
+    <option label="sioc:Post"> http://rdfs.org/sioc/ns#Post </option>
   }
 }

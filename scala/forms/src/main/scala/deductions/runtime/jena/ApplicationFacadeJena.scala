@@ -35,7 +35,7 @@ trait ApplicationFacadeJena
     new ApplicationFacadeImplJena {
       override def htmlForm(uri0: String, blankNode: String = "",
         editable: Boolean = false,
-        lang: String = "en"): NodeSeq = {
+        lang: String = "en", formuri: String = ""): NodeSeq = {
         //        Runtime.getRuntime.maxMemory()
         //        Runtime.getRuntime.totalMemory()
         //        dataset.close()
