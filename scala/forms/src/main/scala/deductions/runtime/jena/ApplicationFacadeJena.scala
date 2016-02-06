@@ -36,8 +36,13 @@ trait ApplicationFacadeJena
       override def htmlForm(uri0: String, blankNode: String = "",
         editable: Boolean = false,
         lang: String = "en", formuri: String = ""): NodeSeq = {
-        //        Runtime.getRuntime.maxMemory()
-        //        Runtime.getRuntime.totalMemory()
+        println(s""">> ApplicationFacadeImplJena 
+                max  Memory  ${Runtime.getRuntime.maxMemory()}
+                totalMemory  ${Runtime.getRuntime.totalMemory()}""")
+        val name = "TDB/journal.jrnl"
+        println(s"$name  : ${new java.io.File(name).length()} bytes")
+        //                dataset.asInstanceOf[com.hp.hpl.jena.query.Dataset].getContext.
+        //                com.hp.hpl.jena.tdb.transaction.TransactionManager.DEBUG
         //        dataset.close()
         //        dataset = createDatabase( databaseLocation )
         super.htmlForm(uri0: String, blankNode,

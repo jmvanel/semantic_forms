@@ -44,7 +44,12 @@ trait RDFStoreLocalJenaProvider
   type DATASET = ImplementationSettings.DATASET
   override val rdfStore = new JenaDatasetStore(false)
   import rdfStore.graphStoreSyntax._
-  // TransactionManager.QueueBatchSize = 0
+
+  /**
+   * default is 10; each chunk commitedAwaitingFlush can be several Mb,
+   *  so this can easily make an OOM exception
+   */
+  TransactionManager.QueueBatchSize = 5
   //  override TransactionManager.DEBUG = true
 
   override def createDatabase(database_location: String) = {

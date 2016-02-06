@@ -13,8 +13,11 @@ javacOptions ++= Seq("-source","1.7", "-target","1.7")
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test
 // libraryDependencies += specs2 % Test
 
-// fork a new JVM for 'test:run', but not 'run'
-fork in Test := true
+sources in (Compile, doc) := Seq.empty
+publishArtifact in (Compile, packageDoc) := false
+
+// fork a new JVM for 'test:run' and 'run'
+fork := true
 // add a JVM option to use when forking a JVM for 'run'
 javaOptions += "-Xmx50M"
 
