@@ -24,8 +24,10 @@ trait MirrorManagement[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, D
   /** coherent with scripts/populate_with_dbpedia.sh */
   val DBPEDIA_VERSION = "2015-04"
   val DBPEDIA_NAMED_GRAPH = s"http://dbpedia.org/$DBPEDIA_VERSION"
-  lazy val DBPEDIA_NAMED_GRAPH_EXISTS: Boolean =
-    rdfStore.getGraph(dataset, URI(DBPEDIA_NAMED_GRAPH)).isSuccess
+  lazy val DBPEDIA_NAMED_GRAPH_EXISTS: Boolean = {
+    val tg = rdfStore.getGraph(dataset, URI(DBPEDIA_NAMED_GRAPH))
+    tg.isSuccess && tg.get.size > 0
+  }
 
   /**
    * get Mirror URI, that is the named graph URI for the mirror,

@@ -48,7 +48,7 @@ Then the archive is found here :
 `target/universal/semantic_forms_play-1.0-SNAPSHOT.zip`
 Download this zip on the server, unzip and type:
 ```shell
-nohup bin/semantic_forms_play -mem 50 &
+nohup bin/semantic_forms_play -J-Xmx50M &
 ```
 
 There is a script that does this, and more: it stops the server, updates the application from sources, and restarts the server :

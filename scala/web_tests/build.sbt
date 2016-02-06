@@ -10,9 +10,9 @@ javacOptions ++= Seq("-source","1.7", "-target","1.7")
 
 // fork a new JVM for 'test:run', but not 'run'
 // fork in Test := true
-fork := true
+// fork := true
 // add a JVM option to use when forking a JVM for 'run'
-javaOptions += "-Xmx50M"
+// javaOptions += "-Xmx50M"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test
 // Gatling is an open-source load testing framework based on Scala, Akka and Netty

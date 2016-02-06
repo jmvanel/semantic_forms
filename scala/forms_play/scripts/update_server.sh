@@ -25,4 +25,4 @@ ln -s ../TDBsandbox TDB
 
 PORT=9111
 echo starting the server on port $PORT
-nohup bin/${APP} -mem 100 -J-server -Dhttp.port=$PORT &
+nohup bin/${APP} -J-Xmx100M -J-server -Dhttp.port=$PORT &

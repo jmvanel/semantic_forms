@@ -89,9 +89,11 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
           println("Graph at URI was downloaded, new addition: " + uri + " , size " + g.size)
           addTimestampToDataset(uri, dataset2)
           g
-        } else
+        } else {
+          println(s"mirrorURI found: $mirrorURI")
           // TODO find in Mirror URI the relevant triples ( but currently AFAIK the resulting graph is not used )
           emptyGraph
+        }
       } else {
         updateLocalVersion(uri, dataset)
         graph
