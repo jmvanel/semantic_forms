@@ -69,7 +69,8 @@ with SPARQLHelpers[Rdf, DATASET] {
   def getMetadata()
     (implicit userURI: String)
         : List[Seq[Rdf#Node]] = {
-    val query = s"""  # DISTINCT
+    val query = s"""
+      PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
       SELECT ?SUBJECT (max(?TS) as ?TIME ) (count(?O) AS ?COUNT)
       WHERE {
         GRAPH <urn:semantic_forms/metadataGraph> {
@@ -80,7 +81,9 @@ with SPARQLHelpers[Rdf, DATASET] {
         GRAPH ?GR {
          ?SUBJECT ?P ?O . } }
       GROUP BY ?SUBJECT
-      ORDER BY DESC(?TS)
+      # ORDER BY ASC(?TS)
+      # ORDER BY DESC(xsd:nonNegativeInteger(?TS))
+      ORDER BY DESC(xsd:integer(?TS))
     """
     println("getMetadata: query " + query)
     val res = sparqlSelectQueryVariables( query, Seq("SUBJECT", "TIME", "COUNT"), dataset2 )

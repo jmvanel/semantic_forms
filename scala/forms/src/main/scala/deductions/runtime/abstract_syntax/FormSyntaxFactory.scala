@@ -91,7 +91,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     with RangeInference[Rdf, DATASET]
     with PreferredLanguageLiteral[Rdf]
     with PossibleValues[Rdf]
-   	with FormConfigurationFactory[Rdf]
+   	with FormConfigurationFactory[Rdf, DATASET]
     with Timer {
 
   // TODO not thread safe: form is not rebuilt for each HTTP request 
@@ -113,7 +113,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   
   
   /** create Form from an instance (subject) URI;
-   *  the Form Specification is inferred from the class of instance */
+   *  the Form Specification is inferred from the class of instance;
+   *  NO transaction, should be called within a transaction */
   def createForm(subject: Rdf#Node,
     editable: Boolean = false,
     formGroup: Rdf#URI = nullURI, formuri: String="")
@@ -152,16 +153,15 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   }
   
   /** Step1: compute properties List from Config, Subject, Class (in that order) */
-  class Step1(subject: Rdf#Node,
+  private class Step1(subject: Rdf#Node,
     editable: Boolean = false, formuri: String)
     (implicit graph: Rdf#Graph) {
     val classs = classFromSubject(subject) // TODO several classes
     val propsFromConfig = if(formuri=="")
       lookPropertieslistFormInConfiguration(classs)._1
     else {
-      // TODO lookPropertiesListFromDatabase(formuri) <<<<<<<<<<<<<<<<<<<
-    	lookPropertieslistFormInConfiguration(classs)._1 }
-
+      lookPropertiesListFromDatabaseOrDownload(formuri)._1
+    }
     val propsFromSubject = fieldsFromSubject(subject, graph)
     val propsFromClass =
       if (editable) {
@@ -185,7 +185,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    *  see if ?D is a datatype or an OWL or RDFS class;
    *  
    * used directly for creating an empty Form from a class URI,
-   * and indirectly for other cases.
+   * and indirectly for other cases;
+   * NO transaction, should be called within a transaction
    */
   def createFormDetailed(subject: Rdf#Node,
     props: Iterable[Rdf#Node], classs: Rdf#URI,

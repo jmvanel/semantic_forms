@@ -63,7 +63,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
 
   /**
    * retrieve URI from a graph named by itself;
-   * or download and store URI only if corresponding graph is empty,
+   * or download and store URI, only if corresponding graph is empty,
    * with transaction
    */
   def retrieveURI(uri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {

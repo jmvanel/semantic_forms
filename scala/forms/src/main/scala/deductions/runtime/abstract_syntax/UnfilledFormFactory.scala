@@ -24,7 +24,7 @@ object UnfilledFormFactory extends DefaultConfiguration {
 /** Factory for an Unfilled Form */
 trait UnfilledFormFactory[Rdf <: RDF, DATASET]
     extends FormSyntaxFactory[Rdf, DATASET]
-   	with FormConfigurationFactory[Rdf]
+   	with FormConfigurationFactory[Rdf, DATASET]
     with Configuration {
 
   val instanceURIPrefix: String = // defaultInstanceURIPrefix
