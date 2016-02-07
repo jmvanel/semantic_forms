@@ -39,13 +39,17 @@ object Application extends Controller
   def displayURI(uri: String, blanknode: String = "", Edit: String = "",
       formuri: String="") = {
     Action { implicit request =>
-      println("displayURI: " + request)
-      println("displayURI: " + Edit)
+      println(s"""displayURI: $request ${request.remoteAddress}, host ${request.host}
+         displayURI headers ${request.headers}
+         displayURI tags ${request.tags}
+         """)
+      println(s"""displayURI: Edit "$Edit" """)
       val lang = chooseLanguage(request)
       val title = labelForURITransaction(uri, lang)
       outputMainPage(
         htmlForm(uri, blanknode, editable = Edit != "",
         lang), lang, title=title )
+      // TODO record in TDB like timestamp & history: request.remoteAddress, request.host
     }
   }
 
