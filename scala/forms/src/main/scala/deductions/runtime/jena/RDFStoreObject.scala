@@ -1,27 +1,18 @@
 package deductions.runtime.jena
 
 import scala.collection.JavaConversions.asScalaIterator
+
 import org.apache.log4j.Logger
 import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaModule
-import com.hp.hpl.jena.tdb.TDBFactory
-import deductions.runtime.dataset.RDFStoreLocalProvider
 import org.w3.banana.jena.JenaDatasetStore
-import org.w3.banana._
-import org.w3.banana.diesel._
-import deductions.runtime.utils.Timer
-import org.apache.jena.query.text.TextDatasetFactory
-import org.apache.solr.client.solrj.impl.HttpClientUtil
-import org.apache.jena.query.text.EntityDefinition
-import org.apache.solr.client.solrj.SolrServer
-import org.apache.solr.client.solrj.impl.HttpSolrServer
-import deductions.runtime.services.Configuration
-import deductions.runtime.services.DefaultConfiguration
-import org.apache.lucene.store.NIOFSDirectory
-import java.io.File
-import org.apache.lucene.analysis.standard.StandardAnalyzer
-import org.apache.lucene.util.Version
+import org.w3.banana.jena.JenaModule
+
+import com.hp.hpl.jena.tdb.TDBFactory
 import com.hp.hpl.jena.tdb.transaction.TransactionManager
+
+import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.Timer
 
 // TODO rename RDFStoreLocalJenaProvider
 
@@ -39,7 +30,8 @@ trait RDFStoreLocalJenaProvider
     extends RDFStoreLocalProvider[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with JenaModule with JenaRDFLoader
     with Timer
-    with DefaultConfiguration {
+    with DefaultConfiguration
+    with LuceneIndex {
   import ops._
   type DATASET = ImplementationSettings.DATASET
   override val rdfStore = new JenaDatasetStore(false)
@@ -57,21 +49,33 @@ trait RDFStoreLocalJenaProvider
     Logger.getRootLogger.info(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
 
     try {
-      if (useTextQuery) {
-        val rdfs = RDFSPrefix[Rdf]
-        val entDef = new EntityDefinition("uri", "text", rdfs.label)
-        val entMap = entDef
-        if (solrIndexing) {
-          val server: SolrServer = new HttpSolrServer("http://localhost:7983/new_core")
-          //      val pingResult = server.ping
-          //      println("pingResult.getStatus " + pingResult.getStatus) // 7983
-          TextDatasetFactory.createSolrIndex(dts, server, entMap)
-        } else {
-          val directory = new NIOFSDirectory(new File("LUCENE"))
-          TextDatasetFactory.createLucene(dts, directory, entMap,
-            new StandardAnalyzer(Version.LUCENE_46))
-        }
-      }
+      configureLuceneIndex( dts )
+//      if (useTextQuery) {
+//        val rdfs = RDFSPrefix[Rdf]
+//        val foaf = FOAFPrefix[Rdf]        
+//        /* this means: in Lucene the URI will be kept in key "uri",
+//         * the text indexed by SORL will be kept in key "text" */
+//        val entMap = new EntityDefinition("uri", "text", rdfs.label)
+//
+//        entMap.set( "text", foaf.givenName )
+//        entMap.set( "text", foaf.familyName )
+//        entMap.set( "text", foaf.firstName )
+//        entMap.set( "text", foaf.lastName )
+//        entMap.set( "text", foaf.name )
+//        /* cf trait InstanceLabelsInference */
+//        entMap.set( "text", URI("http://dbpedia.org/ontology/abstract") )
+//                
+//        if (solrIndexing) {
+//          val server: SolrServer = new HttpSolrServer("http://localhost:7983/new_core")
+//          //      val pingResult = server.ping
+//          //      println("pingResult.getStatus " + pingResult.getStatus) // 7983
+//          TextDatasetFactory.createSolrIndex(dts, server, entMap)
+//        } else {
+//          val directory = new NIOFSDirectory(new File("LUCENE"))
+//          TextDatasetFactory.createLucene(dts, directory, entMap,
+//            new StandardAnalyzer(Version.LUCENE_46))
+//        }
+//      }
     } catch {
       case t: Throwable =>
         println(t.getLocalizedMessage)

@@ -82,7 +82,7 @@ val uris = List(
     
     val scn2 = scenario("Stress 1")
         . exec( execs )
-             .pause(5)
+             .pause(3) // 5)
 
     setUp(scn2.inject(atOnceUsers(1)))
       .protocols(httpConf)
