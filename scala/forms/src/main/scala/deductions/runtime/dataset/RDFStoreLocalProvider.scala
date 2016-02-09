@@ -25,7 +25,8 @@ trait RDFOPerationsDB[Rdf <: RDF, DATASET] {
  */
 trait RDFStoreLocalProvider[Rdf <: RDF, DATASET] extends RDFOPerationsDB[Rdf, DATASET] {
 
-  /** relative or absolute file path for the database */
+  /** relative or absolute file path for the database 
+   *  TODO put in Configuration */
   val databaseLocation: String = "TDB"
   def createDatabase(database_location: String = databaseLocation): DATASET
   //  override ?? 
