@@ -36,7 +36,9 @@ trait DefaultConfiguration extends Configuration {
   override val inlineJavascriptInForm: Boolean = true
   override def displayTechnicalSemWebDetails: Boolean = true
 
-  override def useTextQuery: Boolean = false
+  /** use Text indexing with Lucene or SOLR */
+  override def useTextQuery: Boolean = true
+  /** when #useTextQuery is true, use Text indexing with SOLR */
   override def solrIndexing: Boolean = false
 
   override val css: CSS = new CSS {}

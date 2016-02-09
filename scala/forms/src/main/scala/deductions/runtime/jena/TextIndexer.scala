@@ -9,22 +9,17 @@ import org.w3.banana.jena.JenaModule
 object TextIndexer extends jena.textindexer(Array[String]())
     with JenaModule
     with LuceneIndex
-    with DefaultConfiguration //  with RDFStoreLocalJena1Provider // with App
-    {
+    with DefaultConfiguration {
   val rdfStoreProvider = new RDFStoreLocalJena1Provider {
     override val useTextQuery = true
   }
-
-  //  val databaseLocation: String = "TDB"
-  //  val dataset0 = TDBFactory.createDataset(databaseLocation)
   val dataset0 = rdfStoreProvider.dataset
-  val d = configureLuceneIndex(dataset0)
-  val g = d.asDatasetGraph()
-  println("d.asDatasetGraph() " + g.getClass)
-
-  val datasetGraphText: DatasetGraphText =
-    g.asInstanceOf[DatasetGraphText]
+  val datasetWithLuceneConfigured = configureLuceneIndex(dataset0)
+  val graphWithLuceneConfigured = datasetWithLuceneConfigured.asDatasetGraph()
+  println("datasetWithLuceneConfigured.asDatasetGraph() " + graphWithLuceneConfigured.getClass)
+  val datasetGraphText: DatasetGraphText = graphWithLuceneConfigured.asInstanceOf[DatasetGraphText]
   dataset = datasetGraphText
+  textIndex = dataset.getTextIndex()
 
   def main(args: Array[String]) {
     doIndex()
@@ -34,12 +29,4 @@ object TextIndexer extends jena.textindexer(Array[String]())
     this.entityDefinition = rdfIndexing
     exec()
   }
-
-  //  override val args = super[App].args  
-  //  override val args: Array[String] = super[textindexer].args
-  /*
-object TextIndexer inherits conflicting members: variable args in class CmdLineArgs of type 
- java.util.Map[String,arq.cmdline.Arg] and method args in trait App of type ⇒ Array[String] (Note: this 
- can be resolved by declaring an override in object TextIndexer.)
-    */
 }
