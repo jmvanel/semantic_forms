@@ -38,7 +38,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
 
   /** leverage on ParameterizedSPARQL.makeHyperlinkForURI() */
   def makeTableHistoryUserActions(lang: String="en")(implicit userURI: String): NodeSeq = {
-    val met = getMetadata()
+    val metadata = getMetadata()
     implicit val queryMaker = qm
     <table>
       <tr>
@@ -50,11 +50,18 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
         <th>IP</th>
 </tr>
       {
+      def dateAsLong(row: Seq[Rdf#Node]): Long = makeStringFromLiteral(row(1)).toLong
+
+      val sorted = metadata . sortWith {
+        (row1, row2) =>
+          dateAsLong(row1) >
+          dateAsLong(row2)
+      }
       dataset.rw({ // for calling instanceLabel()
-      for (row <- met) yield {
+      for (row <- sorted) yield {
         println( "row " + row(1).toString() )
             if (row(1).toString().length() > 3 ) {
-              val date = new Date(makeStringFromLiteral(row(1)).toLong)
+              val date = new Date(dateAsLong(row))
               val dateFormat = new SimpleDateFormat(
                 "EEEE dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
               <tr>{
