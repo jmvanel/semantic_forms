@@ -59,6 +59,7 @@ object Application extends Controller
       val lang = chooseLanguage(request)
       Ok(htmlFormElemJustFields(uri: String, hrefDisplayPrefix, blankNode,
         editable = Edit != "", lang, formuri))
+        .as("text/html; charset=utf-8")
     }
   }
     
