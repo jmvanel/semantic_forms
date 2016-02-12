@@ -42,21 +42,21 @@ trait Lookup[Rdf <: RDF, DATASET]
    *    </Class>
    */
   def lookup(search: String): String = {
-    val r1 = dataset.r({
+    val tryListString = dataset.r({
       implicit val listOfLists = search_only(search)
       val subjects = listOfLists.map { l => l.head }
       for (subject <- subjects) yield {
         val label = instanceLabelFromTDB(subject, "")
         // TODO output rdf:type also
         s"""
-        label: "$label""
-        uri: "${subject}"
-        description: ""
+        "label": "$label",
+        "uri": "${subject}",
+        "description": ""
       """
       }
     })
-    s"""{ result: [
-       ${r1.get}
+    s"""{ "result": [
+       ${tryListString.get.mkString("{", "},\n", "}\n")}
     ]}"""
   }
 
