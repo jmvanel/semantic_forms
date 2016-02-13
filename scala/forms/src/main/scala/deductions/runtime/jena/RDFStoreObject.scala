@@ -49,39 +49,13 @@ trait RDFStoreLocalJenaProvider
     Logger.getRootLogger.info(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
 
     try {
-      configureLuceneIndex( dts )
-//      if (useTextQuery) {
-//        val rdfs = RDFSPrefix[Rdf]
-//        val foaf = FOAFPrefix[Rdf]        
-//        /* this means: in Lucene the URI will be kept in key "uri",
-//         * the text indexed by SORL will be kept in key "text" */
-//        val entMap = new EntityDefinition("uri", "text", rdfs.label)
-//
-//        entMap.set( "text", foaf.givenName )
-//        entMap.set( "text", foaf.familyName )
-//        entMap.set( "text", foaf.firstName )
-//        entMap.set( "text", foaf.lastName )
-//        entMap.set( "text", foaf.name )
-//        /* cf trait InstanceLabelsInference */
-//        entMap.set( "text", URI("http://dbpedia.org/ontology/abstract") )
-//                
-//        if (solrIndexing) {
-//          val server: SolrServer = new HttpSolrServer("http://localhost:7983/new_core")
-//          //      val pingResult = server.ping
-//          //      println("pingResult.getStatus " + pingResult.getStatus) // 7983
-//          TextDatasetFactory.createSolrIndex(dts, server, entMap)
-//        } else {
-//          val directory = new NIOFSDirectory(new File("LUCENE"))
-//          TextDatasetFactory.createLucene(dts, directory, entMap,
-//            new StandardAnalyzer(Version.LUCENE_46))
-//        }
-//      }
+      configureLuceneIndex(dts)
     } catch {
       case t: Throwable =>
         println(t.getLocalizedMessage)
         println(t.getCause)
+        dts
     }
-    dts
   }
 
   /**

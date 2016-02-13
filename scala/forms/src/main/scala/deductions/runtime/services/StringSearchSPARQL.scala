@@ -31,8 +31,9 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
          |PREFIX rdfs: <${rdfs.prefixIri}>
          |SELECT DISTINCT ?thing WHERE {
          |  graph ?g {
-         |    ?thing text:query (rdfs:label '${search.trim()}' 10) ;
-         |           rdfs:label ?label .
+         |    # ?thing text:query ( rdfs:label '${search.trim()}' 10 ) ;
+         |    ?thing text:query ( '${search.trim()}' 10 )
+         |    # ;  rdfs:label ?label .
          |  }
          |}""".stripMargin
   }
