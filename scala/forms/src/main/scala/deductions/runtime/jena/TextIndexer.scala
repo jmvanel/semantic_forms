@@ -6,6 +6,7 @@ import com.hp.hpl.jena.tdb.TDBFactory
 import deductions.runtime.services.DefaultConfiguration
 import org.w3.banana.jena.JenaModule
 
+/** see https://jena.apache.org/documentation/query/text-query.html */
 object TextIndexer extends jena.textindexer(Array[String]())
     with JenaModule
     with LuceneIndex

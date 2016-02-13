@@ -15,6 +15,7 @@ import org.w3.banana.RDFSPrefix
 
 import deductions.runtime.services.Configuration
 
+/** see https://jena.apache.org/documentation/query/text-query.html */
 trait LuceneIndex // [Rdf <: RDF]
     extends Configuration {
 
