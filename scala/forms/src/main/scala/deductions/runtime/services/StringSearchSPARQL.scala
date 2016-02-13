@@ -23,6 +23,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
          |}""".stripMargin
   }
 
+  /** see https://jena.apache.org/documentation/query/text-query.html */
   val indexBasedQuery = new SPARQLQueryMaker[Rdf]
       with ColsInResponse {
           val rdfs = RDFSPrefix[Rdf]

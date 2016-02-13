@@ -6,10 +6,11 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 @prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#> .
 @prefix     : <http://deductions-software.com/ontologies/forms.owl.ttl#> .
+@prefix forms: <http://deductions-software.com/ontologies/forms#> .
 
 # form specifications for FOAF
 
-<owl-ClassForm>
+forms:owl-ClassForm
   form:classDomain owl:Class ;
   form:showProperties (
 	rdfs:label rdfs:comment
@@ -21,12 +22,12 @@
 	form:classDomain
   )
 .
-<owl-dct-subject1>
-	:fieldAppliesToForm <owl-ClassForm> ;
+forms:owl-dct-subject1
+	:fieldAppliesToForm forms:owl-ClassForm ;
 	:fieldAppliesToProperty dct:subject ;
 	:widgetClass form:DBPediaLookup .
 
-<owl-DatatypePropertyForm>
+forms:owl-DatatypePropertyForm
   form:classDomain owl:DatatypeProperty ;
   form:showProperties (
 	rdfs:label rdfs:comment
@@ -34,12 +35,12 @@
 	dct:subject
   )
 .
-<owl-dct-subject2>
-	:fieldAppliesToForm <owl-DatatypePropertyForm> ;
+forms:owl-dct-subject2
+	:fieldAppliesToForm forms:owl-DatatypePropertyForm ;
 	:fieldAppliesToProperty dct:subject ;
 	:widgetClass form:DBPediaLookup .
 
-<owl-ObjectPropertyForm>
+forms:owl-ObjectPropertyForm
   form:classDomain owl:ObjectProperty ;
   form:showProperties (
 	rdfs:label rdfs:comment
@@ -48,7 +49,7 @@
 	dct:subject
   )
 .
-<owl-dct-subject3>
-	:fieldAppliesToForm <owl-ObjectPropertyForm> ;
+forms:owl-dct-subject3
+	:fieldAppliesToForm forms:owl-ObjectPropertyForm ;
 	:fieldAppliesToProperty dct:subject ;
 	:widgetClass form:DBPediaLookup .

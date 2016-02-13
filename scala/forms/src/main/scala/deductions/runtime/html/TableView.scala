@@ -83,7 +83,8 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     editable: Boolean = false,
     lang: String = "en",
     graphURI: String = "",
-    formGroup: String = fromUri(nullURI))
+    formGroup: String = fromUri(nullURI),
+    formuri: String="" )
     : NodeSeq = {
 
     // TODO for comprehension like in htmlForm()
@@ -93,9 +94,8 @@ trait TableViewModule[Rdf <: RDF, DATASET]
       implicit val graph: Rdf#Graph = allNamedGraph
       val ops1 = ops;
       val form = createAbstractForm(
-//          graph, 
           uri, editable, lang, blankNode,
-        URI(formGroup))
+        URI(formGroup), formuri )
       new Form2HTMLBanana[Rdf] with ConfigurationCopy {
         val ops = ops1
         lazy val original:Configuration = TableViewModule.this

@@ -7,10 +7,11 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 @prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#> .
 @prefix     : <http://deductions-software.com/ontologies/forms.owl.ttl#> .
+@prefix forms: <http://deductions-software.com/ontologies/forms#> .
 
 # form specifications for SIOC
 
-<sioc-Post_Form>
+forms:sioc-Post_Form
   form:classDomain sioc:Post ;
   form:showProperties (
 	rdfs:label rdfs:comment
@@ -21,8 +22,8 @@
   # to implement in semforms: "reverse" properties :
   form:showReverseProperties ()
 .
-<owl-dct-subject1>
-	:fieldAppliesToForm <sioc-Post_Form> ;
+forms:owl-dct-subject1
+	:fieldAppliesToForm forms:sioc-Post_Form ;
 	:fieldAppliesToProperty dct:subject ;
 	:widgetClass form:DBPediaLookup .
 

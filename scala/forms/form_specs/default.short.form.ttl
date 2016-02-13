@@ -4,10 +4,11 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 @prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#> .
 @prefix     : <http://deductions-software.com/ontologies/forms.owl.ttl#> .
+@prefix forms: <http://deductions-software.com/ontologies/forms#> .
 
 # Generic form specification with the main (non relational) properties for common classes 
 
-<main_properties_Form>
+forms:main_properties_Form
   form:showProperties (
 	rdfs:label rdfs:comment
 	foaf:givenName foaf:familyName

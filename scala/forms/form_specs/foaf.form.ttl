@@ -5,10 +5,11 @@
 @prefix cco: <http://purl.org/ontology/cco/core#> .
 @prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#> .
 @prefix     : <http://deductions-software.com/ontologies/forms.owl.ttl#> .
+@prefix forms: <http://deductions-software.com/ontologies/forms#> .
 
 # form specifications for FOAF
 
-<personForm>
+forms:personForm
   form:classDomain foaf:Person ;
   form:showProperties (
 	# normally single-valued:
@@ -25,19 +26,19 @@
 	cco:expertise
   ) .
 
-<topic_interest>
-	:fieldAppliesToForm <personForm> ;
-	:fieldAppliesToForm <organizationForm> ;
+forms:topic_interest
+	:fieldAppliesToForm forms:personForm ;
+	:fieldAppliesToForm forms:organizationForm ;
 	:fieldAppliesToProperty foaf:topic_interest ;
 	:widgetClass form:DBPediaLookup .
 
-<cco-expertise>
-	:fieldAppliesToForm <personForm> ;
-	:fieldAppliesToForm <organizationForm> ;
+forms:cco-expertise
+	:fieldAppliesToForm forms:personForm ;
+	:fieldAppliesToForm forms:organizationForm ;
 	:fieldAppliesToProperty cco:expertise ;
 	:widgetClass form:DBPediaLookup .
 
-<projectForm>
+forms:projectForm
   form:classDomain foaf:Project ;
   form:showProperties (
 	rdfs:label rdfs:comment
@@ -52,7 +53,7 @@
 	dct:subject
   ) .
 
-<organizationForm>
+forms:organizationForm
   form:classDomain foaf:Organization ;
   form:showProperties (
 	rdfs:label rdfs:comment
@@ -69,9 +70,9 @@
   ) .
 
 
-<dc_subject>
-	:fieldAppliesToForm <projectForm> ;
-	:fieldAppliesToForm <organizationForm> ;
+forms:dc_subject
+	:fieldAppliesToForm <projectForm ;
+	:fieldAppliesToForm <organizationForm ;
 	:fieldAppliesToProperty dct:subject ;
 	:widgetClass form:DBPediaLookup .
 
