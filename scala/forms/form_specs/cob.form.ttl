@@ -21,27 +21,27 @@ forms:cob-User-Form
 ) .
 
 forms:topic_interest-cob1
-	form:fieldAppliesToForm <cob-User-Form ;
+	form:fieldAppliesToForm :cob-User-Form ;
 	form:fieldAppliesToProperty dc:subject ;
 	form:widgetClass form:DBPediaLookup .
 
 forms:topic_interest-cob2
-	form:fieldAppliesToForm <cob-User-Form ;
+	form:fieldAppliesToForm :cob-User-Form ;
 	form:fieldAppliesToProperty dct:subject ;
 	form:widgetClass form:DBPediaLookup .
 
 forms:topic_interest-cob3
-	form:fieldAppliesToForm <cob-User-Form ;
+	form:fieldAppliesToForm :cob-User-Form ;
 	form:fieldAppliesToProperty cob:transversalSkills ;
 	form:widgetClass form:DBPediaLookup .
 
 forms:topic_interest-cob4
-	form:fieldAppliesToForm <cob-User-Form ;
+	form:fieldAppliesToForm :cob-User-Form ;
 	form:fieldAppliesToProperty cob:humanSkills ;
 	form:widgetClass form:DBPediaLookup .
 
 forms:topic_interest-cob5
-	form:fieldAppliesToForm <cob-User-Form ;
+	form:fieldAppliesToForm :cob-User-Form ;
 	form:fieldAppliesToProperty cob:expertiseSkills ;
 	form:widgetClass form:DBPediaLookup .
 

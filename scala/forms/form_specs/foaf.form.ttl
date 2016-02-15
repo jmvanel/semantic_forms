@@ -71,8 +71,8 @@ forms:organizationForm
 
 
 forms:dc_subject
-	:fieldAppliesToForm <projectForm ;
-	:fieldAppliesToForm <organizationForm ;
+	:fieldAppliesToForm :projectForm ;
+	:fieldAppliesToForm :organizationForm ;
 	:fieldAppliesToProperty dct:subject ;
 	:widgetClass form:DBPediaLookup .
 
