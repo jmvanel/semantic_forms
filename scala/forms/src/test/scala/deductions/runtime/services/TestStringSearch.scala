@@ -16,11 +16,10 @@ import com.hp.hpl.jena.query.Dataset
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.utils.FileUtils
+import deductions.runtime.jena.LuceneIndex
 
 trait TestStringSearchTrait[Rdf <: RDF, DATASET] extends FunSuite
     with BeforeAndAfterAll
-    //    with RDFOpsModule
-    //    with RDFXMLReaderModule
     with RDFStoreLocalProvider[Rdf, DATASET]
     with StringSearchSPARQL[Rdf, DATASET] {
 
@@ -64,3 +63,4 @@ class TestStringSearch extends FunSuite
   with RDFStoreLocalJena1Provider
   with TestStringSearchTrait[Jena, Dataset]
   with DefaultConfiguration
+  with LuceneIndex

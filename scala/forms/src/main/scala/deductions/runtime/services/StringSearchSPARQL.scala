@@ -7,7 +7,8 @@ import scala.xml.NodeSeq
 import java.net.URLEncoder
 import org.w3.banana.RDFSPrefix
 
-/** String Search with simple SPARQL */
+/** String Search with simple SPARQL or SPARQL + Lucene 
+ *  (see trait LuceneIndex) */
 trait StringSearchSPARQL[Rdf <: RDF, DATASET]
     extends ParameterizedSPARQL[Rdf, DATASET]
         with Configuration {

@@ -10,13 +10,12 @@ function loadForm( f, id ) {
     if (req.readyState == 4) {
       console.log( "req.response " );
       var formElem = document.getElementById(id);
-      // formElem.appendChild((req.response));
       formElem.innerHTML = req.response;
     }; 
   };
 };
 </script>
-  Enter data:
+  Enter data fro a person:
   <div id="form">
   </div>
 </body>
