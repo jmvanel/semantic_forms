@@ -23,6 +23,8 @@ libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "0
 libraryDependencies += "org.scala-lang.modules" %% "scala-async" % "0.9.2"
 libraryDependencies += "com.typesafe.play" %% "play-json" % "2.3.4"
 // libraryDependencies += "com.netaporter" %% "scala-i18n" % "0.1"
+libraryDependencies += "org.apache.commons" % "commons-csv" % "1.2"
+libraryDependencies += "org.apache.any23" % "apache-any23-csvutils" %  "1.1" // "1.0" // 
 
 // for debugging the SBT test suite:
 // required for the javaOptions to be passed in (??)
