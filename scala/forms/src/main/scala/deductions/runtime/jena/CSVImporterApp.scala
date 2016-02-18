@@ -10,7 +10,8 @@ import java.io.FileOutputStream
 /**
  * App to Import CSV into TDB;
  *  args: url Or File of CSV,
- *  output document URI (also base URL for the rows)
+ *  output document URI (also base URL for the rows),
+ *  rdf:type for the rows (OWL/RDFS class URI)
  */
 object CSVImporterApp extends App
     with RDFStoreLocalJena1Provider
@@ -30,9 +31,12 @@ object CSVImporterApp extends App
   val in: InputStream = getUrlInputStream(url)
   val documentURI: Rdf#URI = URI(
     if (args.size > 1) args(1) else url)
-  val graph = run(in, documentURI): Rdf#Graph
+  val graph = if (args.size > 2)
+    run(in, documentURI, URI(args(2)))
+  else
+    run(in, documentURI)
 
-//  if (true args.size > 2 && args(2) == "print" ) 
+  //  if (args.size > 3 && args(3) == "print" ) 
   {
     val outputFile = urlOrFile + ".ttl"
     println(s"Write $outputFile, # of triples ${graph.size()}")
@@ -61,4 +65,5 @@ object CSVImporterApp extends App
     conn.connect
     conn.getInputStream
   }
+
 }

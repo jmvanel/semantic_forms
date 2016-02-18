@@ -4,14 +4,12 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.lang.Character.toUpperCase
 import java.util.StringTokenizer
-
 import scala.annotation.migration
 import scala.collection.JavaConversions.asScalaBuffer
 import scala.collection.JavaConversions.asScalaIterator
 import scala.collection.JavaConversions.mapAsScalaMap
 import scala.collection.mutable.ArrayBuffer
 import scala.language.postfixOps
-
 import org.apache.any23.vocab.CSV
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
@@ -21,10 +19,15 @@ import org.w3.banana.RDFOps
 import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
 import org.w3.banana.XSDPrefix
+import org.w3.banana.FOAFPrefix
+import org.w3.banana.Prefix
+import org.w3.banana.PrefixBuilder
+import deductions.runtime.services.DefaultConfiguration
 
 /** made from CSVExtractor from Any23;
  *  TODO: probably should be in another SBT project */
-trait CSVImporter[Rdf <: RDF, DATASET] {
+trait CSVImporter[Rdf <: RDF, DATASET]
+		extends DefaultConfiguration {
 
   implicit val ops: RDFOps[Rdf]
   import ops._
@@ -32,6 +35,40 @@ trait CSVImporter[Rdf <: RDF, DATASET] {
   private val rdf = RDFPrefix[Rdf]
   private val rdfs = RDFSPrefix[Rdf]
   private val xsd = XSDPrefix[Rdf]
+  private val foaf = FOAFPrefix[Rdf]
+
+  /** lots of boiler plate for vocabularies !!!!!!!!!!! */
+  object CCOPrefix {
+    def apply[Rdf <: RDF: RDFOps](implicit ops: RDFOps[Rdf]) = new CCOPrefix(ops)
+  }
+  class CCOPrefix[Rdf <: RDF](ops: RDFOps[Rdf])
+      extends PrefixBuilder("cco", "http://purl.org/ontology/cco/core#")(ops) {
+    val expertise = apply("expertise")
+  }
+  private val cco = CCOPrefix[Rdf]
+  
+  object AVPrefix {
+    def apply[Rdf <: RDF: RDFOps](implicit ops: RDFOps[Rdf]) = new AVPrefix(ops)
+  }
+  class AVPrefix[Rdf <: RDF](ops: RDFOps[Rdf])
+      extends PrefixBuilder("av", prefixAVontology )(ops) {
+      val idea = apply("idea")
+      val contributesToOrganization = apply("contributesToOrganization")
+      val metAt = apply("metAt")
+  }
+  private val av = AVPrefix[Rdf]
+
+  object VCardPrefix {
+    def apply[Rdf <: RDF: RDFOps](implicit ops: RDFOps[Rdf]) = new VCardPrefix(ops)
+  }
+  class VCardPrefix[Rdf <: RDF](ops: RDFOps[Rdf])
+      extends PrefixBuilder("vcard", "http://www.w3.org/2006/vcard/ns#" )(ops) {
+	  val postal_code = apply("postal-code")
+	  val locality =  apply("locality")
+  }
+  private val vcard = VCardPrefix[Rdf]
+
+  ///////////////////////////////////
   
   private var csvParser: CSVParser = _
   type URI = Rdf#URI
@@ -45,7 +82,8 @@ trait CSVImporter[Rdf <: RDF, DATASET] {
     
   def run(
       in: InputStream,
-      documentURI: URI ): Rdf#Graph = {
+      documentURI: URI,
+      typeURI: URI = foaf.Person ): Rdf#Graph = {
     
     val rowType = csvPredicate(CSV.ROW_TYPE)
     
@@ -71,6 +109,7 @@ trait CSVImporter[Rdf <: RDF, DATASET] {
       val rowSubject = URI( rowSubjectPrefix + index)
       list += Triple(rowSubject, rdf.typ, rowType)
       produceRowStatements(rowSubject, record, list)
+      list += Triple(rowSubject, rdf.typ, typeURI )
       list += Triple(documentURI, csvPredicate(CSV.ROW), rowSubject)
       list += Triple(rowSubject, csvPredicate(CSV.ROW_POSITION), Literal( String.valueOf(index) ) )
       index = index + 1
@@ -97,20 +136,18 @@ trait CSVImporter[Rdf <: RDF, DATASET] {
     }
   }
 
-  private def writeHeaderPropertiesMetadata(header: java.util.Map[String, Integer],
-//      Array[String], 
-      list: ArrayBuffer[Rdf#Triple]
-      ) {
+  private def writeHeaderPropertiesMetadata(
+    header: java.util.Map[String, Integer],
+    list: ArrayBuffer[Rdf#Triple]) {
     var index = 0
     for (singleHeader <- headerURIs) {
-      if (index > headerURIs.length) {
-        //break
+      if (index <= headerURIs.length) {
+        if (!isAbsoluteURI(fromUri(singleHeader))) {
+          list += Triple(singleHeader, rdfs.label, Literal(fromUri(singleHeader)))
+        }
+        list += Triple(singleHeader, csvPredicate(CSV.COLUMN_POSITION), Literal(String.valueOf(index), xsd.integer))
+        index = index + 1
       }
-      if (!isAbsoluteURI(fromUri(singleHeader))) {
-        list += Triple( singleHeader, rdfs.label, Literal( fromUri(singleHeader) ) )
-      }
-      list += Triple(singleHeader, csvPredicate(CSV.COLUMN_POSITION), Literal(String.valueOf(index), xsd.integer ))
-      index = index + 1
     }
   }
 
@@ -124,13 +161,45 @@ trait CSVImporter[Rdf <: RDF, DATASET] {
         if (isAbsoluteURI(candidate))
           URI(candidate)
         else
-          normalize(candidate, documentURI)
+          manageColumnsMapping(candidate, documentURI)
       )
       index += 1
     }
     result
   }
 
+  /** TODO
+   *  use labels on properties to propose properties to user,
+   *  manage prefixes globally, maybe using prefix.cc */
+  val columnsMappings = Map(
+      "Email" -> foaf.mbox,
+      "Nom" -> foaf.givenName,
+      "Prénom" -> foaf.familyName,
+      "Téléphone" -> foaf.phone,
+      "Catégorie" -> foaf.focus,
+      "Code postal" -> vcard.postal_code,
+	    "Ville" -> vcard.locality,
+	    "Description courte" -> foaf.name,
+	    "Description Longue" -> rdfs.comment,
+	    "Site Web" -> foaf.homepage,
+	    
+      "Projet 1" -> foaf.currentProject,
+      "Projet 2" -> foaf.currentProject,
+      "Projet 3" -> foaf.currentProject,
+      "compétence 1" -> cco.expertise,
+      "compétence 2" -> cco.expertise,
+      "autre" -> cco.expertise,
+      "organisation 1" -> av.contributesToOrganization,
+      "organisation 2" -> av.contributesToOrganization,
+      "Idée 1" -> av.idea,
+      "Idée 2" -> av.idea,
+      "Rencontré à" -> av.metAt
+      )
+  private def manageColumnsMapping(col: String, documentURI: URI): URI = {
+//    println()
+    columnsMappings.getOrElse( col, normalize( col, documentURI) )
+  }
+    
   private def normalize(toBeNormalized0: String, documentURI: URI): URI = {
     val toBeNormalized = toBeNormalized0.trim().toLowerCase().replace("?", "")
       .replace("&", "")
