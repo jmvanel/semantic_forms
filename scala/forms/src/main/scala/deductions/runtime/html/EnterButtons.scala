@@ -100,7 +100,7 @@ trait EnterButtons extends Configuration {
     <option label="doap:Project"> http://usefulinc.com/ns/doap#Project </option>
     <option label="foaf:Organization"> http://xmlns.com/foaf/0.1/Organization </option>
     <option label="sioc:Post"> http://rdfs.org/sioc/ns#Post </option>
-    <!-- http://www.w3.org/2002/12/cal/ical#Vevent" // "cal:Vevent" -->
+    <option label=" cal:Vevent "> http://www.w3.org/2002/12/cal/ical#Vevent </option>
     <option label="owl:Class"> http://www.w3.org/2002/07/owl#Class </option>
     <option label="owl:DatatypeProperty"> http://www.w3.org/2002/07/owl#DatatypeProperty </option>
     <option label="owl:ObjectProperty"> http://www.w3.org/2002/07/owl#ObjectProperty </option>

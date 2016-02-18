@@ -37,36 +37,46 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   }
 
   /** leverage on ParameterizedSPARQL.makeHyperlinkForURI() */
-  def makeTableHistoryUserActions(lang: String = "en")(implicit userURI: String): NodeSeq = {
-    val met = getMetadata()
+  def makeTableHistoryUserActions(lang: String="en")(implicit userURI: String): NodeSeq = {
+    val metadata = getMetadata()
     implicit val queryMaker = qm
-     <table class="table">
+    <table class="table">
       <thead>
         <tr>
-          <th title="Resource URI visited by user">Resource</th>
+          <th title="Resource URI visited by user">Resource</th> 
+          <th title="Action (Create, Display, Update)">Action</th> 
           <th title="Time visited by user">Time</th>
           <th title="Number of fields (triples) edited by user">Count</th>
           <th>User</th>
-        </tr>
-      </thead><tbody>
-                {
-                  dataset.rw({ // for calling instanceLabel()
-                    for (row <- met) yield {
-                      println("row " + row(1).toString())
-                      if (row(1).toString().length() > 3) {
-                        val date = new Date(makeStringFromLiteral(row(1)).toLong)
-                        val dateFormat = new SimpleDateFormat(
-                          "EEEE dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
-                        <tr>{
-                          <td>{ makeHyperlinkForURI(row(0), lang, allNamedGraph) }</td>
-                          <td>{ dateFormat.format(date) }</td>
-                          <td>{ makeStringFromLiteral(row(2)) }</td>
-                          <td>{ userURI }</td>
-                        }</tr>
-                      } else <tr/>
-                    }
-                  }).get
-                }
-    		</tbody></table>
+          <th>IP</th>
+				</tr>
+ 			</thead><tbody>
+      {
+      def dateAsLong(row: Seq[Rdf#Node]): Long = makeStringFromLiteral(row(1)).toLong
+
+      val sorted = metadata . sortWith {
+        (row1, row2) =>
+          dateAsLong(row1) >
+          dateAsLong(row2)
+      }
+      dataset.rw({ // for calling instanceLabel()
+      for (row <- sorted) yield {
+        println( "row " + row(1).toString() )
+            if (row(1).toString().length() > 3 ) {
+              val date = new Date(dateAsLong(row))
+              val dateFormat = new SimpleDateFormat(
+                "EEEE dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
+              <tr>{
+                <td>{ makeHyperlinkForURI(row(0), lang, allNamedGraph) }</td>
+                <td>{ "action ..." }</td>
+                <td>{ dateFormat.format(date) }</td>
+                <td>{ makeStringFromLiteral(row(2)) }</td>
+                <td>{ userURI }</td>
+              }</tr>
+            } else <tr/>
+      }
+      }) . get
+    }
+    </tbody></table>
   }
 }

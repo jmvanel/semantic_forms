@@ -15,6 +15,10 @@ plus a textbox to enter a URL semantics, eg a FOAF profile or DBpedia URI :
 See the [wiki](https://github.com/jmvanel/semantic_forms/wiki) for User manual and Developer manual.
 This README is like an administrator Manual. 
 
+## Terminology
+
+Some people speak of "triple store", or "graph database", or "triple database", or "SPARQL database". We will write here just "database".
+
 # How to run
 ## Run locally from sources
 
@@ -48,7 +52,7 @@ Then the archive is found here :
 `target/universal/semantic_forms_play-1.0-SNAPSHOT.zip`
 Download this zip on the server, unzip and type:
 ```shell
-nohup bin/semantic_forms_play -mem 50 &
+nohup bin/semantic_forms_play -J-Xmx50M &
 ```
 
 There is a script that does this, and more: it stops the server, updates the application from sources, and restarts the server :
@@ -147,7 +151,7 @@ To re-load the database from N-Triples format (possibly delete the TDB directory
 
 ## Updading RDF content
 
-The server must not be started, because Jena TDB does not allow acces to the database on disk from 2 processes.
+The server must not be started while updading RDF content, because Jena TDB does not allow access to the database on disk from 2 different processes.
 
 Take inspiration from these scripts in [forms\_play](https://github.com/jmvanel/semantic_forms/tree/master/scala/forms_play)
 
@@ -184,11 +188,9 @@ To delete named graph related to common vocabularies, default form specification
 
 
 ## SPARQL queries
-There is a web service for SPARQL queries, not a SPARL endpoint yet :( , and not an HTML page for entering queries yet .
-Here are some example showing some queries that you can paste into your browser:
-
-http://localhost:9000/sparql?query=CONSTRUCT { ?x ?p ?v } where {  GRAPH ?G { ?x ?p ?v } } limit 20
-http://localhost:9000/select?query=SELECT * where { GRAPH ?G { ?x ?p ?v }} limit 10
+There is a web page for SPARQL queries, but not a real SPARL endpoint yet :( .
+This is an HTML page for entering queries, in the /tools page.
+There are some example showing some queries that you can paste into your browser:
 
 The service
 <code>/sparql?query=</code>
@@ -198,7 +200,39 @@ and the service
 <code>/select?query=</code>
 is only for SELECT queries.
 
- 
+## Populating with dbPedia (mirroring dbPedia)
+
+There are 2 scripts, one for downloading, the other for populating the triple database.
+
+    download-dbpedia.sh
+    populate_with_dbpedia.sh
+
+In `dbpedia-dbpedia.sh`you should set the LANG variable for the language you want for the rdfs:label and other properties. You can run the script several times with different LANG if several languages are needed.
+
+    LANG=fr
+    VERSION=2015-04
+
+After the database if populated with dbPedia data, you should run this program to index with Lucene or SOLR the newly added text (see next paragraph).
+[TextIndexer.scala](https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/TextIndexer.scala)
+
+# Text indexing with Lucene or SOLR
+
+For details please look the Jena TDB documentation about text search with Lucene or SOLR in TDB :
+https://jena.apache.org/documentation/query/text-query.html
+
+If you run semantic\_forms from scratch, text search with Lucene is activated by default.
+You have nothing to do, the necessary Lucene libraries are present, and the RDF content added is indexed in Lucene as soon as it is added.
+
+The settings for text search with Lucene or SOLR in TDB here:
+https://github.com/jmvanel/semantic\_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/LuceneIndex.scala
+https://github.com/jmvanel/semantic\_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/services/DefaultConfiguration.scala
+
+If you deactivate `useTextQuery` in DefaultConfiguration.scala, the text search is done by a plain SPARLQL search, that coniders input as a regular expression.
+
+If the text indexing with Lucene or SOLR is activated *after* adding RDF data, you can run this program to index with Lucene or SOLR the newly added text:
+[TextIndexer.scala](https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/TextIndexer.scala)
+
+
 # How to debug
 
 Start Activator or SBT with -jvm-debug argument; then type run. Then start a remove debug in eclipse or another IDE with port 9999.
@@ -243,6 +277,7 @@ Please read how-to on the Banana-RDF project:
 
 
 # The features 
+
 The features are listed here for convenience, but from now on, we manage features on 
 [Github issues](https://github.com/jmvanel/semantic_forms/issues).
 

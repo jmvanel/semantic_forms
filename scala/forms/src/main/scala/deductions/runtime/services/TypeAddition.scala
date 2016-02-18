@@ -51,7 +51,7 @@ trait TypeAddition[Rdf <: RDF, DATASET]
             u => u,
             bn => URI(""),
             lit => URI("")))
-        dataset.appendToGraph(grURI, ops.makeGraph(typeTriples))
+        rdfStore.appendToGraph( dataset, grURI, ops.makeGraph(typeTriples))
         typeTriples
       } else Seq()
     }
@@ -65,7 +65,7 @@ trait TypeAddition[Rdf <: RDF, DATASET]
         existingValues3.isEmpty &&
         !objectt.toString().contains(":")) {
         val labelTriple = makeTriple(objectt, rdfs.label, Literal(objectt.toString().replace("_", " ")))
-        dataset.appendToGraph(makeGraphForSaving(), ops.makeGraph(Seq(labelTriple)))
+        rdfStore.appendToGraph( dataset, makeGraphForSaving(), ops.makeGraph(Seq(labelTriple)))
       }
     }
 

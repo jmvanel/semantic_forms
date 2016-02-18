@@ -116,11 +116,15 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
 
 
-  /** TRANSACTIONAL */
+  /** Add behavior (manageBlankNodesReload, Exception management) and
+   *  title and links on top of the form
+   *  to naked form from tableView
+   *  TRANSACTIONAL */
   def htmlForm(uri0: String, blankNode: String = "",
                editable: Boolean = false,
-               lang: String = "en"): NodeSeq = {
-    Logger.getRootLogger().info(s"""Global.htmlForm URI $uri0 blankNode "$blankNode" lang=$lang """)
+               lang: String = "en", formuri: String=""): NodeSeq = {
+    Logger.getRootLogger().info(
+        s"""ApplicationFacadeImpl.htmlForm URI $uri0 blankNode "$blankNode" editable=$editable lang=$lang """)
     val uri = uri0.trim()
     if (uri != null && uri != "")
       try {
@@ -148,7 +152,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
             titleEditDisplayDownloadLinks(uri, lang),
             <div>{status}</div>,
             tableView.htmlFormElemRaw(uri, graph, hrefDisplayPrefix, blankNode, editable = editable,
-              lang = lang)).flatMap { identity }
+              lang = lang, formuri=formuri)).flatMap { identity }
         })
         res.get
       } catch {

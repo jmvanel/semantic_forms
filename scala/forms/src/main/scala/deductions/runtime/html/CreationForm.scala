@@ -18,7 +18,7 @@ with Configuration
 {
   import ops._
   import rdfStore.transactorSyntax._
-//  import Configuration._
+  /** TODO also defined elsewhere */
   var actionURI = "/save"
 
   /**
@@ -30,12 +30,13 @@ with Configuration
       : Try[NodeSeq] = {
     import scala.concurrent.ExecutionContext.Implicits.global
     dataset.rw({
+      val classURI = URI(classUri)
+      retrieveURINoTransaction( classURI, dataset)
       val factory = this
       preferedLanguage = lang
       implicit val graph: Rdf#Graph = allNamedGraph
       val form = factory.createFormFromClass(
-        URI(classUri),
-        formSpecURI);
+        classURI, formSpecURI);
       val ops1 = ops;
       new Form2HTMLBanana[Rdf] with ConfigurationCopy {
         val ops = ops1

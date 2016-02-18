@@ -3,9 +3,10 @@
 @prefix dc: <http://purl.org/dc/elements/1.1/>.
 @prefix dct: <http://purl.org/dc/terms/>.
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix forms: <http://deductions-software.com/ontologies/forms#> .
+@prefix      : <http://deductions-software.com/ontologies/forms#> .
 
-
-<cob-User-Form>
+forms:cob-User-Form
   form:classDomain cob:User ;
   form:showProperties (
 	foaf:firstName foaf:lastName
@@ -20,28 +21,28 @@
 	foaf:knows
 ) .
 
-<topic_interest-cob1>
-	form:fieldAppliesToForm <cob-User-Form> ;
+forms:topic_interest-cob1
+	form:fieldAppliesToForm :cob-User-Form ;
 	form:fieldAppliesToProperty dc:subject ;
 	form:widgetClass form:DBPediaLookup .
 
-<topic_interest-cob2>
-	form:fieldAppliesToForm <cob-User-Form> ;
+forms:topic_interest-cob2
+	form:fieldAppliesToForm :cob-User-Form ;
 	form:fieldAppliesToProperty dct:subject ;
 	form:widgetClass form:DBPediaLookup .
 
-<topic_interest-cob3>
-	form:fieldAppliesToForm <cob-User-Form> ;
+forms:topic_interest-cob3
+	form:fieldAppliesToForm :cob-User-Form ;
 	form:fieldAppliesToProperty cob:transversalSkills ;
 	form:widgetClass form:DBPediaLookup .
 
-<topic_interest-cob4>
-	form:fieldAppliesToForm <cob-User-Form> ;
+forms:topic_interest-cob4
+	form:fieldAppliesToForm :cob-User-Form ;
 	form:fieldAppliesToProperty cob:humanSkills ;
 	form:widgetClass form:DBPediaLookup .
 
-<topic_interest-cob5>
-	form:fieldAppliesToForm <cob-User-Form> ;
+forms:topic_interest-cob5
+	form:fieldAppliesToForm :cob-User-Form ;
 	form:fieldAppliesToProperty cob:expertiseSkills ;
 	form:widgetClass form:DBPediaLookup .
 

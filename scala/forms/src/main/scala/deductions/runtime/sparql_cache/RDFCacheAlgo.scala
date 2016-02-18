@@ -33,7 +33,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     with RDFCacheDependencies[Rdf, DATASET]
     with RDFLoader[Rdf, Try]
     with SPARQLHelpers[Rdf, DATASET]
-    with TimestampManagement[Rdf, DATASET] {
+    with TimestampManagement[Rdf, DATASET]
+    with MirrorManagement[Rdf, DATASET] {
 
   import ops._
   import rdfStore.transactorSyntax._
@@ -52,7 +53,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   /** with transaction */
   def isGraphInUse(uri: Rdf#URI) = {
     dataset.r({
-      for (graph <- dataset.getGraph(uri)) yield {
+      for (graph <- rdfStore.getGraph( dataset, uri)) yield {
         val uriGraphIsEmpty = graph.size == 0
         println("uriGraphIsEmpty " + uriGraphIsEmpty)
         !uriGraphIsEmpty
@@ -62,7 +63,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
 
   /**
    * retrieve URI from a graph named by itself;
-   * or download and store URI only if corresponding graph is empty,
+   * or download and store URI, only if corresponding graph is empty,
    * with transaction
    */
   def retrieveURI(uri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
@@ -70,7 +71,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       retrieveURINoTransaction(uri: Rdf#URI, dataset: DATASET)
     }).flatMap { identity }
   }
-  
+
   /**
    * retrieve URI from a graph named by itself;
    * or download and store URI only if corresponding graph is empty,
@@ -78,20 +79,26 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * TODO save timestamp in another Dataset
    */
   def retrieveURINoTransaction(uri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
-      for (graph <- dataset.getGraph(uri)) yield {
-        val uriGraphIsEmpty = graph.size == 0
-        println(s"uriGraphIsEmpty: $uri : $uriGraphIsEmpty")
-        if (uriGraphIsEmpty) {
+    for (graph <- rdfStore.getGraph( dataset, uri)) yield {
+      val uriGraphIsEmpty = graph.size == 0
+      println(s"uriGraphIsEmpty: $uri : $uriGraphIsEmpty")
+      if (uriGraphIsEmpty) {
+        val mirrorURI = getMirrorURI(uri)
+        if( mirrorURI == "") {
           val g = storeURINoTransaction(uri, uri, dataset)
           println("Graph at URI was downloaded, new addition: " + uri + " , size " + g.size)
           addTimestampToDataset(uri, dataset2)
-//          addTimestampToDatasetNoTransaction(uri, dataset)
           g
         } else {
-          updateLocalVersion(uri, dataset)
-          graph
+          println(s"mirrorURI found: $mirrorURI")
+          // TODO find in Mirror URI the relevant triples ( but currently AFAIK the resulting graph is not used )
+          emptyGraph
         }
+      } else {
+        updateLocalVersion(uri, dataset)
+        graph
       }
+    }
   }
 
   /**
@@ -217,7 +224,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   }
       
   /**
-   * read from uri no matter what the syntax is;
+   * read from uri and store in TDB, no matter what the syntax is;
    * can also load an URI with the # part
    */
   def storeURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
@@ -228,7 +235,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       val graph: Rdf#Graph =
         load(new java.net.URL(uri.toString())).get
       Logger.getRootLogger().info(s"Before storeURI uri $uri graphUri $graphUri")
-      dataset.appendToGraph(graphUri, graph)
+      rdfStore.appendToGraph( dataset, graphUri, graph)
       Logger.getRootLogger().info(s"storeURI uri $uri : stored into graphUri $graphUri")
       graph
     } else {
@@ -239,71 +246,5 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     }
   }
 
-//  /**
-//   * cf post on Jena list:
-//   * http://mail-archives.apache.org/mod_mbox/jena-users/201507.mbox/%3C55943D78.30307@apache.org%3E
-//   *
-//   * When saving <uri1> ,
-//   * must delete existing triples
-//   * <uri1> ?P1 _:bn11_old . _:bn11_old . ?P2 ?O2 .
-//   * when _:bn11_old has a display label equal to the one of incoming blank node _:bn11 such that:
-//   * <uri1> ?P1 _:bn11 .
-//   */
-//  def manageBlankNodesReload(incomingGraph: Rdf#Graph, graphUri: Rdf#URI,
-//      dataset: DATASET) = {
-//
-//    def groupByPredicateThenObjectGraphs(graph: Rdf#Graph, uri: Rdf#URI) = {
-//      val triples = find(graph, uri, ANY, ANY)
-//      // these are the triples  <uri1> ?P1 _:bn11_old .
-//      val blankTriples = triples.filter { t => t.objectt.isBNode }.toIterable
-//
-//      blankTriples.groupBy { t => t.predicate }.map {
-//        case (pred, triplesVar) => (pred, triplesVar.map {
-//          // here we get the triples  _:bn11_old . ?P2 ?O2 .
-//          tr =>
-//            val triplesFromBlank = find(graph, tr.objectt, ANY, ANY).toIterable
-//            makeGraph(triplesFromBlank)
-//        })
-//      }
-//    }
-//
-//    println("Search duplicate graph rooted at blank node: input size " + getTriples(incomingGraph).size)
-//    val blanksIncomingGraphGroupedByPredicate = groupByPredicateThenObjectGraphs(incomingGraph, graphUri)
-//    val blanksLocalGraphGroupedByPredicate = {
-//      val localGraph = dataset.getGraph(graphUri).get // TODO : OrElse(emptyGraph)
-//      groupByPredicateThenObjectGraphs(localGraph, graphUri)
-//    }
-//    println("Search duplicate graph rooted at blank node: number of predicates Incoming " + blanksIncomingGraphGroupedByPredicate.size)
-//    println("Search duplicate graph rooted at blank node: number of predicates Local " + blanksLocalGraphGroupedByPredicate.size)
-//
-//    val keys = blanksLocalGraphGroupedByPredicate.keySet union blanksIncomingGraphGroupedByPredicate.keySet
-//    for (pred <- keys) {
-//      val incomingGraphs = blanksIncomingGraphGroupedByPredicate.get(pred).get
-//      val localGraphs = blanksLocalGraphGroupedByPredicate.get(pred).get
-//      println(s"Search duplicate graph rooted at blank node: for predicate $pred Local, number of graphs " + localGraphs.size)
-//      // and now, complexity O(N^2) !!!
-//      val removed = scala.collection.mutable.Set[Rdf#Graph]()
-//      val duplicates = scala.collection.mutable.Set[Rdf#Graph]()
-//      for (incomingSubGraph <- incomingGraphs) {
-//        println("Search duplicate graph rooted at blank node: subgraph size " + getTriples(incomingSubGraph).size)
-//        for (localGraph <- localGraphs) {
-//          if (!removed.contains(localGraph) &&
-//            !duplicates.contains(incomingSubGraph) &&
-//            incomingSubGraph.isIsomorphicWith(localGraph)) {
-//            // delete local graph
-//            dataset.removeTriples(graphUri, getTriples(localGraph))
-//            if (localGraph.size > 0) {
-//              dataset.removeTriples(graphUri, Seq(Triple(graphUri, pred,
-//                getTriples(localGraph).iterator.next().subject)))
-//            }
-//            removed += localGraph
-//            duplicates += incomingSubGraph
-//            println("Duplicate graph rooted at blank node: deleted:\n" + getTriples(incomingSubGraph))
-//          }
-//        }
-//      }
-//
-//    }
-//  }
 }
 

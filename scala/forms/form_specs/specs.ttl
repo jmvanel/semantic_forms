@@ -4,8 +4,10 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix cob: <http://cobusiness.fr/ontologies/barter.owl.n3#> .
 @prefix sioc: <http://rdfs.org/sioc/ns#> .
+@prefix forms: <http://deductions-software.com/ontologies/forms#> .
 
 # list of form specifications for various classes in common vocabularies
+# NOTE : it's the relative URI's of the Turtle documents, not the URI's of the forms themselves
 
 foaf: form:ontologyHasFormSpecification <foaf.form.ttl> .
 owl:  form:ontologyHasFormSpecification <owl.form.ttl> .

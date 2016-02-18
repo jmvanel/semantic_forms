@@ -1,0 +1,22 @@
+<body onload="loadForm( '/form?displayuri=&formuri=http://deductions-software.com/ontologies/forms#personForm', 'form' ) ");">
+<script>
+var req = new XMLHttpRequest();
+function loadForm( f, id ) {
+  req.open('GET', f, true);
+  req.onreadystatechange = callback;
+  req.send();
+  console.log( "loadForm req sent!" );
+  function callback(aEvt) {
+    if (req.readyState == 4) {
+      console.log( "req.response " );
+      var formElem = document.getElementById(id);
+      formElem.innerHTML = req.response;
+    }; 
+  };
+};
+</script>
+  Enter data fro a person:
+  <div id="form">
+  </div>
+</body>
+

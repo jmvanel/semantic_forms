@@ -20,7 +20,7 @@ trait ApplicationFacadeInterface {
 
   def htmlForm(uri: String, blankNode: String = "",
     editable: Boolean = false,
-    lang: String = "en"): NodeSeq
+    lang: String = "en", formuri: String = ""): NodeSeq
 
   def saveForm(request: Map[String, Seq[String]], lang: String = ""): NodeSeq
 

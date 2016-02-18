@@ -1,15 +1,20 @@
 package deductions.runtime.jena
 
 import scala.collection.JavaConversions.asScalaIterator
+
 import org.apache.log4j.Logger
 import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaModule
-import com.hp.hpl.jena.tdb.TDBFactory
-import deductions.runtime.dataset.RDFStoreLocalProvider
 import org.w3.banana.jena.JenaDatasetStore
-import org.w3.banana._
-import org.w3.banana.diesel._
+import org.w3.banana.jena.JenaModule
+
+import com.hp.hpl.jena.tdb.TDBFactory
+import com.hp.hpl.jena.tdb.transaction.TransactionManager
+
+import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.utils.Timer
+
+// TODO rename RDFStoreLocalJenaProvider
 
 /** singleton for implementation settings */
 object ImplementationSettings {
@@ -21,20 +26,36 @@ object ImplementationSettings {
 /** For user data and RDF cache, sets a default location for the Jena TDB store directory : TDB */
 trait RDFStoreLocalJena1Provider extends RDFStoreLocalJenaProvider
 
-trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, ImplementationSettings.DATASET]
-    //  Dataset]
+trait RDFStoreLocalJenaProvider
+    extends RDFStoreLocalProvider[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with JenaModule with JenaRDFLoader
-    with Timer {
+    with Timer
+    with DefaultConfiguration
+    with LuceneIndex {
   import ops._
-  type DATASET = // Dataset
-  ImplementationSettings.DATASET
+  type DATASET = ImplementationSettings.DATASET
   override val rdfStore = new JenaDatasetStore(false)
   import rdfStore.graphStoreSyntax._
+
+  /**
+   * default is 10; each chunk commitedAwaitingFlush can be several Mb,
+   *  so this can easily make an OOM exception
+   */
+  TransactionManager.QueueBatchSize = 5
+  //  override TransactionManager.DEBUG = true
 
   override def createDatabase(database_location: String) = {
     val dts = TDBFactory.createDataset(database_location)
     Logger.getRootLogger.info(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
-    dts
+
+    try {
+      configureLuceneIndex(dts)
+    } catch {
+      case t: Throwable =>
+        println(t.getLocalizedMessage)
+        println(t.getCause)
+        dts
+    }
   }
 
   /**
@@ -45,8 +66,8 @@ trait RDFStoreLocalJenaProvider extends RDFStoreLocalProvider[Jena, Implementati
   override def allNamedGraph: Rdf#Graph = {
     time(s"allNamedGraph dataset $dataset", {
       //      println(s"Union Graph: entering for $dataset")
-      // val ang = dataset.getGraph(makeUri("urn:x-arq:UnionGraph")).get
-      // TODO:
+
+      // NOTE: very important to use the properly configured rdfStore (with defensiveCopy=false)
       val ang = rdfStore.getGraph(dataset, makeUri("urn:x-arq:UnionGraph")).get
       //      println(s"Union Graph: hashCode ${ang.hashCode()} : size ${ang.size}")
       ang

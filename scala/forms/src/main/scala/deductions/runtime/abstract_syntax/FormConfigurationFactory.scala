@@ -3,15 +3,16 @@ package deductions.runtime.abstract_syntax
 import org.apache.log4j.Logger
 import org.w3.banana.Prefix
 import org.w3.banana.RDF
-
 import deductions.runtime.services.Configuration
 import deductions.runtime.utils.RDFHelpers
+import deductions.runtime.sparql_cache.RDFCacheAlgo
 
 /**
  * Factory for populating Form from graph
  */
-trait FormConfigurationFactory[Rdf <: RDF]
+trait FormConfigurationFactory[Rdf <: RDF, DATASET]
     extends Configuration
+    with RDFCacheAlgo[Rdf, DATASET]
     with RDFHelpers[Rdf] {
   
   import ops._
@@ -45,7 +46,7 @@ trait FormConfigurationFactory[Rdf <: RDF]
     propertiesList
   }
 
-  /** lookup Form Spec from OWL class in In Configuration */
+  /** lookup Form Spec from OWL class in Configuration */
   private def lookFormSpecInConfiguration(classs: Rdf#URI)
   (implicit graph: Rdf#Graph)
   : Option[Rdf#Node] = {
@@ -75,6 +76,14 @@ trait FormConfigurationFactory[Rdf <: RDF]
     (implicit graph: Rdf#Graph)
     = {
     find(graph, ANY, formPrefix("fieldAppliesToProperty"), prop).toSeq
+  }
+
+  def lookPropertiesListFromDatabaseOrDownload(formuri: String)
+      (implicit graph: Rdf#Graph) = {
+    val formConfiguration = URI(formuri)
+    retrieveURINoTransaction( formConfiguration, dataset)
+    val propertiesList = propertiesListFromFormConfiguration(formConfiguration)
+    (propertiesList, formConfiguration)
   }
 
 }

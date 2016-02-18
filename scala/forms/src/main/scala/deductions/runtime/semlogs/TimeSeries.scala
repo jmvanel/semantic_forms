@@ -34,16 +34,16 @@ with SPARQLHelpers[Rdf, DATASET] {
    * transactional
    */
   override def notifyDataEvent(addedTriples: Seq[Rdf#Triple],
-      removedTriples: Seq[Rdf#Triple])(implicit userURI: String) = {
+      removedTriples: Seq[Rdf#Triple], ipAdress: String, isCreation: Boolean)(implicit userURI: String) = {
     // TODO future
     if (!addedTriples.isEmpty)
       dataset2.rw({
         val (graphUri, metadata ) = makeGraphURIAndMetadata(addedTriples, removedTriples)
-        dataset2.appendToGraph( metadataGraph, metadata)
+        rdfStore.appendToGraph( dataset2, metadataGraph, metadata)
        
         // TODO: add only modified triples (configurable)
         val graph = makeGraph(addedTriples)
-        dataset2.appendToGraph(graphUri, graph)
+        rdfStore.appendToGraph( dataset2, graphUri, graph)
       })
       Unit
   }
@@ -69,15 +69,21 @@ with SPARQLHelpers[Rdf, DATASET] {
   def getMetadata()
     (implicit userURI: String)
         : List[Seq[Rdf#Node]] = {
-    val query = s"""  # DISTINCT
+    val query = s"""
+      PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
       SELECT ?SUBJECT (max(?TS) as ?TIME ) (count(?O) AS ?COUNT)
       WHERE {
         GRAPH <urn:semantic_forms/metadataGraph> {
-          ?GR <urn:timestamp> ?TS . }
+          ?GR <urn:timestamp> ?TS
+              # ; <urn:ip> ?IP ; <urn:action> ?ACTION
+              .
+        }
         GRAPH ?GR {
          ?SUBJECT ?P ?O . } }
       GROUP BY ?SUBJECT
-      ORDER BY DESC(?TS)
+      # ORDER BY ASC(?TS)
+      # ORDER BY DESC(xsd:nonNegativeInteger(?TS))
+      ORDER BY DESC(xsd:integer(?TS))
     """
     println("getMetadata: query " + query)
     val res = sparqlSelectQueryVariables( query, Seq("SUBJECT", "TIME", "COUNT"), dataset2 )

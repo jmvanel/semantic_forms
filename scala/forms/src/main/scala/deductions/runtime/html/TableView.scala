@@ -45,10 +45,11 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     lang: String = "en",
     graphURI: String = "",
     actionURI2: String = "/save",
-    formGroup: String = fromUri(nullURI)): NodeSeq = {
+    formGroup: String = fromUri(nullURI),
+    formuri: String=""): NodeSeq = {
 
     htmlFormRaw(uri, unionGraph, hrefPrefix, blankNode, editable, actionURI,
-      lang, graphURI, actionURI2, URI(formGroup)) match {
+      lang, graphURI, actionURI2, URI(formGroup), formuri) match {
         case Success(e) => e
         case Failure(e) => <p>htmlFormElem: Exception occured: { e }</p>
       }
@@ -82,7 +83,8 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     editable: Boolean = false,
     lang: String = "en",
     graphURI: String = "",
-    formGroup: String = fromUri(nullURI))
+    formGroup: String = fromUri(nullURI),
+    formuri: String="" )
     : NodeSeq = {
 
     // TODO for comprehension like in htmlForm()
@@ -92,9 +94,8 @@ trait TableViewModule[Rdf <: RDF, DATASET]
       implicit val graph: Rdf#Graph = allNamedGraph
       val ops1 = ops;
       val form = createAbstractForm(
-//          graph, 
           uri, editable, lang, blankNode,
-        URI(formGroup))
+        URI(formGroup), formuri )
       new Form2HTMLBanana[Rdf] with ConfigurationCopy {
         val ops = ops1
         lazy val original:Configuration = TableViewModule.this
@@ -132,17 +133,18 @@ trait TableViewModule[Rdf <: RDF, DATASET]
                           lang: String = "en",
                           graphURI: String = "",
                           actionURI2: String = "/save",
-                          formGroup: Rdf#URI = nullURI): Try[NodeSeq] = {
+                          formGroup: Rdf#URI = nullURI,
+                          formuri: String=""): Try[NodeSeq] = {
 
     println(s"htmlFormRaw dataset $dataset")
     val tryGraph = if (blankNode != "true") {
       val res = retrieveURINoTransaction(makeUri(uri), dataset)
-      Logger.getRootLogger().info(s"After retrieveURI(makeUri($uri), store)")
+      Logger.getRootLogger().info(s"After retrieveURINoTransaction(makeUri($uri), store)")
       res
     } else Success(emptyGraph)
     val graphURIActual = if (graphURI == "") uri else graphURI
     Success(graf2form(unionGraph, uri, hrefPrefix, blankNode, editable,
-      actionURI, lang, graphURIActual, actionURI2, formGroup))
+      actionURI, lang, graphURIActual, actionURI2, formGroup, formuri))
   }
   
   /**
@@ -204,15 +206,15 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     actionURI: String = "/save",
     lang: String = "en", graphURI: String,
     actionURI2: String = "/save",
-    formGroup: Rdf#URI = nullURI)
+    formGroup: Rdf#URI = nullURI,
+    formuri: String="")
     : NodeSeq = {
 
     implicit val graph: Rdf#Graph = graphe
     println(s"graf2form(graph: graph size: ${graph.size}")
     val form = time("createAbstractForm",
       createAbstractForm(
-//          graph,
-          uri, editable, lang, blankNode, formGroup))
+          uri, editable, lang, blankNode, formGroup, formuri))
     val ops1 = ops;
     val htmlFormGen = time("new Form2HTML",
       new Form2HTMLBanana[Rdf] with ConfigurationCopy {
@@ -230,7 +232,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
   private def createAbstractForm(
 //      graphArg: Rdf#Graph, 
       uri: String, editable: Boolean,
-    lang: String, blankNode: String, formGroup: Rdf#URI)
+    lang: String, blankNode: String, formGroup: Rdf#URI, formuri: String="")
     (implicit graph: Rdf#Graph)
     : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
     val subjectNode = if (blankNode == "true")
@@ -244,7 +246,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
 //     val graph=graphArg
 //     val preferedLanguage = lang }
     preferedLanguage = lang
-    factory.createForm(subjectNode, editable, formGroup)
+    factory.createForm(subjectNode, editable, formGroup, formuri)
   }
 
   def htmlFormString(uri: String,

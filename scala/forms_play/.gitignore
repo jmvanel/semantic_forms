@@ -5,3 +5,4 @@ project/target
 .cache
 .classpath
 /.project
+LUCENE/

@@ -70,14 +70,18 @@ class TestCreationForm extends FunSuite
 
   test("display form from class") {
     val classUri = foaf.Person
-    retrieveURI(URI(foaf.prefixIri), dataset)
+    println("retrieveURI(URI(foaf.prefixIri)\n" +
+      retrieveURI(URI(foaf.prefixIri), dataset)
+    )
     implicit val graph =
       rdfStore.rw(dataset, { allNamedGraph }).get
     val rawForm = createElem(classUri.toString(), lang = "fr")
     TestCreationForm.printWrapedWithHTML(rawForm, "example.creation.form.html")
 
-    assert(rawForm.toString().contains("topic_interest"))
-    assert(rawForm.toString().contains("firstName"))
+    val c1 = rawForm.toString().contains("topic_interest")
+    assert(c1)
+    val c2 = rawForm.toString().contains("firstName")
+    assert(c2)
     //    assert(rawForm.toString().contains("knows"))
   }
 

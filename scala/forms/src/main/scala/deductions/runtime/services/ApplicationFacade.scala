@@ -27,15 +27,15 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
   
   def htmlForm(uri: String, blankNode: String = "",
     editable: Boolean = false,
-    lang: String = "en") =
+    lang: String = "en", formuri: String = "") =
     impl.htmlForm(uri: String, blankNode,
-      editable, lang)
+      editable, lang, formuri)
 
   def htmlFormElemJustFields(uri: String, hrefPrefix: String = "", blankNode: String = "",
     editable: Boolean = false,
-    lang: String = "en" )
+    lang: String = "en", formuri: String )
     : NodeSeq = {
-    impl.htmlFormElemJustFields(uri, hrefPrefix, blankNode, editable, lang)
+    impl.htmlFormElemJustFields(uri, hrefPrefix, blankNode, editable, lang, formuri=formuri )
   }
   
   def create(classUri: String, lang: String, formSpecURI: String)

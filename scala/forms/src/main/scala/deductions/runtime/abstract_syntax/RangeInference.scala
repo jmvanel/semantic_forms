@@ -18,6 +18,7 @@ import scala.util.Success
 import scala.util.Failure
 import scala.language.postfixOps
 import org.w3.banana.PointedGraph
+import org.apache.log4j.Logger
 
 /**
  * populate Fields in form by inferring possible values from given rdfs:range's URI,
@@ -36,6 +37,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
   implicit val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]
   implicit val sparqlOps: SparqlOps[Rdf]
   private val rdfs = RDFSPrefix[Rdf]
+  val logger:Logger // = Logger.getRootLogger()
   
   import ops._
   import sparqlOps._
@@ -50,10 +52,10 @@ trait RangeInference[Rdf <: RDF, DATASET]
                                lang: String = "en") = {
     for (field <- formSyntax.fields) {
     	val ranges = objectsQuery( field.property, rdfs.range)
-    	println( "> field before addPossibleValues" + field )
+    	logger.debug( "> field before addPossibleValues" + field )
       formSyntax.possibleValuesMap.put(field.property,
         addPossibleValues(field, ranges, valuesFromFormGroup))
-      println( "> field after  addPossibleValues" + field )
+      logger.debug( "> field after  addPossibleValues" + field )
     }
   }
 
@@ -82,7 +84,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
         val enumerated = getObjects(graph, range, owl.oneOf)
         fillPossibleValuesFromList(enumerated, possibleValuesFromOwlOneOf)
       }
-      println(s"populateFromOwlOneOf size ${possibleValuesFromOwlOneOf.size} ranges $ranges - $entryField")
+      logger.debug(s"populateFromOwlOneOf size ${possibleValuesFromOwlOneOf.size} ranges $ranges - $entryField")
       if (!possibleValuesFromOwlOneOf.isEmpty) {
         /* normally we have a non empty list of possible values to propose to user,
          * and then there is no open Choice for her. */
@@ -130,7 +132,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
     /** process owl:union appearing as rdfs:range of a property */
     def populateFromOwlUnion(): Map[ Rdf#Node, Seq[ResourceWithLabel[Rdf] ]] = {
       val classes = processOwlUnion()
-      println( "populateFromOwlUnion: classes " + classes )
+      logger.debug( "populateFromOwlUnion: classes " + classes )
       val map = ( for( classe <- classes ) yield {
     	  classe -> tuples2ResourcesWithLabel( getInstancesAndLabels(classe) )
       } ) . toMap
@@ -203,7 +205,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
         rrrr.flatten
         }
       )
-      println(s"  possibleValues.size ${entryField.property} ${possibleValues.size}" )
+      logger.debug(s"  possibleValues.size ${entryField.property} ${possibleValues.size}" )
       val result = possibleValues.map {
         (couple: (Rdf#Node, Rdf#Node)) =>
         new ResourceWithLabel(couple._1, couple._2)
@@ -321,7 +323,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
           row("LABEL").get.as[Rdf#Node].get)
     }
     val possibleValues = res.to[List]
-    info(s""" populateFromTDB  size ${possibleValues.size}
+    logger.debug(s""" populateFromTDB  size ${possibleValues.size}
              ${possibleValues.mkString("\n")}""")
     possibleValues
   }

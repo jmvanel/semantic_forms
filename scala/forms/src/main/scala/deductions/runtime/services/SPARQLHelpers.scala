@@ -52,7 +52,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET] {
 
     /** sparql Update Query;
    * NON transactional */
-  def sparqlUpdateQuery(queryString: String): Try[Unit] = {
+  def sparqlUpdateQuery(queryString: String, ds: DATASET = dataset): Try[Unit] = {
     val result = for {
       query <- {
     	  println( "sparqlUpdateQuery: before parseUpdate" )
@@ -60,7 +60,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET] {
       }
       es <- {
         println( "sparqlUpdateQuery: before executeUpdate" )
-        dataset.executeUpdate( query, Map())
+        ds.executeUpdate( query, Map())
       }
     } yield es
     result
@@ -109,10 +109,10 @@ extends RDFStoreLocalProvider[Rdf, DATASET] {
          |   }
          | }""".stripMargin
     println(s"replaceRDFnode: sparqlUpdate Query: $queryString")
-    val res = sparqlUpdateQuery(queryString)
+    val res = sparqlUpdateQuery(queryString, dataset)
     println(s"replaceRDFnode: sparqlUpdateQuery: $res")
 
-    dataset.appendToGraph(graphURI, makeGraph(Seq(triple)))
+    rdfStore.appendToGraph( dataset, graphURI, makeGraph(Seq(triple)))
   }
 
   //////////////// SELECT stuff //////////////////////////

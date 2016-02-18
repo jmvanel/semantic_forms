@@ -51,7 +51,7 @@ trait TestCreationForm2[Rdf <: RDF, DATASET] extends FunSuite
     retrieveURI(makeUri(uri), dataset)
     // NOTE: without form_specs/foaf.form.ttl
       rdfStore.rw(dataset, {
-      rdfStore.appendToGraph(dataset, makeUri("test"), personFormSpec)
+      rdfStore.appendToGraph( dataset, makeUri("test"), personFormSpec)
     })
     val form = create(uri, lang = "fr")
     val file = "creation.form.2.html"

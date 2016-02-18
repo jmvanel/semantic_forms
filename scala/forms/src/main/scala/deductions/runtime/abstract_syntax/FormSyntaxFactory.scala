@@ -91,7 +91,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     with RangeInference[Rdf, DATASET]
     with PreferredLanguageLiteral[Rdf]
     with PossibleValues[Rdf]
-   	with FormConfigurationFactory[Rdf]
+   	with FormConfigurationFactory[Rdf, DATASET]
     with Timer {
 
   // TODO not thread safe: form is not rebuilt for each HTTP request 
@@ -113,14 +113,15 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   
   
   /** create Form from an instance (subject) URI;
-   *  the Form Specification is inferred from the class of instance */
+   *  the Form Specification is inferred from the class of instance;
+   *  NO transaction, should be called within a transaction */
   def createForm(subject: Rdf#Node,
     editable: Boolean = false,
-    formGroup: Rdf#URI = nullURI)
+    formGroup: Rdf#URI = nullURI, formuri: String="")
     (implicit graph: Rdf#Graph)
   : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
 
-    val s1 = new Step1(subject, editable)
+    val s1 = new Step1(subject, editable, formuri)
 
     createFormDetailed(subject, s1.propertiesList,
       s1.classs,
@@ -130,8 +131,10 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
     /** create Form from an instance (subject) URI,
      * and a Form Specification
-     * ( see form_specs/foaf.form.ttl for an example ) */
-  def createFormFromSpecification(
+     * ( see form_specs/foaf.form.ttl for an example )
+     * 
+     * TODO unused!!!! should it be used or deleted ? */
+  private def createFormFromSpecification(
     subject: Rdf#Node,
     formSpecification: PointedGraph[Rdf],
     editable: Boolean = false,
@@ -139,7 +142,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     (implicit graph: Rdf#Graph)
   : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
 
-	  val s1 = new Step1(subject, editable) {
+	  val s1 = new Step1(subject, editable, "") {
 		  override val propsFromConfig = propertiesListFromFormConfiguration(
         formSpecification.pointer)(formSpecification.graph)
 	  }
@@ -150,11 +153,15 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   }
   
   /** Step1: compute properties List from Config, Subject, Class (in that order) */
-  class Step1(subject: Rdf#Node,
-    editable: Boolean = false)
+  private class Step1(subject: Rdf#Node,
+    editable: Boolean = false, formuri: String)
     (implicit graph: Rdf#Graph) {
     val classs = classFromSubject(subject) // TODO several classes
-    val propsFromConfig = lookPropertieslistFormInConfiguration(classs)._1
+    val propsFromConfig = if(formuri=="")
+      lookPropertieslistFormInConfiguration(classs)._1
+    else {
+      lookPropertiesListFromDatabaseOrDownload(formuri)._1
+    }
     val propsFromSubject = fieldsFromSubject(subject, graph)
     val propsFromClass =
       if (editable) {
@@ -178,7 +185,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    *  see if ?D is a datatype or an OWL or RDFS class;
    *  
    * used directly for creating an empty Form from a class URI,
-   * and indirectly for other cases.
+   * and indirectly for other cases;
+   * NO transaction, should be called within a transaction
    */
   def createFormDetailed(subject: Rdf#Node,
     props: Iterable[Rdf#Node], classs: Rdf#URI,

@@ -12,7 +12,8 @@ trait LogAPI[Rdf <: RDF] {
   import ops._
 
 //  trait SaveListener {
-    def notifyDataEvent(addedTriples: Seq[Rdf#Triple], removedTriples: Seq[Rdf#Triple])
+    def notifyDataEvent(addedTriples: Seq[Rdf#Triple], removedTriples: Seq[Rdf#Triple],
+        ipAdress: String="", isCreation: Boolean=false )
     (implicit userURI: String) = Unit
   
 //  trait DataEventListener {

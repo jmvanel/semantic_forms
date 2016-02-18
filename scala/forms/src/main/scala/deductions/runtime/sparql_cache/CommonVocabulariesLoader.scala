@@ -75,7 +75,7 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
       largerVocabs map {
         voc =>
           try {
-            dataset.removeGraph(voc)
+            rdfStore.removeGraph( dataset, voc)
           } catch {
             case e: Exception => println("Error in resetCommonVocabularies " + voc + " " + e)
           }

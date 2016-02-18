@@ -2,14 +2,14 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET     /display            controllers.Application.displayURI(displayuri:String, blanknode:String ?= "", Edit:String?="")
+GET     /display            controllers.Application.displayURI(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="")
 # GET     /display2            controllers.Application.displayURI2(displayuri:String)
 GET     /edit               controllers.Application.edit( url:String )
 POST    /save               controllers.Application.saveAction()
 GET     /create             controllers.Application.createAction()
 
 GET     /download           controllers.Application.downloadAction( url:String )
-GET     /form               controllers.Application.form(displayuri:String, blanknode:String ?= "", Edit:String?="")
+GET     /form               controllers.Application.form(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="")
 
 
 GET     /sparql             controllers.Application.sparql( query:String )

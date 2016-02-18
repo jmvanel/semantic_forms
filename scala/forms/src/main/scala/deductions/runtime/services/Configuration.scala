@@ -44,7 +44,11 @@ trait Configuration {
    */
   def displayTechnicalSemWebDetails: Boolean
 
-  def css: CSS // = new CSS{}
+  def useTextQuery: Boolean
+  /** considered if useTextQuery */
+  def solrIndexing: Boolean
+
+  def css: CSS
 
   //  def radioForIntervals = false // TODO
   //  def activateUserInputHistory = false
@@ -72,4 +76,7 @@ trait ConfigurationCopy extends Configuration {
   override val showRDFtype = original.showRDFtype
   override val css = original.css
   override val displayTechnicalSemWebDetails = original.displayTechnicalSemWebDetails
+  override val useTextQuery = original.useTextQuery
+  override val solrIndexing = original.solrIndexing
+
 }
