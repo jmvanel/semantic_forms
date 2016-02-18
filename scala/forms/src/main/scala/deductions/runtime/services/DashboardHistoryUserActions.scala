@@ -37,33 +37,36 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   }
 
   /** leverage on ParameterizedSPARQL.makeHyperlinkForURI() */
-  def makeTableHistoryUserActions(lang: String="en")(implicit userURI: String): NodeSeq = {
+  def makeTableHistoryUserActions(lang: String = "en")(implicit userURI: String): NodeSeq = {
     val met = getMetadata()
     implicit val queryMaker = qm
-    <table>
-      <tr>
-        <th title="Resource URI visited by user">Resource</th> 
-        <th title="Time visited by user">Time</th>
-        <th title="Number of fields (triples) edited by user">Count</th>
-        <th>User</th></tr>
-      {
-      dataset.rw({ // for calling instanceLabel()
-      for (row <- met) yield {
-        println( "row " + row(1).toString() )
-            if (row(1).toString().length() > 3 ) {
-              val date = new Date(makeStringFromLiteral(row(1)).toLong)
-              val dateFormat = new SimpleDateFormat(
-                "EEEE dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
-              <tr>{
-                <td>{ makeHyperlinkForURI(row(0), lang, allNamedGraph) }</td>
-                <td>{ dateFormat.format(date) }</td>
-                <td>{ makeStringFromLiteral(row(2)) }</td>
-                <td>{ userURI }</td>
-              }</tr>
-            } else <tr/>
-      }
-      }) . get
-    }
-    </table>
+     <table class="table">
+      <thead>
+        <tr>
+          <th title="Resource URI visited by user">Resource</th>
+          <th title="Time visited by user">Time</th>
+          <th title="Number of fields (triples) edited by user">Count</th>
+          <th>User</th>
+        </tr>
+      </thead><tbody>
+                {
+                  dataset.rw({ // for calling instanceLabel()
+                    for (row <- met) yield {
+                      println("row " + row(1).toString())
+                      if (row(1).toString().length() > 3) {
+                        val date = new Date(makeStringFromLiteral(row(1)).toLong)
+                        val dateFormat = new SimpleDateFormat(
+                          "EEEE dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
+                        <tr>{
+                          <td>{ makeHyperlinkForURI(row(0), lang, allNamedGraph) }</td>
+                          <td>{ dateFormat.format(date) }</td>
+                          <td>{ makeStringFromLiteral(row(2)) }</td>
+                          <td>{ userURI }</td>
+                        }</tr>
+                      } else <tr/>
+                    }
+                  }).get
+                }
+    		</tbody></table>
   }
 }
