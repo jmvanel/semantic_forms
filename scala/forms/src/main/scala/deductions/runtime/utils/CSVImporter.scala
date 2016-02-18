@@ -173,8 +173,8 @@ trait CSVImporter[Rdf <: RDF, DATASET]
    *  manage prefixes globally, maybe using prefix.cc */
   val columnsMappings = Map(
       "Email" -> foaf.mbox,
-      "Nom" -> foaf.givenName,
-      "Prénom" -> foaf.familyName,
+      "Prénom" -> foaf.givenName,
+      "Nom" -> foaf.familyName,
       "Téléphone" -> foaf.phone,
       "Catégorie" -> foaf.focus,
       "Code postal" -> vcard.postal_code,
