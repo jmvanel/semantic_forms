@@ -35,4 +35,5 @@ project/plugins/project/
 dump*.nq
 *__
 TDB*
+LUCENE/
 
