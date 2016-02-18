@@ -32,13 +32,13 @@ object CSVImporterApp extends App
     if (args.size > 1) args(1) else url)
   val graph = run(in, documentURI): Rdf#Graph
 
-  if ( true
-//      args.size > 2 && args(2) == "print"
-      ) {
-     val os = new FileOutputStream( urlOrFile + ".ttl" )
-     turtleWriter.write(graph, os, fromUri(documentURI) )
+//  if (true args.size > 2 && args(2) == "print" ) 
+  {
+    val outputFile = urlOrFile + ".ttl"
+    println(s"Write $outputFile, # of triples ${graph.size()}")
+    val os = new FileOutputStream(outputFile)
+    turtleWriter.write(graph, os, fromUri(documentURI))
   }
-  //
   rdfStore.appendToGraph(dataset, documentURI, graph)
 
   /**

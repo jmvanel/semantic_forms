@@ -1,18 +1,26 @@
 package deductions.runtime.utils
 
-import java.lang.Character.toUpperCase
-import org.apache.commons.csv.CSVParser
-import java.io.IOException
 import java.io.InputStream
+import java.io.InputStreamReader
+import java.lang.Character.toUpperCase
 import java.util.StringTokenizer
-import org.w3.banana.RDF
-import org.w3.banana._
-import scala.collection.JavaConversions._
-import org.apache.any23.extractor.csv.CSVReaderBuilder
+
+import scala.annotation.migration
+import scala.collection.JavaConversions.asScalaBuffer
+import scala.collection.JavaConversions.asScalaIterator
+import scala.collection.JavaConversions.mapAsScalaMap
 import scala.collection.mutable.ArrayBuffer
 import scala.language.postfixOps
-import org.apache.commons.csv.CSVRecord
+
 import org.apache.any23.vocab.CSV
+import org.apache.commons.csv.CSVFormat
+import org.apache.commons.csv.CSVParser
+import org.apache.commons.csv.CSVRecord
+import org.w3.banana.RDF
+import org.w3.banana.RDFOps
+import org.w3.banana.RDFPrefix
+import org.w3.banana.RDFSPrefix
+import org.w3.banana.XSDPrefix
 
 /** made from CSVExtractor from Any23;
  *  TODO: probably should be in another SBT project */
@@ -21,9 +29,9 @@ trait CSVImporter[Rdf <: RDF, DATASET] {
   implicit val ops: RDFOps[Rdf]
   import ops._
   
-  val rdf = RDFPrefix[Rdf]
-  val rdfs = RDFSPrefix[Rdf]
-  val xsd = XSDPrefix[Rdf]
+  private val rdf = RDFPrefix[Rdf]
+  private val rdfs = RDFSPrefix[Rdf]
+  private val xsd = XSDPrefix[Rdf]
   
   private var csvParser: CSVParser = _
   type URI = Rdf#URI
@@ -32,30 +40,39 @@ trait CSVImporter[Rdf <: RDF, DATASET] {
 
   private var csv: CSV = CSV.getInstance
 
-  def setStopAtFirstError(f: Boolean) {  }
-
+  /** TODO consider using R2RML vocab' */
+  private def csvPredicate(p: String) = URI(CSV.NS + p)
+    
   def run(
       in: InputStream,
       documentURI: URI ): Rdf#Graph = {
-//    val documentURI: URI = // extractionContext.getDocumentURI
     
-    val rowType = URI(CSV.ROW_TYPE)
+    val rowType = csvPredicate(CSV.ROW_TYPE)
     
-    csvParser = CSVReaderBuilder.build(in)
-    val header: java.util.Map[String, Integer] = csvParser.getHeaderMap // getLine
+    csvParser = new CSVParser( new InputStreamReader(in) , CSVFormat.DEFAULT .withHeader() )
+      // public CSVParser(final Reader reader, final CSVFormat format) throws IOException {
+      // CSVParser.create(in) // 
+      // CSVReaderBuilder.build(in)
+    val header: java.util.Map[String, Integer] = csvParser.getHeaderMap
     headerURIs = processHeader(header, documentURI)
     
     val list = ArrayBuffer[Rdf#Triple]()
     
     writeHeaderPropertiesMetadata(header, list)
-//    var nextLine: Array[String] = null
     var index = 0
+    val rowSubjectPrefix = {
+      val doc = documentURI.toString
+      if( doc.endsWith("/") ||
+        doc.endsWith("#") ) doc + "row/"
+      else
+        doc + "/row/"
+    }
     for( record <- csvParser.getRecords ) {
-      val rowSubject = URI(documentURI.toString + "/row/" + index)
+      val rowSubject = URI( rowSubjectPrefix + index)
       list += Triple(rowSubject, rdf.typ, rowType)
       produceRowStatements(rowSubject, record, list)
-//      list += Triple(documentURI, csv.row, rowSubject)
-//      list += Triple(rowSubject, csv.rowPosition, new LiteralImpl(String.valueOf(index))
+      list += Triple(documentURI, csvPredicate(CSV.ROW), rowSubject)
+      list += Triple(rowSubject, csvPredicate(CSV.ROW_POSITION), Literal( String.valueOf(index) ) )
       index = index + 1
     }
     addTableMetadataStatements(documentURI, list, index, headerURIs.length)
@@ -92,19 +109,23 @@ trait CSVImporter[Rdf <: RDF, DATASET] {
       if (!isAbsoluteURI(fromUri(singleHeader))) {
         list += Triple( singleHeader, rdfs.label, Literal( fromUri(singleHeader) ) )
       }
-      list += Triple(singleHeader, URI(CSV.COLUMN_POSITION), Literal(String.valueOf(index), xsd.integer ))
+      list += Triple(singleHeader, csvPredicate(CSV.COLUMN_POSITION), Literal(String.valueOf(index), xsd.integer ))
       index = index + 1
     }
   }
 
   private def processHeader(header:  java.util.Map[String, Integer],
-      documentURI: URI): IndexedSeq[URI] = {
-    val result = ArrayBuffer[URI]()
+      documentURI: URI): ArrayBuffer[URI] = {
+    val result = ArrayBuffer.fill( header.size )(URI(""))
     var index = 0
     for (h <- header.keys) {
       val candidate = h.trim()
-      result(index) = if (isAbsoluteURI(candidate)) URI(candidate) else normalize(candidate, 
-        documentURI)
+      result . update( index, 
+        if (isAbsoluteURI(candidate))
+          URI(candidate)
+        else
+          normalize(candidate, documentURI)
+      )
       index += 1
     }
     result
@@ -165,12 +186,12 @@ trait CSVImporter[Rdf <: RDF, DATASET] {
 		  list: ArrayBuffer[Rdf#Triple],
 		  numberOfRows: Int, 
       numberOfColumns: Int) {
-    list += Triple(documentURI, URI(CSV.NUMBER_OF_ROWS), Literal(String.valueOf(numberOfRows), xsd.integer))
-    list += Triple(documentURI, URI(CSV.NUMBER_OF_COLUMNS), Literal(String.valueOf(numberOfColumns), 
+    list += Triple(documentURI, csvPredicate(CSV.NUMBER_OF_ROWS), Literal(String.valueOf(numberOfRows), xsd.integer))
+    list += Triple(documentURI, csvPredicate(CSV.NUMBER_OF_COLUMNS), Literal(String.valueOf(numberOfColumns), 
       xsd.integer))
   }
   
-  def isAbsoluteURI(uri: String) = {
+  private def isAbsoluteURI(uri: String) = {
     try{
       val u = new java.net.URI(uri)
       u.isAbsolute()
