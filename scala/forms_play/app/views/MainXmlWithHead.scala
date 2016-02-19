@@ -7,7 +7,6 @@ trait MainXmlWithHead extends MainXml {
   
   /** HTML head */
   override def head(title: String = "")(implicit lang: String = "en") = {
-    val bootstrap = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1"
     <head>
       <title>{ val default = message("Welcome") ; if( title != "") title +" - "+default else default }</title>
       <meta http-equiv="Content-type" content="text/html; charset=UTF-8"></meta>
@@ -20,9 +19,9 @@ trait MainXmlWithHead extends MainXml {
       <script src={ routes.Assets.at("javascripts/jquery-2.2.0.min.js").url } type="text/javascript"></script>
 
       <!-- bootstrap -->
-      <link rel="stylesheet" href={ bootstrap + "/css/bootstrap.min.css"}/>
-      <link rel="stylesheet" href={ bootstrap + "/css/bootstrap-theme.min.css"}/>
-      <script src={ bootstrap + "/js/bootstrap.min.js"}></script>
+  		<link rel="stylesheet" href={ routes.Assets.at("stylesheets/bootstrap.min.css").url } />
+  		<link rel="stylesheet" href={ routes.Assets.at("stylesheets/bootstrap-theme.min.css").url } />
+  		<script src={ routes.Assets.at("javascripts/bootstrap.min.js").url } type="text/javascript"></script>
 
       <link rel="stylesheet" href={ routes.Assets.at("stylesheets/select2.css").url }/>
       <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-beta.3/css/select2.min.css" rel="stylesheet"/>
