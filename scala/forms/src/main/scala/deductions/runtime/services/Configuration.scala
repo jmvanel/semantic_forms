@@ -7,6 +7,8 @@ import deductions.runtime.html.CSS
  *  TODO should 100% abstract
  */
 trait Configuration {
+  // TODO all members should be abstract!!!!!!!!! 
+
   /** URI Prefix prepended to newly created resource instances */
   def defaultInstanceURIHostPrefix = "http://assemblee-virtuelle.org/"
   /** otherwise use defaultInstanceURIHostPrefix */
@@ -34,7 +36,7 @@ trait Configuration {
   /** show triples with rdf:type */
   def showRDFtype: Boolean
   /** show + Buttons for creating multi-valued */
-  def showPlusButtons: Boolean // TODO all members should be abstract!!!!!!!!! 
+  def showPlusButtons: Boolean
   /** inline Javascript In Form; overwise app. developer must put it in <head> */
   def inlineJavascriptInForm: Boolean
 

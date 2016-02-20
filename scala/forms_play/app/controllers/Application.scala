@@ -39,7 +39,7 @@ object Application extends Controller
   def displayURI(uri: String, blanknode: String = "", Edit: String = "",
       formuri: String="") = {
     Action { implicit request =>
-      println(s"""displayURI: $request ${request.remoteAddress}, host ${request.host}
+      println(s"""displayURI: $request IP ${request.remoteAddress}, host ${request.host}
          displayURI headers ${request.headers}
          displayURI tags ${request.tags}
          """)
@@ -49,7 +49,7 @@ object Application extends Controller
       outputMainPage(
         htmlForm(uri, blanknode, editable = Edit != "", lang, formuri),
         lang, title=title )
-      // TODO record in TDB like, timestamp & history: request.remoteAddress, request.host
+      // TODO record in TDB like timestamp & history: request.remoteAddress, request.host
     }
   }
 

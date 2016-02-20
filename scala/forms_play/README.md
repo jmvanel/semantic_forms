@@ -90,6 +90,22 @@ just once in the directory scala/forms\_play/ ; this creates configuration for 2
 
 You may have to set by hand the dependency in project forms\_play/ towards the other. For this, go in Properties of project, Java Build Path, Projects tab, and Add...
 
+## Ensime
+
+Here are commands I used for installing Ensime for Vim
+https://github.com/ensime/ensime-vim
+
+```shell
+sudo apt-get install python-pip
+sudo pip install websocket-client
+export BROWSER=firefox
+echo 'export BROWSER=firefox' >> ~/.bashrc 
+mkdir -p ~/.sbt/0.13/plugins/
+echo 'addSbtPlugin("org.ensime" % "ensime-sbt" % "0.3.3")'     >> ~/.sbt/0.13/plugins/plugins.sbt
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+sbt gen-ensime
+```
+
 ## Troubleshooting & tips
 
 - FAILED DOWNLOADS messages for the first SBT build: retry later. With SBT, as with all these dependency managers ( Maven, NMP), given the large amount of downloading from multiple sources, it is often the case that the first time, not everything is there.
