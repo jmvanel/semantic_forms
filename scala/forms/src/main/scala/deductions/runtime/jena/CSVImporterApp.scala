@@ -43,7 +43,7 @@ object CSVImporterApp extends App
       r.toList
     }
     run(in, documentURI,
-        propertyValueForEachRow)
+      propertyValueForEachRow)
   } else
     run(in, documentURI)
 
