@@ -20,7 +20,7 @@ trait FormConfigurationFactory[Rdf <: RDF, DATASET]
   val formPrefix: Prefix[Rdf] = Prefix("form", formVocabPrefix)
 
   /**
-   * lookup for form:showProperties (ordered list of fields) in Form Configuration within RDF graph in this class
+   * lookup for form:showProperties (ordered list of fields) in Form Configuration within RDF graph about this class
    *  usable for unfilled and filled Forms
    */
   def lookPropertieslistFormInConfiguration(classs: Rdf#URI)
@@ -78,6 +78,7 @@ trait FormConfigurationFactory[Rdf <: RDF, DATASET]
     find(graph, ANY, formPrefix("fieldAppliesToProperty"), prop).toSeq
   }
 
+  /** look for Properties List & form Configuration From URI in Database after trying to donwload */
   def lookPropertiesListFromDatabaseOrDownload(formuri: String)
       (implicit graph: Rdf#Graph) = {
     val formConfiguration = URI(formuri)

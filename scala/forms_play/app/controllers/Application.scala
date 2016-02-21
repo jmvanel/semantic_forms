@@ -42,6 +42,7 @@ object Application extends Controller
       println(s"""displayURI: $request IP ${request.remoteAddress}, host ${request.host}
          displayURI headers ${request.headers}
          displayURI tags ${request.tags}
+         formuri <$formuri>
          """)
       println(s"""displayURI: Edit "$Edit" """)
       val lang = chooseLanguage(request)
@@ -55,7 +56,7 @@ object Application extends Controller
 
   def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String ="") = {
     Action { implicit request =>
-      println("form: " + request + " displayURI: " + Edit)
+      println( s"""form: request $request : "$Edit" formuri <$formuri> """)
       val lang = chooseLanguage(request)
       Ok(htmlFormElemJustFields(uri: String, hrefDisplayPrefix, blankNode,
         editable = Edit != "", lang, formuri))

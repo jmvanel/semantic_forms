@@ -43,7 +43,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
     formSpecURI: String = "")
   	  (implicit graph: Rdf#Graph)
   	  : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
-	  val formConfiguration = this
+//	  val formConfiguration = this
 
     val (propsListInFormConfig, formConfig) =
       if (formSpecURI != "") {

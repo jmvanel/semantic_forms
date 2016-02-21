@@ -1,4 +1,12 @@
-<body onload="loadForm( '/form?displayuri=&formuri=http://deductions-software.com/ontologies/forms#personForm', 'form' ) ");">
+<!-- 
+body onload="loadForm( '/form?displayuri=&formuri=http%3A%2F%2Fdeductions-software.com%2Fontologies%2Fforms%23personForm', 'form' );">
+ -->
+
+<body onload="loadForm(
+		'/form?displayuri=&formuri=' + encodeURIComponent( 'http://deductions-software.com/ontologies/forms#personForm' ),
+		'form' );" >
+
+
 <script>
 var req = new XMLHttpRequest();
 function loadForm( f, id ) {

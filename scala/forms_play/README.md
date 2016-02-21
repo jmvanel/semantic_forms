@@ -121,8 +121,9 @@ sbt gen-ensime
 See 
 [playframework documentation/2.3.x/IDE](https://www.playframework.com/documentation/2.3.x/IDE)
 
-Apparently Activator, not SBT, is needed:
-    activator -jvm-debug 9999 run
+Activator or SBT work the same way :
+
+    sbt -jvm-debug 9999 run
 
 #Database Administration
 ## Preloading RDF content
