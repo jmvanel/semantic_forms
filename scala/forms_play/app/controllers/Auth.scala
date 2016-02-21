@@ -68,7 +68,7 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
 
   /** page for login or signin */
   def login = Action { implicit request =>
-    println( s"def login" )
+    println( s"def login $request" )
 //      implicit val messages: Messages = null
 //     new play.api.i18n.Messages(  (lang: play.api.i18n.Lang, messages: play.api.i18n.MessagesApi )
       // Implicits.applicationMessages( Lang(lang), play.api.Play.current)
@@ -76,6 +76,7 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
 //    implicit val messages: play.api.i18n.Messages = new play.api.i18n.Messages( Lang("en"), messagesApi )
     val lf = views.html.login(loginForm, registerForm)
     Ok("<!DOCTYPE html>\n" + lf)
+    .as("text/html; charset=utf-8")
   }
 
   /** start a session after login if user Id & password are OK

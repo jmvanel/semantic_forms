@@ -4,7 +4,7 @@ import deductions.runtime.html.CSS
 
 /**
  * All Configuration flags and values for the library;
- * 100% abstract, ie all members are abstract 
+ * 100% abstract, ie all members are abstract
  */
 trait Configuration {
 

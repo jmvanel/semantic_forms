@@ -55,7 +55,4 @@ trait DefaultConfiguration extends Configuration {
   override val hrefDisplayPrefix = "/display?displayuri="
   override val hrefDownloadPrefix = "/download?url="
   override val hrefEditPrefix = "/edit?url="
-
-  // helper functions
-  // override val needLogin = needLoginForEditing || needLoginForDisplaying
 }
