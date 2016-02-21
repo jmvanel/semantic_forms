@@ -154,8 +154,10 @@ object Application extends Controller
   def createAction() = {
     Action { implicit request =>
       println("create: " + request)
+      // URI of RDF class from which to create instance
       val uri = getFirstNonEmptyInMap(request.queryString, "uri")
-      val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formspec")
+      // URI of form Specification
+      val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formuri")
       println("create: " + uri)
       println("formSpecURI: " + formSpecURI)
       val lang = chooseLanguage(request)
