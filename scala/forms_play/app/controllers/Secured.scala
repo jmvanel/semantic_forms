@@ -29,7 +29,10 @@ trait Secured
     }
   }
   
-  /** Ensures authentication and passes the user to the controller */
+  /** Ensures authentication and passes the user to the controller
+   *  TODO distinguish
+   *  needLoginForEditing, needLoginForDisplaying
+   *  */
   def withUser(fun: String => Request[AnyContent] => Result) =
     if(loginActivated)
       withAuth { username =>
