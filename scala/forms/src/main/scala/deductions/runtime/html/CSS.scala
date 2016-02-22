@@ -5,7 +5,7 @@ trait CSS {
   lazy val cssClasses = tableCSSClasses
 
   val cssRules = """
-      .form-root{ margin-left: 10px; }
+      /*.form-root{ margin-left: 10px; }
       .form-row{ display: table-row; }
       .form-cell{ display: table-cell; }
       .form-label{ display: table-cell; width: 160px;
@@ -18,7 +18,7 @@ trait CSS {
       .form-value{ display: table-cell; width: 500px;
                    border-collapse: separate;
                    border-width: 10px; }
-      .button-add{ width: 25px; }
+      .button-add{ width: 25px; }*/
 """
 
   lazy val localCSS = <style type='text/css'>{ cssRules }</style>
@@ -29,13 +29,19 @@ trait CSS {
     val formFieldCSSClass: String = "form-group",
     val formLabelAndInputCSSClass: String = "row",
     val formLabelCSSClass: String = "control-label",
-    val formInputCSSClass: String = "input")
+    val formDivInputCSSClass: String = "col-xs-9",
+    val formInputCSSClass: String = "input",
+    val formAddDivCSSClass: String = "col-xs-1",
+    val formSelectCSSClass: String = "col-xs-1")
 
   /** actually applied CSS classes are here */
   lazy val tableCSSClasses = CSSClasses(
-    formRootCSSClass = "form-root",
+    formRootCSSClass = "form-horizontal",
     formFieldCSSClass = "",
-    formLabelAndInputCSSClass = "form-row",
-    formLabelCSSClass = "form-label",
-    formInputCSSClass = "form-input")
+    formLabelAndInputCSSClass = "form-group",
+    formLabelCSSClass = "control-label col-xs-1",
+    formDivInputCSSClass = "col-xs-9",
+    formInputCSSClass = "form-control",
+    formAddDivCSSClass = "col-xs-1 input-group",
+    formSelectCSSClass = "col-xs-1")
 }

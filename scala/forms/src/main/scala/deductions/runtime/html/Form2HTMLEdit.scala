@@ -37,11 +37,13 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
         case r: fm#ResourceEntry if lookup(r) => makeHTML_Id(r)
         case r: fm#ResourceEntry => makeHTMLIdResourceSelect(r)
         case _ => makeHTML_Id(field)
-      }   
-      <input value="+" class="button-add btn-primary" readonly="yes" size="1" title={
+      }
+      <div class={ css.cssClasses.formAddDivCSSClass }>
+      <button class="btn btn-primary" readonly="yes" size="1" title={
         "Add another value for " + field.label } onClick={
         s""" cloneWidget( "$widgetName" ); cloneWidget( "${ makeHTML_Id(field) }" ); """
-      }></input>
+      }><i class="glyphicon glyphicon-plus"></i></button>
+			</div>
     } else <span></span>
   }
 
@@ -117,7 +119,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
   def renderPossibleValues(r: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     if (hasPossibleValues(r) &&
       isFirstFieldForProperty(r)) {
-      <select value={ r.value.toString } name={
+      <select class={ css.cssClasses.formSelectCSSClass } value={ r.value.toString } name={
         makeHTMLNameResource(r) } id={
         makeHTMLIdResourceSelect(r)
       } list={
@@ -171,6 +173,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
         }
 
       case _ =>
+        <div class={ css.cssClasses.formDivInputCSSClass }>
         <input class={ css.cssClasses.formInputCSSClass } value={
           toPlainString(lit.value)
         } name={ makeHTMNameLiteral(lit) } type={
@@ -181,7 +184,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
         size={
           inputSize.toString()
         } dropzone="copy" id={ htmlId }>
-        </input>
+        </input></div>
         <input type="button" value="EDIT" onClick={
           s"""launchEditorWindow( document.getElementById( "$htmlId" ));"""
         } title="Click to edit text in popup window as Markdown text">
