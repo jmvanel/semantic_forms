@@ -34,7 +34,8 @@ trait RDFI18NLoaderTrait[Rdf <: RDF, DATASET]
     })
   }
 
-  /** load RDF I18N Translations From GitHub, into named graph "rdf-i18n" */
+  /** load RDF I18N Translations From GitHub, into named graph "rdf-i18n";
+   *  TRANSACTIONAL */
   def loadFromGitHubRDFI18NTranslations() {
 
     /* TODO : do not hardcode the URL's but read:

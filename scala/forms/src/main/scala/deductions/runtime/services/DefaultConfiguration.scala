@@ -38,7 +38,7 @@ trait DefaultConfiguration extends Configuration {
   override def displayTechnicalSemWebDetails: Boolean = true
 
   /** use Text indexing with Lucene or SOLR */
-  override def useTextQuery: Boolean = true
+  override def useTextQuery: Boolean = false // true
   /** when #useTextQuery is true, use Text indexing with SOLR */
   override def solrIndexing: Boolean = false
 
