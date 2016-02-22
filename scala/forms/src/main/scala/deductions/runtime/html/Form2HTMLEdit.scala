@@ -58,6 +58,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
       Text("\n"),
     		// format: OFF
         if (r.openChoice)
+          <div class={ css.cssClasses.formDivInputCSSClass }>
           <input class={ css.cssClasses.formInputCSSClass }
       			value={ r.value.toString }
             name={ makeHTMLNameResource(r) }
@@ -69,7 +70,9 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
             onkeyup={if (lookup(r)) "onkeyupComplete(this);" else null}
             size={inputSize.toString()}
 						dropzone="copy">
-          </input> else new Text("") // format: ON
+          </input> 
+					</div>
+				else new Text("") // format: ON
       ,
       if (lookup(r))
         formatPossibleValues(r, inDatalist = true)
@@ -100,6 +103,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
     val placeholder = resourcePlaceholder(r)
     Seq(
       if (r.openChoice) {
+        <div class={ css.cssClasses.formDivInputCSSClass }>
         <input class={ css.cssClasses.formInputCSSClass } value={
           r.value.toString
         } name={ makeHTMLNameBN(r) } id={
@@ -111,6 +115,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
         title={ placeholder }
         >
         </input>
+				</div>
       }else new Text("\n")
       ,
       renderPossibleValues(r)) . flatten
@@ -119,6 +124,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
   def renderPossibleValues(r: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     if (hasPossibleValues(r) &&
       isFirstFieldForProperty(r)) {
+      <div class={ css.cssClasses.formSelectDivCSSClass }>
       <select class={ css.cssClasses.formSelectCSSClass } value={ r.value.toString } name={
         makeHTMLNameResource(r) } id={
         makeHTMLIdResourceSelect(r)
@@ -127,6 +133,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
       }>
         { formatPossibleValues(r) }
       </select>
+			</div>
     } else new Text("\n")
   }
   
@@ -185,10 +192,12 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
           inputSize.toString()
         } dropzone="copy" id={ htmlId }>
         </input></div>
+        <div class={ css.cssClasses.formDivEditInputCSSClass }>
         <input type="button" value="EDIT" onClick={
           s"""launchEditorWindow( document.getElementById( "$htmlId" ));"""
         } title="Click to edit text in popup window as Markdown text">
         </input>
+				</div>
     }
     Text("\n") ++ elem
   }

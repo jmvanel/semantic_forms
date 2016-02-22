@@ -46,15 +46,19 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
       generateHTMLJustFields(form, hrefPrefix, editable, graphURI))
 
     def wrapFieldsWithForm(htmlFormFields: NodeSeq): NodeSeq =
-      <form action={ actionURI } method="POST">
-        <p class="text-right">
-          <input value={ mess("SAVE") } type="submit" class="btn btn-primary btn-lg"/>
-        </p>
-        { htmlFormFields }
-        <p class="text-right">
-          <input value={ mess("SAVE") } type="submit" formaction={ actionURI2 } class="btn btn-primary btn-lg pull-right"/>
-        </p>
-      </form>
+      <div class="container-fluid">  
+      	<div class="row">
+					<form action={ actionURI } method="POST">
+        		<p class="text-right">
+          		<input value={ mess("SAVE") } type="submit" class="btn btn-primary btn-lg"/>
+        		</p>
+            { htmlFormFields }
+        		<p class="text-right">
+          		<input value={ mess("SAVE") } type="submit" formaction={ actionURI2 } class="btn btn-primary btn-lg pull-right"/>
+        		</p>
+      		</form>
+				</div>
+			</div>
     def mess(m: String): String = message(m, lang)
 
     if (editable)

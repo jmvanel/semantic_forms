@@ -31,7 +31,9 @@ trait CSS {
     val formLabelCSSClass: String = "control-label",
     val formDivInputCSSClass: String = "col-xs-9",
     val formInputCSSClass: String = "input",
+    val formDivEditInputCSSClass: String = "col-xs-1",
     val formAddDivCSSClass: String = "col-xs-1",
+    val formSelectDivCSSClass: String = "col-xs-1",
     val formSelectCSSClass: String = "col-xs-1")
 
   /** actually applied CSS classes are here */
@@ -42,6 +44,8 @@ trait CSS {
     formLabelCSSClass = "control-label col-xs-1",
     formDivInputCSSClass = "col-xs-9",
     formInputCSSClass = "form-control",
-    formAddDivCSSClass = "col-xs-1 input-group",
+    formDivEditInputCSSClass = "col-xs-1",
+    formAddDivCSSClass = "col-xs-1",
+    formSelectDivCSSClass = "col-xs-1",
     formSelectCSSClass = "col-xs-1")
 }
