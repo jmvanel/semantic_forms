@@ -45,6 +45,7 @@ object Application extends Controller
       println(s"""displayURI: $request IP ${request.remoteAddress}, host ${request.host}
          displayURI headers ${request.headers}
          displayURI tags ${request.tags}
+         userid "$userid"
          formuri <$formuri>
          """)
       println(s"""displayURI: Edit "$Edit" """)

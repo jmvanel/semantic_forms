@@ -28,7 +28,10 @@ with JenaModule
 with RDFStoreLocalJena1Provider
 with Auth[Jena, Dataset]
 with DefaultConfiguration {
-//  println(s"object Auth")
+  println(s"object Auth")
+  /** NOTE otherwise we get "Lock obtain timed out", because
+   *  LUCENE transactions would overlap with main database TDB/ */
+  override val useTextQuery = false
 }
 
 //@Inject(val messagesApi: MessagesApi)
@@ -108,9 +111,11 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
     bfr.fold(
       formWithErrors => {
         println(s"register = Action: BadRequest:\n\t$bfr")
-        BadRequest("<!DOCTYPE html>\n" + views.html.login(loginForm, formWithErrors))
+        BadRequest( // "<!DOCTYPE html>\n" + 
+            views.html.login(loginForm, formWithErrors))
+            .as("text/html; charset=utf-8")
         },
-        // TODO also Redirect to URL before login
+        // TODO also Redirect to the URL before login
       user => Redirect(routes.Application.index).withSession(Security.username -> user._1)
     )
   }
