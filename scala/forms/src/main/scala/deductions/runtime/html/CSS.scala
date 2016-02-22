@@ -5,6 +5,7 @@ trait CSS {
   lazy val cssClasses = tableCSSClasses
 
   val cssRules = """
+      input.form-control[type='text']{ margin-bottom: 15px; }
       /*.form-root{ margin-left: 10px; }
       .form-row{ display: table-row; }
       .form-cell{ display: table-cell; }
