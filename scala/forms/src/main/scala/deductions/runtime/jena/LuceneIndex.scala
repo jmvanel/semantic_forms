@@ -43,8 +43,7 @@ trait LuceneIndex // [Rdf <: RDF]
          * the text indexed by SORL will be kept in key "text" */
       if (solrIndexing) {
         val server: SolrServer = new HttpSolrServer("http://localhost:7983/new_core")
-        //      val pingResult = server.ping
-        //      println("pingResult.getStatus " + pingResult.getStatus) // 7983
+        // val pingResult = server.ping; println("pingResult.getStatus " + pingResult.getStatus) // 7983
         TextDatasetFactory.createSolrIndex(dataset, server, rdfIndexing)
       } else {
         val directory = new NIOFSDirectory(new File("LUCENE"))
