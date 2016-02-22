@@ -37,12 +37,12 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._
 
-  val FormSpecificationsGraph = URI("form_specs")
+  val formSpecificationsGraph = URI("urn:form_specs")
 
   /** TRANSACTIONAL */
   def resetCommonFormSpecifications() {
     val r = dataset.rw({
-      rdfStore.removeGraph(dataset, FormSpecificationsGraph)
+      rdfStore.removeGraph(dataset, formSpecificationsGraph)
     })
   }
 
@@ -76,7 +76,7 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
       val form_spec_graph: Rdf#Graph = turtleReader.read(from, base = obj.toString()) getOrElse sys.error(
         s"couldn't read ${obj.toString()}")
       val r = dataset.rw({
-        rdfStore.appendToGraph( dataset, FormSpecificationsGraph, form_spec_graph)
+        rdfStore.appendToGraph( dataset, formSpecificationsGraph, form_spec_graph)
       })
       println("Added form_spec " + obj)
     }
