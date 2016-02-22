@@ -41,7 +41,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
       <div class={ css.cssClasses.formAddDivCSSClass }>
       <button class="btn btn-primary" readonly="yes" size="1" title={
         "Add another value for " + field.label } onClick={
-        s""" cloneWidget( "$widgetName" ); cloneWidget( "${ makeHTML_Id(field) }" ); """
+        s""" cloneWidget( "$widgetName" ); return false;"""
       }><i class="glyphicon glyphicon-plus"></i></button>
 			</div>
     } else <span></span>
