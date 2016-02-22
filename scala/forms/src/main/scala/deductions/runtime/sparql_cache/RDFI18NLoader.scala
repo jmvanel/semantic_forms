@@ -1,11 +1,12 @@
 package deductions.runtime.sparql_cache
 
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.jena.RDFCache
 import org.w3.banana.RDF
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
+
 import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.jena.RDFCache
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
 
 /** TODO put in package jena */
 object RDFI18NLoader extends JenaModule
@@ -24,12 +25,12 @@ trait RDFI18NLoaderTrait[Rdf <: RDF, DATASET]
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._
 
-  val I18NGraph = URI("rdf-i18n")
+  val i18NGraph = URI("urn:rdf-i18n")
 
   /** TRANSACTIONAL */
   def resetRDFI18NTranslations() {
     val r = dataset.rw({
-      rdfStore.removeGraph( dataset, I18NGraph)
+      rdfStore.removeGraph( dataset, i18NGraph)
     })
   }
 
@@ -52,6 +53,6 @@ trait RDFI18NLoaderTrait[Rdf <: RDF, DATASET]
     )
     import ops._
     val translations = translations0 map { p => URI(p) }
-    translations map { storeURI(_, I18NGraph, dataset) }
+    translations map { storeURI(_, i18NGraph, dataset) }
   }
 }

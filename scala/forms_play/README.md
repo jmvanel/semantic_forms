@@ -128,13 +128,16 @@ Activator or SBT work the same way :
 #Database Administration
 ## Preloading RDF content
 
+*CAUTION:*
+Do not load data in a named graph (argument --graph below) whose name is a relative URI, like "blabla", or "a/b/c" . Use an absolute URI like urn:data/myorganization or an HTTP URL (see URI spec. https://tools.ietf.org/html/rfc3986 ).
+
 The server must not be started, because Jena TDB does not allow access to the database on disk from 2 different processes.
 
 - Preloading common vocabularies, and preloading some pre-defined form specifications ( currently FOAF ) : in activator (or sbt) shell, type:
 ```
     runMain deductions.runtime.sparql_cache.PopulateRDFCache
     // or, just some forms specs:
-    runMain tdb.tdbloader --loc=TDB --graph=form_specs ../forms/form_specs/foaf.form.ttl
+    runMain tdb.tdbloader --loc=TDB --graph=urn:form_specs ../forms/form_specs/foaf.form.ttl
 ```
 - Preloading a local file: in activator shell type: for example:
 
