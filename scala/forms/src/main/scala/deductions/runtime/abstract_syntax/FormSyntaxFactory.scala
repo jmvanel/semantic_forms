@@ -231,7 +231,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     logger.debug(s"createForm " + this)
     val res = time(s"updateFormFromConfig()",
       updateFormFromConfig(formSyntax, formConfig))
-    logger.info(s"createForm 2 " + this)
+    logger.debug(s"createForm 2 " + this)
     res
   }
 
@@ -327,7 +327,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)])
 	  (implicit graph: Rdf#Graph)
   : Seq[Entry] = {
-    logger.info(s"makeEntries subject $subject, prop $prop")
+    logger.debug(s"makeEntries subject $subject, prop $prop")
     implicit val prlng = preferedLanguage
     val rdfh = this
     
@@ -337,7 +337,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val rdf_type = RDFPrefix[Rdf].typ
     val propClasses = rdfh.objectsQuery(prop, rdf_type)
     val objects = objectsQuery(subject, prop.asInstanceOf[Rdf#URI])
-    logger.info(s"makeEntries subject $subject, objects $objects")
+    logger.debug(s"makeEntries subject $subject, objects $objects")
     val rangeClasses = objectsQueries(ranges, rdf_type)
 
     val result = scala.collection.mutable.ArrayBuffer[Entry]()

@@ -1,11 +1,13 @@
-<body onload="loadForm( '/form?displayuri=&formuri=http://deductions-software.com/ontologies/forms#personForm', 'form' ) ");">
+<html>
+<head>
 <script>
+// Just plain Web service call, could be done with jquery
 var req = new XMLHttpRequest();
 function loadForm( f, id ) {
   req.open('GET', f, true);
   req.onreadystatechange = callback;
   req.send();
-  console.log( "loadForm req sent!" );
+  console.log( "loadForm req sent!" + f );
   function callback(aEvt) {
     if (req.readyState == 4) {
       console.log( "req.response " );
@@ -14,9 +16,42 @@ function loadForm( f, id ) {
     }; 
   };
 };
+
+function populateForms() {
+	loadForm(
+		'/form?displayuri=&formuri=' + encodeURIComponent( 'http://deductions-software.com/ontologies/forms#personForm' ),
+		'form' );
+	loadForm(
+		'/form?displayuri=' + encodeURIComponent( 'http://jmvanel.free.fr/jmv.rdf#me' ) +
+		'&formuri=' + encodeURIComponent( 'http://deductions-software.com/ontologies/forms#personForm' ),
+		'display1' );
+	loadForm(
+			'/create?uri=' + encodeURIComponent( 'http://xmlns.com/foaf/0.1/Person' ) +
+			'&formuri=' + encodeURIComponent( 'http://deductions-software.com/ontologies/forms#personForm' ),
+			'create1' );
+	loadForm(
+			'/form?displayuri=' + encodeURIComponent( 'http://jmvanel.free.fr/jmv.rdf#me' ) +
+			'&formuri=' + encodeURIComponent( 'http://deductions-software.com/ontologies/forms#personForm' ) +
+			'&Edit=yes',
+			'edit1' );
+};
 </script>
-  Enter data fro a person:
-  <div id="form">
-  </div>
+</head>
+
+<body >
+  Empty URI just prints property labels:
+  <div id="form"></div>
+  Display data about a person (with specified form specification):
+  <div id="display1"></div>
+  Create a new person ( ! ;) ):
+  <div id="create1"></div>
+  Modify data for a person:
+  <div id="edit1"></div>
+  
+<script>
+  // Voir https://openclassrooms.com/courses/executer-plusieurs-fonctions-au-chargement-d-une-page
+  window.onload = populateForms;
+</script>
 </body>
 
+</html>

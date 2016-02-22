@@ -5,9 +5,10 @@ import deductions.runtime.html.CSS
 //trait Configuration {
 trait DefaultConfiguration extends Configuration {
   /** URI Prefix prepended to newly created resource instances */
-  //  var defaultInstanceURIHostPrefix = "http://assemblee-virtuelle.org/"
+  override val defaultInstanceURIHostPrefix =
+    "http://ldp.assemblee-virtuelle.org/" // ?????? 
   /** otherwise use defaultInstanceURIHostPrefix */
-  //  var useLocalHostPrefixForURICreation = false
+  override val useLocalHostPrefixForURICreation = false
 
   override val relativeURIforCreatedResourcesByForm = "ldp/"
   override val relativeURIforCreatedResourcesByLDP = relativeURIforCreatedResourcesByForm
@@ -42,10 +43,11 @@ trait DefaultConfiguration extends Configuration {
   override def solrIndexing: Boolean = false
 
   override val css: CSS = new CSS {}
+  override val radioForIntervals = false
 
   //  override val activateUserInputHistory = false
 
-  // CORS
+  /** CORS */
   override val allow_Origin = "*"
 
   // relative URI's
@@ -53,7 +55,4 @@ trait DefaultConfiguration extends Configuration {
   override val hrefDisplayPrefix = "/display?displayuri="
   override val hrefDownloadPrefix = "/download?url="
   override val hrefEditPrefix = "/edit?url="
-
-  // helper functions
-  // override val needLogin = needLoginForEditing || needLoginForDisplaying
 }

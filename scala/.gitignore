@@ -6,6 +6,7 @@
 
 TDB
 .classpath
+.ensime
 
 logfile.log*
 .cache-main

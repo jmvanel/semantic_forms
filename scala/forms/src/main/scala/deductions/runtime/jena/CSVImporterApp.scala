@@ -6,12 +6,15 @@ import java.net.URL
 import java.net.HttpURLConnection
 import java.io.File
 import java.io.FileOutputStream
+import java.io.FileReader
 
 /**
  * App to Import CSV into TDB;
- *  args: url Or File of CSV,
- *  output document URI (also base URL for the rows),
- *  rdf:type for the rows (OWL/RDFS class URI)
+ *  args:
+ *  0 - URL Or File of CSV,
+ *  1 - output document URI (also base URL for the rows),
+ *  2 - import details URL Or File ( in Turtle ) ; for example it contains:
+ *  		<any:ROW> a foaf:Person .
  */
 object CSVImporterApp extends App
     with RDFStoreLocalJena1Provider
@@ -31,9 +34,17 @@ object CSVImporterApp extends App
   val in: InputStream = getUrlInputStream(url)
   val documentURI: Rdf#URI = URI(
     if (args.size > 1) args(1) else url)
-  val graph = if (args.size > 2)
-    run(in, documentURI, URI(args(2)))
-  else
+  val graph = if (args.size > 2) {
+    val propertyValueForEachRow: List[(Rdf#URI, Rdf#Node)] = {
+      val graph = turtleReader.read(new FileReader(args(2)), "")
+      val r = for (triple <- graph.getOrElse(emptyGraph).triples) yield {
+        (triple.predicate, triple.objectt)
+      }
+      r.toList
+    }
+    run(in, documentURI,
+      propertyValueForEachRow)
+  } else
     run(in, documentURI)
 
   //  if (args.size > 3 && args(3) == "print" ) 

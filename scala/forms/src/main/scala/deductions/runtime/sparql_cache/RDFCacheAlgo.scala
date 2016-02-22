@@ -86,8 +86,12 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
         val mirrorURI = getMirrorURI(uri)
         if( mirrorURI == "") {
           val g = storeURINoTransaction(uri, uri, dataset)
-          println("Graph at URI was downloaded, new addition: " + uri + " , size " + g.size)
-          addTimestampToDataset(uri, dataset2)
+          if (g.size > 0) {
+            println("Graph at URI was downloaded, new addition: " + uri + " , size " + g.size)
+            addTimestampToDataset(uri, dataset2)
+          } else
+            println(s"Graph at URI $uri was downloaded, but it's empty." )
+
           g
         } else {
           println(s"mirrorURI found: $mirrorURI")

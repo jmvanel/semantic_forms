@@ -83,14 +83,12 @@ trait CSVImporter[Rdf <: RDF, DATASET]
   def run(
       in: InputStream,
       documentURI: URI,
-      typeURI: URI = foaf.Person ): Rdf#Graph = {
+      /* property Value pair to add For Each Row */
+      propertyValueForEachRow: List[(Rdf#URI, Rdf#Node)] = List() ): Rdf#Graph = {
     
     val rowType = csvPredicate(CSV.ROW_TYPE)
     
     csvParser = new CSVParser( new InputStreamReader(in) , CSVFormat.DEFAULT .withHeader() )
-      // public CSVParser(final Reader reader, final CSVFormat format) throws IOException {
-      // CSVParser.create(in) // 
-      // CSVReaderBuilder.build(in)
     val header: java.util.Map[String, Integer] = csvParser.getHeaderMap
     headerURIs = processHeader(header, documentURI)
     
@@ -109,7 +107,9 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       val rowSubject = URI( rowSubjectPrefix + index)
       list += Triple(rowSubject, rdf.typ, rowType)
       produceRowStatements(rowSubject, record, list)
-      list += Triple(rowSubject, rdf.typ, typeURI )
+      for( pv <- propertyValueForEachRow ) {
+    	  list += Triple(rowSubject, pv._1, pv._2)
+      }
       list += Triple(documentURI, csvPredicate(CSV.ROW), rowSubject)
       list += Triple(rowSubject, csvPredicate(CSV.ROW_POSITION), Literal( String.valueOf(index) ) )
       index = index + 1
@@ -169,6 +169,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
   }
 
   /** TODO
+   *  make this Map an argument
    *  use labels on properties to propose properties to user,
    *  manage prefixes globally, maybe using prefix.cc */
   val columnsMappings = Map(

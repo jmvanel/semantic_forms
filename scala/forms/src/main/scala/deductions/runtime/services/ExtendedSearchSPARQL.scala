@@ -23,6 +23,7 @@ trait ExtendedSearchSPARQL[Rdf <: RDF, DATASET]
         
 SELECT DISTINCT ?S WHERE {
 {
+  graph ?g {
   ?TOPIC ?PRED <$search> .
   ?S ?PRED2  ?TOPIC .
   # ?S a foaf:Person .
@@ -30,6 +31,7 @@ SELECT DISTINCT ?S WHERE {
   <$search> ?PRED3 ?TOPIC2 .
   ?S  ?PRED4  ?TOPIC2 .
   # ?S a foaf:Person .
+}
 }
 }
 """
