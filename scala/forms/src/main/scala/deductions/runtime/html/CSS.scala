@@ -35,7 +35,7 @@ trait CSS {
     val formDivEditInputCSSClass: String = "col-xs-1",
     val formAddDivCSSClass: String = "col-xs-1",
     val formSelectDivCSSClass: String = "col-xs-1",
-    val formSelectCSSClass: String = "")
+    val formSelectCSSClass: String = "form-control")
 
   /** actually applied CSS classes are here */
   lazy val tableCSSClasses = CSSClasses(
@@ -48,5 +48,5 @@ trait CSS {
     formDivEditInputCSSClass = "col-xs-1",
     formAddDivCSSClass = "col-xs-1",
     formSelectDivCSSClass = "col-xs-1",
-    formSelectCSSClass = "")
+    formSelectCSSClass = "form-control")
 }

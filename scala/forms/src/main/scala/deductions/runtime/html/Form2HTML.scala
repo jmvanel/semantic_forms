@@ -46,7 +46,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
       generateHTMLJustFields(form, hrefPrefix, editable, graphURI))
 
     def wrapFieldsWithForm(htmlFormFields: NodeSeq): NodeSeq =
-      <div class="container-fluid">  
+      <div class="container">  
       	<div class="row">
 					<form action={ actionURI } method="POST">
         		<p class="text-right">
