@@ -1,12 +1,10 @@
 package deductions.runtime.sparql_cache
 
 import java.util.Date
-
 import scala.concurrent.ExecutionContext.Implicits
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
-
 import org.apache.log4j.Logger
 import org.w3.banana.OWLPrefix
 import org.w3.banana.RDF
@@ -15,9 +13,10 @@ import org.w3.banana.io.RDFLoader
 import org.w3.banana.io.RDFReader
 import org.w3.banana.io.RDFXML
 import org.w3.banana.io.Turtle
-
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.services.SPARQLHelpers
+import deductions.runtime.utils.URIHelpers
+import deductions.runtime.utils.RDFHelpers
 
 //import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory0
 
@@ -34,7 +33,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     with RDFLoader[Rdf, Try]
     with SPARQLHelpers[Rdf, DATASET]
     with TimestampManagement[Rdf, DATASET]
-    with MirrorManagement[Rdf, DATASET] {
+    with MirrorManagement[Rdf, DATASET]
+    with RDFHelpers[Rdf] {
 
   import ops._
   import rdfStore.transactorSyntax._
@@ -218,14 +218,6 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
         throw e
     }
   }
-
-  def isDownloadableURI(uri: Rdf#URI) = {
-    val u = fromUri(uri)
-    u.startsWith("http") ||
-      u.startsWith("ftp:") ||
-      u.startsWith("file:")
-//      u.startsWith("_:")
-  }
       
   /**
    * read from uri and store in TDB, no matter what the syntax is;
@@ -233,6 +225,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    */
   def storeURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
     Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
+
     if (isDownloadableURI(uri)) {
       System.setProperty("sun.net.client.defaultReadTimeout", "10000")
       System.setProperty("sun.net.client.defaultConnectTimeout", "10000")
@@ -242,10 +235,10 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       rdfStore.appendToGraph( dataset, graphUri, graph)
       Logger.getRootLogger().info(s"storeURI uri $uri : stored into graphUri $graphUri")
       graph
+
     } else {
       val message = s"Load uri $uri is not possible, not a downloadable URI."
       Logger.getRootLogger().warn(message)
-      // throw new Exception(message)
       emptyGraph
     }
   }

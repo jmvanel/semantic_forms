@@ -27,7 +27,8 @@ import deductions.runtime.services.DefaultConfiguration
 /** made from CSVExtractor from Any23;
  *  TODO: probably should be in another SBT project */
 trait CSVImporter[Rdf <: RDF, DATASET]
-		extends DefaultConfiguration {
+		extends DefaultConfiguration
+		with URIHelpers {
 
   implicit val ops: RDFOps[Rdf]
   import ops._
@@ -259,15 +260,6 @@ trait CSVImporter[Rdf <: RDF, DATASET]
     list += Triple(documentURI, csvPredicate(CSV.NUMBER_OF_ROWS), Literal(String.valueOf(numberOfRows), xsd.integer))
     list += Triple(documentURI, csvPredicate(CSV.NUMBER_OF_COLUMNS), Literal(String.valueOf(numberOfColumns), 
       xsd.integer))
-  }
-  
-  private def isAbsoluteURI(uri: String) = {
-    try{
-      val u = new java.net.URI(uri)
-      u.isAbsolute()
-    } catch {
-      case t: Throwable => false
-    }
   }
 
 }

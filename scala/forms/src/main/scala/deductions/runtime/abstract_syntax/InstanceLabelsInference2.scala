@@ -1,12 +1,12 @@
 package deductions.runtime.abstract_syntax
 
 import scala.collection.Seq
-
 import org.w3.banana.FOAFPrefix
 import org.w3.banana.PointedGraph
 import org.w3.banana.RDF
 import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
+import deductions.runtime.utils.RDFHelpers
 
 /**
  * populate Fields in form by inferring possible label from:
@@ -18,13 +18,14 @@ import org.w3.banana.RDFSPrefix
  * systematically trying to get the matching language form,
  * and as last fallback, the last segment of the URI.
  */
-private[abstract_syntax] trait InstanceLabelsInference2[Rdf <: RDF] {
+private[abstract_syntax] trait InstanceLabelsInference2[Rdf <: RDF]
+		extends RDFHelpers[Rdf] {
   self: PreferredLanguageLiteral[Rdf] =>
 
   import ops._
   private lazy val foaf = FOAFPrefix[Rdf]
   private lazy val rdfs = RDFSPrefix[Rdf]
-  private lazy val rdf = RDFPrefix[Rdf]
+//  private lazy val rdf = RDFPrefix[Rdf]
 
   def instanceLabels(list: Seq[Rdf#Node], lang: String = "")(implicit graph: Rdf#Graph): Seq[String] =
     list.map { node => instanceLabel(node, graph, lang) }
@@ -83,20 +84,21 @@ private[abstract_syntax] trait InstanceLabelsInference2[Rdf <: RDF] {
             case None => lsegment
           }
         }
-          
-  def last_segment(node: Rdf#Node) =
-          try {
-            foldNode(node)(
-              uri => {
-                val ls = lastSegment(uri)
-                ls  match {
-                  case "" => fromUri(uri)
-                  case _ => ls
-                }
-              },
-              bn => bn.toString(),
-              x => x.toString())
-          } catch {
-            case t: Throwable => node.toString()
-          }
+
+//  /** NOTE: currently lastSegment() in Banana can return null :( */
+//  def last_segment(node: Rdf#Node) =
+//    try {
+//      foldNode(node)(
+//        uri => {
+//          val ls = lastSegment(uri)
+//          ls match {
+//            case "" => fromUri(uri)
+//            case _  => ls
+//          }
+//        },
+//        bn => bn.toString(),
+//        x => x.toString())
+//    } catch {
+//      case t: Throwable => node.toString()
+//    }
 }

@@ -2,13 +2,17 @@ package deductions.runtime.services
 
 import deductions.runtime.html.CSS
 
-//trait Configuration {
 trait DefaultConfiguration extends Configuration {
+  /**
+   * use Local Host from getLocalHost() as Prefix For URI Creation, otherwise use defaultInstanceURIHostPrefix below
+   *  TODO true should be the default, to adapt to normal machine settings
+   */
+  override val useLocalHostPrefixForURICreation = false
+
   /** URI Prefix prepended to newly created resource instances */
   override val defaultInstanceURIHostPrefix =
-    "http://ldp.assemblee-virtuelle.org/" // ?????? 
-  /** otherwise use defaultInstanceURIHostPrefix */
-  override val useLocalHostPrefixForURICreation = false
+    // "http://ldp.assemblee-virtuelle.org/"
+    "http://ldp.virtual-assembly.org"
 
   override val relativeURIforCreatedResourcesByForm = "ldp/"
   override val relativeURIforCreatedResourcesByLDP = relativeURIforCreatedResourcesByForm

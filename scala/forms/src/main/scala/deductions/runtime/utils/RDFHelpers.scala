@@ -9,6 +9,8 @@ import org.w3.banana.OWLPrefix
 import scala.util.Success
 import scala.util.Failure
 import org.w3.banana.Prefix
+import deductions.runtime.services.Configuration
+import deductions.runtime.abstract_syntax.UnfilledFormFactory
 
 /** */
 trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
@@ -92,10 +94,10 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
   }
 }
 
-trait RDFHelpers0[Rdf <: RDF] {
+trait RDFHelpers0[Rdf <: RDF] extends Configuration {
   implicit val ops: RDFOps[Rdf]
   import ops._
-  val rdf = RDFPrefix[Rdf](ops)
+  lazy val rdf = RDFPrefix[Rdf](ops)
 
   /** from given Set of Rdf#Node , extract rdf#URI */
   def nodeSeqToURISeq(s: Iterable[Rdf#Node]): Seq[Rdf#URI] = {
@@ -127,6 +129,19 @@ trait RDFHelpers0[Rdf <: RDF] {
 
   def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
 
+  def isDownloadableURI(uri: Rdf#URI) = {
+    val u = fromUri(uri)
+    (
+      u.startsWith("http") ||
+      u.startsWith("ftp:") ||
+      u.startsWith("file:")) &&
+      // not Downloadable in this case, because it's hosted here ! 
+      !u.startsWith(UnfilledFormFactory.instanceURIPrefix) //  defaultInstanceURIHostPrefix)
+
+    // TODO ?
+    // u.startsWith("_:")
+  }
+  
   def getStringOrElse(n: Rdf#Node, default: String): String = {
     ops.foldNode(n)(_ => default, _ => default, l => {
       val v = ops.fromLiteral(l)
@@ -139,6 +154,23 @@ trait RDFHelpers0[Rdf <: RDF] {
     ops.foldNode(n)(_ => d, _ => d, l => l)
   }
 
+  /** NOTE: currently lastSegment() in Banana can return null :( */
+  def last_segment(node: Rdf#Node) =
+    try {
+      foldNode(node)(
+        uri => {
+          val ls = lastSegment(uri)
+          ls match {
+            case "" => fromUri(uri)
+            case _  => ls
+          }
+        },
+        bn => bn.toString(),
+        x => x.toString())
+    } catch {
+      case t: Throwable => node.toString()
+    }
+    
   def printGraph(graph: Rdf#Graph) {
     val iterable = ops.getTriples(graph)
     for (t <- iterable) {
@@ -147,7 +179,7 @@ trait RDFHelpers0[Rdf <: RDF] {
     }
   }
 
-  val NL = makeLang("No_language")
+  lazy val NL = makeLang("No_language")
   def getLang(node: Rdf#Node): Rdf#Lang = {
     foldNode(node)(
       l => NL,

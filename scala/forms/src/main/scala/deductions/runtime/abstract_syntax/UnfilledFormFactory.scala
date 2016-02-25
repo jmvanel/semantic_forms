@@ -4,21 +4,58 @@
 
 package deductions.runtime.abstract_syntax
 
+import java.net.InetAddress
+import java.net.URLEncoder
 import scala.language.postfixOps
 import org.w3.banana.RDF
 import deductions.runtime.services.Configuration
-import java.net.InetAddress
 import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.URIHelpers
+import java.net.URLDecoder
 
-/**
+/** TODO move to package services, and rename to URIManagement
  * @author j.m. Vanel
- *
  */
-object UnfilledFormFactory extends DefaultConfiguration {
+object UnfilledFormFactory extends DefaultConfiguration
+with URIHelpers {
+
+	def makeId: String = {
+    makeId(instanceURIPrefix)
+  }
+
+  /** make URI From String, if not already an absolute URI */
+  def makeURIFromString(objectStringFromUser: String): String = {
+    if (isAbsoluteURI(objectStringFromUser))
+      objectStringFromUser
+    else {
+      instanceURIPrefix +
+        // urlencode takes care of other forbidden character in "candidate" URI
+        URLEncoder.encode(objectStringFromUser.replaceAll(" ", "_"), "UTF-8")
+    }
+  }
+
+    /** make String From URI */
+  def makeStringFromURI( uri: String): String = {
+    lastSegment( URLDecoder.decode( uri, "UTF-8" ) ).replaceAll("_", " ")
+  }
+
   /** make a unique Id with given prefix, currentTimeMillis() and nanoTime() */
-  def makeId(instanceURIPrefix: String): String = {
+  private def makeId(instanceURIPrefix: String): String = {
       instanceURIPrefix + System.currentTimeMillis() + "-" + System.nanoTime() // currentId = currentId + 1
   }
+
+  /** TODO : get the actual port */
+  val port = "9000"
+
+  val instanceURIPrefix: String = {
+    val hostNameUsed =
+      if (useLocalHostPrefixForURICreation) {
+        "http://" + InetAddress.getLocalHost().getHostName()
+        // TODO : get the actual port
+      } else defaultInstanceURIHostPrefix
+    hostNameUsed +  ":" + port + "/" + relativeURIforCreatedResourcesByForm
+  }
+
 }
 
 /** Factory for an Unfilled Form */
@@ -27,12 +64,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
    	with FormConfigurationFactory[Rdf, DATASET]
     with Configuration {
 
-  val instanceURIPrefix: String = // defaultInstanceURIPrefix
-    if( useLocalHostPrefixForURICreation ) {
-      val localHost = InetAddress.getLocalHost().getHostName()
-      localHost + "/" + relativeURIforCreatedResourcesByForm
-    } else defaultInstanceURIHostPrefix
-      
+  
   import ops._
 
   /**
@@ -51,7 +83,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
       } else {
         lookPropertieslistFormInConfiguration(classs)
       }
-    val newId = makeId
+    val newId = UnfilledFormFactory . makeId
     if (propsListInFormConfig.isEmpty) {
       val props = fieldsFromClass(classs, graph)
       createFormDetailed(makeUri(newId), addRDFSLabelComment(props), classs, CreationMode)
@@ -60,7 +92,4 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
         CreationMode, formConfig = formConfig)
   }
 
-  def makeId: String = {
-    UnfilledFormFactory.makeId(instanceURIPrefix)
-  }
 }

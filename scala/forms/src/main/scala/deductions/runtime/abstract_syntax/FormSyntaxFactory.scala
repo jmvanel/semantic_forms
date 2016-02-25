@@ -109,7 +109,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     fromUri(_), fromBNode(_), fromLiteral(_)._1))
 
   val rdfs = RDFSPrefix[Rdf]
-  override val rdf = RDFPrefix[Rdf]
+  override lazy val rdf = RDFPrefix[Rdf]
   
   
   /** create Form from an instance (subject) URI;
