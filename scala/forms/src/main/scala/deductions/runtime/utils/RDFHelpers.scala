@@ -11,9 +11,11 @@ import scala.util.Failure
 import org.w3.banana.Prefix
 import deductions.runtime.services.Configuration
 import deductions.runtime.abstract_syntax.UnfilledFormFactory
+import deductions.runtime.services.URIManagement
 
 /** */
 trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
+
   implicit val ops: RDFOps[Rdf]
   val rdfh: RDFHelpers[Rdf] = this
   import rdfh.{ ops => _, _ }
@@ -94,7 +96,8 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
   }
 }
 
-trait RDFHelpers0[Rdf <: RDF] extends Configuration {
+trait RDFHelpers0[Rdf <: RDF] extends Configuration
+      with URIManagement {
   implicit val ops: RDFOps[Rdf]
   import ops._
   lazy val rdf = RDFPrefix[Rdf](ops)
@@ -136,7 +139,8 @@ trait RDFHelpers0[Rdf <: RDF] extends Configuration {
       u.startsWith("ftp:") ||
       u.startsWith("file:")) &&
       // not Downloadable in this case, because it's hosted here ! 
-      !u.startsWith(UnfilledFormFactory.instanceURIPrefix) //  defaultInstanceURIHostPrefix)
+      !u.startsWith( // UnfilledFormFactory.
+          instanceURIPrefix) //  defaultInstanceURIHostPrefix)
 
     // TODO ?
     // u.startsWith("_:")
@@ -159,7 +163,7 @@ trait RDFHelpers0[Rdf <: RDF] extends Configuration {
     try {
       foldNode(node)(
         uri => {
-          val ls = lastSegment(uri)
+          val ls = ops.lastSegment(uri)
           ls match {
             case "" => fromUri(uri)
             case _  => ls

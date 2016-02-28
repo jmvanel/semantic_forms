@@ -13,6 +13,9 @@ trait Configuration {
   /** otherwise use defaultInstanceURIHostPrefix */
   def useLocalHostPrefixForURICreation: Boolean
 
+  /** get the actual port by server API*/
+  def serverPort: String
+
   def relativeURIforCreatedResourcesByForm: String
   def relativeURIforCreatedResourcesByLDP = relativeURIforCreatedResourcesByForm
 
@@ -73,6 +76,7 @@ trait ConfigurationCopy extends Configuration {
   override def useLocalHostPrefixForURICreation = original.useLocalHostPrefixForURICreation
   override def relativeURIforCreatedResourcesByForm = original.relativeURIforCreatedResourcesByForm
   override def relativeURIforCreatedResourcesByLDP = original.relativeURIforCreatedResourcesByLDP
+  override def serverPort = original.serverPort
   override def formVocabPrefix = original.formVocabPrefix
   override def prefixAVontology = original.prefixAVontology
   override def needLoginForEditing = original.needLoginForEditing

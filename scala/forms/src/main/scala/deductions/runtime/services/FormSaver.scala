@@ -22,7 +22,8 @@ trait FormSaver[Rdf <: RDF, DATASET]
     with LogAPI[Rdf]
     with Configuration
     with SaveListenersManager[Rdf]
-    with Timer {
+    with Timer
+    with URIManagement {
 
   import ops._
   import sparqlOps._
@@ -89,7 +90,8 @@ trait FormSaver[Rdf <: RDF, DATASET]
             else {
               if (objectStringFromUser != "")
                 println(s"objectStringFromUser $objectStringFromUser changed: spaces removed")
-                URI( UnfilledFormFactory.makeURIFromString(objectStringFromUser) )
+                URI( // UnfilledFormFactory.
+                    makeURIFromString(objectStringFromUser) )
             }
           },
           _ => BNode(objectStringFromUser.replaceAll(" ", "_")), // ?? really do this ?

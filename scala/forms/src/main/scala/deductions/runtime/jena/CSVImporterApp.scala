@@ -21,6 +21,7 @@ object CSVImporterApp extends App
     with CSVImporter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
   import ops._
 
+  println(s"Arguments: ${args.mkString(", ")}")
   val urlOrFile = args(0)
   val url = if (urlOrFile.startsWith("http") ||
     urlOrFile.startsWith("https"))
@@ -36,7 +37,9 @@ object CSVImporterApp extends App
     if (args.size > 1) args(1) else url)
   val graph = if (args.size > 2) {
     val propertyValueForEachRow: List[(Rdf#URI, Rdf#Node)] = {
-      val graph = turtleReader.read(new FileReader(args(2)), "")
+      val eachRowFile = args(2)
+      println(s"Opening TTL file for adding triples about each row: $eachRowFile")
+      val graph = turtleReader.read(new FileReader(eachRowFile), "")
       val r = for (triple <- graph.getOrElse(emptyGraph).triples) yield {
         (triple.predicate, triple.objectt)
       }

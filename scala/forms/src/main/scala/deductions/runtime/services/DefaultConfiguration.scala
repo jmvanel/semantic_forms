@@ -17,6 +17,11 @@ trait DefaultConfiguration extends Configuration {
   override val relativeURIforCreatedResourcesByForm = "ldp/"
   override val relativeURIforCreatedResourcesByLDP = relativeURIforCreatedResourcesByForm
 
+  override def serverPort = {
+    println("Default port from DefaultConfiguration")
+    "9000"
+  }
+
   /** vocabulary for form specifications */
   override val formVocabPrefix = "http://deductions-software.com/ontologies/forms.owl.ttl#"
 

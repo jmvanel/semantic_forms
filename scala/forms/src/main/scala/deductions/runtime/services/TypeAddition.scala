@@ -17,7 +17,8 @@ import deductions.runtime.abstract_syntax.UnfilledFormFactory
  */
 trait TypeAddition[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
-		with URIHelpers {
+		with URIHelpers
+		with URIManagement {
 
   import ops._
   import sparqlOps._
@@ -76,15 +77,16 @@ trait TypeAddition[Rdf <: RDF, DATASET]
         existingValues2.isEmpty &&
         existingValues3.isEmpty &&
         ( ! isAbsoluteURI(objectt.toString()) ||
-          objectt.toString().startsWith( UnfilledFormFactory.instanceURIPrefix )
+          objectt.toString().startsWith( // UnfilledFormFactory.
+              instanceURIPrefix )
         )  ) {
 //        ! objectt.toString().contains(":")) {
        if (isAbsoluteURI(objectt.toString()))
     	   println("isAbsoluteURI " + objectt)
         val labelTriple = makeTriple(
             objectt, rdfs.label,
-            Literal( UnfilledFormFactory.makeStringFromURI(
-                objectt.toString() ) )
+            Literal( // UnfilledFormFactory.
+                makeStringFromURI( objectt.toString() ) )
         )
         rdfStore.appendToGraph( dataset, makeGraphForSaving(), ops.makeGraph(Seq(labelTriple)))
       }

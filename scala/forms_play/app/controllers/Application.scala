@@ -15,6 +15,7 @@ import play.api.mvc.Request
 import views.MainXmlWithHead
 import deductions.runtime.services.CORS
 import deductions.runtime.services.DefaultConfiguration
+import play.api.Play
 
 /** main controller */
 object Application extends Controller
@@ -24,6 +25,20 @@ object Application extends Controller
     with MainXmlWithHead
     with CORS
     with DefaultConfiguration {
+
+  override def serverPort = {
+    val port = Play.current.configuration.
+      getString("http.port")
+    port match {
+      case Some(p) => 
+        println("Running on port " + p)
+        p
+      case _ =>
+        println("Retrieving default port from config." )
+        super.serverPort
+    }
+  }
+
   
   def index() =
         withUser {
