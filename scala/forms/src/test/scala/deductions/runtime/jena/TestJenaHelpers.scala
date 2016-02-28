@@ -23,7 +23,7 @@ trait TestJenaHelpersRaw
     {
   def test() {
     lazy val dataset1 = TDBFactory.createDataset("TDB")
-    val jh = new RDFCacheAlgo[Jena, Dataset] with RDFStoreLocalJenaProvider with JenaRDFLoader {
+    val jh = new RDFCacheAlgo[Jena, Dataset] with RDFStoreLocalJena1Provider with JenaRDFLoader {
       override val databaseLocation = "TDB"
       //      val dataset: com.hp.hpl.jena.query.Dataset = dataset1
     }

@@ -1,18 +1,16 @@
 package deductions.runtime.jena
 
 import scala.collection.JavaConversions.asScalaIterator
-
 import org.apache.log4j.Logger
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaDatasetStore
 import org.w3.banana.jena.JenaModule
-
 import com.hp.hpl.jena.tdb.TDBFactory
 import com.hp.hpl.jena.tdb.transaction.TransactionManager
-
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.utils.Timer
+import deductions.runtime.services.Configuration
 
 // TODO rename RDFStoreLocalJenaProvider
 
@@ -24,13 +22,15 @@ object ImplementationSettings {
 }
 
 /** For user data and RDF cache, sets a default location for the Jena TDB store directory : TDB */
-trait RDFStoreLocalJena1Provider extends RDFStoreLocalJenaProvider
+trait RDFStoreLocalJena1Provider
+  extends RDFStoreLocalJenaProvider
+  with DefaultConfiguration
 
 trait RDFStoreLocalJenaProvider
     extends RDFStoreLocalProvider[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with JenaModule with JenaRDFLoader
     with Timer
-    with DefaultConfiguration
+    with Configuration
     with LuceneIndex {
   import ops._
   type DATASET = ImplementationSettings.DATASET

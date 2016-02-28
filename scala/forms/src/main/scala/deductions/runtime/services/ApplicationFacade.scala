@@ -21,9 +21,6 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
     {
 
   val impl: ApplicationFacadeImpl[Rdf, DATASET]
-//{
-//    override val recordUserActions = recordUserActions
-//  }
   
   def htmlForm(uri: String, blankNode: String = "",
     editable: Boolean = false,

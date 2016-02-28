@@ -19,12 +19,13 @@ import play.api.Play
 
 /** main controller */
 object Application extends Controller
+    with DefaultConfiguration
     with ApplicationFacadeJena
     with LanguageManagement
     with Secured
     with MainXmlWithHead
     with CORS
-    with DefaultConfiguration {
+    {
 
   override def serverPort = {
     val port = Play.current.configuration.

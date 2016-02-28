@@ -19,13 +19,13 @@ import deductions.runtime.services.DefaultConfiguration
  *
  *  TODO use prefix.cc web service to load from prefix short names (see implementation in EulerGUI)
  */
-object ResetRDFCache extends JenaModule
+object ResetRDFCacheApp extends JenaModule
     with DefaultConfiguration
     with CommonVocabulariesLoaderTrait[Jena, ImplementationSettings.DATASET]
     with RDFI18NLoaderTrait[Jena, ImplementationSettings.DATASET]
     with FormSpecificationsLoaderTrait[Jena, ImplementationSettings.DATASET]
     with RDFOpsModule
-    with RDFStoreLocalJena1Provider
+    with RDFStoreLocalJenaProvider
     //    with JenaHelpers
     with App {
 
