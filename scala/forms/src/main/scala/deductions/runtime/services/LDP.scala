@@ -33,7 +33,8 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
  */
 trait LDP[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
-    with SPARQLHelpers[Rdf, DATASET] {
+    with SPARQLHelpers[Rdf, DATASET]
+    with URIManagement {
 
   val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   implicit val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]
@@ -48,11 +49,12 @@ trait LDP[Rdf <: RDF, DATASET]
   val schemeName = "lpd:"
 
   /** for LDP GET */
-  def getTriples(uri: String, accept: String): String = {
-    println("GET:\n" + makeQueryString(uri))
+  def getTriples(uri: String, rawURI: String, accept: String): String = {
+    println(s"LDP GET: (uri <$uri>, rawURI <$rawURI>)")
+    println("LDP GET:\n" + makeQueryString(uri, rawURI))
     val r = dataset.r {
       for {
-        graph <- sparqlConstructQuery(makeQueryString(uri))
+        graph <- sparqlConstructQuery(makeQueryString(uri, rawURI))
         s <- if (accept == "text/turtle")
           turtleWriter.asString(graph, uri)
         else
@@ -62,13 +64,37 @@ trait LDP[Rdf <: RDF, DATASET]
     r.get.get
   }
 
-  private def makeQueryString(search: String): String =
-    s"""
+  private def makeQueryString(uri: String, rawURI: String): String = {
+    if ( true) // rawURI.endsWith(uri))
+      // URI created with forms engine
+      s"""
+         |CONSTRUCT { <${makeURIFromString(uri)}> ?p ?o } WHERE {
+         |  GRAPH ?G {
+         |    <${makeURIFromString(uri)}> ?p ?o .
+         |  }
+         |}""".stripMargin
+    else
+      // URI created with LDP PUT
+      s"""
          |CONSTRUCT { ?s ?p ?o } WHERE {
-         |  graph <$schemeName$search> {
+         |  graph <$schemeName$uri> {
          |    ?s ?p ?o .
          |  }
          |}""".stripMargin
+    //    s"""
+    //         |CONSTRUCT { ?s ?p ?o } WHERE {
+    //         |  {
+    //         |  graph <$schemeName$uri> {
+    //         |    ?s ?p ?o .
+    //         |  }
+    //         |  } UNION {
+    //         |  GRAPH ?G {
+    //         |    # <${makeURIFromString(uri)}> ?p ?o .
+    //         |    <${uri}> ?p ?o .
+    //         |  }
+    //         |  }
+    //         |}""".stripMargin
+  }
 
   /** for LDP PUT */
   def putTriples(uri: String, link: Option[String], contentType: Option[String],

@@ -44,7 +44,7 @@ trait ApplicationFacadeInterface {
   /** NOTE this creates a transaction; do not use it too often */
   def labelForURI(uri: String, language: String): String
 
-  def ldpGET(uri: String, accept: String): String
+  def ldpGET(uri: String, rawURI: String, accept: String): String
 
   def ldpPOST(uri: String, link: Option[String], contentType: Option[String],
     slug: Option[String],

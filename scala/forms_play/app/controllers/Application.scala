@@ -275,7 +275,7 @@ object Application extends Controller
           val acceptsTurtle = Accepting("text/turtle")
           val turtle = acceptsTurtle.mimeType
           val accepts = Accepting(acceptedTypes.headOption.getOrElse(turtle).toString())
-          val r = ldpGET(uri, accepts.mimeType)
+          val r = ldpGET(uri, request.rawQueryString, accepts.mimeType)
           println("LDP: GET: result " + r)
           val contentType = accepts.mimeType + "; charset=utf-8"
           println(s"contentType $contentType")

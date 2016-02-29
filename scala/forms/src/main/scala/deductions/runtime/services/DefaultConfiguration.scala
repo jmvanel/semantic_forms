@@ -7,7 +7,7 @@ trait DefaultConfiguration extends Configuration {
    * use Local Host from getLocalHost() as Prefix For URI Creation, otherwise use defaultInstanceURIHostPrefix below
    *  TODO true should be the default, to adapt to normal machine settings
    */
-  override val useLocalHostPrefixForURICreation = false
+  override val useLocalHostPrefixForURICreation = true // false
 
   /** URI Prefix prepended to newly created resource instances */
   override val defaultInstanceURIHostPrefix =

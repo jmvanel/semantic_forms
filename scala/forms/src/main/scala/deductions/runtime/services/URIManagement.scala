@@ -27,7 +27,7 @@ trait URIManagement extends Configuration
     }
   }
 
-  /** make String From URI */
+  /** make a human readable String From given URI */
   def makeStringFromURI(uri: String): String = {
     lastSegment(URLDecoder.decode(uri, "UTF-8")).replaceAll("_", " ")
   }
