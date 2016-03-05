@@ -37,7 +37,11 @@ trait URIManagement extends Configuration
     instanceURIPrefix + System.currentTimeMillis() + "-" + System.nanoTime() // currentId = currentId + 1
   }
 
-  val instanceURIPrefix: String = {
+  /**
+   * NOTE: must not be a val because of test, otherwise Play test says
+   *  "There is no started application"
+   */
+  def instanceURIPrefix: String = {
     val hostNameUsed =
       if (useLocalHostPrefixForURICreation) {
         "http://" + InetAddress.getLocalHost().getHostName()

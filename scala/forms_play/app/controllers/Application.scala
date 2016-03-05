@@ -305,6 +305,7 @@ object Application extends Controller
               }
             }
           }
+          println(s"LDP: slug: $slug, link $link")
           println(s"LDP: content: $content")
           val serviceCalled =
             ldpPOST(uri, link, contentType, slug, content).getOrElse("default")

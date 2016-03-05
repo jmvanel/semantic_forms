@@ -48,7 +48,8 @@ trait LDP[Rdf <: RDF, DATASET]
 
   val schemeName = "lpd:"
 
-  /** for LDP GET */
+  /** for LDP GET
+   *  @param uri relative URI received by LDP GET */
   def getTriples(uri: String, rawURI: String, accept: String): String = {
     println(s"LDP GET: (uri <$uri>, rawURI <$rawURI>)")
     println("LDP GET:\n" + makeQueryString(uri, rawURI))
