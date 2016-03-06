@@ -193,10 +193,13 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
         } dropzone="copy" id={ htmlId }>
         </input></div>
         <div class={ css.cssClasses.formDivEditInputCSSClass }>
-        <input type="button" value="EDIT" onClick={
+				{ if( showEditButtons )
+        <input type="button" value="EDIT"
+				onClick={
           s"""launchEditorWindow( document.getElementById( "$htmlId" ));"""
-        } title="Click to edit text in popup window as Markdown text">
+        } title="Click to edit multiline text in popup window as Markdown text">
         </input>
+				}
 				</div>
     }
     Text("\n") ++ elem

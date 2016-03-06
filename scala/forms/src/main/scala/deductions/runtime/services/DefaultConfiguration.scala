@@ -41,8 +41,10 @@ trait DefaultConfiguration extends Configuration {
   /** show triples with rdf:type */
   override val showRDFtype = true
   /** show + Buttons for creating multi-valued */
-  //  lazy override val showPlusButtons = true
   override val showPlusButtons = true
+  /** show EDIT Buttons for multi-line editing popup */
+  override val showEditButtons = true
+
   override val inlineJavascriptInForm: Boolean = true
   override def displayTechnicalSemWebDetails: Boolean = true
 
