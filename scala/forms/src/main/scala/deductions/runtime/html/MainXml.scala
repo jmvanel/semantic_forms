@@ -81,4 +81,11 @@ trait MainXml extends ToolsPage with EnterButtons {
       </body>
     </html>
   }
+
+  /** creation Button for given RDF class */
+  def creationButton(classe: String, label: String): NodeSeq =
+    <form role="form" action="/create">
+      <input type="hidden" name="uri" id="uri" value={ classe }/>
+      <input type="submit" name="create" id="create" value={ label }/>
+    </form>
 }
