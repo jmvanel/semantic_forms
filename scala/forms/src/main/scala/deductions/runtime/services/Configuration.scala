@@ -38,6 +38,9 @@ trait Configuration {
   def showRDFtype: Boolean
   /** show + Buttons for creating multi-valued */
   def showPlusButtons: Boolean
+  /** show EDIT Buttons for a popup to edit large texts */
+  def showEditButtons: Boolean
+
   /** inline Javascript In Form; overwise app. developer must put it in <head> */
   def inlineJavascriptInForm: Boolean
 
@@ -89,6 +92,7 @@ trait ConfigurationCopy extends Configuration {
   override def use_local_lookup = original.use_local_lookup
   override def showRDFtype = original.showRDFtype
   override def showPlusButtons = original.showPlusButtons
+  override def showEditButtons = original.showEditButtons
   override def inlineJavascriptInForm = original.inlineJavascriptInForm
   override def displayTechnicalSemWebDetails = original.displayTechnicalSemWebDetails
   override val css = original.css
