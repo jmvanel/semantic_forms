@@ -74,7 +74,7 @@ trait LDP[Rdf <: RDF, DATASET]
          |  }
          |}""".stripMargin
     else
-      // URI created with LDP PUT
+      // URI created with LDP POST
       s"""
          |CONSTRUCT { ?s ?p ?o } WHERE {
          |  graph <$schemeName$uri> {

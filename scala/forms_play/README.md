@@ -292,6 +292,26 @@ It is not reusing Fresnel, but it could be aligned to Fresnel is necessary.
 See also (in french) :
 [doc/fr/formulaires.html](http://htmlpreview.github.io/?https://github.com/jmvanel/semantic_forms/blob/master/doc/fr/formulaires.html)
 
+# Customize the plain vanilla application
+
+semantic\_forms is really a framework, so it is made to override any feature.
+
+The recommended way is to fork the project on github.
+This fork that will never be merged (no Pull Request). It is a way to overcome the fact that there is no way (AFAIK) to redefine elements of a Play! project from an independent project.
+
+To update with respect to semantic\_forms, see:
+
+https://help.github.com/articles/syncing-a-fork/
+
+And we must first do once and for all in every working directory from a git clone:
+https://help.github.com/articles/configuring-a-remote-for-a-fork/
+	git remote add upstream https://github.com/jmvanel/semantic_forms.git
+
+An exemple of such a project is:
+[https://github.com/deductions/semantic\_forms-sharecop](https://github.com/deductions/semantic_forms-sharecop)
+
+See also:
+[semantic\_forms wiki: Application-development-manual](https://github.com/jmvanel/semantic_forms/wiki/Application-development-manual)
 
 # Community
 
