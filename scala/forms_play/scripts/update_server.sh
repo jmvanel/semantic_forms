@@ -11,6 +11,7 @@ git pull --verbose
 $SBT dist
 echo "sofware recompiled!"
 
+mkdir ~/deploy
 cd ~/deploy
 kill `cat ${APPVERS}/RUNNING_PID`
 
