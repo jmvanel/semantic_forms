@@ -362,8 +362,9 @@ The features are listed here for convenience, but from now on, we manage feature
 - 21 write some JavaScript samples to call the different features
 - 31 write a small help page explaining the role of local database in relation with the external data downloaded
 - 32 TEST : Gatling stress scenario(s)
+- 40 popup an editor for editing large texts
 
-## Unimplemeted features 
+## Unimplemented features 
 - 2.2 show statistics about the current document : # of triples, # of properties, # of URI's
 - 2.3 when document pointed by URI entered by user has no triple with that URI as subject, show a list of URI's in the document like the search results
 - 7. use HTTP HEAD to distinguish RDF content types and others, and have different hyperlinks and styles for HTML, RDF, and image URL's - WIP
@@ -386,12 +387,8 @@ The features are listed here for convenience, but from now on, we manage feature
 - 32 TEST : write Selenium scenario(s) : TODO
 
 - 33 framework to orchestrate a series of questions to user when the data is not present in database : in https://github.com/jmvanel/corporate\_risk/ there are form groups and automatic navigation to  next form by SAVE button - TODO componentize this
-- 34 
 - 35 enforce mandatory properties ( by JavaScript )
 - 36 display properties of blank nodes being objects of current form subject : TODO
 - 37 datatype date : display a calendar ( by JavaScript ) : TODO
 - 39 custom HTML : have an easy way to customize generated HTML forms and fields, by JavaScript or HTML : TODO
-- 40 popup an editor for editing large texts
-
-..... etc etc ...
 
