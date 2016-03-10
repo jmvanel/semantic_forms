@@ -8,7 +8,7 @@ name := "forms_js"
 
 version := "1.0-SNAPSHOT"
 
-scalaVersion :=  "2.11.7"
+scalaVersion :=  "2.11.8"
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 

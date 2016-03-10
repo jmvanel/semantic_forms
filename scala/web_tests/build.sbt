@@ -5,7 +5,7 @@ version := "1.0-SNAPSHOT"
 lazy val semantic_forms_play = (project in file("."))
 	.enablePlugins(GatlingPlugin)
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
 
 // fork a new JVM for 'test:run', but not 'run'

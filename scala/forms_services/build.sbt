@@ -10,7 +10,7 @@ lazy val semantic_forms_services = (project in file("."))
         .dependsOn(semantic_forms)
 	.enablePlugins(PlayScala)
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
 libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.6" % Test
 

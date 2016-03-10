@@ -4,7 +4,7 @@ name := "social_web"
 
 version := "1.0-SNAPSHOT"
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
 libraryDependencies += "com.typesafe.play" %% "play-ws" % "2.3.9"
 

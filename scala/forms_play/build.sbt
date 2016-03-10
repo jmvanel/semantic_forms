@@ -7,7 +7,7 @@ lazy val semantic_forms_play = (project in file("."))
         .dependsOn(semantic_forms)
 	.enablePlugins(PlayScala)
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test
