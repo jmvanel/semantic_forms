@@ -18,7 +18,8 @@ import deductions.runtime.utils.RDFHelpers
  * systematically trying to get the matching language form,
  * and as last fallback, the last segment of the URI.
  */
-private[abstract_syntax] trait InstanceLabelsInference2[Rdf <: RDF]
+//private[abstract_syntax] 
+trait InstanceLabelsInference2[Rdf <: RDF]
 		extends RDFHelpers[Rdf] {
   self: PreferredLanguageLiteral[Rdf] =>
 
