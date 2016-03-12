@@ -13,6 +13,9 @@ trait Configuration {
   /** otherwise use defaultInstanceURIHostPrefix */
   def useLocalHostPrefixForURICreation: Boolean
 
+  /** When subject URI's are loaded in batch, and there are duplicates, this lists the Prefixes that will be preferred when merging URI's */
+  def preferredURIPrefixes: Seq[String]
+
   /** get the actual port by server API*/
   def serverPort: String
 
@@ -79,6 +82,7 @@ trait ConfigurationCopy extends Configuration {
   override def useLocalHostPrefixForURICreation = original.useLocalHostPrefixForURICreation
   override def relativeURIforCreatedResourcesByForm = original.relativeURIforCreatedResourcesByForm
   override def relativeURIforCreatedResourcesByLDP = original.relativeURIforCreatedResourcesByLDP
+  override def preferredURIPrefixes = original.preferredURIPrefixes
   override def serverPort = original.serverPort
   override def formVocabPrefix = original.formVocabPrefix
   override def prefixAVontology = original.prefixAVontology

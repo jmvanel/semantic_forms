@@ -89,8 +89,12 @@ extends RDFStoreLocalProvider[Rdf, DATASET] {
     r.asFuture
   }
 
+
+  //// special updates ////
+  
   /**
-   * replace all triples having same subject and property in Dataset;
+   * replace all triples having same subject and property
+   * with given one, in given dataset;
    *  thus enforcing cardinality one
    *  No Transaction
    */
@@ -113,6 +117,22 @@ extends RDFStoreLocalProvider[Rdf, DATASET] {
     println(s"replaceRDFnode: sparqlUpdateQuery: $res")
 
     rdfStore.appendToGraph( dataset, graphURI, makeGraph(Seq(triple)))
+  }
+
+  /** remove quads whose subject is given URI
+   *  No Transaction */
+  def removeQuadsWithSubject( uri: Rdf#Node, ds: DATASET=dataset) = {
+        val queryString = s"""
+         | DELETE {
+         |   graph ?graphURI {
+         |     <$uri> ?property ?obj .
+         |   }
+         | } WHERE {
+         |   graph ?graphURI {
+         |     <$uri> ?property ?obj .
+         |   }
+         | }""".stripMargin
+     sparqlUpdateQuery( queryString, ds )
   }
 
   //////////////// SELECT stuff //////////////////////////
