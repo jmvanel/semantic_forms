@@ -17,13 +17,16 @@ trait MainXml extends ToolsPage with EnterButtons {
             userInfo,
             mainPageHeader(lang),
             content,
-            linkToToolsPage)
+            pageBottom)
         }
       </body>
     </html>
   }
 
   def head(title: String = "")(implicit lang: String = "en"): NodeSeq = <head></head>
+
+  /** page bottom (overridable!) **/
+  def pageBottom: NodeSeq = linkToToolsPage
 
   def linkToToolsPage =
     <p>
