@@ -16,7 +16,7 @@ trait DefaultConfiguration extends Configuration {
 
   override val relativeURIforCreatedResourcesByForm = "ldp/"
   override val relativeURIforCreatedResourcesByLDP = relativeURIforCreatedResourcesByForm
-  override val preferredURIPrefixes: Seq[String] = Seq( "urn:av/" )
+  override val preferredURIPrefixes: Seq[String] = Seq("urn:av/")
 
   override def serverPort = {
     println("Default port from DefaultConfiguration")

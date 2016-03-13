@@ -6,7 +6,8 @@ import java.net.URLEncoder
 
 import deductions.runtime.utils.URIHelpers
 
-/** Management of URI policy: how are URI created by the application
+/**
+ * Management of URI policy: how are URI created by the application
  *
  * * @author j.m. Vanel
  */

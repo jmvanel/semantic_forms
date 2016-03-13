@@ -31,10 +31,12 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
   //  val rdf = RDFPrefix[Rdf]
 
   def removeAllDuplicates(classURI: Rdf#URI, lang: String = "") = {
-    val instanceLabels2URIsMap: Map[String, Seq[Rdf#Node]] = indexInstanceLabels()
+    val instanceLabels2URIsMap: Map[String, Seq[Rdf#URI]] =
+      indexInstanceLabels(classURI, lang)
     for (el <- instanceLabels2URIsMap) {
       println(s"looking at $el._1")
       val (uriTokeep, duplicateURIs) = tellDuplicates(el._2)
+      println(s"uriTokeep $uriTokeep, ${duplicateURIs.mkString(", ")}")
       copyPropertyValuePairs(uriTokeep, duplicateURIs)
       removeQuadsWithSubjects(duplicateURIs)
     }
@@ -65,7 +67,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
    *
    * @return the URI considered as non-duplicate, and a list of the duplicates
    */
-  def tellDuplicates(uris: Seq[Rdf#Node]): (Rdf#Node, Seq[Rdf#Node]) = {
+  def tellDuplicates(uris: Seq[Rdf#URI]): (Rdf#URI, Seq[Rdf#URI]) = {
     if (uris.size <= 1)
       // nothing to do by caller!
       return (ops.URI(""), Seq())
@@ -76,33 +78,34 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
         jURI.getScheme == scheme
       }
     }
-    def filterURIsByStartsWith( uris: Seq[Rdf#Node], prefixes: Seq[String]) = {
-      val v = for( prefix <- prefixes ) {
-    	  uris filter { u => u.toString().startsWith(prefix) }
-      }
+    /** @return the first URI matching one of the prefixes. */
+    def filterURIsByStartsWith(uris: Seq[Rdf#URI], prefixes: Seq[String]): Option[Rdf#URI] = {
+      val candidates = for (
+        prefix <- prefixes;
+        matching <- uris filter { u => u.toString().startsWith(prefix) }
+      ) yield matching
+      candidates.headOption
     }
-    
     val httpURIs = {
       val httpURIs0 = filterURIsByScheme("http")
       httpURIs0 filter { u => !u.toString().startsWith(instanceURIPrefix) }
     }
 
-    val nonDuplicateURI =
+    val nonDuplicateURI: Rdf#URI =
       if (httpURIs.size > 1)
         throw new RuntimeException(s"several HTTP URI's: ${uris.mkString(", ")}")
       else if (httpURIs.size == 0) {
-        val urnURIs = filterURIsByScheme("urn")
-        if (urnURIs.size > 0)
-          filterURIsByStartsWith TODO <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-          // preferredURIPrefixes
-          urnURIs(0)
-        else
-        	println( s"For these HTTP URI's, the case is not foressen: ${uris.mkString(", ")}")
-        	httpURIs(0)
-      } else if (httpURIs.size == 1) {
+        val uriOption = filterURIsByStartsWith(httpURIs, preferredURIPrefixes)
+        uriOption match {
+          case None =>
+            println(s"For these HTTP URI's, no criterion for duplicate: ${uris.mkString(", ")}")
+            uris(0)
+          case Some(uri) => uri
+        }
+      } else // httpURIs.size == 1
         httpURIs(0)
-      }
-    ???
+
+    (nonDuplicateURI, uris diff List(nonDuplicateURI))
   }
 
   /**
@@ -110,25 +113,46 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
    *  based on identical strings computed by instanceLabel()
    */
   def removeDuplicates(uri: Rdf#URI, classURI: Rdf#URI, lang: String = "") = {
-
-    //      instanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String = ""): String = {
     val label = instanceLabel(uri, allNamedGraph, lang)
-
     val triples = find(allNamedGraph, ANY, rdf.typ, classURI)
     val duplicateURIs = triples.filter {
       t =>
         t.subject != uri &&
           instanceLabel(t.subject, allNamedGraph, lang) == label
     }.map { t => t.subject }.toSeq
-
     removeQuadsWithSubjects(duplicateURIs)
   }
 
-  def copyPropertyValuePairs(uriTokeep: Rdf#Node, duplicateURIs: Seq[Rdf#Node]) = {
-    ???
+  def copyPropertyValuePairs(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI]) = {
+    for (duplicateURI <- duplicateURIs) {
+      /* TODO SPARQL query to get the original graph name */
+      val instanceTriples = find(allNamedGraph, duplicateURI, ANY, ANY)
+      val triplesToAdd = instanceTriples.map {
+        t => Triple(uriTokeep, t.predicate, t.objectt)
+      }.toList
+      rdfStore.rw(dataset, {
+        rdfStore.appendToGraph(dataset,
+          uriTokeep /* TODO SPARQL query to get the original graph name */ , Graph(triplesToAdd))
+      })
+    }
   }
 
-  def indexInstanceLabels() = {
-    ???
+  def indexInstanceLabels(classURI: Rdf#URI,
+    lang: String): Map[String, Seq[Rdf#URI]] = {
+    val classTriples = find(allNamedGraph, ANY, rdf.typ, classURI)
+    // NOTE: this looks laborious !!!!
+    val v = for (
+      classTriple <- classTriples;
+      uri0 = classTriple.subject if (uri0.isURI);
+      uri = uri0.asInstanceOf[Rdf#URI];
+      label = instanceLabel(uri, allNamedGraph, lang)
+    ) yield (label, uri)
+    val res = v.toList.groupBy(_._1).map {
+      case (s, list) => (s,
+        list.map { case (s, node) => node })
+    }
+    println(
+      s"indexInstanceLabels: ${classTriples.size} instances for class $classURI")
+    res
   }
 }
