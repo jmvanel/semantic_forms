@@ -34,9 +34,11 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     val instanceLabels2URIsMap: Map[String, Seq[Rdf#URI]] =
       indexInstanceLabels(classURI, lang)
     for (el <- instanceLabels2URIsMap) {
-      println(s"looking at $el._1")
+      println(s"looking at ${el._1}")
       val (uriTokeep, duplicateURIs) = tellDuplicates(el._2)
       println(s"uriTokeep $uriTokeep, ${duplicateURIs.mkString(", ")}")
+      if( ! duplicateURIs.isEmpty )
+        println(s"Deleting duplicates for ${el._1} uriTokeep $uriTokeep, delete count ${duplicateURIs.size}")
       copyPropertyValuePairs(uriTokeep, duplicateURIs)
       removeQuadsWithSubjects(duplicateURIs)
     }

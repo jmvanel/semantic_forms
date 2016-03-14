@@ -22,7 +22,7 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
  * @author jmv
  */
 trait SPARQLHelpers[Rdf <: RDF, DATASET]
-extends RDFStoreLocalProvider[Rdf, DATASET] {
+    extends RDFStoreLocalProvider[Rdf, DATASET] {
 
   val turtleWriter: RDFWriter[Rdf, Try, Turtle]
 
@@ -34,64 +34,67 @@ extends RDFStoreLocalProvider[Rdf, DATASET] {
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._
 
-  /** sparql Construct Query;
-   * NON transactional */
+  /**
+   * sparql Construct Query;
+   * NON transactional
+   */
   def sparqlConstructQuery(queryString: String): Try[Rdf#Graph] = {
     val result = for {
       query <- {
-    	  println( "sparqlConstructQuery: before parseConstruct" )
-    	  parseConstruct(queryString)
+        println("sparqlConstructQuery: before parseConstruct")
+        parseConstruct(queryString)
       }
       es <- {
-        println( "sparqlConstructQuery: before executeConstruct" )
+        println("sparqlConstructQuery: before executeConstruct")
         dataset.executeConstruct(query, Map())
       }
     } yield es
     result
   }
 
-    /** sparql Update Query;
-   * NON transactional */
+  /**
+   * sparql Update Query;
+   * NON transactional
+   */
   def sparqlUpdateQuery(queryString: String, ds: DATASET = dataset): Try[Unit] = {
     val result = for {
       query <- {
-    	  println( "sparqlUpdateQuery: before parseUpdate" )
-    	  parseUpdate( queryString )
+        println("sparqlUpdateQuery: before parseUpdate")
+        parseUpdate(queryString)
       }
       es <- {
-        println( "sparqlUpdateQuery: before executeUpdate" )
-        ds.executeUpdate( query, Map())
+        println("sparqlUpdateQuery: before executeUpdate")
+        ds.executeUpdate(query, Map())
       }
     } yield es
     result
   }
-  
+
   /** transactional */
   def sparqlConstructQueryTR(queryString: String): String = {
     val transaction = dataset.r({
-      graph2String( sparqlConstructQuery(queryString), "" )
+      graph2String(sparqlConstructQuery(queryString), "")
     })
     transaction.get
   }
-  
-//  /** transactional */
-//  def sparqlConstructQueryTR_old(queryString: String): String = {
-//    val transaction = dataset.r({
-//      val r = sparqlConstructQueryFuture(queryString)
-//      futureGraph2String(r, "")
-//    })
-//    transaction.get
-//  }
+
+  //  /** transactional */
+  //  def sparqlConstructQueryTR_old(queryString: String): String = {
+  //    val transaction = dataset.r({
+  //      val r = sparqlConstructQueryFuture(queryString)
+  //      futureGraph2String(r, "")
+  //    })
+  //    transaction.get
+  //  }
 
   /** transactional */
   def sparqlConstructQueryFuture(queryString: String): Future[Rdf#Graph] = {
-    val r = sparqlConstructQuery( queryString )
+    val r = sparqlConstructQuery(queryString)
     r.asFuture
   }
 
+  //// special updates and queries ////
 
-  //// special updates ////
-  
   /**
    * replace all triples having same subject and property
    * with given one, in given dataset;
@@ -116,13 +119,15 @@ extends RDFStoreLocalProvider[Rdf, DATASET] {
     val res = sparqlUpdateQuery(queryString, dataset)
     println(s"replaceRDFnode: sparqlUpdateQuery: $res")
 
-    rdfStore.appendToGraph( dataset, graphURI, makeGraph(Seq(triple)))
+    rdfStore.appendToGraph(dataset, graphURI, makeGraph(Seq(triple)))
   }
 
-  /** remove quads whose subject is given URI
-   *  No Transaction */
-  def removeQuadsWithSubject( uri: Rdf#Node, ds: DATASET=dataset) = {
-        val queryString = s"""
+  /**
+   * remove quads whose subject is given URI
+   *  No Transaction
+   */
+  def removeQuadsWithSubject(uri: Rdf#Node, ds: DATASET = dataset) = {
+    val queryString = s"""
          | DELETE {
          |   graph ?graphURI {
          |     <$uri> ?property ?obj .
@@ -132,48 +137,80 @@ extends RDFStoreLocalProvider[Rdf, DATASET] {
          |     <$uri> ?property ?obj .
          |   }
          | }""".stripMargin
-     sparqlUpdateQuery( queryString, ds )
+    sparqlUpdateQuery(queryString, ds)
+  }
+
+  type Quad = (Rdf#Triple, Rdf#URI)
+  def quadQuery(s: Rdf#NodeMatch, p: Rdf#NodeMatch, o: Rdf#NodeMatch): Iterable[Quad] = {
+    def makeSPARQLTermFromNodeMatch(nm: Rdf#NodeMatch, varName: String) = {
+      foldNodeMatch(nm)(
+        "?" + varName,
+        node => node.toString())
+    }
+    def makeSPARQLVariableFromNodeMatch(nm: Rdf#NodeMatch, varName: String) = {
+      foldNodeMatch(nm)(
+        "?" + varName,
+        node => "")
+    }
+    val queryString = s"""
+         | SELECT
+         |     ${makeSPARQLVariableFromNodeMatch(s, "S")}
+         |     ${makeSPARQLVariableFromNodeMatch(s, "P")}
+         |     ${makeSPARQLVariableFromNodeMatch(s, "O")}
+         |     ?G
+         | } WHERE {
+         |   graph ?G {
+         |     ${makeSPARQLTermFromNodeMatch(s, "S")}
+         |     ${makeSPARQLTermFromNodeMatch(p, "P")}
+         |     ${makeSPARQLTermFromNodeMatch(o, "O")} .
+         |   }
+         | }""".stripMargin
+    val variables = ???
+    val selectRes = sparqlSelectQueryVariablesNT(queryString, variables: Seq[String],
+      dataset)
+    ???
   }
 
   //////////////// SELECT stuff //////////////////////////
 
   /** run SPARQL on given dataset, knowing result variables; transactional */
   def sparqlSelectQueryVariables(queryString: String, variables: Seq[String],
-      ds: DATASET=dataset):
-  List[Seq[Rdf#Node]] = {
+    ds: DATASET = dataset): List[Seq[Rdf#Node]] = {
     val transaction = ds.r({
       sparqlSelectQueryVariablesNT(queryString, variables, ds)
     })
-    transaction .get
+    transaction.get
   }
 
   /** run SPARQL on given dataset, knowing result variables; NOT transactional */
   def sparqlSelectQueryVariablesNT(queryString: String, variables: Seq[String],
-                                   ds: DATASET = dataset): List[Seq[Rdf#Node]] = {
+    ds: DATASET = dataset): List[Seq[Rdf#Node]] = {
     val solutionsTry = for {
       query <- parseSelect(queryString)
       es <- ds.executeSelect(query, Map())
     } yield es
-//    println( "solutionsTry.isSuccess " + solutionsTry.isSuccess )
+    //    println( "solutionsTry.isSuccess " + solutionsTry.isSuccess )
     val answers: Rdf#Solutions = solutionsTry.get
     val results = answers.iterator.toIterable map {
       row =>
-//        println( row )
+        //        println( row )
         for (variable <- variables) yield {
           val cell = row(variable)
           cell match {
             case Success(node) => row(variable).get.as[Rdf#Node].get
-            case Failure(f)    => Literal(".")
+            case Failure(f) => Literal(".")
           }
         }
     }
     results.to[List]
   }
-  
-  /** run SPARQL on given dataset; transactional
-   * TODO the columns order may be wrong */
-def sparqlSelectQuery(queryString: String,
-            ds: DATASET=dataset): Try[List[List[Rdf#Node]]] = {
+
+  /**
+   * run SPARQL on given dataset; transactional
+   * TODO the columns order may be wrong
+   */
+  def sparqlSelectQuery(queryString: String,
+    ds: DATASET = dataset): Try[List[List[Rdf#Node]]] = {
     val transaction = ds.r({
       val solutionsTry = for {
         query <- parseSelect(queryString)
@@ -184,20 +221,20 @@ def sparqlSelectQuery(queryString: String,
           val results = solutions.iterator.toIterable map {
             row =>
               val variables = row.varnames().toList
-//              println( row )
+              //              println( row )
               for (variable <- variables) yield row(variable).get.as[Rdf#Node].get
           }
-          println( "after results" )
+          println("after results")
           results.to[List]
       }
-      println( "before res" )
+      println("before res")
       res
-//      println( "after res" )
+      //      println( "after res" )
     })
-    println( "before transaction.get" )
+    println("before transaction.get")
     transaction.get
   }
-  
+
   /** run SPARQL on given graph, knowing result variables */
   def runSparqlSelect(
     queryString: String, variables: Seq[String],
@@ -205,14 +242,14 @@ def sparqlSelectQuery(queryString: String,
 
     val query = parseSelect(queryString).get
     val answers: Rdf#Solutions = sparqlGraph.executeSelect(graph, query,
-        Map() ).get
+      Map()).get
     val results: Iterator[Seq[Rdf#URI]] = answers.toIterable map {
       row =>
         for (variable <- variables) yield row(variable).get.as[Rdf#URI].get
     }
     results.to[List]
   }
-  
+
   def futureGraph2String(triples: Future[Rdf#Graph], uri: String): String = {
     val graph = Await.result(triples, 5000 millis)
     Logger.getRootLogger().info(s"uri $uri ${graph}")
@@ -220,14 +257,14 @@ def sparqlSelectQuery(queryString: String,
     val ret = turtleWriter.write(graph, to, base = uri)
     to.toString
   }
-  
+
   def graph2String(triples: Try[Rdf#Graph], baseURI: String): String = {
     Logger.getRootLogger().info(s"base URI $baseURI ${triples}")
     val ret = turtleWriter.asString(triples.get, base = baseURI)
     ret.get
   }
-  
-  def dumpGraph( implicit graph: Rdf#Graph) = {
+
+  def dumpGraph(implicit graph: Rdf#Graph) = {
     val selectAll = """
               # CONSTRUCT { ?S ?P ?O . }
               SELECT ?S ?P ?O
@@ -240,7 +277,7 @@ def sparqlSelectQuery(queryString: String,
     info(s""" populateFromTDB selectAll size ${res2.size}
              ${res2.mkString("\n")}""")
   }
-  
+
   def info(s: String) = Logger.getRootLogger().info(s)
 
 }
