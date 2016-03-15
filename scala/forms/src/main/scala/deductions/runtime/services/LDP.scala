@@ -46,16 +46,17 @@ trait LDP[Rdf <: RDF, DATASET]
   import rdfStore.transactorSyntax._
   import rdfStore.sparqlEngineSyntax._
 
-  val schemeName = "lpd:"
+  val schemeName = "ldp:"
 
   /** for LDP GET
    *  @param uri relative URI received by LDP GET */
   def getTriples(uri: String, rawURI: String, accept: String): String = {
     println(s"LDP GET: (uri <$uri>, rawURI <$rawURI>)")
-    println("LDP GET:\n" + makeQueryString(uri, rawURI))
+    val queryString = makeQueryString(uri, rawURI)
+    println("LDP GET: queryString\n" + queryString)
     val r = dataset.r {
       for {
-        graph <- sparqlConstructQuery(makeQueryString(uri, rawURI))
+        graph <- sparqlConstructQuery( queryString )
         s <- if (accept == "text/turtle")
           turtleWriter.asString(graph, uri)
         else
@@ -66,15 +67,18 @@ trait LDP[Rdf <: RDF, DATASET]
   }
 
   private def makeQueryString(uri: String, rawURI: String): String = {
-    if ( true) // rawURI.endsWith(uri))
+    println(s"makeQueryString rawURI $rawURI")
+    if ( ! rawURI.startsWith( schemeName )) {
       // URI created with forms engine
+      println("! rawURI.startsWith( schemeName )")
+      val absoluteURI = makeURIFromString(uri)
       s"""
-         |CONSTRUCT { <${makeURIFromString(uri)}> ?p ?o } WHERE {
+         |CONSTRUCT { <$absoluteURI> ?p ?o } WHERE {
          |  GRAPH ?G {
-         |    <${makeURIFromString(uri)}> ?p ?o .
+         |    <$absoluteURI> ?p ?o .
          |  }
          |}""".stripMargin
-    else
+    } else
       // URI created with LDP POST
       s"""
          |CONSTRUCT { ?s ?p ?o } WHERE {

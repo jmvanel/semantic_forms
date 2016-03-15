@@ -18,7 +18,10 @@ trait URIManagement extends Configuration
     makeId(instanceURIPrefix)
   }
 
-  /** make URI From String, if not already an absolute URI */
+  /**
+   * make URI From String, if not already an absolute URI,
+   *  by prepending instance URI Prefix and URL Encoding
+   */
   def makeURIFromString(objectStringFromUser: String): String = {
     if (isAbsoluteURI(objectStringFromUser))
       objectStringFromUser

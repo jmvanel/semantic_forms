@@ -43,7 +43,7 @@ import org.scalatestplus.play.OneAppPerTest
   wget --header 'Accept: text/json-ld' http://localhost:9000/ldp/test1/test1.json
 
 The triples for this test are stored in this named graph: 
-<lpd:test1/test1.ttl>
+<ldp:test1/test1.ttl>
 
  * cf http://www.w3.org/TR/ldp-primer/#creating-an-rdf-resource-post-an-rdf-resource-to-an-ldp-bc */
 class LDPSpec extends PlaySpec
@@ -55,16 +55,16 @@ class LDPSpec extends PlaySpec
   val bodyTTL = """
     @prefix : <http://test#> .
     :s :p "Salut!"."""
+
   val ldpServiceURI = "ldp:" 
   val appURL = ldpServiceURI + ldpContainerURI
 
-  val timeout: Timeout = Timeout( DurationInt(240) seconds )
-//  implicit override val app: FakeApplication = FakeApplication()
+  val timeout: Timeout = Timeout( DurationInt(40) seconds )
 
   "LDP service" must {
     "respond to the ldp POST and GET Actions" in {
       post()
-//      get()
+      get()
     }
   }
   
@@ -93,7 +93,6 @@ class LDPSpec extends PlaySpec
     // and we query another TDB instance (in the same directory tough but that's not enough!)
     // assert( graph.contains("Salut!") )
 
-    // should do a SPARQL query that returns the raw result 
     val query = s"SELECT * WHERE { GRAPH <$ldpDataFileURI> {?S ?P ?O.}}"
     info( s"query $query" )
     val r = Application.select( query ) (FakeRequest( Helpers.GET, "" ) )
@@ -102,21 +101,14 @@ class LDPSpec extends PlaySpec
     info( "Application.sparql: " + sresult )
     sresult.substring( sresult.length() - 200 )
 //    assert( sresult.contains("Salut!") ) // For reason unknown this fails too !!!!!!!!!!
-
     //    info( s"""POST:assert succeded!""" )
   }
-
-//  import play.api.mvc.SimpleResult
   
   def get() {
-    info( s"""GET: """ )
-	  val request = FakeRequest( Helpers.GET, appURL + file ).
+    val getRelativeURI = appURL + file
+    info( s"""GET: $getRelativeURI""" )
+	  val request = FakeRequest( Helpers.GET, getRelativeURI ).
     withHeaders(( "Accept", "text/turtle")) // , application/ld+json") )
-    info( s"""GET: launching Application.ldp($ldpContainerURI + $file""" )
-    
-//    val result: Future[Result] = controller.index().apply(FakeRequest())
-          
-//    val result0 = Application.ldp(ldpContainerURI + file)(request)
     val result0 = Application.ldp(ldpContainerURI + file).apply(request)
     val enum: Enumerator[Array[Byte]] = Enumerator() ; val result = enum run result0 
     val content = contentAsString(result)(timeout)
