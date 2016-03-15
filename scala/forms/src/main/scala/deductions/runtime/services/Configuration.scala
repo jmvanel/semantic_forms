@@ -22,6 +22,10 @@ trait Configuration {
   def relativeURIforCreatedResourcesByForm: String
   def relativeURIforCreatedResourcesByLDP = relativeURIforCreatedResourcesByForm
 
+  def defaultReadTimeout: Int
+  def defaultConnectTimeout: Int
+  def httpHeadTimeout: Int
+
   /** vocabulary for form specifications */
   def formVocabPrefix: String
   def prefixAVontology: String
@@ -84,6 +88,10 @@ trait ConfigurationCopy extends Configuration {
   override def relativeURIforCreatedResourcesByLDP = original.relativeURIforCreatedResourcesByLDP
   override def preferredURIPrefixes = original.preferredURIPrefixes
   override def serverPort = original.serverPort
+  override def defaultReadTimeout = original.defaultReadTimeout
+  override def defaultConnectTimeout = original.defaultConnectTimeout
+  override def httpHeadTimeout = original.httpHeadTimeout
+
   override def formVocabPrefix = original.formVocabPrefix
   override def prefixAVontology = original.prefixAVontology
   override def needLoginForEditing = original.needLoginForEditing

@@ -118,7 +118,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
         localTimestamp match {
           case Success(longLocalTimestamp) => {
             println(s"$uri localTimestamp: ${	new Date(longLocalTimestamp) } - $longLocalTimestamp .")
-            val lastModifiedTuple = lastModified(uri.toString(), 500)
+            val lastModifiedTuple = lastModified(uri.toString(), httpHeadTimeout)
             println(s"$uri lastModified: ${new Date(lastModifiedTuple._2)} $lastModifiedTuple .")
             
             if (lastModifiedTuple._1) {
@@ -227,8 +227,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
 
     if (isDownloadableURI(uri)) {
-      System.setProperty("sun.net.client.defaultReadTimeout", "10000")
-      System.setProperty("sun.net.client.defaultConnectTimeout", "10000")
+      System.setProperty("sun.net.client.defaultReadTimeout", defaultReadTimeout.toString)
+      System.setProperty("sun.net.client.defaultConnectTimeout", defaultConnectTimeout.toString)
       val graph: Rdf#Graph =
         load(new java.net.URL(uri.toString())).get
       Logger.getRootLogger().info(s"Before storeURI uri $uri graphUri $graphUri")

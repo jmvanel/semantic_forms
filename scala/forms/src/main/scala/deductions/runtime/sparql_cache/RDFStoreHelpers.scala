@@ -9,6 +9,7 @@ import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
 import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.services.Configuration
 
 /**
  * Helpers for RDF Store
@@ -16,7 +17,8 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
  */
 
 trait RDFStoreHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
-    with RDFLoader[Rdf, Try] {
+    with RDFLoader[Rdf, Try]
+    with Configuration {
 
   import ops._
   import rdfStore.transactorSyntax._
@@ -48,8 +50,8 @@ trait RDFStoreHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DA
    */
   def storeURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
     Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
-    System.setProperty("sun.net.client.defaultReadTimeout", "30000")
-    System.setProperty("sun.net.client.defaultConnectTimeout", "30000")
+    System.setProperty("sun.net.client.defaultReadTimeout", defaultReadTimeout.toString)
+    System.setProperty("sun.net.client.defaultConnectTimeout", defaultConnectTimeout.toString)
 
     val graph: Rdf#Graph =
       /* TODO check new versions of Scala > 2.11.6 that this asInstanceOf is 

@@ -1,7 +1,6 @@
 package deductions.runtime.services
 
 import java.io.ByteArrayOutputStream
-
 import scala.concurrent.Await
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationInt
@@ -9,20 +8,20 @@ import scala.language.postfixOps
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
-
 import org.apache.log4j.Logger
 import org.w3.banana.RDF
 import org.w3.banana.TryW
 import org.w3.banana.io.RDFWriter
 import org.w3.banana.io.Turtle
-
 import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFHelpers0
 
 /**
  * @author jmv
  */
 trait SPARQLHelpers[Rdf <: RDF, DATASET]
-    extends RDFStoreLocalProvider[Rdf, DATASET] {
+    extends RDFStoreLocalProvider[Rdf, DATASET]
+    		with RDFHelpers0[Rdf] {
 
   val turtleWriter: RDFWriter[Rdf, Try, Turtle]
 
@@ -140,42 +139,61 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     sparqlUpdateQuery(queryString, ds)
   }
 
+  /** a triple plus its named graph (empty URI if default graph) */
   type Quad = (Rdf#Triple, Rdf#URI)
   def quadQuery(s: Rdf#NodeMatch, p: Rdf#NodeMatch, o: Rdf#NodeMatch): Iterable[Quad] = {
     def makeSPARQLTermFromNodeMatch(nm: Rdf#NodeMatch, varName: String) = {
       foldNodeMatch(nm)(
         "?" + varName,
-        node => node.toString())
+        node => makeTurtleTerm(node)
+        /* TODO from an Rdf#Node, print the turtle term; betehess 15:22
+         * @jmvanel nothing giving you that out-of-the-box right now
+         * I'd write a new typeclass to handle that
+         * it's super easy to do */
+      )
     }
-    def makeSPARQLVariableFromNodeMatch(nm: Rdf#NodeMatch, varName: String) = {
-      foldNodeMatch(nm)(
-        "?" + varName,
-        node => "")
+    def makeURI(node:Rdf#Node) = foldNode(node)(u=>u, b=>URI(""), l=>URI(""))
+    def makeQuad(result: Seq[Rdf#Node]): Quad = {
+      var resultIndex = 0
+      val triple = Triple(
+          foldNodeMatch(s)(
+          {resultIndex += 1 ; result(resultIndex)},
+          node => node ),
+      foldNodeMatch(p)(
+          {resultIndex += 1 ; makeURI( result(resultIndex) )},
+          node => makeURI(node) ),
+      foldNodeMatch(o)(
+          {resultIndex += 1 ; result(resultIndex)},
+          node => node )
+      )
+      ( triple, makeURI(result(resultIndex)) )
     }
+    val variables0 = List(
+      makeSPARQLTermFromNodeMatch(s, "S"),
+      makeSPARQLTermFromNodeMatch(p, "P"),
+      makeSPARQLTermFromNodeMatch(o, "O"))
+    val variables = variables0 filter (s => s startsWith "?")
+
     val queryString = s"""
          | SELECT
-         |     ${makeSPARQLVariableFromNodeMatch(s, "S")}
-         |     ${makeSPARQLVariableFromNodeMatch(s, "P")}
-         |     ${makeSPARQLVariableFromNodeMatch(s, "O")}
+         |     ${variables.mkString(" ")}
          |     ?G
-         | } WHERE {
+         | WHERE {
          |   graph ?G {
-         |     ${makeSPARQLTermFromNodeMatch(s, "S")}
-         |     ${makeSPARQLTermFromNodeMatch(p, "P")}
-         |     ${makeSPARQLTermFromNodeMatch(o, "O")} .
+         |     ${variables0.mkString(" ")}
+         |     .
          |   }
          | }""".stripMargin
-    val variables = ???
-    val selectRes = sparqlSelectQueryVariablesNT(queryString, variables: Seq[String],
-      dataset)
-    ???
+    println( "quadQuery " + queryString ) 
+    val selectRes = sparqlSelectQueryVariablesNT(queryString, variables, dataset)
+    selectRes map { makeQuad( _ ) }
   }
 
   //////////////// SELECT stuff //////////////////////////
 
   /** run SPARQL on given dataset, knowing result variables; transactional */
   def sparqlSelectQueryVariables(queryString: String, variables: Seq[String],
-    ds: DATASET = dataset): List[Seq[Rdf#Node]] = {
+                                 ds: DATASET = dataset): List[Seq[Rdf#Node]] = {
     val transaction = ds.r({
       sparqlSelectQueryVariablesNT(queryString, variables, ds)
     })
@@ -184,7 +202,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   /** run SPARQL on given dataset, knowing result variables; NOT transactional */
   def sparqlSelectQueryVariablesNT(queryString: String, variables: Seq[String],
-    ds: DATASET = dataset): List[Seq[Rdf#Node]] = {
+                                   ds: DATASET = dataset): List[Seq[Rdf#Node]] = {
     val solutionsTry = for {
       query <- parseSelect(queryString)
       es <- ds.executeSelect(query, Map())
@@ -198,7 +216,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
           val cell = row(variable)
           cell match {
             case Success(node) => row(variable).get.as[Rdf#Node].get
-            case Failure(f) => Literal(".")
+            case Failure(f)    => Literal(".")
           }
         }
     }
@@ -210,7 +228,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    * TODO the columns order may be wrong
    */
   def sparqlSelectQuery(queryString: String,
-    ds: DATASET = dataset): Try[List[List[Rdf#Node]]] = {
+                        ds: DATASET = dataset): Try[List[List[Rdf#Node]]] = {
     val transaction = ds.r({
       val solutionsTry = for {
         query <- parseSelect(queryString)
