@@ -215,4 +215,10 @@ trait RDFHelpers0[Rdf <: RDF] extends Configuration
       }
     } else Seq()
   }
+  
+  def makeTurtleTerm( node: Rdf#Node ) = foldNode(node)(
+      uri => s"<$uri>",
+      bn => s"_:$bn",
+      // TODO: datatype
+      lit => s"$lit")
 }

@@ -98,7 +98,7 @@ extends BlankNodeCleanerBase[Rdf, DATASET] {
   import rdfStore.graphStoreSyntax._
   import rdfStore.transactorSyntax._
 
-  private lazy val rdf = RDFPrefix[Rdf]
+//  private lazy val rdf = RDFPrefix[Rdf]
 
   /**
    * Batch program to clean Unreachable Blank Node Sub-Graphs;

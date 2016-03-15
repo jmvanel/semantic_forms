@@ -16,7 +16,7 @@ import java.net.URI
 import deductions.runtime.services.URIManagement
 
 /**
- * merge FOAF duplicates
+ * merge FOAF duplicates,
  *  #41 https://github.com/jmvanel/semantic_forms/issues/41
  */
 trait DuplicateCleaner[Rdf <: RDF, DATASET]
@@ -28,19 +28,22 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
   import rdfStore.graphStoreSyntax._
   import rdfStore.transactorSyntax._
 
-  //  val rdf = RDFPrefix[Rdf]
 
   def removeAllDuplicates(classURI: Rdf#URI, lang: String = "") = {
     val instanceLabels2URIsMap: Map[String, Seq[Rdf#URI]] =
       indexInstanceLabels(classURI, lang)
     for (el <- instanceLabels2URIsMap) {
-      println(s"looking at ${el._1}")
+      println(s"""looking at label "${el._1}" """)
+      try{
       val (uriTokeep, duplicateURIs) = tellDuplicates(el._2)
-      println(s"uriTokeep $uriTokeep, ${duplicateURIs.mkString(", ")}")
-      if( ! duplicateURIs.isEmpty )
-        println(s"Deleting duplicates for ${el._1} uriTokeep $uriTokeep, delete count ${duplicateURIs.size}")
+      println(s"uriTokeep <$uriTokeep>, duplicates ${duplicateURIs.mkString("<", ">, <", ">")}")
+      if (!duplicateURIs.isEmpty)
+        println(s"""Deleting duplicates for "${el._1}" uriTokeep <$uriTokeep>, delete count ${duplicateURIs.size}""")
       copyPropertyValuePairs(uriTokeep, duplicateURIs)
       removeQuadsWithSubjects(duplicateURIs)
+      } catch {
+        case t: Throwable => println( "WARNING: " + t.getLocalizedMessage )
+      }
     }
   }
 
@@ -128,19 +131,22 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
   def copyPropertyValuePairs(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI]) = {
     for (duplicateURI <- duplicateURIs) {
       /* TODO SPARQL query to get the original graph name */
-      val instanceTriples = find(allNamedGraph, duplicateURI, ANY, ANY)
-      val triplesToAdd = instanceTriples.map {
-        t => Triple(uriTokeep, t.predicate, t.objectt)
+      val quads = quadQuery(duplicateURI, ANY, ANY): Iterable[Quad]
+      val triplesToAdd = quads.map {
+        case (t, uri) => (Triple(uriTokeep, t.predicate, t.objectt), uri)
       }.toList
       rdfStore.rw(dataset, {
-        rdfStore.appendToGraph(dataset,
-          uriTokeep /* TODO SPARQL query to get the original graph name */ , Graph(triplesToAdd))
+        triplesToAdd.map {
+          tripleToAdd =>
+            rdfStore.appendToGraph(dataset,
+              tripleToAdd._2, Graph(List(tripleToAdd._1)))
+        }
       })
     }
   }
 
   def indexInstanceLabels(classURI: Rdf#URI,
-    lang: String): Map[String, Seq[Rdf#URI]] = {
+                          lang: String): Map[String, Seq[Rdf#URI]] = {
     val classTriples = find(allNamedGraph, ANY, rdf.typ, classURI)
     // NOTE: this looks laborious !!!!
     val v = for (
