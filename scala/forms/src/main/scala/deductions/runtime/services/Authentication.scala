@@ -13,7 +13,7 @@ import scala.util.Failure
  */
 trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
 
-  def passwordsGraph: Rdf#Graph
+  def passwordsGraph: Rdf#MGraph
 
   import ops._
   import rdfStore.transactorSyntax._
@@ -46,15 +46,21 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
   private def findPassword(userid: String): Option[(String)] = {
     // query for password in dedicated Authentication database
     val userURI = URI(userid)
+
     val pwds = dataset.r({
-      find(passwordsGraph, userURI, passwordPred, ANY)
+      println( s"find( makeIGraph($passwordsGraph), $userURI, passwordPred, ANY)" )
+      find( makeIGraph(passwordsGraph), userURI, passwordPred, ANY)
     }).get
+    
     val pwdsl = pwds.toList
-    if (pwds.size > 0) {
+    println( s"pwdsl $pwdsl" )
+    /* find( makeIGraph( {devil@hell.com @urn:password "bla"}), devil@hell.com, passwordPred, ANY)
+       pwdsl List(devil@hell.com @urn:password "bla") */
+    if (pwdsl.size > 0) {
       val databasePasswordNode = pwdsl(0).subject
       println(s"findUserAndPassword $databasePasswordNode")
       foldNode(databasePasswordNode)(
-        pw => None, b => None, l => Some(l.lexicalForm))
+        pw => Some((databasePasswordNode).toString), b => None, l => Some(l.lexicalForm))
     } else None
   }
 
@@ -89,18 +95,17 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
 
   /**
    * record password in database; @return user Id if success
-   * TODO makeMGraph() just makes a modifiable copy of passwordsGraph
-   * but does not change it !!!!!!!!!!!!!!!!!
    * TODO check already existing account;
    */
   def signin(agentURI: String, password: String): Try[String] = {
-    println("userId " + agentURI)
-    dataset.rw({
-      val mGraph = passwordsGraph.makeMGraph()
+    println("Authentication.signin: userId " + agentURI)
+    val res = dataset.rw({
+      val mGraph = passwordsGraph // .makeMGraph()
       mGraph += makeTriple(URI(agentURI), passwordPred,
         makeLiteral(password, xsd.string))
       agentURI
     })
+    res
   }
 
   def signinOLD(agentURI: String, password: String): Try[String] = {
@@ -121,7 +126,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
       println("userId " + userId)
       val r1 = dataset.rw({
         // record password in database
-        val mGraph = passwordsGraph.makeMGraph()
+        val mGraph = passwordsGraph // .makeMGraph()
         mGraph += makeTriple(URI(agentURI), passwordPred,
           makeLiteral(password, xsd.string))
         Success(userId)
