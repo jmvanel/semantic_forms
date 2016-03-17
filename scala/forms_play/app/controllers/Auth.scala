@@ -89,7 +89,8 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
   def authenticate = Action { implicit request =>
     loginForm.bindFromRequest.fold(
       formWithErrors =>
-        BadRequest("<!DOCTYPE html>\n" + views.html.login(formWithErrors, registerForm)),
+        BadRequest("<!DOCTYPE html>\n" + views.html.login(formWithErrors, registerForm))
+                    .as("text/html; charset=utf-8"),
       user => {
       // Redirect to URL before login
         val previousURL = request.headers.get("referer")
