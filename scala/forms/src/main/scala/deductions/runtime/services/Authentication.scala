@@ -7,6 +7,8 @@ import org.w3.banana.FOAFPrefix
 import org.w3.banana.RDF
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import scala.util.Failure
+import javax.xml.bind.annotation.adapters.HexBinaryAdapter
+import java.security.MessageDigest
 
 /**
  * @author jmv
@@ -58,7 +60,9 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
       val databasePasswordNode = pwdsl(0).subject
       println(s"findUserAndPassword $databasePasswordNode")
       foldNode(databasePasswordNode)(
-        pw => Some((databasePasswordNode).toString), b => None, l => Some(l.lexicalForm))
+        pw => Some((databasePasswordNode).toString),
+        b => None,
+        l => Some(l.lexicalForm))
     } else None
   }
 
@@ -94,6 +98,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
   /**
    * record password in database; @return user Id if success
    * TODO check already existing account;
+   * TODO store hash , not password
    */
   def signin(agentURI: String, password: String): Try[String] = {
     println("Authentication.signin: userId " + agentURI)
@@ -104,6 +109,11 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
       agentURI
     })
     res
+  }
+
+  def hashPassword(password: String): String = {
+    new HexBinaryAdapter().marshal(MessageDigest.getInstance("MD5").
+        digest(password.getBytes))
   }
 
   def signinOLD(agentURI: String, password: String): Try[String] = {

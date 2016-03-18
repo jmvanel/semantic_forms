@@ -23,7 +23,9 @@ import play.api.i18n.I18nSupport
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 
-object Auth extends Controller
+object Auth extends AuthTrait
+
+trait AuthTrait extends Controller
 with JenaModule
 with RDFStoreLocalJena1Provider
 with Auth[Jena, Dataset]
@@ -72,11 +74,6 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
   /** page for login or signin */
   def login = Action { implicit request =>
     println( s"def login $request" )
-//      implicit val messages: Messages = null
-//     new play.api.i18n.Messages(  (lang: play.api.i18n.Lang, messages: play.api.i18n.MessagesApi )
-      // Implicits.applicationMessages( Lang(lang), play.api.Play.current)
-
-//    implicit val messages: play.api.i18n.Messages = new play.api.i18n.Messages( Lang("en"), messagesApi )
     val lf = views.html.login(loginForm, registerForm)
     Ok("<!DOCTYPE html>\n" + lf)
     .as("text/html; charset=utf-8")
@@ -92,7 +89,7 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
         BadRequest("<!DOCTYPE html>\n" + views.html.login(formWithErrors, registerForm))
                     .as("text/html; charset=utf-8"),
       user => {
-      // Redirect to URL before login
+        // Redirect to URL before login
         val previousURL = request.headers.get("referer")
         val call = previousURL match {
           case Some(url) => Call("GET", url)

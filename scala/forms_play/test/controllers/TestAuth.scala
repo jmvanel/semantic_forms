@@ -24,14 +24,17 @@ class TestAuth
   "devil@hell.com"
   val pw = "bla"
   val timeout: Timeout = Timeout(DurationInt(240) seconds)
-  //  val fakeApplication = FakeApplication
+  val auth = new AuthTrait {
+    override val needLoginForEditing = true
+    override val needLoginForDisplaying = true
+  }
 
   "Auth service" must {
     "implement signin" in {
       val request = FakeRequest(Helpers.POST,
         s"register?userid=${java.net.URLEncoder.encode(loginName, "utf-8")}" +
         s"&password=$pw&confirmPassword=$pw")
-      val result = controllers.Auth.register()(request)
+      val result = auth.register()(request)
       val content = contentAsString(result)(timeout)
       info("register: GET: contentAsString: " + content.split("\n").filter{ _ . contains("form") } )
       val find_user = findUser(loginName)
@@ -43,7 +46,7 @@ class TestAuth
     "implement login" in {
       val request = FakeRequest(Helpers.GET,
         s"login?userid=$loginName,password=$pw")
-      val result = controllers.Auth.authenticate()(request)
+      val result = auth.authenticate()(request)
       val content = contentAsString(result)(timeout)
       info("authenticate: GET: contentAsString: " + content.split("\n").filter{ _ . contains("form") } )
       // assert(content.contains("Salut!"))
