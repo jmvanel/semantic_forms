@@ -36,7 +36,9 @@ with DefaultConfiguration {
   override val useTextQuery = false
 }
 
-//@Inject(val messagesApi: MessagesApi)
+/** Controller for registering account,
+ *  login, logout;
+ *  see https://www.playframework.com/documentation/2.4.x/ScalaSessionFlash */
 trait Auth[Rdf <: RDF, DATASET]
 extends ApplicationFacadeImpl[Rdf, DATASET]
  with Controller
@@ -91,9 +93,10 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
       user => {
         // Redirect to URL before login
         val previousURL = request.headers.get("referer")
+        println(s"authenticate: previous url $previousURL")
         val call = previousURL match {
-          case Some(url) => Call("GET", url)
-          case None => routes.Application.index
+          case Some(url) if( ! url.endsWith("/login")) => Call("GET", url)
+          case _ => routes.Application.index
         }
         Redirect(call).withSession(Security.username -> user._1)
       }
