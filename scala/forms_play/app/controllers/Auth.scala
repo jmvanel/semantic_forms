@@ -25,8 +25,7 @@ import play.api.i18n.Messages.Implicits._
 
 object Auth extends AuthTrait
 
-trait AuthTrait extends Controller
-with JenaModule
+trait AuthTrait extends JenaModule
 with RDFStoreLocalJena1Provider
 with Auth[Jena, Dataset]
 with DefaultConfiguration {
@@ -36,8 +35,7 @@ with DefaultConfiguration {
   override val useTextQuery = false
 }
 
-/** Controller for registering account,
- *  login, logout;
+/** Controller for registering account, login, logout;
  *  see https://www.playframework.com/documentation/2.4.x/ScalaSessionFlash */
 trait Auth[Rdf <: RDF, DATASET]
 extends ApplicationFacadeImpl[Rdf, DATASET]

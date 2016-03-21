@@ -27,7 +27,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
   def checkLogin(loginName: String, password: String): Boolean = {
     val databasePasswordOption = findPassword(loginName)
     databasePasswordOption match {
-      case Some(databasePassword) => databasePassword == password
+      case Some(databasePassword) => databasePassword == hashPassword(password)
       case None => false
     }
   }
@@ -45,8 +45,8 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
     }
   }
 
+  /** query for password in dedicated Authentication database */
   private def findPassword(userid: String): Option[(String)] = {
-    // query for password in dedicated Authentication database
     val userURI = URI(userid)
 
     val pwds = dataset.r({
@@ -98,14 +98,14 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
   /**
    * record password in database; @return user Id if success
    * TODO check already existing account;
-   * TODO store hash , not password
+   * store hash , not password
    */
   def signin(agentURI: String, password: String): Try[String] = {
     println("Authentication.signin: userId " + agentURI)
     val res = dataset.rw({
-      val mGraph = passwordsGraph // .makeMGraph()
+      val mGraph = passwordsGraph
       mGraph += makeTriple(URI(agentURI), passwordPred,
-        makeLiteral(password, xsd.string))
+        makeLiteral(hashPassword(password), xsd.string))
       agentURI
     })
     res
