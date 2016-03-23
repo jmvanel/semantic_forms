@@ -32,7 +32,8 @@ trait DefaultConfiguration extends Configuration {
 
   override val prefixAVontology = "http://www.assemblee-virtuelle.org/ontologies/v1.owl#"
 
-  override val needLoginForEditing: Boolean = false // true
+  override val needLoginForEditing: Boolean = // false //
+    true
   override val needLoginForDisplaying: Boolean = false
 
   override val recordUserActions: Boolean = true // false
