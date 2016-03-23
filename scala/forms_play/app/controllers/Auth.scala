@@ -93,7 +93,8 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
         val previousURL = request.headers.get("referer")
         println(s"authenticate: previous url $previousURL")
         val call = previousURL match {
-          case Some(url) if( ! url.endsWith("/login")) => Call("GET", url)
+          case Some(url) if( ! url.endsWith("/login") &&
+              ! url.endsWith("/authenticate") ) => Call("GET", url)
           case _ => routes.Application.index
         }
         Redirect(call).withSession(Security.username -> user._1)

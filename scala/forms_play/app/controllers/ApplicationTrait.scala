@@ -69,7 +69,7 @@ trait ApplicationTrait extends Controller
       val lang = chooseLanguage(request)
       val title = labelForURITransaction(uri, lang)
       outputMainPage(
-        htmlForm(uri, blanknode, editable = Edit != "", lang, formuri, graphURI=userid),
+        htmlForm(uri, blanknode, editable = Edit != "", lang, formuri, graphURI=makeAbsoluteURIForSaving(userid)),
         lang, title=title )
       // TODO record in TDB like timestamp & history: request.remoteAddress, request.host
     }
@@ -83,7 +83,7 @@ trait ApplicationTrait extends Controller
       println( s"""form: request $request : "$Edit" formuri <$formuri> """)
       val lang = chooseLanguage(request)
       Ok(htmlFormElemJustFields(uri: String, hrefDisplayPrefix, blankNode,
-        editable = Edit != "", lang, formuri))
+        editable = Edit != "", lang, formuri, graphURI=makeAbsoluteURIForSaving(userid)))
         .as("text/html; charset=utf-8")
     }
   }
@@ -136,7 +136,7 @@ trait ApplicationTrait extends Controller
       println( s"userInfo $userInfo, userid $userid" )
        val content = htmlForm(
         uri, editable = true,
-        lang = chooseLanguage(request), graphURI=userid)
+        lang = chooseLanguage(request), graphURI=makeAbsoluteURIForSaving(userid))
       Ok( "<!DOCTYPE html>\n" + mainPage( content, userInfo, lang))
             .as("text/html; charset=utf-8").
         withHeaders("Access-Control-Allow-Origin" -> "*") // TODO dbpedia only
@@ -148,7 +148,7 @@ trait ApplicationTrait extends Controller
       implicit userid =>
         implicit request =>
           val lang = chooseLanguage(request)
-          outputMainPage(save(request, userid, graphURI=userid), lang)
+          outputMainPage(save(request, userid, graphURI=makeAbsoluteURIForSaving(userid)), lang)
     }
 
   private def save(request: Request[_], userid: String, graphURI: String = "" ): NodeSeq = {
@@ -289,7 +289,10 @@ trait ApplicationTrait extends Controller
         }
     }
 
-  /** TODO: this is blocking code !!! */
+  /** TODO:
+   * - maybe the stored named graph should be user specific
+   * - this is blocking code !!!
+   */
   def ldpPOSTAction(uri: String) =
     //  { Action { implicit request =>
     withUser {

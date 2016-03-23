@@ -57,7 +57,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
     val pwdsl = pwds.toList
     println( s"pwdsl $pwdsl" )
     if (pwdsl.size > 0) {
-      val databasePasswordNode = pwdsl(0).subject
+      val databasePasswordNode = pwdsl(0).objectt
       println(s"findUserAndPassword $databasePasswordNode")
       foldNode(databasePasswordNode)(
         pw => Some((databasePasswordNode).toString),
