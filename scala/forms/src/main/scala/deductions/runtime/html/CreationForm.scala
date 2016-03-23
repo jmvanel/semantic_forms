@@ -26,7 +26,7 @@ with Configuration
    *  transactional
    */
   def create(classUri: String, lang: String = "en",
-    formSpecURI: String = "")
+    formSpecURI: String = "", graphURI: String= "")
       : Try[NodeSeq] = {
     import scala.concurrent.ExecutionContext.Implicits.global
     dataset.rw({
@@ -41,9 +41,9 @@ with Configuration
       new Form2HTMLBanana[Rdf] with ConfigurationCopy {
         val ops = ops1
         lazy val original:Configuration = CreationFormAlgo.this
-//        override def showPlusButtons = CreationFormAlgo.this.showPlusButtons 
       } .
-        generateHTML(form, hrefPrefix = "", editable = true, actionURI = actionURI, lang=lang)
+        generateHTML(form, hrefPrefix = "", editable = true, actionURI = actionURI,
+            lang=lang, graphURI=graphURI)
     })
   }
 

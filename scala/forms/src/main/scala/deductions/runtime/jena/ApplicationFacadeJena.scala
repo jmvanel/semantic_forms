@@ -37,14 +37,15 @@ trait ApplicationFacadeJena
       lazy val original = conf
       override def htmlForm(uri0: String, blankNode: String = "",
         editable: Boolean = false,
-        lang: String = "en", formuri: String = ""): NodeSeq = {
+        lang: String = "en", formuri: String = "",
+        graphURI: String = ""): NodeSeq = {
         println(s""">> ApplicationFacadeImplJena 
                 max  Memory  ${Runtime.getRuntime.maxMemory()}
                 totalMemory  ${Runtime.getRuntime.totalMemory()}""")
         val name = "TDB/journal.jrnl"
         println(s"$name  : ${new java.io.File(name).length()} bytes")
         super.htmlForm(uri0: String, blankNode,
-          editable, lang: String)
+          editable, lang: String, graphURI = graphURI)
       }
     }
   } catch {

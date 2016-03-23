@@ -99,7 +99,6 @@ trait TableViewModule[Rdf <: RDF, DATASET]
       new Form2HTMLBanana[Rdf] with ConfigurationCopy {
         val ops = ops1
         lazy val original:Configuration = TableViewModule.this
-//        override def showPlusButtons = TableViewModule.this.showPlusButtons
       } .
         generateHTMLJustFields(form,
           hrefPrefix, editable, graphURIActual)
@@ -136,7 +135,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
                           formGroup: Rdf#URI = nullURI,
                           formuri: String=""): Try[NodeSeq] = {
 
-    println(s"htmlFormRaw dataset $dataset")
+    println(s"htmlFormRaw dataset $dataset, graphURI <$graphURI>")
     val tryGraph = if (blankNode != "true") {
       val res = retrieveURINoTransaction(makeUri(uri), dataset)
       Logger.getRootLogger().info(s"After retrieveURINoTransaction(makeUri($uri), store)")
@@ -211,7 +210,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     : NodeSeq = {
 
     implicit val graph: Rdf#Graph = graphe
-    println(s"graf2form(graph: graph size: ${graph.size}")
+    println(s"TableViewModule.graf2form(graph: graph size: ${graph.size}, graphURI <$graphURI>")
     val form = time("createAbstractForm",
       createAbstractForm(
           uri, editable, lang, blankNode, formGroup, formuri))

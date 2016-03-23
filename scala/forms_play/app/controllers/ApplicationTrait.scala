@@ -69,7 +69,7 @@ trait ApplicationTrait extends Controller
       val lang = chooseLanguage(request)
       val title = labelForURITransaction(uri, lang)
       outputMainPage(
-        htmlForm(uri, blanknode, editable = Edit != "", lang, formuri),
+        htmlForm(uri, blanknode, editable = Edit != "", lang, formuri, graphURI=userid),
         lang, title=title )
       // TODO record in TDB like timestamp & history: request.remoteAddress, request.host
     }
@@ -133,40 +133,41 @@ trait ApplicationTrait extends Controller
       val pageURI = uri
       val pageLabel = labelForURI(uri, lang)
       val userInfo = displayUser(userid, pageURI, pageLabel, lang)
-      println( s"userInfo $userInfo" )
+      println( s"userInfo $userInfo, userid $userid" )
        val content = htmlForm(
         uri, editable = true,
-        lang = chooseLanguage(request))
+        lang = chooseLanguage(request), graphURI=userid)
       Ok( "<!DOCTYPE html>\n" + mainPage( content, userInfo, lang))
             .as("text/html; charset=utf-8").
         withHeaders("Access-Control-Allow-Origin" -> "*") // TODO dbpedia only
   }
 
+  /** TODO: Redirect to display page */
   def saveAction() =
-    //  {    Action { implicit request =>
     withUser {
       implicit userid =>
         implicit request =>
           val lang = chooseLanguage(request)
-          outputMainPage(save(request), lang)
+          outputMainPage(save(request, userid, graphURI=userid), lang)
     }
 
-  def save(request: Request[_]): NodeSeq = {
+  private def save(request: Request[_], userid: String, graphURI: String = "" ): NodeSeq = {
       val body = request.body
       body match {
         case form: AnyContentAsFormUrlEncoded =>
           val lang = chooseLanguage(request)
           val map = form.data
-          println("Global.save: " + body.getClass + ", map " + map)
+          println(s"ApplicationTrait.save: ${body.getClass}, map $map")
           try {
-            saveForm(map, lang )
+            saveForm( map, lang, userid, graphURI )
           } catch {
             case t: Throwable => println("Exception in saveTriples: " + t)
             // TODO show Exception to user
           }
           val uriOption = map.getOrElse("uri", Seq()).headOption
-          println("Global.save: uriOption " + uriOption)
+          println(s"ApplicationTrait.save: uriOption $uriOption, userid $userid")
           uriOption match {
+            // TODO display page is computed twice
             case Some(url1) => htmlForm(
               URLDecoder.decode(url1, "utf-8"),
               editable = false,
@@ -178,7 +179,6 @@ trait ApplicationTrait extends Controller
   }
 
   def createAction() =
-    //  {  Action { implicit request =>
     withUser {
       implicit userid =>
         implicit request =>
@@ -192,9 +192,13 @@ trait ApplicationTrait extends Controller
           val lang = chooseLanguage(request)
           outputMainPage(
             create(uri, chooseLanguage(request),
-              formSpecURI), lang)
+              formSpecURI, makeAbsoluteURIForSaving(userid)
+              ),
+            lang)
     }
 
+  def makeAbsoluteURIForSaving(userid: String): String = userid 
+    
   //  def download(url: String): Action[_] = {
   //    Action { Ok(downloadAsString(url)).as("text/turtle; charset=utf-8") }
   //  }

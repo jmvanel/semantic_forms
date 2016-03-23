@@ -13,7 +13,7 @@ import deductions.runtime.services.StringSearchSPARQL
 import deductions.runtime.utils.I18NMessages
 import scala.xml.NodeSeq
 
-
+/** Register HTML Page */
 trait RegisterPage[Rdf <: RDF, DATASET]
     extends StringSearchSPARQL[Rdf, DATASET]
     with InstanceLabelsInferenceMemory[Rdf, DATASET]
@@ -24,7 +24,7 @@ trait RegisterPage[Rdf <: RDF, DATASET]
 
   import ops._
 
-  /** display User stuff in pages */
+  /** display User information in pages */
   def displayUser(userid: String, pageURI: String, pageLabel: String,
       lang: String = "en"): NodeSeq = {
     <div class="userInfo"> {

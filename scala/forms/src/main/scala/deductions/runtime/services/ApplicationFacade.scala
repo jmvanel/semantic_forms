@@ -24,20 +24,24 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
   
   def htmlForm(uri: String, blankNode: String = "",
     editable: Boolean = false,
-    lang: String = "en", formuri: String = "") =
+    lang: String = "en", formuri: String = "",
+    graphURI: String = "" ) =
     impl.htmlForm(uri: String, blankNode,
-      editable, lang, formuri)
+      editable, lang, formuri, graphURI)
 
   def htmlFormElemJustFields(uri: String, hrefPrefix: String = "", blankNode: String = "",
     editable: Boolean = false,
-    lang: String = "en", formuri: String )
+    lang: String = "en", formuri: String
+    , graphURI: String = ""
+    )
     : NodeSeq = {
-    impl.htmlFormElemJustFields(uri, hrefPrefix, blankNode, editable, lang, formuri=formuri )
+    impl.htmlFormElemJustFields(uri, hrefPrefix, blankNode, editable, lang, formuri=formuri
+            , graphURI=graphURI )
   }
   
-  def create(classUri: String, lang: String, formSpecURI: String)
+  def create(classUri: String, lang: String, formSpecURI: String, graphURI: String)
   : NodeSeq =
-    impl.create(classUri, lang, formSpecURI).get
+    impl.create(classUri, lang, formSpecURI, graphURI).get
 
   def lookup(search: String): String =
     impl.lookup(search)
@@ -56,8 +60,9 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
   def download(url: String): Enumerator[Array[Byte]] =
     impl.download(url)
 
-  def saveForm(request: Map[String, Seq[String]], lang: String = ""): NodeSeq =
-    impl.saveForm(request, lang)
+  def saveForm(request: Map[String, Seq[String]], lang: String = "", userid: String="",
+      graphURI: String = ""): NodeSeq =
+    impl.saveForm(request, lang, userid, graphURI)
 
   def sparqlConstructQuery(query: String, lang: String = "en"): Elem =
     impl.sparqlConstructQuery(query, lang)
