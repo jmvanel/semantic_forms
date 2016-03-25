@@ -62,16 +62,15 @@ trait ApplicationTrait extends Controller
       println(s"""displayURI: $request IP ${request.remoteAddress}, host ${request.host}
          displayURI headers ${request.headers}
          displayURI tags ${request.tags}
-         userid "$userid"
+         userid <$userid>
          formuri <$formuri>
-         """)
-      println(s"""displayURI: Edit "$Edit" """)
+         displayURI: Edit "$Edit" """)
       val lang = chooseLanguage(request)
       val title = labelForURITransaction(uri, lang)
       outputMainPage(
         htmlForm(uri, blanknode, editable = Edit != "", lang, formuri, graphURI=makeAbsoluteURIForSaving(userid)),
         lang, title=title )
-      // TODO record in TDB like timestamp & history: request.remoteAddress, request.host
+      // TODO record in TDB for history: ruserid, equest.remoteAddress, request.host
     }
   }
 

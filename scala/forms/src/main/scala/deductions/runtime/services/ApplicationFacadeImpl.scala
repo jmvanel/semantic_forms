@@ -118,14 +118,13 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
   /** Add behavior (manageBlankNodesReload, Exception management) and
    *  title and links on top of the form
-   *  to naked form from tableView
+   *  to naked form from TableView
    *  TRANSACTIONAL */
   def htmlForm(uri0: String, blankNode: String = "",
                editable: Boolean = false,
                lang: String = "en", formuri: String="",
                graphURI: String = ""): NodeSeq = {
-//    Logger.getRootLogger().info(
-    println(
+    Logger.getRootLogger().info(
         s"""ApplicationFacadeImpl.htmlForm URI $uri0 blankNode "$blankNode"
               editable=$editable lang=$lang graphURI <$graphURI>""")
     val uri = uri0.trim()
@@ -306,8 +305,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
         replaceInstanceLabel( URI(uri), allNamedGraph, // TODO reuse allNamedGraph
             lang )       
     	})
-    	// TODO on SAVE, the display page is computed twice
-        htmlForm( uri, editable = false, lang = lang, graphURI=graphURI )
+        // htmlForm( uri, editable = false, lang = lang, graphURI=graphURI )
+        <p>Save: normal! { uriOption }</p>
       case _ => <p>Save: not normal: { uriOption }</p>
     }
   }

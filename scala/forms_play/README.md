@@ -117,10 +117,16 @@ sbt gen-ensime
 ```
 - to remove the red errors in eclipse in Play! project, apply this workaround: http://stackoverflow.com/posts/28551583/revisions
 
-Useful plugins you may install for developppement purposes:
+Useful SBT plugins you may install for developppement purposes (add in ~/.sbt/0.13/plugins/plugins.sbt ):
 
 	addSbtPlugin("org.ensime" % "ensime-sbt" % "0.3.3")
 	addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.8.2")
+	addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.10")
+
+Commands to run with these useful plugins:
+
+	dependencyUpdates
+	dependencyTree
 
 ## Debug
 See 
