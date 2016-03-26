@@ -60,8 +60,9 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
   def download(url: String): Enumerator[Array[Byte]] =
     impl.download(url)
 
+  /** @see [[ApplicationFacadeImpl.saveForm]] */
   def saveForm(request: Map[String, Seq[String]], lang: String = "", userid: String="",
-      graphURI: String = ""): NodeSeq =
+      graphURI: String = ""): Option[String] =
     impl.saveForm(request, lang, userid, graphURI)
 
   def sparqlConstructQuery(query: String, lang: String = "en"): Elem =

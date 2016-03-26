@@ -41,8 +41,16 @@ To raise the memory, set this environment variable:
     export SBT_OPTS="-Xmx2G"
 
 To load some common vocabularies (FOAF, ...) and form specifications, see below "Preloading RDF content".
-To understand the user interface, see the [User manual wiki](https://github.com/jmvanel/semantic_forms/wiki).
+To understand usage of the user interface, see the [User manual wiki](https://github.com/jmvanel/semantic_forms/wiki).
 
+To build the ScalaDoc, run `sbt doc` , and the ScalaDoc will be in
+
+	target/scala-2.11/api/
+
+A convenience link to [local semantic\_forms ScalaDoc](../forms/target/scala-2.11/api/index.html)
+
+
+Some references on ScalaDoc: http://docs.scala-lang.org/style/scaladoc.html , http://docs.scala-lang.org/overviews/scaladoc/for-library-authors.html , http://stackoverflow.com/questions/15394322/how-to-disambiguate-links-to-methods-in-scaladoc
 
 ## Run on a server without development environment
 

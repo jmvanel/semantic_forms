@@ -33,10 +33,10 @@ trait FormSaver[Rdf <: RDF, DATASET]
   val logger:Logger //  = Logger.getRootLogger()
 
   /** save triples in named graph given by HTTP parameter "graphURI";
-   *  other HTTP parameters are original triples in Turtle
+   *  other HTTP parameters are original triples in Turtle;
+   * transactional  
    * @param map a raw map of HTTP response parameters
    * @return main subject URI
-   * transactional
    */
   def saveTriples(httpParamsMap: Map[String, Seq[String]])
       ( implicit userURI: String = "" ): Option[String]
@@ -44,14 +44,14 @@ trait FormSaver[Rdf <: RDF, DATASET]
     logger.debug(s"FormSaver.saveTriples httpParamsMap $httpParamsMap")
     println(s"""saveTriples: userURI <$userURI>""" )
     val uriArgs = httpParamsMap.getOrElse("uri", Seq())
-    val subjectUriOption = uriArgs.find { uri => uri != "" }
+    val encodedSubjectUriOption = uriArgs.find { uri => uri != "" }
     val graphURIOption = httpParamsMap.getOrElse("graphURI", Seq()).headOption
-    println(s"FormSaver.saveTriples uri $subjectUriOption, graphURI $graphURIOption")
+    println(s"FormSaver.saveTriples uri $encodedSubjectUriOption, graphURI $graphURIOption")
 
     val triplesToAdd = ArrayBuffer[Rdf#Triple]()
     val triplesToRemove = ArrayBuffer[Rdf#Triple]()
 
-    subjectUriOption match {
+    lazy val subjectUriOption = encodedSubjectUriOption match {
       case Some(uri0) =>
         val subjectUri = URLDecoder.decode(uri0, "utf-8") // TODO uri0 ?
         // named graph in which to save:
@@ -77,7 +77,8 @@ trait FormSaver[Rdf <: RDF, DATASET]
             }
         }
         doSave(graphURI)
-      case _ =>
+        Some(subjectUri)
+      case _ => None
     }
 
 

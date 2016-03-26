@@ -16,6 +16,9 @@ import views.MainXmlWithHead
 import deductions.runtime.services.CORS
 import deductions.runtime.services.DefaultConfiguration
 import play.api.Play
+import scala.util.Try
+import scala.util.Success
+import play.api.mvc.Call
 
 
 /** main controller */
@@ -70,7 +73,7 @@ trait ApplicationTrait extends Controller
       outputMainPage(
         htmlForm(uri, blanknode, editable = Edit != "", lang, formuri, graphURI=makeAbsoluteURIForSaving(userid)),
         lang, title=title )
-      // TODO record in TDB for history: ruserid, equest.remoteAddress, request.host
+      // TODO record in TDB for history: userid, request.remoteAddress, request.host
     }
   }
 
@@ -141,41 +144,60 @@ trait ApplicationTrait extends Controller
         withHeaders("Access-Control-Allow-Origin" -> "*") // TODO dbpedia only
   }
 
-  /** TODO: Redirect to display page */
+  /** TODO: keep session when Redirect to display page */
   def saveAction() =
     withUser {
       implicit userid =>
         implicit request =>
           val lang = chooseLanguage(request)
-          outputMainPage(save(request, userid, graphURI=makeAbsoluteURIForSaving(userid)), lang)
+//          outputMainPage(save(request, userid, graphURI=makeAbsoluteURIForSaving(userid)), lang)
+          val uri = saveOnly(request, userid, graphURI=makeAbsoluteURIForSaving(userid))
+          println(s"saveAction: uri $uri")
+          val call = routes.Application.displayURI(uri)
+          Redirect(call)        
     }
 
-  private def save(request: Request[_], userid: String, graphURI: String = "" ): NodeSeq = {
-      val body = request.body
-      body match {
-        case form: AnyContentAsFormUrlEncoded =>
-          val lang = chooseLanguage(request)
-          val map = form.data
-          println(s"ApplicationTrait.save: ${body.getClass}, map $map")
-          try {
-            saveForm( map, lang, userid, graphURI )
-          } catch {
-            case t: Throwable => println("Exception in saveTriples: " + t)
-            // TODO show Exception to user
-          }
-          val uriOption = map.getOrElse("uri", Seq()).headOption
-          println(s"ApplicationTrait.save: uriOption $uriOption, userid $userid")
-          uriOption match {
-            // TODO display page is computed twice
-            case Some(url1) => htmlForm(
-              URLDecoder.decode(url1, "utf-8"),
-              editable = false,
-              lang = lang )
-            case _ => <p>Save: not normal: { uriOption }</p>
-          }
-        case _ => <p>Save: not normal: { getClass() }</p>
-      }
+  private def saveOnly(request: Request[_], userid: String, graphURI: String = ""): String = {
+    val body = request.body
+    body match {
+      case form: AnyContentAsFormUrlEncoded =>
+        val lang = chooseLanguage(request)
+        val map = form.data
+        println(s"ApplicationTrait.save: ${body.getClass}, map $map")
+        // cf http://danielwestheide.com/blog/2012/12/26/the-neophytes-guide-to-scala-part-6-error-handling-with-try.html
+        val subjectUriTryOption = Try {
+          saveForm(map, lang, userid, graphURI)
+        }
+        subjectUriTryOption match {
+            case Success(Some(url1)) => url1
+            case _ => ""
+        }
+    }
   }
+  
+//  /** UNUSED */
+//  private def save(request: Request[_], userid: String, graphURI: String = "" ): NodeSeq = {
+//      val body = request.body
+//      body match {
+//        case form: AnyContentAsFormUrlEncoded =>
+//          val lang = chooseLanguage(request)
+//          val map = form.data
+//          println(s"ApplicationTrait.save: ${body.getClass}, map $map")
+//          // cf http://danielwestheide.com/blog/2012/12/26/the-neophytes-guide-to-scala-part-6-error-handling-with-try.html
+//          val subjectUriTryOption = Try {
+//            saveForm( map, lang, userid, graphURI )
+//          }
+//          println(s"ApplicationTrait.save: uriOption $subjectUriTryOption, userid $userid")
+//          subjectUriTryOption match {
+//            case Success(Some(url1)) =>
+//              htmlForm( URLDecoder.decode(url1, "utf-8"),
+//              editable = false,
+//              lang = lang )
+//            case _ => <p>Save: not normal: { subjectUriTryOption }</p>
+//          }
+//        case _ => <p>Save: not normal: { getClass() }</p>
+//      }
+//  }
 
   def createAction() =
     withUser {

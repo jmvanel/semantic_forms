@@ -24,7 +24,7 @@ trait ApplicationFacadeInterface {
     graphURI: String = ""): NodeSeq
 
   def saveForm(request: Map[String, Seq[String]], lang: String = "",
-    userid: String = "", graphURI: String = ""): NodeSeq
+    userid: String = "", graphURI: String = ""): Option[String]
 
   def create(uri: String, lang: String = "en",
     formSpecURI: String = "", graphURI: String = ""): NodeSeq

@@ -280,21 +280,21 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     htmlForm(url, editable = true)
   }
 
-  /** save Form data in TDB */
+  /** save Form data in TDB
+   *  @return main subject URI like [[FormSaver.saveTriples]] */
   def saveForm(request: Map[String, Seq[String]], lang: String = "",
       userid: String, graphURI: String = "")
-  // (implicit allNamedGraphs: Rdf#Graph)
-  : NodeSeq = {
+  : Option[String]
+  // NodeSeq 
+  = {
     println(s"ApplicationFacadeImpl.save: map :$request, userid $userid")
-    try {
+    val mainSubjectURI = try {
       implicit val userURI: String = userid
       fs.saveTriples(request)
-      // ( userid ) // "noUserURI") // user ID when login activated
     } catch {
       case t: Throwable =>
         println("Exception in saveTriples: " + t)
-        // show Exception to user:
-        throw t
+        throw t  // show Exception to user
     }
     val uriOption = (request).getOrElse("uri", Seq()).headOption
     println(s"ApplicationFacadeImpl.save: uriOption $uriOption, graphURI $graphURI")
@@ -305,10 +305,10 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
         replaceInstanceLabel( URI(uri), allNamedGraph, // TODO reuse allNamedGraph
             lang )       
     	})
-        // htmlForm( uri, editable = false, lang = lang, graphURI=graphURI )
-        <p>Save: normal! { uriOption }</p>
-      case _ => <p>Save: not normal: { uriOption }</p>
+    	logger.info( s"Save: normal! $uriOption" )
+      case _ => logger.info( s"Save:  NOT normal! $uriOption" )
     }
+    mainSubjectURI
   }
 
   def sparqlConstructQuery(query: String, lang: String = "en"): Elem = {
