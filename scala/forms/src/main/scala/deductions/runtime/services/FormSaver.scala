@@ -53,7 +53,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
     lazy val subjectUriOption = encodedSubjectUriOption match {
       case Some(uri0) =>
-        val subjectUri = URLDecoder.decode(uri0, "utf-8") // TODO uri0 ?
+        val subjectUri = URLDecoder.decode(uri0, "utf-8")
         // named graph in which to save:
         val graphURI =
           if (graphURIOption == Some("")) subjectUri

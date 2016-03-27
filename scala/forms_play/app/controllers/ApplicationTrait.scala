@@ -73,7 +73,6 @@ trait ApplicationTrait extends Controller
       outputMainPage(
         htmlForm(uri, blanknode, editable = Edit != "", lang, formuri, graphURI=makeAbsoluteURIForSaving(userid)),
         lang, title=title )
-      // TODO record in TDB for history: userid, request.remoteAddress, request.host
     }
   }
 
@@ -144,7 +143,7 @@ trait ApplicationTrait extends Controller
         withHeaders("Access-Control-Allow-Origin" -> "*") // TODO dbpedia only
   }
 
-  /** TODO: keep session when Redirect to display page */
+  /** */
   def saveAction() =
     withUser {
       implicit userid =>
@@ -154,7 +153,9 @@ trait ApplicationTrait extends Controller
           val uri = saveOnly(request, userid, graphURI=makeAbsoluteURIForSaving(userid))
           println(s"saveAction: uri $uri")
           val call = routes.Application.displayURI(uri)
-          Redirect(call)        
+          Redirect(call)
+          /* TODO */
+          // recordForHistory( userid, request.remoteAddress, request.host )
     }
 
   private def saveOnly(request: Request[_], userid: String, graphURI: String = ""): String = {

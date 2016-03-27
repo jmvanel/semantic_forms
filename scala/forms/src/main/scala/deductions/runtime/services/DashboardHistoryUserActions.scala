@@ -71,7 +71,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
                 <td>{ "action ..." }</td>
                 <td>{ dateFormat.format(date) }</td>
                 <td>{ makeStringFromLiteral(row(2)) }</td>
-                <td>{ userURI }</td>
+                <td>{ row(3) }</td>
               }</tr>
             } else <tr/>
       }

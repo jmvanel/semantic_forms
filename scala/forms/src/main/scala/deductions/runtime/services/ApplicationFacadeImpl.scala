@@ -284,10 +284,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
    *  @return main subject URI like [[FormSaver.saveTriples]] */
   def saveForm(request: Map[String, Seq[String]], lang: String = "",
       userid: String, graphURI: String = "")
-  : Option[String]
-  // NodeSeq 
-  = {
-    println(s"ApplicationFacadeImpl.save: map :$request, userid $userid")
+  : Option[String] = {
+    println(s"ApplicationFacadeImpl.save: map :$request, userid <$userid>")
     val mainSubjectURI = try {
       implicit val userURI: String = userid
       fs.saveTriples(request)

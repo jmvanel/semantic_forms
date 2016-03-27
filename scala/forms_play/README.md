@@ -135,6 +135,9 @@ Commands to run with these useful plugins:
 
 	dependencyUpdates
 	dependencyTree
+	test:dependencyGraph
+
+See: https://github.com/jrudolph/sbt-dependency-graph , https://github.com/rtimush/sbt-updates
 
 ## Debug
 See 
