@@ -87,20 +87,21 @@ with SPARQLHelpers[Rdf, DATASET] {
       ORDER BY DESC(xsd:integer(?TS))
     """
     println("getMetadata: query " + query)
-    val res = sparqlSelectQueryVariables( query, Seq("SUBJECT", "TIME", "COUNT", "USER"), dataset2 )
+    val res = sparqlSelectQueryVariables( query,
+        Seq("SUBJECT", "TIME", "COUNT", "USER"), dataset2 )
     println("getMetadata: res " + res)
     res
   }
 
 
   /** get Time Series from accumulated values with timestamp;
-   *  used only in https://github.com/jmvanel/corporate_risk
+   *  used only in https://github.com/jmvanel/corporate_risk and in test
    *  @return a Map from label to a seq of time & value pairs;
    *  the time is a Unix time obtained by Date.getTime,
    *  the value is a double;
    * NON transactional
    */
-  private def getTimeSeries( predicateURI: String = "urn:average")(implicit userURI: String):
+  def getTimeSeries( predicateURI: String = "urn:average")(implicit userURI: String):
 //  Seq[( String, Map[Long, Float] )] = {
   Map[ String, Seq[(BigInteger, Double)] ] = {
     val query = s"""

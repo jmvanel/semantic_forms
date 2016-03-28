@@ -19,7 +19,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   import rdfStore.transactorSyntax._
   private val logger: Logger = Logger.getRootLogger()
 
-  val dataset3 = dataset
+  val datasetForLabels = dataset
   /* TODO : does not work because the transaction has been started on the other dataset ! 
   val dataset3 = createDatabase("TDBlabels")
    */
@@ -38,7 +38,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   def instanceLabelFromTDB(node: Rdf#Node, lang: String): String = {
 //	  println(s"""instanceLabelFromTDB node "$node" """ )
     val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
-    val labelsGraph0 = rdfStore.getGraph( dataset3, labelsGraphUri)
+    val labelsGraph0 = rdfStore.getGraph( datasetForLabels, labelsGraphUri)
 //	  println( s"instanceLabelFromTDB after .getGraph( dataset3, labelsGraphUri) $dataset3 $labelsGraph0" )
     val labelsGraph = labelsGraph0.get
 //	  println( s"instanceLabelFromTDB after labelsGraph.get $labelsGraphUri $labelsGraph")
@@ -101,7 +101,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     val label = computeInstanceLabel(node, graph, lang)
     
     val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
-    replaceObjects( labelsGraphUri, node, displayLabelPred, Literal(label), dataset3 )
+    replaceObjects( labelsGraphUri, node, displayLabelPred, Literal(label), datasetForLabels )
     label
   }
 
@@ -121,6 +121,6 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
       graph: Rdf#Graph, lang: String) = {
     val computedDisplayLabel = (node -- displayLabelPred ->- Literal(label)).graph
     val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
-    rdfStore.appendToGraph(dataset3, labelsGraphUri, computedDisplayLabel)
+    rdfStore.appendToGraph(datasetForLabels, labelsGraphUri, computedDisplayLabel)
   }
 }

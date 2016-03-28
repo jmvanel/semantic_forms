@@ -10,7 +10,8 @@ import scala.util.Failure
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter
 import java.security.MessageDigest
 
-/**
+/** facade for user Authentication management;
+ *  wraps the TDB database
  * @author jmv
  */
 trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
@@ -116,7 +117,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
         digest(password.getBytes))
   }
 
-  def signinOLD(agentURI: String, password: String): Try[String] = {
+  private def signinOLD(agentURI: String, password: String): Try[String] = {
 
     // check that there is an email
     println(s"signin(agentURI=$agentURI")
