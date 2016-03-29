@@ -60,7 +60,7 @@ trait RDFStoreLocalUserManagement[Rdf <: RDF, DATASET] extends RDFStoreLocalProv
    */
   def passwordsGraph: Rdf#MGraph = {
     makeMGraph( URI("urn:users")
-//        , dataset3 
+        , dataset3 
         )
   }
 }
