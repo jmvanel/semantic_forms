@@ -38,6 +38,7 @@ trait MainXml extends ToolsPage with EnterButtons {
       <a href="https://github.com/jmvanel/semantic_forms/blob/master/scala/forms_play/README.md#play-framework-implementations">
         semantic_forms
       </a>
+      Version vendredi 1 avril 2016, 20:14:39 (UTC+0200)
     </p>
 
   //  def message(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
