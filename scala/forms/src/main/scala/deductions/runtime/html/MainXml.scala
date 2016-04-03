@@ -92,4 +92,37 @@ trait MainXml extends ToolsPage with EnterButtons {
       <input type="hidden" name="uri" id="uri" value={ classe }/>
       <input type="submit" name="create" id="create" value={ label }/>
     </form>
+
+  def javascriptCSSImports: NodeSeq = {
+    <!--script src="assets/javascripts/jquery-2.2.0.min.js" type="text/javascript"></script-->
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css"/>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="assets/stylesheets/bootstrap.min.css"/>
+    <link rel="stylesheet" href="assets/stylesheets/bootstrap-theme.min.css"/>
+    <script src="assets/javascripts/bootstrap.min.js" type="text/javascript"></script>
+
+    <!--link rel="stylesheet" href="assets/stylesheets/select2.css"/>
+      <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-beta.3/css/select2.min.css" rel="stylesheet"/>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-beta.3/js/select2.min.js"></script>
+      <script src="assets/javascripts/select2.js" type="text/javascript"></script -->
+    <script src="assets/javascripts/wikipedia.js" type="text/javascript"></script>
+    <script src="assets/javascripts/formInteractions.js" type="text/javascript"></script>
+    <script src="assets/fluidgraph/js/jquery-2.1.4.min.js"></script>
+    <script src="assets/fluidgraph/js/d3.v3.min.js"></script>
+    <script src="assets/fluidgraph/js/jquery.mockjax.min.js"></script>
+    <script src="assets/fluidgraph/js/FileSaver.min.js"></script>
+    <script src="assets/LDP-framework/mystore.js"></script>
+    <script src="assets/fluidgraph/js/semantic2.1.2.js"></script>
+    <link rel="stylesheet" href="assets/fluidgraph/css/semantic2.1.2.css"/>
+    <script src="assets/fluidgraph/js/mockdata.js"></script>
+    <script src="assets/fluidgraph/js/init.js"></script>
+    <script src="assets/fluidgraph/js/mygraph.js"></script>
+    <script src="assets/fluidgraph/js/mynodes.js"></script>
+    <script src="assets/fluidgraph/js/mylinks.js"></script>
+    <script src="assets/fluidgraph/js/mybackground.js"></script>
+    <script src="assets/fluidgraph/js/convert.js"></script>
+  }
 }

@@ -8,46 +8,18 @@ trait MainXmlWithHead extends MainXml {
   /** HTML head */
   override def head(title: String = "")(implicit lang: String = "en") = {
     <head>
-      <title>{ val default = message("Welcome") ; if( title != "") title +" - "+default else default }</title>
+      <title>{
+        val default = message("Welcome")
+        if( title != "")
+          s"$title - $default"
+        else
+          default }
+      </title>
       <meta http-equiv="Content-type" content="text/html; charset=UTF-8"></meta>
-
       <link rel="shortcut icon" type="image/png" href={ routes.Assets.at("images/favicon.png").url }/>
-      <!--
-        script src={ routes.Assets.at("javascripts/jquery-1.11.2.min.js").url } type="text/javascript"></script
-        <script src={ routes.Assets.at("javascripts/jquery-1.12.0.min.js").url } type="text/javascript"></script>
-      -->
-      <script src={ routes.Assets.at("javascripts/jquery-2.2.0.min.js").url } type="text/javascript"></script>
 
-      <!-- bootstrap -->
-  		<link rel="stylesheet" href={ routes.Assets.at("stylesheets/bootstrap.min.css").url } />
-  		<link rel="stylesheet" href={ routes.Assets.at("stylesheets/bootstrap-theme.min.css").url } />
-  		<script src={ routes.Assets.at("javascripts/bootstrap.min.js").url } type="text/javascript"></script>
-
-      <link rel="stylesheet" href={ routes.Assets.at("stylesheets/select2.css").url }/>
-      <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-beta.3/css/select2.min.css" rel="stylesheet"/>
-      <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-beta.3/js/select2.min.js"></script>
-
-      <script src={ routes.Assets.at("javascripts/select2.js").url } type="text/javascript"></script>
-      <script src={ routes.Assets.at("javascripts/wikipedia.js").url } type="text/javascript"></script>
-      <script src={ routes.Assets.at("javascripts/formInteractions.js").url } type="text/javascript"></script>
-
-<script src="assets/fluidgraph/js/jquery-2.1.4.min.js"></script>
-<script src="assets/fluidgraph/js/d3.v3.min.js"></script>
-<script src="assets/fluidgraph/js/jquery.mockjax.min.js"></script>
-<script src="assets/fluidgraph/js/FileSaver.min.js"></script>
-<script src="assets/LDP-framework/mystore.js"></script>
-
-<script src="assets/fluidgraph/js/semantic2.1.2.js"></script>
-<link rel="stylesheet" href="assets/fluidgraph/css/semantic2.1.2.css" />
-
-<script src="assets/fluidgraph/js/mockdata.js"></script>
-<script src="assets/fluidgraph/js/init.js"></script>
-<script src="assets/fluidgraph/js/mygraph.js"></script>
-<script src="assets/fluidgraph/js/mynodes.js"></script>
-<script src="assets/fluidgraph/js/mylinks.js"></script>
-<script src="assets/fluidgraph/js/mybackground.js"></script>
-<script src="assets/fluidgraph/js/convert.js"></script>
-
+      { javascriptCSSImports }
+      
       <style type="text/css">
         .resize {{ resize: both; width: 100%; height: 100%; }}
         .overflow {{ overflow: auto; width: 100%; height: 100%; }}
