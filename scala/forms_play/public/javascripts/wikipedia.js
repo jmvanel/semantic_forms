@@ -34,6 +34,7 @@ function addDBPediaLookup( inputElementId ) {
       console.log( "addDBPediaLookup " + " " + (typeof $(inputElementId)) );
       // var inputElement = $(inputElementId);
       var inputElement = document.getElementById(inputElementId.substring(1));
+      inputElement.hasLookup = true;
       var topics = {}, // NOTE topics is populated but not used 
           $topics = $(inputElementId).autocomplete({
         autoFocus: true,

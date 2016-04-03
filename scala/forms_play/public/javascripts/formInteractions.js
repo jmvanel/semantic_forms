@@ -5,11 +5,13 @@
 function cloneWidget(widgetName) {
 //    var existingWidget =  window.document.getElementsByName(widgetName)[0],
     var existingWidget =  window.document.getElementById(widgetName),
-        addWidget = existingWidget.cloneNode(true),
+        addedWidget = existingWidget.cloneNode(true),
         parent = existingWidget.parentNode;
-    addWidget.value = '';
-    parent.insertBefore(addWidget, existingWidget);
-    addWidget.focus();
+    addedWidget.value = '';
+    parent.insertBefore(addedWidget, existingWidget);
+    if( existingWidget.hasLookup )
+      addDBPediaLookup( '#' + addedWidget.id );
+    addedWidget.focus();
 }
 
 function backlinks(uri) {
