@@ -50,8 +50,10 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
   private def findPassword(userid: String): Option[(String)] = {
     val userURI = URI(userid)
 
-    val pwds = dataset.r({
-      println( s"find( makeIGraph($passwordsGraph), $userURI, passwordPred, ANY)" )
+    val pwds = dataset3.r({
+      println( s"""find( makeIGraph(
+        $passwordsGraph
+        ), $userURI, passwordPred, ANY)""" )
       find( makeIGraph(passwordsGraph), userURI, passwordPred, ANY)
     }).get
     
@@ -74,7 +76,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
    * ?USER :password ?PASSWORD .
    */
   private def findUserAndPasswordFromEmail(email: String): Option[(String, String)] = {
-    val tryUserAndPassword = dataset.r {
+    val tryUserAndPassword = dataset3.r {
       // query for a resource having foaf:mbox email
       val mboxTriples = find(allNamedGraph, ANY, foaf.mbox, URI(email))
       val lt = mboxTriples.toList
@@ -103,7 +105,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
    */
   def signin(agentURI: String, password: String): Try[String] = {
     println("Authentication.signin: userId " + agentURI)
-    val res = dataset.rw({
+    val res = dataset3.rw({
       val mGraph = passwordsGraph
       mGraph += makeTriple(URI(agentURI), passwordPred,
         makeLiteral(hashPassword(password), xsd.string))
@@ -122,7 +124,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
     // check that there is an email
     println(s"signin(agentURI=$agentURI")
     val mboxTriples =
-      dataset.r({
+      dataset3.r({
         find(allNamedGraph, URI(agentURI), foaf.mbox, ANY)
       }).get
     val lt = mboxTriples.toList
@@ -133,7 +135,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
         bn => fromBNode(bn),
         lit => fromLiteral(lit)._1)
       println("userId " + userId)
-      val r1 = dataset.rw({
+      val r1 = dataset3.rw({
         // record password in database
         val mGraph = passwordsGraph // .makeMGraph()
         mGraph += makeTriple(URI(agentURI), passwordPred,

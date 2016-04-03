@@ -79,8 +79,11 @@ trait RDFStoreLocalJenaProvider
   def listNames(ds: DATASET): Iterator[String] = ds.listNames()
 
   /** make an MGraph from a Dataset */
-  def makeMGraph(graphURI: Rdf#URI, ds: DATASET = dataset): Rdf#MGraph =
-    ds.getNamedModel(fromUri(graphURI)).getGraph
+  def makeMGraph(graphURI: Rdf#URI, ds: DATASET = dataset): Rdf#MGraph = {
+    println(s"makeMGraph( $graphURI")
+    val nm = ds.getNamedModel(fromUri(graphURI))
+    nm.getGraph
+  }
 }
 
 /** TODO implement independently of Jena */
