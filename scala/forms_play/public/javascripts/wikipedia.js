@@ -34,7 +34,7 @@ function addDBPediaLookup( inputElementId ) {
       console.log( "addDBPediaLookup " + " " + (typeof $(inputElementId)) );
       // var inputElement = $(inputElementId);
       var inputElement = document.getElementById(inputElementId.substring(1));
-      var topics = {},
+      var topics = {}, // NOTE topics is populated but not used 
           $topics = $(inputElementId).autocomplete({
         autoFocus: true,
        select: function( event, ui ) {
@@ -42,11 +42,12 @@ function addDBPediaLookup( inputElementId ) {
             console.log( "Topic chosen label ui" + JSON.stringify(ui) );
             console.log( "Topic chosen label " + ui.item.label +
               ", topics[ui.label] " + topics[ui.item.label] +
+              ", topics[ui.value] " + topics[ui.item.value] +
               ", ui.value " + ui.item.value );
             console.log( "typeof inputElement " + typeof inputElement );
             console.log( "  inputElement.value ", inputElement.value );
             // inputElement.value = topics[ui.item.label];
-            $topics.value = topics[ui.item.label];
+            // $topics.value = topics[ui.item.label];
        },
         source: function(request, callback) {
           $.ajax({
@@ -57,7 +58,7 @@ function addDBPediaLookup( inputElementId ) {
               callback(response.results.map(function (m) {
                 console.log( "response " + m );
                 topics[m.label] = m.uri;
-                return m.label;
+                return { "label": m.label, "value": m.uri }  // m.label;
               }));
             }
           });
