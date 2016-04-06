@@ -38,7 +38,7 @@ trait URIManagement extends Configuration
   }
 
   /** make a unique Id with given prefix, currentTimeMillis() and nanoTime() */
-  private def makeId(instanceURIPrefix: String): String = {
+  def makeId(instanceURIPrefix: String): String = {
     instanceURIPrefix + System.currentTimeMillis() + "-" + System.nanoTime() // currentId = currentId + 1
   }
 
