@@ -11,7 +11,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
   def createHTMLiteralReadonlyField(l: fm#LiteralEntry): NodeSeq =
     <xml:group>
-      <div>{ Unparsed(toPlainString(l.value)) }</div>
+      <div class="form-cell-display">{ Unparsed(toPlainString(l.value)) }</div>
       <div>{ if (l.lang != "" && l.lang != "No_language") " > " + l.lang }</div>
     </xml:group>
 
