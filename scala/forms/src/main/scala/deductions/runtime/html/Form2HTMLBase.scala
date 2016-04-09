@@ -9,6 +9,7 @@ import scala.util.Try
 /** generate HTML from abstract Form : common parts for Display & edition */
 trait Form2HTMLBase[NODE, URI <: NODE]
     extends Configuration
+    with BasicWidgets
     // CSS
     {
 

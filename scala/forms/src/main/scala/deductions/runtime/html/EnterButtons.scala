@@ -17,7 +17,7 @@ trait EnterButtons extends Configuration {
       <div class="col-md-12">
         <form role="form" action="/display">
           <div class="form-group">
-            <label class="col-md-2 control-label" for="Display">{ message("URI_to_display") }</label>
+            <label class="col-md-2 control-label" for="Display">{ message("Display") }</label>
             <div class="col-md-6">
               <input class="form-control" type="text" name="displayuri" list="start_uris" dropzone="copy string:text/plain"/>
               <datalist id="start_uris">

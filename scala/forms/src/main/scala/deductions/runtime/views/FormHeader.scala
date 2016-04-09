@@ -7,9 +7,12 @@ import deductions.runtime.services.ApplicationFacadeImpl
 import deductions.runtime.utils.I18NMessages
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.ApplicationFacadeInterface
+import scala.xml.NodeSeq
+import deductions.runtime.html.BasicWidgets
 
-trait FormHeader[Rdf <: RDF] extends Configuration
-// with ApplicationFacadeInterface
+trait FormHeader[Rdf <: RDF]
+		extends Configuration
+    with BasicWidgets
 {
 self: ApplicationFacadeImpl[Rdf, _] =>
   
@@ -22,14 +25,14 @@ self: ApplicationFacadeImpl[Rdf, _] =>
       <div class="row">
         <h3>
           { mess("Properties_for") }
-          <b>
+          <strong>
             <a href={ hrefEditPrefix + URLEncoder.encode(uri, "utf-8") } title={ mess("edit_URI") }>
               { labelForURI(uri, lang) }
             </a>
             { mess("Display") } :
             <a href={ hrefDisplayPrefix + URLEncoder.encode(uri, "utf-8") } title={ mess("display_URI") } >{ uri }</a> )
-            <a href={ s"/backlinks?q=${URLEncoder.encode(uri, "utf-8")}" } title={ mess("links_towards_URI") } >o--></a>
-          </b>
+            { makeBackLinkButton(uri) }
+          </strong>
         </h3>
       </div>
       <div class="row">
@@ -44,5 +47,4 @@ self: ApplicationFacadeImpl[Rdf, _] =>
       </div>
     </div>
   }
-
 }

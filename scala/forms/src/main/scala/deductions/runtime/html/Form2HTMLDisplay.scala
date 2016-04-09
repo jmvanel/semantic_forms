@@ -35,15 +35,11 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       Text(" "),
 
       (if (r.value.toString().size > 0) {
+        
 				val title = s""" Reverse links for "${r.label}" "${r.value}" """
-        <button type="button" class="btn-primary" readonly="yes"
-				title={title}
-        data-value={ r.value.toString }
-        onClick={ s"backlinks( '${r.value}' )" }
-        id={ "BACK-" + r.value }>
-        ? --> o
-        </button>
-      } else new Text("")), normalNavigationButton)
+				makeBackLinkButton(r.value.toString(), title=title )
+      } else new Text("")),
+      normalNavigationButton)
   }
 
   def createHTMLBlankNodeReadonlyField(
