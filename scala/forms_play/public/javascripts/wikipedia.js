@@ -21,14 +21,14 @@ function onkeyupComplete( element ) {
   console.log( "onkeyupComplete " + this );
 };
 
-function addDBPediaLookup( inputElementId ) {
-      console.log( "addDBPediaLookup " + inputElementId );
-      console.log( "addDBPediaLookup " + " " + (typeof $(inputElementId)) );
-      // var inputElement = $(inputElementId);
-      var inputElement = document.getElementById(inputElementId.substring(1));
+function addDBPediaLookup( inputElementURI ) {
+      console.log( "addDBPediaLookup " + inputElementURI );
+      console.log( "addDBPediaLookup " + " " + (typeof $(inputElementURI)) );
+      var inputElementId = inputElementURI.substring(1);
+      var inputElement = document.getElementById(inputElementId);
       inputElement.hasLookup = true;
       var topics = {}, // NOTE topics is populated but not used 
-          $topics = $(inputElementId).autocomplete({
+          $topics = $(inputElementURI).autocomplete({
         autoFocus: true,
        select: function( event, ui ) {
             console.log( "Topic chosen label event " + (event) );
@@ -39,6 +39,8 @@ function addDBPediaLookup( inputElementId ) {
               ", ui.value " + ui.item.value );
             console.log( "typeof inputElement " + typeof inputElement );
             console.log( "  inputElement.value ", inputElement.value );
+            console.log( "  inputElementURI ", inputElementURI );
+            cloneWidget(inputElementId);
        },
         source: function(request, callback) {
           $.ajax({
