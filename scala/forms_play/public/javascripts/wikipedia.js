@@ -51,7 +51,8 @@ function addDBPediaLookup( inputElementURI ) {
               callback(response.results.map(function (m) {
                 console.log( "response " + m );
                 topics[m.label] = m.uri;
-                return { "label": m.label + " - " + m.description, "value": m.uri }  // m.label;
+                return { "label": m.label + " - " +
+                          cutStringAfterCharacter(m.description, '.'), "value": m.uri }
               }));
             }
           });
@@ -63,5 +64,10 @@ function addDBPediaLookup( inputElementURI ) {
           console.log( "Topic typed " + label + " " + topics[label]);
         }
       });
+};
+
+function cutStringAfterCharacter( s, c) {
+  var n = s.indexOf(c);
+  return s.substring(0, n != -1 ? n : s.length);
 };
 
