@@ -1,6 +1,6 @@
 package deductions.runtime.jena
 
-import deductions.runtime.sparql_cache.BlankNodeCleanerBatch
+import deductions.runtime.data_cleaning.BlankNodeCleanerBatch
 
 object BlankNodeCleanerApp extends RDFStoreLocalJena1Provider
     with App

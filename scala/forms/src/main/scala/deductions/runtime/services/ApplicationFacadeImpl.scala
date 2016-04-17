@@ -32,7 +32,7 @@ import deductions.runtime.views.ToolsPage
 import deductions.runtime.semlogs.TimeSeries
 import deductions.runtime.semlogs.LogAPI
 import deductions.runtime.html.CSS
-import deductions.runtime.sparql_cache.BlankNodeCleanerIncremental
+import deductions.runtime.data_cleaning.BlankNodeCleanerIncremental
 
 /**
  * a Web Application Facade,

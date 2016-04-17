@@ -1,4 +1,4 @@
-package deductions.runtime.sparql_cache
+package deductions.runtime.data_cleaning
 
 import org.w3.banana.RDF
 import deductions.runtime.dataset.RDFStoreLocalProvider
@@ -10,7 +10,7 @@ import org.w3.banana.RDFPrefix
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.dataset.RDFOPerationsDB
 
-/** TODO move to package data_cleaning */
+/** */
 trait BlankNodeCleaner[Rdf <: RDF, DATASET]
 extends BlankNodeCleanerBatch[Rdf, DATASET]
 with BlankNodeCleanerIncremental[Rdf, DATASET]

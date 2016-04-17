@@ -9,7 +9,6 @@ import scala.language.postfixOps
 import org.w3.banana.RDFPrefix
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.dataset.RDFOPerationsDB
-import deductions.runtime.sparql_cache.BlankNodeCleanerBase
 import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
 import java.net.URI
