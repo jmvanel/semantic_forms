@@ -33,7 +33,7 @@ trait ChildrenFetcher[Rdf <: RDF]
   }
 
   def fetch(url: URL, propertyFilter: List[Rdf#URI],
-            propertyFilter2: List[Rdf#URI]): List[Rdf#Triple] = {
+            propertyFilter2: List[Rdf#URI], langWanted: String): List[Rdf#Triple] = {
     val grs = fetch(url, propertyFilter)
 
     val trss = for {
@@ -41,7 +41,20 @@ trait ChildrenFetcher[Rdf <: RDF]
       pr <- propertyFilter2
       trs = find(gr, ANY, pr, ANY)
     } yield trs
-    trss.flatten
+    val triples = trss.flatten
+    // filter on lang
+    triples.filter { tr =>
+      foldNode(tr.objectt)(
+        _ => false,
+        _ => false,
+        literal => {
+          val optionLang = fromLiteral(literal)._3
+          optionLang match {
+            case Some(lang) => lang == langWanted
+            case _          => false
+          }
+        })
+    }
   }
 
   
@@ -54,8 +67,8 @@ trait ChildrenFetcher[Rdf <: RDF]
   implicit val ntriplesWriter: RDFWriter[Rdf, Try, NTriples]
 
   /** will be used for machine learning */
-  def fetchDBPediaAbstractFromInterestsAndExpertise(url: URL): List[Rdf#Triple] = {
-    fetch(url, List(foaf.topic_interest, cco("cco:expertise")), List(rdfs.label, dbo("abstract")))
+  def fetchDBPediaAbstractFromInterestsAndExpertise(url: URL, lang: String="fr" ): List[Rdf#Triple] = {
+    fetch(url, List(foaf.topic_interest, cco("cco:expertise")), List(rdfs.label, dbo("abstract")), lang)
   }
   
   def writeToNTriplesFile( triples: List[Rdf#Triple], file: String = "dump1.nt", base: String = "urn:sample" ) = {
