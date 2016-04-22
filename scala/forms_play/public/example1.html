@@ -29,14 +29,17 @@
 			};
 			
 			function populateForms() {
+				// Display: give URI instance (FOAF profile), and form specification URI (to set fields order, etc)
 				loadForm(
 					'/form?displayuri=' + encodeURIComponent( 'http://jmvanel.free.fr/jmv.rdf#me' ) +
 					'&formuri=' + encodeURIComponent( 'http://deductions-software.com/ontologies/forms#personForm' ),
 					'display' );
+				// Create: give form specification URI, and class of instance to create
 				loadForm(
 					'/create?uri=' + encodeURIComponent( 'http://xmlns.com/foaf/0.1/Person' ) +
 					'&formuri=' + encodeURIComponent( 'http://deductions-software.com/ontologies/forms#personForm' ),
 					'create' );
+				// Edition: give URI instance (FOAF profile), and form specification URI
 				loadForm(
 					'/form?displayuri=' + encodeURIComponent( 'http://jmvanel.free.fr/jmv.rdf#me' ) +
 					'&formuri=' + encodeURIComponent( 'http://deductions-software.com/ontologies/forms#personForm' ) +
