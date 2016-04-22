@@ -33,6 +33,9 @@ import deductions.runtime.semlogs.TimeSeries
 import deductions.runtime.semlogs.LogAPI
 import deductions.runtime.html.CSS
 import deductions.runtime.data_cleaning.BlankNodeCleanerIncremental
+import scala.util.control.NonFatal
+import scala.util.control.NonFatal
+import org.w3.banana.io.JsonLdCompacted
 
 /**
  * a Web Application Facade,
@@ -79,6 +82,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   val logger = Logger.getRootLogger()
 
   implicit val turtleWriter: RDFWriter[Rdf, Try, Turtle]
+  implicit val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]
+
   import ops._
 
 //  val ops1 = ops
@@ -309,6 +314,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     mainSubjectURI
   }
 
+  /** XHTML wrapper around SPARQL result */
   def sparqlConstructQuery(query: String, lang: String = "en"): Elem = {
     Logger.getRootLogger().info("Global.sparql query  " + query)
     <p>
@@ -320,12 +326,24 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
         	  if( query != "" )
         		  dl.sparqlConstructQueryTR(query)
           } catch {
-            case t: Throwable => t.printStackTrace() // TODO: handle error
+            case NonFatal(e) => e.printStackTrace() // TODO: handle error?
           }
           /* TODO Future !!!!!!!!!!!!!!!!!!! */
         }
       </pre>
     </p>
+  }
+
+  /** SPARQL result */
+  def sparqlConstructResult(query: String, lang: String = "en", format: String="turtle"): String = {
+    Logger.getRootLogger().info("Global.sparql query  " + query)
+    try {
+      if (query != "")
+        sparqlConstructQueryTR(query, format)
+      else "Empty query !!!"
+    } catch {
+      case NonFatal(e) => "sparqlConstructResult: " + e.getMessage() // TODO: handle error?
+    }
   }
 
   /*

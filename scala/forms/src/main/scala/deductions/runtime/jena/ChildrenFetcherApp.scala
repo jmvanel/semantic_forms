@@ -8,8 +8,8 @@ object ChildrenFetcherApp extends RDFStoreLocalJena1Provider with App
     with ChildrenFetcher[ImplementationSettings.Rdf] {
 
   val url = args(0)
-  val file = if( args.size > 1 ) args(1) else "dump2.nt"   
-  val triples = fetchDBPediaAbstractFromInterestsAndExpertise(new URL(url) )
-  writeToNTriplesFile( triples, file )
+  val file = if (args.size > 1) args(1) else "dump2.nt"
+  val triples = fetchDBPediaAbstractFromInterestsAndExpertise(new URL(url))
+  writeToNTriplesFile(triples, file)
 
 }

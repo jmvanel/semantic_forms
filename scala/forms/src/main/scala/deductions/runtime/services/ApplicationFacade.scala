@@ -68,6 +68,11 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
   def sparqlConstructQuery(query: String, lang: String = "en"): Elem =
     impl.sparqlConstructQuery(query, lang)
 
+  // TODO lang useful ????
+  def sparqlConstructResult(query: String, lang: String = "en", format: String="turtle"): String = {
+	  impl.sparqlConstructResult(query, lang, format)
+  }
+
   def sparqlSelectQuery(query: String, lang: String = "en"): Elem =
     impl.selectSPARQL(query, lang)
 

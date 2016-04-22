@@ -244,7 +244,6 @@ trait ApplicationTrait extends Controller
   }
 
   def sparql(query: String) =
-    //  {  Action { implicit request =>
     withUser {
       implicit userid =>
         implicit request => {
@@ -255,8 +254,19 @@ trait ApplicationTrait extends Controller
         }
     }
 
+  def sparqlConstruct(query: String) =
+    withUser {
+      implicit userid =>
+        implicit request => {
+          println("sparql: " + request)
+          println("sparql: " + query)
+          val lang = chooseLanguage(request)
+          val JSONresult = sparqlConstructResult(query, lang, "jsonld" )
+          Ok( JSONresult ).as("application/ld+json; charset=utf-8")
+        }
+    }
+
   def select(query: String) =
-    //  {  Action { implicit request =>
     withUser {
       implicit userid =>
         implicit request => {

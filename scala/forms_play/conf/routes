@@ -14,6 +14,9 @@ GET     /form               controllers.Application.form(displayuri:String, blan
 
 GET     /sparql             controllers.Application.sparql( query:String )
 POST    /sparql             controllers.Application.sparql( query:String )
+GET     /sparqls            controllers.Application.sparqlConstruct( query:String )
+POST    /sparqls            controllers.Application.sparqlConstruct( query:String )
+
 GET     /select             controllers.Application.select( query:String )
 POST    /select             controllers.Application.select( query:String )
 
