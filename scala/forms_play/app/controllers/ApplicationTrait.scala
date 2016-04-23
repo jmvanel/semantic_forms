@@ -331,7 +331,7 @@ trait ApplicationTrait extends Controller
               val raw = request.body.asRaw.get
               println(s"""LDP: raw: "$raw" size ${raw.size}""")
               raw.asBytes(raw.size.toInt).map {
-                arr => new String(arr, "UTF-8")
+                arr => new String(arr.toArray, "UTF-8")
               }
             }
           }
