@@ -12,8 +12,11 @@ GET     /create             controllers.Application.createAction()
 GET     /download           controllers.Application.downloadAction( url:String )
 GET     /form               controllers.Application.form(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="")
 
-GET     /sparql             controllers.Application.sparql( query:String )
-POST    /sparql             controllers.Application.sparql( query:String )
+GET     /sparql-ui          controllers.Application.sparql( query:String )
+POST    /sparql-ui          controllers.Application.sparql( query:String )
+GET     /sparql             controllers.Application.sparqlConstruct( query:String )
+POST    /sparql             controllers.Application.sparqlConstruct( query:String )
+
 GET     /select             controllers.Application.select( query:String )
 POST    /select             controllers.Application.select( query:String )
 

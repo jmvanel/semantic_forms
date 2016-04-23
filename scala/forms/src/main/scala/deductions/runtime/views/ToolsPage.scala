@@ -10,6 +10,7 @@ trait ToolsPage extends EnterButtons {
       <p>
         SPARQL select
         {
+          // TODO: the URL here appears also in Play! route!
           sparqlQueryForm("", "/select", Seq(
             "SELECT * WHERE { GRAPH ?G {?S ?P ?O . } } LIMIT 100",
             "SELECT DISTINCT ?CLASS WHERE { GRAPH ?G { [] a  ?CLASS . } } LIMIT 100",
@@ -20,7 +21,8 @@ trait ToolsPage extends EnterButtons {
       <p>
         SPARQL construct
         {
-          sparqlQueryForm("", "/sparql",
+          // TODO: the URL here appears also in Play! route!
+          sparqlQueryForm("", "/sparql-ui",
             Seq("CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10"))
         }
       </p>

@@ -15,6 +15,9 @@ import org.w3.banana.io.RDFWriter
 import org.w3.banana.io.Turtle
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.utils.RDFHelpers0
+import org.w3.banana.io.JsonLdFlattened
+import org.w3.banana.io.JsonLdExpanded
+import org.w3.banana.io.JsonLdCompacted
 
 /**
  * @author jmv
@@ -24,6 +27,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     		with RDFHelpers0[Rdf] {
 
   val turtleWriter: RDFWriter[Rdf, Try, Turtle]
+  val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]
 
   import ops._
   import sparqlOps._
@@ -70,21 +74,12 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   }
 
   /** transactional */
-  def sparqlConstructQueryTR(queryString: String): String = {
+  def sparqlConstructQueryTR(queryString: String, format: String="turtle"): String = {
     val transaction = dataset.r({
-      graph2String(sparqlConstructQuery(queryString), "")
+      graph2String(sparqlConstructQuery(queryString), "", format)
     })
     transaction.get
   }
-
-  //  /** transactional */
-  //  def sparqlConstructQueryTR_old(queryString: String): String = {
-  //    val transaction = dataset.r({
-  //      val r = sparqlConstructQueryFuture(queryString)
-  //      futureGraph2String(r, "")
-  //    })
-  //    transaction.get
-  //  }
 
   /** transactional */
   def sparqlConstructQueryFuture(queryString: String): Future[Rdf#Graph] = {
@@ -276,9 +271,10 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     to.toString
   }
 
-  def graph2String(triples: Try[Rdf#Graph], baseURI: String): String = {
+  def graph2String(triples: Try[Rdf#Graph], baseURI: String, format: String="turtle"): String = {
     Logger.getRootLogger().info(s"base URI $baseURI ${triples}")
-    val ret = turtleWriter.asString(triples.get, base = baseURI)
+    val writer = if(format=="jsonld") jsonldCompactedWriter else turtleWriter // later add RDF/XML ......     
+    val ret = writer.asString(triples.get, base = baseURI)
     ret.get
   }
 
