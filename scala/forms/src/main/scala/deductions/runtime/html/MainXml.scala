@@ -87,9 +87,12 @@ trait MainXml extends ToolsPage with EnterButtons {
   }
 
   /** creation Button for given RDF class */
-  def creationButton(classe: String, label: String): NodeSeq =
+  def creationButton(classe: String, label: String, formuri: String = ""): NodeSeq =
     <form role="form" action="/create">
       <input type="hidden" name="uri" id="uri" value={ classe }/>
+      <input type="hidden" name="formuri" id="formuri" value={
+        if (formuri != "") formuri else null
+      }/>
       <input type="submit" name="create" id="create" value={ label }/>
     </form>
 

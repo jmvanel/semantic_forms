@@ -23,6 +23,18 @@ trait MainXmlWithHead extends MainXml {
       <style type="text/css">
         .resize {{ resize: both; width: 100%; height: 100%; }}
         .overflow {{ overflow: auto; width: 100%; height: 100%; }}
+				.unselectable {{
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}}
+.selectable {{
+  user-select: text;
+  -moz-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+}}
       </style>
     </head>
   }

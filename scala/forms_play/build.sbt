@@ -10,6 +10,8 @@ lazy val semantic_forms_play = (project in file("."))
 scalaVersion := "2.11.8"
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
 
+routesGenerator := StaticRoutesGenerator
+
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test
 libraryDependencies += "org.scalatestplus" %% "play" % "1.4.0" % Test
 // libraryDependencies += specs2 % Test

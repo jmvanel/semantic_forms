@@ -70,7 +70,7 @@ trait EnterButtons extends Configuration {
               <input class="form-control" type="text" name="uri" placeholder={
                 message("Paste_ontology")
               } dropzone="copy"></input>
-              <select class="form-control" type="text" name="uri" list="class_uris">
+              <select class="form-control selectable" type="text" name="uri" list="class_uris">
                 <optgroup label="Assemblée Virtuelle">
                   <option label="av:Person"> { prefixAVontology }Person </option>
                   <option label="av:Organization"> { prefixAVontology }Organization </option>
