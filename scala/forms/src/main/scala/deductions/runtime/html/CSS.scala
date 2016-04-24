@@ -7,7 +7,11 @@ trait CSS {
 
   val cssRules = """
       input.form-control[type='text']{ margin-bottom: 15px; }
-      /*.form-root{ margin-left: 10px; }
+      .form-value{ display: table-cell; width: 500px;
+                   border-collapse: separate;
+                   border-width: 10px; }
+      /*
+      .form-root{ margin-left: 10px; }
       .form-row{ display: table-row; }
       .form-cell{ display: table-cell; }
       .form-label{ display: table-cell; width: 160px;
@@ -17,9 +21,6 @@ trait CSS {
       .form-input{ display: table-cell; width: 500px;
                    border-collapse: separate;
                    border-width: 2px;}
-      .form-value{ display: table-cell; width: 500px;
-                   border-collapse: separate;
-                   border-width: 10px; }
       .button-add{ width: 25px; }*/
 """
 
