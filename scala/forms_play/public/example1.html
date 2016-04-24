@@ -22,7 +22,6 @@
 					url: uriToCall,
 					context: document.body
 				}).done(function(data) {
-					console.log('Data', data);
 				    var formElem = document.getElementById(displayDivId);
 				    formElem.innerHTML = data;
 				});
