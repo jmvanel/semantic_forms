@@ -49,6 +49,8 @@ trait RDFStoreLocalProvider[Rdf <: RDF, DATASET] extends RDFOPerationsDB[Rdf, DA
   
   /** make an MGraph from a Dataset */
   def makeMGraph( graphURI: Rdf#URI, ds: DATASET = dataset): Rdf#MGraph
+
+  def close(ds: DATASET = dataset)
 }
 
 trait RDFStoreLocalUserManagement[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET] {

@@ -12,6 +12,7 @@ import org.w3.banana.Prefix
 import deductions.runtime.services.Configuration
 import deductions.runtime.abstract_syntax.UnfilledFormFactory
 import deductions.runtime.services.URIManagement
+import scala.util.control.NonFatal
 
 /** */
 trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
@@ -159,20 +160,27 @@ trait RDFHelpers0[Rdf <: RDF] extends Configuration
   }
 
   /** NOTE: currently lastSegment() in Banana can return null :( */
-  def last_segment(node: Rdf#Node) =
+  def last_segment(node: Rdf#Node): String =
     try {
       foldNode(node)(
         uri => {
           val ls = ops.lastSegment(uri)
+          val uriString = fromUri(uri)
+//          println(s"last_segment 1 $uriString '$ls'")
           ls match {
-            case "" => fromUri(uri)
-            case _  => ls
+            case "" => uriString
+            case _  =>
+//              val uri2 = uriString.substring(0, (uriString.length - ls.length) )
+//              println(s"last_segment 2 $uriString '$ls'")
+//              last_segment( URI( uri2 )) +
+//              "/" +
+              ls + "#" + getFragment(uri).getOrElse("")
           }
         },
         bn => bn.toString(),
         x => x.toString())
     } catch {
-      case t: Throwable => node.toString()
+      case NonFatal(e) => node.toString()
     }
     
   def printGraph(graph: Rdf#Graph) {

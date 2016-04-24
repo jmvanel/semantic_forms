@@ -84,6 +84,8 @@ trait RDFStoreLocalJenaProvider
     val nm = ds.getNamedModel(fromUri(graphURI))
     nm.getGraph
   }
+
+  def close(ds: DATASET) = ds.close()
 }
 
 /** TODO implement independently of Jena */

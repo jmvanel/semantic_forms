@@ -21,8 +21,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
 
   val datasetForLabels = dataset
   /* TODO : does not work because the transaction has been started on the other dataset ! 
-  val dataset3 = createDatabase("TDBlabels")
-   */
+  val datasetForLabels = dataset3   */
   val labelsGraphUriPrefix = "urn:/semforms/labelsGraphUri/"
   val displayLabelPred = URI("urn:displayLabel")
 
@@ -122,5 +121,10 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     val computedDisplayLabel = (node -- displayLabelPred ->- Literal(label)).graph
     val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
     rdfStore.appendToGraph(datasetForLabels, labelsGraphUri, computedDisplayLabel)
+  }
+  
+  def cleanStoredLabels(lang: String) {
+    val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
+    rdfStore.removeGraph( datasetForLabels, labelsGraphUri)
   }
 }

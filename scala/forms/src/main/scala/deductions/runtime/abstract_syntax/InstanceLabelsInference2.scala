@@ -68,38 +68,21 @@ trait InstanceLabelsInference2[Rdf <: RDF]
       }
     }
   }
-  
-  def instanceClassLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String = ""): String = {
-          val pgraph = PointedGraph(node, graph)
-          val noption = (pgraph / rdf.typ).nodes.headOption
-          val lsegment = last_segment(node)
-          noption match {
-            case Some(classs) =>
-              implicit val gr: Rdf#Graph = graph
-              val label = getLiteralInPreferedLanguageFromSubjectAndPredicate(classs,
-                rdfs.label, lsegment)
-              if( label == "Thing" )
-                ""
-              else 
-                label
-            case None => lsegment
-          }
-        }
 
-//  /** NOTE: currently lastSegment() in Banana can return null :( */
-//  def last_segment(node: Rdf#Node) =
-//    try {
-//      foldNode(node)(
-//        uri => {
-//          val ls = lastSegment(uri)
-//          ls match {
-//            case "" => fromUri(uri)
-//            case _  => ls
-//          }
-//        },
-//        bn => bn.toString(),
-//        x => x.toString())
-//    } catch {
-//      case t: Throwable => node.toString()
-//    }
+  def instanceClassLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String = ""): String = {
+    val pgraph = PointedGraph(node, graph)
+    val noption = (pgraph / rdf.typ).nodes.headOption
+    val lsegment = last_segment(node)
+    noption match {
+      case Some(classs) =>
+        implicit val gr: Rdf#Graph = graph
+        val label = getLiteralInPreferedLanguageFromSubjectAndPredicate(classs,
+          rdfs.label, lsegment)
+        if (label == "Thing")
+          ""
+        else
+          label
+      case None => lsegment
+    }
+  }
 }
