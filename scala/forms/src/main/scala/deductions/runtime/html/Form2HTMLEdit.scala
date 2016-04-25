@@ -47,6 +47,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
     } else <span></span>
   }
 
+  /** tell if given Entry is configured for lookup (completion) */
   def lookup(r: fm#Entry) = r.widgetType == DBPediaLookup
   
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
@@ -71,9 +72,10 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
             size={inputSize.toString()}
 						dropzone="copy">
           </input>
+          { if (lookup(r))
             <script type="text/javascript" >
               addDBPediaLookup('#{ makeHTML_Id(r) }'); 
-            </script>
+            </script> }
 					</div>
 				else new Text("") // format: ON
       ,
@@ -84,6 +86,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
     ). flatten
   }
 
+  /** Placeholder for a resource URI or literal */
   private def resourcePlaceholder(r: fm#Entry) =
     if (lookup(r))
       s"Enter a word; completion with Wikipedia lookup"
