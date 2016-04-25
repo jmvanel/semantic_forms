@@ -52,11 +52,18 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
     CertPrefix[Rdf],
     OWLPrefix[Rdf])
 
+    import scala.language.postfixOps
+    
   /** larger and less known vocab's */
   val largerVocabs: List[Rdf#URI] =
     makeUri("http://usefulinc.com/ns/doap#") ::
-      makeUri("http://rdfs.org/sioc/ns#") ::
-      makeUri("http://schema.rdfs.org/all.nt") :: // NOTE .ttl is still broken ( asked on https://github.com/mhausenblas/schema-org-rdf/issues/63 )
+      makeUri("http://rdfs.org/sioc/ns#") ::   
+      makeUri("http://schema.rdfs.org/all.nt") ::
+      makeUri("http://topbraid.org/schema/schema.ttl") ::
+      /* NOTES
+       * schema.rdfs.org is down on 25 april 2016
+       * .ttl is still broken ?
+       * ( asked on https://github.com/mhausenblas/schema-org-rdf/issues/63 ) */
       makeUri("http://downloads.dbpedia.org/3.9/dbpedia_3.9.owl") ::
       /* geo: , con: */
       makeUri("http://www.w3.org/2003/01/geo/wgs84_pos#") ::
