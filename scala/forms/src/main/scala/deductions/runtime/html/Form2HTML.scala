@@ -43,7 +43,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
                    actionURI2: String = "/save", lang: String = "en"): NodeSeq = {
 
     val htmlFormFields = time("generateHTMLJustFields",
-      generateHTMLJustFields(form, hrefPrefix, editable, graphURI))
+      generateHTMLJustFields(form, hrefPrefix, editable, graphURI, lang))
 
     def wrapFieldsWithForm(htmlFormFields: NodeSeq): NodeSeq =
       <div class="container">  
@@ -74,7 +74,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
   def generateHTMLJustFields(form: fm#FormSyntax,
     hrefPrefix: String = "",
     editable: Boolean = false,
-    graphURI: String = ""): NodeSeq = {
+    graphURI: String = "", lang: String = "en"): NodeSeq = {
 
     implicit val formImpl: fm#FormSyntax = form
 
@@ -104,7 +104,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
             ) yield {
               <div class={ css.cssClasses.formLabelAndInputCSSClass }>
                 { makeFieldLabel(preceding, field) }
-                { makeFieldDataOrInput(field, hrefPrefix, editable) }
+                { makeFieldDataOrInput(field, hrefPrefix, editable, lang) }
               </div>
             }
             )
@@ -119,7 +119,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
 
 
   private def createHTMLField(field: fm#Entry, editable: Boolean,
-    hrefPrefix: String = "")(implicit form: FormModule[NODE, URI]#FormSyntax): xml.NodeSeq = {
+    hrefPrefix: String = "", lang: String = "en")(implicit form: FormModule[NODE, URI]#FormSyntax): xml.NodeSeq = {
     
     // hack instead of true form separator in the form spec in RDF:
     if (field.label.contains("----"))
@@ -138,7 +138,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
            * or just create a new resource with its type, given by range, or derived
            * (like in N3Form in EulerGUI ) */
           if (editable)
-            createHTMLResourceEditableField(r)
+            createHTMLResourceEditableField(r, lang)
           else
             createHTMLResourceReadonlyField(r, hrefPrefix)
 
@@ -155,13 +155,13 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
 
   /** make Field Data (display) Or Input (edit) */
   private def makeFieldDataOrInput(field: fm#Entry, hrefPrefix: String,
-    editable: Boolean)(implicit form: FormModule[NODE, URI]#FormSyntax) = {
+    editable: Boolean, lang: String = "en")(implicit form: FormModule[NODE, URI]#FormSyntax) = {
     if (shouldAddAddRemoveWidgets(field, editable))
-      createHTMLField(field, editable, hrefPrefix)
+      createHTMLField(field, editable, hrefPrefix, lang)
     else
       // that's for corporate_risk:
       <div class={ css.cssClasses.formInputCSSClass }>
-        { createHTMLField(field, editable, hrefPrefix) }
+        { createHTMLField(field, editable, hrefPrefix, lang) }
       </div>
   }
 }

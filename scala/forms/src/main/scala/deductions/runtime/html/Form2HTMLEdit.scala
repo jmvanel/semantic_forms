@@ -9,6 +9,7 @@ import Form2HTML.urlEncode
 import deductions.runtime.abstract_syntax.DBPediaLookup
 import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.services.Configuration
+import deductions.runtime.utils.I18NMessages
 
 
 /** generate HTML from abstract Form for Edition */
@@ -51,10 +52,10 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
   def lookup(r: fm#Entry) = r.widgetType == DBPediaLookup
   
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
-  def createHTMLResourceEditableField(r: fm#ResourceEntry
+  def createHTMLResourceEditableField(r: fm#ResourceEntry, lang: String = "en"
       )(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
 //  if( r.property . toString() . contains("knows")) println("knows")
-    val placeholder = resourcePlaceholder(r)
+    val placeholder = resourcePlaceholder(r, lang)
     Seq(
       Text("\n"),
     		// format: OFF
@@ -85,11 +86,12 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
       , Text("\n")
     ). flatten
   }
-
-  /** Placeholder for a resource URI or literal */
-  private def resourcePlaceholder(r: fm#Entry) =
+  
+  /** Placeholder for a resource URI */
+  private def resourcePlaceholder(r: fm#Entry, lang: String = "en") = {
     if (lookup(r))
-      s"Enter a word; completion with Wikipedia lookup"
+      I18NMessages.get("Completion", lang)
+//      s"Enter a word; completion with Wikipedia lookup"
       else {
         val typ0 = r.type_.toString()
         val typ = if (
@@ -97,9 +99,11 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
             typ0.endsWith( "#Thing") )
           ""
         else
-          " of type <" + typ0 + ">"
-        s"Enter or paste a resource URI $typ; typing here creates a new resource; better look first in pulldown menu for an already existing resource."
+          "<" + typ0 + ">"
+        I18NMessages.format("Enter_resource_URI", lang, typ) // Array(typ))
+//        s"Enter or paste a resource URI  of type $typ; typing here creates a new resource; better look first in pulldown menu for an already existing resource."
       }
+}
 
   /**
    * TODO analyse differences with createHTMLResourceEditableField;
