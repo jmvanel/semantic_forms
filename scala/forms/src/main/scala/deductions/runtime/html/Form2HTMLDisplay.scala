@@ -4,6 +4,7 @@ import scala.xml.NodeSeq
 import scala.xml.NodeSeq.seqToNodeSeq
 import scala.xml.Text
 import scala.xml.Unparsed
+import java.net.URLEncoder
 
 /** generate HTML from abstract Form for Display (Read only) */
 trait Form2HTMLDisplay[NODE, URI <: NODE]
@@ -42,7 +43,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     
     val drawGraphLink = 
       <button type="button" class="btn-primary" readonly="yes" title=""
-    	        onclick={ s"popupgraph( 'uri' )" }>
+    	        onclick={ s"popupgraph( '${hrefDownloadPrefix + URLEncoder.encode( r.subject.toString(), "utf-8")}' )" }>
         Draw graph
       </button> 
       // http://localhost:9000/download?url=http%3A%2F%2Fjmvanel.free.fr%2Fjmv.rdf%23me

@@ -3,6 +3,10 @@ package deductions.runtime.html
 import scala.io.Source
 import scala.xml.Node
 
+/**
+ * NOTE: most of the JavaScript is in ../forms_play/public/javascripts/ ;
+ *  all this will become Scala.JS :)
+ */
 trait JavaScript {
 
   /** native javascript Code (written now in Scala.JS) */

@@ -33,7 +33,7 @@ trait ApplicationFacadeInterface {
 
   def lookup(search: String): String
 
-  def download(url: String): Enumerator[Array[Byte]]
+  def download(url: String, mime: String): Enumerator[Array[Byte]]
 
   def sparqlConstructQuery(query: String, lang: String = "en"): NodeSeq
 

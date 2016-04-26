@@ -16,7 +16,7 @@ trait FormHeader[Rdf <: RDF]
 {
 self: ApplicationFacadeImpl[Rdf, _] =>
   
-  /** title and links on top of the form */
+  /** title and links on top of the form: Edit, Display, Download Links */
   def titleEditDisplayDownloadLinks(uri: String, lang: String)
     (implicit graph: Rdf#Graph)
   : Elem = {

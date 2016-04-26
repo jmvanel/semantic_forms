@@ -214,8 +214,7 @@ trait ApplicationTrait extends Controller
           val lang = chooseLanguage(request)
           outputMainPage(
             create(uri, chooseLanguage(request),
-              formSpecURI, makeAbsoluteURIForSaving(userid)
-              ),
+              formSpecURI, makeAbsoluteURIForSaving(userid) ),
             lang)
     }
 
