@@ -19,27 +19,41 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       r: fm#ResourceEntry,
       hrefPrefix: String): NodeSeq = {
     val stringValue = r.value.toString()
-    val normalNavigationButton = if (stringValue == "")
-      Text("")
-    else
-      <a href={ stringValue } title={ s"Normal HTTP link to ${r.value}" }
-      draggable="true">LINK</a>
-    Seq(
+    
+    val hyperlinkToObjectURI = 
       <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }
       title={
         s"""Value ${if (r.value.toString != r.valueLabel) r.value.toString else ""}
               of type ${r.type_.toString()}"""
       } draggable="true"> {
         r.valueLabel
-      }</a>,
-      Text(" "),
-
-      (if (r.value.toString().size > 0) {
-        
+      }</a>
+    
+    val backLinkButton = (if (stringValue.size > 0) {      
 				val title = s""" Reverse links for "${r.label}" "${r.value}" """
-				makeBackLinkButton(r.value.toString(), title=title )
-      } else new Text("")),
-      normalNavigationButton)
+				makeBackLinkButton(stringValue, title=title )
+      } else new Text(""))
+      
+    val normalNavigationButton = if (stringValue == "")
+      Text("")
+    else
+      <a href={ stringValue } title={ s"Normal HTTP link to ${r.value}" }
+      draggable="true">LINK</a>
+    
+    val drawGraphLink = 
+      <button type="button" class="btn-primary" readonly="yes" title=""
+    	        onclick={ s"popupgraph( 'uri' )" }>
+        Draw graph
+      </button> 
+      // http://localhost:9000/download?url=http%3A%2F%2Fjmvanel.free.fr%2Fjmv.rdf%23me
+      // <a href="/assets/javascripts/drawgraph.js" title="Draw graph (RDF diagram)">Draw graph</a>
+    
+    Seq(
+      hyperlinkToObjectURI,  
+      Text(" "),
+      backLinkButton,
+      normalNavigationButton,
+      drawGraphLink)
   }
 
   def createHTMLBlankNodeReadonlyField(

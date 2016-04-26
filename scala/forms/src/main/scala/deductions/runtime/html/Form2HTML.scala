@@ -45,7 +45,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
     val htmlFormFields = time("generateHTMLJustFields",
       generateHTMLJustFields(form, hrefPrefix, editable, graphURI, lang))
 
-    def wrapFieldsWithForm(htmlFormFields: NodeSeq): NodeSeq =
+    def wrapFieldsWithFormHeader(htmlFormFields: NodeSeq): NodeSeq =
       <div class="container">  
       	<div class="row">
 					<form action={ actionURI } method="POST">
@@ -62,7 +62,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
     def mess(m: String): String = message(m, lang)
 
     if (editable)
-      wrapFieldsWithForm(htmlFormFields)
+      wrapFieldsWithFormHeader(htmlFormFields)
     else
       htmlFormFields
   }
