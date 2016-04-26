@@ -57,8 +57,8 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
   =
     impl.showTriplesInGraph(graphURI: String, lang)
     
-  def download(url: String): Enumerator[Array[Byte]] =
-    impl.download(url)
+  def download(url: String, mime: String="text/turtle"): Enumerator[Array[Byte]] =
+    impl.download(url, mime)
 
   /** @see [[ApplicationFacadeImpl.saveForm]] */
   def saveForm(request: Map[String, Seq[String]], lang: String = "", userid: String="",

@@ -245,9 +245,9 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     wrapSearchResults(fut, q)
   }
     
-  def downloadAsString(url: String): String = {
-    println("download url " + url)
-    val res = dl.focusOnURI(url)
+  def downloadAsString(url: String, mime: String="text/turtle"): String = {
+    println( s"download url $url mime $mime")
+    val res = dl.focusOnURI(url, mime)
     println(s"""download result "$res" """)
     res
   }
@@ -255,8 +255,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   /** TODO should be non-blocking !!!!!!!!!!!!!
    *  currently accumulates a string first !!!
    *  not sure if Banana and Jena allow a non-blocking access to SPARQL query results */
-  def download(url: String): Enumerator[Array[Byte]] = {
-	  val res = downloadAsString(url)
+  def download(url: String, mime: String="text/turtle"): Enumerator[Array[Byte]] = {
+	  val res = downloadAsString(url, mime)
 	  val input = new ByteArrayInputStream(res.getBytes("utf-8"))
 	  Enumerator.fromStream(input, chunkSize=256*256)
   }

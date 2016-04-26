@@ -219,21 +219,30 @@ trait ApplicationTrait extends Controller
             lang)
     }
 
-  def makeAbsoluteURIForSaving(userid: String): String = userid 
-    
+  def makeAbsoluteURIForSaving(userid: String): String = userid
+
   //  def download(url: String): Action[_] = {
   //    Action { Ok(downloadAsString(url)).as("text/turtle; charset=utf-8") }
   //  }
 
   /** cf https://www.playframework.com/documentation/2.3.x/ScalaStream */
   def downloadAction(url: String) =
-    //  {   Action {
     withUser {
       implicit userid =>
         implicit request => {
-          Ok.chunked(download(url)).as("text/turtle; charset=utf-8")
+          def ttlOutput =    Ok.chunked(download(url, "text/turtle")).as("text/turtle; charset=utf-8")
+        		  .withHeaders("Access-Control-Allow-Origin" -> "*")
+          def jsonldOutput = Ok.chunked(download(url, "text/json-ld")).as("text/turtle; charset=utf-8")
             .withHeaders("Access-Control-Allow-Origin" -> "*")
           // Ok.stream(download(url) >>> Enumerator.eof).as("text/turtle; charset=utf-8")
+
+          val AcceptsTTL = Accepting("text/turtle")
+          val AcceptsJSONLD = Accepting("text/json-ld")
+          render {
+            case AcceptsTTL => jsonldOutput
+            case AcceptsJSONLD => ttlOutput
+            case _ => ttlOutput
+          }
         }
     }
 
