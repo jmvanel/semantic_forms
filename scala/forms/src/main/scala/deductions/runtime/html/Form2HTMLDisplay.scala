@@ -41,13 +41,14 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       <a href={ stringValue } title={ s"Normal HTTP link to ${r.value}" }
       draggable="true">LINK</a>
     
+    // TODO different link when we are on localhost or in production (or use N3.js)
+    val link = /*hrefDownloadPrefix + URLEncoder.encode( */ stringValue /*, "utf-8")*/
     val drawGraphLink = 
-      <button type="button" class="btn-primary" readonly="yes" title=""
-    	        onclick={ s"popupgraph( '${hrefDownloadPrefix + URLEncoder.encode( r.subject.toString(), "utf-8")}' )" }>
+      <button type="button" class="btn-primary" readonly="yes" title="Draw RDF graph"
+    	        onclick={ s"popupgraph( '$link' );" }>
         Draw graph
       </button> 
       // http://localhost:9000/download?url=http%3A%2F%2Fjmvanel.free.fr%2Fjmv.rdf%23me
-      // <a href="/assets/javascripts/drawgraph.js" title="Draw graph (RDF diagram)">Draw graph</a>
     
     Seq(
       hyperlinkToObjectURI,  

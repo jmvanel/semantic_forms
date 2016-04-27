@@ -1,0 +1,196 @@
+div.resource {
+  font-size: 12px;
+  font-family:Helvetica, Verdana, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+}
+table {
+  background-color: AliceBlue;
+  border: 2px solid #99BBDD;
+  border-radius: 3px;
+  margin: 0;
+  padding: 0;
+  margin-left:auto;
+  margin-right:auto;
+    width: auto;
+    min-width: 0;
+    display: table;
+}
+
+table.Class {
+    width: auto;
+    min-width: 0;
+    display: table;
+  border-radius: 10px;
+  background-color: LightBlue;
+}
+
+table.Expression {
+    width: auto;
+    min-width: 0;
+    display: table;
+  background-color: #6baed6;
+  border-color: #1f77b4;
+}
+
+table.Work {
+    width: auto;
+    min-width: 0;
+    display: table;
+  background-color: #aec7e8;
+  border-color: #1f77b4;
+}
+
+table.Manifestation {
+    width: auto;
+    min-width: 0;
+    display: table;
+  background-color: #9ecae1;
+  border-color: #1f77b4;
+}
+
+table.Item, table.Response {
+    width: auto;
+    min-width: 0;
+    display: table;
+  background-color: #c6dbef;
+  border-color: #1f77b4;
+}
+
+table.Agent {
+    width: auto;
+    min-width: 0;
+    display: table;
+  background-color: #ffbb78;
+  border-color: #ff7f0e;
+}
+
+table.Activity {
+    width: auto;
+    min-width: 0;
+    display: table;
+  background-color: #98df8a;
+  border-color: #2ca02c;
+}
+
+table.Plan {
+    width: auto;
+    min-width: 0;
+    display: table;
+  background-color: #ff9896;
+  border-color: #d62728;
+}
+
+body {
+    margin: 0px;
+    padding: 0px;
+}
+tr {
+  border-width: 0px;
+  font-size: 12px;
+  font-family:Helvetica, Verdana, Arial, sans-serif;
+  margin: 0px;
+  padding: 0px;
+}
+td {
+  border-width: 0px;
+  font-size: 11px;
+  font-family:Helvetica, Verdana, Arial, sans-serif;
+  padding: 2px;
+  margin: 0px;
+  vertical-align: top;
+}
+td.type {
+  font-size: 12px;
+  font-weight:bold;
+}
+
+td.attrName {
+  font-weight:bold;
+}
+th {
+  border-width: 0px;
+  font-size: 13px;
+  font-family:Helvetica, Verdana, Arial, sans-serif;
+  padding: 2px;
+  margin: 0px;
+}
+
+a {
+  text-align: center;
+  text-decoration: none;
+}
+
+line.link {
+  stroke: #999;
+  stroke-width: 1;
+}
+
+text.link {
+  font-size: 12px;
+  font-family:Helvetica, Verdana, Arial, sans-serif;
+}
+
+polygon.arrowhead {
+  stroke: #999;
+  fill: #999;
+  stroke-width: 1;
+}
+
+.context-menu {
+	visibility:hidden; /* No, you cannot use display:none; */
+	position:absolute;
+	border:1px solid #666;
+	margin:0;
+	padding:3px;
+	list-style:none;
+	width:100px;
+	background-color:#eee;
+} 
+.context-menu li:hover, .context-menu .context-menu-item-active {
+	background-color:#ccc;
+}
+.disabled {
+	color:#999;
+	background-color:#eee !important;
+}
+
+:root {
+  -webkit-print-color-adjust: exact;
+}
+.compass{
+    fill:  #fff;
+    stroke:  #000;
+    stroke-width:  1.5;
+  }
+  .button{
+    fill:  #225EA8;
+    stroke:  #0C2C84;
+    stroke-miterlimit:	6;
+    stroke-linecap:  round;
+  }
+  .button:hover{
+    stroke-width:  2;
+  }
+  .plus-minus{
+    fill:  #fff;
+    pointer-events: none;
+  }
+body
+{
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  overflow:hidden;
+}
+#content {
+  height: 85%;
+  top: 125;
+  left: 0;
+  position: absolute;
+  width: 99%;
+}
+#header, {
+  height: 150px;
+}

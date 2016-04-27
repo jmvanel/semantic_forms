@@ -1,0 +1,43 @@
+body {
+  background: #FFF;
+}
+
+h1{
+  font-size: 45px;
+}
+
+h1,h2,body {
+  font-weight: normal;
+  vertical-align: top;
+  font-family: Helvetica Neue,Georgia, serif;
+  padding: 0;
+  margin: 0;
+  display: inline;
+  letter-spacing: -0.02em;
+}
+
+ a,
+ a:hover,
+ a:visited {
+  margin: 0;
+  padding: 0;
+  color: #000;
+}
+a:hover{
+ text-decoration: none;
+}  
+
+
+table tr td {
+    border-width: thin;
+	padding: 2px;
+	border-style: dotted;
+	border-color: gray;
+	background-color: white;
+}
+
+table{
+  width: 50%;
+  margin-left:100px;
+  margin-right:auto;
+}
