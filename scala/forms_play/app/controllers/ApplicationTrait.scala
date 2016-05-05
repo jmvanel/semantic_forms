@@ -58,7 +58,6 @@ trait ApplicationTrait extends Controller
 
   def displayURI(uri: String, blanknode: String = "", Edit: String = "",
       formuri: String="") =
-      //    { Action { implicit request =>
       withUser {
 	    implicit userid =>
       implicit request => {
@@ -77,7 +76,6 @@ trait ApplicationTrait extends Controller
   }
 
   def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String ="") =
-//    { Action { implicit request =>
           withUser {
 	    implicit userid =>
       implicit request => {
@@ -334,7 +332,6 @@ trait ApplicationTrait extends Controller
    * - this is blocking code !!!
    */
   def ldpPOSTAction(uri: String) =
-    //  { Action { implicit request =>
     withUser {
       implicit userid =>
         implicit request => {

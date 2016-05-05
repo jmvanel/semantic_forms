@@ -101,7 +101,8 @@ trait LDP[Rdf <: RDF, DATASET]
     //         |}""".stripMargin
   }
 
-  /** for LDP PUT */
+  /** for LDP PUT
+   *  TODO content type negotiation is done elsewhere */
   def putTriples(uri: String, link: Option[String], contentType: Option[String],
     slug: Option[String],
     content: Option[String]): Try[String] = {
@@ -111,11 +112,12 @@ trait LDP[Rdf <: RDF, DATASET]
     println(s"putTriples: contentType: ${contentType}")
     println(s"putTriples: slug: ${slug}")
     val r = dataset.rw {
+      val reader =
+          if (contentType.get.contains("text/turtle"))
+            turtleReader
+          else jsonldReader
       for {
-        graph <- if (contentType.get.contains("text/turtle"))
-          turtleReader.read(new StringReader(content.get), putURI)
-        else
-          jsonldReader.read(new StringReader(content.get), putURI)
+        graph <- reader.read(new StringReader(content.get), putURI)
         res <- {
           println("putTriples: graph: " + graph);
           rdfStore.removeGraph(dataset, URI(putURI))
