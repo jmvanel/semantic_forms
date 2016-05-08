@@ -97,14 +97,18 @@ trait MainXml extends ToolsPage with EnterButtons {
     </form>
 
   def javascriptCSSImports: NodeSeq = {
-    <!--script src="assets/javascripts/jquery-2.2.0.min.js" type="text/javascript"></script-->
-    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css"/>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <!--
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css"></link>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+-->
+    <script src="assets/javascripts/jquery.min.js" type="text/javascript"></script>
+    <script src="assets/javascripts/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="assets/stylesheets/jquery-ui.min.css"></link>
 
     <!-- bootstrap -->
-    <link rel="stylesheet" href="assets/stylesheets/bootstrap.min.css"/>
-    <link rel="stylesheet" href="assets/stylesheets/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="assets/stylesheets/bootstrap.min.css"></link>
+    <link rel="stylesheet" href="assets/stylesheets/bootstrap-theme.min.css"></link>
     <script src="assets/javascripts/bootstrap.min.js" type="text/javascript"></script>
 
     <!--link rel="stylesheet" href="assets/stylesheets/select2.css"/>
@@ -114,6 +118,18 @@ trait MainXml extends ToolsPage with EnterButtons {
     <script src="assets/javascripts/wikipedia.js" type="text/javascript"></script>
     <script src="assets/javascripts/formInteractions.js" type="text/javascript"></script>
     <script src="assets/javascripts/drawgraph.js" type="text/javascript"></script>
+    <script src="assets/rdfviewer/rdf.js" type="text/javascript"></script>
+
+    <!-- RDFViewer -->
+    <script src="assets/rdfviewer/rdf.js" type="text/javascript"></script>
+    <script src="assets/rdfviewer/md5.min.js" type="text/javascript"></script>
+    <script src="assets/javascripts/d3.v2.min.js" type="text/javascript"></script>
+
+    <!--
+     RDFicon.png
+    <link rel="stylesheet" href="assets/rdfviewer/rdfviewer.css"></link>
+    <link rel="stylesheet" href="assets/rdfviewer/basic.css"></link>
+
     <script src="assets/fluidgraph/js/jquery-2.1.4.min.js"></script>
     <script src="assets/fluidgraph/js/d3.v3.min.js"></script>
     <script src="assets/fluidgraph/js/jquery.mockjax.min.js"></script>
@@ -128,5 +144,7 @@ trait MainXml extends ToolsPage with EnterButtons {
     <script src="assets/fluidgraph/js/mylinks.js"></script>
     <script src="assets/fluidgraph/js/mybackground.js"></script>
     <script src="assets/fluidgraph/js/convert.js"></script>
+    -->
+
   }
 }
