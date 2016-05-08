@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>RDF Viewer</title>
+    <link type="text/css" rel="stylesheet" href="rdfviewer.css"></link>
+    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.v2.js"></script>
+    <script type="text/javascript" src="md5.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="rdf.js"></script>
+  </head>
+  <body>
+    <div>
+      <!--form method="get" action="">
+        <input type="text" id="url" name="url" value="http://www.w3.org/People/Berners-Lee/card.rdf" size="100"/>
+        <input type="submit" value="Redraw"/>
+      </form-->
+    </div>
+    <div style="" id="content">
+      <svg id="chart"></svg>
+    </div>
+    <script type="text/javascript">
+      $(window).ready(function () {
+	// function restart(){
+	    // var loadVal = $.getUrlVar(
+		// SyntaxError: Unexpected identifier ???????????????
+	    var loadVal = jQuery.getUrlVar("url");
+	    console.log("loadVal " + loadVal);
+	    if (loadVal != null) {
+	      var value = decodeURIComponent(loadVal);
+	      console.log("value " + value);
+	    };
+	    viewrdf("#chart",1000,1000, value, 300);
+	// }
+	// restart();
+      });
+   </script>
+ </body>
+</html>
