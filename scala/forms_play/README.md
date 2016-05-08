@@ -145,12 +145,31 @@ Commands to run with these useful plugins:
 See: https://github.com/jrudolph/sbt-dependency-graph , https://github.com/rtimush/sbt-updates
 
 ## Debug
-See 
-[playframework documentation/2.3.x/IDE](https://www.playframework.com/documentation/2.3.x/IDE)
+See [playframework documentation/2.4.x/IDE](https://www.playframework.com/documentation/2.4.x/IDE)
 
-Activator or SBT work the same way :
+Start Activator or SBT with -jvm-debug argument; then type run. Then start a remove debug in eclipse or another IDE with port 9999.
+```
+    activator -jvm-debug
+```
 
-    sbt -jvm-debug 9999 run
+or:
+```
+    sbt  -jvm-debug 9999
+```
+
+## Test
+```script
+get --method=OPTIONS --save-headers http://localhost:9000/bla
+
+# Do this ti test most service URL that are protected by login:
+wget --keep-session-cookies --save-cookies cookies.txt \
+    --post-data 'userid=foo&password=bar' \
+    -p http://localhost:9000/authenticate
+
+# test SPARQL CONSTRUCT service
+wget --load-cookies cookies.txt \
+    'http://localhost:9000/sparql?query=CONSTRUCT{?S ?P ?O} WHERE{ GRAPH ?G {?S ?P ?O}} LIMIT 10'
+```
 
 #Database Administration
 ## Preloading RDF content
@@ -235,17 +254,18 @@ To delete named graph related to common vocabularies, default form specification
 
 
 ## SPARQL queries
-There is a web page for SPARQL queries, but not a real SPARL endpoint yet :( .
-This is an HTML page for entering queries, in the /tools page.
+There is a web page for SPARQL queries, and also a real SPARL endpoint at URL /sparql for CONSTRUCT queries (see below under Test about how to query with authentication).
+
+There is an HTML page for entering queries, in the /tools page.
 There are some example showing some queries that you can paste into your browser:
 
 The service
-<code>/sparql?query=</code>
-is only for CONSTRUCT queries.
+<code>/sparql-ui?query=</code>
+is for CONSTRUCT queries.
 
 and the service
-<code>/select?query=</code>
-is only for SELECT queries.
+<code>/select-ui?query=</code>
+is for SELECT queries.
 
 ## Populating with dbPedia (mirroring dbPedia)
 
@@ -294,18 +314,6 @@ https://github.com/jmvanel/semantic\_forms/blob/master/scala/forms/src/main/scal
 And here is where the text search is called:
 https://github.com/jmvanel/semantic\_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/services/StringSearchSPARQL.scala
 
-
-# How to debug
-
-Start Activator or SBT with -jvm-debug argument; then type run. Then start a remove debug in eclipse or another IDE with port 9999.
-```
-    ./activator -jvm-debug
-```
-
-or:
-```
-    sbt  -jvm-debug 9999
-```
 
 # Vocabulary for forms
 
