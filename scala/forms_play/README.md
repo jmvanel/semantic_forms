@@ -156,7 +156,7 @@ or:
 ```script
 get --method=OPTIONS --save-headers http://localhost:9000/bla
 
-# Do this ti test most service URL that are protected by login:
+# Do this (just once) to test URL that are protected by login:
 wget --keep-session-cookies --save-cookies cookies.txt \
     --post-data 'userid=foo&password=bar' \
     -p http://localhost:9000/authenticate
