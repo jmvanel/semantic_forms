@@ -5,8 +5,8 @@ function popupgraph(uri) {
 
   var htmlContent = `<html><head>
     <script src="javascripts/jquery-2.2.3.min.js" type="text/javascript"></script>
-    <script src="assets/rdfviewer/rdf.js" type="text/javascript"></script>
-    <script src="assets/rdfviewer/md5.min.js" type="text/javascript"></script>
+    <script src="/assets/rdfviewer/rdf.js" type="text/javascript"></script>
+    <script src="/assets/rdfviewer/md5.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="http://mbostock.github.com/d3/d3.v2.js" type="text/javascript"></script>
     <link rel="stylesheet" href="assets/rdfviewer/basic.css"></link>
     <link rel="stylesheet" href="assets/rdfviewer/rdfviewer.css"></link>
