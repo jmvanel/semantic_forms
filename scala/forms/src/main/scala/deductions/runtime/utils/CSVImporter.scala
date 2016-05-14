@@ -26,7 +26,8 @@ import org.w3.banana.PrefixBuilder
  *  TODO: probably should be in another SBT project */
 trait CSVImporter[Rdf <: RDF, DATASET]
 		extends Configuration
-		with URIHelpers {
+		with URIHelpers
+		with RDFPrefixes[Rdf] {
 
   implicit val ops: RDFOps[Rdf]
   import ops._
@@ -157,9 +158,13 @@ trait CSVImporter[Rdf <: RDF, DATASET]
     for (h <- header.keys) {
       val candidate = h.trim()
       result . update( index, 
-        if (isAbsoluteURI(candidate))
-          URI(candidate)
-        else
+        if (isAbsoluteURI(candidate)) {
+          // accept prefixed URI's like foaf:name, and expand them
+          expand(candidate) match {
+            case Some(uri) => uri 
+            case None => URI(candidate)
+          }
+        } else
           manageColumnsMapping(candidate, documentURI)
       )
       index += 1
@@ -167,7 +172,8 @@ trait CSVImporter[Rdf <: RDF, DATASET]
     result
   }
 
-  /** TODO
+  /** columns Mappings from Guillaume's column names to well-known RDF properties
+   *  TODO
    *  make this Map an argument
    *  use labels on properties to propose properties to user,
    *  manage prefixes globally, maybe using prefix.cc */
@@ -194,15 +200,17 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       "Idée 1" -> av.idea,
       "Idée 2" -> av.idea,
       "Rencontré à" -> av.metAt
-      )
-  private def manageColumnsMapping(col: String, documentURI: URI): URI = {
-//    println()
-    columnsMappings.getOrElse( col, normalize( col, documentURI) )
+  )
+  private def manageColumnsMapping(columnName: String, documentURI: URI): URI = {
+    columnsMappings.getOrElse( columnName, normalize( columnName, documentURI) )
   }
-    
+
+  /** normalize column names: remove "&", "?", "/", capitalize */
   private def normalize(toBeNormalized0: String, documentURI: URI): URI = {
-    val toBeNormalized = toBeNormalized0.trim().toLowerCase().replace("?", "")
-      .replace("&", "")
+    val toBeNormalized = toBeNormalized0.trim().toLowerCase().
+    replace("?", "").
+    replace("/", "").
+    replace("&", "")
     val result = new StringBuilder(documentURI.toString)
     val tokenizer = new StringTokenizer(toBeNormalized, " ")
     while (tokenizer.hasMoreTokens()) {

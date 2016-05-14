@@ -12,9 +12,10 @@ import java.io.FileReader
  * App to Import CSV into TDB;
  *  args:
  *  0 - URL Or File of CSV,
- *  1 - output document URI (also base URL for the rows),
- *  2 - import details URL Or File ( in Turtle ) ; for example it contains:
+ *  1 - base URL for the rows,
+ *  2 - import details URL or File ( in Turtle ) ; for example it contains:
  *  		<any:ROW> a foaf:Person .
+ *    which will add this triple to every row.
  */
 object CSVImporterApp extends App
     with RDFStoreLocalJena1Provider
