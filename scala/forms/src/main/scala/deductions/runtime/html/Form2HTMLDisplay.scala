@@ -40,19 +40,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     else
       <a href={ stringValue } title={ s"Normal HTTP link to ${r.value}" }
       draggable="true">LINK</a>
-    
-    // TODO different link when we are on localhost (transmit RDF String then) or in production (or use N3.js
-    // http://localhost:9000/download?url=http%3A%2F%2Fjmvanel.free.fr%2Fjmv.rdf%23me
-    val link = /*hrefDownloadPrefix + */ URLEncoder.encode( stringValue, "utf-8")
-    val drawGraphLink = 
-//      <button type="button" class="btn-primary" readonly="yes" title="Draw RDF graph"
-//    	        onclick={ s"popupgraph( '$link' );" }>
-//    	<form action={ s"/assets/rdfviewer/rdfviewer.html?url=$link" }>
-//        <input type="submit" class="btn-primary" readonly="yes" title="Draw RDF graph"
-//    	         value="Draw graph"></input> 
-//    	</form >
-    <a href={ s"/assets/rdfviewer/rdfviewer.html?url=$link" } title={"Draw RDF graph for " + stringValue}>Draw graph</a>
-    
+      
     Seq(
       hyperlinkToObjectURI,  
       Text(" "),
@@ -60,7 +48,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       Text("-"),
       normalNavigationButton,
       Text("-"),
-      drawGraphLink)
+      makeDrawGraphLink(stringValue) )
   }
 
   def createHTMLBlankNodeReadonlyField(
