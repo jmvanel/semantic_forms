@@ -38,7 +38,7 @@ trait RDFPrefixes[Rdf <: RDF] {
   
   /** expand possibly Prefixed URI (like foaf:name),
    *  and then output Some(URI("http://xmlns.com/foaf/0.1/name")),
-   *  or leave input as is */
+   *  or output None */
   def expand(possiblyPrefixedURI: String): Option[Rdf#URI] = {
     val uri_string = possiblyPrefixedURI // URLEncoder.encode(possiblyPrefixedURI, "UTF-8")
     val tr = Try{
