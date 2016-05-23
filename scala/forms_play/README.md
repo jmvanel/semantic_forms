@@ -53,15 +53,25 @@ A convenience link to [local semantic\_forms ScalaDoc](../forms/target/scala-2.1
 Some references on ScalaDoc: http://docs.scala-lang.org/style/scaladoc.html , http://docs.scala-lang.org/overviews/scaladoc/for-library-authors.html , http://stackoverflow.com/questions/15394322/how-to-disambiguate-links-to-methods-in-scaladoc
 
 ## Run on a server without development environment
+### Obtaining the zipped application
+The zipped application is available as a [github release](https://github.com/jmvanel/semantic_forms/releases).
 
-To package to run on a server that has Java only: type in activator : `dist`
+Otherwise, to obtain the zipped application starting from the sources (see above), to package to run on a server that has Java only: type in activator : `dist`
 
 Then the archive is found here :
-`target/universal/semantic_forms_play-1.0-SNAPSHOT.zip`
+`target/universal/semantic_forms_play-1.0-SNAPSHOT.zip
+`
+### Runnning the zipped application
 Download this zip on the server, unzip and type:
 ```shell
+cd semantic_forms_play-1.0-SNAPSHOT
 nohup bin/semantic_forms_play -J-Xmx50M &
 ```
+Or you can change the default port (9000) like this:
+
+	nohup bin/semantic_forms_play -J-Xmx50M -Dhttp.port=9999 &
+
+There is no need to be administrator.
 
 There is a script that does this, and more: it stops the server, updates the application from sources, and restarts the server :
 
@@ -71,7 +81,8 @@ It is advised to deactivate the automatic formatting on a server machine. Just c
 scala/forms/build.sbt . 
 
 If you want to change the HTTP ports, etc, look in the Play! documentation:
-https://www.playframework.com/documentation/2.3.x/ProductionConfiguration
+https://www.playframework.com/documentation/2.4.x/ProductionConfiguration
+
 
 If you want to change the log settings:
 ```
@@ -161,7 +172,7 @@ or:
 ```script
 get --method=OPTIONS --save-headers http://localhost:9000/bla
 
-# Do this ti test most service URL that are protected by login:
+# Do this (just once) to test URL that are protected by login:
 wget --keep-session-cookies --save-cookies cookies.txt \
     --post-data 'userid=foo&password=bar' \
     -p http://localhost:9000/authenticate

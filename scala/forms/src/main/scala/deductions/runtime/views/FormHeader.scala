@@ -32,6 +32,8 @@ self: ApplicationFacadeImpl[Rdf, _] =>
             { mess("Display") } :
             <a href={ hrefDisplayPrefix + URLEncoder.encode(uri, "utf-8") } title={ mess("display_URI") } >{ uri }</a> )
             { makeBackLinkButton(uri) }
+            --
+            { makeDrawGraphLink(uri) }
           </strong>
         </h3>
       </div>
