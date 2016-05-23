@@ -12,7 +12,7 @@ import org.w3.banana.io.RDFWriter
 import org.w3.banana.io.NTriples
 import java.nio.file.StandardOpenOption
 
-trait ChildrenFetcher[Rdf <: RDF]
+trait ChildrenDocumentsFetcher[Rdf <: RDF]
     extends RDFLoader[Rdf, Try] {
 
   implicit val ops: RDFOps[Rdf]
