@@ -19,6 +19,11 @@ trait DuplicatesDetectionOWL[Rdf <: RDF] {
 
   def findDuplicateDataProperties(graph: Rdf#Graph) = {
     val datatypeProperties = find(graph, ANY, rdf.typ, owl.DatatypeProperty)
+
+    val datatypePropertiesURI = datatypeProperties.map{ trip => trip.subject }
+    val datatypePropertiesPairs = datatypePropertiesURI.toSet.subsets(2)
+    // TODO réécrire boucle ci-dessous avec datatypePropertiesPairs
+    
     for {
       datatypeProperty_triple1 <- datatypeProperties
       datatypeProperty_triple2 <- datatypeProperties
