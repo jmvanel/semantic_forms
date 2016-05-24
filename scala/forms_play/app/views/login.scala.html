@@ -5,31 +5,67 @@ import play.api.i18n.Messages._
 *@
 
 @(loginForm: Form[(String, String)], registerForm: Form[(String, String, String)])(implicit messages:  play.api.i18n.Messages)
+	<head>
+	  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
+	  <title>Welcome to Semantic Forms Play default application</title>
+	  <!-- TODO: REFORMAT ROUTES USING THE ASSETS HELPER -->
+	  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png"></link>
+	  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.ico"/>
+	
+	  <script src="/assets/javascripts/jquery-1.11.2.min.js" type="text/javascript"></script>
+	
+	  <!-- bootstrap -->
+	  <link rel="stylesheet" href="/assets/stylesheets/bootstrap.min.css" />
+	  <link rel="stylesheet" href="/assets/stylesheets/bootstrap-theme.min.css" />
+	  <script src="/assets/javascripts/bootstrap.min.js" type="text/javascript"></script>
 
-	<p> Semantic Forms </p>
-    <div class="contentform">
-	    <div class="btn btn-blue" data-toggle="collapse" href="#collapseLogin" aria-expanded="false" 
-	    	aria-controls="#collapseLogin">Déjà membre</div>
-	    <div class="collapse" id="collapseLogin">
-		    @helper.form(action = routes.Auth.authenticate) {
-		    	@loginForm.globalError.map { error => <p class="error">@error.message</p>}
-		    	
-		    	@helper.inputText(loginForm("userid"), 'placeholder -> "userid", '_label -> null)
-		    	@helper.inputPassword(loginForm("password"), 'placeholder -> "mot de passe", '_label -> null)
-		    	<input type="submit" class="btn" value="Se connecter">
-		    }
-		</div>
-	    
-	    <div class="btn btn-blue" data-toggle="collapse" href="#collapseRegister" aria-expanded="false" 
-	    	aria-controls="collapseRegister">Nouveau membre</div>
-	    <div class="collapse" id="collapseRegister">
-		    @helper.form(action = routes.Auth.register) {
-		    	@registerForm.globalError.map { error => <p class="error">@error.message</p>}
-		    	
-		    	@helper.inputText(registerForm("userid"), 'placeholder -> "userid", '_label -> null)
-		    	@helper.inputPassword(registerForm("password"), 'placeholder -> "mot de passe", '_label -> null)
-		    	@helper.inputPassword(registerForm("confirmPassword"), 'placeholder -> "confirmez le mot de passe", '_label -> null)
-		    	<input type="submit" class="btn" value="S'inscrire">
-		    }
-		</div>
-    </div>
+	  <script src="/assets/javascripts/wikipedia.js" type="text/javascript"></script>
+	  <script src="/assets/javascripts/formInteractions.js" type="text/javascript"></script>
+	
+	</head>
+	<body>
+		<div class="container text-center">
+			<div class="row">
+				<h1> Welcome to Semantic Forms</h1>
+				<span>Please login to access the system</span>
+			</div>
+			<!-- TODO: 
+				Improve the look and feel of the form by either splitting into two different templates
+				or display/hide the whole login block when willing to create a new account 
+			 -->
+		    <div class="row">
+			    <div class="col-sm-6 col-md-6 col-lg-6" data-toggle="collapse" href="#collapseLogin" aria-expanded="false" 
+			    	aria-controls="#collapseLogin">
+			    	<span class="btn btn-primary">
+			    		Already a member
+			    	</span>
+				    <div class="" id="">
+					    @helper.form(action = routes.Auth.authenticate) {
+					    	@loginForm.globalError.map { error => <p class="error">@error.message</p>}
+					    	
+					    	@helper.inputText(loginForm("userid"), 'placeholder -> "userid", '_label -> null)
+					    	@helper.inputPassword(loginForm("password"), 'placeholder -> "mot de passe", '_label -> null)
+					    	<input type="submit" class="btn" value="Se connecter">
+					    }
+					</div>
+			    </div>
+			    
+			    <div class="col-sm-6 col-md-6 col-lg-6" data-toggle="collapse" href="#collapseRegister" aria-expanded="false" 
+			    	aria-controls="collapseRegister">
+			    	<span class="btn btn-primary">
+			    		New user
+			    	</span>
+				    <div class="" id="">
+					    @helper.form(action = routes.Auth.register) {
+					    	@registerForm.globalError.map { error => <p class="error">@error.message</p>}
+					    	
+					    	@helper.inputText(registerForm("userid"), 'placeholder -> "userid", '_label -> null)
+					    	@helper.inputPassword(registerForm("password"), 'placeholder -> "mot de passe", '_label -> null)
+					    	@helper.inputPassword(registerForm("confirmPassword"), 'placeholder -> "confirmez le mot de passe", '_label -> null)
+					    	<input type="submit" class="btn" value="S'inscrire">
+					    }
+					</div>
+			    </div>
+			</div>
+	    </div>
+	</body>
