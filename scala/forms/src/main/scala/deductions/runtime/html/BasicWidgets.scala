@@ -9,8 +9,8 @@ trait BasicWidgets {
     // format: OFF
     val tit = if (title == "") s" Reverse links for &lt;$uri&gt;" else title
     <button type="button" 
-    		class="btn-primary" readonly="yes" title={ tit } data-value="$uri" onclick={ s"backlinks( '$uri' )" } id={ s"BACK-$uri" }>
-      ? --&gt; o
+    		class="btn btn-info" readonly="yes" title={ tit } data-value="$uri" onclick={ s"backlinks( '$uri' )" } id={ s"BACK-$uri" }>
+      <i class="glyphicon glyphicon-search"></i> 
     </button>
   }
   
@@ -24,6 +24,8 @@ trait BasicWidgets {
 //        <input type="submit" class="btn-primary" readonly="yes" title="Draw RDF graph"
 //    	         value="Draw graph"></input> 
 //    	</form >
-    <a href={ s"/assets/rdfviewer/rdfviewer.html?url=$link" } title={"Draw RDF graph for " + uri}>Draw graph</a>
+    <a class="btn btn-default" href={ s"/assets/rdfviewer/rdfviewer.html?url=$link" } title={"Draw RDF graph for " + uri}>
+			<img width="15" border="0" src="https://www.w3.org/RDF/icons/rdf_flyer.svg" alt="RDF Resource Description Framework Flyer Icon"/>
+		</a>
   }
 }

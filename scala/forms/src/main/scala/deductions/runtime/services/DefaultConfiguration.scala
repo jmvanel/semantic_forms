@@ -50,6 +50,8 @@ trait DefaultConfiguration extends Configuration {
   override val showPlusButtons = true
   /** show EDIT Buttons for multi-line editing popup */
   override val showEditButtons = true
+  /** show all 3 buttons beside the current items in display or edit mode */
+  override val showExpertButtons = true
 
   override val inlineJavascriptInForm: Boolean = true
   override def displayTechnicalSemWebDetails: Boolean = true

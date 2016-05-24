@@ -21,33 +21,32 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       hrefPrefix: String): NodeSeq = {
     val stringValue = r.value.toString()
     
-    val hyperlinkToObjectURI = 
+    val hyperlinkToObjectURI = (if (showExpertButtons) {
       <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }
       title={
         s"""Value ${if (r.value.toString != r.valueLabel) r.value.toString else ""}
               of type ${r.type_.toString()}"""
       } draggable="true"> {
         r.valueLabel
-      }</a>
+      }</a> } else new Text(""))
     
-    val backLinkButton = (if (stringValue.size > 0) {      
+    val backLinkButton = (if (stringValue.size > 0 && showExpertButtons) {      
 				val title = s""" Reverse links for "${r.label}" "${r.value}" """
 				makeBackLinkButton(stringValue, title=title )
       } else new Text(""))
       
-    val normalNavigationButton = if (stringValue == "")
-      Text("")
-    else
-      <a href={ stringValue } title={ s"Normal HTTP link to ${r.value}" }
-      draggable="true">LINK</a>
-      
+    val normalNavigationButton = (if (stringValue.size > 0 && showExpertButtons) {
+      <a class="btn btn-primary" href={ stringValue } title={ s"Normal HTTP link to ${r.value}" }
+      draggable="true"><i class="glyphicon glyphicon-share-alt"></i> </a>
+    } else new Text(""))
+    
     Seq(
-      hyperlinkToObjectURI,  
-      Text(" "),
+      hyperlinkToObjectURI,
+      Text("  "),
       backLinkButton,
-      Text("-"),
+      Text("  "),
       normalNavigationButton,
-      Text("-"),
+      Text("  "),
       makeDrawGraphLink(stringValue) )
   }
 

@@ -158,11 +158,13 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
     editable: Boolean, lang: String = "en")(implicit form: FormModule[NODE, URI]#FormSyntax) = {
     if (shouldAddAddRemoveWidgets(field, editable))
       createHTMLField(field, editable, hrefPrefix, lang)
-    else
+    else if (editable)
       // that's for corporate_risk:
-      <div class={ css.cssClasses.formInputCSSClass }>
-        { createHTMLField(field, editable, hrefPrefix, lang) }
-      </div>
+       <div class={ css.cssClasses.formInputCSSClass }>
+         { createHTMLField(field, editable, hrefPrefix, lang) }
+       </div>
+    else
+       createHTMLField(field, editable, hrefPrefix, lang)
   }
 }
 

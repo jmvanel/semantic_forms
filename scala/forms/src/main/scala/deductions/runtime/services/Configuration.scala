@@ -47,6 +47,8 @@ trait Configuration {
   def showPlusButtons: Boolean
   /** show EDIT Buttons for a popup to edit large texts */
   def showEditButtons: Boolean
+  /** show all 3 buttons beside the current items in display or edit mode */
+  def showExpertButtons: Boolean
 
   /** inline Javascript In Form; overwise app. developer must put it in <head> */
   def inlineJavascriptInForm: Boolean
@@ -105,6 +107,7 @@ trait ConfigurationCopy extends Configuration {
   override def showRDFtype = original.showRDFtype
   override def showPlusButtons = original.showPlusButtons
   override def showEditButtons = original.showEditButtons
+  override def showExpertButtons = original.showExpertButtons
   override def inlineJavascriptInForm = original.inlineJavascriptInForm
   override def displayTechnicalSemWebDetails = original.displayTechnicalSemWebDetails
   override val css = original.css
