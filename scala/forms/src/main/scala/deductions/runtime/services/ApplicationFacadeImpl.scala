@@ -156,7 +156,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
           } else ""
           implicit val graph = allNamedGraph;
           Seq(
-            titleEditDisplayDownloadLinks(uri, lang),
+            titleEditDisplayDownloadLinks(uri, lang, editable),
             <div>{status}</div>,
             tableView.htmlFormElemRaw(uri, graph, hrefDisplayPrefix, blankNode, editable = editable,
               lang = lang, formuri=formuri, graphURI=graphURI)).flatMap { identity }
