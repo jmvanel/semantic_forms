@@ -14,3 +14,15 @@ Paste_ontology=Paste URI of a class in an ontology
 Other_vocabs=Other vocabularies
 
 Search_placeholder=Enter search term (actually regular expression) for which value (object triple) match
+
+Connect=Connect
+Create_an_account=Create an account
+Login=Login
+Password=Password
+Confirm_password=Confirm password
+Register=Register
+Already_a_member=Already a member
+Please_enter_your_login=Please enter your login
+Please_login_to_access_the_system=Please login to access the system
+Please_enter_your_password=Please enter your password
+Please_confirm_your_password=Please confirm your password

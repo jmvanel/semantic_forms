@@ -1,4 +1,4 @@
-Welcome=Bienvenue à Semantic forms
+Welcome=Bienvenue dans Semantic forms
 Display=Afficher
 Edit=Éditer
 Search=Chercher
@@ -14,3 +14,15 @@ Paste_ontology=Coller ou taper l''URI d''une classe dans une ontologie.
 Other_vocabs=Autres vocabulaires
 
 Search_placeholder=Entrer terme de recherche (en fait une expression régulière) qui correspond aux valeurs (objets des triplets)
+
+Connect=Se connecter
+Create_an_account=Créer un compte
+Login=Identifiant
+Password=Mot de passe
+Confirm_password=Confirmation
+Register=S'inscrire
+Already_a_member=Déjà membre
+Please_enter_your_login=Veuillez saisir votre identifiant
+Please_login_to_access_the_system=Veuillez vous identifier afin d'accéder au système
+Please_enter_your_password=Veuillez saisir votre mot de passe
+Please_confirm_your_password=Veuillez confirmer votre mot de passe

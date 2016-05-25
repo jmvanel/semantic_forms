@@ -27,7 +27,7 @@ import play.api.i18n.Messages._
 		<div class="container">
 			<div class="row text-center">
 				<h1>@{messages("Welcome", "fr")}</h1>
-				<span>@{messages("Please login to access the system", "fr")}</span>
+				<span>@{messages("Please_login_to_access_the_system", "fr")}</span>
 			</div>
 			<!-- TODO: 
 				Improve the look and feel of the form by either splitting into two different templates
@@ -37,7 +37,7 @@ import play.api.i18n.Messages._
 			    <div class="col-sm-12 col-md-6 col-lg-6" href="#collapseLogin" aria-expanded="false" 
 			    	aria-controls="#collapseLogin">
 			    	<h2>
-			    		@{messages("Already a member", "fr")}
+			    		@{messages("Already_a_member", "fr")}
 			    	</h2>
 				    <div id="collapseLogin">
 					    @helper.form(action = routes.Auth.authenticate) {
@@ -45,18 +45,18 @@ import play.api.i18n.Messages._
 					    	
 					    	@helper.inputText(
 					    		loginForm("userid"), 
-					    		'placeholder -> messages("Please enter your login", "fr"), 
-					    		'_label -> "Login", 
+					    		'placeholder -> messages("Please_enter_your_login", "fr"), 
+					    		'_label -> messages("Login", "fr"),
 					    		'class -> "form-control"
 					    	)
 					    	
 					    	@helper.inputPassword(
 					    		loginForm("password"),
-					    		'placeholder -> messages("Please enter your password", "fr"),
-					    		'_label -> "Password", 
+					    		'placeholder -> messages("Please_enter_your_password", "fr"),
+					    		'_label -> messages("Password", "fr"),
 					    		'class -> "form-control"
 					    	)
-					    	<input type="submit" class="btn" value="@{messages("Connect", "fr")}Se connecter">
+					    	<input type="submit" class="btn btn-primary" value="@{messages("Connect", "fr")}">
 					    }
 					</div>
 			    </div>
@@ -64,7 +64,7 @@ import play.api.i18n.Messages._
 			    <div class="col-sm-12 col-md-6 col-lg-6" href="#collapseRegister" aria-expanded="false" 
 			    	aria-controls="#collapseRegister">
 			    	<h2>
-			    		@{messages("Create an account", "fr")}
+			    		@{messages("Create_an_account", "fr")}
 			    	</h2>
 				    <div id="collapseRegister">
 					    @helper.form(action = routes.Auth.register) {
@@ -72,25 +72,25 @@ import play.api.i18n.Messages._
 					    	
 					    	@helper.inputText(
 					    		registerForm("userid"), 
-					    		'placeholder -> messages("Please enter your login", "fr"), 
-					    		'_label -> "Login", 
+					    		'placeholder -> messages("Please_enter_your_login", "fr"), 
+					    		'_label -> messages("Login", "fr"), 
 					    		'class -> "form-control"
 					    	)
 					    	
 					    	@helper.inputPassword(
 					    		registerForm("password"), 
-					    		'placeholder -> messages("Please enter your password", "fr"), 
-					    		'_label -> "Password", 
+					    		'placeholder -> messages("Please_enter_your_password", "fr"),
+					    		'_label -> messages("Password", "fr"),
 					    		'class -> "form-control"
 					    	)
 					    	
 					    	@helper.inputPassword(
 					    		registerForm("confirmPassword"), 
-					    		'placeholder -> messages("Please confirm your password", "fr"),
-					    		'_label -> "Confirm password", 
+					    		'placeholder -> messages("Please_confirm_your_password", "fr"),
+					    		'_label -> messages("Confirm_password", "fr"), 
 					    		'class -> "form-control"
 					    	)
-					    	<input type="submit" class="btn" value="@{messages("Register", "fr")}S'inscrire">
+					    	<input type="submit" class="btn btn-primary" value="@{messages("Register", "fr")}">
 					    }
 					</div>
 			    </div>
