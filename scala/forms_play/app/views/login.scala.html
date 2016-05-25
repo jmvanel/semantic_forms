@@ -34,34 +34,34 @@ import play.api.i18n.Messages._
 				or display/hide the whole login block when willing to create a new account 
 			 -->
 		    <div class="row">
-			    <div class="col-sm-6 col-md-6 col-lg-6" href="#collapseLogin" aria-expanded="false" 
+			    <div class="col-sm-12 col-md-6 col-lg-6" href="#collapseLogin" aria-expanded="false" 
 			    	aria-controls="#collapseLogin">
 			    	<span class="btn btn-primary">
 			    		Already a member
 			    	</span>
-				    <div id="collapseLogin">
+				    <div id="collapseLogin" class="text-left">
 					    @helper.form(action = routes.Auth.authenticate) {
 					    	@loginForm.globalError.map { error => <p class="error">@error.message</p>}
 					    	
-					    	@helper.inputText(loginForm("userid"), 'placeholder -> "userid", '_label -> null)
-					    	@helper.inputPassword(loginForm("password"), 'placeholder -> "mot de passe", '_label -> null)
+					    	@helper.inputText(loginForm("userid"), 'placeholder -> "userid", '_label -> "Login", 'class -> "form-control")
+					    	@helper.inputPassword(loginForm("password"), 'placeholder -> "mot de passe", '_label -> "Password", 'class -> "form-control")
 					    	<input type="submit" class="btn" value="Se connecter">
 					    }
 					</div>
 			    </div>
 			    
-			    <div class="col-sm-6 col-md-6 col-lg-6" href="#collapseRegister" aria-expanded="false" 
+			    <div class="col-sm-12 col-md-6 col-lg-6" href="#collapseRegister" aria-expanded="false" 
 			    	aria-controls="#collapseRegister">
 			    	<span class="btn btn-primary">
 			    		New user
 			    	</span>
-				    <div id="collapseRegister">
+				    <div id="collapseRegister" class="text-left">
 					    @helper.form(action = routes.Auth.register) {
 					    	@registerForm.globalError.map { error => <p class="error">@error.message</p>}
 					    	
-					    	@helper.inputText(registerForm("userid"), 'placeholder -> "userid", '_label -> null)
-					    	@helper.inputPassword(registerForm("password"), 'placeholder -> "mot de passe", '_label -> null)
-					    	@helper.inputPassword(registerForm("confirmPassword"), 'placeholder -> "confirmez le mot de passe", '_label -> null)
+					    	@helper.inputText(registerForm("userid"), 'placeholder -> "userid", '_label -> "Login", 'class -> "form-control")
+					    	@helper.inputPassword(registerForm("password"), 'placeholder -> "mot de passe", '_label -> "Password", 'class -> "form-control")
+					    	@helper.inputPassword(registerForm("confirmPassword"), 'placeholder -> "confirmez le mot de passe", '_label -> "Confirm password", 'class -> "form-control")
 					    	<input type="submit" class="btn" value="S'inscrire">
 					    }
 					</div>
