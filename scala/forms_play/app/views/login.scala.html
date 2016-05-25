@@ -34,12 +34,12 @@ import play.api.i18n.Messages._
 				or display/hide the whole login block when willing to create a new account 
 			 -->
 		    <div class="row">
-			    <div class="col-sm-6 col-md-6 col-lg-6" data-toggle="collapse" href="#collapseLogin" aria-expanded="false" 
+			    <div class="col-sm-6 col-md-6 col-lg-6" href="#collapseLogin" aria-expanded="false" 
 			    	aria-controls="#collapseLogin">
 			    	<span class="btn btn-primary">
 			    		Already a member
 			    	</span>
-				    <div class="" id="">
+				    <div id="collapseLogin">
 					    @helper.form(action = routes.Auth.authenticate) {
 					    	@loginForm.globalError.map { error => <p class="error">@error.message</p>}
 					    	
@@ -50,12 +50,12 @@ import play.api.i18n.Messages._
 					</div>
 			    </div>
 			    
-			    <div class="col-sm-6 col-md-6 col-lg-6" data-toggle="collapse" href="#collapseRegister" aria-expanded="false" 
-			    	aria-controls="collapseRegister">
+			    <div class="col-sm-6 col-md-6 col-lg-6" href="#collapseRegister" aria-expanded="false" 
+			    	aria-controls="#collapseRegister">
 			    	<span class="btn btn-primary">
 			    		New user
 			    	</span>
-				    <div class="" id="">
+				    <div id="collapseRegister">
 					    @helper.form(action = routes.Auth.register) {
 					    	@registerForm.globalError.map { error => <p class="error">@error.message</p>}
 					    	
