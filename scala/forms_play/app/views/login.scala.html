@@ -24,10 +24,10 @@ import play.api.i18n.Messages._
 	
 	</head>
 	<body>
-		<div class="container text-center">
-			<div class="row">
-				<h1> Welcome to Semantic Forms</h1>
-				<span>Please login to access the system</span>
+		<div class="container">
+			<div class="row text-center">
+				<h1>@{messages("Welcome", "fr")}</h1>
+				<span>@{messages("Please login to access the system", "fr")}</span>
 			</div>
 			<!-- TODO: 
 				Improve the look and feel of the form by either splitting into two different templates
@@ -36,33 +36,61 @@ import play.api.i18n.Messages._
 		    <div class="row">
 			    <div class="col-sm-12 col-md-6 col-lg-6" href="#collapseLogin" aria-expanded="false" 
 			    	aria-controls="#collapseLogin">
-			    	<span class="btn btn-primary">
-			    		Already a member
-			    	</span>
-				    <div id="collapseLogin" class="text-left">
+			    	<h2>
+			    		@{messages("Already a member", "fr")}
+			    	</h2>
+				    <div id="collapseLogin">
 					    @helper.form(action = routes.Auth.authenticate) {
 					    	@loginForm.globalError.map { error => <p class="error">@error.message</p>}
 					    	
-					    	@helper.inputText(loginForm("userid"), 'placeholder -> "userid", '_label -> "Login", 'class -> "form-control")
-					    	@helper.inputPassword(loginForm("password"), 'placeholder -> "mot de passe", '_label -> "Password", 'class -> "form-control")
-					    	<input type="submit" class="btn" value="Se connecter">
+					    	@helper.inputText(
+					    		loginForm("userid"), 
+					    		'placeholder -> messages("Please enter your login", "fr"), 
+					    		'_label -> "Login", 
+					    		'class -> "form-control"
+					    	)
+					    	
+					    	@helper.inputPassword(
+					    		loginForm("password"),
+					    		'placeholder -> messages("Please enter your password", "fr"),
+					    		'_label -> "Password", 
+					    		'class -> "form-control"
+					    	)
+					    	<input type="submit" class="btn" value="@{messages("Connect", "fr")}Se connecter">
 					    }
 					</div>
 			    </div>
 			    
 			    <div class="col-sm-12 col-md-6 col-lg-6" href="#collapseRegister" aria-expanded="false" 
 			    	aria-controls="#collapseRegister">
-			    	<span class="btn btn-primary">
-			    		New user
-			    	</span>
-				    <div id="collapseRegister" class="text-left">
+			    	<h2>
+			    		@{messages("Create an account", "fr")}
+			    	</h2>
+				    <div id="collapseRegister">
 					    @helper.form(action = routes.Auth.register) {
 					    	@registerForm.globalError.map { error => <p class="error">@error.message</p>}
 					    	
-					    	@helper.inputText(registerForm("userid"), 'placeholder -> "userid", '_label -> "Login", 'class -> "form-control")
-					    	@helper.inputPassword(registerForm("password"), 'placeholder -> "mot de passe", '_label -> "Password", 'class -> "form-control")
-					    	@helper.inputPassword(registerForm("confirmPassword"), 'placeholder -> "confirmez le mot de passe", '_label -> "Confirm password", 'class -> "form-control")
-					    	<input type="submit" class="btn" value="S'inscrire">
+					    	@helper.inputText(
+					    		registerForm("userid"), 
+					    		'placeholder -> messages("Please enter your login", "fr"), 
+					    		'_label -> "Login", 
+					    		'class -> "form-control"
+					    	)
+					    	
+					    	@helper.inputPassword(
+					    		registerForm("password"), 
+					    		'placeholder -> messages("Please enter your password", "fr"), 
+					    		'_label -> "Password", 
+					    		'class -> "form-control"
+					    	)
+					    	
+					    	@helper.inputPassword(
+					    		registerForm("confirmPassword"), 
+					    		'placeholder -> messages("Please confirm your password", "fr"),
+					    		'_label -> "Confirm password", 
+					    		'class -> "form-control"
+					    	)
+					    	<input type="submit" class="btn" value="@{messages("Register", "fr")}S'inscrire">
 					    }
 					</div>
 			    </div>
