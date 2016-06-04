@@ -51,43 +51,43 @@ trait DuplicatesDetectionOWL[Rdf <: RDF] {
   }
   case class DuplicationAnalysis( duplicates: List[Duplicate] )
 
-  
   /** @return the list of pairs of similar property URI's */
   def findDuplicateDataProperties(graph: Rdf#Graph): DuplicationAnalysis = {
-	  ouput(s"Triple count ${graph.size}")
+    ouput(s"Triple count ${graph.size}")
     val datatypeProperties = find(graph, ANY, rdf.typ, owl.DatatypeProperty)
-    val datatypePropertiesURI = datatypeProperties.map { triple => triple.subject } . toList
+    val datatypePropertiesURI = datatypeProperties.map { triple => triple.subject }.toList
     ouput(s"datatype Properties count ${datatypePropertiesURI.size}")
-    val datatypePropertiesPairs = datatypePropertiesURI.toSet.subsets(2). toList
-    ouput(s"datatype Properties pairs count ${datatypePropertiesPairs.size}")
+    val datatypePropertiesPairs = datatypePropertiesURI.toSet.subsets(2).toList
+    ouput(s"datatype Properties pairs count n*(n-1)/2 ${datatypePropertiesPairs.size}")
     val pairs = for {
-      pair <- datatypePropertiesPairs if (haveSimilarLabels(pair, graph))
-    	  _ = log(s"pair $pair")
-    } yield {
-      pair.toList match {
-        case (datatypeProperty1 :: datatypeProperty2 :: rest) => Duplicate(datatypeProperty1, datatypeProperty2)
-        case _ => Duplicate(???, ???) // will not happen :)
-      }
-    }
-    DuplicationAnalysis( pairs.toList )
+      pair <- datatypePropertiesPairs
+      pairList: List[Rdf#Node] = pair.toList
+      datatypeProperty1 :: datatypeProperty2 :: rest = pairList if (
+        haveSimilarLabels(datatypeProperty1, datatypeProperty2, graph)) &&
+        haveSameRanges(datatypeProperty1, datatypeProperty2, graph)
+      //        _ = log(s"pair $pair")
+    } yield Duplicate(datatypeProperty1, datatypeProperty2)
+
+    DuplicationAnalysis(pairs.toList)
   }
 
-  def haveSimilarLabels(pair: Set[Rdf#Node], graph: Rdf#Graph): Boolean = {
-    pair.toList match {
-      case (datatypeProperty1 :: datatypeProperty2 :: rest) =>
-        val ranges1 = find(graph, datatypeProperty1, rdfs.range, ANY)
-        val ranges2: Iterator[Rdf#Triple] = find(graph, datatypeProperty2, rdfs.range, ANY)
-        val rangesOverlap = !ranges1.toSet.intersect(ranges2.toSet).isEmpty
-        // TODO use rangesOverlap ; how ?
-        
-        val label1 = rdfsLabel( datatypeProperty1, graph)
-        val label2 = rdfsLabel( datatypeProperty2, graph)
-        areSimilar(label1, label2)
-      case _ => false
-    }
+  def haveSameRanges(n1: Rdf#Node, n2: Rdf#Node, graph: Rdf#Graph): Boolean = {
+    val ranges1 = find(graph, n1, rdfs.range, ANY).
+      map { triple => triple.objectt }.toList
+    val ranges2 = find(graph, n2, rdfs.range, ANY).
+      map { triple => triple.objectt }.toList
+    println(s"ranges1 $ranges1 ranges2 $ranges2")
+    val rangesOverlap = !(ranges1.toSet.intersect(ranges2.toSet).isEmpty)
+    rangesOverlap
+  }
+  
+  def haveSimilarLabels( n1: Rdf#Node, n2: Rdf#Node, graph: Rdf#Graph): Boolean = {
+        val label1 = rdfsLabel(n1, graph)
+        val label2 = rdfsLabel(n2, graph)
+        stringsAreSimilar(label1, label2)
   }
 
-  def areSimilar(s1: String, s2: String): Boolean = {
+  def stringsAreSimilar(s1: String, s2: String): Boolean = {
     val words1 = s1.split("""\s+""").toSet
     val words2 = s2.split("""\s+""").toSet
     val intersection = words1 intersect (words2)
