@@ -9,40 +9,48 @@ import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
+	import scala.collection.immutable.ListMap
 
-// deductions.runtime.sparql_cache.algos.DuplicatesDetectionOWLApp
+object DuplicatesDetectionOWLGroupBy extends App with JenaModule with DuplicatesDetectionOWL[Jena] {
+	val owlFile = args(0)
+  val graph = turtleReader.read( new FileReader(owlFile), "") .get
+  val datatypePropertiesURI = findDataProperties(graph)
+  val datatypePropertiesgroupedByRdfsLabel0 = datatypePropertiesURI.groupBy { n => rdfsLabel( n, graph) }
+	val datatypePropertiesgroupedByRdfsLabel = ListMap( datatypePropertiesgroupedByRdfsLabel0.toSeq.sortBy(_._1):_* )
+	val report = datatypePropertiesgroupedByRdfsLabel . map {
+	  labelAndList => s"'${labelAndList._1}'\n" +
+			  (labelAndList._2) . map { n => abbreviateURI(n) } . sorted . mkString("\t", "\n\t", "" )
+	} . mkString( "\n" )
+	
+	output( s"datatypePropertiesgroupedByRdfsLabel\n$report" )
+}
+
+
 object DuplicatesDetectionOWLApp extends App with JenaModule with DuplicatesDetectionOWL[Jena] {
-  /** you can set your own ontology Prefix, that will be replaced on output by ":" */
-  val ontologyPrefix = "http://data.onisep.fr/ontologies/"
-// "http://www.w3.org/2001/XMLSchema#" -> "xsd:"
   val owlFile = args(0)
   val graph = turtleReader.read( new FileReader(owlFile), "") .get
   val duplicates = findDuplicateDataProperties(graph)
-  ouput( s"duplicates size ${duplicates.duplicates.size}\n")
+  output( s"duplicates size ${duplicates.duplicates.size}\n")
 
   val v = duplicates.duplicates.map { dup => dup toString(graph) }
-  ouput( v . mkString("\n") )
-  ouput( s"duplicates size ${duplicates.duplicates.size}")
+  output( v . mkString("\n") )
+  output( s"duplicates size ${duplicates.duplicates.size}")
 }
 
 
 trait DuplicatesDetectionOWL[Rdf <: RDF]
 extends DuplicatesDetectionBase[Rdf] {
+  /** you can set your own ontology Prefix, that will be replaced on output by ":" */
+  val ontologyPrefix = "http://data.onisep.fr/ontologies/"
 
   implicit val ops: RDFOps[Rdf]
   import ops._
-  private val rdf = RDFPrefix[Rdf]
-  private val rdfs = RDFSPrefix[Rdf]
-  private val owl = OWLPrefix[Rdf]
-
+  
   /** @return the list of pairs of similar property URI's */
   def findDuplicateDataProperties(graph: Rdf#Graph): DuplicationAnalysis = {
-    ouput(s"Triple count ${graph.size}")
-    val datatypeProperties = find(graph, ANY, rdf.typ, owl.DatatypeProperty)
-    val datatypePropertiesURI = datatypeProperties.map { triple => triple.subject }.toList
-    ouput(s"datatype Properties count ${datatypePropertiesURI.size}")
+    val datatypePropertiesURI = findDataProperties(graph)
     val datatypePropertiesPairs = datatypePropertiesURI.toSet.subsets(2).toList
-    ouput(s"datatype Properties pairs count n*(n-1)/2 = ${datatypePropertiesPairs.size}")
+    output(s"datatype Properties pairs count n*(n-1)/2 = ${datatypePropertiesPairs.size}")
     val pairs = for {
       pair <- datatypePropertiesPairs
       pairList: List[Rdf#Node] = pair.toList

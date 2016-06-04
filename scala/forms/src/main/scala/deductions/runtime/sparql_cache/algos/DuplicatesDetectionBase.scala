@@ -18,16 +18,26 @@ extends HTML5TypesTrait[Rdf] {
 
   implicit val ops: RDFOps[Rdf]
   import ops._
-  private val rdf = RDFPrefix[Rdf]
-  private val rdfs = RDFSPrefix[Rdf]
-  private val owl = OWLPrefix[Rdf]
+  val rdf = RDFPrefix[Rdf]
+  val rdfs = RDFSPrefix[Rdf]
+  val owl = OWLPrefix[Rdf]
+
+  
+  /** @return the list property URI's */
+  def findDataProperties(graph: Rdf#Graph): List[Rdf#Node] = {
+    output(s"Triple count ${graph.size}")
+    val datatypeProperties = find(graph, ANY, rdf.typ, owl.DatatypeProperty)
+    val datatypePropertiesURI = datatypeProperties.map { triple => triple.subject }.toList
+    output(s"datatype Properties count ${datatypePropertiesURI.size}\n")
+    datatypePropertiesURI
+  }
 
   case class Duplicate(d1: Rdf#Node, d2: Rdf#Node) {
     /** cf http://tools.ietf.org/html/rfc4180 */
     def toString(graph: Rdf#Graph): String = {
       def toString(n: Rdf#Node) = {
-        n.toString().replace(ontologyPrefix, ":") +
-          "; \"" + rdfsLabel(n, graph) + "\""
+        abbreviateURI(n) +
+          "; " + rdfsLabel(n, graph)
       };
 
       val r1 = rdfsRangeToString(d1, graph)
@@ -43,7 +53,9 @@ extends HTML5TypesTrait[Rdf] {
     }
   }
   case class DuplicationAnalysis( duplicates: List[Duplicate] )
-
+  
+  def abbreviateURI(n: Rdf#Node) = n.toString().replace(ontologyPrefix, ":")
+  
   def nodesAreSimilar(n1: Rdf#Node, n2: Rdf#Node, graph: Rdf#Graph): Boolean = {
 	  haveSimilarLabels(n1, n2, graph) &&
 	  haveSameRanges(n1, n2, graph)
@@ -92,5 +104,5 @@ extends HTML5TypesTrait[Rdf] {
   }
       
   def log(mess: String) = if(detailedLog) println(mess)
-  def ouput(mess: String) = println(mess)
+  def output(mess: String) = println(mess)
 }
