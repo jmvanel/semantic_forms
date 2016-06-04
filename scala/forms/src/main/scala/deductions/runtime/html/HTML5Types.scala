@@ -25,15 +25,19 @@ trait HTML5TypesTrait[Rdf <: RDF] extends HTML5Types {
 
   def xsd2html5TnputType(xsdDatatype: String): String =
     xsd2html5.getOrElse(URI(xsdDatatype), "text")
+  def xsdNode2html5TnputType(xsdDatatype: Rdf#Node): String =
+    xsd2html5.getOrElse(xsdDatatype, "text")
 
   /** see http://www.w3.org/TR/html-markup/input.html */
-  lazy val xsd2html5 = Map[Rdf#URI, String](
+  lazy val xsd2html5 = Map[Rdf#Node, String](
+    xsd.string -> "text",
     xsd.integer -> "number",
     xsd.int -> "number",
     xsd.float -> "number",
     xsd.decimal -> "number",
     xsd.long -> "number",
     xsd.short -> "number",
+    xsd.double -> "number",
     xsd.nonNegativeInteger -> "number",
     xsd.nonPositiveInteger -> "number",
     xsd.negativeInteger -> "number",
@@ -43,7 +47,8 @@ trait HTML5TypesTrait[Rdf <: RDF] extends HTML5Types {
     xsd.dateTimeStamp -> "datetime-local",
     xsd.anyURI -> "url",
     xsd.boolean -> "radio"
-  /* ⓘ input type=text
+  /* Symfony stuff:
+   * ⓘ input type=text
 ⓘ input type=password
 ⓘ input type=checkbox
 ⓘ input type=radio
@@ -54,7 +59,6 @@ trait HTML5TypesTrait[Rdf <: RDF] extends HTML5Types {
 ⓘ input type=hidden
 ⓘ input type=image
 
-ⓘ input type=datetime NEW
 ⓘ input type=datetime-local NEW
 ⓘ input type=date NEW
 ⓘ input type=month NEW
@@ -63,7 +67,6 @@ trait HTML5TypesTrait[Rdf <: RDF] extends HTML5Types {
 ⓘ input type=number NEW
 ⓘ input type=range NEW
 ⓘ input type=email NEW
-ⓘ input type=url NEW
 ⓘ input type=search NEW
 ⓘ input type=tel NEW
 ⓘ input type=color NEW
