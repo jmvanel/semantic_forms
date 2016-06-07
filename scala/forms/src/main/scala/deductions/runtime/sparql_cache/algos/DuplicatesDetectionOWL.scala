@@ -25,7 +25,8 @@ object DuplicatesDetectionOWLGroupBy extends App with JenaModule with Duplicates
 	output( s"datatypePropertiesgroupedByRdfsLabel\n$report" )
 }
 
-
+/** This App oututs too much : count n*(n-1)/2 ;
+ *  rather use DuplicatesDetectionOWLGroupBy */
 object DuplicatesDetectionOWLApp extends App with JenaModule with DuplicatesDetectionOWL[Jena] {
   val owlFile = args(0)
   val graph = turtleReader.read( new FileReader(owlFile), "") .get

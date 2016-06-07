@@ -73,7 +73,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     result
   }
 
-  /** transactional */
+  /** transactional, output Turtle String */
   def sparqlConstructQueryTR(queryString: String, format: String="turtle"): String = {
     val transaction = dataset.r({
       graph2String(sparqlConstructQuery(queryString), "", format)

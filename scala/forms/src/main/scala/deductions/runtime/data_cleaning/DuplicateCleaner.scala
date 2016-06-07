@@ -27,7 +27,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
   import rdfStore.graphStoreSyntax._
   import rdfStore.transactorSyntax._
 
-
+  /** merges Duplicates among instances of given class URI */
   def removeAllDuplicates(classURI: Rdf#URI, lang: String = "") = {
     val instanceLabels2URIsMap: Map[String, Seq[Rdf#URI]] =
       indexInstanceLabels(classURI, lang)

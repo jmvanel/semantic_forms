@@ -66,7 +66,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * or download and store URI, only if corresponding graph is empty,
    * with transaction
    */
-  def retrieveURI(uri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
+  def retrieveURI(uri: Rdf#URI, dataset: DATASET = dataset): Try[Rdf#Graph] = {
     dataset.rw({
       retrieveURINoTransaction(uri: Rdf#URI, dataset: DATASET)
     }).flatMap { identity }
