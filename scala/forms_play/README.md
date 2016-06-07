@@ -25,6 +25,10 @@ Some people speak of "triple store", or "graph database", or "triple database", 
 - install dependencies:
   - Java 8 ,
   - [SBT](http://www.scala-sbt.org/) or [Typesafe Activator](http://typesafe.com/platform/getstarted) .
+
+	wget https://dl.bintray.com/sbt/native-packages/sbt/0.13.11/sbt-0.13.11.tgz
+	tar xvzf sbt-0.13.11.tgz
+
 Then SBT or Activator will download the rest.
 - download the source from [Banana-RDf fork on github](https://github.com/deductions/banana-rdf) (temporary, until my Pull Request in Banana-RDF is accepted)
   - build this project with SBT or Activator: change directory to `banana-rdf` ; type in the activator console : `publishLocal`
@@ -92,9 +96,18 @@ nohup bin/semantic_forms_play -Dlog4j.configuration=myconf.properties -mem 50 &
 ```
 
 To download Java from the server with no browser (see http://stackoverflow.com/questions/10268583/downloading-java-jdk-on-linux-via-wget-is-shown-license-page-instead):
+
     VERSION=51
     wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" \
     http://download.oracle.com/otn-pub/java/jdk/8u$VERSION-b16/jdk-8u$VERSION-linux-arm-vfp-hflt.tar.gz
+
+or for Linux x86:
+
+    wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" \
+    http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-linux-x64.tar.gz
+
+    wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" \
+    http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-linux-i586.tar.gz
 
 # Setting a IDE project ( eclipse ...)
 

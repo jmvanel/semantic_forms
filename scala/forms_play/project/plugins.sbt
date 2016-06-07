@@ -12,6 +12,6 @@ addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.4.6")
 // http://pastebin.com/MkkWLGL1
 
 // Let sbt eclipse plugin be available to eclipse users
-addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "3.0.0")
+addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "4.0.0")
 
 
