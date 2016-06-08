@@ -224,6 +224,10 @@ trait RDFHelpers0[Rdf <: RDF] extends Configuration
     } else Seq()
   }
   
+  /* from an Rdf#Node, print the turtle term; betehess 15:22
+   * @jmvanel nothing giving you that out-of-the-box right now
+   * I'd write a new typeclass to handle that
+   * it's super easy to do */
   def makeTurtleTerm( node: Rdf#Node ) = foldNode(node)(
       uri => s"<$uri>",
       bn => s"_:$bn",

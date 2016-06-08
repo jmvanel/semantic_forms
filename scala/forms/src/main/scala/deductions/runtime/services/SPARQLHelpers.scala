@@ -18,6 +18,7 @@ import deductions.runtime.utils.RDFHelpers0
 import org.w3.banana.io.JsonLdFlattened
 import org.w3.banana.io.JsonLdExpanded
 import org.w3.banana.io.JsonLdCompacted
+import org.w3.banana.syntax.NodeMatchSyntax
 
 /**
  * @author jmv
@@ -62,12 +63,14 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   def sparqlUpdateQuery(queryString: String, ds: DATASET = dataset): Try[Unit] = {
     val result = for {
       query <- {
-        println("sparqlUpdateQuery: before parseUpdate")
+        println(s"sparqlUpdateQuery: before parseUpdate $queryString")
         parseUpdate(queryString)
       }
       es <- {
         println("sparqlUpdateQuery: before executeUpdate")
-        ds.executeUpdate(query, Map())
+        val r = ds.executeUpdate(query, Map())
+        println("sparqlUpdateQuery: AFTER executeUpdate")
+        r
       }
     } yield es
     result
@@ -133,52 +136,60 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
          | }""".stripMargin
          
     // DEBUG: same WHERE part
-    val queryString1 = s"""
-         | SELECT *
-         | } WHERE {
-         |   graph ?graphURI {
-         |     <$uri> ?property ?obj .
-         |   }
-         | }""".stripMargin
-    println( s"removeQuadsWithSubject $uri " + sparqlSelectQuery( queryString1 ) )
+//    val queryString1 = s"""
+//         | SELECT *
+//         | } WHERE {
+//         |   graph ?graphURI {
+//         |     <$uri> ?property ?obj .
+//         |   }
+//         | }""".stripMargin
+//    println( s"removeQuadsWithSubject $uri " + sparqlSelectQuery( queryString1 ) )
     
-    sparqlUpdateQuery(queryString, ds)
+    val res = sparqlUpdateQuery(queryString, ds)
+    println( s"removeQuadsWithSubject res ${res}" )
   }
 
   /** a triple plus its named graph (empty URI if default graph) */
   type Quad = (Rdf#Triple, Rdf#URI)
+
+  /* An SPO Query returning quads */
   def quadQuery(s: Rdf#NodeMatch, p: Rdf#NodeMatch, o: Rdf#NodeMatch): Iterable[Quad] = {
+    
     def makeSPARQLTermFromNodeMatch(nm: Rdf#NodeMatch, varName: String) = {
       foldNodeMatch(nm)(
         "?" + varName,
         node => makeTurtleTerm(node)
-        /* TODO from an Rdf#Node, print the turtle term; betehess 15:22
-         * @jmvanel nothing giving you that out-of-the-box right now
-         * I'd write a new typeclass to handle that
-         * it's super easy to do */
       )
     }
     def makeURI(node:Rdf#Node) = foldNode(node)(u=>u, b=>URI(""), l=>URI(""))
     def makeQuad(result: Seq[Rdf#Node]): Quad = {
       var resultIndex = 0
-      val triple = Triple(
-          foldNodeMatch(s)(
-          {resultIndex += 1 ; result(resultIndex)},
-          node => node ),
-      foldNodeMatch(p)(
-          {resultIndex += 1 ; makeURI( result(resultIndex) )},
-          node => makeURI(node) ),
-      foldNodeMatch(o)(
-          {resultIndex += 1 ; result(resultIndex)},
+      def processNodeMatch(nodeMatch: Rdf#NodeMatch): Rdf#Node = {
+    	  println(s"processNodeMatch BEFORE result $result , resultIndex $resultIndex , nodeMatch $nodeMatch" )
+        val res = foldNodeMatch(nodeMatch)(
+          {
+            val node = result(resultIndex)
+            resultIndex += 1
+            node
+            },
           node => node )
-      )
+          println(s"processNodeMatch result $result nodeMatch $nodeMatch" )
+        res
+      }
+      val triple = Triple(
+        processNodeMatch(s),
+        makeURI(processNodeMatch(p)),
+        processNodeMatch(o))
+      println(s"processNodeMatch BEFORE makeURI(result(resultIndex)) , resultIndex $resultIndex size ${result.size}" )
       ( triple, makeURI(result(resultIndex)) )
     }
-    val variables0 = List(
+
+    val sparqlTerms = List(
       makeSPARQLTermFromNodeMatch(s, "S"),
       makeSPARQLTermFromNodeMatch(p, "P"),
       makeSPARQLTermFromNodeMatch(o, "O"))
-    val variables = variables0 filter (s => s startsWith "?")
+    val v = sparqlTerms filter (s => s startsWith "?")
+    val variables = v :+ "?G" // append ?G
 
     val queryString = s"""
          | SELECT
@@ -186,12 +197,15 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
          |     ?G
          | WHERE {
          |   graph ?G {
-         |     ${variables0.mkString(" ")}
+         |     ${sparqlTerms.mkString(" ")}
          |     .
          |   }
          | }""".stripMargin
+    println( s"sparqlTerms $sparqlTerms" )
+    println( s"variables $variables" )
     println( "quadQuery " + queryString ) 
     val selectRes = sparqlSelectQueryVariablesNT(queryString, variables, dataset)
+    println( s"selectRes $selectRes" )
     selectRes map { makeQuad( _ ) }
   }
 

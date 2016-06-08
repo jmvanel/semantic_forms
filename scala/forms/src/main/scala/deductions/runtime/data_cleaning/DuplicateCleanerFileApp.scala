@@ -28,31 +28,37 @@ object DuplicateCleanerFileApp extends App
     // TODO multi-platform temporary directory
     "/tmp/TDB"
 
-  val classURI = ops.URI(args(0))
-  println(s"classURI $classURI")
-  val files = args.slice(1, args.size)
-  println(s"Files ${files.mkString(", ")}")
+  duplicateCleanerFileApp
+  
+  def duplicateCleanerFileApp() = {
+    val classURI = ops.URI(args(0))
+    println(s"classURI $classURI")
+    val files = args.slice(1, args.size)
+    println(s"Files ${files.mkString(", ")}")
 
-  for (file <- files) {
-    println(s"Load file $file")
-    retrieveURI(URI(new File(file).toURI().toASCIIString()))
-  }
-  // TODO get locale
-  val lang = "fr"
-  rdfStore.rw(dataset, {
-    removeAllDuplicates(classURI, lang)
-  })
-  // output modified data in /tmp
-  val queryString = """
+    for (file <- files) {
+      println(s"Load file $file")
+      retrieveURI(URI(new File(file).toURI().toASCIIString()))
+    }
+    // TODO get locale
+    val lang = "fr"
+//    val transaction = rdfStore.rw(dataset, {
+      removeAllDuplicates(classURI, lang)
+//    })
+    println( s"AFTER removeAllDuplicate" )
+    
+    // output modified data in /tmp
+    val queryString = """
     CONSTRUCT { ?S ?P ?O }
     WHERE {
       GRAPH ?GR { ?S ?P ?O }
     }
     """
-  val ttl = sparqlConstructQueryTR(queryString)
-  val outputFile = "/tmp/" + new File(files(0)) .getName
-  println(s"Writing ${ttl.length()} chars in  output File $outputFile")
-  val fw = new FileWriter(new File(outputFile) )
-  fw.write(ttl)
-  fw.close()
+    val ttl = sparqlConstructQueryTR(queryString)
+    val outputFile = "/tmp/" + new File(files(0)).getName
+    println(s"Writing ${ttl.length()} chars in  output File $outputFile")
+    val fw = new FileWriter(new File(outputFile))
+    fw.write(ttl)
+    fw.close()
+  }
 }

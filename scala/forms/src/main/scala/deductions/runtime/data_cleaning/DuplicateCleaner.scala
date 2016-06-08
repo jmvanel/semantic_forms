@@ -27,10 +27,13 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
   import rdfStore.graphStoreSyntax._
   import rdfStore.transactorSyntax._
 
-  /** merges Duplicates among instances of given class URI */
+  /** merges Duplicates among instances of given class URI;
+   *  includes transactions */
   def removeAllDuplicates(classURI: Rdf#URI, lang: String = "") = {
     val instanceLabels2URIsMap: Map[String, Seq[Rdf#URI]] =
-      indexInstanceLabels(classURI, lang)
+            rdfStore.rw( dataset, {
+      indexInstanceLabels(classURI, lang) }) . get
+      
     for (el <- instanceLabels2URIsMap) {
       println(s"""looking at label "${el._1}" """)
       try{
@@ -38,8 +41,9 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       println(s"uriTokeep <$uriTokeep>, duplicates ${duplicateURIs.mkString("<", ">, <", ">")}")
       if (!duplicateURIs.isEmpty)
         println(s"""Deleting duplicates for "${el._1}" uriTokeep <$uriTokeep>, delete count ${duplicateURIs.size}""")
-      copyPropertyValuePairs(uriTokeep, duplicateURIs)
+        copyPropertyValuePairs(uriTokeep, duplicateURIs)
       removeQuadsWithSubjects(duplicateURIs)
+      println( s"Deleted ${duplicateURIs.size} duplicate URI's" )
       } catch {
         case t: Throwable =>
           println( "WARNING: " + t.getClass + " " + t.getLocalizedMessage )
@@ -132,12 +136,13 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
 
   def copyPropertyValuePairs(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI]) = {
     for (duplicateURI <- duplicateURIs) {
-      /* TODO SPARQL query to get the original graph name */
-      val quads = quadQuery(duplicateURI, ANY, ANY): Iterable[Quad]
-      val triplesToAdd = quads.map {
-        case (t, uri) => (Triple(uriTokeep, t.predicate, t.objectt), uri)
-      }.toList
       rdfStore.rw(dataset, {
+        /* SPARQL query to get the original graph name */
+        val quads = quadQuery(duplicateURI, ANY, ANY): Iterable[Quad]
+        val triplesToAdd = quads.map {
+          case (t, uri) => (Triple(uriTokeep, t.predicate, t.objectt), uri)
+        }.toList
+        println(s"triplesToAdd $triplesToAdd")
         triplesToAdd.map {
           tripleToAdd =>
             rdfStore.appendToGraph(dataset,
@@ -147,22 +152,27 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     }
   }
 
+  /** DOES NOT include transactions */
   def indexInstanceLabels(classURI: Rdf#URI,
                           lang: String): Map[String, Seq[Rdf#URI]] = {
     val classTriples = find(allNamedGraph, ANY, rdf.typ, classURI)
     // NOTE: this looks laborious !!!!
+    var count = 0
     val v = for (
       classTriple <- classTriples;
       uri0 = classTriple.subject if (uri0.isURI);
       uri = uri0.asInstanceOf[Rdf#URI];
       label = instanceLabel(uri, allNamedGraph, lang)
-    ) yield (label, uri)
+    ) yield {
+      count = count + 1
+      (label, uri)
+    }
     val res = v.toList.groupBy(_._1).map {
       case (s, list) => (s,
         list.map { case (s, node) => node })
     }
     println(
-      s"indexInstanceLabels: ${classTriples.size} instances for class $classURI")
+      s"indexInstanceLabels: ${count} instances for class $classURI")
     res
   }
 }
