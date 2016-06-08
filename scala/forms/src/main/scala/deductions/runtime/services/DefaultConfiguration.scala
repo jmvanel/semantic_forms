@@ -19,7 +19,7 @@ trait DefaultConfiguration extends Configuration {
   override val preferredURIPrefixes: Seq[String] = Seq("urn:av/")
 
   override def serverPort = {
-    println("Default port from DefaultConfiguration")
+    // println("Default port from DefaultConfiguration")
     "9000"
   }
 

@@ -41,14 +41,15 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       copyPropertyValuePairs(uriTokeep, duplicateURIs)
       removeQuadsWithSubjects(duplicateURIs)
       } catch {
-        case t: Throwable => println( "WARNING: " + t.getLocalizedMessage )
+        case t: Throwable =>
+          println( "WARNING: " + t.getClass + " " + t.getLocalizedMessage )
       }
     }
   }
 
   def removeQuadsWithSubjects(subjects: Seq[Rdf#Node]) = {
     for (dupURI <- subjects) {
-      val transaction = dataset.r({
+      val transaction = rdfStore.rw( dataset, {
         removeQuadsWithSubject(dupURI)
       })
     }
@@ -96,13 +97,15 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     }
 
     val nonDuplicateURI: Rdf#URI =
-      if (httpURIs.size > 1)
-        throw new RuntimeException(s"several HTTP URI's: ${uris.mkString(", ")}")
-      else if (httpURIs.size == 0) {
+//      if (httpURIs.size > 1)
+//        throw new RuntimeException(s"several HTTP URI's: ${uris.mkString(", ")}")
+//      else
+        if (httpURIs.size == 0) {
         val uriOption = filterURIsByStartsWith(httpURIs, preferredURIPrefixes)
         uriOption match {
           case None =>
-            println(s"For these HTTP URI's, no criterion for duplicate: ${uris.mkString(", ")}")
+            println(s"""For these HTTP URI's, no preferred URI Prefixes criterion for duplicate: 
+              ${uris.mkString(", ")} => first URI kept.""")
             uris(0)
           case Some(uri) => uri
         }

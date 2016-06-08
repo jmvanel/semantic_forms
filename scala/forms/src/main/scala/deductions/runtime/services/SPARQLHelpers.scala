@@ -131,6 +131,17 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
          |     <$uri> ?property ?obj .
          |   }
          | }""".stripMargin
+         
+    // DEBUG: same WHERE part
+    val queryString1 = s"""
+         | SELECT *
+         | } WHERE {
+         |   graph ?graphURI {
+         |     <$uri> ?property ?obj .
+         |   }
+         | }""".stripMargin
+    println( s"removeQuadsWithSubject $uri " + sparqlSelectQuery( queryString1 ) )
+    
     sparqlUpdateQuery(queryString, ds)
   }
 
