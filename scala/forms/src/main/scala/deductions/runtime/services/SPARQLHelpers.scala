@@ -63,13 +63,13 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   def sparqlUpdateQuery(queryString: String, ds: DATASET = dataset): Try[Unit] = {
     val result = for {
       query <- {
-        println(s"sparqlUpdateQuery: before parseUpdate $queryString")
+//        println(s"sparqlUpdateQuery: before parseUpdate $queryString")
         parseUpdate(queryString)
       }
       es <- {
-        println("sparqlUpdateQuery: before executeUpdate")
+//        println("sparqlUpdateQuery: before executeUpdate")
         val r = ds.executeUpdate(query, Map())
-        println("sparqlUpdateQuery: AFTER executeUpdate")
+//        println("sparqlUpdateQuery: AFTER executeUpdate")
         r
       }
     } yield es
@@ -146,7 +146,19 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 //    println( s"removeQuadsWithSubject $uri " + sparqlSelectQuery( queryString1 ) )
     
     val res = sparqlUpdateQuery(queryString, ds)
-    println( s"removeQuadsWithSubject res ${res}" )
+//    println( s"removeQuadsWithSubject res ${res}" )
+  }
+
+  /** remove triples matching SPO Query, in any named graph
+   *  DOES NOT include transaction */
+  def removeFromQuadQuery(s: Rdf#NodeMatch, p: Rdf#NodeMatch, o: Rdf#NodeMatch) = {
+    val quads = quadQuery(s, p, o): Iterable[Quad]
+    println(s"triplesToAdd $quads")
+    quads.map {
+      tripleToRemove =>
+        rdfStore.removeTriples(dataset, tripleToRemove._2,
+          List(tripleToRemove._1))
+    }
   }
 
   /** a triple plus its named graph (empty URI if default graph) */
@@ -165,7 +177,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     def makeQuad(result: Seq[Rdf#Node]): Quad = {
       var resultIndex = 0
       def processNodeMatch(nodeMatch: Rdf#NodeMatch): Rdf#Node = {
-    	  println(s"processNodeMatch BEFORE result $result , resultIndex $resultIndex , nodeMatch $nodeMatch" )
+//    	  println(s"processNodeMatch BEFORE result $result , resultIndex $resultIndex , nodeMatch $nodeMatch" )
         val res = foldNodeMatch(nodeMatch)(
           {
             val node = result(resultIndex)
@@ -173,14 +185,14 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
             node
             },
           node => node )
-          println(s"processNodeMatch result $result nodeMatch $nodeMatch" )
+//          println(s"processNodeMatch result $result nodeMatch $nodeMatch" )
         res
       }
       val triple = Triple(
         processNodeMatch(s),
         makeURI(processNodeMatch(p)),
         processNodeMatch(o))
-      println(s"processNodeMatch BEFORE makeURI(result(resultIndex)) , resultIndex $resultIndex size ${result.size}" )
+//      println(s"processNodeMatch BEFORE makeURI(result(resultIndex)) , resultIndex $resultIndex size ${result.size}" )
       ( triple, makeURI(result(resultIndex)) )
     }
 
@@ -201,11 +213,11 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
          |     .
          |   }
          | }""".stripMargin
-    println( s"sparqlTerms $sparqlTerms" )
-    println( s"variables $variables" )
-    println( "quadQuery " + queryString ) 
+//    println( s"sparqlTerms $sparqlTerms" )
+//    println( s"variables $variables" )
+//    println( "quadQuery " + queryString ) 
     val selectRes = sparqlSelectQueryVariablesNT(queryString, variables, dataset)
-    println( s"selectRes $selectRes" )
+//    println( s"selectRes $selectRes" )
     selectRes map { makeQuad( _ ) }
   }
 
@@ -297,7 +309,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   }
 
   def graph2String(triples: Try[Rdf#Graph], baseURI: String, format: String="turtle"): String = {
-    Logger.getRootLogger().info(s"base URI $baseURI ${triples}")
+    Logger.getRootLogger().info(s"graph2String: base URI $baseURI ${triples}")
     val writer = if(format=="jsonld") jsonldCompactedWriter else turtleWriter // later add RDF/XML ......     
     val ret = writer.asString(triples.get, base = baseURI)
     ret.get

@@ -20,38 +20,55 @@ import deductions.runtime.services.URIManagement
  */
 trait DuplicateCleaner[Rdf <: RDF, DATASET]
     extends BlankNodeCleanerBase[Rdf, DATASET]
+    with PropertiesCleaner[Rdf, DATASET]
+    with PropertyDomainCleaner[Rdf, DATASET]
     with InstanceLabelsInference2[Rdf]
     with PreferredLanguageLiteral[Rdf]
-    with URIManagement {
+    with URIManagement
+{
   import ops._
   import rdfStore.graphStoreSyntax._
   import rdfStore.transactorSyntax._
 
-  /** merges Duplicates among instances of given class URI;
-   *  includes transactions */
+  /**
+   * merges Duplicates among instances of given class URI;
+   *  includes transactions
+   */
   def removeAllDuplicates(classURI: Rdf#URI, lang: String = "") = {
     val instanceLabels2URIsMap: Map[String, Seq[Rdf#URI]] =
-            rdfStore.rw( dataset, {
-      indexInstanceLabels(classURI, lang) }) . get
-      
+      rdfStore.rw(dataset, {
+        indexInstanceLabels(classURI, lang)
+      }).get
+
     for (el <- instanceLabels2URIsMap) {
       println(s"""looking at label "${el._1}" """)
-      try{
-      val (uriTokeep, duplicateURIs) = tellDuplicates(el._2)
-      println(s"uriTokeep <$uriTokeep>, duplicates ${duplicateURIs.mkString("<", ">, <", ">")}")
-      if (!duplicateURIs.isEmpty)
-        println(s"""Deleting duplicates for "${el._1}" uriTokeep <$uriTokeep>, delete count ${duplicateURIs.size}""")
-        copyPropertyValuePairs(uriTokeep, duplicateURIs)
-      removeQuadsWithSubjects(duplicateURIs)
-      println( s"Deleted ${duplicateURIs.size} duplicate URI's" )
+      try {
+        val (uriTokeep, duplicateURIs) = tellDuplicates(el._2)
+        println(s"uriTokeep <$uriTokeep>, duplicates ${duplicateURIs.mkString("<", ">, <", ">")}")
+        if (!duplicateURIs.isEmpty) {
+          println(s"""Deleting duplicates for "${el._1}" uriTokeep <$uriTokeep>, delete count ${duplicateURIs.size}""")
+          copyPropertyValuePairs(uriTokeep, duplicateURIs)
+//          dumpAllNamedGraph("AFTER copyPropertyValuePairs")
+          
+          removeQuadsWithSubjects(duplicateURIs)
+//          dumpAllNamedGraph("AFTER removeQuadsWithSubjects")
+          println(s"Deleted ${duplicateURIs.size} duplicate URI's")
+          
+          processKeepingTrackOfDuplicates(uriTokeep, duplicateURIs)
+//          dumpAllNamedGraph("AFTER processDuplicates")
+          
+          processMultipleRdfsDomains(uriTokeep, duplicateURIs)
+//          dumpAllNamedGraph("AFTER processMultipleRdfsDomains")
+        }
       } catch {
         case t: Throwable =>
-          println( "WARNING: " + t.getClass + " " + t.getLocalizedMessage )
+          println("WARNING: removeAllDuplicates: " + t.getClass + " " + t.getLocalizedMessage)
       }
     }
   }
 
-  def removeQuadsWithSubjects(subjects: Seq[Rdf#Node]) = {
+  /** includes transaction */
+  private def removeQuadsWithSubjects(subjects: Seq[Rdf#Node]) = {
     for (dupURI <- subjects) {
       val transaction = rdfStore.rw( dataset, {
         removeQuadsWithSubject(dupURI)
@@ -76,7 +93,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
    *
    * @return the URI considered as non-duplicate, and a list of the duplicates
    */
-  def tellDuplicates(uris: Seq[Rdf#URI]): (Rdf#URI, Seq[Rdf#URI]) = {
+  private def tellDuplicates(uris: Seq[Rdf#URI]): (Rdf#URI, Seq[Rdf#URI]) = {
     if (uris.size <= 1)
       // nothing to do by caller!
       return (ops.URI(""), Seq())
@@ -119,22 +136,26 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     (nonDuplicateURI, uris diff List(nonDuplicateURI))
   }
 
-  /**
-   * remove Duplicates for given uri, searching in given class URI,
-   *  based on identical strings computed by instanceLabel()
-   */
-  def removeDuplicates(uri: Rdf#URI, classURI: Rdf#URI, lang: String = "") = {
-    val label = instanceLabel(uri, allNamedGraph, lang)
-    val triples = find(allNamedGraph, ANY, rdf.typ, classURI)
-    val duplicateURIs = triples.filter {
-      t =>
-        t.subject != uri &&
-          instanceLabel(t.subject, allNamedGraph, lang) == label
-    }.map { t => t.subject }.toSeq
-    removeQuadsWithSubjects(duplicateURIs)
-  }
+//  /**
+//   * remove Duplicates for given uri, searching in given class URI,
+//   *  based on identical strings computed by instanceLabel()
+//   */
+//  private def removeDuplicates(uri: Rdf#URI, classURI: Rdf#URI, lang: String = "") = {
+//    val label = instanceLabel(uri, allNamedGraph, lang)
+//    val triples = find(allNamedGraph, ANY, rdf.typ, classURI)
+//    val duplicateURIs = triples.filter {
+//      t =>
+//        t.subject != uri &&
+//          instanceLabel(t.subject, allNamedGraph, lang) == label
+//    }.map { t => t.subject }.toSeq
+//    removeQuadsWithSubjects(duplicateURIs)
+//  }
 
-  def copyPropertyValuePairs(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI]) = {
+  /**
+   * copy Property Value Pairs
+   *  includes transaction
+   */
+  private def copyPropertyValuePairs(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI]) = {
     for (duplicateURI <- duplicateURIs) {
       rdfStore.rw(dataset, {
         /* SPARQL query to get the original graph name */
@@ -142,7 +163,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
         val triplesToAdd = quads.map {
           case (t, uri) => (Triple(uriTokeep, t.predicate, t.objectt), uri)
         }.toList
-        println(s"triplesToAdd $triplesToAdd")
+//        println(s"copyPropertyValuePairs: triplesToAdd $triplesToAdd")
         triplesToAdd.map {
           tripleToAdd =>
             rdfStore.appendToGraph(dataset,
@@ -150,10 +171,11 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
         }
       })
     }
+//    println(s"copyPropertyValuePairs: dataset $dataset")
   }
 
   /** DOES NOT include transactions */
-  def indexInstanceLabels(classURI: Rdf#URI,
+  private def indexInstanceLabels(classURI: Rdf#URI,
                           lang: String): Map[String, Seq[Rdf#URI]] = {
     val classTriples = find(allNamedGraph, ANY, rdf.typ, classURI)
     // NOTE: this looks laborious !!!!
@@ -175,4 +197,10 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       s"indexInstanceLabels: ${count} instances for class $classURI")
     res
   }
+  
+  def dumpAllNamedGraph(mess: String="") = 
+    rdfStore.r( dataset, {
+    println(s"$mess: allNamedGraph ${allNamedGraph.toString().
+      replaceAll(""";""", ".\n")}" )
+    })
 }

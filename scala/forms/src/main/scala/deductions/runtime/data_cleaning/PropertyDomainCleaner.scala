@@ -25,6 +25,7 @@ trait PropertyDomainCleaner[Rdf <: RDF, DATASET]
     with InstanceLabelsInference2[Rdf]
     with PreferredLanguageLiteral[Rdf]
     with URIManagement {
+
   import ops._
   import rdfStore.graphStoreSyntax._
   import rdfStore.transactorSyntax._
@@ -32,21 +33,35 @@ trait PropertyDomainCleaner[Rdf <: RDF, DATASET]
   private val owl = OWLPrefix[Rdf]
   val newRdfsDomainsGraph = URI("urn:newRdfsDomains/")
 
+  /**
+   * replace multiple rdfs:domain's with a single rdfs:domain being a owl:unionOf ;
+   * includes transaction
+   */
+  def processMultipleRdfsDomains(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI]) = {
+    println(s"processMultipleRdfsDomains: uriTokeep $uriTokeep duplicateURIs ${duplicateURIs.mkString(", ")}")
+    val transaction = rdfStore.rw(dataset, {
+      if (isProperty(uriTokeep)) replaceMultipleRdfsDomains(uriTokeep)
+    })
+    println(s"replaceMultipleRdfsDomains: transaction $transaction dataset $dataset")
+  }
+
   /** replace multiple rdfs:domain's with a single rdfs:domain being a owl:unionOf */
   def replaceMultipleRdfsDomains(property: Rdf#URI) = {
-    val triples = find(allNamedGraph, property, rdfs.domain, ANY).toList
-    if (triples.size > 1) {
-      val binder = PGBinder[Rdf, List[Rdf#Node]]
-      val list: List[Rdf#Node] = triples.map { t => t.subject }.toList
-      val listPg = binder.toPG(list)
-      val graphToAdd = (
-        property -- rdfs.domain ->- (
-          BNode() -- owl.unionOf ->- listPg.pointer)).graph
-      rdfStore.appendToGraph( dataset, newRdfsDomainsGraph, graphToAdd)
-      
-      // TODO remove triples
-      // leverage on quadQuery?
-//      rdfStore.removeTriples(dataset, uri, triples)
-    }
+      val triples = find(allNamedGraph, property, rdfs.domain, ANY).toList
+    	println(s"replaceMultipleRdfsDomains: triples $triples")
+      if (triples.size > 1) {
+        val binder = PGBinder[Rdf, List[Rdf#Node]]
+        val list: List[Rdf#Node] = triples.map { t => t.subject }.toList
+        val listPg = binder.toPG(list)
+        val graphToAdd = (
+          property -- rdfs.domain ->- (
+            BNode() -- owl.unionOf ->- listPg.pointer)).graph union listPg.graph
+        println(s"replaceMultipleRdfsDomains: graphToAdd $graphToAdd")
+        rdfStore.appendToGraph(dataset, newRdfsDomainsGraph, graphToAdd)
+
+        // remove original triples <property> rdfs:domain ?CLASS .
+        for (triple <- graphToAdd.triples)
+          removeFromQuadQuery(triple.subject, triple.predicate, triple.objectt)
+      }
   }
 }

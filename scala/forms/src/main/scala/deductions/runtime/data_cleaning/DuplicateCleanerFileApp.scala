@@ -29,7 +29,7 @@ object DuplicateCleanerFileApp extends App
     "/tmp/TDB"
 
   duplicateCleanerFileApp
-  
+
   def duplicateCleanerFileApp() = {
     val classURI = ops.URI(args(0))
     println(s"classURI $classURI")
@@ -42,11 +42,12 @@ object DuplicateCleanerFileApp extends App
     }
     // TODO get locale
     val lang = "fr"
-//    val transaction = rdfStore.rw(dataset, {
-      removeAllDuplicates(classURI, lang)
-//    })
-    println( s"AFTER removeAllDuplicate" )
-    
+    //    val transaction = rdfStore.rw(dataset, {
+    removeAllDuplicates(classURI, lang)
+    //    })
+//    println(s"AFTER removeAllDuplicate")
+//    dumpAllNamedGraph()
+
     // output modified data in /tmp
     val queryString = """
     CONSTRUCT { ?S ?P ?O }

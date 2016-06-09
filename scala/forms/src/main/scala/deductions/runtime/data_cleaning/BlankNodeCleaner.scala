@@ -9,15 +9,31 @@ import scala.language.postfixOps
 import org.w3.banana.RDFPrefix
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.dataset.RDFOPerationsDB
+import org.w3.banana.OWLPrefix
+import org.w3.banana.RDFSPrefix
+import org.w3.banana.syntax._
+import org.w3.banana.diesel._
 
 /** */
 trait BlankNodeCleaner[Rdf <: RDF, DATASET]
 extends BlankNodeCleanerBatch[Rdf, DATASET]
 with BlankNodeCleanerIncremental[Rdf, DATASET]
 
-trait BlankNodeCleanerBase [Rdf <: RDF, DATASET]
-extends RDFStoreLocalProvider[Rdf, DATASET]
-with SPARQLHelpers[Rdf, DATASET]
+trait BlankNodeCleanerBase[Rdf <: RDF, DATASET]
+    extends RDFStoreLocalProvider[Rdf, DATASET]
+    with SPARQLHelpers[Rdf, DATASET] {
+  import ops._
+
+  private val owl = OWLPrefix[Rdf]
+  private val rdfs = RDFSPrefix[Rdf]
+
+  def isProperty(uriTokeep: Rdf#Node): Boolean = {
+    val types = quadQuery(uriTokeep, rdf.typ, ANY).toList
+    println( s"isProperty( $uriTokeep types $types" )
+    val propTypes = List(rdf.Property, owl.ObjectProperty, owl.DatatypeProperty)
+    types.exists { typ => propTypes.contains(typ._1.objectt) }
+  }
+}
 
 trait BlankNodeCleanerIncremental[Rdf <: RDF, DATASET] extends BlankNodeCleanerBase[Rdf, DATASET] {
   import ops._
