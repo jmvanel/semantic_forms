@@ -11,18 +11,37 @@ import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
 	import scala.collection.immutable.ListMap
 
+/** Duplicates Detection for OWL; output: CSV, Grouped By labels of Datatype properties */
 object DuplicatesDetectionOWLGroupBy extends App with JenaModule with DuplicatesDetectionOWL[Jena] {
-	val owlFile = args(0)
-  val graph = turtleReader.read( new FileReader(owlFile), "") .get
+  val owlFile = args(0)
+  val graph = turtleReader.read(new FileReader(owlFile), "").get
   val datatypePropertiesURI = findDataProperties(graph)
-  val datatypePropertiesgroupedByRdfsLabel0 = datatypePropertiesURI.groupBy { n => rdfsLabel( n, graph) }
-	val datatypePropertiesgroupedByRdfsLabel = ListMap( datatypePropertiesgroupedByRdfsLabel0.toSeq.sortBy(_._1):_* )
-	val report = datatypePropertiesgroupedByRdfsLabel . map {
-	  labelAndList => s"'${labelAndList._1}'\n" +
-			  (labelAndList._2) . map { n => abbreviateURI(n) } . sorted . mkString("\t", "\n\t", "" )
-	} . mkString( "\n" )
-	
-	output( s"datatypePropertiesgroupedByRdfsLabel\n$report" )
+  val datatypePropertiesgroupedByRdfsLabel0 = datatypePropertiesURI.
+    groupBy { n => rdfsLabel(n, graph) }
+  val datatypePropertiesgroupedByRdfsLabel = ListMap(datatypePropertiesgroupedByRdfsLabel0.toSeq.
+    sortBy(_._1): _*)
+  val report = formatCSV() // formatIndentedText()
+  output(s"$report")
+
+  def formatCSV() = {
+    datatypePropertiesgroupedByRdfsLabel.map {
+      labelAndList =>
+          (labelAndList._2).
+//          map { n => abbreviateURI(n) }.sorted.
+          mkString(
+              s"'${labelAndList._1}'\t",
+              s"\n'${labelAndList._1}'\t",
+              "\n")
+    }.mkString("")
+  }
+  
+  def formatIndentedText() = {
+    datatypePropertiesgroupedByRdfsLabel.map {
+      labelAndList =>
+        s"'${labelAndList._1}'\n" +
+          (labelAndList._2).map { n => abbreviateURI(n) }.sorted.mkString("\t", "\n\t", "")
+    }.mkString("\n")
+  }
 }
 
 /** This App oututs too much : count n*(n-1)/2 ;
