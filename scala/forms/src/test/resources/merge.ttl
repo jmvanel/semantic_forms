@@ -1,8 +1,23 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+@prefix : <http://example.com/>.
+@base <http://example.com/>.
 
 <urn:p1> rdfs:label "Otis Rush" ; a foaf:Person ;
 	foaf:knows <urn:friend1> .
 <urn:p2> rdfs:label "Otis Rush" ; a foaf:Person ;
 	foaf:knows <urn:friend2> .
+
+:prop1 rdfs:label "prop duplicated" ; a owl:DatatypeProperty ;
+	rdfs:domain :D1 ;
+	rdfs:range xsd:string ;
+	rdfs:comment "comment 1" .
+
+:prop2 rdfs:label "prop duplicated" ; a owl:DatatypeProperty ;
+	rdfs:domain :D2 ;
+	rdfs:range xsd:long ;
+	rdfs:comment "comment 2" .
 

@@ -54,8 +54,9 @@ trait PropertyDomainCleaner[Rdf <: RDF, DATASET]
         val list: List[Rdf#Node] = triples.map { t => t.objectt }.toList
         val listPg = binder.toPG(list)
         val graphToAdd = (
-          property -- rdfs.domain ->- (
-            BNode() -- owl.unionOf ->- listPg.pointer)).graph union listPg.graph
+          property -- rdfs.domain ->- ( BNode()
+            -- rdf.typ ->- owl.Class   
+            -- owl.unionOf ->- listPg.pointer)).graph union listPg.graph
         println(s"replaceMultipleRdfsDomains: graphToAdd $graphToAdd")
         rdfStore.appendToGraph(dataset, newRdfsDomainsGraph, graphToAdd)
 

@@ -153,7 +153,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    *  DOES NOT include transaction */
   def removeFromQuadQuery(s: Rdf#NodeMatch, p: Rdf#NodeMatch, o: Rdf#NodeMatch) = {
     val quads = quadQuery(s, p, o): Iterable[Quad]
-    println(s"triplesToAdd $quads")
+//    println(s"triples To remove $quads")
     quads.map {
       tripleToRemove =>
         rdfStore.removeTriples(dataset, tripleToRemove._2,

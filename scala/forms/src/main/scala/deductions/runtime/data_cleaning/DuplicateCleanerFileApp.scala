@@ -45,8 +45,8 @@ object DuplicateCleanerFileApp extends App
     //    val transaction = rdfStore.rw(dataset, {
     removeAllDuplicates(classURI, lang)
     //    })
-//    println(s"AFTER removeAllDuplicate")
-//    dumpAllNamedGraph()
+    //    println(s"AFTER removeAllDuplicate")
+    //    dumpAllNamedGraph()
 
     // output modified data in /tmp
     val queryString = """
