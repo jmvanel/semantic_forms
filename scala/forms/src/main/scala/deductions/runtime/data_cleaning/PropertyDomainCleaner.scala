@@ -51,7 +51,7 @@ trait PropertyDomainCleaner[Rdf <: RDF, DATASET]
     	println(s"replaceMultipleRdfsDomains: triples $triples")
       if (triples.size > 1) {
         val binder = PGBinder[Rdf, List[Rdf#Node]]
-        val list: List[Rdf#Node] = triples.map { t => t.subject }.toList
+        val list: List[Rdf#Node] = triples.map { t => t.objectt }.toList
         val listPg = binder.toPG(list)
         val graphToAdd = (
           property -- rdfs.domain ->- (
@@ -60,7 +60,7 @@ trait PropertyDomainCleaner[Rdf <: RDF, DATASET]
         rdfStore.appendToGraph(dataset, newRdfsDomainsGraph, graphToAdd)
 
         // remove original triples <property> rdfs:domain ?CLASS .
-        for (triple <- graphToAdd.triples)
+        for (triple <- triples)
           removeFromQuadQuery(triple.subject, triple.predicate, triple.objectt)
       }
   }
