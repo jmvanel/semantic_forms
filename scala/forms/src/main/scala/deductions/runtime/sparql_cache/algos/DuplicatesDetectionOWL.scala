@@ -33,6 +33,14 @@ object DuplicatesDetectionOWLGroupBy extends App with JenaModule with Duplicates
               s"\n'${labelAndList._1}'\t",
               "\n")
     }.mkString("")
+    
+    def formatCSVLine(labelAndList: (String, List[Rdf#Node])) = {
+      val list = labelAndList._2
+      for ( n <- list) {
+        abbreviateURI(n) + "\t" + rdfsDomain(n)
+      }
+      s"'${labelAndList._1}'\t"
+    }
   }
   
   def formatIndentedText() = {

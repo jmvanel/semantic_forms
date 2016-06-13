@@ -40,6 +40,10 @@ To run on another port than 9000 :
 
     run 9053
 
+To use HTTPS, also just change the port to 9443, see:
+https://www.playframework.com/documentation/2.4.x/ConfiguringHttps
+
+
 To raise the memory, set this environment variable:
 
     export SBT_OPTS="-Xmx2G"
