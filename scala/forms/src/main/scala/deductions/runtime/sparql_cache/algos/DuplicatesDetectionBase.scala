@@ -25,10 +25,10 @@ extends HTML5TypesTrait[Rdf] {
   
   /** @return the list property URI's */
   def findDataProperties(graph: Rdf#Graph): List[Rdf#Node] = {
-    output(s"Triple count ${graph.size}")
+    outputErr(s"Triple count ${graph.size}")
     val datatypeProperties = find(graph, ANY, rdf.typ, owl.DatatypeProperty)
     val datatypePropertiesURI = datatypeProperties.map { triple => triple.subject }.toList
-    output(s"datatype Properties count ${datatypePropertiesURI.size}\n")
+    outputErr(s"datatype Properties count ${datatypePropertiesURI.size}\n")
     datatypePropertiesURI
   }
 
@@ -87,9 +87,15 @@ extends HTML5TypesTrait[Rdf] {
       log(s"""\tintersection.size >0  $intersection - "$s1" "$s2" """)
     output
   }
-  
+
+
+  // ==== TODO move these reusable functions ====
+
   def rdfsLabel( n: Rdf#Node, graph: Rdf#Graph) =
 		  (PointedGraph( n , graph) / rdfs.label).as[String].getOrElse("")
+
+	def rdfsDomain(n: Rdf#Node, graph: Rdf#Graph) =
+		  (PointedGraph( n , graph) / rdfs.domain) .as[Rdf#Node].getOrElse(URI(""))
 
   def rdfsRange(n: Rdf#Node, graph: Rdf#Graph) =
     find(graph, n, rdfs.range, ANY).
@@ -105,4 +111,5 @@ extends HTML5TypesTrait[Rdf] {
       
   def log(mess: String) = if(detailedLog) println(mess)
   def output(mess: String) = println(mess)
+  def outputErr(mess: String) = Console.err.println(mess)
 }

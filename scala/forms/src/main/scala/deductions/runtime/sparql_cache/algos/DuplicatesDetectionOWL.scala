@@ -9,7 +9,7 @@ import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
-	import scala.collection.immutable.ListMap
+import scala.collection.immutable.ListMap
 
 /** Duplicates Detection for OWL; output: CSV, Grouped By labels of Datatype properties */
 object DuplicatesDetectionOWLGroupBy extends App with JenaModule with DuplicatesDetectionOWL[Jena] {
@@ -20,29 +20,25 @@ object DuplicatesDetectionOWLGroupBy extends App with JenaModule with Duplicates
     groupBy { n => rdfsLabel(n, graph) }
   val datatypePropertiesgroupedByRdfsLabel = ListMap(datatypePropertiesgroupedByRdfsLabel0.toSeq.
     sortBy(_._1): _*)
-  val report = formatCSV() // formatIndentedText()
+  val report = formatCSV()
+  // formatIndentedText()
   output(s"$report")
 
-  def formatCSV() = {
-    datatypePropertiesgroupedByRdfsLabel.map {
-      labelAndList =>
-          (labelAndList._2).
-//          map { n => abbreviateURI(n) }.sorted.
-          mkString(
-              s"'${labelAndList._1}'\t",
-              s"\n'${labelAndList._1}'\t",
-              "\n")
-    }.mkString("")
-    
-    def formatCSVLine(labelAndList: (String, List[Rdf#Node])) = {
+  def formatCSV(): String = {
+    def formatCSVLines(labelAndList: (String, List[Rdf#Node])) = {
       val list = labelAndList._2
-      for ( n <- list) {
-        abbreviateURI(n) + "\t" + rdfsDomain(n)
+      val columns = for (n <- list) yield {
+        s"'${labelAndList._1}'\t" + abbreviateURI(n) + "\t" + rdfsLabel(rdfsDomain(n: Rdf#Node, graph), graph)
       }
-      s"'${labelAndList._1}'\t"
+      columns.mkString("\n")
     }
+    // TODO I18N
+    output("Libellé_propriété	Id_propriété	Contexte	Action")
+    datatypePropertiesgroupedByRdfsLabel.map {
+      labelAndList => formatCSVLines(labelAndList)
+    }.mkString("\n")
   }
-  
+
   def formatIndentedText() = {
     datatypePropertiesgroupedByRdfsLabel.map {
       labelAndList =>
@@ -52,28 +48,29 @@ object DuplicatesDetectionOWLGroupBy extends App with JenaModule with Duplicates
   }
 }
 
-/** This App oututs too much : count n*(n-1)/2 ;
- *  rather use DuplicatesDetectionOWLGroupBy */
+/**
+ * This App oututs too much : count n*(n-1)/2 ;
+ *  rather use DuplicatesDetectionOWLGroupBy
+ */
 object DuplicatesDetectionOWLApp extends App with JenaModule with DuplicatesDetectionOWL[Jena] {
   val owlFile = args(0)
-  val graph = turtleReader.read( new FileReader(owlFile), "") .get
+  val graph = turtleReader.read(new FileReader(owlFile), "").get
   val duplicates = findDuplicateDataProperties(graph)
-  output( s"duplicates size ${duplicates.duplicates.size}\n")
+  output(s"duplicates size ${duplicates.duplicates.size}\n")
 
-  val v = duplicates.duplicates.map { dup => dup toString(graph) }
-  output( v . mkString("\n") )
-  output( s"duplicates size ${duplicates.duplicates.size}")
+  val v = duplicates.duplicates.map { dup => dup toString (graph) }
+  output(v.mkString("\n"))
+  output(s"duplicates size ${duplicates.duplicates.size}")
 }
 
-
 trait DuplicatesDetectionOWL[Rdf <: RDF]
-extends DuplicatesDetectionBase[Rdf] {
+    extends DuplicatesDetectionBase[Rdf] {
   /** you can set your own ontology Prefix, that will be replaced on output by ":" */
   val ontologyPrefix = "http://data.onisep.fr/ontologies/"
 
   implicit val ops: RDFOps[Rdf]
   import ops._
-  
+
   /** @return the list of pairs of similar property URI's */
   def findDuplicateDataProperties(graph: Rdf#Graph): DuplicationAnalysis = {
     val datatypePropertiesURI = findDataProperties(graph)
@@ -83,7 +80,7 @@ extends DuplicatesDetectionBase[Rdf] {
       pair <- datatypePropertiesPairs
       pairList: List[Rdf#Node] = pair.toList
       datatypeProperty1 :: datatypeProperty2 :: rest = pairList if (
-    		  nodesAreSimilar(datatypeProperty1, datatypeProperty2, graph) )
+        nodesAreSimilar(datatypeProperty1, datatypeProperty2, graph))
       //        _ = log(s"pair $pair")
     } yield Duplicate(datatypeProperty1, datatypeProperty2)
 
