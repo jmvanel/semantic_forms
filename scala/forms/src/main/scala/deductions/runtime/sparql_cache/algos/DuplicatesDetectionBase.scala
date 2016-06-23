@@ -97,6 +97,10 @@ extends HTML5TypesTrait[Rdf] {
 	def rdfsDomain(n: Rdf#Node, graph: Rdf#Graph) =
 		  (PointedGraph( n , graph) / rdfs.domain) .as[Rdf#Node].getOrElse(URI(""))
 
+	def rdfsSuperClasses(n: Rdf#Node, graph: Rdf#Graph): List[Rdf#Node]= {
+	  find(graph, n, rdfs.subClassOf, ANY ) . map { tr => tr.objectt } . toList
+  }
+		  
   def rdfsRange(n: Rdf#Node, graph: Rdf#Graph) =
     find(graph, n, rdfs.range, ANY).
       map { triple => triple.objectt }.toList

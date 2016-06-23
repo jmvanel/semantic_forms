@@ -13,6 +13,8 @@ import scala.collection.immutable.ListMap
 
 /** Duplicates Detection for OWL; output: CSV, Grouped By labels of Datatype properties */
 object DuplicatesDetectionOWLGroupBy extends App with JenaModule with DuplicatesDetectionOWL[Jena] {
+  val addEmptyLineBetweenLabelGroups = true
+  
   val owlFile = args(0)
   val graph = turtleReader.read(new FileReader(owlFile), "").get
   val datatypePropertiesURI = findDataProperties(graph)
@@ -24,13 +26,24 @@ object DuplicatesDetectionOWLGroupBy extends App with JenaModule with Duplicates
   // formatIndentedText()
   output(s"$report")
 
+  /** format report as CSV */
   def formatCSV(): String = {
+    /** format Label Group as CSV */
     def formatCSVLines(labelAndList: (String, List[Rdf#Node])) = {
       val list = labelAndList._2
       val columns = for (n <- list) yield {
-        s"'${labelAndList._1}'\t" + abbreviateURI(n) + "\t" + rdfsLabel(rdfsDomain(n: Rdf#Node, graph), graph)
+        val rdfs_domain = rdfsDomain(n, graph)
+        val domainLabel = rdfsLabel(rdfs_domain, graph)
+        val superClassesLabel = rdfsSuperClasses(rdfs_domain, graph).
+          map { superC => rdfsLabel(superC, graph) }.
+          mkString(", ")
+        val contextLabel = domainLabel + (if (!superClassesLabel.isEmpty) " --> " + superClassesLabel else "")
+        s"'${labelAndList._1}'\t" + abbreviateURI(n) + "\t" + contextLabel
       }
-      columns.mkString("\n")
+      columns.mkString("\n") + (
+        if (addEmptyLineBetweenLabelGroups)
+          "\n"
+        else "")
     }
     // TODO I18N
     output("Libellé_propriété	Id_propriété	Contexte	Action")
