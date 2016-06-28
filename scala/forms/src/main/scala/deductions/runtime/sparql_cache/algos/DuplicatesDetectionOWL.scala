@@ -10,20 +10,30 @@ import org.w3.banana.RDFSPrefix
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
 import scala.collection.immutable.ListMap
+import java.io.PrintStream
 
-/** Duplicates Detection for OWL; output: CSV, Grouped By labels of Datatype properties */
+/** Duplicates Detection for OWL; output: CSV, Grouped By labels of Datatype properties,
+ *  or  owl:ObjectProperty", or "owl:Class"*/
 object DuplicatesDetectionOWLGroupBy extends App with JenaModule with DuplicatesDetectionOWL[Jena] {
   val addEmptyLineBetweenLabelGroups = true
-  
+
   val owlFile = args(0)
+  override val printStream = new PrintStream(owlFile + ".group_by_label.csv")
+
   val graph = turtleReader.read(new FileReader(owlFile), "").get
-  val datatypePropertiesURI = findDataProperties(graph)
+  val datatypePropertiesURI =
+    if (args.size > 1 )
+      args(1) match {
+        case "owl:ObjectProperty" => findInstances(graph, owl.ObjectProperty)
+        case "owl:Class" => findInstances(graph, owl.Class)
+      }
+    else
+      findInstances(graph, owl.DatatypeProperty)
   val datatypePropertiesgroupedByRdfsLabel0 = datatypePropertiesURI.
     groupBy { n => rdfsLabel(n, graph) }
   val datatypePropertiesgroupedByRdfsLabel = ListMap(datatypePropertiesgroupedByRdfsLabel0.toSeq.
     sortBy(_._1): _*)
   val report = formatCSV()
-  // formatIndentedText()
   output(s"$report")
 
   /** format report as CSV */
@@ -46,7 +56,7 @@ object DuplicatesDetectionOWLGroupBy extends App with JenaModule with Duplicates
         else "")
     }
     // TODO I18N
-    output("Libellé_propriété	Id_propriété	Contexte	Action")
+    output("Libellé_propriété	Id_propriété	Contexte	Action	Description")
     datatypePropertiesgroupedByRdfsLabel.map {
       labelAndList => formatCSVLines(labelAndList)
     }.mkString("\n")
@@ -67,6 +77,7 @@ object DuplicatesDetectionOWLGroupBy extends App with JenaModule with Duplicates
  */
 object DuplicatesDetectionOWLApp extends App with JenaModule with DuplicatesDetectionOWL[Jena] {
   val owlFile = args(0)
+  override val printStream = new PrintStream(owlFile + ".DuplicatesDetectionOWL.csv" )
   val graph = turtleReader.read(new FileReader(owlFile), "").get
   val duplicates = findDuplicateDataProperties(graph)
   output(s"duplicates size ${duplicates.duplicates.size}\n")
@@ -86,7 +97,7 @@ trait DuplicatesDetectionOWL[Rdf <: RDF]
 
   /** @return the list of pairs of similar property URI's */
   def findDuplicateDataProperties(graph: Rdf#Graph): DuplicationAnalysis = {
-    val datatypePropertiesURI = findDataProperties(graph)
+    val datatypePropertiesURI = findInstances(graph)
     val datatypePropertiesPairs = datatypePropertiesURI.toSet.subsets(2).toList
     output(s"datatype Properties pairs count n*(n-1)/2 = ${datatypePropertiesPairs.size}")
     val pairs = for {

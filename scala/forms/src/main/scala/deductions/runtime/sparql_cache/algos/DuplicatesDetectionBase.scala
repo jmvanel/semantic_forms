@@ -8,11 +8,14 @@ import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
 
 import deductions.runtime.html.HTML5TypesTrait
+import java.io.PrintStream
 
 
 
 trait DuplicatesDetectionBase[Rdf <: RDF]
 extends HTML5TypesTrait[Rdf] {
+  val FILE_OUTPUT = true
+  val printStream: PrintStream
   val ontologyPrefix: String
   val detailedLog = false
 
@@ -22,13 +25,12 @@ extends HTML5TypesTrait[Rdf] {
   val rdfs = RDFSPrefix[Rdf]
   val owl = OWLPrefix[Rdf]
 
-  
-  /** @return the list property URI's */
-  def findDataProperties(graph: Rdf#Graph): List[Rdf#Node] = {
+  /** @return the Instances URI's */
+  def findInstances(graph: Rdf#Graph, typeURI: Rdf#URI=owl.DatatypeProperty): List[Rdf#Node] = {
     outputErr(s"Triple count ${graph.size}")
-    val datatypeProperties = find(graph, ANY, rdf.typ, owl.DatatypeProperty)
+    val datatypeProperties = find(graph, ANY, rdf.typ, typeURI)
     val datatypePropertiesURI = datatypeProperties.map { triple => triple.subject }.toList
-    outputErr(s"datatype Properties count ${datatypePropertiesURI.size}\n")
+    outputErr(s"Instances count <$typeURI> ${datatypePropertiesURI.size}\n")
     datatypePropertiesURI
   }
 
@@ -114,6 +116,9 @@ extends HTML5TypesTrait[Rdf] {
   }
       
   def log(mess: String) = if(detailedLog) println(mess)
-  def output(mess: String) = println(mess)
+  def output(mess: String) = if(FILE_OUTPUT)
+    printStream.println(mess)
+  else
+    println(mess)
   def outputErr(mess: String) = Console.err.println(mess)
 }
