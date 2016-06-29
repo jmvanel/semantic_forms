@@ -23,7 +23,7 @@ object ReplaceSubclassWithPropertyApp extends App with JenaModule with ReplaceSu
   }
 }
 
-trait ReplaceSubclassWithProperty[Rdf <: RDF, DATASET] // extends CSVImporter[Rdf, DATASET]
+trait ReplaceSubclassWithProperty[Rdf <: RDF, DATASET] // TODO extends CSVImporter[Rdf, DATASET]
 {
   val detailedLog = false
 

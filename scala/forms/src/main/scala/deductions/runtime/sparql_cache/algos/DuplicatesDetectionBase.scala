@@ -9,11 +9,13 @@ import org.w3.banana.RDFSPrefix
 
 import deductions.runtime.html.HTML5TypesTrait
 import java.io.PrintStream
+import deductions.runtime.utils.RDFPrefixes
 
 
 
 trait DuplicatesDetectionBase[Rdf <: RDF]
-extends HTML5TypesTrait[Rdf] {
+extends HTML5TypesTrait[Rdf]
+with RDFPrefixes[Rdf] {
   val FILE_OUTPUT = true
   val printStream: PrintStream
   val ontologyPrefix: String
@@ -93,8 +95,14 @@ extends HTML5TypesTrait[Rdf] {
 
   // ==== TODO move these reusable functions ====
 
+  def rdfsLabel( no: Option[Rdf#Node], graph: Rdf#Graph): String =
+    no match {
+      case Some(n) => rdfsLabel( n, graph)
+      case None => ""
+    }
+
   def rdfsLabel( n: Rdf#Node, graph: Rdf#Graph) =
-		  (PointedGraph( n , graph) / rdfs.label).as[String].getOrElse("")
+		  (PointedGraph( n , graph) / rdfs.label).as[String].getOrElse( abbreviateTurtle(n) )
 
 	def rdfsDomain(n: Rdf#Node, graph: Rdf#Graph) =
 		  (PointedGraph( n , graph) / rdfs.domain) .as[Rdf#Node].getOrElse(URI(""))

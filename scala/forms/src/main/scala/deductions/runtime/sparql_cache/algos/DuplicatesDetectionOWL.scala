@@ -18,7 +18,8 @@ object DuplicatesDetectionOWLGroupBy extends App with JenaModule with Duplicates
   val addEmptyLineBetweenLabelGroups = true
 
   val owlFile = args(0)
-  override val printStream = new PrintStream(owlFile + ".group_by_label.csv")
+  val outputFile = owlFile + ".group_by_label.csv"
+  override val printStream = new PrintStream(outputFile)
 
   val graph = turtleReader.read(new FileReader(owlFile), "").get
   val datatypePropertiesURI =
@@ -26,6 +27,10 @@ object DuplicatesDetectionOWLGroupBy extends App with JenaModule with Duplicates
       args(1) match {
         case "owl:ObjectProperty" => findInstances(graph, owl.ObjectProperty)
         case "owl:Class" => findInstances(graph, owl.Class)
+        case t =>
+          outputErr(s"case not implemented: $t")
+          System.exit(-1)
+          List()
       }
     else
       findInstances(graph, owl.DatatypeProperty)
@@ -35,6 +40,7 @@ object DuplicatesDetectionOWLGroupBy extends App with JenaModule with Duplicates
     sortBy(_._1): _*)
   val report = formatCSV()
   output(s"$report")
+  outputErr(s"File written: $outputFile")
 
   /** format report as CSV */
   def formatCSV(): String = {
@@ -47,8 +53,11 @@ object DuplicatesDetectionOWLGroupBy extends App with JenaModule with Duplicates
         val superClassesLabel = rdfsSuperClasses(rdfs_domain, graph).
           map { superC => rdfsLabel(superC, graph) }.
           mkString(", ")
+        val rdfs_range = rdfsRange(n, graph)
+        val rangeLabel = rdfsLabel(rdfs_range.headOption, graph)
+
         val contextLabel = domainLabel + (if (!superClassesLabel.isEmpty) " --> " + superClassesLabel else "")
-        s"'${labelAndList._1}'\t" + abbreviateURI(n) + "\t" + contextLabel
+        s"'${labelAndList._1}'\t" + abbreviateURI(n) + "\t" + contextLabel + "\t" + rangeLabel
       }
       columns.mkString("\n") + (
         if (addEmptyLineBetweenLabelGroups)
@@ -56,7 +65,7 @@ object DuplicatesDetectionOWLGroupBy extends App with JenaModule with Duplicates
         else "")
     }
     // TODO I18N
-    output("Libellé_propriété	Id_propriété	Contexte	Action	Description")
+    output("Libellé	Id	Contexte	type(rdfs:range)	Action	Description")
     datatypePropertiesgroupedByRdfsLabel.map {
       labelAndList => formatCSVLines(labelAndList)
     }.mkString("\n")
