@@ -15,25 +15,29 @@ import java.io.PrintStream
 /** Duplicates Detection for OWL; output: CSV, Grouped By labels of Datatype properties,
  *  or  owl:ObjectProperty", or "owl:Class"*/
 object DuplicatesDetectionOWLGroupBy extends App with JenaModule with DuplicatesDetectionOWL[Jena] {
-  val addEmptyLineBetweenLabelGroups = true
+  val addEmptyLineBetweenLabelGroups = false // true
 
   val owlFile = args(0)
-  val outputFile = owlFile + ".group_by_label.csv"
-  override val printStream = new PrintStream(outputFile)
 
   val graph = turtleReader.read(new FileReader(owlFile), "").get
-  val datatypePropertiesURI =
+  val classToReportURI =
     if (args.size > 1 )
       args(1) match {
-        case "owl:ObjectProperty" => findInstances(graph, owl.ObjectProperty)
-        case "owl:Class" => findInstances(graph, owl.Class)
+        case "owl:ObjectProperty" => owl.ObjectProperty
+        case "owl:Class" => owl.Class
         case t =>
           outputErr(s"case not implemented: $t")
           System.exit(-1)
-          List()
+          owl.DatatypeProperty
       }
     else
-      findInstances(graph, owl.DatatypeProperty)
+      owl.DatatypeProperty
+
+  val datatypePropertiesURI = findInstances(graph, classToReportURI)
+
+  val outputFile = owlFile + "." + rdfsLabel(classToReportURI, graph) + ".group_by_label.csv"
+  override val printStream = new PrintStream(outputFile)
+
   val datatypePropertiesgroupedByRdfsLabel0 = datatypePropertiesURI.
     groupBy { n => rdfsLabel(n, graph) }
   val datatypePropertiesgroupedByRdfsLabel = ListMap(datatypePropertiesgroupedByRdfsLabel0.toSeq.
@@ -55,9 +59,13 @@ object DuplicatesDetectionOWLGroupBy extends App with JenaModule with Duplicates
           mkString(", ")
         val rdfs_range = rdfsRange(n, graph)
         val rangeLabel = rdfsLabel(rdfs_range.headOption, graph)
-
-        val contextLabel = domainLabel + (if (!superClassesLabel.isEmpty) " --> " + superClassesLabel else "")
-        s"'${labelAndList._1}'\t" + abbreviateURI(n) + "\t" + contextLabel + "\t" + rangeLabel
+        val contextLabelProperty = domainLabel + (if (!superClassesLabel.isEmpty) " --> " + superClassesLabel else "")
+        val contextLabel = classToReportURI match {
+          case owl.ObjectProperty   => contextLabelProperty
+          case owl.DatatypeProperty => contextLabelProperty
+          case owl.Class            => rdfsPropertiesAndRangesFromClass(n,graph)
+        }
+        s"\t'${labelAndList._1}'\t" + abbreviateURI(n) + "\t" + contextLabel + "\t" + rangeLabel
       }
       columns.mkString("\n") + (
         if (addEmptyLineBetweenLabelGroups)
@@ -65,7 +73,7 @@ object DuplicatesDetectionOWLGroupBy extends App with JenaModule with Duplicates
         else "")
     }
     // TODO I18N
-    output("Libellé	Id	Contexte	type(rdfs:range)	Action	Description")
+    output("Action	Libellé	Id	Contexte	type(rdfs:range)	Description")
     datatypePropertiesgroupedByRdfsLabel.map {
       labelAndList => formatCSVLines(labelAndList)
     }.mkString("\n")

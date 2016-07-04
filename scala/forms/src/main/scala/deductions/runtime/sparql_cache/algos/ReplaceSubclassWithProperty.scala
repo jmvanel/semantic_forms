@@ -23,15 +23,47 @@ object ReplaceSubclassWithPropertyApp extends App with JenaModule with ReplaceSu
   }
 }
 
-trait ReplaceSubclassWithProperty[Rdf <: RDF, DATASET] // TODO extends CSVImporter[Rdf, DATASET]
-{
-  val detailedLog = false
-
+trait WrongSubclassesSelection[Rdf <: RDF] {
   implicit val ops: RDFOps[Rdf]
   import ops._
-  val rdf = RDFPrefix[Rdf]
-  val rdfs = RDFSPrefix[Rdf]
-  val owl = OWLPrefix[Rdf]
+  val rdfs: RDFSPrefix[Rdf]
+
+  def getWrongSubclassePairs(): List[(Rdf#URI, Rdf#URI)]
+
+  /** @return List of pairs (subClass, superClass) */
+  def makeWrongSubclassePairsFromSuperClasses(superClasses: List[Rdf#URI],
+                                              graph: Rdf#Graph): List[(Rdf#URI, Rdf#URI)] = {
+    val list = for (
+      superClass <- superClasses;
+      subClass <- find(graph, ANY, rdfs.subClassOf, superClass)
+    ) yield ( makeURIFromNode(subClass.subject) , superClass)
+    list
+  }
+
+  def makeURIFromNode(n: Rdf#Node): Rdf#URI =
+    foldNode(n)(
+        uri => uri,
+        bn => URI(""),
+        lit => URI(""))
+}
+
+trait ReplaceSubclassWithProperty[Rdf <: RDF, DATASET] // TODO extends CSVImporter[Rdf, DATASET]
+{
+  implicit val ops: RDFOps[Rdf]
+  import ops._
+  private val rdf = RDFPrefix[Rdf]
+  private val rdfs = RDFSPrefix[Rdf]
+  private val owl = OWLPrefix[Rdf]
+
+  /** @param paris List of pairs (subClass, superClass) */
+  def replaceSubclasses(graph: Rdf#MGraph, pairs: List[(Rdf#URI, Rdf#URI)] ) = {
+    for(
+        pair <- pairs ;
+        subClass = pair._1 ;
+        superClass = pair._2
+    )
+      replaceSubclass(graph, subClass, superClass)
+  }
 
   /**
    * input such that
@@ -44,14 +76,13 @@ trait ReplaceSubclassWithProperty[Rdf <: RDF, DATASET] // TODO extends CSVImport
     createProperty
 
     def removeSubClassOf = {
-      println(s"subClass subClass")
-      println(s"superClass $superClass")
+      println(s"subClass $subClass, superClass $superClass")    
       removeTriple(graph, Triple(subClass, rdfs.subClassOf, superClass))
     }
 
     def createProperty = {
       val newProperty = fromUri(superClass) + "#prop"
-      val labelPG = PointedGraph(subClass) / rdfs.label
+      val labelPG = PointedGraph(subClass, graph.makeIGraph()) / rdfs.label
       val label = labelPG.nodes.head
       val newGraph = (URI(newProperty)
         -- rdf.typ ->- owl.ObjectProperty

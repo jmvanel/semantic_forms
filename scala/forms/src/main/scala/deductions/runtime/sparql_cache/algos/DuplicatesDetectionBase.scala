@@ -17,7 +17,7 @@ trait DuplicatesDetectionBase[Rdf <: RDF]
 extends HTML5TypesTrait[Rdf]
 with RDFPrefixes[Rdf] {
   val FILE_OUTPUT = true
-  val printStream: PrintStream
+  val printStream: PrintStream = System.out
   val ontologyPrefix: String
   val detailedLog = false
 
@@ -101,7 +101,7 @@ with RDFPrefixes[Rdf] {
       case None => ""
     }
 
-  def rdfsLabel( n: Rdf#Node, graph: Rdf#Graph) =
+  def rdfsLabel( n: Rdf#Node, graph: Rdf#Graph): String =
 		  (PointedGraph( n , graph) / rdfs.label).as[String].getOrElse( abbreviateTurtle(n) )
 
 	def rdfsDomain(n: Rdf#Node, graph: Rdf#Graph) =
@@ -111,10 +111,26 @@ with RDFPrefixes[Rdf] {
 	  find(graph, n, rdfs.subClassOf, ANY ) . map { tr => tr.objectt } . toList
   }
 		  
-  def rdfsRange(n: Rdf#Node, graph: Rdf#Graph) =
-    find(graph, n, rdfs.range, ANY).
+  def rdfsRange(p: Rdf#Node, graph: Rdf#Graph) =
+    find(graph, p, rdfs.range, ANY).
       map { triple => triple.objectt }.toList
 
+  def rdfsRangeFromClass(c: Rdf#Node, graph: Rdf#Graph) = {
+    val props = find(graph, ANY, rdfs.domain, c)
+    val v = props . map { trip => val prop = trip.subject; rdfsRange( prop, graph) }
+    v.flatten
+  }
+
+  def rdfsPropertiesAndRangesFromClass(c: Rdf#Node, graph: Rdf#Graph): String = {
+    val props = find(graph, ANY, rdfs.domain, c)
+    val v = props . map { trip =>
+      val prop = trip.subject
+      rdfsLabel(prop, graph) + ": " +
+      rdfsLabel(rdfsRange( prop, graph).headOption, graph)    
+    }
+    v. mkString(", ")
+  }
+  
   def rdfsRangeToString(n: Rdf#Node, graph: Rdf#Graph): String = {
     rdfsRange(n, graph) match {
       case range :: rest =>
