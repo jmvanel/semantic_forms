@@ -82,7 +82,7 @@ trait ReplaceSubclassWithProperty[Rdf <: RDF, DATASET] // TODO extends CSVImport
 
     def createProperty = {
       val newProperty = fromUri(superClass) + "#prop"
-      val labelPG = PointedGraph(subClass, graph.makeIGraph()) / rdfs.label
+      val labelPG = PointedGraph(superClass, graph.makeIGraph()) / rdfs.label
       val label = labelPG.nodes.head
       val newGraph = (URI(newProperty)
         -- rdf.typ ->- owl.ObjectProperty
