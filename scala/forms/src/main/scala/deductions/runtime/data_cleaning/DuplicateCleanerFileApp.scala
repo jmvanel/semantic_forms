@@ -10,7 +10,6 @@ import java.io.FileWriter
 /**
  * merges Duplicates in given file(s),
  * among instances of given class URI
- * deductions.runtime.data_cleaning.DuplicateCleanerFileApp
  *
  * Arguments
  * - class URI for instances
@@ -24,9 +23,8 @@ object DuplicateCleanerFileApp extends App
 
   import ops._
 
-  override val databaseLocation: String =
-    // TODO multi-platform temporary directory
-    "/tmp/TDB"
+  override val databaseLocation: String = "" // in-memory
+  // override val databaseLocation = "/tmp/TDB" // TODO multi-platform temporary directory
 
   duplicateCleanerFileApp
 
@@ -42,19 +40,18 @@ object DuplicateCleanerFileApp extends App
     }
     // TODO get locale
     val lang = "fr"
-    //    val transaction = rdfStore.rw(dataset, {
     removeAllDuplicates(classURI, lang)
-    //    })
-    //    println(s"AFTER removeAllDuplicate")
-    //    dumpAllNamedGraph()
 
-    // output modified data in /tmp
+    outputModifiedTurtle(files)
+  }
+
+  /** output modified data in /tmp */
+  def outputModifiedTurtle(files: Array[String]) = {
     val queryString = """
     CONSTRUCT { ?S ?P ?O }
     WHERE {
       GRAPH ?GR { ?S ?P ?O }
-    }
-    """
+    } """
     val ttl = sparqlConstructQueryTR(queryString)
     val outputFile = "/tmp/" + new File(files(0)).getName
     println(s"Writing ${ttl.length()} chars in  output File $outputFile")

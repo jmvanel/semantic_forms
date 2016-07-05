@@ -31,7 +31,7 @@ trait RDFStoreLocalProvider[Rdf <: RDF, DATASET] extends RDFOPerationsDB[Rdf, DA
   def createDatabase(database_location: String = databaseLocation): DATASET
   //  override ?? 
   lazy val 
-  // TODO:   def 
+  // TODO? def 
   dataset: DATASET = createDatabase(databaseLocation)
 
   def allNamedGraph: Rdf#Graph
