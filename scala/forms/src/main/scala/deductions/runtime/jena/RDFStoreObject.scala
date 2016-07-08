@@ -11,6 +11,8 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.utils.Timer
 import deductions.runtime.services.Configuration
+import com.hp.hpl.jena.rdf.model.ModelFactory
+import com.hp.hpl.jena.query.DatasetFactory
 
 // TODO rename RDFStoreLocalJenaProvider
 
@@ -34,6 +36,7 @@ trait RDFStoreLocalJenaProvider
     with LuceneIndex {
   import ops._
   type DATASET = ImplementationSettings.DATASET
+  /** very important that defensiveCopy=false, otherwise no update happens, and a big overhead for every operation */
   override val rdfStore = new JenaDatasetStore(false)
   import rdfStore.graphStoreSyntax._
 
@@ -44,18 +47,25 @@ trait RDFStoreLocalJenaProvider
   TransactionManager.QueueBatchSize = 5
   //  override TransactionManager.DEBUG = true
 
+  /**
+   * create TDB Database in given directory;
+   *  if it is empty, create an in-memory Database
+   */
   override def createDatabase(database_location: String) = {
-    val dts = TDBFactory.createDataset(database_location)
-    Logger.getRootLogger.info(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
+    if (database_location != "") {
+      val dts = TDBFactory.createDataset(database_location)
+      Logger.getRootLogger.info(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
 
-    try {
-      configureLuceneIndex(dts)
-    } catch {
-      case t: Throwable =>
-        println(t.getLocalizedMessage)
-        println(t.getCause)
-        dts
-    }
+      try {
+        configureLuceneIndex(dts)
+      } catch {
+        case t: Throwable =>
+          println(t.getLocalizedMessage)
+          println(t.getCause)
+          dts
+      }
+    } else
+      DatasetFactory.createMem()
   }
 
   /**

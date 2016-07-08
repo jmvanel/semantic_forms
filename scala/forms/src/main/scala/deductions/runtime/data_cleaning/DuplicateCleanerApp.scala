@@ -7,8 +7,9 @@ import deductions.runtime.jena.RDFStoreLocalJena1Provider
 object DuplicateCleanerApp extends App
     with RDFStoreLocalJena1Provider
     with DuplicateCleaner[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+  // override val databaseLocation: String = "" // in-memory
 
-  val classURI = ops.URI(args(0))
+  val classURIForMergingInstances = ops.URI(args(0))
   val lang = if (args.size > 1) args(1) else "en"
-  removeAllDuplicates(classURI, lang)
+  removeAllDuplicates(classURIForMergingInstances, lang)
 }
