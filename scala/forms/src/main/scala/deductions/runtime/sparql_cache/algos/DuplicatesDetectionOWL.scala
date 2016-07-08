@@ -20,18 +20,8 @@ object DuplicatesDetectionOWLGroupBy extends App with JenaModule with Duplicates
   val owlFile = args(0)
 
   val graph = turtleReader.read(new FileReader(owlFile), "").get
-  val classToReportURI =
-    if (args.size > 1 )
-      args(1) match {
-        case "owl:ObjectProperty" => owl.ObjectProperty
-        case "owl:Class" => owl.Class
-        case t =>
-          outputErr(s"case not implemented: $t")
-          System.exit(-1)
-          owl.DatatypeProperty
-      }
-    else
-      owl.DatatypeProperty
+  
+  val classToReportURI = owlClassToReport(args)
 
   val datatypePropertiesURI = findInstances(graph, classToReportURI)
 
@@ -89,7 +79,7 @@ object DuplicatesDetectionOWLGroupBy extends App with JenaModule with Duplicates
 }
 
 /**
- * This App oututs too much : count n*(n-1)/2 ;
+ * This App outputs too much : count n*(n-1)/2 ;
  *  rather use DuplicatesDetectionOWLGroupBy
  */
 object DuplicatesDetectionOWLApp extends App with JenaModule with DuplicatesDetectionOWL[Jena] {

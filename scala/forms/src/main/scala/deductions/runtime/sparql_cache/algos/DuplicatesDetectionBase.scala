@@ -36,6 +36,19 @@ with RDFPrefixes[Rdf] {
     datatypePropertiesURI
   }
 
+  def owlClassToReport(args: Array[String]) =
+    if (args.size > 1)
+      args(1) match {
+        case "owl:ObjectProperty" => owl.ObjectProperty
+        case "owl:Class"          => owl.Class
+        case t =>
+          outputErr(s"case not implemented: $t")
+          System.exit(-1)
+          owl.DatatypeProperty
+      }
+    else
+      owl.DatatypeProperty
+
   case class Duplicate(d1: Rdf#Node, d2: Rdf#Node) {
     /** cf http://tools.ietf.org/html/rfc4180 */
     def toString(graph: Rdf#Graph): String = {
