@@ -54,22 +54,24 @@ object TextTreeViewRDF extends App with JenaModule with DuplicatesDetectionBase[
     ) yield instance
   }
 
-  /** find inheritance Roots ?R that are not declared by 
-   *  ?R a owl:Class */
+  /**
+   * find inheritance Roots ?R that are not declared by
+   *  ?R a owl:Class
+   */
   def findUndeclaredRoots(instancesURI: List[Rdf#Node]): List[Rdf#Node] = {
-	  val tr = find(graph, ANY, rdfs.subClassOf, ANY ) . map { tr => tr.objectt } . toList
-    tr . toSet . toList
+    val tr = find(graph, ANY, rdfs.subClassOf, ANY).map { tr => tr.objectt }.toList
+    tr.toSet.toList
   }
 
   /** recursive */
   def indentURILabel(node: Rdf#Node, depth: Int): Unit = {
-    val formattedURILabel = ("\t" * depth) + rdfsLabel(node, graph) +" - " + abbreviateURI( node )
-    output( formattedURILabel )
+    val formattedURILabel = ("\t" * depth) + rdfsLabel(node, graph) + " - " + abbreviateURI(node)
+    output(formattedURILabel)
     // recursive call 
-    val subClasses = rdfsSubClasses( node, graph)
-    sortWithRdfsLabel(subClasses).foreach { indentURILabel( _, depth+1) }
+    val subClasses = rdfsSubClasses(node, graph)
+    sortWithRdfsLabel(subClasses).foreach { indentURILabel(_, depth + 1) }
   }
 
   def sortWithRdfsLabel(list: List[Rdf#Node]) = list.sortWith(
-      (n1, n2) => rdfsLabel(n1, graph) < rdfsLabel(n2, graph))
+    (n1, n2) => rdfsLabel(n1, graph) < rdfsLabel(n2, graph))
 }

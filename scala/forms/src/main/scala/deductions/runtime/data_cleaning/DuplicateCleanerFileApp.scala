@@ -23,8 +23,8 @@ object DuplicateCleanerFileApp extends App
 
   import ops._
 
-  override val databaseLocation: String = "" // in-memory
-  // override val databaseLocation = "/tmp/TDB" // TODO multi-platform temporary directory
+//  override val databaseLocation: String = "" // in-memory
+   override val databaseLocation = "/tmp/TDB" // TODO multi-platform temporary directory
 
   duplicateCleanerFileApp
 
@@ -37,6 +37,7 @@ object DuplicateCleanerFileApp extends App
     for (file <- files) {
       println(s"Load file $file")
       retrieveURI(URI(new File(file).toURI().toASCIIString()))
+      println(s"Loaded file $file")
     }
     // TODO get locale
     val lang = "fr"
