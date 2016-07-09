@@ -21,8 +21,6 @@ object TextTreeViewRDF extends App with JenaModule with DuplicatesDetectionBase[
   /** you can set your own ontology Prefix, that will be replaced on output by ":" */
   val ontologyPrefix = "http://data.onisep.fr/ontologies/"
 
-  val addEmptyLineBetweenLabelGroups = false // true
-
   val owlFile = args(0)
   val graph = turtleReader.read(new FileReader(owlFile), "").get
   val owlClassToReportURI = owlClassToReport(args)
@@ -38,11 +36,7 @@ object TextTreeViewRDF extends App with JenaModule with DuplicatesDetectionBase[
   /** format tree view with tabs */
   def formatTreeView(instancesURI: List[Rdf#Node]) = {
     val roots = findRoots(instancesURI)
-        for (
-        		root <- roots
-        		) yield {
-          indentURILabel(root, 0)
-        }
+    roots foreach { indentURILabel( _, 0) }
   }
 
   /** TODO parameterize % predicate to build tree: currently hard-coded rdfs:subClassOf */
@@ -52,16 +46,14 @@ object TextTreeViewRDF extends App with JenaModule with DuplicatesDetectionBase[
       l = rdfsSuperClasses(instance, graph) if (l.isEmpty)
     ) yield instance
   }
-  
+
   /** recursive */
-  def indentURILabel( node: Rdf#Node, depth: Int): Unit = {
-    // format URI & Label
-    ???
-    // recursive call to rdfsSubClasses(instance, graph)
-    ???
+  def indentURILabel(node: Rdf#Node, depth: Int): Unit = {
+    val formattedURILabel = ("\t" * depth) + rdfsLabel(node, graph) +" - " + abbreviateURI( node )
+    output( formattedURILabel )
+    // recursive call 
+    val subClasses = rdfsSubClasses( node, graph)
+    subClasses.foreach { indentURILabel( _, depth+1) }
   }
 
 }
-
-
-

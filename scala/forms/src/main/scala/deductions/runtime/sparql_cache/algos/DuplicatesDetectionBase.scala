@@ -41,8 +41,9 @@ with RDFPrefixes[Rdf] {
       args(1) match {
         case "owl:ObjectProperty" => owl.ObjectProperty
         case "owl:Class"          => owl.Class
+//        case (owl.Class.toString()) => owl.Class
         case t =>
-          outputErr(s"case not implemented: $t")
+          outputErr(s"case not implemented: '${t}'")
           System.exit(-1)
           owl.DatatypeProperty
       }
@@ -123,7 +124,11 @@ with RDFPrefixes[Rdf] {
 	def rdfsSuperClasses(n: Rdf#Node, graph: Rdf#Graph): List[Rdf#Node]= {
 	  find(graph, n, rdfs.subClassOf, ANY ) . map { tr => tr.objectt } . toList
   }
-		  
+		
+  def rdfsSubClasses(n: Rdf#Node, graph: Rdf#Graph): List[Rdf#Node]= {
+	  find(graph, ANY, rdfs.subClassOf, n ) . map { tr => tr.subject } . toList
+  }
+  
   def rdfsRange(p: Rdf#Node, graph: Rdf#Graph) =
     find(graph, p, rdfs.range, ANY).
       map { triple => triple.objectt }.toList
