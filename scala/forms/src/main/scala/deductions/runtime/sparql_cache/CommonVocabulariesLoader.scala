@@ -56,10 +56,11 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
     
   /** larger and less known vocab's */
   val largerVocabs: List[Rdf#URI] =
-    makeUri("http://usefulinc.com/ns/doap#") ::
+    // makeUri("http://usefulinc.com/ns/doap#") ::
+    URI("https://raw.githubusercontent.com/edumbill/doap/master/schema/doap.rdf") ::
       makeUri("http://rdfs.org/sioc/ns#") ::   
-      makeUri("http://schema.rdfs.org/all.nt") ::
       makeUri("http://topbraid.org/schema/schema.ttl") ::
+      // makeUri("http://schema.rdfs.org/all.nt") ::
       /* NOTES
        * schema.rdfs.org is down on 25 april 2016
        * .ttl is still broken ?
@@ -70,7 +71,8 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
       makeUri("http://www.w3.org/2000/10/swap/pim/contact#") ::
       makeUri(githubcontent + "/assemblee-virtuelle/pair/master/av.owl.ttl") ::
       makeUri("http://purl.org/ontology/cco/cognitivecharacteristics.n3") ::
-      makeUri("http://www.w3.org/2004/02/skos/core#") ::      
+      makeUri("http://www.w3.org/2004/02/skos/core#") ::
+      // "http://purl.org/ontology/mo/"
       Nil
 
   /**
@@ -100,12 +102,36 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
       voc =>
         try {
           storeUriInNamedGraph(voc)
+            println("JVM Total memory (bytes): " +
+              Runtime.getRuntime().totalMemory());
+            System.gc()
+            println("JVM Free memory after gc(): " +
+              Runtime.getRuntime().freeMemory())
         } catch {
-          case e: Exception => println("Error in loadCommonVocabularies" + voc + " " + e)
-        }
+          case e: Exception =>
+            System.err.println("Error in loadCommonVocabularies: " +
+                voc + " " + e)
+            /* Total number of processors or cores available to the JVM */
+            System.err.println("Available processors (cores): " +
+              Runtime.getRuntime().availableProcessors());
+
+            /* Total amount of free memory available to the JVM */
+            System.err.println("JVM Free memory (bytes): " +
+              Runtime.getRuntime().freeMemory())
+
+            /* This will return Long.MAX_VALUE if there is no preset limit */
+            val maxMemory = Runtime.getRuntime().maxMemory();
+            /* Maximum amount of memory the JVM will attempt to use */
+            System.err.println("JVM Maximum memory (bytes): " +
+              (if (maxMemory == Long.MaxValue) "no limit" else maxMemory));
+
+            /* Total memory currently in use by the JVM */
+            System.err.println("JVM Total memory (bytes): " +
+              Runtime.getRuntime().totalMemory());
+            System.gc()
+            System.err.println("JVM Free memory after gc(): " +
+              Runtime.getRuntime().freeMemory())        }
     }
-    // test OK:
-    //    storeURI( ops.makeUri( "http://purl.org/ontology/mo/" ), dataset  )))))))))))))))
   }
 
 }

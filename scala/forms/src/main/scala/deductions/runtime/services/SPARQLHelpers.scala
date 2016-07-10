@@ -112,7 +112,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
          |     <$uri> <$property> ?ts .
          |   }
          | }""".stripMargin
-    println(s"replaceRDFnode: sparqlUpdate Query: $queryString")
+    println(s"replaceRDFnode: $triple in <$graphURI>")
     val res = sparqlUpdateQuery(queryString, dataset)
     println(s"replaceRDFnode: sparqlUpdateQuery: $res")
 

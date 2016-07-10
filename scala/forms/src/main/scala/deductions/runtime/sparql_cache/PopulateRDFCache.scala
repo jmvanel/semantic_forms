@@ -13,7 +13,7 @@ trait SitesURLForDownload {
 
 /**
  * Populate RDF Cache with commonly used vocabularies;
- *  should be done just once;
+ *  should be done just once (anyway because of SPARQL cache it goes quickly the second time);
  *
  *  same as loading
  *  http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/examples/defaultVocabularies.n3p.n3

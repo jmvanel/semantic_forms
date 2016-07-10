@@ -33,7 +33,7 @@ Then SBT or Activator will download the rest.
 - download the source from [Banana-RDf fork on github](https://github.com/deductions/banana-rdf) (temporary, until my Pull Request in Banana-RDF is accepted)
   - build this project with SBT or Activator: change directory to `banana-rdf` ; type in the activator console : `publishLocal`
 - download the source from [semantic\_forms on github](https://github.com/jmvanel/semantic_forms/)
-- build and run the semantic\_forms project itself with SBT or Activator: change directory to `scala/forms_play` within the source downloaded from github; type in the activator console : `~ run`
+- build and run the semantic\_forms project itself with SBT or Activator: change directory to `scala/forms_play` within the source downloaded from github; type in the sbt (or activator) console : `~ run`
 
 The default port is 9000, so you can direct your browser to [http://localhost:9000](http://localhost:9000) .
 To run on another port than 9000 :
@@ -213,6 +213,12 @@ The server must not be started, because Jena TDB does not allow access to the da
     // or, just some forms specs:
     runMain tdb.tdbloader --loc=TDB --graph=urn:form_specs ../forms/form_specs/foaf.form.ttl
 ```
+Normally it is done just once, but in case of troubles (out of memory or server down) can be re-done (anyway because of SPARQL cache it goes quickly the second time).
+
+PopulateRDFCache can run, with Lucene activated, with this memory setting:
+
+    export SBT_OPTS="-Xmx4800M -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -Xss20M"
+
 - Preloading a local file: in activator shell type: for example:
 
 ```

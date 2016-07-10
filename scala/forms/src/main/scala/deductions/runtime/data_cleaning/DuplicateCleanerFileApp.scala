@@ -23,8 +23,8 @@ object DuplicateCleanerFileApp extends App
 
   import ops._
 
-//  override val databaseLocation: String = "" // in-memory
-   override val databaseLocation = "/tmp/TDB" // TODO multi-platform temporary directory
+  //  override val databaseLocation: String = "" // in-memory
+  override val databaseLocation = "/tmp/TDB" // TODO multi-platform temporary directory
 
   duplicateCleanerFileApp
 
