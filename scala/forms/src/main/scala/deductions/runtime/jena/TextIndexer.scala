@@ -7,7 +7,9 @@ import deductions.runtime.services.DefaultConfiguration
 import org.w3.banana.jena.JenaModule
 
 /** see https://jena.apache.org/documentation/query/text-query.html */
-object TextIndexer extends jena.textindexer(Array[String]())
+object TextIndexerRDF extends TextIndexerTrait
+
+class TextIndexerTrait extends jena.textindexer(Array[String]())
     with JenaModule
     with LuceneIndex
     with DefaultConfiguration {
