@@ -34,37 +34,42 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
    * merges Duplicates among instances of given class URI;
    *  includes transactions
    */
-  def removeAllDuplicates(classURI: Rdf#URI, lang: String = "") = {
+  def removeAllDuplicates(classURI: Rdf#URI, lang: String = ""): String = {
     val instanceLabels2URIsMap: Map[String, Seq[Rdf#URI]] =
       rdfStore.rw(dataset, {
         indexInstanceLabels(classURI, lang)
       }).get
+
+    var duplicatesCount = 0
+    var propertiesHavingDuplicates = 0
 
     for (el <- instanceLabels2URIsMap) {
       println(s"""looking at label "${el._1}" """)
       try {
         val (uriTokeep, duplicateURIs) = tellDuplicates(el._2)
         println(s"uriTokeep <$uriTokeep>, duplicates ${duplicateURIs.mkString("<", ">, <", ">")}")
+
         if (!duplicateURIs.isEmpty) {
+          propertiesHavingDuplicates = propertiesHavingDuplicates + 1
+          duplicatesCount = duplicatesCount + duplicateURIs.size
           println(s"""Deleting duplicates for "${el._1}" uriTokeep <$uriTokeep>, delete count ${duplicateURIs.size}""")
+
           copyPropertyValuePairs(uriTokeep, duplicateURIs)
 //          dumpAllNamedGraph("AFTER copyPropertyValuePairs")
           
           removeQuadsWithSubjects(duplicateURIs)
-//          dumpAllNamedGraph("AFTER removeQuadsWithSubjects")
           println(s"Deleted ${duplicateURIs.size} duplicate URI's")
           
           processKeepingTrackOfDuplicates(uriTokeep, duplicateURIs)
-//          dumpAllNamedGraph("AFTER processDuplicates")
           
           processMultipleRdfsDomains(uriTokeep, duplicateURIs)
-//          dumpAllNamedGraph("AFTER processMultipleRdfsDomains")
         }
       } catch {
         case t: Throwable =>
           println("WARNING: removeAllDuplicates: " + t.getClass + " " + t.getLocalizedMessage)
       }
     }
+    s"propertiesHavingDuplicates: $propertiesHavingDuplicates, duplicatesCount: $duplicatesCount"
   }
 
   /** includes transaction */

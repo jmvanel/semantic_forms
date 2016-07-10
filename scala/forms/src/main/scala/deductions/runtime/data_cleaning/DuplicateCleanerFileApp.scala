@@ -14,6 +14,9 @@ import java.io.FileWriter
  * Arguments
  * - class URI for instances
  * - files
+ *
+ * Output:
+ * modified data file in /tmp (same name as input)
  */
 object DuplicateCleanerFileApp extends App
     with RDFStoreLocalJena1Provider
@@ -25,7 +28,7 @@ object DuplicateCleanerFileApp extends App
 
   //  override val databaseLocation: String = "" // in-memory
   override val databaseLocation = "/tmp/TDB" // TODO multi-platform temporary directory
-
+  println(s"databaseLocation $databaseLocation")
   duplicateCleanerFileApp
 
   def duplicateCleanerFileApp() = {
@@ -39,9 +42,8 @@ object DuplicateCleanerFileApp extends App
       retrieveURI(URI(new File(file).toURI().toASCIIString()))
       println(s"Loaded file $file")
     }
-    // TODO get locale
-    val lang = "fr"
-    removeAllDuplicates(classURI, lang)
+    val lang = java.util.Locale.getDefault().getCountry
+    println(removeAllDuplicates(classURI, lang))
 
     outputModifiedTurtle(files)
   }

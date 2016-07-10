@@ -41,6 +41,7 @@ with RDFPrefixes[Rdf] {
       args(1) match {
         case "owl:ObjectProperty" => owl.ObjectProperty
         case "owl:Class"          => owl.Class
+        case "owl:DatatypeProperty" => owl.DatatypeProperty
 //        case (owl.Class.toString()) => owl.Class
         case t =>
           outputErr(s"case not implemented: '${t}'")
