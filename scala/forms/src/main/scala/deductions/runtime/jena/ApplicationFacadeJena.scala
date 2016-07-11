@@ -10,6 +10,7 @@ import deductions.runtime.services.ApplicationFacadeImpl
 import deductions.runtime.services.ApplicationFacadeInterface
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.ConfigurationCopy
+import deductions.runtime.services.DefaultConfiguration
 
 /**
  * ApplicationFacade for Jena,
@@ -19,9 +20,10 @@ trait ApplicationFacadeJena
     extends ApplicationFacadeInterface
     with ApplicationFacade[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RDFStoreLocalJenaProvider
-    with Configuration {
+    with DefaultConfiguration {
+
   val conf: Configuration = this
-  override val impl = try {
+  override val impl: ApplicationFacadeImpl[Rdf, DATASET] = try {
     /**
      * NOTES:
      * - mandatory that JenaModule is first; otherwise ops may be null
