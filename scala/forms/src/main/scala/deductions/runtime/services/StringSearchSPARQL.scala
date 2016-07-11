@@ -50,11 +50,13 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
     }
   }
 
-  private implicit val searchStringQueryMaker =
+  private implicit def searchStringQueryMaker = {
+		println( s"searchStringQueryMaker: useTextQuery $useTextQuery")
     if( useTextQuery )
       indexBasedQuery
     else
       plainSPARQLquery
+  }
 
   def searchString(searchString: String, hrefPrefix: String = "",
                    lang: String = ""): Future[NodeSeq] =

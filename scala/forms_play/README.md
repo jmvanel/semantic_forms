@@ -314,7 +314,7 @@ In `dbpedia-dbpedia.sh`you should set the LANG variable for the language you wan
     VERSION=2015-04
 
 After the database if populated with dbPedia data, you should run this program to index with Lucene or SOLR the newly added text (see next paragraph).
-[TextIndexer.scala](https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/TextIndexer.scala)
+[TextIndexerRDF.scala](https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/TextIndexerRDF.scala)
 
 # Text indexing with Lucene or SOLR
 
@@ -331,19 +331,19 @@ https://github.com/jmvanel/semantic\_forms/blob/master/scala/forms/src/main/scal
 If you deactivate `useTextQuery` in DefaultConfiguration.scala, the text search is done by a plain SPARLQL search, that considers input as a regular expression.
 
 If the text indexing with Lucene or SOLR is activated *after* adding RDF data, you can run this program to index with Lucene or SOLR the newly added text:
-[TextIndexer.scala](https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/TextIndexer.scala)
+[TextIndexerRDF.scala](https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/TextIndexerRDF.scala)
 
-    runMain deductions.runtime.jena.TextIndexer
+    runMain deductions.runtime.jena.TextIndexerRDF
 
 *NOTE:*
-Since the association between TDB and Lucene is set by launching semantic\_forms, if you just add RDF content with tdb.tdbloader, you must afterwards index this content by running TextIndexer.
+Since the association between TDB and Lucene is set by launching semantic\_forms, if you just add RDF content with tdb.tdbloader, you must afterwards index this content by running TextIndexerRDF.
 
 To use Lucene with TDB , here is the code to configure (I don't use the TTL config. as its vocab' is not documented in TTL ) :
 https://github.com/jmvanel/semantic\_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/LuceneIndex.scala
 This code is used in trait RDFStoreLocalJenaProvider in method `createDatabase(database_location: String)` .
 
 Here is were an existing RDF content is indexed:
-https://github.com/jmvanel/semantic\_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/TextIndexer.scala
+https://github.com/jmvanel/semantic\_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/TextIndexerRDF.scala
 
 And here is where the text search is called:
 https://github.com/jmvanel/semantic\_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/services/StringSearchSPARQL.scala

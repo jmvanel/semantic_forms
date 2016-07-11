@@ -39,9 +39,12 @@ object TextTreeViewRDF extends App with JenaModule with DuplicatesDetectionBase[
   def formatTreeView(instancesURI: List[Rdf#Node]) = {
     val roots = findRoots(instancesURI)
     val roots2 = findUndeclaredRoots(instancesURI)
+
     val undeclaredRoots = roots2.toSet.diff(roots.toSet)
+    println(s"declared Roots: ${roots.size}")
     println(s"Undeclared Roots: ${undeclaredRoots.size} : $undeclaredRoots")
-    val sortedMergedRoots = sortWithRdfsLabel((roots ::: roots2).toSet.toList)
+    val mergedRoots = (roots ::: roots2).toSet.toList
+    val sortedMergedRoots = sortWithRdfsLabel(mergedRoots)
     println("sorted Merged Roots: " + sortedMergedRoots.size)
     sortedMergedRoots.foreach { indentURILabel(_, 0) }
   }
