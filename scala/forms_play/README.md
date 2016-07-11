@@ -175,7 +175,7 @@ See: https://github.com/jrudolph/sbt-dependency-graph , https://github.com/rtimu
 ## Debug
 See [playframework documentation/2.4.x/IDE](https://www.playframework.com/documentation/2.4.x/IDE)
 
-Start Activator or SBT with -jvm-debug argument; then type run. Then start a remove debug in eclipse or another IDE with port 9999.
+Start Activator or SBT with -jvm-debug argument; then type run. Then start a remote debug in eclipse or another IDE with port 9999.
 ```
     activator -jvm-debug
 ```
