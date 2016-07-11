@@ -316,6 +316,11 @@ In `dbpedia-dbpedia.sh`you should set the LANG variable for the language you wan
 After the database if populated with dbPedia data, you should run this program to index with Lucene or SOLR the newly added text (see next paragraph).
 [TextIndexerRDF.scala](https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/TextIndexerRDF.scala)
 
+## TDB databases
+- TDB/ : user edits and cached URL's from internet
+- TDB2/ : timestamp for named graphs
+- TDB3/ : user And Password association
+
 # Text indexing with Lucene or SOLR
 
 For details please look the Jena TDB documentation about text search with Lucene or SOLR in TDB :

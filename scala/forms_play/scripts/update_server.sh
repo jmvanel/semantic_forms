@@ -22,7 +22,13 @@ mv ${APPVERS} ${APPVERS}_OLD
 unzip $SRC/target/universal/${APPVERS}.zip
 
 cd ${APPVERS}
-ln -s ../TDBsandbox TDB
+mkdir -p ../TDBsandbox
+mkdir -p ../TDBsandbox2
+mkdir -p ../TDBsandbox3
+
+ln -s ../TDBsandbox  TDB
+ln -s ../TDBsandbox2 TDB
+ln -s ../TDBsandbox3 TDB
 
 PORT=9111
 echo starting the server on port $PORT
