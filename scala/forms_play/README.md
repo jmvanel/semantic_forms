@@ -60,7 +60,15 @@ A convenience link to [local semantic\_forms ScalaDoc](../forms/target/scala-2.1
 
 Some references on ScalaDoc: http://docs.scala-lang.org/style/scaladoc.html , http://docs.scala-lang.org/overviews/scaladoc/for-library-authors.html , http://stackoverflow.com/questions/15394322/how-to-disambiguate-links-to-methods-in-scaladoc
 
-## Run on a server without development environment
+## Run on a machine without development environment
+There two use cases:
+
+- server (internet or intranet)
+- personal usage
+
+For both usages, the install is the same (and very easy).
+The personal usage can be a contact manager, projet manager, blog, or notes manager, ... It allows to create one's FOAF profile, navigate on the web of data and keeping, or any structured data management.
+
 ### Obtaining the zipped application
 The zipped application is available as a [github release](https://github.com/jmvanel/semantic_forms/releases).
 
@@ -439,6 +447,9 @@ The features are listed here for convenience, but from now on, we manage feature
 - 40 popup an editor for editing large texts
 
 ## Unimplemented features 
+The features are listed here for convenience, but from now on, we manage features on 
+[Github issues](https://github.com/jmvanel/semantic_forms/issues).
+
 - 2.2 show statistics about the current document : # of triples, # of properties, # of URI's
 - 2.3 when document pointed by URI entered by user has no triple with that URI as subject, show a list of URI's in the document like the search results
 - 7. use HTTP HEAD to distinguish RDF content types and others, and have different hyperlinks and styles for HTML, RDF, and image URL's - WIP
