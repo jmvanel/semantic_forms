@@ -19,7 +19,6 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
         with Configuration 
         =>
 
-  // val radioForIntervals = false // choice moved to FormSyntaxFactory
   val inputSize = 90
 
 

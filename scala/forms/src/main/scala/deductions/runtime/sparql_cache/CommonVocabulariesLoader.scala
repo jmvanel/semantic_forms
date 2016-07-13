@@ -30,6 +30,8 @@ object CommonVocabulariesLoader extends JenaModule
   loadCommonVocabularies()
 }
 
+/** TODO reuse trait RDFPrefixes[Rdf <: RDF]
+ *  */
 trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
     //    with RDFStoreHelpers[Rdf, DATASET]

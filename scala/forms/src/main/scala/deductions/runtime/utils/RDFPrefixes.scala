@@ -34,10 +34,16 @@ trait RDFPrefixes[Rdf <: RDF] {
     Prefix[Rdf]("dc", "http://purl.org/dc/elements/1.1/"),
     Prefix[Rdf]("schema", "http://schema.org/"),
     Prefix[Rdf]("doap", "http://usefulinc.com/ns/doap#"),
-    Prefix[Rdf]("sioc", "http://rdfs.org/sioc/ns#")
+    Prefix[Rdf]("sioc", "http://rdfs.org/sioc/ns#"),
+    Prefix[Rdf]("dbo", "http://dbpedia.org/ontology/"),
+
+    Prefix[Rdf]("forms", "http://deductions-software.com/ontologies/forms#"),
+    Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#" )
     )
   val prefixesMap: Map[String, Rdf#URI] =
     prefixes.map{ pf => pf.prefixName -> URI(pf.prefixIri) }.toMap
+  val prefixesMap2: Map[String, Prefix[Rdf]] =
+    prefixes.map{ pf => pf.prefixName -> pf }.toMap
   val urisMap: Map[String, String] =
     prefixes.map{ pf =>
       (pf.prefixIri) ->
