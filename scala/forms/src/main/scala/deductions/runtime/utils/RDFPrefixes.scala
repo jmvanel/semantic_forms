@@ -37,7 +37,9 @@ trait RDFPrefixes[Rdf <: RDF] {
     Prefix[Rdf]("sioc", "http://rdfs.org/sioc/ns#"),
     Prefix[Rdf]("dbo", "http://dbpedia.org/ontology/"),
 
+    // for specific form specs (FOAF, etc)
     Prefix[Rdf]("forms", "http://deductions-software.com/ontologies/forms#"),
+    // form vocabulary
     Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#" )
     )
   val prefixesMap: Map[String, Rdf#URI] =
