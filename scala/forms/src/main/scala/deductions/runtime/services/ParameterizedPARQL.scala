@@ -190,7 +190,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
   private def search_onlyNT(search: String)
   (implicit queryMaker: SPARQLQueryMaker[Rdf] ): Try[Iterator[Rdf#Node]] = {
     val queryString = queryMaker.makeQueryString(search)
-    println( s"search_only(search='$search') \n$queryString" )
+    println( s"search_only(search='$search') \n$queryString  \n\tdataset Class ${dataset.getClass().getName}" )
         println(s"search_only: starting TRANSACTION for dataset $dataset")
         val result = for {
           query <- parseSelect(queryString)

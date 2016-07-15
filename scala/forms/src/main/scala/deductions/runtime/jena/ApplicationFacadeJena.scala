@@ -31,12 +31,15 @@ trait ApplicationFacadeJena
      *   otherwise allNamedGraph may be null
      */
     abstract class ApplicationFacadeImplJena extends JenaModule
+      with ConfigurationCopy
       with RDFStoreLocalJenaProvider
       with ApplicationFacadeImpl[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
       with RDFStoreLocalUserManagement[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 
-    new ApplicationFacadeImplJena with ConfigurationCopy {
-      lazy val original = conf
+    //    new ApplicationFacadeImplJena with ConfigurationCopy {
+    new ApplicationFacadeImplJena {
+      override lazy val original = { conf }
+      println(s""">> ApplicationFacadeImplJena ConfigurationCopy of ${original.getClass}""")
       override def htmlForm(uri0: String, blankNode: String = "",
         editable: Boolean = false,
         lang: String = "en", formuri: String = "",
