@@ -112,7 +112,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   override lazy val rdf = RDFPrefix[Rdf]
   
   
-  /** create Form from an instance (subject) URI;
+  /** create Form abstract syntax from an instance (subject) URI;
    *  the Form Specification is inferred from the class of instance;
    *  NO transaction, should be called within a transaction */
   def createForm(subject: Rdf#Node,
@@ -121,7 +121,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     (implicit graph: Rdf#Graph)
   : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
 
-    val s1 = new Step1(subject, editable, formuri)
+    val s1 = new Step1ComputePropertiesList(subject, editable, formuri)
 
     createFormDetailed(subject, s1.propertiesList,
       s1.classs,
@@ -142,7 +142,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     (implicit graph: Rdf#Graph)
   : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
 
-	  val s1 = new Step1(subject, editable, "") {
+	  val s1 = new Step1ComputePropertiesList(subject, editable, "") {
 		  override val propsFromConfig = propertiesListFromFormConfiguration(
         formSpecification.pointer)(formSpecification.graph)
 	  }
@@ -152,8 +152,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       formGroup)
   }
   
-  /** Step1: compute properties List from Config, Subject, Class (in that order) */
-  private class Step1(subject: Rdf#Node,
+  /** Step 1: compute properties List from Config, Subject, Class (in that order) */
+  private class Step1ComputePropertiesList(subject: Rdf#Node,
     editable: Boolean = false, formuri: String)
     (implicit graph: Rdf#Graph) {
     val classs = classFromSubject(subject) // TODO several classes

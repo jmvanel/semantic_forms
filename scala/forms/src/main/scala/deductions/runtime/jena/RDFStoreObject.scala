@@ -13,6 +13,7 @@ import deductions.runtime.utils.Timer
 import deductions.runtime.services.Configuration
 import com.hp.hpl.jena.rdf.model.ModelFactory
 import com.hp.hpl.jena.query.DatasetFactory
+import deductions.runtime.jena.lucene.LuceneIndex
 
 // TODO rename RDFStoreLocalJenaProvider
 

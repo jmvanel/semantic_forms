@@ -1,7 +1,6 @@
-package deductions.runtime.jena
+package deductions.runtime.jena.lucene
 
 import java.io.File
-
 import org.apache.jena.query.text.EntityDefinition
 import org.apache.jena.query.text.TextDatasetFactory
 import org.apache.lucene.analysis.standard.StandardAnalyzer
@@ -12,8 +11,8 @@ import org.apache.solr.client.solrj.impl.HttpSolrServer
 import org.w3.banana.FOAFPrefix
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFSPrefix
-
 import deductions.runtime.services.Configuration
+import deductions.runtime.jena.ImplementationSettings
 
 /** see https://jena.apache.org/documentation/query/text-query.html */
 trait LuceneIndex // [Rdf <: RDF]

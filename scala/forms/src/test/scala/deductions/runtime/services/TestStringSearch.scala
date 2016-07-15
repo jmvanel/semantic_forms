@@ -16,7 +16,7 @@ import com.hp.hpl.jena.query.Dataset
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.utils.FileUtils
-import deductions.runtime.jena.LuceneIndex
+import deductions.runtime.jena.lucene.LuceneIndex
 
 trait TestStringSearchTrait[Rdf <: RDF, DATASET] extends FunSuite
     with BeforeAndAfterAll

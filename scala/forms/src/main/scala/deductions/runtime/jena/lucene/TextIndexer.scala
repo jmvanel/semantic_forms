@@ -1,13 +1,21 @@
-package deductions.runtime.jena
+package deductions.runtime.jena.lucene
+
 import jena._
 import org.apache.jena.query.text.EntityDefinition
 import org.apache.jena.query.text.DatasetGraphText
 import com.hp.hpl.jena.tdb.TDBFactory
 import deductions.runtime.services.DefaultConfiguration
 import org.w3.banana.jena.JenaModule
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
 
-/** see https://jena.apache.org/documentation/query/text-query.html */
-object TextIndexerRDF extends TextIndexerTrait
+/**
+ * Index TDB with Lucene a posteriori;
+ *  see https://jena.apache.org/documentation/query/text-query.html
+ */
+object TextIndexerRDF extends App {
+  val te = new TextIndexerTrait
+  te.doIndex()
+}
 
 class TextIndexerTrait extends jena.textindexer(Array[String]())
     with JenaModule
@@ -25,10 +33,6 @@ class TextIndexerTrait extends jena.textindexer(Array[String]())
   val datasetGraphText: DatasetGraphText = graphWithLuceneConfigured.asInstanceOf[DatasetGraphText]
   dataset = datasetGraphText
   textIndex = dataset.getTextIndex()
-
-  def main(args: Array[String]) {
-    doIndex()
-  }
 
   def doIndex() = {
     this.entityDefinition = rdfIndexing

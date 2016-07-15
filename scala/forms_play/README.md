@@ -208,6 +208,13 @@ wget --load-cookies cookies.txt \
 ```
 
 #Database Administration
+*SBT trick*
+If you need to run a program from the Unix shell with the classpath of semantic\_forms
+```
+CLASSPATH=`sbt "export runtime:fullClasspath"`
+```
+outputs the classpath as a colon-separated list perfect if you want to use it for invoking Scala.
+
 ## Preloading RDF content
 
 *CAUTION:*
@@ -351,16 +358,30 @@ If the text indexing with Lucene or SOLR is activated *after* adding RDF data, y
 *NOTE:*
 Since the association between TDB and Lucene is set by launching semantic\_forms, if you just add RDF content with tdb.tdbloader, you must afterwards index this content by running TextIndexerRDF.
 
-To use Lucene with TDB , here is the code to configure (I don't use the TTL config. as its vocab' is not documented in TTL ) :
+To use Lucene with TDB , here is the code to configure (I don't use the Turtle config. as its vocab' is not documented in TTL ) :
 https://github.com/jmvanel/semantic\_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/LuceneIndex.scala
 This code is used in trait RDFStoreLocalJenaProvider in method `createDatabase(database_location: String)` .
 
-Here is were an existing RDF content is indexed:
-https://github.com/jmvanel/semantic\_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/TextIndexerRDF.scala
+Here is the grogram were an existing RDF content is indexed:
+https://github.com/jmvanel/semantic\_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/lucene/TextIndexerRDF.scala
 
 And here is where the text search is called:
 https://github.com/jmvanel/semantic\_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/services/StringSearchSPARQL.scala
 
+[lucene core 4.6.1 doc.](https://lucene.apache.org/core/4_6_1/)
+
+## Lucene commands
+
+Index TDB with Lucene a posteriori:
+```
+runMain deductions.runtime.jena.lucene.TextIndexerRDF
+INFO  14075 (2815 per second) properties indexed
+```
+Search the Lucene index with Lucene demo; see 
+```
+ln -s LUCENE  index
+sbt "runMain org.apache.lucene.demo.SearchFiles"
+```
 
 # Vocabulary for forms
 
