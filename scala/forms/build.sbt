@@ -27,6 +27,8 @@ libraryDependencies += "org.apache.commons" % "commons-csv" %
 "1.2"
 libraryDependencies += "org.apache.any23" % "apache-any23-csvutils" %  "1.1" // "1.0" // 
 
+libraryDependencies += "org.apache.lucene" % "lucene-demo" % "4.6.1"
+
 // for debugging the SBT test suite:
 // required for the javaOptions to be passed in (??)
 // fork := true

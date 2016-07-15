@@ -31,6 +31,7 @@ trait LuceneIndex // [Rdf <: RDF]
     entMap.set("text", foaf.firstName)
     entMap.set("text", foaf.lastName)
     entMap.set("text", foaf.name)
+    entMap.set("text", rdfs.comment)
     /* cf trait InstanceLabelsInference */
     entMap.set("text", URI("http://dbpedia.org/ontology/abstract"))
     entMap
@@ -39,6 +40,7 @@ trait LuceneIndex // [Rdf <: RDF]
   /** configure Lucene or SOLR Index for Jena */
   def configureLuceneIndex(dataset: ImplementationSettings.DATASET): ImplementationSettings.DATASET = {
     if (useTextQuery) {
+      println(s"configureLuceneIndex: useTextQuery $useTextQuery")
       /* this means: in Lucene the URI will be kept in key "uri",
          * the text indexed by SORL will be kept in key "text" */
       if (solrIndexing) {
