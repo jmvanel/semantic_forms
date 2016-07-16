@@ -332,7 +332,7 @@ After the database if populated with dbPedia data, you should run this program t
 [TextIndexerRDF.scala](https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/TextIndexerRDF.scala)
 
 ## TDB databases
-- TDB/ : user edits and cached URL's from internet
+- TDB/ : data: user edits and cached URL's from internet
 - TDB2/ : timestamp for named graphs
 - TDB3/ : user And Password association
 

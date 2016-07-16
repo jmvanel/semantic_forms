@@ -27,8 +27,8 @@ mkdir -p ../TDBsandbox2
 mkdir -p ../TDBsandbox3
 
 ln -s ../TDBsandbox  TDB
-ln -s ../TDBsandbox2 TDB
-ln -s ../TDBsandbox3 TDB
+ln -s ../TDBsandbox2 TDB2
+ln -s ../TDBsandbox3 TDB3
 
 PORT=9111
 echo starting the server on port $PORT
