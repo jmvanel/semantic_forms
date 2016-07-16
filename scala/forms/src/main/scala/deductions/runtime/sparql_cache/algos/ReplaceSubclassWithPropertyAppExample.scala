@@ -6,6 +6,7 @@ import java.io.PrintStream
 import java.io.FileReader
 import java.io.FileWriter
 import java.io.FileOutputStream
+import deductions.runtime.services.DefaultConfiguration
 
 /**
  * ReplaceSubclassWithProperty : App Example with hard-coded list of super-classes
@@ -13,9 +14,11 @@ import java.io.FileOutputStream
  */
 object ReplaceSubclassWithPropertyAppExample extends App
     with JenaModule
+    with DefaultConfiguration
     with DuplicatesDetectionOWL[Jena]
     with ReplaceSubclassWithProperty[Jena, AnyRef]
     with WrongSubclassesSelection[Jena] {
+
   //  val printStream: PrintStream = ???
   val owlFile = args(0)
   val graph = turtleReader.read(new FileReader(owlFile), "").get

@@ -16,6 +16,8 @@ import org.w3.banana.jena.JenaModule
 import deductions.runtime.jena.RDFCache
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.jena.ImplementationSettings
+import org.w3.banana.LDPPrefix
+import org.w3.banana.IANALinkPrefix
 
 /**
  * @author jmv
@@ -30,7 +32,10 @@ object CommonVocabulariesLoader extends JenaModule
   loadCommonVocabularies()
 }
 
-/** TODO reuse trait RDFPrefixes[Rdf <: RDF]
+/** TODO common stuff with trait RDFPrefixes[Rdf] ;
+ * not trivial;
+ * - probably need to distinguish the self-hosted vocabs and the others
+ * - distinguish prefixes for data (dbpedia.org/resource) and prefixes for vocabs
  *  */
 trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
@@ -48,8 +53,8 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
     DCPrefix[Rdf],
     DCTPrefix[Rdf],
     FOAFPrefix[Rdf],
-    //    LDPPrefix[Rdf],
-    //    IANALinkPrefix[Rdf],
+    LDPPrefix[Rdf],
+//    IANALinkPrefix[Rdf],
     WebACLPrefix[Rdf],
     CertPrefix[Rdf],
     OWLPrefix[Rdf])
@@ -58,7 +63,6 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
     
   /** larger and less known vocab's */
   val largerVocabs: List[Rdf#URI] =
-    // makeUri("http://usefulinc.com/ns/doap#") ::
     URI("https://raw.githubusercontent.com/edumbill/doap/master/schema/doap.rdf") ::
       makeUri("http://rdfs.org/sioc/ns#") ::   
       makeUri("http://topbraid.org/schema/schema.ttl") ::
@@ -71,7 +75,7 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
       /* geo: , con: */
       makeUri("http://www.w3.org/2003/01/geo/wgs84_pos#") ::
       makeUri("http://www.w3.org/2000/10/swap/pim/contact#") ::
-      makeUri(githubcontent + "/assemblee-virtuelle/pair/master/av.owl.ttl") ::
+      makeUri(githubcontent + "/assemblee-virtuelle/pair/master/PAIR_1.0.owl.ttl" ) ::
       makeUri("http://purl.org/ontology/cco/cognitivecharacteristics.n3") ::
       makeUri("http://www.w3.org/2004/02/skos/core#") ::
       // "http://purl.org/ontology/mo/"

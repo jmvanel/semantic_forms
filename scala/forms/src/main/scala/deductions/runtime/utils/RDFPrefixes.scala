@@ -10,11 +10,13 @@ import org.w3.banana._
   import scala.util.Try
   import scala.util.Success
   import scala.util.Failure
+  import deductions.runtime.services.Configuration
 
 /** database of Turtle prefixes;
  *  TODO possibility to add prefix-URI pairs;
  *  TODO use prefix.cc like in EulerGUI */
 trait RDFPrefixes[Rdf <: RDF] {
+  this: Configuration =>
 
   implicit val ops: RDFOps[Rdf]
   import ops._
@@ -40,7 +42,8 @@ trait RDFPrefixes[Rdf <: RDF] {
     // for specific form specs (FOAF, etc)
     Prefix[Rdf]("forms", "http://deductions-software.com/ontologies/forms#"),
     // form vocabulary
-    Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#" )
+    Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#" ),
+    Prefix[Rdf]("av", prefixAVontology )
     )
   val prefixesMap: Map[String, Rdf#URI] =
     prefixes.map{ pf => pf.prefixName -> URI(pf.prefixIri) }.toMap

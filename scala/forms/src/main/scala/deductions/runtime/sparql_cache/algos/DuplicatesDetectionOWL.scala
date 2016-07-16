@@ -11,10 +11,13 @@ import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
 import scala.collection.immutable.ListMap
 import java.io.PrintStream
+import deductions.runtime.services.Configuration
+import deductions.runtime.services.DefaultConfiguration
 
 /** Duplicates Detection for OWL; output: CSV, Grouped By labels of Datatype properties,
  *  or  owl:ObjectProperty", or "owl:Class"*/
-object DuplicatesDetectionOWLGroupBy extends App with JenaModule with DuplicatesDetectionOWL[Jena] {
+object DuplicatesDetectionOWLGroupBy extends App with JenaModule with DuplicatesDetectionOWL[Jena]
+with DefaultConfiguration {
   val addEmptyLineBetweenLabelGroups = false // true
 
   val owlFile = args(0)
@@ -82,7 +85,8 @@ object DuplicatesDetectionOWLGroupBy extends App with JenaModule with Duplicates
  * This App outputs too much : count n*(n-1)/2 ;
  *  rather use DuplicatesDetectionOWLGroupBy
  */
-object DuplicatesDetectionOWLApp extends App with JenaModule with DuplicatesDetectionOWL[Jena] {
+object DuplicatesDetectionOWLApp extends App with JenaModule with DuplicatesDetectionOWL[Jena]
+with DefaultConfiguration {
   val owlFile = args(0)
   override val printStream = new PrintStream(owlFile + ".DuplicatesDetectionOWL.csv" )
   val graph = turtleReader.read(new FileReader(owlFile), "").get
@@ -96,6 +100,8 @@ object DuplicatesDetectionOWLApp extends App with JenaModule with DuplicatesDete
 
 trait DuplicatesDetectionOWL[Rdf <: RDF]
     extends DuplicatesDetectionBase[Rdf] {
+    this: Configuration =>
+
   /** you can set your own ontology Prefix, that will be replaced on output by ":" */
   val ontologyPrefix = "http://data.onisep.fr/ontologies/"
 

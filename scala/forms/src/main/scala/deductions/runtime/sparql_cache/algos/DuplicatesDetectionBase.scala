@@ -10,12 +10,15 @@ import org.w3.banana.RDFSPrefix
 import deductions.runtime.html.HTML5TypesTrait
 import java.io.PrintStream
 import deductions.runtime.utils.RDFPrefixes
+import deductions.runtime.services.Configuration
 
 
 
 trait DuplicatesDetectionBase[Rdf <: RDF]
 extends HTML5TypesTrait[Rdf]
 with RDFPrefixes[Rdf] {
+    this: Configuration =>
+
   val FILE_OUTPUT = true
   val printStream: PrintStream = System.out
   val ontologyPrefix: String

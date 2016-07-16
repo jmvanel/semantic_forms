@@ -42,7 +42,6 @@ trait MainXml extends ToolsPage with EnterButtons {
     </p>
 
   //  def message(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
-  //  val prefixAV = "http://www.assemblee-virtuelle.org/ontologies/v1.owl#"
 
   /**
    * main Page Header for generic app:

@@ -11,7 +11,6 @@ trait DefaultConfiguration extends Configuration {
 
   /** URI Prefix prepended to newly created resource instances */
   override val defaultInstanceURIHostPrefix =
-    // "http://ldp.assemblee-virtuelle.org/"
     "http://ldp.virtual-assembly.org"
 
   override val relativeURIforCreatedResourcesByForm = "ldp/"
@@ -30,7 +29,8 @@ trait DefaultConfiguration extends Configuration {
   /** vocabulary for form specifications */
   override val formVocabPrefix = "http://deductions-software.com/ontologies/forms.owl.ttl#"
 
-  override val prefixAVontology = "http://www.assemblee-virtuelle.org/ontologies/v1.owl#"
+  // override val prefixAVontology = "http://www.assemblee-virtuelle.org/ontologies/v1.owl#"
+  override val prefixAVontology = "http://www.virtual-assembly.org/ontologies/1.0/pair#"
 
   override val needLoginForEditing: Boolean = // false //
     true
@@ -57,7 +57,9 @@ trait DefaultConfiguration extends Configuration {
   override def displayTechnicalSemWebDetails: Boolean = true
 
   /** use Text indexing with Lucene or SOLR */
-  override def useTextQuery: Boolean = false // true
+  override def useTextQuery: Boolean = true
+  // false // 
+
   /** when #useTextQuery is true, use Text indexing with SOLR */
   override def solrIndexing: Boolean = false
 

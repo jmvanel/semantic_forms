@@ -11,12 +11,15 @@ import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
 import scala.collection.immutable.ListMap
 import java.io.PrintStream
+import deductions.runtime.services.DefaultConfiguration
 
 /**
  * Duplicates Detection for OWL; output: CSV, Grouped By labels of Datatype properties,
  *  or  owl:ObjectProperty", or "owl:Class"
  */
-object TextTreeViewRDF extends App with JenaModule with DuplicatesDetectionBase[Jena] {
+object TextTreeViewRDF extends App with JenaModule
+    with DefaultConfiguration
+    with DuplicatesDetectionBase[Jena] {
 
   /** you can set your own ontology Prefix, that will be replaced on output by ":" */
   val ontologyPrefix = "http://data.onisep.fr/ontologies/"
