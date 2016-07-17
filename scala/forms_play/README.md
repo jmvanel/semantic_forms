@@ -67,7 +67,7 @@ There two use cases:
 - personal usage
 
 For both usages, the install is the same (and very easy).
-The personal usage can be a contact manager, projet manager, blog, or notes manager, ... It allows to create one's FOAF profile, navigate on the web of data and keeping, or any structured data management.
+The personal usage can be a contact manager, project manager, blog, or notes manager, ... It allows to create one's FOAF profile, navigate on the Web of Data and keeping track, or any structured data management.
 
 ### Obtaining the zipped application
 The zipped application is available as a [github release](https://github.com/jmvanel/semantic_forms/releases).
@@ -180,6 +180,9 @@ Commands to run with these useful plugins:
 
 See: https://github.com/jrudolph/sbt-dependency-graph , https://github.com/rtimush/sbt-updates
 
+The jconsole command in the Java JDK is useful to monitor a running application like semantic\_forms, through SBT or standalone.
+See https://docs.oracle.com/javase/8/docs/technotes/guides/management/jconsole.html
+
 ## Debug
 See [playframework documentation/2.4.x/IDE](https://www.playframework.com/documentation/2.4.x/IDE)
 
@@ -266,6 +269,8 @@ To re-load the database from N-Triples format (possibly delete the TDB directory
 
 ## Updading RDF content
 
+Run deductions.runtime.utils.CommandLineApp for a commented list of Scala/Java Applications available in Semantic\_forms classpath.
+
 The server must not be started while updading RDF content, because Jena TDB does not allow access to the database on disk from 2 different processes.
 
 Take inspiration from these scripts in [forms\_play](https://github.com/jmvanel/semantic_forms/tree/master/scala/forms_play)
@@ -273,7 +278,7 @@ Take inspiration from these scripts in [forms\_play](https://github.com/jmvanel/
     dump.sh       graphload.sh	 graphremove.sh     populateRDFCache.sh  tdbsearch.sh
     graphdump.sh  graphnamedlist.sh  tdbquery.sh
 
-For example, to update the I18N translations:
+For example, to update the I18N translations of the RDF vocabularies:
 
     GRAPH=rdf-i18n
     echo "DROP GRAPH <$GRAPH>" > /tmp/delete_graph.rq    
@@ -326,7 +331,12 @@ There are 2 scripts, one for downloading, the other for populating the triple da
 In `dbpedia-dbpedia.sh`you should set the LANG variable for the language you want for the rdfs:label and other properties. You can run the script several times with different LANG if several languages are needed.
 
     LANG=fr
-    VERSION=2015-04
+    VERSION=2015-10
+
+Beware: The script `populate_with_dbpedia.sh` can take hours! You may have to start from a virgin database and use tdbloader2 instead of tdbloader, see 
+https://jena.apache.org/documentation/tdb/commands.html#tdbloader
+https://jena.apache.org/documentation/tdb/commands.html#tdbloader2
+
 
 After the database if populated with dbPedia data, you should run this program to index with Lucene or SOLR the newly added text (see next paragraph).
 [TextIndexerRDF.scala](https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/TextIndexerRDF.scala)

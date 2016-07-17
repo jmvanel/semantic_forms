@@ -1,16 +1,16 @@
 #!/bin:bash
 
 LANG=fr
-VERSION=2015-10
-DBPEDIA=http://downloads.dbpedia.org/$VERSION/core-i18n
+DBPEDIA_VERSION=2015-10
+DBPEDIA_DOWNLOAD=http://downloads.dbpedia.org/$DBPEDIA_VERSION/core-i18n
 EXT=ttl.bz2
 
-mkdir --parents ~/data/dbpedia.org/$VERSION
-cd ~/data/dbpedia.org/$VERSION
+mkdir --parents ~/data/dbpedia.org/$DBPEDIA_VERSION
+cd ~/data/dbpedia.org/$DBPEDIA_VERSION
 
 
 # http://downloads.dbpedia.org/2015-10/dbpedia_2015-10.nt
-FILE=dbpedia_${VERSION}.nt
+FILE=dbpedia_${DBPEDIA_VERSION}.nt
 OWL=$DBPEDIA/../$FILE
 wget $OWL
 
@@ -27,7 +27,7 @@ wget $OWL
 function get_one_url_en_uris {
   NAME=$1
   FILE=${NAME}_en_uris_${LANG}.$EXT
-  URL=$DBPEDIA/$LANG/$FILE
+  URL=$DBPEDIA_DOWNLOAD/$LANG/$FILE
   wget $URL
   if [ $? -eq 0 ] ; then echo DONE $FILE from $URL ; else DOWNLOAD FAILED! ; fi
   bunzip2 $FILE &

@@ -98,13 +98,16 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
     })
   }
 
+  val vocabularies = {
+    val basicVocabsAsURI = basicVocabs map { p => p.apply("") }
+    basicVocabsAsURI ::: largerVocabs
+  }
+
   /** TRANSACTIONAL */
   def loadCommonVocabularies() {
     import ops._
-    val basicVocabsAsURI = basicVocabs map { p => p.apply("") }
-    val vocabs = basicVocabsAsURI ::: largerVocabs
-    Logger.getRootLogger().info(vocabs)
-    vocabs map {
+    Logger.getRootLogger().info(vocabularies)
+    vocabularies map {
       voc =>
         try {
           storeUriInNamedGraph(voc)
