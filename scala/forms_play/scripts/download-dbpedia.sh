@@ -1,7 +1,7 @@
 #!/bin:bash
 
 LANG=fr
-VERSION=2015-04
+VERSION=2015-10
 DBPEDIA=http://downloads.dbpedia.org/$VERSION/core-i18n
 EXT=ttl.bz2
 
@@ -9,30 +9,37 @@ mkdir --parents ~/data/dbpedia.org/$VERSION
 cd ~/data/dbpedia.org/$VERSION
 
 
-# http://downloads.dbpedia.org/2015-04/dbpedia_2015-04.owl.bz2
-FILE=dbpedia_${VERSION}.owl.bz2
+# http://downloads.dbpedia.org/2015-10/dbpedia_2015-10.nt
+FILE=dbpedia_${VERSION}.nt
 OWL=$DBPEDIA/../$FILE
-wget $OWL ; bunzip2 $FILE
+wget $OWL
 
-# http://downloads.dbpedia.org/2015-04/core-i18n/fr/instance-types-en-uris_fr.ttl.bz2
-# http://downloads.dbpedia.org/2015-04/core-i18n/fr/mappingbased-properties-en-uris_fr.ttl.bz2
-# http://downloads.dbpedia.org/2015-04/core-i18n/fr/infobox-properties-en-uris_fr.ttl.bz2
+# on site 20106-07
+# with _en_uris_
+# http://downloads.dbpedia.org/2015-10/core-i18n/fr/instance_types_en_uris_fr.ttl.bz2
+# http://downloads.dbpedia.org/2015-10/core-i18n/fr/mappingbased_objects_en_uris_fr.ttl.bz2
+# http://downloads.dbpedia.org/2015-10/core-i18n/fr/mappingbased_literals_en_uris_fr.ttl.bz2
 
-function get_one_url {
+# before, in 2015
+# http://downloads.dbpedia.org/2015-10/core-i18n/fr/instance-types-en-uris_fr.ttl.bz2
+# http://downloads.dbpedia.org/2015-10/core-i18n/fr/infobox-properties-en-uris_fr.ttl.bz2
+
+function get_one_url_en_uris {
   NAME=$1
-  FILE=${NAME}-en-uris_${LANG}.$EXT
+  FILE=${NAME}_en_uris_${LANG}.$EXT
   URL=$DBPEDIA/$LANG/$FILE
   wget $URL
+  if [ $? -eq 0 ] ; then echo DONE $FILE from $URL ; else DOWNLOAD FAILED! ; fi
   bunzip2 $FILE &
-  echo DONE $FILE from $URL
 }
 
-get_one_url 'instance-types'
-get_one_url 'mappingbased-properties'
-get_one_url 'labels'
-get_one_url 'short-abstracts'
-get_one_url 'infobox-properties'
-get_one_url 'article-categories'
-get_one_url 'category-labels'
-get_one_url 'skos-categories'
+get_one_url_en_uris 'article_categories'
+get_one_url_en_uris 'category_labels'
+get_one_url_en_uris 'instance_types'
+get_one_url_en_uris 'labels'
+get_one_url_en_uris 'mappingbased_literals'
+get_one_url_en_uris 'mappingbased_objects'
+get_one_url_en_uris 'short_abstracts'
+get_one_url_en_uris 'skos_categories'
+# "less clean":	get_one_url 'infobox-properties'
 
