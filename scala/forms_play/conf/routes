@@ -42,6 +42,8 @@ GET     /                   controllers.Application.index
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
+# files in local files/ directory are served like Apache does:
+GET     /files/*file                controllers.Files.at(file)
 
 # LDP
 GET     /ldp/*uri              controllers.Application.ldp(uri: String)
