@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Basic Page created based on semantic forms web services</title>
+		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css"/>
+	    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+	    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+	
+	    <!-- bootstrap -->
+	    <link rel="stylesheet" href="stylesheets/bootstrap.min.css"/>
+	    <link rel="stylesheet" href="stylesheets/bootstrap-theme.min.css"/>
+	    <script src="javascripts/bootstrap.min.js" type="text/javascript"></script>
+	
+	    <script src="javascripts/wikipedia.js" type="text/javascript"></script>
+	    <script src="javascripts/formInteractions.js" type="text/javascript"></script>
+	    
+		<script type="text/javascript">
+			function loadForm(uriToCall, displayDivId) {
+				console.log('Calling URL: ' + uriToCall);
+				$.ajax({
+					url: uriToCall,
+					context: document.body
+				}).done(function(data) {
+				    var formElem = document.getElementById(displayDivId);
+				    formElem.innerHTML = data;
+				});
+			};
+			
+			function populateForms() {
+				// Display: give URI instance (FOAF profile), and form specification URI (to set fields order, etc)
+				loadForm(
+					'/form?displayuri=' + encodeURIComponent( 'http://jmvanel.free.fr/jmv.rdf#me' ) +
+					'&formuri=' + encodeURIComponent( 'http://deductions-software.com/ontologies/forms#personForm' ),
+					'display' );
+				// Create: give form specification URI, and class of instance to create
+				loadForm(
+					'/create?uri=' + encodeURIComponent( 'http://xmlns.com/foaf/0.1/Person' ) +
+					'&formuri=' + encodeURIComponent( 'http://deductions-software.com/ontologies/forms#personForm' ),
+					'create' );
+				// Edition: give URI instance (FOAF profile), and form specification URI
+				loadForm(
+					'/form?displayuri=' + encodeURIComponent( 'http://jmvanel.free.fr/jmv.rdf#me' ) +
+					'&formuri=' + encodeURIComponent( 'http://deductions-software.com/ontologies/forms#personForm' ) +
+					'&Edit=yes',
+					'edit' );
+			};
+		</script>
+	</head>
+	<body>
+		<div class="container">
+			<div class="row">
+				<div class="page-header">
+					<h1>Example of Client Application based on SF</h1>
+				</div>
+				<p>
+					This application will allow you to create Persons, Projects and Ideas.
+				</p>
+			</div>
+			<div class="row">
+				<ul class="nav nav-pills" role="tablist">
+				  	<li role="presentation">
+				  		<a href="#display" aria-controls="display" role="tab" data-toggle="tab">
+				  			Display data about a person
+				  		</a>
+				  	</li>
+				  	<li role="presentation">
+				  		<a href="#create" aria-controls="create" role="tab" data-toggle="tab">
+				  			Create a new person ( ! ;) )
+				  		</a>
+				  	</li>
+				  	<li role="presentation">
+				  		<a href="#edit" aria-controls="edit" role="tab" data-toggle="tab">
+				  			Modify data for a person
+				  		</a>
+				  	</li>
+			 	</ul>
+			  
+			  	<div class="tab-content">
+					<div role="tabpanel" class="tab-pane fade" id="display"></div>
+					<div role="tabpanel" class="tab-pane fade" id="create"></div>
+					<div role="tabpanel" class="tab-pane fade" id="edit"></div>
+			  	</div>
+			</div>
+	  	</div>
+		<script>
+			$('#display a').click(function (e) {
+				  e.preventDefault()
+				  $(this).tab('show')
+			});
+			
+			$('#create a').click(function (e) {
+				  e.preventDefault()
+				  $(this).tab('show')
+			});
+			
+			$('#edit a').click(function (e) {
+				  e.preventDefault()
+				  $(this).tab('show')
+			});
+			
+			$(document).ready(function() {
+				populateForms();
+			});
+		</script>
+	</body>
+</html>
