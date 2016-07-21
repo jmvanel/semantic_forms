@@ -133,6 +133,7 @@ with RDFPrefixes[Rdf] {
 	  find(graph, ANY, rdfs.subClassOf, n ) . map { tr => tr.subject } . toList
   }
   
+  /** @return list of rdfs:range's */
   def rdfsRange(p: Rdf#Node, graph: Rdf#Graph) =
     find(graph, p, rdfs.range, ANY).
       map { triple => triple.objectt }.toList
@@ -143,16 +144,36 @@ with RDFPrefixes[Rdf] {
     v.flatten
   }
 
-  def rdfsPropertiesAndRangesFromClass(c: Rdf#Node, graph: Rdf#Graph): String = {
-    val props = find(graph, ANY, rdfs.domain, c)
-    val v = props . map { trip =>
-      val prop = trip.subject
+  def rdfsPropertiesAndRangesFromClass(classe: Rdf#Node, graph: Rdf#Graph): String = {
+    val props = find(graph, ANY, rdfs.domain, classe)
+    val v = props . map { triple =>
+      val prop = triple.subject
       rdfsLabel(prop, graph) + ": " +
       rdfsLabel(rdfsRange( prop, graph).headOption, graph)    
     }
     v. mkString(", ")
   }
-  
+
+  def makeDigestFromClass(classe: Rdf#Node, graph: Rdf#Graph): String = {
+    val props = find(graph, ANY, rdfs.domain, classe) . toList
+    val urisForRanges = props.map { triple =>
+      val prop = triple.subject
+      val ranges = rdfsRange(prop, graph)
+      val rangesAbbreviatedURIs = ranges.map { range =>
+        if( range == xsd.string )
+          "\"" + rdfsLabel(prop, graph) + "\""
+        else
+        abbreviateTurtle(URI(abbreviateURI(range)))
+      }
+      println(s"makeDigestFromClass: class ${abbreviateURI(classe)} prop ${abbreviateURI(prop)} ranges $rangesAbbreviatedURIs")
+      rangesAbbreviatedURIs.mkString(", ")
+    }
+    val urisForRangesAndProps = urisForRanges.toList
+    urisForRangesAndProps.sortWith(
+      (n1, n2) => (n1) < (n2)).
+      mkString("; ")
+  }
+
   def rdfsRangeToString(n: Rdf#Node, graph: Rdf#Graph): String = {
     rdfsRange(n, graph) match {
       case range :: rest =>

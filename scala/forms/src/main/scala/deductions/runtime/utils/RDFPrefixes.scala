@@ -46,7 +46,9 @@ trait RDFPrefixes[Rdf <: RDF] {
     Prefix[Rdf]("av", prefixAVontology )
     )
   val prefixesMap: Map[String, Rdf#URI] =
-    prefixes.map{ pf => pf.prefixName -> URI(pf.prefixIri) }.toMap
+    prefixes.map{ pf =>
+      // println(s"prefix ${pf.prefixName} : ${pf.prefixIri}")
+      pf.prefixName -> URI(pf.prefixIri) }.toMap
   val prefixesMap2: Map[String, Prefix[Rdf]] =
     prefixes.map{ pf => pf.prefixName -> pf }.toMap
   val urisMap: Map[String, String] =

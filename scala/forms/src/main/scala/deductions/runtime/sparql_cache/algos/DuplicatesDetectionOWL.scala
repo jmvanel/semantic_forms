@@ -16,8 +16,11 @@ import deductions.runtime.services.DefaultConfiguration
 
 /** Duplicates Detection for OWL; output: CSV, Grouped By labels of Datatype properties,
  *  or  owl:ObjectProperty", or "owl:Class"*/
-object DuplicatesDetectionOWLGroupBy extends App with JenaModule with DuplicatesDetectionOWL[Jena]
-with DefaultConfiguration {
+object DuplicatesDetectionOWLGroupBy extends App
+with JenaModule
+with DefaultConfiguration
+with DuplicatesDetectionOWL[Jena]
+{
   val addEmptyLineBetweenLabelGroups = false // true
 
   val owlFile = args(0)
@@ -58,7 +61,12 @@ with DefaultConfiguration {
           case owl.DatatypeProperty => contextLabelProperty
           case owl.Class            => rdfsPropertiesAndRangesFromClass(n,graph)
         }
-        s"\t'${labelAndList._1}'\t" + abbreviateURI(n) + "\t" + contextLabel + "\t" + rangeLabel
+        val digestFromClass = "\t" +
+          (if (classToReportURI == owl.Class)
+            makeDigestFromClass(n, graph)
+          else "")
+        s"\t'${labelAndList._1}'\t" + abbreviateURI(n) + "\t" + contextLabel + "\t" +
+        rangeLabel + digestFromClass
       }
       columns.mkString("\n") + (
         if (addEmptyLineBetweenLabelGroups)
@@ -66,7 +74,8 @@ with DefaultConfiguration {
         else "")
     }
     // TODO I18N
-    output("Action	Libellé	Id	Contexte	type(rdfs:range)	Description")
+    //      A       B       C   D         E                 F                     G
+    output("Action	Libellé	Id	Contexte	type(rdfs:range)	Empreinte(propriétés)	Description")
     datatypePropertiesgroupedByRdfsLabel.map {
       labelAndList => formatCSVLines(labelAndList)
     }.mkString("\n")

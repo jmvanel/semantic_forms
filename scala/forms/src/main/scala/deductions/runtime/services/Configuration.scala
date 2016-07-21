@@ -28,7 +28,7 @@ trait Configuration {
 
   /** vocabulary for form specifications */
   def formVocabPrefix: String
-  def prefixAVontology: String
+  def prefixAVontology: String = "prefixAVontology"
 
   def needLoginForEditing: Boolean
   def needLoginForDisplaying: Boolean
