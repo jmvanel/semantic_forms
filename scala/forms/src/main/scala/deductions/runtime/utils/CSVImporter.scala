@@ -79,7 +79,9 @@ trait CSVImporter[Rdf <: RDF, DATASET]
 
   /** TODO consider using R2RML vocab' */
   private def csvPredicate(p: String) = URI(CSV.NS + p)
-    
+
+  /** run the parser and "semantize"
+   *  @param documentURI document URI to be predended to column names */
   def run(
       in: InputStream,
       documentURI: URI,
@@ -205,7 +207,8 @@ trait CSVImporter[Rdf <: RDF, DATASET]
     columnsMappings.getOrElse( columnName, normalize( columnName, documentURI) )
   }
 
-  /** normalize column names: remove "&", "?", "/", capitalize */
+  /** normalize column names: remove "&", "?", "/", capitalize;
+   * prepend document URI */
   private def normalize(toBeNormalized0: String, documentURI: URI): URI = {
     val toBeNormalized = toBeNormalized0.trim().toLowerCase().
     replace("?", "").

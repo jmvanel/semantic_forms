@@ -10,8 +10,13 @@ import org.w3.banana.jena.JenaModule
 import java.io.FileReader
 import org.w3.banana.PointedGraph
 import deductions.runtime.utils.CSVImporter
+import java.io.FileInputStream
+import deductions.runtime.services.DefaultConfiguration
 
-object ReplaceSubclassWithPropertyApp extends App with JenaModule with ReplaceSubclassWithProperty[Jena, Any] 
+object ReplaceSubclassWithPropertyApp extends App
+with JenaModule
+with DefaultConfiguration
+with ReplaceSubclassWithProperty[Jena, Any] 
 {
   val owlFile = args(0)
   val graph = turtleReader.read(new FileReader(owlFile), "").get
@@ -47,8 +52,8 @@ trait WrongSubclassesSelection[Rdf <: RDF] {
         lit => URI(""))
 }
 
-trait ReplaceSubclassWithProperty[Rdf <: RDF, DATASET] // TODO extends CSVImporter[Rdf, DATASET]
-{
+trait ReplaceSubclassWithProperty[Rdf <: RDF, DATASET]
+extends CSVImporter[Rdf, DATASET] {
   implicit val ops: RDFOps[Rdf]
   import ops._
   private val rdf = RDFPrefix[Rdf]
@@ -93,8 +98,11 @@ trait ReplaceSubclassWithProperty[Rdf <: RDF, DATASET] // TODO extends CSVImport
     }
   }
 
-  /** read CSV file with columns owl:Class & rdfs.subClassOf : inheritances to transform */
+  /** read CSV file with columns owl:Class & rdfs:subClassOf : inheritances to transform */
   def readCSVFile(tableClassesFile: String): List[(Rdf#URI, Rdf#URI)] = {
-    ???
+    val z = run( new FileInputStream(tableClassesFile), URI("urn:/owl/transform"), List() )
+    
+    // TODO
+    List()
   }
 }
