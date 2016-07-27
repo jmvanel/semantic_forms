@@ -201,7 +201,10 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       "organisation 2" -> av.contributesToOrganization,
       "Idée 1" -> av.idea,
       "Idée 2" -> av.idea,
-      "Rencontré à" -> av.metAt
+      "Rencontré à" -> av.metAt,
+      
+      "Identifiant de la propriété" -> URI(restruc.prefixIri + "property"),
+      "Action" -> URI(restruc.prefixIri + "replacingProperty")
   )
   private def manageColumnsMapping(columnName: String, documentURI: URI): URI = {
     columnsMappings.getOrElse( columnName, normalize( columnName, documentURI) )

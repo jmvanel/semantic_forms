@@ -22,6 +22,7 @@ with DefaultConfiguration
 with DuplicatesDetectionOWL[Jena]
 {
   val addEmptyLineBetweenLabelGroups = false // true
+  val filterAmetysSubForms = true
 
   val owlFile = args(0)
 
@@ -29,12 +30,21 @@ with DuplicatesDetectionOWL[Jena]
   
   val classToReportURI = owlClassToReport(args)
 
-  val datatypePropertiesURI = findInstances(graph, classToReportURI)
+  val datatypePropertiesURI = {
+    val allInstances = findInstances(graph, classToReportURI)
+    // filter Ametys sub-forms
+    if (filterAmetysSubForms)
+      allInstances.filter { ins => !ins.toString().endsWith("#class") }
+    else
+      allInstances
+  }
 
-  val outputFile = owlFile + "." + rdfsLabel(classToReportURI, graph) + ".group_by_label.csv"
+  val outputFile = owlFile + "." + rdfsLabel(classToReportURI, graph).replace(":","=") +
+		  ".group_by_label.csv"
   override val printStream = new PrintStream(outputFile)
 
-  val datatypePropertiesgroupedByRdfsLabel0 = datatypePropertiesURI.
+  val datatypePropertiesgroupedByRdfsLabel0: Map[String, List[Rdf#Node]] =
+    datatypePropertiesURI.
     groupBy { n => rdfsLabel(n, graph) }
   val datatypePropertiesgroupedByRdfsLabel = ListMap(datatypePropertiesgroupedByRdfsLabel0.toSeq.
     sortBy(_._1): _*)

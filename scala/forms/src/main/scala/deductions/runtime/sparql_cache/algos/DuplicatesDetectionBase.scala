@@ -161,11 +161,13 @@ with RDFPrefixes[Rdf] {
       val ranges = rdfsRange(prop, graph)
       val rangesAbbreviatedURIs = ranges.map { range =>
         if( range == xsd.string )
-          "\"" + rdfsLabel(prop, graph) + "\""
+//          "\"" + rdfsLabel(prop, graph) + "\""
+          abbreviateURI(prop).split("/").last
         else
         abbreviateTurtle(URI(abbreviateURI(range)))
       }
-      println(s"makeDigestFromClass: class ${abbreviateURI(classe)} prop ${abbreviateURI(prop)} ranges $rangesAbbreviatedURIs")
+      println(s"""makeDigestFromClass: class ${abbreviateURI(classe)} prop ${abbreviateURI(prop)} ranges_or_URI $rangesAbbreviatedURIs
+          " ${rdfsLabel(prop, graph)}" """)
       rangesAbbreviatedURIs.mkString(", ")
     }
     val urisForRangesAndProps = urisForRanges.toList

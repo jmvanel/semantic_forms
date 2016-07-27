@@ -22,6 +22,9 @@ trait RDFPrefixes[Rdf <: RDF] {
   import ops._
 
   val commonSchemes = List("http", "https", "url")
+
+  val restruc = Prefix[Rdf]("restruc", "http://deductions.github.io/restruc.owl.ttl#" )
+
   val prefixes = List(
     RDFPrefix[Rdf], RDFSPrefix[Rdf],
     XSDPrefix[Rdf],
@@ -43,8 +46,10 @@ trait RDFPrefixes[Rdf <: RDF] {
     Prefix[Rdf]("forms", "http://deductions-software.com/ontologies/forms#"),
     // form vocabulary
     Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#" ),
-    Prefix[Rdf]("av", prefixAVontology )
+    Prefix[Rdf]("av", prefixAVontology ),
+    restruc
     )
+  
   val prefixesMap: Map[String, Rdf#URI] =
     prefixes.map{ pf =>
       // println(s"prefix ${pf.prefixName} : ${pf.prefixIri}")

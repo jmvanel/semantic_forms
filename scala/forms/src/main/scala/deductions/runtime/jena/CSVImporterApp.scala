@@ -7,6 +7,7 @@ import java.net.HttpURLConnection
 import java.io.File
 import java.io.FileOutputStream
 import java.io.FileReader
+import deductions.runtime.services.DefaultConfiguration
 
 /**
  * App to Import CSV into TDB;
@@ -19,11 +20,14 @@ import java.io.FileReader
  */
 object CSVImporterApp extends App
     with RDFStoreLocalJena1Provider
+    with DefaultConfiguration
     with CSVImporter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
   import ops._
 
   println(s"Arguments: ${args.mkString(", ")}")
   val urlOrFile = args(0)
+  
+  // make URL from file or already URL
   val url = if (urlOrFile.startsWith("http") ||
     urlOrFile.startsWith("https"))
     urlOrFile
@@ -32,10 +36,22 @@ object CSVImporterApp extends App
     if (file.exists()) file.toURI().toURL().toString()
     else throw new RuntimeException(s"File $file does not exist!")
   }
+  
+  // make URI prefix
+  val documentURI: Rdf#URI = URI(
+    if (args.size > 1) args(1) else {
+//      url })
+      val d = url match {
+      case _ if(url.endsWith("#")) => url
+      case _ if(url.endsWith("/")) => url
+      case _ => url + "#"
+      }
+      d
+    })
+      println(s"""document URI
+$documentURI""")
 
   val in: InputStream = getUrlInputStream(url)
-  val documentURI: Rdf#URI = URI(
-    if (args.size > 1) args(1) else url)
   val graph = if (args.size > 2) {
     val propertyValueForEachRow: List[(Rdf#URI, Rdf#Node)] = {
       val eachRowFile = args(2)
