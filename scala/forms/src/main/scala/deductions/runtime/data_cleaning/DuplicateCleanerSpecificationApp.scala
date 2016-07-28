@@ -36,6 +36,7 @@ object DuplicateCleanerSpecificationApp extends App
 
   def duplicateCleanerApp() = {
     val csvSpecification = args(0)
+    loadFilesFromArgs(args)
     val propertyChanges = readCSVFile(csvSpecification)
     val v = propertyChanges.groupBy(pair => pair._2)
     val uriTokeep_duplicateURIs = v.map { case (uri, list) => (uri, list.map { el => el._1 }) }
@@ -43,8 +44,7 @@ object DuplicateCleanerSpecificationApp extends App
       case (uriTokeep, duplicateURIs) =>
         removeDuplicates(uriTokeep, duplicateURIs)
     }
-    
-    //  TODO  outputModifiedTurtle(files)
+    outputModifiedTurtle(csvSpecification)
   }
 
   /** read CSV file with columns restruc:property & restruc:replacingProperty */

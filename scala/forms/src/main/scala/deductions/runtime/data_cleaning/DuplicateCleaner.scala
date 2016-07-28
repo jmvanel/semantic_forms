@@ -13,6 +13,9 @@ import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
 import java.net.URI
 import deductions.runtime.services.URIManagement
+import java.io.FileWriter
+import java.io.File
+import deductions.runtime.sparql_cache.RDFCacheAlgo
 
 /**
  * merge Duplicates among instances of given class URI;
@@ -23,6 +26,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     extends BlankNodeCleanerBase[Rdf, DATASET]
     with PropertiesCleaner[Rdf, DATASET]
     with PropertyDomainCleaner[Rdf, DATASET]
+    with RDFCacheAlgo[Rdf, DATASET]
     with InstanceLabelsInference2[Rdf]
     with PreferredLanguageLiteral[Rdf]
     with URIManagement
@@ -210,4 +214,31 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     println(s"$mess: allNamedGraph ${allNamedGraph.toString().
       replaceAll(""";""", ".\n")}" )
     })
+
+    /** Load files From Args ( starting at args(1) ) */
+    def loadFilesFromArgs(args: Array[String]): Array[String] = {
+      val files = args.slice(1, args.size)
+      println(s"Files ${files.mkString(", ")}")
+      for (file <- files) {
+        println(s"Load file $file")
+        retrieveURI(ops.URI(new File(file).toURI().toASCIIString()))
+        println(s"Loaded file $file")
+      }
+      files
+    }
+  
+  /** output modified data in /tmp */
+  def outputModifiedTurtle(file: String) = {
+    val queryString = """
+    CONSTRUCT { ?S ?P ?O }
+    WHERE {
+      GRAPH ?GR { ?S ?P ?O }
+    } """
+    val ttl = sparqlConstructQueryTR(queryString)
+    val outputFile = "/tmp/" + new File(file).getName
+    println(s"Writing ${ttl.length()} chars in  output File $outputFile")
+    val fw = new FileWriter(new File(outputFile))
+    fw.write(ttl)
+    fw.close()
+  }
 }
