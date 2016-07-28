@@ -17,7 +17,8 @@ import org.w3.banana.PointedGraphs
 import org.w3.banana.RDFSPrefix
 
 
-trait PropertiesCleaner[Rdf <: RDF, DATASET] extends BlankNodeCleanerBase[Rdf, DATASET] {
+trait PropertiesCleaner[Rdf <: RDF, DATASET]
+extends BlankNodeCleanerBase[Rdf, DATASET] {
   import ops._
   import rdfStore.graphStoreSyntax._
   import rdfStore.transactorSyntax._

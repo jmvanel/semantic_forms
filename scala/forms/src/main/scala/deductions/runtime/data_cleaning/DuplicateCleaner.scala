@@ -15,7 +15,8 @@ import java.net.URI
 import deductions.runtime.services.URIManagement
 
 /**
- * merge FOAF duplicates,
+ * merge Duplicates among instances of given class URI;
+ * use cases: merge FOAF duplicates, etc;
  *  #41 https://github.com/jmvanel/semantic_forms/issues/41
  */
 trait DuplicateCleaner[Rdf <: RDF, DATASET]
@@ -31,7 +32,8 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
   import rdfStore.transactorSyntax._
 
   /**
-   * merges Duplicates among instances of given class URI;
+   * merges Duplicates among instances of given class URI,
+   * based on criterium: instanceLabel() giving identical result;
    *  includes transactions
    */
   def removeAllDuplicates(classURI: Rdf#URI, lang: String = ""): String = {
@@ -53,16 +55,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
           propertiesHavingDuplicates = propertiesHavingDuplicates + 1
           duplicatesCount = duplicatesCount + duplicateURIs.size
           println(s"""Deleting duplicates for "${el._1}" uriTokeep <$uriTokeep>, delete count ${duplicateURIs.size}""")
-
-          copyPropertyValuePairs(uriTokeep, duplicateURIs)
-//          dumpAllNamedGraph("AFTER copyPropertyValuePairs")
-          
-          removeQuadsWithSubjects(duplicateURIs)
-          println(s"Deleted ${duplicateURIs.size} duplicate URI's")
-          
-          processKeepingTrackOfDuplicates(uriTokeep, duplicateURIs)
-          
-          processMultipleRdfsDomains(uriTokeep, duplicateURIs)
+          removeDuplicates(uriTokeep, duplicateURIs )
         }
       } catch {
         case t: Throwable =>
@@ -72,8 +65,16 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     s"propertiesHavingDuplicates: $propertiesHavingDuplicates, duplicatesCount: $duplicatesCount"
   }
 
+  def removeDuplicates(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI]): Unit = {
+    copyPropertyValuePairs(uriTokeep, duplicateURIs)
+    removeQuadsWithSubjects(duplicateURIs)
+    println(s"Deleted ${duplicateURIs.size} duplicate URI's")
+    processKeepingTrackOfDuplicates(uriTokeep, duplicateURIs)
+    processMultipleRdfsDomains(uriTokeep, duplicateURIs)
+  }
+    
   /** includes transaction */
-  private def removeQuadsWithSubjects(subjects: Seq[Rdf#Node]) = {
+  protected def removeQuadsWithSubjects(subjects: Seq[Rdf#Node]) = {
     for (dupURI <- subjects) {
       val transaction = rdfStore.rw( dataset, {
         removeQuadsWithSubject(dupURI)
@@ -83,10 +84,11 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
 
   /**
    * tell which URI's are Duplicates;
-   *  NOTE: this is the function you may want to override, depending on your URI creation policy.
+   *  NOTE: this is the function you may want to override,
+   *  depending on your criteria for duplication, and URI creation policy.
    *
    * The URI considered as non-duplicate will be
-   * HTTP URI's not in the DSN domain of the server
+   * HTTP URI's not in the DNS domain of the server,
    * URI in the urn: scheme that were loaded in batch from CVS data
    * In the case both are present, the HTTP URI will be kept.
    *
@@ -98,9 +100,9 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
    *
    * @return the URI considered as non-duplicate, and a list of the duplicates
    */
-  private def tellDuplicates(uris: Seq[Rdf#URI]): (Rdf#URI, Seq[Rdf#URI]) = {
+  protected def tellDuplicates(uris: Seq[Rdf#URI]): (Rdf#URI, Seq[Rdf#URI]) = {
     if (uris.size <= 1)
-      // nothing to do by caller!
+      // nothing to do by caller! no Duplicates
       return (ops.URI(""), Seq())
 
     def filterURIsByScheme(scheme: String) = {

@@ -20,7 +20,7 @@ import org.w3.banana.io.JsonLdExpanded
 import org.w3.banana.io.JsonLdCompacted
 import org.w3.banana.syntax.NodeMatchSyntax
 
-/**
+/** TODO separate stuff depending on dataset, and stuff taking a  graph in argument
  * @author jmv
  */
 trait SPARQLHelpers[Rdf <: RDF, DATASET]
