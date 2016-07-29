@@ -26,7 +26,7 @@ object CSVImporterApp extends App
 
   println(s"Arguments: ${args.mkString(", ")}")
   val urlOrFile = args(0)
-  
+
   // make URL from file or already URL
   val url = if (urlOrFile.startsWith("http") ||
     urlOrFile.startsWith("https"))
@@ -36,20 +36,20 @@ object CSVImporterApp extends App
     if (file.exists()) file.toURI().toURL().toString()
     else throw new RuntimeException(s"File $file does not exist!")
   }
-  
+
   // make URI prefix
   val documentURI: Rdf#URI = URI(
     if (args.size > 1) args(1) else {
-//      url })
+      //      url })
       val d = url match {
-      case _ if(url.endsWith("#")) => url
-      case _ if(url.endsWith("/")) => url
-      case _ => url + "#"
+        case _ if (url.endsWith("#")) => url
+        case _ if (url.endsWith("/")) => url
+        case _ => url + "#"
       }
       d
     })
-      println(s"""document URI
-$documentURI""")
+  println(s"""document URI
+		  $documentURI""")
 
   val in: InputStream = getUrlInputStream(url)
   val graph = if (args.size > 2) {
@@ -70,7 +70,8 @@ $documentURI""")
   //  if (args.size > 3 && args(3) == "print" ) 
   {
     val outputFile = urlOrFile + ".ttl"
-    println(s"Write $outputFile, # of triples ${graph.size()}")
+    println(s"""Write $outputFile,
+      # of triples ${graph.size()}""")
     val os = new FileOutputStream(outputFile)
     turtleWriter.write(graph, os, fromUri(documentURI))
   }

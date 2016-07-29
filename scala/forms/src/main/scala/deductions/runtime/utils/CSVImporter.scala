@@ -159,19 +159,26 @@ trait CSVImporter[Rdf <: RDF, DATASET]
     var index = 0
     for (h <- header.keys) {
       val candidate = h.trim()
-      result . update( index, 
-        if (isAbsoluteURI(candidate)) {
-          // accept prefixed URI's like foaf:name, and expand them
-          expand(candidate) match {
-            case Some(uri) => uri 
-            case None => URI(candidate)
-          }
-        } else
-          manageColumnsMapping(candidate, documentURI)
-      )
+      val headerURI =
+        recognizePrefixedURI(candidate) match {
+        case Some(uri) => uri
+        case None => manageColumnsMapping(candidate, documentURI)
+      }
+      result . update( index, headerURI )
       index += 1
     }
     result
+  }
+
+  def recognizePrefixedURI(candidate: String): Option[Rdf#URI] = {
+    if (isAbsoluteURI(candidate) ||
+        candidate.startsWith(":") ) {
+      // accept prefixed URI's like foaf:name, and expand them
+      expand(candidate) match {
+        case Some(uri) => Some(uri)
+        case None      => Some(URI(candidate))
+      }
+    } else None
   }
 
   /** columns Mappings from Guillaume's column names to well-known RDF properties
@@ -206,6 +213,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       "Identifiant de la propriété" -> URI(restruc.prefixIri + "property"),
       "Action" -> URI(restruc.prefixIri + "replacingProperty")
   )
+  /** manage Mapping from Column name to URI */
   private def manageColumnsMapping(columnName: String, documentURI: URI): URI = {
     columnsMappings.getOrElse( columnName, normalize( columnName, documentURI) )
   }
@@ -244,12 +252,18 @@ trait CSVImporter[Rdf <: RDF, DATASET]
     }
   }
 
+  /** get RDF Object From Cell */
   private def getObjectFromCell(cell0: String): Rdf#Node = {
-    var `object`: Rdf#Node = Literal("")
     val cell = cell0.trim()
     if (isAbsoluteURI(cell)) {
-      `object` = URI(cell)
+        URI(cell)
 
+    } else if( cell.contains(":")) {
+    	recognizePrefixedURI(cell) match {
+        case Some(uri) => uri
+        case None => Literal(cell)
+      }
+      
     } else {
 
       var datatype =
@@ -259,12 +273,10 @@ trait CSVImporter[Rdf <: RDF, DATASET]
           xsd.float
         } else
           xsd.string        
-
-      `object` = Literal(cell, datatype)
+      Literal(cell, datatype)
     }
-    `object`
   }
-
+  
   private def addTableMetadataStatements(documentURI: URI, 
 		  list: ArrayBuffer[Rdf#Triple],
 		  numberOfRows: Int, 

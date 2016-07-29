@@ -47,7 +47,8 @@ trait RDFPrefixes[Rdf <: RDF] {
     // form vocabulary
     Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#" ),
     Prefix[Rdf]("av", prefixAVontology ),
-    restruc
+    restruc,
+    Prefix[Rdf]("", "http://data.onisep.fr/ontologies/" )
     )
   
   val prefixesMap: Map[String, Rdf#URI] =
@@ -61,24 +62,38 @@ trait RDFPrefixes[Rdf <: RDF] {
       (pf.prefixIri) ->
       pf.prefixName
       }.toMap
-  
-  /** expand possibly Prefixed URI (like foaf:name),
+
+  /**
+   * expand possibly Prefixed URI (like foaf:name),
    *  @return Some(URI("http://xmlns.com/foaf/0.1/name")),
-   *  or output None */
+   *  or output None
+   */
   def expand(possiblyPrefixedURI: String): Option[Rdf#URI] = {
     val uri_string = possiblyPrefixedURI // URLEncoder.encode(possiblyPrefixedURI, "UTF-8")
-    val tr = Try{
-    val uri = new jURI(uri_string)
-    if (uri.isAbsolute() && !commonSchemes.contains(uri.getScheme)) {
-      // then it's possibly a Prefixed URI like foaf:name
-      val prefix = uri.getScheme
-      val prefixAsURI = prefixesMap.get(prefix)
-      prefixAsURI match {
-        case Some(prefixIri) =>
-          Some( URI( fromUri(prefixIri) + possiblyPrefixedURI.substring( prefix.length() + 1 ) ))
+    val tr = Try {
+
+      val prefixOption =
+        if (possiblyPrefixedURI.startsWith(":")) {
+          Some("")
+        } else {
+          val uri = new jURI(uri_string)
+          if (uri.isAbsolute() && !commonSchemes.contains(uri.getScheme)) {
+            // then it's possibly a Prefixed URI like foaf:name
+            Some(uri.getScheme)
+          } else None
+        }
+
+      prefixOption match {
+        case Some(prefix) => {
+          val prefixAsURI = prefixesMap.get(prefix)
+          prefixAsURI match {
+            case Some(prefixIri) =>
+              Some(URI(fromUri(prefixIri) + possiblyPrefixedURI.substring(prefix.length() + 1)))
+            case None => None
+          }
+        }
         case None => None
       }
-    } else None
     }
     tr match {
       case Success(r) => r

@@ -38,6 +38,7 @@ object DuplicateCleanerSpecificationApp extends App
     val csvSpecification = args(0)
     loadFilesFromArgs(args)
     val propertyChanges = readCSVFile(csvSpecification)
+    println(s"DuplicateCleanerSpecificationApp: propertyChanges: ${propertyChanges.size}")
     val v = propertyChanges.groupBy(pair => pair._2)
     val uriTokeep_duplicateURIs = v.map { case (uri, list) => (uri, list.map { el => el._1 }) }
     uriTokeep_duplicateURIs.map {
@@ -50,6 +51,7 @@ object DuplicateCleanerSpecificationApp extends App
   /** read CSV file with columns restruc:property & restruc:replacingProperty */
   private def readCSVFile(file: String): List[(Rdf#URI, Rdf#URI)] = {
     val graph = run(new FileInputStream(file), URI("urn:/owl/transform"), List())
+    println(s"DuplicateCleanerSpecificationApp: file $file: graph size: ${graph.size}")
     val queryString = """
          | PREFIX restruc: <http://deductions.github.io/restruc.owl.ttl#>
          | SELECT ?P ?RP
@@ -59,6 +61,6 @@ object DuplicateCleanerSpecificationApp extends App
          | }""".stripMargin
     val variables = Seq("P", "RP")
     val res = runSparqlSelect(queryString, variables, graph: Rdf#Graph)
-    res . map { s => (s(0), s(0)) }
+    res.map { s => (s(0), s(0)) }
   }
 }
