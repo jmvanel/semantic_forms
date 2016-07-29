@@ -45,7 +45,7 @@ object DuplicateCleanerSpecificationApp extends App
       case (uriTokeep, duplicateURIs) =>
         removeDuplicates(uriTokeep, duplicateURIs)
     }
-    outputModifiedTurtle(csvSpecification)
+    outputModifiedTurtle(csvSpecification + ".ttl")
   }
 
   /** read CSV file with columns restruc:property & restruc:replacingProperty */
@@ -61,6 +61,6 @@ object DuplicateCleanerSpecificationApp extends App
          | }""".stripMargin
     val variables = Seq("P", "RP")
     val res = runSparqlSelect(queryString, variables, graph: Rdf#Graph)
-    res.map { s => (s(0), s(0)) }
+    res.map { s => (s(0), s(1)) }
   }
 }

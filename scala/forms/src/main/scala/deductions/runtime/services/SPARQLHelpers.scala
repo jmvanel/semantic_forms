@@ -295,7 +295,14 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       Map()).get
     val results: Iterator[Seq[Rdf#URI]] = answers.toIterable map {
       row =>
-        for (variable <- variables) yield row(variable).get.as[Rdf#URI].get
+        println(s"row $row")
+        for (variable <- variables) yield {
+          val cell = row(variable)
+          cell match {
+            case Success(node) => foldNode(node)( uri=> uri, x=>URI(""), x=>URI("") )
+            case Failure(error) => URI("")
+          }
+        }
     }
     results.to[List]
   }
