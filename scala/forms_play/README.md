@@ -67,7 +67,8 @@ There two use cases:
 - personal usage
 
 For both usages, the install is the same (and very easy).
-The personal usage can be a contact manager, project manager, blog, or notes manager, ... It allows to create one's FOAF profile, navigate on the Web of Data and keeping track, or any structured data management.
+The personal usage can be a contact manager, project manager, blog, or notes manager, ... It allows to create one's FOAF profile, navigate on the Web of Data and keeping track, or any structured data management. See details on 
+ [User manual / possible usages](https://github.com/jmvanel/semantic_forms/wiki/User_manual#possible-usages)
 
 ### Obtaining the zipped application
 The zipped application is available as a [github release](https://github.com/jmvanel/semantic_forms/releases).
@@ -77,13 +78,19 @@ Otherwise, to obtain the zipped application starting from the sources (see above
 Then the archive is found here :
 `target/universal/semantic_forms_play-1.0-SNAPSHOT.zip
 `
+
 ### Runnning the zipped application
 Download this zip on the server, unzip and type:
 ```shell
 cd semantic_forms_play-1.0-SNAPSHOT
 nohup bin/semantic_forms_play -J-Xmx50M &
 ```
-Or you can change the default port (9000) like this:
+
+The generic application is perfectly usable out of the box, see [User manual](https://github.com/jmvanel/semantic_forms/wiki/User_manual). However, it is better to preload common RDF vocabularies and related form specifications and I18N translations, see: [[preloading-rdf-content]] .
+
+
+#### Settings when runnning the zipped distribution
+You can change the default port (9000) to e.g. 9999 like this:
 
 	nohup bin/semantic_forms_play -J-Xmx50M -Dhttp.port=9999 &
 
