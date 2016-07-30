@@ -12,8 +12,12 @@ For now, the display looks like this,
 plus a textbox to enter a URL semantics, eg a FOAF profile or DBpedia URI : 
 [example.form.foaf.html](http://htmlpreview.github.io/?https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/example.form.foaf.html)
 
-See the [wiki](https://github.com/jmvanel/semantic_forms/wiki) for User manual and Developer manual.
-This README is like an administrator Manual. 
+See:
+
+- the [wiki](https://github.com/jmvanel/semantic_forms/wiki) for User manual and Developer manual.
+- [Installation of the `semantic_forms` generic application](../../doc/en/install.md)
+
+This README is like an administrator Manual.
 
 ## Terminology
 
@@ -86,7 +90,8 @@ cd semantic_forms_play-1.0-SNAPSHOT
 nohup bin/semantic_forms_play -J-Xmx50M &
 ```
 
-The generic application is perfectly usable out of the box, see [User manual](https://github.com/jmvanel/semantic_forms/wiki/User_manual). However, it is better to preload common RDF vocabularies and related form specifications and I18N translations, see: [[preloading-rdf-content]] .
+The default port is 9000, so you can direct your browser to [http://localhost:9000](http://localhost:9000) .
+The generic application is perfectly usable out of the box, see [User manual](https://github.com/jmvanel/semantic_forms/wiki/User_manual). However, it is better to preload common RDF vocabularies and related form specifications and I18N translations, see: [preloading-rdf-content](#preloading-rdf-content) .
 
 
 #### Settings when runnning the zipped distribution
