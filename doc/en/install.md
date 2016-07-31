@@ -1,7 +1,7 @@
 # Installation of the `semantic_forms` generic application
 
 ## Prerequisites 
-- Java JRE 8 (check with ``java -version``)
+- Java JRE 8 (check with `java -version`)
 
 ## Obtaining the zipped application
 The zipped application is available as a [github release](https://github.com/jmvanel/semantic_forms/releases).
@@ -20,7 +20,7 @@ bin/semantic_forms_play -J-Xmx50M &
 ```
 but then the application will be stopped when the user disconnects.
 
-*** On windows simply run: ***
+**On windows simply run:**
 ```
 bin/semantic_forms_play.bat -J-Xmx50M &
 ```
@@ -30,7 +30,7 @@ The generic application is perfectly usable out of the box, see [User manual](ht
 ```shell
 scripts/populateRDFCache.sh
 ```
-*** CAUTION: all scripts involving the database must be run when the web application is stopped.***
+**CAUTION: all scripts involving the database must be run when the web application is stopped.**
 
 For more details, see: [preloading RDF content](../../scala/forms_play/README.md#preloading-rdf-content) .
 
