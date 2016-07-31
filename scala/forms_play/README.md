@@ -64,11 +64,12 @@ A convenience link to [local semantic\_forms ScalaDoc](../forms/target/scala-2.1
 
 Some references on ScalaDoc: http://docs.scala-lang.org/style/scaladoc.html , http://docs.scala-lang.org/overviews/scaladoc/for-library-authors.html , http://stackoverflow.com/questions/15394322/how-to-disambiguate-links-to-methods-in-scaladoc
 
-## Run on a machine without development environment
-There two use cases:
+## Run without development environment
+There several use cases:
 
 - server (internet or intranet)
 - personal usage
+- running some memory intensive scripts (avoids the big overhead of SBT)
 
 For both usages, the install is the same (and very easy).
 The personal usage can be a contact manager, project manager, blog, or notes manager, ... It allows to create one's FOAF profile, navigate on the Web of Data and keeping track, or any structured data management. See details on 
