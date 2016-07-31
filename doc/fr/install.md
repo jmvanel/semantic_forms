@@ -4,10 +4,10 @@
 - Java JRE 8 (vérifier avec `java -version`)
 
 ## Obtenir l'application au format .zip
-L'application est disponible sous forme de  [github release](https://github.com/jmvanel/semantic_forms/releases).
+L'application est disponible sous forme de [mise en production github](https://github.com/jmvanel/semantic_forms/releases).
 
 ## Démarrer l'Application zippée
-Télécharger le zip sur le serveur, dézipper puis taper (on Linux or Mac):
+Télécharger le zip sur le serveur, dézipper puis taper (sur Linux ou Mac):
 ```shell
 cd semantic_forms_play-1.0-SNAPSHOT
 nohup bin/semantic_forms_play -J-Xmx50M &
@@ -26,7 +26,7 @@ bin/semantic_forms_play.bat -J-Xmx50M &
 ```
 
 Le port par défaut est 9000, donc vous pouvez démarrer votre navigateur à l'adresse suivante [http://localhost:9000](http://localhost:9000) .
-L'application générique est parfaitement utilisable ainsi, voir [User manual](https://github.com/jmvanel/semantic_forms/wiki/User_manual). Cependant, il est préférable de précharger des vocabulaires RDF standards et relatifs aux spécifications et les traductions I18N, lancez:
+L'application générique est parfaitement utilisable telle quelle, voir [User manual](https://github.com/jmvanel/semantic_forms/wiki/User_manual). Cependant, il est préférable de précharger des vocabulaires RDF standards et  les spécifications de fomulaires associées et les traductions I18N, lancez:
 ```shell
 scripts/populateRDFCache.sh
 ```
@@ -35,7 +35,7 @@ scripts/populateRDFCache.sh
 Pour plus de détails, voir: [préchargement du contenu RDF](../../scala/forms_play/README.md#preloading-rdf-content) .
 
 #### Arrêter l'application zippée
-`kill` l'application java; son ID process est dans le fichier `RUNNING_PID`.
+`kill` l'application java; son identifiant de processus est dans le fichier `RUNNING_PID`.
 
 #### Paramétrage lorsque l'application zippée est en fonctionnement
 Vous pouvez changer le port par défaut (9000) vers e.g. 9999 comme suit:
