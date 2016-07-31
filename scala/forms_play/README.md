@@ -25,10 +25,10 @@ Some people speak of "triple store", or "graph database", or "triple database", 
 - install dependencies:
   - Java 8 ,
   - [SBT](http://www.scala-sbt.org/) or [Typesafe Activator](http://typesafe.com/platform/getstarted) .
-
-	wget https://dl.bintray.com/sbt/native-packages/sbt/0.13.11/sbt-0.13.11.tgz
-	tar xvzf sbt-0.13.11.tgz
-
+```shell
+wget https://dl.bintray.com/sbt/native-packages/sbt/0.13.12/sbt-0.13.12.tgz
+tar xvzf sbt-0.13.12.tgz
+```
 Then SBT or Activator will download the rest.
 - download the source from [Banana-RDf fork on github](https://github.com/deductions/banana-rdf) (temporary, until my Pull Request in Banana-RDF is accepted)
   - build this project with SBT or Activator: change directory to `banana-rdf` ; type in the activator console : `publishLocal`
