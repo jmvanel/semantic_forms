@@ -285,7 +285,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     transaction.get
   }
 
-  /** run SPARQL on given graph, knowing result variables */
+  /** run SPARQL on given graph, knowing result variables
+   * CAUTION: only URI's as results */
   def runSparqlSelect(
     queryString: String, variables: Seq[String],
     graph: Rdf#Graph): List[Seq[Rdf#URI]] = {

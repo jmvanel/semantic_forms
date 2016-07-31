@@ -123,7 +123,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     (implicit graph: Rdf#Graph)
   : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
 
-//    val s1 = new Step1ComputePropertiesList(subject, editable, formuri)
     val s1 = computePropertiesList(subject, editable, formuri)
 
     createFormDetailed(subject, s1.propertiesList,
@@ -144,11 +143,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     formGroup: Rdf#URI = nullURI)
     (implicit graph: Rdf#Graph)
   : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
-
-    //	  val s1 = new Step1ComputePropertiesList(subject, editable, "") {
-    //		  override val propsFromConfig = propertiesListFromFormConfiguration(
-    //        formSpecification.pointer)(formSpecification.graph)
-    //	  }
     val s1 = computePropertiesListFromConfig(subject, editable,
       propertiesListFromFormConfiguration(
         formSpecification.pointer)(formSpecification.graph))
@@ -158,25 +152,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       if (editable) EditionMode else DisplayMode,
       formGroup)
   }
-  
-//  /** Step 1: compute properties List from Config, Subject, Class (in that order) */
-//  private class Step1ComputePropertiesList(subject: Rdf#Node,
-//    editable: Boolean = false, formuri: String)
-//    (implicit graph: Rdf#Graph) {
-//    val classs = classFromSubject(subject) // TODO several classes
-//    val propsFromConfig = if(formuri=="")
-//      lookPropertieslistFormInConfiguration(classs)._1
-//    else {
-//      lookPropertiesListFromDatabaseOrDownload(formuri)._1
-//    }
-//    val propsFromSubject = fieldsFromSubject(subject, graph)
-//    val propsFromClass: Seq[Rdf#Node] =
-//      if (editable) {
-//        fieldsFromClass(classs, graph)
-//      } else Seq()
-//    val propertiesList0 = (propsFromConfig ++ propsFromSubject ++ propsFromClass).distinct
-//    val propertiesList = addRDFSLabelComment(propertiesList0)
-//  }
 
   def addRDFSLabelComment(propertiesList: Seq[Rdf#Node]): Seq[Rdf#Node] = {
     if (addRDFS_label_comment &&

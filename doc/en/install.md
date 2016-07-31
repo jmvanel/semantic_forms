@@ -26,8 +26,16 @@ bin/semantic_forms_play.bat -J-Xmx50M &
 ```
 
 The default port is 9000, so you can direct your browser to [http://localhost:9000](http://localhost:9000) .
-The generic application is perfectly usable out of the box, see [User manual](https://github.com/jmvanel/semantic_forms/wiki/User_manual). However, it is better to preload common RDF vocabularies and related form specifications and I18N translations, see: [preloading-rdf-content](../../scala/forms_play/README.md#preloading-rdf-content) .
+The generic application is perfectly usable out of the box, see [User manual](https://github.com/jmvanel/semantic_forms/wiki/User_manual). However, it is better to preload common RDF vocabularies and related form specifications and I18N translations, run:
+```shell
+scripts/populateRDFCache.sh
+```
+CAUTION: all scripts involving the database must be run when the web application is stopped.
 
+For more details, see: [preloading RDF content](../../scala/forms_play/README.md#preloading-rdf-content) .
+
+#### Stopings the zipped distribution
+`kill` the java application; its process ID is in the `RUNNING_PID` file.
 
 #### Settings when runnning the zipped distribution
 You can change the default port (9000) to e.g. 9999 like this:
