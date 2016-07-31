@@ -8,17 +8,24 @@ case class RawDataForForm[Rdf <: RDF](propertiesList: Seq[Rdf#Node], classs: Rdf
 trait ComputePropertiesList[Rdf <: RDF, DATASET] {
   self: FormSyntaxFactory[Rdf, DATASET] =>
 
-  def computePropertiesList(subject: Rdf#Node,
+   /** create Raw Data For Form from an instance (subject) URI,
+     * and a Form Specification URI
+     * ( see form_specs/foaf.form.ttl for an example )
+     * */
+    def computePropertiesList(subject: Rdf#Node,
                             editable: Boolean = false, formuri: String)(implicit graph: Rdf#Graph): RawDataForForm[Rdf] = {
 
     val classs = classFromSubject(subject) // TODO several classes
     val propsFromConfig: Seq[Rdf#URI] = computePropsFromConfig(classs, formuri)
-    computePropertiesListFromConfig(subject,
-                            editable,
-                            propsFromConfig)
+    computePropertiesListWithList(subject, editable, propsFromConfig)
   }
 
-  def computePropertiesListFromConfig(subject: Rdf#Node,
+    /** create Raw Data For Form from an instance (subject) URI,
+     * and a properties list (typically From Config);
+     * it merges given properties with properties From Config, From Subject
+     * and From Class.
+     * */
+    def computePropertiesListWithList(subject: Rdf#Node,
                             editable: Boolean = false,
                             propsFromConfig: Seq[Rdf#URI])(implicit graph: Rdf#Graph) = {
     val classs = classFromSubject(subject) // TODO several classes
@@ -38,4 +45,11 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
     else {
       lookPropertiesListFromDatabaseOrDownload(formuri)._1
     }
+  
+  
+  private def classFromSubject(subject: Rdf#Node)
+  (implicit graph: Rdf#Graph)
+  = {
+    getHeadOrElse(subject, rdf.typ)
+  }
 }

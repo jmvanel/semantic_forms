@@ -10,19 +10,22 @@ import org.w3.banana.RDFPrefix
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.SPARQLHelpers
 
-/** populate Fields in form by inferencing from class(es) of given instance URI */
+/** populate Fields in form by inferencing from given class */
 trait FieldsInference[Rdf <: RDF, DATASET]
 extends RDFHelpers[Rdf]
 with RDFOPerationsDB[Rdf, DATASET]
 with SPARQLHelpers[Rdf, DATASET]
-with Configuration
-{
-//  import Configuration._
+with Configuration {
 
   import ops._
   private val rdfs = RDFSPrefix[Rdf]
   private val owl = OWLPrefix[Rdf]
 
+  /** find fields from given Instance subject */
+  def fieldsFromSubject(subject: Rdf#Node, graph: Rdf#Graph): Seq[Rdf#URI] =
+    getPredicates(graph, subject).toSeq.distinct
+
+  /** find fields from given RDF class */
   def fieldsFromClass(classs: Rdf#URI, graph: Rdf#Graph): Seq[Rdf#Node] = {
 
     val result = scala.collection.mutable.ListBuffer[Rdf#Node]()

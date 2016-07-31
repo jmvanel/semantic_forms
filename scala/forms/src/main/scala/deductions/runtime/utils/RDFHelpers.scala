@@ -132,6 +132,8 @@ trait RDFHelpers0[Rdf <: RDF] extends Configuration
   }
 
   def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
+  def isBN(node: Rdf#Node) = foldNode(node)(x => None, identity, x => None) != None
+  def toBN(node: Rdf#Node): Rdf#BNode = foldNode(node)(x => BNode(""), identity, x => BNode(""))
 
   def isDownloadableURI(uri: Rdf#URI) = {
     val u = fromUri(uri)
@@ -159,6 +161,22 @@ trait RDFHelpers0[Rdf <: RDF] extends Configuration
     ops.foldNode(n)(_ => d, _ => d, l => l)
   }
 
+  /**
+   * compute terminal Part of URI, eg
+   *  Person from http://xmlns.com/foaf/0.1/Person
+   *  Project from http://usefulinc.com/ns/doap#Project
+   *  NOTE: code related for getting the ontology prefix
+   */
+  def terminalPart(n: Rdf#Node): String = {
+    foldNode(n)(
+      uri => getFragment(uri) match {
+        case None       => last_segment(uri) // lastSegment(uri)
+        case Some(frag) => frag
+      },
+      bNode => "",
+      literal => "")
+  }
+  
   /** NOTE: currently lastSegment() in Banana can return null :( */
   def last_segment(node: Rdf#Node): String =
     try {

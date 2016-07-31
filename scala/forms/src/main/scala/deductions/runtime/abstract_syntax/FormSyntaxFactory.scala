@@ -131,28 +131,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       formGroup)
   }
 
-    /** create Form from an instance (subject) URI,
-     * and a Form Specification
-     * ( see form_specs/foaf.form.ttl for an example )
-     * 
-     * TODO unused!!!! should it be used or deleted ? */
-  private def createFormFromSpecification(
-    subject: Rdf#Node,
-    formSpecification: PointedGraph[Rdf],
-    editable: Boolean = false,
-    formGroup: Rdf#URI = nullURI)
-    (implicit graph: Rdf#Graph)
-  : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
-    val s1 = computePropertiesListFromConfig(subject, editable,
-      propertiesListFromFormConfiguration(
-        formSpecification.pointer)(formSpecification.graph))
-
-	  createFormDetailed(subject, s1.propertiesList,
-      s1.classs,
-      if (editable) EditionMode else DisplayMode,
-      formGroup)
-  }
-
   def addRDFSLabelComment(propertiesList: Seq[Rdf#Node]): Seq[Rdf#Node] = {
     if (addRDFS_label_comment &&
       !propertiesList.contains(rdfs.label)) {
@@ -205,10 +183,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val fields2 = addTypeTriple(subject, classs, fields)
     val formSyntax = FormSyntax(subject, fields2, classs)
     addAllPossibleValues(formSyntax, valuesFromFormGroup)
-    
-//    val foaf = org.w3.banana.FOAFPrefix[Rdf]
-//    println( "formSyntax.possibleValuesMap.get( foaf.knows )\n\t" +
-//        formSyntax.possibleValuesMap.get( foaf.knows ) )
     
     logger.debug(s"createForm " + this)
     val res = time(s"updateFormFromConfig()",
@@ -294,10 +268,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       (fields ++ Seq(classFormEntry)).toSeq
     } else fields.toSeq
   }
-
-  /** find fields from given Instance subject */
-  def fieldsFromSubject(subject: Rdf#Node, graph: Rdf#Graph): Seq[Rdf#URI] =
-    getPredicates(graph, subject).toSeq.distinct
 
   /** make form Entries for given subject and property,
    * thus taking in account multi-valued properties;
@@ -397,36 +367,15 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     result
   }
 
-  def isURIorBN(node: Rdf#Node) = foldNode(node)(identity, identity, x => None) != None
-  override def isURI(node: Rdf#Node) = foldNode(node)(identity, x => None, x => None) != None
-  def isBN(node: Rdf#Node) = foldNode(node)(x => None, identity, x => None) != None
-  def toBN(node: Rdf#Node): Rdf#BNode = foldNode(node)(x => BNode(""), identity, x => BNode(""))
-  def firstNodeOrElseNullURI(set: Set[Rdf#Node]): Rdf#Node = set.headOption.getOrElse(nullURI)
-
-  /**
-   * compute terminal Part of URI, eg
-   *  Person from http://xmlns.com/foaf/0.1/Person
-   *  Project from http://usefulinc.com/ns/doap#Project
-   *  NOTE: code related for getting the ontology prefix
-   */
-  def terminalPart(n: Rdf#Node): String = {
-//    if( n.toString == "urn:grands_voisins/Date" )
-//      println(s"terminalPart $n")
-    foldNode(n)(
-        uri =>         getFragment(uri) match {
-          case None       =>  last_segment(uri) // lastSegment(uri)
-          case Some(frag) => frag
-        },
-        bNode => "" ,
-        literal => "" )
-    }
+  private def isURIorBN(node: Rdf#Node) = foldNode(node)(identity, identity, x => None) != None
+  private def firstNodeOrElseNullURI(set: Set[Rdf#Node]): Rdf#Node = set.headOption.getOrElse(nullURI)
 
   /**
    * get first ?OBJ such that:
    *   subject predicate ?OBJ	,
-   *   or returns default
+   *   or returns default URI
    */
-  private def getHeadOrElse(subject: Rdf#Node, predicate: Rdf#URI,
+  private[abstract_syntax] def getHeadOrElse(subject: Rdf#Node, predicate: Rdf#URI,
     default: Rdf#URI = nullURI)
     (implicit graph: Rdf#Graph)
   : Rdf#URI = {
@@ -447,12 +396,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       case Some(x) => x
       case _ => nullURI
     }
-  }
-
-  def classFromSubject(subject: Rdf#Node)
-  (implicit graph: Rdf#Graph)
-  = {
-    getHeadOrElse(subject, rdf.typ)
   }
 
 }
