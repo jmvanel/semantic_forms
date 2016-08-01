@@ -13,7 +13,9 @@ import org.w3.banana.io.NTriples
 import java.nio.file.StandardOpenOption
 
 trait ChildrenDocumentsFetcher[Rdf <: RDF]
-    extends RDFLoader[Rdf, Try] {
+//    extends RDFLoader[Rdf, Try]
+{
+  implicit val rdfLoader: RDFLoader[Rdf, Try]
 
   implicit val ops: RDFOps[Rdf]
   import ops._
@@ -22,10 +24,10 @@ trait ChildrenDocumentsFetcher[Rdf <: RDF]
    *  <url> ?P ?D .
    * where ?P is in list propertyFilter */
   def fetch(url: URL, propertyFilter: List[Rdf#URI]): List[Rdf#Graph] = {
-    val graph = load(url).getOrElse(emptyGraph)
+    val graph = rdfLoader.load(url).getOrElse(emptyGraph)
     val v = getTriples(graph) collect {
       case triple if (propertyFilter.contains(triple.predicate) || propertyFilter.isEmpty) =>
-        val doc = load(new URL(triple.objectt.toString())).getOrElse(emptyGraph)
+        val doc = rdfLoader.load(new URL(triple.objectt.toString())).getOrElse(emptyGraph)
         println( s"Fetched object from triple $triple, size ${doc.size}" )
         doc
     }

@@ -1,3 +1,5 @@
+[Installation of the `semantic_forms` generic application](../fr/install.md)
+
 # Installation de l'application générique `semantic_forms`
 
 ## Pré-requis 
@@ -13,7 +15,7 @@ cd semantic_forms_play-1.0-SNAPSHOT
 nohup bin/semantic_forms_play -J-Xmx50M &
 ```
 
-`nohup` démarre l'application donc elle continue de fonctionner après la déconnexion de l'utilisateur.
+`nohup` démarre l'application de telle façon qu'elle continue de fonctionner après la déconnexion de l'utilisateur.
 Autrement, vous pouvez simplement taper:
 ```
 bin/semantic_forms_play -J-Xmx50M &
@@ -26,7 +28,7 @@ bin/semantic_forms_play.bat -J-Xmx50M &
 ```
 
 Le port par défaut est 9000, donc vous pouvez démarrer votre navigateur à l'adresse suivante [http://localhost:9000](http://localhost:9000) .
-L'application générique est parfaitement utilisable telle quelle, voir [User manual](https://github.com/jmvanel/semantic_forms/wiki/User_manual). Cependant, il est préférable de précharger des vocabulaires RDF standards et  les spécifications de fomulaires associées et les traductions I18N, lancez:
+L'application générique est parfaitement utilisable telle quelle, voir [User manual](https://github.com/jmvanel/semantic_forms/wiki/User_manual). Cependant, il est préférable de précharger des vocabulaires RDF standards et  les spécifications de formulaires associées et les traductions I18N, pour cela lancez:
 ```shell
 scripts/populateRDFCache.sh
 ```

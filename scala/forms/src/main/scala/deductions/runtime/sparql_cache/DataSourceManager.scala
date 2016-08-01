@@ -16,7 +16,10 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
 trait DataSourceManager[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
     with RDFHelpers[Rdf]
-    with RDFLoader[Rdf, Try] {
+//    with RDFLoader[Rdf, Try]
+{
+  implicit val rdfLoader: RDFLoader[Rdf, Try]
+
   import ops._
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._
@@ -42,7 +45,7 @@ trait DataSourceManager[Rdf <: RDF, DATASET]
         val mgraph = givenGraph.makeMGraph()
         /* TODO check new versions of Scala > 2.11.6 that this asInstanceOf is 
         still necessary */
-        val loadedGraph: Rdf#Graph = load(url).get.
+        val loadedGraph: Rdf#Graph = rdfLoader.load(url).get.
           asInstanceOf[Rdf#Graph]
         val triples = ops.getTriples(loadedGraph)
         val r = triples.map {

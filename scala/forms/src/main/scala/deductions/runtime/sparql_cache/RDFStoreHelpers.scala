@@ -17,8 +17,10 @@ import deductions.runtime.services.Configuration
  */
 
 trait RDFStoreHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
-    with RDFLoader[Rdf, Try]
+//    with RDFLoader[Rdf, Try]
     with Configuration {
+
+  implicit val rdfLoader: RDFLoader[Rdf, Try]
 
   import ops._
   import rdfStore.transactorSyntax._
@@ -56,7 +58,7 @@ trait RDFStoreHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DA
     val graph: Rdf#Graph =
       /* TODO check new versions of Scala > 2.11.6 that this asInstanceOf is 
         still necessary */
-      load(new java.net.URL(uri.toString())).get.
+      rdfLoader.load(new java.net.URL(uri.toString())).get.
         asInstanceOf[Rdf#Graph]
     rdfStore.appendToGraph( dataset, graphUri, graph)
     Logger.getRootLogger().info(s"storeURI uri $uri : stored into graphUri $graphUri")

@@ -25,12 +25,13 @@ import deductions.runtime.utils.RDFHelpers
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
   implicit val turtleReader: RDFReader[Rdf, Try, Turtle]
   implicit val rdfXMLReader: RDFReader[Rdf, Try, RDFXML]
+  implicit val rdfLoader: RDFLoader[Rdf, Try]
 }
 
 /** */
 trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
     with RDFCacheDependencies[Rdf, DATASET]
-    with RDFLoader[Rdf, Try]
+//    with RDFLoader[Rdf, Try]
     with SPARQLHelpers[Rdf, DATASET]
     with TimestampManagement[Rdf, DATASET]
     with MirrorManagement[Rdf, DATASET]
@@ -230,7 +231,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       System.setProperty("sun.net.client.defaultReadTimeout", defaultReadTimeout.toString)
       System.setProperty("sun.net.client.defaultConnectTimeout", defaultConnectTimeout.toString)
       val graph: Rdf#Graph =
-        load(new java.net.URL(uri.toString())).get
+        rdfLoader.load(new java.net.URL(uri.toString())).get
       Logger.getRootLogger().info(s"Before storeURI uri $uri graphUri $graphUri")
       rdfStore.appendToGraph( dataset, graphUri, graph)
       Logger.getRootLogger().info(s"storeURI uri $uri : stored into graphUri $graphUri")

@@ -1,3 +1,5 @@
+[Installation de l'application générique `semantic_forms`](../en/install.md)
+
 # Installation of the `semantic_forms` generic application
 
 ## Prerequisites 

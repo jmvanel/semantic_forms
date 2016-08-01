@@ -1,0 +1,1 @@
+../../../../doc/fr/install.md

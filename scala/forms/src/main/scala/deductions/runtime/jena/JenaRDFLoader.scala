@@ -11,15 +11,12 @@ import scala.util._
 
 /** >>>> temporarily added this, pending Banana RDf pull request */
 trait JenaRDFLoader {
-
-  //  def makeRDFLoader() = new RDFLoader[Jena, Try] {
   /**
    * Read triples from the given location. The syntax is determined from input source URI
    *  (content negotiation or extension).
    */
-  def load(url: java.net.URL): Try[Jena#Graph] = {
-    Try(RDFDataMgr.loadGraph(url.toString))
-  }
+  //  def load(url: java.net.URL): Try[Jena#Graph] = {
+  //    Try(RDFDataMgr.loadGraph(url.toString))
   //  }
 
 }

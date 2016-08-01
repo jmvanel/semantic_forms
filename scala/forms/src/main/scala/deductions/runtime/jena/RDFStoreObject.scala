@@ -31,7 +31,7 @@ trait RDFStoreLocalJena1Provider
 
 trait RDFStoreLocalJenaProvider
     extends RDFStoreLocalProvider[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with JenaModule with JenaRDFLoader
+    with JenaModule // with JenaRDFLoader
     with Timer
     with Configuration
     with LuceneIndex {
