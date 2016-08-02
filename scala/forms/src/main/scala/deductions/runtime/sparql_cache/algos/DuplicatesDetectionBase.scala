@@ -26,7 +26,7 @@ with RDFPrefixes[Rdf] {
 
   implicit val ops: RDFOps[Rdf]
   import ops._
-  val rdf = RDFPrefix[Rdf]
+  lazy val rdf = RDFPrefix[Rdf]
   val rdfs = RDFSPrefix[Rdf]
   val owl = OWLPrefix[Rdf]
 
@@ -46,11 +46,10 @@ with RDFPrefixes[Rdf] {
         case "owl:ObjectProperty" => owl.ObjectProperty
         case "owl:Class"          => owl.Class
         case "owl:DatatypeProperty" => owl.DatatypeProperty
-//        case (owl.Class.toString()) => owl.Class
-        case t =>
-          outputErr(s"case not implemented: '${t}'")
-          System.exit(-1)
-          owl.DatatypeProperty
+        case t => URI(t)
+//          outputErr(s"case not implemented: '${t}'")
+//          System.exit(-1)
+//          owl.DatatypeProperty
       }
     else
       owl.DatatypeProperty
