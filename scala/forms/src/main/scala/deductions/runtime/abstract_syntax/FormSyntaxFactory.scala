@@ -103,7 +103,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   
   import ops._
 
-  lazy val nullURI = URI("")
   val literalInitialValue = ""
   val logger:Logger // = Logger.getRootLogger()
 
@@ -369,23 +368,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
   private def isURIorBN(node: Rdf#Node) = foldNode(node)(identity, identity, x => None) != None
   private def firstNodeOrElseNullURI(set: Set[Rdf#Node]): Rdf#Node = set.headOption.getOrElse(nullURI)
-
-  /**
-   * get first ?OBJ such that:
-   *   subject predicate ?OBJ	,
-   *   or returns default URI
-   */
-  private[abstract_syntax] def getHeadOrElse(subject: Rdf#Node, predicate: Rdf#URI,
-    default: Rdf#URI = nullURI)
-    (implicit graph: Rdf#Graph)
-  : Rdf#URI = {
-	  val rdfh = this
-    objectsQuery(subject, predicate) match {
-      case ll if ll.isEmpty => default
-      case ll if (isURI(ll.head)) => ll.head.asInstanceOf[Rdf#URI]
-      case _ => default
-    }
-  }
 
   private def getHeadValueOrElse(subjects: Set[Rdf#Node], predicate: Rdf#URI)
   (implicit graph: Rdf#Graph)

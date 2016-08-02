@@ -1,37 +1,57 @@
 package deductions.runtime.sparql_cache.algos
 
-import java.io.FileReader
+import java.io.File
 import java.io.PrintStream
+import java.net.URL
 
 import scala.collection.immutable.ListMap
 
 import org.w3.banana.RDF
 import org.w3.banana.RDFOps
+import org.w3.banana.RDFPrefix
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
-import org.w3.banana.RDFPrefix
 
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.DefaultConfiguration
-import java.io.File
 import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.utils.RDFHelpers0
+import deductions.runtime.abstract_syntax.FieldsInference
+import com.hp.hpl.jena.query.Dataset
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import deductions.runtime.sparql_cache.RDFCacheAlgo
+import org.w3.banana.OWLPrefix
+import org.w3.banana.Prefix
 
 /** output given SKOS file as CSV */
 object SKOS2CSVApp extends App
-with JenaModule
-with DefaultConfiguration
-with SKOS2CSV[Jena]
-{
+//with JenaModule
+with RDFStoreLocalJena1Provider
+with RDFCacheAlgo[Jena, Dataset]
+with DefaultConfiguration 
+with SKOS2CSV[Jena, Dataset] {
   val addEmptyLineBetweenLabelGroups = false
+  override lazy val owl = OWLPrefix[Rdf]
 
   val inputFile = args(0)
-  
   val graph = rdfLoader.load( new File(inputFile).toURI().toURL() ) . get
 
   val classToReportURI = owlClassToReport(args)
   val instancesURI = findInstances(graph, classToReportURI)
-
+  
+  import ops._
+  val ontologyURI = withoutFragment(classToReportURI)
+  lazy val fieldsFromOntology = {
+    //  val g1 = rdfLoader.load( new URL(fromUri(ontologyURI) ))
+    // outputErr(s"class To Report ontology size ${g1.get.size}" )
+	  val ontologyGraph = retrieveURI( ontologyURI) . get
+	  rdfStore.r(dataset, fieldsFromClass(classToReportURI, ontologyGraph) . toList ) . get
+  }
+  val fields = {
+    val skos = Prefix[Rdf]("skos", "http://www.w3.org/2004/02/skos/core#")
+    List( skos("prefLabel"), skos("altLabel"), skos("broader"), skos("related") )
+  }
+  outputErr(s"fields ${fields.mkString(", ")}")
+  
   val outputFile = inputFile + "." +
     // rfsLabel(classToReportURI, graph).replace(":","=") +
     terminalPart(classToReportURI) +
@@ -47,33 +67,26 @@ with SKOS2CSV[Jena]
   output(s"$report")
   outputErr(s"File written: $outputFile")
 
+  val csvHeader =
+    //A       B       C   D         E                 F                     G
+    "Action	Libellé	Id	Contexte	type(rdfs:range)	Empreinte(propriétés)	Description"
 
   /** format report as CSV */
   def formatCSV(): String = {
     /** format Label Group as CSV */
     def formatCSVLines(labelAndList: (String, List[Rdf#Node])) = {
       val list = labelAndList._2
+//      println(s"list size ${list.size}")
       val columns = for (n <- list) yield {
-        val rdfs_domain = rdfsDomain(n, graph)
-        val domainLabel = rdfsLabel(rdfs_domain, graph)
-        val superClassesLabel = rdfsSuperClasses(rdfs_domain, graph).
-          map { superC => rdfsLabel(superC, graph) }.
-          mkString(", ")
-        val rdfs_range = rdfsRange(n, graph)
-        val rangeLabel = rdfsLabel(rdfs_range.headOption, graph)
-        val contextLabelProperty = domainLabel + (if (!superClassesLabel.isEmpty) " --> " + superClassesLabel else "")
-        val contextLabel = classToReportURI match {
-          case owl.ObjectProperty   => contextLabelProperty
-          case owl.DatatypeProperty => contextLabelProperty
-          case owl.Class            => rdfsPropertiesAndRangesFromClass(n,graph)
-          case _ => ""
-        }
-        val digestFromClass = "\t" +
-          (if (classToReportURI == owl.Class)
-            makeDigestFromClass(n, graph)
-          else "")
-        s"\t'${labelAndList._1}'\t" + abbreviateURI(n) + "\t" + contextLabel + "\t" +
-        rangeLabel + digestFromClass
+    	  val propsFromSubject0 = // fieldsFromSubject(n, graph) . toList
+    	  fields
+    	  val propsFromSubject = propsFromSubject0 . map { p => foldNode(p)(u=>u, _=>URI(""), _=>URI("")) }
+
+    	  val r = propsFromSubject . map { p =>
+    	    val objects = ops.getObjects(graph, n, p). map { o => o.toString() }
+    	    objects . mkString("\t")
+    	    }
+    	  r  . mkString(",")
       }
       columns.mkString("\n") + (
         if (addEmptyLineBetweenLabelGroups)
@@ -81,8 +94,7 @@ with SKOS2CSV[Jena]
         else "")
     }
     // TODO I18N
-    //      A       B       C   D         E                 F                     G
-    output("Action	Libellé	Id	Contexte	type(rdfs:range)	Empreinte(propriétés)	Description")
+    output(csvHeader)
     instancesgroupedByRdfsLabel.map {
       labelAndList => formatCSVLines(labelAndList)
     }.mkString("\n")
@@ -97,9 +109,11 @@ with SKOS2CSV[Jena]
   }
 }
 
-trait SKOS2CSV[Rdf <: RDF]
+trait SKOS2CSV[Rdf <: RDF, DATASET]
     extends DuplicatesDetectionBase[Rdf]
-    with RDFHelpers[Rdf] {
+    with RDFHelpers[Rdf]
+with FieldsInference[Rdf, DATASET]
+{
   this: Configuration =>
 
   override lazy val rdf = RDFPrefix[Rdf]
@@ -108,21 +122,10 @@ trait SKOS2CSV[Rdf <: RDF]
   val ontologyPrefix = "http://data.onisep.fr/ontologies/"
 
   implicit val ops: RDFOps[Rdf]
+  import ops._
 
-  /** @return the list of pairs of similar property URI's */
-  def findDuplicateDataProperties(graph: Rdf#Graph): DuplicationAnalysis = {
-    val datatypePropertiesURI = findInstances(graph)
-    val datatypePropertiesPairs = datatypePropertiesURI.toSet.subsets(2).toList
-    output(s"datatype Properties pairs count n*(n-1)/2 = ${datatypePropertiesPairs.size}")
-    val pairs = for {
-      pair <- datatypePropertiesPairs
-      pairList: List[Rdf#Node] = pair.toList
-      datatypeProperty1 :: datatypeProperty2 :: rest = pairList if (
-        nodesAreSimilar(datatypeProperty1, datatypeProperty2, graph))
-      //        _ = log(s"pair $pair")
-    } yield Duplicate(datatypeProperty1, datatypeProperty2)
-
-    DuplicationAnalysis(pairs.toList)
-  }
-
+//  /** find fields from given Instance subject */
+//  def fieldsFromSubject(subject: Rdf#Node, graph: Rdf#Graph): Seq[Rdf#URI] =
+//    getPredicates(graph, subject).toSeq.distinct
+    
 }

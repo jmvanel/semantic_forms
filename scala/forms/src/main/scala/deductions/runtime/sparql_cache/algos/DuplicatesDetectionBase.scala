@@ -28,7 +28,7 @@ with RDFPrefixes[Rdf] {
   import ops._
   lazy val rdf = RDFPrefix[Rdf]
   val rdfs = RDFSPrefix[Rdf]
-  val owl = OWLPrefix[Rdf]
+  lazy val owl = OWLPrefix[Rdf]
 
   /** @return the Instances URI's */
   def findInstances(graph: Rdf#Graph, typeURI: Rdf#URI=owl.DatatypeProperty): List[Rdf#Node] = {

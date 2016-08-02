@@ -95,12 +95,31 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
       } else 0
     count
   }
+
+  /**
+   * get first ?OBJ such that:
+   *   subject predicate ?OBJ	,
+   *   or returns default URI
+   */
+  def getHeadOrElse(subject: Rdf#Node, predicate: Rdf#URI,
+    default: Rdf#URI = nullURI)
+    (implicit graph: Rdf#Graph)
+  : Rdf#URI = {
+	  val rdfh = this
+    objectsQuery(subject, predicate) match {
+      case ll if ll.isEmpty => default
+      case ll if (isURI(ll.head)) => ll.head.asInstanceOf[Rdf#URI]
+      case _ => default
+    }
+  }
 }
 
 trait RDFHelpers0[Rdf <: RDF] extends Configuration
       with URIManagement {
   implicit val ops: RDFOps[Rdf]
   import ops._
+  
+  lazy val nullURI = URI("")
   lazy val rdf = RDFPrefix[Rdf](ops)
 
   /** from given Set of Rdf#Node , extract rdf#URI */
@@ -242,7 +261,8 @@ trait RDFHelpers0[Rdf <: RDF] extends Configuration
     } else Seq()
   }
   
-  /* from an Rdf#Node, print the turtle term; betehess 15:22
+  /** from an Rdf#Node, print the turtle term;
+   * betehess 15:22
    * @jmvanel nothing giving you that out-of-the-box right now
    * I'd write a new typeclass to handle that
    * it's super easy to do */
