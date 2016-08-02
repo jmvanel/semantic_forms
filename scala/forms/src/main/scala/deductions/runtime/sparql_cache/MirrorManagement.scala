@@ -32,6 +32,7 @@ trait MirrorManagement[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, D
   /**
    * get Mirror URI, that is the named graph URI for the mirror,
    *  or "" if none
+   * (used for dbPedia)
    */
   def getMirrorURI(uri: Rdf#URI): String = {
     if (fromUri(uri).startsWith("http://dbpedia.org/resource/") &&

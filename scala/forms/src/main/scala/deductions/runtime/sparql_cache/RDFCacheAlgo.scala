@@ -17,6 +17,8 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.services.SPARQLHelpers
 import deductions.runtime.utils.URIHelpers
 import deductions.runtime.utils.RDFHelpers
+import deductions.runtime.services.BrowsableGraph
+import org.apache.jena.riot.RiotException
 
 //import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory0
 
@@ -35,6 +37,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     with SPARQLHelpers[Rdf, DATASET]
     with TimestampManagement[Rdf, DATASET]
     with MirrorManagement[Rdf, DATASET]
+    with BrowsableGraph[Rdf, DATASET]
     with RDFHelpers[Rdf] {
 
   import ops._
@@ -74,29 +77,38 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   }
 
   /**
-   * retrieve URI from a graph named by itself;
+   * retrieve URI from a graph named by the URI itself;
    * or download and store URI only if corresponding graph is empty,
-   * or local timestamp is older
-   * TODO save timestamp in another Dataset
+   * or local timestamp is older;
+   * timestamp is saved in another Dataset
    */
   def retrieveURINoTransaction(uri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
-    for (graph <- rdfStore.getGraph( dataset, uri)) yield {
+    for (graph <- rdfStore.getGraph(dataset, uri)) yield {
       val uriGraphIsEmpty = graph.size == 0
       println(s"uriGraphIsEmpty: $uri : $uriGraphIsEmpty")
       if (uriGraphIsEmpty) {
         val mirrorURI = getMirrorURI(uri)
-        if( mirrorURI == "") {
-          val g = storeURINoTransaction(uri, uri, dataset)
-          if (g.size > 0) {
-            println("Graph at URI was downloaded, new addition: " + uri + " , size " + g.size)
-            addTimestampToDataset(uri, dataset2)
-          } else
-            println(s"Graph at URI $uri was downloaded, but it's empty." )
-
-          g
+        if (mirrorURI == "") {
+          try {
+            val g = storeURINoTransaction(uri, uri, dataset)
+            if (g.size > 0) {
+              println("Graph at URI was downloaded, new addition: " + uri + " , size " + g.size)
+              addTimestampToDataset(uri, dataset2)
+            } else
+              println(s"Graph at URI $uri was downloaded, but it's empty.")
+            g
+          } catch {
+            case t: RiotException =>
+              println(s"Graph at URI $uri could not be downloaded, trying local TDB (${t.getLocalizedMessage}).")
+              val tryGraph = search_only(fromUri(uri))
+              tryGraph match {
+                case Success(g)   => g
+                case Failure(err) => throw err
+              }
+          }
         } else {
           println(s"mirrorURI found: $mirrorURI")
-          // TODO find in Mirror URI the relevant triples ( but currently AFAIK the resulting graph is not used )
+          // TODO find in Mirror URI the relevant triples ( but currently AFAIK the graph returned by this function is not used )
           emptyGraph
         }
       } else {

@@ -43,7 +43,7 @@ trait Lookup[Rdf <: RDF, DATASET]
    */
   def lookup(search: String): String = {
     val tryListString = dataset.r({
-      implicit val listOfLists = search_only(search)
+      implicit val listOfLists = search_string(search)
       val subjects = listOfLists.map { l => l.head }
       for (subject <- subjects) yield {
         val label = instanceLabelFromTDB(subject, "")
@@ -63,7 +63,7 @@ trait Lookup[Rdf <: RDF, DATASET]
   /**
    * NON transactional
    */
-  private def search_only(search: String) = {
+  private def search_string(search: String): List[Seq[Rdf#Node]] = {
     val queryString = s"""
          |select distinct ?thing ?class WHERE {
          |  {
@@ -79,7 +79,6 @@ trait Lookup[Rdf <: RDF, DATASET]
          |}""".stripMargin
 //    println("search_only " + queryString)
     sparqlSelectQueryVariablesNT(queryString, Seq("thing", "class") )
-//    sparqlSelectQuery(queryString)  
   }
 
 }

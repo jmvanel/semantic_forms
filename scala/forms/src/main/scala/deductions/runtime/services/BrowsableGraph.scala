@@ -26,11 +26,13 @@ trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DAT
   import rdfStore.transactorSyntax._
 
   /**
+   * used in Play! app;
+   * NON transactional
+   * 
+   * @param search : subject or object URI
+   * @return
    * all triples <search> ?p ?o   ,
    * plus optionally all triples in graph <search> , plus "reverse" triples everywhere
-   *
-   *  used in Play! app : NON blocking !
-   * NON transactional
    */
   def search_only(search: String): Try[Rdf#Graph] = {
     val queryString =
@@ -41,12 +43,12 @@ trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DAT
          |  ?s ?p1 <$search> .     
          |}
          |WHERE {
-         |  graph ?GRAPH
+         |  GRAPH ?GRAPH
          |  { <$search> ?p ?o . }
          |  OPTIONAL {
-         |    graph <$search>
+         |    GRAPH <$search>
          |    { ?thing ?p ?o . }
-         |    graph ?GRAPH2
+         |    GRAPH ?GRAPH2
          |    { ?s ?p1 <$search> . } # "reverse" triples
          |  }
          |}""".stripMargin
@@ -63,7 +65,9 @@ trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DAT
         val triples = search_only(uri)
         triples
       })
+      // TODO RDF/XML
       val format = if( mime.contains("turtle")) "turtle" else "jsonld"
+
       graph2String(transaction.get, uri, format=format)
     } catch {
       case t: Throwable =>

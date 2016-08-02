@@ -139,8 +139,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
           val status = if (blankNode != "true") {
             val resRetrieve = retrieveURINoTransaction(
               // if( blankNode=="true") makeUri("_:" + uri ) else makeUri(uri),
-              makeUri(uri),
-              dataset)
+              makeUri(uri), dataset)
 
             // TODO should be done in FormSaver 
             println(s"Search in $uri duplicate graph rooted at blank node: size " +

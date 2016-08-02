@@ -9,9 +9,6 @@ import scala.xml.NodeSeq
 trait ReverseLinksSearchSPARQL[Rdf <: RDF, DATASET]
     extends ParameterizedSPARQL[Rdf, DATASET] {
 
-  def backlinks(uri: String, hrefPrefix: String = ""): Future[NodeSeq] =
-    search(uri, hrefPrefix)
-
   private implicit val queryMaker = new SPARQLQueryMaker[Rdf] {
     override def makeQueryString(search: String): String =
       s"""
@@ -21,5 +18,8 @@ trait ReverseLinksSearchSPARQL[Rdf <: RDF, DATASET]
          |  }
          |}""".stripMargin
   }
+
+  def backlinks(uri: String, hrefPrefix: String = ""): Future[NodeSeq] =
+    search(uri, hrefPrefix)
 
 }
