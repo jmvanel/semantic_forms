@@ -35,7 +35,7 @@ trait ToolsPage extends EnterButtons {
 
   def sparqlQueryForm(query: String, action: String, sampleQueries: Seq[String]): NodeSeq =
     <form role="form" action={ action }>
-      <textarea name="query" cols="80" rows="4" title="To get started, uncomment one of these lines.">{
+      <textarea name="query" style="min-width:80em; min-height:8em" title="To get started, uncomment one of these lines.">{
         if (query != "")
           query
         else
