@@ -36,6 +36,7 @@ import deductions.runtime.data_cleaning.BlankNodeCleanerIncremental
 import scala.util.control.NonFatal
 import scala.util.control.NonFatal
 import org.w3.banana.io.JsonLdCompacted
+import deductions.runtime.sparql_cache.algos.StatisticsGraph
 
 /**
  * a Web Application Facade,
@@ -69,6 +70,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with TriplesInGraphSPARQL[Rdf, DATASET]
     with BlankNodeCleanerIncremental[Rdf, DATASET]
     with DashboardHistoryUserActions[Rdf, DATASET]
+    with StatisticsGraph[Rdf]
     with ToolsPage
     with Configuration
 //    with CSS
@@ -121,10 +123,14 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
 
 
-  /** Add behavior (manageBlankNodesReload, Exception management) and
-   *  title and links on top of the form
-   *  to naked form from TableView
-   *  TRANSACTIONAL */
+  /** Add to naked form from TableView:
+   *
+   * - title and links on top of the form,
+   * - page URI (graph) statistics,
+   * - behavior (manageBlankNodesReload, Exception management)
+   *
+   * TODO extract as WrappedHTMLForm
+   * TRANSACTIONAL */
   def htmlForm(uri0: String, blankNode: String = "",
                editable: Boolean = false,
                lang: String = "en", formuri: String="",
@@ -149,7 +155,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
             val status = resRetrieve match {
               case Failure(e) => e.getLocalizedMessage
-              case _          => ""
+              case Success(g) => formatHTMLStatistics(URI(uri), g, lang)
             }
             status
           } else ""

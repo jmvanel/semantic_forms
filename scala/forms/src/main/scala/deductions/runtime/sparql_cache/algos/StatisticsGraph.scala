@@ -10,13 +10,18 @@ trait StatisticsGraph[Rdf <: RDF] extends RDFHelpers[Rdf] {
 
   def formatHTMLStatistics(focus: Rdf#URI, graph: Rdf#Graph,
                            lang: String = "en"): NodeSeq = {
-    val predsCount = getPredicates(graph, focus).size
-    val subjectsCount = find(graph, focus, ANY, ANY).size
+    val predsCount = getPredicates(graph, focus).toList.distinct.size
+    val subjectsCount = getTriples(graph) . map{ trip => trip.subject } . toList.distinct.size
+    val objectsCount  = getTriples(graph) . map{ trip => trip.objectt } . toList.distinct.size
+    val objectsCount2 = find(graph, focus, ANY, ANY).map{ trip => trip.objectt } . toList.distinct.size
     val triplesCount = graph.size
+    // TODO hyperlinks to subjects, etc
     <p class="statistics">
       { subjectsCount } subjects,
       { triplesCount } triples,
-      { predsCount } predicates
+      { predsCount } predicates,
+      { objectsCount } objects,
+      { objectsCount2 } objects from page URI
     </p>
   }
 }
