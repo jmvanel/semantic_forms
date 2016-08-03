@@ -319,6 +319,30 @@ To delete named graph related to common vocabularies, default form specification
 
     java -cp $JARS deductions.runtime.jena.ResetRDFCache
 
+## Semantize raw stuff
+
+By "semantize" we mean transform into triples raw stuff like CSV, XML, JSON, SQL.
+Actually there are several steps:
+
+- obtain triples in the most direct way (sometimes called "direct mapping")
+- change predicates to well-known predicates
+- change values to well-known Linked Open Data (LOD) URI's (eg dbPedia or Wikidata URI's)
+- modify the graph to add new URI's to have a model compliant with database normal forms and semantic web goods practices.
+
+`semantic_forms` has a semantizer tool in command line: `deductions.runtime.jena.CSVImporterApp` .
+ This application transforms CSV into a Turtle file; the args are:
+
+ *  0 - URL or File of CSV,
+ *  1 - base URL for the rows,
+ *  2 - URL or File ( in Turtle ) for adding details to each row; for example it contains:
+ *  		<any:ROW> a foaf:Person .
+ *    which will add this triple to every row.
+ 
+The features are like Any23, plus:
+ * abbreviated Turtle terms with well-known prefixes (eg foaf:name) are understood as columns names 
+ * abbreviated Turtle terms with well-known prefixes (eg dbpedia:Paris) are understood in cells 
+
+Link on [other tools for semantization](http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/html/documentation.html#L3234).
 
 ## SPARQL queries
 There is a web page for SPARQL queries, and also a real SPARL endpoint at URL /sparql for CONSTRUCT queries (see below under Test about how to query with authentication).

@@ -10,13 +10,17 @@ import java.io.FileReader
 import deductions.runtime.services.DefaultConfiguration
 
 /**
- * App to Import CSV into TDB;
+ * App to transform CSV into a Turtle file;
  *  args:
- *  0 - URL Or File of CSV,
+ *  0 - URL or File of CSV,
  *  1 - base URL for the rows,
- *  2 - import details URL or File ( in Turtle ) ; for example it contains:
+ *  2 - URL or File ( in Turtle ) for adding details to each row; for example it contains:
  *  		<any:ROW> a foaf:Person .
  *    which will add this triple to every row.
+ *
+ * Features: like Any23, plus:
+ * - abbreviated Turtle terms with well-known prefixes (eg foaf:name) are understood as columns names
+ * - abbreviated Turtle terms with well-known prefixes (eg dbpedia:Paris) are understood in cells
  */
 object CSVImporterApp extends App
     with RDFStoreLocalJena1Provider
