@@ -31,5 +31,5 @@ ln -s ../TDBsandbox2 TDB2
 ln -s ../TDBsandbox3 TDB3
 
 PORT=9111
-echo starting the server on port $PORT
+echo starting the server on port $PORT in directory  ~/deploy/$APPVERS
 nohup bin/${APP} -J-Xmx100M -J-server -Dhttp.port=$PORT &
