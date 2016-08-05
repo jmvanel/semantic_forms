@@ -71,8 +71,13 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
 
   def removeDuplicates(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI]): Unit = {
     copyPropertyValuePairs(uriTokeep, duplicateURIs)
-    removeQuadsWithSubjects(duplicateURIs)
-    println(s"Deleted ${duplicateURIs.size} duplicate URI's")
+    if( duplicateURIs.contains(uriTokeep) ) {
+      println( s"CAUTION: duplicateURIs.contains(uriTokeep=$uriTokeep)")
+      removeQuadsWithSubjects(duplicateURIs.toList.diff(List(uriTokeep)))
+    } else {
+      removeQuadsWithSubjects(duplicateURIs)
+      println(s"Deleted ${duplicateURIs.size} duplicate URI's for $uriTokeep")
+    }
     processKeepingTrackOfDuplicates(uriTokeep, duplicateURIs)
     processMultipleRdfsDomains(uriTokeep, duplicateURIs)
   }
@@ -215,7 +220,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       replaceAll(""";""", ".\n")}" )
     })
 
-    /** Load files From Args ( starting at args(1) ) */
+    /** Load files into TDB from Args ( starting at args(1) ) */
     def loadFilesFromArgs(args: Array[String]): Array[String] = {
       val files = args.slice(1, args.size)
       println(s"Files ${files.mkString(", ")}")

@@ -2,11 +2,18 @@
 
 # Install party `semantic_forms`
 
-`semantic_forms` est une application générique de navigation du LOD.
-Plus encore, c'est une application d'annotation, et un cadriciel (framework) pour construire des applications d'entreprise centrées sur les formulaires (entrée ou lecture seule). Toutes les données et tous les modèles de données (ontologies) s'appuient sur les recommandations du Web Sémantique du W3C: 
-[`https://en.wikipedia.org/wiki/Semantic_Web`](https://en.wikipedia.org/wiki/Semantic_Web).
+`semantic_forms` est une application générique de navigation du [LOD](https://fr.wikipedia.org/wiki/Linked_open_data) (**Linked Open Data**).
+Plus encore, c'est une application d'annotation, d'édition de données structurées, et un cadriciel (framework) pour construire des **applications d'entreprise** centrées sur les formulaires (entrée ou lecture seule). C'est le Système d'Information Sémantique, qui est destiné à remplacer les PGI ([Progiciel de Gestion Intégré](https://fr.wikipedia.org/wiki/Progiciel_de_gestion_int%C3%A9gr%C3%A9), ERP). Toutes les données et tous les modèles de données (ontologies) s'appuient sur les recommandations du **Web Sémantique du W3C**: 
+[`wikipedia / Semantic_Web`](https://en.wikipedia.org/wiki/Semantic_Web).
 
-Le Web Sémantique, et `semantic_forms`, s'inscrivent dans un vaste mouvement visant à se réapproprier ses données personnelles, qui sont actuellement épar-pillées ;) dans des silos relativement étanches: Facebook, LinkedIn, Google, etc.
+Le Web Sémantique, et `semantic_forms`, s'inscrivent dans un vaste mouvement visant à se réapproprier ses **données personnelles**, qui sont actuellement épar-pillées ;) dans des silos relativement étanches: Facebook, LinkedIn, Google, etc. 
+Cf le projet [Solid](https://blog.p2pfoundation.net/solid-can-web-re-decentralised/2016/04/07), “social linked data”.
+
+La flexibilité des bases de données [SPARQL](https://fr.wikipedia.org/wiki/SPARQL) du web Sémantique, leur excellente standardisation par le W3C, la présence de modèles de données réutilisables (FOAF, schema.org, dublin Core, SIOC ...), offrent aux entreprises et associations un excellent support pour leurs applications, et pour mutualiser les données quand le besoin se fait sentir. Le standard JSON-LD ([JSON pour le Linked Data](https://en.wikipedia.org/wiki/JSON-LD)) permet d'échanger des données en favorisant les liens entre données et la gouvernance décentralisée plutôt que les recopies.
+
+`semantic_forms` peut aussi être vu comme un outil d'administration de bases SPARQL, même s'il n'y a pas encore toutes les fonctionnalités.
+
+De plus, la qualité des modèles de données sémantiques (appelés ontologies ou vocabulaires), ainsi que la scalabilité de certaines bases SPARQL, permettent de supporter facilement les études **Big Data et Intelligence Economique** (BI). C'est à dire que l'étape de préparation d'un modèle de type OLAP, ou Hadoop, ou Spark Apache, très consommatrice en resources humaines, n'a plus lieu d'être. On travaille directment sur la base SPARQL
 
 ## Public visé
 On veut intéresser plusieurs publics:

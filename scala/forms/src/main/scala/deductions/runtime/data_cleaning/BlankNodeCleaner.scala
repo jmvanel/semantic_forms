@@ -27,10 +27,11 @@ trait BlankNodeCleanerBase[Rdf <: RDF, DATASET]
   private val owl = OWLPrefix[Rdf]
   private val rdfs = RDFSPrefix[Rdf]
 
+	private lazy val propTypes = List(rdf.Property, owl.ObjectProperty, owl.DatatypeProperty)
+	
   def isProperty(uriTokeep: Rdf#Node): Boolean = {
     val types = quadQuery(uriTokeep, rdf.typ, ANY).toList
-    println( s"isProperty( $uriTokeep types $types" )
-    val propTypes = List(rdf.Property, owl.ObjectProperty, owl.DatatypeProperty)
+    println( s"isProperty( $uriTokeep ) : types $types" )
     types.exists { typ => propTypes.contains(typ._1.objectt) }
   }
 }
