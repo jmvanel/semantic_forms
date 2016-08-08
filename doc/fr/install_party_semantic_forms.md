@@ -11,7 +11,7 @@ Cf le projet [Solid](https://blog.p2pfoundation.net/solid-can-web-re-decentralis
 
 La flexibilité des bases de données [SPARQL](https://fr.wikipedia.org/wiki/SPARQL) du web Sémantique, leur excellente standardisation par le W3C, la présence de modèles de données réutilisables (FOAF, schema.org, dublin Core, SIOC ...), offrent aux entreprises et associations un excellent support pour leurs applications, et pour mutualiser les données quand le besoin se fait sentir. Le standard JSON-LD ([JSON pour le Linked Data](https://en.wikipedia.org/wiki/JSON-LD)) permet d'échanger des données en favorisant les liens entre données et la gouvernance décentralisée plutôt que les recopies.
 
-`semantic_forms` peut aussi être vu comme un outil d'administration de bases SPARQL, même s'il n'y a pas encore toutes les fonctionnalités.
+`semantic_forms` peut aussi être vu comme un outil d'administration de bases SPARQL, même s'il n'y a pas encore toutes les fonctionnalités. Le cache sémantique, le support (partiel) du protocole LDP, permettent d'agréger de manière collaborative des documents provenant de tout le LOD.
 
 De plus, la qualité des modèles de données sémantiques (appelés ontologies ou vocabulaires), ainsi que la scalabilité de certaines bases SPARQL, permettent de supporter facilement les études **Big Data et Intelligence Economique** (BI). C'est à dire que l'étape de préparation d'un modèle de type OLAP, ou Hadoop, ou Spark Apache, très consommatrice en resources humaines, n'a plus lieu d'être. On travaille directment sur la base SPARQL
 
@@ -28,7 +28,9 @@ On veut intéresser plusieurs publics:
 - pour installer à partir des sources, voir [README](../../scala/forms_play/README.md)
 
 ## Activités
-Donc les activités possibles sont:
+`semantic_forms` est facilement installable sur un ordinateur (installer Java JRE 8, dézipper la distribution, lancer l'application). Un "bac à sable" est accessible en permanence. En plus une instance dédiée à l'évènement sera créée, qui permettra d'interagir comme un réseau social.
+
+Les activités possibles sont:
 
 - initiez vous au LOD (Linked Open Data) et au Web Sémantique à travers `semantic_forms` ; voir le <a href="https://github.com/jmvanel/semantic_forms/wiki/Manuel-utilisateur">Manuel utilisateur</a>
     * Naviguer
