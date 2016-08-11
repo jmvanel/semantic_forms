@@ -36,7 +36,13 @@ extends BlankNodeCleanerBase[Rdf, DATASET] {
     if (uriTokeep != URI("")) {
       // check that it's actually a property
       val transaction = rdfStore.rw(dataset, {
-        val equivalenceProperty = if( isProperty(uriTokeep) ) owl.equivalentProperty else owl.sameAs 
+        val equivalenceProperty =
+          if (isProperty(uriTokeep))
+            owl.equivalentProperty
+//          else if (isClass(uriTokeep))
+//            owl.equivalentClass
+          else
+            owl.sameAs
         val pgs = for { duplicateURI <- duplicateURIs } yield {
           duplicateURI -- equivalenceProperty ->- uriTokeep
         }

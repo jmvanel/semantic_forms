@@ -27,14 +27,24 @@ trait BlankNodeCleanerBase[Rdf <: RDF, DATASET]
   private val owl = OWLPrefix[Rdf]
   private val rdfs = RDFSPrefix[Rdf]
 
-	private lazy val propTypes = List(rdf.Property, owl.ObjectProperty, owl.DatatypeProperty)
-	
+  private lazy val propTypes = List(rdf.Property, owl.ObjectProperty, owl.DatatypeProperty)
+
   def isProperty(uriTokeep: Rdf#Node): Boolean = {
     val types = quadQuery(uriTokeep, rdf.typ, ANY).toList
     println( s"isProperty( $uriTokeep ) : types $types" )
     types.exists { typ => propTypes.contains(typ._1.objectt) }
   }
+
+  private lazy val classTypes = List(rdfs.Class, owl.Class)
+
+  def isClass(uriTokeep: Rdf#Node): Boolean = {
+    val types = quadQuery(uriTokeep, rdf.typ, ANY).toList
+    println( s"isProperty( $uriTokeep ) : types $types" )
+    types.exists { typ => classTypes.contains(typ._1.objectt) }
+  }
+
 }
+
 
 trait BlankNodeCleanerIncremental[Rdf <: RDF, DATASET] extends BlankNodeCleanerBase[Rdf, DATASET] {
   import ops._

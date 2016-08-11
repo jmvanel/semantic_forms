@@ -210,7 +210,10 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       "Idée 2" -> av.idea,
       "Rencontré à" -> av.metAt,
       
+      /* For DuplicateCleanerSpecificationApp; NOTE: any rdf:type can be replaced,
+      it's not necessarily properties*/
       "Identifiant de la propriété" -> URI(restruc.prefixIri + "property"),
+      "Id" -> URI(restruc.prefixIri + "property"),
       "Action" -> URI(restruc.prefixIri + "replacingProperty")
   )
   /** manage Mapping from Column name to URI */

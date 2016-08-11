@@ -149,6 +149,24 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 //    println( s"removeQuadsWithSubject res ${res}" )
   }
 
+    /**
+   * remove quads whose object is given URI
+   *  No Transaction
+   */
+  def removeQuadsWithObject(objet: Rdf#Node, ds: DATASET = dataset) = {
+    val queryString = s"""
+         | DELETE {
+         |   GRAPH ?graphURI {
+         |     ?subj ?property <$objet> .
+         |   }
+         | } WHERE {
+         |   GRAPH ?graphURI {
+         |     ?subj ?property <$objet> .
+         |   }
+         | }""".stripMargin
+    val res = sparqlUpdateQuery(queryString, ds)
+  }
+
   /** remove triples matching SPO Query, in any named graph
    *  DOES NOT include transaction */
   def removeFromQuadQuery(s: Rdf#NodeMatch, p: Rdf#NodeMatch, o: Rdf#NodeMatch) = {

@@ -69,13 +69,25 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     s"propertiesHavingDuplicates: $propertiesHavingDuplicates, duplicatesCount: $duplicatesCount"
   }
 
+  /** the algorithm:
+   * - from triples <duplicateURIs> ?P ?O
+   *   create triples <uriTokeep> ?P ?O
+   * - delete triples <duplicateURIs> ?P ?O
+   *
+   * - from reverse triples ?S ?P1 <duplicateURIs>
+   *   create triples ?S ?P1 <uriTokeep>
+   * - delete triples ?S ?P1 <duplicateURIs>
+   * */
   def removeDuplicates(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI]): Unit = {
     copyPropertyValuePairs(uriTokeep, duplicateURIs)
+    copySubjectPropertyPairs(uriTokeep, duplicateURIs)
     if( duplicateURIs.contains(uriTokeep) ) {
       println( s"CAUTION: duplicateURIs.contains(uriTokeep=$uriTokeep)")
       removeQuadsWithSubjects(duplicateURIs.toList.diff(List(uriTokeep)))
+      removeQuadsWithObjects(duplicateURIs.toList.diff(List(uriTokeep)))
     } else {
       removeQuadsWithSubjects(duplicateURIs)
+      removeQuadsWithObjects(duplicateURIs)
       println(s"Deleted ${duplicateURIs.size} duplicate URI's for $uriTokeep")
     }
     processKeepingTrackOfDuplicates(uriTokeep, duplicateURIs)
@@ -87,6 +99,15 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     for (dupURI <- subjects) {
       val transaction = rdfStore.rw( dataset, {
         removeQuadsWithSubject(dupURI)
+      })
+    }
+  }
+
+  /** includes transaction */
+  protected def removeQuadsWithObjects(objects: Seq[Rdf#Node]) = {
+    for (dupURI <- objects) {
+      val transaction = rdfStore.rw( dataset, {
+        removeQuadsWithObject(dupURI)
       })
     }
   }
@@ -168,8 +189,8 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
 //  }
 
   /**
-   * copy Property Value Pairs
-   *  includes transaction
+   * copy Property Value Pairs;
+   * includes transaction
    */
   private def copyPropertyValuePairs(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI]) = {
     for (duplicateURI <- duplicateURIs) {
@@ -190,6 +211,27 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
 //    println(s"copyPropertyValuePairs: dataset $dataset")
   }
 
+  /**
+   * copy Subject Property Pairs;
+   * includes transaction
+   */
+  private def copySubjectPropertyPairs(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI]) = {
+    for (duplicateURI <- duplicateURIs) {
+      rdfStore.rw(dataset, {
+        /* SPARQL query to get the original graph name */
+        val quads = quadQuery(ANY, ANY, duplicateURI): Iterable[Quad]
+        val triplesToAdd = quads.map {
+          case (t, uri) => (Triple(t.subject, t.predicate, uriTokeep), uri)
+        }.toList
+        triplesToAdd.map {
+          tripleToAdd =>
+            rdfStore.appendToGraph(dataset,
+              tripleToAdd._2, Graph(List(tripleToAdd._1)))
+        }
+      })
+    }
+  }
+ 
   /** DOES NOT include transactions */
   private def indexInstanceLabels(classURI: Rdf#URI,
                           lang: String): Map[String, Seq[Rdf#URI]] = {

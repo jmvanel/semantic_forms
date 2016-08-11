@@ -11,11 +11,16 @@ import java.io.FileInputStream
 
 /**
  * merges Duplicates in given file(s),
- * among instances of given class URI
+ * among given instances;
+ * NOTEs:
+ * - no need to specify the class URI of merged instances,
+ * since the instance URI's themselves are given,
+ * - the columns names specifying the replaced URI & the replacing URI
+ *   are controlled by the mappings in columnsMappings in trait [[deductions.runtime.utils.CSVImporter]]
  *
  * Arguments
- * - class URI for instances
- * - files
+ * - CSV Specification of pairs of URI: Duplicate and
+ * - RDF files to load
  *
  * Output:
  * modified data file in /tmp (same name as input)
@@ -35,10 +40,11 @@ object DuplicateCleanerSpecificationApp extends App
   duplicateCleanerApp()
 
   def duplicateCleanerApp() = {
-    val csvSpecification = args(0)
     loadFilesFromArgs(args)
+    val csvSpecification = args(0)
     val propertyChanges = readCSVFile(csvSpecification)
     println(s"DuplicateCleanerSpecificationApp: propertyChanges: ${propertyChanges.size}")
+
     val v = propertyChanges.groupBy(pair => pair._2)
     val uriTokeep_duplicateURIs = v.map { case (uri, list) => (uri, list.map { el => el._1 }) }
     uriTokeep_duplicateURIs.map {
