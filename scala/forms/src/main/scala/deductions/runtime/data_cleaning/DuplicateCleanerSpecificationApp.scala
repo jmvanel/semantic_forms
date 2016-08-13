@@ -8,6 +8,8 @@ import deductions.runtime.services.SPARQLHelpers
 import java.io.FileWriter
 import deductions.runtime.utils.CSVImporter
 import java.io.FileInputStream
+import scala.reflect.io.Path
+import scala.util.Try
 
 /**
  * merges Duplicates in given file(s),
@@ -35,11 +37,13 @@ object DuplicateCleanerSpecificationApp extends App
   import ops._
 
   override val databaseLocation = "/tmp/TDB" // TODO multi-platform temporary directory
+  val deleteDatabaseLocation = true
   println(s"databaseLocation $databaseLocation")
 
   duplicateCleanerApp()
 
   def duplicateCleanerApp() = {
+    possiblyDeleteDatabaseLocation
     loadFilesFromArgs(args)
     val csvSpecification = args(0)
     val propertyChanges = readCSVFile(csvSpecification)
@@ -68,5 +72,13 @@ object DuplicateCleanerSpecificationApp extends App
     val variables = Seq("P", "RP")
     val res = runSparqlSelect(queryString, variables, graph: Rdf#Graph)
     res.map { s => (s(0), s(1)) }
+  }
+
+  private def possiblyDeleteDatabaseLocation = {
+    Try {
+      val path = Path(databaseLocation)
+      if (deleteDatabaseLocation)
+        path.deleteRecursively()
+    }
   }
 }
