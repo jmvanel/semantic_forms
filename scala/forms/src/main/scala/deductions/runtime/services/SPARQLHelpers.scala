@@ -40,7 +40,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   /**
    * sparql Construct Query;
-   * NON transactional
+   * NEEDS transaction
    */
   def sparqlConstructQuery(queryString: String): Try[Rdf#Graph] = {
     val result = for {
@@ -95,8 +95,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   /**
    * replace all triples having same subject and property
    * with given one, in given dataset;
-   *  thus enforcing cardinality one
-   *  No Transaction
+   *  thus enforcing cardinality one;
+   *  NEEDS Transaction;
+   *  See also [[DatasetHelper.replaceObjects]]
    */
   def replaceRDFTriple(triple: Rdf#Triple, graphURI: Rdf#URI, dataset: DATASET) = {
     val uri = triple.subject
@@ -148,7 +149,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     val res = sparqlUpdateQuery(queryString, ds)
 //    println( s"removeQuadsWithSubject res ${res}" )
   }
-
+  
     /**
    * remove quads whose object is given URI
    *  No Transaction
@@ -167,16 +168,18 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     val res = sparqlUpdateQuery(queryString, ds)
   }
 
-  /** remove triples matching SPO Query, in any named graph
+  /** remove triples matching SPO Query, in any named graph;
+   *  @return removed Quads
    *  DOES NOT include transaction */
-  def removeFromQuadQuery(s: Rdf#NodeMatch, p: Rdf#NodeMatch, o: Rdf#NodeMatch) = {
-    val quads = quadQuery(s, p, o): Iterable[Quad]
-//    println(s"triples To remove $quads")
+  def removeFromQuadQuery(s: Rdf#NodeMatch, p: Rdf#NodeMatch, o: Rdf#NodeMatch): List[Quad] = {
+    val quads = quadQuery(s, p, o).toList // : Iterable[Quad]
+//    println(s"removeFromQuadQuery: from $s $p $o: triples To remove $quads")
     quads.map {
       tripleToRemove =>
         rdfStore.removeTriples(dataset, tripleToRemove._2,
           List(tripleToRemove._1))
     }
+    quads
   }
 
   /** a triple plus its named graph (empty URI if default graph) */
@@ -321,6 +324,37 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
             case Success(node) => foldNode(node)( uri=> uri, x=>URI(""), x=>URI("") )
             case Failure(error) => URI("")
           }
+        }
+    }
+//  TODO  val r = runSparqlSelectNodes( queryString, variables, graph)
+    results.to[List]
+  }
+
+  /** run SPARQL on given graph, knowing result variables */
+  def runSparqlSelectNodes(
+    queryString: String, variables: Seq[String],
+    graph: Rdf#Graph): List[Seq[Rdf#Node]] = {
+
+    val query = parseSelect(queryString).get
+    val answers: Rdf#Solutions = sparqlGraph.executeSelect(graph, query,
+      Map()).get
+    val results = answers.toIterable map {
+      row =>
+        val varnames = row.varnames()
+//        if (varnames.contains("COMM")) 
+        println(s"row $row")
+        //        val effectiveVariables = varnames.intersect(variables.toSet)
+        for (variable <- variables) yield {
+          val cell = if (varnames.contains(variable)) {
+        	  print(s"row variable $variable")
+            val cell = row(variable)
+            cell match {
+              case Success(node)  => node
+              case Failure(error) => Literal(error.getLocalizedMessage)
+            }
+          } else Literal("")
+          println (s", cell $cell")
+          cell
         }
     }
     results.to[List]

@@ -47,31 +47,45 @@ object DuplicateCleanerSpecificationApp extends App
     loadFilesFromArgs(args)
     val csvSpecification = args(0)
     val propertyChanges = readCSVFile(csvSpecification)
-    println(s"DuplicateCleanerSpecificationApp: propertyChanges: ${propertyChanges.size}")
+    println(s"""DuplicateCleanerSpecificationApp:
+      CSV input $csvSpecification,
+      propertyChanges: ${propertyChanges.size}""")
 
-    val v = propertyChanges.groupBy(pair => pair._2)
-    val uriTokeep_duplicateURIs = v.map { case (uri, list) => (uri, list.map { el => el._1 }) }
-    uriTokeep_duplicateURIs.map {
-      case (uriTokeep, duplicateURIs) =>
-        removeDuplicates(uriTokeep, duplicateURIs)
-    }
+    val v = propertyChanges.groupBy(uriMergeSpecification => uriMergeSpecification.replacingURI)
+    for ((uriTokeep, uriMergeSpecifications) <- v) removeDuplicates(uriTokeep, uriMergeSpecifications)
+    //    val uriTokeep_duplicateURIs = v.map { case (uri, list) => (uri, list.map { el => el.replacedURI }) }
+    //    uriTokeep_duplicateURIs.map {
+    //      case (uriTokeep, duplicateURIs) =>
+    //        removeDuplicates(uriTokeep, duplicateURIs)
+    //    }
     outputModifiedTurtle(csvSpecification + ".ttl")
   }
 
   /** read CSV file with columns restruc:property & restruc:replacingProperty */
-  private def readCSVFile(file: String): List[(Rdf#URI, Rdf#URI)] = {
-    val graph = run(new FileInputStream(file), URI("urn:/owl/transform"), List())
-    println(s"DuplicateCleanerSpecificationApp: file $file: graph size: ${graph.size}")
-    val queryString = """
+  private def readCSVFile(file: String): URIMergeSpecifications = {
+    val graph = run(new FileInputStream(file),
+      URI("urn:/owl/transform/"), List())
+    println(s"""DuplicateCleanerSpecificationApp:
+      file $file:
+      graph size: ${graph.size}""")
+    val queryString = s"""
          | PREFIX restruc: <http://deductions.github.io/restruc.owl.ttl#>
-         | SELECT ?P ?RP
+         | PREFIX rdfs: <${uriFromPrefix("rdfs")}>
+         | SELECT ?P ?RP ?LAB ?COMM
          | WHERE {
-         | ?S restruc:replacingProperty ?RP ;
-         |    restruc:property ?P .
+         |   ?S restruc:replacingProperty ?RP ;
+         |     restruc:property ?P .
+         |   OPTIONAL {
+         |     ?S rdfs:label ?LAB ;
+         |        rdfs:comment ?COMM .
+         |   }
          | }""".stripMargin
-    val variables = Seq("P", "RP")
-    val res = runSparqlSelect(queryString, variables, graph: Rdf#Graph)
-    res.map { s => (s(0), s(1)) }
+    val variables = Seq("P", "RP", "LAB", "COMM");
+    val res = runSparqlSelectNodes(queryString, variables, graph: Rdf#Graph)
+    res.map { s =>
+      URIMergeSpecification(uriNodeToURI(s(0)), uriNodeToURI(s(1)),
+        literalNodeToString(s(2)), literalNodeToString(s(3)))
+    }
   }
 
   private def possiblyDeleteDatabaseLocation = {

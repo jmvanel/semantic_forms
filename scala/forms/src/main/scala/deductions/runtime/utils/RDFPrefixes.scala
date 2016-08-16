@@ -25,8 +25,11 @@ trait RDFPrefixes[Rdf <: RDF] {
 
   val restruc = Prefix[Rdf]("restruc", "http://deductions.github.io/restruc.owl.ttl#" )
 
+  def uriFromPrefix(pf: String): String = fromUri(prefixesMap(pf))
+
   val prefixes = List(
-    RDFPrefix[Rdf], RDFSPrefix[Rdf],
+    RDFPrefix[Rdf],
+    RDFSPrefix[Rdf],
     XSDPrefix[Rdf],
     DCPrefix[Rdf],
     DCTPrefix[Rdf],

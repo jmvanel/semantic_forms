@@ -14,9 +14,12 @@ trait DatasetHelper[Rdf <: RDF, DATASET]
    *  (if any)
    *  with a single one:
    *  <subject> <predicate> <objet> .
-   *  
+   *
    *  Used for label caching;
    *  can be used for enforcing cardinality 1
+   *   See also [[SPARQLHelpers.replaceRDFTriple]]
+   *
+   *   Needs transaction
    *  */
   def replaceObjects(graphURI: Rdf#URI, subject: Rdf#Node, predicate: Rdf#URI,
       objet: Rdf#Node, ds:DATASET=dataset,

@@ -16,6 +16,10 @@ import deductions.runtime.services.URIManagement
 import java.io.FileWriter
 import java.io.File
 import deductions.runtime.sparql_cache.RDFCacheAlgo
+import org.w3.banana.RDFSPrefix
+import org.w3.banana.Prefix
+import deductions.runtime.utils.RDFPrefixes
+import java.util.Date
 
 /**
  * merge Duplicates among instances of given class URI;
@@ -29,11 +33,17 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     with RDFCacheAlgo[Rdf, DATASET]
     with InstanceLabelsInference2[Rdf]
     with PreferredLanguageLiteral[Rdf]
+    with RDFPrefixes[Rdf]
     with URIManagement
 {
   import ops._
   import rdfStore.graphStoreSyntax._
   import rdfStore.transactorSyntax._
+
+  
+  type URIMergeSpecifications = List[URIMergeSpecification]
+  case class URIMergeSpecification(replacedURI: Rdf#URI, replacingURI: Rdf#URI,
+    newLabel: String = "", comment: String = "")
 
   /**
    * merges Duplicates among instances of given class URI,
@@ -79,19 +89,57 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
    * - delete triples ?S ?P1 <duplicateURIs>
    * */
   def removeDuplicates(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI]): Unit = {
-    copyPropertyValuePairs(uriTokeep, duplicateURIs)
     copySubjectPropertyPairs(uriTokeep, duplicateURIs)
     if( duplicateURIs.contains(uriTokeep) ) {
       println( s"CAUTION: duplicateURIs.contains(uriTokeep=$uriTokeep)")
-      removeQuadsWithSubjects(duplicateURIs.toList.diff(List(uriTokeep)))
-      removeQuadsWithObjects(duplicateURIs.toList.diff(List(uriTokeep)))
-    } else {
-      removeQuadsWithSubjects(duplicateURIs)
-      removeQuadsWithObjects(duplicateURIs)
-      println(s"Deleted ${duplicateURIs.size} duplicate URI's for $uriTokeep")
     }
+    removeQuadsWithSubjects(duplicateURIs.toList.diff(List(uriTokeep)))
+    removeQuadsWithObjects(duplicateURIs.toList.diff(List(uriTokeep)))
+    println(s"Deleted ${duplicateURIs.size} duplicate URI's for $uriTokeep")
     processKeepingTrackOfDuplicates(uriTokeep, duplicateURIs)
     processMultipleRdfsDomains(uriTokeep, duplicateURIs)
+  }
+
+  def removeDuplicates(uriTokeep: Rdf#URI, mergeSpecifications: URIMergeSpecifications): Unit = {
+    val duplicateURIs: List[Rdf#URI] =
+      for (ms <- mergeSpecifications) yield ms.replacedURI
+    removeDuplicates(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI])
+    
+    //  create and replace triples for new label & comment
+    val rdfs = RDFSPrefix[Rdf]
+    val skos = Prefix[Rdf]("skos", "http://www.w3.org/2004/02/skos/core#")
+    val transaction = rdfStore.rw( dataset, {
+      for (ms <- mergeSpecifications) {
+        // if given newLabel, remove old rdfs:label's
+        // add newLabel as rdfs
+        // and recycle old rdfs:label's as skos:altLabel's
+        if (ms.newLabel != "") {
+          val removedQuads: List[Quad] = removeFromQuadQuery(ms.replacingURI, rdfs.label, ANY)
+          if (!removedQuads.isEmpty) {
+            val newTriples = for (removedQuad <- removedQuads) yield Triple(ms.replacingURI, skos("altLabel"), removedQuad._1.objectt)
+            val newLabelTriple = Triple(ms.replacingURI, rdfs.label, Literal(ms.newLabel))
+            rdfStore.appendToGraph(dataset, removedQuads(0)._2, makeGraph(
+                newTriples :+ newLabelTriple ))
+            // add given rdfs:comment
+            if (ms.comment != "") {
+              val commentTriple = Triple(ms.replacingURI, rdfs.comment, Literal(ms.comment))
+              rdfStore.appendToGraph(dataset, removedQuads(0)._2, makeGraph(List(commentTriple)))
+            }
+          }
+        }
+      }
+      // add restructruction comment
+    val restrucProp = restruc("restructructionComment")
+    val dupsComment = for( duplicateURI <- duplicateURIs) yield fromUri(duplicateURI)
+    val restructructionComment = s"Fusion le ${new Date} vers $uriTokeep à partir de " +
+      dupsComment.mkString(",\n")
+    val restructructionCommentTriple = Triple(
+        uriTokeep,
+        restrucProp,
+        Literal(restructructionComment))
+    rdfStore.appendToGraph(dataset, uriTokeep,
+        makeGraph(List(restructructionCommentTriple)))
+    })
   }
     
   /** includes transaction */
@@ -141,7 +189,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
         jURI.getScheme == scheme
       }
     }
-    /** @return the first URI matching one of the prefixes. */
+    /* @return the first URI matching one of the prefixes. */
     def filterURIsByStartsWith(uris: Seq[Rdf#URI], prefixes: Seq[String]): Option[Rdf#URI] = {
       val candidates = for (
         prefix <- prefixes;
@@ -212,7 +260,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
   }
 
   /**
-   * copy Subject Property Pairs;
+   * copy Subject Property Pairs with uriTokeep as object;
    * includes transaction
    */
   private def copySubjectPropertyPairs(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI]) = {
@@ -221,7 +269,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
         /* SPARQL query to get the original graph name */
         val quads = quadQuery(ANY, ANY, duplicateURI): Iterable[Quad]
         val triplesToAdd = quads.map {
-          case (t, uri) => (Triple(t.subject, t.predicate, uriTokeep), uri)
+          case (t, uri) if (true) => (Triple(t.subject, t.predicate, uriTokeep), uri)
         }.toList
         triplesToAdd.map {
           tripleToAdd =>

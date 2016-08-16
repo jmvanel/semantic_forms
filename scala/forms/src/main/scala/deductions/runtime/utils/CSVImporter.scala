@@ -209,16 +209,25 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       "Idée 1" -> av.idea,
       "Idée 2" -> av.idea,
       "Rencontré à" -> av.metAt,
-      
+
+      // ONISEP
+
       /* For DuplicateCleanerSpecificationApp; NOTE: any rdf:type can be replaced,
-      it's not necessarily properties*/
+      it's not necessarily properties */
       "Identifiant de la propriété" -> URI(restruc.prefixIri + "property"),
       "Id" -> URI(restruc.prefixIri + "property"),
-      "Action" -> URI(restruc.prefixIri + "replacingProperty")
+      "Action" -> URI(restruc.prefixIri + "replacingProperty"),
+
+          "Nouveau libellé" -> rdfs.label,
+          "Propriété à renommer" -> rdfs.label,
+          "Commentaire fusion" -> rdfs.comment
   )
+
   /** manage Mapping from Column name to URI */
   private def manageColumnsMapping(columnName: String, documentURI: URI): URI = {
-    columnsMappings.getOrElse( columnName, normalize( columnName, documentURI) )
+    println(s"manageColumnsMapping: columnName '$columnName': <${columnsMappings.getOrElse( columnName, normalize( columnName, documentURI) )}>")
+    columnsMappings.getOrElse( columnName.trim(),
+        normalize( columnName, documentURI) )
   }
 
   /** normalize column names: remove "&", "?", "/", capitalize;

@@ -154,6 +154,17 @@ trait RDFHelpers0[Rdf <: RDF] extends Configuration
   def isBN(node: Rdf#Node) = foldNode(node)(x => None, identity, x => None) != None
   def toBN(node: Rdf#Node): Rdf#BNode = foldNode(node)(x => BNode(""), identity, x => BNode(""))
 
+  /** use case : when we know that the node is a literal */
+  def literalNodeToString(node: Rdf#Node): String =
+    foldNode(node)(
+      x => "", x => "",
+      literal => fromLiteral(literal)._1)
+  /** use case : when we know that the node is an URI */
+  def uriNodeToURI(node: Rdf#Node): Rdf#URI =
+    foldNode(node)(
+      uri => uri, x => URI(""),
+      literal => URI("") )
+
   def isDownloadableURI(uri: Rdf#URI) = {
     val u = fromUri(uri)
     (
