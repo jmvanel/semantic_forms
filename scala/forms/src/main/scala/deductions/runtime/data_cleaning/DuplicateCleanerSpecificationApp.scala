@@ -51,14 +51,15 @@ object DuplicateCleanerSpecificationApp extends App
       CSV input $csvSpecification,
       propertyChanges: ${propertyChanges.size}""")
 
-    val v = propertyChanges.groupBy(uriMergeSpecification => uriMergeSpecification.replacingURI)
-    for ((uriTokeep, uriMergeSpecifications) <- v) removeDuplicates(uriTokeep, uriMergeSpecifications)
-    //    val uriTokeep_duplicateURIs = v.map { case (uri, list) => (uri, list.map { el => el.replacedURI }) }
-    //    uriTokeep_duplicateURIs.map {
-    //      case (uriTokeep, duplicateURIs) =>
-    //        removeDuplicates(uriTokeep, duplicateURIs)
-    //    }
-    outputModifiedTurtle(csvSpecification + ".ttl")
+    val auxiliaryOutput : Rdf#MGraph = makeEmptyMGraph()
+
+    val v = propertyChanges.groupBy(uriMergeSpecification =>
+      uriMergeSpecification.replacingURI)
+    for ((uriTokeep, uriMergeSpecifications) <- v) removeDuplicates(
+        uriTokeep, uriMergeSpecifications, auxiliaryOutput)
+    val outputDir = new File(csvSpecification).getParent
+    outputModifiedTurtle(csvSpecification + ".ttl", outputDir )
+    outputGraph( auxiliaryOutput, csvSpecification + ".aux.ttl", outputDir )
   }
 
   /** read CSV file with columns restruc:property & restruc:replacingProperty */
@@ -91,8 +92,11 @@ object DuplicateCleanerSpecificationApp extends App
   private def possiblyDeleteDatabaseLocation = {
     Try {
       val path = Path(databaseLocation)
-      if (deleteDatabaseLocation)
+      if (deleteDatabaseLocation) {
         path.deleteRecursively()
+        println(s"reset database Location $databaseLocation")
+      }
     }
   }
+
 }

@@ -23,7 +23,7 @@ extends BlankNodeCleanerBase[Rdf, DATASET] {
   import rdfStore.graphStoreSyntax._
   import rdfStore.transactorSyntax._
 
-  val namedGraphForTrackingDuplicates = URI("urn:duplicates")
+//  val namedGraphForTrackingDuplicates = URI("urn:duplicates")
   private val owl = OWLPrefix[Rdf]
   private val rdfs = RDFSPrefix[Rdf]
 
@@ -31,7 +31,11 @@ extends BlankNodeCleanerBase[Rdf, DATASET] {
    *  keep track of the merge of triples with owl:equivalentProperty or owl:sameAs
    *  includes transaction
    */
-  def processKeepingTrackOfDuplicates(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI]) = {
+  def processKeepingTrackOfDuplicates(
+      uriTokeep: Rdf#URI,
+      duplicateURIs: Seq[Rdf#URI],
+      auxiliaryOutput : Rdf#MGraph = makeEmptyMGraph()
+  ): Unit = {
 //	  println(s"processKeepingTrackOfDuplicates: uriTokeep $uriTokeep duplicateURIs ${duplicateURIs.mkString(", ")}")
     if (uriTokeep != URI("")) {
       // check that it's actually a property
@@ -39,18 +43,16 @@ extends BlankNodeCleanerBase[Rdf, DATASET] {
         val equivalenceProperty =
           if (isProperty(uriTokeep))
             owl.equivalentProperty
-//          else if (isClass(uriTokeep))
-//            owl.equivalentClass
+          else if (isClass(uriTokeep))
+            owl.equivalentClass
           else
             owl.sameAs
         val pgs = for { duplicateURI <- duplicateURIs } yield {
           duplicateURI -- equivalenceProperty ->- uriTokeep
         }
-//        println(s"processKeepingTrackOfDuplicates 2.2: allNamedGraph $allNamedGraph" )
         val graph = pgs.foldLeft(emptyGraph)((x, y) => { x union y.graph })
-//        println( s"processKeepingTrackOfDuplicates: graph $graph" )
-        rdfStore.appendToGraph(dataset, namedGraphForTrackingDuplicates, graph)
-//        println(s"processKeepingTrackOfDuplicates 2.3: allNamedGraph $allNamedGraph" )
+//        rdfStore.appendToGraph(dataset, namedGraphForTrackingDuplicates, graph)
+        addTriples( auxiliaryOutput, graph.triples )
       })
 //      println(s"processKeepingTrackOfDuplicates 3: transaction $transaction" )
     }

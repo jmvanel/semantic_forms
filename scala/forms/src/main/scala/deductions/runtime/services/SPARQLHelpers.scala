@@ -146,8 +146,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 //         | }""".stripMargin
 //    println( s"removeQuadsWithSubject $uri " + sparqlSelectQuery( queryString1 ) )
     
+//    println( s"removeQuadsWithSubject size() $size()" )
     val res = sparqlUpdateQuery(queryString, ds)
-//    println( s"removeQuadsWithSubject res ${res}" )
+    println( s"removeQuadsWithSubject res ${res}" )
   }
   
     /**
@@ -346,14 +347,14 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         //        val effectiveVariables = varnames.intersect(variables.toSet)
         for (variable <- variables) yield {
           val cell = if (varnames.contains(variable)) {
-        	  print(s"row variable $variable")
+//        	  print(s"row variable $variable")
             val cell = row(variable)
             cell match {
               case Success(node)  => node
               case Failure(error) => Literal(error.getLocalizedMessage)
             }
           } else Literal("")
-          println (s", cell $cell")
+//          println (s", cell $cell")
           cell
         }
     }

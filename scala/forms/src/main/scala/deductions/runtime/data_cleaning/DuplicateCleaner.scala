@@ -20,6 +20,7 @@ import org.w3.banana.RDFSPrefix
 import org.w3.banana.Prefix
 import deductions.runtime.utils.RDFPrefixes
 import java.util.Date
+import java.io.FileOutputStream
 
 /**
  * merge Duplicates among instances of given class URI;
@@ -69,7 +70,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
           propertiesHavingDuplicates = propertiesHavingDuplicates + 1
           duplicatesCount = duplicatesCount + duplicateURIs.size
           println(s"""Deleting duplicates for "${el._1}" uriTokeep <$uriTokeep>, delete count ${duplicateURIs.size}""")
-          removeDuplicates(uriTokeep, duplicateURIs )
+          removeDuplicatesFromSeq(uriTokeep, duplicateURIs )
         }
       } catch {
         case t: Throwable =>
@@ -79,33 +80,21 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     s"propertiesHavingDuplicates: $propertiesHavingDuplicates, duplicatesCount: $duplicatesCount"
   }
 
-  /** the algorithm:
-   * - from triples <duplicateURIs> ?P ?O
-   *   create triples <uriTokeep> ?P ?O
-   * - delete triples <duplicateURIs> ?P ?O
-   *
-   * - from reverse triples ?S ?P1 <duplicateURIs>
-   *   create triples ?S ?P1 <uriTokeep>
-   * - delete triples ?S ?P1 <duplicateURIs>
-   * */
-  def removeDuplicates(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI]): Unit = {
-    copySubjectPropertyPairs(uriTokeep, duplicateURIs)
-    if( duplicateURIs.contains(uriTokeep) ) {
-      println( s"CAUTION: duplicateURIs.contains(uriTokeep=$uriTokeep)")
-    }
-    removeQuadsWithSubjects(duplicateURIs.toList.diff(List(uriTokeep)))
-    removeQuadsWithObjects(duplicateURIs.toList.diff(List(uriTokeep)))
-    println(s"Deleted ${duplicateURIs.size} duplicate URI's for $uriTokeep")
-    processKeepingTrackOfDuplicates(uriTokeep, duplicateURIs)
-    processMultipleRdfsDomains(uriTokeep, duplicateURIs)
-  }
-
-  def removeDuplicates(uriTokeep: Rdf#URI, mergeSpecifications: URIMergeSpecifications): Unit = {
+  /** After calling [[removeDuplicates]],
+   *  replace multiple rdfs:labels with the given new label
+   *  from mergeSpecifications
+   *   */
+  def removeDuplicates(uriTokeep: Rdf#URI,
+      mergeSpecifications: URIMergeSpecifications,
+      auxiliaryOutput : Rdf#MGraph = makeEmptyMGraph()
+      ): Unit = {
     val duplicateURIs: List[Rdf#URI] =
       for (ms <- mergeSpecifications) yield ms.replacedURI
-    removeDuplicates(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI])
+    removeDuplicatesFromSeq(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI],
+        auxiliaryOutput)
     
     //  create and replace triples for new label & comment
+
     val rdfs = RDFSPrefix[Rdf]
     val skos = Prefix[Rdf]("skos", "http://www.w3.org/2004/02/skos/core#")
     val transaction = rdfStore.rw( dataset, {
@@ -116,7 +105,8 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
         if (ms.newLabel != "") {
           val removedQuads: List[Quad] = removeFromQuadQuery(ms.replacingURI, rdfs.label, ANY)
           if (!removedQuads.isEmpty) {
-            val newTriples = for (removedQuad <- removedQuads) yield Triple(ms.replacingURI, skos("altLabel"), removedQuad._1.objectt)
+            val newTriples = for (removedQuad <- removedQuads) yield
+            		Triple(ms.replacingURI, skos("altLabel"), removedQuad._1.objectt)
             val newLabelTriple = Triple(ms.replacingURI, rdfs.label, Literal(ms.newLabel))
             rdfStore.appendToGraph(dataset, removedQuads(0)._2, makeGraph(
                 newTriples :+ newLabelTriple ))
@@ -141,13 +131,42 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
         makeGraph(List(restructructionCommentTriple)))
     })
   }
-    
+
+  /** the algorithm:
+   * - from triples <duplicateURIs> ?P ?O
+   *   create triples <uriTokeep> ?P ?O
+   * - delete triples <duplicateURIs> ?P ?O
+   *
+   * - from reverse triples ?S ?P1 <duplicateURIs>
+   *   create triples ?S ?P1 <uriTokeep>
+   * - delete triples ?S ?P1 <duplicateURIs>
+   * */
+  def removeDuplicatesFromSeq(
+      uriTokeep: Rdf#URI,
+      duplicateURIs: Seq[Rdf#URI],
+      auxiliaryOutput : Rdf#MGraph = makeEmptyMGraph()
+  ): Unit = {
+    copySubjectPropertyPairs(uriTokeep, duplicateURIs)
+    if( duplicateURIs.contains(uriTokeep) ) {
+      println( s"CAUTION: duplicateURIs contains uriTokeep=$uriTokeep")
+    }
+    removeQuadsWithSubjects(duplicateURIs.toList.diff(List(uriTokeep)))
+    removeQuadsWithObjects(duplicateURIs.toList.diff(List(uriTokeep)))
+    println(s"Deleted ${duplicateURIs.size} duplicate URI's for <$uriTokeep>")
+    processKeepingTrackOfDuplicates(uriTokeep, duplicateURIs, auxiliaryOutput)
+    processMultipleRdfsDomains(uriTokeep, duplicateURIs)
+    rdfStore.r( dataset, 
+    		println( s"removeDuplicates: named graphs ${listNames().mkString(", ")}") )
+  }
+
   /** includes transaction */
   protected def removeQuadsWithSubjects(subjects: Seq[Rdf#Node]) = {
     for (dupURI <- subjects) {
+    	println( s"removeQuadsWithSubject <$dupURI> size() $datasetSize()" )
       val transaction = rdfStore.rw( dataset, {
         removeQuadsWithSubject(dupURI)
       })
+    	println( s"removeQuadsWithSubject <$dupURI> size() after $datasetSize()" )
     }
   }
 
@@ -323,17 +342,27 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     }
   
   /** output modified data in /tmp */
-  def outputModifiedTurtle(file: String) = {
+  def outputModifiedTurtle(file: String, outputDir: String = "/tmp" ) = {
     val queryString = """
     CONSTRUCT { ?S ?P ?O }
     WHERE {
       GRAPH ?GR { ?S ?P ?O }
     } """
     val ttl = sparqlConstructQueryTR(queryString)
-    val outputFile = "/tmp/" + new File(file).getName
-    println(s"Writing ${ttl.length()} chars in  output File $outputFile")
+    val outputFile = outputDir + File.separator + new File(file).getName
+    println(s"""Writing ${ttl.length()} chars in output File
+      $outputFile""")
     val fw = new FileWriter(new File(outputFile))
     fw.write(ttl)
     fw.close()
+  }
+
+  def outputGraph(auxiliaryOutput: Rdf#Graph, file: String, outputDir: String = "." ) = {
+    val outputFile = outputDir + File.separator + new File(file).getName
+    println(s"""Writing ${auxiliaryOutput.size} triples in output File
+      $outputFile""")
+    val os = new FileOutputStream(outputFile)
+    turtleWriter.write(auxiliaryOutput, os, "")
+    os.close()
   }
 }

@@ -38,7 +38,7 @@ trait PropertyDomainCleaner[Rdf <: RDF, DATASET]
    * includes transaction
    */
   def processMultipleRdfsDomains(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI]) = {
-    println(s"processMultipleRdfsDomains: uriTokeep $uriTokeep duplicateURIs ${duplicateURIs.mkString(", ")}")
+    println(s"processMultipleRdfsDomains: uriTokeep <$uriTokeep>, duplicateURIs ${duplicateURIs.mkString(", ")}")
     val transaction = rdfStore.rw(dataset, {
       if (isProperty(uriTokeep)) replaceMultipleRdfsDomains(uriTokeep)
     })
