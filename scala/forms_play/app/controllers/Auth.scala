@@ -73,8 +73,9 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
 
   /** page for login or signin */
   def login = Action { implicit request =>
-    println( s"def login $request" )
-    val lf = views.html.login(loginForm, registerForm)
+    println( s"""def login request $request,
+      cookies ${request.cookies}""" )
+    val lf = views.html.login( loginForm, registerForm, redirect(request) )
     Ok("<!DOCTYPE html>\n" + lf)
     .as("text/html; charset=utf-8")
   }
@@ -90,10 +91,14 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
                     .as("text/html; charset=utf-8"),
       user => {
         // Redirect to URL before login
-        val previousURL = request.headers.get("referer")
-        println(s"authenticate: previous url $previousURL")
+        println(s"""authenticate: cookies ${request.cookies}
+          get("to-redirect") ${request.session.get("to-redirect")}""")
+        val previousURL = redirect(request)
+        println(s"authenticate: previous url <$previousURL>")
         val call = previousURL match {
-          case Some(url) if( ! url.endsWith("/login") &&
+          case (url) if(
+              url != "" &&
+              ! url.endsWith("/login") &&
               ! url.endsWith("/authenticate") ) => Call("GET", url)
           case _ => routes.Application.index
         }
@@ -101,6 +106,9 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
       }
     )
   }
+
+  def redirect(request: Request[_]) = request.session.get("to-redirect") . getOrElse(
+        "" )
 
   /** start a session after registering user Id & password
    *  this is the action of form `registerForm`

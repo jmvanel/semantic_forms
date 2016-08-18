@@ -4,7 +4,7 @@ import play.api.i18n.Messages.Implicits._
 import play.api.i18n.Messages._
 *@
 
-@(loginForm: Form[(String, String)], registerForm: Form[(String, String, String)])(implicit messages:  play.api.i18n.Messages)
+@(loginForm: Form[(String, String)], registerForm: Form[(String, String, String)], redirect: String="")(implicit messages: play.api.i18n.Messages)
 	<head>
 	  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
 	  <title>Welcome to Semantic Forms Play default application</title>

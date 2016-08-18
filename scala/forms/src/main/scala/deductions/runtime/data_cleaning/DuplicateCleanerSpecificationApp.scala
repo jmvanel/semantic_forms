@@ -51,15 +51,15 @@ object DuplicateCleanerSpecificationApp extends App
       CSV input $csvSpecification,
       propertyChanges: ${propertyChanges.size}""")
 
-    val auxiliaryOutput : Rdf#MGraph = makeEmptyMGraph()
+    val auxiliaryOutput: Rdf#MGraph = makeEmptyMGraph()
 
     val v = propertyChanges.groupBy(uriMergeSpecification =>
       uriMergeSpecification.replacingURI)
     for ((uriTokeep, uriMergeSpecifications) <- v) removeDuplicates(
-        uriTokeep, uriMergeSpecifications, auxiliaryOutput)
+      uriTokeep, uriMergeSpecifications, auxiliaryOutput)
     val outputDir = new File(csvSpecification).getParent
-    outputModifiedTurtle(csvSpecification + ".ttl", outputDir )
-    outputGraph( auxiliaryOutput, csvSpecification + ".aux.ttl", outputDir )
+    outputModifiedTurtle(csvSpecification + ".ttl", outputDir)
+    outputGraph(auxiliaryOutput, csvSpecification + ".aux.ttl", outputDir)
   }
 
   /** read CSV file with columns restruc:property & restruc:replacingProperty */

@@ -20,7 +20,9 @@ trait Secured
 
   def username(request: RequestHeader) = request.session.get(Security.username)
 
-  private def onUnauthorized(request: RequestHeader) = Results.Redirect(routes.Auth.login)
+  private def onUnauthorized(request: RequestHeader) =
+    Results.Redirect(routes.Auth.login).
+        addingToSession( "to-redirect" -> request.uri )(request)
 
   /** Ensures the controller is only accessible to registered users */
   private def withAuth(fun: => String => Request[AnyContent] => Result): EssentialAction = {
