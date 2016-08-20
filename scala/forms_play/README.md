@@ -282,7 +282,7 @@ To re-load the database from N-Triples format (possibly delete the TDB directory
 
 ## Updading RDF content
 
-Run deductions.runtime.utils.CommandLineApp for a commented list of Scala/Java Applications available in Semantic\_forms classpath.
+Run (with `java -cp $JARS` or `runMain` under SBT) deductions.runtime.utils.CommandLineApp for a commented list of Scala/Java Applications available in Semantic\_forms classpath.
 
 The server must not be started while updading RDF content, because Jena TDB does not allow access to the database on disk from 2 different processes.
 

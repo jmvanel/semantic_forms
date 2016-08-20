@@ -21,6 +21,7 @@ object CommandLineApp extends App {
     |deductions.runtime.sparql_cache.RDFI18NLoader     update the I18N translations of the RDF vocabularies
     |deductions.runtime.sparql_cache.FormSpecificationsLoader  update the Common Form Specifications
     |deductions.runtime.jena.DataSourceManagerApp      Replace Same Language triples from given RDF file or URL in given graph
+    |deductions.runtime.abstract_syntax.FormSpecificationsFromVocabApp	Create squeleton form specifications from an RDFS/OWL vocabulary
     |
     """.stripMargin
   )

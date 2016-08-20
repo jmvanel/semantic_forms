@@ -19,18 +19,22 @@ import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.utils.RDFPrefixes
 
-
+/** input file for vocabulary; output in new file with ".formspec.ttl" suffix */
 object FormSpecificationsFromVocabApp extends RDFStoreLocalJena1Provider
     with App
     with FormSpecificationsFromVocab[
     ImplementationSettings.Rdf, ImplementationSettings.DATASET
 ] {
     val logger:Logger = Logger.getRootLogger()
+    if( args.size == 0 ) {
+      println("Usage: input file for vocabulary; output in new file with '.formspec.ttl' suffix")
+      System.exit(-1)
+    }
     makeFormSpecificationsFromVocabFile( new File(args(0)) )
 }
 
 /**
- * Create form specifications from an RDFS/OWL vocabulary;
+ * Create squeleton form specifications from an RDFS/OWL vocabulary;
  * the resulting RDF file can then be manually updated
  * (leverages abstract Form Syntax)
  *
@@ -57,22 +61,22 @@ trait FormSpecificationsFromVocab[Rdf <: RDF, DATASET]
 
   /** generate Form Specifications (skeletons to be hand edited) from an RDFS/OWL vocabulary */
   def makeFormSpecificationsFromVocab(vocabGraph: Rdf#Graph): Rdf#Graph = {
-		println(s"makeFormSpecificationsFromVocab: vocabGraph ${vocabGraph.size}") ;
+		println(s"makeFormSpecificationsFromVocab: vocabGraph size ${vocabGraph.size}") ;
     implicit val graph: Rdf#Graph = vocabGraph
     val graphs = for (
-      classeTr <- find(vocabGraph, ANY, rdf.typ, owl.Class);
-      zz = println(s"makeFormSpecificationsFromVocab: classeTr $classeTr") ;
-      classe = classeTr.subject;
+      classTriple <- find(vocabGraph, ANY, rdf.typ, owl.Class);
+      _ = println(s"makeFormSpecificationsFromVocab: class Triple $classTriple") ;
+      classe = classTriple.subject;
       formSyntax = createFormFromClass(makeURI(classe)) ;
-      zzz = println(s"makeFormSpecificationsFromVocab: formSyntax $formSyntax")
+      _ = println(s"makeFormSpecificationsFromVocab: formSyntax $formSyntax")
     ) yield makeFormSpecificationFromFormSyntax(formSyntax)
 
     union(graphs.toSeq)
   }
 
-  private def makeFormSpecificationFromFormSyntax(formSyntax: FormModule[Rdf#Node, Rdf#URI]#FormSyntax): Rdf#Graph = {
-		println(s"makeFormSpecificationFromFormSyntax: formSyntax $formSyntax")
-
+  /** make Form Specification From Form Syntax */
+  private def makeFormSpecificationFromFormSyntax(
+    formSyntax: FormModule[Rdf#Node, Rdf#URI]#FormSyntax): Rdf#Graph = {
     val classs = formSyntax.classs
     val fields = formSyntax.fields
     val properties = for (field <- fields) yield {
@@ -80,8 +84,8 @@ trait FormSpecificationsFromVocab[Rdf <: RDF, DATASET]
     }
     val classDomain = prefixesMap2("form")("classDomain")
     val showProperties = prefixesMap2("form")("showProperties")
-    val formURI = ops.withFragment(classs, "formFromClass")
-
+    val formURI = URI(fromUri(classs) + "-formFromClass" )
+    println("formURI " + formURI + ", classs " + classs)
     val formGraph = (formURI
       -- classDomain ->- classs
       -- showProperties ->- properties.toList).graph
