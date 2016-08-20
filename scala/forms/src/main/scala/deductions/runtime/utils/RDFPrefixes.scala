@@ -49,9 +49,12 @@ trait RDFPrefixes[Rdf <: RDF] {
     Prefix[Rdf]("forms", "http://deductions-software.com/ontologies/forms#"),
     // form vocabulary
     Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#" ),
+
     Prefix[Rdf]("av", prefixAVontology ),
+
     restruc,
-    Prefix[Rdf]("", "http://data.onisep.fr/ontologies/" )
+    Prefix[Rdf]("", "http://data.onisep.fr/ontologies/" ),
+    Prefix[Rdf]("bioc", "http://deductions.github.io/biological-collections.owl.ttl#")
     )
   
   val prefixesMap: Map[String, Rdf#URI] =
