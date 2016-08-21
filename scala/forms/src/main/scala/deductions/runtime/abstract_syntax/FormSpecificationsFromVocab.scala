@@ -115,7 +115,6 @@ trait FormSpecificationsFromVocab[Rdf <: RDF, DATASET]
                               vocabGraph: Rdf#Graph): Rdf#Graph = {
     val graphs = for (
       field <- formSyntax.fields;
-//      _ = println(s"field $field")
       if( field match {
         case re: ResourceEntry => true
         case _ => false

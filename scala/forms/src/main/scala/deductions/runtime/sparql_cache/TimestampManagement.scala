@@ -56,6 +56,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
    *  No Transaction
    */
   def getTimestampFromDataset(uri: Rdf#URI, dataset: DATASET): Try[Long] = {
+    println(s"getTimestampFromDataset: uri: $uri")
     import org.w3.banana.binder._
     import java.math.BigInteger
     val queryString = s"""
@@ -81,6 +82,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
           }
       }
     }
+    println(s"getTimestampFromDataset: result: $result")
     result.map { x => x.next.longValue() }
   }
   
@@ -96,7 +98,8 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
     try {
       val connection0 = new URL(url).openConnection()
       connection0 match {
-        case connection: HttpURLConnection =>
+        case connection: HttpURLConnection if( ! url.startsWith("file:/") ) =>
+          println(s"lastModified: http:// ")
           connection.setConnectTimeout(timeout);
           connection.setReadTimeout(timeout);
           connection.setRequestMethod("HEAD");
@@ -120,6 +123,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
 
         case _ if(url.startsWith("file:/") ) =>
           val f = new File( new java.net.URI(url) )
+          println(s"lastModified: file:// ${new java.util.Date(f.lastModified)}")
           (true,  f.lastModified(), None )
           
         case _ =>

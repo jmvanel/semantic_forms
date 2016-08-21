@@ -85,7 +85,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   def retrieveURINoTransaction(uri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
     for (graph <- rdfStore.getGraph(dataset, uri)) yield {
       val uriGraphIsEmpty = graph.size == 0
-      println(s"uriGraphIsEmpty: $uri : $uriGraphIsEmpty")
+      println(s"retrieveURINoTransaction.uriGraphIsEmpty: $uriGraphIsEmpty <$uri>")
       if (uriGraphIsEmpty) {
         val mirrorURI = getMirrorURI(uri)
         if (mirrorURI == "") {
@@ -120,19 +120,18 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
 
   /**
    * according to timestamp download if outdated;
-   * with transaction, in a Future
+   * with NO transaction
    */
   def updateLocalVersion(uri: Rdf#URI, dataset: DATASET) = {
-//    val future = Future {
-      dataset.rw({
+//      dataset.rw({
         val localTimestamp = dataset2.r{
           getTimestampFromDataset(uri, dataset2)
         } . get
         localTimestamp match {
           case Success(longLocalTimestamp) => {
-            println(s"$uri localTimestamp: ${	new Date(longLocalTimestamp) } - $longLocalTimestamp .")
+            println(s"updateLocalVersion: $uri local TDB Timestamp: ${new Date(longLocalTimestamp) } - $longLocalTimestamp .")
             val lastModifiedTuple = lastModified(uri.toString(), httpHeadTimeout)
-            println(s"$uri lastModified: ${new Date(lastModifiedTuple._2)} $lastModifiedTuple .")
+            println(s"$uri last Modified: ${new Date(lastModifiedTuple._2)} - $lastModifiedTuple .")
             
             if (lastModifiedTuple._1) {
             	if (lastModifiedTuple._2 > longLocalTimestamp
@@ -142,7 +141,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
 //            		addTimestampToDatasetNoTransaction(uri, dataset)
             		addTimestampToDataset(uri, dataset2)
             	}
-            } else if (! lastModifiedTuple._1 || lastModifiedTuple._2 == Long.MaxValue ) {
+            } else if (! lastModifiedTuple._1 ||
+                lastModifiedTuple._2 == Long.MaxValue ) {
               lastModifiedTuple._3 match {
                 case Some(connection) => 
                 val etag = headerField( fromUri(uri), "ETag": String, connection )
@@ -161,9 +161,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
             storeURINoTransaction(uri, uri, dataset)
             println(s"$uri had no localTimestamp ($fail); downloaded.")
         }
-      })
-//    }
-//    future
+//      })
   }
 
   /**
