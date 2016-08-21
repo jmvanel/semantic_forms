@@ -24,15 +24,12 @@ trait SitesURLForDownload {
  *  TODO move in jena package ( and update README )
  */
 object PopulateRDFCache extends JenaModule
-  //  with JenaHelpers
   with DefaultConfiguration
   with RDFStoreLocalJena1Provider
   with PopulateRDFCacheTrait[Jena, ImplementationSettings.DATASET]
 
 trait PopulateRDFCacheTrait[Rdf <: RDF, DATASET]
-    extends //    RDFOpsModule
-    //    with
-    CommonVocabulariesLoaderTrait[Rdf, DATASET]
+    extends CommonVocabulariesLoaderTrait[Rdf, DATASET]
     with RDFI18NLoaderTrait[Rdf, DATASET]
     with FormSpecificationsLoaderTrait[Rdf, DATASET]
     with App {

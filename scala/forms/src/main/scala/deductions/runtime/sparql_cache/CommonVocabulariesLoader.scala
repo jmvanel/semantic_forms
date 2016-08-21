@@ -18,6 +18,7 @@ import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.jena.ImplementationSettings
 import org.w3.banana.LDPPrefix
 import org.w3.banana.IANALinkPrefix
+import deductions.runtime.utils.RDFPrefixes
 
 /**
  * @author jmv
@@ -39,14 +40,14 @@ object CommonVocabulariesLoader extends JenaModule
  *  */
 trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
-    //    with RDFStoreHelpers[Rdf, DATASET]
+    with RDFPrefixes[Rdf]
     with SitesURLForDownload {
 
   import ops._
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._
 
-  /** most used vocab's */
+  /** most used vocab's; they are "self-hosted" */
   val basicVocabs: List[Prefix[Rdf]] = List(
     RDFPrefix[Rdf],
     RDFSPrefix[Rdf],
@@ -60,27 +61,30 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
     OWLPrefix[Rdf])
 
     import scala.language.postfixOps
-    
+      
   /** larger and less known vocab's */
   val largerVocabs: List[Rdf#URI] =
     URI("https://raw.githubusercontent.com/edumbill/doap/master/schema/doap.rdf") ::
-      makeUri("http://rdfs.org/sioc/ns#") ::   
-      makeUri("http://topbraid.org/schema/schema.ttl") ::
-      // makeUri("http://schema.rdfs.org/all.nt") ::
+      URI("http://rdfs.org/sioc/ns#") ::
+      URI("http://topbraid.org/schema/schema.ttl") ::
       /* NOTES
        * schema.rdfs.org is down on 25 april 2016
        * .ttl is still broken ?
        * ( asked on https://github.com/mhausenblas/schema-org-rdf/issues/63 ) */
-      makeUri("http://downloads.dbpedia.org/3.9/dbpedia_3.9.owl") ::
+    	URI("http://schema.rdfs.org/all.nt") ::
+      /* see also scripts/download-dbpedia.sh in Semantic_forms */
+      URI("http://downloads.dbpedia.org/2015-10/dbpedia_2015-10.nt") ::
       /* geo: , con: */
-      makeUri("http://www.w3.org/2003/01/geo/wgs84_pos#") ::
-      makeUri("http://www.w3.org/2000/10/swap/pim/contact#") ::
-      makeUri(githubcontent + "/assemblee-virtuelle/pair/master/PAIR_1.0.owl.ttl" ) ::
-      makeUri("http://purl.org/ontology/cco/cognitivecharacteristics.n3") ::
-      makeUri("http://www.w3.org/2004/02/skos/core#") ::
+      URI("http://www.w3.org/2003/01/geo/wgs84_pos#") ::
+      URI("http://www.w3.org/2000/10/swap/pim/contact#") ::
+      URI(githubcontent + "/assemblee-virtuelle/pair/master/PAIR_1.0.owl.ttl" ) ::
+      URI("http://purl.org/ontology/cco/cognitivecharacteristics.n3") ::
+//      URI("http://www.w3.org/2004/02/skos/core#") ::
+      prefixesMap("skos") ::
+      prefixesMap("vcard") ::
       // "http://purl.org/ontology/mo/"
       Nil
-
+   
   /**
    * TRANSACTIONAL
    *  basicVocabs are not supposed to change often ..
