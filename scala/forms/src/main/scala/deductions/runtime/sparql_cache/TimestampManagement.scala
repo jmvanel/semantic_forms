@@ -161,7 +161,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
          |    <$uri> <ETag> ?etag .
          |  }
          |}""".stripMargin
-    val list = sparqlSelectQueryVariables(queryString, Seq("etag") )
+    val list = sparqlSelectQueryVariablesNT(queryString, Seq("etag") )
     val v = list.headOption.getOrElse(Seq())
     val vv = v.headOption.getOrElse(Literal(""))
     vv.toString()

@@ -91,8 +91,11 @@ cd semantic_forms_play-1.0-SNAPSHOT
 nohup bin/semantic_forms_play -J-Xmx50M &
 ```
 
-The default port is 9000, so you can direct your browser to [http://localhost:9000](http://localhost:9000) .
-The generic application is perfectly usable out of the box, see [User manual](https://github.com/jmvanel/semantic_forms/wiki/User_manual). However, it is better to preload common RDF vocabularies and related form specifications and I18N translations, see: [preloading-rdf-content](#preloading-rdf-content) .
+By doing this you start a web serveur on your machine. The default port is 9000, so you can direct your browser to [http://localhost:9000](http://localhost:9000) .
+
+The generic application is perfectly usable out of the box, see [User manual](https://github.com/jmvanel/semantic_forms/wiki/User_manual). However, it is better to preload common RDF vocabularies and related form specifications and I18N translations, see:
+[installation doc.](../../doc/en/install.md)
+and [preloading-rdf-content](#preloading-rdf-content) .
 
 
 #### Settings when runnning the zipped distribution
