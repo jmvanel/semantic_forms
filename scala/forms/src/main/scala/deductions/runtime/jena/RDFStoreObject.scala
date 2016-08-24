@@ -14,6 +14,8 @@ import deductions.runtime.services.Configuration
 import com.hp.hpl.jena.rdf.model.ModelFactory
 import com.hp.hpl.jena.query.DatasetFactory
 import deductions.runtime.jena.lucene.LuceneIndex
+import java.io.File
+import java.nio.file.Paths
 
 // TODO rename RDFStoreLocalJenaProvider
 
@@ -54,7 +56,19 @@ trait RDFStoreLocalJenaProvider
    */
   override def createDatabase(database_location: String) = {
     if (database_location != "") {
-      val dts = TDBFactory.createDataset(database_location)
+
+      // if the directory does not exist, create it
+      val currentRelativePath = Paths.get("");
+      val abs = currentRelativePath.toAbsolutePath().toString();
+      System.out.println("Current relative path is: " + abs);
+      val dir = new File(abs, database_location)
+      if (!dir.exists()) {
+        System.out.println("creating database directory: " +
+          database_location + " as " + dir + " - current (.) : " + new File(".").getAbsolutePath);
+        dir.mkdirs()
+      }
+
+      val dts = TDBFactory.createDataset(Paths.get(database_location).toString())
       Logger.getRootLogger.info(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
 
       try {
