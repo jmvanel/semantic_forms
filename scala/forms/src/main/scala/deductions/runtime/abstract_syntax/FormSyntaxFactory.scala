@@ -4,7 +4,6 @@ http://www.gnu.org/licenses/lgpl.html
 $Id$
  */
 package deductions.runtime.abstract_syntax
-
 import scala.collection.mutable
 import scala.util.Try
 import scala.util.Failure
@@ -37,9 +36,11 @@ import deductions.runtime.services.Configuration
 import deductions.runtime.services.DefaultConfiguration
 
 /** one of EditionMode, DisplayMode, CreationMode */
-abstract sealed class FormMode
+abstract sealed class FormMode { val editable = true }
 object EditionMode extends FormMode { override def toString() = "EditionMode" }
-object DisplayMode extends FormMode { override def toString() = "DisplayMode" }
+object DisplayMode extends FormMode {
+  override def toString() = "DisplayMode"
+  override val editable = false }
 object CreationMode extends FormMode { override def toString() = "CreationMode" }
 
 /** simple data class to hold an URI with its computed label (rdfs:label, foaf;name, etc) */
@@ -94,6 +95,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     with PossibleValues[Rdf]
    	with FormConfigurationFactory[Rdf, DATASET]
    	with ComputePropertiesList[Rdf, DATASET]
+    with FormConfigurationReverseProperties[Rdf, DATASET]
     with Timer {
 
   // TODO not thread safe: form is not rebuilt for each HTTP request 
@@ -122,12 +124,12 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     (implicit graph: Rdf#Graph)
   : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
 
-    val s1 = computePropertiesList(subject, editable, formuri)
-
-    createFormDetailed(subject, s1.propertiesList,
-      s1.classs,
-      if (editable) EditionMode else DisplayMode,
-      formGroup)
+    val step1 = computePropertiesList(subject, editable, formuri)
+    createFormDetailed2( step1 )
+//    createFormDetailed(subject, step1.propertiesList,
+//      step1.classs,
+//      if (editable) EditionMode else DisplayMode,
+//      formGroup)
   }
 
   def addRDFSLabelComment(propertiesList: Seq[Rdf#Node]): Seq[Rdf#Node] = {
@@ -148,12 +150,34 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    * NO transaction, should be called within a transaction
    */
   def createFormDetailed(subject: Rdf#Node,
-    props: Iterable[Rdf#Node], classs: Rdf#URI,
+    propertiesList: Iterable[Rdf#Node], classs: Rdf#URI,
     formMode: FormMode,
     formGroup: Rdf#URI = nullURI,
     formConfig: Rdf#Node = URI(""))
     (implicit graph: Rdf#Graph)
   : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
+    createFormDetailed2(
+          RawDataForForm(propertiesList.toSeq, classs, subject, formMode.editable,
+        formConfig match { case URI("") => None
+        case uri => Some(uri) } )
+    )
+  }
+
+  def createFormDetailed2(
+      step1: RawDataForForm[Rdf],
+//      subject: Rdf#Node,
+//    props: Iterable[Rdf#Node],
+//    classs: Rdf#URI,
+//    formMode: FormMode,
+    formGroup: Rdf#URI = nullURI,
+    formConfig: Rdf#Node = URI(""))
+    (implicit graph: Rdf#Graph)
+  : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
+
+    val subject = step1.subject
+    val props = step1.propertiesList
+    val classs = step1.classs
+    val formMode: FormMode = if (step1.editable) EditionMode else DisplayMode
 
     logger.debug(s"createForm subject $subject, props $props")
     println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)

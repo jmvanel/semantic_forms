@@ -35,7 +35,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
         (propertiesListFromFormConfiguration(URI(formSpecURI)),
           URI(formSpecURI))
       } else {
-        lookPropertieslistFormInConfiguration(classs)
+        lookPropertiesListInConfiguration(classs)
       }
     val newId = // UnfilledFormFactory . 
         makeId
