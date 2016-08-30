@@ -16,14 +16,15 @@ var urlReqPrefix = "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?Query
       resultsCount + "&QueryString=" ;
 // var urlReqPrefix = "/lookup?q=";
 
-/** onkeyup callback on <input> tag */
+/** onkeyup callback on <input> tag 
 function onkeyupComplete( element ) {
   console.log( "onkeyupComplete " + this );
 };
+*/
 
 function addDBPediaLookup( inputElementURI ) {
       console.log( "addDBPediaLookup " + inputElementURI );
-      console.log( "addDBPediaLookup " + " " + (typeof $(inputElementURI)) );
+      console.log( "addDBPediaLookup typeof " + " " + (typeof $(inputElementURI)) );
       var inputElementId = inputElementURI.substring(1);
       var inputElement = document.getElementById(inputElementId);
       inputElement.hasLookup = true;

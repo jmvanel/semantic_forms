@@ -97,13 +97,13 @@ trait MainXml extends ToolsPage with EnterButtons {
 
   def javascriptCSSImports: NodeSeq = {
     <!--
+    <script src="assets/javascripts/jquery-ui.min.js"></script>
+    <script src="assets/javascripts/jquery.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="assets/stylesheets/jquery-ui.min.css"></link>
+-->
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css"></link>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
--->
-    <script src="assets/javascripts/jquery.min.js" type="text/javascript"></script>
-    <script src="assets/javascripts/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="assets/stylesheets/jquery-ui.min.css"></link>
 
     <!-- bootstrap -->
     <link rel="stylesheet" href="assets/stylesheets/bootstrap.min.css"></link>
