@@ -101,7 +101,8 @@ trait FormModule[NODE, URI <: NODE] {
     value: URI = nullURI, val alreadyInDatabase: Boolean = true,
     possibleValues: Seq[(NODE, NODE)] = Seq(),
     val valueLabel: String = "",
-    type_ : NODE = nullURI)
+    type_ : NODE = nullURI,
+    inverseTriple: Boolean= false)
       extends Entry(label, comment, property, type_ = type_, value = value,
           possibleValues = possibleValues) {
     override def toString(): String = {

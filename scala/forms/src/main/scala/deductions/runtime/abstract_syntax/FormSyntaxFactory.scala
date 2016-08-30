@@ -126,10 +126,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
     val step1 = computePropertiesList(subject, editable, formuri)
     createFormDetailed2( step1 )
-//    createFormDetailed(subject, step1.propertiesList,
-//      step1.classs,
-//      if (editable) EditionMode else DisplayMode,
-//      formGroup)
   }
 
   def addRDFSLabelComment(propertiesList: Seq[Rdf#Node]): Seq[Rdf#Node] = {
@@ -163,14 +159,12 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     )
   }
 
+  type fm = FormModule[Rdf#Node, Rdf#URI]
+  
   def createFormDetailed2(
-      step1: RawDataForForm[Rdf],
-//      subject: Rdf#Node,
-//    props: Iterable[Rdf#Node],
-//    classs: Rdf#URI,
-//    formMode: FormMode,
-    formGroup: Rdf#URI = nullURI,
-    formConfig: Rdf#Node = URI(""))
+		  step1: RawDataForForm[Rdf],
+		  formGroup: Rdf#URI = nullURI,
+		  formConfig: Rdf#Node = URI(""))
     (implicit graph: Rdf#Graph)
   : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
 
@@ -204,7 +198,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     }
     val fields = entries.flatMap { identity }
     val fields2 = addTypeTriple(subject, classs, fields)
-    val formSyntax = FormSyntax(subject, fields2, classs)
+    val fields3 = addInverseTriples(fields2, step1)
+    val formSyntax = FormSyntax(subject, fields3, classs)
     addAllPossibleValues(formSyntax, valuesFromFormGroup)
     
     logger.debug(s"createForm " + this)
@@ -214,9 +209,12 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     res
   }
 
+  def addInverseTriples(fields2: Seq[Entry],
+      step1: RawDataForForm[Rdf]): Seq[Entry]
+  
   /**
    * update given Form,
-   * looking up for Form Configuration within given RDF graph 
+   * looking up for field Configurations within given RDF graph
    * eg in :
    *  <pre>
    *  &lt;topic_interest> :fieldAppliesToForm &lt;personForm> ;
