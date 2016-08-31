@@ -14,6 +14,8 @@ javaOptions in run ++= Seq(
     "-Xms256M", "-Xmx2G", "-XX:MaxPermSize=1024M", "-XX:+UseConcMarkSweepGC")
 fork in run := true
 
+connectInput in run := true
+
 routesGenerator := StaticRoutesGenerator
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test

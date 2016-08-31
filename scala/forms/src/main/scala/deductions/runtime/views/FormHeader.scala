@@ -55,6 +55,7 @@ self: ApplicationFacadeImpl[Rdf, _] =>
       <div class="row">
         <div class="col-md-6">
           <a href={ uri } title="Download from original URI">{mess("Download_original_URI")}</a>
+						&lt; { uri } &gt;
         </div>
         <div class="col-md-6">
           <a href={ hrefDownloadPrefix + URLEncoder.encode(uri, "utf-8") } title={mess("Triples_tooltip")} >

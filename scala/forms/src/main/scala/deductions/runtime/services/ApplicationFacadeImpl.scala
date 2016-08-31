@@ -295,14 +295,14 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   def saveForm(request: Map[String, Seq[String]], lang: String = "",
       userid: String, graphURI: String = "")
   : Option[String] = {
-    println(s"ApplicationFacadeImpl.save: map :$request, userid <$userid>")
+//    println(s"ApplicationFacadeImpl.save: map :$request, userid <$userid>")
     val mainSubjectURI = try {
       implicit val userURI: String = userid
       fs.saveTriples(request)
     } catch {
       case t: Throwable =>
         println("Exception in saveTriples: " + t)
-        throw t  // show Exception to user
+        throw t
     }
     val uriOption = (request).getOrElse("uri", Seq()).headOption
     println(s"ApplicationFacadeImpl.save: uriOption $uriOption, graphURI $graphURI")
