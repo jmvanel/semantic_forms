@@ -70,8 +70,11 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
       /* NOTES
        * schema.rdfs.org is down on 25 april 2016
        * .ttl is still broken ?
-       * ( asked on https://github.com/mhausenblas/schema-org-rdf/issues/63 ) */
-    	URI("http://schema.rdfs.org/all.nt") ::
+       * ( asked on https://github.com/mhausenblas/schema-org-rdf/issues/63 )
+       * 
+       * TODO the best is to use the RDFa official version at
+       * https://github.com/schemaorg/schemaorg/blob/sdo-callisto/data/schema.rdfa */
+//    	URI("http://schema.rdfs.org/all.nt") ::
       /* see also scripts/download-dbpedia.sh in Semantic_forms */
       URI("http://downloads.dbpedia.org/2015-10/dbpedia_2015-10.nt") ::
       /* geo: , con: */
