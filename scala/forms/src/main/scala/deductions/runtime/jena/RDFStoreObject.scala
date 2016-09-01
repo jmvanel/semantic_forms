@@ -54,7 +54,7 @@ trait RDFStoreLocalJenaProvider
    * create TDB Database in given directory;
    *  if it is empty, create an in-memory Database
    */
-  override def createDatabase(database_location: String) = {
+  override def createDatabase(database_location: String, useTextQuery: Boolean = useTextQuery) = {
     if (database_location != "") {
 
       // if the directory does not exist, create it
@@ -72,7 +72,7 @@ trait RDFStoreLocalJenaProvider
       Logger.getRootLogger.info(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
 
       try {
-        configureLuceneIndex(dts)
+        configureLuceneIndex(dts, useTextQuery)
       } catch {
         case t: Throwable =>
           println(t.getLocalizedMessage)

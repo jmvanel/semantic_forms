@@ -10,7 +10,7 @@ import org.apache.log4j.Logger
 trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     extends InstanceLabelsInference2[Rdf]
     with PreferredLanguageLiteral[Rdf]
-    with RDFCacheAlgo[Rdf, DATASET]
+//    with RDFCacheAlgo[Rdf, DATASET]
     with RDFHelpers[Rdf]
     with DatasetHelper[Rdf, DATASET] {
 

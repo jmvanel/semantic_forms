@@ -10,9 +10,11 @@ import org.w3.banana.SparqlOps
 import org.w3.banana.SparqlEngine
 import org.w3.banana.SparqlUpdate
 import org.w3.banana.URIOps
+import deductions.runtime.services.Configuration
 
 /** RDF OPerations on a DataBase */
-trait RDFOPerationsDB[Rdf <: RDF, DATASET] {
+trait RDFOPerationsDB[Rdf <: RDF, DATASET]
+extends Configuration {
     /** NOTE: same design pattern as for XXXModule in Banana */
   implicit val rdfStore: RDFStore[Rdf, Try, DATASET] with SparqlUpdate[Rdf, Try, DATASET]
   implicit val ops: RDFOps[Rdf]
@@ -28,11 +30,8 @@ trait RDFStoreLocalProvider[Rdf <: RDF, DATASET] extends RDFOPerationsDB[Rdf, DA
   /** relative or absolute file path for the database 
    *  TODO put in Configuration */
   val databaseLocation: String = "TDB"
-  def createDatabase(database_location: String = databaseLocation): DATASET
-  //  override ?? 
-  lazy val 
-  // TODO? def 
-  dataset: DATASET = createDatabase(databaseLocation)
+  def createDatabase(database_location: String = databaseLocation, useTextQuery: Boolean= useTextQuery): DATASET
+  lazy val dataset: DATASET = createDatabase(databaseLocation)
 
   def allNamedGraph: Rdf#Graph
   
@@ -40,8 +39,8 @@ trait RDFStoreLocalProvider[Rdf <: RDF, DATASET] extends RDFOPerationsDB[Rdf, DA
    *  sets a default location for the Jena TDB store directory : TDB2/ */
   val databaseLocation2 = "TDB2"
   val databaseLocation3 = "TDB3"
-  lazy val dataset2: DATASET = createDatabase(databaseLocation2)
-  lazy val dataset3: DATASET = createDatabase(databaseLocation3)
+  lazy val dataset2: DATASET = createDatabase(databaseLocation2, false)
+  lazy val dataset3: DATASET = createDatabase(databaseLocation3, false)
   // TODO datasetForLabels
   
   /** List the names of graphs */
