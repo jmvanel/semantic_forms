@@ -9,6 +9,7 @@ DBPEDIA_VERSION=2015-10
 DBPEDIA_DIR=$HOME/data/dbpedia.org/$DBPEDIA_VERSION
 DBPEDIA_GRAPH_URI=file://$HOME/data/dbpedia.org/$DBPEDIA_VERSION
 SFDIR=$HOME/src/semantic_forms/scala/forms_play
+JENA=apache-jena-3.1.0
 
 for file in $DBPEDIA_DIR/*.ttl
 do
@@ -18,6 +19,9 @@ do
 	ls -l $file.nq
 done
 
-$HOME/apps/apache-jena-3.0.1/bin/tdbloader2 --loc $SFDIR/TDB $DBPEDIA_DIR/*.ttl.nq
+$HOME/apps/$JENA/bin/tdbloader2 --loc $SFDIR/TDB $DBPEDIA_DIR/*.ttl.nq
 # Download Jena from http://archive.apache.org/dist/jena/binaries/apache-jena-2.13.0.tar.gz
 # $HOME/apps/apache-jena-2.13.0/bin/tdbloader2 --loc $SFDIR/TDB $DBPEDIA_DIR/*.ttl.nq
+
+echo You may now want to run "scripts/populateRDFCache.sh" after this
+

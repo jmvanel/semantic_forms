@@ -14,3 +14,5 @@ java -cp $JARS tdb.tdbdump --loc=TDB 1> dump.nq
 ls -l dump.nq
 echo DONE quads dump - edit dump.nq to remove log messages
 
+java -cp $JARS tdb.tdbdump --loc=TDB2 1> dump_accounts.nq
+ls -l dump_accounts.nq

@@ -1,4 +1,4 @@
-#!/bin:bash
+#!/bin/bash
 
 LANG=fr
 DBPEDIA_VERSION=2015-10
