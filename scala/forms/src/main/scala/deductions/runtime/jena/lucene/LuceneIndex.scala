@@ -37,8 +37,9 @@ trait LuceneIndex // [Rdf <: RDF]
   }
 
   /** configure Lucene or SOLR Index for Jena */
-  def configureLuceneIndex(dataset: ImplementationSettings.DATASET): ImplementationSettings.DATASET = {
+  def configureLuceneIndex(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean): ImplementationSettings.DATASET = {
     println(s"configureLuceneIndex: useTextQuery $useTextQuery")
+    //    println(s"configureLuceneIndex: ${Thread.currentThread().getStackTrace().slice(0, 15).mkString("\n")}")
     if (useTextQuery) {
       /* this means: in Lucene the URI will be kept in key "uri",
          * the text indexed by SORL will be kept in key "text" */

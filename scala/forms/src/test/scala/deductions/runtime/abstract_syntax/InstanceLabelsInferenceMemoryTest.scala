@@ -18,11 +18,13 @@ import org.w3.banana.jena.Jena
 import com.hp.hpl.jena.query.Dataset
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import scala.util.Try
+import deductions.runtime.sparql_cache.RDFCacheAlgo
 
 class InstanceLabelsInferenceMemoryTest extends FunSuite
     with JenaModule
     with RDFStoreLocalJena1Provider
-    with InstanceLabelsInferenceMemory[Jena, Dataset] {
+    with InstanceLabelsInferenceMemory[Jena, Dataset]
+    with RDFCacheAlgo[Jena, Dataset] {
   import ops._
   import rdfStore.transactorSyntax._
 
