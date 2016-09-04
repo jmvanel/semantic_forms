@@ -22,11 +22,15 @@ trait MirrorManagement[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, D
   import ops._
 
   /** coherent with scripts/populate_with_dbpedia.sh */
-  val DBPEDIA_VERSION = "2015-04"
-  val DBPEDIA_NAMED_GRAPH = s"http://dbpedia.org/$DBPEDIA_VERSION"
+  // dbpedia:/home/jmv/data/dbpedia.org/2015-10/labels_en_uris_fr.ttl
+  val DBPEDIA_VERSION = "2015-10"
+  val DBPEDIA_NAMED_GRAPH = // s"http://dbpedia.org/$DBPEDIA_VERSION"
+  s"dbpedia:${System.getProperty("user.home")}/data/dbpedia.org/$DBPEDIA_VERSION/labels_en_uris_fr.ttl"
   lazy val DBPEDIA_NAMED_GRAPH_EXISTS: Boolean = {
     val tg = rdfStore.getGraph(dataset, URI(DBPEDIA_NAMED_GRAPH))
-    tg.isSuccess && tg.get.size > 0
+    val ret = tg.isSuccess && tg.get.size > 0
+    println( s"DBPEDIA_NAMED_GRAPH=<$DBPEDIA_NAMED_GRAPH>, DBPEDIA_NAMED_GRAPH_EXISTS: $ret")
+    ret
   }
 
   /**

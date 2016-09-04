@@ -72,6 +72,8 @@ There several use cases:
 - running some memory intensive scripts (avoids the big overhead of SBT)
 
 For both usages, the install is the same (and very easy).
+See the [installation doc.](https://github.com/jmvanel/semantic_forms/blob/master/doc/en/install.md#installation-of-the-semantic_forms-generic-application)
+
 The personal usage can be a contact manager, project manager, blog, or notes manager, ... It allows to create one's FOAF profile, navigate on the Web of Data and keeping track, or any structured data management. See details on 
  [User manual / possible usages](https://github.com/jmvanel/semantic_forms/wiki/User_manual#possible-usages)
 
@@ -373,13 +375,17 @@ In `dbpedia-dbpedia.sh`you should set the LANG variable for the language you wan
     LANG=fr
     VERSION=2015-10
 
-Beware: The script `populate_with_dbpedia.sh` can take hours! You may have to start from a virgin database and use tdbloader2 instead of tdbloader, see 
+Beware: The script `populate_with_dbpedia_loop.sh` can take hours! You better have to start from a virgin database and use tdbloader2 instead of tdbloader, see 
 https://jena.apache.org/documentation/tdb/commands.html#tdbloader
 https://jena.apache.org/documentation/tdb/commands.html#tdbloader2
 
 
 After the database if populated with dbPedia data, you should run this program to index with Lucene or SOLR the newly added text (see next paragraph).
-[TextIndexerRDF.scala](https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/TextIndexerRDF.scala)
+[TextIndexerRDF.scala](https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/lucene/TextIndexerRDF.scala)
+
+`semantic_forms` with dbPedia mirroring has been tested with 2 Gb memory.
+`semantic_forms` does not download dbPedia URI's when it detects that dbPedia is loaded by `populate_with_dbpedia.sh` script
+(implemented in [MirrorManagement.scala](https://github.com/jmvanel/semantic_forms/scala/forms/src/main/scala/deductions/runtime/sparql_cache/MirrorManagement.scala)).
 
 ## TDB databases
 - TDB/ : data: user edits and cached URL's from internet
@@ -401,9 +407,11 @@ https://github.com/jmvanel/semantic\_forms/blob/master/scala/forms/src/main/scal
 If you deactivate `useTextQuery` in DefaultConfiguration.scala, the text search is done by a plain SPARLQL search, that considers input as a regular expression.
 
 If the text indexing with Lucene or SOLR is activated *after* adding RDF data, you can run this program to index with Lucene or SOLR the newly added text:
-[TextIndexerRDF.scala](https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/TextIndexerRDF.scala)
+[TextIndexerRDF.scala](https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/lucene/TextIndexerRDF.scala)
 
-    runMain deductions.runtime.jena.TextIndexerRDF
+    runMain deductions.runtime.jena.lucene.TextIndexerRDF
+
+There is a script in the zip distribution : `scripts/TextIndexerRDF.sh`.
 
 *NOTE:*
 Since the association between TDB and Lucene is set by launching semantic\_forms, if you just add RDF content with tdb.tdbloader, you must afterwards index this content by running TextIndexerRDF.
@@ -412,7 +420,7 @@ To use Lucene with TDB , here is the code to configure (I don't use the Turtle c
 https://github.com/jmvanel/semantic\_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/LuceneIndex.scala
 This code is used in trait RDFStoreLocalJenaProvider in method `createDatabase(database_location: String)` .
 
-Here is the grogram were an existing RDF content is indexed:
+Here is the program were an existing RDF content is indexed:
 https://github.com/jmvanel/semantic\_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/lucene/TextIndexerRDF.scala
 
 And here is where the text search is called:

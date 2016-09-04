@@ -10,9 +10,9 @@ lazy val semantic_forms_play = (project in file("."))
 scalaVersion := "2.11.8"
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
 
+fork in run := true
 javaOptions in run ++= Seq(
     "-Xms256M", "-Xmx2G", "-XX:MaxPermSize=1024M", "-XX:+UseConcMarkSweepGC")
-fork in run := true
 
 connectInput in run := true
 

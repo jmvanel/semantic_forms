@@ -210,7 +210,12 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     : NodeSeq = {
 
     implicit val graph: Rdf#Graph = graphe
-    println(s"TableViewModule.graf2form(graph: graph size: ${graph.size}, graphURI <$graphURI>")
+    try {
+//    	println(s"TableViewModule.graf2form(graph: graph size: ${graph.size}, graphURI <$graphURI>")      
+    	println(s"TableViewModule.graf2form(graph: graph : ${graph}, graphURI <$graphURI>")      
+    } catch {
+      case t: Throwable => "graf2form : getting graph.size" + t.getLocalizedMessage()
+    }
     val form = time("createAbstractForm",
       createAbstractForm(
           uri, editable, lang, blankNode, formGroup, formuri))
