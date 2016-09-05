@@ -383,9 +383,15 @@ https://jena.apache.org/documentation/tdb/commands.html#tdbloader2
 After the database if populated with dbPedia data, you should run this program to index with Lucene or SOLR the newly added text (see next paragraph).
 [TextIndexerRDF.scala](https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/lucene/TextIndexerRDF.scala)
 
-`semantic_forms` with dbPedia mirroring has been tested with 2 Gb memory.
 `semantic_forms` does not download dbPedia URI's when it detects that dbPedia is loaded by `populate_with_dbpedia.sh` script
 (implemented in [MirrorManagement.scala](https://github.com/jmvanel/semantic_forms/scala/forms/src/main/scala/deductions/runtime/sparql_cache/MirrorManagement.scala)).
+
+`semantic_forms` with dbPedia mirroring has been tested with 2 Gb memory.
+On disk this uses :
+
+- 2,7Gb for Jena TDB (SPARQL database)
+- 233Mb for Lucene (text index)
+
 
 ## TDB databases
 - TDB/ : data: user edits and cached URL's from internet

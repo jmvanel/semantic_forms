@@ -54,3 +54,37 @@ You can change the default port (9000) to e.g. 9999 like this:
 	nohup bin/semantic_forms_play -J-Xmx50M -Dhttp.port=9999 &
 
 There is no need to be administrator.
+
+
+# Work with the `semantic_forms` distribution
+
+## Scripts for Unix
+Scripts are in the scripts/ directory. There are currently:
+
+```
+scripts/clone_implementation.sh
+scripts/dump.sh
+scripts/graphdump.sh
+scripts/graphload.sh
+scripts/index_lucene.sh
+scripts/load_dump.sh
+scripts/populateRDFCache.sh
+scripts/start.sh
+scripts/stop.sh
+scripts/tdbsearch.sh
+scripts/TextIndexerRDF.sh
+scripts/clone_implementation.sh
+```
+## Backup and recovery from backups
+
+Scripts to launch are: `dump.sh, clone_implementation.sh, load_dump.sh, start.sh`.
+For example, starting from an installed directory `semantic_forms_play-1.0-SNAPSHOT`:
+
+```
+scripts/dump.sh
+scripts/clone_implementation.sh
+cd ../semantic_forms_cloned
+scripts/load_dump.sh ../semantic_forms_play-1.0-SNAPSHOT
+scripts/start.sh
+```
+

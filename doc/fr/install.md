@@ -2,6 +2,9 @@
 
 # Installation de l'application générique `semantic_forms`
 
+On parle aussi de "distribution".
+Il n'y a pas d'installeur ni d'installation à proprement parler, puisque le contenu zip est prêt à fonctionner.
+
 ## Pré-requis 
 - Java JRE 8 (vérifier avec `java -version`)
 
@@ -45,3 +48,37 @@ Vous pouvez changer le port par défaut (9000) vers e.g. 9999 comme suit:
 	nohup bin/semantic_forms_play -J-Xmx50M -Dhttp.port=9999 &
 
 Il n'est pas nécessaire de se connecter en tant qu'administrateur.
+
+
+# Travailler avec la distribution `semantic_forms`
+
+## Scripts pour Unix
+Les scripts sont dans le répertoire scripts/ . Il y a actuellement:
+
+```
+scripts/clone_implementation.sh
+scripts/dump.sh
+scripts/graphdump.sh
+scripts/graphload.sh
+scripts/index_lucene.sh
+scripts/load_dump.sh
+scripts/populateRDFCache.sh
+scripts/start.sh
+scripts/stop.sh
+scripts/tdbsearch.sh
+scripts/TextIndexerRDF.sh
+scripts/clone_implementation.sh
+```
+
+## Sauvegardes et relance à partir des sauvegardes
+
+Les scripts à lancer sont: `dump.sh , clone_implementation.sh , load_dump.sh , start.sh`.
+Par exemple, en partir d'un répertoire installé `semantic_forms_play-1.0-SNAPSHOT` :
+```
+scripts/dump.sh
+scripts/clone_implementation.sh
+cd ../semantic_forms_cloned
+scripts/load_dump.sh ../semantic_forms_play-1.0-SNAPSHOT
+scripts/start.sh
+```
+ 
