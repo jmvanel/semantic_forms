@@ -63,22 +63,32 @@ Scripts are in the scripts/ directory. There are currently:
 
 ```
 scripts/clone_implementation.sh
+scripts/download-dbpedia.sh
 scripts/dump.sh
 scripts/graphdump.sh
 scripts/graphload.sh
 scripts/index_lucene.sh
+scripts/load_dump_no_erase.sh
 scripts/load_dump.sh
 scripts/populateRDFCache.sh
+scripts/populate_with_dbpedia.sh
 scripts/start.sh
 scripts/stop.sh
 scripts/tdbsearch.sh
-scripts/TextIndexerRDF.sh
-scripts/clone_implementation.sh
 ```
+
+## Setup a new instance with common vocab's, form specifiacations, translations, dbPedia mirroring and Lucene indexing
+The scripts must be run in this order:
+```
+scripts/populate_with_dbpedia.sh
+scripts/populateRDFCache.sh
+scripts/index_lucene.sh
+```
+
 ## Backup and recovery from backups
 
-Scripts to launch are: `dump.sh, clone_implementation.sh, load_dump.sh, start.sh`.
-For example, starting from an installed directory `semantic_forms_play-1.0-SNAPSHOT`:
+The scripts to launch are: `dump.sh, clone_implementation.sh, load_dump.sh, start.sh`.
+For example, starting from an installed directory `semantic_forms_play-1.0-SNAPSHOT`, this script backs up the data, then clones the distribution, then loads the backup into the freshly cloned distribution:
 
 ```
 scripts/dump.sh
@@ -87,4 +97,9 @@ cd ../semantic_forms_cloned
 scripts/load_dump.sh ../semantic_forms_play-1.0-SNAPSHOT
 scripts/start.sh
 ```
+NOTE:
+There is currently no way to back up specifically the user data, it is mixed with the cached data.
+However, it is possible to to back up the data of a specific user; as it is in a named graph derived from its user URI .
+
+
 

@@ -285,7 +285,9 @@ To re-load the database from N-Triples format (possibly delete the TDB directory
 
     sbt "runMain tdb.tdbloader --loc=TDB dump.nq"
 
-## Updading RDF content
+## Updating RDF content
+
+Of course the simplest way to upload and update RDF content is to paste the URL in the top field "Disply", see the [User manual](https://github.com/jmvanel/semantic_forms/wiki/User_manual#navigating).
 
 Run (with `java -cp $JARS` or `runMain` under SBT) deductions.runtime.utils.CommandLineApp for a commented list of Scala/Java Applications available in Semantic\_forms classpath.
 
@@ -380,7 +382,7 @@ https://jena.apache.org/documentation/tdb/commands.html#tdbloader
 https://jena.apache.org/documentation/tdb/commands.html#tdbloader2
 
 
-After the database if populated with dbPedia data, you should run this program to index with Lucene or SOLR the newly added text (see next paragraph).
+After the database is populated with dbPedia data, you should run this program to index with Lucene or SOLR the newly added text (see next paragraph).
 [TextIndexerRDF.scala](https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/lucene/TextIndexerRDF.scala)
 
 `semantic_forms` does not download dbPedia URI's when it detects that dbPedia is loaded by `populate_with_dbpedia.sh` script
@@ -417,7 +419,7 @@ If the text indexing with Lucene or SOLR is activated *after* adding RDF data, y
 
     runMain deductions.runtime.jena.lucene.TextIndexerRDF
 
-There is a script in the zip distribution : `scripts/TextIndexerRDF.sh`.
+There is a script in the zip distribution : `scripts/index_lucene.sh`.
 
 *NOTE:*
 Since the association between TDB and Lucene is set by launching semantic\_forms, if you just add RDF content with tdb.tdbloader, you must afterwards index this content by running TextIndexerRDF.

@@ -57,6 +57,7 @@ Les scripts sont dans le répertoire scripts/ . Il y a actuellement:
 
 ```
 scripts/clone_implementation.sh
+scripts/download-dbpedia.sh
 scripts/dump.sh
 scripts/graphdump.sh
 scripts/graphload.sh
@@ -66,14 +67,21 @@ scripts/populateRDFCache.sh
 scripts/start.sh
 scripts/stop.sh
 scripts/tdbsearch.sh
-scripts/TextIndexerRDF.sh
-scripts/clone_implementation.sh
+```
+
+## Configurer une nouvelle instance avec Vocab' communs, spécifications de formulaire, traductions, miroir DBPedia et indexation Lucene
+Les scripts doivent être exécutés dans cet ordre:
+```
+scripts/populate_with_dbpedia.sh
+scripts/populateRDFCache.sh
+scripts/index_lucene.sh
 ```
 
 ## Sauvegardes et relance à partir des sauvegardes
 
 Les scripts à lancer sont: `dump.sh , clone_implementation.sh , load_dump.sh , start.sh`.
-Par exemple, en partir d'un répertoire installé `semantic_forms_play-1.0-SNAPSHOT` :
+Par exemple, à partir d'un répertoire d'installation `semantic_forms_play-1.0-SNAPSHOT`, ce script sauvegarde les données, puis clone la distribution, puis charge la sauvegarde dans la distribution fraîchement clonée:
+
 ```
 scripts/dump.sh
 scripts/clone_implementation.sh
