@@ -1,8 +1,7 @@
 #!/bin/bash
 
-sbt > dump.nq <<EOF
-runMain tdb.tdbdump --loc=TDB
-EOF
-ls -l dump.nq
-echo DONE quads dump - edit dump.nq to remove log messages
+echo runMain tdb.tdbdump --loc=TDB  EOF \> dump.nq
 
+sbt "runMain tdb.tdbdump --loc=TDB" > dump.nq
+ls -l dump.nq
+echo DONE

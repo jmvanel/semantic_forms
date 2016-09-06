@@ -158,6 +158,7 @@ trait ApplicationTrait extends Controller
 
   private def saveOnly(request: Request[_], userid: String, graphURI: String = ""): String = {
     val body = request.body
+    val host  = request.host
     body match {
       case form: AnyContentAsFormUrlEncoded =>
         val lang = chooseLanguage(request)
@@ -165,7 +166,7 @@ trait ApplicationTrait extends Controller
         println(s"ApplicationTrait.save: ${body.getClass}, map $map")
         // cf http://danielwestheide.com/blog/2012/12/26/the-neophytes-guide-to-scala-part-6-error-handling-with-try.html
         val subjectUriTryOption = Try {
-          saveForm(map, lang, userid, graphURI)
+          saveForm(map, lang, userid, graphURI, host)
         }
         subjectUriTryOption match {
             case Success(Some(url1)) => url1

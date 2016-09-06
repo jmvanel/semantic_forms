@@ -62,8 +62,8 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
 
   /** @see [[ApplicationFacadeImpl.saveForm]] */
   def saveForm(request: Map[String, Seq[String]], lang: String = "", userid: String="",
-      graphURI: String = ""): Option[String] =
-    impl.saveForm(request, lang, userid, graphURI)
+      graphURI: String = "", host: String= ""): Option[String] =
+    impl.saveForm(request, lang, userid, graphURI, host)
 
   def sparqlConstructQuery(query: String, lang: String = "en"): Elem =
     impl.sparqlConstructQuery(query, lang)

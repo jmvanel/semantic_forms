@@ -100,8 +100,8 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
 
   /**
    * record password in database; @return user Id if success
-   * TODO check already existing account;
    * store hash , not password
+   * TODO check already existing account;
    */
   def signin(agentURI: String, password: String): Try[String] = {
     println("Authentication.signin: userId " + agentURI)
