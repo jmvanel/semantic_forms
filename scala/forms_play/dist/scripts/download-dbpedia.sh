@@ -1,0 +1,1 @@
+../../scripts/download-dbpedia.sh
