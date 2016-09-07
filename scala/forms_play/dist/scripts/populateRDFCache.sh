@@ -6,4 +6,4 @@ do
 done
 java -cp $JARS deductions.runtime.sparql_cache.PopulateRDFCache
 
-echo You may now want to run "download-dbpedia.sh" and "populate_with_dbpedia.sh"
+echo You may now want to run "scripts/start.sh"

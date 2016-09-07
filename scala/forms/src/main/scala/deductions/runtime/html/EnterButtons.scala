@@ -3,12 +3,19 @@ package deductions.runtime.html
 import deductions.runtime.services.Configuration
 import deductions.runtime.utils.I18NMessages
 import scala.xml.NodeSeq
+import deductions.runtime.utils.RDFPrefixes
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.DefaultConfiguration
+import org.w3.banana.jena.JenaModule
 
 /**
  * Buttons for loading/display/edit, search, and create;
  *  this the default HTML UI before the form
  */
 trait EnterButtons extends Configuration {
+
+  lazy val pfs = new ImplementationSettings.RDFModule with RDFPrefixes[ImplementationSettings.Rdf] with DefaultConfiguration {}
+  import pfs._
 
   def message(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
 
@@ -72,12 +79,13 @@ trait EnterButtons extends Configuration {
               } dropzone="copy"></input>
               <select class="form-control selectable" type="text" name="uri" list="class_uris">
                 <optgroup label="Assemblée Virtuelle">
+                  <!--
                   <option label="av:Person"> { prefixAVontology }Person </option>
                   <option label="av:Organization"> { prefixAVontology }Organization </option>
                   <option label="av:Project" title="Projet dans ontologie de l'Assemblée Virtuelle">
-                    { prefixAVontology }
-                    Project
+                    { prefixAVontology }Project
                   </option>
+                 -->
                   <option label="av:Idea"> { prefixAVontology }Idea </option>
                   <option label="av:Resource"> { prefixAVontology }Resource </option>
                 </optgroup>
@@ -96,13 +104,16 @@ trait EnterButtons extends Configuration {
     </div>
 
   def suggestedClassesForCreation: NodeSeq = {
-    <option label="foaf:Person" selected="selected"> http://xmlns.com/foaf/0.1/Person </option>
+    <option label="foaf:Person" selected="selected"> { prefixesMap2("foaf")("Person") } </option>
+    <option label="foaf:Project">                    { prefixesMap2("foaf")("Project") } </option>
     <option label="doap:Project"> http://usefulinc.com/ns/doap#Project </option>
-    <option label="foaf:Organization"> http://xmlns.com/foaf/0.1/Organization </option>
+    <option label="foaf:Organization">               { prefixesMap2("foaf")("Organization") } </option>
     <option label="sioc:Post"> http://rdfs.org/sioc/ns#Post </option>
     <option label=" cal:Vevent "> http://www.w3.org/2002/12/cal/ical#Vevent </option>
     <option label="owl:Class"> http://www.w3.org/2002/07/owl#Class </option>
     <option label="owl:DatatypeProperty"> http://www.w3.org/2002/07/owl#DatatypeProperty </option>
     <option label="owl:ObjectProperty"> http://www.w3.org/2002/07/owl#ObjectProperty </option>
+    <option label="bioc:Planting">                   { prefixesMap2("bioc")("Planting") } </option>
+
   }
 }

@@ -27,7 +27,7 @@ trait RDFPrefixes[Rdf <: RDF] {
 
   def uriFromPrefix(pf: String): String = fromUri(prefixesMap(pf))
 
-  val prefixes = List(
+  lazy val prefixes = List(
     RDFPrefix[Rdf],
     RDFSPrefix[Rdf],
     XSDPrefix[Rdf],
@@ -59,13 +59,13 @@ trait RDFPrefixes[Rdf <: RDF] {
     Prefix[Rdf]("bioc", "http://deductions.github.io/biological-collections.owl.ttl#")
     )
   
-  val prefixesMap: Map[String, Rdf#URI] =
+  lazy val prefixesMap: Map[String, Rdf#URI] =
     prefixes.map{ pf =>
       // println(s"prefix ${pf.prefixName} : ${pf.prefixIri}")
       pf.prefixName -> URI(pf.prefixIri) }.toMap
-  val prefixesMap2: Map[String, Prefix[Rdf]] =
+  lazy val prefixesMap2: Map[String, Prefix[Rdf]] =
     prefixes.map{ pf => pf.prefixName -> pf }.toMap
-  val urisMap: Map[String, String] =
+  lazy val urisMap: Map[String, String] =
     prefixes.map{ pf =>
       (pf.prefixIri) ->
       pf.prefixName

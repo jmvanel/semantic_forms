@@ -24,6 +24,7 @@ object ImplementationSettings {
   // pave the way for migration to Jena 3 ( or BlazeGraph )
   type DATASET = com.hp.hpl.jena.query.Dataset
   type Rdf = Jena
+  type RDFModule = JenaModule
 }
 
 /** For user data and RDF cache, sets a default location for the Jena TDB store directory : TDB */

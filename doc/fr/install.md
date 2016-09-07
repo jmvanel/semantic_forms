@@ -89,4 +89,6 @@ cd ../semantic_forms_cloned
 scripts/load_dump.sh ../semantic_forms_play-1.0-SNAPSHOT
 scripts/start.sh
 ```
- 
+
+But run `scripts/load_dump_no_erase.sh` if you have already RDF content .
+
