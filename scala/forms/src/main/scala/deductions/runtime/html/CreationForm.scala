@@ -9,12 +9,14 @@ import deductions.runtime.sparql_cache.RDFCacheAlgo
 import org.w3.banana.RDFOps
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.ConfigurationCopy
+import deductions.runtime.utils.RDFPrefixes
 
 trait CreationFormAlgo[Rdf <: RDF, DATASET]
 extends RDFCacheAlgo[Rdf, DATASET]
 with UnfilledFormFactory[Rdf, DATASET]
 with HTML5TypesTrait[Rdf]
 with Configuration
+with RDFPrefixes[Rdf]
 {
   import ops._
   import rdfStore.transactorSyntax._
@@ -36,15 +38,28 @@ with Configuration
       preferedLanguage = lang
       implicit val graph: Rdf#Graph = allNamedGraph
       val form = factory.createFormFromClass(
-        classURI, formSpecURI);
-      val ops1 = ops;
-      new Form2HTMLBanana[Rdf] with ConfigurationCopy {
+        classURI, formSpecURI)
+      val ops1 = ops
+      val htmlFormatter = new Form2HTMLBanana[Rdf] with ConfigurationCopy {
         val ops = ops1
         lazy val original:Configuration = CreationFormAlgo.this
-      } .
-        generateHTML(form, hrefPrefix = "", editable = true, actionURI = actionURI,
-            lang=lang, graphURI=graphURI)
+      }
+      val rawForm = htmlFormatter . generateHTML(
+          form, hrefPrefix = "",
+          editable = true,
+          actionURI = actionURI,
+          lang=lang, graphURI=graphURI)
+
+          Seq( makeEditingHeader(classUri, lang, formSpecURI, graphURI),
+              rawForm ) . flatten
     })
+  }
+
+  def makeEditingHeader(classUri: String, lang: String,
+    formSpecURI: String, graphURI: String) : NodeSeq = {
+    <div class="sf-form-header">
+    Creating a {abbreviateTurtle(classUri)}
+    </div>
   }
 
   /** create an XHTML input form for a new instance from a class URI; transactional */
