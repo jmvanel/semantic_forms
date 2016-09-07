@@ -293,7 +293,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   /** save Form data in TDB
    *  @return main subject URI like [[FormSaver.saveTriples]] */
   def saveForm(request: Map[String, Seq[String]], lang: String = "",
-      userid: String, graphURI: String = "")
+      userid: String, graphURI: String = "", host: String= "")
   : Option[String] = {
 //    println(s"ApplicationFacadeImpl.save: map :$request, userid <$userid>")
     val mainSubjectURI = try {
@@ -311,11 +311,24 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       val uri = URLDecoder.decode(url1, "utf-8")
       val res = dataset.rw({
         replaceInstanceLabel( URI(uri), allNamedGraph, // TODO reuse allNamedGraph
-            lang )       
+            lang )
     	})
     	logger.info( s"Save: normal! $uriOption" )
       case _ => logger.info( s"Save:  NOT normal! $uriOption" )
     }
+    
+    // associate userid with graphURI
+    rdfStore.rw( dataset, {      
+    	rdfStore.appendToGraph( dataset,
+              URI("urn:graphForUser"),
+              makeGraph(
+                  // TODO
+//              Seq( Triple( URI(graphURI), URI("urn:graphForUser"), URI(userid) ) ) . toIterable
+              Seq() . toIterable
+      )
+      )
+    })
+
     mainSubjectURI
   }
 

@@ -77,7 +77,7 @@ trait RDFStoreLocalJenaProvider
       } catch {
         case t: Throwable =>
           println(t.getLocalizedMessage)
-          println(t.getCause)
+          println("getCause " + t.getCause)
           dts
       }
     } else
