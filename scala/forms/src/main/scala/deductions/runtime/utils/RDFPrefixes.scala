@@ -109,6 +109,10 @@ trait RDFPrefixes[Rdf <: RDF] {
     }
   }
 
+    def abbreviateTurtle(uri: String): String = {
+      abbreviateTurtle(URI(uri))
+    }
+
   /**
    * inverse of #expand()
    *  @return abbreviated Turtle term, eg foaf:name

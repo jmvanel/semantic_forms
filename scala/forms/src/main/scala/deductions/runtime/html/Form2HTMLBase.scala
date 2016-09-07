@@ -1,10 +1,14 @@
 package deductions.runtime.html
 
+import scala.util.Try
+
 import Form2HTML.urlEncode
 import deductions.runtime.abstract_syntax.FormModule
-import deductions.runtime.utils.I18NMessages
+import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.Configuration
-import scala.util.Try
+import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.I18NMessages
+import deductions.runtime.utils.RDFPrefixes
 
 /** generate HTML from abstract Form : common parts for Display & edition */
 trait Form2HTMLBase[NODE, URI <: NODE]
@@ -15,6 +19,10 @@ trait Form2HTMLBase[NODE, URI <: NODE]
 
   type fm = FormModule[NODE, URI]
   type Entry = fm#Entry
+  
+  lazy val prefixes = new ImplementationSettings.RDFModule
+  with RDFPrefixes[ImplementationSettings.Rdf] with DefaultConfiguration {}
+  import prefixes._
   
   def makeFieldLabel(preceding: fm#Entry, field: fm#Entry)
   (implicit form: FormModule[NODE, URI]#FormSyntax) = {

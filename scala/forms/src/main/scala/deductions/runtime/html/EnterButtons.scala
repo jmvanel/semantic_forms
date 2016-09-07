@@ -14,8 +14,8 @@ import org.w3.banana.jena.JenaModule
  */
 trait EnterButtons extends Configuration {
 
-  lazy val pfs = new ImplementationSettings.RDFModule with RDFPrefixes[ImplementationSettings.Rdf] with DefaultConfiguration {}
-  import pfs._
+  lazy val prefixes = new ImplementationSettings.RDFModule with RDFPrefixes[ImplementationSettings.Rdf] with DefaultConfiguration {}
+  import prefixes._
 
   def message(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
 
