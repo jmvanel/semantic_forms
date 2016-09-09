@@ -15,7 +15,7 @@ plus a textbox to enter a URL semantics, eg a FOAF profile or DBpedia URI :
 See:
 
 - the [wiki](https://github.com/jmvanel/semantic_forms/wiki) for User manual and Developer manual.
-- [Installation of the `semantic_forms` generic application](../../doc/en/install.md)
+- [Installation of the `semantic_forms` generic application](../../doc/en/install.md) from zip distribution (easy and no compilation)
 
 This README is like an administrator Manual.
 

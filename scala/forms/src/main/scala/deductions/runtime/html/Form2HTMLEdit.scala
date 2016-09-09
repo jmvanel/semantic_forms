@@ -130,19 +130,21 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
       renderPossibleValues(r)) . flatten
   }
 
-  def renderPossibleValues(r: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
+  /** display list of Possible Values from TDB as a pulldown menu */
+  private def renderPossibleValues(r: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     if (hasPossibleValues(r) &&
       isFirstFieldForProperty(r)) {
       <div class={ css.cssClasses.formSelectDivCSSClass }>
-      <select class={ css.cssClasses.formSelectCSSClass } value={ r.value.toString } name={
-        makeHTMLNameResource(r) } id={
-        makeHTMLIdResourceSelect(r)
-      } list={
-        makeDatalistIdForEntryProperty(r)
-      }>
-        { formatPossibleValues(r) }
-      </select>
-			</div>
+        <select class={ css.cssClasses.formSelectCSSClass } value={ r.value.toString } name={
+          makeHTMLNameResource(r)
+        } id={
+          makeHTMLIdResourceSelect(r)
+        } list={
+          makeDatalistIdForEntryProperty(r)
+        }>
+          { formatPossibleValues(r) }
+        </select>
+      </div>
     } else new Text("\n")
   }
   
@@ -238,14 +240,13 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
 
   /** make sequence of HTML <option> */
   private def makeHTMLOptionsSequence(field: Entry)
-  (implicit form: fm#FormSyntax) = {
+  (implicit form: fm#FormSyntax): Seq[Elem] = {
 	  def makeHTMLOption(value: (NODE, NODE), field: fm#Entry): Elem = {
 		  <option value={ toPlainString(value._1) } selected={
 			  if (toPlainString(field.value) ==
 					  toPlainString(value._1))
 			    "selected"
-			  else
-			    null
+			  else null
 		  } title={ toPlainString(value._1) } label={ toPlainString(value._2) }>{
 		    toPlainString(value._2) }
 		  </option>
@@ -255,7 +256,10 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
 	    yield makeHTMLOption(value, field)
   }
   
-  def hasPossibleValues( f: Entry)(implicit form: fm#FormSyntax) = form.possibleValuesMap.contains( f.property )
+  def hasPossibleValues( f: Entry)(implicit form: fm#FormSyntax): Boolean = {
+//    println( s">>>> hasPossibleValues ${f.label} : ${form.possibleValuesMap.getOrElse(f.property, "NOTHING")}" )
+    ! form.possibleValuesMap.getOrElse( f.property, List() ) .isEmpty
+  }
 
   private val datalistsAlreadyDone = scala.collection.mutable.Set[NODE]()
 	def	makeFieldDatalist(field: Entry)
