@@ -29,6 +29,7 @@ trait DataSourceManager[Rdf <: RDF, DATASET]
   /**
    * replace Same Language Triples in named graph `graphURI`
    *  with the triples coming from given `url`
+   *
    *  USE CASE: replace some rdfs:label's of an ontology,
    *  to change the generated forms.
    *  @return number of triples changed
@@ -40,17 +41,10 @@ trait DataSourceManager[Rdf <: RDF, DATASET]
       val graphURI = URI(graphURIString)
       for (givenGraph <- rdfStore.getGraph( dataset, graphURI)) yield {
         val ops1: RDFOps[Rdf]= ops
-        val rdfh1 = this
-        val rdfh: RDFHelpers[Rdf] = this
         val mgraph = givenGraph.makeMGraph()
-        /* TODO check new versions of Scala > 2.11.6 that this asInstanceOf is 
-        still necessary */
-        val loadedGraph: Rdf#Graph = rdfLoader.load(url).get.
-          asInstanceOf[Rdf#Graph]
+        val loadedGraph: Rdf#Graph = rdfLoader.load(url).get
         val triples = ops.getTriples(loadedGraph)
-        val r = triples.map {
-          t => rdfh.replaceSameLanguageTriple(t, mgraph)
-        }
+        val r = triples.map { replaceSameLanguageTriple( _, mgraph) }
         val total = r.fold(0)(_ + _)
         val modifiedGraph = mgraph.makeIGraph()
         rdfStore.removeGraph( dataset, graphURI)

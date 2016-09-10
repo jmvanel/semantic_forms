@@ -209,7 +209,7 @@ trait ApplicationTrait extends Controller
           // URI of form Specification
           val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formuri")
           println("create: " + uri)
-          println("formSpecURI: " + formSpecURI)
+          println( s"formSpecURI from HTTP request: <$formSpecURI>")
           val lang = chooseLanguage(request)
           outputMainPage(
             create(uri, chooseLanguage(request),

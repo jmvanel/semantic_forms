@@ -60,7 +60,7 @@ trait Lookup[Rdf <: RDF, DATASET]
     ]}"""
   }
 
-  /**
+  /** TODO use Lucene when configured , like StringSearchSPARQL
    * NON transactional
    */
   private def search_string(search: String): List[Seq[Rdf#Node]] = {

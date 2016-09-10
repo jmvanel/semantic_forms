@@ -74,8 +74,10 @@ trait FormConfigurationFactory[Rdf <: RDF, DATASET]
       form => ops.foldNode(form)(uri => Some(uri), bn => Some(bn), lit => None)
     }.headOption
     if( forms.size > 1 )
-    	Logger.getRootLogger().warn(s"WARNING: several form specs for $classs")
-    Logger.getRootLogger().debug("formNodeOption " + formSpecOption)
+    	Logger.getRootLogger().warn(
+    	    s"WARNING: several form specs for $classs; chosen $formSpecOption")
+//    Logger.getRootLogger().debug
+    println( s"lookFormSpecInConfiguration: formNodeOption $formSpecOption" )
     formSpecOption
   }
 

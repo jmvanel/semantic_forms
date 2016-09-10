@@ -14,11 +14,12 @@ class TestRDFCache extends FunSuite with RDFCache
     with SparqlOpsModule
     with BeforeAndAfterAll
     with JenaModule
-    with RDFStoreLocalJena1Provider {
+    with RDFStoreLocalJena1Provider
+    with SitesURLForDownload {
   val uri = "http://jmvanel.free.fr/jmv.rdf#me"
   //  val uri2 = "http://live.dbpedia.org/page/Taraxacum_japonicum"
   //  val uri2 = uri 
-  val uri2 = "https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/foaf/foaf.fr.ttl"
+  val uri2 = githubcontent + "/jmvanel/rdf-i18n/master/foaf/foaf.fr.ttl"
   //  src/test/resources/foaf.n3
 
   import ops._

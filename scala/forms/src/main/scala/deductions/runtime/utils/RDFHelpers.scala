@@ -58,22 +58,10 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
     values
   }
 
-  //  /** replace all triples
-  //   *  <subject> <predicate> ?O .
-  //   *  (if any)
-  //   *  with a single one:
-  //   *  <subject> <predicate> <objet> .
-  //   *  */
-  //  def replaceObjects(graph: Rdf#Graph, subject: Rdf#Node, predicate: Rdf#URI,
-  //      objet: Rdf#Node): Unit = {
-  ////	  val mgraph = graph.makeMGraph()
-  //    val objectsToRemove = getObjects(graph, subject, predicate)
-  //    for( obj <- objectsToRemove ) {
-  //    	ops.removeTriple( mgraph, Triple(subject, predicate, obj) )
-  //    }
-  //    ops.addTriple( mgraph, Triple(subject, predicate, objet) )
-  //  }
-
+  /** replace Same Language triple(s):
+   *  given triple ?S ?P ?O ,
+   *  remove triple(s)  ?S ?P ?O1 whose language matches input triple,
+   *  and finally add given triple */
   def replaceSameLanguageTriple(triple: Rdf#Triple,
                                 mgraph: Rdf#MGraph)(implicit graph: Rdf#Graph): Int = {
     val language = getLang(triple.objectt)
