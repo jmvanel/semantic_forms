@@ -59,7 +59,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
   }
 
   def searchString(searchString: String, hrefPrefix: String = "",
-                   lang: String = ""): Future[NodeSeq] =
+                   lang: String = "", classURI: String = ""): Future[NodeSeq] =
     search(searchString, hrefPrefix, lang)
     
 //  private val searchStringQueryMaker2 = new SPARQLQueryMaker {

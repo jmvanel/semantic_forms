@@ -23,6 +23,7 @@ import scala.util.Try
 
 
 trait SPARQLQueryMaker[Rdf <: RDF] {
+  // TODO : search: String*
   def makeQueryString(search: String): String
   def variables = Seq("thing")
     /** overridable function for adding columns in response */

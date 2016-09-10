@@ -13,7 +13,7 @@ trait DatasetHelper[Rdf <: RDF, DATASET]
    *  <subject> <predicate> ?O .
    *  (if any)
    *  with a single one:
-   *  <subject> <predicate> <objet> .
+   *  <subject> <predicate> <object> .
    *
    *  Used for label caching;
    *  can be used for enforcing cardinality 1

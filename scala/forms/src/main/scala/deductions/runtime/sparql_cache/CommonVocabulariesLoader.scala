@@ -64,7 +64,7 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
       
   /** larger and less known vocab's */
   val largerVocabs: List[Rdf#URI] =
-    URI("https://raw.githubusercontent.com/edumbill/doap/master/schema/doap.rdf") ::
+    URI(githubcontent + "/edumbill/doap/master/schema/doap.rdf") ::
       URI("http://rdfs.org/sioc/ns#") ::
       URI("http://topbraid.org/schema/schema.ttl") ::
       /* NOTES
@@ -105,7 +105,7 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
   }
 
   val vocabularies = {
-    val basicVocabsAsURI = basicVocabs map { p => p.apply("") }
+    val basicVocabsAsURI = basicVocabs map { _.apply("") }
     basicVocabsAsURI ::: largerVocabs
   }
 

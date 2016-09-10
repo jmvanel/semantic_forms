@@ -318,7 +318,10 @@ To update everything (but better delete some named graph before, like above, or 
 
 In the case when one wants to override some triples that are already loaded in graph G, and taking in account the language of the literals:
 
-    java -cp $JARS deductions.runtime.jena.DataSourceManagerApp file:///home/user/newTriples.tll G
+    java -cp $JARS deductions.runtime.jena.DataSourceManagerApp \
+		file:///home/user/newTriples.tll 'http://jmvanel.free.fr/jmv.rdf#me'
+    java -cp $JARS deductions.runtime.jena.DataSourceManagerApp \
+		"https://raw.githubusercontent.com/assemblee-virtuelle/pair/master/form_labels.ttl" "rdf-i18n"
 
 For each triple `?S ?P "val"@lang.` in newTriples.tll , this will remove the existing triple:  `?S ?P "old val"@lang.` , and add the new triple: `?S ?P "val"@lang.` 
 
