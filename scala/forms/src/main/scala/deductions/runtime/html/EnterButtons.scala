@@ -86,6 +86,7 @@ trait EnterButtons extends Configuration {
                     { prefixAVontology }Project
                   </option>
                  -->
+                  <option label="av:Idea"> { prefixAVontology }InitiativeOrMission  </option>
                   <option label="av:Idea"> { prefixAVontology }Idea </option>
                   <option label="av:Resource"> { prefixAVontology }Resource </option>
                 </optgroup>

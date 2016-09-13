@@ -26,7 +26,7 @@ object TextTreeViewRDF extends App with JenaModule
 
   val owlFile = args(0)
   val graph = turtleReader.read(new FileReader(owlFile), "").get
-  val owlClassToReportURI = owlClassToReport(args)
+  val owlClassToReportURI = owlMetaClassToReport(args)
   val instancesURI = findInstances(graph, owlClassToReportURI)
 
   val outputFile = owlFile + "." + rdfsLabel(owlClassToReportURI, graph) +

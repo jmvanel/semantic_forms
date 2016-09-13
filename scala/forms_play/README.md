@@ -300,14 +300,14 @@ Take inspiration from these scripts in [forms\_play](https://github.com/jmvanel/
 
 For example, to update the I18N translations of the RDF vocabularies:
 
-    GRAPH=rdf-i18n
+    GRAPH=urn:rdf-i18n
     echo "DROP GRAPH <$GRAPH>" > /tmp/delete_graph.rq    
     java -cp $JARS tdb.tdbupdate --loc=TDB --update=/tmp/delete_graph.rq
-    java -cp $JARS deductions.runtime.sparql_cache.RDFI18NLoader
+    java -cp $JARS deductions.runtime.sparql_cache.RDFI18NLoaderApp
 
 To update the Common Form Specifications :
 
-    GRAPH=form_specs
+    GRAPH=urn:form_specs
     echo "DROP GRAPH <$GRAPH>" > /tmp/delete_graph.rq    
     java -cp $JARS tdb.tdbupdate --loc=TDB --update=/tmp/delete_graph.rq
     java -cp $JARS deductions.runtime.sparql_cache.FormSpecificationsLoader
@@ -322,6 +322,9 @@ In the case when one wants to override some triples that are already loaded in g
 		file:///home/user/newTriples.tll 'http://jmvanel.free.fr/jmv.rdf#me'
     java -cp $JARS deductions.runtime.jena.DataSourceManagerApp \
 		"https://raw.githubusercontent.com/assemblee-virtuelle/pair/master/form_labels.ttl" "rdf-i18n"
+    # or:
+    sbt "runMain deductions.runtime.jena.DataSourceManagerApp \
+		https://raw.githubusercontent.com/assemblee-virtuelle/pair/master/form_labels.ttl rdf-i18n"
 
 For each triple `?S ?P "val"@lang.` in newTriples.tll , this will remove the existing triple:  `?S ?P "old val"@lang.` , and add the new triple: `?S ?P "val"@lang.` 
 

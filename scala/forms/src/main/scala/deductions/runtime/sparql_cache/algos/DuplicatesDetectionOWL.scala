@@ -15,20 +15,21 @@ import deductions.runtime.services.Configuration
 import deductions.runtime.services.DefaultConfiguration
 
 /** Duplicates Detection for OWL; output: CSV, Grouped By labels of Datatype properties,
- *  or  owl:ObjectProperty", or "owl:Class"*/
+ *  or  owl:ObjectProperty", or "owl:Class" */
 object DuplicatesDetectionOWLGroupBy extends App
 with JenaModule
 with DefaultConfiguration
 with DuplicatesDetectionOWL[Jena]
 {
-  val addEmptyLineBetweenLabelGroups = false // true
+  val addEmptyLineBetweenLabelGroups = // false //
+    true
   val filterAmetysSubForms = true
 
   val owlFile = args(0)
 
   val graph = turtleReader.read(new FileReader(owlFile), "").get
   
-  val classToReportURI = owlClassToReport(args)
+  val classToReportURI = owlMetaClassToReport(args)
 
   val datatypePropertiesURI = {
     val allInstances = findInstances(graph, classToReportURI)

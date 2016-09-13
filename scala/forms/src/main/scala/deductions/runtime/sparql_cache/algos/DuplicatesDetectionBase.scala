@@ -39,8 +39,12 @@ with RDFPrefixes[Rdf] {
     datatypePropertiesURI
   }
 
-  /** @return URI of Class To Report (second command line argument if any) */
-  def owlClassToReport(args: Array[String]): Rdf#URI =
+  /** @return URI of meta-Class To Report:
+   *  owl:ObjectProperty 
+   *  owl:Class
+   *  owl:DatatypeProperty
+   *  (second command line argument if any) */
+  def owlMetaClassToReport(args: Array[String]): Rdf#URI =
     if (args.size > 1)
       args(1) match {
         case "owl:ObjectProperty" => owl.ObjectProperty

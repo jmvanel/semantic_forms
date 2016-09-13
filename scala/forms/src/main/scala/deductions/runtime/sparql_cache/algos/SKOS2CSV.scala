@@ -35,7 +35,7 @@ with SKOS2CSV[Jena, Dataset] {
   val inputFile = args(0)
   val graph = rdfLoader.load( new File(inputFile).toURI().toURL() ) . get
 
-  val classToReportURI = owlClassToReport(args)
+  val classToReportURI = owlMetaClassToReport(args)
   val instancesURI = findInstances(graph, classToReportURI)
   
   import ops._
