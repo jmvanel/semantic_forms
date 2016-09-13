@@ -41,10 +41,12 @@ object ReplaceSubclassWithPropertyAppExample extends App
   val classPairs = getWrongSubclassePairs()
   println(s"class Pairs: ${classPairs.mkString(", ")}")
   replaceSubclasses(graph, classPairs)
-  turtleWriter.write(graph, new FileOutputStream(owlFile + ".ReplaceSubclass.ttl"), "")
+
+  val outputFile = owlFile + ".ReplaceSubclass.ttl"
+  turtleWriter.write(graph, new FileOutputStream(outputFile), "")
+  println(s"output File $outputFile: graph size ${graph.size}")
 
   override def getWrongSubclassePairs(): List[(Rdf#URI, Rdf#URI)] = {
     makeWrongSubclassePairsFromSuperClasses(superClasses, graph)
   }
-
 }

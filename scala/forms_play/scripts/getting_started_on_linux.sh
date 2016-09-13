@@ -1,6 +1,9 @@
 echo "==== install and run semantic_forms on an empty user account ===="
 
-sudo apt-get install git openjdk-8-jdk-headless unzip firefox
+echo mandatory packages
+sudo apt-get install git openjdk-8-jdk-headless 
+echo useful packages
+sudo apt-get install unzip firefox filezilla raptor2-utils swap-cwm
 
 mkdir src apps deploy data
 echo "==== install SBT ===="
