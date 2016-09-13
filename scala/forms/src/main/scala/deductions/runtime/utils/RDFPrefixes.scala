@@ -52,7 +52,7 @@ trait RDFPrefixes[Rdf <: RDF] {
     // form vocabulary
     Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#" ),
 
-    Prefix[Rdf]("av", prefixAVontology ),
+    Prefix[Rdf]("pair", prefixAVontology ),
 
     restruc,
     Prefix[Rdf]("", "http://data.onisep.fr/ontologies/" ),
