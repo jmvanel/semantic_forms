@@ -27,6 +27,8 @@ trait RDFPrefixes[Rdf <: RDF] {
 
   def uriFromPrefix(pf: String): String = fromUri(prefixesMap(pf))
 
+  private val prefixAV = "http://www.virtual-assembly.org/ontologies/1.0/pair#"
+
   lazy val prefixesList = List(
     RDFPrefix[Rdf],
     RDFSPrefix[Rdf],
@@ -52,7 +54,10 @@ trait RDFPrefixes[Rdf <: RDF] {
     // form vocabulary
     Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#" ),
 
-    Prefix[Rdf]("pair", prefixAVontology ),
+    Prefix[Rdf]("pair", {
+//      println( "prefixAVontology " +
+//          prefixAVontology);
+      prefixAV } ),
 
     restruc,
     Prefix[Rdf]("", "http://data.onisep.fr/ontologies/" ),
