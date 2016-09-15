@@ -19,7 +19,7 @@ import deductions.runtime.services.SPARQLHelpers
  * modified data file in /tmp (same name as input)
  */
 object DuplicateCleanerFileApp extends App
-    with RDFStoreLocalJena1Provider
+    with ImplementationSettings.RDFCache
     with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with DuplicateCleaner[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with SPARQLHelpers[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {

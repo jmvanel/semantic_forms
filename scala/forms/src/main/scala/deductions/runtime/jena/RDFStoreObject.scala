@@ -19,12 +19,14 @@ import java.nio.file.Paths
 
 // TODO rename RDFStoreLocalJenaProvider
 
-/** singleton for implementation settings */
+/** singleton for implementation settings
+ *  TODO move to package jena */
 object ImplementationSettings {
   // pave the way for migration to Jena 3 ( or BlazeGraph )
   type DATASET = com.hp.hpl.jena.query.Dataset
   type Rdf = Jena
   type RDFModule = JenaModule
+  type RDFCache = RDFStoreLocalJena1Provider
 }
 
 /** For user data and RDF cache, sets a default location for the Jena TDB store directory : TDB */

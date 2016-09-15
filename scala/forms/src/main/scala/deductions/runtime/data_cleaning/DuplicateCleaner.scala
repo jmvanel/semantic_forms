@@ -41,7 +41,9 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
   import rdfStore.graphStoreSyntax._
   import rdfStore.transactorSyntax._
 
-  
+  val mergeMarker = " (F)"
+  val mergeMarkerSpec = " (FS)"
+
   type URIMergeSpecifications = List[URIMergeSpecification]
   case class URIMergeSpecification(replacedURI: Rdf#URI, replacingURI: Rdf#URI,
     newLabel: String = "", comment: String = "")
@@ -94,7 +96,6 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
         auxiliaryOutput)
     
     //  create and replace triples for new label & comment
-
     val rdfs = RDFSPrefix[Rdf]
     val skos = Prefix[Rdf]("skos", "http://www.w3.org/2004/02/skos/core#")
     val transaction = rdfStore.rw( dataset, {
@@ -107,7 +108,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
           if (!removedQuads.isEmpty) {
             val newTriples = for (removedQuad <- removedQuads) yield
             		Triple(ms.replacingURI, skos("altLabel"), removedQuad._1.objectt)
-            val newLabelTriple = Triple(ms.replacingURI, rdfs.label, Literal(ms.newLabel))
+            val newLabelTriple = Triple(ms.replacingURI, rdfs.label, Literal(ms.newLabel + mergeMarkerSpec ))
             rdfStore.appendToGraph(dataset, removedQuads(0)._2, makeGraph(
                 newTriples :+ newLabelTriple ))
             // add given rdfs:comment
@@ -147,6 +148,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       auxiliaryOutput : Rdf#MGraph = makeEmptyMGraph()
   ): Unit = {
     copySubjectPropertyPairs(uriTokeep, duplicateURIs)
+    copyPropertyValuePairs(uriTokeep, duplicateURIs)  // ?????????????
     if( duplicateURIs.contains(uriTokeep) ) {
       println( s"CAUTION: duplicateURIs contains uriTokeep=$uriTokeep")
     }
@@ -265,7 +267,14 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
         /* SPARQL query to get the original graph name */
         val quads = quadQuery(duplicateURI, ANY, ANY): Iterable[Quad]
         val triplesToAdd = quads.map {
-          case (t, uri) => (Triple(uriTokeep, t.predicate, t.objectt), uri)
+          // change rdfs:label to indicate merging
+          case (t, uri) =>
+          val newObject =
+            if( t.predicate == prefixesMap2("rdfs")("label") )
+        	  Literal( literalNodeToString(t.objectt) + mergeMarker )
+          else
+            t.objectt
+            (Triple(uriTokeep, t.predicate, newObject), uri)
         }.toList
 //        println(s"copyPropertyValuePairs: triplesToAdd $triplesToAdd")
         triplesToAdd.map {

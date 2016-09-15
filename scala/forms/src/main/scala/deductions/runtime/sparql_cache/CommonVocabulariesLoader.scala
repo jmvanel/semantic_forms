@@ -11,24 +11,23 @@ import org.w3.banana.RDF
 import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
 import org.w3.banana.WebACLPrefix
-import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaModule
+import org.w3.banana.IANALinkPrefix
+import org.w3.banana.LDPPrefix
+
 import deductions.runtime.jena.RDFCache
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.jena.ImplementationSettings
-import org.w3.banana.LDPPrefix
-import org.w3.banana.IANALinkPrefix
 import deductions.runtime.utils.RDFPrefixes
 
 /**
  * @author jmv
  */
 
-/** TODO put in package jena */
-object CommonVocabulariesLoader extends JenaModule
+/** */
+object CommonVocabulariesLoader extends ImplementationSettings.RDFModule
     with RDFCache with App
-    with CommonVocabulariesLoaderTrait[Jena, ImplementationSettings.DATASET]
-    with RDFStoreLocalJena1Provider //    with JenaHelpers
+    with CommonVocabulariesLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with RDFStoreLocalJena1Provider
     {
   loadCommonVocabularies()
 }
