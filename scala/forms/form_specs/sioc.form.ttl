@@ -12,6 +12,7 @@
 # form specifications for SIOC
 
 forms:sioc-Post_Form
+  a form:specification ;
   form:classDomain sioc:Post ;
   form:showProperties (
 	rdfs:label rdfs:comment

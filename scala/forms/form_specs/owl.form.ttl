@@ -11,6 +11,7 @@
 # form specifications for FOAF
 
 forms:owl-ClassForm
+  a form:specification ;
   form:classDomain owl:Class ;
   form:showProperties (
 	rdfs:label rdfs:comment
@@ -28,6 +29,7 @@ forms:owl-dct-subject1
 	:widgetClass form:DBPediaLookup .
 
 forms:owl-DatatypePropertyForm
+  a form:specification ;
   form:classDomain owl:DatatypeProperty ;
   form:showProperties (
 	rdfs:label rdfs:comment
@@ -41,6 +43,7 @@ forms:owl-dct-subject2
 	:widgetClass form:DBPediaLookup .
 
 forms:owl-ObjectPropertyForm
+  a form:specification ;
   form:classDomain owl:ObjectProperty ;
   form:showProperties (
 	rdfs:label rdfs:comment

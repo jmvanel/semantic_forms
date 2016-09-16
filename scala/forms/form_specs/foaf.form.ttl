@@ -10,6 +10,7 @@
 # form specifications for FOAF
 
 forms:personForm
+  a form:specification ;
   form:classDomain foaf:Person ;
   form:showProperties (
 	# normally single-valued:
@@ -39,6 +40,7 @@ forms:cco-expertise
 	:widgetClass form:DBPediaLookup .
 
 forms:projectForm
+  a form:specification ;
   form:classDomain foaf:Project ;
   form:showProperties (
 	rdfs:label rdfs:comment
@@ -54,6 +56,7 @@ forms:projectForm
   ) .
 
 forms:organizationForm
+  a form:specification ;
   form:classDomain foaf:Organization ;
   form:showProperties (
 	rdfs:label rdfs:comment

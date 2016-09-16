@@ -9,6 +9,7 @@
 # Generic form specification with the main (non relational) properties for common classes 
 
 forms:main_properties_Form
+  a form:specification ;
   form:showProperties (
 	rdfs:label rdfs:comment
 	foaf:givenName foaf:familyName

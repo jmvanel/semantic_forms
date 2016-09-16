@@ -3,7 +3,7 @@
 # Install party `semantic_forms`
 
 `semantic_forms` est une application générique de navigation du [LOD](https://fr.wikipedia.org/wiki/Linked_open_data) (**Linked Open Data**).
-Plus encore, c'est une application d'annotation, d'édition de données structurées, et un cadriciel (framework) pour construire des **applications d'entreprise** centrées sur les formulaires (entrée ou lecture seule). C'est le Système d'Information Sémantique, qui est destiné à remplacer les PGI ([Progiciel de Gestion Intégré](https://fr.wikipedia.org/wiki/Progiciel_de_gestion_int%C3%A9gr%C3%A9), ERP). Toutes les données et tous les modèles de données (ontologies) s'appuient sur les recommandations du **Web Sémantique du W3C**: 
+Plus encore, c'est une application d'annotation, d'édition de données structurées, et un cadriciel (framework) pour construire des **applications d'entreprise** centrées sur les formulaires (entrée ou lecture seule). C'est un pas vers le Système d'Information Sémantique, qui est destiné à remplacer les PGI ([Progiciel de Gestion Intégré](https://fr.wikipedia.org/wiki/Progiciel_de_gestion_int%C3%A9gr%C3%A9), ERP). Toutes les données et tous les modèles de données (ontologies) s'appuient sur les recommandations du **Web Sémantique du W3C**: 
 [`wikipedia / Semantic_Web`](https://en.wikipedia.org/wiki/Semantic_Web).
 
 Le Web Sémantique, et `semantic_forms`, s'inscrivent dans un vaste mouvement visant à se réapproprier ses **données personnelles**, qui sont actuellement épar-pillées ;) dans des silos relativement étanches: Facebook, LinkedIn, Google, etc. 

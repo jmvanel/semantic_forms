@@ -7,6 +7,7 @@
 @prefix      : <http://deductions-software.com/ontologies/forms#> .
 
 forms:cob-User-Form
+  a form:specification ;
   form:classDomain cob:User ;
   form:showProperties (
 	foaf:firstName foaf:lastName

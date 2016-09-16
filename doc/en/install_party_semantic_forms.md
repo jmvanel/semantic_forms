@@ -3,7 +3,7 @@
 # Install party `semantic_forms`
 
 `Semantic_forms` is a generic application navigation of [LOD](https://fr.wikipedia.org/wiki/Linked_open_data) (** Linked Open Data **).
-Moreover, it is an application for annotation, editing of structured data, and a software framework to build **business applications**, forms centric (single entry or reading). This is the Semantic Information System, which is designed to replace ERP ([Enterprise Resource Planning] (https://en.wikipedia.org/wiki/Enterprise_resource_planning)) .
+Moreover, it is an application for annotation, editing of structured data, and a software framework to build **business applications**, forms centric (input or read only). This is a step towards Semantic Information System, which is designed to replace ERP ([Enterprise Resource Planning] (https://en.wikipedia.org/wiki/Enterprise_resource_planning)) .
 All data and all data models (ontologies) are based on the recommendations of the **W3C Semantic Web**:
 [ `Wikipedia / Semantic_Web`](https://en.wikipedia.org/wiki/Semantic_Web).
 
@@ -49,7 +49,7 @@ Possible activities are:
     4. possibly customize pages in the application: call static Web pages that require JavaScript via one or more Web services forms
 - Come with your data model (OWL, SQL, UML, XML Schema, Markdown, CSV) and install an editing & publishing application;
 - Come with an application project, and create a data model based on the existing Semantic Web vocabularies, and forms specifications
-- Try your hand at Scala, Play!, through `semantic_forms`fraùework; see [build from source](../../scala/forms_play/README.md#Run locally from sources)
+- Try your hand at Scala, Play!, through `semantic_forms`framework; see [build from source](../../scala/forms_play/README.md#Run locally from sources)
 
 In any case, [install the `semantic_forms` distribution](install.md), locally or on a server with SSH connection is very simple: unzip, run the script (just need Java 8).
 
