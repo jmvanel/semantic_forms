@@ -24,7 +24,7 @@ but then the application will be stopped when the user disconnects.
 
 **On windows** simply run:
 ```
-bin/semantic_forms_play.bat -J-Xmx50M &
+bin\semantic_forms_play.bat -J-Xmx50M &
 ```
 
 The default port is 9000, so you can direct your browser to [http://localhost:9000](http://localhost:9000) .
