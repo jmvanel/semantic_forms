@@ -19,8 +19,10 @@ import java.nio.file.Paths
 
 // TODO rename RDFStoreLocalJenaProvider
 
-/** singleton for implementation settings
- *  TODO move to package jena */
+/**
+ * singleton for implementation settings
+ *  TODO move to package jena
+ */
 object ImplementationSettings {
   // pave the way for migration to Jena 3 ( or BlazeGraph )
   type DATASET = com.hp.hpl.jena.query.Dataset

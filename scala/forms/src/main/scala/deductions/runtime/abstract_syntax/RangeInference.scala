@@ -323,7 +323,8 @@ trait RangeInference[Rdf <: RDF, DATASET]
           row("LABEL").get.as[Rdf#Node].get)
     }
     val possibleValues = res.to[List]
-    logger.debug(s""" populateFromTDB  size ${possibleValues.size}
+    logger.debug(
+        s"""possibleValuesFromFormGroup populateFromTDB formGroup <$formGroup> size ${possibleValues.size}
              ${possibleValues.mkString("\n")}""")
     possibleValues
   }

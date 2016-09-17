@@ -184,7 +184,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
             <label for={ makeHTMNameLiteral(lit) }>{ n }</label>
           )).flatten
         else {
-          // TODO maybe call re()nderPossibleValues
+          // TODO maybe call renderPossibleValues
           <select name={ makeHTMNameLiteral(lit) }>
             { formatPossibleValues(lit) }
           </select>

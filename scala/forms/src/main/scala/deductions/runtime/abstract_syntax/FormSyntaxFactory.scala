@@ -125,7 +125,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
 
     val step1 = computePropertiesList(subject, editable, formuri)
-    createFormDetailed2( step1 )
+    createFormDetailed2( step1, formGroup )
   }
 
   def addRDFSLabelComment(propertiesList: Seq[Rdf#Node]): Seq[Rdf#Node] = {
@@ -155,7 +155,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     createFormDetailed2(
           RawDataForForm(propertiesList.toSeq, classs, subject, formMode.editable,
         formConfig match { case URI("") => None
-        case uri => Some(uri) } )
+        case uri => Some(uri) } ),
+        formGroup
     )
   }
 
@@ -164,7 +165,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   def createFormDetailed2(
 		  step1: RawDataForForm[Rdf],
 		  formGroup: Rdf#URI = nullURI,
-		  formConfig: Rdf#Node = URI(""))
+		  formConfig: Rdf#Node = URI("step1.formURI") // URI("")
+		  )
     (implicit graph: Rdf#Graph)
   : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
 
