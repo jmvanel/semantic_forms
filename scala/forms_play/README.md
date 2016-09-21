@@ -12,12 +12,12 @@ For now, the display looks like this,
 plus a textbox to enter a URL semantics, eg a FOAF profile or DBpedia URI : 
 [example.form.foaf.html](http://htmlpreview.github.io/?https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/example.form.foaf.html)
 
-See:
+This README is like an administrator Manual.
+For other documentations, see:
 
 - the [wiki](https://github.com/jmvanel/semantic_forms/wiki) for User manual and Developer manual.
 - [Installation of the `semantic_forms` generic application](../../doc/en/install.md) from zip distribution (easy and no compilation)
 
-This README is like an administrator Manual.
 
 ## Terminology
 
@@ -65,7 +65,7 @@ A convenience link to [local semantic\_forms ScalaDoc](../forms/target/scala-2.1
 Some references on ScalaDoc: http://docs.scala-lang.org/style/scaladoc.html , http://docs.scala-lang.org/overviews/scaladoc/for-library-authors.html , http://stackoverflow.com/questions/15394322/how-to-disambiguate-links-to-methods-in-scaladoc
 
 ## Run without development environment
-There several use cases:
+There are several use cases:
 
 - server (internet or intranet)
 - personal usage
@@ -80,13 +80,15 @@ The personal usage can be a contact manager, project manager, blog, or notes man
 ### Obtaining the zipped application
 The zipped application is available as a [github release](https://github.com/jmvanel/semantic_forms/releases).
 
-Otherwise, to obtain the zipped application starting from the sources (see above), to package to run on a server that has Java only: type in activator : `dist`
+Otherwise, to obtain the zipped application when starting from the sources (see above), to package to run on a server that has Java only: type in activator : `dist`
 
 Then the archive is found here :
 `target/universal/semantic_forms_play-1.0-SNAPSHOT.zip
 `
 
 ### Runnning the zipped application
+For more details, , see: [installation doc.](../../doc/en/install.md)
+
 Download this zip on the server, unzip and type:
 ```shell
 cd semantic_forms_play-1.0-SNAPSHOT
@@ -101,43 +103,13 @@ and [preloading-rdf-content](#preloading-rdf-content) .
 
 
 #### Settings when runnning the zipped distribution
+For more details, , see: [installation doc.](../../doc/en/install.md)
 You can change the default port (9000) to e.g. 9999 like this:
 
 	nohup bin/semantic_forms_play -J-Xmx50M -Dhttp.port=9999 &
 
 There is no need to be administrator.
 
-There is a script that does this, and more: it stops the server, updates the application from sources, and restarts the server :
-
-    ./scripts/update_server.sh
-
-It is advised to deactivate the automatic formatting on a server machine. Just comment out the line `scalariformSettings` in 
-scala/forms/build.sbt . 
-
-If you want to change the HTTP ports, etc, look in the Play! documentation:
-https://www.playframework.com/documentation/2.4.x/ProductionConfiguration
-
-
-If you want to change the log settings:
-```
-cp conf/log4j.properties myconf.properties
-vi myconf.properties
-nohup bin/semantic_forms_play -Dlog4j.configuration=myconf.properties -mem 50 &
-```
-
-To download Java from the server with no browser (see http://stackoverflow.com/questions/10268583/downloading-java-jdk-on-linux-via-wget-is-shown-license-page-instead):
-
-    VERSION=51
-    wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" \
-    http://download.oracle.com/otn-pub/java/jdk/8u$VERSION-b16/jdk-8u$VERSION-linux-arm-vfp-hflt.tar.gz
-
-or for Linux x86:
-
-    wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" \
-    http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-linux-x64.tar.gz
-
-    wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" \
-    http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-linux-i586.tar.gz
 
 # Setting a IDE project ( eclipse ...)
 
@@ -216,17 +188,51 @@ or:
 
 ## Test
 ```script
-get --method=OPTIONS --save-headers http://localhost:9000/bla
+ get --method=OPTIONS --save-headers http://localhost:9000/bla
 
-# Do this (just once) to test URL that are protected by login:
-wget --keep-session-cookies --save-cookies cookies.txt \
+ # Do this (just once) to test URL that are protected by login:
+ wget --keep-session-cookies --save-cookies cookies.txt \
     --post-data 'userid=foo&password=bar' \
     -p http://localhost:9000/authenticate
 
-# test SPARQL CONSTRUCT service
-wget --load-cookies cookies.txt \
+ # test SPARQL CONSTRUCT service
+ wget --load-cookies cookies.txt \
     'http://localhost:9000/sparql?query=CONSTRUCT{?S ?P ?O} WHERE{ GRAPH ?G {?S ?P ?O}} LIMIT 10'
 ```
+
+# Administration of a server instance from the sources
+There is a script that updates the server from the sources, and more: it stops the server, updates the application from sources, and restarts the server :
+
+    ./scripts/update_server.sh
+
+It is advised to deactivate the automatic formatting on a server machine. Just comment out the line `scalariformSettings` in 
+scala/forms/build.sbt . 
+
+If you want to change the HTTP ports, etc, look in the Play! documentation:
+https://www.playframework.com/documentation/2.4.x/ProductionConfiguration
+
+
+If you want to change the log settings:
+```
+cp conf/log4j.properties myconf.properties
+vi myconf.properties
+nohup bin/semantic_forms_play -Dlog4j.configuration=myconf.properties -mem 50 &
+```
+
+To download Java from the server with no browser (see http://stackoverflow.com/questions/10268583/downloading-java-jdk-on-linux-via-wget-is-shown-license-page-instead):
+
+    VERSION=51
+    wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" \
+    http://download.oracle.com/otn-pub/java/jdk/8u$VERSION-b16/jdk-8u$VERSION-linux-arm-vfp-hflt.tar.gz
+
+or for Linux x86:
+
+    wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" \
+    http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-linux-x64.tar.gz
+
+    wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" \
+    http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-linux-i586.tar.gz
+
 
 #Database Administration
 *SBT trick*
