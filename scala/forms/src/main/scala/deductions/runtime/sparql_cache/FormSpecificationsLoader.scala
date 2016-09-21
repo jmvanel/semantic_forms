@@ -63,7 +63,7 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
     val form_specs_graph: Rdf#Graph =
       turtleReader.read(from, base = form_specs) getOrElse sys.error(
         s"couldn't read $form_specs")
-//    import deductions.runtime.abstract_syntax.FormSyntaxFactory._
+    //    import deductions.runtime.abstract_syntax.FormSyntaxFactory._
     val formPrefix = Prefix("form", formVocabPrefix)
     /* Retrieving triple :
      * foaf: form:ontologyHasFormSpecification <foaf.form.ttl> . */
@@ -72,13 +72,20 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
       triple._3 // getObject
     }
     for (obj <- objects) {
-      val from = new java.net.URL(obj.toString()).openStream()
-      val form_spec_graph: Rdf#Graph = turtleReader.read(from, base = obj.toString()) getOrElse sys.error(
-        s"couldn't read ${obj.toString()}")
-      val r = dataset.rw({
-        rdfStore.appendToGraph( dataset, formSpecificationsGraph, form_spec_graph)
-      })
-      println("Added form_spec " + obj)
+      try {
+        val from = new java.net.URL(obj.toString()).openStream()
+        val form_spec_graph: Rdf#Graph = turtleReader.read(from, base = obj.toString()) getOrElse sys.error(
+          s"couldn't read ${obj.toString()}")
+        val r = dataset.rw({
+          rdfStore.appendToGraph(dataset, formSpecificationsGraph, form_spec_graph)
+        })
+        println("Added form_spec " + obj)
+      } catch {
+        case e: Exception =>
+          System.err.println(s"""!!!! Error in loadFormSpecifications:
+            $obj
+            $e""")
+      }
     }
   }
 }
