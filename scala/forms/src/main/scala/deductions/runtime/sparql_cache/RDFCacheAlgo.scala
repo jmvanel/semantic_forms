@@ -95,7 +95,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
               println("Graph at URI was downloaded, new addition: " + uri + " , size " + g.size)
               addTimestampToDataset(uri, dataset2)
             } else
-              println(s"Graph at URI $uri was downloaded, but it's empty.")
+              println(s"Graph at URI <$uri> was downloaded, but it's empty.")
             g
           } catch {
             case t: RiotException =>

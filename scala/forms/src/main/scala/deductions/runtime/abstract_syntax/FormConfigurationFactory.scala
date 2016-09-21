@@ -6,6 +6,7 @@ import org.w3.banana.RDF
 import deductions.runtime.services.Configuration
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.sparql_cache.RDFCacheAlgo
+import scala.util.Try
 
 /**
  * Lookup Form specifications from RDF graph
@@ -41,11 +42,11 @@ trait FormConfigurationFactory[Rdf <: RDF, DATASET]
    *  PENDING : what to do when given formuri gives an empty propertiesList? */
   def lookPropertiesListFromDatabaseOrDownload(formuri: String)
       (implicit graph: Rdf#Graph):
-       (Seq[Rdf#URI], Rdf#Node) = {
+       (Seq[Rdf#URI], Rdf#Node, Try[Rdf#Graph]) = {
     val formConfiguration = URI(formuri)
-    retrieveURINoTransaction( formConfiguration, dataset)
+    val tryGraph = retrieveURINoTransaction( formConfiguration, dataset)
     val propertiesList = propertiesListFromFormConfiguration(formConfiguration)
-    (propertiesList, formConfiguration)
+    (propertiesList, formConfiguration, tryGraph)
   }
   
   /** from given form Configuration, @return ordered RDF properties List 
@@ -99,4 +100,11 @@ trait FormConfigurationFactory[Rdf <: RDF, DATASET]
     find(graph, ANY, formPrefix("fieldAppliesToProperty"), prop).toSeq
   }
 
+  def lookClassInFormSpec( formURI: Rdf#URI, formSpec: Rdf#Graph) = {
+    val trOpt = find(formSpec, formURI, formPrefix("classDomain"), ANY).toSeq.headOption
+    trOpt . map {
+      tr => tr.objectt
+    }.getOrElse(URI(""))
+  }
+    
 }

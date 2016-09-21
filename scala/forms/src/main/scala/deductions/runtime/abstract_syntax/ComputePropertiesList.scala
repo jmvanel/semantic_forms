@@ -1,6 +1,8 @@
 package deductions.runtime.abstract_syntax
 
 import org.w3.banana.RDF
+import scala.util.Try
+import scala.util.Success
 
 /** intermediary data for form generation */
 case class RawDataForForm[Rdf <: RDF](propertiesList: Seq[Rdf#Node],
@@ -14,6 +16,22 @@ case class RawDataForForm[Rdf <: RDF](propertiesList: Seq[Rdf#Node],
 trait ComputePropertiesList[Rdf <: RDF, DATASET] {
   self: FormSyntaxFactory[Rdf, DATASET] =>
 
+  /** look for Properties list from form spec in given URI or else in TDB from given class URI
+   *  @return (propertiesList, formConfiguration, tryClass) */
+  private def computePropsFromConfig(classs: Rdf#URI,
+      formuri: String)(implicit graph: Rdf#Graph): (Seq[Rdf#URI], Rdf#Node, Try[Rdf#Node]) =
+    if (formuri == "") {
+      val (propertiesList, formConfiguration) = lookPropertiesListInConfiguration(classs)
+            (propertiesList, formConfiguration, Success(classs))
+    } else {
+      val (propertiesList, formConfiguration, tryGraph) = lookPropertiesListFromDatabaseOrDownload(formuri)
+      val tryClass = tryGraph . map { gr => 
+         lookClassInFormSpec( ops.URI(formuri), gr)
+      }
+//      (propertiesList, formConfiguration)
+      (propertiesList, formConfiguration, tryClass)
+    }
+
   /** create Raw Data For Form from an instance (subject) URI,
    * and a Form Specification URI if not empty;
    * ( see form_specs/foaf.form.ttl for an example of form Specification)
@@ -23,16 +41,23 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
   protected def computePropertiesList(subject: Rdf#Node,
                             editable: Boolean = false, formuri: String)(implicit graph: Rdf#Graph):
                             RawDataForForm[Rdf] = {
+      
+    val classOfSubject = classFromSubject(subject) // TODO several classes
 
-    val classs = classFromSubject(subject) // TODO several classes
-    val (propsFromConfig: Seq[Rdf#URI], formConfiguration) =
-      computePropsFromConfig(classs, formuri)
+    val (propsFromConfig: Seq[Rdf#URI], formConfiguration, tryClass ) =
+      computePropsFromConfig(classOfSubject, formuri)
 
+    val classs = if( classOfSubject == ops.URI("") && formuri != ops.URI("")) {
+      println(s">>>> computePropertiesList $tryClass")
+    	uriNodeToURI(tryClass.getOrElse(ops.URI("")))
+    } else classOfSubject
+    
     val propsFromSubject = fieldsFromSubject(subject, graph)
     val propsFromClass: Seq[Rdf#Node] =
       if (editable) {
         fieldsFromClass(classs, graph)
       } else Seq()
+
     val propertiesList0 = (propsFromConfig ++ propsFromSubject ++ propsFromClass).distinct
     val propertiesList = addRDFSLabelComment(propertiesList0)
     val reversePropertiesList = reversePropertiesListFromFormConfiguration(formConfiguration)
@@ -41,15 +66,6 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
         case uri => Some(ops.URI(uri)) },
         reversePropertiesList)
   }
-
-  /** look for Properties list form Configuration in given URI or else in TDB from given classs URI */
-  private def computePropsFromConfig(classs: Rdf#URI,
-      formuri: String)(implicit graph: Rdf#Graph): (Seq[Rdf#URI], Rdf#Node) =
-    if (formuri == "")
-      lookPropertiesListInConfiguration(classs)
-    else {
-      lookPropertiesListFromDatabaseOrDownload(formuri)
-    }
   
   
   private def classFromSubject(subject: Rdf#Node)(implicit graph: Rdf#Graph)

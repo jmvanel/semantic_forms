@@ -18,7 +18,6 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
     with Configuration
     with URIManagement {
 
-  
   import ops._
 
   /**
@@ -37,13 +36,21 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
       } else {
         lookPropertiesListInConfiguration(classs)
       }
-    val newId = // UnfilledFormFactory . 
-        makeId
+
+    println(s">>> UnfilledFormFactory.createFormFromClass: formSpecURI <$formSpecURI> classs <$classs>")
+    val classFromSpecsOrGiven =
+      if (formSpecURI != "" && classs == URI("") ) {
+        val classFromSpecs = lookClassInFormSpec( URI(formSpecURI), graph)
+        uriNodeToURI(classFromSpecs)
+      } else classs
+    println(s">>> UnfilledFormFactory.createFormFromClass: classFromSpecsOrGiven <$classFromSpecsOrGiven>")
+
+    val newId = makeId
     if (propsListInFormConfig.isEmpty) {
-      val props = fieldsFromClass(classs, graph)
-      createFormDetailed(makeUri(newId), addRDFSLabelComment(props), classs, CreationMode)
+      val props = fieldsFromClass(classFromSpecsOrGiven, graph)
+      createFormDetailed(makeUri(newId), addRDFSLabelComment(props), classFromSpecsOrGiven, CreationMode)
     } else
-      createFormDetailed(makeUri(newId), propsListInFormConfig.toSeq, classs,
+      createFormDetailed(makeUri(newId), propsListInFormConfig.toSeq, classFromSpecsOrGiven,
         CreationMode, formConfig = formConfig)
   }
 

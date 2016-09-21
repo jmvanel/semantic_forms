@@ -25,7 +25,7 @@ with RDFPrefixes[Rdf]
 
   /**
    * create an XHTML input form for a new instance from a class URI;
-   *  transactional
+   *  transactional TODO classUri should be an Option
    */
   def create(classUri: String, lang: String = "en",
     formSpecURI: String = "", graphURI: String= "")
@@ -37,13 +37,14 @@ with RDFPrefixes[Rdf]
       val factory = this
       preferedLanguage = lang
       implicit val graph: Rdf#Graph = allNamedGraph
-      val form = factory.createFormFromClass(
-        classURI, formSpecURI)
+      val form = factory.createFormFromClass(classURI, formSpecURI)
+
       val ops1 = ops
       val htmlFormatter = new Form2HTMLBanana[Rdf] with ConfigurationCopy {
         val ops = ops1
         lazy val original:Configuration = CreationFormAlgo.this
       }
+
       val rawForm = htmlFormatter . generateHTML(
           form, hrefPrefix = "",
           editable = true,

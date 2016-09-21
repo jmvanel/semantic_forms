@@ -327,7 +327,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
     def addOneEntry(object_ : Rdf#Node,
       formMode: FormMode,
-      valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)] //        formGroup: Rdf#URI
+      valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)] // formGroup: Rdf#URI
       ) = {
 
       val xsdPrefix = XSDPrefix[Rdf].prefixIri
