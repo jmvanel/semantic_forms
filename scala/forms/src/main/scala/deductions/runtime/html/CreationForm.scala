@@ -10,6 +10,7 @@ import org.w3.banana.RDFOps
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.ConfigurationCopy
 import deductions.runtime.utils.RDFPrefixes
+import deductions.runtime.utils.I18NMessages
 
 trait CreationFormAlgo[Rdf <: RDF, DATASET]
 extends RDFCacheAlgo[Rdf, DATASET]
@@ -57,9 +58,10 @@ with RDFPrefixes[Rdf]
   }
 
   def makeEditingHeader(classUri: String, lang: String,
-    formSpecURI: String, graphURI: String) : NodeSeq = {
+                        formSpecURI: String, graphURI: String): NodeSeq = {
     <div class="sf-form-header">
-    Creating a {abbreviateTurtle(classUri)}
+      { I18NMessages.get("CREATING", lang) }
+      { abbreviateTurtle(classUri) }
     </div>
   }
 

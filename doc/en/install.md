@@ -77,7 +77,11 @@ scripts/stop.sh
 scripts/tdbsearch.sh
 ```
 
-## Setup a new instance with common vocab's, form specifiacations, translations, dbPedia mirroring and Lucene indexing
+Of course, all the Jena command line tools are available, see:
+https://jena.apache.org/documentation/tools/index.html
+
+
+## Setup a new instance with common vocab's, form specifications, translations, dbPedia mirroring and Lucene indexing
 The scripts must be run in this order:
 ```
 scripts/populate_with_dbpedia.sh
@@ -100,6 +104,5 @@ scripts/start.sh
 NOTE:
 There is currently no way to back up specifically the user data, it is mixed with the cached data.
 However, it is possible to to back up the data of a specific user; as it is in a named graph derived from its user URI .
-
 
 

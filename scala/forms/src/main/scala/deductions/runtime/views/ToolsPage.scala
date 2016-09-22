@@ -2,10 +2,11 @@ package deductions.runtime.views
 
 import scala.xml.NodeSeq
 import deductions.runtime.html.EnterButtons
+import deductions.runtime.utils.I18NMessages
 
 trait ToolsPage extends EnterButtons {
 
-  def getPage: NodeSeq = {
+  def getPage(lang: String = "en"): NodeSeq = {
     <div>
       <p>
         SPARQL select
@@ -26,10 +27,13 @@ trait ToolsPage extends EnterButtons {
             Seq("CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10"))
         }
       </p>
-      <p> <a href="/showNamedGraphs">show Named Graphs</a> </p>
-      <p> <a href="/history">Dashboard: history of user actions</a> </p>
-      { enterURItoDownloadAndDisplay() }
-      <p> <a href="..">Back to Main page</a> </p>
+      <p> <a href="/showNamedGraphs">{ I18NMessages.get("showNamedGraphs", lang) }</a> </p>
+      <p> <a href="/history">{ I18NMessages.get("Dashboard", lang) }</a> </p>
+      {
+        implicit val lang1: String = lang
+        enterURItoDownloadAndDisplay()
+      }
+      <p> <a href="..">{ I18NMessages.get("MainPage", lang) }</a> </p>
     </div>
   }
 

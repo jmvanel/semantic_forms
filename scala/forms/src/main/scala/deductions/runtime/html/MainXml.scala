@@ -17,7 +17,7 @@ trait MainXml extends ToolsPage with EnterButtons {
             userInfo,
             mainPageHeader(lang),
             content,
-            pageBottom)
+            pageBottom(lang))
         }
       </body>
     </html>
@@ -26,15 +26,15 @@ trait MainXml extends ToolsPage with EnterButtons {
   def head(title: String = "")(implicit lang: String = "en"): NodeSeq = <head></head>
 
   /** page bottom (overridable!) **/
-  def pageBottom: NodeSeq = linkToToolsPage
+  def pageBottom(lang: String = "en"): NodeSeq = linkToToolsPage(lang)
 
-  def linkToToolsPage =
+  def linkToToolsPage(lang: String = "en") =
     <p>
       ---<br/>
-      <a href="/tools">Tools</a>
-      -<a href="https://github.com/jmvanel/semantic_forms/wiki/User_manual">User Manual</a>
-      -<a href="https://github.com/jmvanel/semantic_forms/wiki/Manuel-utilisateur">Manuel utilisateur</a>
-      - Powered by
+      <a href="/tools">{ I18NMessages.get("Tools", lang) }</a>
+      -&nbsp;<a href="https://github.com/jmvanel/semantic_forms/wiki/User_manual">User Manual</a>
+      -&nbsp;<a href="https://github.com/jmvanel/semantic_forms/wiki/Manuel-utilisateur">Manuel utilisateur</a>
+      { I18NMessages.get("POWERED", lang) }
       <a href="https://github.com/jmvanel/semantic_forms/blob/master/scala/forms_play/README.md#play-framework-implementations">
         semantic_forms
       </a>
@@ -79,7 +79,7 @@ trait MainXml extends ToolsPage with EnterButtons {
               <div class="right-panel">{ contentRight }</div>
             </div>,
 
-            linkToToolsPage)
+            linkToToolsPage(lang))
         }
       </body>
     </html>
