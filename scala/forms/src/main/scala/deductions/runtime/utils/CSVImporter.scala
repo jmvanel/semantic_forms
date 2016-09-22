@@ -187,9 +187,14 @@ trait CSVImporter[Rdf <: RDF, DATASET]
    *  use labels on properties to propose properties to user,
    *  manage prefixes globally, maybe using prefix.cc */
   val columnsMappings = Map(
-      "Email" -> foaf.mbox,
+      // foaf:Person
       "Prénom" -> foaf.givenName,
       "Nom" -> foaf.familyName,
+      "organisation 1" -> av.contributesToOrganization,
+      "organisation 2" -> av.contributesToOrganization,
+
+      // foaf:Organization or foaf:Person     
+      "Email" -> foaf.mbox,
       "Téléphone" -> foaf.phone,
       "Catégorie" -> foaf.focus,
       "Code postal" -> vcard.postal_code,
@@ -201,14 +206,35 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       "Projet 1" -> foaf.currentProject,
       "Projet 2" -> foaf.currentProject,
       "Projet 3" -> foaf.currentProject,
+      
       "compétence 1" -> cco.expertise,
       "compétence 2" -> cco.expertise,
       "autre" -> cco.expertise,
-      "organisation 1" -> av.contributesToOrganization,
-      "organisation 2" -> av.contributesToOrganization,
+      
       "Idée 1" -> av.idea,
       "Idée 2" -> av.idea,
       "Rencontré à" -> av.metAt,
+
+      // GV
+      
+      /*	",SUIVI,SITE WEB,PRINT SIGNA,
+      Nom structure pour admnistration,Nom pour communication,
+      Prénom interlocuteur référent,Nom interlocuteur référent,Numéro contact,Adresse e-mail,
+      Prénom interlocuteur référent 2,Nom interlocuteur référent 2,Numéro contact 2,Adresse e-mail 2,
+      Activité,Site Web,Bâtiment,Espace,Arrivée,Contribution au projet proposée,Contribution réalisée,
+      Nombre salariés,
+      Page Facebook,Compte twitter,NB de mentions presses,Ventes ou services,Structure juridique signature convention,
+      Numéro de clé au PC
+      http://dbpedia.org/ontology/longName
+      */
+      "Nom structure pour admnistration" ->  foaf.name,
+      "Nom pour communication" -> URI("http://dbpedia.org/ontology/longName"),
+      "Prénom interlocuteur référent" -> foaf.givenName,
+      "Nom interlocuteur référent" -> foaf.familyName,
+      "Numéro contact" -> foaf.phone,
+      "Adresse e-mail" -> foaf.mbox,
+      "Page Facebook" -> av("facebook"),
+      "Compte twitter" -> av("twitter"),
 
       // ONISEP
 

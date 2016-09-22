@@ -33,11 +33,12 @@ Some people speak of "triple store", or "graph database", or "triple database", 
 wget https://dl.bintray.com/sbt/native-packages/sbt/0.13.12/sbt-0.13.12.tgz
 tar xvzf sbt-0.13.12.tgz
 ```
-Then SBT or Activator will download the rest.
+Then SBT will download the rest.
 - download the source from [Banana-RDf fork on github](https://github.com/deductions/banana-rdf) (temporary, until my Pull Request in Banana-RDF is accepted)
-  - build this project with SBT or Activator: change directory to `banana-rdf` ; type in the activator console : `publishLocal`
+  - build this project with SBT : change directory to `banana-rdf` ; type in the SBT console : `publishLocal`
 - download the source from [semantic\_forms on github](https://github.com/jmvanel/semantic_forms/)
-- build and run the semantic\_forms project itself with SBT or Activator: change directory to `scala/forms_play` within the source downloaded from github; type in the sbt (or activator) console : `~ run`
+- build and run the `semantic_forms` project itself with SBT: change directory to `scala/forms_play` within the source downloaded from github;
+- type in the SBT console : `~ run`
 
 The default port is 9000, so you can direct your browser to [http://localhost:9000](http://localhost:9000) .
 To run on another port than 9000 :
@@ -80,11 +81,10 @@ The personal usage can be a contact manager, project manager, blog, or notes man
 ### Obtaining the zipped application
 The zipped application is available as a [github release](https://github.com/jmvanel/semantic_forms/releases).
 
-Otherwise, to obtain the zipped application when starting from the sources (see above), to package to run on a server that has Java only: type in activator : `dist`
+Otherwise, to obtain the zipped application when starting from the sources (see above), type in SBT : `dist`
 
 Then the archive is found here :
-`target/universal/semantic_forms_play-1.0-SNAPSHOT.zip
-`
+`target/universal/semantic_forms_play-1.0-SNAPSHOT.zip`
 
 ### Runnning the zipped application
 For more details, , see: [installation doc.](../../doc/en/install.md)
@@ -149,7 +149,7 @@ sbt gen-ensime
 
 - FAILED DOWNLOADS messages for the first SBT build: retry later. With SBT, as with all these dependency managers ( Maven, NMP), given the large amount of downloading from multiple sources, it is often the case that the first time, not everything is there.
 - in case of troubles in build, delete `target/` directory
-- create eclipse configurations with the "eclipse" command in sbt or activator, in the project directory scala/forms\_play/ :
+- create eclipse configurations with the "eclipse" command in sbt, in the project directory scala/forms\_play/ :
 
 ```
     eclipse with-source=true
@@ -176,12 +176,7 @@ See https://docs.oracle.com/javase/8/docs/technotes/guides/management/jconsole.h
 ## Debug
 See [playframework documentation/2.4.x/IDE](https://www.playframework.com/documentation/2.4.x/IDE)
 
-Start Activator or SBT with -jvm-debug argument; then type run. Then start a remote debug in eclipse or another IDE with port 9999.
-```
-    activator -jvm-debug
-```
-
-or:
+Start SBT with -jvm-debug argument; then type run. Then start a remote debug in eclipse or another IDE with port 9999.
 ```
     sbt  -jvm-debug 9999
 ```
@@ -244,12 +239,12 @@ outputs the classpath as a colon-separated list perfect if you want to use it fo
 
 ## Preloading RDF content
 
-*CAUTION:*
+**CAUTION:**
 Do not load data in a named graph (argument --graph below) whose name is a relative URI, like "blabla", or "a/b/c" . Use an absolute URI like urn:data/myorganization or an HTTP URL (see URI spec. https://tools.ietf.org/html/rfc3986 ).
 
 The server must not be started, because Jena TDB does not allow access to the database on disk from 2 different processes.
 
-- Preloading common vocabularies, and preloading some pre-defined form specifications ( currently FOAF ) : in activator (or sbt) shell, type:
+- Preloading common vocabularies, and preloading some pre-defined form specifications ( currently FOAF ) : in SBT shell, type:
 ```
     runMain deductions.runtime.sparql_cache.PopulateRDFCache
     // or, just some forms specs:
@@ -261,7 +256,7 @@ PopulateRDFCache can run, with Lucene activated, with this memory setting:
 
     export SBT_OPTS="-Xmx4800M -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -Xss20M"
 
-- Preloading a local file: in activator shell type: for example:
+- Preloading a local file: in SBT shell type: for example:
 
 ```
     # load a FOAF profile from a local file :
@@ -283,7 +278,7 @@ done
 echo java -cp $JARS
 java -cp $JARS tdb.tdbdump --loc=TDB > dump.nq
 ```
-Or with sbt or activator:
+Or with sbt:
 
     sbt "runMain tdb.tdbdump --loc=TDB" > dump.nq
 
