@@ -1,4 +1,5 @@
 [Installation de l'application générique `semantic_forms`](../en/install.md)
+[Administration](administration.md)
 
 # Installation of the `semantic_forms` generic application
 
