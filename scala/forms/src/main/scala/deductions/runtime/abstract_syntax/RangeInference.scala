@@ -169,7 +169,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
       } else Seq()
     }
     
-    /**
+    /*
      * given a list of URI's,
        * @return Possible Values into Seq of pairs (nodeId, label),
        * from given list `enumerated`, which typically comes

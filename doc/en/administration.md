@@ -25,7 +25,7 @@ outputs the classpath as a colon-separated list perfect if you want to use it fo
 
 From a shell in a deployed application, you must first set the claspath, by running:
 
-    scripts/setClasspath.sh
+    source scripts/setClasspath.sh
 
 with does this:
 ```
