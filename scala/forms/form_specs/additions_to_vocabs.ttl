@@ -1,0 +1,29 @@
+@prefix dc: <http://purl.org/dc/elements/1.1/>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix cco: <http://purl.org/ontology/cco/core#> .
+@prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#> .
+@prefix     : <http://deductions-software.com/ontologies/forms.owl.ttl#> .
+@prefix forms: <http://deductions-software.com/ontologies/forms#> .
+
+# Additions to FOAF vocab' ;
+# the forms system will propose possible values based on rdfs:range,
+# so, to work well we need some additions to ontologie(s).
+
+# NOTES:
+# - maybe use https://www.w3.org/TR/2012/WD-vocab-org-20121023/
+#	property is interesting, https://www.w3.org/TR/2012/WD-vocab-org-20121023/#property--memberof
+# as FOAF soes not have this.
+# FOAF has foaf:member , but it is applied to foaf:Group ;
+# however, foaf:Group is NOT distinct (owl:disjointWith) of foaf:Organization ,
+# it could be good to treat all foaf:Organization's as being foaf:Group's also
+# - 
+# - anyway, we currentlmy try to avoid using and entering owl:inverseOf properties,
+#	because nothing is implemented, not even specified,
+#	and it is alway possible to enter the link on one side of the relation. 
+
+# For forms:personForm
+foaf:currentProject rdfs:range foaf:Project .
+foaf:pastProject rdfs:range foaf:Project .
+

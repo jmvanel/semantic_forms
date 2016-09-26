@@ -83,6 +83,7 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
       URI("http://purl.org/ontology/cco/cognitivecharacteristics.n3") ::
       prefixesMap("skos") ::
       prefixesMap("vcard") ::
+      URI(githubcontent + "/jmvanel/semantic_forms/master/scala/forms/form_specs/additions_to_vocabs.ttl" ) ::
       // "http://purl.org/ontology/mo/"
       Nil
    
