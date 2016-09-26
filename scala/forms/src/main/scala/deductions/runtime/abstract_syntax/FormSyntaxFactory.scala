@@ -34,6 +34,7 @@ import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.utils.Timer
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.RDFPrefixes
 
 /** one of EditionMode, DisplayMode, CreationMode */
 abstract sealed class FormMode { val editable = true }
@@ -96,6 +97,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    	with FormConfigurationFactory[Rdf, DATASET]
    	with ComputePropertiesList[Rdf, DATASET]
     with FormConfigurationReverseProperties[Rdf, DATASET]
+    with RDFPrefixes[Rdf]
     with Timer {
 
   // TODO not thread safe: form is not rebuilt for each HTTP request 
@@ -192,12 +194,23 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       System.err.println(
         if (rangesSize > 1) {
           s"""WARNING: ranges $ranges for property $prop are multiple;
-            taking first: <${ranges.head}>"""
+            taking first if not owl:Thing"""
         } else if (rangesSize == 0) {
           "WARNING: There is no range for property " + prop
         } else "")
+
+      val ranges2 = if (rangesSize > 1) {
+         val owlThing = prefixesMap2("owl")("Thing")
+         if ( ranges.contains( owlThing) ) {
+           System.err.println(
+               s"""WARNING: ranges $ranges for property $prop contain owl:Thing;
+               removing owl:Thing, and take first remaining: <${(ranges - owlThing).head}>""" )
+         }
+         ranges - owlThing
+      } else ranges
+
       time(s"makeEntries(${prop})",
-        makeEntries(subject, prop, ranges, formMode, valuesFromFormGroup))
+        makeEntries(subject, prop, ranges2, formMode, valuesFromFormGroup))
     }
     val fields = entries.flatMap { identity }
     val fields2 = addTypeTriple(subject, classs, fields)
