@@ -12,10 +12,12 @@ trait SitesURLForDownload {
 }
 
 /**
- * Populate RDF Cache with commonly used vocabularies;
+ * Populate RDF Cache with commonly used vocabularies, formS pecifications and I18N Translations;
  *  should be done just once (anyway because of SPARQL cache it goes quickly the second time);
  *
- *  same as loading
+ *  To remove all such content, run [[deductions.runtime.jena.ResetRDFCacheApp]] ;
+ *
+ *  similar to loading
  *  http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/examples/defaultVocabularies.n3p.n3
  *  but without any dependency to EulerGUI.
  *

@@ -231,7 +231,7 @@ or for Linux x86:
 
 #Database Administration
 
-See [administration](administration.md)
+See [administration page](../../doc/en/administration.md)
 
 
 # Vocabulary for forms

@@ -8,7 +8,7 @@ There are 2 way of executing them:
 
 Through SBT, you use runMain, like this (from the shell):
 ```shell
-sbt "runMain myPackage.mrProgram arg1 arg2"
+sbt "runMain myPackage.myProgram arg1 arg2"
 ```
 
 For example:
@@ -52,6 +52,10 @@ The server must not be started, because Jena TDB does not allow access to the da
 By running this, you also index with Lucene. The URL's can be file:// URL's.
 
     java -cp $JARS deductions.runtime.jena.RDFLoaderApp url1 url2 ...
+
+   * downloads and stores URI content, in a graph named by its URI minus the # part,
+   *  stores the timestamp from HTTP HEAD request;
+   * loads also the direct owl:imports , but not recursively
 
 **CAUTION:**
 Do not load data in a named graph (argument --graph below) whose name is a relative URI, like "blabla", or "a/b/c" . Use an absolute URI like urn:data/myorganization or an HTTP URL (see URI spec. https://tools.ietf.org/html/rfc3986 ).

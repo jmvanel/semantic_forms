@@ -78,7 +78,7 @@ trait FormConfigurationFactory[Rdf <: RDF, DATASET]
     	Logger.getRootLogger().warn(
     	    s"WARNING: several form specs for $classs; chosen $formSpecOption")
 //    Logger.getRootLogger().debug
-    println( s"lookFormSpecInConfiguration: formNodeOption $formSpecOption" )
+    println( s"lookFormSpecInConfiguration: found for $classs $formSpecOption" )
     formSpecOption
   }
 

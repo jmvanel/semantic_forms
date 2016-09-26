@@ -191,7 +191,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       val rangesSize = ranges.size
       System.err.println(
         if (rangesSize > 1) {
-          "WARNING: ranges " + ranges + " for property " + prop + " are multiple."
+          s"""WARNING: ranges $ranges for property $prop are multiple;
+            taking first: <${ranges.head}>"""
         } else if (rangesSize == 0) {
           "WARNING: There is no range for property " + prop
         } else "")
