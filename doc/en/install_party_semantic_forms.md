@@ -12,7 +12,7 @@ Cf the project [Solid] (https://blog.p2pfoundation.net/solid-can-web-re-decentra
 
 The flexibility of [SPARQL databases](https://fr.wikipedia.org/wiki/SPARQL) Semantic web, their excellent standardization by the W3C, the presence of reusable data models (FOAF, schema.org, dublin Core ... SIOC), offer companies and associations excellent support for their applications, and to pool data when the need arises. The JSON-LD standard ([JSON for Linked Data] (https://en.wikipedia.org/wiki/JSON-LD)) enables the exchange of data by encouraging links between data and decentralized governance rather than recopies.
 
-`Semantic_forms` can also be seen as an administration tool for SPARQL databases, even if there is not yet full functionality. The semantic cache, support (partial) of the W3C recommandation, allow to aggregate collaboratively documents from all the LOD.
+`Semantic_forms` can also be seen as an administration tool for SPARQL databases, even if there is not yet full functionality. The semantic cache, support (partial) of the LDP W3C recommandation, allow to aggregate collaboratively documents from all the LOD.
 
 Moreover, the quality of semantic data models (called ontologies or vocabularies), and the scalability of some bases SPARQL, make it easy to support **Big Data and Business Intelligence (BI)**. Indeed the step of preparing an OLAP model, Hadoop, or Apache Spark, very consuming in human resources, is no longer relevant. One directly works on  SPARQL database.
 
