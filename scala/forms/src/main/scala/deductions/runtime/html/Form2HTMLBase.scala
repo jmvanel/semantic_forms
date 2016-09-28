@@ -88,7 +88,10 @@ trait Form2HTMLBase[NODE, URI <: NODE]
     urlEncode(rawResult)
   }
 
-  def makeHTMLNameResource(re: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = makeHTMLName(re)
+  /** make HTML name for a resource */
+  def makeHTMLNameResource(re: fm#Entry)(implicit form:
+      FormModule[NODE, URI]#FormSyntax) =
+    makeHTMLName(re)
   def makeHTMLIdResourceSelect(re: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): String =
     toPlainString(re.property)
   def makeHTMLNameBN(re: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = makeHTMLName(re)

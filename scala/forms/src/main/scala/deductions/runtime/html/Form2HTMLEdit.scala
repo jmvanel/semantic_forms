@@ -87,7 +87,11 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
   }
   
   /** Placeholder for a resource URI */
-  private def resourcePlaceholder(r: fm#Entry, lang: String = "en") = {
+  private def resourcePlaceholder(r: fm#ResourceEntry, lang: String = "en") = {
+    resourceOrBN_Placeholder(r, lang )  +
+        " - " + r.valueLabel
+  }
+  private def resourceOrBN_Placeholder(r: fm#Entry, lang: String = "en") = {
     if (lookup(r))
       I18NMessages.get("Completion", lang)
 //      s"Enter a word; completion with Wikipedia lookup"
@@ -109,7 +113,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
    *  maybe there is no necessary difference
    */
   def createHTMLBlankNodeEditableField(r: fm#BlankNodeEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
-    val placeholder = resourcePlaceholder(r)
+    val placeholder = resourceOrBN_Placeholder(r)
     Seq(
       if (r.openChoice) {
         <div class={ css.cssClasses.formDivInputCSSClass }>
@@ -130,7 +134,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
       renderPossibleValues(r)) . flatten
   }
 
-  /** display list of Possible Values from TDB as a pulldown menu */
+  /** display list of Possible Values from TDB as a <select> pulldown menu */
   private def renderPossibleValues(r: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     if (hasPossibleValues(r) &&
       isFirstFieldForProperty(r)) {
@@ -225,7 +229,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
       })
   }
 
-//  /** @return a list of option tags or a datalist tag (with the option tags inside) */
+  /** @return a list of option tags or a datalist tag (with the option tags inside) */
   def formatPossibleValues(field: Entry, inDatalist: Boolean = false)
   (implicit form: fm#FormSyntax)
   : NodeSeq = {
@@ -251,11 +255,14 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
 		    toPlainString(value._2) }
 		  </option>
 	  }
-	  def getPossibleValues( f: Entry) = form.possibleValuesMap.getOrElse( f.property, Seq() )
+	  def getPossibleValues( f: Entry) =
+	    form.possibleValuesMap.getOrElse( f.property, Seq() )
+
 	  for (value <- getPossibleValues(field) )
 	    yield makeHTMLOption(value, field)
   }
-  
+
+
   def hasPossibleValues( f: Entry)(implicit form: fm#FormSyntax): Boolean = {
 //    println( s">>>> hasPossibleValues ${f.label} : ${form.possibleValuesMap.getOrElse(f.property, "NOTHING")}" )
     ! form.possibleValuesMap.getOrElse( f.property, List() ) .isEmpty
