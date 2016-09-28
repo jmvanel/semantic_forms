@@ -10,7 +10,8 @@ trait CSS {
       .form-value{ display: table-cell; width: 500px;
                    border-collapse: separate;
                    border-width: 10px; }
-      /*
+"""
+  /*
       .form-root{ margin-left: 10px; }
       .form-row{ display: table-row; }
       .form-cell{ display: table-cell; }
@@ -22,7 +23,6 @@ trait CSS {
                    border-collapse: separate;
                    border-width: 2px;}
       .button-add{ width: 25px; }*/
-"""
 
   lazy val localCSS = <style type='text/css'>{ cssRules }</style>
 
@@ -37,7 +37,7 @@ trait CSS {
     val formDivEditInputCSSClass: String = "col-xs-1",
     val formAddDivCSSClass: String = "col-xs-1",
     val formSelectDivCSSClass: String = "col-xs-1",
-    val formSelectCSSClass: String = "form-control")
+    val formSelectCSSClass: String = "form-select")
 
   /** actually applied CSS classes are here */
   lazy val tableCSSClasses = CSSClasses(
@@ -50,5 +50,5 @@ trait CSS {
     formDivEditInputCSSClass = "col-xs-1",
     formAddDivCSSClass = "col-xs-1",
     formSelectDivCSSClass = "col-xs-1",
-    formSelectCSSClass = "form-control")
+    formSelectCSSClass = "form-select")
 }

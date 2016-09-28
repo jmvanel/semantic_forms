@@ -68,7 +68,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
                 "EEEE dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
               <tr>{
                 <td>{ makeHyperlinkForURI(row(0), lang, allNamedGraph) }</td>
-                <td>{ "action ..." }</td>
+                <td>{ "Edit" /* TODO */ }</td>
                 <td>{ dateFormat.format(date) }</td>
                 <td>{ makeStringFromLiteral(row(2)) }</td>
                 <td>{ row(3) }</td>
