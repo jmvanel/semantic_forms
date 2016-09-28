@@ -28,8 +28,9 @@ object DuplicateCleanerFileApp extends App
 
   //  override val databaseLocation: String = "" // in-memory
   override val databaseLocation = "/tmp/TDB" // TODO multi-platform temporary directory
+
   println(s"databaseLocation $databaseLocation")
-  duplicateCleanerFileApp
+  duplicateCleanerFileApp()
 
   def duplicateCleanerFileApp() = {
     val classURI = ops.URI(args(0))
