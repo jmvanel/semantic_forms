@@ -79,16 +79,12 @@ trait EnterButtons extends Configuration {
               } dropzone="copy"></input>
               <select class="form-control selectable" type="text" name="uri" list="class_uris">
                 <optgroup label="Assemblée Virtuelle">
-                  <!--
-                  <option label="av:Person"> { prefixAVontology }Person </option>
-                  <option label="av:Organization"> { prefixAVontology }Organization </option>
-                  <option label="av:Project" title="Projet dans ontologie de l'Assemblée Virtuelle">
-                    { prefixAVontology }Project
-                  </option>
-                 -->
-                  <option label="av:Idea"> { prefixAVontology }InitiativeOrMission  </option>
+                  <option label="av:InitiativeOrMission"> { prefixAVontology }InitiativeOrMission  </option>
                   <option label="av:Idea"> { prefixAVontology }Idea </option>
                   <option label="av:Resource"> { prefixAVontology }Resource </option>
+                  <option label="av:Event"> { prefixAVontology }Event </option>
+                  Theme
+Thesis
                 </optgroup>
                 <optgroup label={ message("Other_vocabs") }>
                   { suggestedClassesForCreation }
@@ -107,8 +103,10 @@ trait EnterButtons extends Configuration {
   def suggestedClassesForCreation: NodeSeq = {
     <option label="foaf:Person" selected="selected"> { prefixesMap2("foaf")("Person") } </option>
     <option label="foaf:Project">                    { prefixesMap2("foaf")("Project") } </option>
+    <option label="foaf:Group">                      { prefixesMap2("foaf")("Group") } </option>
     <option label="doap:Project"> http://usefulinc.com/ns/doap#Project </option>
     <option label="foaf:Organization">               { prefixesMap2("foaf")("Organization") } </option>
+    <option label="cco:Skill">                       { prefixesMap2("cco")("Skill") } </option>
     <option label="sioc:Post"> http://rdfs.org/sioc/ns#Post </option>
     <option label=" cal:Vevent "> http://www.w3.org/2002/12/cal/ical#Vevent </option>
     <option label="owl:Class"> http://www.w3.org/2002/07/owl#Class </option>

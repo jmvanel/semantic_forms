@@ -54,14 +54,12 @@ trait RDFPrefixes[Rdf <: RDF] {
     // form vocabulary
     Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#" ),
 
-    Prefix[Rdf]("pair", {
-//      println( "prefixAVontology " +
-//          prefixAVontology);
-      prefixAV } ),
+    Prefix[Rdf]("pair", prefixAV ),
 
     restruc,
     Prefix[Rdf]("", "http://data.onisep.fr/ontologies/" ),
-    Prefix[Rdf]("bioc", "http://deductions.github.io/biological-collections.owl.ttl#")
+    Prefix[Rdf]("bioc", "http://deductions.github.io/biological-collections.owl.ttl#"),
+    Prefix[Rdf]("cco", "http://purl.org/ontology/cco/core#" )
     )
   
   lazy val prefixesMap: Map[String, Rdf#URI] =
