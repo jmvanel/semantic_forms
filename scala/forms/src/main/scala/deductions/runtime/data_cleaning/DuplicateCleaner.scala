@@ -78,7 +78,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
           removeDuplicatesFromSeq(uriTokeep, duplicateURIs)
 
           val transaction = rdfStore.rw(dataset, {
-            addRestructructionComment(uriTokeep, duplicateURIs)
+            addRestructuringComment(uriTokeep, duplicateURIs)
           })
         }
       } catch {
@@ -94,7 +94,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
    *  replace multiple rdfs:labels with the given new label from mergeSpecifications;
    *  add a merge Marker to rdfs:label's
    */
-  def removeDuplicates(uriTokeep: Rdf#URI,
+  def removeDuplicatesFromSpec(uriTokeep: Rdf#URI,
                        mergeSpecifications: URIMergeSpecifications,
                        auxiliaryOutput: Rdf#MGraph = makeEmptyMGraph()): Unit = {
 
@@ -131,12 +131,12 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
         }
       }
 
-      addRestructructionComment(uriTokeep, duplicateURIs)
+      addRestructuringComment(uriTokeep, duplicateURIs)
     })
   }
 
-  /** add restructuration comment (annotation property); DOES NOT include transaction */
-  def addRestructructionComment(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI]) = {
+  /** add restructuring comment (annotation property); DOES NOT include transaction */
+  def addRestructuringComment(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI]) = {
     val restrucProp = restruc("restructructionComment")
     val dupsComment = for (duplicateURI <- duplicateURIs) yield fromUri(duplicateURI)
     val restructructionComment = s"Fusion le ${new Date} vers $uriTokeep à partir de " +

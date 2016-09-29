@@ -55,8 +55,8 @@ object DuplicateCleanerSpecificationApp extends App
 
     val v = propertyChanges.groupBy(uriMergeSpecification =>
       uriMergeSpecification.replacingURI)
-    for ((uriTokeep, uriMergeSpecifications) <- v) removeDuplicates(
-      uriTokeep, uriMergeSpecifications, auxiliaryOutput)
+    for ((uriTokeep, uriMergeSpecifications) <- v)
+      removeDuplicatesFromSpec(uriTokeep, uriMergeSpecifications, auxiliaryOutput)
     val outputDir = new File(csvSpecification).getParent
     outputModifiedTurtle(csvSpecification + ".ttl", outputDir)
     outputGraph(auxiliaryOutput, csvSpecification + ".aux.ttl", outputDir)
