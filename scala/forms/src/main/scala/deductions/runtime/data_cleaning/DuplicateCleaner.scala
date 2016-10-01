@@ -35,11 +35,10 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     with InstanceLabelsInference2[Rdf]
     with PreferredLanguageLiteral[Rdf]
     with RDFPrefixes[Rdf]
-    with URIManagement
-{
+    with URIManagement {
   import ops._
-  import rdfStore.graphStoreSyntax._
-  import rdfStore.transactorSyntax._
+      import rdfStore.graphStoreSyntax._
+      import rdfStore.transactorSyntax._
 
   val mergeMarker = " (F)"
   val mergeMarkerSpec = " (FS)"
@@ -49,11 +48,13 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     newLabel: String = "", comment: String = "")
 
   /**
-   * merges Duplicates among instances of given class URI,
+   * merges Duplicates automatically among instances of given class URI,
    * based on criterium: instanceLabel() giving identical result;
-   *  includes transactions
+   * moreover if class URI == owl:ObjectProperty the rdfs:range's must be equal
+   * includes transactions
    */
   def removeAllDuplicates(classURI: Rdf#URI, lang: String = ""): String = {
+
     val instanceLabels2URIsMap: Map[String, Seq[Rdf#URI]] =
       rdfStore.rw(dataset, {
         indexInstanceLabels(classURI, lang)
@@ -62,14 +63,15 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     var duplicatesCount = 0
     var propertiesHavingDuplicates = 0
 
-    for (labelAndURIs <- instanceLabels2URIsMap) {
+    val instanceLabels2URIsMap2 = rdfStore.rw(dataset, {
+      checkRdfsRanges(instanceLabels2URIsMap, classURI)
+    }).get
+
+    for (labelAndURIs <- instanceLabels2URIsMap2) {
       val label = labelAndURIs._1
       println(s"""looking at label "$label" """)
       try {
         val (uriTokeep, duplicateURIs) = tellDuplicates(labelAndURIs._2)
-
-        println(s"uriTokeep <$uriTokeep>, duplicates ${duplicateURIs.mkString("<", ">, <", ">")}")
-
         if (!duplicateURIs.isEmpty) {
           propertiesHavingDuplicates = propertiesHavingDuplicates + 1
           duplicatesCount = duplicatesCount + duplicateURIs.size
@@ -204,6 +206,8 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
 
   /**
    * tell which URI's are Duplicates;
+   * that is, for each given Seq[Rdf#URI], distinguish one URI as the one to keep
+   *
    *  NOTE: this is the function you may want to override,
    *  depending on your criteria for duplication, and URI creation policy.
    *
@@ -218,7 +222,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
    * The criterion for duplication should involve not only givenName and familyName.
    * So it is preferable to leverage on function instanceLabel().
    *
-   * @return the URI considered as non-duplicate, and a list of the duplicates
+   * @return the URI's considered as non-duplicate, and for each a list of the duplicates
    */
   protected def tellDuplicates(uris: Seq[Rdf#URI]): (Rdf#URI, Seq[Rdf#URI]) = {
     if (uris.size <= 1)
@@ -245,10 +249,10 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     }
 
     val nonDuplicateURI: Rdf#URI =
-//      if (httpURIs.size > 1)
-//        throw new RuntimeException(s"several HTTP URI's: ${uris.mkString(", ")}")
-//      else
-        if (httpURIs.size == 0) {
+      //      if (httpURIs.size > 1)
+      //        throw new RuntimeException(s"several HTTP URI's: ${uris.mkString(", ")}")
+      //      else
+      if (httpURIs.size == 0) {
         val uriOption = filterURIsByStartsWith(httpURIs, preferredURIPrefixes)
         uriOption match {
           case None =>
@@ -257,10 +261,13 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
             uris(0)
           case Some(uri) => uri
         }
-      } else // httpURIs.size == 1
+      } else // httpURIs.size >= 1
         httpURIs(0)
 
-    (nonDuplicateURI, uris diff List(nonDuplicateURI))
+    val duplicateURIs = uris diff List(nonDuplicateURI)
+    println(s"uriTokeep <$nonDuplicateURI>, duplicates ${duplicateURIs.mkString("<", ">, <", ">")}")
+
+    (nonDuplicateURI, duplicateURIs)
   }
 
   //  /**
@@ -394,5 +401,22 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     val os = new FileOutputStream(outputFile)
     turtleWriter.write(auxiliaryOutput, os, "")
     os.close()
+  }
+
+  /** if class URI == owl:ObjectProperty the rdfs:range's must be equal */
+  private def checkRdfsRanges(instanceLabels2URIsMap: Map[String, Seq[Rdf#URI]],
+                              classURI: Rdf#URI): Map[String, Seq[Rdf#URI]] = {
+    if (classURI == owl.ObjectProperty) {
+      instanceLabels2URIsMap.filter {
+        pair =>
+          val (label, uris) = pair
+          val groupedByRdfsRange = uris.groupBy { uri =>
+            val ranges = find(allNamedGraph, uri, rdfs.range, ANY).
+              map { _.objectt }.toSeq.headOption
+            ranges
+          }
+          groupedByRdfsRange.size == uris.size
+      }
+    } else instanceLabels2URIsMap
   }
 }

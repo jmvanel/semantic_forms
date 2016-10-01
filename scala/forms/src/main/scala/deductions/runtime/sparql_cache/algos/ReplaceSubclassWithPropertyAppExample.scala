@@ -1,23 +1,22 @@
 package deductions.runtime.sparql_cache.algos
 
-import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaModule
 import java.io.PrintStream
 import java.io.FileReader
 import java.io.FileWriter
 import java.io.FileOutputStream
 import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.jena.ImplementationSettings
 
 /**
  * ReplaceSubclassWithProperty : App Example with hard-coded list of super-classes
  * to disconnect from their sub-classes
  */
 object ReplaceSubclassWithPropertyAppExample extends App
-    with JenaModule
+    with ImplementationSettings.RDFModule
     with DefaultConfiguration
-    with DuplicatesDetectionOWL[Jena]
-    with ReplaceSubclassWithProperty[Jena, AnyRef]
-    with WrongSubclassesSelection[Jena] {
+    with DuplicatesDetectionOWL[ImplementationSettings.Rdf]
+    with ReplaceSubclassWithProperty[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with WrongSubclassesSelection[ImplementationSettings.Rdf] {
 
   //  val printStream: PrintStream = ???
   val owlFile = args(0)

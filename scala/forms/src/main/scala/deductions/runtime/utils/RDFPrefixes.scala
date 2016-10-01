@@ -29,9 +29,11 @@ trait RDFPrefixes[Rdf <: RDF] {
 
   private val prefixAV = "http://www.virtual-assembly.org/ontologies/1.0/pair#"
 
+  lazy val rdfs = RDFSPrefix[Rdf]
+
   lazy val prefixesList = List(
     RDFPrefix[Rdf],
-    RDFSPrefix[Rdf],
+    rdfs,
     XSDPrefix[Rdf],
     DCPrefix[Rdf],
     DCTPrefix[Rdf],

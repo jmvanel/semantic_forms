@@ -7,20 +7,18 @@ import org.w3.banana.RDF
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
-import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaModule
 import scala.collection.immutable.ListMap
 import java.io.PrintStream
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.jena.ImplementationSettings
 
 /** Duplicates Detection for OWL; output: CSV, Grouped By labels of Datatype properties,
  *  or  owl:ObjectProperty", or "owl:Class" */
 object DuplicatesDetectionOWLGroupBy extends App
-with JenaModule
+with ImplementationSettings.RDFModule
 with DefaultConfiguration
-with DuplicatesDetectionOWL[Jena]
-{
+with DuplicatesDetectionOWL[ImplementationSettings.Rdf] {
   val addEmptyLineBetweenLabelGroups = // false //
     true
   val filterAmetysSubForms = true
@@ -31,7 +29,7 @@ with DuplicatesDetectionOWL[Jena]
   
   val classToReportURI = owlMetaClassToReport(args)
 
-  val datatypePropertiesURI = {
+  val instancesToReportURIs = {
     val allInstances = findInstances(graph, classToReportURI)
     // filter Ametys sub-forms
     if (filterAmetysSubForms)
@@ -44,10 +42,10 @@ with DuplicatesDetectionOWL[Jena]
 		  ".group_by_label.csv"
   override val printStream = new PrintStream(outputFile)
 
-  val datatypePropertiesgroupedByRdfsLabel0: Map[String, List[Rdf#Node]] =
-    datatypePropertiesURI.
+  val instancesToReportGroupedByRdfsLabel0: Map[String, List[Rdf#Node]] =
+    instancesToReportURIs.
     groupBy { n => rdfsLabel(n, graph) }
-  val datatypePropertiesgroupedByRdfsLabel = ListMap(datatypePropertiesgroupedByRdfsLabel0.toSeq.
+  val instancesToReportGroupedByRdfsLabel = ListMap(instancesToReportGroupedByRdfsLabel0.toSeq.
     sortBy(_._1): _*)
   val report = formatCSV()
   output(s"$report")
@@ -87,25 +85,27 @@ with DuplicatesDetectionOWL[Jena]
     // TODO I18N
     //      A       B       C   D         E                 F                     G
     output("Action	Libellé	Id	Contexte	type(rdfs:range)	Empreinte(propriétés)	Description")
-    datatypePropertiesgroupedByRdfsLabel.map {
+    instancesToReportGroupedByRdfsLabel.map {
       labelAndList => formatCSVLines(labelAndList)
     }.mkString("\n")
   }
 
-  def formatIndentedText() = {
-    datatypePropertiesgroupedByRdfsLabel.map {
-      labelAndList =>
-        s"'${labelAndList._1}'\n" +
-          (labelAndList._2).map { n => abbreviateURI(n) }.sorted.mkString("\t", "\n\t", "")
-    }.mkString("\n")
-  }
+//  private def formatIndentedText() = {
+//    instancesToReportGroupedByRdfsLabel.map {
+//      labelAndList =>
+//        s"'${labelAndList._1}'\n" +
+//          (labelAndList._2).map { n => abbreviateURI(n) }.sorted.mkString("\t", "\n\t", "")
+//    }.mkString("\n")
+//  }
 }
 
 /**
  * This App outputs too much : count n*(n-1)/2 ;
  *  rather use DuplicatesDetectionOWLGroupBy
  */
-object DuplicatesDetectionOWLApp extends App with JenaModule with DuplicatesDetectionOWL[Jena]
+object DuplicatesDetectionOWLApp extends App
+with ImplementationSettings.RDFModule
+with DuplicatesDetectionOWL[ImplementationSettings.Rdf]
 with DefaultConfiguration {
   val owlFile = args(0)
   override val printStream = new PrintStream(owlFile + ".DuplicatesDetectionOWL.csv" )

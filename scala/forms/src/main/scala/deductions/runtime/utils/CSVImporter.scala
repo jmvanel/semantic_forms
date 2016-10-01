@@ -33,7 +33,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
   import ops._
   
   private val rdf = RDFPrefix[Rdf]
-  private val rdfs = RDFSPrefix[Rdf]
+//  private val rdfs = RDFSPrefix[Rdf]
   private val xsd = XSDPrefix[Rdf]
   private val foaf = FOAFPrefix[Rdf]
 

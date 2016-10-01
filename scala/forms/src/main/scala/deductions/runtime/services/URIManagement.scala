@@ -43,13 +43,19 @@ trait URIManagement extends Configuration
   }
 
   /**
+   * if host Name From API contains "." , it is not a global Internet DNS, then use the IP for created URI's .
+   *
    * NOTE: must not be a val because of test, otherwise Play test says
    *  "There is no started application"
    */
   def instanceURIPrefix: String = {
     val hostNameUsed =
       if (useLocalHostPrefixForURICreation) {
-        "http://" + InetAddress.getLocalHost().getHostName()
+        val hostNameFromAPI = InetAddress.getLocalHost().getHostName()
+        if (hostNameFromAPI.contains("."))
+          "http://" + InetAddress.getLocalHost().getHostName()
+        else
+          "http://" + InetAddress.getLocalHost().getHostAddress()
         // TODO : get the actual port
       } else defaultInstanceURIHostPrefix
     hostNameUsed + ":" + serverPort + "/" + relativeURIforCreatedResourcesByForm

@@ -57,7 +57,7 @@ extends CSVImporter[Rdf, DATASET] {
   implicit val ops: RDFOps[Rdf]
   import ops._
   private val rdf = RDFPrefix[Rdf]
-  private val rdfs = RDFSPrefix[Rdf]
+//  private val rdfs = RDFSPrefix[Rdf]
   private val owl = OWLPrefix[Rdf]
 
   /** @param paris List of pairs (subClass, superClass) */

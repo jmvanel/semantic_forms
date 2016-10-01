@@ -27,7 +27,7 @@ with RDFPrefixes[Rdf] {
   implicit val ops: RDFOps[Rdf]
   import ops._
   lazy val rdf = RDFPrefix[Rdf]
-  val rdfs = RDFSPrefix[Rdf]
+//  val rdfs = RDFSPrefix[Rdf]
   lazy val owl = OWLPrefix[Rdf]
 
   /** @return the Instances URI's */
