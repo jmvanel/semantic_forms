@@ -21,11 +21,13 @@ import scala.util.Try
  *   are controlled by the mappings in columnsMappings in trait [[deductions.runtime.utils.CSVImporter]]
  *
  * Arguments
- * - CSV Specification of pairs of URI: Duplicate and
+ * - CSV Specification of pairs of URI: Duplicate and kept URI
  * - RDF files to load
  *
  * Output:
  * modified data file in /tmp (same name as input)
+ *
+ * Properties used in CSV Specification: see "ONISEP" in [[CSVImporter.columnsMappings]]
  */
 object DuplicateCleanerSpecificationApp extends App
     with RDFStoreLocalJena1Provider
@@ -44,19 +46,25 @@ object DuplicateCleanerSpecificationApp extends App
 
   def duplicateCleanerApp() = {
     possiblyDeleteDatabaseLocation
-    loadFilesFromArgs(args)
-    val csvSpecification = args(0)
+
+    val args2 = args.map { new File(_).getCanonicalPath }
+
+    loadFilesFromArgs(args2)
+    val csvSpecification = args2(0)
     val propertyChanges = readCSVFile(csvSpecification)
     println(s"""DuplicateCleanerSpecificationApp:
       CSV input $csvSpecification,
-      propertyChanges: ${propertyChanges.size}""")
+      Change Specifications: size ${propertyChanges.size}""")
 
     val auxiliaryOutput: Rdf#MGraph = makeEmptyMGraph()
 
-    val v = propertyChanges.groupBy(uriMergeSpecification =>
-      uriMergeSpecification.replacingURI)
-    for ((uriTokeep, uriMergeSpecifications) <- v)
+    val propertyChangesGroupedByReplacingURI =
+      propertyChanges.groupBy(uriMergeSpecification =>
+        uriMergeSpecification.replacingURI)
+    println(s""" Change Specifications Grouped By Replacing URI : size: ${propertyChangesGroupedByReplacingURI.size}""")
+    for ((uriTokeep, uriMergeSpecifications) <- propertyChangesGroupedByReplacingURI)
       removeDuplicatesFromSpec(uriTokeep, uriMergeSpecifications, auxiliaryOutput)
+
     val outputDir = new File(csvSpecification).getParent
     outputModifiedTurtle(csvSpecification + ".ttl", outputDir)
     outputGraph(auxiliaryOutput, csvSpecification + ".aux.ttl", outputDir)

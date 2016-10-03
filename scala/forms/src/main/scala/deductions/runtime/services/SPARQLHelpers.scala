@@ -98,6 +98,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    *  thus enforcing cardinality one;
    *  NEEDS Transaction;
    *  See also [[deductions.runtime.dataset.DatasetHelper#replaceObjects]]
+   *  
+   *  TODO remove all such triples in any named graph,
+   *  and re-create given triple in first named graph having a such triple
    */
   def replaceRDFTriple(triple: Rdf#Triple, graphURI: Rdf#URI, dataset: DATASET) = {
     val uri = triple.subject

@@ -97,7 +97,23 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
     objectsQuery(subject, predicate) match {
       case ll if ll.isEmpty => default
       case ll if (isURI(ll.head)) => ll.head.asInstanceOf[Rdf#URI]
-      case _ => default
+//      case _ => default
+    }
+  }
+
+  /**
+   * get first ?OBJ such that:
+   *   subject predicate ?OBJ	,
+   *   or returns default string
+   */
+  def getStringHeadOrElse(subject: Rdf#Node, predicate: Rdf#URI,
+    default: String="")
+    (implicit graph: Rdf#Graph)
+  : String = {
+	  val rdfh = this
+    objectsQuery(subject, predicate) match {
+      case ll if ll.isEmpty => default
+      case ll => literalNodeToString(ll.head)
     }
   }
 }
@@ -167,7 +183,7 @@ trait RDFHelpers0[Rdf <: RDF] extends Configuration
     // u.startsWith("_:")
   }
   
-  def getStringOrElse(n: Rdf#Node, default: String): String = {
+  def getStringOrElse(n: Rdf#Node, default: String =""): String = {
     ops.foldNode(n)(_ => default, _ => default, l => {
       val v = ops.fromLiteral(l)
       v._1
