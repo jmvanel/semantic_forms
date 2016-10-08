@@ -68,9 +68,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       }
       es <- {
 //        println("sparqlUpdateQuery: before executeUpdate")
-        val r = ds.executeUpdate(query, Map())
-//        println("sparqlUpdateQuery: AFTER executeUpdate")
-        r
+        val result = ds.executeUpdate(query, Map())
+        println(s"sparqlUpdateQuery: AFTER executeUpdate : $result")
+        result
       }
     } yield es
     result
@@ -105,7 +105,13 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   def replaceRDFTriple(triple: Rdf#Triple, graphURI: Rdf#URI, dataset: DATASET) = {
     val uri = triple.subject
     val property = triple.predicate
-    // TODO  WITH <g1> DELETE { a b c } INSERT { x y z } WHERE { ... }
+    // TESTED
+//    val queryString0 = s"""
+//      WITH <$graphURI>
+//      DELETE { <$uri> <$property> ?ts . }
+//      # INSERT { <$uri> <$property> ??? . }
+//      WHERE { <$uri> <$property> ?ts . }
+//      """
     val queryString = s"""
          | DELETE {
          |   graph <$graphURI> {
@@ -116,9 +122,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
          |     <$uri> <$property> ?ts .
          |   }
          | }""".stripMargin
-    println(s"replaceRDFnode: $triple in <$graphURI>")
-    val res = sparqlUpdateQuery(queryString, dataset)
-    println(s"replaceRDFnode: sparqlUpdateQuery: $res")
+    println(s"""replaceRDFTriple: $triple in <$graphURI> """)
+    val result = sparqlUpdateQuery(queryString, dataset)
+//    println(s"replaceRDFTriple: result: $result")
 
     rdfStore.appendToGraph(dataset, graphURI, makeGraph(Seq(triple)))
   }

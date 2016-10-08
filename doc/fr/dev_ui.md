@@ -4,7 +4,7 @@ Développements IHM, CSS, et JS
 Pour un hackaton!
 
 # RDFViewer
-**But**
+
 Issues 
 [Diagram (graph drawing) enhancements #91](https://github.com/jmvanel/semantic_forms/issues/91)
 
@@ -48,6 +48,7 @@ Par exemple:
 - montrer un petit icône et lien Wikipedia pour les URI dbPedia, dans les réponses de la recherche /wordsearch
 - montrer les images  comme des vignettes
 - distinguer les URI "internes" LDP et les URI externes
+
 ## Placement en ligne des des URI dans la vue affichage
  
 # Développements d'applications utilisant l'API Web /form
@@ -62,7 +63,7 @@ Voir comment utiliser l'API /form pour écrire une petite application simple.
 La page 2 va utiliser une requête SPARQL qui renvoie un résultat en JSON-LD.
 
 ## Exemple 2: suggestions d'objets proches
-- une page renvoie les objets proches d'un objet donné; les résultats sont objets prochesclassés par types.
+- une page renvoie les objets proches d'un objet donné; les résultats sont les objets proches classés par types.
 
 La page va utiliser une requête SPARQL qui renvoie un résultat en JSON-LD.
 
@@ -73,10 +74,13 @@ Ces 3 premiers services sont présentés dans l'ordre de dépendance.
 ## Complétion (en français) via Lucene
 - adaptation du service actuel /lookup qui utilise SPARQL pur
 - changement de l'adresse du service dans le JS (le service sera compatible dbPedia lookup)
+
 ## Complétion en tenant compte de la classe RDF
 - adaptation du service /lookup
+
 ## Utilisation de la Complétion pour l'édition de propriétés objet
 Il s'agit d'abandonner l'envoi dans le formulaire de toutes les listes d'URI par classes, par le remplacer par l'appel au service /lookup
+
 ## Importation d'un CSV dans un graphe nommé
 Voir issue
 https://github.com/jmvanel/semantic_forms/issues/77

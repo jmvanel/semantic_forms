@@ -16,6 +16,7 @@ import com.hp.hpl.jena.query.DatasetFactory
 import deductions.runtime.jena.lucene.LuceneIndex
 import java.io.File
 import java.nio.file.Paths
+import org.apache.jena.riot.RiotException
 
 // TODO rename RDFStoreLocalJenaProvider
 
@@ -29,6 +30,7 @@ object ImplementationSettings {
   type Rdf = Jena
   type RDFModule = JenaModule
   type RDFCache = RDFStoreLocalJena1Provider
+  type RDFReadException = RiotException
 }
 
 /** For user data and RDF cache, sets a default location for the Jena TDB store directory : TDB */

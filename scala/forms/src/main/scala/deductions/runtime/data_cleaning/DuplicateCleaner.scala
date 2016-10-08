@@ -44,6 +44,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
   val mergeMarker = " (F)"
   /** merge Marker in case of Specification based merge */
   val mergeMarkerSpec = " (FS)"
+  val globalNamedGraph = URI("urn:/globalNamedGraph")
 
   type URIMergeSpecifications = List[URIMergeSpecification]
   case class URIMergeSpecification(replacedURI: Rdf#URI, replacingURI: Rdf#URI,
@@ -135,6 +136,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     val newLabel = newLabels.headOption.getOrElse("")
 
     val transaction = rdfStore.rw(dataset, {
+      println(s"Before storeLabelWithMergeMarker: size ${allNamedGraph.size}")
       storeLabelWithMergeMarker(uriTokeep, merge_marker = mergeMarkerSpec,
         graphToWrite = named_graph, newLabel = newLabel)
 
@@ -142,11 +144,11 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
         // recycle old rdfs:label's as skos:altLabel's
         if (mergeSpecification.replacedURI != mergeSpecification.replacingURI) {
           val labelsFromReplacedURI: List[Quad] = removeFromQuadQuery(mergeSpecification.replacedURI, rdfs.label, ANY)
-          if (!labelsFromReplacedURI.isEmpty) {
+//          if (!labelsFromReplacedURI.isEmpty) {
             val newTriples = for (removedQuad <- labelsFromReplacedURI)
               yield Triple(mergeSpecification.replacingURI, skos("altLabel"), removedQuad._1.objectt);
             rdfStore.appendToGraph(dataset, named_graph, makeGraph(newTriples))
-          }
+//          }
         }
 
         // add rdfs:comment from given merge Specification
@@ -158,17 +160,23 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       }
       addRestructuringCommentNoTr(uriTokeep, duplicateURIs, mergeMarkerSpec)
     })
+    println(s"After storeLabelWithMergeMarker: transaction $transaction")
+    rdfStore.rw(dataset, {
+    println(s"After storeLabelWithMergeMarker: size ${allNamedGraph.size}")
+    })
   }
 
-  /** add a merge Marker to rdfs:label's */
+  /**
+   * add a merge Marker to rdfs:label's;
+   *  replaces existing triple(s) <replacingURI> rdfs.label ?LAB
+   */
   private def storeLabelWithMergeMarker(replacingURI: Rdf#URI,
                                         newLabel: String = "",
                                         merge_marker: String = mergeMarker,
                                         graphToWrite: Rdf#URI = URI("")) = {
-//    rdfStore.rw(dataset, {
-      if( replacingURI.toString() != "" )
-        println(s"DDDDDDDDDDDDDDD replacingURI $replacingURI")
-        
+    if (replacingURI.toString() != "") {
+      //      println(s"DDDDDDDDDDDDDDD replacingURI <$replacingURI>")
+
       val label = if (newLabel != "") {
         newLabel
       } else {
@@ -178,11 +186,10 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       if (label != "") {
         val newLabelTriple = Triple(replacingURI,
           rdfs.label, Literal(label + merge_marker))
-        println(s"DDDDDDDDDDDDDDD newLabelTriple $newLabelTriple")
-        rdfStore.appendToGraph(dataset, graphToWrite, makeGraph(List(newLabelTriple)))
-       replaceRDFTriple(newLabelTriple, graphToWrite, dataset)
+        //      println(s"DDDDDDDDDDDDDDD newLabelTriple $newLabelTriple")
+        replaceRDFTriple(newLabelTriple, graphToWrite, dataset)
       }
-//    })
+    }
   }
     
   /** add restructuring comment (annotation property),
@@ -443,7 +450,8 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       println(s"Files ${files.mkString(", ")}")
       for (file <- files) {
         println(s"Load file $file")
-        retrieveURI(ops.URI(new File(file).toURI().toASCIIString()))
+//        retrieveURI(URI(new File(file).toURI().toASCIIString())) 
+        storeURI( URI(new File(file).toURI().toASCIIString()), globalNamedGraph, dataset) // : Rdf#Graph
         println(s"Loaded file $file")
       }
       files
