@@ -42,10 +42,12 @@ object DuplicateCleanerSpecificationApp extends App
   val deleteDatabaseLocation = true
   println(s"databaseLocation $databaseLocation")
 
-  duplicateCleanerApp()
+  duplicateCleanerSpecificationApp()
 
-  def duplicateCleanerApp() = {
+  def duplicateCleanerSpecificationApp() = {
     possiblyDeleteDatabaseLocation
+
+    println(s"===== dataset $dataset") // TODO debug <<<<<<<<<<<<<<<
 
     val args2 = args.map { new File(_).getCanonicalPath }
 

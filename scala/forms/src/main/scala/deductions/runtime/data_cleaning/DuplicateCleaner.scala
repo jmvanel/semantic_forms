@@ -133,10 +133,11 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     ) yield mergeSpecification.newLabel
     if (newLabels.size > 1) System.err.println(s"WARING! several new Labels for $uriTokeep: $newLabels")
     val newLabel = newLabels.headOption.getOrElse("")
-    storeLabelWithMergeMarker(uriTokeep, merge_marker = mergeMarkerSpec,
-      graphToWrite = named_graph, newLabel = newLabel)
 
     val transaction = rdfStore.rw(dataset, {
+      storeLabelWithMergeMarker(uriTokeep, merge_marker = mergeMarkerSpec,
+        graphToWrite = named_graph, newLabel = newLabel)
+
       for (mergeSpecification <- mergeSpecifications) {
         // recycle old rdfs:label's as skos:altLabel's
         if (mergeSpecification.replacedURI != mergeSpecification.replacingURI) {
@@ -164,7 +165,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
                                         newLabel: String = "",
                                         merge_marker: String = mergeMarker,
                                         graphToWrite: Rdf#URI = URI("")) = {
-    rdfStore.rw(dataset, {
+//    rdfStore.rw(dataset, {
       if( replacingURI.toString() != "" )
         println(s"DDDDDDDDDDDDDDD replacingURI $replacingURI")
         
@@ -173,21 +174,15 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       } else {
         implicit val graph = allNamedGraph: Rdf#Graph
         getStringHeadOrElse(replacingURI, rdfs.label)
-//        val tryGraph = rdfStore.getGraph(dataset, graphToWrite)
-//        tryGraph.map { graph =>
-//          val originalLabel = getObjects(graph, replacingURI, rdfs.label).
-//            headOption.getOrElse(Literal(""))
-//          getStringOrElse(originalLabel)
-//        }
       }
       if (label != "") {
         val newLabelTriple = Triple(replacingURI,
           rdfs.label, Literal(label + merge_marker))
         println(s"DDDDDDDDDDDDDDD newLabelTriple $newLabelTriple")
-//        rdfStore.appendToGraph(dataset, graphToWrite, makeGraph(List(newLabelTriple)))
+        rdfStore.appendToGraph(dataset, graphToWrite, makeGraph(List(newLabelTriple)))
        replaceRDFTriple(newLabelTriple, graphToWrite, dataset)
       }
-    })
+//    })
   }
     
   /** add restructuring comment (annotation property),
