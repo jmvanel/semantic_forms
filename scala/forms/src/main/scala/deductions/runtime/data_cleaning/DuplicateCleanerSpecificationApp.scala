@@ -8,8 +8,6 @@ import deductions.runtime.services.SPARQLHelpers
 import java.io.FileWriter
 import deductions.runtime.utils.CSVImporter
 import java.io.FileInputStream
-import scala.reflect.io.Path
-import scala.util.Try
 
 /**
  * merges Duplicates in given file(s),
@@ -39,15 +37,13 @@ object DuplicateCleanerSpecificationApp extends App
   import ops._
 
   override val databaseLocation = "/tmp/TDB" // TODO multi-platform temporary directory
-  val deleteDatabaseLocation = true
+  override val deleteDatabaseLocation = true
   println(s"databaseLocation $databaseLocation")
 
   duplicateCleanerSpecificationApp()
 
   def duplicateCleanerSpecificationApp() = {
-    possiblyDeleteDatabaseLocation
-
-    println(s"===== dataset $dataset") // TODO debug <<<<<<<<<<<<<<<
+    possiblyDeleteDatabaseLocation()
 
     val args2 = args.map { new File(_).getCanonicalPath }
 
@@ -96,16 +92,6 @@ object DuplicateCleanerSpecificationApp extends App
     res.map { s =>
       URIMergeSpecification(uriNodeToURI(s(0)), uriNodeToURI(s(1)),
         literalNodeToString(s(2)), literalNodeToString(s(3)))
-    }
-  }
-
-  private def possiblyDeleteDatabaseLocation = {
-    Try {
-      val path = Path(databaseLocation)
-      if (deleteDatabaseLocation) {
-        path.deleteRecursively()
-        println(s"reset database Location $databaseLocation")
-      }
     }
   }
 

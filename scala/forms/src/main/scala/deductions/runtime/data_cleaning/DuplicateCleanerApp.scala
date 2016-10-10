@@ -8,6 +8,7 @@ object DuplicateCleanerApp extends App
     with RDFStoreLocalJena1Provider
     with DuplicateCleaner[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
   // override val databaseLocation: String = "" // in-memory
+  override val deleteDatabaseLocation = true
 
   val classURIForMergingInstances = ops.URI(args(0))
   val lang = if (args.size > 1) args(1) else "en"

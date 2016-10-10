@@ -20,6 +20,8 @@ import org.w3.banana.Prefix
 import deductions.runtime.utils.RDFPrefixes
 import java.util.Date
 import java.io.FileOutputStream
+import scala.reflect.io.Path
+import scala.util.Try
 
 /**
  * merge Duplicates among instances of given class URI;
@@ -82,7 +84,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
 
           val named_graph = removeDuplicatesFromSeq(uriTokeep, duplicateURIs)
 
-          storeLabelWithMergeMarker(uriTokeep, merge_marker = mergeMarkerSpec,
+          storeLabelWithMergeMarkerTR(uriTokeep, merge_marker = mergeMarker,
             graphToWrite = named_graph)
 
           addRestructuringComment(uriTokeep, duplicateURIs)
@@ -169,6 +171,8 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
   /**
    * add a merge Marker to rdfs:label's;
    *  replaces existing triple(s) <replacingURI> rdfs.label ?LAB
+   *  
+   * NEEDS Transaction
    */
   private def storeLabelWithMergeMarker(replacingURI: Rdf#URI,
                                         newLabel: String = "",
@@ -191,7 +195,19 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       }
     }
   }
-    
+
+  private def storeLabelWithMergeMarkerTR(replacingURI: Rdf#URI,
+                                          newLabel: String = "",
+                                          merge_marker: String = mergeMarker,
+                                          graphToWrite: Rdf#URI = URI("")) = {
+    val transaction = rdfStore.rw(dataset, {
+      storeLabelWithMergeMarker(replacingURI,
+        newLabel,
+        merge_marker,
+        graphToWrite)
+    })
+  }
+
   /** add restructuring comment (annotation property),
    *  telling with URI's have been merged; DOES NOT include transaction */
   private def addRestructuringCommentNoTr(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI],
@@ -417,7 +433,9 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
   /** DOES NOT include transactions */
   private def indexInstanceLabels(classURI: Rdf#URI,
                           lang: String): Map[String, Seq[Rdf#URI]] = {
-    val classTriples = find(allNamedGraph, ANY, rdf.typ, classURI)
+    val classTriples = find(allNamedGraph, ANY, rdf.typ, classURI) . toList
+    println( s"indexInstanceLabels: ${classTriples.size} instances for class $classURI")
+
     // NOTE: this looks laborious !!!!
     var count = 0
     val v = for (
@@ -433,8 +451,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       case (s, list) => (s,
         list.map { case (s, node) => node })
     }
-    println(
-      s"indexInstanceLabels: ${count} instances for class $classURI")
+    println( s"indexInstanceLabels: ${count} labels in instances for class $classURI")
     res
   }
   
@@ -497,5 +514,18 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
           groupedByRdfsRange.size == uris.size
       }
     } else instanceLabels2URIsMap
+  }
+
+
+  val deleteDatabaseLocation: Boolean
+
+  protected def possiblyDeleteDatabaseLocation() = {
+    Try {
+      val path = Path(databaseLocation)
+      if (deleteDatabaseLocation) {
+        path.deleteRecursively()
+        println(s"reset database Location $databaseLocation")
+      }
+    }
   }
 }
