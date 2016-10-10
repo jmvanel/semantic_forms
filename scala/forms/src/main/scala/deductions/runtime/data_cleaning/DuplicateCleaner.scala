@@ -72,9 +72,11 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       checkRdfsRanges(instanceLabels2URIsMap, classURI)
     }).get
 
+//    println( s"DDDDDDDDDDD indexInstanceLabels: Auteur 2 : ${instanceLabels2URIsMap2.getOrElse("Auteur", "")} ")
+
     for (labelAndURIs <- instanceLabels2URIsMap2) {
       val label = labelAndURIs._1
-      println(s"""looking at label "$label" """)
+      println(s"""Looking at label "$label" """)
       try {
         val (uriTokeep, duplicateURIs) = tellDuplicates(labelAndURIs._2)
         if (!duplicateURIs.isEmpty) {
@@ -451,7 +453,8 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       case (s, list) => (s,
         list.map { case (s, node) => node })
     }
-    println( s"indexInstanceLabels: ${count} labels in instances for class $classURI")
+    println( s"indexInstanceLabels: ${res.size} labels in instances for class $classURI")
+//    println( s"DDDDDDDDDDD indexInstanceLabels: Auteur: ${res.getOrElse("Auteur", "")} ")
     res
   }
   
@@ -506,12 +509,13 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       instanceLabels2URIsMap.filter {
         pair =>
           val (label, uris) = pair
+//          if(label == "Auteur") println( s"DDDDDDDDDDD checkRdfsRanges: Auteur 2 : ${uris}")
           val groupedByRdfsRange = uris.groupBy { uri =>
             val ranges = find(allNamedGraph, uri, rdfs.range, ANY).
               map { _.objectt }.toSeq.headOption
             ranges
           }
-          groupedByRdfsRange.size == uris.size
+          groupedByRdfsRange.size == 1 // uris.size
       }
     } else instanceLabels2URIsMap
   }

@@ -38,6 +38,8 @@ object DuplicateCleanerSpecificationApp extends App
 
   override val databaseLocation = "/tmp/TDB" // TODO multi-platform temporary directory
   override val deleteDatabaseLocation = true
+  override val useTextQuery = false
+
   println(s"databaseLocation $databaseLocation")
 
   duplicateCleanerSpecificationApp()

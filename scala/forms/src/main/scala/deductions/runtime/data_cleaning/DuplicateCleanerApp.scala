@@ -9,6 +9,7 @@ object DuplicateCleanerApp extends App
     with DuplicateCleaner[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
   // override val databaseLocation: String = "" // in-memory
   override val deleteDatabaseLocation = true
+  override val useTextQuery = false
 
   val classURIForMergingInstances = ops.URI(args(0))
   val lang = if (args.size > 1) args(1) else "en"
