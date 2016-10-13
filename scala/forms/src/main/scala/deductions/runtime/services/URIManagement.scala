@@ -5,6 +5,8 @@ import java.net.URLDecoder
 import java.net.URLEncoder
 
 import deductions.runtime.utils.URIHelpers
+import java.net.NetworkInterface
+import scala.collection.JavaConversions._
 
 /**
  * Management of URI policy: how are URI created by the application
@@ -54,9 +56,23 @@ trait URIManagement extends Configuration
         val hostNameFromAPI = InetAddress.getLocalHost().getHostName()
         if (hostNameFromAPI.contains("."))
           "http://" + InetAddress.getLocalHost().getHostName()
-        else
-          "http://" + InetAddress.getLocalHost().getHostAddress()
-        // TODO : get the actual port
+        else {
+          // get the actual port
+          val nis = NetworkInterface.getNetworkInterfaces()
+          val adresses = for (
+            networkInterface <- nis;
+            adress <- networkInterface.getInetAddresses;
+            hostAddress = adress.getHostAddress;
+            zz = println(s"ni $networkInterface hostAddress $hostAddress");
+            // if (!hostAddress.startsWith("127."))
+            if (!adress.isLoopbackAddress &&
+              !hostAddress.contains(":"))
+          ) yield adress
+          val result = "http://" + adresses.toList.headOption.getOrElse("127.0.0.1")
+          // "http://" + InetAddress.getLocalHost().getHostAddress()
+          println(s"hostNameUsed $result")
+          result
+        }
       } else defaultInstanceURIHostPrefix
     hostNameUsed + ":" + serverPort + "/" + relativeURIforCreatedResourcesByForm
   }
