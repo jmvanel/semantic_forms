@@ -364,21 +364,6 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     (nonDuplicateURI, duplicateURIs)
   }
 
-  //  /**
-  //   * remove Duplicates for given uri, searching in given class URI,
-  //   *  based on identical strings computed by instanceLabel()
-  //   */
-  //  private def removeDuplicates(uri: Rdf#URI, classURI: Rdf#URI, lang: String = "") = {
-  //    val label = instanceLabel(uri, allNamedGraph, lang)
-  //    val triples = find(allNamedGraph, ANY, rdf.typ, classURI)
-  //    val duplicateURIs = triples.filter {
-  //      t =>
-  //        t.subject != uri &&
-  //          instanceLabel(t.subject, allNamedGraph, lang) == label
-  //    }.map { t => t.subject }.toSeq
-  //    removeQuadsWithSubjects(duplicateURIs)
-  //  }
-
   /**
    * copy Property Value Pairs from duplicateURIs to uriTokeep,
    * except rdfs:label;
@@ -463,29 +448,37 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     println(s"$mess: allNamedGraph ${allNamedGraph.toString().
       replaceAll(""";""", ".\n")}" )
     })
-
+ 
     /** Load files into TDB from Args ( starting at args(1) ) */
-    def loadFilesFromArgs(args: Array[String]): Array[String] = {
-      val files = args.slice(1, args.size)
+    def loadFilesFromArgs(args: Array[String],from: Int=1)
+//  : Array[String]
+  = {
+      val files = args.slice(from, args.size)
       println(s"Files ${files.mkString(", ")}")
-      for (file <- files) {
+      val uris = for (file <- files) yield {
         println(s"Load file $file")
-//        retrieveURI(URI(new File(file).toURI().toASCIIString())) 
-        storeURI( URI(new File(file).toURI().toASCIIString()), globalNamedGraph, dataset) // : Rdf#Graph
-        println(s"Loaded file $file")
+        val uri = uriFromFile(file)
+        storeURI( URI(uri), globalNamedGraph, dataset) // : Rdf#Graph
+        println(s"Loaded file $file => $uri")
+        uri
       }
       files
     }
   
+  /* TODO move to global utility, and use Jena utility */
+  def uriFromFile(filename: String) =
+             org.apache.jena.riot.system.IRIResolver.resolveFileURL(filename)
+//    new File(file).toURI().toASCIIString()
+  
   /** output modified data (actually all triples in TDB) in /tmp */
-  def outputModifiedTurtle(file: String, outputDir: String = "/tmp" ) = {
+  def outputModifiedTurtle(file: String, outputDir: String = "/tmp" , suffix:String="") = {
     val queryString = """
     CONSTRUCT { ?S ?P ?O }
     WHERE {
       GRAPH ?GR { ?S ?P ?O }
     } """
     val ttl = sparqlConstructQueryTR(queryString)
-    val outputFile = outputDir + File.separator + new File(file).getName
+    val outputFile = outputDir + File.separator + new File(file).getName + suffix
     println(s"""Writing ${ttl.length()} chars in output File
       $outputFile""")
     val fw = new FileWriter(new File(outputFile))
