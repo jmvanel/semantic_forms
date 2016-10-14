@@ -52,10 +52,14 @@ trait RangeCleaner[Rdf <: RDF, DATASET]
   import rdfStore.graphStoreSyntax._
   import rdfStore.transactorSyntax._
 
+  /** the most specific Datatype (to be kept) is in first position */
   val rangePriorities = List(
     (xsd.long, xsd.string),
     (xsd.long, xsd.integer),
-    (xsd.double, xsd.long))
+    (xsd.double, xsd.long),
+    (xsd.dateTime, xsd("date") ),
+    ("double", "dateTime" ) // this one, hack for ONISEP
+  )
 
   def computeRangesToRemove(ranges: List[Rdf#Node]): List[Rdf#Node] = {
 	  if( ranges.size > 1 )
