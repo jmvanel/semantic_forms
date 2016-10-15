@@ -8,6 +8,7 @@ import deductions.runtime.utils.URIHelpers
 import java.net.NetworkInterface
 import scala.collection.JavaConversions._
 import java.net.Inet4Address
+import deductions.runtime.utils.HTTPrequest
 
 /**
  * Management of URI policy: how are URI created by the application
@@ -17,8 +18,8 @@ import java.net.Inet4Address
 trait URIManagement extends Configuration
     with URIHelpers {
 
-  def makeId: String = {
-    makeId(instanceURIPrefix)
+  def makeId(request: HTTPrequest): String = {
+    makeId(instanceURIPrefix(request))
   }
 
   /**
@@ -45,9 +46,22 @@ trait URIManagement extends Configuration
     instanceURIPrefix + System.currentTimeMillis() + "-" + System.nanoTime() // currentId = currentId + 1
   }
 
+  def instanceURIPrefix(request: HTTPrequest): String = {
+    val hostname =
+      if (request.host != "" &&
+        request.host.contains("."))
+        request.host
+      else request.remoteAddress
+
+    val urip = "http://" + hostname + ":" + serverPort + "/" + relativeURIforCreatedResourcesByForm
+    println(s"instance URI Prefix $urip - $request")
+    urip
+  }
+
   /**
    * if host Name From API contains "." , it is not a global Internet DNS, then use the IP for created URI's .
-   *
+   * @DEPRECATED
+   * 
    * NOTE: must not be a val because of test, otherwise Play test says
    *  "There is no started application"
    */
@@ -129,7 +143,7 @@ trait URIManagement extends Configuration
   /**
    * Returns a list of the IPv4-addresses on the network interface in string format.
    * from http://www.programcreek.com/java-api-examples/index.php?api=java.net.NetworkInterface
-   * 
+   *
    * @param netif The network interface to get the IPv4-addresses from.
    * @return All the IPv4-addresses on the network interface.
    */

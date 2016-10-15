@@ -10,6 +10,7 @@ import org.w3.banana.RDF
 
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.URIManagement
+import deductions.runtime.utils.HTTPrequest
 
 /** Factory for an Unfilled Form */
 trait UnfilledFormFactory[Rdf <: RDF, DATASET]
@@ -25,7 +26,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
    *  looking up for Form Configuration within RDF graph in this class
    */
   def createFormFromClass(classs: Rdf#URI,
-    formSpecURI: String = "")
+    formSpecURI: String = "" , request: HTTPrequest= HTTPrequest() )
   	  (implicit graph: Rdf#Graph)
   	  : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
 
@@ -45,7 +46,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
       } else classs
     println(s">>> UnfilledFormFactory.createFormFromClass: classFromSpecsOrGiven <$classFromSpecsOrGiven>")
 
-    val newId = makeId
+    val newId = makeId(request)
     if (propsListInFormConfig.isEmpty) {
       val props = fieldsFromClass(classFromSpecsOrGiven, graph)
       createFormDetailed(makeUri(newId), addRDFSLabelComment(props), classFromSpecsOrGiven, CreationMode)

@@ -40,9 +40,9 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
             , graphURI=graphURI )
   }
   
-  def create(classUri: String, lang: String, formSpecURI: String, graphURI: String)
+  def create(classUri: String, lang: String, formSpecURI: String, graphURI: String, request: HTTPrequest )
   : NodeSeq =
-    impl.create(classUri, lang, formSpecURI, graphURI).get
+    impl.create(classUri, lang, formSpecURI, graphURI, request: HTTPrequest).get
 
   def lookup(search: String): String =
     impl.lookup(search)

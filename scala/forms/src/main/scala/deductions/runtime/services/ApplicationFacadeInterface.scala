@@ -6,6 +6,7 @@ import scala.util.Try
 import scala.xml.NodeSeq
 
 import play.api.libs.iteratee.Enumerator
+import deductions.runtime.utils.HTTPrequest
 
 /**
  * @author jmv
@@ -27,7 +28,7 @@ trait ApplicationFacadeInterface {
     userid: String = "", graphURI: String = "", host: String = ""): Option[String]
 
   def create(uri: String, lang: String = "en",
-    formSpecURI: String = "", graphURI: String = ""): NodeSeq
+    formSpecURI: String = "", graphURI: String = "", request: HTTPrequest = HTTPrequest()): NodeSeq
 
   def wordsearch(q: String = "", lang: String = ""): Future[Elem]
 
