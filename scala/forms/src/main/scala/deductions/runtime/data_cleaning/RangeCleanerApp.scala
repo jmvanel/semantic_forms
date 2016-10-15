@@ -58,7 +58,7 @@ trait RangeCleaner[Rdf <: RDF, DATASET]
     (xsd.long, xsd.integer),
     (xsd.double, xsd.long),
     (xsd.dateTime, xsd("date") ),
-    ("double", "dateTime" ) // this one, hack for ONISEP
+    (xsd("double"), xsd.dateTime ) // this one, hack for ONISEP
   )
 
   def computeRangesToRemove(ranges: List[Rdf#Node]): List[Rdf#Node] = {
