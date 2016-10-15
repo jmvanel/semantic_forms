@@ -12,6 +12,7 @@ import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 import java.util.Date
 import java.text.SimpleDateFormat
 import java.util.Locale
+import deductions.runtime.utils.HTTPrequest
 
 /**
  * Show History of User Actions:
@@ -37,7 +38,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   }
 
   /** leverage on ParameterizedSPARQL.makeHyperlinkForURI() */
-  def makeTableHistoryUserActions(lang: String="en")(implicit userURI: String): NodeSeq = {
+  def makeTableHistoryUserActions(lang: String="en", request: HTTPrequest)(implicit userURI: String): NodeSeq = {
     val metadata = getMetadata()
     implicit val queryMaker = qm
     <table class="table">

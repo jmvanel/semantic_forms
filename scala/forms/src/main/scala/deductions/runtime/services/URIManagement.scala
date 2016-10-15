@@ -128,7 +128,8 @@ trait URIManagement extends Configuration
 
   /**
    * Returns a list of the IPv4-addresses on the network interface in string format.
-   *
+   * from http://www.programcreek.com/java-api-examples/index.php?api=java.net.NetworkInterface
+   * 
    * @param netif The network interface to get the IPv4-addresses from.
    * @return All the IPv4-addresses on the network interface.
    */

@@ -37,6 +37,7 @@ import scala.util.control.NonFatal
 import scala.util.control.NonFatal
 import org.w3.banana.io.JsonLdCompacted
 import deductions.runtime.sparql_cache.algos.StatisticsGraph
+import deductions.runtime.utils.HTTPrequest
 
 /**
  * a Web Application Facade,
@@ -438,7 +439,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     putTriples(uri, link, contentType,
       slug, content)
 
-  def makeHistoryUserActions(userURI: String, lang: String): NodeSeq =
-    makeTableHistoryUserActions(lang)(userURI)
+  def makeHistoryUserActions(userURI: String, lang: String, request: HTTPrequest): NodeSeq =
+    makeTableHistoryUserActions(lang, request)(userURI)
 
 }

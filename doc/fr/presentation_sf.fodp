@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0" xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0" xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0" xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0" xmlns:ooo="http://openoffice.org/2004/office" xmlns:ooow="http://openoffice.org/2004/writer" xmlns:oooc="http://openoffice.org/2004/calc" xmlns:dom="http://www.w3.org/2001/xml-events" xmlns:xforms="http://www.w3.org/2002/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:smil="urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0" xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0" xmlns:rpt="http://openoffice.org/2005/report" xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:grddl="http://www.w3.org/2003/g/data-view#" xmlns:officeooo="http://openoffice.org/2009/office" xmlns:tableooo="http://openoffice.org/2009/table" xmlns:drawooo="http://openoffice.org/2010/draw" xmlns:calcext="urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" xmlns:field="urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" xmlns:formx="urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" xmlns:css3t="http://www.w3.org/TR/css3-text/" office:version="1.2" office:mimetype="application/vnd.oasis.opendocument.presentation">
- <office:meta><meta:initial-creator>Jean-Marc Vanel </meta:initial-creator><meta:creation-date>2016-10-14T10:15:11.053412511</meta:creation-date><dc:date>2016-10-14T11:39:06.396198063</dc:date><dc:creator>Jean-Marc Vanel </dc:creator><meta:editing-duration>PT52M30S</meta:editing-duration><meta:editing-cycles>11</meta:editing-cycles><meta:generator>LibreOffice/5.1.4.2$Linux_X86_64 LibreOffice_project/10m0$Build-2</meta:generator><meta:document-statistic meta:object-count="57"/></office:meta>
+ <office:meta><meta:initial-creator>Jean-Marc Vanel </meta:initial-creator><meta:creation-date>2016-10-14T10:15:11.053412511</meta:creation-date><dc:date>2016-10-14T13:28:54.226902179</dc:date><dc:creator>Jean-Marc Vanel </dc:creator><meta:editing-duration>PT2H42M16S</meta:editing-duration><meta:editing-cycles>16</meta:editing-cycles><meta:generator>LibreOffice/5.1.4.2$Linux_X86_64 LibreOffice_project/10m0$Build-2</meta:generator><meta:document-statistic meta:object-count="57"/></office:meta>
  <office:settings>
   <config:config-item-set config:name="ooo:view-settings">
-   <config:config-item config:name="VisibleAreaTop" config:type="int">1235</config:config-item>
-   <config:config-item config:name="VisibleAreaLeft" config:type="int">-1235</config:config-item>
+   <config:config-item config:name="VisibleAreaTop" config:type="int">1253</config:config-item>
+   <config:config-item config:name="VisibleAreaLeft" config:type="int">-580</config:config-item>
    <config:config-item config:name="VisibleAreaWidth" config:type="int">30666</config:config-item>
    <config:config-item config:name="VisibleAreaHeight" config:type="int">21746</config:config-item>
    <config:config-item-map-indexed config:name="Views">
@@ -35,7 +35,7 @@
      <config:config-item config:name="IsClickChangeRotation" config:type="boolean">true</config:config-item>
      <config:config-item config:name="SlidesPerRow" config:type="short">4</config:config-item>
      <config:config-item config:name="EditMode" config:type="int">0</config:config-item>
-     <config:config-item config:name="VisibleAreaTop" config:type="int">-325</config:config-item>
+     <config:config-item config:name="VisibleAreaTop" config:type="int">1253</config:config-item>
      <config:config-item config:name="VisibleAreaLeft" config:type="int">-580</config:config-item>
      <config:config-item config:name="VisibleAreaWidth" config:type="int">29407</config:config-item>
      <config:config-item config:name="VisibleAreaHeight" config:type="int">21794</config:config-item>
@@ -961,7 +961,7 @@
      <draw:text-box>
       <text:list text:style-name="L5">
        <text:list-item>
-        <text:p>En général : données LOD, modèles réutilisables, communuté</text:p>
+        <text:p>En général : données LOD, modèles réutilisables, communauté</text:p>
        </text:list-item>
        <text:list-item>
         <text:p>Par rapport à SQL</text:p>
@@ -970,12 +970,12 @@
           <text:p>Cardinalité flexible</text:p>
          </text:list-item>
          <text:list-item>
-          <text:p>propriétés exeptionnelles possibles</text:p>
+          <text:p>propriétés exceptionnelles possibles</text:p>
          </text:list-item>
         </text:list>
        </text:list-item>
        <text:list-item>
-        <text:p>Par rapport no-SQL (orienté document)</text:p>
+        <text:p>Par rapport à no-SQL (orienté document)</text:p>
         <text:list>
          <text:list-item>
           <text:p>Pas besoin de lire-écrire un gros JSON pour changer un champ</text:p>
@@ -1027,7 +1027,7 @@
         </text:list>
        </text:list-item>
        <text:list-item>
-        <text:p text:style-name="P8">application d&apos;annotation, d&apos;édition de données structurées</text:p>
+        <text:p text:style-name="P8">annotation, édition de données structurées</text:p>
        </text:list-item>
        <text:list-item>
         <text:p text:style-name="P8">cadriciel (framework) pour construire des <text:span text:style-name="T1">applications d&apos;entreprise</text:span> centrées sur les formulaires</text:p>
@@ -1094,7 +1094,7 @@
      <draw:text-box>
       <text:list text:style-name="L5">
        <text:list-item>
-        <text:p>Recherche plein dans la base SPARQL avec Lucene</text:p>
+        <text:p>Recherche plein texte dans la base SPARQL avec Lucene</text:p>
        </text:list-item>
        <text:list-item>
         <text:p>Complétion par rapport à dbPedia pour compétences, etc</text:p>
@@ -1134,7 +1134,7 @@
         <text:p>Session utilisateur via Play! framework</text:p>
        </text:list-item>
        <text:list-item>
-        <text:p>Service web renvoyant un formulaire nu : possibilité de créer des applications HTML + JavaScript</text:p>
+        <text:p>Service web renvoyant un formulaire nu : possibilité de créer des applications en HTML + JavaScript</text:p>
        </text:list-item>
        <text:list-item>
         <text:p>Semantic_forms est fonctionnel en sortant de la boîte, une fois qu&apos;on a dézippé le logiciel</text:p>
@@ -1206,7 +1206,7 @@
       <text:p>En chantier</text:p>
      </draw:text-box>
     </draw:frame>
-    <draw:frame presentation:style-name="pr7" draw:layer="layout" svg:width="25.199cm" svg:height="12.179cm" svg:x="1.4cm" svg:y="4.914cm" presentation:class="outline">
+    <draw:frame presentation:style-name="pr7" draw:layer="layout" svg:width="25.199cm" svg:height="12.179cm" svg:x="1.4cm" svg:y="4.914cm" presentation:class="outline" presentation:user-transformed="true">
      <draw:text-box>
       <text:list text:style-name="L5">
        <text:list-item>

@@ -29,6 +29,7 @@ trait ApplicationTrait extends Controller
     with Secured
     with MainXmlWithHead
     with CORS
+    with HTTPrequestHelpers
     {
 
   override def serverPort = {
@@ -390,7 +391,7 @@ trait ApplicationTrait extends Controller
       implicit userid =>
         implicit request => {
           val lang = chooseLanguage(request)
-          outputMainPage(makeHistoryUserActions(userURI, lang), lang)
+          outputMainPage(makeHistoryUserActions(userURI, lang, copyRequest(request) ), lang)
         }
     }
 
