@@ -53,7 +53,8 @@ trait URIManagement extends Configuration
         request.host
       else request.remoteAddress
 
-    val urip = "http://" + hostname + ":" + serverPort + "/" + relativeURIforCreatedResourcesByForm
+    val serverPortPart = if (hostname.contains(":")) "" else ":" + serverPort
+    val urip = "http://" + hostname + serverPortPart + "/" + relativeURIforCreatedResourcesByForm
     println(s"instance URI Prefix $urip - $request")
     urip
   }
@@ -61,7 +62,7 @@ trait URIManagement extends Configuration
   /**
    * if host Name From API contains "." , it is not a global Internet DNS, then use the IP for created URI's .
    * @DEPRECATED
-   * 
+   *
    * NOTE: must not be a val because of test, otherwise Play test says
    *  "There is no started application"
    */

@@ -1,6 +1,9 @@
 package deductions.runtime.utils
 
-/** Like Request from Play! (in package play.api.mvc), but avoid Play! dependency */
+/**
+ * Like Request from Play! (in package play.api.mvc), but avoid Play! dependency
+ *  [[play.api.mvc.Request]]
+ */
 case class HTTPrequest(
   /**
    * The HTTP host (domain, optionally port)
