@@ -10,13 +10,14 @@ import org.scalatest.FunSuite
 import org.w3.banana.FOAFPrefix
 import org.w3.banana.RDF
 import org.w3.banana.jena.Jena
-import com.hp.hpl.jena.query.Dataset
+
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.jena.ImplementationSettings
 
 class FormSyntaxFactoryTestJena extends FunSuite
 with RDFStoreLocalJena1Provider
-with FormSyntaxFactoryTest[ Jena, Dataset ]
+with FormSyntaxFactoryTest[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 with DefaultConfiguration {
 
   val logger = Logger.getRootLogger()

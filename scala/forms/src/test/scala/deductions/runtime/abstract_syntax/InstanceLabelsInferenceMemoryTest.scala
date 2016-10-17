@@ -2,9 +2,12 @@ package deductions.runtime.abstract_syntax
 
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import scala.util.Try
+
 import org.hamcrest.BaseMatcher
 import org.junit.Assert
 import org.scalatest.FunSuite
+
 import org.w3.banana.FOAFPrefix
 import org.w3.banana.RDFModule
 import org.w3.banana.RDFOpsModule
@@ -15,16 +18,16 @@ import org.w3.banana.TurtleWriterModule
 import org.w3.banana.SparqlOpsModule
 import org.w3.banana.SparqlGraphModule
 import org.w3.banana.jena.Jena
-import com.hp.hpl.jena.query.Dataset
+
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import scala.util.Try
 import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.jena.ImplementationSettings
 
 class InstanceLabelsInferenceMemoryTest extends FunSuite
     with JenaModule
     with RDFStoreLocalJena1Provider
-    with InstanceLabelsInferenceMemory[Jena, Dataset]
-    with RDFCacheAlgo[Jena, Dataset] {
+    with InstanceLabelsInferenceMemory[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
   import ops._
   import rdfStore.transactorSyntax._
 

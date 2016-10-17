@@ -11,10 +11,10 @@ import org.w3.banana.SparqlOpsModule
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
 
-import com.hp.hpl.jena.query.Dataset
-
 import deductions.runtime.jena.RDFCache
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import deductions.runtime.jena.ImplementationSettings
+
 //import deductions.runtime.jena.RDFStoreLocalProvider
 
 class TestFormSaver
@@ -25,7 +25,7 @@ class TestFormSaver
     with SparqlOpsModule
     with JenaModule
     with RDFStoreLocalJena1Provider
-    with FormSaver[Jena, Dataset]
+    with FormSaver[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with DefaultConfiguration {
 
   import ops._

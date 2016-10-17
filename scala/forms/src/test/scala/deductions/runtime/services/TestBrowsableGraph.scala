@@ -7,10 +7,9 @@ import org.w3.banana.SparqlHttpModule
 import org.w3.banana.SparqlOpsModule
 import org.w3.banana.jena.Jena
 
-import com.hp.hpl.jena.query.Dataset
-
 import deductions.runtime.jena.RDFCache
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import deductions.runtime.jena.ImplementationSettings
 
 //@Ignore
 class TestBrowsableGraph
@@ -21,7 +20,7 @@ class TestBrowsableGraph
     with SparqlOpsModule
     with SparqlHttpModule
     with RDFStoreLocalJena1Provider
-    with BrowsableGraph[Jena, Dataset] {
+    with BrowsableGraph[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
   import ops._
 
   def test {

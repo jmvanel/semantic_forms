@@ -5,29 +5,29 @@ import play.api.mvc._
 import play.api.data.Form
 import play.api.data.Forms._
 import deductions.runtime.services.Authentication
-import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaModule
+
+import org.w3.banana.RDF
+
 import deductions.runtime.services.ApplicationFacade
 import deductions.runtime.services.ApplicationFacadeImpl
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import org.w3.banana.RDF
 import deductions.runtime.dataset.RDFStoreLocalUserManagement
-import com.hp.hpl.jena.query.Dataset
 import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.jena.ImplementationSettings
 
 import play.i18n.Messages
 import play.api.i18n.MessagesApi
 import play.api.i18n.Lang
 import play.api.i18n.I18nSupport
-
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 
 object Auth extends AuthTrait
 
-trait AuthTrait extends JenaModule
+trait AuthTrait extends ImplementationSettings.RDFModule
 with RDFStoreLocalJena1Provider
-with Auth[Jena, Dataset]
+with Auth[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+
 with DefaultConfiguration {
   println(s"object Auth")
   /** NOTE otherwise we get "Lock obtain timed out", because

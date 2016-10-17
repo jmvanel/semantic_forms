@@ -1,22 +1,32 @@
 package deductions.runtime.jena
 
+import java.io.File
+import java.nio.file.Paths
+
 import scala.collection.JavaConversions.asScalaIterator
+
+import org.apache.jena.riot.RiotException
 import org.apache.log4j.Logger
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaDatasetStore
 import org.w3.banana.jena.JenaModule
-import com.hp.hpl.jena.tdb.TDBFactory
-import com.hp.hpl.jena.tdb.transaction.TransactionManager
+
+//import com.hp.hpl.jena.query.DatasetFactory
+//import com.hp.hpl.jena.tdb.TDBFactory
+//import com.hp.hpl.jena.tdb.transaction.TransactionManager
+
+import org.apache.jena.graph.{ Graph => JenaGraph, Node => JenaNode, Triple => JenaTriple, _ }
+import org.apache.jena.query.{ QuerySolution, ResultSet, Query => JenaQuery }
+import org.apache.jena.query.DatasetFactory
+import org.apache.jena.tdb.TDBFactory
+import org.apache.jena.tdb.transaction.TransactionManager
+import org.apache.jena.update.UpdateRequest
+
 import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.jena.lucene.LuceneIndex
+import deductions.runtime.services.Configuration
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.utils.Timer
-import deductions.runtime.services.Configuration
-import com.hp.hpl.jena.rdf.model.ModelFactory
-import com.hp.hpl.jena.query.DatasetFactory
-import deductions.runtime.jena.lucene.LuceneIndex
-import java.io.File
-import java.nio.file.Paths
-import org.apache.jena.riot.RiotException
 
 // TODO rename RDFStoreLocalJenaProvider
 
@@ -26,7 +36,7 @@ import org.apache.jena.riot.RiotException
  */
 object ImplementationSettings {
   // pave the way for migration to Jena 3 ( or BlazeGraph )
-  type DATASET = com.hp.hpl.jena.query.Dataset
+  type DATASET = org.apache.jena.query.Dataset
   type Rdf = Jena
   type RDFModule = JenaModule
   type RDFCache = RDFStoreLocalJena1Provider
@@ -48,7 +58,6 @@ trait RDFStoreLocalJenaProvider
   type DATASET = ImplementationSettings.DATASET
   /** very important that defensiveCopy=false, otherwise no update happens, and a big overhead for every operation */
   override val rdfStore = new JenaDatasetStore(false)
-  import rdfStore.graphStoreSyntax._
 
   /**
    * default is 10; each chunk commitedAwaitingFlush can be several Mb,
