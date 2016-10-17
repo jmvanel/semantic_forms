@@ -254,6 +254,7 @@ trait RDFHelpers0[Rdf <: RDF] extends Configuration
       })
   }
 
+  /** declare Prefix in SPARQL */
   def declarePrefix(pref: Prefix[Rdf]) = {
     s"PREFIX ${pref.prefixName}: <${pref.prefixIri}> "
   }

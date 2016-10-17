@@ -30,7 +30,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
           val rdfs = RDFSPrefix[Rdf]
     override def makeQueryString(search: String): String = s"""
          |PREFIX text: <http://jena.apache.org/text#>
-         |PREFIX rdfs: <${rdfs.prefixIri}>
+         |${declarePrefix(rdfs)}
          |SELECT DISTINCT ?thing WHERE {
          |  graph ?g {
          |    ?thing text:query ( '${search.trim()}' 10 )
@@ -50,7 +50,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
     }
   }
 
-  private implicit def searchStringQueryMaker = {
+  private implicit def searchStringQueryMaker: SPARQLQueryMaker[Rdf] = {
 		println( s"searchStringQueryMaker: useTextQuery $useTextQuery")
     if( useTextQuery )
       indexBasedQuery
