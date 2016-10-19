@@ -10,7 +10,7 @@ trait CSS {
       .form-value{ display: table-cell; width: 500px;
                    border-collapse: separate;
                    border-width: 10px; }
-      .sf-external-link{color: 'DarkRed'; background-color: 'lightyellow'}
+      .sf-external-link{color: DarkRed; background-color: lightyellow;}
       .sf-internal-link{}
 """
   /*
