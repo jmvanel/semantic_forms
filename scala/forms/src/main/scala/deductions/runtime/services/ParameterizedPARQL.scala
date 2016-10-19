@@ -41,7 +41,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     with PreferredLanguageLiteral[Rdf]
     with SPARQLHelpers[Rdf, DATASET]
     with Configuration
-//    with CSS
+    with CSS
     {
   import ops._
   import sparqlOps._
@@ -148,10 +148,11 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     <div title={ node.toString() } class={
       if( sortAnd1rowPerElement ) "form-row" else "form-value"
     }> {
+      val css= cssForURI(uriString)
       def hyperlink =
                 <a href={
                 Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode)
-              } class="form-value">
+              } class={css}>
               { displayLabel } </a>
       val nodeRendering = foldNode(node)(
                 x => hyperlink,

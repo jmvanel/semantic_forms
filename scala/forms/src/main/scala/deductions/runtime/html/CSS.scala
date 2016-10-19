@@ -10,6 +10,8 @@ trait CSS {
       .form-value{ display: table-cell; width: 500px;
                    border-collapse: separate;
                    border-width: 10px; }
+      .sf-external-link{color: 'DarkRed'; background-color: 'lightyellow'}
+      .sf-internal-link{}
 """
   /*
       .form-root{ margin-left: 10px; }
@@ -51,4 +53,12 @@ trait CSS {
     formAddDivCSSClass = "col-xs-1",
     formSelectDivCSSClass = "col-xs-1",
     formSelectCSSClass = "form-select")
+
+  /** TODO use the LDP prefix; distinguish 1) dbpedia URI's 2) other external links 3) internal links */
+  def cssForURI(uri: String) = {
+    if (uri.startsWith("http://dbpedia.org/resource/"))
+      "sf-external-link"
+    else
+      "sf-internal-link"
+  }
 }
