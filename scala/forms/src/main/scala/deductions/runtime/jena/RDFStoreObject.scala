@@ -96,7 +96,7 @@ trait RDFStoreLocalJenaProvider
           dts
       }
     } else
-      DatasetFactory.createMem()
+      DatasetFactory.createTxnMem()
   }
 
   /**
