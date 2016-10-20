@@ -12,14 +12,14 @@ import org.w3.banana.RDFSPrefix
 trait StringSearchSPARQL[Rdf <: RDF, DATASET]
     extends ParameterizedSPARQL[Rdf, DATASET]
         with Configuration {
-    
+
   val plainSPARQLquery = new SPARQLQueryMaker[Rdf]
         with ColsInResponse {
     override def makeQueryString(search: String): String = s"""
          |SELECT DISTINCT ?thing WHERE {
          |  graph ?g {
          |    ?thing ?p ?o .
-         |    FILTER regex( ?o, "${search.trim()}", 'i')
+         |    FILTER regex( ?o, '${prepareSearchString(search)}', 'i')
          |  }
          |}""".stripMargin
   }
@@ -33,7 +33,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
          |${declarePrefix(rdfs)}
          |SELECT DISTINCT ?thing WHERE {
          |  graph ?g {
-         |    ?thing text:query ( '${search.trim()}' 10 )
+         |    ?thing text:query ( '${prepareSearchString(search)}' 10 )
          |  }
          |}""".stripMargin
   }

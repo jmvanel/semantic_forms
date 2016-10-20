@@ -28,6 +28,10 @@ trait SPARQLQueryMaker[Rdf <: RDF] {
   def variables = Seq("thing")
     /** overridable function for adding columns in response */
   def columnsForURI( node: Rdf#Node, label: String): NodeSeq = Text("")
+
+  def prepareSearchString(search: String) = {
+    search.trim().replace("'", """\'""")
+  }
 }
 
 /**
