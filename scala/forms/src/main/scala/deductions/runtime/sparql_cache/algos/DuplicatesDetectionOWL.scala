@@ -12,6 +12,7 @@ import java.io.PrintStream
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.jena.ImplementationSettings
+import java.io.FileInputStream
 
 /** Duplicates Detection for OWL; output: CSV, Grouped By labels of Datatype properties,
  *  or  owl:ObjectProperty", or "owl:Class" */
@@ -19,13 +20,12 @@ object DuplicatesDetectionOWLGroupBy extends App
 with ImplementationSettings.RDFModule
 with DefaultConfiguration
 with DuplicatesDetectionOWL[ImplementationSettings.Rdf] {
-  val addEmptyLineBetweenLabelGroups = // false //
-    true
-  val filterAmetysSubForms = true
+  val addEmptyLineBetweenLabelGroups = false // true
+  val filterAmetysSubForms = false
 
   val owlFile = args(0)
 
-  val graph = turtleReader.read(new FileReader(owlFile), "").get
+  val graph = turtleReader.read(new FileInputStream(owlFile), "").get
   
   val classToReportURI = owlMetaClassToReport(args)
 
