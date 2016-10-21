@@ -82,10 +82,25 @@ trait ApplicationTrait extends Controller
       implicit request => {
       println( s"""form: request $request : "$Edit" formuri <$formuri> """)
       val lang = chooseLanguage(request)
-      Ok(htmlFormElemJustFields(uri: String, hrefDisplayPrefix, blankNode,
-        editable = Edit != "", lang, formuri, graphURI=makeAbsoluteURIForSaving(userid)))
-        .as("text/html; charset=utf-8")
+     Ok( htmlForm(uri, blankNode, editable = Edit != "", lang, formuri, graphURI=makeAbsoluteURIForSaving(userid)))
+//      Ok(htmlFormElemJustFields(uri: String, hrefDisplayPrefix, blankNode,
+//        editable = Edit != "", lang, formuri, graphURI=makeAbsoluteURIForSaving(userid)))
+//        .as("text/html; charset=utf-8")
     }
+  }
+
+  def searchOrDisplayAction(q: String) = {
+//          withUser {
+//	    implicit userid =>
+//      implicit request => {
+    def isURI(q: String): Boolean = q.contains(":")
+    
+    if (isURI(q)) {
+      displayURI( q, Edit="" )
+    } else
+      wordsearchAction(q)
+//    }
+//  }
   }
     
   /** generate a Main Page wrapping given XHTML content */
