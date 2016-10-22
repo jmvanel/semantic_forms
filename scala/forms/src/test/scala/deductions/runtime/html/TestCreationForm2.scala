@@ -15,13 +15,14 @@ import org.w3.banana.io.RDFWriter
 import org.w3.banana.io.Turtle
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
-import com.hp.hpl.jena.query.Dataset
+
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.utils.FileUtils
 import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.jena.ImplementationSettings
 
 class TestCreationForm2Jena extends FunSuite with TestForJena
-with TestCreationForm2[Jena, Dataset]
+with TestCreationForm2[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 with DefaultConfiguration
 
 trait TestForJena extends JenaModule

@@ -7,35 +7,36 @@ import scala.xml.Elem
 import scala.xml.NodeSeq
 import scala.collection.JavaConversions._
 import org.apache.log4j.Logger
+
 import org.scalatest.BeforeAndAfter
 import org.scalatest.Finders
 import org.scalatest.FunSuite
+
 import org.w3.banana.FOAFPrefix
 import org.w3.banana.OWLPrefix
 import org.w3.banana.RDFOpsModule
 import org.w3.banana.RDFSPrefix
 import org.w3.banana.TurtleWriterModule
-import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaModule
-import com.hp.hpl.jena.query.Dataset
+
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.services.SPARQLHelpers
 import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.jena.ImplementationSettings
 
 /**
  * Test Creation Form from class URI, without form specification
  * NOTE: the TDB database is used here
  */
 class TestCreationForm extends FunSuite
-    with JenaModule
-    with CreationFormAlgo[Jena, Dataset]
+    with ImplementationSettings.RDFModule
+    with CreationFormAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with GraphTestEnum
     //    with BeforeAndAfterAll
     with RDFStoreLocalJena1Provider
-    with SPARQLHelpers[Jena, Dataset]
-    with InstanceLabelsInferenceMemory[Jena, Dataset]
+    with SPARQLHelpers[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with InstanceLabelsInferenceMemory[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with BeforeAndAfter
     with Configuration // [Rdf <: RDF, DATASET]
     with DefaultConfiguration {

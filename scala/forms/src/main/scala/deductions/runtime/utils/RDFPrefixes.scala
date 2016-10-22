@@ -29,9 +29,12 @@ trait RDFPrefixes[Rdf <: RDF] {
 
   private val prefixAV = "http://www.virtual-assembly.org/ontologies/1.0/pair#"
 
+  lazy val rdfs = RDFSPrefix[Rdf]
+  lazy val skos = Prefix[Rdf]("skos", "http://www.w3.org/2004/02/skos/core#")
+  
   lazy val prefixesList = List(
     RDFPrefix[Rdf],
-    RDFSPrefix[Rdf],
+    rdfs,
     XSDPrefix[Rdf],
     DCPrefix[Rdf],
     DCTPrefix[Rdf],
@@ -47,7 +50,7 @@ trait RDFPrefixes[Rdf <: RDF] {
     Prefix[Rdf]("sioc", "http://rdfs.org/sioc/ns#"),
     Prefix[Rdf]("dbo", "http://dbpedia.org/ontology/"),
     Prefix[Rdf]("vcard", "http://www.w3.org/2006/vcard/ns#"),
-    Prefix[Rdf]("skos", "http://www.w3.org/2004/02/skos/core#"),
+    skos,
 
     // for specific form specs (FOAF, etc)
     Prefix[Rdf]("forms", "http://deductions-software.com/ontologies/forms#"),

@@ -50,7 +50,7 @@ trait LuceneIndex // [Rdf <: RDF]
       } else {
         val directory = new NIOFSDirectory(new File("LUCENE"))
         TextDatasetFactory.createLucene(dataset, directory, rdfIndexing,
-          new StandardAnalyzer(Version.LUCENE_46))
+          new StandardAnalyzer(Version.LUCENE_4_9))
       }
     } else
       dataset

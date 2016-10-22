@@ -1,3 +1,5 @@
+<!-- pandoc --standalone Présentation_semantic_forms_semwebpro2016_résumé.md > Présentation_semantic_forms_semwebpro2016_résumé.html -->
+
 Le cadriciel Semantic\_forms: vers le SI Sémantique
 ===================================================
 J.M. Vanel

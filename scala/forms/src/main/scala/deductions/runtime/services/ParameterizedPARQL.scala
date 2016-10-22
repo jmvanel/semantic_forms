@@ -28,6 +28,10 @@ trait SPARQLQueryMaker[Rdf <: RDF] {
   def variables = Seq("thing")
     /** overridable function for adding columns in response */
   def columnsForURI( node: Rdf#Node, label: String): NodeSeq = Text("")
+
+  def prepareSearchString(search: String) = {
+    search.trim().replace("'", """\'""")
+  }
 }
 
 /**
@@ -41,7 +45,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     with PreferredLanguageLiteral[Rdf]
     with SPARQLHelpers[Rdf, DATASET]
     with Configuration
-//    with CSS
+    with CSS
     {
   import ops._
   import sparqlOps._
@@ -56,12 +60,10 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    */
   def search(search: String, hrefPrefix: String = "",
              lang: String = "")(implicit queryMaker: SPARQLQueryMaker[Rdf] ): Future[NodeSeq] = {
-    println(s"search: starting TRANSACTION for dataset $dataset")
     val elem0 = dataset.rw({
+      println(s"search 1: starting TRANSACTION for dataset $dataset")
     	val uris = search_onlyNT(search)
-//      println(s"after search_only uris ${uris}")
     	val graph: Rdf#Graph = allNamedGraph
-//      println(s"displayResults : 1" + graph  )
       val elems =
         <div class={css.tableCSSClasses.formRootCSSClass}> {
     	    css.localCSS ++
@@ -72,7 +74,6 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     })
     println(s"search: leaving TRANSACTION for dataset $dataset")
     val elem = elem0.get
-//    elem.asFuture
     Future.successful( elem )
   }
 
@@ -83,7 +84,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    * transactional
    */
   def search2(search: String, hrefPrefix: String = "",
-              lang: String = "")(implicit queryMaker: SPARQLQueryMaker[Rdf] )
+              lang: String = "")(implicit queryMaker: SPARQLQueryMaker[Rdf] ): Elem
   = {
     val uris = search_only2(search)
 //    println(s"after search_only uris $uris")
@@ -151,10 +152,11 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     <div title={ node.toString() } class={
       if( sortAnd1rowPerElement ) "form-row" else "form-value"
     }> {
+      val css= cssForURI(uriString)
       def hyperlink =
                 <a href={
                 Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode)
-              } class="form-value">
+              } class={css}>
               { displayLabel } </a>
       val nodeRendering = foldNode(node)(
                 x => hyperlink,
@@ -178,6 +180,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    */
   private def search_only(search: String)
   (implicit queryMaker: SPARQLQueryMaker[Rdf] ): Future[Iterator[Rdf#Node]] = {
+    println(s"search 2: starting TRANSACTION for dataset $dataset")
     val transaction =
       dataset.r({
     	  search_onlyNT(search)
@@ -191,17 +194,17 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
   private def search_onlyNT(search: String)
   (implicit queryMaker: SPARQLQueryMaker[Rdf] ): Try[Iterator[Rdf#Node]] = {
     val queryString = queryMaker.makeQueryString(search)
-    println( s"search_only(search='$search') \n$queryString  \n\tdataset Class ${dataset.getClass().getName}" )
-        println(s"search_only: starting TRANSACTION for dataset $dataset")
-        val result = for {
+
+    println( s"search_onlyNT(search='$search') \n$queryString \n\tdataset Class ${dataset.getClass().getName}" )
+    // TODO use sparqlSelectQueryVariables() like in Lookup
+    val result = for {
           query <- parseSelect(queryString)
           solutions <- dataset.executeSelect(query, Map())
         } yield {
           solutions.toIterable.map {
             row =>
               row("thing") getOrElse {
-                // sys.error
-                println(s"search_only($search) : no ?thing in row")
+                System.err.println(s"search_only($search) : no ?thing in row")
                 URI("")
               }
           }

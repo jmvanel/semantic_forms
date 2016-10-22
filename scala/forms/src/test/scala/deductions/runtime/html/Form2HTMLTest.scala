@@ -2,22 +2,24 @@ package deductions.runtime.html
 
 import java.nio.file.Files
 import java.nio.file.Paths
+
 import org.apache.log4j.Logger
+
 import org.junit.Assert
 import org.scalatest.Finders
 import org.scalatest.FunSuite
-import org.w3.banana.jena.Jena
-import com.hp.hpl.jena.query.Dataset
+
 import deductions.runtime.abstract_syntax.FormSyntaxFactoryTest
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.jena.ImplementationSettings
 
 //class Form2HTMLTestJena extends Form2HTMLTest
 
 class Form2HTMLTest
     extends FunSuite
     with RDFStoreLocalJena1Provider //    with JenaModule
-    with FormSyntaxFactoryTest[Jena, Dataset]
+    with FormSyntaxFactoryTest[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with DefaultConfiguration {
 
   val logger = Logger.getRootLogger()

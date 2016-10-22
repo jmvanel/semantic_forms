@@ -3,7 +3,7 @@ package deductions.runtime.jena.lucene
 import jena._
 import org.apache.jena.query.text.EntityDefinition
 import org.apache.jena.query.text.DatasetGraphText
-import com.hp.hpl.jena.tdb.TDBFactory
+import org.apache.jena.tdb.TDBFactory
 import deductions.runtime.services.DefaultConfiguration
 import org.w3.banana.jena.JenaModule
 import deductions.runtime.jena.RDFStoreLocalJena1Provider

@@ -1,20 +1,25 @@
 package deductions.runtime.utils
 
+import scala.collection.JavaConversions.asScalaIterator
+import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
-import java.io.FileInputStream
-import com.hp.hpl.jena.rdf.model.ModelFactory
-import com.hp.hpl.jena.util.FileManager
+
 import org.apache.jena.riot.RDFDataMgr
-import scala.collection.JavaConversions._
-import deductions.runtime.jena.RDFCache
+import org.w3.banana.RDF
+import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
+
+//import com.hp.hpl.jena.rdf.model.ModelFactory
+//import com.hp.hpl.jena.util.FileManager
+import org.apache.jena.rdf.model.ModelFactory
+import org.apache.jena.util.FileManager
+
+import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.sparql_cache.RDFCacheAlgo
-import org.w3.banana.RDF
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import org.w3.banana.jena.Jena
-import scala.collection.mutable.ArrayBuffer
-import deductions.runtime.jena.ImplementationSettings
+
+
 /**
  * @author jmv
  */
@@ -50,9 +55,6 @@ trait FixBadURI[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
 
   import ops._
   import rdfStore.transactorSyntax._
-  import rdfStore.graphStoreSyntax._
-  import rdfStore.sparqlEngineSyntax._
-  import scala.concurrent.ExecutionContext.Implicits.global
 
   def fix() = {
     val names =

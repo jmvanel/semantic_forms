@@ -12,11 +12,15 @@ scalaVersion :=  "2.11.8"
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
-// libraryDependencies += "org.w3" %%  "jena" % "0.7.2.radical" 
-libraryDependencies += "org.w3" %%  "banana-jena" % // "0.8.1"
-"0.8.2-SNAPSHOT"
+libraryDependencies += "org.w3" %%  "banana-jena" % "0.9.0-SNAPSHOT"
+//	"0.8.2-SNAPSHOT" // 
+
 libraryDependencies += "org.apache.jena" % "apache-jena-libs" % "2.13.0" exclude("org.slf4j", "slf4j-api" )
-libraryDependencies += "org.apache.jena" % "jena-text" % "1.1.2"
+libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
+
+// libraryDependencies += "org.apache.jena" % "jena-text" % "1.1.2"
+libraryDependencies += "org.apache.jena" % "jena-text" % "3.1.0"
+
 libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "0.11"
 // See more at: https://typesafe.com/blog/akka-http-preview#sthash.IZR1O9fx.dpuf
 libraryDependencies += "org.scala-lang.modules" %% "scala-async" % "0.9.2"

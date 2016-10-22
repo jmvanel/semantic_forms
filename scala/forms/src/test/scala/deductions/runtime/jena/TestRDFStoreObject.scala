@@ -1,17 +1,17 @@
 package deductions.runtime.jena
 
+import scala.util.Try
+
 import org.w3.banana.RDFOpsModule
 import org.w3.banana.SparqlGraphModule
 import org.scalatest.FunSuite
-import org.w3.banana.jena.JenaModule
-import org.w3.banana.RDF
-import org.w3.banana.jena.Jena
-import com.hp.hpl.jena.query.Dataset
-import deductions.runtime.dataset.RDFStoreLocalProvider
+import org.scalatest.Ignore
 import org.w3.banana.SparqlEngine
 import org.w3.banana.SparqlOps
-import scala.util.Try
-import org.scalatest.Ignore
+
+import org.w3.banana.RDF
+
+import deductions.runtime.dataset.RDFStoreLocalProvider
 
 trait TestRDFStoreObject[Rdf <: RDF, DATASET]
     extends FunSuite
@@ -82,8 +82,8 @@ trait TestRDFStoreObject[Rdf <: RDF, DATASET]
 }
 
 //@Ignore
-class TestRDFStoreObjectJena extends TestRDFStoreObject[Jena, Dataset]
-    with RDFStoreLocalJena1Provider with JenaModule {
+class TestRDFStoreObjectJena extends TestRDFStoreObject[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with RDFStoreLocalJena1Provider with ImplementationSettings.RDFModule {
   def makeGraph(): Rdf#Graph = {
     println(s"""dataset $dataset """)
     allNamedGraph

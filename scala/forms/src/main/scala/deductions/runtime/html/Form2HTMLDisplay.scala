@@ -19,16 +19,19 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
   def createHTMLResourceReadonlyField(
       r: fm#ResourceEntry,
       hrefPrefix: String): NodeSeq = {
+
     val stringValue = r.value.toString()
-    
-    val hyperlinkToObjectURI = (if (showExpertButtons) {
-      <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString) }
+    val css = cssForURI(stringValue)
+
+    val hyperlinkToObjectURI =
+      <a href={ Form2HTML.createHyperlinkString(hrefPrefix, stringValue) }
+      class={css}
       title={
-        s"""Value ${if (r.value.toString != r.valueLabel) r.value.toString else ""}
+        s"""Value ${if (stringValue != r.valueLabel) stringValue else ""}
               of type ${r.type_.toString()}"""
       } draggable="true"> {
         r.valueLabel
-      }</a> } else new Text(""))
+      }</a>
     
     val backLinkButton = (if (stringValue.size > 0 && showExpertButtons) {      
 				val title = s""" Reverse links for "${r.label}" "${r.value}" """

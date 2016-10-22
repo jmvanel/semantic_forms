@@ -27,7 +27,7 @@ with RDFPrefixes[Rdf] {
   implicit val ops: RDFOps[Rdf]
   import ops._
   lazy val rdf = RDFPrefix[Rdf]
-  val rdfs = RDFSPrefix[Rdf]
+//  val rdfs = RDFSPrefix[Rdf]
   lazy val owl = OWLPrefix[Rdf]
 
   /** @return the Instances URI's */
@@ -117,15 +117,28 @@ with RDFPrefixes[Rdf] {
 
   // ==== TODO move these reusable functions ====
 
+  /** print rdfs:label if any Or Else abbreviated Turtle */
   def rdfsLabel( no: Option[Rdf#Node], graph: Rdf#Graph): String =
     no match {
       case Some(n) => rdfsLabel( n, graph)
       case None => ""
     }
 
-  def rdfsLabel( n: Rdf#Node, graph: Rdf#Graph): String =
-		  (PointedGraph( n , graph) / rdfs.label).as[String].getOrElse( abbreviateTurtle(n) )
+  protected def rdfsLabel( n: Rdf#Node, graph: Rdf#Graph): String = printPropertyValue( n, graph)
 
+  protected def printPropertyValue( n: Rdf#Node, graph: Rdf#Graph, prop: Rdf#URI = rdfs.label): String =
+		  (PointedGraph( n , graph) / prop ).as[String].getOrElse( abbreviateTurtle(n) )
+  private def printObjectPropertyValue( n: Rdf#Node, graph: Rdf#Graph, prop: Rdf#URI = rdfs.label): String =
+		  abbreviateTurtle( (PointedGraph( n , graph) / prop ).as[Rdf#URI].getOrElse( (n) ))
+  protected def printPropertyValueNoDefault( n: Rdf#Node, graph: Rdf#Graph, prop: Rdf#URI = rdfs.label): String = {
+    if ( n.toString() .endsWith("CFA"))
+      println()
+		  val literal = (PointedGraph( n , graph) / prop ).as[String].getOrElse( "" )
+		  if(literal != "" && ! literal.contains(":"))
+		    literal
+		  else
+		    printObjectPropertyValue( n, graph, prop)
+  }
 	def rdfsDomain(n: Rdf#Node, graph: Rdf#Graph) =
 		  (PointedGraph( n , graph) / rdfs.domain) .as[Rdf#Node].getOrElse(URI(""))
 

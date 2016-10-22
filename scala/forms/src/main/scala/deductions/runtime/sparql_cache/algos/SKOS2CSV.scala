@@ -16,19 +16,20 @@ import deductions.runtime.services.Configuration
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.abstract_syntax.FieldsInference
-import com.hp.hpl.jena.query.Dataset
+
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import org.w3.banana.OWLPrefix
 import org.w3.banana.Prefix
+import deductions.runtime.jena.ImplementationSettings
 
 /** output given SKOS file as CSV */
 object SKOS2CSVApp extends App
-//with JenaModule
 with RDFStoreLocalJena1Provider
-with RDFCacheAlgo[Jena, Dataset]
+with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+
 with DefaultConfiguration 
-with SKOS2CSV[Jena, Dataset] {
+with SKOS2CSV[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
   val addEmptyLineBetweenLabelGroups = false
   override lazy val owl = OWLPrefix[Rdf]
 

@@ -21,6 +21,8 @@ GET     /select             controllers.Application.select( query:String )
 POST    /select             controllers.Application.select( query:String )
 
 GET     /wordsearch         controllers.Application.wordsearchAction(q:String ?= "")
+GET     /search             controllers.Application.searchOrDisplayAction(q:String ?= "")
+
 GET     /backlinks          controllers.Application.backlinksAction(q:String ?= "")
 GET     /esearch            controllers.Application.extSearch(q:String ?= "")
 

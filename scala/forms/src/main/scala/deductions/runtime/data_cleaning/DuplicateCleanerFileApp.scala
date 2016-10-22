@@ -28,14 +28,18 @@ object DuplicateCleanerFileApp extends App
 
   //  override val databaseLocation: String = "" // in-memory
   override val databaseLocation = "/tmp/TDB" // TODO multi-platform temporary directory
+  override val deleteDatabaseLocation = true
+  override val useTextQuery = false
 
   println(s"databaseLocation $databaseLocation")
   duplicateCleanerFileApp()
 
   def duplicateCleanerFileApp() = {
+    possiblyDeleteDatabaseLocation()
+    val args2 = args.map { new File(_).getCanonicalPath }
     val classURI = ops.URI(args(0))
     println(s"classURI $classURI")
-    val files = loadFilesFromArgs(args)
+    val files = loadFilesFromArgs(args2)
     val lang = java.util.Locale.getDefault().getCountry
     println(removeAllDuplicates(classURI, lang))
     outputModifiedTurtle(files(0))

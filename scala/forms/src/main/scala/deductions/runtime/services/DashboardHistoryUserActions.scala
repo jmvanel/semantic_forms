@@ -13,6 +13,7 @@ import java.util.Date
 import java.text.SimpleDateFormat
 import java.util.Locale
 import deductions.runtime.utils.I18NMessages
+import deductions.runtime.utils.HTTPrequest
 
 /**
  * Show History of User Actions:
@@ -40,7 +41,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   private def mess(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
 
   /** leverage on ParameterizedSPARQL.makeHyperlinkForURI() */
-  def makeTableHistoryUserActions(lang: String="en")(userURI: String): NodeSeq = {
+  def makeTableHistoryUserActions(lang: String="en", request: HTTPrequest)(userURI: String): NodeSeq = {
     val metadata = getMetadata()(userURI)
     implicit val queryMaker = qm
     implicit val _ = lang

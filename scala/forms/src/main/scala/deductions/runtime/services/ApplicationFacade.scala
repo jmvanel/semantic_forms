@@ -7,6 +7,7 @@ import scala.xml.NodeSeq
 import org.w3.banana.RDF
 
 import play.api.libs.iteratee.Enumerator
+import deductions.runtime.utils.HTTPrequest
 
 /**
  * @author jmv
@@ -39,9 +40,9 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
             , graphURI=graphURI )
   }
   
-  def create(classUri: String, lang: String, formSpecURI: String, graphURI: String)
+  def create(classUri: String, lang: String, formSpecURI: String, graphURI: String, request: HTTPrequest )
   : NodeSeq =
-    impl.create(classUri, lang, formSpecURI, graphURI).get
+    impl.create(classUri, lang, formSpecURI, graphURI, request: HTTPrequest).get
 
   def lookup(search: String): String =
     impl.lookup(search)
@@ -117,8 +118,8 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
 //    (implicit graph: Rdf#Graph)
     = impl.registerAction(uri)
     
-  def makeHistoryUserActions(userURI: String, lang: String): NodeSeq =
-    impl.makeHistoryUserActions(userURI, lang)
+  def makeHistoryUserActions(userURI: String, lang: String, request: HTTPrequest): NodeSeq =
+    impl.makeHistoryUserActions(userURI, lang, request)
 
   def labelForURITransaction(uri: String, language: String) =
    impl.labelForURITransaction(uri: String, language: String)

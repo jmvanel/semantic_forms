@@ -17,7 +17,6 @@ trait Secured
   val loginActivated = needLogin
 
 
-
   def username(request: RequestHeader) = request.session.get(Security.username)
 
   private def onUnauthorized(request: RequestHeader) =
@@ -35,7 +34,7 @@ trait Secured
    *  TODO distinguish
    *  needLoginForEditing, needLoginForDisplaying
    *  */
-  def withUser(fun: String => Request[AnyContent] => Result) =
+  def withUser(fun: /*user*/ String => Request[AnyContent] => Result): EssentialAction =
     if(loginActivated)
       withAuth { username =>
         implicit request =>

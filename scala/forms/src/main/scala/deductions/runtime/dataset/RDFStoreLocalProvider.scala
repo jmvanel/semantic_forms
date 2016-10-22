@@ -51,7 +51,8 @@ trait RDFStoreLocalProvider[Rdf <: RDF, DATASET] extends RDFOPerationsDB[Rdf, DA
 
   def close(ds: DATASET = dataset)
 
-  def datasetSize() = rdfStore.rw( dataset, { ops.graphSize(allNamedGraph) } )
+  def datasetSize() = rdfStore.rw( dataset, { datasetSizeNoTR() })
+  def datasetSizeNoTR() = ops.graphSize(allNamedGraph)
 }
 
 trait RDFStoreLocalUserManagement[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET] {

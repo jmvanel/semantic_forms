@@ -14,7 +14,7 @@ import deductions.runtime.utils.RDFPrefixes
 trait Form2HTMLBase[NODE, URI <: NODE]
     extends Configuration
     with BasicWidgets
-    // CSS
+    with CSS
     {
 
   type fm = FormModule[NODE, URI]

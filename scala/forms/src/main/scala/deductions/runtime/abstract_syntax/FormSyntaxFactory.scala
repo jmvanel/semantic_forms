@@ -113,7 +113,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   override def makeURI(n: Rdf#Node): Rdf#URI = URI(foldNode(n)(
     fromUri(_), fromBNode(_), fromLiteral(_)._1))
 
-  val rdfs = RDFSPrefix[Rdf]
+//  val rdfs = RDFSPrefix[Rdf]
   override lazy val rdf = RDFPrefix[Rdf]
   
   

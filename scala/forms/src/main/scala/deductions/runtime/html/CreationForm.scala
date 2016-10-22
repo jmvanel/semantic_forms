@@ -11,6 +11,7 @@ import deductions.runtime.services.Configuration
 import deductions.runtime.services.ConfigurationCopy
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.utils.I18NMessages
+import deductions.runtime.utils.HTTPrequest
 
 trait CreationFormAlgo[Rdf <: RDF, DATASET]
 extends RDFCacheAlgo[Rdf, DATASET]
@@ -29,7 +30,7 @@ with RDFPrefixes[Rdf]
    *  transactional TODO classUri should be an Option
    */
   def create(classUri: String, lang: String = "en",
-    formSpecURI: String = "", graphURI: String= "")
+    formSpecURI: String = "", graphURI: String= "", request: HTTPrequest= HTTPrequest() )
       : Try[NodeSeq] = {
     import scala.concurrent.ExecutionContext.Implicits.global
     dataset.rw({
@@ -38,7 +39,7 @@ with RDFPrefixes[Rdf]
       val factory = this
       preferedLanguage = lang
       implicit val graph: Rdf#Graph = allNamedGraph
-      val form = factory.createFormFromClass(classURI, formSpecURI)
+      val form = factory.createFormFromClass(classURI, formSpecURI, request)
 
       val ops1 = ops
       val htmlFormatter = new Form2HTMLBanana[Rdf] with ConfigurationCopy {
