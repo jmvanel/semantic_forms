@@ -12,6 +12,7 @@ import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 import java.util.Date
 import java.text.SimpleDateFormat
 import java.util.Locale
+import deductions.runtime.utils.I18NMessages
 
 /**
  * Show History of User Actions:
@@ -36,18 +37,21 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     override def variables = Seq("SUBJECT", "TIME", "COUNT")
   }
 
+  private def mess(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
+
   /** leverage on ParameterizedSPARQL.makeHyperlinkForURI() */
-  def makeTableHistoryUserActions(lang: String="en")(implicit userURI: String): NodeSeq = {
-    val metadata = getMetadata()
+  def makeTableHistoryUserActions(lang: String="en")(userURI: String): NodeSeq = {
+    val metadata = getMetadata()(userURI)
     implicit val queryMaker = qm
+    implicit val _ = lang
     <table class="table">
       <thead>
         <tr>
-          <th title="Resource URI visited by user">Resource</th> 
-          <th title="Action (Create, Display, Update)">Action</th> 
-          <th title="Time visited by user">Time</th>
-          <th title="Number of fields (triples) edited by user">Count</th>
-          <th>User</th>
+          <th title="Resource URI visited by user">{mess("Resource")}</th>
+          <th title="Action (Create, Display, Update)">{mess("Action")}</th>
+          <th title="Time visited by user">{mess("Time")}</th>
+          <th title="Number of fields (triples) edited by user">{mess("Count")}</th>
+          <th>{mess("User")}</th>
           <!--th>IP</th-->
 				</tr>
  			</thead><tbody>
