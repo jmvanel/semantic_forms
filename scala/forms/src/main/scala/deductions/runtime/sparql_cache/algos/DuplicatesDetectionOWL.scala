@@ -15,14 +15,20 @@ import deductions.runtime.jena.ImplementationSettings
 import java.io.FileInputStream
 
 /** Duplicates Detection for OWL; output: CSV, Grouped By labels of Datatype properties,
- *  or  owl:ObjectProperty", or "owl:Class" */
+ *  or  owl:ObjectProperty", or "owl:Class"
+ *  
+ *  deductions.runtime.sparql_cache.algos.DuplicatesDetectionOWLGroupBy
+ *  */
 object DuplicatesDetectionOWLGroupBy extends App
 with ImplementationSettings.RDFModule
 with DefaultConfiguration
 with DuplicatesDetectionOWL[ImplementationSettings.Rdf] {
+  import ops._
+
   val addEmptyLineBetweenLabelGroups = false // true
   val filterAmetysSubForms = false
-
+  val propertiesToReport = List(URI("http://deductions.sf.net/ametys.ttl#category"), rdfs.subClassOf )
+  
   val owlFile = args(0)
 
   val graph = turtleReader.read(new FileInputStream(owlFile), "").get
@@ -74,17 +80,26 @@ with DuplicatesDetectionOWL[ImplementationSettings.Rdf] {
           (if (classToReportURI == owl.Class)
             makeDigestFromClass(n, graph)
           else "")
+
+        val otherProperties = propertiesToReport . map {
+          p => printPropertyValueNoDefault(n, graph, p)
+        } . mkString("\t")
+
         s"\t'${labelAndList._1}'\t" + abbreviateURI(n) + "\t" + contextLabel + "\t" +
-        rangeLabel + digestFromClass
+        rangeLabel + digestFromClass + "\t" + otherProperties
       }
       columns.mkString("\n") + (
         if (addEmptyLineBetweenLabelGroups)
           "\n"
         else "")
     }
+    val headerEnd = propertiesToReport.map{
+      p => "\t" + rdfsLabel(p, graph)
+    } . mkString
+    
     // TODO I18N
-    //      A       B       C   D         E                 F                     G
-    output("Action	Libellé	Id	Contexte	type(rdfs:range)	Empreinte(propriétés)	Description")
+    //      A       B       C   D         E                 F                        G
+    output("Action	Libellé	Id	Contexte	type(rdfs:range)	Empreinte(propriétés)" + headerEnd )
     instancesToReportGroupedByRdfsLabel.map {
       labelAndList => formatCSVLines(labelAndList)
     }.mkString("\n")
