@@ -45,49 +45,42 @@ trait ApplicationTrait extends Controller
     }
   }
 
-  
   def index() =
-        withUser {
-    implicit userid =>
-    implicit request => {
-      val lang = chooseLanguageObject(request).language
-      val userInfo = displayUser(userid, "", "", lang)
-      Ok( "<!DOCTYPE html>\n" + mainPage(<p>...</p>, userInfo, lang))
+    withUser {
+      implicit userid =>
+        implicit request =>
+          val lang = chooseLanguageObject(request).language
+          val userInfo = displayUser(userid, "", "", lang)
+          Ok("<!DOCTYPE html>\n" + mainPage(<p>...</p>, userInfo, lang))
             .as("text/html; charset=utf-8")
     }
-  }
 
   def displayURI(uri: String, blanknode: String = "", Edit: String = "",
-      formuri: String="") =
-      withUser {
-	    implicit userid =>
-      implicit request => {
-      println(s"""displayURI: $request IP ${request.remoteAddress}, host ${request.host}
+                 formuri: String = "") =
+    withUser {
+      implicit userid =>
+        implicit request =>
+          println(s"""displayURI: $request IP ${request.remoteAddress}, host ${request.host}
          displayURI headers ${request.headers}
          displayURI tags ${request.tags}
          userid <$userid>
          formuri <$formuri>
          displayURI: Edit "$Edit" """)
-      val lang = chooseLanguage(request)
-      val title = labelForURITransaction(uri, lang)
-      outputMainPage(
-        htmlForm(uri, blanknode, editable = Edit != "", lang, formuri, graphURI=makeAbsoluteURIForSaving(userid)),
-        lang, title=title )
+          val lang = chooseLanguage(request)
+          val title = labelForURITransaction(uri, lang)
+          outputMainPage(
+            htmlForm(uri, blanknode, editable = Edit != "", lang, formuri, graphURI = makeAbsoluteURIForSaving(userid)),
+            lang, title = title)
     }
-  }
 
-  def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String ="") =
-          withUser {
-	    implicit userid =>
-      implicit request => {
-      println( s"""form: request $request : "$Edit" formuri <$formuri> """)
-      val lang = chooseLanguage(request)
-     Ok( htmlForm(uri, blankNode, editable = Edit != "", lang, formuri, graphURI=makeAbsoluteURIForSaving(userid)))
-//      Ok(htmlFormElemJustFields(uri: String, hrefDisplayPrefix, blankNode,
-//        editable = Edit != "", lang, formuri, graphURI=makeAbsoluteURIForSaving(userid)))
-//        .as("text/html; charset=utf-8")
+  def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "") =
+    withUser {
+      implicit userid =>
+        implicit request =>
+          println(s"""form: request $request : "$Edit" formuri <$formuri> """)
+          val lang = chooseLanguage(request)
+          Ok(htmlForm(uri, blankNode, editable = Edit != "", lang, formuri, graphURI = makeAbsoluteURIForSaving(userid)))
     }
-  }
 
   def searchOrDisplayAction(q: String) = {
 //          withUser {
@@ -95,12 +88,10 @@ trait ApplicationTrait extends Controller
 //      implicit request => {
     def isURI(q: String): Boolean = q.contains(":")
     
-    if (isURI(q)) {
+    if (isURI(q))
       displayURI( q, Edit="" )
-    } else
+    else
       wordsearchAction(q)
-//    }
-//  }
   }
     
   /** generate a Main Page wrapping given XHTML content */
@@ -137,25 +128,25 @@ trait ApplicationTrait extends Controller
           rr
   }
   }
-  
+
   /////////////////////////////////
-  
+
   def edit(uri: String) =
     withUser {
-    implicit userid =>
-    implicit request =>
-      val lang = chooseLanguageObject(request).language
-      val pageURI = uri
-      val pageLabel = labelForURI(uri, lang)
-      val userInfo = displayUser(userid, pageURI, pageLabel, lang)
-      println( s"userInfo $userInfo, userid $userid" )
-       val content = htmlForm(
-        uri, editable = true,
-        lang = chooseLanguage(request), graphURI=makeAbsoluteURIForSaving(userid))
-      Ok( "<!DOCTYPE html>\n" + mainPage( content, userInfo, lang))
+      implicit userid =>
+        implicit request =>
+          val lang = chooseLanguageObject(request).language
+          val pageURI = uri
+          val pageLabel = labelForURI(uri, lang)
+          val userInfo = displayUser(userid, pageURI, pageLabel, lang)
+          println(s"userInfo $userInfo, userid $userid")
+          val content = htmlForm(
+            uri, editable = true,
+            lang = chooseLanguage(request), graphURI = makeAbsoluteURIForSaving(userid))
+          Ok("<!DOCTYPE html>\n" + mainPage(content, userInfo, lang))
             .as("text/html; charset=utf-8").
-        withHeaders("Access-Control-Allow-Origin" -> "*") // TODO dbpedia only
-  }
+            withHeaders("Access-Control-Allow-Origin" -> "*") // TODO dbpedia only
+    }
 
   /** */
   def saveAction() =
@@ -235,17 +226,16 @@ trait ApplicationTrait extends Controller
 
   def makeAbsoluteURIForSaving(userid: String): String = userid
 
-  //  def download(url: String): Action[_] = {
-  //    Action { Ok(downloadAsString(url)).as("text/turtle; charset=utf-8") }
-  //  }
-
-  /** cf https://www.playframework.com/documentation/2.3.x/ScalaStream */
+  /** get RDF with content negotiation for RDF syntax;
+   *  see also LDP.scala
+   *
+   *  cf https://www.playframework.com/documentation/2.3.x/ScalaStream */
   def downloadAction(url: String) =
     withUser {
       implicit userid =>
-        implicit request => {
-          def ttlOutput =    Ok.chunked(download(url, "text/turtle")).as("text/turtle; charset=utf-8")
-        		  .withHeaders("Access-Control-Allow-Origin" -> "*")
+        implicit request =>
+          def ttlOutput = Ok.chunked(download(url, "text/turtle")).as("text/turtle; charset=utf-8")
+            .withHeaders("Access-Control-Allow-Origin" -> "*")
           def jsonldOutput = Ok.chunked(download(url, "text/json-ld")).as("text/turtle; charset=utf-8")
             .withHeaders("Access-Control-Allow-Origin" -> "*")
           // Ok.stream(download(url) >>> Enumerator.eof).as("text/turtle; charset=utf-8")
@@ -253,11 +243,10 @@ trait ApplicationTrait extends Controller
           val AcceptsTTL = Accepting("text/turtle")
           val AcceptsJSONLD = Accepting("text/json-ld")
           render {
-            case AcceptsTTL => jsonldOutput
+            case AcceptsTTL    => jsonldOutput
             case AcceptsJSONLD => ttlOutput
-            case _ => ttlOutput
+            case _             => ttlOutput
           }
-        }
     }
 
   def getFirstNonEmptyInMap(map: Map[String, Seq[String]],
@@ -269,36 +258,33 @@ trait ApplicationTrait extends Controller
   def sparql(query: String) =
     withUser {
       implicit userid =>
-        implicit request => {
+        implicit request =>
           println("sparql: " + request)
           println("sparql: " + query)
           val lang = chooseLanguage(request)
           outputMainPage(sparqlConstructQuery(query, lang), lang)
-        }
     }
 
   def sparqlConstruct(query: String) =
     withUser {
       implicit userid =>
-        implicit request => {
+        implicit request =>
           println("sparql: " + request)
           println("sparql: " + query)
           val lang = chooseLanguage(request)
-          val JSONresult = sparqlConstructResult(query, lang, "jsonld" )
-          Ok( JSONresult ).as("application/ld+json; charset=utf-8")
-        }
+          val JSONresult = sparqlConstructResult(query, lang, "jsonld")
+          Ok(JSONresult).as("application/ld+json; charset=utf-8")
     }
 
   def select(query: String) =
     withUser {
       implicit userid =>
-        implicit request => {
+        implicit request =>
           println("sparql: " + request)
           println("sparql: " + query)
           val lang = chooseLanguage(request)
           outputMainPage(
             sparqlSelectQuery(query, lang), lang)
-        }
     }
 
   def backlinksAction(q: String = "") = Action.async {
@@ -326,10 +312,9 @@ trait ApplicationTrait extends Controller
   }
 
   def ldp(uri: String) =
-    //  {  Action { implicit request =>
     withUser {
       implicit userid =>
-        implicit request => {
+        implicit request =>
           println("LDP GET: request " + request)
           val acceptedTypes = request.acceptedTypes // contentType
           val acceptsTurtle = Accepting("text/turtle")
@@ -341,7 +326,6 @@ trait ApplicationTrait extends Controller
           println(s"contentType $contentType")
           Ok(r).as(contentType)
             .withHeaders("Access-Control-Allow-Origin" -> "*")
-        }
     }
 
   /** TODO:
@@ -351,7 +335,7 @@ trait ApplicationTrait extends Controller
   def ldpPOSTAction(uri: String) =
     withUser {
       implicit userid =>
-        implicit request => {
+        implicit request =>
           println("LDP: " + request)
           val slug = request.headers.get("Slug")
           val link = request.headers.get("Link")
@@ -373,7 +357,6 @@ trait ApplicationTrait extends Controller
             ldpPOST(uri, link, contentType, slug, content).getOrElse("default")
           Ok(serviceCalled).as("text/plain; charset=utf-8")
             .withHeaders("Access-Control-Allow-Origin" -> "*")
-        }
     }
 
   def lookupService(search: String) = {
@@ -401,13 +384,11 @@ trait ApplicationTrait extends Controller
   }
 
   def makeHistoryUserActionsAction(userURI: String) =
-    //    Action { implicit request =>
     withUser {
       implicit userid =>
-        implicit request => {
+        implicit request =>
           val lang = chooseLanguage(request)
           outputMainPage(makeHistoryUserActions(userURI, lang, copyRequest(request) ), lang)
-        }
     }
 
 }
