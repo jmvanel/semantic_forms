@@ -87,12 +87,12 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
   def labelForURI(uri: String, language: String): String =
     impl.labelForURITransaction(uri, language)
 
-  def ldpGET(uri: String, rawURI: String, accept: String): String =
-    impl.getTriples(uri, rawURI, accept)
+  def ldpGET(uri: String, rawURI: String, accept: String, request: HTTPrequest): String =
+    impl.getTriples(uri, rawURI, accept, request)
 
   def ldpPOST(uri: String, link: Option[String], contentType: Option[String],
-    slug: Option[String], content: Option[String]): scala.util.Try[String] =
-    impl.ldpPOST(uri, link, contentType, slug, content)
+    slug: Option[String], content: Option[String], request: HTTPrequest): scala.util.Try[String] =
+    impl.ldpPOST(uri, link, contentType, slug, content, request)
 
   def checkLogin(loginName: String, password: String): Boolean =
     impl.checkLogin(loginName, password)

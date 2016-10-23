@@ -435,9 +435,9 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
   def ldpPOST(uri: String, link: Option[String], contentType: Option[String],
     slug: Option[String],
-    content: Option[String]): Try[String] =
+    content: Option[String], request: HTTPrequest): Try[String] =
     putTriples(uri, link, contentType,
-      slug, content)
+      slug, content, request)
 
   def makeHistoryUserActions(userURI: String, lang: String, request: HTTPrequest): NodeSeq =
     makeTableHistoryUserActions(lang, request)(userURI)

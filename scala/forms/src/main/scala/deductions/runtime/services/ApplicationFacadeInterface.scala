@@ -22,7 +22,8 @@ trait ApplicationFacadeInterface {
   def htmlForm(uri: String, blankNode: String = "",
     editable: Boolean = false,
     lang: String = "en", formuri: String = "",
-    graphURI: String = ""): NodeSeq
+    graphURI: String = "" // , request: HTTPrequest= HTTPrequest()  // TODO
+    ): NodeSeq
 
   def saveForm(request: Map[String, Seq[String]], lang: String = "",
     userid: String = "", graphURI: String = "", host: String = ""): Option[String]
@@ -47,11 +48,11 @@ trait ApplicationFacadeInterface {
   /** NOTE this creates a transaction; do not use it too often */
   def labelForURI(uri: String, language: String): String
 
-  def ldpGET(uri: String, rawURI: String, accept: String): String
+  def ldpGET(uri: String, rawURI: String, accept: String, request: HTTPrequest = HTTPrequest()): String
 
   def ldpPOST(uri: String, link: Option[String], contentType: Option[String],
     slug: Option[String],
-    content: Option[String]): Try[String]
+    content: Option[String], request: HTTPrequest = HTTPrequest()): Try[String]
 
   def checkLogin(loginName: String, password: String): Boolean
 

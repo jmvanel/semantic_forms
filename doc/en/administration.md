@@ -177,7 +177,7 @@ The features are like Any23, plus:
 Link on [other tools for semantization](http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/html/documentation.html#L3234).
 
 ## SPARQL queries
-There is a web page for SPARQL queries, and also a real SPARL endpoint at URL /sparql for CONSTRUCT queries (see below under Test about how to query with authentication).
+There is a web page for SPARQL queries, and also a real SPARL endpoint at URL /sparql for CONSTRUCT queries (see in README under Test about how to query with authentication).
 
 There is an HTML page for entering queries, in the /tools page.
 There are some example showing some queries that you can paste into your browser:

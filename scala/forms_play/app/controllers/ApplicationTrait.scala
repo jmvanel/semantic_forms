@@ -19,6 +19,7 @@ import play.api.Play
 import scala.util.Try
 import scala.util.Success
 import play.api.mvc.Call
+import play.api.http.MimeTypes
 
 
 /** main controller */
@@ -311,21 +312,32 @@ trait ApplicationTrait extends Controller
     outputMainPage(r, lang))
   }
 
+  val acceptsTurtle = Accepting("text/turtle")
+  val turtle = acceptsTurtle.mimeType
+  val acceptsJSONLD = Accepting("application/ld+json") // text/json-ld")
+
   def ldp(uri: String) =
     withUser {
       implicit userid =>
         implicit request =>
           println("LDP GET: request " + request)
-          val acceptedTypes = request.acceptedTypes // contentType
-          val acceptsTurtle = Accepting("text/turtle")
-          val turtle = acceptsTurtle.mimeType
-          val accepts = Accepting(acceptedTypes.headOption.getOrElse(turtle).toString())
-          val r = ldpGET(uri, request.path, accepts.mimeType)
-          println("LDP: GET: result " + r)
-          val contentType = accepts.mimeType + "; charset=utf-8"
+          val acceptedTypes = request.acceptedTypes
+          println(s"acceptedTypes $acceptedTypes")
+          val mimeType =
+            if (acceptedTypes.contains(acceptsTurtle))
+              turtle
+            // tODO RDF/XML
+            else
+              acceptsJSONLD.mimeType
+          val response = ldpGET(uri, request.path, mimeType, copyRequest(request))
+          println("LDP: GET: result " + response)
+          val contentType = mimeType + "; charset=utf-8"
           println(s"contentType $contentType")
-          Ok(r).as(contentType)
-            .withHeaders("Access-Control-Allow-Origin" -> "*")
+          Ok(response)
+            //          .as(contentType)
+            //          .as(MimeTypes.JSON)
+            .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+            .withHeaders(CONTENT_TYPE -> mimeType)
     }
 
   /** TODO:
@@ -354,7 +366,7 @@ trait ApplicationTrait extends Controller
           println(s"LDP: slug: $slug, link $link")
           println(s"LDP: content: $content")
           val serviceCalled =
-            ldpPOST(uri, link, contentType, slug, content).getOrElse("default")
+            ldpPOST(uri, link, contentType, slug, content, copyRequest(request) ).getOrElse("default")
           Ok(serviceCalled).as("text/plain; charset=utf-8")
             .withHeaders("Access-Control-Allow-Origin" -> "*")
     }

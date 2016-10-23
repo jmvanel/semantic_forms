@@ -15,4 +15,6 @@ case class HTTPrequest(
    * the last untrusted proxy
    * from the Forwarded-Headers or the X-Forwarded-*-Headers.
    */
-  remoteAddress: String = "")
+  remoteAddress: String = "",
+
+  rawQueryString: String = "")
