@@ -1,0 +1,7 @@
+/* line 1, ../scss/styles.scss */
+body {
+  font-family: QuickSand, sans-serif; }
+  /* line 4, ../scss/styles.scss */
+  body header h1 {
+    text-align: center;
+    color: rgba(0, 0, 0, 0.3); }
