@@ -2,3 +2,5 @@
 .*.swp
 .*.swo
 oldies/
+# JetBrain projects files
+.idea

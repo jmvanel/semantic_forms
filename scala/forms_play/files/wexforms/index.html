@@ -3,18 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <title>Wexform - 0.1-alpha</title>
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="css/styles.css">
     <script src="src/wexforms.js"></script>
-    <script src="src/main.js"></script>
+    <script src="src/scripts.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet">
 </head>
 <body>
 <header>
     <h1>WexForms</h1>
-    <input id="getTest" type="submit" value="Envoyer" />
 </header>
-<section>
-    <div id="resultTest">... result ...</div>
+<section class="row content-section">
+    <form id="sfSearchForm">
+        <div class="col col-sm-6 col-sm-offset-2">
+            <input id="sfSearchString" class="form-control" type="text" placeholder="Type a URI" value="http://jmvanel.free.fr/jmv.rdf#me"/>
+        </div>
+        <div class="col col-sm-2">
+            <input id="sfSearchSubmit" class="btn btn-default btn-submit-query btn-info" type="submit" value="Search" />
+        </div>
+    </form>
+
+    <div id="sfSearchResult" class="col col-sm-8 col-sm-offset-2">
+
+    </div>
 </section>
 <footer></footer>
 </body>

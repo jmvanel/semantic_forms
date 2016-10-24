@@ -1,7 +1,22 @@
-/* line 1, ../scss/styles.scss */
+/* latin */
+@font-face {
+  font-family: 'Quicksand';
+  font-style: normal;
+  font-weight: 400;
+  src: local("Quicksand Regular"), local("Quicksand-Regular"), url("../fonts/Quicksand-Regular.ttf") format("ttf");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000; }
+/* line 10, ../scss/styles.scss */
 body {
-  font-family: QuickSand, sans-serif; }
-  /* line 4, ../scss/styles.scss */
+  font-family: Quicksand, sans-serif; }
+  /* line 13, ../scss/styles.scss */
   body header h1 {
     text-align: center;
-    color: rgba(0, 0, 0, 0.3); }
+    color: rgba(0, 0, 0, 0.3);
+    font-weight: bold;
+    margin: 60px; }
+  /* line 20, ../scss/styles.scss */
+  body .content-section {
+    margin: 0 auto; }
+    /* line 22, ../scss/styles.scss */
+    body .content-section .btn-submit-query {
+      width: 100%; }

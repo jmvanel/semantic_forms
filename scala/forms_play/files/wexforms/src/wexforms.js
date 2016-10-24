@@ -2,7 +2,7 @@
   'use strict';
   class WexForm {
 
-    constructor() {
+    constructor(callback) {
       // Hi
       Object.assign(this, {
         sfFormUri: encodeURIComponent('http://deductions-software.com/ontologies/forms#personForm'),
@@ -21,6 +21,10 @@
           },
         }
       });
+      // Only one instance allowed in page.
+      window.wexForm = this;
+      // Set callback if defined.
+      callback && document.addEventListener('DOMContentLoaded', callback);
     }
 
     formDisplay(uri, success) {
