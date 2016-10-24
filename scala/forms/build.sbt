@@ -42,7 +42,8 @@ libraryDependencies += "org.apache.lucene" % "lucene-demo" % "4.6.1"
 parallelExecution in Test := false
 
 libraryDependencies += "junit" % "junit" % "4.8.1" % Test
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test
+//libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % Test
 
 // resolvers += "spray repo" at "http://repo.spray.io"
 // resolvers += Resolver.mavenLocal

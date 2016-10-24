@@ -15,8 +15,8 @@ object CommandLineApp extends App {
     |                                                    SELECT DISTINCT ?g WHERE { GRAPH ?g { ?s ?p ?o } . }
     |                                                    SELECT DISTINCT ?s ?p ?o ?g WHERE { GRAPH ?g { ?s ?p ?o } . OPTIONAL { ?s ?p ?o }
     |                                                      FILTER regex( ?o, '${SEARCH}', 'i') }
-    |deductions.runtime.jena.TextIndexerRDF            index all RDF with Lucene or SORL
-    |org.apache.lucene.demo.SearchFiles                simple text search from lucene-demo
+    |deductions.runtime.jena.lucene.TextIndexerRDF     index all RDF with Lucene or SORL
+    |org.apache.lucene.demo.Se1archFiles               simple text search from lucene-demo
     |
     |deductions.runtime.sparql_cache.RDFI18NLoader     update the I18N translations of the RDF vocabularies
     |deductions.runtime.sparql_cache.FormSpecificationsLoader  update the Common Form Specifications
