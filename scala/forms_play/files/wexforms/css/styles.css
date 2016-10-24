@@ -10,13 +10,22 @@ body {
   font-family: Quicksand, sans-serif; }
   /* line 13, ../scss/styles.scss */
   body header h1 {
+    font-family: Quicksand, sans-serif;
     text-align: center;
     color: rgba(0, 0, 0, 0.3);
     font-weight: bold;
     margin: 60px; }
-  /* line 20, ../scss/styles.scss */
-  body .content-section {
-    margin: 0 auto; }
-    /* line 22, ../scss/styles.scss */
-    body .content-section .btn-submit-query {
+  /* line 21, ../scss/styles.scss */
+  body section.content {
+    margin: 0 auto;
+    min-height: 200px; }
+    /* line 23, ../scss/styles.scss */
+    body section.content .btn-submit-query {
       width: 100%; }
+  /* line 28, ../scss/styles.scss */
+  body footer {
+    margin-top: 20px;
+    background: #F5F5F5;
+    padding: 20px;
+    text-align: center;
+    opacity: .6; }
