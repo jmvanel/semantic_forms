@@ -7,15 +7,25 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 
+.clearfix {
+  clear: both;
+}
+
 body {
   font-family: Quicksand, sans-serif;
   header {
-    h1 {
-      font-family: Quicksand, sans-serif;
-      text-align: center;
-      color: rgba(0, 0, 0, .3);
-      font-weight: bold;
-      margin: 60px;
+    .logo {
+      background: url(../images/logo.png) no-repeat center left;
+      margin: 0 auto;
+      width: 290px;
+      padding: 50px 0;
+      h1 {
+        font-family: Quicksand, sans-serif;
+        text-align: center;
+        color: rgba(0, 0, 0, 0.3);
+        font-weight: bold;
+        padding-left: 80px;
+      }
     }
   }
   section.content {
