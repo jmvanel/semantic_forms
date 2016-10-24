@@ -13,6 +13,7 @@ import org.w3.banana.io.RDFWriter
 import org.w3.banana.io.Turtle
 
 import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.HTTPrequest
 
 /**
  * A simple (partial) LDP implementation backed by SPARQL
@@ -50,9 +51,9 @@ trait LDP[Rdf <: RDF, DATASET]
 
   /** for LDP GET
    *  @param uri relative URI received by LDP GET */
-  def getTriples(uri: String, rawURI: String, accept: String): String = {
-    println(s"LDP GET: (uri <$uri>, rawURI <$rawURI>)")
-    val queryString = makeQueryString(uri, rawURI)
+  def getTriples(uri: String, rawURI: String, accept: String, request: HTTPrequest): String = {
+    println(s"LDP GET: (uri <$uri>, rawURI <$rawURI>, request $request)")
+    val queryString = makeQueryString(uri, rawURI, request)
     println("LDP GET: queryString\n" + queryString)
     val r = dataset.r {
       for {
@@ -66,7 +67,21 @@ trait LDP[Rdf <: RDF, DATASET]
     r.get.get
   }
 
-  private def makeQueryString(uri: String, rawURI: String): String = {
+  private def absoluteURL( request: HTTPrequest, rawURI: String, secure: Boolean = false): String =
+      "http" + (if (secure) "s" else "") + "://" + request.host + rawURI // + this.appendFragment
+
+  private def makeQueryString(uri: String, rawURI: String, request: HTTPrequest): String = {
+		  println(s"makeQueryString rawURI $rawURI")
+		  val absoluteURI = absoluteURL( request: HTTPrequest, rawURI)
+      s"""
+         |CONSTRUCT { <$absoluteURI> ?p ?o } WHERE {
+         |  GRAPH ?G {
+         |    <$absoluteURI> ?p ?o .
+         |  }
+         |}""".stripMargin
+  }
+
+  private def makeQueryStringOld(uri: String, rawURI: String): String = {
     println(s"makeQueryString rawURI $rawURI")
     if ( ! rawURI.startsWith( schemeName )) {
       // URI created with forms engine
@@ -78,6 +93,7 @@ trait LDP[Rdf <: RDF, DATASET]
          |    <$absoluteURI> ?p ?o .
          |  }
          |}""".stripMargin
+
     } else
       // URI created with LDP POST
       s"""
@@ -86,26 +102,13 @@ trait LDP[Rdf <: RDF, DATASET]
          |    ?s ?p ?o .
          |  }
          |}""".stripMargin
-    //    s"""
-    //         |CONSTRUCT { ?s ?p ?o } WHERE {
-    //         |  {
-    //         |  graph <$schemeName$uri> {
-    //         |    ?s ?p ?o .
-    //         |  }
-    //         |  } UNION {
-    //         |  GRAPH ?G {
-    //         |    # <${makeURIFromString(uri)}> ?p ?o .
-    //         |    <${uri}> ?p ?o .
-    //         |  }
-    //         |  }
-    //         |}""".stripMargin
   }
 
   /** for LDP PUT
    *  TODO content type negotiation is done elsewhere */
   def putTriples(uri: String, link: Option[String], contentType: Option[String],
     slug: Option[String],
-    content: Option[String]): Try[String] = {
+    content: Option[String], request: HTTPrequest): Try[String] = {
     val putURI = schemeName + uri + slug.getOrElse("unnamed")
 
     println(s"putTriples: content: ${content.get}")
