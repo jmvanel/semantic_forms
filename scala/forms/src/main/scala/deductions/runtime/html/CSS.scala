@@ -56,7 +56,8 @@ trait CSS {
 
   /** TODO use the LDP prefix; distinguish 1) dbpedia URI's 2) other external links 3) internal links */
   def cssForURI(uri: String) = {
-    if (uri.startsWith("http://dbpedia.org/resource/"))
+    // if (uri.startsWith("http://dbpedia.org/resource/"))
+    if (uri.contains("dbpedia.org/resource/"))
       "sf-external-link"
     else
       "sf-internal-link"
