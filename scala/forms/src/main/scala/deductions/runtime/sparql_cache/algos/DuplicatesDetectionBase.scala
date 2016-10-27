@@ -6,17 +6,21 @@ import org.w3.banana.RDF
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
+import org.w3.banana.PointedGraph
 
 import deductions.runtime.html.HTML5TypesTrait
 import java.io.PrintStream
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.services.Configuration
+import deductions.runtime.services.SPARQLHelpers
 
 
 
-trait DuplicatesDetectionBase[Rdf <: RDF]
+trait DuplicatesDetectionBase[Rdf <: RDF, DATASET]
 extends HTML5TypesTrait[Rdf]
-with RDFPrefixes[Rdf] {
+with RDFPrefixes[Rdf]
+with SPARQLHelpers[Rdf, DATASET]
+{
     this: Configuration =>
 
   val FILE_OUTPUT = true
@@ -26,7 +30,7 @@ with RDFPrefixes[Rdf] {
 
   implicit val ops: RDFOps[Rdf]
   import ops._
-  lazy val rdf = RDFPrefix[Rdf]
+//  private lazy val rdf = RDFPrefix[Rdf]
 //  val rdfs = RDFSPrefix[Rdf]
   lazy val owl = OWLPrefix[Rdf]
 
@@ -162,14 +166,47 @@ with RDFPrefixes[Rdf] {
   }
 
   def rdfsPropertiesAndRangesFromClass(classe: Rdf#Node, graph: Rdf#Graph): String = {
-    val props = find(graph, ANY, rdfs.domain, classe)
-    val v = props . map { triple =>
-      val prop = triple.subject
-      rdfsLabel(prop, graph) + ": " +
-      rdfsLabel(rdfsRange( prop, graph).headOption, graph)    
-    }
+    val v = rdfsPropertiesAndRangesFromClassList(classe, graph)
     v. mkString(", ")
   }
+
+  def rdfsPropertiesAndRangesFromClassList(classe: Rdf#Node, graph: Rdf#Graph): List[String] = {
+     def rdfsPropertyAndRange(prop: Rdf#Node) = {
+       rdfsLabel(prop, graph) + ": " +
+      rdfsLabel(rdfsRange( prop, graph).headOption, graph)
+     }
+    val props = find(graph, ANY, rdfs.domain, classe)
+    val propsStrings = props . map { triple =>
+      val prop = triple.subject
+      rdfsPropertyAndRange(prop)
+    } . toList
+
+    val q = queryString.replace("<CLASS>", s"<${classe}>")
+//    println( ">>>>>>>>>>> queryString: "+ q )
+    val res: List[Seq[Rdf#Node]] = runSparqlSelectNodes(
+    q, List("PROP"),
+    graph: Rdf#Graph)
+    val propsFromUnionOf = res . map {
+      list => list.head
+    }
+    val propsAndRangeFromUnionOf = propsFromUnionOf . map {
+         prop => rdfsPropertyAndRange(prop)
+    }
+    if( classe.toString().endsWith("Concours/age/#class"))
+      println
+    propsStrings ++ propsAndRangeFromUnionOf
+  }
+
+  val queryString = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>
+
+    SELECT *
+    WHERE {
+      ?PROP rdfs:domain / owl:unionOf / rdf:rest* / rdf:first <CLASS>
+   }
+  """
 
   def makeDigestFromClass(classe: Rdf#Node, graph: Rdf#Graph): String = {
     val props = find(graph, ANY, rdfs.domain, classe) . toList

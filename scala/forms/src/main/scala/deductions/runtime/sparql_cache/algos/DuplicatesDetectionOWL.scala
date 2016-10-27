@@ -7,12 +7,16 @@ import org.w3.banana.RDF
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
+
 import scala.collection.immutable.ListMap
 import java.io.PrintStream
+import java.io.FileInputStream
+
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.jena.ImplementationSettings
-import java.io.FileInputStream
+import deductions.runtime.services.SPARQLHelpers
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
 
 /** Duplicates Detection for OWL; output: CSV, Grouped By labels of Datatype properties,
  *  or  owl:ObjectProperty", or "owl:Class"
@@ -20,9 +24,10 @@ import java.io.FileInputStream
  *  deductions.runtime.sparql_cache.algos.DuplicatesDetectionOWLGroupBy
  *  */
 object DuplicatesDetectionOWLGroupBy extends App
+with RDFStoreLocalJena1Provider
 with ImplementationSettings.RDFModule
 with DefaultConfiguration
-with DuplicatesDetectionOWL[ImplementationSettings.Rdf] {
+with DuplicatesDetectionOWL[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
   import ops._
 
   val addEmptyLineBetweenLabelGroups = false // true
@@ -62,65 +67,73 @@ with DuplicatesDetectionOWL[ImplementationSettings.Rdf] {
     /** format Label Group as CSV */
     def formatCSVLines(labelAndList: (String, List[Rdf#Node])) = {
       val list = labelAndList._2
-      val columns = for (n <- list) yield {
-        val rdfs_domain = rdfsDomain(n, graph)
+      val columns = for (
+          node <- list
+          if( ! node.isBlank() ) ) yield {
+
+        val rdfs_domain = rdfsDomain(node, graph)
         val domainLabel = rdfsLabel(rdfs_domain, graph)
         val superClassesLabel = rdfsSuperClasses(rdfs_domain, graph).
           map { superC => rdfsLabel(superC, graph) }.
           mkString(", ")
-        val rdfs_range = rdfsRange(n, graph)
+        val rdfs_range = rdfsRange(node, graph)
         val rangeLabel = rdfsLabel(rdfs_range.headOption, graph)
         val contextLabelProperty = domainLabel + (if (!superClassesLabel.isEmpty) " --> " + superClassesLabel else "")
         val contextLabel = classToReportURI match {
           case owl.ObjectProperty   => contextLabelProperty
           case owl.DatatypeProperty => contextLabelProperty
-          case owl.Class            => rdfsPropertiesAndRangesFromClass(n,graph)
+          case owl.Class            => rdfsPropertiesAndRangesFromClass(node, graph)
         }
         val digestFromClass = "\t" +
           (if (classToReportURI == owl.Class)
-            makeDigestFromClass(n, graph)
+            makeDigestFromClass(node, graph)
           else "")
 
         val otherProperties = propertiesToReport . map {
-          p => printPropertyValueNoDefault(n, graph, p)
+          p => printPropertyValueNoDefault(node, graph, p)
         } . mkString("\t")
 
-        s"\t'${labelAndList._1}'\t" + abbreviateURI(n) + "\t" + contextLabel + "\t" +
-        rangeLabel + digestFromClass + "\t" + otherProperties
+        val id = abbreviateURI(node)
+        val fullLine = s"\t'${labelAndList._1}'\t" + id + "\t" + contextLabel + "\t" +
+        rangeLabel + digestFromClass + "\t" + otherProperties + "\n"
+
+        fullLine + detailLines(node)
       }
-      columns.mkString("\n") + (
+
+      columns.mkString + (
         if (addEmptyLineBetweenLabelGroups)
           "\n"
         else "")
     }
+
     val headerEnd = propertiesToReport.map{
       p => "\t" + rdfsLabel(p, graph)
     } . mkString
-    
     // TODO I18N
     //      A       B       C   D         E                 F                        G
     output("Action	Libellé	Id	Contexte	type(rdfs:range)	Empreinte(propriétés)" + headerEnd )
     instancesToReportGroupedByRdfsLabel.map {
       labelAndList => formatCSVLines(labelAndList)
-    }.mkString("\n")
+    }. filter { c => c != "" } . mkString("\n")
   }
 
-//  private def formatIndentedText() = {
-//    instancesToReportGroupedByRdfsLabel.map {
-//      labelAndList =>
-//        s"'${labelAndList._1}'\n" +
-//          (labelAndList._2).map { n => abbreviateURI(n) }.sorted.mkString("\t", "\n\t", "")
-//    }.mkString("\n")
-//  }
+  /** detail Lines in between full Lines */
+  def detailLines(n:  ImplementationSettings.Rdf#Node): String = {
+    val firstColumns = "\t\t\t\t"
+    rdfsPropertiesAndRangesFromClassList(n, graph) .
+    mkString(firstColumns, "\n" + firstColumns, "")
+  }
 }
+
 
 /**
  * This App outputs too much : count n*(n-1)/2 ;
  *  rather use DuplicatesDetectionOWLGroupBy
  */
 object DuplicatesDetectionOWLApp extends App
+with RDFStoreLocalJena1Provider
 with ImplementationSettings.RDFModule
-with DuplicatesDetectionOWL[ImplementationSettings.Rdf]
+with DuplicatesDetectionOWL[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 with DefaultConfiguration {
   val owlFile = args(0)
   override val printStream = new PrintStream(owlFile + ".DuplicatesDetectionOWL.csv" )
@@ -133,8 +146,9 @@ with DefaultConfiguration {
   output(s"duplicates size ${duplicates.duplicates.size}")
 }
 
-trait DuplicatesDetectionOWL[Rdf <: RDF]
-    extends DuplicatesDetectionBase[Rdf] {
+trait DuplicatesDetectionOWL[Rdf <: RDF, DATASET]
+    extends DuplicatesDetectionBase[Rdf, DATASET]
+{
     this: Configuration =>
 
   /** you can set your own ontology Prefix, that will be replaced on output by ":" */

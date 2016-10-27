@@ -111,7 +111,7 @@ with SKOS2CSV[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 }
 
 trait SKOS2CSV[Rdf <: RDF, DATASET]
-    extends DuplicatesDetectionBase[Rdf]
+    extends DuplicatesDetectionBase[Rdf, DATASET]
     with RDFHelpers[Rdf]
 with FieldsInference[Rdf, DATASET]
 {

@@ -12,9 +12,9 @@ import deductions.runtime.jena.ImplementationSettings
  * to disconnect from their sub-classes
  */
 object ReplaceSubclassWithPropertyAppExample extends App
-    with ImplementationSettings.RDFModule
+    with ImplementationSettings.RDFCache
     with DefaultConfiguration
-    with DuplicatesDetectionOWL[ImplementationSettings.Rdf]
+    with DuplicatesDetectionOWL[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with ReplaceSubclassWithProperty[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with WrongSubclassesSelection[ImplementationSettings.Rdf] {
 
