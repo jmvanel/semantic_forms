@@ -85,7 +85,8 @@ trait RDFStoreLocalJenaProvider
       }
 
       val dts = TDBFactory.createDataset(Paths.get(database_location).toString())
-      Logger.getRootLogger.info(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
+      //      Logger.getRootLogger.info
+      println(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
 
       try {
         configureLuceneIndex(dts, useTextQuery)

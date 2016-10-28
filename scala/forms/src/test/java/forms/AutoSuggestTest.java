@@ -103,6 +103,7 @@ public class AutoSuggestTest {
         analyzingInfixSuggester.build(dictionary);
 
         List<Lookup.LookupResult> lookupResultList = analyzingInfixSuggester.lookup("put h", false, 10);
+        analyzingInfixSuggester.close();
 
         assertEquals("Number of hits matching", 1, lookupResultList.size(), 0);
 

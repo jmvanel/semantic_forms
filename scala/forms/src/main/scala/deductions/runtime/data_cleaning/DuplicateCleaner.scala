@@ -121,7 +121,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       println(s"mergeSpecification $mergeSpecification assertion $assertion")
       System.out.flush() ; if (!assertion) System.exit(0)
     }
-    println("XXXXX")
+    println("!!!! removeDuplicatesFromSpec: checked mergeSpecification's")
 
     val mergeSpecifications = mergeSpecifications0.filter { mergeSpecification =>
       mergeSpecification.replacingURI != nullURI &&
@@ -132,7 +132,10 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     val duplicateURIs: List[Rdf#URI] =
       for (mergeSpecification <- mergeSpecifications) yield mergeSpecification.replacedURI
 
-    val named_graph = removeDuplicatesFromSeq(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI],
+
+    // TODO extract <<<<<<<<<<<<<<<<<<<<<
+
+      val named_graph = removeDuplicatesFromSeq(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI],
       auxiliaryOutput)
 
     //  create and replace triples for new rdfs:label
@@ -176,6 +179,12 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     })
   }
 
+  def zz(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI],
+      auxiliaryOutput: Rdf#MGraph) = {
+          val named_graph = removeDuplicatesFromSeq(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI],
+      auxiliaryOutput)
+  }
+    
   /**
    * add a merge Marker to rdfs:label's;
    *  replaces existing triple(s) <replacingURI> rdfs.label ?LAB

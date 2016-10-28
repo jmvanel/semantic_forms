@@ -14,9 +14,10 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 libraryDependencies += "org.w3" %%  "banana-jena" % "0.9.0-SNAPSHOT"
 
-libraryDependencies += "org.apache.jena" % "apache-jena-libs" % "2.13.0" exclude("org.slf4j", "slf4j-api" )
+// libraryDependencies += "org.apache.jena" % "apache-jena-libs" % "2.13.0" exclude("org.slf4j", "slf4j-api" )
 libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
 libraryDependencies += "org.apache.lucene" % "lucene-suggest" % "4.9.1"
+libraryDependencies += "org.apache.lucene" % "lucene-demo" % "4.9.1"
 
 libraryDependencies += "org.apache.jena" % "jena-text" % "3.1.0"
 
@@ -30,7 +31,6 @@ libraryDependencies += "org.apache.commons" % "commons-csv" %
 "1.2"
 libraryDependencies += "org.apache.any23" % "apache-any23-csvutils" %  "1.1" // "1.0" // 
 
-libraryDependencies += "org.apache.lucene" % "lucene-demo" % "4.6.1"
 
 // for debugging the SBT test suite:
 // required for the javaOptions to be passed in (??)
