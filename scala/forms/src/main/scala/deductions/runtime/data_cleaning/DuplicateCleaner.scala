@@ -38,9 +38,15 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     with RDFPrefixes[Rdf]
     with SPARQLHelpers[Rdf, DATASET]
     with URIManagement {
+
   import ops._
       import rdfStore.graphStoreSyntax._
       import rdfStore.transactorSyntax._
+
+  //  override val databaseLocation: String = "" // in-memory
+  override val databaseLocation = "/tmp/TDB" // TODO multi-platform temporary directory
+  val deleteDatabaseLocation = true
+  override val useTextQuery = false
 
   /** merge Marker in case of _automatic merge */
   val mergeMarker = " (F)"
@@ -512,9 +518,6 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       }
     } else instanceLabels2URIsMap
   }
-
-
-  val deleteDatabaseLocation: Boolean
 
   protected def possiblyDeleteDatabaseLocation() = {
     Try {

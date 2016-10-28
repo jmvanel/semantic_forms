@@ -182,10 +182,7 @@ with SPARQLHelpers[Rdf, DATASET]
     } . toList
 
     val q = queryString.replace("<CLASS>", s"<${classe}>")
-//    println( ">>>>>>>>>>> queryString: "+ q )
-    val res: List[Seq[Rdf#Node]] = runSparqlSelectNodes(
-    q, List("PROP"),
-    graph: Rdf#Graph)
+    val res: List[Seq[Rdf#Node]] = runSparqlSelectNodes( q, List("PROP"), graph)
     val propsFromUnionOf = res . map {
       list => list.head
     }
