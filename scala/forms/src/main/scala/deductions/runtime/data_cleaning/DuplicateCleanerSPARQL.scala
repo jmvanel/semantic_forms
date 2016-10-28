@@ -10,26 +10,21 @@ object DuplicateCleanerSPARQLApp extends App
     with DuplicateCleanerSPARQL[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with CSVFormatter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
-  /* WIP <<<<<<<<<<<<<<<<<<<<<<
-- object DuplicateCleanerSPARQLApp inherits conflicting members: lazy value owl in trait 
-	 RDFCacheAlgo of type 
-	 org.w3.banana.OWLPrefix[deductions.runtime.jena.ImplementationSettings.Rdf] and lazy value owl 
-	 in trait DuplicatesDetectionBase of type 
-	 org.w3.banana.OWLPrefix[deductions.runtime.jena.ImplementationSettings.Rdf] (Note: this can be 
-	 resolved by declaring an override in object DuplicateCleanerSPARQLApp.)
-	- object creation impossible, since value ontologyPrefix in trait DuplicatesDetectionBase of type 
-	 String is not defined
-   */
+  /** you can set your own ontology Prefix, that will be replaced on output by ":" */
+  val ontologyPrefix = "http://data.onisep.fr/ontologies/"
 
   val owlFile = args(0)
   implicit val graph = turtleReader.read(new FileInputStream(owlFile), "").get
+
   val homologURIGroups = groupBySPARQL(detectMergeableObjectProperties1, graph)
 
-  for (
-    homologURIGroup <- homologURIGroups;
-    homologURI <- homologURIGroup
-  ) {
-    formatCSVLine(homologURI)
+  for ( homologURIGroup <- homologURIGroups ) {
+    output(s"Groupe ${homologURIGroup.map{uri=>rdfsLabel(uri, graph)}.mkString(", ")}")
+    for (homologURI <- homologURIGroup) {
+      val l = formatCSVLine(homologURI, owl.ObjectProperty )
+      output( l )
+    }
+    output("\n\n")
   }
 }
 

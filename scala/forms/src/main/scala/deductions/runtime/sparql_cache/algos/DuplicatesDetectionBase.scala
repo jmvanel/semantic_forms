@@ -30,9 +30,7 @@ with SPARQLHelpers[Rdf, DATASET]
 
   implicit val ops: RDFOps[Rdf]
   import ops._
-//  private lazy val rdf = RDFPrefix[Rdf]
-//  val rdfs = RDFSPrefix[Rdf]
-  lazy val owl = OWLPrefix[Rdf]
+  private lazy val owl = OWLPrefix[Rdf]
 
   /** @return the Instances URI's */
   def findInstances(graph: Rdf#Graph, typeURI: Rdf#URI=owl.DatatypeProperty): List[Rdf#Node] = {

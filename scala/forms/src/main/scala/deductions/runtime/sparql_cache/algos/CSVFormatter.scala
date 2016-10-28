@@ -1,10 +1,12 @@
 package deductions.runtime.sparql_cache.algos
 
 import org.w3.banana.RDF
+import org.w3.banana.OWLPrefix
 
 trait CSVFormatter[Rdf <: RDF, DATASET]
     extends DuplicatesDetectionBase[Rdf, DATASET] {
 
+  private lazy val owl = OWLPrefix[Rdf]
 
   def formatCSVLine(node: Rdf#Node, classToReportURI: Rdf#URI= owl.Class,
       propertiesToReport: List[Rdf#URI]= List() )(implicit graph: Rdf#Graph): String = {
@@ -34,15 +36,18 @@ trait CSVFormatter[Rdf <: RDF, DATASET]
     val label = rdfsLabel(node, graph)
     val id = abbreviateURI(node)
     val fullLine = s"\t'${label}'\t" + id + "\t" + contextLabel + "\t" +
-      rangeLabel + digestFromClass + "\t" + otherProperties + "\n"
+      rangeLabel + digestFromClass + "\t" + otherProperties
 
     fullLine + detailLines(node)
-  }  
+  }
 
-    /** detail Lines in between full Lines */
-  def detailLines(n:  Rdf#Node)(implicit graph: Rdf#Graph): String = {
+  /** detail Lines in between full Lines */
+  def detailLines(n: Rdf#Node)(implicit graph: Rdf#Graph): String = {
     val firstColumns = "\t\t\t\t"
-    rdfsPropertiesAndRangesFromClassList(n, graph) .
-    mkString(firstColumns, "\n" + firstColumns, "")
+    val props = rdfsPropertiesAndRangesFromClassList(n, graph)
+    if (props.isEmpty)
+      ""
+    else
+      props.mkString(firstColumns, "\n" + firstColumns, "")
   }
 }

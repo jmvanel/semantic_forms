@@ -6,6 +6,7 @@ import java.io.FileWriter
 import java.io.FileOutputStream
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.jena.ImplementationSettings
+import org.w3.banana.OWLPrefix
 
 /**
  * ReplaceSubclassWithProperty : App Example with hard-coded list of super-classes
@@ -23,6 +24,7 @@ object ReplaceSubclassWithPropertyAppExample extends App
   val graph = turtleReader.read(new FileReader(owlFile), "").get
 
   import ops._
+  private lazy val owl = OWLPrefix[Rdf]
 
   val superClasses0 = for (
     classeTriple <- ops.find(graph, ANY, rdf.typ, owl.Class);

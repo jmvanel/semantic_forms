@@ -327,7 +327,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       Map()).get
     val results: Iterator[Seq[Rdf#URI]] = answers.toIterable map {
       row =>
-        println(s"row $row")
+//        println(s"row $row")
         for (variable <- variables) yield {
           val cell = row(variable)
           cell match {
@@ -352,7 +352,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       row =>
         val varnames = row.varnames()
 //        if (varnames.contains("COMM")) 
-        println(s"row $row")
+//        println(s"row $row")
         //        val effectiveVariables = varnames.intersect(variables.toSet)
         for (variable <- variables) yield {
           val cell = if (varnames.contains(variable)) {
