@@ -74,7 +74,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with StatisticsGraph[Rdf]
     with ToolsPage
     with Configuration
-//    with CSS
+    with CSS
     {
  
 //  val v = new TimeSeries[Rdf, DATASET]{}
@@ -386,15 +386,21 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 		{ sparqlQueryForm(query, "/select",
 				Seq("SELECT * WHERE {{ GRAPH ?G {{?S ?P ?O . }} }} LIMIT 10" )) }
       <br></br>
-      <script type="text/css">
+      <!--script type="text/css">
         table {{ border-collapse:collapse; width:90%; }}
         th, td {{ border:1px solid black; width:20%; }}
         td {{ text-align:center; }}
        caption {{ font-weight:bold }}
-      </script>
-      <table>
+      </script-->
+
+      <style type="text/css">
+      {cssRules}
+      </style>
+
+      <table class="sf-sparql-table">
+
         { if( query != "" ) {
-          val rowsTry = dl.sparqlSelectQuery(query) // , dataset)
+          val rowsTry = dl.sparqlSelectQuery(query)
           rowsTry match {
             case Success(rows) =>
               val printedRows = for (row <- rows) yield {

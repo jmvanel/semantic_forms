@@ -12,6 +12,8 @@ trait CSS {
                    border-width: 10px; }
       .sf-external-link{color: DarkRed; background-color: lightyellow;}
       .sf-internal-link{}
+      .sf-sparql-table td { padding:0px 10px; }
+      .sf-sparql-table tr:first-of-type { font-weight:bold; }
 """
   /*
       .form-root{ margin-left: 10px; }

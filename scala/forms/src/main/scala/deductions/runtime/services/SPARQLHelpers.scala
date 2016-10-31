@@ -287,8 +287,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   }
 
   /**
-   * run SPARQL on given dataset; transactional
-   * TODO the columns order may be wrong
+   * run SPARQL on given dataset; transactional;
+   *  used in SPARQL results Web page
    */
   def sparqlSelectQuery(queryString: String,
                         ds: DATASET = dataset): Try[List[List[Rdf#Node]]] = {
@@ -297,16 +297,28 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         query <- parseSelect(queryString)
         es <- ds.executeSelect(query, Map())
       } yield es
+
       val res = solutionsTry.map {
         solutions =>
-          val results = solutions.iterator.toIterable map {
+          val solsIterable = solutions.iterator.toIterable
+          val r = solsIterable . headOption . map {
+            row =>
+              val names = row.varnames().toList
+              val headerRow = names . map {
+                name => Literal(name)
+              }
+              headerRow
+          }
+          val headerRow = r.toList
+
+          val results = solsIterable map {
             row =>
               val variables = row.varnames().toList
-              //              println( row )
               for (variable <- variables) yield row(variable).get.as[Rdf#Node].get
           }
           println("after results")
-          results.to[List]
+
+          headerRow ++ results.to[List]
       }
       println("before res")
       res
