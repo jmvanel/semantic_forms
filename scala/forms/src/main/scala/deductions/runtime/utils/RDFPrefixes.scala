@@ -15,7 +15,7 @@ import org.w3.banana._
 /** database of Turtle prefixes;
  *  TODO possibility to add prefix-URI pairs;
  *  TODO use prefix.cc like in EulerGUI */
-trait RDFPrefixes[Rdf <: RDF] {
+  trait RDFPrefixes[Rdf <: RDF] {
   this: Configuration =>
 
   implicit val ops: RDFOps[Rdf]
@@ -24,30 +24,41 @@ trait RDFPrefixes[Rdf <: RDF] {
   val commonSchemes = List("http", "https", "url")
 
   val restruc = Prefix[Rdf]("restruc", "http://deductions.github.io/restruc.owl.ttl#" )
+  val tasks = Prefix[Rdf]("tm", "http://deductions.github.io/task-management.owl.ttl#" )
 
   def uriFromPrefix(pf: String): String = fromUri(prefixesMap(pf))
 
   private val prefixAV = "http://www.virtual-assembly.org/ontologies/1.0/pair#"
 
   lazy val rdfs = RDFSPrefix[Rdf]
-  lazy val skos = Prefix[Rdf]("skos", "http://www.w3.org/2004/02/skos/core#")
   
+  // TODO remove private
+  private lazy val rdf = RDFPrefix[Rdf]
+  private lazy val xsd = XSDPrefix[Rdf]
+  private lazy val foaf = FOAFPrefix[Rdf]
+  private lazy val owl = OWLPrefix[Rdf]
+
+  lazy val skos = Prefix[Rdf]("skos", "http://www.w3.org/2004/02/skos/core#")
+  lazy val sioc =     Prefix[Rdf]("sioc", "http://rdfs.org/sioc/ns#")
+  lazy val schema = Prefix[Rdf]("schema", "http://schema.org/")
+  lazy val dc = Prefix[Rdf]("dc", "http://purl.org/dc/elements/1.1/")
+
   lazy val prefixesList = List(
-    RDFPrefix[Rdf],
+    rdf,
     rdfs,
-    XSDPrefix[Rdf],
+    xsd,
     DCPrefix[Rdf],
     DCTPrefix[Rdf],
-    FOAFPrefix[Rdf],
+    foaf,
     LDPPrefix[Rdf],
     IANALinkPrefix[Rdf],
     WebACLPrefix[Rdf],
     CertPrefix[Rdf],
-    OWLPrefix[Rdf],
-    Prefix[Rdf]("dc", "http://purl.org/dc/elements/1.1/"),
-    Prefix[Rdf]("schema", "http://schema.org/"),
+    owl,
+    dc,
+    schema,
     Prefix[Rdf]("doap", "http://usefulinc.com/ns/doap#"),
-    Prefix[Rdf]("sioc", "http://rdfs.org/sioc/ns#"),
+    sioc,
     Prefix[Rdf]("dbo", "http://dbpedia.org/ontology/"),
     Prefix[Rdf]("vcard", "http://www.w3.org/2006/vcard/ns#"),
     skos,
@@ -60,6 +71,7 @@ trait RDFPrefixes[Rdf <: RDF] {
     Prefix[Rdf]("pair", prefixAV ),
 
     restruc,
+    tasks,
     Prefix[Rdf]("", "http://data.onisep.fr/ontologies/" ),
     Prefix[Rdf]("bioc", "http://deductions.github.io/biological-collections.owl.ttl#"),
     Prefix[Rdf]("cco", "http://purl.org/ontology/cco/core#" )

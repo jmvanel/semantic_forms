@@ -14,7 +14,10 @@ import org.w3.banana.RDFSPrefix
 import deductions.runtime.services.Configuration
 import deductions.runtime.jena.ImplementationSettings
 
-/** see https://jena.apache.org/documentation/query/text-query.html */
+/**
+ * see https://jena.apache.org/documentation/query/text-query.html
+ * see [[StringSearchSPARQL]] for search query
+ */
 trait LuceneIndex // [Rdf <: RDF]
     extends Configuration {
 

@@ -236,6 +236,25 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       "Page Facebook" -> av("facebook"),
       "Compte twitter" -> av("twitter"),
 
+      // Tasks management
+
+      "Tâche" ->  rdfs.label,
+      "Etat" ->  tasks("state"),
+      "JH estimé" ->  tasks("workDurationEstimated"),
+      "JH réel" ->  tasks("workDuration"),
+      "Assignée à" ->  tasks("assignee"),
+      "Suivi par" ->  tasks("managedBy"),
+      "Réalisée par" ->  tasks("realizedBy"),
+      "TJM" ->  tasks(""),  // ???
+      "Tarif estimé" ->  tasks("estimatedPrice"),  // ???
+      "Tarif réel" ->  tasks("price"),
+      "Détail" ->  rdfs.comment,
+      "Discussion" ->  tasks("discussion"),
+      "Groupe" ->  tasks("groupe"),  // ???
+      "Priorité" ->  tasks("priority"),  // ???
+      "Technologie" ->  tasks("technology"),
+      "Difficulté" ->  tasks("hardness"),  // ???
+
       // ONISEP
 
       /* For DuplicateCleanerSpecificationApp; NOTE: any rdf:type can be replaced,
