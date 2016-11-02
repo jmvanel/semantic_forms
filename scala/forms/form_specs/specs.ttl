@@ -18,4 +18,5 @@ av:   form:ontologyHasFormSpecification <https://raw.githubusercontent.com/assem
 cob:  form:ontologyHasFormSpecification <cob.form.ttl> .
 sioc: form:ontologyHasFormSpecification <sioc.form.ttl> .
 bioc: form:ontologyHasFormSpecification <https://deductions.github.io/biological-collections.form.ttl> .
+tm:   form:ontologyHasFormSpecification <https://deductions.github.io/task-management.form.ttl> .
 skos: form:ontologyHasFormSpecification <skos.form.ttl> .

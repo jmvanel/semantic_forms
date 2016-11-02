@@ -167,13 +167,15 @@ Actually there are several steps:
  *  0 - URL or File of CSV,
  *  1 - base URL for the rows,
  *  2 - URL or File ( in Turtle ) for adding details to each row; for example it contains:
- *  		<any:ROW> a foaf:Person .
- *    which will add this triple to every row.
+  *  		`<any:ROW> a foaf:Person .`
+  *    which will add this triple to every row.
  
 The features are like Any23, plus:
  * abbreviated Turtle terms with well-known prefixes (eg foaf:name) are understood as columns names 
  * abbreviated Turtle terms with well-known prefixes (eg dbpedia:Paris) are understood in cells 
 
+For example, adding `rdf:type` in first row and `foaf:Person` in another row will assign the class  `foaf:Person` to (the URI of) this row.
+ 
 Link on [other tools for semantization](http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/html/documentation.html#L3234).
 
 ## SPARQL queries
