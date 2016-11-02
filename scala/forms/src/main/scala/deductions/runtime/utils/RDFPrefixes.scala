@@ -44,6 +44,7 @@ import org.w3.banana._
   lazy val dc = Prefix[Rdf]("dc", "http://purl.org/dc/elements/1.1/")
 
   lazy val prefixesList = List(
+      // prefixes for ontologies
     rdf,
     rdfs,
     xsd,
@@ -74,7 +75,11 @@ import org.w3.banana._
     tasks,
     Prefix[Rdf]("", "http://data.onisep.fr/ontologies/" ),
     Prefix[Rdf]("bioc", "http://deductions.github.io/biological-collections.owl.ttl#"),
-    Prefix[Rdf]("cco", "http://purl.org/ontology/cco/core#" )
+    Prefix[Rdf]("cco", "http://purl.org/ontology/cco/core#" ),
+
+    // prefixes for resources
+
+    Prefix[Rdf]("dbpedia", "http://dbpedia.org/resource/")
     )
   
   lazy val prefixesMap: Map[String, Rdf#URI] =
@@ -88,6 +93,14 @@ import org.w3.banana._
       (pf.prefixIri) ->
       pf.prefixName
       }.toMap
+
+  def expandOrUnchanged(possiblyPrefixedURI: String): String = {
+     val uriMaybe = expand(possiblyPrefixedURI)
+     uriMaybe match {
+       case Some(uri) => fromUri(uri)
+       case None => possiblyPrefixedURI
+     }
+  }
 
   /**
    * expand possibly Prefixed URI (like foaf:name),

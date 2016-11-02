@@ -20,6 +20,8 @@ import scala.util.Try
 import scala.util.Success
 import play.api.mvc.Call
 import play.api.http.MimeTypes
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.utils.RDFPrefixes
 
 
 /** main controller */
@@ -31,6 +33,7 @@ trait ApplicationTrait extends Controller
     with MainXmlWithHead
     with CORS
     with HTTPrequestHelpers
+    with RDFPrefixes[ImplementationSettings.Rdf]
     {
 
   override def serverPort = {
@@ -56,18 +59,20 @@ trait ApplicationTrait extends Controller
             .as("text/html; charset=utf-8")
     }
 
-  def displayURI(uri: String, blanknode: String = "", Edit: String = "",
+  def displayURI(uri0: String, blanknode: String = "", Edit: String = "",
                  formuri: String = "") =
     withUser {
       implicit userid =>
         implicit request =>
           println(s"""displayURI: $request IP ${request.remoteAddress}, host ${request.host}
-         displayURI headers ${request.headers}
-         displayURI tags ${request.tags}
-         userid <$userid>
-         formuri <$formuri>
-         displayURI: Edit "$Edit" """)
+            displayURI headers ${request.headers}
+            displayURI tags ${request.tags}
+            userid <$userid>
+            formuri <$formuri>
+            displayURI: Edit "$Edit" """)
           val lang = chooseLanguage(request)
+          val uri = expandOrUnchanged(uri0)
+          println(s"expandOrUnchanged $uri")
           val title = labelForURITransaction(uri, lang)
           outputMainPage(
             htmlForm(uri, blanknode, editable = Edit != "", lang, formuri, graphURI = makeAbsoluteURIForSaving(userid)),
