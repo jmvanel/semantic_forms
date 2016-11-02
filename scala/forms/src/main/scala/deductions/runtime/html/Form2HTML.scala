@@ -19,8 +19,7 @@ import deductions.runtime.services.Configuration
  *  takes in account datatype
  */
 private [html] trait Form2HTML[NODE, URI <: NODE]
-    extends Form2HTMLBase[NODE, URI]
-    with Form2HTMLDisplay[NODE, URI]
+    extends Form2HTMLDisplay[NODE, URI]
     with Form2HTMLEdit[NODE, URI]
     with Timer
 //    with CSS

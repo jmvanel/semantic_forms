@@ -22,13 +22,17 @@ trait BasicWidgets {
 //      <button type="button" class="btn-primary" readonly="yes" title="Draw RDF graph"
 //    	        onclick={ s"popupgraph( '$link' );" }>
 //    	<form action={ s"/assets/rdfviewer/rdfviewer.html?url=$link" }>
-//        <input type="submit" class="btn-primary" readonly="yes" title="Draw RDF graph"
+//  		<input type="submit" class="btn-primary" readonly="yes" title="Draw RDF graph"
 //    	         value="Draw graph"></input> 
 //    	</form >
+
     if( uri != "" )
-<a class="btn btn-default" href={ s"/assets/rdfviewer/rdfviewer.html?url=$link" } title={"Draw RDF graph for " + uri}>
-			<img width="15" border="0" src="https://www.w3.org/RDF/icons/rdf_flyer.svg" alt="RDF Resource Description Framework Flyer Icon"/>
-		</a>
-else <div></div>
+    <a class="btn btn-default" href={ s"/assets/rdfviewer/rdfviewer.html?url=$link" }
+    title={"Draw RDF graph for " + uri}
+    target="_blank">
+			<img width="15" border="0" src="https://www.w3.org/RDF/icons/rdf_flyer.svg"
+           alt="RDF Resource Description Framework Flyer Icon"/>
+    </a>
+    else <div></div>
   }
 }
