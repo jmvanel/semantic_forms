@@ -40,7 +40,7 @@ trait Lookup[Rdf <: RDF, DATASET]
    *    </Class>
    */
   def lookup(search: String, lang: String = "en"): String = {
-    val queryString = indexBasedQuery.makeQueryString(search)
+    val queryString = indexBasedQuery.makeQueryString(search + "*")
     
     val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariables(queryString: String, Seq("thing") )
     println(s"lookup(search=$search $queryString => $res")
