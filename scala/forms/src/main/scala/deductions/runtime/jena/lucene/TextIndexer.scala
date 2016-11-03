@@ -3,26 +3,25 @@ package deductions.runtime.jena.lucene
 import jena._
 import org.apache.jena.query.text.EntityDefinition
 import org.apache.jena.query.text.DatasetGraphText
-import org.apache.jena.tdb.TDBFactory
+//import org.apache.jena.tdb.TDBFactory
 import deductions.runtime.services.DefaultConfiguration
-import org.w3.banana.jena.JenaModule
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import deductions.runtime.jena.ImplementationSettings
 
 /**
  * Index TDB with Lucene a posteriori;
  *  see https://jena.apache.org/documentation/query/text-query.html
  */
 object TextIndexerRDF extends App {
-  val te = new TextIndexerTrait
+  val te = new TextIndexerClass
   te.doIndex()
 }
 
-class TextIndexerTrait extends jena.textindexer(Array[String]())
-    with JenaModule
+private[lucene] class TextIndexerClass extends jena.textindexer(Array[String]())
+    with ImplementationSettings.RDFModule
     with LuceneIndex
     with DefaultConfiguration {
 
-  val rdfStoreProvider = new RDFStoreLocalJena1Provider {
+  val rdfStoreProvider = new ImplementationSettings.RDFCache {
     override val useTextQuery = true
   }
 
