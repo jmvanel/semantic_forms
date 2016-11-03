@@ -6,6 +6,7 @@ There are 2 way of executing them:
 - through SBT in the source directory
 - from a shell in a deployed application
 
+## Running with SBT
 Through SBT, you use runMain, like this (from the shell):
 ```shell
 sbt "runMain myPackage.myProgram arg1 arg2"
@@ -23,6 +24,7 @@ CLASSPATH=`sbt "export runtime:fullClasspath"`
 ```
 outputs the classpath as a colon-separated list perfect if you want to use it for invoking Scala.
 
+## Running with the Unix shell
 From a shell in a deployed application, you must first set the claspath, by running:
 
     source scripts/setClasspath.sh
@@ -135,6 +137,18 @@ To update everything (but better delete some named graph before, like above, or 
 
     java -cp $JARS deductions.runtime.sparql_cache.PopulateRDFCache
 
+To delete named graph related to common vocabularies, default form specifications, and IN18 translations, run this:
+
+    java -cp $JARS deductions.runtime.jena.ResetRDFCache
+
+To delete named graph for just one of the above:
+
+    scala -cp $JARS
+      deductions.runtime.jena.ResetRDFCacheApp.resetCommonVocabularies()
+      deductions.runtime.jena.ResetRDFCacheApp.resetCommonFormSpecifications()
+      deductions.runtime.jena.ResetRDFCacheApp.resetRDFI18NTranslations()
+
+### Misc.
 In the case when one wants to override some triples that are already loaded in graph G, and taking in account the language of the literals:
 
     java -cp $JARS deductions.runtime.jena.DataSourceManagerApp \
@@ -147,9 +161,6 @@ In the case when one wants to override some triples that are already loaded in g
 
 For each triple `?S ?P "val"@lang.` in newTriples.tll , this will remove the existing triple:  `?S ?P "old val"@lang.` , and add the new triple: `?S ?P "val"@lang.` 
 
-To delete named graph related to common vocabularies, default form specifications, and IN18 translations, run this:
-
-    java -cp $JARS deductions.runtime.jena.ResetRDFCache
 
 ## Semantize raw stuff
 

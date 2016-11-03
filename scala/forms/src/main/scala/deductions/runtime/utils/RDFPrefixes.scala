@@ -79,7 +79,9 @@ import org.w3.banana._
 
     // prefixes for resources
 
-    Prefix[Rdf]("dbpedia", "http://dbpedia.org/resource/")
+    Prefix[Rdf]("dbpedia", "http://dbpedia.org/resource/"),
+
+    Prefix[Rdf]("text", "http://jena.apache.org/text#" )
     )
   
   lazy val prefixesMap: Map[String, Rdf#URI] =
