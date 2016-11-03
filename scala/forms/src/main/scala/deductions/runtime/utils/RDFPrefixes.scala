@@ -42,6 +42,8 @@ import org.w3.banana._
   lazy val sioc =     Prefix[Rdf]("sioc", "http://rdfs.org/sioc/ns#")
   lazy val schema = Prefix[Rdf]("schema", "http://schema.org/")
   lazy val dc = Prefix[Rdf]("dc", "http://purl.org/dc/elements/1.1/")
+  lazy val text = Prefix[Rdf]("text", "http://jena.apache.org/text#" )
+
 
   lazy val prefixesList = List(
       // prefixes for ontologies
@@ -80,8 +82,7 @@ import org.w3.banana._
     // prefixes for resources
 
     Prefix[Rdf]("dbpedia", "http://dbpedia.org/resource/"),
-
-    Prefix[Rdf]("text", "http://jena.apache.org/text#" )
+    text
     )
   
   lazy val prefixesMap: Map[String, Rdf#URI] =

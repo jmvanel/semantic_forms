@@ -3,6 +3,7 @@ package controllers
 import play.api._
 import play.api.mvc._
 import play.api.data.Form
+import play.api.data.Forms
 import play.api.data.Forms._
 import deductions.runtime.services.Authentication
 
@@ -44,7 +45,7 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
   
 	/** checks user password in RDF database */
   val loginForm = Form(
-    tuple("userid" -> text, "password" -> text)
+    tuple("userid" -> Forms.text, "password" -> Forms.text)
       verifying
       ("Invalid userid or password",
         result => result match {
@@ -53,7 +54,7 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
 
   /** save user instance in RDF database */        
   val registerForm = Form(
-    tuple("userid" -> text, "password" -> text, "confirmPassword" -> text)
+    tuple("userid" -> Forms.text, "password" -> Forms.text, "confirmPassword" -> Forms.text)
       verifying
       ("Passwords do not match",
         result => result match {

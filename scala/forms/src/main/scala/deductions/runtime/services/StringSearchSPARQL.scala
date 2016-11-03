@@ -1,16 +1,21 @@
 package deductions.runtime.services
 
-import org.w3.banana.RDF
-import scala.concurrent.Future
-import scala.xml.Elem
-import scala.xml.NodeSeq
 import java.net.URLEncoder
+
+import scala.concurrent.Future
+import scala.xml.NodeSeq
+
+import org.w3.banana.RDF
 import org.w3.banana.RDFSPrefix
+
+import deductions.runtime.utils.RDFPrefixes
+import org.w3.banana.Prefix
 
 /** String Search with simple SPARQL or SPARQL + Lucene 
  *  (see trait LuceneIndex) */
 trait StringSearchSPARQL[Rdf <: RDF, DATASET]
     extends ParameterizedSPARQL[Rdf, DATASET]
+    with RDFPrefixes[Rdf]
         with Configuration {
 
   val plainSPARQLquery = new SPARQLQueryMaker[Rdf]
@@ -28,14 +33,20 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
   val indexBasedQuery = new SPARQLQueryMaker[Rdf]
       with ColsInResponse {
           val rdfs = RDFSPrefix[Rdf]
+          lazy val text = Prefix[Rdf]("text", "http://jena.apache.org/text#" )
+
     override def makeQueryString(search: String): String = s"""
-         |PREFIX text: <http://jena.apache.org/text#>
+         |${declarePrefix(text)}
          |${declarePrefix(rdfs)}
-         |SELECT DISTINCT ?thing WHERE {
+         |SELECT DISTINCT ?thing (COUNT(*) as ?count) WHERE {
          |  graph ?g {
-         |    ?thing text:query ( '${prepareSearchString(search)}' 10 )
+         |    ?thing text:query ( '${prepareSearchString(search)}' ) .
+         |    ?thing ?p ?o .
          |  }
-         |}""".stripMargin
+         |}
+         |GROUP BY ?thing
+         |ORDER BY DESC(?count)
+         |LIMIT 10""".stripMargin
   }
   
   trait ColsInResponse extends SPARQLQueryMaker[Rdf] {

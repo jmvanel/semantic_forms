@@ -9,7 +9,6 @@ import deductions.runtime.sparql_cache.FormSpecificationsLoaderTrait
 import deductions.runtime.sparql_cache.RDFI18NLoaderTrait
 import deductions.runtime.services.DefaultConfiguration
 
-
 /**
  * Populate RDF Cache with commonly used vocabularies;
  *  should be done just once;

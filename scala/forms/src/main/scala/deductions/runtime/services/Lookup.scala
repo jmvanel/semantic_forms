@@ -42,7 +42,7 @@ trait Lookup[Rdf <: RDF, DATASET]
   def lookup(search: String, lang: String = "en"): String = {
     val queryString = indexBasedQuery.makeQueryString(search + "*")
     
-    val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariables(queryString: String, Seq("thing") )
+    val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariables(queryString, Seq("thing") )
     println(s"lookup(search=$search $queryString => $res")
     println(s"lookup: starting TRANSACTION for dataset $dataset")
     val transaction = dataset.r({
@@ -75,15 +75,19 @@ trait Lookup[Rdf <: RDF, DATASET]
    *  TODO output rdf:type also
    *  */
   private val indexBasedQuery = new SPARQLQueryMaker[Rdf] {
-    //          val rdfs = RDFSPrefix[Rdf]
     override def makeQueryString(search: String): String = s"""
-         |PREFIX text: <http://jena.apache.org/text#>
+         |${declarePrefix(text)}
          |${declarePrefix(rdfs)}
-         |SELECT DISTINCT ?thing WHERE {
+         |SELECT DISTINCT ?thing (COUNT(*) as ?count) WHERE {
          |  graph ?g {
-         |    ?thing text:query ( '${search.trim()}' 10 )
+         |    ?thing text:query '${search.trim()}' .
+         |    ?thing ?p ?o .
          |  }
-         |}""".stripMargin
+         |}
+         |GROUP BY ?thing
+         |ORDER BY DESC(?count)
+         |LIMIT 10
+         |""".stripMargin
   }
 
   /**

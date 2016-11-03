@@ -68,7 +68,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
         <div class={css.tableCSSClasses.formRootCSSClass}> {
     	    css.localCSS ++
         uris.map(
-        u => displayResults(u.toIterable, hrefPrefix, lang, graph, true)) . get
+        u => displayResults(u.toIterable, hrefPrefix, lang, graph, true)) // . get
     	}</div>
       elems
     })
@@ -179,39 +179,51 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    * cf http://stackoverflow.com/questions/18420995/scala-iterator-one-should-never-use-an-iterator-after-calling-a-method-on-it
    */
   private def search_only(search: String)
-  (implicit queryMaker: SPARQLQueryMaker[Rdf] ): Future[Iterator[Rdf#Node]] = {
+  (implicit queryMaker: SPARQLQueryMaker[Rdf] )
+  // : Future[Iterator[Rdf#Node]]
+  = {
     println(s"search 2: starting TRANSACTION for dataset $dataset")
     val transaction =
       dataset.r({
     	  search_onlyNT(search)
       })
-    val tryIteratorRdfNode = transaction.flatMap { identity }
+    val tryIteratorRdfNode = transaction // .flatMap { identity }
     println( s"after search_only(search tryIteratorRdfNode $tryIteratorRdfNode" )
     tryIteratorRdfNode.asFuture
   }
   
-  /** non TRANSACTIONAL */
-  private def search_onlyNT(search: String)
-  (implicit queryMaker: SPARQLQueryMaker[Rdf] ): Try[Iterator[Rdf#Node]] = {
+    private def search_onlyNT(search: String)
+  (implicit queryMaker: SPARQLQueryMaker[Rdf] )
+  // : Try[Iterator[Rdf#Node]] 
+  = {
     val queryString = queryMaker.makeQueryString(search)
-
     println( s"search_onlyNT(search='$search') \n$queryString \n\tdataset Class ${dataset.getClass().getName}" )
-    // TODO use sparqlSelectQueryVariables() like in Lookup
-    val result = for {
-          query <- parseSelect(queryString)
-          solutions <- dataset.executeSelect(query, Map())
-        } yield {
-          solutions.toIterable.map {
-            row =>
-              row("thing") getOrElse {
-                System.err.println(s"search_only($search) : no ?thing in row")
-                URI("")
-              }
-          }
-        }
-    println( s"after search_only(search $search" )
-    result
+    sparqlSelectQueryVariablesNT(queryString, Seq("thing") )
   }
+
+//  /** non TRANSACTIONAL */
+//  private def search_onlyNT0(search: String)
+//  (implicit queryMaker: SPARQLQueryMaker[Rdf] )
+//  // : Try[Iterator[Rdf#Node]] 
+//  = {
+//    val queryString = queryMaker.makeQueryString(search)
+//
+//    println( s"search_onlyNT(search='$search') \n$queryString \n\tdataset Class ${dataset.getClass().getName}" )
+//    val result = for {
+//          query <- parseSelect(queryString)
+//          solutions <- dataset.executeSelect(query, Map())
+//        } yield {
+//          solutions.iterator.toList.map {
+//            row =>
+//              row("thing") getOrElse {
+//                System.err.println(s"search_only($search) : no ?thing in row")
+//                URI("")
+//              }
+//          }
+//        }
+//    println( s"after search_only(search $search" )
+//    result
+//  }
 
   /** with result variables specified; transactional */
   private def search_only2(search: String)

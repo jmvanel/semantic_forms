@@ -19,13 +19,15 @@ import org.w3.banana.io.JsonLdFlattened
 import org.w3.banana.io.JsonLdExpanded
 import org.w3.banana.io.JsonLdCompacted
 import org.w3.banana.syntax.NodeMatchSyntax
+import deductions.runtime.utils.Timer
 
 /** TODO separate stuff depending on dataset, and stuff taking a  graph in argument
  * @author jmv
  */
 trait SPARQLHelpers[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
-    		with RDFHelpers0[Rdf] {
+    		with RDFHelpers0[Rdf]
+    		with Timer {
 
   val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]
@@ -257,15 +259,18 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   /** run SPARQL on given dataset, knowing result variables; transactional */
   def sparqlSelectQueryVariables(queryString: String, variables: Seq[String],
                                  ds: DATASET = dataset): List[Seq[Rdf#Node]] = {
+    println("RRRRRRRRRRRRRRRR sparqlSelectQueryVariables")
     val transaction = ds.r({
       sparqlSelectQueryVariablesNT(queryString, variables, ds)
     })
+    println("RRRRRRRRRRRRRRRRr")
     transaction.get
   }
 
   /** run SPARQL on given dataset, knowing result variables; NOT transactional */
   def sparqlSelectQueryVariablesNT(queryString: String, variables: Seq[String],
                                    ds: DATASET = dataset): List[Seq[Rdf#Node]] = {
+    time("sparqlSelectQueryVariablesNT", {
     val solutionsTry = for {
       query <- parseSelect(queryString)
       es <- ds.executeSelect(query, Map())
@@ -283,7 +288,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
           }
         }
     }
-    results.to[List]
+//    println("RRRRRRRRRRRRRRRRr")
+    results.to[List] },
+    true )
   }
 
   /**

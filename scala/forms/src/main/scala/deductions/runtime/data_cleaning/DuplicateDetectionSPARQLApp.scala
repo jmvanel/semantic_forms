@@ -21,7 +21,7 @@ object DuplicateDetectionSPARQLApp extends App
   for (homologURIGroup <- homologURIGroups) {
     output(s"Groupe ${homologURIGroup.map { uri => rdfsLabel(uri, graph) }.mkString(", ")}")
     for (homologURI <- homologURIGroup) {
-      val l = formatCSVLine(homologURI, owl.ObjectProperty)
+      val l = formatCSVLine(homologURI, owl.ObjectProperty, List(rdfs.domain))
       output(l)
     }
     output("\n\n")
