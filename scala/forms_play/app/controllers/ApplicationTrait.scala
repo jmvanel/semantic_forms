@@ -218,7 +218,8 @@ trait ApplicationTrait extends Controller
         implicit request =>
           println("create: " + request)
           // URI of RDF class from which to create instance
-          val uri = getFirstNonEmptyInMap(request.queryString, "uri")
+          val uri0 = getFirstNonEmptyInMap(request.queryString, "uri")
+          val uri = expandOrUnchanged(uri0)
           // URI of form Specification
           val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formuri")
           println("create: " + uri)
