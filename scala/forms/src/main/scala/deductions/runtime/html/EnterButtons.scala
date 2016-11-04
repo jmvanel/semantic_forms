@@ -92,7 +92,7 @@ Thesis
               </select>
             </div>
             <div class="col-md-4">
-              <input class="btn btn-primary" type="submit" value={ message("Create") }/>
+              <input class="btn btn-primary" style="position: relative; top: 18px;" type="submit" value={ message("Create") }/>
             </div>
             <input type="submit" style="display:none"/>
           </div>

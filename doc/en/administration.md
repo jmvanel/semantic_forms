@@ -148,6 +148,16 @@ To delete named graph for just one of the above:
       deductions.runtime.jena.ResetRDFCacheApp.resetCommonFormSpecifications()
       deductions.runtime.jena.ResetRDFCacheApp.resetRDFI18NTranslations()
 
+### Jena commands 
+
+SPARQL query in TDB:
+
+    java -cp $JARS tdb.tdbquery --loc=$HOME/src/semantic_forms/scala/forms_play/TDB --query /tmp/test.rq
+
+Converting RDF file in any syntax in JSON-LD. This is particularly useful, as "classic" command line tools like CWM and rapper cannot do that.
+
+    java -cp $JARS riotcmd.riot --out=json-ld ~/data/sioc1.rdf 1> ~/data/sioc1.jsonld
+
 ### Misc.
 In the case when one wants to override some triples that are already loaded in graph G, and taking in account the language of the literals:
 
