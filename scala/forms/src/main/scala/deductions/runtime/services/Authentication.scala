@@ -1,27 +1,30 @@
 package deductions.runtime.services
 
+import java.security.MessageDigest
+
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
-import org.w3.banana.FOAFPrefix
+
 import org.w3.banana.RDF
+
 import deductions.runtime.sparql_cache.RDFCacheAlgo
-import scala.util.Failure
+import deductions.runtime.utils.RDFPrefixes
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter
-import java.security.MessageDigest
 
 /** facade for user Authentication management;
  *  wraps the TDB database
  * @author jmv
  */
-trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET] {
+trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
+    with RDFPrefixes[Rdf] {
 
   def passwordsGraph: Rdf#MGraph
 
   import ops._
   import rdfStore.transactorSyntax._
 
-  val foaf = FOAFPrefix[Rdf]
+//  val foaf = FOAFPrefix[Rdf]
   val passwordPred = URI("urn:password")
 
   /** compare password with database; @return user URI if success */

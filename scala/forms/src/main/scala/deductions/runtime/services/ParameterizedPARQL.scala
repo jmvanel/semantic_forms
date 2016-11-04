@@ -201,30 +201,6 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     sparqlSelectQueryVariablesNT(queryString, Seq("thing") )
   }
 
-//  /** non TRANSACTIONAL */
-//  private def search_onlyNT0(search: String)
-//  (implicit queryMaker: SPARQLQueryMaker[Rdf] )
-//  // : Try[Iterator[Rdf#Node]] 
-//  = {
-//    val queryString = queryMaker.makeQueryString(search)
-//
-//    println( s"search_onlyNT(search='$search') \n$queryString \n\tdataset Class ${dataset.getClass().getName}" )
-//    val result = for {
-//          query <- parseSelect(queryString)
-//          solutions <- dataset.executeSelect(query, Map())
-//        } yield {
-//          solutions.iterator.toList.map {
-//            row =>
-//              row("thing") getOrElse {
-//                System.err.println(s"search_only($search) : no ?thing in row")
-//                URI("")
-//              }
-//          }
-//        }
-//    println( s"after search_only(search $search" )
-//    result
-//  }
-
   /** with result variables specified; transactional */
   private def search_only2(search: String)
   (implicit queryMaker: SPARQLQueryMaker[Rdf] ): List[Seq[Rdf#Node]] = {

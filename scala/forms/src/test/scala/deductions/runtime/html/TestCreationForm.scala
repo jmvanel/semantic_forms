@@ -24,6 +24,9 @@ import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.utils.RDFPrefixes
+import org.w3.banana.RDF
+import org.w3.banana.RDFOps
 
 /**
  * Test Creation Form from class URI, without form specification
@@ -32,7 +35,7 @@ import deductions.runtime.jena.ImplementationSettings
 class TestCreationForm extends FunSuite
     with ImplementationSettings.RDFModule
     with CreationFormAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with GraphTestEnum
+    with GraphTestEnum[ImplementationSettings.Rdf]
     //    with BeforeAndAfterAll
     with RDFStoreLocalJena1Provider
     with SPARQLHelpers[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
@@ -42,7 +45,6 @@ class TestCreationForm extends FunSuite
     with DefaultConfiguration {
 
   override val lookup_domain_unionOf = true
-
   val logger = Logger.getRootLogger()
   import ops._
 
@@ -132,9 +134,14 @@ class TestCreationForm extends FunSuite
 
 }
 
-trait GraphTestEnum extends RDFOpsModule with TurtleWriterModule {
+trait GraphTestEnum[Rdf <: RDF ] extends RDFOpsModule with TurtleWriterModule
+//with DefaultConfiguration
+//    with RDFPrefixes[Rdf]
+{
+  implicit val ops: RDFOps[Rdf]
+
   import ops._
-  val foaf = FOAFPrefix[Rdf]
+  private val foaf = FOAFPrefix[Rdf]
   private val owl = OWLPrefix[Rdf]
   private val rdfs = RDFSPrefix[Rdf]
 

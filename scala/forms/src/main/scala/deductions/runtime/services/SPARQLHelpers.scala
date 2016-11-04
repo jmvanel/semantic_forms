@@ -263,7 +263,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     val transaction = ds.r({
       sparqlSelectQueryVariablesNT(queryString, variables, ds)
     })
-    println("RRRRRRRRRRRRRRRRr")
+    println("RRRRRRRRRRRRRRRR")
     transaction.get
   }
 
@@ -288,7 +288,6 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
           }
         }
     }
-//    println("RRRRRRRRRRRRRRRRr")
     results.to[List] },
     true )
   }

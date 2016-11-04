@@ -423,10 +423,10 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   }
 
   /** TODO should be in package hmtl */
-  private def wrapSearchResults(fut: Future[NodeSeq], q: String): Future[Elem] =
+  private def wrapSearchResults(fut: Future[NodeSeq], q: String, mess:String= "Searched for"): Future[Elem] =
     fut.map { v =>
       <section class="label-search-results">
-        <p class="label-search-header">Searched for "{ q }" :</p>
+        <p class="label-search-header">{mess} "{ q }" :</p>
         <div>
         { css.localCSS }
         { v }
@@ -436,7 +436,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
   def esearchFuture(q: String = ""): Future[Elem] = {
     val fut = extendedSearch(q)
-    wrapSearchResults(fut, q)
+    wrapSearchResults(fut, q, mess= "Extended search for")
   }
 
   def ldpPOST(uri: String, link: Option[String], contentType: Option[String],

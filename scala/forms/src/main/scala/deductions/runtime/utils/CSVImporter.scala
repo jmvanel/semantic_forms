@@ -35,7 +35,6 @@ trait CSVImporter[Rdf <: RDF, DATASET]
   private val rdf = RDFPrefix[Rdf]
 //  private val rdfs = RDFSPrefix[Rdf]
   private val xsd = XSDPrefix[Rdf]
-  private val foaf = FOAFPrefix[Rdf]
 
   /** lots of boiler plate for vocabularies !!!!!!!!!!! */
   object CCOPrefix {

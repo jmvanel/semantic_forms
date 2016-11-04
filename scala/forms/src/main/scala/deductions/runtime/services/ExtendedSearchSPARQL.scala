@@ -2,8 +2,9 @@ package deductions.runtime.services
 
 import org.w3.banana.RDF
 import scala.concurrent.Future
-import scala.xml.Elem
 import scala.xml.NodeSeq
+
+import deductions.runtime.utils.RDFPrefixes
 
 /**
  * Broader "interest" search in simple search results page
@@ -11,7 +12,8 @@ import scala.xml.NodeSeq
  *  http://localhost:9000/esearch?q=http%3A%2F%2Fjmvanel.free.fr%2Fjmv.rdf%23me
  */
 trait ExtendedSearchSPARQL[Rdf <: RDF, DATASET]
-    extends ParameterizedSPARQL[Rdf, DATASET] {
+    extends ParameterizedSPARQL[Rdf, DATASET]
+    with RDFPrefixes[Rdf] {
 
   def extendedSearch(uri: String, hrefPrefix: String = ""): Future[NodeSeq] =
     search(uri, hrefPrefix)
@@ -19,22 +21,30 @@ trait ExtendedSearchSPARQL[Rdf <: RDF, DATASET]
   private implicit val queryMaker = new SPARQLQueryMaker[Rdf] {
     override def makeQueryString(search: String): String = {
       val q = s"""
-        prefix foaf: <http://xmlns.com/foaf/0.1/>
-        
-SELECT DISTINCT ?S WHERE {
-{
-  graph ?g {
-  ?TOPIC ?PRED <$search> .
-  ?S ?PRED2  ?TOPIC .
-  # ?S a foaf:Person .
-} OPTIONAL {
-  <$search> ?PRED3 ?TOPIC2 .
-  ?S  ?PRED4  ?TOPIC2 .
-  # ?S a foaf:Person .
-}
-}
-}
-"""
+       |${declarePrefix(foaf)}
+       |SELECT DISTINCT ?thing WHERE {
+       |  graph ?g {
+       |    # "backward" links distance 2
+       |    ?TOPIC ?PRED <$search> .
+       |    ?thing ?PRED2  ?TOPIC .
+       |    # ?S a foaf:Person .
+       |} OPTIONAL {
+       |  graph ?g {
+       |    # "forward-backward" links distance 2
+       |    <$search> ?PRED3 ?TOPIC2 .
+       |    ?thing ?PRED4 ?TOPIC2 .
+       |    # ?S a foaf:Person .
+       |  }
+       |}
+       | OPTIONAL {
+       |  graph ?g {
+       |    # "forward" links distance 2
+       |    <$search> ?PRED4 ?TOPIC3 .
+       |    ?TOPIC3 ?PRED5 ?thing .
+       |  }
+       |}
+       |}
+""".stripMargin
       println("extendedSearch: query: " + q)
       q
     }

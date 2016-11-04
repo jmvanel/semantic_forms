@@ -69,7 +69,7 @@ trait FormSyntaxFactoryTest[Rdf <: RDF, DATASET] extends FormSyntaxFactory[Rdf, 
   import rdfStore.transactorSyntax._
 
   //  import FormSyntaxFactory._
-  lazy val foaf = FOAFPrefix[Rdf]
+//  private lazy val foaf = FOAFPrefix[Rdf]
 
   def makeFOAFsample: Rdf#Graph = {
     (URI("betehess")

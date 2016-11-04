@@ -73,7 +73,7 @@ trait GraphTest[Rdf <: RDF] //extends RDFOpsModule
 
   import ops._
   val form = Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#")
-  val foaf = FOAFPrefix[Rdf]
+  private val foaf = FOAFPrefix[Rdf]
 
   val personFormSpec0 = (
     URI("personForm")

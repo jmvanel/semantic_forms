@@ -35,9 +35,9 @@ import org.w3.banana._
   // TODO remove private
   private lazy val rdf = RDFPrefix[Rdf]
   private lazy val xsd = XSDPrefix[Rdf]
-  private lazy val foaf = FOAFPrefix[Rdf]
   private lazy val owl = OWLPrefix[Rdf]
 
+  lazy val foaf = FOAFPrefix[Rdf]
   lazy val skos = Prefix[Rdf]("skos", "http://www.w3.org/2004/02/skos/core#")
   lazy val sioc =     Prefix[Rdf]("sioc", "http://rdfs.org/sioc/ns#")
   lazy val schema = Prefix[Rdf]("schema", "http://schema.org/")
