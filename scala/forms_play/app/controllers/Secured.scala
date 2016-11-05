@@ -12,16 +12,21 @@ import deductions.runtime.services.Configuration
  */
 trait Secured
     extends ApplicationFacadeJena
-   with Configuration {
+   with Configuration
+   with Results {
 
   val loginActivated = needLogin
 
-
   def username(request: RequestHeader) = request.session.get(Security.username)
 
-  private def onUnauthorized(request: RequestHeader) =
-    Results.Redirect(routes.Auth.login).
-        addingToSession( "to-redirect" -> request.uri )(request)
+  private def onUnauthorized(request: RequestHeader) = {
+    if (request.path.startsWith("/form"))
+      Unauthorized("""{"currentRequest": "ERROR UNAUTHORIZED"}""").
+        addingToSession("to-redirect" -> request.uri)(request)
+    else
+      Results.Redirect(routes.Auth.login).
+        addingToSession("to-redirect" -> request.uri)(request)
+  }
 
   /** Ensures the controller is only accessible to registered users */
   private def withAuth(fun: => String => Request[AnyContent] => Result): EssentialAction = {
