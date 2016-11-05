@@ -168,7 +168,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
 }
 
 object Form2HTML {
-  def urlEncode(node: Any) = { URLEncoder.encode(node.toString, "utf-8") }
+  def urlEncode(node: Any) = URLEncoder.encode(node.toString, "utf-8")
 
   def createHyperlinkString(hrefPrefix: String, uri: String, blanknode: Boolean = false): String = {
     if (hrefPrefix == "")

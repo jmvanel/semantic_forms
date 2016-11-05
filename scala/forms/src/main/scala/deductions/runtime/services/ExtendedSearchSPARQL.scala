@@ -13,9 +13,10 @@ import deductions.runtime.utils.RDFPrefixes
  */
 trait ExtendedSearchSPARQL[Rdf <: RDF, DATASET]
     extends ParameterizedSPARQL[Rdf, DATASET]
-    with RDFPrefixes[Rdf] {
+    with RDFPrefixes[Rdf]
+    with Configuration {
 
-  def extendedSearch(uri: String, hrefPrefix: String = ""): Future[NodeSeq] =
+  def extendedSearch(uri: String, hrefPrefix: String = hrefDisplayPrefix): Future[NodeSeq] =
     search(uri, hrefPrefix)
 
   private implicit val queryMaker = new SPARQLQueryMaker[Rdf] {
