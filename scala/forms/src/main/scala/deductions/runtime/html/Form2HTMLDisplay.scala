@@ -5,41 +5,42 @@ import scala.xml.NodeSeq.seqToNodeSeq
 import scala.xml.Text
 import scala.xml.Unparsed
 import java.net.URLEncoder
+import deductions.runtime.abstract_syntax.FormModule
 
 /** generate HTML from abstract Form for Display (Read only) */
 trait Form2HTMLDisplay[NODE, URI <: NODE]
     extends Form2HTMLBase[NODE, URI] {
 
-  def createHTMLiteralReadonlyField(l: fm#LiteralEntry): NodeSeq =
+  def createHTMLiteralReadonlyField(l: formMod#LiteralEntry): NodeSeq =
     <xml:group>
       <div class="form-cell-display">{ Unparsed(toPlainString(l.value)) }</div>
       <div>{ if (l.lang != "" && l.lang != "No_language") " > " + l.lang }</div>
     </xml:group>
 
   def createHTMLResourceReadonlyField(
-      r: fm#ResourceEntry,
-      hrefPrefix: String): NodeSeq = {
+      resourceEntry: formMod#ResourceEntry,
+      hrefPrefix: String = hrefDisplayPrefix ): NodeSeq = {
 
-    val stringValue = r.value.toString()
+    val stringValue = resourceEntry.value.toString()
     val css = cssForURI(stringValue)
 
     val hyperlinkToObjectURI =
       <a href={ Form2HTML.createHyperlinkString(hrefPrefix, stringValue) }
       class={css}
       title={
-        s"""Value ${if (stringValue != r.valueLabel) stringValue else ""}
-              of type ${r.type_.toString()}"""
+        s"""Value ${if (stringValue != resourceEntry.valueLabel) stringValue else ""}
+              of type ${resourceEntry.type_.toString()}"""
       } draggable="true"> {
-        r.valueLabel
+        resourceEntry.valueLabel
       }</a>
     
     val backLinkButton = (if (stringValue.size > 0 && showExpertButtons) {      
-				val title = s""" Reverse links for "${r.label}" "${r.value}" """
+				val title = s""" Reverse links for "${resourceEntry.label}" "${resourceEntry.value}" """
 				makeBackLinkButton(stringValue, title=title )
       } else new Text(""))
       
     val normalNavigationButton = (if (stringValue.size > 0 && showExpertButtons) {
-      <a class="btn btn-primary" href={ stringValue } title={ s"Normal HTTP link to ${r.value}" }
+      <a class="btn btn-primary" href={ stringValue } title={ s"Normal HTTP link to ${resourceEntry.value}" }
       draggable="true"><i class="glyphicon glyphicon-share-alt"></i> </a>
     } else new Text(""))
     
@@ -53,8 +54,28 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       makeDrawGraphLink(stringValue) )
   }
 
+//  def displayNode(uri: URI, hrefPrefix: String = hrefDisplayPrefix,
+//      label: String,
+//      property: URI,
+//      type_ : NODE
+//      ): NodeSeq = {
+//    val fmod = new FormModule[NODE, URI ]{
+////      val nullURI= "" // ops.URI("")
+//      }   
+//    val resourceEntry = new
+//      fmod.ResourceEntry(label, "comment",
+//    property, // fmod.nullURI,
+//    new fmod.ResourceValidator(Set()),
+//    uri, true,
+//    Seq(),
+//    label,
+//    type_, // fmod.nullURI,
+//    false) 
+//    createHTMLResourceReadonlyField( resourceEntry, hrefPrefix)
+//  }
+
   def createHTMLBlankNodeReadonlyField(
-    r: fm#BlankNodeEntry,
+    r: formMod#BlankNodeEntry,
     hrefPrefix: String) =
     <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString, true) }>{
       r.valueLabel

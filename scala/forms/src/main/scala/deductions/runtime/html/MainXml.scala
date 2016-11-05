@@ -50,7 +50,7 @@ trait MainXml extends ToolsPage with EnterButtons {
   def mainPageHeader(implicit lang: String = "en"): NodeSeq = {
     <div><h3>
            <a href="/" title="Open a new Semantic_forms in a new tab." target="_blank">{
-             message("Welcome")
+             messageI18N("Welcome")
            }</a>
          </h3></div>
     <div> {

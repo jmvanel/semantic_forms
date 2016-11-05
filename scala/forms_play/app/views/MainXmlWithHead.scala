@@ -9,7 +9,7 @@ trait MainXmlWithHead extends MainXml {
   override def head(title: String = "")(implicit lang: String = "en") = {
     <head>
       <title>{
-        val default = message("Welcome")
+        val default = messageI18N("Welcome")
         if( title != "")
           s"$title - $default"
         else

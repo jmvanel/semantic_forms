@@ -15,16 +15,19 @@ trait Form2HTMLBase[NODE, URI <: NODE]
     extends Configuration
     with BasicWidgets
     with CSS
+//    with RDFPrefixes[Rdf] // TODO ???
     {
 
-  type fm = FormModule[NODE, URI]
-  type Entry = fm#Entry
+  type formMod = FormModule[NODE, URI]
+  type FormEntry = formMod#Entry
+
+  lazy val prefixes = new RDFPrefixes[ImplementationSettings.Rdf]
+		  with ImplementationSettings.RDFModule
+		  with DefaultConfiguration {}
   
-  lazy val prefixes = new ImplementationSettings.RDFModule
-  with RDFPrefixes[ImplementationSettings.Rdf] with DefaultConfiguration {}
   import prefixes._
   
-  def makeFieldLabel(preceding: fm#Entry, field: fm#Entry)
+  def makeFieldLabel(preceding: formMod#Entry, field: formMod#Entry)
   (implicit form: FormModule[NODE, URI]#FormSyntax) = {
     // display field label only if different from preceding
     if (preceding.label != field.label)
@@ -43,7 +46,7 @@ trait Form2HTMLBase[NODE, URI <: NODE]
       }> -- </label>
   }
 
-  def labelTooltip(field: fm#Entry) = {
+  def labelTooltip(field: formMod#Entry) = {
     val details = if( displayTechnicalSemWebDetails )
         s"""
           property: ${field.property} -
@@ -57,7 +60,7 @@ trait Form2HTMLBase[NODE, URI <: NODE]
   
   def message(m: String,lang: String): String = I18NMessages.get(m, lang)
 
-  def isFirstFieldForProperty( field: fm#Entry )
+  def isFirstFieldForProperty( field: formMod#Entry )
     (implicit form: FormModule[NODE, URI]#FormSyntax): Boolean = {
     val ff = form.fields
     val previous = Try(ff(ff.indexOf(field) - 1)).toOption
@@ -70,14 +73,14 @@ trait Form2HTMLBase[NODE, URI <: NODE]
     /** leveraging on HTTP parameter being the original triple from TDB,
    * in N-Triple syntax, we generate here the HTTP parameter from the original triple;
    * see HttpParamsManager#httpParam2Triple for the reverse operation */
-  def makeHTMLName(ent: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): String = {
+  def makeHTMLName(ent: formMod#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): String = {
     val rawResult = {
       def makeTTLURI(s: NODE) = s"<$s>"
       def makeTTLBN(s: NODE) = s"_:$s"
-      def makeTTLAnyTerm(value: NODE, ent: fm#Entry) = {
+      def makeTTLAnyTerm(value: NODE, ent: formMod#Entry) = {
         ent match {
-          case lit: fm#LiteralEntry => value
-          case bn: fm#BlankNodeEntry => makeTTLBN(value)
+          case lit: formMod#LiteralEntry => value
+          case bn: formMod#BlankNodeEntry => makeTTLBN(value)
           case _ => makeTTLURI(value)
         }
       }
@@ -89,16 +92,16 @@ trait Form2HTMLBase[NODE, URI <: NODE]
   }
 
   /** make HTML name for a resource */
-  def makeHTMLNameResource(re: fm#Entry)(implicit form:
+  def makeHTMLNameResource(re: formMod#Entry)(implicit form:
       FormModule[NODE, URI]#FormSyntax) =
     makeHTMLName(re)
-  def makeHTMLIdResourceSelect(re: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): String =
+  def makeHTMLIdResourceSelect(re: formMod#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): String =
     toPlainString(re.property)
-  def makeHTMLNameBN(re: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = makeHTMLName(re)
-  def makeHTMNameLiteral(lit: fm#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax) = 
+  def makeHTMLNameBN(re: formMod#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = makeHTMLName(re)
+  def makeHTMNameLiteral(lit: formMod#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax) =
     makeHTMLName(lit)
    
-  def makeHTML_Id(entry: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) =
+  def makeHTML_Id(entry: formMod#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) =
     "f" + form.fields.indexOf(entry)
 
 }

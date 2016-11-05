@@ -20,6 +20,8 @@ import deductions.runtime.html.CSS
 import scala.xml.NodeSeq
 import scala.xml.Text
 import scala.util.Try
+import deductions.runtime.html.Form2HTMLDisplay
+import deductions.runtime.abstract_syntax.FormModule
 
 
 trait SPARQLQueryMaker[Rdf <: RDF] {
@@ -46,7 +48,8 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     with SPARQLHelpers[Rdf, DATASET]
     with Configuration
     with CSS
-    {
+    with Form2HTMLDisplay[Rdf#Node, Rdf#URI] {
+
   import ops._
   import sparqlOps._
   import rdfStore.transactorSyntax._
@@ -133,10 +136,37 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     }</div><!-- end of wrapping div displayResults -->
   }
 
+    /** make HTML hyperlink For given URI;
+   *  this links to semantic_forms page for displaying this URI;
+   * NOTE: this duplicates code in Form2HTMLDisplay.createHTMLResourceReadonlyField() */
+  protected def makeHyperlinkForURI( node: Rdf#Node, lang: String, graph: Rdf#Graph,
+      hrefPrefix: String = hrefDisplayPrefix,
+      label: String = "",
+      sortAnd1rowPerElement:Boolean = false )
+    (implicit queryMaker: SPARQLQueryMaker[Rdf] ): NodeSeq = {
+     displayNode(uriNodeToURI(node), hrefPrefix, label,
+         nullURI, nullURI )
+  }
+
+  private def displayNode(uri: Rdf#URI, hrefPrefix: String = hrefDisplayPrefix,
+		  label: String,
+      property: Rdf#URI,
+      type_ : Rdf#Node
+      ): NodeSeq = {
+    val fmod = new FormModule[Rdf#Node,  Rdf#URI ]{
+      val nullURI= ops.URI("")
+      }
+    val resourceEntry = new fmod.ResourceEntry(
+      label, "comment", property, new fmod.ResourceValidator(Set()),
+      uri, true,
+      Seq(), label, type_, false)
+    createHTMLResourceReadonlyField( resourceEntry, hrefPrefix)
+  }
+
   /** make HTML hyperlink For given URI;
    *  this links to semantic_forms page for displaying this URI;
    * NOTE: this duplicates code in Form2HTMLDisplay.createHTMLResourceReadonlyField() */
-  def makeHyperlinkForURI( node: Rdf#Node, lang: String, graph: Rdf#Graph,
+  private def makeHyperlinkForURIOLD( node: Rdf#Node, lang: String, graph: Rdf#Graph,
       hrefPrefix: String = hrefDisplayPrefix,
       label: String = "",
       sortAnd1rowPerElement:Boolean = false )

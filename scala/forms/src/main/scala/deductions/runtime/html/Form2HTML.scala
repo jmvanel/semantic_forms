@@ -70,12 +70,12 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
    * generate HTML, but Just Fields;
    *  this lets application developers create their own submit button(s) and <form> tag
    */
-  def generateHTMLJustFields(form: fm#FormSyntax,
+  def generateHTMLJustFields(form: formMod#FormSyntax,
     hrefPrefix: String = "",
     editable: Boolean = false,
     graphURI: String = "", lang: String = "en"): NodeSeq = {
 
-    implicit val formImpl: fm#FormSyntax = form
+    implicit val formImpl: formMod#FormSyntax = form
 
     val hidden = if (editable) {
       <input type="hidden" name="url" value={ urlEncode(form.subject) }/>
@@ -117,7 +117,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
   }
 
 
-  private def createHTMLField(field: fm#Entry, editable: Boolean,
+  private def createHTMLField(field: formMod#Entry, editable: Boolean,
     hrefPrefix: String = "", lang: String = "en")(implicit form: FormModule[NODE, URI]#FormSyntax): xml.NodeSeq = {
     
     // hack instead of true form separator in the form spec in RDF:
@@ -125,13 +125,13 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
       return <hr style="background:#F87431; border:0; height:4px"/> // Text("----")
 
     val xmlField = field match {
-      case l: fm#LiteralEntry =>
+      case l: formMod#LiteralEntry =>
           if (editable)
             createHTMLiteralEditableField(l)
           else
             createHTMLiteralReadonlyField(l)
             
-      case r: fm#ResourceEntry =>
+      case r: formMod#ResourceEntry =>
         /* link to a known resource of the right type,
            * or (TODO) create a sub-form for a blank node of an ancillary type (like a street address),
            * or just create a new resource with its type, given by range, or derived
@@ -141,7 +141,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
           else
             createHTMLResourceReadonlyField(r, hrefPrefix)
 
-      case r: fm#BlankNodeEntry =>
+      case r: formMod#BlankNodeEntry =>
           if (editable)
             createHTMLBlankNodeEditableField(r)
           else
@@ -153,7 +153,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
   }
 
   /** make Field Data (display) Or Input (edit) */
-  private def makeFieldDataOrInput(field: fm#Entry, hrefPrefix: String,
+  private def makeFieldDataOrInput(field: formMod#Entry, hrefPrefix: String,
     editable: Boolean, lang: String = "en")(implicit form: FormModule[NODE, URI]#FormSyntax) = {
     if (shouldAddAddRemoveWidgets(field, editable))
       createHTMLField(field, editable, hrefPrefix, lang)

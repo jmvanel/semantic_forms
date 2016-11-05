@@ -22,20 +22,20 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
   val inputSize = 90
 
 
-  def shouldAddAddRemoveWidgets(field: fm#Entry, editable: Boolean)
+  def shouldAddAddRemoveWidgets(field: formMod#Entry, editable: Boolean)
     (implicit form: FormModule[NODE, URI]#FormSyntax): Boolean = {
     // println( "showPlusButtons " + showPlusButtons)
     editable && field.defaults.multivalue && field.openChoice && showPlusButtons &&
     isFirstFieldForProperty(field)
   }
   
-  def createAddRemoveWidgets(field: fm#Entry, editable: Boolean)
+  def createAddRemoveWidgets(field: formMod#Entry, editable: Boolean)
   (implicit form: FormModule[NODE, URI]#FormSyntax): Elem = {
     if (shouldAddAddRemoveWidgets(field, editable)) {
       // button with an action to duplicate the original HTML widget with an empty content
       val widgetName = field match {
-        case r: fm#ResourceEntry if lookup(r) => makeHTML_Id(r)
-        case r: fm#ResourceEntry => makeHTMLIdResourceSelect(r)
+        case r: formMod#ResourceEntry if lookup(r) => makeHTML_Id(r)
+        case r: formMod#ResourceEntry => makeHTMLIdResourceSelect(r)
         case _ => makeHTML_Id(field)
       }
       <div class={ css.cssClasses.formAddDivCSSClass }>
@@ -48,10 +48,10 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
   }
 
   /** tell if given Entry is configured for lookup (completion) */
-  def lookup(r: fm#Entry) = r.widgetType == DBPediaLookup
+  def lookup(r: formMod#Entry) = r.widgetType == DBPediaLookup
   
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
-  def createHTMLResourceEditableField(r: fm#ResourceEntry, lang: String = "en"
+  def createHTMLResourceEditableField(r: formMod#ResourceEntry, lang: String = "en"
       )(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
 //  if( r.property . toString() . contains("knows")) println("knows")
     val placeholder = resourcePlaceholder(r, lang)
@@ -87,11 +87,11 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
   }
   
   /** Placeholder for a resource URI */
-  private def resourcePlaceholder(r: fm#ResourceEntry, lang: String = "en") = {
+  private def resourcePlaceholder(r: formMod#ResourceEntry, lang: String = "en") = {
     resourceOrBN_Placeholder(r, lang )  +
         " - " + r.valueLabel
   }
-  private def resourceOrBN_Placeholder(r: fm#Entry, lang: String = "en") = {
+  private def resourceOrBN_Placeholder(r: formMod#Entry, lang: String = "en") = {
     if (lookup(r))
       I18NMessages.get("Completion", lang)
 //      s"Enter a word; completion with Wikipedia lookup"
@@ -112,7 +112,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
    * TODO analyse differences with createHTMLResourceEditableField;
    *  maybe there is no necessary difference
    */
-  def createHTMLBlankNodeEditableField(r: fm#BlankNodeEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
+  def createHTMLBlankNodeEditableField(r: formMod#BlankNodeEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     val placeholder = resourceOrBN_Placeholder(r)
     Seq(
       if (r.openChoice) {
@@ -135,7 +135,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
   }
 
   /** display list of Possible Values from TDB as a <select> pulldown menu */
-  private def renderPossibleValues(r: fm#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
+  private def renderPossibleValues(r: formMod#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     if (hasPossibleValues(r) &&
       isFirstFieldForProperty(r)) {
       <div class={ css.cssClasses.formSelectDivCSSClass }>
@@ -152,14 +152,14 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
     } else new Text("\n")
   }
   
-  def makeDatalistIdForEntryProperty(r: fm#Entry) = urlEncode(r.property.toString()) + "__property"
+  def makeDatalistIdForEntryProperty(r: formMod#Entry) = urlEncode(r.property.toString()) + "__property"
 
 
 
   //// stuff for Literal (string) data ////
 
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
-  def createHTMLiteralEditableField(lit: fm#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
+  def createHTMLiteralEditableField(lit: formMod#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     val placeholder = {
         val typ0 = lit.type_.toString()
         val typ = if (
@@ -220,18 +220,18 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
     Text("\n") ++ elem
   }
 
-  private def makeHTMLIdForDatalist(re: fm#Entry): String = {
+  private def makeHTMLIdForDatalist(re: formMod#Entry): String = {
     "possibleValues-" + (
       re match {
-        case re: fm#ResourceEntry => (re.property + "--" + re.value).hashCode().toString()
-        case lit: fm#LiteralEntry => (lit.property + "--" + lit.value).hashCode().toString()
-        case bn: fm#BlankNodeEntry => (bn.property + "--" + bn.value).hashCode().toString()
+        case re: formMod#ResourceEntry => (re.property + "--" + re.value).hashCode().toString()
+        case lit: formMod#LiteralEntry => (lit.property + "--" + lit.value).hashCode().toString()
+        case bn: formMod#BlankNodeEntry => (bn.property + "--" + bn.value).hashCode().toString()
       })
   }
 
   /** @return a list of option tags or a datalist tag (with the option tags inside) */
-  def formatPossibleValues(field: Entry, inDatalist: Boolean = false)
-  (implicit form: fm#FormSyntax)
+  def formatPossibleValues(field: FormEntry, inDatalist: Boolean = false)
+  (implicit form: formMod#FormSyntax)
   : NodeSeq = {
     val options = Seq(<option value=""></option>) ++
     		makeHTMLOptionsSequence(field)
@@ -243,9 +243,9 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
   }
 
   /** make sequence of HTML <option> */
-  private def makeHTMLOptionsSequence(field: Entry)
-  (implicit form: fm#FormSyntax): Seq[Elem] = {
-	  def makeHTMLOption(value: (NODE, NODE), field: fm#Entry): Elem = {
+  private def makeHTMLOptionsSequence(field: FormEntry)
+  (implicit form: formMod#FormSyntax): Seq[Elem] = {
+	  def makeHTMLOption(value: (NODE, NODE), field: formMod#Entry): Elem = {
 		  <option value={ toPlainString(value._1) } selected={
 			  if (toPlainString(field.value) ==
 					  toPlainString(value._1))
@@ -255,7 +255,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
 		    toPlainString(value._2) }
 		  </option>
 	  }
-	  def getPossibleValues( f: Entry) =
+	  def getPossibleValues( f: FormEntry) =
 	    form.possibleValuesMap.getOrElse( f.property, Seq() )
 
 	  for (value <- getPossibleValues(field) )
@@ -263,14 +263,14 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
   }
 
 
-  def hasPossibleValues( f: Entry)(implicit form: fm#FormSyntax): Boolean = {
+  def hasPossibleValues( f: FormEntry)(implicit form: formMod#FormSyntax): Boolean = {
 //    println( s">>>> hasPossibleValues ${f.label} : ${form.possibleValuesMap.getOrElse(f.property, "NOTHING")}" )
     ! form.possibleValuesMap.getOrElse( f.property, List() ) .isEmpty
   }
 
   private val datalistsAlreadyDone = scala.collection.mutable.Set[NODE]()
-	def	makeFieldDatalist(field: Entry)
-		  (implicit form: fm#FormSyntax)
+	def	makeFieldDatalist(field: FormEntry)
+		  (implicit form: formMod#FormSyntax)
 		  : Elem
 		  = {
 	  if( ! datalistsAlreadyDone.contains(field.property) ) {

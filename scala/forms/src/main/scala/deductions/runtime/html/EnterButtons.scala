@@ -14,17 +14,17 @@ import org.w3.banana.jena.JenaModule
  */
 trait EnterButtons extends Configuration {
 
-  lazy val prefixes = new ImplementationSettings.RDFModule with RDFPrefixes[ImplementationSettings.Rdf] with DefaultConfiguration {}
+  private lazy val prefixes = new ImplementationSettings.RDFModule with RDFPrefixes[ImplementationSettings.Rdf] with DefaultConfiguration {}
   import prefixes._
 
-  def message(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
+  protected def messageI18N(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
 
   def enterURItoDownloadAndDisplay()(implicit lang: String = "en") = {
     <div class="row">
       <div class="col-md-12">
         <form role="form" action="/display">
           <div class="form-group">
-            <label class="col-md-2 control-label" for="Display">{ message("Display") }</label>
+            <label class="col-md-2 control-label" for="Display">{ messageI18N("Display") }</label>
             <div class="col-md-6">
               <input class="form-control" type="text" name="displayuri" list="start_uris" dropzone="copy string:text/plain"/>
               <datalist id="start_uris">
@@ -34,8 +34,8 @@ trait EnterButtons extends Configuration {
               </datalist>
             </div>
             <div class="col-md-4">
-              <input class="btn btn-primary" type="submit" name="Display" value={ message("Display") }/>
-              <input class="btn btn-primary" type="submit" name="Edit" value={ message("Edit") }/>
+              <input class="btn btn-primary" type="submit" name="Display" value={ messageI18N("Display") }/>
+              <input class="btn btn-primary" type="submit" name="Edit" value={ messageI18N("Edit") }/>
             </div>
             <input type="submit" style="display:none"/>
           </div>
@@ -50,15 +50,15 @@ trait EnterButtons extends Configuration {
         <form role="form" action="/wordsearch">
           <div class="form-group">
             <label class="col-md-2 control-label" for="q" title="Search URI whose value (object triple) match given regular expression">
-              { message("String_to_search") }
+              { messageI18N("String_to_search") }
             </label>
             <div class="col-md-6">
               <input class="form-control" type="text" name="q" placeholder={
-                message("Search_placeholder")
+                messageI18N("Search_placeholder")
               } dropzone="copy"/>
             </div>
             <div class="col-md-4">
-              <input class="btn btn-primary" type="submit" value={ message("Search") }/>
+              <input class="btn btn-primary" type="submit" value={ messageI18N("Search") }/>
             </div>
             <input type="submit" style="display:none"/>
           </div>
@@ -72,10 +72,10 @@ trait EnterButtons extends Configuration {
       <div class="col-md-12">
         <form role="form" action="/create">
           <div class="form-group">
-            <label class="col-md-2 control-label" for="uri">{ message("Create_instance_of") }</label>
+            <label class="col-md-2 control-label" for="uri">{ messageI18N("Create_instance_of") }</label>
             <div class="col-md-6">
               <input class="form-control" type="text" name="uri" placeholder={
-                message("Paste_ontology")
+                messageI18N("Paste_ontology")
               } dropzone="copy"></input>
               <select class="form-control selectable" type="text" name="uri" list="class_uris">
                 <optgroup label="Assemblée Virtuelle">
@@ -86,13 +86,13 @@ trait EnterButtons extends Configuration {
                   Theme
 Thesis
                 </optgroup>
-                <optgroup label={ message("Other_vocabs") }>
+                <optgroup label={ messageI18N("Other_vocabs") }>
                   { suggestedClassesForCreation }
                 </optgroup>
               </select>
             </div>
             <div class="col-md-4">
-              <input class="btn btn-primary" style="position: relative; top: 18px;" type="submit" value={ message("Create") }/>
+              <input class="btn btn-primary" style="position: relative; top: 18px;" type="submit" value={ messageI18N("Create") }/>
             </div>
             <input type="submit" style="display:none"/>
           </div>

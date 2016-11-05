@@ -45,6 +45,8 @@ trait HTML5TypesTrait[Rdf <: RDF] extends HTML5Types {
 
     xsd.dateTime -> "datetime-local",
     xsd.dateTimeStamp -> "datetime-local",
+    xsd("date") -> "datetime-local",
+
     xsd.anyURI -> "url",
     xsd.boolean -> "radio"
   /* Symfony stuff:
