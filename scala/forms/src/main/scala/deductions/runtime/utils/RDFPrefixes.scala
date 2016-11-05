@@ -41,9 +41,7 @@ import org.w3.banana._
   lazy val skos = Prefix[Rdf]("skos", "http://www.w3.org/2004/02/skos/core#")
   lazy val sioc =     Prefix[Rdf]("sioc", "http://rdfs.org/sioc/ns#")
   lazy val schema = Prefix[Rdf]("schema", "http://schema.org/")
-  lazy val dc = Prefix[Rdf]("dc", "http://purl.org/dc/elements/1.1/")
   lazy val text = Prefix[Rdf]("text", "http://jena.apache.org/text#" )
-
 
   lazy val prefixesList = List(
       // prefixes for ontologies
@@ -58,7 +56,6 @@ import org.w3.banana._
     WebACLPrefix[Rdf],
     CertPrefix[Rdf],
     owl,
-    dc,
     schema,
     Prefix[Rdf]("doap", "http://usefulinc.com/ns/doap#"),
     sioc,
