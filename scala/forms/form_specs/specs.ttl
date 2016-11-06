@@ -6,6 +6,7 @@
 @prefix sioc: <http://rdfs.org/sioc/ns#> .
 @prefix bioc: <http://deductions.github.io/biological-collections.owl.ttl#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix tm: <http://deductions.github.io/task-management.owl.ttl#> .
 
 @prefix forms: <http://deductions-software.com/ontologies/forms#> .
 
