@@ -20,7 +20,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
         =>
 
   val inputSize = 90
-
+  val xsdPrefix = "http://www.w3.org/2001/XMLSchema#"
 
   def shouldAddAddRemoveWidgets(field: formMod#Entry, editable: Boolean)
     (implicit form: FormModule[NODE, URI]#FormSyntax): Boolean = {
@@ -169,7 +169,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
         )
           ""
         else
-          " of type <" + typ0 + ">"
+          s" of type <$typ0>"
         s"Enter or paste a string $typ"
     }
 
@@ -177,7 +177,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
     val elem = lit.type_.toString() match {
 
       // TODO in FormSyntaxFactory match graph pattern for interval datatype ; see issue #17
-      case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
+      case typ if typ == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
         if (radioForIntervals)
           (for (n <- Range(0, 6)) yield (
             <input type="radio" name={ makeHTMNameLiteral(lit) } id={
@@ -194,6 +194,17 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
           </select>
         }
 
+      case typ if typ == xsdPrefix + "boolean" =>
+        <div class="wrapper">
+          <label for="yes_radio" id="yes-lbl">Oui</label>
+          <input type="radio" value="" name={ makeHTMNameLiteral(lit) } id="yes_radio" ></input>
+          <label for="maybe_radio" id="maybe-lbl">?</label>
+          <input type="radio" value="" name={ makeHTMNameLiteral(lit) } id="maybe_radio" checked="checked"></input>
+          <label for="no_radio" id="no-lbl">Non</label>
+          <input type="radio" value="" name={ makeHTMNameLiteral(lit) } id="no_radio"></input>
+          <div class="toggle"></div>
+        </div>
+
       case _ =>
         <div class={ css.cssClasses.formDivInputCSSClass }>
         <input class={ css.cssClasses.formInputCSSClass } value={
@@ -207,6 +218,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
           inputSize.toString()
         } dropzone="copy" id={ htmlId }>
         </input></div>
+
         <div class={ css.cssClasses.formDivEditInputCSSClass }>
 				{ if( showEditButtons )
         <input type="button" value="EDIT"

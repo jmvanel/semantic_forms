@@ -54,26 +54,6 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       makeDrawGraphLink(stringValue) )
   }
 
-//  def displayNode(uri: URI, hrefPrefix: String = hrefDisplayPrefix,
-//      label: String,
-//      property: URI,
-//      type_ : NODE
-//      ): NodeSeq = {
-//    val fmod = new FormModule[NODE, URI ]{
-////      val nullURI= "" // ops.URI("")
-//      }   
-//    val resourceEntry = new
-//      fmod.ResourceEntry(label, "comment",
-//    property, // fmod.nullURI,
-//    new fmod.ResourceValidator(Set()),
-//    uri, true,
-//    Seq(),
-//    label,
-//    type_, // fmod.nullURI,
-//    false) 
-//    createHTMLResourceReadonlyField( resourceEntry, hrefPrefix)
-//  }
-
   def createHTMLBlankNodeReadonlyField(
     r: formMod#BlankNodeEntry,
     hrefPrefix: String) =
