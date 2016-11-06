@@ -197,11 +197,19 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
       case typ if typ == xsdPrefix + "boolean" =>
         <div class="wrapper">
           <label for="yes_radio" id="yes-lbl">Oui</label>
-          <input type="radio" value="" name={ makeHTMNameLiteral(lit) } id="yes_radio" ></input>
+          <input type="radio" name={ makeHTMNameLiteral(lit) } id="yes_radio"
+          checked={toPlainString(lit.value) match {case "true" => "true" ; case _ => null } }
+          value="true" ></input>
+
           <label for="maybe_radio" id="maybe-lbl">?</label>
-          <input type="radio" value="" name={ makeHTMNameLiteral(lit) } id="maybe_radio" checked="checked"></input>
+          <input type="radio" name={ makeHTMNameLiteral(lit) } id="maybe_radio"
+          checked={toPlainString(lit.value) match {case "" => "checked" ; case _ => null } }
+          value="" ></input>
+
           <label for="no_radio" id="no-lbl">Non</label>
-          <input type="radio" value="" name={ makeHTMNameLiteral(lit) } id="no_radio"></input>
+          <input type="radio" name={ makeHTMNameLiteral(lit) } id="no_radio"
+          checked={toPlainString(lit.value) match {case "false" => "false" ; case _ => null } }
+          value="false" ></input>
           <div class="toggle"></div>
         </div>
 
