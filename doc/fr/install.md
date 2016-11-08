@@ -27,7 +27,7 @@ Mais l'application va s'arrêter de fonctionner après la déconnexion de l'util
 
 **Sous Windows, il suffit d'exécuter:**
 ```
-bin/semantic_forms_play.bat -J-Xmx50M &
+bin\semantic_forms_play.bat -J-Xmx50M &
 ```
 
 Le port par défaut est 9000, donc vous pouvez démarrer votre navigateur à l'adresse suivante [http://localhost:9000](http://localhost:9000) .
