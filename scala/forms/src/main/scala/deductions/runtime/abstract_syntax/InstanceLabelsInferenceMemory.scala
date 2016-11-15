@@ -10,9 +10,9 @@ import org.apache.log4j.Logger
 trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     extends InstanceLabelsInference2[Rdf]
     with PreferredLanguageLiteral[Rdf]
-//    with RDFCacheAlgo[Rdf, DATASET]
     with RDFHelpers[Rdf]
-    with DatasetHelper[Rdf, DATASET] {
+    with DatasetHelper[Rdf, DATASET]
+    with InstanceLabelsFromLabelProperty[Rdf, DATASET] {
 
   import ops._
   import rdfStore.graphStoreSyntax._
@@ -28,8 +28,8 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   /** NON transactional, needs rw transaction */
   override def instanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
     val labelFromTDB = instanceLabelFromTDB(node, lang)
-    if (labelFromTDB == "" || labelFromTDB == "Thing")
-      computeInstanceLabel(node, graph, lang)
+    if (labelFromTDB == "" || labelFromTDB == "Thing" || isLabelLikeURI(node, labelFromTDB ) )
+      computeInstanceLabeAndStoreInTDB(node, graph, lang)
     else labelFromTDB
   }
 
@@ -96,32 +96,50 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
       println("labelsComputedOrFromTDB 3 " + ret )
       ret
   }
-    
+
+  /** compute Instance Label and store it in TDB,
+   *  then replace label in special named Graph */
   def replaceInstanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
-    val label = computeInstanceLabel(node, graph, lang)
-    
+    val label = computeInstanceLabeAndStoreInTDB(node, graph, lang)
+
     val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
     replaceObjects( labelsGraphUri, node, displayLabelPred, Literal(label), datasetForLabels )
     label
   }
 
   /** compute Instance Label and store it in TDB */
-  private def computeInstanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
+  private def computeInstanceLabeAndStoreInTDB(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
     logger.debug( s"compute displayLabel for $node" )
-    val label = super.instanceLabel(node, graph, lang)
+    if( node.toString() == "" ) return ""
 
-//    val computedDisplayLabel = (node -- displayLabelPred ->- Literal(label)).graph
-//    val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
-//    rdfStore.appendToGraph( dataset3, labelsGraphUri, computedDisplayLabel)
-    storeInstanceLabel(node, label, graph, lang)
-    label
+    val label = super.instanceLabel(node, graph, lang)
+    println(s"computeInstanceLabeAndStoreInTDB: $node .toString() , label $label")
+    println(s"$node .toString().endsWith( label.substring(label.length()-1) = ${label.substring(0, label.length()-1)}")
+    val label2 = if( label == "" || isLabelLikeURI(node: Rdf#Node, label) ) {
+      val v = instanceLabelFromLabelProperty(node)
+      v match {
+        case Some(node) =>
+          foldNode(node)( uri => instanceLabel(uri, graph, lang),
+              _ => instanceLabel(node, graph, lang),
+              lab => fromLiteral(lab)._1 )
+        case _ => ""
+      }
+  }  else label
+    storeInstanceLabel(node, label2, graph, lang)
+    label2
   }
   
+  def isLabelLikeURI(node: Rdf#Node, label: String) =
+		  node.toString().endsWith(label) ||
+		  node.toString().endsWith(label.substring(0, label.length()-1))
+
   private def storeInstanceLabel(node: Rdf#Node, label: String,
-      graph: Rdf#Graph, lang: String) = {
-    val computedDisplayLabel = (node -- displayLabelPred ->- Literal(label)).graph
-    val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
-    rdfStore.appendToGraph(datasetForLabels, labelsGraphUri, computedDisplayLabel)
+                                 graph: Rdf#Graph, lang: String) = {
+    if (label != "") {
+      val computedDisplayLabel = (node -- displayLabelPred ->- Literal(label)).graph
+      val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
+      rdfStore.appendToGraph(datasetForLabels, labelsGraphUri, computedDisplayLabel)
+    }
   }
   
   def cleanStoredLabels(lang: String) {

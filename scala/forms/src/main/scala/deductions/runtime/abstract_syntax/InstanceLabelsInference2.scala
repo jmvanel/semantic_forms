@@ -7,26 +7,27 @@ import org.w3.banana.RDF
 import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
 import deductions.runtime.utils.RDFHelpers
+import deductions.runtime.utils.RDFPrefixes
+import deductions.runtime.jena.ImplementationSettings
 
 /**
  * populate Fields in form by inferring possible label from:
  * FOAF Person properties
  * foaf:name
  * rdfs.label
- * rdfs.label from class ( by rdf:type)
+ * rdfs.label from class ( by rdf:type )
+ * form:labelProperty in the rdf:type (in InstanceLabelsFromLabelProperty )
  * 
  * systematically trying to get the matching language form,
  * and as last fallback, the last segment of the URI.
  */
 //private[abstract_syntax] 
 trait InstanceLabelsInference2[Rdf <: RDF]
-		extends RDFHelpers[Rdf] {
+		extends RDFHelpers[Rdf]
+    with RDFPrefixes[Rdf] {
   self: PreferredLanguageLiteral[Rdf] =>
 
   import ops._
-  private lazy val foaf = FOAFPrefix[Rdf]
-  private lazy val rdfs = RDFSPrefix[Rdf]
-//  private lazy val rdf = RDFPrefix[Rdf]
 
   def instanceLabels(list: Seq[Rdf#Node], lang: String = "")(implicit graph: Rdf#Graph): Seq[String] =
     list.map { node => instanceLabel(node, graph, lang) }
@@ -41,6 +42,8 @@ trait InstanceLabelsInference2[Rdf <: RDF]
    *  NON transactional
    */
   def instanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String = ""): String = {
+    if(node == nullURI ) return ""
+
     val pgraph = PointedGraph(node, graph)
 
     val firstName = (pgraph / foaf.firstName).as[String].getOrElse("")
@@ -61,6 +64,9 @@ trait InstanceLabelsInference2[Rdf <: RDF]
         if (l != "") return l
         val n = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, foaf.name, "")
         if (n != "") return n
+        val s = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, skos("prefLabel"), "")
+        if (s != "") return s
+
 //        val cl = instanceClassLabel( node, graph, lang)
 ////        println( s"""instanceClassLabel $node "$cl" """ )
 //        if (cl != "") return cl
@@ -69,7 +75,8 @@ trait InstanceLabelsInference2[Rdf <: RDF]
     }
   }
 
-  def instanceClassLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String = ""): String = {
+  /** unused */
+  private def instanceClassLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String = ""): String = {
     val pgraph = PointedGraph(node, graph)
     val noption = (pgraph / rdf.typ).nodes.headOption
     val lsegment = last_segment(node)

@@ -20,6 +20,7 @@ import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.utils.FileUtils
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.utils.RDFPrefixes
 
 class TestCreationForm2Jena extends FunSuite with TestForJena
 with TestCreationForm2[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
@@ -67,13 +68,11 @@ trait TestCreationForm2[Rdf <: RDF, DATASET] extends FunSuite
   println(turtleWriter.asString(personFormSpec, "base"))
 }
 
-trait GraphTest[Rdf <: RDF] //extends RDFOpsModule
+trait GraphTest[Rdf <: RDF] extends RDFPrefixes[Rdf] with DefaultConfiguration
 {
   implicit val ops: RDFOps[Rdf]
 
   import ops._
-  val form = Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#")
-  private val foaf = FOAFPrefix[Rdf]
 
   val personFormSpec0 = (
     URI("personForm")

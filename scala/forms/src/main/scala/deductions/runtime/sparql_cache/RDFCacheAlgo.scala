@@ -1,10 +1,11 @@
 package deductions.runtime.sparql_cache
 
 import java.util.Date
-import scala.concurrent.ExecutionContext.Implicits
+
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
+
 import org.apache.log4j.Logger
 import org.w3.banana.OWLPrefix
 import org.w3.banana.RDF
@@ -13,12 +14,11 @@ import org.w3.banana.io.RDFLoader
 import org.w3.banana.io.RDFReader
 import org.w3.banana.io.RDFXML
 import org.w3.banana.io.Turtle
+
 import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.services.SPARQLHelpers
-import deductions.runtime.utils.URIHelpers
-import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.services.BrowsableGraph
-import org.apache.jena.riot.RiotException
+import deductions.runtime.services.SPARQLHelpers
+import deductions.runtime.utils.RDFHelpers
 
 //import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory0
 
@@ -42,9 +42,6 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
 
   import ops._
   import rdfStore.transactorSyntax._
-  import rdfStore.graphStoreSyntax._
-  import rdfStore.sparqlEngineSyntax._
-  import scala.concurrent.ExecutionContext.Implicits.global
 
   lazy val xsd = XSDPrefix[Rdf]
   lazy val owl = OWLPrefix[Rdf]
@@ -98,7 +95,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
               println(s"Graph at URI <$uri> was downloaded, but it's empty.")
             g
           } catch {
-            case t: RiotException =>
+            case t: Exception =>
               println(s"Graph at URI $uri could not be downloaded, trying local TDB (${t.getLocalizedMessage}).")
               val tryGraph = search_only(fromUri(uri))
               tryGraph match {

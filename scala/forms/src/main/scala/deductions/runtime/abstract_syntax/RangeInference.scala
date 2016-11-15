@@ -36,7 +36,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
 
   implicit val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]
   implicit val sparqlOps: SparqlOps[Rdf]
-  private val rdfs = RDFSPrefix[Rdf]
+//  private val rdfs = RDFSPrefix[Rdf]
   val logger:Logger // = Logger.getRootLogger()
   
   import ops._

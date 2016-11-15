@@ -6,12 +6,12 @@ import deductions.runtime.services.SPARQLHelpers
 import org.w3.banana.jena.JenaModule
 import deductions.runtime.jena.RDFStoreLocalJenaProvider
 import scala.language.postfixOps
-import org.w3.banana.RDFSPrefix
+
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.dataset.RDFOPerationsDB
 import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
-//import java.net.URI
+
 import deductions.runtime.services.URIManagement
 import org.w3.banana.binder.PGBinder
 import org.w3.banana.OWLPrefix
@@ -29,7 +29,7 @@ trait PropertyDomainCleaner[Rdf <: RDF, DATASET]
   import ops._
   import rdfStore.graphStoreSyntax._
   import rdfStore.transactorSyntax._
-  private val rdfs = RDFSPrefix[Rdf]
+
   private val owl = OWLPrefix[Rdf]
   val newRdfsDomainsGraph = URI("urn:newRdfsDomains/")
 

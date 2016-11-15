@@ -97,13 +97,16 @@ nohup bin/semantic_forms_play -J-Xmx50M &
 
 By doing this you start a web serveur on your machine. The default port is 9000, so you can direct your browser to [http://localhost:9000](http://localhost:9000) .
 
-The generic application is perfectly usable out of the box, see [User manual](https://github.com/jmvanel/semantic_forms/wiki/User_manual). However, it is better to preload common RDF vocabularies and related form specifications and I18N translations, see:
+The generic application is perfectly usable out of the box for navigating, see [User manual](https://github.com/jmvanel/semantic_forms/wiki/User_manual). However, for editing data, it is better to preload common RDF vocabularies and related form specifications and I18N translations, see:
 [installation doc.](../../doc/en/install.md)
 and [preloading-rdf-content](#preloading-rdf-content) .
 
+To check that the external service dbpedia-lookup is working
+http://rubenverborgh.github.io/dbpedia-lookup-page/
 
 #### Settings when runnning the zipped distribution
-For more details, , see: [installation doc.](../../doc/en/install.md)
+For more details, , see: [installation documentation](../../doc/en/install.md)
+and [administration documentation](../../doc/en/administration.md).
 You can change the default port (9000) to e.g. 9999 like this:
 
 	nohup bin/semantic_forms_play -J-Xmx50M -Dhttp.port=9999 &

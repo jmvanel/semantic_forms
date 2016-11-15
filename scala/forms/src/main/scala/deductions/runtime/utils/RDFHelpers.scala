@@ -93,7 +93,6 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
     default: Rdf#URI = nullURI)
     (implicit graph: Rdf#Graph)
   : Rdf#URI = {
-	  val rdfh = this
     objectsQuery(subject, predicate) match {
       case ll if ll.isEmpty => default
       case ll if (isURI(ll.head)) => ll.head.asInstanceOf[Rdf#URI]
@@ -110,13 +109,17 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
     default: String="")
     (implicit graph: Rdf#Graph)
   : String = {
-	  val rdfh = this
-    objectsQuery(subject, predicate) match {
+	  getStringHead(objectsQuery(subject, predicate).toList, default)
+  }
+
+  def getStringHead(list: List[Rdf#Node], default: String = ""): String = {
+    list match {
       case ll if ll.isEmpty => default
-      case ll => literalNodeToString(ll.head)
+      case ll               => literalNodeToString(ll.head)
     }
   }
 }
+
 
 trait RDFHelpers0[Rdf <: RDF] extends Configuration
       with URIManagement {

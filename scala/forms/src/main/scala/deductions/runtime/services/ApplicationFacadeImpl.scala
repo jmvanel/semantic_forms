@@ -112,7 +112,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
   Logger.getRootLogger().info(s"in Global")
 
-  var form: Elem = <p>initial value</p>
+//  var form: Elem = <p>initial value</p>
   lazy val tableView = this
   lazy val search = this
 
