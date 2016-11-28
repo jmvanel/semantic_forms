@@ -364,22 +364,9 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       case NonFatal(e) => "sparqlConstructResult: " + e.getMessage() // TODO: handle error?
     }
   }
-
-  /*
-  def sparqlQueryForm(query: String, action: String, sampleQuery: String): NodeSeq =
-    <form role="form" action={action}>
-    SPARQL query:
-    <textarea name="query" cols="80">
-      {if( query != "" )
-        query
-      else
-        "# " + sampleQuery }
-    </textarea>
-    <input type="submit" value="Submit"/>
-    </form>
-  */
   
-  /** TODO the columns order may be wrong */
+  /** Display result of a SPARQL select;
+   *  TODO the columns order may be wrong */
   def selectSPARQL(query: String, lang: String = "en"): Elem = {
     Logger.getRootLogger().info("sparql query  " + query)
     <p>

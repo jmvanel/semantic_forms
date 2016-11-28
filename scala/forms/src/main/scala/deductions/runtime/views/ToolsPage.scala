@@ -6,13 +6,14 @@ import deductions.runtime.utils.I18NMessages
 
 trait ToolsPage extends EnterButtons {
 
+  /** HTML page with 2 SPARQL Queries: select & construct */
   def getPage(lang: String = "en"): NodeSeq = {
     <div>
       <p>
         SPARQL select
         {
           // TODO: the URL here appears also in Play! route!
-          sparqlQueryForm("", "/select", Seq(
+          sparqlQueryForm("", "/select-ui", Seq(
             "SELECT * WHERE { GRAPH ?G {?S ?P ?O . } } LIMIT 100",
             "SELECT DISTINCT ?CLASS WHERE { GRAPH ?G { [] a  ?CLASS . } } LIMIT 100",
             "SELECT DISTINCT ?PROP WHERE { GRAPH ?G { [] ?PROP [] . } } LIMIT 100"
@@ -37,6 +38,7 @@ trait ToolsPage extends EnterButtons {
     </div>
   }
 
+  /** HTML Form for a sparql Query */
   def sparqlQueryForm(query: String, action: String, sampleQueries: Seq[String]): NodeSeq =
     <form role="form" action={ action }>
       <textarea name="query" style="min-width:80em; min-height:8em" title="To get started, uncomment one of these lines.">{
