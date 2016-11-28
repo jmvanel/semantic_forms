@@ -1,3 +1,5 @@
+// import Common._
+
 organization := "deductions"
 name := "semantic_forms"
 version := "1.0-SNAPSHOT"
@@ -7,7 +9,7 @@ version := "1.0-SNAPSHOT"
 //        .dependsOn(forms_js)
 
 scalaVersion :=  "2.11.8"
-// scalaVersion :=  "2.12.0-M3"
+// scalaVersion :=  "2.12.0"
 
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
@@ -22,13 +24,13 @@ libraryDependencies += "org.apache.lucene" % "lucene-demo" % "4.9.1"
 libraryDependencies += "org.apache.jena" % "jena-text" % "3.1.0"
 
 libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "0.11"
+//libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "2.0.5"
 // See more at: https://typesafe.com/blog/akka-http-preview#sthash.IZR1O9fx.dpuf
-libraryDependencies += "org.scala-lang.modules" %% "scala-async" % "0.9.2"
-libraryDependencies += "com.typesafe.play" %% "play-json" % "2.3.4"
+
+libraryDependencies += "org.scala-lang.modules" %% "scala-async" % "0.9.6"
+libraryDependencies += "com.typesafe.play" %% "play-json" % "2.3.10"
 // libraryDependencies += "com.netaporter" %% "scala-i18n" % "0.1"
-libraryDependencies += "org.apache.commons" % "commons-csv" % 
-// "1.0-SNAPSHOT-rev1148315"
-"1.2"
+libraryDependencies += "org.apache.commons" % "commons-csv" % "1.4"
 libraryDependencies += "org.apache.any23" % "apache-any23-csvutils" %  "1.1" // "1.0" // 
 
 
@@ -40,9 +42,8 @@ libraryDependencies += "org.apache.any23" % "apache-any23-csvutils" %  "1.1" // 
 
 parallelExecution in Test := false
 
-libraryDependencies += "junit" % "junit" % "4.8.1" % Test
-//libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % Test
+libraryDependencies += "junit" % "junit" % "4.12" % Test
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % Test
 
 // resolvers += "spray repo" at "http://repo.spray.io"
 // resolvers += Resolver.mavenLocal

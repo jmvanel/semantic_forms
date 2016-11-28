@@ -8,12 +8,13 @@ import SemanticURIGuesser._
 import org.scalatest.Ignore
 import scala.language.postfixOps
 
-@Ignore
 class TestSemanticURIGuesser extends FunSuite {
   test("TestSemanticURIGuesser") {
     for (
       (uri, semanticType) <- List(
-        ("http://jmvanel.free.fr/images/jmv_id.jpg", Image), ("http://jmvanel.free.fr/images/jmv.rdf", SemanticURI), ("http://danbri.org/foaf.rdf#danbri", SemanticURI)
+        ("http://jmvanel.free.fr/images/jmv_id.jpg", Image),
+        ("http://jmvanel.free.fr/images/jmv.rdf", SemanticURI),
+        ("http://danbri.org/foaf.rdf#danbri", SemanticURI)
 
       // TODO: must try parent URI http://xmlns.com/foaf/0.1/ for a graph in RDF store
       //        , ("http://xmlns.com/foaf/0.1/Person", SemanticURI)
@@ -22,8 +23,9 @@ class TestSemanticURIGuesser extends FunSuite {
       //        , ("http://fcns.eu/people/andrei/card#me", SemanticURI)
       )
     ) {
+      println(s"\nuri $uri")
       val fut = SemanticURIGuesser.guessSemanticURIType(uri)
-      Await.result(fut, 1000000 millis) // TODO <<<<<<<<<<<<<<<<<<
+      Await.result(fut, 10000 millis) // TODO avoid Await
 
       fut onSuccess {
         case t =>
