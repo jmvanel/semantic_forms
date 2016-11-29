@@ -74,6 +74,8 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
 	  impl.sparqlConstructResult(query, lang, format)
   }
 
+  def sparqlSelectJSON(query: String ) = impl. sparqlSelectJSON(query)
+
   def sparqlSelectQuery(query: String, lang: String = "en"): Elem =
     impl.selectSPARQL(query, lang)
 

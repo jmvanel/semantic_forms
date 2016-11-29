@@ -1,6 +1,7 @@
 package deductions.runtime.services
 
 import java.io.ByteArrayOutputStream
+
 import scala.concurrent.Await
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationInt
@@ -8,18 +9,22 @@ import scala.language.postfixOps
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
+
 import org.apache.log4j.Logger
 import org.w3.banana.RDF
 import org.w3.banana.TryW
+import org.w3.banana.io.JsonLdCompacted
 import org.w3.banana.io.RDFWriter
 import org.w3.banana.io.Turtle
+
 import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.utils.RDFHelpers0
-import org.w3.banana.io.JsonLdFlattened
-import org.w3.banana.io.JsonLdExpanded
-import org.w3.banana.io.JsonLdCompacted
-import org.w3.banana.syntax.NodeMatchSyntax
 import deductions.runtime.utils.Timer
+import play.api.libs.json.Json
+import play.api.libs.json.JsObject
+import play.api.libs.json.JsArray
+import play.api.libs.json.JsString
 
 /** TODO separate stuff depending on dataset, and stuff taking a  graph in argument
  * @author jmv
@@ -33,12 +38,10 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]
 
   import ops._
-  import sparqlOps._
   import rdfStore.sparqlEngineSyntax._
-  import rdfStore.transactorSyntax._
   import rdfStore.sparqlUpdateSyntax._
   import rdfStore.transactorSyntax._
-  import rdfStore.graphStoreSyntax._
+  import sparqlOps._
 
   /**
    * sparql Construct Query;
@@ -294,6 +297,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   /**
    * run SPARQL on given dataset; transactional;
+   * the fisrt row is the variables' list
    *  used in SPARQL results Web page
    */
   def sparqlSelectQuery(queryString: String,
@@ -332,6 +336,48 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     })
     println("before transaction.get")
     transaction.get
+  }
+
+  /** sparql Select, JSON output, see https://www.w3.org/TR/sparql11-results-json/#example */
+  def sparqlSelectJSON(queryString: String,
+                       ds: DATASET = dataset): String = {
+    val result = sparqlSelectQuery(queryString, ds)
+    val output = result match {
+      case Success(res) =>
+        val header = res.head.map { node => literalNodeToString(node) }
+        println( s"sparqlSelectJSON: header $header" )
+        val headValue = Json.obj("vars" -> JsArray( header.map { s => JsString(s) } ) )
+        val bindings = res.drop(1).map {
+          list =>
+            val listOfJSOjects = list.map {
+              node =>
+                foldNode(node)(
+                  uri => Json.obj("type" -> "uri",
+                    "value" -> fromUri(uri)),
+                  bn => Json.obj("type" -> "bnode",
+                    "value" -> fromBNode(bn)),
+                  lit => {
+                    val litTuple = fromLiteral(lit)
+                    Json.obj(
+                      "type" -> "literal",
+                      "value" -> litTuple._1,
+                      "datatype" -> litTuple._2.toString(),
+                      "xml:lang" -> litTuple._3.toString())
+                  })
+            }
+            val v = header.zip(listOfJSOjects).map {
+              pair => Json.obj(pair._1 -> pair._2)
+            }
+            val binding = v.fold(Json.obj())((a, b) => a ++ b)
+            binding
+        }
+        val resultsValue = Json.obj("bindings" -> bindings)
+        Json.obj(
+          "head" -> headValue,
+          "results" -> resultsValue)
+      case Failure(f) => Json.toJson( f.getLocalizedMessage )
+    }
+    Json.prettyPrint(output)
   }
 
   /** run SPARQL on given graph, knowing result variables
@@ -418,5 +464,19 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   }
 
   def info(s: String) = Logger.getRootLogger().info(s)
+
+}
+
+object SPARQLHelper extends ImplementationSettings.RDFModule
+    with ImplementationSettings.RDFCache
+    with SPARQLHelpers[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+
+  def selectJSON(queryString: String): String = {
+    sparqlSelectJSON(queryString)
+  }
+
+//  def select(queryString: String): String = {
+//    sparqlSelectQuery(queryString).toString()
+//  }
 
 }

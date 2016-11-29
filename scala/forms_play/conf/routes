@@ -19,8 +19,6 @@ POST    /sparql             controllers.Application.sparqlConstruct( query:Strin
 
 GET     /select-ui          controllers.Application.select( query:String )
 POST    /select-ui          controllers.Application.select( query:String )
-# GET     /select             controllers.Application.sparqlSelect( query:String )
-# POST    /select             controllers.Application.sparqlConstruct( query:String )
 
 GET     /wordsearch         controllers.Application.wordsearchAction(q:String ?= "")
 GET     /search             controllers.Application.searchOrDisplayAction(q:String ?= "")

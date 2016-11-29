@@ -272,6 +272,7 @@ trait ApplicationTrait extends Controller
           outputMainPage(sparqlConstructQuery(query, lang), lang)
     }
 
+  /** construct or select SPARQL query */
   def sparqlConstruct(query: String) =
     withUser {
       implicit userid =>
@@ -279,10 +280,16 @@ trait ApplicationTrait extends Controller
           println("sparql: " + request)
           println("sparql: " + query)
           val lang = chooseLanguage(request)
-          val JSONresult = sparqlConstructResult(query, lang, "jsonld")
+          val JSONresult = if (query.contains("select") ||
+            query.contains("SELECT"))
+            // TODO better try a parse of the query
+            sparqlSelectJSON(query)
+          else
+            sparqlConstructResult(query, lang, "jsonld")
           Ok(JSONresult).as("application/ld+json; charset=utf-8")
     }
 
+  /** select UI */
   def select(query: String) =
     withUser {
       implicit userid =>

@@ -1,8 +1,6 @@
 package deductions.runtime.jena
 
 import org.w3.banana.RDFOpsModule
-import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaModule
 
 import deductions.runtime.sparql_cache.CommonVocabulariesLoaderTrait
 import deductions.runtime.sparql_cache.FormSpecificationsLoaderTrait
@@ -21,7 +19,7 @@ import deductions.runtime.services.DefaultConfiguration
  */
 object ResetRDFCacheApp extends ImplementationSettings.RDFModule
     with DefaultConfiguration
-    with CommonVocabulariesLoaderTrait[Jena, ImplementationSettings.DATASET]
+    with CommonVocabulariesLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RDFI18NLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with FormSpecificationsLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RDFOpsModule
