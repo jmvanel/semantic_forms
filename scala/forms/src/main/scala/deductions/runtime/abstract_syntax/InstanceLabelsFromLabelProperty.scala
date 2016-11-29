@@ -25,12 +25,12 @@ trait InstanceLabelsFromLabelProperty[Rdf <: RDF, DATASET]
 		|${declarePrefix(form)}
     |SELECT ?LABEL_URI
     |WHERE {
-    |GRAPH ?G {
-    |  ?CLASS form:labelProperty ?PROP.
-    |}
-    |GRAPH ?GG {
-    |  <thing> a ?CLASS .
-    |  <thing> ?PROP ?LABEL_URI.
+    |  GRAPH ?G {
+    |    ?CLASS form:labelProperty ?PROP.
+    |  }
+    |  GRAPH ?GG {
+    |    <thing> a ?CLASS .
+    |    <thing> ?PROP ?LABEL_URI.
     |} }
     """.stripMargin
 
@@ -38,7 +38,7 @@ trait InstanceLabelsFromLabelProperty[Rdf <: RDF, DATASET]
     if( node == ops.URI("") ) return None
 
     val q = query.replaceAll("\\<thing\\>", "<" + node.toString() + ">" )
-    println(s"query $q")
+    // println(s"query $q")
     val res = for (
       nodes <- sparqlSelectQueryVariablesNT( q, List("LABEL_URI"));
       node <- nodes
