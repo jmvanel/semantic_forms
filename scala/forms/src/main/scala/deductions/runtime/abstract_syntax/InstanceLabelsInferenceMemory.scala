@@ -122,7 +122,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
           foldNode(node)( uri => instanceLabel(uri, graph, lang),
               _ => instanceLabel(node, graph, lang),
               lab => fromLiteral(lab)._1 )
-        case _ => ""
+        case _ => label
       }
   }  else label
     storeInstanceLabel(node, label2, graph, lang)
