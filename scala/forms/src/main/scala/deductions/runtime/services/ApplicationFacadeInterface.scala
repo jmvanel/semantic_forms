@@ -33,7 +33,7 @@ trait ApplicationFacadeInterface {
 
   def wordsearch(q: String = "", lang: String = ""): Future[Elem]
 
-  def lookup(search: String): String
+  def lookup(search: String, lang: String = "en", clas: String = "", mime: String = ""): String
 
   /** implements download of RDF content from HTTP client */
   def download(url: String, mime: String): Enumerator[Array[Byte]]

@@ -45,8 +45,8 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
   : NodeSeq =
     impl.create(classUri, lang, formSpecURI, graphURI, request: HTTPrequest).get
 
-  def lookup(search: String): String =
-    impl.lookup(search)
+  def lookup(search: String, lang: String = "en", clas: String ="", mime: String=""): String =
+    impl.lookup(search, lang, clas, mime)
 
   def wordsearch(q: String = "", lang: String = ""): Future[Elem] =
     impl.wordsearchFuture(q, lang)

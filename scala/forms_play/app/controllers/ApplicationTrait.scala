@@ -458,10 +458,14 @@ trait ApplicationTrait extends Controller
             .withHeaders("Access-Control-Allow-Origin" -> "*")
     }
 
-  def lookupService(search: String) = {
+  def lookupService(search: String, clas: String = "") = {
     Action { implicit request =>
-      println("Lookup: " + request)
-      Ok(lookup(search)).as("text/json-ld; charset=utf-8")
+      println(s"""Lookup: $request
+            accepts ${request.acceptedTypes} """)
+      val lang = chooseLanguage(request)
+      val mime = request.acceptedTypes.headOption.map { typ => typ.mediaType }.getOrElse(Accepts.Xml.mimeType)
+      Ok(lookup(search, lang, clas, mime)).as(s"$mime; charset=utf-8")
+      .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
     }
   }
 

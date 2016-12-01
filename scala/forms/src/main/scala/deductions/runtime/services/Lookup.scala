@@ -6,6 +6,8 @@ import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 import deductions.runtime.utils.RDFPrefixes
+import play.api.libs.json.Json
+import play.api.libs.json.JsArray
 
 /**
  * API for a lookup web service similar to dbPedia lookup
@@ -39,23 +41,30 @@ trait Lookup[Rdf <: RDF, DATASET]
    *     <URI>http://xmlns.com/foaf/0.1/Person</URI>
    *    </Class>
    */
-  def lookup(search: String, lang: String = "en"): String = {
+  def lookup(search: String, lang: String = "en", clas: String = "", mime: String): String = {
     val queryString = indexBasedQuery.makeQueryString(search + "*")
-    
-    val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariables(queryString, Seq("thing") )
+
+    val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariables(queryString, Seq("thing"))
     println(s"lookup(search=$search $queryString => $res")
     println(s"lookup: starting TRANSACTION for dataset $dataset")
     val transaction = dataset.r({
       val urilangs = res.map {
         uris =>
           val uri = uris.head
-//          val label = instanceLabelFromTDB(uri, lang)
-        val label = instanceLabel(uri, allNamedGraph, lang)
-        (uri, label)
+          val label = instanceLabel(uri, allNamedGraph, lang)
+          (uri, label)
       }
       urilangs
     })
-    val elems = transaction.get.map {
+    val list = transaction.get
+    if (mime.contains("xml"))
+      formatXML(list)
+    else
+      formatJSONLD(list)
+  }
+
+  private def formatXML(list: List[(Rdf#Node, String)]): String = {
+    val elems = list.map {
       case (uri, label) =>
         <Result>
           <Label>{ label }</Label>
@@ -64,10 +73,17 @@ trait Lookup[Rdf <: RDF, DATASET]
     }
     val xml =
       <ArrayOfResult>
-    	{ elems }
-    </ArrayOfResult>
+        { elems }
+      </ArrayOfResult>
     xml.toString
-    // lookupJSON(search)
+  }
+
+  private def formatJSONLD(list: List[(Rdf#Node, String)]): String = {
+    val list2 = list.map {
+      case (uri, label) => Json.obj( "Label" -> label, "URI" -> uri.toString() )
+    }
+    val responses = new JsArray( list2 )
+    Json.prettyPrint(responses)
   }
 
   /** use Lucene
@@ -97,7 +113,7 @@ trait Lookup[Rdf <: RDF, DATASET]
    * Tested with
    * http://localhost:9000/lookup?q=Jean-Marc
    */
-  private def lookupJSON(search: String): String = {
+  private def lookupJSON_OLD(search: String): String = {
     val tryListString = dataset.r({
       implicit val listOfLists = search_string(search)
       val subjects = listOfLists.map { l => l.head }
