@@ -367,8 +367,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     }
   }
   
-  /** Display result of a SPARQL select;
-   *  TODO the columns order may be wrong */
+  /** Display result of a SPARQL select */
   def selectSPARQL(query: String, lang: String = "en"): Elem = {
     Logger.getRootLogger().info("sparql query  " + query)
     <p>

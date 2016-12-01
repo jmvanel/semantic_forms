@@ -8,6 +8,7 @@ import org.w3.banana.RDF
 
 import play.api.libs.iteratee.Enumerator
 import deductions.runtime.utils.HTTPrequest
+import scala.util.Try
 
 /**
  * @author jmv
@@ -75,11 +76,15 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
 	  impl.sparqlConstructResult(query, lang, format)
   }
 
-  def sparqlSelectConneg(queryString: String, format: String="turtle",
-		  ds: DATASET ) = impl. sparqlSelectConneg(queryString, format, ds)
+  def sparqlSelectConneg(queryString: String, format: String="turtle", ds: DATASET ) =
+    impl.sparqlSelectConneg(queryString, format, ds)
 
   def sparqlSelectQuery(query: String, lang: String = "en"): Elem =
     impl.selectSPARQL(query, lang)
+
+  def sparqlUpdateQuery(queryString: String): Try[Unit] =
+    impl.sparqlUpdateQueryTR(queryString)
+
 
   def backlinks(q: String = ""): Future[Elem] =
     impl.backlinksFuture(q)

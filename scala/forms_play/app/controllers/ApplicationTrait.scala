@@ -25,6 +25,7 @@ import deductions.runtime.utils.RDFPrefixes
 import play.api.mvc.Result
 import play.api.mvc.RequestHeader
 import play.api.http.MediaRange
+import scala.util.Failure
 
 
 /** main controller */
@@ -359,6 +360,19 @@ trait ApplicationTrait extends Controller
           val lang = chooseLanguage(request)
           outputMainPage(
             sparqlSelectQuery(query, lang), lang)
+    }
+
+  def update(update: String) =
+    withUser {
+      implicit userid =>
+        implicit request =>
+          println("sparql update: " + request)
+          println("sparql: " + update)
+          val res = sparqlUpdateQuery(update)
+          res match {
+            case Success(s) => Ok(s"$res")
+            case Failure(f) => InternalServerError(s"$res")
+          }
     }
 
   def backlinksAction(q: String = "") = Action.async {
