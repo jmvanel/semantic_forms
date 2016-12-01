@@ -14,6 +14,7 @@ import org.w3.banana.io.Turtle
 
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.utils.HTTPrequest
+import org.w3.banana.io.RDFXML
 
 /**
  * A simple (partial) LDP implementation backed by SPARQL
@@ -39,6 +40,8 @@ trait LDP[Rdf <: RDF, DATASET]
 
   val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   implicit val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]
+  val rdfXMLWriter: RDFWriter[Rdf, Try, RDFXML]
+
   implicit val turtleReader: RDFReader[Rdf, Try, Turtle]
   implicit val jsonldReader: RDFReader[Rdf, Try, JsonLd]
 
@@ -49,24 +52,35 @@ trait LDP[Rdf <: RDF, DATASET]
 
   val schemeName = "ldp:"
 
-  /** for LDP GET
-   *  @param uri relative URI received by LDP GET */
+  /**
+   * for LDP GET
+   *  @param uri relative URI received by LDP GET
+   */
   def getTriples(uri: String, rawURI: String, accept: String, request: HTTPrequest): String = {
     println(s"LDP GET: (uri <$uri>, rawURI <$rawURI>, request $request)")
     val queryString = makeQueryString(uri, rawURI, request)
     println("LDP GET: queryString\n" + queryString)
     val r = dataset.r {
       for {
-        graph <- sparqlConstructQuery( queryString )
-        s <- if (accept == "text/turtle")
-          turtleWriter.asString(graph, uri)
-        else
-          jsonldCompactedWriter.asString(graph, uri)
+        graph <- sparqlConstructQuery(queryString)
+        s <- {
+          val writer = getWriterFromMIME(accept)
+          writer.asString(graph, uri)
+        }
       } yield s
     }
     r.get.get
   }
 
+  /** TODO reuse */
+  private def getWriterFromMIME(accept: String): RDFWriter[Rdf, Try, _] =
+    if (accept == "text/turtle")
+      turtleWriter
+    else if (accept == "application/rdf+xml")
+      rdfXMLWriter
+    else
+      jsonldCompactedWriter
+            
   private def absoluteURL( request: HTTPrequest, rawURI: String, secure: Boolean = false): String =
       "http" + (if (secure) "s" else "") + "://" + request.host + rawURI // + this.appendFragment
 

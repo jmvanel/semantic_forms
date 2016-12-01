@@ -58,6 +58,7 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
   =
     impl.showTriplesInGraph(graphURI: String, lang)
     
+  /** implements download of RDF content from HTTP client */
   def download(url: String, mime: String="text/turtle"): Enumerator[Array[Byte]] =
     impl.download(url, mime)
 
@@ -74,7 +75,8 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
 	  impl.sparqlConstructResult(query, lang, format)
   }
 
-  def sparqlSelectJSON(query: String ) = impl. sparqlSelectJSON(query)
+  def sparqlSelectConneg(queryString: String, format: String="turtle",
+		  ds: DATASET ) = impl. sparqlSelectConneg(queryString, format, ds)
 
   def sparqlSelectQuery(query: String, lang: String = "en"): Elem =
     impl.selectSPARQL(query, lang)

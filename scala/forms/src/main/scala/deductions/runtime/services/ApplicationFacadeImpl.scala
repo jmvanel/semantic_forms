@@ -258,7 +258,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     res
   }
 
-  /** TODO should be non-blocking !!!!!!!!!!!!!
+  /** implements download of RDF content from HTTP client;
+   *  TODO should be non-blocking !!!!!!!!!!!!!
    *  currently accumulates a string first !!!
    *  not sure if Banana and Jena allow a non-blocking access to SPARQL query results */
   def download(url: String, mime: String="text/turtle"): Enumerator[Array[Byte]] = {
@@ -353,7 +354,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     </p>
   }
 
-  /** SPARQL result */
+  /** SPARQL result
+   *  @param format = "turtle" or "rdfxml" or "jsonld" */
   def sparqlConstructResult(query: String, lang: String = "en", format: String="turtle"): String = {
     Logger.getRootLogger().info("Global.sparql query  " + query)
     try {

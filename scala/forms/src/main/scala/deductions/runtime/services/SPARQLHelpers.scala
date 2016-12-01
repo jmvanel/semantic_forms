@@ -25,6 +25,7 @@ import play.api.libs.json.Json
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsString
+import org.w3.banana.io.RDFXML
 
 /** TODO separate stuff depending on dataset, and stuff taking a  graph in argument
  * @author jmv
@@ -36,6 +37,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]
+  val rdfXMLWriter: RDFWriter[Rdf, Try, RDFXML]
 
   import ops._
   import rdfStore.sparqlEngineSyntax._
@@ -81,7 +83,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     result
   }
 
-  /** transactional, output Turtle String */
+  /** transactional, output Turtle String
+   *  @param format = "turtle" or "rdfxml" or "jsonld" */
   def sparqlConstructQueryTR(queryString: String, format: String="turtle"): String = {
     val transaction = dataset.r({
       graph2String(sparqlConstructQuery(queryString), "", format)
@@ -338,6 +341,77 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     transaction.get
   }
 
+  /** sparql Select with "content negotiation" (conneg)
+   *  @param format = "turtle" or "rdfxml" or "jsonld" */
+  def sparqlSelectConneg(queryString: String,
+      format: String="xml",
+		  ds: DATASET = dataset): String = {
+    println( s"format $format" )
+			format match {
+			  case "jsonld" => sparqlSelectJSON(queryString, ds)
+			  case "turtle" => sparqlSelectJSON(queryString, ds) // should not happen
+			  case "rdfxml" => sparqlSelectXML(queryString, ds) // should not happen
+			  case "xml" => sparqlSelectXML(queryString, ds)
+			  case "json" => sparqlSelectJSON(queryString, ds)
+			  case _ => sparqlSelectJSON(queryString, ds)
+			}
+  }
+
+  /**
+   * sparql Select, JSON output, see https://www.w3.org/TR/rdf-sparql-XMLres/#examples
+   */
+  def sparqlSelectXML(queryString: String,
+                      ds: DATASET = dataset): String = {
+    val result = sparqlSelectQuery(queryString, ds)
+    val output = result match {
+      case Success(res) =>
+        val header = res.head.map { node => literalNodeToString(node) }
+        println(s"sparqlSelectXML: header $header")
+
+        val xml =
+          <sparql xmlns="http://www.w3.org/2005/sparql-results#">
+            <head>
+              { header.map { s => <variable name={ s }/> } }
+            </head>
+            <results>
+              {
+                val bindings = res.drop(1).map {
+                  list =>
+                    val listOfElements = list.map {
+                      node =>
+                        foldNode(node)(
+                          uri => <uri>{ fromUri(uri) }</uri>,
+                          bn => <bnode>{ fromBNode(bn) }</bnode>,
+                          lit => {
+                            val litTuple = fromLiteral(lit)
+                            <literal xml:lang={ litTuple._3.toString() } datatype={ litTuple._2.toString() }>{ litTuple._1 }</literal>
+                          })
+                    }
+                    // println(s"sparqlSelectXML: listOfElements $listOfElements")
+                    val bindings = header.zip(listOfElements).map {
+                      pair =>
+                        <binding name={ pair._1 }>
+                          { pair._2 }
+                        </binding>
+                    }
+                    <result>
+                      { bindings }
+                    </result>
+                }
+                bindings
+              }
+            </results>
+          </sparql>
+        xml
+      case Failure(f) => <sparql>
+                           { f.getLocalizedMessage }
+                         </sparql>
+    }
+//    output.toString()
+    val printer = new scala.xml.PrettyPrinter(80, 2)
+    printer.format(output)
+  }
+  
   /** sparql Select, JSON output, see https://www.w3.org/TR/sparql11-results-json/#example */
   def sparqlSelectJSON(queryString: String,
                        ds: DATASET = dataset): String = {
@@ -442,9 +516,14 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     to.toString
   }
 
-  def graph2String(triples: Try[Rdf#Graph], baseURI: String, format: String="turtle"): String = {
+  /** RDF graph to String
+   *  @param format = "turtle" or "rdfxml" or "jsonld" */
+  def graph2String(triples: Try[Rdf#Graph], baseURI: String, format: String = "turtle"): String = {
     Logger.getRootLogger().info(s"graph2String: base URI $baseURI ${triples}")
-    val writer = if(format=="jsonld") jsonldCompactedWriter else turtleWriter // later add RDF/XML ......     
+    val writer =
+      if (format == "jsonld") jsonldCompactedWriter
+      else if (format == "rdfxml") rdfXMLWriter
+      else turtleWriter
     val ret = writer.asString(triples.get, base = baseURI)
     ret.get
   }
@@ -475,6 +554,9 @@ object SPARQLHelper extends ImplementationSettings.RDFModule
     sparqlSelectJSON(queryString)
   }
 
+    def selectXML(queryString: String): String = {
+    sparqlSelectXML(queryString)
+  }
 //  def select(queryString: String): String = {
 //    sparqlSelectQuery(queryString).toString()
 //  }

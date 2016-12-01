@@ -22,6 +22,9 @@ import play.api.mvc.Call
 import play.api.http.MimeTypes
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.utils.RDFPrefixes
+import play.api.mvc.Result
+import play.api.mvc.RequestHeader
+import play.api.http.MediaRange
 
 
 /** main controller */
@@ -233,30 +236,64 @@ trait ApplicationTrait extends Controller
 
   def makeAbsoluteURIForSaving(userid: String): String = userid
 
-  /** get RDF with content negotiation for RDF syntax;
+  /**
+   * get RDF with content negotiation (conneg) for RDF syntax;
    *  see also LDP.scala
    *
-   *  cf https://www.playframework.com/documentation/2.3.x/ScalaStream */
+   *  cf https://www.playframework.com/documentation/2.3.x/ScalaStream
+   */
   def downloadAction(url: String) =
     withUser {
       implicit userid =>
         implicit request =>
-          def ttlOutput = Ok.chunked(download(url, "text/turtle")).as("text/turtle; charset=utf-8")
-            .withHeaders("Access-Control-Allow-Origin" -> "*")
-          def jsonldOutput = Ok.chunked(download(url, "text/json-ld")).as("text/turtle; charset=utf-8")
-            .withHeaders("Access-Control-Allow-Origin" -> "*")
-          // Ok.stream(download(url) >>> Enumerator.eof).as("text/turtle; charset=utf-8")
-
-          val AcceptsTTL = Accepting("text/turtle")
-          val AcceptsJSONLD = Accepting("text/json-ld")
-          render {
-            case AcceptsTTL    => jsonldOutput
-            case AcceptsJSONLD => ttlOutput
-            case _             => ttlOutput
+          def output(accepts: Accepting): Result = {
+            val mime = computeMIME(accepts, AcceptsJSONLD)
+            Ok.chunked(
+              download(url, mime.mimeType)).
+              as(s"${mime.mimeType}; charset=utf-8")
+              .withHeaders("Access-Control-Allow-Origin" -> "*")
           }
+          // Ok.stream(download(url) >>> Enumerator.eof).as("text/turtle; charset=utf-8")
+          renderResult(output)
     }
 
-  def getFirstNonEmptyInMap(map: Map[String, Seq[String]],
+
+  //// factor out the conneg stuff ////
+
+  val AcceptsTTL = Accepting("text/turtle")
+	val AcceptsJSONLD = Accepting("text/json-ld")
+	val AcceptsRDFXML = Accepting("application/rdf+xml")
+	// format = "turtle" or "rdfxml" or "jsonld"
+	val mimeAbbrevs = Map( AcceptsTTL -> "turtle", AcceptsJSONLD -> "rdfxml", AcceptsRDFXML -> "jsonld",
+	    Accepts.Json -> "json", Accepts.Xml -> "xml" )
+
+	private def renderResult(output: Accepting => Result, default: Accepting = AcceptsTTL)(implicit request: RequestHeader): Result = {
+    render {
+      case AcceptsTTL    => output(AcceptsTTL)
+      case AcceptsJSONLD => output(AcceptsJSONLD)
+      case AcceptsRDFXML => output(AcceptsRDFXML)
+      case Accepts.Json  => output(Accepts.Json)
+      case Accepts.Xml   => output(Accepts.Xml)
+      case _             => output(default)
+    }
+  }
+
+  val mimeSet = Set(AcceptsTTL, AcceptsJSONLD, AcceptsRDFXML, Accepts.Json, Accepts.Xml)
+  private def computeMIME(accepts: Accepting, default: Accepting): Accepting = {
+    if( mimeSet.contains(accepts))
+       accepts
+    else default
+  }
+
+  private def computeMIME(accepts: Seq[MediaRange], default: Accepting): Accepting = {
+    val v = accepts.find { x => val acc = Accepting(x.mediaType) ; mimeSet.contains(acc) }
+    v match {
+      case Some(acc) => Accepting(acc.mediaType)
+      case None => default
+    }
+  }
+
+  private def getFirstNonEmptyInMap(map: Map[String, Seq[String]],
                             uri: String): String = {
     val uriArgs = map.getOrElse(uri, Seq())
     uriArgs.find { uri => uri != "" }.getOrElse("")
@@ -272,21 +309,44 @@ trait ApplicationTrait extends Controller
           outputMainPage(sparqlConstructQuery(query, lang), lang)
     }
 
-  /** construct or select SPARQL query */
+  /**
+   * construct or select SPARQL query
+   *  conneg => RDF/XML, Turtle or json-ld
+   */
   def sparqlConstruct(query: String) =
     withUser {
       implicit userid =>
         implicit request =>
-          println("sparql: " + request)
-          println("sparql: " + query)
+          println(s"""sparqlConstruct: sparql: request $request
+            sparql: $query
+            accepts ${request.acceptedTypes} """)
           val lang = chooseLanguage(request)
-          val JSONresult = if (query.contains("select") ||
-            query.contains("SELECT"))
-            // TODO better try a parse of the query
-            sparqlSelectJSON(query)
-          else
-            sparqlConstructResult(query, lang, "jsonld")
-          Ok(JSONresult).as("application/ld+json; charset=utf-8")
+
+          // TODO better try a parse of the query
+          def checkSPARQLqueryType(query: String) =
+            if (query.contains("select") ||
+              query.contains("SELECT"))
+              "select"
+            else
+              "construct"
+          val isSelect = (checkSPARQLqueryType(query) == "select")
+          val defaultMIME = if (isSelect) Accepts.Xml else AcceptsJSONLD
+          val accepts = request.acceptedTypes
+          val mime = computeMIME(accepts, defaultMIME)
+
+          def output(accepts: Accepting): Result = {
+            val format = mimeAbbrevs(accepts)
+            println(s"sparqlConstruct: accepts: $accepts, format: $format")
+            val (result, defaultMIME) = if (isSelect)
+              (sparqlSelectConneg(query, format, dataset), Accepts.Xml)
+            else
+              (sparqlConstructResult(query, lang, format), AcceptsJSONLD)
+
+            val mime = computeMIME(accepts, defaultMIME)
+            Ok(result).as(s"${mime.mimeType}; charset=utf-8")
+          }
+
+          renderResult(output, mime)
     }
 
   /** select UI */

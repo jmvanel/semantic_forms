@@ -35,6 +35,7 @@ trait ApplicationFacadeInterface {
 
   def lookup(search: String): String
 
+  /** implements download of RDF content from HTTP client */
   def download(url: String, mime: String): Enumerator[Array[Byte]]
 
   def sparqlConstructQuery(query: String, lang: String = "en"): NodeSeq
