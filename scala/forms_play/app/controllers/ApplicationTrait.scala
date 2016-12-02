@@ -26,6 +26,7 @@ import play.api.mvc.Result
 import play.api.mvc.RequestHeader
 import play.api.http.MediaRange
 import scala.util.Failure
+import play.api.mvc.Codec
 
 
 /** main controller */
@@ -458,12 +459,15 @@ trait ApplicationTrait extends Controller
             .withHeaders("Access-Control-Allow-Origin" -> "*")
     }
 
+//  implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(
+
   def lookupService(search: String, clas: String = "") = {
     Action { implicit request =>
       println(s"""Lookup: $request
             accepts ${request.acceptedTypes} """)
       val lang = chooseLanguage(request)
-      val mime = request.acceptedTypes.headOption.map { typ => typ.mediaType }.getOrElse(Accepts.Xml.mimeType)
+      val mime = request.acceptedTypes.headOption.map { typ => typ.toString() }.getOrElse(Accepts.Xml.mimeType)
+      println(s"mime $mime")
       Ok(lookup(search, lang, clas, mime)).as(s"$mime; charset=utf-8")
       .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
     }

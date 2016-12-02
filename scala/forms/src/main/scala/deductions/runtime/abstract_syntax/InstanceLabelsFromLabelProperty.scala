@@ -34,17 +34,25 @@ trait InstanceLabelsFromLabelProperty[Rdf <: RDF, DATASET]
     |} }
     """.stripMargin
 
-  def instanceLabelFromLabelProperty(node: Rdf#Node) : Option[Rdf#Node]= {
-    if( node == ops.URI("") ) return None
+  def instanceLabelFromLabelProperty(node: Rdf#Node): Option[Rdf#Node] = {
+    ops.foldNode(node)(
+      node => {
+        if (node == ops.URI(""))
+          None
+        else {
+          val q = query.replaceAll("\\<thing\\>", "<" + node.toString() + ">")
+          // println(s"query $q")
+          val res = for (
+            nodes <- sparqlSelectQueryVariablesNT(q, List("LABEL_URI"));
+            node <- nodes
+          ) yield {
+            node
+          }
+          res.headOption
+        }
+      },
+      _ => None,
+      _ => None)
 
-    val q = query.replaceAll("\\<thing\\>", "<" + node.toString() + ">" )
-    // println(s"query $q")
-    val res = for (
-      nodes <- sparqlSelectQueryVariablesNT( q, List("LABEL_URI"));
-      node <- nodes
-    ) yield {
-      node
-    }
-    res . headOption
   }
 }

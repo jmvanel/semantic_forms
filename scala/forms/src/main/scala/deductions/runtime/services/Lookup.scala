@@ -42,8 +42,11 @@ trait Lookup[Rdf <: RDF, DATASET]
    *    </Class>
    */
   def lookup(search: String, lang: String = "en", clas: String = "", mime: String): String = {
-    val queryString = indexBasedQuery.makeQueryString(search + "*")
-
+    val queryString0 = indexBasedQuery.makeQueryString(search)
+    val queryString = if( clas != "" ) {
+      queryString0.replaceFirst( """\?class""", "<" + expandOrUnchanged(clas) + ">" )
+    } else queryString0
+    println(s"lookup(search=$search, clas $clas, queryString $queryString")
     val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariables(queryString, Seq("thing"))
     println(s"lookup(search=$search $queryString => $res")
     println(s"lookup: starting TRANSACTION for dataset $dataset")
@@ -98,6 +101,7 @@ trait Lookup[Rdf <: RDF, DATASET]
          |  graph ?g {
          |    ?thing text:query '${search.trim()}' .
          |    ?thing ?p ?o .
+         |    ?thing a ?class .
          |  }
          |}
          |GROUP BY ?thing

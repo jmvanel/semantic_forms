@@ -58,5 +58,5 @@ PUT     /ldp/*uri              controllers.Application.ldpPOSTAction(uri: String
 
 OPTIONS /*path                         controllers.Application.httpOptions(path)
 
-GET     /lookup                controllers.Application.lookupService(q:String)
+GET     /lookup                controllers.Application.lookupService(q:String, clas: String ?= "")
 

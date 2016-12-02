@@ -303,18 +303,20 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     } yield es
     //    println( "solutionsTry.isSuccess " + solutionsTry.isSuccess )
     val answers: Rdf#Solutions = solutionsTry.get
-    val results = answers.iterator.toIterable map {
+    val results = answers.iterator.toIterable . map {
       row =>
-        //        println( row )
         for (variable <- variables) yield {
           val cell = row(variable)
           cell match {
             case Success(node) => row(variable).get.as[Rdf#Node].get
-            case Failure(f)    => Literal(".")
+            case Failure(f)    => Literal(">>>> Failure: " + f.toString())
           }
         }
     }
-    results.to[List] },
+    results.to[List] .
+    // hack :(((((((((
+    filter( node => ! node.toString().contains(""">>>> Failure: """))
+    },
     true )
   }
 

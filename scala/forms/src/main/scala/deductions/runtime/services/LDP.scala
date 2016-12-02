@@ -78,7 +78,7 @@ trait LDP[Rdf <: RDF, DATASET]
       turtleWriter
     else if (accept == "application/rdf+xml")
       rdfXMLWriter
-    else
+    else // application/ld+json
       jsonldCompactedWriter
             
   private def absoluteURL( request: HTTPrequest, rawURI: String, secure: Boolean = false): String =
