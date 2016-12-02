@@ -263,10 +263,10 @@ trait ApplicationTrait extends Controller
   //// factor out the conneg stuff ////
 
   val AcceptsTTL = Accepting("text/turtle")
-	val AcceptsJSONLD = Accepting("text/json-ld")
+	val AcceptsJSONLD = Accepting("application/json-ld")
 	val AcceptsRDFXML = Accepting("application/rdf+xml")
 	// format = "turtle" or "rdfxml" or "jsonld"
-	val mimeAbbrevs = Map( AcceptsTTL -> "turtle", AcceptsJSONLD -> "rdfxml", AcceptsRDFXML -> "jsonld",
+	val mimeAbbrevs = Map( AcceptsTTL -> "turtle", AcceptsJSONLD -> "jsonld", AcceptsRDFXML -> "rdfxml",
 	    Accepts.Json -> "json", Accepts.Xml -> "xml" )
 
 	private def renderResult(output: Accepting => Result, default: Accepting = AcceptsTTL)(implicit request: RequestHeader): Result = {
