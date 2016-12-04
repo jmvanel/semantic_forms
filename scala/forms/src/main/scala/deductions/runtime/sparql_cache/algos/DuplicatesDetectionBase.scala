@@ -13,6 +13,7 @@ import java.io.PrintStream
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.SPARQLHelpers
+import deductions.runtime.utils.RDFHelpers
 
 
 
@@ -20,6 +21,7 @@ trait DuplicatesDetectionBase[Rdf <: RDF, DATASET]
 extends HTML5TypesTrait[Rdf]
 with RDFPrefixes[Rdf]
 with SPARQLHelpers[Rdf, DATASET]
+with RDFHelpers[Rdf]
 {
     this: Configuration =>
 
@@ -176,7 +178,8 @@ with SPARQLHelpers[Rdf, DATASET]
     val props = find(graph, ANY, rdfs.domain, classe)
     val propsStrings = props . map { triple =>
       val prop = triple.subject
-      rdfsPropertyAndRange(prop)
+      rdfsPropertyAndRange(prop) + " - " +
+      (getStringHeadOrElse(prop, restruc("restructructionComment"), "" )(graph)) . replace('\n', ',')
     } . toList
 
     val q = queryString.replace("<CLASS>", s"<${classe}>")
@@ -187,8 +190,8 @@ with SPARQLHelpers[Rdf, DATASET]
     val propsAndRangeFromUnionOf = propsFromUnionOf . map {
          prop => rdfsPropertyAndRange(prop)
     }
-    if( classe.toString().endsWith("Concours/age/#class"))
-      println
+
+//    if( classe.toString().endsWith("Concours/age/#class")) println
     propsStrings ++ propsAndRangeFromUnionOf
   }
 

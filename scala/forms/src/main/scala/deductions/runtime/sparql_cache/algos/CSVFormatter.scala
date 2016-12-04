@@ -8,7 +8,7 @@ trait CSVFormatter[Rdf <: RDF, DATASET]
 
   private lazy val owl = OWLPrefix[Rdf]
 
-  def formatCSVLine(node: Rdf#Node, classToReportURI: Rdf#URI= owl.Class,
+  def formatCSVLinesForNode(node: Rdf#Node, classToReportURI: Rdf#URI= owl.Class,
       propertiesToReport: List[Rdf#URI]= List() )(implicit graph: Rdf#Graph): String = {
 
     val rdfs_domain = rdfsDomain(node, graph)

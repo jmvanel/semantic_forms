@@ -32,7 +32,7 @@ with CSVFormatter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
   val addEmptyLineBetweenLabelGroups = false // true
   val filterAmetysSubForms = false
-  val propertiesToReport = List(URI("http://deductions.sf.net/ametys.ttl#category"), rdfs.subClassOf )
+  val propertiesToReport = List(URI("http://deductions.sf.net/ametys.ttl#category"), rdfs.subClassOf)
   
   val owlFile = args(0)
   implicit val graph = turtleReader.read(new FileInputStream(owlFile), "").get
@@ -82,15 +82,16 @@ with CSVFormatter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
     instancesToReportGroupedByRdfsLabel.map {
       labelAndList => formatCSVLines(labelAndList)
-    }. filter { c => c != "" } . mkString("\n")
+    }. filter { c => ! c.matches(" *") } . mkString("\n")
   }
 
-  /** format Label Group as CSV */
+  /** format same Label Group as CSV */
   def formatCSVLines(labelAndList: (String, List[Rdf#Node])) = {
     val list = labelAndList._2
     val columns = for (
       node <- list if (!node.isBlank())
-    ) yield { formatCSVLine(node, classToReportURI, propertiesToReport); }
+    ) yield
+    formatCSVLinesForNode(node, classToReportURI, propertiesToReport)
     columns.mkString + (
       if (addEmptyLineBetweenLabelGroups)
         "\n"

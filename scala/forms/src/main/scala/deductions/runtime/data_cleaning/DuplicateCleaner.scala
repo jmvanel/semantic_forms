@@ -43,6 +43,8 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       import rdfStore.graphStoreSyntax._
       import rdfStore.transactorSyntax._
 
+  var originalGraph = emptyGraph
+
   //  override val databaseLocation: String = "" // in-memory
   override val databaseLocation = "/tmp/TDB" // TODO multi-platform temporary directory
   val deleteDatabaseLocation = true
@@ -225,13 +227,20 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     })
   }
 
-  /** add restructuring comment (annotation property),
-   *  telling with URI's have been merged; DOES NOT include transaction */
+  /**
+   * add restructuring comment (annotation property),
+   *  telling with URI's have been merged; DOES NOT include transaction
+   */
   private def addRestructuringCommentNoTr(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI],
-      comment: String=mergeMarker,
-      graphToWrite: Rdf#URI=URI("")) = {
+                                          comment: String = mergeMarker,
+                                          graphToWrite: Rdf#URI = URI("")) = {
     val restrucProp = restruc("restructructionComment")
-    val dupsComment = for (duplicateURI <- duplicateURIs) yield fromUri(duplicateURI)
+    val dupsComment = for (
+      duplicateURI <- duplicateURIs
+    ) yield {
+      val oldLabel = instanceLabel(duplicateURI, originalGraph, "fr")
+      abbreviateTurtle(duplicateURI) + s" ($oldLabel)"
+    }
     val restructructionComment = s"""Fusion $comment le ${new Date}
     vers $uriTokeep
     à partir de
