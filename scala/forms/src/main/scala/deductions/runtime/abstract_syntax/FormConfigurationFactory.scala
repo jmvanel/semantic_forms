@@ -24,6 +24,7 @@ trait FormConfigurationFactory[Rdf <: RDF, DATASET]
   /**
    * lookup for form:showProperties (ordered list of fields) in Form Configuration within RDF graph about this class;
    *  usable for unfilled and filled Forms
+   *  @return Seq of pairs (properties RDF List, form Configuration node)
    */
   def lookPropertiesListInConfiguration(classs: Rdf#URI)
   (implicit graph: Rdf#Graph)
@@ -37,9 +38,13 @@ trait FormConfigurationFactory[Rdf <: RDF, DATASET]
     }
   }
 
- /** look for Properties List & form Configuration From URI in Database after trying to donwload
+ /** look for Properties List & form Configuration From URI in Database,
+  *   after trying to download form Configuration from its URI;
    *  TODO remove dependency to RDFCacheAlgo (dataset)
-   *  PENDING : what to do when given formuri gives an empty propertiesList? */
+   *  PENDING : what to do when given formuri gives an empty propertiesList?
+   *  
+   *  @return properties List, form Configuration URI,
+   *  Try[Graph]: possibly downloaded form Configuration from its URI */
   def lookPropertiesListFromDatabaseOrDownload(formuri: String)
       (implicit graph: Rdf#Graph):
        (Seq[Rdf#URI], Rdf#Node, Try[Rdf#Graph]) = {

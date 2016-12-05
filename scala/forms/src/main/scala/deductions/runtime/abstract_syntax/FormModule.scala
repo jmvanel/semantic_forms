@@ -35,7 +35,7 @@ trait FormModule[NODE, URI <: NODE] {
   case class FormSyntax(
       val subject: NODE,
       var fields: Seq[Entry],
-      classs: URI = nullURI,
+      classs: NODE = nullURI,
       formGroup: URI = nullURI,
       val defaults: FormDefaults = FormModule.formDefaults
       ) {
@@ -98,7 +98,7 @@ trait FormModule[NODE, URI <: NODE] {
   /** @param possibleValues a couple of an RDF node id and the label to display, see trait RangeInference */
   class ResourceEntry(label: String, comment: String,
     property: ObjectProperty = nullURI, validator: ResourceValidator,
-    value: URI = nullURI, val alreadyInDatabase: Boolean = true,
+    value: NODE = nullURI, val alreadyInDatabase: Boolean = true,
     possibleValues: Seq[(NODE, NODE)] = Seq(),
     val valueLabel: String = "",
     type_ : NODE = nullURI,

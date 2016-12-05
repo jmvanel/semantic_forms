@@ -95,7 +95,7 @@ trait FormSpecificationsFromVocab[Rdf <: RDF, DATASET]
   }
 
   def formvoc(id: String) = prefixesMap2("form")(id)
-  def formURI(formSyntax: FormModule[Rdf#Node, Rdf#URI]#FormSyntax) = URI(fromUri(formSyntax.classs) + "-formFromClass")
+  def formURI(formSyntax: FormModule[Rdf#Node, Rdf#URI]#FormSyntax) = URI(fromUri(uriNodeToURI(formSyntax.classs)) + "-formFromClass")
 
   /**
    * create form:DBPediaLookup field Specifications,

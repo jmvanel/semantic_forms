@@ -10,7 +10,10 @@ import org.w3.banana.RDFPrefix
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.SPARQLHelpers
 
-/** populate Fields in form by inferencing from given class */
+/** populate Fields in form by inferencing from given class, using properties:
+ *  - rdfs:subClassOf
+ *  - rdfs:domain
+ *  */
 trait FieldsInference[Rdf <: RDF, DATASET]
 extends RDFHelpers[Rdf]
 with RDFOPerationsDB[Rdf, DATASET]
@@ -26,10 +29,13 @@ with Configuration {
     getPredicates(graph, subject).toSeq.distinct
 
   /** find fields from given RDF class */
-  def fieldsFromClass(classs: Rdf#URI, graph: Rdf#Graph): Seq[Rdf#Node] = {
+  def fieldsFromClass(classs: Rdf#URI, graph: Rdf#Graph)
+  : Seq[Rdf#Node]
+  = {
 
-    val result = scala.collection.mutable.ListBuffer[Rdf#Node]()
-
+    val inferedProperties = scala.collection.mutable.ListBuffer[Rdf#Node]()
+    val propertiesGroups = scala.collection.mutable.HashMap.empty[Rdf#Node, RawDataForForm[Rdf]]
+    		
     /** retrieve rdfs:domain's From given Class */
     def domainsFromClass(classs: Rdf#Node): List[Rdf#Node] = {
       if (classs != owl.Thing) {
@@ -73,12 +79,15 @@ with Configuration {
     /** recursively process super-classes and owl:equivalentClass until reaching owl:Thing */
     def processSuperClasses(classs: Rdf#Node) {
       if (classs != owl.Thing) {
-        result ++= domainsFromClass(classs)
+        val domains = domainsFromClass(classs)
+        inferedProperties ++= domains
+        propertiesGroups += ( classs -> RawDataForForm(domains, classs, URI("") ) )
+        
         val superClasses = getObjects(graph, classs, rdfs.subClassOf)
         println(s"process Super Classes of <$classs> size ${superClasses.size} ; ${superClasses.mkString(", ")}")
-        superClasses foreach (sc => result ++= domainsFromClass(sc))
+        superClasses foreach (sc => inferedProperties ++= domainsFromClass(sc))
         val equivalentClasses = getObjects(graph, classs, owl.equivalentClass)
-        equivalentClasses foreach (sc => result ++= domainsFromClass(sc))
+        equivalentClasses foreach (sc => inferedProperties ++= domainsFromClass(sc))
         superClasses foreach (sc => processSuperClasses(sc))
       }
     }
@@ -119,7 +128,7 @@ with Configuration {
         if (prop.toString().startsWith(graphURI)) {
           val doms = find(graph, toConcreteNodeMatch(prop), toConcreteNodeMatch(rdfs.domain), ANY)
           if (doms.size == 0) {
-            result += prop.asInstanceOf[Rdf#URI]
+            inferedProperties += prop.asInstanceOf[Rdf#URI]
             println(s"addDomainlessProperties: <$uri> add <$prop>")
           }
         }
@@ -128,6 +137,10 @@ with Configuration {
 
     processSuperClasses(classs)
     if (showDomainlessProperties) addDomainlessProperties(classs)
-    result.distinct
-  }
+    
+    // TODO return >>>>>>>>>>>>>>>>>>>>
+//    RawDataForForm(inferedProperties.distinct, classs, URI(""), propertiesGroups=propertiesGroups )
+    
+    inferedProperties.distinct
+  } // end of fieldsFromClass()
 }

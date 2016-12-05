@@ -53,7 +53,7 @@ with RDFPrefixes[Rdf]
           actionURI = actionURI,
           lang=lang, graphURI=graphURI)
 
-          Seq( makeEditingHeader(fromUri(form.classs), lang, formSpecURI, graphURI),
+          Seq( makeEditingHeader(fromUri(uriNodeToURI(form.classs)), lang, formSpecURI, graphURI),
               rawForm ) . flatten
     })
   }

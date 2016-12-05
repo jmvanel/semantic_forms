@@ -3,14 +3,18 @@ package deductions.runtime.abstract_syntax
 import org.w3.banana.RDF
 import scala.util.Try
 import scala.util.Success
+import scala.collection.mutable.HashMap
 
-/** intermediary data for form generation */
-case class RawDataForForm[Rdf <: RDF](propertiesList: Seq[Rdf#Node],
-    classs: Rdf#URI,
+/** intermediary data for form generation:  properties' List, etc */
+case class RawDataForForm[Rdf <: RDF](
+    propertiesList: Seq[Rdf#Node],
+    classs: Rdf#Node, // URI,
     subject: Rdf#Node,
     editable: Boolean = false,
     formURI: Option[Rdf#Node] = None,
-    reversePropertiesList: Seq[Rdf#Node]= Seq() )
+    reversePropertiesList: Seq[Rdf#Node]= Seq(),
+    propertiesGroups: collection.Map[Rdf#Node, RawDataForForm[Rdf]] = collection.Map[Rdf#Node, RawDataForForm[Rdf]]()
+)
 
 /** Step 1: compute properties List from Config, Subject, Class (in that order) */
 trait ComputePropertiesList[Rdf <: RDF, DATASET] {
@@ -33,10 +37,12 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
     }
 
   /** create Raw Data For Form from an instance (subject) URI,
-   * and a Form Specification URI if not empty;
+   * and possibly a Form Specification URI if URI is not <> ;
    * ( see form_specs/foaf.form.ttl for an example of form Specification)
+   * 
    * it merges given properties from Config, with properties from Subject
-   * and from Class (in this order). 
+   * and from Class (in this order).
+   * @return a RawDataForForm data structure
    * */
   protected def computePropertiesList(subject: Rdf#Node,
                             editable: Boolean = false, formuri: String)(implicit graph: Rdf#Graph):

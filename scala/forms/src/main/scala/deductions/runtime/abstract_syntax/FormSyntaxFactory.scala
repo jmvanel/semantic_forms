@@ -290,7 +290,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    * add Triple: <subject> rdf:type <classs>
    *  @return augmented fields argument
    */
-  def addTypeTriple(subject: Rdf#Node, classs: Rdf#URI,
+  def addTypeTriple(subject: Rdf#Node, classs: Rdf#Node, // URI,
     fields: Iterable[Entry])
     (implicit graph: Rdf#Graph)
   : Seq[Entry] = {
