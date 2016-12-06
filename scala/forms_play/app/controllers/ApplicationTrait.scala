@@ -256,15 +256,22 @@ trait ApplicationTrait extends Controller
               .withHeaders("Access-Control-Allow-Origin" -> "*")
           }
           // Ok.stream(download(url) >>> Enumerator.eof).as("text/turtle; charset=utf-8")
-          renderResult(output)
+
+          val defaultMIME = AcceptsJSONLD
+          val accepts = request.acceptedTypes
+          val mime = computeMIME(accepts, defaultMIME)
+
+          renderResult(output, mime)
     }
 
 
   //// factor out the conneg stuff ////
 
   val AcceptsTTL = Accepting("text/turtle")
-	val AcceptsJSONLD = Accepting("application/json-ld")
+	val AcceptsJSONLD = Accepting("application/ld+json")
 	val AcceptsRDFXML = Accepting("application/rdf+xml")
+	val turtle = AcceptsTTL.mimeType
+
 	// format = "turtle" or "rdfxml" or "jsonld"
 	val mimeAbbrevs = Map( AcceptsTTL -> "turtle", AcceptsJSONLD -> "jsonld", AcceptsRDFXML -> "rdfxml",
 	    Accepts.Json -> "json", Accepts.Xml -> "xml" )
@@ -331,6 +338,7 @@ trait ApplicationTrait extends Controller
               "select"
             else
               "construct"
+
           val isSelect = (checkSPARQLqueryType(query) == "select")
           val defaultMIME = if (isSelect) Accepts.Xml else AcceptsJSONLD
           val accepts = request.acceptedTypes
@@ -400,10 +408,6 @@ trait ApplicationTrait extends Controller
     outputMainPage(r, lang))
   }
 
-  val acceptsTurtle = Accepting("text/turtle")
-  val turtle = acceptsTurtle.mimeType
-  val acceptsJSONLD = Accepting("application/ld+json") // text/json-ld")
-
   def ldp(uri: String) =
     withUser {
       implicit userid =>
@@ -412,11 +416,11 @@ trait ApplicationTrait extends Controller
           val acceptedTypes = request.acceptedTypes
           println(s"acceptedTypes $acceptedTypes")
           val mimeType =
-            if (acceptedTypes.contains(acceptsTurtle))
+            if (acceptedTypes.contains(AcceptsTTL))
               turtle
             // tODO RDF/XML
             else
-              acceptsJSONLD.mimeType
+              AcceptsJSONLD.mimeType
           val response = ldpGET(uri, request.path, mimeType, copyRequest(request))
           println("LDP: GET: result " + response)
           val contentType = mimeType + "; charset=utf-8"
