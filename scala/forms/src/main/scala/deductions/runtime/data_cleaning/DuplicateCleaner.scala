@@ -42,7 +42,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
   import ops._
       import rdfStore.graphStoreSyntax._
       import rdfStore.transactorSyntax._
-
+   
   var originalGraph = emptyGraph
 
   //  override val databaseLocation: String = "" // in-memory
@@ -486,6 +486,10 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
         println(s"Loaded file $file => $uri")
         uri
       }
+      val r = rdfStore.rw(dataset, {
+    	  originalGraph = union(Seq(allNamedGraph))
+        // println(s"originalGraph size ${originalGraph.size()(ops)}")
+      })
       files
     }
   

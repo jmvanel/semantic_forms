@@ -44,10 +44,10 @@ trait CSVFormatter[Rdf <: RDF, DATASET]
   /** detail Lines in between full Lines */
   def detailLines(n: Rdf#Node)(implicit graph: Rdf#Graph): String = {
     val firstColumns = "\t\t\t\t"
-    val props = rdfsPropertiesAndRangesFromClassList(n, graph)
+    val props = rdfsPropertiesAndRangesFromClassListDetails(n, graph)
     if (props.isEmpty)
       ""
     else
-      props.mkString(firstColumns, "\n" + firstColumns, "")
+      props.mkString("\n" + firstColumns, "\n" + firstColumns, "")
   }
 }

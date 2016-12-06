@@ -166,6 +166,7 @@ with RDFHelpers[Rdf]
   }
 
   def rdfsPropertiesAndRangesFromClass(classe: Rdf#Node, graph: Rdf#Graph): String = {
+//		  if( classe.toString().contains( "http://data.onisep.fr/ontologies/AbstractMetier" ))  println()
     val v = rdfsPropertiesAndRangesFromClassList(classe, graph)
     v. mkString(", ")
   }
@@ -175,14 +176,13 @@ with RDFHelpers[Rdf]
        rdfsLabel(prop, graph) + ": " +
       rdfsLabel(rdfsRange( prop, graph).headOption, graph)
      }
-    val props = find(graph, ANY, rdfs.domain, classe)
+     val props = find(graph, ANY, rdfs.domain, classe)
     val propsStrings = props . map { triple =>
       val prop = triple.subject
-      rdfsPropertyAndRange(prop) + " - " +
-      (getStringHeadOrElse(prop, restruc("restructructionComment"), "" )(graph)) . replace('\n', ',')
+      rdfsPropertyAndRange(prop)
     } . toList
 
-    val q = queryString.replace("<CLASS>", s"<${classe}>")
+    val q = queryRdfsPropertiesUnionOfFromClass.replace("<CLASS>", s"<${classe}>")
     val res: List[Seq[Rdf#Node]] = runSparqlSelectNodes( q, List("PROP"), graph)
     val propsFromUnionOf = res . map {
       list => list.head
@@ -195,7 +195,51 @@ with RDFHelpers[Rdf]
     propsStrings ++ propsAndRangeFromUnionOf
   }
 
-  val queryString = """
+  /** add details from restructructionComment;
+   *  TODO pasted from previous rdfsPropertiesAndRangesFromClassList */
+  def rdfsPropertiesAndRangesFromClassListDetails(classe: Rdf#Node, graph: Rdf#Graph): List[String] = {
+    def rdfsPropertyAndRange(prop: Rdf#Node) = {
+      rdfsLabel(prop, graph) + ": " +
+        rdfsLabel(rdfsRange(prop, graph).headOption, graph)
+    }
+//    if (classe.toString().contains("http://data.onisep.fr/ontologies/AbstractMetier")) println(s"rdfsPropertiesAndRangesFromClassList props ${props.toList.mkString("\n")}")
+
+    def displayProp(prop: Rdf#Node) = {
+            rdfsPropertyAndRange(prop) + " - " +
+        (getStringHeadOrElse(prop, restruc("restructructionComment"), "")(graph)).replace('\n', ',')
+    }
+
+    val propsFromRdfsDomain = {
+      val propsTriples = find(graph, ANY, rdfs.domain, classe)
+      propsTriples.map { triple =>
+        triple.subject
+      }
+    }
+
+    val propsStrings = propsFromRdfsDomain.map {
+      prop =>
+//      if (prop.toString().contains("http://data.onisep.fr/ontologies/AbstractMetier/libelleOfficiel")) println()
+        displayProp(prop)
+    }.toList
+
+    val propsFromUnionOf = {
+      val q = queryRdfsPropertiesUnionOfFromClass.replace("<CLASS>", s"<${classe}>")
+      val res: List[Seq[Rdf#Node]] = runSparqlSelectNodes(q, List("PROP"), graph)
+      res.map {
+        list => list.head
+      }
+    }
+    val propsAndRangeFromUnionOf = propsFromUnionOf.map {
+      prop => displayProp(prop)
+    }
+
+    //    if( classe.toString().endsWith("Concours/age/#class")) println
+    propsStrings ++ propsAndRangeFromUnionOf
+  }
+
+
+     
+  val queryRdfsPropertiesUnionOfFromClass = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX owl: <http://www.w3.org/2002/07/owl#>
