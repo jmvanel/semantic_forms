@@ -50,10 +50,10 @@ object DuplicateCleanerSpecificationApp extends App
     val args2 = args.map { new File(_).getCanonicalPath }
 
     loadFilesFromArgs(args2)
-//    val r = rdfStore.rw(dataset, {
-//      originalGraph = union(Seq(allNamedGraph))
-//      println(s"originalGraph size ${originalGraph.size()}")
-//    })
+    //    val r = rdfStore.rw(dataset, {
+    //      originalGraph = union(Seq(allNamedGraph))
+    //      println(s"originalGraph size ${originalGraph.size()}")
+    //    })
 
     val csvSpecification = args2(0)
     val propertyChanges = readCSVFile(csvSpecification)

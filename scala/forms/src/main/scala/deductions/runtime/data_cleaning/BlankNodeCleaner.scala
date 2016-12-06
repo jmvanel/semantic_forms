@@ -90,9 +90,11 @@ trait BlankNodeCleanerIncremental[Rdf <: RDF, DATASET] extends BlankNodeCleanerB
     println("Search duplicate graph rooted at blank node: number of predicates Local " + blanksLocalGraphGroupedByPredicate.size)
 
     val keys = blanksLocalGraphGroupedByPredicate.keySet union blanksIncomingGraphGroupedByPredicate.keySet
-    for (pred <- keys) {
-      val incomingGraphs = blanksIncomingGraphGroupedByPredicate.get(pred).get
-      val localGraphs = blanksLocalGraphGroupedByPredicate.get(pred).get
+    for (
+      pred <- keys;
+      incomingGraphs <- blanksIncomingGraphGroupedByPredicate.get(pred);
+      localGraphs <- blanksLocalGraphGroupedByPredicate.get(pred)
+    ) {
       println(s"Search duplicate graph rooted at blank node: for predicate $pred Local, number of graphs " + localGraphs.size)
       // and now, complexity O(N^2) !!!
       val removed = scala.collection.mutable.Set[Rdf#Graph]()
