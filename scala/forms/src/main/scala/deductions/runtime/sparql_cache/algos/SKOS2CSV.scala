@@ -45,7 +45,7 @@ with SKOS2CSV[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
     //  val g1 = rdfLoader.load( new URL(fromUri(ontologyURI) ))
     // outputErr(s"class To Report ontology size ${g1.get.size}" )
 	  val ontologyGraph = retrieveURI( ontologyURI) . get
-	  rdfStore.r(dataset, fieldsFromClass(classToReportURI, ontologyGraph) . toList ) . get
+	  rdfStore.r(dataset, fieldsFromClass(classToReportURI, ontologyGraph) . propertiesList . toList ) . get
   }
   val fields = {
     val skos = Prefix[Rdf]("skos", "http://www.w3.org/2004/02/skos/core#")

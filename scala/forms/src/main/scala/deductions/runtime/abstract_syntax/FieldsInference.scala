@@ -30,11 +30,12 @@ with Configuration {
 
   /** find fields from given RDF class */
   def fieldsFromClass(classs: Rdf#URI, graph: Rdf#Graph)
-  : Seq[Rdf#Node]
+//  : Seq
+  : RawDataForForm[Rdf#Node]
   = {
 
     val inferedProperties = scala.collection.mutable.ListBuffer[Rdf#Node]()
-    val propertiesGroups = scala.collection.mutable.HashMap.empty[Rdf#Node, RawDataForForm[Rdf]]
+    val propertiesGroups = scala.collection.mutable.HashMap.empty[Rdf#Node, RawDataForForm[Rdf#Node]]
     		
     /** retrieve rdfs:domain's From given Class */
     def domainsFromClass(classs: Rdf#Node): List[Rdf#Node] = {
@@ -138,9 +139,8 @@ with Configuration {
     processSuperClasses(classs)
     if (showDomainlessProperties) addDomainlessProperties(classs)
     
-    // TODO return >>>>>>>>>>>>>>>>>>>>
-//    RawDataForForm(inferedProperties.distinct, classs, URI(""), propertiesGroups=propertiesGroups )
+    RawDataForForm(inferedProperties.distinct, classs, URI(""), propertiesGroups=propertiesGroups )
     
-    inferedProperties.distinct
+//    inferedProperties.distinct
   } // end of fieldsFromClass()
 }

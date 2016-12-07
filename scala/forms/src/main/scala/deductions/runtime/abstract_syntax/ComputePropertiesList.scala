@@ -6,14 +6,14 @@ import scala.util.Success
 import scala.collection.mutable.HashMap
 
 /** intermediary data for form generation:  properties' List, etc */
-case class RawDataForForm[Rdf <: RDF](
-    propertiesList: Seq[Rdf#Node],
-    classs: Rdf#Node, // URI,
-    subject: Rdf#Node,
+case class RawDataForForm[Node] ( //  <: RDF.Node](
+    propertiesList: Seq[Node],
+    classs: Node, // URI,
+    subject: Node,
     editable: Boolean = false,
-    formURI: Option[Rdf#Node] = None,
-    reversePropertiesList: Seq[Rdf#Node]= Seq(),
-    propertiesGroups: collection.Map[Rdf#Node, RawDataForForm[Rdf]] = collection.Map[Rdf#Node, RawDataForForm[Rdf]]()
+    formURI: Option[Node] = None,
+    reversePropertiesList: Seq[Node]= Seq(),
+    propertiesGroups: collection.Map[Node, RawDataForForm[Node]] = collection.Map[Node, RawDataForForm[Node]]()
 )
 
 /** Step 1: compute properties List from Config, Subject, Class (in that order) */
@@ -46,7 +46,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
    * */
   protected def computePropertiesList(subject: Rdf#Node,
                             editable: Boolean = false, formuri: String)(implicit graph: Rdf#Graph):
-                            RawDataForForm[Rdf] = {
+                            RawDataForForm[Rdf#Node] = {
       
     val classOfSubject = classFromSubject(subject) // TODO several classes
 
@@ -61,13 +61,13 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
     val propsFromSubject = fieldsFromSubject(subject, graph)
     val propsFromClass: Seq[Rdf#Node] =
       if (editable) {
-        fieldsFromClass(classs, graph)
+        fieldsFromClass(classs, graph).propertiesList
       } else Seq()
 
     val propertiesList0 = (propsFromConfig ++ propsFromSubject ++ propsFromClass).distinct
     val propertiesList = addRDFSLabelComment(propertiesList0)
     val reversePropertiesList = reversePropertiesListFromFormConfiguration(formConfiguration)
-    RawDataForForm(propertiesList, classs, subject, editable,
+    RawDataForForm[Rdf#Node](propertiesList, classs, subject, editable,
         formuri match { case "" => None
         case uri => Some(ops.URI(uri)) },
         reversePropertiesList)

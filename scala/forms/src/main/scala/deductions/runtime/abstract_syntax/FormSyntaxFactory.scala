@@ -165,7 +165,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   type fm = FormModule[Rdf#Node, Rdf#URI]
   
   def createFormDetailed2(
-		  step1: RawDataForForm[Rdf],
+		  step1: RawDataForForm[Rdf#Node],
 		  formGroup: Rdf#URI = nullURI,
 		  formConfig: Rdf#Node = URI("step1.formURI") // URI("")
 		  )
@@ -215,7 +215,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val fields = entries.flatMap { identity }
     val fields2 = addTypeTriple(subject, classs, fields)
     val fields3 = addInverseTriples(fields2, step1)
-    val formSyntax = FormSyntax(subject, fields3, classs)
+    val formSyntax = FormSyntax(subject, fields3, classs, propertiesGroups=step1.propertiesGroups)
     addAllPossibleValues(formSyntax, valuesFromFormGroup)
     
     logger.debug(s"createForm " + this)
@@ -226,7 +226,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   }
 
   def addInverseTriples(fields2: Seq[Entry],
-      step1: RawDataForForm[Rdf]): Seq[Entry]
+      step1: RawDataForForm[Rdf#Node]): Seq[Entry]
   
   /**
    * update given Form,

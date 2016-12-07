@@ -48,7 +48,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
 
     val newId = makeId(request)
     if (propsListInFormConfig.isEmpty) {
-      val props = fieldsFromClass(classFromSpecsOrGiven, graph)
+      val props = fieldsFromClass(classFromSpecsOrGiven, graph).propertiesList
       createFormDetailed(makeUri(newId), addRDFSLabelComment(props), classFromSpecsOrGiven, CreationMode)
     } else
       createFormDetailed(makeUri(newId), propsListInFormConfig.toSeq, classFromSpecsOrGiven,

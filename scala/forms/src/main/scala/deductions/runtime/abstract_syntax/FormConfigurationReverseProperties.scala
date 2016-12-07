@@ -19,7 +19,7 @@ trait FormConfigurationReverseProperties[Rdf <: RDF, DATASET]
     listFromFormConfiguration(formConfiguration, formPrefix("showReverseProperties"))
 
   def addInverseTriples(fields2: Seq[Entry],
-                        step1: RawDataForForm[Rdf]): Seq[Entry] = {
+                        step1: RawDataForForm[Rdf#Node]): Seq[Entry] = {
     for ( reverseProperty <- step1.reversePropertiesList ) yield {
       /* ResourceEntry(label: String, comment: String,
     property: ObjectProperty = nullURI, validator: ResourceValidator,
