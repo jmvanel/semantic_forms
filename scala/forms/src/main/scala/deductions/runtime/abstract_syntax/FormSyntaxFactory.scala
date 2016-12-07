@@ -162,7 +162,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     )
   }
 
-  type fm = FormModule[Rdf#Node, Rdf#URI]
+//  type fm = FormModule[Rdf#Node, Rdf#URI]
   
   def createFormDetailed2(
 		  step1: RawDataForForm[Rdf#Node],
@@ -172,50 +172,60 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     (implicit graph: Rdf#Graph)
   : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
 
-    val subject = step1.subject
-    val props = step1.propertiesList
-    val classs = step1.classs
-    val formMode: FormMode = if (step1.editable) EditionMode else DisplayMode
-
-    logger.debug(s"createForm subject $subject, props $props")
-    println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
-    implicit val lang = preferedLanguage
-    
-    val rdfh = this
-    
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
 
-    val entries = for (
-        prop <- props
-        if prop != displayLabelPred ) yield {
-      logger.debug(s"createForm subject $subject, prop $prop")
-      val ranges = objectsQuery(prop, rdfs.range)
-      val rangesSize = ranges.size
-      System.err.println(
-        if (rangesSize > 1) {
-          s"""WARNING: ranges $ranges for property $prop are multiple;
+    def makeEntries2(step1: RawDataForForm[Rdf#Node]): Seq[Entry] = {
+      val subject = step1.subject
+      val props = step1.propertiesList
+      val classs = step1.classs
+      val formMode: FormMode = if (step1.editable) EditionMode else DisplayMode
+
+      logger.debug(s"createForm subject $subject, props $props")
+      println("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
+      implicit val lang = preferedLanguage
+
+      val entries = for (
+        prop <- props if prop != displayLabelPred
+      ) yield {
+        logger.debug(s"createForm subject $subject, prop $prop")
+        val ranges = objectsQuery(prop, rdfs.range)
+        val rangesSize = ranges.size
+        System.err.println(
+          if (rangesSize > 1) {
+            s"""WARNING: ranges $ranges for property $prop are multiple;
             taking first if not owl:Thing"""
-        } else if (rangesSize == 0) {
-          "WARNING: There is no range for property " + prop
-        } else "")
+          } else if (rangesSize == 0) {
+            "WARNING: There is no range for property " + prop
+          } else "")
 
-      val ranges2 = if (rangesSize > 1) {
-         val owlThing = prefixesMap2("owl")("Thing")
-         if ( ranges.contains( owlThing) ) {
-           System.err.println(
-               s"""WARNING: ranges $ranges for property $prop contain owl:Thing;
-               removing owl:Thing, and take first remaining: <${(ranges - owlThing).head}>""" )
-         }
-         ranges - owlThing
-      } else ranges
+        val ranges2 = if (rangesSize > 1) {
+          val owlThing = prefixesMap2("owl")("Thing")
+          if (ranges.contains(owlThing)) {
+            System.err.println(
+              s"""WARNING: ranges $ranges for property $prop contain owl:Thing;
+               removing owl:Thing, and take first remaining: <${(ranges - owlThing).head}>""")
+          }
+          ranges - owlThing
+        } else ranges
 
-      time(s"makeEntries(${prop})",
-        makeEntries(subject, prop, ranges2, formMode, valuesFromFormGroup))
+        val res = time(s"makeEntries(${prop})",
+          makeEntries(subject, prop, ranges2, formMode, valuesFromFormGroup))
+        res
+      }
+      val fields = entries.flatMap { identity }
+      val fields2 = addTypeTriple(subject, classs, fields)
+      addInverseTriples(fields2, step1)
     }
-    val fields = entries.flatMap { identity }
-    val fields2 = addTypeTriple(subject, classs, fields)
-    val fields3 = addInverseTriples(fields2, step1)
-    val formSyntax = FormSyntax(subject, fields3, classs, propertiesGroups=step1.propertiesGroups)
+    
+    val fields3 = makeEntries2(step1)
+    val subject = step1.subject
+    val classs = step1.classs
+
+    val seqOfEntries = for( (node, rawDataForForm ) <- step1.propertiesGroups ) yield
+    	node -> makeEntries2(rawDataForForm)
+    	
+    val formSyntax = FormSyntax(subject, fields3, classs, propertiesGroups=seqOfEntries)
+    
     addAllPossibleValues(formSyntax, valuesFromFormGroup)
     
     logger.debug(s"createForm " + this)
@@ -318,7 +328,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   : Seq[Entry] = {
     logger.debug(s"makeEntries subject $subject, prop $prop")
     implicit val prlng = preferedLanguage
-    val rdfh = this
+//    val rdfh = this
     
     val label = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.label, terminalPart(prop))
     val comment = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.comment, "")

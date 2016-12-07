@@ -38,7 +38,7 @@ trait FormModule[NODE, URI <: NODE] {
       classs: NODE = nullURI,
       formGroup: URI = nullURI,
       val defaults: FormDefaults = FormModule.formDefaults,
-      propertiesGroups: collection.Map[NODE, RawDataForForm[NODE]] = collection.Map[NODE, RawDataForForm[NODE]]()
+      propertiesGroups: collection.Map[NODE, Seq[Entry]] = collection.Map[NODE, Seq[Entry]]()
       ) {
     
     /** Map from property to possible Values  */

@@ -65,55 +65,67 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
     else
       htmlFormFields
   }
-  
+
   /**
    * generate HTML, but Just Fields;
    *  this lets application developers create their own submit button(s) and <form> tag
    */
   def generateHTMLJustFields(form: formMod#FormSyntax,
-    hrefPrefix: String = "",
-    editable: Boolean = false,
-    graphURI: String = "", lang: String = "en"): NodeSeq = {
+                             hrefPrefix: String = "",
+                             editable: Boolean = false,
+                             graphURI: String = "", lang: String = "en"): NodeSeq = {
 
     implicit val formImpl: formMod#FormSyntax = form
 
-    val hidden = if (editable) {
+    val hidden: NodeSeq = if (editable) {
       <input type="hidden" name="url" value={ urlEncode(form.subject) }/>
       <input type="hidden" name="graphURI" value={ urlEncode(graphURI) }/>
     } else Seq()
-    hidden ++
+
+    def makeFieldsLabelAndData(fields: Seq[FormEntry]): NodeSeq = {
+      if (!fields.isEmpty) {
+        val lastEntry = fields.last
+        val s: Seq[Elem] = for (
+          (preceding, field) <- (lastEntry +: fields) zip fields // do not display NullResourceEntry
+          if (field.property.toString != "")
+        ) yield {
+          <div class={ css.cssClasses.formLabelAndInputCSSClass }>
+            { makeFieldLabel(preceding, field) }
+            { makeFieldDataOrInput(field, hrefPrefix, editable, lang) }
+          </div>
+        }
+        s
+      } else Text("\n")
+    }
+  
+  def makeFieldsGroups() = {
+    val map = form.propertiesGroups
+    for ( (node, group) <- map ) yield {
+      <div class="">
+      { makeFieldsLabelAndData(group) }
+      </div>
+    }
+  }
+
+    val res = hidden ++
       <div class={ css.cssClasses.formRootCSSClass }>
         {
           css.localCSS ++
             Text("\n") ++
-            (if( inlineJavascriptInForm )
-               localJS
-//              css.cssRules
+            (if (inlineJavascriptInForm)
+              localJS
             else Text("")) ++
             Text("\n")
         }
         <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
         {
           val fields = form.fields
-          if (!fields.isEmpty) {
-            val lastEntry = fields.last
-            ( for ((preceding, field) <- (lastEntry +: fields) zip fields
-                // do not display NullResourceEntry
-                if( field.property.toString != "" )
-            ) yield {
-              <div class={ css.cssClasses.formLabelAndInputCSSClass }>
-                { makeFieldLabel(preceding, field) }
-                { makeFieldDataOrInput(field, hrefPrefix, editable, lang) }
-              </div>
-            }
-            )
-//            ++
-//            ( for (field <- fields ) yield {
-//            	makeFieldDatalist(field)     
-//            } )
-          }
+          // TODO : makeFieldsGroups()
+          val v: NodeSeq = makeFieldsLabelAndData(fields)
+          v
         }
       </div>
+    return res
   }
 
 
