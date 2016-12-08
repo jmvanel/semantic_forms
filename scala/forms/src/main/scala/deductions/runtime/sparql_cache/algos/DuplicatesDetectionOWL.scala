@@ -111,7 +111,7 @@ with CSVFormatter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 //with DefaultConfiguration {
 //  val owlFile = args(0)
 //  override val printStream = new PrintStream(owlFile + ".DuplicatesDetectionOWL.csv" )
-//  val graph = turtleReader.read(new FileReader(owlFile), "").get
+//  val graph = turtleReader.read(new FileInputStream(owlFile), "").get
 //  val duplicates = findDuplicateDataProperties(graph)
 //  output(s"duplicates size ${duplicates.duplicates.size}\n")
 //

@@ -7,7 +7,6 @@ import org.w3.banana.RDFSPrefix
 import org.w3.banana.OWLPrefix
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
-import java.io.FileReader
 import org.w3.banana.PointedGraph
 import deductions.runtime.utils.CSVImporter
 import java.io.FileInputStream
@@ -19,7 +18,7 @@ with DefaultConfiguration
 with ReplaceSubclassWithProperty[Jena, Any] 
 {
   val owlFile = args(0)
-  val graph = turtleReader.read(new FileReader(owlFile), "").get
+  val graph = turtleReader.read(new FileInputStream(owlFile), "").get
   val mgraph = ops.makeMGraph(graph)
   val tableClassesFile = args(1)
   val pairs: List[(Rdf#URI, Rdf#URI)] = readCSVFile(tableClassesFile)

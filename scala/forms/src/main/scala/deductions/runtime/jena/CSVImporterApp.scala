@@ -6,8 +6,8 @@ import java.net.URL
 import java.net.HttpURLConnection
 import java.io.File
 import java.io.FileOutputStream
-import java.io.FileReader
 import deductions.runtime.services.DefaultConfiguration
+import java.io.FileInputStream
 
 /**
  * App to transform CSV into a Turtle file;
@@ -60,7 +60,7 @@ object CSVImporterApp extends App
     val propertyValueForEachRow: List[(Rdf#URI, Rdf#Node)] = {
       val eachRowFile = args(2)
       println(s"Opening TTL file for adding triples about each row: $eachRowFile")
-      val graph = turtleReader.read(new FileReader(eachRowFile), "")
+      val graph = turtleReader.read(new FileInputStream(eachRowFile), "")
       val r = for (triple <- graph.getOrElse(emptyGraph).triples) yield {
         (triple.predicate, triple.objectt)
       }

@@ -7,6 +7,7 @@ import java.io.FileOutputStream
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.jena.ImplementationSettings
 import org.w3.banana.OWLPrefix
+import java.io.FileInputStream
 
 /**
  * ReplaceSubclassWithProperty : App Example with hard-coded list of super-classes
@@ -21,8 +22,8 @@ object ReplaceSubclassWithPropertyAppExample extends App
 
   //  val printStream: PrintStream = ???
   val owlFile = args(0)
-  val graph = turtleReader.read(new FileReader(owlFile), "").get
-
+  val graph = turtleReader.read(new FileInputStream(owlFile), "").get
+  
   import ops._
   private lazy val owl = OWLPrefix[Rdf]
 
