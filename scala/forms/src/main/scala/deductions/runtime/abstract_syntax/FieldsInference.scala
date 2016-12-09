@@ -30,7 +30,6 @@ with Configuration {
 
   /** find fields from given RDF class */
   def fieldsFromClass(classs: Rdf#URI, graph: Rdf#Graph)
-//  : Seq
   : RawDataForForm[Rdf#Node]
   = {
 

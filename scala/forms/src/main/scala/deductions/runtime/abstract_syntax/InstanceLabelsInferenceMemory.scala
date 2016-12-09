@@ -113,8 +113,8 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     if( node.toString() == "" ) return ""
 
     val label = super.instanceLabel(node, graph, lang)
-    println(s"computeInstanceLabeAndStoreInTDB: $node .toString() , label $label")
-    println(s"$node .toString().endsWith( label.substring(label.length()-1) = ${label.substring(0, label.length()-1)}")
+//    println(s"computeInstanceLabeAndStoreInTDB: $node .toString() , computed label $label")
+//    println(s"$node .toString().endsWith( label.substring(label.length()-1) = ${label.substring(0, label.length()-1)}")
     val label2 = if( label == "" || isLabelLikeURI(node: Rdf#Node, label) ) {
       val v = instanceLabelFromLabelProperty(node)
       v match {

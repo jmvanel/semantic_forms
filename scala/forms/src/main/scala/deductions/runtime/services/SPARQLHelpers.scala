@@ -297,27 +297,27 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   def sparqlSelectQueryVariablesNT(queryString: String, variables: Seq[String],
                                    ds: DATASET = dataset): List[Seq[Rdf#Node]] = {
     time("sparqlSelectQueryVariablesNT", {
-    val solutionsTry = for {
-      query <- parseSelect(queryString)
-      es <- ds.executeSelect(query, Map())
-    } yield es
-    //    println( "solutionsTry.isSuccess " + solutionsTry.isSuccess )
-    val answers: Rdf#Solutions = solutionsTry.get
-    val results = answers.iterator.toIterable . map {
-      row =>
-        for (variable <- variables) yield {
-          val cell = row(variable)
-          cell match {
-            case Success(node) => row(variable).get.as[Rdf#Node].get
-            case Failure(f)    => Literal(">>>> Failure: " + f.toString())
+      val solutionsTry = for {
+        query <- parseSelect(queryString)
+        es <- ds.executeSelect(query, Map())
+      } yield es
+      //    println( "solutionsTry.isSuccess " + solutionsTry.isSuccess )
+      val answers: Rdf#Solutions = solutionsTry.get
+      val results = answers.iterator.toIterable.map {
+        row =>
+          for (variable <- variables) yield {
+            val cell = row(variable)
+            cell match {
+              case Success(node) => row(variable).get.as[Rdf#Node].get
+              case Failure(f)    => Literal(">>>> Failure: " + f.toString())
+            }
           }
-        }
-    }
-    results.to[List] .
-    // hack :(((((((((
-    filter( node => ! node.toString().contains(""">>>> Failure: """))
+      }
+      results.to[List].
+        // hack :(((((((((
+        filter(node => !node.toString().contains(""">>>> Failure: """))
     },
-    true )
+      false)
   }
 
   /**
