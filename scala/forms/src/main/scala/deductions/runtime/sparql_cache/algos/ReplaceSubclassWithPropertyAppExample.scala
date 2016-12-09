@@ -20,10 +20,9 @@ object ReplaceSubclassWithPropertyAppExample extends App
     with ReplaceSubclassWithProperty[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with WrongSubclassesSelection[ImplementationSettings.Rdf] {
 
-  //  val printStream: PrintStream = ???
   val owlFile = args(0)
   val graph = turtleReader.read(new FileInputStream(owlFile), "").get
-  
+
   import ops._
   private lazy val owl = OWLPrefix[Rdf]
 

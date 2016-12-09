@@ -2,9 +2,13 @@ package deductions.runtime.sparql_cache.algos
 
 import org.w3.banana.RDF
 import org.w3.banana.OWLPrefix
+import deductions.runtime.abstract_syntax.InstanceLabelsInference2
+import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
 
 trait CSVFormatter[Rdf <: RDF, DATASET]
-    extends DuplicatesDetectionBase[Rdf, DATASET] {
+    extends DuplicatesDetectionBase[Rdf, DATASET]
+    with PreferredLanguageLiteral[Rdf]
+    with InstanceLabelsInference2[Rdf] {
 
   private lazy val owl = OWLPrefix[Rdf]
 
@@ -43,11 +47,13 @@ trait CSVFormatter[Rdf <: RDF, DATASET]
 
   /** detail Lines in between full Lines */
   def detailLines(n: Rdf#Node)(implicit graph: Rdf#Graph): String = {
-    val firstColumns = "\t\t\t\t"
-    val props = rdfsPropertiesAndRangesFromClassListDetails(n, graph)
-    if (props.isEmpty)
+    val propertiesAndRangesFromClass = rdfsPropertiesAndRangesFromClassListDetails(n, graph)
+
+    val classLabel = instanceLabel(n, graph, "fr")
+    val firstColumns = s"\t'$classLabel' (P)\t\t\t"
+    if (propertiesAndRangesFromClass.isEmpty)
       ""
     else
-      props.mkString("\n" + firstColumns, "\n" + firstColumns, "")
+      propertiesAndRangesFromClass.mkString("\n" + firstColumns, "\n" + firstColumns, "")
   }
 }
