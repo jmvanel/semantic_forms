@@ -6,15 +6,23 @@ import scala.util.Success
 import scala.collection.mutable.HashMap
 
 /** intermediary data for form generation:  properties' List, etc */
-case class RawDataForForm[Node] ( //  <: RDF.Node](
+case class RawDataForForm[Node]( //  <: RDF.Node](
     propertiesList: Seq[Node],
     classs: Node, // URI,
     subject: Node,
     editable: Boolean = false,
     formURI: Option[Node] = None,
-    reversePropertiesList: Seq[Node]= Seq(),
-    propertiesGroups: collection.Map[Node, RawDataForForm[Node]] = collection.Map[Node, RawDataForForm[Node]]()
-)
+    reversePropertiesList: Seq[Node] = Seq(),
+    propertiesGroups: collection.Map[Node, RawDataForForm[Node]] = collection.Map[Node, RawDataForForm[Node]]()) {
+  def setSubject(subject: Node, editable: Boolean): RawDataForForm[Node] = {
+    val propertiesGroupsWithSubject = propertiesGroups.map {
+      case (node, rawDataForForm) => (node,
+        rawDataForForm.setSubject(subject, editable))
+    }
+    RawDataForForm[Node](propertiesList, classs, subject, editable, formURI, reversePropertiesList,
+      propertiesGroupsWithSubject)
+  }
+}
 
 /** Step 1: compute properties List from Config, Subject, Class (in that order) */
 trait ComputePropertiesList[Rdf <: RDF, DATASET] {
@@ -59,18 +67,22 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
     } else classOfSubject
     
     val propsFromSubject = fieldsFromSubject(subject, graph)
-    val propsFromClass: Seq[Rdf#Node] =
-      if (editable) {
-        fieldsFromClass(classs, graph).propertiesList
-      } else Seq()
-
-    val propertiesList0 = (propsFromConfig ++ propsFromSubject ++ propsFromClass).distinct
+    val propsFromClass = {
+//      if (editable) {
+        val ff = fieldsFromClass(classs, graph)
+        ff.setSubject(subject, editable)
+//      } else Seq()
+    }
+    val propertiesList0 = (propsFromConfig ++ propsFromSubject ++ propsFromClass.propertiesList).distinct
     val propertiesList = addRDFSLabelComment(propertiesList0)
     val reversePropertiesList = reversePropertiesListFromFormConfiguration(formConfiguration)
     RawDataForForm[Rdf#Node](propertiesList, classs, subject, editable,
         formuri match { case "" => None
         case uri => Some(ops.URI(uri)) },
-        reversePropertiesList)
+        reversePropertiesList,
+        propertiesGroups=propsFromClass.propertiesGroups
+//          Map() 
+          )
   }
   
   

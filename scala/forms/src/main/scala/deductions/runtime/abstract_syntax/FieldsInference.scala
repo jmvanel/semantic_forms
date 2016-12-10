@@ -120,8 +120,8 @@ with Configuration {
       val props1 = find(graph, ANY, toConcreteNodeMatch(rdf.typ), toConcreteNodeMatch(rdf.Property))
       val props2 = find(graph, ANY, toConcreteNodeMatch(rdf.typ), toConcreteNodeMatch(owl.ObjectProperty))
       val props3 = find(graph, ANY, toConcreteNodeMatch(rdf.typ), toConcreteNodeMatch(owl.DatatypeProperty))
-      val pp = props1 ++ props2 ++ props3
-      for (t <- pp) {
+      val allProperties = props1 ++ props2 ++ props3
+      for (t <- allProperties) {
         val (prop, _, _) = fromTriple(t)
         //        if( prop.toString.contains("doap") && prop.toString.contains("name"))
         //          println("doap") // debug <<<<<

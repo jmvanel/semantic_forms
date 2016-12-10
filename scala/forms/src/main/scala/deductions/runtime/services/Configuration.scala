@@ -36,6 +36,7 @@ trait Configuration {
   def recordUserActions: Boolean
   def showDomainlessProperties: Boolean
   def addRDFS_label_comment: Boolean
+  def groupFields: Boolean
 
   def lookup_domain_unionOf: Boolean
 
@@ -101,6 +102,8 @@ trait ConfigurationCopy extends Configuration {
   override def recordUserActions = original.recordUserActions
   override def showDomainlessProperties = original.showDomainlessProperties
   override def addRDFS_label_comment = original.addRDFS_label_comment
+  override def groupFields: Boolean = original.groupFields
+
   override def lookup_domain_unionOf = original.lookup_domain_unionOf
   override def use_dbpedia_lookup = original.use_dbpedia_lookup
   override def use_local_lookup = original.use_local_lookup

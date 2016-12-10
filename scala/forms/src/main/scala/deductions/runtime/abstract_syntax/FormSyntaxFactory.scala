@@ -328,7 +328,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   : Seq[Entry] = {
     logger.debug(s"makeEntries subject $subject, prop $prop")
     implicit val prlng = preferedLanguage
-//    val rdfh = this
     
     val label = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.label, terminalPart(prop))
     val comment = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.comment, "")
@@ -338,7 +337,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val objects = objectsQuery(subject, prop.asInstanceOf[Rdf#URI])
     logger.debug(s"makeEntries subject $subject, objects $objects")
     val rangeClasses = objectsQueries(ranges, rdf_type)
-
     val result = scala.collection.mutable.ArrayBuffer[Entry]()
     for (obj <- objects)
       addOneEntry(obj, formMode, valuesFromFormGroup)

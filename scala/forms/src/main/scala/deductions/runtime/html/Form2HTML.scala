@@ -97,15 +97,32 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
         s
       } else Text("\n")
     }
-  
-  def makeFieldsGroups() = {
-    val map = form.propertiesGroups
-    for ( (node, group) <- map ) yield {
-      <div class="">
-      { makeFieldsLabelAndData(group) }
-      </div>
+
+    def makeFieldsGroups(): NodeSeq = {
+      val map = form.propertiesGroups
+
+      def makeHref(label: String) = URLEncoder.encode(label, "utf-8")
+
+      // http://jqueryui.com/accordion/
+      val tabsNames = <ul>{
+        for ((node, group) <- map) yield {
+          val label = toPlainString(node)
+          <li><a href={ "#" + makeHref(label) }>{ label }</a></li>
+        }
+      }</ul>
+
+      val r = for ((node, group) <- map) yield {
+        val label = toPlainString(node)
+        println(s"Fields Group $label")
+        Seq(
+          <div class="sf-fields-group-title" name={  makeHref(label) }>{ label }</div>,
+          <div class="sf-fields-group">
+            { makeFieldsLabelAndData(group) }
+          </div>)
+      }
+      val tabs: Seq[Elem] = r.flatten.toSeq
+      tabs . +: (tabsNames)
     }
-  }
 
     val res = hidden ++
       <div class={ css.cssClasses.formRootCSSClass }>
@@ -119,10 +136,11 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
         }
         <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
         {
-          val fields = form.fields
-          // TODO : makeFieldsGroups()
-          val v: NodeSeq = makeFieldsLabelAndData(fields)
-          v
+          if( groupFields ) {
+            val fieldsGroups = makeFieldsGroups()
+            fieldsGroups
+          } else
+          makeFieldsLabelAndData(form.fields)
         }
       </div>
     return res
