@@ -27,6 +27,7 @@ case class RawDataForForm[Node]( //  <: RDF.Node](
 /** Step 1: compute properties List from Config, Subject, Class (in that order) */
 trait ComputePropertiesList[Rdf <: RDF, DATASET] {
   self: FormSyntaxFactory[Rdf, DATASET] =>
+  import ops._
 
   /** look for Properties list from form spec in given URI or else in TDB from given class URI
    *  @return (propertiesList, formConfiguration, tryClass) */
@@ -40,7 +41,6 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
       val tryClass = tryGraph . map { gr => 
          lookClassInFormSpec( ops.URI(formuri), gr)
       }
-//      (propertiesList, formConfiguration)
       (propertiesList, formConfiguration, tryClass)
     }
 
@@ -58,13 +58,14 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
       
     val classOfSubject = classFromSubject(subject) // TODO several classes
 
-    val (propsFromConfig: Seq[Rdf#URI], formConfiguration, tryClass ) =
+    val (propsFromConfig, formConfiguration, tryClass ) =
       computePropsFromConfig(classOfSubject, formuri)
 
     val classs = if( classOfSubject == ops.URI("") && formuri != ops.URI("")) {
       println(s">>>> computePropertiesList $tryClass")
     	uriNodeToURI(tryClass.getOrElse(ops.URI("")))
     } else classOfSubject
+    println(s">>> computePropsFromConfig( $classs) => formConfiguration=$formConfiguration, $propsFromConfig")
     
     val propsFromSubject = fieldsFromSubject(subject, graph)
     val propsFromClass = {
@@ -76,13 +77,20 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
     val propertiesList0 = (propsFromConfig ++ propsFromSubject ++ propsFromClass.propertiesList).distinct
     val propertiesList = addRDFSLabelComment(propertiesList0)
     val reversePropertiesList = reversePropertiesListFromFormConfiguration(formConfiguration)
-    RawDataForForm[Rdf#Node](propertiesList, classs, subject, editable,
-        formuri match { case "" => None
-        case uri => Some(ops.URI(uri)) },
+
+    def makeRawDataForForm(propertiesGroups: collection.Map[Rdf#Node, RawDataForForm[Rdf#Node]]) =
+      RawDataForForm[Rdf#Node](propertiesList, classs, subject, editable,
+        formuri match { case "" => None; case uri => Some(URI(uri)) },
         reversePropertiesList,
-        propertiesGroups=propsFromClass.propertiesGroups
-//          Map() 
-          )
+        propertiesGroups = propertiesGroups)
+
+    val rawDataFromSpecif = RawDataForForm[Rdf#Node](
+        propsFromConfig, classs, subject, editable )
+
+    return makeRawDataForForm(
+        propsFromClass.propertiesGroups
+        + ( formConfiguration -> rawDataFromSpecif )
+        )
   }
   
   

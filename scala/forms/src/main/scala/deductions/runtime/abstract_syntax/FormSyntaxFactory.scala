@@ -209,7 +209,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         } else ranges
 
         val res = time(s"makeEntries(${prop})",
-          makeEntries(subject, prop, ranges2, formMode, valuesFromFormGroup))
+          makeEntriesForSubject(subject, prop, ranges2, formMode, valuesFromFormGroup))
         res
       }
       val fields = entries.flatMap { identity }
@@ -321,7 +321,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    * try to get rdfs:label, comment, rdf:type,
    * or else display terminal Part of URI as label;
    */
-  private def makeEntries(subject: Rdf#Node, prop: Rdf#Node, ranges: Set[Rdf#Node],
+  private def makeEntriesForSubject(subject: Rdf#Node, prop: Rdf#Node, ranges: Set[Rdf#Node],
     formMode: FormMode,
     valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)])
 	  (implicit graph: Rdf#Graph)

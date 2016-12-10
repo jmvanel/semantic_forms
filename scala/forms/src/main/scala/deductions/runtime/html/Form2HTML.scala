@@ -13,6 +13,7 @@ import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.utils.I18NMessages
 import deductions.runtime.utils.Timer
 import deductions.runtime.services.Configuration
+import java.security.MessageDigest
 
 /**
  * different modes: display or edit;
@@ -101,7 +102,8 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
     def makeFieldsGroups(): NodeSeq = {
       val map = form.propertiesGroups
 
-      def makeHref(label: String) = URLEncoder.encode(label, "utf-8")
+      def makeHref(label: String) = { val md = MessageDigest.getInstance("SHA"); md.update(label.getBytes); new String( md . digest() ) }
+//        URLEncoder.encode(label, "utf-8")
 
       // http://jqueryui.com/accordion/
       val tabsNames = <ul>{
@@ -115,7 +117,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
         val label = toPlainString(node)
         println(s"Fields Group $label")
         Seq(
-          <div class="sf-fields-group-title" name={  makeHref(label) }>{ label }</div>,
+          <div class="sf-fields-group-title" id={  makeHref(label) }>{ label }</div>,
           <div class="sf-fields-group">
             { makeFieldsLabelAndData(group) }
           </div>)
