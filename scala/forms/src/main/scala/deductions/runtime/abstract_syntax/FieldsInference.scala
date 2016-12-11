@@ -10,7 +10,7 @@ import org.w3.banana.RDFPrefix
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.SPARQLHelpers
 
-/** populate Fields in form by inferencing from given class, using properties:
+/** populate Fields in form by inferencing from given class, using ontologies and properties:
  *  - rdfs:subClassOf
  *  - rdfs:domain
  *  */

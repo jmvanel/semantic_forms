@@ -65,22 +65,38 @@ trait FormModule[NODE, URI <: NODE] {
    * openChoice allows user in form to choose a value not in suggested values
    *  TODO somehow factor value: Any ?
    */
-  sealed abstract case class Entry(
-      val label: String, val comment: String,
-      val property: NODE = nullURI,
-      /** unused yet :( */
-      val mandatory: Boolean = false,
-      /** TODO : several types */
-      val type_ : NODE = nullURI,
-      val value: NODE = nullURI, // Any = "",
-      var widgetType: WidgetType = Text,
-      /** true <=> user has possibility to type any (valid) data */
-      var openChoice: Boolean = true,
-      var possibleValues: Seq[(NODE, NODE)] = Seq(),
-      val defaults: FormDefaults = FormModule.formDefaults,
-      // for multi-subject forms:
-      val subject: NODE = nullURI
-	) {
+   abstract class Entry
+//      val label: String, val comment: String,
+//      val property: NODE = nullURI,
+//      /** unused yet :( */
+//      val mandatory: Boolean = false,
+//      /** TODO : several types */
+//      val type_ : NODE = nullURI,
+//      val value: NODE = nullURI, // Any = "",
+//      var widgetType: WidgetType = Text,
+//      /** true <=> user has possibility to type any (valid) data */
+//      var openChoice: Boolean = true,
+//      var possibleValues: Seq[(NODE, NODE)] = Seq(),
+//      val defaults: FormDefaults = FormModule.formDefaults,
+//      // for multi-subject forms:
+//      val subject: NODE = nullURI
+	{
+	  val label: String
+	  val comment: String
+	  val property: NODE
+	  /** unused yet :( */
+	  val mandatory: Boolean
+	  /** TODO : several types */
+	  val type_ : NODE
+	  val value: NODE
+	  var widgetType: WidgetType
+	  /** true <=> user has possibility to type any (valid) data */
+	  var openChoice: Boolean
+	  var possibleValues: Seq[(NODE, NODE)]
+	  val defaults: FormDefaults = FormModule.formDefaults
+	  /** for multi-subject forms */
+		val subject: NODE
+      
     private val triples: mutable.Buffer[Triple] = mutable.ListBuffer[Triple]()
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]): Entry
     override def toString(): String = {
@@ -97,15 +113,23 @@ trait FormModule[NODE, URI <: NODE] {
   }
 
   /** @param possibleValues a couple of an RDF node id and the label to display, see trait RangeInference */
-  class ResourceEntry(label: String, comment: String,
+  case class ResourceEntry(label: String, comment: String,
     property: ObjectProperty = nullURI, validator: ResourceValidator,
     value: NODE = nullURI, val alreadyInDatabase: Boolean = true,
-    possibleValues: Seq[(NODE, NODE)] = Seq(),
+    var possibleValues: Seq[(NODE, NODE)] = Seq(),
     val valueLabel: String = "",
     type_ : NODE = nullURI,
-    inverseTriple: Boolean= false)
-      extends Entry(label, comment, property, type_ = type_, value = value,
-          possibleValues = possibleValues) {
+    inverseTriple: Boolean= false,
+    subject: NODE = nullURI,
+    val mandatory: Boolean = false,
+    var openChoice: Boolean = true,
+    var widgetType: WidgetType = Text
+    )
+      extends Entry
+//      (label, comment, property, type_ = type_, value = value,
+//      possibleValues = possibleValues,
+//      subject = subject )
+  {
     override def toString(): String = {
       "RES " + super.toString +
       s""" : <$value>, valueLabel "$valueLabel" possibleValues count:${possibleValues.size} """
@@ -132,13 +156,20 @@ trait FormModule[NODE, URI <: NODE] {
       makeURI(e.type_))
   }
 
-  class BlankNodeEntry(label: String, comment: String,
+  case class BlankNodeEntry(label: String, comment: String,
     property: ObjectProperty = nullURI, validator: ResourceValidator,
     value: NODE, type_ : NODE = nullURI,
-    possibleValues: Seq[(NODE, NODE)] = Seq(),
-    val valueLabel: String = "")
-      extends Entry(label, comment, property, type_ = type_, value = value,
-        possibleValues = possibleValues) {
+    var possibleValues: Seq[(NODE, NODE)] = Seq(),
+    val valueLabel: String = "",
+    subject: NODE = nullURI,
+    val mandatory: Boolean = false,
+    var openChoice: Boolean = true,
+    var widgetType: WidgetType = Text )
+      extends Entry
+//      (label, comment, property, type_ = type_, value = value,
+//        possibleValues = possibleValues,
+//        subject = subject )
+  {
     override def toString(): String = {
       "BN: " + super.toString + s", $value , possibleValues count:${possibleValues.size}"
     }
@@ -151,18 +182,22 @@ trait FormModule[NODE, URI <: NODE] {
       ret
     }
   }
-  class LiteralEntry(l: String, c: String,
-    property: NODE
-//    DatatypeProperty
-    = nullURI,
+  case class LiteralEntry(label: String, comment: String,
+    property: NODE /* DatatypeProperty */ = nullURI,
     validator: DatatypeValidator,
     value: NODE = nullURI, // String = "",
     val lang: String = "",
     type_ : NODE = nullURI,
-    possibleValues: Seq[(NODE, NODE)] = Seq())
+    var possibleValues: Seq[(NODE, NODE)] = Seq(),
+    subject: NODE = nullURI,
+    val mandatory: Boolean = false,
+    var openChoice: Boolean = true,
+    var widgetType: WidgetType = Text)
 
-      extends Entry(l, c, property, type_ = type_,
-        value = value, possibleValues = possibleValues) {
+      extends Entry
+//      (l, c, property, type_ = type_,
+//        value = value, possibleValues = possibleValues)
+  {
     override def toString(): String = {
       super.toString + s""" := "$value" """
     }
