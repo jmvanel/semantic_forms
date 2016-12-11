@@ -14,9 +14,7 @@ import deductions.runtime.utils.RDFPrefixes
 trait Form2HTMLBase[NODE, URI <: NODE]
     extends Configuration
     with BasicWidgets
-    with CSS
-//    with RDFPrefixes[Rdf] // TODO ???
-    {
+    with CSS {
 
   type formMod = FormModule[NODE, URI]
   type FormEntry = formMod#Entry

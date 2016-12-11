@@ -45,10 +45,12 @@ import deductions.runtime.utils.HTTPrequest
  *   and Banana
  *
  * API Functions already implemented by inheritance :
+ *
  *  def lookup(search: String): String
  *  def login(loginName: String, password: String): Option[String]
  *  def ldpGET(uri: String, accept: String): String = getTriples(uri, accept)
- *
+ *	def formData(uri: String, blankNode: String = "", Edit: String = "", formuri: String = ""): String
+ * 
  */
 trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
@@ -72,6 +74,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with BlankNodeCleanerIncremental[Rdf, DATASET]
     with DashboardHistoryUserActions[Rdf, DATASET]
     with StatisticsGraph[Rdf]
+    with FormJSON[Rdf, DATASET]
     with ToolsPage
     with Configuration
     with CSS

@@ -93,6 +93,14 @@ trait ApplicationTrait extends Controller
           Ok(htmlForm(uri, blankNode, editable = Edit != "", lang, formuri, graphURI = makeAbsoluteURIForSaving(userid)))
     }
 
+  def formData(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "") =
+    withUser {
+      implicit userid =>
+        implicit request =>
+          // FormJSON[Rdf <: RDF, DATASET]
+       Ok(formDataImpl(uri, blankNode, Edit, formuri))
+    }
+
   def searchOrDisplayAction(q: String) = {
 //          withUser {
 //	    implicit userid =>

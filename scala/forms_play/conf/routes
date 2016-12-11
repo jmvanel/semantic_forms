@@ -11,6 +11,7 @@ GET     /create             controllers.Application.createAction()
 
 GET     /download           controllers.Application.downloadAction( url:String )
 GET     /form               controllers.Application.form(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="")
+GET     /form-data          controllers.Application.formData(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="")
 
 GET     /sparql-ui          controllers.Application.sparql( query:String )
 POST    /sparql-ui          controllers.Application.sparql( query:String )

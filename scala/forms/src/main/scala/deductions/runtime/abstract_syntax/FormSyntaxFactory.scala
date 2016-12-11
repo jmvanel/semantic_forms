@@ -124,7 +124,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     editable: Boolean = false,
     formGroup: Rdf#URI = nullURI, formuri: String="")
     (implicit graph: Rdf#Graph)
-  : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
+  : FormSyntax = {
 
     val step1 = computePropertiesList(subject, editable, formuri)
     createFormDetailed2( step1, formGroup )
@@ -170,7 +170,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 		  formConfig: Rdf#Node = URI("step1.formURI") // URI("")
 		  )
     (implicit graph: Rdf#Graph)
-  : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
+  : FormSyntax = {
 
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
 
