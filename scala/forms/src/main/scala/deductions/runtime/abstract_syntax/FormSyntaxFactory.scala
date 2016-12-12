@@ -97,6 +97,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    	with FormConfigurationFactory[Rdf, DATASET]
    	with ComputePropertiesList[Rdf, DATASET]
     with FormConfigurationReverseProperties[Rdf, DATASET]
+    with RDFListInference[Rdf, DATASET]
     with RDFPrefixes[Rdf]
     with Timer {
 
@@ -356,6 +357,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       val rdf = RDFPrefix[Rdf]
       val rdfs = RDFSPrefix[Rdf]
 
+      def rdfListEntry = makeRDFListEntry(label, comment, prop, object_ , subject=subject )
+
       def literalEntry = {
         // TODO match graph pattern for interval datatype ; see issue #17
         // case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
@@ -403,6 +406,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         case _ if isBN(object_) => makeBN(label, comment, prop,
             ResourceValidator(ranges), toBN(object_), firstType)
         case _ if object_.toString.startsWith("_:") => resourceEntry
+        // TODO:
+//        case _ if rdfListEntry.isDefined => rdfListEntry.get
         case _ => literalEntry
       }
       result += entry

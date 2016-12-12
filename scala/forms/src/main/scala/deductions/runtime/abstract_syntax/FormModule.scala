@@ -65,22 +65,7 @@ trait FormModule[NODE, URI <: NODE] {
    * openChoice allows user in form to choose a value not in suggested values
    *  TODO somehow factor value: Any ?
    */
-   abstract class Entry
-//      val label: String, val comment: String,
-//      val property: NODE = nullURI,
-//      /** unused yet :( */
-//      val mandatory: Boolean = false,
-//      /** TODO : several types */
-//      val type_ : NODE = nullURI,
-//      val value: NODE = nullURI, // Any = "",
-//      var widgetType: WidgetType = Text,
-//      /** true <=> user has possibility to type any (valid) data */
-//      var openChoice: Boolean = true,
-//      var possibleValues: Seq[(NODE, NODE)] = Seq(),
-//      val defaults: FormDefaults = FormModule.formDefaults,
-//      // for multi-subject forms:
-//      val subject: NODE = nullURI
-	{
+   abstract class Entry	{
 	  val label: String
 	  val comment: String
 	  val property: NODE
@@ -112,6 +97,7 @@ trait FormModule[NODE, URI <: NODE] {
     }
   }
 
+
   /** @param possibleValues a couple of an RDF node id and the label to display, see trait RangeInference */
   case class ResourceEntry(label: String, comment: String,
     property: ObjectProperty = nullURI, validator: ResourceValidator,
@@ -125,11 +111,7 @@ trait FormModule[NODE, URI <: NODE] {
     var openChoice: Boolean = true,
     var widgetType: WidgetType = Text
     )
-      extends Entry
-//      (label, comment, property, type_ = type_, value = value,
-//      possibleValues = possibleValues,
-//      subject = subject )
-  {
+      extends Entry {
     override def toString(): String = {
       "RES " + super.toString +
       s""" : <$value>, valueLabel "$valueLabel" possibleValues count:${possibleValues.size} """
@@ -156,6 +138,7 @@ trait FormModule[NODE, URI <: NODE] {
       makeURI(e.type_))
   }
 
+
   case class BlankNodeEntry(label: String, comment: String,
     property: ObjectProperty = nullURI, validator: ResourceValidator,
     value: NODE, type_ : NODE = nullURI,
@@ -165,11 +148,7 @@ trait FormModule[NODE, URI <: NODE] {
     val mandatory: Boolean = false,
     var openChoice: Boolean = true,
     var widgetType: WidgetType = Text )
-      extends Entry
-//      (label, comment, property, type_ = type_, value = value,
-//        possibleValues = possibleValues,
-//        subject = subject )
-  {
+      extends Entry {
     override def toString(): String = {
       "BN: " + super.toString + s", $value , possibleValues count:${possibleValues.size}"
     }
@@ -182,6 +161,8 @@ trait FormModule[NODE, URI <: NODE] {
       ret
     }
   }
+
+
   case class LiteralEntry(label: String, comment: String,
     property: NODE /* DatatypeProperty */ = nullURI,
     validator: DatatypeValidator,
@@ -194,10 +175,8 @@ trait FormModule[NODE, URI <: NODE] {
     var openChoice: Boolean = true,
     var widgetType: WidgetType = Text)
 
-      extends Entry
-//      (l, c, property, type_ = type_,
-//        value = value, possibleValues = possibleValues)
-  {
+      extends Entry {
+
     override def toString(): String = {
       super.toString + s""" := "$value" """
     }
@@ -218,11 +197,29 @@ trait FormModule[NODE, URI <: NODE] {
         valueLabel = this.value.toString()
       )
     }
-
   }
 
-  case class ResourceValidator(typ: Set[NODE]) // URI])
-  case class DatatypeValidator(typ: Set[NODE]) // URI])
+  case class RDFListEntry(
+    label: String, comment: String,
+    property: ObjectProperty = nullURI,
+    value: NODE = nullURI,
+    val alreadyInDatabase: Boolean = true,
+    var possibleValues: Seq[(NODE, NODE)] = Seq(),
+    val valueLabel: String = "",
+    type_ : NODE = nullURI,
+    inverseTriple: Boolean = false,
+    subject: NODE = nullURI,
+    val mandatory: Boolean = false,
+    var openChoice: Boolean = true,
+    var widgetType: WidgetType = Text,
+    val values: Seq[NODE] = Seq())
+      extends Entry {
+    def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = this
+  }
+
+
+  case class ResourceValidator(typ: Set[NODE])
+  case class DatatypeValidator(typ: Set[NODE])
 
 }
 
