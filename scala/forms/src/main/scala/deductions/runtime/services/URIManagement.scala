@@ -55,7 +55,7 @@ trait URIManagement extends Configuration
 
     val serverPortPart = if (hostname.contains(":")) "" else ":" + serverPort
     val urip = "http://" + hostname + serverPortPart + "/" + relativeURIforCreatedResourcesByForm
-    println(s"instance URI Prefix $urip - $request")
+    println1(s"instance URI Prefix $urip - $request")
     urip
   }
 
@@ -77,10 +77,10 @@ trait URIManagement extends Configuration
           val nis = NetworkInterface.getNetworkInterfaces().toList
           val adresses = for (
             networkInterface <- nis;
-            _ = println(getNetworkInterfaceInfo(networkInterface));
+            _ = println1(getNetworkInterfaceInfo(networkInterface));
             adress <- networkInterface.getInetAddresses;
             hostAddress = adress.getHostAddress;
-            _ = println(s"ni $networkInterface hostAddress $hostAddress")
+            _ = println1(s"ni $networkInterface hostAddress $hostAddress")
           ) yield adress
 
           val internetAdresses = adresses.filter { adress =>
@@ -99,20 +99,20 @@ trait URIManagement extends Configuration
                 hostAddress.startsWith("192.168."))
             )
           }
-          println(s"intranetAdresses $intranetAdresses")
-          println(s"internetAdresses $internetAdresses")
+          println1(s"intranetAdresses $intranetAdresses")
+          println1(s"internetAdresses $internetAdresses")
           val adresses2 = if (!internetAdresses.isEmpty) {
             if (internetAdresses.size > 1)
               System.err.println(s"CAUTION: several Internet Adresses: $internetAdresses")
             internetAdresses
           } else {
             if (intranetAdresses.size > 1)
-              System.err.println(s"CAUTION: several Internet Adresses: $intranetAdresses")
+              System.err.println(s"CAUTION: several Intranet Adresses: $intranetAdresses")
             intranetAdresses
           }
           val result = "http://" + adresses2.toList.headOption.getOrElse("127.0.0.1")
           // "http://" + InetAddress.getLocalHost().getHostAddress()
-          println(s"hostNameUsed $result")
+          println1(s"hostNameUsed $result")
           result
         }
       } else defaultInstanceURIHostPrefix
@@ -163,5 +163,7 @@ trait URIManagement extends Configuration
     }
     return ipAddress;
   }
+
+  def println1(mess: String) = if (false) println(mess)
 
 }

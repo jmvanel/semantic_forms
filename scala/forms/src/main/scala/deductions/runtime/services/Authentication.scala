@@ -54,17 +54,17 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
     val userURI = URI(userid)
 
     val pwds = dataset3.r({
-      println( s"""find( makeIGraph(
+      println1( s"""findPassword: find( makeIGraph(
         $passwordsGraph
         ), $userURI, passwordPred, ANY)""" )
       find( makeIGraph(passwordsGraph), userURI, passwordPred, ANY)
     }).get
     
     val pwdsl = pwds.toList
-    println( s"pwdsl $pwdsl" )
+    println1( s"findPassword: pwdsl $pwdsl" )
     if (pwdsl.size > 0) {
       val databasePasswordNode = pwdsl(0).objectt
-      println(s"findUserAndPassword $databasePasswordNode")
+      println1(s"findPassword: findUserAndPassword $databasePasswordNode")
       foldNode(databasePasswordNode)(
         pw => Some((databasePasswordNode).toString),
         b => None,
@@ -95,7 +95,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
     tryUserAndPassword match {
       case Success(v) => v
       case Failure(e) => {
-        println(s"findUserAndPassword: Failure($e)")
+        println1(s"findUserAndPassword: Failure($e)")
         None
       }
     }
@@ -107,7 +107,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
    * TODO check already existing account;
    */
   def signin(agentURI: String, password: String): Try[String] = {
-    println("Authentication.signin: userId " + agentURI)
+    println1("Authentication.signin: userId " + agentURI)
     val res = dataset3.rw({
       val mGraph = passwordsGraph
       mGraph += makeTriple(URI(agentURI), passwordPred,
@@ -122,31 +122,33 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
         digest(password.getBytes))
   }
 
-  private def signinOLD(agentURI: String, password: String): Try[String] = {
-
-    // check that there is an email
-    println(s"signin(agentURI=$agentURI")
-    val mboxTriples =
-      dataset3.r({
-        find(allNamedGraph, URI(agentURI), foaf.mbox, ANY)
-      }).get
-    val lt = mboxTriples.toList
-    println("mbox Triples size " + lt.size)
-    if (lt.size > 0) {
-      val userId = foldNode(lt(0).objectt)(
-        uri => fromUri(uri),
-        bn => fromBNode(bn),
-        lit => fromLiteral(lit)._1)
-      println("userId " + userId)
-      val r1 = dataset3.rw({
-        // record password in database
-        val mGraph = passwordsGraph // .makeMGraph()
-        mGraph += makeTriple(URI(agentURI), passwordPred,
-          makeLiteral(password, xsd.string))
-        Success(userId)
-      })
-      r1.get
-    } else Failure(new Exception(
-      s"""There is no email (foaf:mbox) associated to "$agentURI""""))
-  }
+  override def println1(mess: String) = if(false) println(mess)
+  
+//  private def signinOLD(agentURI: String, password: String): Try[String] = {
+//
+//    // check that there is an email
+//    println1(s"signin(agentURI=$agentURI")
+//    val mboxTriples =
+//      dataset3.r({
+//        find(allNamedGraph, URI(agentURI), foaf.mbox, ANY)
+//      }).get
+//    val lt = mboxTriples.toList
+//    println1("mbox Triples size " + lt.size)
+//    if (lt.size > 0) {
+//      val userId = foldNode(lt(0).objectt)(
+//        uri => fromUri(uri),
+//        bn => fromBNode(bn),
+//        lit => fromLiteral(lit)._1)
+//      println1("userId " + userId)
+//      val r1 = dataset3.rw({
+//        // record password in database
+//        val mGraph = passwordsGraph // .makeMGraph()
+//        mGraph += makeTriple(URI(agentURI), passwordPred,
+//          makeLiteral(password, xsd.string))
+//        Success(userId)
+//      })
+//      r1.get
+//    } else Failure(new Exception(
+//      s"""There is no email (foaf:mbox) associated to "$agentURI""""))
+//  }
 }
