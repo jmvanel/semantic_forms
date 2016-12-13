@@ -237,6 +237,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     if (isDownloadableURI(uri)) {
       System.setProperty("sun.net.client.defaultReadTimeout", defaultReadTimeout.toString)
       System.setProperty("sun.net.client.defaultConnectTimeout", defaultConnectTimeout.toString)
+      // TODO: does not seem to take in account the JDK network timeout
       val graph: Rdf#Graph =
         rdfLoader.load(new java.net.URL(uri.toString())).get
       Logger.getRootLogger().info(s"Before storeURI uri $uri graphUri $graphUri")

@@ -42,7 +42,7 @@ import org.w3.banana._
   lazy val sioc =     Prefix[Rdf]("sioc", "http://rdfs.org/sioc/ns#")
   lazy val schema = Prefix[Rdf]("schema", "http://schema.org/")
   lazy val text = Prefix[Rdf]("text", "http://jena.apache.org/text#" )
-  lazy val form = Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#" )
+  lazy val form = Prefix[Rdf]("form", "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#") // http://deductions-software.com/ontologies/forms.owl.ttl#" )
 
   lazy val prefixesList = List(
       // prefixes for ontologies
@@ -65,7 +65,7 @@ import org.w3.banana._
     skos,
 
     // for specific form specs (FOAF, etc)
-    Prefix[Rdf]("forms", "http://deductions-software.com/ontologies/forms#"),
+    Prefix[Rdf]("forms", "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#" ), // "http://deductions-software.com/ontologies/forms#"),
     // form vocabulary
     form,
 

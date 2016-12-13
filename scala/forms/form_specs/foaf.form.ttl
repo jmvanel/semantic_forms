@@ -3,9 +3,12 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 @prefix cco: <http://purl.org/ontology/cco/core#> .
-@prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#> .
-@prefix     : <http://deductions-software.com/ontologies/forms.owl.ttl#> .
-@prefix forms: <http://deductions-software.com/ontologies/forms#> .
+# @prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#> .
+# @prefix     : <http://deductions-software.com/ontologies/forms.owl.ttl#> .
+# @prefix forms: <http://deductions-software.com/ontologies/forms#> .
+@prefix  form: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
+@prefix      : <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
+@prefix forms: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#> .
 
 # form specifications for FOAF
 

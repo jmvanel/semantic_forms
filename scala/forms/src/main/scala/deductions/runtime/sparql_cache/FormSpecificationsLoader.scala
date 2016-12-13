@@ -9,6 +9,7 @@ import org.w3.banana.jena.JenaModule
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.utils.RDFPrefixes
 
 /**
  * @author jmv
@@ -29,7 +30,7 @@ object FormSpecificationsLoader extends JenaModule
 
 trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
-    //    with RDFStoreHelpers[Rdf, DATASET]
+    with RDFPrefixes[Rdf]
     with SitesURLForDownload
     with Configuration {
 
@@ -64,7 +65,7 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
       turtleReader.read(from, base = form_specs) getOrElse sys.error(
         s"couldn't read $form_specs")
     //    import deductions.runtime.abstract_syntax.FormSyntaxFactory._
-    val formPrefix = Prefix("form", formVocabPrefix)
+    val formPrefix = form
     /* Retrieving triple :
      * foaf: form:ontologyHasFormSpecification <foaf.form.ttl> . */
     val triples: Iterator[Rdf#Triple] = find(form_specs_graph, ANY, formPrefix("ontologyHasFormSpecification"), ANY)

@@ -26,8 +26,7 @@ trait Configuration {
   def defaultConnectTimeout: Int
   def httpHeadTimeout: Int
 
-  /** vocabulary for form specifications */
-  def formVocabPrefix: String
+  //  def formVocabPrefix: String
   def prefixAVontology: String = "prefixAVontology"
 
   def needLoginForEditing: Boolean
@@ -95,7 +94,7 @@ trait ConfigurationCopy extends Configuration {
   override def defaultConnectTimeout = original.defaultConnectTimeout
   override def httpHeadTimeout = original.httpHeadTimeout
 
-  override def formVocabPrefix = original.formVocabPrefix
+  //  override def formVocabPrefix = original.formVocabPrefix
   override def prefixAVontology = original.prefixAVontology
   override def needLoginForEditing = original.needLoginForEditing
   override def needLoginForDisplaying = original.needLoginForDisplaying

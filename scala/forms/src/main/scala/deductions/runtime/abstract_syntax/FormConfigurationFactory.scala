@@ -7,6 +7,7 @@ import deductions.runtime.services.Configuration
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import scala.util.Try
+import deductions.runtime.utils.RDFPrefixes
 
 /**
  * Lookup Form specifications from RDF graph
@@ -14,12 +15,12 @@ import scala.util.Try
 trait FormConfigurationFactory[Rdf <: RDF, DATASET]
     extends Configuration
     with RDFCacheAlgo[Rdf, DATASET]
-//    with RDFStoreLocalProvider[Rdf, DATASET]
-    with RDFHelpers[Rdf] {
+    with RDFHelpers[Rdf]
+    with RDFPrefixes[Rdf] {
   
   import ops._
 
-  val formPrefix: Prefix[Rdf] = Prefix("form", formVocabPrefix)
+  val formPrefix: Prefix[Rdf] = form // = Prefix("form", formVocabPrefix)
 
   /**
    * lookup for form:showProperties (ordered list of fields) in Form Configuration within RDF graph about this class;
