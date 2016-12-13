@@ -83,8 +83,8 @@ object DuplicateCleanerSpecificationApp extends App
       file $file:
       graph size: ${graph.size}""")
     val queryString = s"""
-         | PREFIX restruc: <http://deductions.github.io/restruc.owl.ttl#>
-         | PREFIX rdfs: <${uriFromPrefix("rdfs")}>
+         | ${declarePrefix(rdfs)}
+         | ${declarePrefix(restruc)}
          | SELECT ?P ?RP ?LAB ?COMM
          | WHERE {
          |   ?S restruc:replacingProperty ?RP ;

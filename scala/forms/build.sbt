@@ -16,7 +16,7 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 libraryDependencies += "org.w3" %%  "banana-jena" % "0.9.0-SNAPSHOT"
 
-// libraryDependencies += "org.apache.jena" % "apache-jena-libs" % "2.13.0" exclude("org.slf4j", "slf4j-api" )
+libraryDependencies += "org.apache.jena" % "apache-jena-libs" % "3.1.1" // exclude("org.slf4j", "slf4j-api" )
 libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
 libraryDependencies += "org.apache.lucene" % "lucene-suggest" % "4.9.1"
 libraryDependencies += "org.apache.lucene" % "lucene-demo" % "4.9.1"
@@ -47,11 +47,12 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % Test
 
 // resolvers += "spray repo" at "http://repo.spray.io"
 // resolvers += Resolver.mavenLocal
-resolvers += Resolver.url("inthenow-releases", url("http://dl.bintray.com/inthenow/releases"))(Resolver.ivyStylePatterns)
+// resolvers += Resolver.url("inthenow-releases", url("http://dl.bintray.com/inthenow/releases"))(Resolver.ivyStylePatterns)
 
 // outdated:  resolvers += "betehess" at  "http://dl.bintray.com/banana-rdf/banana-rdf"
 
-// banana-rdf still has some dependencies that are not yet on Maven Central
+resolvers += "apache-repo-releases" at "https://repository.apache.org/content/repositories/releases/"
+
 resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
 resolvers += "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/"
 

@@ -70,7 +70,7 @@ with SPARQLHelpers[Rdf, DATASET] {
     (implicit userURI: String)
         : List[Seq[Rdf#Node]] = {
     val query = s"""
-      PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+      ${declarePrefix(xsd)}
       SELECT ?SUBJECT (max(?TS) as ?TIME ) (count(?O) AS ?COUNT) ?USER
       WHERE {
         GRAPH <$metadataGraph> {

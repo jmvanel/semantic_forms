@@ -38,9 +38,9 @@ trait DuplicateCleanerSPARQL[Rdf <: RDF, DATASET]
    * - D1 /= D2
    */
   val detectMergeableObjectProperties1 = """
-    |PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    |PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    |PREFIX owl: <http://www.w3.org/2002/07/owl#>
+    |${declarePrefix(rdfs)}
+    |${declarePrefix(rdf)}
+    |${declarePrefix(owl)}
     |
     |SELECT ?P1 ?P2 ?R
     |WHERE {

@@ -303,8 +303,8 @@ trait RangeInference[Rdf <: RDF, DATASET]
     (implicit graph: Rdf#Graph)
     : Seq[(Rdf#Node, Rdf#Node)] = {
     val q = s"""
-              prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#>
-              prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+      ${declarePrefix(form)}
+      ${declarePrefix(rdfs)}
               SELECT ?VALUE ?LABEL
               WHERE {
                 <${formGroup}> form:labelsForFormGroup ?LABELS .

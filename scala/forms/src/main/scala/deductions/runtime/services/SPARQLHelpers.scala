@@ -159,7 +159,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   def getRDFList(subject: String): List[Rdf#Node] = {
     val queryRdfList = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    ${declarePrefix(rdf)}
     SELECT ?ELEM
     WHERE { GRAPH ?G {
       <SUBJECT> rdf:rest* / rdf:first ?ELEM
