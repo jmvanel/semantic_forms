@@ -148,7 +148,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
     return res
   }
 
-
+  /** dispatch to various Entry's: LiteralEntry, ResourceEntry; ..., editable or not */
   private def createHTMLField(field: formMod#Entry, editable: Boolean,
     hrefPrefix: String = "", lang: String = "en")(implicit form: FormModule[NODE, URI]#FormSyntax): xml.NodeSeq = {
     
@@ -178,6 +178,9 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
             createHTMLBlankNodeEditableField(r)
           else
             createHTMLBlankNodeReadonlyField(r, hrefPrefix)
+
+      case r: formMod#RDFListEntry => <p>RDF List {r.values.mkString(", ")}</p>
+
       case _ => <p>Should not happen! createHTMLField({ field })</p>
     }
 

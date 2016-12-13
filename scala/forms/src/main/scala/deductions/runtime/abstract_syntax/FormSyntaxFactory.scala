@@ -394,20 +394,23 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       }
 
       val entry = rangeClasses match {
+        case _ if object_.isLiteral => literalEntry
         case _ if rangeClasses.exists { c => c.toString startsWith (xsdPrefix) } => literalEntry
         case _ if rangeClasses.contains(rdfs.Literal) => literalEntry
         case _ if propClasses.contains(owl.DatatypeProperty) => literalEntry
         case _ if ranges.contains(rdfs.Literal) => literalEntry
+
         case _ if propClasses.contains(owl.ObjectProperty) => resourceEntry
         case _ if rangeClasses.contains(owl.Class) => resourceEntry
         case _ if rangeClasses.contains(rdf.Property) => resourceEntry
         case _ if ranges.contains(owl.Thing) => resourceEntry
         case _ if isURI(object_) => resourceEntry
+
+        case _ if rdfListEntry.isDefined => rdfListEntry.get
         case _ if isBN(object_) => makeBN(label, comment, prop,
             ResourceValidator(ranges), toBN(object_), firstType)
-        case _ if object_.toString.startsWith("_:") => resourceEntry
-        // TODO:
-//        case _ if rdfListEntry.isDefined => rdfListEntry.get
+        case _ if object_.toString.startsWith("_:") => resourceEntry // ??????????????? rather makeBN() ???
+
         case _ => literalEntry
       }
       result += entry

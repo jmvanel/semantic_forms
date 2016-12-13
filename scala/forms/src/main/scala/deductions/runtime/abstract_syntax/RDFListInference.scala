@@ -30,7 +30,8 @@ trait RDFListInference[Rdf <: RDF, DATASET]
     openChoice: Boolean = true,
     widgetType: WidgetType = Text): Option[RDFListEntry] = {
 
-    val list = getRDFList(value.toString()): List[Rdf#Node]
+    val list = getRDFList(makeTurtleTerm(value)): List[Rdf#Node]
+    println(s"makeRDFListEntry list $list")
 
     list match {
       case l if !l.isEmpty => Some(RDFListEntry(

@@ -286,8 +286,8 @@ trait RDFHelpers0[Rdf <: RDF] extends Configuration
    * I'd write a new typeclass to handle that
    * it's super easy to do */
   def makeTurtleTerm( node: Rdf#Node ) = foldNode(node)(
-      uri => s"<$uri>",
-      bn => s"_:$bn",
+      uri => s"<${fromUri(uri)}>",
+      bn => s"<_:${fromBNode(bn)}>",
       // TODO: datatype
       lit => s"$lit")
 }
