@@ -25,7 +25,6 @@ extends BlankNodeCleanerBase[Rdf, DATASET] {
 
 //  val namedGraphForTrackingDuplicates = URI("urn:duplicates")
   private val owl = OWLPrefix[Rdf]
-  private val rdfs = RDFSPrefix[Rdf]
 
   /**
    *  keep track of the merge of triples with owl:equivalentProperty or owl:sameAs

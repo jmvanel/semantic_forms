@@ -22,8 +22,6 @@ with SPARQLHelpers[Rdf, DATASET] {
   val timestampURI = URI("urn:timestamp")
   val userPredURI = URI("urn:user")
   val metadataGraph = URI( "urn:semantic_forms/metadataGraph" ) // "urn:x-arq:DefaultGraph")
-
-  private val rdfs = RDFSPrefix[Rdf]
   
   /** reference implementation:
    * save all `addedTriples` to a specific new named graph,

@@ -25,7 +25,6 @@ trait BlankNodeCleanerBase[Rdf <: RDF, DATASET]
   import ops._
 
   private val owl = OWLPrefix[Rdf]
-  private val rdfs = RDFSPrefix[Rdf]
 
   private lazy val propTypes = List(rdf.Property, owl.ObjectProperty, owl.DatatypeProperty)
 

@@ -15,7 +15,6 @@ trait TimeSeriesTest[Rdf <: RDF, DATASET] extends FunSuite with TimeSeries[Rdf, 
   
   import ops._
   val xsd = XSDPrefix[Rdf]
-  private val rdfs = RDFSPrefix[Rdf]
   val label = "my label"
   
   val tLabel = Triple(URI("a"), rdfs.label, Literal(label) )

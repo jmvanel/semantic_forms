@@ -26,6 +26,7 @@ import play.api.libs.json.JsObject
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsString
 import org.w3.banana.io.RDFXML
+import deductions.runtime.utils.RDFPrefixes
 
 /** TODO separate stuff depending on dataset, and stuff taking a  graph in argument
  * @author jmv
@@ -33,6 +34,7 @@ import org.w3.banana.io.RDFXML
 trait SPARQLHelpers[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
     		with RDFHelpers0[Rdf]
+        with RDFPrefixes[Rdf]
     		with Timer {
 
   val turtleWriter: RDFWriter[Rdf, Try, Turtle]
@@ -158,7 +160,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   }
 
   def getRDFList(subject: String): List[Rdf#Node] = {
-    val queryRdfList = """
+    val queryRdfList = s"""
     ${declarePrefix(rdf)}
     SELECT ?ELEM
     WHERE { GRAPH ?G {

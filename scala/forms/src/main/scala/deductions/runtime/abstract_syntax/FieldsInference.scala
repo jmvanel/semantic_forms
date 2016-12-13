@@ -21,7 +21,6 @@ with SPARQLHelpers[Rdf, DATASET]
 with Configuration {
 
   import ops._
-  private val rdfs = RDFSPrefix[Rdf]
   private val owl = OWLPrefix[Rdf]
 
   /** find fields from given Instance subject */
