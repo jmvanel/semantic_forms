@@ -22,8 +22,8 @@ trait DefaultConfiguration extends Configuration {
     "9000"
   }
 
-  override val defaultReadTimeout = 4000
-  override val defaultConnectTimeout = 4000
+  override val defaultReadTimeout = 10
+  override val defaultConnectTimeout = 5
   override val httpHeadTimeout = 500
 
   /** vocabulary for form specifications */
