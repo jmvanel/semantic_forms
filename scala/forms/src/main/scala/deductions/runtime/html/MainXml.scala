@@ -148,6 +148,11 @@ trait MainXml extends ToolsPage with EnterButtons {
     <script src="assets/fluidgraph/js/mybackground.js"></script>
     <script src="assets/fluidgraph/js/convert.js"></script>
     -->
+    <script type='text/javascript'>
+        $(document).ready(function () {
+            $(".form-horizontal").tabs();
+        })
+    </script>
 
   }
 }
