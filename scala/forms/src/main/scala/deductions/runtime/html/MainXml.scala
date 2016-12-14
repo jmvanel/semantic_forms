@@ -148,9 +148,10 @@ trait MainXml extends ToolsPage with EnterButtons {
     <script src="assets/fluidgraph/js/mybackground.js"></script>
     <script src="assets/fluidgraph/js/convert.js"></script>
     -->
+    val javascriptCode = scala.xml.Unparsed(""" $(".form-horizontal").tabs(); """)
     <script type='text/javascript'>
       $(document).ready(function (){{
-        $(".form-horizontal").tabs();
+        {javascriptCode}
       }}
       )
     </script>
