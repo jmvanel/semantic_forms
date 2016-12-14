@@ -99,6 +99,8 @@ trait MainXml extends ToolsPage with EnterButtons {
       <input type="submit" name="create" id="create" value={ label }/>
     </form>
 
+  private val javascriptCode = scala.xml.Unparsed(""" $(".form-horizontal").tabs(); """)
+
   def javascriptCSSImports: NodeSeq = {
     <!--
     <script src="assets/javascripts/jquery-ui.min.js"></script>
@@ -148,13 +150,11 @@ trait MainXml extends ToolsPage with EnterButtons {
     <script src="assets/fluidgraph/js/mybackground.js"></script>
     <script src="assets/fluidgraph/js/convert.js"></script>
     -->
-    val javascriptCode = scala.xml.Unparsed(""" $(".form-horizontal").tabs(); """)
     <script type='text/javascript'>
       $(document).ready(function (){{
-        {javascriptCode}
+      { javascriptCode }
       }}
       )
     </script>
-
   }
 }
