@@ -117,8 +117,8 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
         val label = toPlainString(node)
         println(s"Fields Group $label")
         Seq(
-          <div class="sf-fields-group-title" id={  makeHref(label) }>{ label }</div>,
-          <div class="sf-fields-group">
+          // <div class="sf-fields-group-title">{ label }</div>,
+          <div class="sf-fields-group"  id={  makeHref(label) } >
             { makeFieldsLabelAndData(group) }
           </div>)
       }
@@ -179,7 +179,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
           else
             createHTMLBlankNodeReadonlyField(r, hrefPrefix)
 
-      case r: formMod#RDFListEntry => <p>RDF List {r.values.mkString(", ")}</p>
+      case r: formMod#RDFListEntry => <p>RDF List: {r.values.mkString(", ")}</p>
 
       case _ => <p>Should not happen! createHTMLField({ field })</p>
     }
