@@ -338,6 +338,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
             // hack :(((((((((
             filter(node => !node.toString().contains(""">>>> Failure: """))
 
+        case Failure(failure: org.apache.jena.query.QueryParseException) => List(Seq(
+            Literal(failure.getLocalizedMessage),
+            Literal(queryString)))
         case Failure(failure) => List(Seq(Literal(failure.getLocalizedMessage)))
       }
 
