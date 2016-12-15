@@ -36,12 +36,17 @@ The input line is too long.
 The syntax of the command is incorrect.
 ```
 This is probably corrected in Play! Framework 2.5 .
-There is a workaround here:
+There is a workaround. Change the long line in `bin\semantic_forms_play.bat` with this one:
+```
+set "APP_CLASSPATH=%APP_LIB_DIR%..\conf\;%APP_LIB_DIR%*;"
+```
+See also:
 http://stackoverflow.com/questions/21429234/play-framework-2-stage-task-on-windows-the-input-line-is-too-long
 
-
+### URL of the main application page
 The default port is 9000, so you can direct your browser to [http://localhost:9000](http://localhost:9000) .
-The generic application is perfectly usable out of the box, see [User manual](https://github.com/jmvanel/semantic_forms/wiki/User_manual). However, it is better to preload common RDF vocabularies and related form specifications and I18N translations, see below "Database manipulations".
+The generic application is perfectly usable out of the box, see [User manual](https://github.com/jmvanel/semantic_forms/wiki/User_manual).
+However, it is better to preload common RDF vocabularies and related form specifications and I18N translations, see below "Database manipulations".
 
 #### Stopping the zipped distribution
 `kill` the java application; its process ID is in the `RUNNING_PID` file.
