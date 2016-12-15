@@ -15,11 +15,11 @@ import deductions.runtime.utils.RDFPrefixes
  * @author jmv
  */
 
-/** TODO put in package jena */
+/** Form Specifications Loader App */
 object FormSpecificationsLoader extends JenaModule
       with DefaultConfiguration
     with RDFCache with App
-    with FormSpecificationsLoaderTrait[Jena, ImplementationSettings.DATASET]
+    with FormSpecificationsLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RDFStoreLocalJena1Provider //    with JenaHelpers
     {
   if (args.size == 0)
@@ -60,33 +60,39 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
 
   /** non TRANSACTIONAL */
   def loadFormSpecifications(form_specs: String) {
-    val from = new java.net.URL(form_specs).openStream()
-    val form_specs_graph: Rdf#Graph =
-      turtleReader.read(from, base = form_specs) getOrElse sys.error(
-        s"couldn't read $form_specs")
-    //    import deductions.runtime.abstract_syntax.FormSyntaxFactory._
-    val formPrefix = form
-    /* Retrieving triple :
+    try {
+      val from = new java.net.URL(form_specs).openStream()
+      val form_specs_graph: Rdf#Graph =
+        turtleReader.read(from, base = form_specs) getOrElse sys.error(
+          s"couldn't read $form_specs")
+      //    import deductions.runtime.abstract_syntax.FormSyntaxFactory._
+      val formPrefix = form
+      /* Retrieving triple :
      * foaf: form:ontologyHasFormSpecification <foaf.form.ttl> . */
-    val triples: Iterator[Rdf#Triple] = find(form_specs_graph, ANY, formPrefix("ontologyHasFormSpecification"), ANY)
-    val objects = for (triple <- triples) yield {
-      triple._3 // getObject
-    }
-    for (obj <- objects) {
-      try {
-        val from = new java.net.URL(obj.toString()).openStream()
-        val form_spec_graph: Rdf#Graph = turtleReader.read(from, base = obj.toString()) getOrElse sys.error(
-          s"couldn't read ${obj.toString()}")
-        val r = dataset.rw({
-          rdfStore.appendToGraph(dataset, formSpecificationsGraph, form_spec_graph)
-        })
-        println("Added form_spec " + obj)
-      } catch {
-        case e: Exception =>
-          System.err.println(s"""!!!! Error in loadFormSpecifications:
+      val triples: Iterator[Rdf#Triple] = find(form_specs_graph, ANY, formPrefix("ontologyHasFormSpecification"), ANY)
+      val objects = for (triple <- triples) yield {
+        triple._3 // getObject
+      }
+      for (obj <- objects) {
+        try {
+          val from = new java.net.URL(obj.toString()).openStream()
+          val form_spec_graph: Rdf#Graph = turtleReader.read(from, base = obj.toString()) getOrElse sys.error(
+            s"couldn't read ${obj.toString()}")
+          val r = dataset.rw({
+            rdfStore.appendToGraph(dataset, formSpecificationsGraph, form_spec_graph)
+          })
+          println("Added form_spec " + obj)
+        } catch {
+          case e: Exception =>
+            System.err.println(s"""!!!! Error in loadFormSpecifications:
             $obj
             $e""")
+        }
       }
+    } catch {
+      case e: Exception =>
+        System.err.println(s"""!!!! Error in loadFormSpecifications: load form_specs <$form_specs>
+            $e""")
     }
   }
 }
