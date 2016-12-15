@@ -73,6 +73,7 @@ trait FormModule[NODE, URI <: NODE] {
 	  val mandatory: Boolean
 	  /** TODO : several types */
 	  val type_ : NODE
+//	  val type_ : Seq[NODE] // TODO <<<<<<<<<<<<<<<<
 	  val value: NODE
 	  var widgetType: WidgetType
 	  /** true <=> user has possibility to type any (valid) data */
@@ -134,8 +135,9 @@ trait FormModule[NODE, URI <: NODE] {
       makeURI(e.value),
       alreadyInDatabase,
       e.possibleValues,
-      valueLabel,
-      makeURI(e.type_))
+      valueLabel
+      ,makeURI(e.type_)
+      )
   }
 
 

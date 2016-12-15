@@ -105,7 +105,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
       def makeHref(label: String) = { val md = MessageDigest.getInstance("SHA"); md.update(label.getBytes); new String( md . digest() ) }
 //        URLEncoder.encode(label, "utf-8")
 
-      // http://jqueryui.com/accordion/
+      // http://jqueryui.com/accordion/ or http://jqueryui.com/tabs/
       val tabsNames = <ul>{
         for ((node, group) <- map) yield {
           val label = toPlainString(node)
