@@ -222,10 +222,11 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val subject = step1.subject
     val classs = step1.classs
 
-    val seqOfEntries = for( (node, rawDataForForm ) <- step1.propertiesGroups ) yield
+    // TODO set a FormSyntax.title for each group in propertiesGroups
+    val entriesFromPropertiesGroups = for( (node, rawDataForForm ) <- step1.propertiesGroups ) yield
     	node -> makeEntries2(rawDataForForm)
     	
-    val formSyntax = FormSyntax(subject, fields3, classs, propertiesGroups=seqOfEntries)
+    val formSyntax = FormSyntax(subject, fields3, classs, propertiesGroups=entriesFromPropertiesGroups)
     
     addAllPossibleValues(formSyntax, valuesFromFormGroup)
     

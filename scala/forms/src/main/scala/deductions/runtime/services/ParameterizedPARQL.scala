@@ -144,7 +144,12 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
       label: String = "",
       sortAnd1rowPerElement:Boolean = false )
     (implicit queryMaker: SPARQLQueryMaker[Rdf] ): NodeSeq = {
-     displayNode(uriNodeToURI(node), hrefPrefix, label,
+    val displayLabel =
+      if( label != "" )
+          label
+        else
+          instanceLabel(node, graph, lang)
+     displayNode(uriNodeToURI(node), hrefPrefix, displayLabel,
          nullURI, nullURI )
   }
 
