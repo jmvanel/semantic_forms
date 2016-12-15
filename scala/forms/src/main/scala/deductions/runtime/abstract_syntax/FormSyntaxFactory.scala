@@ -149,21 +149,24 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    * NO transaction, should be called within a transaction
    */
   def createFormDetailed(subject: Rdf#Node,
-    propertiesList: Iterable[Rdf#Node], classs: Rdf#URI,
+    propertiesList: Iterable[Rdf#Node],
+    classs: Rdf#URI,
     formMode: FormMode,
     formGroup: Rdf#URI = nullURI,
     formConfig: Rdf#Node = URI(""))
     (implicit graph: Rdf#Graph)
   : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
+
+		val step1 = computePropertiesList(subject, formMode.editable, fromUri(uriNodeToURI(formConfig)), classs )
+
     createFormDetailed2(
-          RawDataForForm(propertiesList.toSeq, classs, subject, formMode.editable,
-        formConfig match { case URI("") => None
-        case uri => Some(uri) } ),
+//          RawDataForForm(propertiesList.toSeq, classs, subject, formMode.editable,
+//        formConfig match { case URI("") => None
+//        case uri => Some(uri) } ),
+        step1,
         formGroup
     )
   }
-
-//  type fm = FormModule[Rdf#Node, Rdf#URI]
   
   def createFormDetailed2(
 		  step1: RawDataForForm[Rdf#Node],
