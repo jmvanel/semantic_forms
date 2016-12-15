@@ -117,8 +117,8 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
         val label = toPlainString(node)
         println(s"Fields Group $label")
         Seq(
-          // <div class="sf-fields-group-title">{ label }</div>,
-          <div class="sf-fields-group"  id={  makeHref(label) } >
+          <div class="sf-fields-group"  id={  makeHref(label) } >,
+           <div class="sf-fields-group-title">{ label }</div>,
             { makeFieldsLabelAndData(group) }
           </div>)
       }
