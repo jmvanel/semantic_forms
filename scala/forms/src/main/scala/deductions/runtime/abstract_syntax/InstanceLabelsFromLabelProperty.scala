@@ -15,12 +15,14 @@ trait InstanceLabelsFromLabelProperty[Rdf <: RDF, DATASET]
     extends SPARQLHelpers[Rdf, DATASET]
     with RDFHelpers[Rdf]
     with RDFPrefixes[Rdf] {
+
+  import ops._
+
   /**
    * inferring possible label from:
    *
    * form:labelProperty in the rdf:type class
    */
-
   val query = s"""
 		|${declarePrefix(form)}
     |SELECT ?LABEL_URI
@@ -40,7 +42,7 @@ trait InstanceLabelsFromLabelProperty[Rdf <: RDF, DATASET]
         if (node == ops.URI(""))
           None
         else {
-          val q = query.replaceAll("\\<thing\\>", "<" + node.toString() + ">")
+          val q = query.replaceAll("\\<thing\\>", "<" + fromUri(node) + ">")
           // println(s"query $q")
           val res = for (
             nodes <- sparqlSelectQueryVariablesNT(q, List("LABEL_URI"));
