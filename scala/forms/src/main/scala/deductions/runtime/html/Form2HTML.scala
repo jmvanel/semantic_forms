@@ -14,6 +14,7 @@ import deductions.runtime.utils.I18NMessages
 import deductions.runtime.utils.Timer
 import deductions.runtime.services.Configuration
 import java.security.MessageDigest
+import org.apache.commons.codec.digest.DigestUtils
 
 /**
  * different modes: display or edit;
@@ -102,8 +103,7 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
     def makeFieldsGroups(): NodeSeq = {
       val map = form.propertiesGroups
 
-      def makeHref(label: String) = { val md = MessageDigest.getInstance("SHA"); md.update(label.getBytes); new String( md . digest() ) }
-//        URLEncoder.encode(label, "utf-8")
+      def makeHref(s: String) = DigestUtils.md5Hex(s)
 
       // http://jqueryui.com/accordion/ or http://jqueryui.com/tabs/
       val tabsNames = <ul>{
