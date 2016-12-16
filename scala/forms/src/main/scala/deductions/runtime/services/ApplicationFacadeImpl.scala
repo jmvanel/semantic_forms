@@ -374,7 +374,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   def selectSPARQL(query: String, lang: String = "en"): Elem = {
     Logger.getRootLogger().info("sparql query  " + query)
     <p>
-		{ sparqlQueryForm(query, "/select",
+		{ sparqlQueryForm(query, "/select-ui",
 				Seq("SELECT * WHERE {{ GRAPH ?G {{?S ?P ?O . }} }} LIMIT 10" )) }
       <br></br>
       <!--script type="text/css">
