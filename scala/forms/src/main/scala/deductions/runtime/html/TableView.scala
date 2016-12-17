@@ -12,7 +12,7 @@ import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.abstract_syntax.FormSyntaxFactory
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.Timer
-import deductions.runtime.services.ConfigurationCopy
+//import deductions.runtime.services.ConfigurationCopy
 import deductions.runtime.services.Configuration
 
 /**
