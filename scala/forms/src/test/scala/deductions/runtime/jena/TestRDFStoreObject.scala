@@ -12,6 +12,7 @@ import org.w3.banana.SparqlOps
 import org.w3.banana.RDF
 
 import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.services.DefaultConfiguration
 
 trait TestRDFStoreObject[Rdf <: RDF, DATASET]
     extends FunSuite
@@ -84,6 +85,9 @@ trait TestRDFStoreObject[Rdf <: RDF, DATASET]
 //@Ignore
 class TestRDFStoreObjectJena extends TestRDFStoreObject[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RDFStoreLocalJena1Provider with ImplementationSettings.RDFModule {
+  val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
   def makeGraph(): Rdf#Graph = {
     println(s"""dataset $dataset """)
     allNamedGraph

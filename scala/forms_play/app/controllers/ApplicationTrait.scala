@@ -31,7 +31,7 @@ import play.api.mvc.Codec
 
 /** main controller */
 trait ApplicationTrait extends Controller
-    with DefaultConfiguration
+//    with DefaultConfiguration
     with ApplicationFacadeJena
     with LanguageManagement
     with Secured
@@ -41,7 +41,8 @@ trait ApplicationTrait extends Controller
     with RDFPrefixes[ImplementationSettings.Rdf]
     {
 
-  override def serverPort = {
+  lazy val config = new DefaultConfiguration{
+      override def serverPort = {
     val port = Play.current.configuration.
       getString("http.port")
     port match {
@@ -50,9 +51,11 @@ trait ApplicationTrait extends Controller
         p
       case _ =>
         println("Retrieving default port from config." )
-        super.serverPort
+        serverPort
     }
   }
+  }
+//  import config._
 
   def index() =
     withUser {

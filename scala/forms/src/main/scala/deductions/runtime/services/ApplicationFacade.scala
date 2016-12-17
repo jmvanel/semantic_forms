@@ -19,7 +19,7 @@ import scala.util.Try
  */
 trait ApplicationFacade[Rdf <: RDF, DATASET]
 		extends ApplicationFacadeInterface
-    with Configuration
+//    with Configuration
     {
 
   val impl: ApplicationFacadeImpl[Rdf, DATASET]

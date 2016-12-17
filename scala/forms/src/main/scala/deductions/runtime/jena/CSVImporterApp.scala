@@ -1,13 +1,14 @@
 package deductions.runtime.jena
 
-import deductions.runtime.utils.CSVImporter
-import java.io.InputStream
-import java.net.URL
-import java.net.HttpURLConnection
 import java.io.File
-import java.io.FileOutputStream
-import deductions.runtime.services.DefaultConfiguration
 import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.net.HttpURLConnection
+import java.net.URL
+
+import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.CSVImporter
 
 /**
  * App to transform CSV into a Turtle file;
@@ -26,6 +27,10 @@ object CSVImporterApp extends App
     with RDFStoreLocalJena1Provider
     with DefaultConfiguration
     with CSVImporter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+
+  val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
   import ops._
 
   println(s"Arguments: ${args.mkString(", ")}")

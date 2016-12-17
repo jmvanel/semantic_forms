@@ -18,11 +18,16 @@ import org.w3.banana.RDF
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.utils.RDFPrefixes
+import deductions.runtime.services.DefaultConfiguration
 
 /** input file for vocabulary; output in new file with ".formspec.ttl" suffix */
 object FormSpecificationsFromVocabApp extends RDFStoreLocalJena1Provider
     with App
-    with FormSpecificationsFromVocab[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+    with FormSpecificationsFromVocab
+    [ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+  val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
   val logger: Logger = Logger.getRootLogger()
   if (args.size == 0) {
     println("Usage: input file for vocabulary; output in new file with '.formspec.ttl' suffix")

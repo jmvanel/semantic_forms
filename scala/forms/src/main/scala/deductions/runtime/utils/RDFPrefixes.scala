@@ -16,7 +16,7 @@ import org.w3.banana._
  *  TODO possibility to add prefix-URI pairs;
  *  TODO use prefix.cc like in EulerGUI */
   trait RDFPrefixes[Rdf <: RDF] {
-  this: Configuration =>
+//  this: Configuration =>
 
   implicit val ops: RDFOps[Rdf]
   import ops._

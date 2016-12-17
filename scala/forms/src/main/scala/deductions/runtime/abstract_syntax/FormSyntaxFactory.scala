@@ -101,6 +101,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     with RDFPrefixes[Rdf]
     with Timer {
 
+  val config: Configuration
+  import config._
+
   // TODO not thread safe: form is not rebuilt for each HTTP request 
   var preferedLanguage: String = "en"
   

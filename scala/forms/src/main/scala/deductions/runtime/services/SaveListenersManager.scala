@@ -7,7 +7,9 @@ import org.w3.banana.RDF
 import deductions.runtime.semlogs.LogAPI
 
 trait SaveListenersManager[Rdf <: RDF]
-    extends Configuration {
+//    extends Configuration
+    {
+  val config: Configuration
 
   type SaveListener = LogAPI[Rdf]
   val saveListeners = ArrayBuffer[SaveListener]()
@@ -17,7 +19,7 @@ trait SaveListenersManager[Rdf <: RDF]
   }
 
   def callSaveListeners(addedTriples: Seq[Rdf#Triple], removedTriples: Seq[Rdf#Triple])(implicit userURI: String) = {
-    if (recordUserActions)
+    if (config.recordUserActions)
       saveListeners.map {
         _.notifyDataEvent(addedTriples, removedTriples)
       }

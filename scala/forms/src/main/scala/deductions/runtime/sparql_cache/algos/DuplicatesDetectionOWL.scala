@@ -1,21 +1,16 @@
 package deductions.runtime.sparql_cache.algos
 
-import java.io.FileReader
-
-import org.w3.banana.OWLPrefix
-import org.w3.banana.RDF
-import org.w3.banana.RDFOps
-import org.w3.banana.RDFPrefix
-import org.w3.banana.RDFSPrefix
+import java.io.FileInputStream
+import java.io.PrintStream
 
 import scala.collection.immutable.ListMap
-import java.io.PrintStream
-import java.io.FileInputStream
 
+import org.w3.banana.RDF
+import org.w3.banana.RDFOps
+
+import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.SPARQLHelpers
 
 /** Duplicates Detection for OWL; output: CSV, Grouped By labels of Datatype properties,
  *  or  owl:ObjectProperty", or "owl:Class"
@@ -28,6 +23,10 @@ with ImplementationSettings.RDFModule
 with DefaultConfiguration
 with DuplicatesDetectionOWL[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 with CSVFormatter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+
+  val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
   import ops._
 
   val addEmptyLineBetweenLabelGroups = false // true
@@ -129,7 +128,6 @@ trait DuplicatesDetectionOWL[Rdf <: RDF, DATASET]
   val ontologyPrefix = "http://data.onisep.fr/ontologies/"
 
   implicit val ops: RDFOps[Rdf]
-  import ops._
 
   /** @return the list of pairs of similar property URI's */
   def findDuplicateDataProperties(graph: Rdf#Graph): DuplicationAnalysis = {

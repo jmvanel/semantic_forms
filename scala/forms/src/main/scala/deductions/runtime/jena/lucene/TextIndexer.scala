@@ -1,11 +1,9 @@
 package deductions.runtime.jena.lucene
 
-import jena._
-import org.apache.jena.query.text.EntityDefinition
 import org.apache.jena.query.text.DatasetGraphText
-//import org.apache.jena.tdb.TDBFactory
-import deductions.runtime.services.DefaultConfiguration
+
 import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.DefaultConfiguration
 
 /**
  * Index TDB with Lucene a posteriori;
@@ -21,8 +19,14 @@ private[lucene] class TextIndexerClass extends jena.textindexer(Array[String]())
     with LuceneIndex
     with DefaultConfiguration {
 
+  val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+  import config._
+
+  val config1 = config
   val rdfStoreProvider = new ImplementationSettings.RDFCache {
-    override val useTextQuery = true
+    val config = config1
   }
 
   val dataset0 = rdfStoreProvider.dataset

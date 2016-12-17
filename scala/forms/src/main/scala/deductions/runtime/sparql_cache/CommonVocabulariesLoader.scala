@@ -18,6 +18,7 @@ import deductions.runtime.jena.RDFCache
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.utils.RDFPrefixes
+import deductions.runtime.services.DefaultConfiguration
 
 /**
  * @author jmv
@@ -29,6 +30,11 @@ object CommonVocabulariesLoader extends ImplementationSettings.RDFModule
     with CommonVocabulariesLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RDFStoreLocalJena1Provider
     {
+	val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+  import config._
+  
   loadCommonVocabularies()
 }
 

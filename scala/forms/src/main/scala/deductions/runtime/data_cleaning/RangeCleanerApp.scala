@@ -9,6 +9,7 @@ import deductions.runtime.services.SPARQLHelpers
 import org.w3.banana.OWLPrefix
 import org.w3.banana.RDFSPrefix
 import org.w3.banana.RDF
+import deductions.runtime.services.DefaultConfiguration
 
 /**
  * Removes the less specific Datatype.
@@ -25,11 +26,15 @@ object RangeCleanerApp extends App
     with ImplementationSettings.RDFCache
     with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RangeCleaner[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
-  import ops._
+
+	val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+	import config._
+	import ops._
 
   override val databaseLocation = "/tmp/TDB" // TODO multi-platform temporary directory
   override val deleteDatabaseLocation = true
-  override val useTextQuery = false
 
   println(s"databaseLocation $databaseLocation")
   rangeCleanerApp()

@@ -26,6 +26,9 @@ object ResetRDFCacheApp extends ImplementationSettings.RDFModule
     with ImplementationSettings.RDFCache
     with App {
 
+  val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
   import ops._
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._

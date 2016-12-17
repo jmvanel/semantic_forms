@@ -3,9 +3,9 @@ package deductions.runtime.data_cleaning
 import java.io.File
 
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.services.SPARQLHelpers
+import deductions.runtime.sparql_cache.RDFCacheAlgo
 
 /**
  * merges Duplicates in given file(s),
@@ -24,6 +24,9 @@ object DuplicateCleanerFileApp extends App
     with DuplicateCleaner[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with SPARQLHelpers[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
+  val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
   import ops._
 
   //  //  override val databaseLocation: String = "" // in-memory

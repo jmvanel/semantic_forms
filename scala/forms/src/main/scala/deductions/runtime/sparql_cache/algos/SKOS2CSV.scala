@@ -2,34 +2,33 @@ package deductions.runtime.sparql_cache.algos
 
 import java.io.File
 import java.io.PrintStream
-import java.net.URL
 
 import scala.collection.immutable.ListMap
 
+import org.w3.banana.OWLPrefix
+import org.w3.banana.Prefix
 import org.w3.banana.RDF
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFPrefix
-import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaModule
 
+import deductions.runtime.abstract_syntax.FieldsInference
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.abstract_syntax.FieldsInference
-
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.sparql_cache.RDFCacheAlgo
-import org.w3.banana.OWLPrefix
-import org.w3.banana.Prefix
-import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.utils.RDFHelpers
 
 /** output given SKOS file as CSV */
 object SKOS2CSVApp extends App
 with RDFStoreLocalJena1Provider
 with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-
 with DefaultConfiguration 
 with SKOS2CSV[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+  val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+
   val addEmptyLineBetweenLabelGroups = false
   override lazy val owl = OWLPrefix[Rdf]
 
@@ -123,7 +122,6 @@ with FieldsInference[Rdf, DATASET]
   val ontologyPrefix = "http://data.onisep.fr/ontologies/"
 
   implicit val ops: RDFOps[Rdf]
-  import ops._
 
 //  /** find fields from given Instance subject */
 //  def fieldsFromSubject(subject: Rdf#Node, graph: Rdf#Graph): Seq[Rdf#URI] =

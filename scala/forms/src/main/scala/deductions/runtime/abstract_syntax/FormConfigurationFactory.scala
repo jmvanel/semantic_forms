@@ -3,7 +3,7 @@ package deductions.runtime.abstract_syntax
 import org.apache.log4j.Logger
 import org.w3.banana.Prefix
 import org.w3.banana.RDF
-import deductions.runtime.services.Configuration
+//import deductions.runtime.services.Configuration
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import scala.util.Try
@@ -13,8 +13,10 @@ import deductions.runtime.utils.RDFPrefixes
  * Lookup Form specifications from RDF graph
  */
 trait FormConfigurationFactory[Rdf <: RDF, DATASET]
-    extends Configuration
-    with RDFCacheAlgo[Rdf, DATASET]
+    extends
+//Configuration
+//    with 
+    RDFCacheAlgo[Rdf, DATASET]
     with RDFHelpers[Rdf]
     with RDFPrefixes[Rdf] {
   

@@ -4,19 +4,18 @@ import scala.collection.JavaConversions.asScalaIterator
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
 
+//import com.hp.hpl.jena.util.FileManager
+import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.riot.RDFDataMgr
+import org.apache.jena.util.FileManager
 import org.w3.banana.RDF
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
 
-//import com.hp.hpl.jena.rdf.model.ModelFactory
-//import com.hp.hpl.jena.util.FileManager
-import org.apache.jena.rdf.model.ModelFactory
-import org.apache.jena.util.FileManager
-
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 
 
@@ -39,6 +38,12 @@ object FixBadURIApp extends JenaModule
     with RDFStoreLocalJena1Provider
     //    with JenaHelpers 
     with App {
+
+  val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+  import config._
+  
   fix
   def listGraphNames() = dataset.listNames()
 }

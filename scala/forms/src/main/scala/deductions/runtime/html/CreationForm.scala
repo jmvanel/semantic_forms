@@ -8,7 +8,7 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import org.w3.banana.RDFOps
 import deductions.runtime.services.Configuration
-import deductions.runtime.services.ConfigurationCopy
+//import deductions.runtime.services.ConfigurationCopy
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.utils.I18NMessages
 import deductions.runtime.utils.HTTPrequest
@@ -17,9 +17,12 @@ trait CreationFormAlgo[Rdf <: RDF, DATASET]
 extends RDFCacheAlgo[Rdf, DATASET]
 with UnfilledFormFactory[Rdf, DATASET]
 with HTML5TypesTrait[Rdf]
-with Configuration
+//with Configuration
 with RDFPrefixes[Rdf]
 {
+  
+  val config: Configuration
+
   import ops._
   import rdfStore.transactorSyntax._
   /** TODO also defined elsewhere */
@@ -42,9 +45,13 @@ with RDFPrefixes[Rdf]
       val form = factory.createFormFromClass(classURI, formSpecURI, request)
 
       val ops1 = ops
-      val htmlFormatter = new Form2HTMLBanana[Rdf] with ConfigurationCopy {
+      val config1 = config
+      val htmlFormatter = new Form2HTMLBanana[Rdf]
+      //with ConfigurationCopy
+      {
         val ops = ops1
-        lazy val original:Configuration = CreationFormAlgo.this
+        val config = config1
+        // lazy val original:Configuration = CreationFormAlgo.this
       }
 
       val rawForm = htmlFormatter . generateHTML(

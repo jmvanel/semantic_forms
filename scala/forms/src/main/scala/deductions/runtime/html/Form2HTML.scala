@@ -24,12 +24,11 @@ private [html] trait Form2HTML[NODE, URI <: NODE]
     extends Form2HTMLDisplay[NODE, URI]
     with Form2HTMLEdit[NODE, URI]
     with Timer
-//    with CSS
     with JavaScript
-    with Configuration
     {
   self: HTML5Types =>
 
+import config._
 
   /**
    * render the given Form Syntax as HTML;

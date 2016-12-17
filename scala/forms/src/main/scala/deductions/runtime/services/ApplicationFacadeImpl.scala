@@ -76,13 +76,16 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with StatisticsGraph[Rdf]
     with FormJSON[Rdf, DATASET]
     with ToolsPage
-    with Configuration
+//    with Configuration
     with CSS
     {
  
-//  val v = new TimeSeries[Rdf, DATASET]{}
-//  if( activateUserInputHistory )
-    addSaveListener(this) // for TimeSeries
+  val config: Configuration
+  import config._
+
+  //  val v = new TimeSeries[Rdf, DATASET]{}
+  //  if( activateUserInputHistory )
+  addSaveListener(this) // for TimeSeries
 
   
   val logger = Logger.getRootLogger()

@@ -16,7 +16,7 @@ import deductions.runtime.utils.HTTPrequest
 trait UnfilledFormFactory[Rdf <: RDF, DATASET]
     extends FormSyntaxFactory[Rdf, DATASET]
    	with FormConfigurationFactory[Rdf, DATASET]
-    with Configuration
+//    with Configuration
     with URIManagement {
 
   import ops._

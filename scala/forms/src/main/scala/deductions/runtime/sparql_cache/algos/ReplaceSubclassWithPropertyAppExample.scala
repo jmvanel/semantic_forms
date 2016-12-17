@@ -1,13 +1,12 @@
 package deductions.runtime.sparql_cache.algos
 
-import java.io.PrintStream
-import java.io.FileReader
-import java.io.FileWriter
-import java.io.FileOutputStream
-import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.jena.ImplementationSettings
-import org.w3.banana.OWLPrefix
 import java.io.FileInputStream
+import java.io.FileOutputStream
+
+import org.w3.banana.OWLPrefix
+
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.DefaultConfiguration
 
 /**
  * ReplaceSubclassWithProperty : App Example with hard-coded list of super-classes
@@ -19,6 +18,10 @@ object ReplaceSubclassWithPropertyAppExample extends App
     with DuplicatesDetectionOWL[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with ReplaceSubclassWithProperty[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with WrongSubclassesSelection[ImplementationSettings.Rdf] {
+
+  val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
 
   val owlFile = args(0)
   val graph = turtleReader.read(new FileInputStream(owlFile), "").get

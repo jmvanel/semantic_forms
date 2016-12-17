@@ -23,8 +23,10 @@ import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.utils.RDFPrefixes
 
 class TestCreationForm2Jena extends FunSuite with TestForJena
-with TestCreationForm2[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-with DefaultConfiguration
+with TestCreationForm2[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+    val config = new DefaultConfiguration{}
+}
+//with DefaultConfiguration
 
 trait TestForJena extends JenaModule
   with RDFStoreLocalJena1Provider

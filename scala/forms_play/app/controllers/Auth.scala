@@ -23,17 +23,23 @@ import play.api.i18n.I18nSupport
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 
-object Auth extends AuthTrait
+object Auth extends AuthTrait {
+  val config = new DefaultConfiguration {
+    override val needLoginForEditing = true
+    override val needLoginForDisplaying = true
+    override val useTextQuery = false
+  }
+}
 
-trait AuthTrait extends ImplementationSettings.RDFModule
+trait AuthTrait
+extends ImplementationSettings.RDFModule
 with RDFStoreLocalJena1Provider
 with Auth[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-
-with DefaultConfiguration {
+//with DefaultConfiguration
+{
   println(s"object Auth")
   /** NOTE otherwise we get "Lock obtain timed out", because
    *  LUCENE transactions would overlap with main database TDB/ */
-  override val useTextQuery = false
 }
 
 /** Controller for registering account, login, logout;

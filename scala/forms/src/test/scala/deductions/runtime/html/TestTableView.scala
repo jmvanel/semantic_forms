@@ -18,8 +18,9 @@ class TestTableView extends FunSuite
     with ImplementationSettings.RDFModule
     with TableViewModule[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RDFStoreLocalJena1Provider
-    with BeforeAndAfter
-    with DefaultConfiguration {
+    with BeforeAndAfter //    with DefaultConfiguration
+    {
+  val config = new DefaultConfiguration {}
 
   val logger = Logger.getRootLogger()
   lazy implicit val allNamedGraphs = allNamedGraph

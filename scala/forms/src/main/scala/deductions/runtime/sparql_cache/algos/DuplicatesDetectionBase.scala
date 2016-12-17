@@ -23,8 +23,10 @@ with RDFPrefixes[Rdf]
 with SPARQLHelpers[Rdf, DATASET]
 with RDFHelpers[Rdf]
 {
-    this: Configuration =>
-
+//    this: Configuration =>
+  val config: Configuration
+  import config._
+  
   val FILE_OUTPUT = true
   val printStream: PrintStream = System.out
   val ontologyPrefix: String

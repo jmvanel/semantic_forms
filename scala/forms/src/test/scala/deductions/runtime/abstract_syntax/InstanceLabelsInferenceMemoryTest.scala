@@ -1,33 +1,21 @@
 package deductions.runtime.abstract_syntax
 
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import scala.util.Try
-
-import org.hamcrest.BaseMatcher
-import org.junit.Assert
 import org.scalatest.FunSuite
-
-import org.w3.banana.FOAFPrefix
-import org.w3.banana.RDFModule
-import org.w3.banana.RDFOpsModule
-import org.w3.banana.TurtleReaderModule
-import org.w3.banana.diesel._
 import org.w3.banana.jena.JenaModule
-import org.w3.banana.TurtleWriterModule
-import org.w3.banana.SparqlOpsModule
-import org.w3.banana.SparqlGraphModule
-import org.w3.banana.jena.Jena
 
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.sparql_cache.RDFCacheAlgo
 
 class InstanceLabelsInferenceMemoryTest extends FunSuite
     with JenaModule
     with RDFStoreLocalJena1Provider
     with InstanceLabelsInferenceMemory[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+  val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
   import ops._
   import rdfStore.transactorSyntax._
 

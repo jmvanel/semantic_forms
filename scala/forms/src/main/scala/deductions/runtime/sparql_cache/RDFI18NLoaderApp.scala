@@ -6,18 +6,19 @@ import org.w3.banana.jena.JenaModule
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFCache
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import deductions.runtime.services.DefaultConfiguration
 
 /** TODO put in package jena */
 object RDFI18NLoaderApp extends JenaModule
     with RDFCache with App
     with RDFI18NLoaderTrait[Jena, ImplementationSettings.DATASET]
     with RDFStoreLocalJena1Provider {
+  val config = new DefaultConfiguration {}
   loadFromGitHubRDFI18NTranslations()
 }
 
 trait RDFI18NLoaderTrait[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
-    //    with RDFStoreHelpers[Rdf, DATASET]
     with SitesURLForDownload {
 
   import ops._

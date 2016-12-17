@@ -17,14 +17,13 @@ import org.w3.banana.io.Turtle
 
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.services.BrowsableGraph
+import deductions.runtime.services.Configuration
 import deductions.runtime.services.SPARQLHelpers
 import deductions.runtime.utils.RDFHelpers
 
-//import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory0
-
-
 /** */
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
+  val config: Configuration
   implicit val turtleReader: RDFReader[Rdf, Try, Turtle]
   implicit val rdfXMLReader: RDFReader[Rdf, Try, RDFXML]
   implicit val rdfLoader: RDFLoader[Rdf, Try]
@@ -40,6 +39,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     with BrowsableGraph[Rdf, DATASET]
     with RDFHelpers[Rdf] {
 
+  import config._
   import ops._
   import rdfStore.transactorSyntax._
 

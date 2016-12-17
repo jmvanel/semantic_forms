@@ -24,8 +24,8 @@ import org.apache.jena.update.UpdateRequest
 
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.jena.lucene.LuceneIndex
+//import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.services.Configuration
-import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.utils.Timer
 
 // TODO rename RDFStoreLocalJenaProvider
@@ -46,14 +46,18 @@ object ImplementationSettings {
 /** For user data and RDF cache, sets a default location for the Jena TDB store directory : TDB */
 trait RDFStoreLocalJena1Provider
   extends RDFStoreLocalJenaProvider
-  with DefaultConfiguration
+//  with DefaultConfiguration
 
 trait RDFStoreLocalJenaProvider
     extends RDFStoreLocalProvider[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with JenaModule // with JenaRDFLoader
     with Timer
-    with Configuration
+    //    with Configuration
     with LuceneIndex {
+
+  val config: Configuration
+  import config._
+
   import ops._
   type DATASET = ImplementationSettings.DATASET
   /** very important that defensiveCopy=false, otherwise no update happens, and a big overhead for every operation */

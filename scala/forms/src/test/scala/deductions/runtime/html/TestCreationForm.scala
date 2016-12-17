@@ -44,6 +44,8 @@ class TestCreationForm extends FunSuite
     with Configuration // [Rdf <: RDF, DATASET]
     with DefaultConfiguration {
 
+	val config = new DefaultConfiguration{}
+
   override val lookup_domain_unionOf = true
   val logger = Logger.getRootLogger()
   import ops._

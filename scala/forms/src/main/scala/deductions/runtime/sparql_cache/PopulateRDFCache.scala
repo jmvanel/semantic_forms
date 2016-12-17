@@ -3,9 +3,10 @@ package deductions.runtime.sparql_cache
 import org.w3.banana.RDF
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaModule
+
+import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.jena.ImplementationSettings
 
 trait SitesURLForDownload {
   val githubcontent: String = "https://raw.githubusercontent.com"
@@ -26,7 +27,9 @@ trait SitesURLForDownload {
 object PopulateRDFCache extends JenaModule
   with DefaultConfiguration
   with RDFStoreLocalJena1Provider
-  with PopulateRDFCacheTrait[Jena, ImplementationSettings.DATASET]
+  with PopulateRDFCacheTrait[Jena, ImplementationSettings.DATASET] {
+    val config = new DefaultConfiguration{}
+}
 
 
 trait PopulateRDFCacheTrait[Rdf <: RDF, DATASET]

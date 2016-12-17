@@ -1,27 +1,20 @@
 package deductions.runtime.services
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.xml.Elem
-import org.w3.banana.RDF
-import org.w3.banana.SparqlOpsModule
-import org.w3.banana.TryW
-import org.w3.banana.syntax._
-import org.w3.banana.Transactor
-import org.w3.banana.RDFOpsModule
-import org.w3.banana.RDFOps
-
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.html.Form2HTML
-import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
-import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
-import deductions.runtime.html.CSS
-
 import scala.xml.NodeSeq
 import scala.xml.Text
-import scala.util.Try
-import deductions.runtime.html.Form2HTMLDisplay
+
+import org.w3.banana.RDF
+import org.w3.banana.TryW
+
 import deductions.runtime.abstract_syntax.FormModule
+import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
+import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
+import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.html.CSS
+import deductions.runtime.html.Form2HTML
+import deductions.runtime.html.Form2HTMLDisplay
 
 
 trait SPARQLQueryMaker[Rdf <: RDF] {
@@ -46,14 +39,13 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     with InstanceLabelsInferenceMemory[Rdf, DATASET]
     with PreferredLanguageLiteral[Rdf]
     with SPARQLHelpers[Rdf, DATASET]
-    with Configuration
+//    with Configuration
     with CSS
     with Form2HTMLDisplay[Rdf#Node, Rdf#URI] {
 
+  import config._
   import ops._
-  import sparqlOps._
   import rdfStore.transactorSyntax._
-  import rdfStore.sparqlEngineSyntax._
 
   /**
    * Generic SPARQL SELECT with single result columns (must be named "thing"),

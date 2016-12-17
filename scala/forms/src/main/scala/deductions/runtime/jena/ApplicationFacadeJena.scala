@@ -11,6 +11,7 @@ import deductions.runtime.services.ApplicationFacadeInterface
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.ConfigurationCopy
 import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.services.DefaultConfiguration
 
 /**
  * ApplicationFacade for Jena,
@@ -19,10 +20,10 @@ import deductions.runtime.services.DefaultConfiguration
 trait ApplicationFacadeJena
     extends ApplicationFacadeInterface
     with ApplicationFacade[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with RDFStoreLocalJenaProvider
-    with DefaultConfiguration {
+    with RDFStoreLocalJenaProvider //    with DefaultConfiguration
+    {
 
-  val conf: Configuration = this
+  val config: Configuration //  = this
   override val impl: ApplicationFacadeImpl[Rdf, DATASET] = try {
     /**
      * NOTES:
@@ -31,15 +32,17 @@ trait ApplicationFacadeJena
      *   otherwise allNamedGraph may be null
      */
     abstract class ApplicationFacadeImplJena extends JenaModule
-      with ConfigurationCopy
+      //      with ConfigurationCopy
       with RDFStoreLocalJenaProvider
       with ApplicationFacadeImpl[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
       with RDFStoreLocalUserManagement[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 
-    //    new ApplicationFacadeImplJena with ConfigurationCopy {
+    val conf = config
     new ApplicationFacadeImplJena {
-      override lazy val original = { conf }
-      println(s""">> ApplicationFacadeImplJena ConfigurationCopy of ${original.getClass}""")
+
+      val config = conf
+
+      //      override lazy val original = { conf }
       override def htmlForm(uri0: String, blankNode: String = "",
         editable: Boolean = false,
         lang: String = "en", formuri: String = "",

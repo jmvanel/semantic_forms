@@ -11,6 +11,8 @@ import deductions.runtime.abstract_syntax.FormModule
 trait Form2HTMLDisplay[NODE, URI <: NODE]
     extends Form2HTMLBase[NODE, URI] {
 
+	import config._
+
   def createHTMLiteralReadonlyField(l: formMod#LiteralEntry): NodeSeq =
     <xml:group>
       <div class="form-cell-display">{ Unparsed(toPlainString(l.value)) }</div>

@@ -19,7 +19,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   import rdfStore.transactorSyntax._
   private val logger: Logger = Logger.getRootLogger()
 
-  val datasetForLabels = dataset
+  lazy val datasetForLabels = dataset
   /* TODO : does not work because the transaction has been started on the other dataset ! 
   val datasetForLabels = dataset3   */
   val labelsGraphUriPrefix = "urn:/semforms/labelsGraphUri/"

@@ -18,8 +18,12 @@ trait FieldsInference[Rdf <: RDF, DATASET]
 extends RDFHelpers[Rdf]
 with RDFOPerationsDB[Rdf, DATASET]
 with SPARQLHelpers[Rdf, DATASET]
-with Configuration {
+//with Configuration
+{
 
+	val config: Configuration
+  import config._
+  
   import ops._
   private val owl = OWLPrefix[Rdf]
 

@@ -8,6 +8,7 @@ import org.scalatest.BeforeAndAfterAll
 import org.w3.banana.jena.JenaModule
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.jena.RDFCache
+import deductions.runtime.services.DefaultConfiguration
 
 //@Ignore
 class TestRDFCache extends FunSuite with RDFCache
@@ -16,6 +17,10 @@ class TestRDFCache extends FunSuite with RDFCache
     with JenaModule
     with RDFStoreLocalJena1Provider
     with SitesURLForDownload {
+
+  val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
   val uri = "http://jmvanel.free.fr/jmv.rdf#me"
   //  val uri2 = "http://live.dbpedia.org/page/Taraxacum_japonicum"
   //  val uri2 = uri 

@@ -8,6 +8,7 @@ import deductions.runtime.services.SPARQLHelpers
 import java.io.FileWriter
 import deductions.runtime.utils.CSVImporter
 import java.io.FileInputStream
+import deductions.runtime.services.DefaultConfiguration
 
 /**
  * merges Duplicates in given file(s),
@@ -34,11 +35,14 @@ object DuplicateCleanerSpecificationApp extends App
     with SPARQLHelpers[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with CSVImporter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
+  val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+  import config._
   import ops._
 
   override val databaseLocation = "/tmp/TDB" // TODO multi-platform temporary directory
   override val deleteDatabaseLocation = true
-  override val useTextQuery = false
 
   println(s"databaseLocation $databaseLocation")
 

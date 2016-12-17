@@ -14,8 +14,12 @@ import deductions.runtime.services.Configuration
 
 /** RDF OPerations on a DataBase */
 trait RDFOPerationsDB[Rdf <: RDF, DATASET]
-extends Configuration {
-    /** NOTE: same design pattern as for XXXModule in Banana */
+//extends Configuration
+{
+  val config: Configuration
+//  import config._
+  
+  /** NOTE: same design pattern as for XXXModule in Banana */
   implicit val rdfStore: RDFStore[Rdf, Try, DATASET] with SparqlUpdate[Rdf, Try, DATASET]
   implicit val ops: RDFOps[Rdf]
   implicit val sparqlOps: SparqlOps[Rdf]
@@ -25,12 +29,13 @@ extends Configuration {
 /**
  * abstract RDFStore Local Provider
  */
-trait RDFStoreLocalProvider[Rdf <: RDF, DATASET] extends RDFOPerationsDB[Rdf, DATASET] {
+trait RDFStoreLocalProvider[Rdf <: RDF, DATASET]
+extends RDFOPerationsDB[Rdf, DATASET] {
 
   /** relative or absolute file path for the database 
    *  TODO put in Configuration */
   val databaseLocation: String = "TDB"
-  def createDatabase(database_location: String = databaseLocation, useTextQuery: Boolean= useTextQuery): DATASET
+  def createDatabase(database_location: String = databaseLocation, useTextQuery: Boolean= config.useTextQuery): DATASET
   lazy val dataset: DATASET = createDatabase(databaseLocation)
 
   def allNamedGraph: Rdf#Graph
@@ -55,7 +60,8 @@ trait RDFStoreLocalProvider[Rdf <: RDF, DATASET] extends RDFOPerationsDB[Rdf, DA
   def datasetSizeNoTR() = ops.graphSize(allNamedGraph)
 }
 
-trait RDFStoreLocalUserManagement[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET] {
+trait RDFStoreLocalUserManagement[Rdf <: RDF, DATASET]
+extends RDFStoreLocalProvider[Rdf, DATASET] {
   import ops._
   /**
    * NOTE:

@@ -12,16 +12,22 @@ import deductions.runtime.utils.RDFPrefixes
 
 /** generate HTML from abstract Form : common parts for Display & edition */
 trait Form2HTMLBase[NODE, URI <: NODE]
-    extends Configuration
-    with BasicWidgets
+    extends 
+//    Configuration
+//    with 
+    BasicWidgets
     with CSS {
 
+  val config: Configuration
+  import config._
+  
   type formMod = FormModule[NODE, URI]
   type FormEntry = formMod#Entry
 
   lazy val prefixes = new RDFPrefixes[ImplementationSettings.Rdf]
 		  with ImplementationSettings.RDFModule
-		  with DefaultConfiguration {}
+//		  with DefaultConfiguration
+		  {}
   
   import prefixes._
   

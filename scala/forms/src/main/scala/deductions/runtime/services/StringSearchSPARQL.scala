@@ -16,7 +16,10 @@ import org.w3.banana.Prefix
 trait StringSearchSPARQL[Rdf <: RDF, DATASET]
     extends ParameterizedSPARQL[Rdf, DATASET]
     with RDFPrefixes[Rdf]
-        with Configuration {
+//        with Configuration
+        {
+  val config: Configuration
+  import config._
 
   val plainSPARQLquery = new SPARQLQueryMaker[Rdf]
         with ColsInResponse {

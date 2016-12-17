@@ -121,8 +121,11 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
 }
 
 
-trait RDFHelpers0[Rdf <: RDF] extends Configuration
-      with URIManagement {
+trait RDFHelpers0[Rdf <: RDF]
+extends
+//Configuration
+//      with 
+      URIManagement {
   implicit val ops: RDFOps[Rdf]
   import ops._
   
