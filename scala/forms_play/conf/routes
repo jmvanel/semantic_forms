@@ -25,7 +25,7 @@ GET     /update             controllers.Application.update( update:String )
 POST    /update             controllers.Application.update( update:String )
 
 
-GET     /wordsearch         controllers.Application.wordsearchAction(q:String ?= "")
+GET     /wordsearch         controllers.Application.wordsearchAction(q:String ?= "", clas: String ?= "")
 GET     /search             controllers.Application.searchOrDisplayAction(q:String ?= "")
 
 GET     /backlinks          controllers.Application.backlinksAction(q:String ?= "")

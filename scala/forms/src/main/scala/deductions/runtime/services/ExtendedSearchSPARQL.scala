@@ -20,7 +20,9 @@ trait ExtendedSearchSPARQL[Rdf <: RDF, DATASET]
   import config._
 
   def extendedSearch(uri: String, hrefPrefix: String = hrefDisplayPrefix): Future[NodeSeq] =
-    search(uri, hrefPrefix)
+    search(hrefPrefix,
+        "fr", // TODO <<<<<<<<<<<<<<
+        uri)
 
   private implicit val queryMaker = new SPARQLQueryMaker[Rdf] {
     override def makeQueryString(search: String): String = {

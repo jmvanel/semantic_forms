@@ -33,7 +33,6 @@ trait NamedGraphsSPARQL[Rdf <: RDF, DATASET]
   }
   
   def showNamedGraphs( lang: String = ""): Future[NodeSeq] =
-//    Future.successful( 
-		  search("", "", lang)
+		  search("", lang, "")
     
 }

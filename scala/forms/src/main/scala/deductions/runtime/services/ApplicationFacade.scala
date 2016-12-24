@@ -51,8 +51,8 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
   def lookup(search: String, lang: String = "en", clas: String ="", mime: String=""): String =
     impl.lookup(search, lang, clas, mime)
 
-  def wordsearch(q: String = "", lang: String = ""): Future[Elem] =
-    impl.wordsearchFuture(q, lang)
+  def wordsearch(q: String = "", lang: String = "", clas: String = ""): Future[Elem] =
+    impl.wordsearchFuture(q, lang, clas)
 
   def showNamedGraphs(lang: String = ""): Future[NodeSeq] =
     impl.showNamedGraphs(lang)

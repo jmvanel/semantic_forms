@@ -247,8 +247,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     s
   }
 
-  def wordsearchFuture(q: String = "", lang: String = ""): Future[Elem] = {
-    val fut = searchString(q, hrefDisplayPrefix, lang)
+  def wordsearchFuture(q: String = "", lang: String = "", clas: String = ""): Future[Elem] = {
+    val fut = searchString(q, hrefDisplayPrefix, lang, clas)
     wrapSearchResults(fut, q)
   }
 

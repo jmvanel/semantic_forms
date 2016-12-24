@@ -17,6 +17,11 @@ trait TextIndexerWeight extends LuceneIndex {
    * add weights to existing Lucene Documents from Jena-text module:
    *  count of triples <S> ?p ?o for each <S> in RDF dataset,
    * (which are mirrored in Lucene Documents)
+   *
+   * inspired by
+   * http://stackoverflow.com/questions/24968697/how-to-implements-auto-suggest-using-lucenes-new-analyzinginfixsuggester-api
+   * See also:
+   * http://lucene.apache.org/core/6_3_0/core/overview-summary.html#overview.description
    */
   def addRDFWeights(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean) = {
     val datasetLucene = configureLuceneIndex(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean)
@@ -54,7 +59,7 @@ trait TextIndexerWeight extends LuceneIndex {
               suggester.build(dict)
 
             /* TODO
-           * 1. compute weight = count of triples <S> ?p ?o .
+           * 1. compute weight = count of triples <S> ?p ?o . and ?s ?p <S> .
            * 2. need to do the weight adding for all properties configured, not just rdfs:label 
            */
 

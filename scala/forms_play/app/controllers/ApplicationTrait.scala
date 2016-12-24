@@ -126,10 +126,10 @@ trait ApplicationTrait extends Controller
       .as("text/html; charset=utf-8")
   }
 
-  def wordsearchAction(q: String = "") = Action.async {
+  def wordsearchAction(q: String = "", clas: String = "") = Action.async {
     implicit request =>
     val lang = chooseLanguageObject(request).language
-    val fut: Future[Elem] = wordsearch(q, lang)
+    val fut: Future[Elem] = wordsearch(q, lang, clas)
     fut.map( r => outputMainPage( r, lang ) )
   }
 

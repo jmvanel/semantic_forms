@@ -53,8 +53,10 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    *  search and display results as an XHTML element
    *  transactional
    */
-  def search(search: String, hrefPrefix: String = "",
-             lang: String = "")(implicit queryMaker: SPARQLQueryMaker[Rdf] ): Future[NodeSeq] = {
+  def search(hrefPrefix: String = "", 
+             lang: String = "",
+             search: String // TODO *
+             )(implicit queryMaker: SPARQLQueryMaker[Rdf] ): Future[NodeSeq] = {
     val elem0 = dataset.rw({
       println(s"search 1: starting TRANSACTION for dataset $dataset")
     	val uris = search_onlyNT(search)

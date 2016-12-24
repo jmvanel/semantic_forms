@@ -17,11 +17,13 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 libraryDependencies += "org.w3" %%  "banana-jena" % "0.9.0-SNAPSHOT"
 
 libraryDependencies += "org.apache.jena" % "apache-jena-libs" % "3.1.1" // exclude("org.slf4j", "slf4j-api" )
+libraryDependencies += "org.apache.jena" % "jena-permissions" % "3.1.1"
+libraryDependencies += "org.apache.jena" % "jena-text" % "3.1.1"
+
 libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
 libraryDependencies += "org.apache.lucene" % "lucene-suggest" % "4.9.1"
 libraryDependencies += "org.apache.lucene" % "lucene-demo" % "4.9.1"
 
-libraryDependencies += "org.apache.jena" % "jena-text" % "3.1.0"
 
 libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "0.11"
 //libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "2.0.5"
