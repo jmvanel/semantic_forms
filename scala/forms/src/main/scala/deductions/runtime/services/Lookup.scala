@@ -42,13 +42,17 @@ trait Lookup[Rdf <: RDF, DATASET]
    *    </Class>
    */
   def lookup(search: String, lang: String = "en", clas: String = "", mime: String): String = {
-    val queryString0 = indexBasedQuery.makeQueryString(search)
-    val queryString = if( clas != "" ) {
-      queryString0.replaceFirst( """\?class""", "<" + expandOrUnchanged(clas) + ">" )
-    } else queryString0
-    println(s"lookup(search=$search, clas $clas, queryString $queryString")
-    val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariables(queryString, Seq("thing"))
-    println(s"lookup(search=$search $queryString => $res")
+    
+//    val queryString0 = indexBasedQuery.makeQueryString(search)
+//    val queryString = if (clas != "") {
+//      queryString0.replaceFirst("""\?class""", "<" + expandOrUnchanged(clas) + ">")
+//    } else queryString0
+//    println(s"lookup(search=$search, clas $clas, queryString $queryString")
+//    val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariables(queryString, Seq("thing"))
+    
+    val res = searchStringOrClass(search, clas)
+
+    println(s"lookup(search=$search, clas=$clas => $res")
     println(s"lookup: starting TRANSACTION for dataset $dataset")
     val transaction = dataset.r({
       val urilangs = res.map {
@@ -83,16 +87,17 @@ trait Lookup[Rdf <: RDF, DATASET]
 
   private def formatJSONLD(list: List[(Rdf#Node, String)]): String = {
     val list2 = list.map {
-      case (uri, label) => Json.obj( "Label" -> label, "URI" -> uri.toString() )
+      case (uri, label) => Json.obj("Label" -> label, "URI" -> uri.toString())
     }
-    val responses = new JsArray( list2 )
+    val responses = new JsArray(list2)
     Json.prettyPrint(responses)
   }
 
-  /** use Lucene
-   *  see https://jena.apache.org/documentation/query/text-query.html 
+  /**
+   * use Lucene
+   *  see https://jena.apache.org/documentation/query/text-query.html
    *  TODO output rdf:type also
-   *  */
+   */
   private val indexBasedQuery = new SPARQLQueryMaker[Rdf] {
     override def makeQueryString(search: String): String = s"""
          |${declarePrefix(text)}
@@ -111,49 +116,16 @@ trait Lookup[Rdf <: RDF, DATASET]
   }
 
   /**
-   * OLD IMPLEMENTATION
-   * Get simple JSON from a simple string search ( for completion in UI )
-   *
-   * Tested with
-   * http://localhost:9000/lookup?q=Jean-Marc
+   * transactional
    */
-  private def lookupJSON_OLD(search: String): String = {
-    val tryListString = dataset.r({
-      implicit val listOfLists = search_string(search)
-      val subjects = listOfLists.map { l => l.head }
-      for (subject <- subjects) yield {
-        val label = instanceLabelFromTDB(subject, "")
-        s"""
-        "label": "$label",
-        "uri": "${subject}",
-        "description": ""
-      """
-      }
-    })
-    s"""{ "result": [
-       ${tryListString.get.mkString("{", "},\n", "}\n")}
-    ]}"""
-  }
-
-  /**
-   * NON transactional
-   */
-  private def search_string(search: String): List[Seq[Rdf#Node]] = {
-    val queryString = s"""
-         |select distinct ?thing ?class WHERE {
-         |  {
-         |  graph ?g {
-         |    ?thing ?p ?o .
-         |    FILTER regex( ?o, "$search", 'i')
-         |  }
-         |  } OPTIONAL {
-         |  graph ?g0 {
-         |    ?thing a ?class .
-         |  }
-         |  }
-         |}""".stripMargin
-    //    println("search_only " + queryString)
-    sparqlSelectQueryVariablesNT(queryString, Seq("thing", "class"))
+  def searchStringOrClass(search: String, clas: String = ""): List[Seq[Rdf#Node]] = {
+    val queryString0 = indexBasedQuery.makeQueryString(search)
+    val queryString = if (clas != "") {
+      queryString0.replaceFirst("""\?class""", "<" + expandOrUnchanged(clas) + ">")
+    } else queryString0
+    println(s"searchStringOrClass(search=$search, clas $clas, queryString $queryString")
+    val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariables(queryString, Seq("thing"))
+    res
   }
 
 }
