@@ -25,7 +25,7 @@ trait ExtendedSearchSPARQL[Rdf <: RDF, DATASET]
         uri)
 
   private implicit val queryMaker = new SPARQLQueryMaker[Rdf] {
-    override def makeQueryString(search: String): String = {
+    override def makeQueryString(search: String*): String = {
       val q = s"""
        |${declarePrefix(foaf)}
        |SELECT DISTINCT ?thing WHERE {
