@@ -25,6 +25,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
     val stringValue = resourceEntry.value.toString()
     val css = cssForURI(stringValue)
+    val alternativeText = "Texte alternatif"
 
     val hyperlinkToObjectURI =
       <a href={ Form2HTML.createHyperlinkString(hrefPrefix, stringValue) }
@@ -35,18 +36,18 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       } draggable="true"> {
         resourceEntry.valueLabel
       }</a>
-    
-    val backLinkButton = (if (stringValue.size > 0 && showExpertButtons) {      
+
+    val backLinkButton = (if (stringValue.size > 0 && showExpertButtons) {
 				val title = s""" Reverse links for "${resourceEntry.label}" "${resourceEntry.value}" """
 				makeBackLinkButton(stringValue, title=title )
       } else new Text(""))
-      
+
     val normalNavigationButton = (if (stringValue.size > 0 && showExpertButtons) {
       <a class="btn btn-primary" href={ stringValue } title={ s"Normal HTTP link to ${resourceEntry.value}" }
       draggable="true"><i class="glyphicon glyphicon-share-alt"></i> </a>
     } else new Text(""))
-    
-    Seq(
+
+    var HTMLElements = Seq(
       hyperlinkToObjectURI,
       Text("  "),
       backLinkButton,
@@ -54,7 +55,21 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       normalNavigationButton,
       Text("  "),
       makeDrawGraphLink(stringValue) )
+
+    if (resourceEntry.type_ == prefixes.prefixesMap2("foaf")("Image")) {
+        val imageElement =
+            <img
+            href="{Form2HTML.createHyperlinkString(hrefPrefix, stringValue)}"
+            css="vignette-{css}"
+            alt="{alternativeText}"
+            />
+        HTMLElements = HTMLElements ++ Seq(imageElement, Text(" "))
+    }
+
+      HTMLElements
   }
+
+
 
   def createHTMLBlankNodeReadonlyField(
     r: formMod#BlankNodeEntry,
@@ -62,5 +77,5 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString, true) }>{
       r.valueLabel
     }</a>
-            
+
 }
