@@ -59,7 +59,6 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
     if ( resourceEntry.type_ == foaf("Image") ||
         resourceEntry.property == foaf("img") ||
-        resourceEntry.property == foaf("img") ||
         resourceEntry.property == foaf("thumbnail") ||
         resourceEntry.property == foaf("depiction")
         ) {

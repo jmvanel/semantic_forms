@@ -1,33 +1,29 @@
 package controllers
 
-import java.net.URLDecoder
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.Failure
+import scala.util.Success
+import scala.util.Try
 import scala.xml.Elem
 import scala.xml.NodeSeq
+
 import deductions.runtime.jena.ApplicationFacadeJena
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.CORS
+import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.views.ToolsPage
+import play.api.Play
+import play.api.http.MediaRange
 import play.api.mvc.Accepting
 import play.api.mvc.Action
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.mvc.Controller
 import play.api.mvc.Request
-import views.MainXmlWithHead
-import deductions.runtime.services.CORS
-import deductions.runtime.services.DefaultConfiguration
-import play.api.Play
-import scala.util.Try
-import scala.util.Success
-import play.api.mvc.Call
-import play.api.http.MimeTypes
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.utils.RDFPrefixes
-import play.api.mvc.Result
 import play.api.mvc.RequestHeader
-import play.api.http.MediaRange
-import scala.util.Failure
-import play.api.mvc.Codec
-
+import play.api.mvc.Result
+import views.MainXmlWithHead
 
 /** main controller */
 trait ApplicationTrait extends Controller
@@ -41,19 +37,20 @@ trait ApplicationTrait extends Controller
     with RDFPrefixes[ImplementationSettings.Rdf]
     {
 
-  lazy val config = new DefaultConfiguration{
-      override def serverPort = {
-    val port = Play.current.configuration.
-      getString("http.port")
-    port match {
-      case Some(p) => 
-        println("Running on port " + p)
-        p
-      case _ =>
-        println("Retrieving default port from config." )
-        serverPort
+  lazy val config = new DefaultConfiguration {
+    override def serverPort = {
+      val port = Play.current.configuration.
+        getString("http.port")
+      port match {
+        case Some(port) =>
+          println( s"Running on port $port")
+          port
+        case _ =>
+          val serverPortFromConfig = super.serverPort
+          println(s"Could not get port from Play configuration; retrieving default port from SF config: $serverPortFromConfig")
+          serverPortFromConfig
+      }
     }
-  }
   }
 //  import config._
 
