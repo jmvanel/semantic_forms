@@ -12,6 +12,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     extends Form2HTMLBase[NODE, URI] {
 
 	import config._
+  import prefixes._
 
   def createHTMLiteralReadonlyField(l: formMod#LiteralEntry): NodeSeq =
     <xml:group>
@@ -56,13 +57,20 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       Text("  "),
       makeDrawGraphLink(stringValue) )
 
-    if (resourceEntry.type_ == prefixes.prefixesMap2("foaf")("Image")) {
+    if ( resourceEntry.type_ == foaf("Image") ||
+        resourceEntry.property == foaf("img") ||
+        resourceEntry.property == foaf("img") ||
+        resourceEntry.property == foaf("thumbnail") ||
+        resourceEntry.property == foaf("depiction")
+        ) {
         val imageElement =
             <img
-            href="{Form2HTML.createHyperlinkString(hrefPrefix, stringValue)}"
-            css="vignette-{css}"
-            alt="{alternativeText}"
+            src={resourceEntry.value.toString()}
+            css="sf-thumbnail"
+            height="40"
+            alt={resourceEntry.value.toString()}
             />
+        // TODO for alt= , need to have access to the display label for the triple subject
         HTMLElements = HTMLElements ++ Seq(imageElement, Text(" "))
     }
 
