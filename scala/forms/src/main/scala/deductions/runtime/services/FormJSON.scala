@@ -12,12 +12,15 @@ trait FormJSON[Rdf <: RDF, DATASET]
 
 import ops._
 
-	def formData(uri: String, blankNode: String = "", Edit: String = "", formuri: String = ""): String = {
-	  formAsJSON(URI(uri), Edit!="", formuri)
+	def formData(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB"): String = {
+	  formAsJSON(URI(uri), Edit!="", formuri, database)
 	}
 
-  private def formAsJSON(subject: Rdf#Node, editable: Boolean, formuri: String = ""): String = {
-    val formSyntax = rdfStore.rw(dataset, {
+  private def formAsJSON(subject: Rdf#Node, editable: Boolean, formuri: String = "", database: String): String = {
+		val datasetOrDefault = getDatasetOrDefault(database)
+    val formSyntax = rdfStore.rw(
+        datasetOrDefault, {
+//        dataset, {
       implicit val graph = allNamedGraph
       createForm(subject, editable, formuri = formuri)
     })

@@ -61,6 +61,17 @@ extends RDFOPerationsDB[Rdf, DATASET] {
 
   def datasetSize() = rdfStore.rw( dataset, { datasetSizeNoTR() })
   def datasetSizeNoTR() = ops.graphSize(allNamedGraph)
+
+  // implementations
+
+    /** */
+  def getDatasetOrDefault(database: String = "TDB", useTextQuery: Boolean= config.useTextQuery): DATASET = {
+    if (database == databaseLocation)
+      dataset
+    else
+      createDatabase(database, useTextQuery)
+  }
+
 }
 
 trait RDFStoreLocalUserManagement[Rdf <: RDF, DATASET]

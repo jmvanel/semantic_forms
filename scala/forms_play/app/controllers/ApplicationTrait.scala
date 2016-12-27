@@ -94,12 +94,12 @@ trait ApplicationTrait extends Controller
               graphURI = makeAbsoluteURIForSaving(userid), database=database))
     }
 
-  def formData(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "") =
+  def formData(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
     withUser {
       implicit userid =>
         implicit request =>
           // FormJSON[Rdf <: RDF, DATASET]
-       Ok(formDataImpl(uri, blankNode, Edit, formuri))
+       Ok(formDataImpl(uri, blankNode, Edit, formuri, database))
     }
 
   def searchOrDisplayAction(q: String) = {
@@ -253,13 +253,14 @@ trait ApplicationTrait extends Controller
    *
    *  cf https://www.playframework.com/documentation/2.3.x/ScalaStream
    */
-  def downloadAction(url: String) =
+  def downloadAction(url: String, database: String = "TDB") =
     withUser {
       implicit userid =>
         implicit request =>
           def output(accepts: Accepting): Result = {
             val mime = computeMIME(accepts, AcceptsJSONLD)
             Ok.chunked(
+                // TODO >>>>>>> add database arg.
               download(url, mime.mimeType)).
               as(s"${mime.mimeType}; charset=utf-8")
               .withHeaders("Access-Control-Allow-Origin" -> "*")

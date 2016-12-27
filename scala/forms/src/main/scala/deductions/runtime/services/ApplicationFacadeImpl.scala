@@ -192,13 +192,13 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       <div class="row">Enter an URI</div>
   }
 
-  /** TODO probably move to trait RDFStoreLocalProvider */
-  def getDatasetOrDefault(database: String = "TDB"): DATASET = {
-    if (database == databaseLocation)
-      dataset
-    else
-      createDatabase(database, useTextQuery)
-  }
+//  /** moved to trait RDFStoreLocalProvider */
+//  def getDatasetOrDefault(database: String = "TDB"): DATASET = {
+//    if (database == databaseLocation)
+//      dataset
+//    else
+//      createDatabase(database, useTextQuery)
+//  }
 
   /** NON transactional */
   def labelForURI(uri: String, language: String)
