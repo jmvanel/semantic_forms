@@ -35,7 +35,10 @@ extends RDFOPerationsDB[Rdf, DATASET] {
   /** relative or absolute file path for the database 
    *  TODO put in Configuration */
   val databaseLocation: String = "TDB"
+
+  /** create (or re-connect to) TDB Database in given directory */
   def createDatabase(database_location: String = databaseLocation, useTextQuery: Boolean= config.useTextQuery): DATASET
+
   lazy val dataset: DATASET = createDatabase(databaseLocation)
 
   def allNamedGraph: Rdf#Graph

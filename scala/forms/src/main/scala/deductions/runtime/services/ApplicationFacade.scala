@@ -27,9 +27,10 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
   def htmlForm(uri: String, blankNode: String = "",
     editable: Boolean = false,
     lang: String = "en", formuri: String = "",
-    graphURI: String = "" ) =
+    graphURI: String = "",
+    database: String = "TDB" ) =
     impl.htmlForm(uri: String, blankNode,
-      editable, lang, formuri, graphURI)
+      editable, lang, formuri, graphURI, database)
 
   def formDataImpl(uri: String, blankNode: String = "", Edit: String = "", formuri: String = ""): String =
     impl.formData(uri, blankNode, Edit, formuri)

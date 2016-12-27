@@ -118,8 +118,6 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
   Logger.getRootLogger().info(s"in Global")
 
-//  var form: Elem = <p>initial value</p>
-  lazy val tableView = this
   lazy val search = this
 
   lazy val dl = this
@@ -141,24 +139,26 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   def htmlForm(uri0: String, blankNode: String = "",
                editable: Boolean = false,
                lang: String = "en", formuri: String="",
-               graphURI: String = ""): NodeSeq = {
+               graphURI: String = "",
+               database: String = "TDB" ): NodeSeq = {
     Logger.getRootLogger().info(
         s"""ApplicationFacadeImpl.htmlForm URI $uri0 blankNode "$blankNode"
               editable=$editable lang=$lang graphURI <$graphURI>""")
     val uri = uri0.trim()
     if (uri != null && uri != "")
       try {
-        val res = rdfStore.rw( dataset, {
+        val datasetOrDefault = getDatasetOrDefault(database)
+        val res = rdfStore.rw( datasetOrDefault, {
           val status = if (blankNode != "true") {
             val resRetrieve = retrieveURINoTransaction(
               // if( blankNode=="true") makeUri("_:" + uri ) else makeUri(uri),
-              makeUri(uri), dataset)
+              makeUri(uri), datasetOrDefault)
 
             // TODO should be done in FormSaver 
             println(s"Search in $uri duplicate graph rooted at blank node: size " +
                 ops.getTriples(resRetrieve.get).size)
             manageBlankNodesReload(resRetrieve.getOrElse(emptyGraph),
-                URI(uri), dataset: DATASET)
+                URI(uri), datasetOrDefault)
 
             val status = resRetrieve match {
               case Failure(e) => e.getLocalizedMessage
@@ -170,8 +170,11 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
           Seq(
             titleEditDisplayDownloadLinks(uri, lang, editable),
             <div>{status}</div>,
-            tableView.htmlFormElemRaw(uri, graph, hrefDisplayPrefix, blankNode, editable = editable,
-              lang = lang, formuri=formuri, graphURI=graphURI)).flatMap { identity }
+            
+            // TODO: add argument datasetOrDefault
+            htmlFormElemRaw(uri, graph, hrefDisplayPrefix, blankNode, editable = editable,
+              lang = lang, formuri=formuri, graphURI=graphURI)) .
+              flatMap { identity }
         })
         res.get
       } catch {
@@ -188,7 +191,15 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     else
       <div class="row">Enter an URI</div>
   }
-  
+
+  /** TODO probably move to trait RDFStoreLocalProvider */
+  def getDatasetOrDefault(database: String = "TDB"): DATASET = {
+    if (database == databaseLocation)
+      dataset
+    else
+      createDatabase(database, useTextQuery)
+  }
+
   /** NON transactional */
   def labelForURI(uri: String, language: String)
   (implicit graph: Rdf#Graph)

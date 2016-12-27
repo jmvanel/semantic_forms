@@ -84,13 +84,14 @@ trait ApplicationTrait extends Controller
             lang, title = title)
     }
 
-  def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "") =
+  def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
     withUser {
       implicit userid =>
         implicit request =>
           println(s"""form: request $request : "$Edit" formuri <$formuri> """)
           val lang = chooseLanguage(request)
-          Ok(htmlForm(uri, blankNode, editable = Edit != "", lang, formuri, graphURI = makeAbsoluteURIForSaving(userid)))
+          Ok(htmlForm(uri, blankNode, editable = Edit != "", lang, formuri,
+              graphURI = makeAbsoluteURIForSaving(userid), database=database))
     }
 
   def formData(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "") =

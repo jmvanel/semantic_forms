@@ -22,7 +22,8 @@ trait ApplicationFacadeInterface {
   def htmlForm(uri: String, blankNode: String = "",
     editable: Boolean = false,
     lang: String = "en", formuri: String = "",
-    graphURI: String = "" // , request: HTTPrequest= HTTPrequest()  // TODO
+    graphURI: String = "",
+    database: String = "TDB" // , request: HTTPrequest= HTTPrequest()  // TODO
     ): NodeSeq
 
   def saveForm(request: Map[String, Seq[String]], lang: String = "",
