@@ -98,15 +98,19 @@ trait FormModule[NODE, URI <: NODE] {
     def asResource(): Entry = {
       this
     }
+
+    def valueLabel: String = ""
   }
 
 
   /** @param possibleValues a couple of an RDF node id and the label to display, see trait RangeInference */
-  case class ResourceEntry(label: String, comment: String,
-    property: ObjectProperty = nullURI, validator: ResourceValidator,
+  case class ResourceEntry(
+		label: String="", comment: String="",
+    property: ObjectProperty = nullURI,
+    validator: ResourceValidator = ResourceValidator(Set()),
     value: NODE = nullURI, val alreadyInDatabase: Boolean = true,
     var possibleValues: Seq[(NODE, NODE)] = Seq(),
-    val valueLabel: String = "",
+    override val valueLabel: String = "",
     type_ : NODE = nullURI,
     inverseTriple: Boolean= false,
     subject: NODE = nullURI,
@@ -143,11 +147,13 @@ trait FormModule[NODE, URI <: NODE] {
   }
 
 
-  case class BlankNodeEntry(label: String, comment: String,
-    property: ObjectProperty = nullURI, validator: ResourceValidator,
+  case class BlankNodeEntry(
+    label: String="", comment: String="",
+    property: ObjectProperty = nullURI,
+    validator: ResourceValidator = ResourceValidator(Set()),
     value: NODE, type_ : NODE = nullURI,
     var possibleValues: Seq[(NODE, NODE)] = Seq(),
-    val valueLabel: String = "",
+    override val valueLabel: String = "",
     subject: NODE = nullURI,
     val mandatory: Boolean = false,
     var openChoice: Boolean = true,
@@ -167,9 +173,10 @@ trait FormModule[NODE, URI <: NODE] {
   }
 
 
-  case class LiteralEntry(label: String, comment: String,
+  case class LiteralEntry(
+    label: String="", comment: String="",
     property: NODE /* DatatypeProperty */ = nullURI,
-    validator: DatatypeValidator,
+    validator: DatatypeValidator = DatatypeValidator(Set()),
     value: NODE = nullURI, // String = "",
     val lang: String = "",
     type_ : NODE = nullURI,
@@ -201,23 +208,24 @@ trait FormModule[NODE, URI <: NODE] {
         valueLabel = this.value.toString()
       )
     }
+    override def valueLabel: String = value.toString()
   }
 
   case class RDFListEntry(
-    label: String, comment: String,
-    property: ObjectProperty = nullURI,
-    value: NODE = nullURI,
-    val alreadyInDatabase: Boolean = true,
-    var possibleValues: Seq[(NODE, NODE)] = Seq(),
-    val valueLabel: String = "",
-    type_ : NODE = nullURI,
-    inverseTriple: Boolean = false,
-    subject: NODE = nullURI,
-    val mandatory: Boolean = false,
-    var openChoice: Boolean = true,
-    var widgetType: WidgetType = Text,
-    val values: Seq[NODE] = Seq())
-      extends Entry {
+      label: String, comment: String,
+      property: ObjectProperty = nullURI,
+      value: NODE = nullURI,
+      val alreadyInDatabase: Boolean = true,
+      var possibleValues: Seq[(NODE, NODE)] = Seq(),
+      override val valueLabel: String = "",
+      type_ : NODE = nullURI,
+      inverseTriple: Boolean = false,
+      subject: NODE = nullURI,
+      val mandatory: Boolean = false,
+      var openChoice: Boolean = true,
+      var widgetType: WidgetType = Text,
+      val values: FormSyntax
+      ) extends Entry {
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = this
   }
 

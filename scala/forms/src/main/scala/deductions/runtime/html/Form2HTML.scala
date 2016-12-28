@@ -1,6 +1,8 @@
 package deductions.runtime.html
 
 import java.net.URLEncoder
+import java.security.MessageDigest
+
 import scala.Range
 import scala.xml.Elem
 import scala.xml.NodeSeq
@@ -13,7 +15,6 @@ import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.utils.I18NMessages
 import deductions.runtime.utils.Timer
 import deductions.runtime.services.Configuration
-import java.security.MessageDigest
 import org.apache.commons.codec.digest.DigestUtils
 
 /**
@@ -178,7 +179,12 @@ import config._
           else
             createHTMLBlankNodeReadonlyField(r, hrefPrefix)
 
-      case r: formMod#RDFListEntry => <p>RDF List: {r.values.mkString(", ")}</p>
+      case r: formMod#RDFListEntry => <p>RDF List: {
+        r.values.fields.map {
+          field => field.valueLabel
+        }.
+          mkString(", ")
+      }</p>
 
       case _ => <p>Should not happen! createHTMLField({ field })</p>
     }
