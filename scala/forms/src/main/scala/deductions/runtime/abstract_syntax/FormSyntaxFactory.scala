@@ -228,11 +228,13 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val subject = step1.subject
     val classs = step1.classs
 
-    // TODO set a FormSyntax.title for each group in propertiesGroups
+    // set a FormSyntax.title for each group in propertiesGroups
     val entriesFromPropertiesGroups = for( (node, rawDataForForm ) <- step1.propertiesGroups ) yield
     	node -> makeEntries2(rawDataForForm)
-    	
-    val formSyntax = FormSyntax(subject, fields3, classs, propertiesGroups=entriesFromPropertiesGroups)
+    val pgs = for( (n, m) <- entriesFromPropertiesGroups ) yield {
+      FormSyntax(n, m, title=instanceLabel(n, allNamedGraph, "en"))
+    }
+    val formSyntax = FormSyntax(subject, fields3, classs, propertiesGroups=pgs.toSeq)
     
     addAllPossibleValues(formSyntax, valuesFromFormGroup)
     

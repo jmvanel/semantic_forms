@@ -39,7 +39,8 @@ trait FormModule[NODE, URI <: NODE] {
       formGroup: URI = nullURI,
       val defaults: FormDefaults = FormModule.formDefaults,
       // TODO maybe : propertiesGroups could be a list of FormSyntax
-      propertiesGroups: collection.Map[NODE, Seq[Entry]] = collection.Map[NODE, Seq[Entry]](),
+//      propertiesGroups: collection.Map[NODE, Seq[Entry]] = collection.Map[NODE, Seq[Entry]](),
+      propertiesGroups: collection.Seq[FormSyntax] = collection.Seq[FormSyntax](),
       val title: String = ""
       ) {
     

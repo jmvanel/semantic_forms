@@ -107,19 +107,19 @@ import config._
 
       // http://jqueryui.com/accordion/ or http://jqueryui.com/tabs/
       val tabsNames = <ul>{
-        for ((node, group) <- map) yield {
-          val label = toPlainString(node)
+        for( pgs <- map) yield {
+          val label = pgs.title
           <li><a href={ "#" + makeHref(label) }>{ label }</a></li>
         }
       }</ul>
 
-      val r = for ((node, group) <- map) yield {
-        val label = toPlainString(node)
+      val r = for (pgs <- map) yield {
+        val label = pgs.title
         println(s"Fields Group $label")
         Seq(
           <div class="sf-fields-group"  id={  makeHref(label) } >,
            <div class="sf-fields-group-title">{ label }</div>,
-            { makeFieldsLabelAndData(group) }
+            { makeFieldsLabelAndData(pgs.fields) }
           </div>)
       }
       val tabs: Seq[Elem] = r.flatten.toSeq
@@ -139,8 +139,7 @@ import config._
         <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
         {
           if( groupFields ) {
-            val fieldsGroups = makeFieldsGroups()
-            fieldsGroups
+              makeFieldsGroups()
           } else
           makeFieldsLabelAndData(form.fields)
         }
