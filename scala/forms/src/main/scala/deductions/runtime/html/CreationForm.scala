@@ -12,14 +12,16 @@ import deductions.runtime.services.Configuration
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.utils.I18NMessages
 import deductions.runtime.utils.HTTPrequest
+import play.api.libs.json.Json
+import deductions.runtime.abstract_syntax.FormSyntaxJson
 
 trait CreationFormAlgo[Rdf <: RDF, DATASET]
 extends RDFCacheAlgo[Rdf, DATASET]
 with UnfilledFormFactory[Rdf, DATASET]
 with HTML5TypesTrait[Rdf]
-//with Configuration
 with RDFPrefixes[Rdf]
-{
+with FormSyntaxJson[Rdf] {
+
   
   val config: Configuration
 
@@ -37,21 +39,13 @@ with RDFPrefixes[Rdf]
       : Try[NodeSeq] = {
     import scala.concurrent.ExecutionContext.Implicits.global
     dataset.rw({
-      val classURI = URI(classUri)
-      retrieveURINoTransaction( classURI, dataset)
-      val factory = this
-      preferedLanguage = lang
-      implicit val graph: Rdf#Graph = allNamedGraph
-      val form = factory.createFormFromClass(classURI, formSpecURI, request)
-
+      val form = createData(classUri, lang, formSpecURI, graphURI, request)
       val ops1 = ops
       val config1 = config
       val htmlFormatter = new Form2HTMLBanana[Rdf]
-      //with ConfigurationCopy
       {
         val ops = ops1
         val config = config1
-        // lazy val original:Configuration = CreationFormAlgo.this
       }
 
       val rawForm = htmlFormatter . generateHTML(
@@ -63,6 +57,26 @@ with RDFPrefixes[Rdf]
           Seq( makeEditingHeader(fromUri(uriNodeToURI(form.classs)), lang, formSpecURI, graphURI),
               rawForm ) . flatten
     })
+  }
+
+  def createData(classUri: String, lang: String = "en",
+                 formSpecURI: String = "", graphURI: String = "",
+                 request: HTTPrequest = HTTPrequest()) : FormSyntax = {
+    val classURI = URI(classUri)
+    retrieveURINoTransaction(classURI, dataset)
+    preferedLanguage = lang
+    implicit val graph: Rdf#Graph = allNamedGraph
+    val form = createFormFromClass(classURI, formSpecURI, request)
+    form
+  }
+
+  def createDataAsJSON(classUri: String, lang: String = "en",
+                       formSpecURI: String = "", graphURI: String = "",
+                       request: HTTPrequest = HTTPrequest()) = {
+    val formSyntax = rdfStore.rw( dataset, {
+      createData(classUri, lang, formSpecURI, graphURI, request)
+    }) . get
+    formSyntax2JSON(formSyntax)
   }
 
   def makeEditingHeader(classUri: String, lang: String,

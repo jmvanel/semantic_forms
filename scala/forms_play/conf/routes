@@ -8,6 +8,7 @@ GET     /display            controllers.Application.displayURI(displayuri:String
 GET     /edit               controllers.Application.edit( url:String )
 POST    /save               controllers.Application.saveAction()
 GET     /create             controllers.Application.createAction()
+GET     /create-data        controllers.Application.createData()
 
 GET     /download           controllers.Application.downloadAction( url:String, database:String ?="TDB" )
 GET     /form               controllers.Application.form(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="", database:String ?="TDB")

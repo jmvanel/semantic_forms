@@ -24,6 +24,7 @@ import play.api.mvc.Request
 import play.api.mvc.RequestHeader
 import play.api.mvc.Result
 import views.MainXmlWithHead
+import play.api.mvc.Codec
 
 /** main controller */
 trait ApplicationTrait extends Controller
@@ -98,8 +99,8 @@ trait ApplicationTrait extends Controller
     withUser {
       implicit userid =>
         implicit request =>
-          // FormJSON[Rdf <: RDF, DATASET]
-       Ok(formDataImpl(uri, blankNode, Edit, formuri, database))
+       Ok(formDataImpl(uri, blankNode, Edit, formuri, database)) .
+         as( AcceptsJSONLD.mimeType + "; charset=" + myCustomCharset.charset )
     }
 
   def searchOrDisplayAction(q: String) = {
@@ -226,6 +227,7 @@ trait ApplicationTrait extends Controller
 //      }
 //  }
 
+  /** creation form - generic SF application */
   def createAction() =
     withUser {
       implicit userid =>
@@ -246,6 +248,26 @@ trait ApplicationTrait extends Controller
     }
 
   def makeAbsoluteURIForSaving(userid: String): String = userid
+
+  /** creation form as raw JSON data
+   *  TODO add database HTTP param. */
+  def createData() =
+    withUser {
+      implicit userid =>
+        implicit request =>
+          println("create: " + request)
+          // URI of RDF class from which to create instance
+          val uri0 = getFirstNonEmptyInMap(request.queryString, "uri")
+          val uri = expandOrUnchanged(uri0)
+          // URI of form Specification
+          val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formuri")
+          println("create: " + uri)
+          println( s"formSpecURI from HTTP request: <$formSpecURI>")
+
+          Ok( createDataAsJSON( uri, chooseLanguage(request),
+                       formSpecURI, makeAbsoluteURIForSaving(userid), copyRequest(request) ) ) .
+                       as( AcceptsJSONLD.mimeType + "; charset=" + myCustomCharset.charset )
+    }
 
   /**
    * get RDF with content negotiation (conneg) for RDF syntax;
@@ -276,6 +298,8 @@ trait ApplicationTrait extends Controller
 
 
   //// factor out the conneg stuff ////
+
+  implicit val myCustomCharset = Codec.javaSupported("utf-8")
 
   val AcceptsTTL = Accepting("text/turtle")
 	val AcceptsJSONLD = Accepting("application/ld+json")
