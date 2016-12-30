@@ -1,8 +1,6 @@
 package deductions.runtime.sparql_cache
 
 import org.w3.banana.RDF
-import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaModule
 
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
@@ -24,11 +22,12 @@ trait SitesURLForDownload {
  *
  *  TODO use prefix.cc web service to load from prefix short names (see implementation in EulerGUI)
  */
-object PopulateRDFCache extends JenaModule
-  with DefaultConfiguration
+object PopulateRDFCache
+  extends { override val config = new DefaultConfiguration{} }
+  with ImplementationSettings.RDFModule
   with RDFStoreLocalJena1Provider
-  with PopulateRDFCacheTrait[Jena, ImplementationSettings.DATASET] {
-    val config = new DefaultConfiguration{}
+  with PopulateRDFCacheTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+//    override val config = new DefaultConfiguration{}
 }
 
 

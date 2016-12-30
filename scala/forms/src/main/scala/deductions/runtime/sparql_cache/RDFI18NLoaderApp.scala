@@ -1,17 +1,17 @@
 package deductions.runtime.sparql_cache
 
 import org.w3.banana.RDF
-import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaModule
+
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFCache
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.services.DefaultConfiguration
 
 /** TODO put in package jena */
-object RDFI18NLoaderApp extends JenaModule
+object RDFI18NLoaderApp
+    extends ImplementationSettings.RDFModule
     with RDFCache with App
-    with RDFI18NLoaderTrait[Jena, ImplementationSettings.DATASET]
+    with RDFI18NLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RDFStoreLocalJena1Provider {
   val config = new DefaultConfiguration {}
   loadFromGitHubRDFI18NTranslations()

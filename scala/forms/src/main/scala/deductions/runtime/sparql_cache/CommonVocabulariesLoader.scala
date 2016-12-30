@@ -134,7 +134,7 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
         } catch {
           case e: Exception =>
             System.err.println(s"""Error in loadCommonVocabularies:
-                $voc $e
+                vocabulary <$voc> Exception: $e
                 ${e.printStackTrace()}""")
 
             /* Total number of processors or cores available to the JVM */

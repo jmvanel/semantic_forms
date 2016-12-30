@@ -54,7 +54,7 @@ trait RDFStoreLocalJenaProvider
     with Timer
     with LuceneIndex {
 
-  val config: Configuration
+//  val config: Configuration
   import config._
 
   import ops._
