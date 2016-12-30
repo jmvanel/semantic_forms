@@ -10,6 +10,8 @@
 
 forms:cob-User-Form
   a form:specification ;
+  rdfs:label "Utilisateur de Cobusiness"@fr ;
+  rdfs:label "Cobusiness user"@en ;
   form:classDomain cob:User ;
   form:showProperties (
 	foaf:firstName foaf:lastName

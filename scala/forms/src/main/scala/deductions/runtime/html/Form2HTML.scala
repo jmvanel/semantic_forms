@@ -100,6 +100,11 @@ import config._
       } else Text("\n")
     }
 
+   /**
+     * makeFieldsGroups Builds a groups of HTML fields to be used with the jQuery UI tabs generator
+     * 
+     * @return NodeSeq Fragment HTML contenant un groupe de champs
+     */
     def makeFieldsGroups(): NodeSeq = {
       val map = form.propertiesGroups
 

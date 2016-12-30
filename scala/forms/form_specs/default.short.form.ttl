@@ -11,6 +11,8 @@
 
 forms:main_properties_Form
   a form:specification ;
+  rdfs:label "Utilisateur"@fr ;
+  rdfs:label "User"@en ;
   form:showProperties (
 	rdfs:label rdfs:comment
 	foaf:givenName foaf:familyName
