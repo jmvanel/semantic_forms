@@ -1,12 +1,10 @@
 package deductions.runtime.sparql_cache
 
 import org.w3.banana.RDF
-import org.w3.banana.jena.JenaModule
 
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFCache
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
-//import deductions.runtime.services.Configuration
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.utils.RDFPrefixes
 
@@ -15,8 +13,8 @@ import deductions.runtime.utils.RDFPrefixes
  */
 
 /** Form Specifications Loader App */
-object FormSpecificationsLoader extends JenaModule
-//      with DefaultConfiguration
+object FormSpecificationsLoader
+extends ImplementationSettings.RDFModule
     with RDFCache with App
     with FormSpecificationsLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RDFStoreLocalJena1Provider
@@ -90,13 +88,15 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
           case e: Exception =>
             System.err.println(s"""!!!! Error in loadFormSpecifications:
             $obj
-            $e""")
+            $e
+            ${e.printStackTrace()}""")
         }
       }
     } catch {
       case e: Exception =>
         System.err.println(s"""!!!! Error in loadFormSpecifications: load form_specs <$form_specs>
-            $e""")
+            $e
+            ${e.printStackTrace()}""")
     }
   }
 }
