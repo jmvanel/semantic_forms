@@ -13,9 +13,7 @@ import org.w3.banana.URIOps
 import deductions.runtime.services.Configuration
 
 /** RDF OPerations on a DataBase */
-trait RDFOPerationsDB[Rdf <: RDF, DATASET]
-//extends Configuration
-{
+trait RDFOPerationsDB[Rdf <: RDF, DATASET] {
   val config: Configuration
 //  import config._
   
@@ -31,6 +29,8 @@ trait RDFOPerationsDB[Rdf <: RDF, DATASET]
  */
 trait RDFStoreLocalProvider[Rdf <: RDF, DATASET]
 extends RDFOPerationsDB[Rdf, DATASET] {
+
+//  val config: Configuration
 
   /** relative or absolute file path for the database 
    *  TODO put in Configuration */

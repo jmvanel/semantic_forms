@@ -162,14 +162,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   FormSyntax = {
 
 		val step1 = computePropertiesList(subject, formMode.editable, fromUri(uriNodeToURI(formConfig)), classs )
-
-    createFormDetailed2(
-//          RawDataForForm(propertiesList.toSeq, classs, subject, formMode.editable,
-//        formConfig match { case URI("") => None
-//        case uri => Some(uri) } ),
-        step1,
-        formGroup
-    )
+    createFormDetailed2( step1, formGroup )
   }
   
   def createFormDetailed2(

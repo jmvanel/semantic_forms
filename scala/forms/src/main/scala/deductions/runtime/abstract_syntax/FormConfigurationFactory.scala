@@ -29,7 +29,7 @@ trait FormConfigurationFactory[Rdf <: RDF, DATASET]
    *  usable for unfilled and filled Forms
    *  @return Seq of pairs (properties RDF List, form Configuration node)
    */
-  def lookPropertiesListInConfiguration(classs: Rdf#URI)
+  def lookPropertiesListInConfiguration(classs: Rdf#Node)
   (implicit graph: Rdf#Graph)
   : (Seq[Rdf#URI], Rdf#Node) = {
     val formSpecOption = lookFormSpecInConfiguration(classs)
@@ -74,7 +74,7 @@ trait FormConfigurationFactory[Rdf <: RDF, DATASET]
   }
 
   /** lookup Form Spec from OWL class in Configuration */
-  def lookFormSpecInConfiguration(classs: Rdf#URI)
+  def lookFormSpecInConfiguration(classs: Rdf#Node)
   (implicit graph: Rdf#Graph)
   : Option[Rdf#Node] = {
     val forms = getSubjects(graph, formPrefix("classDomain"), classs) . toList
