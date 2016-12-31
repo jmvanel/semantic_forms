@@ -1,17 +1,15 @@
 package deductions.runtime.html
 
 import scala.xml.NodeSeq
-import scala.xml.NodeSeq.seqToNodeSeq
 import scala.xml.Text
 import scala.xml.Unparsed
-import java.net.URLEncoder
-import deductions.runtime.abstract_syntax.FormModule
 
 /** generate HTML from abstract Form for Display (Read only) */
 trait Form2HTMLDisplay[NODE, URI <: NODE]
     extends Form2HTMLBase[NODE, URI] {
 
 	import config._
+	import prefixes._
 
   def createHTMLiteralReadonlyField(l: formMod#LiteralEntry): NodeSeq =
     <xml:group>
@@ -40,33 +38,31 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     val backLinkButton = (if (stringValue.size > 0 && showExpertButtons) {
 				val title = s""" Reverse links for "${resourceEntry.label}" "${resourceEntry.value}" """
 				makeBackLinkButton(stringValue, title=title )
-      } else new Text(""))
+      } else NodeSeq.Empty )
 
     val normalNavigationButton = (if (stringValue.size > 0 && showExpertButtons) {
       <a class="btn btn-primary" href={ stringValue } title={ s"Normal HTTP link to ${resourceEntry.value}" }
       draggable="true"><i class="glyphicon glyphicon-share-alt"></i> </a>
-    } else new Text(""))
+    } else NodeSeq.Empty )
 
-    var HTMLElements = Seq(
-      hyperlinkToObjectURI,
-      Text("  "),
-      backLinkButton,
-      Text("  "),
-      normalNavigationButton,
-      Text("  "),
-      makeDrawGraphLink(stringValue) )
+    val thumbnail =
+      if (resourceEntry.type_ == foaf("Image") ||
+        resourceEntry.property == foaf("img") ||
+        resourceEntry.property == foaf("thumbnail") ||
+        resourceEntry.property == foaf("depiction"))
+        <img src={ resourceEntry.value.toString() } css="sf-thumbnail" height="40" alt={ resourceEntry.value.toString() }/>
+      // TODO for alt= , need to have access to the display label for the triple subject
+      else NodeSeq.Empty
 
-    if (resourceEntry.type_ == prefixes.prefixesMap2("foaf")("Image")) {
-        val imageElement =
-            <img
-            href="{Form2HTML.createHyperlinkString(hrefPrefix, stringValue)}"
-            css="vignette-{css}"
-            alt="{alternativeText}"
-            />
-        HTMLElements = HTMLElements ++ Seq(imageElement, Text(" "))
-    }
-
-      HTMLElements
+      hyperlinkToObjectURI ++
+      Text("\n") ++
+      backLinkButton ++
+      Text("\n") ++
+      normalNavigationButton ++
+      Text("\n") ++
+      makeDrawGraphLink(stringValue) ++
+      Text("\n") ++
+      thumbnail
   }
 
 

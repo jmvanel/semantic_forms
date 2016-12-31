@@ -14,6 +14,8 @@
 
 forms:skos-Concept
   a form:specification ;
+  rdfs:label "Concept SKOS"@fr ;
+  rdfs:label "SKOS Concept"@en ;
   form:classDomain skos:Concept ;
   form:showProperties (
 	skos:prefLabel skos:altLabel rdfs:comment

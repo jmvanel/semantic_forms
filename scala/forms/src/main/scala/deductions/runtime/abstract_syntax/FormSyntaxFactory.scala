@@ -157,18 +157,12 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     formMode: FormMode,
     formGroup: Rdf#URI = nullURI,
     formConfig: Rdf#Node = URI(""))
-    (implicit graph: Rdf#Graph)
-  : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
+    (implicit graph: Rdf#Graph) :
+//  : FormModule[Rdf#Node, Rdf#URI]#
+  FormSyntax = {
 
 		val step1 = computePropertiesList(subject, formMode.editable, fromUri(uriNodeToURI(formConfig)), classs )
-
-    createFormDetailed2(
-//          RawDataForForm(propertiesList.toSeq, classs, subject, formMode.editable,
-//        formConfig match { case URI("") => None
-//        case uri => Some(uri) } ),
-        step1,
-        formGroup
-    )
+    createFormDetailed2( step1, formGroup )
   }
   
   def createFormDetailed2(
@@ -228,11 +222,13 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val subject = step1.subject
     val classs = step1.classs
 
-    // TODO set a FormSyntax.title for each group in propertiesGroups
+    // set a FormSyntax.title for each group in propertiesGroups
     val entriesFromPropertiesGroups = for( (node, rawDataForForm ) <- step1.propertiesGroups ) yield
     	node -> makeEntries2(rawDataForForm)
-    	
-    val formSyntax = FormSyntax(subject, fields3, classs, propertiesGroups=entriesFromPropertiesGroups)
+    val pgs = for( (n, m) <- entriesFromPropertiesGroups ) yield {
+      FormSyntax(n, m, title=instanceLabel(n, allNamedGraph, "en"))
+    }
+    val formSyntax = FormSyntax(subject, fields3, classs, propertiesGroups=pgs.toSeq)
     
     addAllPossibleValues(formSyntax, valuesFromFormGroup)
     

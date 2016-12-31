@@ -23,33 +23,39 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
 
   val plainSPARQLquery = new SPARQLQueryMaker[Rdf]
         with ColsInResponse {
-    override def makeQueryString(search: String): String = s"""
+    override def makeQueryString(search: String*): String = s"""
          |SELECT DISTINCT ?thing WHERE {
          |  graph ?g {
          |    ?thing ?p ?o .
-         |    FILTER regex( ?o, '${prepareSearchString(search)}', 'i')
+         |    FILTER regex( ?o, '${prepareSearchString(search(0))}', 'i')
          |  }
          |}""".stripMargin
   }
 
-  /** see https://jena.apache.org/documentation/query/text-query.html */
-  val indexBasedQuery = new SPARQLQueryMaker[Rdf]
-      with ColsInResponse {
-          val rdfs = RDFSPrefix[Rdf]
-          lazy val text = Prefix[Rdf]("text", "http://jena.apache.org/text#" )
-
-    override def makeQueryString(search: String): String = s"""
+  /** see https://jena.apache.org/documentation/query/text-query.html
+   *  TODO code duplicated in Lookup.scala */
+  val indexBasedQuery = new SPARQLQueryMaker[Rdf] with ColsInResponse {
+    override def makeQueryString(searchStrings: String*): String = {
+      val search = searchStrings(0)
+      val clas = searchStrings(1)
+      val queryString0 = s"""
          |${declarePrefix(text)}
          |${declarePrefix(rdfs)}
          |SELECT DISTINCT ?thing (COUNT(*) as ?count) WHERE {
          |  graph ?g {
-         |    ?thing text:query ( '${prepareSearchString(search)}' ) .
+         |    ?thing text:query ( '${prepareSearchString(search).trim()}' ) .
          |    ?thing ?p ?o .
+         |    ?thing a ?class .
          |  }
          |}
          |GROUP BY ?thing
          |ORDER BY DESC(?count)
          |LIMIT 10""".stripMargin
+
+      if (clas != "") {
+        queryString0.replaceFirst("""\?class""", "<" + expandOrUnchanged(clas) + ">")
+      } else queryString0
+    }
   }
   
   trait ColsInResponse extends SPARQLQueryMaker[Rdf] {
@@ -74,6 +80,6 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
 
   def searchString(searchString: String, hrefPrefix: String = "",
                    lang: String = "", classURI: String = ""): Future[NodeSeq] =
-    search(hrefPrefix, lang, searchString)
+    search(hrefPrefix, lang, searchString, classURI)
 
 }

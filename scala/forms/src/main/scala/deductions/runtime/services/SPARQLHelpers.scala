@@ -169,8 +169,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    } }
   """
     val q = queryRdfList.replace("<SUBJECT>", s"$subject")
-    println(s"getRDFList: q $q")
+//    println(s"getRDFList: q $q")
     val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariablesNT(q, List("ELEM"))
+//    println(s"getRDFList: res $res")
     res.flatten
   }
 
@@ -319,6 +320,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         query <- Try(parseSelect(queryString))
         es <- Try(ds.executeSelect(query.get, Map()))
       } yield es
+//      println( s"sparqlSelectQueryVariablesNT: $solutionsTry" )
       val solutionsTry2 = solutionsTry.flatten
 
       solutionsTry2 match {

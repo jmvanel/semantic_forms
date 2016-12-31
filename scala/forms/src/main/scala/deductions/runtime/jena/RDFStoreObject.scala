@@ -50,12 +50,11 @@ trait RDFStoreLocalJena1Provider
 
 trait RDFStoreLocalJenaProvider
     extends RDFStoreLocalProvider[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with JenaModule // with JenaRDFLoader
+    with ImplementationSettings.RDFModule // JenaModule
     with Timer
-    //    with Configuration
     with LuceneIndex {
 
-  val config: Configuration
+  //  val config: Configuration
   import config._
 
   import ops._
@@ -71,7 +70,7 @@ trait RDFStoreLocalJenaProvider
   //  override TransactionManager.DEBUG = true
 
   /**
-   * create TDB Database in given directory;
+   * create (or re-connect to) TDB Database in given directory;
    *  if it is empty, create an in-memory Database
    */
   override def createDatabase(database_location: String, useTextQuery: Boolean = useTextQuery) = {

@@ -46,14 +46,14 @@ trait ApplicationFacadeJena
       override def htmlForm(uri0: String, blankNode: String = "",
         editable: Boolean = false,
         lang: String = "en", formuri: String = "",
-        graphURI: String = ""): NodeSeq = {
+        graphURI: String = "", database: String = "TDB"): NodeSeq = {
         println(s""">> ApplicationFacadeImplJena 
                 max  Memory  ${Runtime.getRuntime.maxMemory()}
                 totalMemory  ${Runtime.getRuntime.totalMemory()}""")
         val name = "TDB/journal.jrnl"
         println(s"$name  : ${new java.io.File(name).length()} bytes")
         super.htmlForm(uri0: String, blankNode,
-          editable, lang: String, graphURI = graphURI)
+          editable, lang: String, graphURI = graphURI, database = database)
       }
     }
   } catch {

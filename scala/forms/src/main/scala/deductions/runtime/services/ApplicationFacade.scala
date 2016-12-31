@@ -27,12 +27,13 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
   def htmlForm(uri: String, blankNode: String = "",
     editable: Boolean = false,
     lang: String = "en", formuri: String = "",
-    graphURI: String = "" ) =
+    graphURI: String = "",
+    database: String = "TDB" ) =
     impl.htmlForm(uri: String, blankNode,
-      editable, lang, formuri, graphURI)
+      editable, lang, formuri, graphURI, database)
 
-  def formDataImpl(uri: String, blankNode: String = "", Edit: String = "", formuri: String = ""): String =
-    impl.formData(uri, blankNode, Edit, formuri)
+  def formDataImpl(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB"): String =
+    impl.formData(uri, blankNode, Edit, formuri, database)
 
   def htmlFormElemJustFields(uri: String, hrefPrefix: String = "", blankNode: String = "",
     editable: Boolean = false,
@@ -47,6 +48,9 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
   def create(classUri: String, lang: String, formSpecURI: String, graphURI: String, request: HTTPrequest )
   : NodeSeq =
     impl.create(classUri, lang, formSpecURI, graphURI, request: HTTPrequest).get
+
+  def createDataAsJSON(classUri: String, lang: String, formSpecURI: String, graphURI: String, request: HTTPrequest ): String =
+    impl.createDataAsJSON(classUri, lang, formSpecURI, graphURI, request: HTTPrequest)
 
   def lookup(search: String, lang: String = "en", clas: String ="", mime: String=""): String =
     impl.lookup(search, lang, clas, mime)

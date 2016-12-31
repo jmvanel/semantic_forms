@@ -99,12 +99,15 @@ trait Lookup[Rdf <: RDF, DATASET]
    *  TODO output rdf:type also
    */
   private val indexBasedQuery = new SPARQLQueryMaker[Rdf] {
-    override def makeQueryString(search: String): String = s"""
+    override def makeQueryString(searchStrings: String*): String = {
+      val search = searchStrings(0)
+      val clas = searchStrings(1)
+      s"""
          |${declarePrefix(text)}
          |${declarePrefix(rdfs)}
          |SELECT DISTINCT ?thing (COUNT(*) as ?count) WHERE {
          |  graph ?g {
-         |    ?thing text:query '${search.trim()}' .
+         |    ?thing text:query '${prepareSearchString(search).trim()}' .
          |    ?thing ?p ?o .
          |    ?thing a ?class .
          |  }
@@ -113,7 +116,11 @@ trait Lookup[Rdf <: RDF, DATASET]
          |ORDER BY DESC(?count)
          |LIMIT 10
          |""".stripMargin
+    }
   }
+
+
+  import scala.language.reflectiveCalls
 
   /**
    * transactional

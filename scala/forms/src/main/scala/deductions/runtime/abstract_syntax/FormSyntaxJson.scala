@@ -5,6 +5,8 @@ import org.w3.banana.RDF
 
 trait FormSyntaxJson[Rdf <: RDF] extends FormModule[Rdf#Node, Rdf#URI] {
 
+  def formSyntax2JSON(formSyntax: FormSyntax) : String = Json.prettyPrint(Json.toJson(formSyntax))
+
   implicit val nodeWrites = new Writes[Rdf#Node] {
     def writes(n: Rdf#Node) = new JsString(n.toString())
   }

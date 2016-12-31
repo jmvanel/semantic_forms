@@ -1,6 +1,8 @@
 package deductions.runtime.html
 
 import java.net.URLEncoder
+import java.security.MessageDigest
+
 import scala.Range
 import scala.xml.Elem
 import scala.xml.NodeSeq
@@ -13,7 +15,6 @@ import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.utils.I18NMessages
 import deductions.runtime.utils.Timer
 import deductions.runtime.services.Configuration
-import java.security.MessageDigest
 import org.apache.commons.codec.digest.DigestUtils
 
 /**
@@ -99,6 +100,11 @@ import config._
       } else Text("\n")
     }
 
+   /**
+     * makeFieldsGroups Builds a groups of HTML fields to be used with the jQuery UI tabs generator
+     * 
+     * @return NodeSeq Fragment HTML contenant un groupe de champs
+     */
     def makeFieldsGroups(): NodeSeq = {
       val map = form.propertiesGroups
 
@@ -106,19 +112,19 @@ import config._
 
       // http://jqueryui.com/accordion/ or http://jqueryui.com/tabs/
       val tabsNames = <ul>{
-        for ((node, group) <- map) yield {
-          val label = toPlainString(node)
+        for( pgs <- map) yield {
+          val label = pgs.title
           <li><a href={ "#" + makeHref(label) }>{ label }</a></li>
         }
       }</ul>
 
-      val r = for ((node, group) <- map) yield {
-        val label = toPlainString(node)
+      val r = for (pgs <- map) yield {
+        val label = pgs.title
         println(s"Fields Group $label")
         Seq(
           <div class="sf-fields-group"  id={  makeHref(label) } >,
            <div class="sf-fields-group-title">{ label }</div>,
-            { makeFieldsLabelAndData(group) }
+            { makeFieldsLabelAndData(pgs.fields) }
           </div>)
       }
       val tabs: Seq[Elem] = r.flatten.toSeq
@@ -138,8 +144,7 @@ import config._
         <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
         {
           if( groupFields ) {
-            val fieldsGroups = makeFieldsGroups()
-            fieldsGroups
+              makeFieldsGroups()
           } else
           makeFieldsLabelAndData(form.fields)
         }
@@ -178,7 +183,12 @@ import config._
           else
             createHTMLBlankNodeReadonlyField(r, hrefPrefix)
 
-      case r: formMod#RDFListEntry => <p>RDF List: {r.values.mkString(", ")}</p>
+      case r: formMod#RDFListEntry => <p>RDF List: {
+        r.values.fields.map {
+          field => field.valueLabel
+        }.
+          mkString(", ")
+      }</p>
 
       case _ => <p>Should not happen! createHTMLField({ field })</p>
     }

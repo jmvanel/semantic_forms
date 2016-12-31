@@ -13,9 +13,7 @@ import org.w3.banana.URIOps
 import deductions.runtime.services.Configuration
 
 /** RDF OPerations on a DataBase */
-trait RDFOPerationsDB[Rdf <: RDF, DATASET]
-//extends Configuration
-{
+trait RDFOPerationsDB[Rdf <: RDF, DATASET] {
   val config: Configuration
 //  import config._
   
@@ -32,10 +30,15 @@ trait RDFOPerationsDB[Rdf <: RDF, DATASET]
 trait RDFStoreLocalProvider[Rdf <: RDF, DATASET]
 extends RDFOPerationsDB[Rdf, DATASET] {
 
+//  val config: Configuration
+
   /** relative or absolute file path for the database 
    *  TODO put in Configuration */
   val databaseLocation: String = "TDB"
+
+  /** create (or re-connect to) TDB Database in given directory */
   def createDatabase(database_location: String = databaseLocation, useTextQuery: Boolean= config.useTextQuery): DATASET
+
   lazy val dataset: DATASET = createDatabase(databaseLocation)
 
   def allNamedGraph: Rdf#Graph
@@ -58,6 +61,17 @@ extends RDFOPerationsDB[Rdf, DATASET] {
 
   def datasetSize() = rdfStore.rw( dataset, { datasetSizeNoTR() })
   def datasetSizeNoTR() = ops.graphSize(allNamedGraph)
+
+  // implementations
+
+    /** */
+  def getDatasetOrDefault(database: String = "TDB", useTextQuery: Boolean= config.useTextQuery): DATASET = {
+    if (database == databaseLocation)
+      dataset
+    else
+      createDatabase(database, useTextQuery)
+  }
+
 }
 
 trait RDFStoreLocalUserManagement[Rdf <: RDF, DATASET]
