@@ -14,7 +14,7 @@ trait ReverseLinksSearchSPARQL[Rdf <: RDF, DATASET]
       s"""
          |SELECT DISTINCT ?thing WHERE {
          |  graph ?g {
-         |    ?thing ?p <$search> .
+         |    ?thing ?p <${search(0)}> .
          |  }
          |}""".stripMargin
   }
