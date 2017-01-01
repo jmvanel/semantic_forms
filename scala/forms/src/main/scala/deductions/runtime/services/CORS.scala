@@ -7,7 +7,11 @@ package deductions.runtime.services
  * cf http://www.html5rocks.com/en/tutorials/cors/#toc-adding-cors-support-to-the-server
  *  https://developer.mozilla.org/fr/docs/HTTP/Access_control_CORS
  */
-trait CORS extends Configuration {
+trait CORS //extends Configuration
+{
+  val config: Configuration
+  import config._
+
   // currently PUT is not implemented for LDP
   val corsHeaders: Map[String, String] = Map(
     "Access-Control-Allow-Origin" -> allow_Origin,

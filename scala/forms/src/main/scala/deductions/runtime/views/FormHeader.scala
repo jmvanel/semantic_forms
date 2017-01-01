@@ -7,17 +7,23 @@ import deductions.runtime.services.ApplicationFacadeImpl
 import deductions.runtime.utils.I18NMessages
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.ApplicationFacadeInterface
-import scala.xml.NodeSeq
 import deductions.runtime.html.BasicWidgets
+
+import scala.xml.NodeSeq
 import scala.xml.NodeSeq.seqToNodeSeq
 import scala.xml.Text
 import scala.xml.Unparsed
 
 trait FormHeader[Rdf <: RDF]
-		extends Configuration
-    with BasicWidgets
+		extends 
+//		Configuration
+//    with 
+    BasicWidgets
 {
 self: ApplicationFacadeImpl[Rdf, _] =>
+
+  val config: Configuration
+  import config._
   
   /** title and links on top of the form: Edit, Display, Download Links */
   def titleEditDisplayDownloadLinks(uri: String, lang: String, editable: Boolean = false)

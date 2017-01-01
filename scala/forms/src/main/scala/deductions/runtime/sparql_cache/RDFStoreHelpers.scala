@@ -18,10 +18,13 @@ import deductions.runtime.services.Configuration
 
 trait RDFStoreHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
 //    with RDFLoader[Rdf, Try]
-    with Configuration {
+//    with Configuration
+    {
 
+  val config: Configuration
   implicit val rdfLoader: RDFLoader[Rdf, Try]
 
+  import config._
   import ops._
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._

@@ -15,8 +15,12 @@ import deductions.runtime.utils.HTTPrequest
  *
  * * @author j.m. Vanel
  */
-trait URIManagement extends Configuration
-    with URIHelpers {
+trait URIManagement extends URIHelpers //extends Configuration
+//    with URIHelpers
+{
+
+  val config: Configuration
+  import config._
 
   def makeId(request: HTTPrequest): String = {
     makeId(instanceURIPrefix(request))

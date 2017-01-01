@@ -17,11 +17,15 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 libraryDependencies += "org.w3" %%  "banana-jena" % "0.9.0-SNAPSHOT"
 
 libraryDependencies += "org.apache.jena" % "apache-jena-libs" % "3.1.1" // exclude("org.slf4j", "slf4j-api" )
+libraryDependencies += "org.apache.jena" % "jena-permissions" % "3.1.1"
+libraryDependencies += "org.apache.jena" % "jena-text" % "3.1.1"
+
 libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
 libraryDependencies += "org.apache.lucene" % "lucene-suggest" % "4.9.1"
 libraryDependencies += "org.apache.lucene" % "lucene-demo" % "4.9.1"
 
-libraryDependencies += "org.apache.jena" % "jena-text" % "3.1.0"
+// libraryDependencies += "net.rootdev" % "java-rdfa" % "0.4.3-SNAPSHOT"
+libraryDependencies += "net.rootdev" % "java-rdfa" % "0.4.2"
 
 libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "0.11"
 //libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "2.0.5"
@@ -46,15 +50,16 @@ libraryDependencies += "junit" % "junit" % "4.12" % Test
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % Test
 
 // resolvers += "spray repo" at "http://repo.spray.io"
-// resolvers += Resolver.mavenLocal
 // resolvers += Resolver.url("inthenow-releases", url("http://dl.bintray.com/inthenow/releases"))(Resolver.ivyStylePatterns)
 
 // outdated:  resolvers += "betehess" at  "http://dl.bintray.com/banana-rdf/banana-rdf"
 
 resolvers += "apache-repo-releases" at "https://repository.apache.org/content/repositories/releases/"
 
-resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
-resolvers += "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/"
+// resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
+// resolvers += "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/"
+// resolvers += Resolver.mavenLocal
+// resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
 
-// for i18n resolvers += "bintray" at "http://jcenter.bintray.com"
+// for i18n? resolvers += "bintray" at "http://jcenter.bintray.com"
 scalariformSettings

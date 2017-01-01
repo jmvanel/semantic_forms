@@ -20,7 +20,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
     with TypeAddition[Rdf, DATASET]
     with HttpParamsManager[Rdf]
     with LogAPI[Rdf]
-    with Configuration
+//    with Configuration
     with SaveListenersManager[Rdf]
     with Timer
     with URIManagement {

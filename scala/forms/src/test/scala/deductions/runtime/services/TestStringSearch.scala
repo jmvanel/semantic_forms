@@ -65,4 +65,6 @@ class TestStringSearch extends FunSuite
   with RDFStoreLocalJena1Provider
   with TestStringSearchTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
   with DefaultConfiguration
-  with LuceneIndex
+  with LuceneIndex {
+    val config = new DefaultConfiguration{}
+}

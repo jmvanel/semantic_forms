@@ -1,22 +1,27 @@
 package deductions.runtime.sparql_cache.algos
 
+import java.io.FileInputStream
+
+import org.w3.banana.OWLPrefix
+import org.w3.banana.PointedGraph
 import org.w3.banana.RDF
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
-import org.w3.banana.OWLPrefix
-import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaModule
-import org.w3.banana.PointedGraph
-import deductions.runtime.utils.CSVImporter
-import java.io.FileInputStream
-import deductions.runtime.services.DefaultConfiguration
 
-object ReplaceSubclassWithPropertyApp extends App
-with JenaModule
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.CSVImporter
+
+object ReplaceSubclassWithPropertyApp extends  {
+  override val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+} with App
+with ImplementationSettings.RDFModule
 with DefaultConfiguration
-with ReplaceSubclassWithProperty[Jena, Any] 
-{
+with ReplaceSubclassWithProperty[ImplementationSettings.Rdf, Any] {
+
   val owlFile = args(0)
   val graph = turtleReader.read(new FileInputStream(owlFile), "").get
   val mgraph = ops.makeMGraph(graph)

@@ -21,6 +21,9 @@ class TestBrowsableGraph
     with SparqlHttpModule
     with RDFStoreLocalJena1Provider
     with BrowsableGraph[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+  val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
   import ops._
 
   def test {

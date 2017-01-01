@@ -1,8 +1,9 @@
 package deductions.runtime.services
 
-import org.w3.banana.RDF
 import scala.concurrent.Future
 import scala.xml.NodeSeq
+
+import org.w3.banana.RDF
 
 import deductions.runtime.utils.RDFPrefixes
 
@@ -14,13 +15,17 @@ import deductions.runtime.utils.RDFPrefixes
 trait ExtendedSearchSPARQL[Rdf <: RDF, DATASET]
     extends ParameterizedSPARQL[Rdf, DATASET]
     with RDFPrefixes[Rdf]
-    with Configuration {
+//    with Configuration
+    {
+  import config._
 
   def extendedSearch(uri: String, hrefPrefix: String = hrefDisplayPrefix): Future[NodeSeq] =
-    search(uri, hrefPrefix)
+    search(hrefPrefix,
+        "fr", // TODO <<<<<<<<<<<<<<
+        uri)
 
   private implicit val queryMaker = new SPARQLQueryMaker[Rdf] {
-    override def makeQueryString(search: String): String = {
+    override def makeQueryString(search: String*): String = {
       val q = s"""
        |${declarePrefix(foaf)}
        |SELECT DISTINCT ?thing WHERE {

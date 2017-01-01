@@ -1,15 +1,13 @@
 package deductions.runtime.jena
 
-import org.scalatest.FunSuite
-import org.scalatest.Ignore
+import java.io.File
 
 import org.apache.jena.tdb.TDBFactory
-
+import org.scalatest.FunSuite
 import org.w3.banana.jena.JenaModule
-import java.io.File
-import deductions.runtime.sparql_cache.RDFCacheAlgo
 
-import org.w3.banana.jena.Jena
+import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.sparql_cache.RDFCacheAlgo
 
 object TestJenaHelpersApp extends App with TestJenaHelpersRaw {
   test()
@@ -25,8 +23,10 @@ trait TestJenaHelpersRaw
     {
   def test() {
     lazy val dataset1 = TDBFactory.createDataset("TDB")
-    val jh = new RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET] with RDFStoreLocalJena1Provider //    with JenaRDFLoader
-    {
+    val jh = new RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET] with RDFStoreLocalJena1Provider {
+      val config = new DefaultConfiguration {
+        override val useTextQuery = false
+      }
       override val databaseLocation = "TDB"
       //      val dataset: com.hp.hpl.jena.query.Dataset = dataset1
     }

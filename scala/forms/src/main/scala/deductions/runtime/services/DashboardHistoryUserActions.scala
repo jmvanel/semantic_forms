@@ -34,7 +34,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   import rdfStore.transactorSyntax._
 
   val qm = new SPARQLQueryMaker[Rdf] {
-    override def makeQueryString(search: String): String = ""
+    override def makeQueryString(search: String*): String = ""
     override def variables = Seq("SUBJECT", "TIME", "COUNT")
   }
 

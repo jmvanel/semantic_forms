@@ -14,11 +14,15 @@ import org.w3.banana.RDF
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFStore
 import scala.util.Try
+import deductions.runtime.services.DefaultConfiguration
 
 class TestRDFList extends FunSuite
     with JenaModule
     with RDFStoreLocalJena1Provider
-   with TestRDFListTrait[Jena] {
+    with TestRDFListTrait[Jena] {
+  val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
 }
    
 trait TestRDFListTrait[Rdf <: RDF] extends FunSuite {

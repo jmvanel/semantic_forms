@@ -1,27 +1,23 @@
 package deductions.runtime.data_cleaning
 
-import org.w3.banana.RDF
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.services.SPARQLHelpers
-import org.w3.banana.jena.JenaModule
-import deductions.runtime.jena.RDFStoreLocalJenaProvider
-import scala.language.postfixOps
-import org.w3.banana.RDFPrefix
-import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.dataset.RDFOPerationsDB
-import deductions.runtime.abstract_syntax.InstanceLabelsInference2
-import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
-import deductions.runtime.services.URIManagement
-import java.io.FileWriter
 import java.io.File
-import deductions.runtime.sparql_cache.RDFCacheAlgo
-import org.w3.banana.RDFSPrefix
-import org.w3.banana.Prefix
-import deductions.runtime.utils.RDFPrefixes
-import java.util.Date
 import java.io.FileOutputStream
+import java.io.FileWriter
+import java.util.Date
+
+import scala.language.postfixOps
 import scala.reflect.io.Path
 import scala.util.Try
+
+import org.w3.banana.RDF
+
+import deductions.runtime.abstract_syntax.InstanceLabelsInference2
+import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
+import deductions.runtime.services.Configuration
+import deductions.runtime.services.SPARQLHelpers
+import deductions.runtime.services.URIManagement
+import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.utils.RDFPrefixes
 
 /**
  * merge Duplicates among instances of given class URI;
@@ -39,16 +35,16 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     with SPARQLHelpers[Rdf, DATASET]
     with URIManagement {
 
+	val config: Configuration
+  import config._
   import ops._
-      import rdfStore.graphStoreSyntax._
-      import rdfStore.transactorSyntax._
    
   var originalGraph = emptyGraph
 
   //  override val databaseLocation: String = "" // in-memory
   override val databaseLocation = "/tmp/TDB" // TODO multi-platform temporary directory
   val deleteDatabaseLocation = true
-  override val useTextQuery = false
+//  override val config.useTextQuery = false
 
   /** merge Marker in case of _automatic merge */
   val mergeMarker = " (F)"

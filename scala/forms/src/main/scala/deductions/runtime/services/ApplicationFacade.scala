@@ -18,21 +18,20 @@ import scala.util.Try
  *   to a particular Web framework
  */
 trait ApplicationFacade[Rdf <: RDF, DATASET]
-		extends ApplicationFacadeInterface
-    with Configuration
-    {
+		extends ApplicationFacadeInterface {
 
   val impl: ApplicationFacadeImpl[Rdf, DATASET]
   
   def htmlForm(uri: String, blankNode: String = "",
     editable: Boolean = false,
     lang: String = "en", formuri: String = "",
-    graphURI: String = "" ) =
+    graphURI: String = "",
+    database: String = "TDB" ) =
     impl.htmlForm(uri: String, blankNode,
-      editable, lang, formuri, graphURI)
+      editable, lang, formuri, graphURI, database)
 
-  def formDataImpl(uri: String, blankNode: String = "", Edit: String = "", formuri: String = ""): String =
-    impl.formData(uri, blankNode, Edit, formuri)
+  def formDataImpl(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB"): String =
+    impl.formData(uri, blankNode, Edit, formuri, database)
 
   def htmlFormElemJustFields(uri: String, hrefPrefix: String = "", blankNode: String = "",
     editable: Boolean = false,
@@ -48,11 +47,14 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
   : NodeSeq =
     impl.create(classUri, lang, formSpecURI, graphURI, request: HTTPrequest).get
 
+  def createDataAsJSON(classUri: String, lang: String, formSpecURI: String, graphURI: String, request: HTTPrequest ): String =
+    impl.createDataAsJSON(classUri, lang, formSpecURI, graphURI, request: HTTPrequest)
+
   def lookup(search: String, lang: String = "en", clas: String ="", mime: String=""): String =
     impl.lookup(search, lang, clas, mime)
 
-  def wordsearch(q: String = "", lang: String = ""): Future[Elem] =
-    impl.wordsearchFuture(q, lang)
+  def wordsearch(q: String = "", lang: String = "", clas: String = ""): Future[Elem] =
+    impl.wordsearchFuture(q, lang, clas)
 
   def showNamedGraphs(lang: String = ""): Future[NodeSeq] =
     impl.showNamedGraphs(lang)

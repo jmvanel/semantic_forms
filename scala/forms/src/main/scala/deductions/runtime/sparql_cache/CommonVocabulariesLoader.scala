@@ -18,16 +18,22 @@ import deductions.runtime.jena.RDFCache
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.utils.RDFPrefixes
+import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.DependenciesForApps
 
 /**
  * @author jmv
  */
 
 /** */
-object CommonVocabulariesLoader extends ImplementationSettings.RDFModule
-    with RDFCache with App
+object CommonVocabulariesLoader
+    extends  {
+      override val config = new DefaultConfiguration {
+        override val useTextQuery = false
+      }
+    }
+    with DependenciesForApps
     with CommonVocabulariesLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with RDFStoreLocalJena1Provider
     {
   loadCommonVocabularies()
 }
@@ -126,8 +132,10 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
               Runtime.getRuntime().freeMemory())
         } catch {
           case e: Exception =>
-            System.err.println("Error in loadCommonVocabularies: " +
-                voc + " " + e)
+            System.err.println(s"""Error in loadCommonVocabularies:
+                vocabulary <$voc> Exception: $e
+                ${e.printStackTrace()}""")
+
             /* Total number of processors or cores available to the JVM */
             System.err.println("Available processors (cores): " +
               Runtime.getRuntime().availableProcessors());

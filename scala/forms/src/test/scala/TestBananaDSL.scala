@@ -2,11 +2,11 @@ import org.w3.banana.FOAFPrefix
 import org.w3.banana.RDFModule
 import org.w3.banana.RDFOpsModule
 import org.w3.banana.diesel._
-import org.w3.banana.jena.JenaModule
+import deductions.runtime.jena.ImplementationSettings
 
 object TestBananaDSLApp extends App
     with TestBananaDSL
-    with JenaModule {
+    with ImplementationSettings.RDFModule {
   println(exampleGraph.toString)
 }
 

@@ -16,9 +16,12 @@ import deductions.runtime.utils.I18NMessages
 trait Form2HTMLEdit[NODE, URI <: NODE]
     extends Form2HTMLBase[NODE, URI] {
   self: HTML5Types 
-        with Configuration 
+//        with Configuration 
         =>
 
+  val config: Configuration
+  import config._
+  
   val inputSize = 90
   val xsdPrefix = "http://www.w3.org/2001/XMLSchema#"
 

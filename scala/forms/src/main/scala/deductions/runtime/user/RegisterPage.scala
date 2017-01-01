@@ -8,10 +8,10 @@ import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
 import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 import deductions.runtime.html.TableViewModule
 import deductions.runtime.html.CreationFormAlgo
-import deductions.runtime.services.Configuration
 import deductions.runtime.services.StringSearchSPARQL
 import deductions.runtime.utils.I18NMessages
 import scala.xml.NodeSeq
+import deductions.runtime.services.Configuration
 
 /** Register HTML Page */
 trait RegisterPage[Rdf <: RDF, DATASET]
@@ -20,8 +20,11 @@ trait RegisterPage[Rdf <: RDF, DATASET]
     with PreferredLanguageLiteral[Rdf]
     with TableViewModule[Rdf, DATASET]
     with CreationFormAlgo[Rdf, DATASET]
-    with Configuration {
+//    with Configuration
+    {
 
+ 	val config: Configuration
+  import config._
   import ops._
 
   /** display User information in pages */

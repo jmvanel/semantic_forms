@@ -1,37 +1,33 @@
 package controllers
 
-import java.net.URLDecoder
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.Failure
+import scala.util.Success
+import scala.util.Try
 import scala.xml.Elem
 import scala.xml.NodeSeq
+
 import deductions.runtime.jena.ApplicationFacadeJena
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.CORS
+import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.views.ToolsPage
+import play.api.Play
+import play.api.http.MediaRange
 import play.api.mvc.Accepting
 import play.api.mvc.Action
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.mvc.Controller
 import play.api.mvc.Request
-import views.MainXmlWithHead
-import deductions.runtime.services.CORS
-import deductions.runtime.services.DefaultConfiguration
-import play.api.Play
-import scala.util.Try
-import scala.util.Success
-import play.api.mvc.Call
-import play.api.http.MimeTypes
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.utils.RDFPrefixes
-import play.api.mvc.Result
 import play.api.mvc.RequestHeader
-import play.api.http.MediaRange
-import scala.util.Failure
+import play.api.mvc.Result
+import views.MainXmlWithHead
 import play.api.mvc.Codec
-
 
 /** main controller */
 trait ApplicationTrait extends Controller
-    with DefaultConfiguration
     with ApplicationFacadeJena
     with LanguageManagement
     with Secured
@@ -41,18 +37,22 @@ trait ApplicationTrait extends Controller
     with RDFPrefixes[ImplementationSettings.Rdf]
     {
 
-  override def serverPort = {
-    val port = Play.current.configuration.
-      getString("http.port")
-    port match {
-      case Some(p) => 
-        println("Running on port " + p)
-        p
-      case _ =>
-        println("Retrieving default port from config." )
-        super.serverPort
-    }
-  }
+//  override lazy val config = new DefaultConfiguration {
+//    override def serverPort = {
+//      val port = Play.current.configuration.
+//        getString("http.port")
+//      port match {
+//        case Some(port) =>
+//          println( s"Running on port $port")
+//          port
+//        case _ =>
+//          val serverPortFromConfig = super.serverPort
+//          println(s"Could not get port from Play configuration; retrieving default port from SF config: $serverPortFromConfig")
+//          serverPortFromConfig
+//      }
+//    }
+//  }
+//  import config._
 
   def index() =
     withUser {
@@ -84,21 +84,22 @@ trait ApplicationTrait extends Controller
             lang, title = title)
     }
 
-  def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "") =
+  def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
     withUser {
       implicit userid =>
         implicit request =>
           println(s"""form: request $request : "$Edit" formuri <$formuri> """)
           val lang = chooseLanguage(request)
-          Ok(htmlForm(uri, blankNode, editable = Edit != "", lang, formuri, graphURI = makeAbsoluteURIForSaving(userid)))
+          Ok(htmlForm(uri, blankNode, editable = Edit != "", lang, formuri,
+              graphURI = makeAbsoluteURIForSaving(userid), database=database))
     }
 
-  def formData(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "") =
+  def formData(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
     withUser {
       implicit userid =>
         implicit request =>
-          // FormJSON[Rdf <: RDF, DATASET]
-       Ok(formDataImpl(uri, blankNode, Edit, formuri))
+       Ok(formDataImpl(uri, blankNode, Edit, formuri, database)) .
+         as( AcceptsJSONLD.mimeType + "; charset=" + myCustomCharset.charset )
     }
 
   def searchOrDisplayAction(q: String) = {
@@ -123,10 +124,10 @@ trait ApplicationTrait extends Controller
       .as("text/html; charset=utf-8")
   }
 
-  def wordsearchAction(q: String = "") = Action.async {
+  def wordsearchAction(q: String = "", clas: String = "") = Action.async {
     implicit request =>
     val lang = chooseLanguageObject(request).language
-    val fut: Future[Elem] = wordsearch(q, lang)
+    val fut: Future[Elem] = wordsearch(q, lang, clas)
     fut.map( r => outputMainPage( r, lang ) )
   }
 
@@ -225,6 +226,7 @@ trait ApplicationTrait extends Controller
 //      }
 //  }
 
+  /** creation form - generic SF application */
   def createAction() =
     withUser {
       implicit userid =>
@@ -246,19 +248,40 @@ trait ApplicationTrait extends Controller
 
   def makeAbsoluteURIForSaving(userid: String): String = userid
 
+  /** creation form as raw JSON data
+   *  TODO add database HTTP param. */
+  def createData() =
+    withUser {
+      implicit userid =>
+        implicit request =>
+          println("create: " + request)
+          // URI of RDF class from which to create instance
+          val uri0 = getFirstNonEmptyInMap(request.queryString, "uri")
+          val uri = expandOrUnchanged(uri0)
+          // URI of form Specification
+          val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formuri")
+          println("create: " + uri)
+          println( s"formSpecURI from HTTP request: <$formSpecURI>")
+
+          Ok( createDataAsJSON( uri, chooseLanguage(request),
+                       formSpecURI, makeAbsoluteURIForSaving(userid), copyRequest(request) ) ) .
+                       as( AcceptsJSONLD.mimeType + "; charset=" + myCustomCharset.charset )
+    }
+
   /**
    * get RDF with content negotiation (conneg) for RDF syntax;
    *  see also LDP.scala
    *
    *  cf https://www.playframework.com/documentation/2.3.x/ScalaStream
    */
-  def downloadAction(url: String) =
+  def downloadAction(url: String, database: String = "TDB") =
     withUser {
       implicit userid =>
         implicit request =>
           def output(accepts: Accepting): Result = {
             val mime = computeMIME(accepts, AcceptsJSONLD)
             Ok.chunked(
+                // TODO >>>>>>> add database arg.
               download(url, mime.mimeType)).
               as(s"${mime.mimeType}; charset=utf-8")
               .withHeaders("Access-Control-Allow-Origin" -> "*")
@@ -274,6 +297,8 @@ trait ApplicationTrait extends Controller
 
 
   //// factor out the conneg stuff ////
+
+  implicit val myCustomCharset = Codec.javaSupported("utf-8")
 
   val AcceptsTTL = Accepting("text/turtle")
 	val AcceptsJSONLD = Accepting("application/ld+json")

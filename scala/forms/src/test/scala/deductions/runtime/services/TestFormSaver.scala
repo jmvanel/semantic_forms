@@ -28,6 +28,9 @@ class TestFormSaver
     with FormSaver[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with DefaultConfiguration {
 
+  val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
   import ops._
   val logger = Logger.getRootLogger()
   lazy val fs = this // new FormSaver[Jena, Dataset] {}

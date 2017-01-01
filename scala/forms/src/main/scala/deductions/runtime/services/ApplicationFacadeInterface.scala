@@ -22,7 +22,8 @@ trait ApplicationFacadeInterface {
   def htmlForm(uri: String, blankNode: String = "",
     editable: Boolean = false,
     lang: String = "en", formuri: String = "",
-    graphURI: String = "" // , request: HTTPrequest= HTTPrequest()  // TODO
+    graphURI: String = "",
+    database: String = "TDB" // , request: HTTPrequest= HTTPrequest()  // TODO
     ): NodeSeq
 
   def saveForm(request: Map[String, Seq[String]], lang: String = "",
@@ -31,7 +32,7 @@ trait ApplicationFacadeInterface {
   def create(uri: String, lang: String = "en",
     formSpecURI: String = "", graphURI: String = "", request: HTTPrequest = HTTPrequest()): NodeSeq
 
-  def wordsearch(q: String = "", lang: String = ""): Future[Elem]
+  def wordsearch(q: String = "", lang: String = "", clas: String = ""): Future[Elem]
 
   def lookup(search: String, lang: String = "en", clas: String = "", mime: String = ""): String
 

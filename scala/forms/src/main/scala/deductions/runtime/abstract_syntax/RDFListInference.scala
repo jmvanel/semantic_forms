@@ -14,7 +14,9 @@ import deductions.runtime.services.SPARQLHelpers
  */
 trait RDFListInference[Rdf <: RDF, DATASET]
     extends SPARQLHelpers[Rdf, DATASET]
-    with FormModule[Rdf#Node, Rdf#URI] {
+    with FormModule[Rdf#Node, Rdf#URI]
+    with PreferredLanguageLiteral[Rdf]
+    with InstanceLabelsInference2[Rdf] {
 
   def makeRDFListEntry(
     label: String, comment: String,
@@ -30,10 +32,19 @@ trait RDFListInference[Rdf <: RDF, DATASET]
     openChoice: Boolean = true,
     widgetType: WidgetType = Text): Option[RDFListEntry] = {
 
-    val list = getRDFList(makeTurtleTerm(value)): List[Rdf#Node]
-    println(s"makeRDFListEntry list $list")
+    val graph = allNamedGraph
+    val nodesList = getRDFList(makeTurtleTerm(value)): List[Rdf#Node]
+    println(s"makeRDFListEntry list $nodesList")
+    val entriesList: Seq[Entry] = nodesList . map {
+      node => ops.foldNode(node)(
+          uri => ResourceEntry(value=uri, valueLabel=instanceLabel(node, graph, "en")),
+          bn => BlankNodeEntry(value=bn, valueLabel=instanceLabel(node, graph, "en")),
+          lit => LiteralEntry(value=lit)
+      )
+    }
+    val list = FormSyntax(nullURI, entriesList)
 
-    list match {
+    nodesList match {
       case l if !l.isEmpty => Some(RDFListEntry(
         label: String, comment: String,
         property: ObjectProperty,

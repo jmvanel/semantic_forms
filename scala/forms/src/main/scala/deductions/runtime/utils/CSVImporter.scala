@@ -25,9 +25,14 @@ import org.w3.banana.PrefixBuilder
 /** made from CSVExtractor from Any23;
  *  TODO: probably should be in another SBT project */
 trait CSVImporter[Rdf <: RDF, DATASET]
-		extends Configuration
-		with URIHelpers
+		extends 
+//		Configuration
+//		with 
+		URIHelpers
 		with RDFPrefixes[Rdf] {
+
+  val config: Configuration
+  import config._
 
   implicit val ops: RDFOps[Rdf]
   import ops._

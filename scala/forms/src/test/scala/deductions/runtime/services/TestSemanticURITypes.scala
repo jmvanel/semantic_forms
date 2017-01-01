@@ -64,7 +64,13 @@ trait TestSemanticURITypesTrait[Rdf <: RDF, DATASET] extends FunSuite
 
 class TestSemanticURITypes extends FunSuite
     with RDFStoreLocalJena1Provider
-    with TestSemanticURITypesTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-{
-  val appDataStore = new RDFStoreLocalJena1Provider {}
+    with TestSemanticURITypesTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+    val config = new DefaultConfiguration {
+      override val useTextQuery = false
+    }
+  val appDataStore = new RDFStoreLocalJena1Provider {
+    val config = new DefaultConfiguration {
+      override val useTextQuery = false
+    }
+  }
 }

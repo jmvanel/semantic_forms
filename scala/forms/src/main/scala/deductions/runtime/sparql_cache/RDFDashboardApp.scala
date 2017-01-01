@@ -3,10 +3,16 @@ package deductions.runtime.sparql_cache
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 //import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.jena.RDFCache
+import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.DependenciesForApps
 
-object RDFDashboardApp extends RDFCache with App
-    with RDFStoreLocalJena1Provider //    with JenaHelpers
-    {
+object RDFDashboardApp
+    extends {
+      override val config = new DefaultConfiguration {
+        override val useTextQuery = false
+      }
+    } with DependenciesForApps {
+
   import ops._
   import sparqlOps._
   import rdfStore.sparqlEngineSyntax._

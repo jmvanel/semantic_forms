@@ -1,19 +1,22 @@
 package deductions.runtime.sparql_cache.algos
 
-import java.io.PrintStream
-import java.io.FileReader
-import java.io.FileWriter
-import java.io.FileOutputStream
-import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.jena.ImplementationSettings
-import org.w3.banana.OWLPrefix
 import java.io.FileInputStream
+import java.io.FileOutputStream
+
+import org.w3.banana.OWLPrefix
+
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.DefaultConfiguration
 
 /**
  * ReplaceSubclassWithProperty : App Example with hard-coded list of super-classes
  * to disconnect from their sub-classes
  */
-object ReplaceSubclassWithPropertyAppExample extends App
+object ReplaceSubclassWithPropertyAppExample extends {
+  override val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+} with App
     with ImplementationSettings.RDFCache
     with DefaultConfiguration
     with DuplicatesDetectionOWL[ImplementationSettings.Rdf, ImplementationSettings.DATASET]

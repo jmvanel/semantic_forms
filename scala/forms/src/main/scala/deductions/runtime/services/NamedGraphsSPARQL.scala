@@ -11,7 +11,7 @@ trait NamedGraphsSPARQL[Rdf <: RDF, DATASET]
     extends ParameterizedSPARQL[Rdf, DATASET] {
 
   private implicit val searchStringQueryMaker = new SPARQLQueryMaker[Rdf] {
-    override def makeQueryString(search: String): String =
+    override def makeQueryString(search: String*): String =
       // TODO show # of triples
       s"""
          |SELECT DISTINCT ?thing WHERE {
@@ -33,7 +33,6 @@ trait NamedGraphsSPARQL[Rdf <: RDF, DATASET]
   }
   
   def showNamedGraphs( lang: String = ""): Future[NodeSeq] =
-//    Future.successful( 
-		  search("", "", lang)
+		  search("", lang, "")
     
 }

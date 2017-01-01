@@ -14,18 +14,25 @@ import org.scalatestplus.play.OneAppPerSuite
 
 class TestAuth
     extends PlaySpec
+    with DefaultConfiguration
     with WhiteBoxTestdependencies
     with OneAppPerSuite
     with Secured
-    with DefaultConfiguration {
+    {
+
+  lazy val config = new DefaultConfiguration {
+    override val needLoginForEditing = true
+    override val needLoginForDisplaying = true
+    override val useTextQuery = false
+  }
 
   val loginName = // "http://jmvanel.free.fr/jmv.rdf#me" // 
     "devil@hell.com"
   val pw = "bla"
   val timeout: Timeout = Timeout(DurationInt(240) seconds)
+  val config1 = config
   val auth = new AuthTrait {
-    override val needLoginForEditing = true
-    override val needLoginForDisplaying = true
+    val config = config1
   }
 
   "Auth service" must {

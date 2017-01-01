@@ -2,24 +2,24 @@ package deductions.runtime.abstract_syntax
 
 import java.io.FileInputStream
 import java.io.FileOutputStream
+
 import org.apache.log4j.Logger
 import org.hamcrest.BaseMatcher
 import org.junit.Assert
-import org.scalatest.Finders
 import org.scalatest.FunSuite
-import org.w3.banana.FOAFPrefix
 import org.w3.banana.RDF
-import org.w3.banana.jena.Jena
 
+import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.jena.ImplementationSettings
 
 class FormSyntaxFactoryTestJena extends FunSuite
-with RDFStoreLocalJena1Provider
-with FormSyntaxFactoryTest[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-with DefaultConfiguration {
-
+    with RDFStoreLocalJena1Provider
+    with FormSyntaxFactoryTest[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with DefaultConfiguration {
+  val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
   val logger = Logger.getRootLogger()
 
   test("form contains label and data") {

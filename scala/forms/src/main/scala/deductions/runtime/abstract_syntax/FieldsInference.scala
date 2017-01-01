@@ -17,15 +17,25 @@ import deductions.runtime.services.SPARQLHelpers
 trait FieldsInference[Rdf <: RDF, DATASET]
 extends RDFHelpers[Rdf]
 with RDFOPerationsDB[Rdf, DATASET]
-with SPARQLHelpers[Rdf, DATASET]
-with Configuration {
+with SPARQLHelpers[Rdf, DATASET] {
 
+	val config: Configuration
+  import config._
+  
   import ops._
   private val owl = OWLPrefix[Rdf]
 
   /** find fields from given Instance subject */
   def fieldsFromSubject(subject: Rdf#Node, graph: Rdf#Graph): Seq[Rdf#URI] =
     getPredicates(graph, subject).toSeq.distinct
+
+  /** find fields from given RDF class */
+  def fieldsFromClasses(classes:  List[Rdf#Node], subject: Rdf#Node, editable: Boolean, graph: Rdf#Graph)
+  : List[RawDataForForm[Rdf#Node]] =
+	  for( classs <- classes) yield {
+	    val ff = fieldsFromClass( uriNodeToURI(classs), graph)
+	    ff.setSubject(subject, editable)
+	  }
 
   /** find fields from given RDF class */
   def fieldsFromClass(classs: Rdf#URI, graph: Rdf#Graph)
@@ -137,7 +147,7 @@ with Configuration {
     processSuperClasses(classs)
     if (showDomainlessProperties) addDomainlessProperties(classs)
     
-    RawDataForForm(inferedProperties.distinct, classs, URI(""), propertiesGroups=propertiesGroups )
+    RawDataForForm(inferedProperties.distinct, classs, subject=nullURI, propertiesGroups=propertiesGroups )
     
 //    inferedProperties.distinct
   } // end of fieldsFromClass()

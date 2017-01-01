@@ -16,7 +16,7 @@ import deductions.runtime.utils.HTTPrequest
 trait UnfilledFormFactory[Rdf <: RDF, DATASET]
     extends FormSyntaxFactory[Rdf, DATASET]
    	with FormConfigurationFactory[Rdf, DATASET]
-    with Configuration
+//    with Configuration
     with URIManagement {
 
   import ops._
@@ -27,8 +27,9 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
    */
   def createFormFromClass(classs: Rdf#URI,
     formSpecURI: String = "" , request: HTTPrequest= HTTPrequest() )
-  	  (implicit graph: Rdf#Graph)
-  	  : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
+  	  (implicit graph: Rdf#Graph) :
+//  	  FormModule[Rdf#Node, Rdf#URI]#
+  	  FormSyntax = {
 
     val (propsListInFormConfig, formConfig) =
       if (formSpecURI != "") {

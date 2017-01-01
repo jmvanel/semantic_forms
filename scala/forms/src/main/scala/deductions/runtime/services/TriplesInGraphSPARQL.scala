@@ -11,7 +11,7 @@ trait TriplesInGraphSPARQL[Rdf <: RDF, DATASET]
     extends ParameterizedSPARQL[Rdf, DATASET] {
 
   private implicit val searchStringQueryMaker = new SPARQLQueryMaker[Rdf] {
-    override def makeQueryString( graphURI: String): String =
+    override def makeQueryString( graphURI: String*): String =
     s"""
          |SELECT DISTINCT ?thing ?p ?o WHERE {
          |  graph <$graphURI> {

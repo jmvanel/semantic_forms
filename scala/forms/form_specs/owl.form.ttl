@@ -13,6 +13,8 @@
 
 forms:owl-ClassForm
   a form:specification ;
+  rdfs:label "Classe OWL"@fr ;
+  rdfs:label "owl:Class"@en ;
   form:classDomain owl:Class ;
   form:showProperties (
 	rdfs:label rdfs:comment

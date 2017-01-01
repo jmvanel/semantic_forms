@@ -8,10 +8,11 @@ GET     /display            controllers.Application.displayURI(displayuri:String
 GET     /edit               controllers.Application.edit( url:String )
 POST    /save               controllers.Application.saveAction()
 GET     /create             controllers.Application.createAction()
+GET     /create-data        controllers.Application.createData()
 
-GET     /download           controllers.Application.downloadAction( url:String )
-GET     /form               controllers.Application.form(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="")
-GET     /form-data          controllers.Application.formData(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="")
+GET     /download           controllers.Application.downloadAction( url:String, database:String ?="TDB" )
+GET     /form               controllers.Application.form(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="", database:String ?="TDB")
+GET     /form-data          controllers.Application.formData(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="", database:String ?="TDB")
 
 GET     /sparql-ui          controllers.Application.sparql( query:String )
 POST    /sparql-ui          controllers.Application.sparql( query:String )
@@ -25,7 +26,7 @@ GET     /update             controllers.Application.update( update:String )
 POST    /update             controllers.Application.update( update:String )
 
 
-GET     /wordsearch         controllers.Application.wordsearchAction(q:String ?= "")
+GET     /wordsearch         controllers.Application.wordsearchAction(q:String ?= "", clas: String ?= "")
 GET     /search             controllers.Application.searchOrDisplayAction(q:String ?= "")
 
 GET     /backlinks          controllers.Application.backlinksAction(q:String ?= "")

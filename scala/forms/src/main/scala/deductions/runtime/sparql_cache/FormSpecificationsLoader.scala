@@ -1,27 +1,29 @@
 package deductions.runtime.sparql_cache
 
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import org.w3.banana.Prefix
-import deductions.runtime.jena.RDFCache
-import org.w3.banana.jena.Jena
 import org.w3.banana.RDF
-import org.w3.banana.jena.JenaModule
-import deductions.runtime.services.Configuration
-import deductions.runtime.services.DefaultConfiguration
+
 import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.jena.RDFCache
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.utils.RDFPrefixes
+import deductions.runtime.DependenciesForApps
 
 /**
  * @author jmv
  */
 
 /** Form Specifications Loader App */
-object FormSpecificationsLoader extends JenaModule
-      with DefaultConfiguration
-    with RDFCache with App
-    with FormSpecificationsLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with RDFStoreLocalJena1Provider //    with JenaHelpers
-    {
+object FormSpecificationsLoader
+    extends {
+      override val config = new DefaultConfiguration {
+        override val useTextQuery = false
+      }
+    } with DependenciesForApps
+    with FormSpecificationsLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+
+  import config._
+
   if (args.size == 0)
     loadCommonFormSpecifications()
   else
@@ -32,11 +34,11 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
     with RDFPrefixes[Rdf]
     with SitesURLForDownload
-    with Configuration {
+//    with Configuration
+    {
 
   import ops._
   import rdfStore.transactorSyntax._
-  import rdfStore.graphStoreSyntax._
 
   val formSpecificationsGraph = URI("urn:form_specs")
 
@@ -86,13 +88,15 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
           case e: Exception =>
             System.err.println(s"""!!!! Error in loadFormSpecifications:
             $obj
-            $e""")
+            $e
+            ${e.printStackTrace()}""")
         }
       }
     } catch {
       case e: Exception =>
         System.err.println(s"""!!!! Error in loadFormSpecifications: load form_specs <$form_specs>
-            $e""")
+            $e
+            ${e.printStackTrace()}""")
     }
   }
 }

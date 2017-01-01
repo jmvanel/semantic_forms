@@ -1,23 +1,20 @@
 package deductions.runtime.sparql_cache.algos
 
-import org.w3.banana.OWLPrefix
-import org.w3.banana.RDF
-import org.w3.banana.RDFOps
-import org.w3.banana.RDFPrefix
-import org.w3.banana.RDFSPrefix
-import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaModule
-import scala.collection.immutable.ListMap
-import java.io.PrintStream
-import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.jena.ImplementationSettings
 import java.io.FileInputStream
+import java.io.PrintStream
+
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.DefaultConfiguration
 
 /**
  * Duplicates Detection for OWL; output: CSV, Grouped By labels of Datatype properties,
  *  or  owl:ObjectProperty", or "owl:Class"
  */
-object TextTreeViewRDF extends App
+object TextTreeViewRDF extends {
+  override val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+} with App
     with ImplementationSettings.RDFCache
     with DefaultConfiguration
     with DuplicatesDetectionBase[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {

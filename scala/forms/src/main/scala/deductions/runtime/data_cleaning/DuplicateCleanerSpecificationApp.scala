@@ -8,6 +8,7 @@ import deductions.runtime.services.SPARQLHelpers
 import java.io.FileWriter
 import deductions.runtime.utils.CSVImporter
 import java.io.FileInputStream
+import deductions.runtime.services.DefaultConfiguration
 
 /**
  * merges Duplicates in given file(s),
@@ -27,18 +28,25 @@ import java.io.FileInputStream
  *
  * Properties used in CSV Specification: see "ONISEP" in [[CSVImporter.columnsMappings]]
  */
-object DuplicateCleanerSpecificationApp extends App
+object DuplicateCleanerSpecificationApp extends {
+  override val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+} with App
     with RDFStoreLocalJena1Provider
     with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with DuplicateCleaner[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with SPARQLHelpers[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with CSVImporter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
+  //  val config = new DefaultConfiguration {
+  //    override val useTextQuery = false
+  //  }
+  import config._
   import ops._
 
   override val databaseLocation = "/tmp/TDB" // TODO multi-platform temporary directory
   override val deleteDatabaseLocation = true
-  override val useTextQuery = false
 
   println(s"databaseLocation $databaseLocation")
 

@@ -5,12 +5,18 @@ import org.w3.banana.RDF
 
 trait FormSyntaxJson[Rdf <: RDF] extends FormModule[Rdf#Node, Rdf#URI] {
 
+  def formSyntax2JSON(formSyntax: FormSyntax) : String = Json.prettyPrint(Json.toJson(formSyntax))
+
   implicit val nodeWrites = new Writes[Rdf#Node] {
     def writes(n: Rdf#Node) = new JsString(n.toString())
   }
 
   implicit val WidgetTypeWrites = new Writes[WidgetType] {
     def writes(wt: WidgetType) = new JsString(wt.toString())
+  }
+
+    implicit val cardinalityWrites = new Writes[Cardinality] {
+    def writes(obj: Cardinality) = new JsString(obj.toString())
   }
 
   implicit val entryWrites = new Writes[Entry] {
@@ -20,10 +26,11 @@ trait FormSyntaxJson[Rdf <: RDF] extends FormModule[Rdf#Node, Rdf#URI] {
       "mandatory" -> e.mandatory,
       "property" -> e.property,
       "subject" -> e.subject,
-      "type_" -> e.type_,
+      "type" -> e.type_,
       "value" -> e.value,
       "widgetType" -> e.widgetType,
-      "openChoice" -> e.openChoice
+      "openChoice" -> e.openChoice,
+      "cardinality" -> e.cardinality
       // , "possibleValues" -> e.possibleValues
       )
   }

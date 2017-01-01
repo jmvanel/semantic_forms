@@ -1,6 +1,6 @@
 package deductions.runtime.html
 
-import deductions.runtime.services.Configuration
+//import deductions.runtime.services.Configuration
 import deductions.runtime.utils.I18NMessages
 import scala.xml.NodeSeq
 import deductions.runtime.utils.RDFPrefixes
@@ -12,7 +12,8 @@ import org.w3.banana.jena.JenaModule
  * Buttons for loading/display/edit, search, and create;
  *  this the default HTML UI before the form
  */
-trait EnterButtons extends Configuration {
+trait EnterButtons //extends Configuration
+{
 
   private lazy val prefixes = new ImplementationSettings.RDFModule with RDFPrefixes[ImplementationSettings.Rdf] with DefaultConfiguration {}
   import prefixes._

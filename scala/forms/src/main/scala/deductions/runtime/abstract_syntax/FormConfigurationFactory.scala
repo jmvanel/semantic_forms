@@ -3,7 +3,7 @@ package deductions.runtime.abstract_syntax
 import org.apache.log4j.Logger
 import org.w3.banana.Prefix
 import org.w3.banana.RDF
-import deductions.runtime.services.Configuration
+//import deductions.runtime.services.Configuration
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import scala.util.Try
@@ -13,8 +13,10 @@ import deductions.runtime.utils.RDFPrefixes
  * Lookup Form specifications from RDF graph
  */
 trait FormConfigurationFactory[Rdf <: RDF, DATASET]
-    extends Configuration
-    with RDFCacheAlgo[Rdf, DATASET]
+    extends
+//Configuration
+//    with 
+    RDFCacheAlgo[Rdf, DATASET]
     with RDFHelpers[Rdf]
     with RDFPrefixes[Rdf] {
   
@@ -27,7 +29,7 @@ trait FormConfigurationFactory[Rdf <: RDF, DATASET]
    *  usable for unfilled and filled Forms
    *  @return Seq of pairs (properties RDF List, form Configuration node)
    */
-  def lookPropertiesListInConfiguration(classs: Rdf#URI)
+  def lookPropertiesListInConfiguration(classs: Rdf#Node)
   (implicit graph: Rdf#Graph)
   : (Seq[Rdf#URI], Rdf#Node) = {
     val formSpecOption = lookFormSpecInConfiguration(classs)
@@ -72,7 +74,7 @@ trait FormConfigurationFactory[Rdf <: RDF, DATASET]
   }
 
   /** lookup Form Spec from OWL class in Configuration */
-  def lookFormSpecInConfiguration(classs: Rdf#URI)
+  def lookFormSpecInConfiguration(classs: Rdf#Node)
   (implicit graph: Rdf#Graph)
   : Option[Rdf#Node] = {
     val forms = getSubjects(graph, formPrefix("classDomain"), classs) . toList

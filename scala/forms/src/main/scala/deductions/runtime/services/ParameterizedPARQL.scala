@@ -1,32 +1,25 @@
 package deductions.runtime.services
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.xml.Elem
-import org.w3.banana.RDF
-import org.w3.banana.SparqlOpsModule
-import org.w3.banana.TryW
-import org.w3.banana.syntax._
-import org.w3.banana.Transactor
-import org.w3.banana.RDFOpsModule
-import org.w3.banana.RDFOps
-
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.html.Form2HTML
-import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
-import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
-import deductions.runtime.html.CSS
-
 import scala.xml.NodeSeq
 import scala.xml.Text
-import scala.util.Try
-import deductions.runtime.html.Form2HTMLDisplay
+
+import org.w3.banana.RDF
+import org.w3.banana.TryW
+
 import deductions.runtime.abstract_syntax.FormModule
+import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
+import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
+import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.html.CSS
+import deductions.runtime.html.Form2HTML
+import deductions.runtime.html.Form2HTMLDisplay
 
 
 trait SPARQLQueryMaker[Rdf <: RDF] {
   // TODO : search: String*
-  def makeQueryString(search: String): String
+  def makeQueryString(search: String*): String
   def variables = Seq("thing")
     /** overridable function for adding columns in response */
   def columnsForURI( node: Rdf#Node, label: String): NodeSeq = Text("")
@@ -46,14 +39,13 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     with InstanceLabelsInferenceMemory[Rdf, DATASET]
     with PreferredLanguageLiteral[Rdf]
     with SPARQLHelpers[Rdf, DATASET]
-    with Configuration
+//    with Configuration
     with CSS
     with Form2HTMLDisplay[Rdf#Node, Rdf#URI] {
 
+  import config._
   import ops._
-  import sparqlOps._
   import rdfStore.transactorSyntax._
-  import rdfStore.sparqlEngineSyntax._
 
   /**
    * Generic SPARQL SELECT with single result columns (must be named "thing"),
@@ -61,11 +53,13 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    *  search and display results as an XHTML element
    *  transactional
    */
-  def search(search: String, hrefPrefix: String = "",
-             lang: String = "")(implicit queryMaker: SPARQLQueryMaker[Rdf] ): Future[NodeSeq] = {
+  def search(hrefPrefix: String, 
+             lang: String,
+             search: String*
+             )(implicit queryMaker: SPARQLQueryMaker[Rdf] ): Future[NodeSeq] = {
     val elem0 = dataset.rw({
       println(s"search 1: starting TRANSACTION for dataset $dataset")
-    	val uris = search_onlyNT(search)
+    	val uris = search_onlyNT(search :_* )
     	val graph: Rdf#Graph = allNamedGraph
       val elems =
         <div class={css.tableCSSClasses.formRootCSSClass}> {
@@ -213,25 +207,25 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    * one should never use an Iterator after calling a method on it;
    * cf http://stackoverflow.com/questions/18420995/scala-iterator-one-should-never-use-an-iterator-after-calling-a-method-on-it
    */
-  private def search_only(search: String)
+  private def search_only(search: String*)
   (implicit queryMaker: SPARQLQueryMaker[Rdf] )
   // : Future[Iterator[Rdf#Node]]
   = {
     println(s"search 2: starting TRANSACTION for dataset $dataset")
     val transaction =
       dataset.r({
-    	  search_onlyNT(search)
+    	  search_onlyNT(search :_* )
       })
     val tryIteratorRdfNode = transaction // .flatMap { identity }
     println( s"after search_only(search tryIteratorRdfNode $tryIteratorRdfNode" )
     tryIteratorRdfNode.asFuture
   }
   
-    private def search_onlyNT(search: String)
+  private def search_onlyNT(search: String*)
   (implicit queryMaker: SPARQLQueryMaker[Rdf] )
   // : Try[Iterator[Rdf#Node]] 
   = {
-    val queryString = queryMaker.makeQueryString(search)
+    val queryString = queryMaker.makeQueryString(search :_* )
     println( s"search_onlyNT(search='$search') \n$queryString \n\tdataset Class ${dataset.getClass().getName}" )
     sparqlSelectQueryVariablesNT(queryString, Seq("thing") )
   }

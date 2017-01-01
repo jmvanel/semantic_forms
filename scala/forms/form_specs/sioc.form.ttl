@@ -14,6 +14,7 @@
 
 forms:sioc-Post_Form
   a form:specification ;
+  rdfs:label "post SIOC" ;
   form:classDomain sioc:Post ;
   form:showProperties (
 	rdfs:label rdfs:comment

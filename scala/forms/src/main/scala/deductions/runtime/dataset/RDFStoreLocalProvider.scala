@@ -13,9 +13,11 @@ import org.w3.banana.URIOps
 import deductions.runtime.services.Configuration
 
 /** RDF OPerations on a DataBase */
-trait RDFOPerationsDB[Rdf <: RDF, DATASET]
-extends Configuration {
-    /** NOTE: same design pattern as for XXXModule in Banana */
+trait RDFOPerationsDB[Rdf <: RDF, DATASET] {
+  val config: Configuration
+//  import config._
+  
+  /** NOTE: same design pattern as for XXXModule in Banana */
   implicit val rdfStore: RDFStore[Rdf, Try, DATASET] with SparqlUpdate[Rdf, Try, DATASET]
   implicit val ops: RDFOps[Rdf]
   implicit val sparqlOps: SparqlOps[Rdf]
@@ -25,12 +27,18 @@ extends Configuration {
 /**
  * abstract RDFStore Local Provider
  */
-trait RDFStoreLocalProvider[Rdf <: RDF, DATASET] extends RDFOPerationsDB[Rdf, DATASET] {
+trait RDFStoreLocalProvider[Rdf <: RDF, DATASET]
+extends RDFOPerationsDB[Rdf, DATASET] {
+
+//  CURRENTLY unused, but could be:  val config: Configuration
 
   /** relative or absolute file path for the database 
    *  TODO put in Configuration */
   val databaseLocation: String = "TDB"
-  def createDatabase(database_location: String = databaseLocation, useTextQuery: Boolean= useTextQuery): DATASET
+
+  /** create (or re-connect to) TDB Database in given directory */
+  def createDatabase(database_location: String = databaseLocation, useTextQuery: Boolean= config.useTextQuery): DATASET
+
   lazy val dataset: DATASET = createDatabase(databaseLocation)
 
   def allNamedGraph: Rdf#Graph
@@ -53,9 +61,21 @@ trait RDFStoreLocalProvider[Rdf <: RDF, DATASET] extends RDFOPerationsDB[Rdf, DA
 
   def datasetSize() = rdfStore.rw( dataset, { datasetSizeNoTR() })
   def datasetSizeNoTR() = ops.graphSize(allNamedGraph)
+
+  // implementations
+
+    /** */
+  def getDatasetOrDefault(database: String = "TDB", useTextQuery: Boolean= config.useTextQuery): DATASET = {
+    if (database == databaseLocation)
+      dataset
+    else
+      createDatabase(database, useTextQuery)
+  }
+
 }
 
-trait RDFStoreLocalUserManagement[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET] {
+trait RDFStoreLocalUserManagement[Rdf <: RDF, DATASET]
+extends RDFStoreLocalProvider[Rdf, DATASET] {
   import ops._
   /**
    * NOTE:

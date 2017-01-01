@@ -1,20 +1,20 @@
 package controllers
 
-import scala.concurrent.duration._
-import org.scalatest.FunSuite
-import org.w3.banana.RDFOpsModule
-import org.w3.banana.SparqlGraphModule
-import org.w3.banana.TurtleWriterModule
-import org.w3.banana.jena.JenaModule
-import akka.util.Timeout
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import play.api.test._
-import play.api.test.Helpers._
-import scala.concurrent.Future
-import play.api.mvc.Result
-import play.api.libs.iteratee.Enumerator
-import org.scalatestplus.play.PlaySpec
+import scala.concurrent.duration.DurationInt
+
 import org.scalatestplus.play.OneAppPerTest
+import org.scalatestplus.play.PlaySpec
+
+import akka.util.Timeout
+import deductions.runtime.services.DefaultConfiguration
+import play.api.libs.iteratee.Enumerator
+import play.api.test.FakeRequest
+import play.api.test.Helpers
+import play.api.test.Helpers.charset
+import play.api.test.Helpers.contentAsString
+import play.api.test.Helpers.contentType
+import play.api.test.Helpers.defaultAwaitTimeout
+import play.api.test.Helpers.status
 
 
 /** 
@@ -49,6 +49,11 @@ The triples for this test are stored in this named graph:
 class LDPSpec extends PlaySpec
     with WhiteBoxTestdependencies
     with OneAppPerTest {
+  val config = new DefaultConfiguration {
+    override val useTextQuery = false
+    override val needLoginForEditing = false
+    override val needLoginForDisplaying = false
+  }
 
   val ldpContainerURI = "test1/"
   val file = "test1.ttl"
@@ -118,9 +123,7 @@ class LDPSpec extends PlaySpec
   }
 
   import ops._
-  import sparqlOps._
   import rdfStore.transactorSyntax._
-  import rdfStore.sparqlEngineSyntax._
 
   /** get named graph for given URI */
   def getGraph(uri: String) = {

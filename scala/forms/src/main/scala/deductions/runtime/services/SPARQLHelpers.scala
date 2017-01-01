@@ -15,18 +15,17 @@ import org.w3.banana.RDF
 import org.w3.banana.TryW
 import org.w3.banana.io.JsonLdCompacted
 import org.w3.banana.io.RDFWriter
+import org.w3.banana.io.RDFXML
 import org.w3.banana.io.Turtle
 
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.utils.RDFHelpers0
+import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.utils.Timer
-import play.api.libs.json.Json
-import play.api.libs.json.JsObject
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsString
-import org.w3.banana.io.RDFXML
-import deductions.runtime.utils.RDFPrefixes
+import play.api.libs.json.Json
 
 /** TODO separate stuff depending on dataset, and stuff taking a  graph in argument
  * @author jmv
@@ -37,6 +36,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         with RDFPrefixes[Rdf]
     		with Timer {
 
+	val config: Configuration
+	
   val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]
   val rdfXMLWriter: RDFWriter[Rdf, Try, RDFXML]
@@ -168,8 +169,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    } }
   """
     val q = queryRdfList.replace("<SUBJECT>", s"$subject")
-    println(s"getRDFList: q $q")
+//    println(s"getRDFList: q $q")
     val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariablesNT(q, List("ELEM"))
+//    println(s"getRDFList: res $res")
     res.flatten
   }
 
@@ -318,6 +320,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         query <- Try(parseSelect(queryString))
         es <- Try(ds.executeSelect(query.get, Map()))
       } yield es
+//      println( s"sparqlSelectQueryVariablesNT: $solutionsTry" )
       val solutionsTry2 = solutionsTry.flatten
 
       solutionsTry2 match {
@@ -602,6 +605,11 @@ object SPARQLHelper extends ImplementationSettings.RDFModule
     with ImplementationSettings.RDFCache
     with SPARQLHelpers[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
+	val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+	import config._
+	
   def selectJSON(queryString: String): String = {
     sparqlSelectJSON(queryString)
   }

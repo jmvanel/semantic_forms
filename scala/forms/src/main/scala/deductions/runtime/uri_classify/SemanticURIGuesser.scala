@@ -3,14 +3,18 @@ package deductions.runtime.uri_classify
 import java.net.URL
 import java.net.URLConnection
 import java.nio.file.Paths
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+
 import akka.http.model.HttpHeader
 import akka.http.model.HttpMethods.HEAD
 import akka.http.model.HttpResponse
 import akka.http.model.MediaType
 import deductions.runtime.jena.RDFCache
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import deductions.runtime.services.DefaultConfiguration
+
 //import deductions.runtime.jena.JenaHelpers
 
 /**
@@ -26,6 +30,10 @@ import deductions.runtime.jena.RDFStoreLocalJena1Provider
 object SemanticURIGuesser extends RDFCache
     with RDFStoreLocalJena1Provider //    with JenaHelpers 
     {
+  val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+  //  import config._
 
   sealed abstract class SemanticURIType {
     override def toString = getClass.getSimpleName
@@ -117,8 +125,8 @@ object SemanticURIGuesser extends RDFCache
    *  TODO: works in the REPL, but not in TestSemanticURIGuesser
    */
   private def trySuffix(url: String): String = {
-    import java.nio.file._
     import java.net._
+    import java.nio.file._
     val urlObj = new URL(url)
     println("trySuffix " + url)
     // to eliminate #me in FOAF profiles: 

@@ -1,11 +1,11 @@
 package deductions.runtime.sparql_cache
 
 import org.w3.banana.RDF
-import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaModule
+
+import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.DependenciesForApps
 
 trait SitesURLForDownload {
   val githubcontent: String = "https://raw.githubusercontent.com"
@@ -23,10 +23,10 @@ trait SitesURLForDownload {
  *
  *  TODO use prefix.cc web service to load from prefix short names (see implementation in EulerGUI)
  */
-object PopulateRDFCache extends JenaModule
-  with DefaultConfiguration
-  with RDFStoreLocalJena1Provider
-  with PopulateRDFCacheTrait[Jena, ImplementationSettings.DATASET]
+object PopulateRDFCache
+  extends { override val config = new DefaultConfiguration{} }
+  with DependenciesForApps  
+  with PopulateRDFCacheTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 
 
 trait PopulateRDFCacheTrait[Rdf <: RDF, DATASET]

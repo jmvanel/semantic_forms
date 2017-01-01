@@ -58,6 +58,8 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
     values
   }
 
+  def getClasses(subject: Rdf#Node)(implicit graph: Rdf#Graph): List[Rdf#Node]= getObjects(graph, subject: Rdf#Node, rdf("type")).toList
+
   /** replace Same Language triple(s):
    *  given triple ?S ?P ?O ,
    *  remove triple(s)  ?S ?P ?O1 whose language matches input triple,
@@ -121,8 +123,11 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
 }
 
 
-trait RDFHelpers0[Rdf <: RDF] extends Configuration
-      with URIManagement {
+trait RDFHelpers0[Rdf <: RDF]
+extends
+//Configuration
+//      with 
+      URIManagement {
   implicit val ops: RDFOps[Rdf]
   import ops._
   

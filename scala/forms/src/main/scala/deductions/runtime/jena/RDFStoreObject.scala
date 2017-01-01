@@ -2,43 +2,34 @@ package deductions.runtime.jena
 
 import java.io.File
 import java.nio.file.Paths
-
 import scala.collection.JavaConversions.asScalaIterator
-
 import org.apache.jena.riot.RiotException
 import org.apache.log4j.Logger
 import org.w3.banana.jena.Jena
 import org.w3.banana.jena.JenaDatasetStore
 import org.w3.banana.jena.JenaModule
-
-//import com.hp.hpl.jena.query.DatasetFactory
-//import com.hp.hpl.jena.tdb.TDBFactory
-//import com.hp.hpl.jena.tdb.transaction.TransactionManager
-
 import org.apache.jena.graph.{ Graph => JenaGraph, Node => JenaNode, Triple => JenaTriple, _ }
 import org.apache.jena.query.{ QuerySolution, ResultSet, Query => JenaQuery }
 import org.apache.jena.query.DatasetFactory
 import org.apache.jena.tdb.TDBFactory
 import org.apache.jena.tdb.transaction.TransactionManager
 import org.apache.jena.update.UpdateRequest
-
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.jena.lucene.LuceneIndex
 import deductions.runtime.services.Configuration
-import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.utils.Timer
 
 // TODO rename RDFStoreLocalJenaProvider
 
 /**
  * singleton for implementation settings
- *  TODO move to package jena
  */
 object ImplementationSettings {
   // pave the way for migration to Jena 3 ( or BlazeGraph )
   type DATASET = org.apache.jena.query.Dataset
   type Rdf = Jena
   type RDFModule = JenaModule
+  /** actually just RDF database location; TODO rename RDFDatabase */
   type RDFCache = RDFStoreLocalJena1Provider
   type RDFReadException = RiotException
 }
@@ -46,14 +37,21 @@ object ImplementationSettings {
 /** For user data and RDF cache, sets a default location for the Jena TDB store directory : TDB */
 trait RDFStoreLocalJena1Provider
   extends RDFStoreLocalJenaProvider
-  with DefaultConfiguration
 
+/**
+ * NOTES:
+ * - mandatory that JenaModule (RDFModule) is first; otherwise ops may be null
+ */
 trait RDFStoreLocalJenaProvider
-    extends RDFStoreLocalProvider[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with JenaModule // with JenaRDFLoader
+    extends MicrodataLoaderModuleJena
+    with ImplementationSettings.RDFModule
+    with RDFStoreLocalProvider[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with Timer
-    with Configuration
     with LuceneIndex {
+
+  // CURRENTLY unused, but could be:  val config: Configuration
+  import config._
+
   import ops._
   type DATASET = ImplementationSettings.DATASET
   /** very important that defensiveCopy=false, otherwise no update happens, and a big overhead for every operation */
@@ -67,7 +65,7 @@ trait RDFStoreLocalJenaProvider
   //  override TransactionManager.DEBUG = true
 
   /**
-   * create TDB Database in given directory;
+   * create (or re-connect to) TDB Database in given directory;
    *  if it is empty, create an in-memory Database
    */
   override def createDatabase(database_location: String, useTextQuery: Boolean = useTextQuery) = {
