@@ -85,7 +85,8 @@ trait FormModule[NODE, URI <: NODE] {
 	  val defaults: FormDefaults = FormModule.formDefaults
 	  /** for multi-subject forms */
 		val subject: NODE
-      
+    val cardinality: Cardinality
+
     private val triples: mutable.Buffer[Triple] = mutable.ListBuffer[Triple]()
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]): Entry
     override def toString(): String = {
@@ -117,7 +118,8 @@ trait FormModule[NODE, URI <: NODE] {
     subject: NODE = nullURI,
     val mandatory: Boolean = false,
     var openChoice: Boolean = true,
-    var widgetType: WidgetType = Text
+    var widgetType: WidgetType = URIWidget,
+    val cardinality: Cardinality = zeroOrMore
     )
       extends Entry {
     override def toString(): String = {
@@ -158,7 +160,8 @@ trait FormModule[NODE, URI <: NODE] {
     subject: NODE = nullURI,
     val mandatory: Boolean = false,
     var openChoice: Boolean = true,
-    var widgetType: WidgetType = Text )
+    var widgetType: WidgetType = URIWidget,
+    val cardinality: Cardinality = zeroOrMore )
       extends Entry {
     override def toString(): String = {
       "BN: " + super.toString + s", $value , possibleValues count:${possibleValues.size}"
@@ -185,7 +188,8 @@ trait FormModule[NODE, URI <: NODE] {
     subject: NODE = nullURI,
     val mandatory: Boolean = false,
     var openChoice: Boolean = true,
-    var widgetType: WidgetType = Text)
+    var widgetType: WidgetType = Text,
+    val cardinality: Cardinality = zeroOrMore)
 
       extends Entry {
 
@@ -224,8 +228,9 @@ trait FormModule[NODE, URI <: NODE] {
       subject: NODE = nullURI,
       val mandatory: Boolean = false,
       var openChoice: Boolean = true,
-      var widgetType: WidgetType = Text,
-      val values: FormSyntax
+      var widgetType: WidgetType = ListWidget,
+      val values: FormSyntax,
+    val cardinality: Cardinality = exactlyOne
       ) extends Entry {
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = this
   }
@@ -247,9 +252,12 @@ object Buttons extends Choice
 object Slider extends Choice
 object PulldownMenu extends Choice
 
-object Collection extends WidgetType
+/** */
+object URIWidget extends WidgetType { override def toString() = "URI WidgetType" }
+object ListWidget extends WidgetType { override def toString() = "List WidgetType" }
 object DBPediaLookup extends WidgetType { override def toString() = "DBPediaLookup WidgetType" }
 object UpLoad extends WidgetType
+
 
 sealed class Cardinality
 object zeroOrMore extends Cardinality { override def toString() = "0 Or More" }

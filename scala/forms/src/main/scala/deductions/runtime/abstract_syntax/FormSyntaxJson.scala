@@ -15,6 +15,10 @@ trait FormSyntaxJson[Rdf <: RDF] extends FormModule[Rdf#Node, Rdf#URI] {
     def writes(wt: WidgetType) = new JsString(wt.toString())
   }
 
+    implicit val cardinalityWrites = new Writes[Cardinality] {
+    def writes(obj: Cardinality) = new JsString(obj.toString())
+  }
+
   implicit val entryWrites = new Writes[Entry] {
     def writes(e: Entry) = Json.obj(
       "label" -> e.label,
@@ -22,10 +26,11 @@ trait FormSyntaxJson[Rdf <: RDF] extends FormModule[Rdf#Node, Rdf#URI] {
       "mandatory" -> e.mandatory,
       "property" -> e.property,
       "subject" -> e.subject,
-      "type_" -> e.type_,
+      "type" -> e.type_,
       "value" -> e.value,
       "widgetType" -> e.widgetType,
-      "openChoice" -> e.openChoice
+      "openChoice" -> e.openChoice,
+      "cardinality" -> e.cardinality
       // , "possibleValues" -> e.possibleValues
       )
   }
