@@ -51,7 +51,7 @@ trait DefaultConfiguration extends Configuration {
   override val showEditButtons = true
   /** show all 3 buttons beside the current items in display or edit mode */
   override val showExpertButtons = true
-  override val groupFields: Boolean = false // true
+  override val groupFields: Boolean = true
 
   override val inlineJavascriptInForm: Boolean = true
   override def displayTechnicalSemWebDetails: Boolean = true
