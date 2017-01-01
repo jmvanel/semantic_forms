@@ -20,6 +20,7 @@ import deductions.runtime.services.BrowsableGraph
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.SPARQLHelpers
 import deductions.runtime.utils.RDFHelpers
+import deductions.runtime.jena.MicrodataLoaderModule
 
 /** */
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
@@ -32,7 +33,7 @@ trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
 /** */
 trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
     with RDFCacheDependencies[Rdf, DATASET]
-//    with RDFLoader[Rdf, Try]
+    with MicrodataLoaderModule[Rdf]
     with SPARQLHelpers[Rdf, DATASET]
     with TimestampManagement[Rdf, DATASET]
     with MirrorManagement[Rdf, DATASET]
@@ -96,12 +97,16 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
             g
           } catch {
             case t: Exception =>
-              println(s"Graph at URI $uri could not be downloaded, trying local TDB (${t.getLocalizedMessage}).")
+              println(s"Graph at URI <$uri> could not be downloaded, trying local TDB (exception ${t.getLocalizedMessage}, ${t.getClass} cause ${t.getCause}).")
               val tryGraph = search_only(fromUri(uri))
               tryGraph match {
                 case Success(g)   => g
                 case Failure(err) => throw err
               }
+
+            case t: Throwable =>
+              // for Java-RDFa release 0.4.2 :
+              println(s"Graph at URI <$uri> could not be downloaded, exception: $t") ; emptyGraph
           }
         } else {
           println(s"mirrorURI found: $mirrorURI")
@@ -237,9 +242,17 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     if (isDownloadableURI(uri)) {
       System.setProperty("sun.net.client.defaultReadTimeout", defaultReadTimeout.toString)
       System.setProperty("sun.net.client.defaultConnectTimeout", defaultConnectTimeout.toString)
-      // TODO: does not seem to take in account the JDK network timeout
-      val graph: Rdf#Graph =
-        rdfLoader.load(new java.net.URL(uri.toString())).get
+
+      // NOTE: Jena RDF loader can throw an exception "Failed to determine the content type"
+      val graphTry = rdfLoader.load(new java.net.URL(uri.toString()))
+
+       val graph = graphTry . getOrElse {
+            println(s"Trying RDFa for <$uri>")
+            microdataLoader.load(
+              new java.net.URL(uri.toString())) .get
+          }
+      println(s"storeURINoTransaction: $graph")
+
       Logger.getRootLogger().info(s"Before storeURI uri $uri graphUri $graphUri")
       rdfStore.appendToGraph( dataset, graphUri, graph)
       Logger.getRootLogger().info(s"storeURI uri $uri : stored into graphUri $graphUri")

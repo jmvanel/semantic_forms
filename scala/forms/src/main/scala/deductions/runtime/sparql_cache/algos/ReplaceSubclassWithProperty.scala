@@ -8,16 +8,15 @@ import org.w3.banana.RDF
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
-import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaModule
 
+import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.utils.CSVImporter
 
 object ReplaceSubclassWithPropertyApp extends App
-with JenaModule
+with ImplementationSettings.RDFModule
 with DefaultConfiguration
-with ReplaceSubclassWithProperty[Jena, Any] {
+with ReplaceSubclassWithProperty[ImplementationSettings.Rdf, Any] {
 
   val config = new DefaultConfiguration {
     override val useTextQuery = false
