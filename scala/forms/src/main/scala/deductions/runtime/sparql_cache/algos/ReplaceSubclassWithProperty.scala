@@ -13,14 +13,15 @@ import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.utils.CSVImporter
 
-object ReplaceSubclassWithPropertyApp extends App
+object ReplaceSubclassWithPropertyApp extends  {
+  override val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+} with App
 with ImplementationSettings.RDFModule
 with DefaultConfiguration
 with ReplaceSubclassWithProperty[ImplementationSettings.Rdf, Any] {
 
-  val config = new DefaultConfiguration {
-    override val useTextQuery = false
-  }
   val owlFile = args(0)
   val graph = turtleReader.read(new FileInputStream(owlFile), "").get
   val mgraph = ops.makeMGraph(graph)

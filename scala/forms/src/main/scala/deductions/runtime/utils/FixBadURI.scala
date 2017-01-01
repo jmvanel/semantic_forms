@@ -9,9 +9,8 @@ import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.riot.RDFDataMgr
 import org.apache.jena.util.FileManager
 import org.w3.banana.RDF
-import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaModule
-
+//import org.w3.banana.jena.Jena
+//import org.w3.banana.jena.JenaModule
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
@@ -33,15 +32,16 @@ import deductions.runtime.sparql_cache.RDFCacheAlgo
  *  TODO: reuse a single function for fixing URI,
  *  common to TypeAddition
  */
-object FixBadURIApp extends JenaModule
-    with FixBadURI[Jena, ImplementationSettings.DATASET]
+object FixBadURIApp extends  {
+  override val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+} with ImplementationSettings.RDFModule
+    with FixBadURI[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RDFStoreLocalJena1Provider
     //    with JenaHelpers 
     with App {
 
-  val config = new DefaultConfiguration {
-    override val useTextQuery = false
-  }
   import config._
   
   fix

@@ -16,8 +16,7 @@ import play.api.mvc.Security
  */
 trait Secured
     extends ApplicationFacadeJena
-//   with Configuration
-   with Results {
+    with Results {
 
   val config: Configuration
   import config._

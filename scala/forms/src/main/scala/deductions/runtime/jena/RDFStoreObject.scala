@@ -29,6 +29,7 @@ object ImplementationSettings {
   type DATASET = org.apache.jena.query.Dataset
   type Rdf = Jena
   type RDFModule = JenaModule
+  /** actually just RDF database location; TODO rename RDFDatabase */
   type RDFCache = RDFStoreLocalJena1Provider
   type RDFReadException = RiotException
 }
@@ -37,14 +38,18 @@ object ImplementationSettings {
 trait RDFStoreLocalJena1Provider
   extends RDFStoreLocalJenaProvider
 
+/**
+ * NOTES:
+ * - mandatory that JenaModule (RDFModule) is first; otherwise ops may be null
+ */
 trait RDFStoreLocalJenaProvider
     extends MicrodataLoaderModuleJena
-    with RDFStoreLocalProvider[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with ImplementationSettings.RDFModule
+    with RDFStoreLocalProvider[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with Timer
     with LuceneIndex {
 
-  //  val config: Configuration
+  // CURRENTLY unused, but could be:  val config: Configuration
   import config._
 
   import ops._

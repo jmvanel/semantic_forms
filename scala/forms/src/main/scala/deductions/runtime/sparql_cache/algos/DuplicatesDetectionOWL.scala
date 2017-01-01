@@ -17,16 +17,17 @@ import deductions.runtime.services.DefaultConfiguration
  *  
  *  deductions.runtime.sparql_cache.algos.DuplicatesDetectionOWLGroupBy
  *  */
-object DuplicatesDetectionOWLGroupBy extends App
+object DuplicatesDetectionOWLGroupBy extends {
+  override val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+} with App
 with ImplementationSettings.RDFCache
 with ImplementationSettings.RDFModule
 with DefaultConfiguration
 with DuplicatesDetectionOWL[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 with CSVFormatter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
-  val config = new DefaultConfiguration {
-    override val useTextQuery = false
-  }
   import ops._
 
   val addEmptyLineBetweenLabelGroups = false // true

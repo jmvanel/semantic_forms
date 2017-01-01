@@ -9,11 +9,13 @@ import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.sparql_cache.DataSourceManager
 
 /** deductions.runtime.jena.DataSourceManagerApp */
-object DataSourceManagerApp extends JenaModule
+object DataSourceManagerApp extends {
+  override val config = new DefaultConfiguration {
+  }
+} with ImplementationSettings.RDFModule
     with DataSourceManager[Jena, ImplementationSettings.DATASET] with App
     with RDFStoreLocalJena1Provider {
 
-  val config = new DefaultConfiguration {}
   import config._
 
   val url: URL = new URL(args(0))

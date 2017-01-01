@@ -2,47 +2,43 @@ package deductions.runtime.jena
 
 import scala.xml.NodeSeq
 
-import org.w3.banana.jena.JenaModule
-
 import deductions.runtime.dataset.RDFStoreLocalUserManagement
 import deductions.runtime.services.ApplicationFacade
 import deductions.runtime.services.ApplicationFacadeImpl
 import deductions.runtime.services.ApplicationFacadeInterface
 import deductions.runtime.services.Configuration
-//import deductions.runtime.services.ConfigurationCopy
-import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.services.DefaultConfiguration
 
 /**
- * ApplicationFacade for Jena,
- * does not expose Jena, just ApplicationFacadeInterface
+ * ApplicationFacade implemeted with Jena,
+ * but does not expose Jena nor Banana, just ApplicationFacadeInterface
  */
 trait ApplicationFacadeJena
     extends ApplicationFacadeInterface
     with ApplicationFacade[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with RDFStoreLocalJenaProvider //    with DefaultConfiguration
-    {
+    with RDFStoreLocalJenaProvider {
 
-  val config: Configuration //  = this
+  val config: Configuration
+  val conf = config
+
   override val impl: ApplicationFacadeImpl[Rdf, DATASET] = try {
     /**
      * NOTES:
-     * - mandatory that JenaModule is first; otherwise ops may be null
+     * - mandatory that JenaModule (RDFModule) is first; otherwise ops may be null
      * - mandatory that RDFStoreLocalJena1Provider is before ApplicationFacadeImpl;
      *   otherwise allNamedGraph may be null
      */
-    abstract class ApplicationFacadeImplJena extends JenaModule
-      //      with ConfigurationCopy
+    abstract class ApplicationFacadeImplJena
+      extends { override val config = conf } with ImplementationSettings.RDFModule
       with RDFStoreLocalJenaProvider
       with ApplicationFacadeImpl[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
       with RDFStoreLocalUserManagement[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 
-    val conf = config
     new ApplicationFacadeImplJena {
 
-      val config = conf
+      //      override val config = conf
 
-      //      override lazy val original = { conf }
+      /** Overridden just for some logging */
       override def htmlForm(uri0: String, blankNode: String = "",
         editable: Boolean = false,
         lang: String = "en", formuri: String = "",

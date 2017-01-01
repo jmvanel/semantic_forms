@@ -28,7 +28,6 @@ import play.api.mvc.Codec
 
 /** main controller */
 trait ApplicationTrait extends Controller
-//    with DefaultConfiguration
     with ApplicationFacadeJena
     with LanguageManagement
     with Secured
@@ -38,21 +37,21 @@ trait ApplicationTrait extends Controller
     with RDFPrefixes[ImplementationSettings.Rdf]
     {
 
-  lazy val config = new DefaultConfiguration {
-    override def serverPort = {
-      val port = Play.current.configuration.
-        getString("http.port")
-      port match {
-        case Some(port) =>
-          println( s"Running on port $port")
-          port
-        case _ =>
-          val serverPortFromConfig = super.serverPort
-          println(s"Could not get port from Play configuration; retrieving default port from SF config: $serverPortFromConfig")
-          serverPortFromConfig
-      }
-    }
-  }
+//  override lazy val config = new DefaultConfiguration {
+//    override def serverPort = {
+//      val port = Play.current.configuration.
+//        getString("http.port")
+//      port match {
+//        case Some(port) =>
+//          println( s"Running on port $port")
+//          port
+//        case _ =>
+//          val serverPortFromConfig = super.serverPort
+//          println(s"Could not get port from Play configuration; retrieving default port from SF config: $serverPortFromConfig")
+//          serverPortFromConfig
+//      }
+//    }
+//  }
 //  import config._
 
   def index() =

@@ -10,15 +10,14 @@ import deductions.runtime.services.DefaultConfiguration
  * Duplicates Detection for OWL; output: CSV, Grouped By labels of Datatype properties,
  *  or  owl:ObjectProperty", or "owl:Class"
  */
-object TextTreeViewRDF extends App
+object TextTreeViewRDF extends {
+  override val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+} with App
     with ImplementationSettings.RDFCache
     with DefaultConfiguration
     with DuplicatesDetectionBase[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
-
-  val config = new DefaultConfiguration {
-    override val useTextQuery = false
-  }
-  //  import config.
 
   /** you can set your own ontology Prefix, that will be replaced on output by ":" */
   val ontologyPrefix = "http://data.onisep.fr/ontologies/"

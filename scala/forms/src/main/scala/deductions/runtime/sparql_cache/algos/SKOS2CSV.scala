@@ -20,14 +20,15 @@ import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.RDFHelpers
 
 /** output given SKOS file as CSV */
-object SKOS2CSVApp extends App
+object SKOS2CSVApp extends  {
+  override val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+} with App
 with RDFStoreLocalJena1Provider
 with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 with DefaultConfiguration 
 with SKOS2CSV[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
-  val config = new DefaultConfiguration {
-    override val useTextQuery = false
-  }
 
   val addEmptyLineBetweenLabelGroups = false
   override lazy val owl = OWLPrefix[Rdf]

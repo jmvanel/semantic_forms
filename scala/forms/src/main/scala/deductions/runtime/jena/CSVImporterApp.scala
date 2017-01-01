@@ -23,14 +23,18 @@ import deductions.runtime.utils.CSVImporter
  * - abbreviated Turtle terms with well-known prefixes (eg foaf:name) are understood as columns names
  * - abbreviated Turtle terms with well-known prefixes (eg dbpedia:Paris) are understood in cells
  */
-object CSVImporterApp extends App
+object CSVImporterApp extends {
+  override val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+} with App
     with RDFStoreLocalJena1Provider
     with DefaultConfiguration
     with CSVImporter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
-  val config = new DefaultConfiguration {
-    override val useTextQuery = false
-  }
+  //  val config = new DefaultConfiguration {
+  //    override val useTextQuery = false
+  //  }
   import ops._
 
   println(s"Arguments: ${args.mkString(", ")}")

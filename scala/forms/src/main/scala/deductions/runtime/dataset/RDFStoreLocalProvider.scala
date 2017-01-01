@@ -30,7 +30,7 @@ trait RDFOPerationsDB[Rdf <: RDF, DATASET] {
 trait RDFStoreLocalProvider[Rdf <: RDF, DATASET]
 extends RDFOPerationsDB[Rdf, DATASET] {
 
-//  val config: Configuration
+//  CURRENTLY unused, but could be:  val config: Configuration
 
   /** relative or absolute file path for the database 
    *  TODO put in Configuration */

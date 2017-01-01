@@ -10,7 +10,6 @@ import deductions.runtime.services.Configuration
 trait Form2HTMLBanana[Rdf <: RDF]
 extends Form2HTML[Rdf#Node, Rdf#URI]
 with HTML5TypesTrait[Rdf] {
-//    self: Configuration =>
   implicit val ops: RDFOps[Rdf]
   import ops._
   override def toPlainString(n: Rdf#Node): String =

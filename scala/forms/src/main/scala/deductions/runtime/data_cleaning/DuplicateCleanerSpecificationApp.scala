@@ -28,16 +28,20 @@ import deductions.runtime.services.DefaultConfiguration
  *
  * Properties used in CSV Specification: see "ONISEP" in [[CSVImporter.columnsMappings]]
  */
-object DuplicateCleanerSpecificationApp extends App
+object DuplicateCleanerSpecificationApp extends {
+  override val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+} with App
     with RDFStoreLocalJena1Provider
     with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with DuplicateCleaner[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with SPARQLHelpers[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with CSVImporter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
-  val config = new DefaultConfiguration {
-    override val useTextQuery = false
-  }
+  //  val config = new DefaultConfiguration {
+  //    override val useTextQuery = false
+  //  }
   import config._
   import ops._
 

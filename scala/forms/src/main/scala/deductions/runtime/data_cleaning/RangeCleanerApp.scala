@@ -22,14 +22,18 @@ import deductions.runtime.services.DefaultConfiguration
  * Output:
  * modified data file in /tmp (same name as input)
  */
-object RangeCleanerApp extends App
+object RangeCleanerApp extends {
+  override val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+} with App
     with ImplementationSettings.RDFCache
     with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RangeCleaner[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
-	val config = new DefaultConfiguration {
-    override val useTextQuery = false
-  }
+//	val config = new DefaultConfiguration {
+//    override val useTextQuery = false
+//  }
 	import config._
 	import ops._
 

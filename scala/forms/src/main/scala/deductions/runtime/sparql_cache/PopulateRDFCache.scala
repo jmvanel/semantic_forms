@@ -5,6 +5,7 @@ import org.w3.banana.RDF
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.DependenciesForApps
 
 trait SitesURLForDownload {
   val githubcontent: String = "https://raw.githubusercontent.com"
@@ -24,11 +25,8 @@ trait SitesURLForDownload {
  */
 object PopulateRDFCache
   extends { override val config = new DefaultConfiguration{} }
-  with ImplementationSettings.RDFModule
-  with RDFStoreLocalJena1Provider
-  with PopulateRDFCacheTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
-//    override val config = new DefaultConfiguration{}
-}
+  with DependenciesForApps  
+  with PopulateRDFCacheTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 
 
 trait PopulateRDFCacheTrait[Rdf <: RDF, DATASET]

@@ -17,7 +17,11 @@ import deductions.runtime.services.DefaultConfiguration
  *
  *  TODO use prefix.cc web service to load from prefix short names (see implementation in EulerGUI)
  */
-object ResetRDFCacheApp extends ImplementationSettings.RDFModule
+object ResetRDFCacheApp extends {
+  override val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+} with ImplementationSettings.RDFModule
     with DefaultConfiguration
     with CommonVocabulariesLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RDFI18NLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
@@ -26,9 +30,6 @@ object ResetRDFCacheApp extends ImplementationSettings.RDFModule
     with ImplementationSettings.RDFCache
     with App {
 
-  val config = new DefaultConfiguration {
-    override val useTextQuery = false
-  }
   import ops._
   import rdfStore.transactorSyntax._
   import rdfStore.graphStoreSyntax._

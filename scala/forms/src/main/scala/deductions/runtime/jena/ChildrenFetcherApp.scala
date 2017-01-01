@@ -5,12 +5,16 @@ import java.net.URL
 import deductions.runtime.services.DefaultConfiguration
 
 /** will be used for machine learning */
-object ChildrenFetcherApp extends RDFStoreLocalJena1Provider with App
-    with ChildrenDocumentsFetcher[ImplementationSettings.Rdf] {
-
-  val config = new DefaultConfiguration {
+object ChildrenFetcherApp extends {
+  override val config = new DefaultConfiguration {
     override val useTextQuery = false
   }
+} with RDFStoreLocalJena1Provider with App
+    with ChildrenDocumentsFetcher[ImplementationSettings.Rdf] {
+
+  //  val config = new DefaultConfiguration {
+  //    override val useTextQuery = false
+  //  }
   import config._
 
   val url = args(0)

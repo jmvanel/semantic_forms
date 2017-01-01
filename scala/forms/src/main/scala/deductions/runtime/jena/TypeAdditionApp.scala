@@ -5,8 +5,8 @@ import scala.language.postfixOps
 import scala.util.Try
 
 import org.w3.banana.RDF
-import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaModule
+//import org.w3.banana.jena.Jena
+//import org.w3.banana.jena.JenaModule
 
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.services.TypeAddition
@@ -19,13 +19,16 @@ import deductions.runtime.services.TypeAddition
  *
  * @author jmv
  */
-object TypeAdditionApp extends JenaModule
-    with App
-    with RDFStoreLocalJena1Provider
-    with TypeAdditionAppTrait[Jena, ImplementationSettings.DATASET] {
-	val config = new DefaultConfiguration {
+object TypeAdditionApp extends  {
+  override val config = new DefaultConfiguration {
     override val useTextQuery = false
   }
+} with ImplementationSettings.RDFModule
+    with App
+    with RDFStoreLocalJena1Provider
+    with TypeAdditionAppTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+
+
 	import config._
   val uris: ArraySeq[Rdf#URI] = args map { p => ops.URI(p) }
   run()

@@ -18,9 +18,7 @@ import scala.util.Try
  *   to a particular Web framework
  */
 trait ApplicationFacade[Rdf <: RDF, DATASET]
-		extends ApplicationFacadeInterface
-//    with Configuration
-    {
+		extends ApplicationFacadeInterface {
 
   val impl: ApplicationFacadeImpl[Rdf, DATASET]
   

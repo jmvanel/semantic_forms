@@ -7,6 +7,7 @@ import deductions.runtime.jena.RDFCache
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.utils.RDFPrefixes
+import deductions.runtime.DependenciesForApps
 
 /**
  * @author jmv
@@ -14,14 +15,13 @@ import deductions.runtime.utils.RDFPrefixes
 
 /** Form Specifications Loader App */
 object FormSpecificationsLoader
-extends ImplementationSettings.RDFModule
-    with RDFCache with App
-    with FormSpecificationsLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with RDFStoreLocalJena1Provider
-    {
-  val config = new DefaultConfiguration {
-    override val useTextQuery = false
-  }
+    extends {
+      override val config = new DefaultConfiguration {
+        override val useTextQuery = false
+      }
+    } with DependenciesForApps
+    with FormSpecificationsLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+
   import config._
 
   if (args.size == 0)

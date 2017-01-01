@@ -12,16 +12,16 @@ import deductions.runtime.services.DefaultConfiguration
  * ReplaceSubclassWithProperty : App Example with hard-coded list of super-classes
  * to disconnect from their sub-classes
  */
-object ReplaceSubclassWithPropertyAppExample extends App
+object ReplaceSubclassWithPropertyAppExample extends {
+  override val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+} with App
     with ImplementationSettings.RDFCache
     with DefaultConfiguration
     with DuplicatesDetectionOWL[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with ReplaceSubclassWithProperty[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with WrongSubclassesSelection[ImplementationSettings.Rdf] {
-
-  val config = new DefaultConfiguration {
-    override val useTextQuery = false
-  }
 
   val owlFile = args(0)
   val graph = turtleReader.read(new FileInputStream(owlFile), "").get

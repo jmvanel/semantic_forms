@@ -18,15 +18,16 @@ import deductions.runtime.sparql_cache.RDFCacheAlgo
  * Output:
  * modified data file in /tmp (same name as input)
  */
-object DuplicateCleanerFileApp extends App
+object DuplicateCleanerFileApp extends {
+  override val config = new DefaultConfiguration {
+    override val useTextQuery = false
+  }
+} with App
     with ImplementationSettings.RDFCache
     with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with DuplicateCleaner[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with SPARQLHelpers[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
-  val config = new DefaultConfiguration {
-    override val useTextQuery = false
-  }
   import ops._
 
   //  //  override val databaseLocation: String = "" // in-memory

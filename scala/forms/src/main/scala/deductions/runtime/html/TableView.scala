@@ -35,7 +35,6 @@ trait TableViewModule[Rdf <: RDF, DATASET]
   import ops._
   import rdfStore.transactorSyntax._
 
-//  val nullURI: Rdf#URI = URI("")
   import scala.concurrent.ExecutionContext.Implicits.global
 
   /**
@@ -229,13 +228,9 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     val ops1 = ops
     val config1 = config
     val htmlFormGen = time("new Form2HTML",
-      new Form2HTMLBanana[Rdf]
-//    with ConfigurationCopy
-    {
+      new Form2HTMLBanana[Rdf] {
         val ops = ops1
-      	val config = config1
-//        lazy val original:Configuration = TableViewModule.this
-//        override def showPlusButtons = TableViewModule.this.showPlusButtons   
+      	val config = config1 
       }
     )
     val htmlForm = htmlFormGen.
