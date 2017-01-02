@@ -50,7 +50,7 @@ trait EnterButtons //extends Configuration
       <div class="col-md-12">
         <form role="form" action="/wordsearch">
           <div class="form-group">
-            <label class="col-md-2 control-label" for="q" title="Search URI whose value (object triple) match given regular expression">
+            <label class="col-md-2 control-label" for="q" title="Search URI whose value (object triple) match (Lucene search)">
               { messageI18N("String_to_search") }
             </label>
             <div class="col-md-6">

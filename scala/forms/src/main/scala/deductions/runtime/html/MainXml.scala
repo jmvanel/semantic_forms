@@ -129,27 +129,6 @@ trait MainXml extends ToolsPage with EnterButtons {
     <script src="assets/rdfviewer/rdf.js" type="text/javascript"></script>
     <script src="assets/rdfviewer/md5.min.js" type="text/javascript"></script>
     <script src="assets/javascripts/d3.v2.min.js" type="text/javascript"></script>
-
-    <!--
-     RDFicon.png
-    <link rel="stylesheet" href="assets/rdfviewer/rdfviewer.css"></link>
-    <link rel="stylesheet" href="assets/rdfviewer/basic.css"></link>
-
-    <script src="assets/fluidgraph/js/jquery-2.1.4.min.js"></script>
-    <script src="assets/fluidgraph/js/d3.v3.min.js"></script>
-    <script src="assets/fluidgraph/js/jquery.mockjax.min.js"></script>
-    <script src="assets/fluidgraph/js/FileSaver.min.js"></script>
-    <script src="assets/LDP-framework/mystore.js"></script>
-    <script src="assets/fluidgraph/js/semantic2.1.2.js"></script>
-    <link rel="stylesheet" href="assets/fluidgraph/css/semantic2.1.2.css"/>
-    <script src="assets/fluidgraph/js/mockdata.js"></script>
-    <script src="assets/fluidgraph/js/init.js"></script>
-    <script src="assets/fluidgraph/js/mygraph.js"></script>
-    <script src="assets/fluidgraph/js/mynodes.js"></script>
-    <script src="assets/fluidgraph/js/mylinks.js"></script>
-    <script src="assets/fluidgraph/js/mybackground.js"></script>
-    <script src="assets/fluidgraph/js/convert.js"></script>
-    -->
     <script type='text/javascript'>
       $(document).ready(function (){{
       { javascriptCode }
