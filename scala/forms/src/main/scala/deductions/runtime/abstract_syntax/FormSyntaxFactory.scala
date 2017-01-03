@@ -363,11 +363,14 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       def rdfListEntry = makeRDFListEntry(label, comment, prop, object_ , subject=subject )
 
       def literalEntry = {
+        val value = getLiteralNodeOrElse(object_, literalInitialValue)
         // TODO match graph pattern for interval datatype ; see issue #17
         // case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
         new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
-          getLiteralNodeOrElse(object_, literalInitialValue),
-          type_ = firstType, lang = getLang(object_).toString())
+          value,
+          type_ = firstType,
+          lang = getLang(object_).toString(),
+          valueLabel = nodeToString(value) )
       }
 
       val NullResourceEntry = new ResourceEntry("", "", nullURI, ResourceValidator(Set()) )

@@ -2,8 +2,11 @@ package deductions.runtime.abstract_syntax
 
 import play.api.libs.json._
 import org.w3.banana.RDF
+import deductions.runtime.utils.RDFHelpers
 
-trait FormSyntaxJson[Rdf <: RDF] extends FormModule[Rdf#Node, Rdf#URI] {
+trait FormSyntaxJson[Rdf <: RDF]
+    extends FormModule[Rdf#Node, Rdf#URI]
+    with RDFHelpers[Rdf] {
 
   def formSyntax2JSON(formSyntax: FormSyntax) : String = Json.prettyPrint(Json.toJson(formSyntax))
 
@@ -27,7 +30,8 @@ trait FormSyntaxJson[Rdf <: RDF] extends FormModule[Rdf#Node, Rdf#URI] {
       "property" -> e.property,
       "subject" -> e.subject,
       "type" -> e.type_,
-      "value" -> e.value,
+      "value" -> nodeToString(e.value),
+      "valueLabel" -> e.valueLabel,
       "widgetType" -> e.widgetType,
       "openChoice" -> e.openChoice,
       "cardinality" -> e.cardinality

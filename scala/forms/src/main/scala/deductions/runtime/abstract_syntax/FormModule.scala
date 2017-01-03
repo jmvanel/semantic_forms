@@ -189,7 +189,8 @@ trait FormModule[NODE, URI <: NODE] {
     val mandatory: Boolean = false,
     var openChoice: Boolean = true,
     var widgetType: WidgetType = Text,
-    val cardinality: Cardinality = zeroOrMore)
+    val cardinality: Cardinality = zeroOrMore,
+    override val valueLabel: String = "")
 
       extends Entry {
 
@@ -213,7 +214,7 @@ trait FormModule[NODE, URI <: NODE] {
         valueLabel = this.value.toString()
       )
     }
-    override def valueLabel: String = value.toString()
+//    override def valueLabel: String = value.toString()
   }
 
   case class RDFListEntry(
