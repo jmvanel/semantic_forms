@@ -41,12 +41,17 @@ trait FormSyntaxJson[Rdf <: RDF]
 
   implicit val resourceEntryWrites = new Writes[ResourceEntry] {
     def writes(e: ResourceEntry) = Json.obj(
-      "valueLabel" -> e.valueLabel)
+      "valueLabel" -> e.valueLabel,
+      "thumbnail" -> e.thumbnail,
+      "isImage" -> e.isImage )
   }
 
   implicit val formSyntaxWrites = new Writes[FormSyntax] {
     def writes(fs: FormSyntax) = Json.obj(
       "subject" -> fs.subject,
+      "title" -> fs.title,
+      "thumbnail" -> fs.thumbnail,
+ 
       "fields" -> fs.fields)
   }
 

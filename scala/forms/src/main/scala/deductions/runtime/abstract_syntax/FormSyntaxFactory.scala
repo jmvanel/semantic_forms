@@ -98,6 +98,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    	with ComputePropertiesList[Rdf, DATASET]
     with FormConfigurationReverseProperties[Rdf, DATASET]
     with RDFListInference[Rdf, DATASET]
+    with ThumbnailInference[Rdf, DATASET]
     with RDFPrefixes[Rdf]
     with Timer {
 
@@ -228,7 +229,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val pgs = for( (n, m) <- entriesFromPropertiesGroups ) yield {
       FormSyntax(n, m, title=instanceLabel(n, allNamedGraph, "en"))
     }
-    val formSyntax = FormSyntax(subject, fields3, classs, propertiesGroups=pgs.toSeq)
+    val formSyntax = FormSyntax(subject, fields3, classs, propertiesGroups=pgs.toSeq,
+        thumbnail = getURIimage(subject) )
     
     addAllPossibleValues(formSyntax, valuesFromFormGroup)
     
@@ -382,7 +384,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
                 new ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_,
                   alreadyInDatabase = true,
                   valueLabel = instanceLabel(object_, graph, preferedLanguage),
-                  type_ = firstType ) },
+                  type_ = firstType,
+                  isImage = isImageTriple(subject, prop, object_, firstType)
+                )},
               object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_,
                 typ = firstType),
               object_ => literalEntry))
