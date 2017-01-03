@@ -50,13 +50,14 @@ trait EnterButtons //extends Configuration
       <div class="col-md-12">
         <form role="form" action="/wordsearch">
           <div class="form-group">
-            <label class="col-md-2 control-label" for="q" title="Search URI whose value (object triple) match (Lucene search)">
+            <label class="col-md-2 control-label" for="q" title="Search URI whose value (object triple) matches (Lucene search) or (known RDF class)">
               { messageI18N("String_to_search") }
             </label>
             <div class="col-md-6">
               <input class="form-control" type="text" name="q" placeholder={
                 messageI18N("Search_placeholder")
               } dropzone="copy"/>
+              <input class="form-control" type="text" name="clas" placeholder={ messageI18N("Class_placeholder") }/>
             </div>
             <div class="col-md-4">
               <input class="btn btn-primary" type="submit" value={ messageI18N("Search") }/>
