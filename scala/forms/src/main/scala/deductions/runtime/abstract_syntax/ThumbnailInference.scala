@@ -11,21 +11,25 @@ trait ThumbnailInference[Rdf <: RDF, DATASET]
   import ops._
 
   val imagePproperties = Seq(
-      foaf("thumbnail"),
-      foaf("img"),
-      dbo("thumbnail"),
-      foaf("depiction")
-      )
+    foaf("thumbnail"),
+    foaf("img"),
+    dbo("thumbnail"),
+    foaf("depiction"))
 
   def isImageTriple(subject: Rdf#Node, property: Rdf#Node, objet: Rdf#Node, objetType: Rdf#Node): Boolean =
     objetType == foaf("Image") ||
-    imagePproperties.contains(property)
+      imagePproperties.contains(property)
 
   def getURIimage(subject: Rdf#Node): Option[Rdf#Node] = {
 
-    def getOne(property: Rdf#URI) = getObjects(allNamedGraph, subject, property) . headOption
-    imagePproperties. find ( property => {
-      val opt = getOne(property) ; opt.isDefined } )
-    
+    def getOne(property: Rdf#URI) = getObjects(allNamedGraph, subject, property).headOption
+    val correspondingProperty = imagePproperties.find(property => {
+      val opt = getOne(property); opt.isDefined
+    })
+
+    val imageURIOption = correspondingProperty.map {
+      correspondingProperty => getObjects(allNamedGraph, subject, correspondingProperty).headOption
+    }
+    imageURIOption.flatten
   }
 }
