@@ -230,7 +230,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       FormSyntax(n, m, title=instanceLabel(n, allNamedGraph, "en"))
     }
     val formSyntax = FormSyntax(subject, fields3, classs, propertiesGroups=pgs.toSeq,
-        thumbnail = getURIimage(subject) )
+        thumbnail = getURIimage(subject),
+        title = instanceLabel( subject, allNamedGraph, "en" ) )
     
     addAllPossibleValues(formSyntax, valuesFromFormGroup)
     
