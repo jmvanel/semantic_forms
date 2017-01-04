@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:9000/" />
+<title>crud.selenium</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">crud.selenium</td></tr>
+</thead><tbody>
+
+<!--login -->
+<tr>
+	<td>open</td>
+	<td>/login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=#collapseRegister &gt; form &gt; #userid_field &gt; dd &gt; #userid</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>css=#collapseRegister &gt; form &gt; #password_field &gt; dd &gt; #password</td>
+	<td>aa</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>css=#collapseRegister &gt; form &gt; #userid_field &gt; dd &gt; #userid</td>
+	<td>aa</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=confirmPassword</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=confirmPassword</td>
+	<td>aa</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=#collapseRegister &gt; form &gt; input.btn.btn-primary</td>
+	<td></td>
+</tr>
+
+
+<!-- Create default type (foaf:Person) -->
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Créer']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//form // div [label [ text() = "prénom"]] // input [ type != "button" ] </td>
+	<td>Victime 1</td>
+</tr>
+<!-- id=f0  / @value -->
+<tr>
+	<td>select</td>
+	<td>id=http://xmlns.com/foaf/0.1/knows</td>
+	<td>label=Jean-Marc Vanel</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='SAUVER']</td>
+	<td></td>
+</tr>
+
+<!-- Check what is saved -->
+<tr>
+	<td>assertTitle</td>
+	<td>Victime 1 - Bienvenue à Semantic forms</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>link=Personne</td>
+	<td>Personne</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>link=Jean-Marc Vanel</td>
+	<td>Jean-Marc Vanel</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>css=div.form-cell-display</td>
+	<td>Victime 1</td>
+</tr>
+
+<!--logout -->
+<tr>
+	<td>open</td>
+	<td>/logout</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

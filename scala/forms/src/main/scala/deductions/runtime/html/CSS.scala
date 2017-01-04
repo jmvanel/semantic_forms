@@ -15,18 +15,6 @@ trait CSS {
       .sf-sparql-table td { padding:0px 10px; }
       .sf-sparql-table tr:first-of-type { font-weight:bold; }
 """
-  /*
-      .form-root{ margin-left: 10px; }
-      .form-row{ display: table-row; }
-      .form-cell{ display: table-cell; }
-      .form-label{ display: table-cell; width: 160px;
-                   border-collapse: separate;
-                   border-width: 10px;
-                   background-color: lightcoral; }
-      .form-input{ display: table-cell; width: 500px;
-                   border-collapse: separate;
-                   border-width: 2px;}
-      .button-add{ width: 25px; }*/
 
   lazy val localCSS = <style type='text/css'>{ cssRules }</style>
 

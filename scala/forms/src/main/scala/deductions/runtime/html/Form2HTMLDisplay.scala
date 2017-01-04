@@ -45,15 +45,16 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       draggable="true"><i class="glyphicon glyphicon-share-alt"></i> </a>
     } else NodeSeq.Empty )
 
-    val thumbnail =
-      if (resourceEntry.type_ == foaf("Image") ||
-        resourceEntry.property == foaf("img") ||
-        resourceEntry.property == foaf("thumbnail") ||
-        resourceEntry.property == foaf("depiction"))
-        <img src={ resourceEntry.value.toString() } css="sf-thumbnail" height="40" alt={ resourceEntry.value.toString() }/>
-      // TODO for alt= , need to have access to the display label for the triple subject
+    val thumbnail = {
+      val thumbnail = resourceEntry.thumbnail
+      val imageURL = if (resourceEntry.isImage) Some(resourceEntry.value)
+      else thumbnail
+      if (resourceEntry.isImage || thumbnail.isDefined)
+        <img src={ imageURL.get.toString() } css="sf-thumbnail" height="40" alt={
+          s"Image of ${resourceEntry.valueLabel}: ${resourceEntry.value.toString()}"
+        }/>
       else NodeSeq.Empty
-
+      }
       hyperlinkToObjectURI ++
       Text("\n") ++
       backLinkButton ++

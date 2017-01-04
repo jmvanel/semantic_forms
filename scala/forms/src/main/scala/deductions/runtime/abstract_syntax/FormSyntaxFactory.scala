@@ -98,6 +98,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    	with ComputePropertiesList[Rdf, DATASET]
     with FormConfigurationReverseProperties[Rdf, DATASET]
     with RDFListInference[Rdf, DATASET]
+    with ThumbnailInference[Rdf, DATASET]
     with RDFPrefixes[Rdf]
     with Timer {
 
@@ -228,7 +229,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val pgs = for( (n, m) <- entriesFromPropertiesGroups ) yield {
       FormSyntax(n, m, title=instanceLabel(n, allNamedGraph, "en"))
     }
-    val formSyntax = FormSyntax(subject, fields3, classs, propertiesGroups=pgs.toSeq)
+    val formSyntax = FormSyntax(subject, fields3, classs, propertiesGroups=pgs.toSeq,
+        thumbnail = getURIimage(subject),
+        title = instanceLabel( subject, allNamedGraph, "en" ) )
     
     addAllPossibleValues(formSyntax, valuesFromFormGroup)
     
@@ -363,11 +366,14 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       def rdfListEntry = makeRDFListEntry(label, comment, prop, object_ , subject=subject )
 
       def literalEntry = {
+        val value = getLiteralNodeOrElse(object_, literalInitialValue)
         // TODO match graph pattern for interval datatype ; see issue #17
         // case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
         new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
-          getLiteralNodeOrElse(object_, literalInitialValue),
-          type_ = firstType, lang = getLang(object_).toString())
+          value,
+          type_ = firstType,
+          lang = getLang(object_).toString(),
+          valueLabel = nodeToString(value) )
       }
 
       val NullResourceEntry = new ResourceEntry("", "", nullURI, ResourceValidator(Set()) )
@@ -379,7 +385,10 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
                 new ResourceEntry(label, comment, prop, ResourceValidator(ranges), object_,
                   alreadyInDatabase = true,
                   valueLabel = instanceLabel(object_, graph, preferedLanguage),
-                  type_ = firstType ) },
+                  type_ = firstType,
+                  isImage = isImageTriple(subject, prop, object_, firstType),
+                  thumbnail = getURIimage(object_)
+                )},
               object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_,
                 typ = firstType),
               object_ => literalEntry))

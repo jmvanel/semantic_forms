@@ -41,7 +41,8 @@ trait FormModule[NODE, URI <: NODE] {
       // TODO maybe : propertiesGroups could be a list of FormSyntax
 //      propertiesGroups: collection.Map[NODE, Seq[Entry]] = collection.Map[NODE, Seq[Entry]](),
       propertiesGroups: collection.Seq[FormSyntax] = collection.Seq[FormSyntax](),
-      val title: String = ""
+      val title: String = "",
+      val thumbnail: Option[NODE] = None
       ) {
     
     /** Map from property to possible Values  */
@@ -119,7 +120,11 @@ trait FormModule[NODE, URI <: NODE] {
     val mandatory: Boolean = false,
     var openChoice: Boolean = true,
     var widgetType: WidgetType = URIWidget,
-    val cardinality: Cardinality = zeroOrMore
+    val cardinality: Cardinality = zeroOrMore,
+    /** is the value itself an Image? */
+    val isImage: Boolean = false,
+    /** possible thumbnail Image for the value */
+    val thumbnail: Option[NODE] = None
     )
       extends Entry {
     override def toString(): String = {
@@ -161,7 +166,10 @@ trait FormModule[NODE, URI <: NODE] {
     val mandatory: Boolean = false,
     var openChoice: Boolean = true,
     var widgetType: WidgetType = URIWidget,
-    val cardinality: Cardinality = zeroOrMore )
+    val cardinality: Cardinality = zeroOrMore,
+    val isImage: Boolean = false,
+    val thumbnail: Option[NODE] = None )
+
       extends Entry {
     override def toString(): String = {
       "BN: " + super.toString + s", $value , possibleValues count:${possibleValues.size}"
@@ -189,7 +197,8 @@ trait FormModule[NODE, URI <: NODE] {
     val mandatory: Boolean = false,
     var openChoice: Boolean = true,
     var widgetType: WidgetType = Text,
-    val cardinality: Cardinality = zeroOrMore)
+    val cardinality: Cardinality = zeroOrMore,
+    override val valueLabel: String = "")
 
       extends Entry {
 
@@ -213,7 +222,6 @@ trait FormModule[NODE, URI <: NODE] {
         valueLabel = this.value.toString()
       )
     }
-    override def valueLabel: String = value.toString()
   }
 
   case class RDFListEntry(

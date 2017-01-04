@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:9000/" />
+<title>Basic features</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Basic features</td></tr>
+</thead><tbody>
+
+<!--login -->
+<tr>
+	<td>open</td>
+	<td>/login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=#collapseRegister &gt; form &gt; #userid_field &gt; dd &gt; #userid</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>css=#collapseRegister &gt; form &gt; #password_field &gt; dd &gt; #password</td>
+	<td>aa</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>css=#collapseRegister &gt; form &gt; #userid_field &gt; dd &gt; #userid</td>
+	<td>aa</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=confirmPassword</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=confirmPassword</td>
+	<td>aa</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=#collapseRegister &gt; form &gt; input.btn.btn-primary</td>
+	<td></td>
+</tr>
+
+<!-- display uri some FOAF RDF -->
+<tr>
+	<td>type</td>
+	<td>name=displayuri</td>
+	<td>http://jmvanel.free.fr/jmv.rdf#me</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>name=Display</td>
+	<td></td>
+</tr>
+
+<tr>
+	<td>verifyText</td>
+	<td>css=div.row &gt; h3</td>
+	<td>Jean-Marc Vanel</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>link=Tim Berners-Lee</td>
+	<td>Tim Berners-Lee</td>
+</tr>
+<tr>
+	<td>assertElementPresent</td>
+	<td>xpath=//div [position() &gt; 1 ]/ label [text() = "type" ]</td>
+	<td></td>
+</tr>
+
+<!-- Edit same FOAF RDF -->
+<tr>
+	<td>clickAndWait</td>
+	<td>css=i.glyphicon.glyphicon-edit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertElementPresent</td>
+	<td>xpath=//form//div/input [ @value = "http://bblfish.net/people/henry/card#me" ] </td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=option[title=&quot;http://www.w3.org/People/Berners-Lee/card#i&quot;]</td>
+	<td>Tim Berners-Lee</td>
+</tr>
+
+<!-- Reverse (back) links from form title button -->
+<tr>
+	<td>clickAndWait</td>
+	<td>id=BACK-http://jmvanel.free.fr/jmv.rdf#me</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>link=jmv.rdf#</td>
+	<td>jmv.rdf#</td>
+</tr>
+
+<!-- Search "Jean-Marc" -->
+<tr>
+	<td>type</td>
+	<td>name=q</td>
+	<td>Jean-Marc</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Chercher']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>link=Jean-Marc Vanel</td>
+	<td>Jean-Marc Vanel</td>
+</tr>
+
+<!-- Create default type (foaf:Person) -->
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Créer']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertElementPresent</td>
+	<td>xpath=//form // div / label [text() = "nom de famille" ]</td>
+	<td>nom de famille</td>
+</tr>
+<tr>
+	<td>assertElementPresent</td>
+	<td>xpath=//form/div//label [text() = "connaît"]</td>
+	<td></td>
+</tr>
+
+<!-- Create another type -->
+<tr>
+	<td>select</td>
+	<td>css=select[name=&quot;uri&quot;]</td>
+	<td>label=http://deductions.github.io/biological-collections.owl.ttl#Planting</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Créer']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertElementPresent</td>
+	<td>// div / label  [text() = "espèce"]</td>
+	<td></td>
+</tr>
+
+<!--logout -->
+<tr>
+	<td>open</td>
+	<td>/logout</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

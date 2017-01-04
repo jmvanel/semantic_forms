@@ -176,7 +176,13 @@ extends
     foldNode(node)(
       uri => uri, x => URI(""),
       literal => URI("") )
-
+  /** avoids the "" around the literal */
+  def nodeToString(node: Rdf#Node): String =
+    foldNode(node)(
+      uri => fromUri(uri),
+      bn => fromBNode(bn),
+      literal => fromLiteral(literal)._1)
+ 
   def isDownloadableURI(uri: Rdf#URI) = {
     val u = fromUri(uri)
     (
