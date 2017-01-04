@@ -170,15 +170,19 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
           } else ""
 
           implicit val graph = allNamedGraph
-            Text("\n") ++
-            titleEditDisplayDownloadLinks(uri, lang, editable) ++
-            <div>{status}</div> ++        
-            htmlFormElemRaw(uri, graph, hrefDisplayPrefix, blankNode, editable = editable,
+          val formBoth = htmlFormElemRaw(uri, graph, hrefDisplayPrefix, blankNode, editable = editable,
               lang = lang,
               formuri = formuri,
               graphURI = graphURI,
-              database = database
-              )
+              database = database)
+          val formItself = formBoth . _1
+          val formSyntax = formBoth . _2
+
+            Text("\n") ++
+            titleEditDisplayDownloadLinks(uri, lang, editable) ++
+            titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable) ++ // TODO <<<<<<<<<<<<
+            <div>{status}</div> ++
+            formItself
         })
         res.get
       } catch {
