@@ -386,7 +386,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
                   alreadyInDatabase = true,
                   valueLabel = instanceLabel(object_, graph, preferedLanguage),
                   type_ = firstType,
-                  isImage = isImageTriple(subject, prop, object_, firstType)
+                  isImage = isImageTriple(subject, prop, object_, firstType),
+                  thumbnail = getURIimage(object_)
                 )},
               object_ => makeBN(label, comment, prop, ResourceValidator(ranges), object_,
                 typ = firstType),

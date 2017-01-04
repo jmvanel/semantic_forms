@@ -45,12 +45,16 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       draggable="true"><i class="glyphicon glyphicon-share-alt"></i> </a>
     } else NodeSeq.Empty )
 
-    val thumbnail =
-      if ( resourceEntry.isImage )
-        <img src={ resourceEntry.value.toString() } css="sf-thumbnail" height="40" alt={
-          s"Image of ${resourceEntry.valueLabel}: ${resourceEntry.value.toString()}" }/>
+    val thumbnail = {
+      val thumbnail = resourceEntry.thumbnail
+      val imageURL = if (resourceEntry.isImage) Some(resourceEntry.value)
+      else thumbnail
+      if (resourceEntry.isImage || thumbnail.isDefined)
+        <img src={ imageURL.get.toString() } css="sf-thumbnail" height="40" alt={
+          s"Image of ${resourceEntry.valueLabel}: ${resourceEntry.value.toString()}"
+        }/>
       else NodeSeq.Empty
-
+      }
       hyperlinkToObjectURI ++
       Text("\n") ++
       backLinkButton ++

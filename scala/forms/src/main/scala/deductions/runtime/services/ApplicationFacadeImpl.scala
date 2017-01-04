@@ -8,6 +8,8 @@ import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
 import scala.xml.Elem
+import scala.xml.Text
+
 import org.apache.log4j.Logger
 import org.w3.banana.RDF
 import org.w3.banana.io.RDFWriter
@@ -166,15 +168,14 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
             }
             status
           } else ""
-          implicit val graph = allNamedGraph;
-          Seq(
-            titleEditDisplayDownloadLinks(uri, lang, editable),
-            <div>{status}</div>,
-            
+
+          implicit val graph = allNamedGraph
+            Text("\n") ++
+            titleEditDisplayDownloadLinks(uri, lang, editable) ++
+            <div>{status}</div> ++        
             // TODO: add argument datasetOrDefault
             htmlFormElemRaw(uri, graph, hrefDisplayPrefix, blankNode, editable = editable,
-              lang = lang, formuri=formuri, graphURI=graphURI)) .
-              flatMap { identity }
+              lang = lang, formuri=formuri, graphURI=graphURI)
         })
         res.get
       } catch {
