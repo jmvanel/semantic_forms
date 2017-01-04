@@ -48,10 +48,11 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     graphURI: String = "",
     actionURI2: String = "/save",
     formGroup: String = fromUri(nullURI),
-    formuri: String=""): NodeSeq = {
+    formuri: String="",
+    database: String = "TDB"): NodeSeq = {
 
     htmlFormRaw(uri, unionGraph, hrefPrefix, blankNode, editable, actionURI,
-      lang, graphURI, actionURI2, URI(formGroup), formuri) match {
+      lang, graphURI, actionURI2, URI(formGroup), formuri, database) match {
         case Success(e) => e
         case Failure(e) => <p>htmlFormElem: Exception occured: { e }</p>
       }
@@ -139,11 +140,13 @@ trait TableViewModule[Rdf <: RDF, DATASET]
                           graphURI: String = "",
                           actionURI2: String = "/save",
                           formGroup: Rdf#URI = nullURI,
-                          formuri: String=""): Try[NodeSeq] = {
+                          formuri: String="",
+                          database: String = "TDB"): Try[NodeSeq] = {
 
     println(s"htmlFormRaw dataset $dataset, graphURI <$graphURI>")
     val tryGraph = if (blankNode != "true") {
-      val res = retrieveURINoTransaction(makeUri(uri), dataset)
+    	val datasetOrDefault = getDatasetOrDefault(database)
+      val res = retrieveURINoTransaction(makeUri(uri), datasetOrDefault)
       Logger.getRootLogger().info(s"After retrieveURINoTransaction(makeUri($uri), store)")
       res
     } else Success(emptyGraph)
