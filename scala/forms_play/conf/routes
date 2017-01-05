@@ -43,6 +43,7 @@ GET     /login                      controllers.Auth.login
 POST    /authenticate               controllers.Auth.authenticate
 GET     /authenticate               controllers.Auth.authenticate
 POST    /register                   controllers.Auth.register
+GET     /register                   controllers.Auth.register
 GET     /logout                     controllers.Auth.logout
 
 # Home page

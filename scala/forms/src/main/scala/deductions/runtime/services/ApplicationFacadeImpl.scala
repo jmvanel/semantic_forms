@@ -179,8 +179,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
           val formSyntax = formBoth . _2
 
             Text("\n") ++
-            titleEditDisplayDownloadLinks(uri, lang, editable) ++
-//            titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable) ++ // TODO <<<<<<<<<<<<
+//            titleEditDisplayDownloadLinks(uri, lang, editable) ++
+            titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable) ++
             <div>{status}</div> ++
             formItself
         })
