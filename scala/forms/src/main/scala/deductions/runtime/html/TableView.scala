@@ -48,12 +48,13 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     graphURI: String = "",
     actionURI2: String = "/save",
     formGroup: String = fromUri(nullURI),
-    formuri: String=""): NodeSeq = {
+    formuri: String="",
+    database: String = "TDB"): ( NodeSeq, FormSyntax ) = {
 
     htmlFormRaw(uri, unionGraph, hrefPrefix, blankNode, editable, actionURI,
-      lang, graphURI, actionURI2, URI(formGroup), formuri) match {
+      lang, graphURI, actionURI2, URI(formGroup), formuri, database) match {
         case Success(e) => e
-        case Failure(e) => <p>htmlFormElem: Exception occured: { e }</p>
+        case Failure(e) => ( <p>htmlFormElem: Exception occured: { e }</p>, FormSyntax(nullURI, Seq() ) )
       }
   }
   
@@ -71,7 +72,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
 
     htmlForm(uri, hrefPrefix, blankNode, editable, actionURI,
       lang, graphURI, actionURI2, URI(formGroup)) match {
-        case Success(e) => e
+        case Success(e) => e._1
         case Failure(e) => <p>htmlFormElem: Exception occured: { e }</p>
       }
   }
@@ -139,11 +140,13 @@ trait TableViewModule[Rdf <: RDF, DATASET]
                           graphURI: String = "",
                           actionURI2: String = "/save",
                           formGroup: Rdf#URI = nullURI,
-                          formuri: String=""): Try[NodeSeq] = {
+                          formuri: String="",
+                          database: String = "TDB"): Try[( NodeSeq, FormSyntax)] = {
 
     println(s"htmlFormRaw dataset $dataset, graphURI <$graphURI>")
     val tryGraph = if (blankNode != "true") {
-      val res = retrieveURINoTransaction(makeUri(uri), dataset)
+    	val datasetOrDefault = getDatasetOrDefault(database)
+      val res = retrieveURINoTransaction(makeUri(uri), datasetOrDefault)
       Logger.getRootLogger().info(s"After retrieveURINoTransaction(makeUri($uri), store)")
       res
     } else Success(emptyGraph)
@@ -165,7 +168,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     graphURI: String = "",
     actionURI2: String = "/save",
     formGroup: Rdf#URI = nullURI)
-    : Try[NodeSeq] = {
+    : Try[( NodeSeq, FormSyntax )] = {
 
     println( s"htmlForm dataset $dataset" )
 
@@ -213,12 +216,12 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     actionURI2: String = "/save",
     formGroup: Rdf#URI = nullURI,
     formuri: String="")
-    : NodeSeq = {
+    : ( NodeSeq , FormSyntax ) = {
 
     implicit val graph: Rdf#Graph = graphe
     try {
-//    	println(s"TableViewModule.graf2form(graph: graph size: ${graph.size}, graphURI <$graphURI>")      
-    	println(s"TableViewModule.graf2form(graph: graph : ${graph}, graphURI <$graphURI>")      
+    	println(s"TableViewModule.graf2form(graph: graph size: ${graph.size}, graphURI <$graphURI>")      
+      //    	println(s"TableViewModule.graf2form(graph: graph : ${graph}, graphURI <$graphURI>")      
     } catch {
       case t: Throwable => "graf2form : getting graph.size" + t.getLocalizedMessage()
     }
@@ -236,7 +239,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     val htmlForm = htmlFormGen.
       generateHTML(form, hrefPrefix, editable, actionURI, graphURI,
         actionURI2, lang)
-    htmlForm
+    ( htmlForm, form )
   }
 
   private def createAbstractForm(
@@ -244,19 +247,18 @@ trait TableViewModule[Rdf <: RDF, DATASET]
       uri: String, editable: Boolean,
     lang: String, blankNode: String, formGroup: Rdf#URI, formuri: String="")
     (implicit graph: Rdf#Graph)
-    : FormModule[Rdf#Node, Rdf#URI]#FormSyntax = {
+    : 
+//    FormModule[Rdf#Node, Rdf#URI]#
+    FormSyntax = {
     val subjectNode = if (blankNode == "true")
       /* Jena TDB specific:
            * Jena supports "concrete bnodes" in SPARQL syntax as pseudo URIs in the "_" URI scheme
            * (it's an illegal name for a URI scheme) */
       BNode(uri)
     else URI(uri)
-    val factory = this
-//      new FormSyntaxFactory[Rdf, DATASET] {
-//     val graph=graphArg
-//     val preferedLanguage = lang }
+
     preferedLanguage = lang
-    factory.createForm(subjectNode, editable, formGroup, formuri)
+    createForm(subjectNode, editable, formGroup, formuri)
   }
 
   def htmlFormString(uri: String,
@@ -268,7 +270,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
   }
 
   def graf2formString(graph1: Rdf#Graph, uri: String, graphURI: String): String = {
-    graf2form(graph1, uri, graphURI = graphURI).toString
+    graf2form(graph1, uri, graphURI = graphURI)._1.toString
   }
 
   //  override 

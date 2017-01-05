@@ -36,14 +36,19 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
    *  TODO code duplicated in Lookup.scala */
   val indexBasedQuery = new SPARQLQueryMaker[Rdf] with ColsInResponse {
     override def makeQueryString(searchStrings: String*): String = {
-      val search = searchStrings(0)
+      val search =  searchStrings(0)
       val clas = searchStrings(1)
+
+      val textQuery = if( searchStrings(0).length() > 0 )
+        s"?thing text:query ( '${prepareSearchString(search).trim()}' ) ."
+      else ""
+
       val queryString0 = s"""
          |${declarePrefix(text)}
          |${declarePrefix(rdfs)}
          |SELECT DISTINCT ?thing (COUNT(*) as ?count) WHERE {
          |  graph ?g {
-         |    ?thing text:query ( '${prepareSearchString(search).trim()}' ) .
+         |    $textQuery
          |    ?thing ?p ?o .
          |    ?thing a ?class .
          |  }

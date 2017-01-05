@@ -130,7 +130,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
 
 
-  /** Add to naked form from TableView:
+  /** Naked form from TableView, plus:
    *
    * - title and links on top of the form,
    * - page URI (graph) statistics,
@@ -170,12 +170,19 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
           } else ""
 
           implicit val graph = allNamedGraph
+          val formBoth = htmlFormElemRaw(uri, graph, hrefDisplayPrefix, blankNode, editable = editable,
+              lang = lang,
+              formuri = formuri,
+              graphURI = graphURI,
+              database = database)
+          val formItself = formBoth . _1
+          val formSyntax = formBoth . _2
+
             Text("\n") ++
-            titleEditDisplayDownloadLinks(uri, lang, editable) ++
-            <div>{status}</div> ++        
-            // TODO: add argument datasetOrDefault
-            htmlFormElemRaw(uri, graph, hrefDisplayPrefix, blankNode, editable = editable,
-              lang = lang, formuri=formuri, graphURI=graphURI)
+//            titleEditDisplayDownloadLinks(uri, lang, editable) ++
+            titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable) ++
+            <div>{status}</div> ++
+            formItself
         })
         res.get
       } catch {
@@ -192,14 +199,6 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     else
       <div class="row">Enter an URI</div>
   }
-
-//  /** moved to trait RDFStoreLocalProvider */
-//  def getDatasetOrDefault(database: String = "TDB"): DATASET = {
-//    if (database == databaseLocation)
-//      dataset
-//    else
-//      createDatabase(database, useTextQuery)
-//  }
 
   /** NON transactional */
   def labelForURI(uri: String, language: String)
