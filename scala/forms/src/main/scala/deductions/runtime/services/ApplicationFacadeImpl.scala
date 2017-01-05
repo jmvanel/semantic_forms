@@ -180,7 +180,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
             Text("\n") ++
             titleEditDisplayDownloadLinks(uri, lang, editable) ++
-            titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable) ++ // TODO <<<<<<<<<<<<
+//            titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable) ++ // TODO <<<<<<<<<<<<
             <div>{status}</div> ++
             formItself
         })
