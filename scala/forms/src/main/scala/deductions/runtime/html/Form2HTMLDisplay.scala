@@ -21,7 +21,9 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       resourceEntry: formMod#ResourceEntry,
       hrefPrefix: String = hrefDisplayPrefix ): NodeSeq = {
 
-    val stringValue = resourceEntry.value.toString()
+    import resourceEntry._
+
+    val stringValue = value.toString()
     val css = cssForURI(stringValue)
     val alternativeText = "Texte alternatif"
 
@@ -29,29 +31,29 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       <a href={ Form2HTML.createHyperlinkString(hrefPrefix, stringValue) }
       class={css}
       title={
-        s"""Value ${if (stringValue != resourceEntry.valueLabel) stringValue else ""}
-              of type ${resourceEntry.type_.toString()}"""
+        s"""Value ${if (stringValue != valueLabel) stringValue else ""}
+              of type ${type_.toString()}"""
       } draggable="true"> {
-        resourceEntry.valueLabel
+        valueLabel
       }</a>
 
     val backLinkButton = (if (stringValue.size > 0 && showExpertButtons) {
-				val title = s""" Reverse links for "${resourceEntry.label}" "${resourceEntry.value}" """
+				val title = s""" Reverse links for "$label" "$value" """
 				makeBackLinkButton(stringValue, title=title )
       } else NodeSeq.Empty )
 
     val normalNavigationButton = (if (stringValue.size > 0 && showExpertButtons) {
-      <a class="btn btn-primary" href={ stringValue } title={ s"Normal HTTP link to ${resourceEntry.value}" }
+      <a class="btn btn-primary" href={ stringValue } title={ s"Normal HTTP link to $value" }
       draggable="true"><i class="glyphicon glyphicon-share-alt"></i> </a>
     } else NodeSeq.Empty )
 
     val thumbnail = {
       val thumbnail = resourceEntry.thumbnail
-      val imageURL = if (resourceEntry.isImage) Some(resourceEntry.value)
+      val imageURL = if (isImage) Some(value)
       else thumbnail
-      if (resourceEntry.isImage || thumbnail.isDefined)
+      if (isImage || thumbnail.isDefined)
         <img src={ imageURL.get.toString() } css="sf-thumbnail" height="40" alt={
-          s"Image of ${resourceEntry.valueLabel}: ${resourceEntry.value.toString()}"
+          s"Image of $valueLabel: ${value.toString()}"
         }/>
       else NodeSeq.Empty
       }

@@ -54,45 +54,45 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
   def lookup(r: formMod#Entry) = r.widgetType == DBPediaLookup
   
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
-  def createHTMLResourceEditableField(r: formMod#ResourceEntry, lang: String = "en"
+  def createHTMLResourceEditableField(resourceEntry: formMod#ResourceEntry, lang: String = "en"
       )(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
-//  if( r.property . toString() . contains("knows")) println("knows")
-    val placeholder = resourcePlaceholder(r, lang)
+    import resourceEntry._
+    val placeholder = resourcePlaceholder(resourceEntry, lang)
     Seq(
       Text("\n"),
     		// format: OFF
-        if (r.openChoice)
+        if (openChoice)
           <div class={ css.cssClasses.formDivInputCSSClass }>
           <input class={ css.cssClasses.formInputCSSClass }
-      			value={ r.value.toString }
-            name={ makeHTMLNameResource(r) }
-            id={ makeHTML_Id(r) }
-            list={ makeHTMLIdForDatalist(r) }
-            data-type={ r.type_.toString() }
+            value={ value.toString }
+            name={ makeHTMLNameResource(resourceEntry) }
+            id={ makeHTML_Id(resourceEntry) }
+            list={ makeHTMLIdForDatalist(resourceEntry) }
+            data-type={ type_.toString() }
             placeholder={ placeholder }
             title={ placeholder }
-            onkeyup={if (lookup(r)) "onkeyupComplete(this);" else null}
+            onkeyup={if (lookup(resourceEntry)) "onkeyupComplete(this);" else null}
             size={inputSize.toString()}
 						dropzone="copy">
           </input>
-          { if (lookup(r))
+          { if (lookup(resourceEntry))
             <script type="text/javascript" >
-              addDBPediaLookup('#{ makeHTML_Id(r) }'); 
+              addDBPediaLookup('#{ makeHTML_Id(resourceEntry) }'); 
             </script> }
 					</div>
 				else new Text("") // format: ON
       ,
-      if (lookup(r))
-        formatPossibleValues(r, inDatalist = true)
-      else renderPossibleValues(r)
+      if (lookup(resourceEntry))
+        formatPossibleValues(resourceEntry, inDatalist = true)
+      else renderPossibleValues(resourceEntry)
       , Text("\n")
     ). flatten
   }
   
   /** Placeholder for a resource URI */
-  private def resourcePlaceholder(r: formMod#ResourceEntry, lang: String = "en") = {
-    resourceOrBN_Placeholder(r, lang )  +
-        " - " + r.valueLabel
+  private def resourcePlaceholder(resourceEntry: formMod#ResourceEntry, lang: String = "en") = {
+    resourceOrBN_Placeholder(resourceEntry, lang )  +
+        " - " + resourceEntry.valueLabel
   }
   private def resourceOrBN_Placeholder(r: formMod#Entry, lang: String = "en") = {
     if (lookup(r))
@@ -163,8 +163,10 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
 
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   def createHTMLiteralEditableField(lit: formMod#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
+    import lit._
+    
     val placeholder = {
-        val typ0 = lit.type_.toString()
+        val typ0 = type_.toString()
         val typ = if (
             typ0 == ""
             || typ0.endsWith( "#string")
@@ -177,7 +179,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
     }
 
     val htmlId = makeHTML_Id(lit) // "f" + form.fields.indexOf(lit)
-    val elem = lit.type_.toString() match {
+    val elem = type_.toString() match {
 
       // TODO in FormSyntaxFactory match graph pattern for interval datatype ; see issue #17
       case typ if typ == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
@@ -185,7 +187,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
           (for (n <- Range(0, 6)) yield (
             <input type="radio" name={ makeHTMNameLiteral(lit) } id={
               makeHTMNameLiteral(lit) } checked={
-              if (n.toString.equals(lit.value)) "checked" else null
+              if (n.toString.equals(value)) "checked" else null
             } value={ n.toString }>
             </input>
             <label for={ makeHTMNameLiteral(lit) }>{ n }</label>
@@ -201,17 +203,17 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
         <div class="wrapper">
           <label for="yes_radio" id="yes-lbl">Oui</label>
           <input type="radio" name={ makeHTMNameLiteral(lit) } id="yes_radio"
-          checked={toPlainString(lit.value) match {case "true" => "true" ; case _ => null } }
+          checked={toPlainString(value) match {case "true" => "true" ; case _ => null } }
           value="true" ></input>
 
           <label for="maybe_radio" id="maybe-lbl">?</label>
           <input type="radio" name={ makeHTMNameLiteral(lit) } id="maybe_radio"
-          checked={toPlainString(lit.value) match {case "" => "checked" ; case _ => null } }
+          checked={toPlainString(value) match {case "" => "checked" ; case _ => null } }
           value="" ></input>
 
           <label for="no_radio" id="no-lbl">Non</label>
           <input type="radio" name={ makeHTMNameLiteral(lit) } id="no_radio"
-          checked={toPlainString(lit.value) match {case "false" => "false" ; case _ => null } }
+          checked={toPlainString(value) match {case "false" => "false" ; case _ => null } }
           value="false" ></input>
           <div class="toggle"></div>
         </div>
@@ -219,9 +221,9 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
       case _ =>
         <div class={ css.cssClasses.formDivInputCSSClass }>
         <input class={ css.cssClasses.formInputCSSClass } value={
-          toPlainString(lit.value)
+          toPlainString(value)
         } name={ makeHTMNameLiteral(lit) } type={
-          xsd2html5TnputType(lit.type_.toString())
+          xsd2html5TnputType(type_.toString())
         }
         placeholder={ placeholder }
         title={ placeholder }
