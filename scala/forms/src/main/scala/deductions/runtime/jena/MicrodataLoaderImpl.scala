@@ -27,9 +27,15 @@ trait MicrodataLoaderJena extends MicrodataLoader[Jena] {
   import ops._
 
   {
-  Class.forName("net.rootdev.javardfa.jena.RDFaReader")
-  // Which will hook the two readers in to jena, then you will be able to read RDFa URL
-  println("""Class.forName("net.rootdev.javardfa.jena.RDFaReader")""")
+    try {
+      Class.forName("net.rootdev.javardfa.jena.RDFaReader")
+      // Which will hook the two readers in to jena, then you will be able to read RDFa URL
+      println("""Class.forName("net.rootdev.javardfa.jena.RDFaReader")""")
+    } catch {
+      case t: Throwable =>
+        // for Java-RDFa release 0.4.2 :
+        println(s"RDFaReader could not be instanciated, exception: $t")
+    }
   }
 
   def load(url: java.net.URL): Try[Rdf#Graph] = {
