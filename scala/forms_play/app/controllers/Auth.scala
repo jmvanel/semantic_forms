@@ -132,6 +132,9 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
         },
         // TODO also Redirect to the URL before login
       user => Redirect(routes.Application.index).withSession(Security.username -> user._1)
+          .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+          .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
+          .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
     )
   }
 

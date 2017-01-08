@@ -19,12 +19,22 @@ import play.api.http.MediaRange
 import play.api.mvc.Accepting
 import play.api.mvc.Action
 import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Request
 import play.api.mvc.RequestHeader
 import play.api.mvc.Result
 import views.MainXmlWithHead
 import play.api.mvc.Codec
+import play.api.GlobalSettings
+
+object Global extends GlobalSettings {
+
+//  override def onBadRequest(request: RequestHeader, error: String) = {
+//    BadRequest("Bad Request: " + error)
+//  }  
+    
+}
 
 /** main controller */
 trait ApplicationTrait extends Controller
@@ -303,11 +313,13 @@ trait ApplicationTrait extends Controller
   val AcceptsTTL = Accepting("text/turtle")
 	val AcceptsJSONLD = Accepting("application/ld+json")
 	val AcceptsRDFXML = Accepting("application/rdf+xml")
+	val AcceptsSPARQLresults = Accepting("application/sparql-results+json")
+
 	val turtle = AcceptsTTL.mimeType
 
 	// format = "turtle" or "rdfxml" or "jsonld"
 	val mimeAbbrevs = Map( AcceptsTTL -> "turtle", AcceptsJSONLD -> "jsonld", AcceptsRDFXML -> "rdfxml",
-	    Accepts.Json -> "json", Accepts.Xml -> "xml" )
+	    Accepts.Json -> "json", Accepts.Xml -> "xml", AcceptsSPARQLresults -> "json" )
 
 	private def renderResult(output: Accepting => Result, default: Accepting = AcceptsTTL)(implicit request: RequestHeader): Result = {
     render {
@@ -316,11 +328,13 @@ trait ApplicationTrait extends Controller
       case AcceptsRDFXML => output(AcceptsRDFXML)
       case Accepts.Json  => output(Accepts.Json)
       case Accepts.Xml   => output(Accepts.Xml)
+      case AcceptsSPARQLresults => output(AcceptsSPARQLresults)
       case _             => output(default)
     }
   }
 
-  val mimeSet = Set(AcceptsTTL, AcceptsJSONLD, AcceptsRDFXML, Accepts.Json, Accepts.Xml)
+  val mimeSet = mimeAbbrevs.keys.toSet
+//     Set(AcceptsTTL, AcceptsJSONLD, AcceptsRDFXML, Accepts.Json, Accepts.Xml)
   private def computeMIME(accepts: Accepting, default: Accepting): Accepting = {
     if( mimeSet.contains(accepts))
        accepts
@@ -328,9 +342,11 @@ trait ApplicationTrait extends Controller
   }
 
   private def computeMIME(accepts: Seq[MediaRange], default: Accepting): Accepting = {
-    val v = accepts.find { x => val acc = Accepting(x.mediaType) ; mimeSet.contains(acc) }
+    val v = accepts.find {
+      mediaRange => val acc = Accepting(mediaRange.toString())
+      mimeSet.contains(acc) }
     v match {
-      case Some(acc) => Accepting(acc.mediaType)
+      case Some(acc) => Accepting(acc.toString())
       case None => default
     }
   }
@@ -341,9 +357,11 @@ trait ApplicationTrait extends Controller
     uriArgs.find { uri => uri != "" }.getOrElse("")
   }
 
+  /** SPARQL UI */
   def sparql(query: String) =
-    withUser {
-      implicit userid =>
+//    withUser
+    Action {
+//      implicit userid =>
         implicit request =>
           println("sparql: " + request)
           println("sparql: " + query)
@@ -352,12 +370,13 @@ trait ApplicationTrait extends Controller
     }
 
   /**
-   * construct or select SPARQL query
+   * SPARQL GET compliant, construct or select SPARQL query
    *  conneg => RDF/XML, Turtle or json-ld
    */
   def sparqlConstruct(query: String) =
-    withUser {
-      implicit userid =>
+        Action {
+//    withUser {
+//      implicit userid =>
         implicit request =>
           println(s"""sparqlConstruct: sparql: request $request
             sparql: $query
@@ -375,22 +394,95 @@ trait ApplicationTrait extends Controller
           val isSelect = (checkSPARQLqueryType(query) == "select")
           val defaultMIME = if (isSelect) Accepts.Xml else AcceptsJSONLD
           val accepts = request.acceptedTypes
-          val mime = computeMIME(accepts, defaultMIME)
+          val mime = AcceptsSPARQLresults
 
           def output(accepts: Accepting): Result = {
             val format = mimeAbbrevs(accepts)
-            println(s"sparqlConstruct: accepts: $accepts, format: $format")
+            println(s"sparqlConstruct: output(accepts=$accepts) => format: $format")
             val (result, defaultMIME) = if (isSelect)
-              (sparqlSelectConneg(query, format, dataset), Accepts.Xml)
+              (sparqlSelectConneg(query, format, dataset), AcceptsSPARQLresults) // Accepts.Xml)
             else
               (sparqlConstructResult(query, lang, format), AcceptsJSONLD)
 
             val mime = computeMIME(accepts, defaultMIME)
+            println( s"sparqlConstruct (output): mime.mimeType ${mime.mimeType}")
             Ok(result).as(s"${mime.mimeType}; charset=utf-8")
           }
 
-          renderResult(output, mime)
-    }
+          // Accept: application/sparql-results+json
+          println( s"sparqlConstruct: mime ${mime}")
+          renderResult(output, default = mime)
+          .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+          .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
+          .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
+          /* access-control-allow-headers :"Accept, Authorization, Slug, Link, Origin, Content-type, 
+           * DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,
+           * If-Modified-Since,Cache-Control,Content-Type,Accept-Encoding"
+           */
+  }
+
+  /**
+   * SPARQL POST compliant, construct or select SPARQL query
+   *  conneg => RDF/XML, Turtle or json-ld
+   */
+  def sparqlConstructPOST = Action {
+    implicit request =>
+      println(s"""sparqlConstruct: sparql: request $request
+            accepts ${request.acceptedTypes} """)
+      val lang = chooseLanguage(request)
+      val body: AnyContent = request.body
+
+      // Expecting body as FormUrlEncoded
+      val formBody: Option[Map[String, Seq[String]]] = body.asFormUrlEncoded
+      val r = formBody.map { map =>
+
+        val query0 = map.getOrElse("query", Seq())
+        val query = query0 . mkString("\n")
+        println(s"""sparql: $query""" )
+
+        // TODO better try a parse of the query
+        def checkSPARQLqueryType(query: String) =
+          if (query.contains("select") ||
+            query.contains("SELECT"))
+            "select"
+          else
+            "construct"
+        val isSelect = (checkSPARQLqueryType(query) == "select")
+
+        val defaultMIME = if (isSelect) AcceptsSPARQLresults else AcceptsJSONLD
+        val accepts = request.acceptedTypes
+        val mime = computeMIME(accepts, defaultMIME)
+        println(s"sparqlConstruct: computed mime ${mime}")
+
+        val output : Result = {
+          val preferredMedia = accepts.map{ media => Accepting(media.toString()) }.headOption
+          val resultFormat = mimeAbbrevs(preferredMedia.getOrElse(defaultMIME))
+          println(s"sparqlConstruct: output(accepts=$accepts) => result format: $resultFormat")
+          if( preferredMedia.isDefined &&
+              ! mimeSet.contains(preferredMedia.get) )
+            println(s"CAUTION: preferredMedia $preferredMedia not in this application's list: ${mimeAbbrevs.keys.mkString(", ")}" )
+          val result = if (isSelect)
+            sparqlSelectConneg(query, resultFormat, dataset)
+          else
+            sparqlConstructResult(query, lang, resultFormat)
+
+          println(s"sparqlConstruct (output): mime.mimeType ${mime.mimeType}")
+          println(s"result $result")
+          Ok(result)
+          .as(s"${mime.mimeType}")
+//          .as(s"${mime.mimeType}; charset=utf-8")
+        }
+
+        output
+          .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+          .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
+          .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
+      }
+      r match {
+        case Some(r) => r
+        case None => BadRequest("BadRequest")
+      }
+  }
 
   /** select UI */
   def select(query: String) =

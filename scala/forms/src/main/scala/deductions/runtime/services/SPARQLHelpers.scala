@@ -384,15 +384,15 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
               val variables = row.varnames().toList
               for (variable <- variables) yield row(variable).get.as[Rdf#Node].get
           }
-          println("after results")
+          println("sparqlSelectQuery: after results")
 
           headerRow ++ results.to[List]
       }
-      println("before res")
+      println("sparqlSelectQuery: before res")
       res
       //      println( "after res" )
     })
-    println("before transaction.get")
+    println("sparqlSelectQuery: before transaction.get")
     transaction.get
   }
 
@@ -473,6 +473,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     val result = sparqlSelectQuery(queryString, ds)
     val output = result match {
       case Success(res) =>
+        if( ! res.isEmpty ) {
         val header = res.head.map { node => literalNodeToString(node) }
         println( s"sparqlSelectJSON: header $header" )
         val headValue = Json.obj("vars" -> JsArray( header.map { s => JsString(s) } ) )
@@ -504,6 +505,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         Json.obj(
           "head" -> headValue,
           "results" -> resultsValue)
+        } else
+          Json.toJson( Json.toJson("Empty result") )
       case Failure(f) => Json.toJson( f.getLocalizedMessage )
     }
     Json.prettyPrint(output)

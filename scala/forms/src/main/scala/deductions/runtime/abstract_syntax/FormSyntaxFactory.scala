@@ -158,22 +158,21 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     formMode: FormMode,
     formGroup: Rdf#URI = nullURI,
     formConfig: Rdf#Node = URI(""))
-    (implicit graph: Rdf#Graph) :
-//  : FormModule[Rdf#Node, Rdf#URI]#
-  FormSyntax = {
+    (implicit graph: Rdf#Graph) : FormSyntax = {
 
 		val step1 = computePropertiesList(subject, formMode.editable, fromUri(uriNodeToURI(formConfig)), classs )
     createFormDetailed2( step1, formGroup )
   }
   
-  def createFormDetailed2(
+  private def createFormDetailed2(
 		  step1: RawDataForForm[Rdf#Node],
-		  formGroup: Rdf#URI = nullURI,
-		  formConfig: Rdf#Node = URI("step1.formURI") // URI("")
-		  )
+		  formGroup: Rdf#URI = nullURI)
     (implicit graph: Rdf#Graph)
   : FormSyntax = {
 
+    val formConfig = step1.formURI
+    println(s">>>> createFormDetailed2 formConfig $formConfig")
+    
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
 
     def makeEntries2(step1: RawDataForForm[Rdf#Node]): Seq[Entry] = {
@@ -214,7 +213,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
           makeEntriesForSubject(subject, prop, ranges2, formMode, valuesFromFormGroup))
         res
       }
-      val fields = entries.flatMap { identity }
+      val fields = entries.flatten
       val fields2 = addTypeTriple(subject, classs, fields)
       addInverseTriples(fields2, step1)
     }
@@ -244,7 +243,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
   def addInverseTriples(fields2: Seq[Entry],
       step1: RawDataForForm[Rdf#Node]): Seq[Entry]
-  
+
   /**
    * update given Form,
    * looking up for field Configurations within given RDF graph
@@ -255,30 +254,32 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    *   :widgetClass form:DBPediaLookup .
    *  <pre>
    */
-  private def updateFormFromConfig(formSyntax: FormSyntax, formConfig: Rdf#Node)
-  (implicit graph: Rdf#Graph)
-  : FormSyntax = {
-	  val formConfigFactory = this // new FormConfigurationFactory[Rdf](graph)
+  private def updateFormFromConfig(formSyntax: FormSyntax, formConfigOption: Option[Rdf#Node])(implicit graph: Rdf#Graph): FormSyntax = {
+    formConfigOption.map {
+      formConfig =>
+        updateOneFormFromConfig(formSyntax, formConfig)
+        // shallow recursion
+        for ( fs <- formSyntax.propertiesGroups ) updateOneFormFromConfig(fs, formConfig)
+    }
+    formSyntax
+  }
+
+  /** non recursive update */
+  private def updateOneFormFromConfig(formSyntax: FormSyntax, formConfig: Rdf#Node)(implicit graph: Rdf#Graph) = {
     for (field <- formSyntax.fields) {
-      val fieldSpecs = formConfigFactory.lookFieldSpecInConfiguration(field.property)
-      //    	val DEBUG2 = new Level( 5000, "DEBUG2", 7);
+      val fieldSpecs = lookFieldSpecInConfiguration(field.property)
       if (!fieldSpecs.isEmpty)
-        //        logger.log(Level.OFF, s"""updateFormFromConfig field $field -- fieldSpecs size ${fieldSpecs.size}
-        //        $fieldSpecs""")
         fieldSpecs.map {
           fieldSpec =>
             val triples = find(graph, fieldSpec.subject, ANY, ANY).toSeq
-            for (t <- triples) {
-              // println(s"updateFormFromConfig fieldSpec $fieldSpec -- triple $t")
+            for (t <- triples)
               field.addTriple(t.subject, t.predicate, t.objectt)
-            }
             // TODO each feature should be in a different file
+            def replace[T](s: Seq[T], occurence: T, replacement: T): Seq[T] =
+              s.map { i => if (i == occurence) replacement else i }
             for (t <- triples) {
               if (t.predicate == formPrefix("widgetClass")
                 && t.objectt == formPrefix("DBPediaLookup")) {
-                def replace[T](s: Seq[T], occurence: T, replacement: T): Seq[T] = {
-                  s.map { i => if (i == occurence) replacement else i }
-                }
                 val rep = field.asResource
                 rep.widgetType = DBPediaLookup
                 formSyntax.fields = replace(formSyntax.fields, field, rep)
@@ -300,9 +301,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         formSyntax.defaults.defaultCardinality = uriToCardinalities.getOrElse(t.objectt, zeroOrOne)
       }
     }
-    formSyntax
   }
-
+          
   /**
    * add Triple: <subject> rdf:type <classs>
    *  @return augmented fields argument
