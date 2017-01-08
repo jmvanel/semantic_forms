@@ -63,7 +63,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
 
     val classesOfSubjectOrFromConfig =
       if (classesOfSubject . isEmpty && formuri != nullURI) {
-        println(s">>>> computePropertiesList tryClassFromConfig $tryClassFromConfig")
+        println(s"computePropertiesList tryClassFromConfig $tryClassFromConfig")
         List( uriNodeToURI(tryClassFromConfig.getOrElse(nullURI)) )
       } else
         classesOfSubject
@@ -85,13 +85,13 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
 
 
     def makeRawDataForForm(rawDataForFormList: List[RawDataForForm[Rdf#Node]]): RawDataForForm[Rdf#Node] = {
-      println(s""">>>> makeRawDataForForm: rawDataForFormList size ${rawDataForFormList.size}
+      println(s"""makeRawDataForForm: rawDataForFormList size ${rawDataForFormList.size}
         ${rawDataForFormList.mkString("\n")}""")
       val propertiesGroupsList = for (rawDataForForm <- rawDataForFormList) yield {
         rawDataForForm.propertiesGroups
       }
       val propertiesGroupsMap = propertiesGroupsList.flatten.toMap
-      println(s""">>>> makeRawDataForForm: size ${propertiesGroupsMap.size}
+      println(s"""makeRawDataForForm: size ${propertiesGroupsMap.size}
         ${propertiesGroupsMap.keySet}""")
 
       RawDataForForm[Rdf#Node](
@@ -121,7 +121,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
         formConfiguration,
         subject, editable)
     else NullRawDataForForm
-    println(s">>>> computePropertiesList rawDataFromSpecif $rawDataFromSpecif")
+    println(s"computePropertiesList rawDataFromSpecif $rawDataFromSpecif")
 
     return prependPropertyGroup(globalDataForForm, Literal("Short form"), rawDataFromSpecif)
 //    makeRawDataForForm( rawDataFromSpecif ++ propsFromClasses )
