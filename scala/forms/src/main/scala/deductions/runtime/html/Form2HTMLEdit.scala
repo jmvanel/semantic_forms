@@ -37,7 +37,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
     if (shouldAddAddRemoveWidgets(field, editable)) {
       // button with an action to duplicate the original HTML widget with an empty content
       val widgetName = field match {
-        case r: formMod#ResourceEntry if lookup(r) => makeHTML_Id(r)
+        case r: formMod#ResourceEntry if lookupActivatedFor(r) => makeHTML_Id(r)
         case r: formMod#ResourceEntry => makeHTMLIdResourceSelect(r)
         case _ => makeHTML_Id(field)
       }
@@ -51,7 +51,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
   }
 
   /** tell if given Entry is configured for lookup (completion) */
-  def lookup(r: formMod#Entry) = r.widgetType == DBPediaLookup
+  def lookupActivatedFor(r: formMod#Entry) = r.widgetType == DBPediaLookup
   
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   def createHTMLResourceEditableField(resourceEntry: formMod#ResourceEntry, lang: String = "en"
@@ -71,18 +71,18 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
             data-type={ type_.toString() }
             placeholder={ placeholder }
             title={ placeholder }
-            onkeyup={if (lookup(resourceEntry)) "onkeyupComplete(this);" else null}
+            onkeyup={if (lookupActivatedFor(resourceEntry)) "onkeyupComplete(this);" else null}
             size={inputSize.toString()}
 						dropzone="copy">
           </input>
-          { if (lookup(resourceEntry))
+          { if (lookupActivatedFor(resourceEntry))
             <script type="text/javascript" >
               addDBPediaLookup('#{ makeHTML_Id(resourceEntry) }'); 
             </script> }
 					</div>
 				else new Text("") // format: ON
       ,
-      if (lookup(resourceEntry))
+      if (lookupActivatedFor(resourceEntry))
         formatPossibleValues(resourceEntry, inDatalist = true)
       else renderPossibleValues(resourceEntry)
       , Text("\n")
@@ -95,7 +95,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
         " - " + resourceEntry.valueLabel
   }
   private def resourceOrBN_Placeholder(r: formMod#Entry, lang: String = "en") = {
-    if (lookup(r))
+    if (lookupActivatedFor(r))
       I18NMessages.get("Completion", lang)
 //      s"Enter a word; completion with Wikipedia lookup"
       else {

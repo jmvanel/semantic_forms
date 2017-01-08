@@ -6,7 +6,7 @@ import scala.util.Try
 import org.w3.banana.RDF
 
 /** intermediary data for form generation:  properties' List, etc */
-case class RawDataForForm[Node]( //  <: RDF.Node](
+case class RawDataForForm[Node](
     propertiesList: Seq[Node],
     classs: Node,
     subject: Node,
@@ -30,6 +30,8 @@ case class RawDataForForm[Node]( //  <: RDF.Node](
 trait ComputePropertiesList[Rdf <: RDF, DATASET] {
   self: FormSyntaxFactory[Rdf, DATASET] =>
   import ops._
+
+  object NullRawDataForForm extends RawDataForForm[Rdf#Node](Seq(), nullURI, nullURI )
 
   /**
    * create Raw Data For Form from an instance (subject) URI,
@@ -81,30 +83,48 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
     val propertiesList = addRDFSLabelComment(propertiesList0)
     val reversePropertiesList = reversePropertiesListFromFormConfiguration(formConfiguration)
 
-//    def makeRawDataForForm(propertiesGroups: collection.Map[Rdf#Node, RawDataForForm[Rdf#Node]]) =
-//      RawDataForForm[Rdf#Node](propertiesList, classOfSubjectOrFromConfig, subject, editable,
-//        formuri match { case "" => None; case uri => Some(URI(uri)) },
-//        reversePropertiesList,
-//        propertiesGroups = propertiesGroups)
+
     def makeRawDataForForm(rawDataForFormList: List[RawDataForForm[Rdf#Node]]): RawDataForForm[Rdf#Node] = {
-      val propertiesGroupsList = for( rawDataForForm <- rawDataForFormList ) yield {
+      println(s""">>>> makeRawDataForForm: rawDataForFormList size ${rawDataForFormList.size}
+        ${rawDataForFormList.mkString("\n")}""")
+      val propertiesGroupsList = for (rawDataForForm <- rawDataForFormList) yield {
         rawDataForForm.propertiesGroups
-      }   
-      val propertiesGroupsMap = propertiesGroupsList . flatten . toMap
-      RawDataForForm[Rdf#Node](propertiesList, classesOfSubjectOrFromConfig.head, subject, editable,
+      }
+      val propertiesGroupsMap = propertiesGroupsList.flatten.toMap
+      println(s""">>>> makeRawDataForForm: size ${propertiesGroupsMap.size}
+        ${propertiesGroupsMap.keySet}""")
+
+      RawDataForForm[Rdf#Node](
+        propertiesList, classesOfSubjectOrFromConfig.head, subject, editable,
         formuri match { case "" => None; case uri => Some(URI(uri)) },
         reversePropertiesList,
         propertiesGroups = propertiesGroupsMap)
     }
 
-    val rawDataFromSpecif = RawDataForForm[Rdf#Node](
-      propsFromConfig, classesOfSubjectOrFromConfig.head, subject, editable)
+    /** local function to mix:
+     *  - stuff from the context: propertiesList, classe sOf Subject Or Formm Specif,
+     *    subject, editable, form URI
+     *   */
+    def prependPropertyGroup(globalDataForForm: RawDataForForm[Rdf#Node], key: Rdf#Node,
+                             addedDataForForm: RawDataForForm[Rdf#Node]) =
+      globalDataForForm.copy(
+        propertiesGroups =
+          globalDataForForm.propertiesGroups +
+            (key -> addedDataForForm))
 
-    return makeRawDataForForm(
-//      propsFromClasses.propertiesGroups
-      propsFromClasses
-//        + (formConfiguration -> rawDataFromSpecif)
-        )
+    val globalDataForForm = makeRawDataForForm(propsFromClasses)
+
+    /** RawDataForForm from Form Specification */
+    val rawDataFromSpecif: RawDataForForm[Rdf#Node] = if (formConfiguration != nullURI)
+      RawDataForForm[Rdf#Node](
+        propsFromConfig,
+        formConfiguration,
+        subject, editable)
+    else NullRawDataForForm
+    println(s">>>> computePropertiesList rawDataFromSpecif $rawDataFromSpecif")
+
+    return prependPropertyGroup(globalDataForForm, Literal("Short form"), rawDataFromSpecif)
+//    makeRawDataForForm( rawDataFromSpecif ++ propsFromClasses )
   }
 
   /**
