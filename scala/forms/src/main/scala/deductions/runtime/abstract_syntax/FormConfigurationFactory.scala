@@ -10,19 +10,16 @@ import scala.util.Try
 import deductions.runtime.utils.RDFPrefixes
 
 /**
- * Lookup Form specifications from RDF graph
+ * Lookup Form specifications from RDF graph; TODO rename FormSpecificationFactory
  */
 trait FormConfigurationFactory[Rdf <: RDF, DATASET]
     extends
-//Configuration
-//    with 
     RDFCacheAlgo[Rdf, DATASET]
     with RDFHelpers[Rdf]
     with RDFPrefixes[Rdf] {
   
   import ops._
-
-  val formPrefix: Prefix[Rdf] = form // = Prefix("form", formVocabPrefix)
+  val formPrefix: Prefix[Rdf] = form
 
   /**
    * lookup for form:showProperties (ordered list of fields) in Form Configuration within RDF graph about this class;
@@ -102,11 +99,8 @@ trait FormConfigurationFactory[Rdf <: RDF, DATASET]
    *  ?S form:fieldAppliesToProperty prop .
    */
   def lookFieldSpecInConfiguration(
-    prop: Rdf#Node)
-    (implicit graph: Rdf#Graph): Seq[Rdf#Triple]
-    = {
+    prop: Rdf#Node)(implicit graph: Rdf#Graph): Seq[Rdf#Triple] =
     find(graph, ANY, formPrefix("fieldAppliesToProperty"), prop).toSeq
-  }
 
   def lookClassInFormSpec( formURI: Rdf#URI, formSpec: Rdf#Graph) = {
     val trOpt = find(formSpec, formURI, formPrefix("classDomain"), ANY).toSeq.headOption

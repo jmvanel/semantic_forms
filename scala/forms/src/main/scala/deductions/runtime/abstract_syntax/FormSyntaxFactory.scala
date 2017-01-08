@@ -213,7 +213,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
           makeEntriesForSubject(subject, prop, ranges2, formMode, valuesFromFormGroup))
         res
       }
-      val fields = entries.flatMap { identity }
+      val fields = entries.flatten
       val fields2 = addTypeTriple(subject, classs, fields)
       addInverseTriples(fields2, step1)
     }
@@ -257,52 +257,52 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   private def updateFormFromConfig(formSyntax: FormSyntax, formConfigOption: Option[Rdf#Node])(implicit graph: Rdf#Graph): FormSyntax = {
     formConfigOption.map {
       formConfig =>
-        val formConfigFactory = this // new FormConfigurationFactory[Rdf](graph)
-        for (field <- formSyntax.fields) {
-          val fieldSpecs = formConfigFactory.lookFieldSpecInConfiguration(field.property)
-          //    	val DEBUG2 = new Level( 5000, "DEBUG2", 7);
-          if (!fieldSpecs.isEmpty)
-            //        logger.log(Level.OFF, s"""updateFormFromConfig field $field -- fieldSpecs size ${fieldSpecs.size}
-            //        $fieldSpecs""")
-            fieldSpecs.map {
-              fieldSpec =>
-                val triples = find(graph, fieldSpec.subject, ANY, ANY).toSeq
-                for (t <- triples) {
-                  // println(s"updateFormFromConfig fieldSpec $fieldSpec -- triple $t")
-                  field.addTriple(t.subject, t.predicate, t.objectt)
-                }
-                // TODO each feature should be in a different file
-                for (t <- triples) {
-                  if (t.predicate == formPrefix("widgetClass")
-                    && t.objectt == formPrefix("DBPediaLookup")) {
-                    def replace[T](s: Seq[T], occurence: T, replacement: T): Seq[T] = {
-                      s.map { i => if (i == occurence) replacement else i }
-                    }
-                    val rep = field.asResource
-                    rep.widgetType = DBPediaLookup
-                    formSyntax.fields = replace(formSyntax.fields, field, rep)
-                  }
-                }
-            }
-        }
-        val triples = find(graph, formConfig, ANY, ANY).toSeq
-        // TODO try the Object - semantic mapping of Banana-RDF
-        val uriToCardinalities = Map[Rdf#Node, Cardinality] {
-          formPrefix("zeroOrMore") -> zeroOrMore;
-          formPrefix("oneOrMore") -> oneOrMore;
-          formPrefix("zeroOrOne") -> zeroOrOne;
-          formPrefix("exactlyOne") -> exactlyOne
-        }
-        for (t <- triples) {
-          logger.log(Level.OFF, "updateFormForClass formConfig " + t)
-          if (t.predicate == formPrefix("defaultCardinality")) {
-            formSyntax.defaults.defaultCardinality = uriToCardinalities.getOrElse(t.objectt, zeroOrOne)
-          }
-        }
+        updateOneFormFromConfig(formSyntax, formConfig)
+        // shallow recursion
+        for ( fs <- formSyntax.propertiesGroups ) updateOneFormFromConfig(fs, formConfig)
     }
     formSyntax
   }
 
+  /** non recursive update */
+  private def updateOneFormFromConfig(formSyntax: FormSyntax, formConfig: Rdf#Node)(implicit graph: Rdf#Graph) = {
+    for (field <- formSyntax.fields) {
+      val fieldSpecs = lookFieldSpecInConfiguration(field.property)
+      if (!fieldSpecs.isEmpty)
+        fieldSpecs.map {
+          fieldSpec =>
+            val triples = find(graph, fieldSpec.subject, ANY, ANY).toSeq
+            for (t <- triples)
+              field.addTriple(t.subject, t.predicate, t.objectt)
+            // TODO each feature should be in a different file
+            def replace[T](s: Seq[T], occurence: T, replacement: T): Seq[T] =
+              s.map { i => if (i == occurence) replacement else i }
+            for (t <- triples) {
+              if (t.predicate == formPrefix("widgetClass")
+                && t.objectt == formPrefix("DBPediaLookup")) {
+                val rep = field.asResource
+                rep.widgetType = DBPediaLookup
+                formSyntax.fields = replace(formSyntax.fields, field, rep)
+              }
+            }
+        }
+    }
+    val triples = find(graph, formConfig, ANY, ANY).toSeq
+    // TODO try the Object - semantic mapping of Banana-RDF
+    val uriToCardinalities = Map[Rdf#Node, Cardinality] {
+      formPrefix("zeroOrMore") -> zeroOrMore;
+      formPrefix("oneOrMore") -> oneOrMore;
+      formPrefix("zeroOrOne") -> zeroOrOne;
+      formPrefix("exactlyOne") -> exactlyOne
+    }
+    for (t <- triples) {
+      logger.log(Level.OFF, "updateFormForClass formConfig " + t)
+      if (t.predicate == formPrefix("defaultCardinality")) {
+        formSyntax.defaults.defaultCardinality = uriToCardinalities.getOrElse(t.objectt, zeroOrOne)
+      }
+    }
+  }
+          
   /**
    * add Triple: <subject> rdf:type <classs>
    *  @return augmented fields argument
