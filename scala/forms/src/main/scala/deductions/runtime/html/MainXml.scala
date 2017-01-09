@@ -13,11 +13,10 @@ trait MainXml extends ToolsPage with EnterButtons {
       { head(title)(lang) }
       <body>
         {
-          Seq(
-            userInfo,
-            mainPageHeader(lang),
-            content,
-            pageBottom(lang))
+          userInfo ++
+            mainPageHeader(lang) ++
+            content ++
+            pageBottom(lang)
         }
       </body>
     </html>
