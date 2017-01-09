@@ -95,21 +95,31 @@ trait ApplicationTrait extends Controller
     }
 
   def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
-    withUser {
+//        Action // 
+        withUser
+    {
       implicit userid =>
         implicit request =>
           println(s"""form: request $request : "$Edit" formuri <$formuri> """)
           val lang = chooseLanguage(request)
           Ok(htmlForm(uri, blankNode, editable = Edit != "", lang, formuri,
               graphURI = makeAbsoluteURIForSaving(userid), database=database))
+          .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+          .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
+          .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
     }
 
   def formData(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
-    withUser {
-      implicit userid =>
+//    withUser
+    Action
+    {
+//      implicit userid =>
         implicit request =>
        Ok(formDataImpl(uri, blankNode, Edit, formuri, database)) .
          as( AcceptsJSONLD.mimeType + "; charset=" + myCustomCharset.charset )
+         .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+          .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
+          .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
     }
 
   def searchOrDisplayAction(q: String) = {
