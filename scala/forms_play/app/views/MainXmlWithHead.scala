@@ -1,12 +1,35 @@
 package views
  
-import controllers._
+import scala.io.Source
+import scala.xml.Elem
+import scala.xml.Node
+import scala.xml.XML
+
+import controllers.routes
 import deductions.runtime.html.MainXml
 
 trait MainXmlWithHead extends MainXml {
-  
+ 
+  private def add(e:Elem, c:Node): Elem = e.copy(child=e.child++c)
+
   /** HTML head */
-  override def head(title: String = "")(implicit lang: String = "en") = {
+  override def head(title: String = "")(implicit lang: String = "en"): Elem = {
+    val basicHead = XML.loadString(
+      Source.fromURL(getClass.getResource("/deductions/runtime/html/head.html")).getLines().mkString("\n"))
+    val titleTag =
+      <title>
+        {
+          val default = messageI18N("Welcome")
+          if (title != "")
+            s"$title - $default"
+          else
+            default
+        }
+      </title>
+    add(basicHead, titleTag)
+  }
+  
+  private def headOLD(title: String = "")(implicit lang: String = "en") = {
     <head>
       <title>{
         val default = messageI18N("Welcome")
@@ -15,6 +38,7 @@ trait MainXmlWithHead extends MainXml {
         else
           default }
       </title>
+
       <meta http-equiv="Content-type" content="text/html; charset=UTF-8"></meta>
       <link rel="shortcut icon" type="image/png" href={ routes.Assets.at("images/favicon.png").url }/>
 

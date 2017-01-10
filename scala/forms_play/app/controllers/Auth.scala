@@ -110,6 +110,9 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
           case _ => routes.Application.index
         }
         Redirect(call).withSession(Security.username -> user._1)
+        .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+        .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
+        .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
       }
     )
   }
