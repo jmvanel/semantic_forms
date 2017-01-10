@@ -39,7 +39,6 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     with InstanceLabelsInferenceMemory[Rdf, DATASET]
     with PreferredLanguageLiteral[Rdf]
     with SPARQLHelpers[Rdf, DATASET]
-//    with Configuration
     with CSS
     with Form2HTMLDisplay[Rdf#Node, Rdf#URI] {
 
@@ -84,7 +83,6 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
               lang: String = "")(implicit queryMaker: SPARQLQueryMaker[Rdf] ): Elem
   = {
     val uris = search_only2(search)
-//    println(s"after search_only uris $uris")
     val elem0 =
       dataset.rw({
     	  val graph: Rdf#Graph = allNamedGraph
@@ -144,9 +142,10 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
         else
           instanceLabel(node, graph, lang)
      displayNode(uriNodeToURI(node), hrefPrefix, displayLabel,
-         nullURI, nullURI )
+         property = nullURI, type_ = nullURI )
   }
 
+  /** call createHTMLResourceReadonlyField() in trait Form2HTMLDisplay */
   private def displayNode(uri: Rdf#URI, hrefPrefix: String = hrefDisplayPrefix,
 		  label: String,
       property: Rdf#URI,
@@ -157,7 +156,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
       }
     val resourceEntry = new fmod.ResourceEntry(
       label, "comment", property, new fmod.ResourceValidator(Set()),
-      uri, true,
+      value=uri, true,
       Seq(), label, type_, false)
     createHTMLResourceReadonlyField( resourceEntry, hrefPrefix)
   }

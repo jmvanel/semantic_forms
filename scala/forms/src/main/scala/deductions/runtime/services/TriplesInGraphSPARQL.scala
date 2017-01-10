@@ -14,7 +14,7 @@ trait TriplesInGraphSPARQL[Rdf <: RDF, DATASET]
     override def makeQueryString( graphURI: String*): String =
     s"""
          |SELECT DISTINCT ?thing ?p ?o WHERE {
-         |  graph <$graphURI> {
+         |  graph <${graphURI(0)}> {
          |    ?thing ?p ?o .
          |  }
          |}""".stripMargin
@@ -27,9 +27,10 @@ trait TriplesInGraphSPARQL[Rdf <: RDF, DATASET]
 
   def showTriplesInGraph(graphURI: String, lang: String = "") //  : Future[Elem]
   = {
+//		  println(s"showTriplesInGraph: hrefDisplayPrefix ${config.hrefDisplayPrefix}")
     <p>
       <p> Triples in Graph &lt;{ graphURI }> </p>
-      { search2(graphURI, "", lang) }
+      { search2(graphURI, config.hrefDisplayPrefix, lang) }
     </p>
   }
 

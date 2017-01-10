@@ -78,7 +78,6 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with StatisticsGraph[Rdf]
     with FormJSON[Rdf, DATASET]
     with ToolsPage
-//    with Configuration
     with CSS
     {
  
@@ -304,8 +303,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     }
   }
 
-  def edit(url: String) // (implicit allNamedGraphs: Rdf#Graph)
-  : NodeSeq = {
+  def edit(url: String): NodeSeq = {
     htmlForm(url, editable = true)
   }
 
