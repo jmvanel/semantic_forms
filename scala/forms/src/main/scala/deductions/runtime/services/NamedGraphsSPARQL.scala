@@ -1,10 +1,11 @@
 package deductions.runtime.services
 
-import org.w3.banana.RDF
-import scala.concurrent.Future
-import scala.xml.Elem
-import scala.xml.NodeSeq
 import java.net.URLEncoder
+
+import scala.concurrent.Future
+import scala.xml.NodeSeq
+
+import org.w3.banana.RDF
 
 /** Show named graphs */
 trait NamedGraphsSPARQL[Rdf <: RDF, DATASET]
@@ -33,6 +34,6 @@ trait NamedGraphsSPARQL[Rdf <: RDF, DATASET]
   }
   
   def showNamedGraphs( lang: String = ""): Future[NodeSeq] =
-		  search("", lang, "")
+		  search("/showTriplesInGraph?uri=", lang)
     
 }

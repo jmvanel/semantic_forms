@@ -82,11 +82,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
   def search2(search: String, hrefPrefix: String = "",
               lang: String = "")(implicit queryMaker: SPARQLQueryMaker[Rdf] ): Elem
   = {
-//		println(s"search2: hrefDisplayPrefix ${config.hrefDisplayPrefix}")
-//		println(s"search2: hrefDisplayPrefix ${hrefDisplayPrefix}")
-//		println(s"search2: hrefPrefix ${hrefPrefix}")
     val uris = search_only2(search)
-//    println(s"after search_only uris $uris")
     val elem0 =
       dataset.rw({
     	  val graph: Rdf#Graph = allNamedGraph
