@@ -9,13 +9,13 @@ import controllers.routes
 import deductions.runtime.html.MainXml
 
 trait MainXmlWithHead extends MainXml {
- 
-  private def add(e:Elem, c:Node): Elem = e.copy(child=e.child++c)
+
+  private def add(e: Elem, c: Node): Elem = e.copy(child = e.child ++ c)
+  private val basicHead = XML.loadString(
+    Source.fromURL(getClass.getResource("/deductions/runtime/html/head.html")).getLines().mkString("\n"))
 
   /** HTML head */
   override def head(title: String = "")(implicit lang: String = "en"): Elem = {
-    val basicHead = XML.loadString(
-      Source.fromURL(getClass.getResource("/deductions/runtime/html/head.html")).getLines().mkString("\n"))
     val titleTag =
       <title>
         {
