@@ -8,6 +8,15 @@ trait ToolsPage extends EnterButtons {
 
   /** HTML page with 2 SPARQL Queries: select & construct */
   def getPage(lang: String = "en"): NodeSeq = {
+    val querySample = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT * WHERE { graph ?g {
+  ?sub ?pred ?obj .
+  }}
+LIMIT 5"""
+
+    <link href="assets/images/favicon.png" type="image/png" rel="shortcut icon"/>
+    
     <div>
       <p>
         SPARQL select
@@ -32,8 +41,12 @@ trait ToolsPage extends EnterButtons {
       <p> <a href="/history">{ I18NMessages.get("Dashboard", lang) }</a> </p>
       {
         implicit val lang1: String = lang
-        enterURItoDownloadAndDisplay()
+        "Charger / Load" ++ enterURItoDownloadAndDisplay()
       }
+      <p> <a href={
+        s"""http://yasgui.org?endpoint=http://localhost:9000/sparql,
+        query=$querySample"""
+      } target="_blank">YasGUI</a> (Yet Another SPARL GUI) </p>
       <p> <a href="..">{ I18NMessages.get("MainPage", lang) }</a> </p>
     </div>
   }
