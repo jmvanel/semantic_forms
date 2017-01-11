@@ -27,6 +27,7 @@ import play.api.mvc.Result
 import views.MainXmlWithHead
 import play.api.mvc.Codec
 import play.api.GlobalSettings
+import deductions.runtime.utils.HTTPrequest
 
 object Global extends GlobalSettings {
 
@@ -624,7 +625,10 @@ trait ApplicationTrait extends Controller
   def toolsPage = {
     Action { implicit request =>
       val lang = chooseLanguage(request)
-      Ok(new ToolsPage with DefaultConfiguration {}.getPage(lang) )
+      val requestCopy = copyRequest(request)
+      Ok(new ToolsPage with DefaultConfiguration {
+        override def getRequest: HTTPrequest = requestCopy
+      }.getPage(lang) )
         .as("text/html; charset=utf-8")
     }
   }

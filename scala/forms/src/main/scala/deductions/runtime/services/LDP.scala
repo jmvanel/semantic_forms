@@ -81,12 +81,12 @@ trait LDP[Rdf <: RDF, DATASET]
     else // application/ld+json
       jsonldCompactedWriter
             
-  private def absoluteURL( request: HTTPrequest, rawURI: String, secure: Boolean = false): String =
-      "http" + (if (secure) "s" else "") + "://" + request.host + rawURI // + this.appendFragment
+//  private def absoluteURL( request: HTTPrequest, rawURI: String, secure: Boolean = false): String =
+//      "http" + (if (secure) "s" else "") + "://" + request.host + rawURI // + this.appendFragment
 
   private def makeQueryString(uri: String, rawURI: String, request: HTTPrequest): String = {
 		  println(s"makeQueryString rawURI $rawURI")
-		  val absoluteURI = absoluteURL( request: HTTPrequest, rawURI)
+		  val absoluteURI = request . absoluteURL(rawURI)
       s"""
          |CONSTRUCT { <$absoluteURI> ?p ?o } WHERE {
          |  GRAPH ?G {
