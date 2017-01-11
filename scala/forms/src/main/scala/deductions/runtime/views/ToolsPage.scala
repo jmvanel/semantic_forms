@@ -7,23 +7,22 @@ import deductions.runtime.utils.HTTPrequest
 
 trait ToolsPage extends EnterButtons {
 
-	def getRequest(): HTTPrequest = HTTPrequest()
-	def absoluteURI = getRequest() . absoluteURL("")
+  def getRequest(): HTTPrequest = HTTPrequest()
+  def absoluteURI = getRequest().absoluteURL("")
 
-  /** HTML page with 2 SPARQL Queries: select & construct */
+  /** HTML page with 2 SPARQL Queries: select & construct, show Named Graphs, history, YASGUI, etc */
   def getPage(lang: String = "en"): NodeSeq = {
-    val querySample = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-SELECT * WHERE { graph ?g {
-  ?sub ?pred ?obj .
-  }}
-LIMIT 5"""
+    val querySample =
+      """|PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+      |PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+      |SELECT * WHERE { graph ?g {
+      |  ?sub ?pred ?obj .
+      |}} LIMIT 5""".stripMargin
 
     <link href="assets/images/favicon.png" type="image/png" rel="shortcut icon"/>
     <div>
       <p>
-        SPARQL select
-        {
+        SPARQL select{
           // TODO: the URL here appears also in Play! route!
           sparqlQueryForm("", "/select-ui", Seq(
             "SELECT * WHERE { GRAPH ?G {?S ?P ?O . } } LIMIT 100",
@@ -33,8 +32,7 @@ LIMIT 5"""
         }
       </p>
       <p>
-        SPARQL construct
-        {
+        SPARQL construct{
           // TODO: the URL here appears also in Play! route!
           sparqlQueryForm("", "/sparql-ui",
             Seq("CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10"))
@@ -47,7 +45,7 @@ LIMIT 5"""
         "Charger / Load" ++ enterURItoDownloadAndDisplay()
       }
       <p> <a href={
-        s"""http://yasgui.org?endpoint=$absoluteURI,
+        s"""http://yasgui.org?endpoint=$absoluteURI/sparql,
         query=$querySample"""
       } target="_blank">YasGUI</a> (Yet Another SPARL GUI) </p>
       <p> <a href="..">{ I18NMessages.get("MainPage", lang) }</a> </p>

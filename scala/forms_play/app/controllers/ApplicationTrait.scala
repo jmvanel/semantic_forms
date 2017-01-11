@@ -110,6 +110,7 @@ trait ApplicationTrait extends Controller
           .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
     }
 
+  /** /form-data service; like /form but raw JSON data */
   def formData(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
 //    withUser
     Action
@@ -121,6 +122,12 @@ trait ApplicationTrait extends Controller
          .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
+    }
+
+  /** /sparql-form service; like /form-data spits raw JSON data,
+   *  like /sparql has input a SPARQL query */
+  def sparqlForm(query:String, Edit:String="", formuri:String ="", database:String ="TDB") = Action {
+	  Ok("TODO") // TODO <<<<<<<<<<<<<<<<<<<<<<<<<<<<
     }
 
   def searchOrDisplayAction(q: String) = {
@@ -495,6 +502,11 @@ trait ApplicationTrait extends Controller
       }
   }
 
+  /** cf issue https://github.com/jmvanel/semantic_forms/issues/115 */
+    def sparqlDataPOST = Action {
+      Ok("TODO") // TODO <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    }
+  
   /** select UI */
   def select(query: String) =
     withUser {

@@ -13,11 +13,13 @@ GET     /create-data        controllers.Application.createData()
 GET     /download           controllers.Application.downloadAction( url:String, database:String ?="TDB" )
 GET     /form               controllers.Application.form(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="", database:String ?="TDB")
 GET     /form-data          controllers.Application.formData(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="", database:String ?="TDB")
+GET     /sparql-form        controllers.Application.sparqlForm(query:String, Edit:String?="", formuri:String ?="", database:String ?="TDB")
 
 GET     /sparql-ui          controllers.Application.sparql( query:String )
 POST    /sparql-ui          controllers.Application.sparql( query:String )
 GET     /sparql             controllers.Application.sparqlConstruct( query:String )
 POST    /sparql             controllers.Application.sparqlConstructPOST()
+POST    /sparql-data        controllers.Application.sparqlDataPOST()
 
 GET     /select-ui          controllers.Application.select( query:String )
 POST    /select-ui          controllers.Application.select( query:String )
