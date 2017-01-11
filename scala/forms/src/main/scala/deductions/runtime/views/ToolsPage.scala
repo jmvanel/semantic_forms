@@ -3,8 +3,12 @@ package deductions.runtime.views
 import scala.xml.NodeSeq
 import deductions.runtime.html.EnterButtons
 import deductions.runtime.utils.I18NMessages
+import deductions.runtime.utils.HTTPrequest
 
 trait ToolsPage extends EnterButtons {
+
+	def getRequest(): HTTPrequest = HTTPrequest()
+	def absoluteURI = getRequest() . absoluteURL("")
 
   /** HTML page with 2 SPARQL Queries: select & construct */
   def getPage(lang: String = "en"): NodeSeq = {
@@ -16,7 +20,6 @@ SELECT * WHERE { graph ?g {
 LIMIT 5"""
 
     <link href="assets/images/favicon.png" type="image/png" rel="shortcut icon"/>
-    
     <div>
       <p>
         SPARQL select
@@ -44,7 +47,7 @@ LIMIT 5"""
         "Charger / Load" ++ enterURItoDownloadAndDisplay()
       }
       <p> <a href={
-        s"""http://yasgui.org?endpoint=http://localhost:9000/sparql,
+        s"""http://yasgui.org?endpoint=$absoluteURI,
         query=$querySample"""
       } target="_blank">YasGUI</a> (Yet Another SPARL GUI) </p>
       <p> <a href="..">{ I18NMessages.get("MainPage", lang) }</a> </p>
