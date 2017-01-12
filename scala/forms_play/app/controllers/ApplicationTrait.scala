@@ -28,13 +28,12 @@ import views.MainXmlWithHead
 import play.api.mvc.Codec
 import play.api.GlobalSettings
 import deductions.runtime.utils.HTTPrequest
+import play.api.mvc.Results
 
-object Global extends GlobalSettings {
-
-//  override def onBadRequest(request: RequestHeader, error: String) = {
-//    BadRequest("Bad Request: " + error)
-//  }  
-    
+object Global extends GlobalSettings with Results {
+  override def onBadRequest(request: RequestHeader, error: String) = {
+    Future{ BadRequest("""Bad Request: "$error" """) }
+  }
 }
 
 /** main controller */
@@ -128,8 +127,9 @@ trait ApplicationTrait extends Controller
           .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
 
   /**
-   * /sparql-form service;
-   *  like /sparql has input a SPARQL query
+   * /sparql-form service: Create HTML form from SPARQL (construct);
+   *  like /sparql has input a SPARQL query;
+   *  like /form and /display has input Edit, formuri & database
    */
   def sparqlForm(query: String, Edit: String = "", formuri: String = "", database: String = "TDB") = Action {
     makeJSONResult(
@@ -512,7 +512,8 @@ trait ApplicationTrait extends Controller
   }
 
   /**
-   * service /sparql-data, like /form-data spits raw JSON data,
+   * service /sparql-data, like /form-data spits raw JSON data for a view,
+   * but from a SPARQL CONSTRUCT query,
    *  cf issue https://github.com/jmvanel/semantic_forms/issues/115
    */
   def sparqlDataPOST = Action {
