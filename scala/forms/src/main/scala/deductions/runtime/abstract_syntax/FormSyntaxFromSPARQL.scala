@@ -1,10 +1,11 @@
 package deductions.runtime.abstract_syntax
 
-import org.w3.banana.RDF
-import deductions.runtime.services.SPARQLHelpers
-import scala.util.Success
 import scala.util.Failure
-import scala.xml.NodeSeq
+import scala.util.Success
+
+import org.w3.banana.RDF
+
+import deductions.runtime.services.SPARQLHelpers
 
 trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
     extends SPARQLHelpers[Rdf, DATASET]
@@ -20,7 +21,7 @@ trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
                                formuri: String = ""): String = {
     formSyntax2JSON(createFormFromSPARQL(query, editable, formuri))
   }
-  
+
   def createFormFromSPARQL(query: String,
                            editable: Boolean = false,
                            formuri: String = ""): FormSyntax = {
@@ -46,12 +47,12 @@ trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
     editable: Boolean = false,
     formuri: String = "")(implicit graph: Rdf#Graph): FormSyntax = {
 
-    val formEntries = triples.map {
-      triple =>
-        val (subject, prop, objet) = fromTriple(triple)
-        makeEntryFromTriple(subject, prop, objet,
-          formMode = FormMode(editable))
-    }
+    val formEntries = wrapInReadTransaction(
+      triples.map {
+        triple =>
+          val (subject, prop, objet) = fromTriple(triple)
+          makeEntryFromTriple(subject, prop, objet, formMode = FormMode(editable))
+      }).get
     FormSyntax(subject = nullURI, fields = formEntries)
   }
 }
