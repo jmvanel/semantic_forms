@@ -117,18 +117,27 @@ trait ApplicationTrait extends Controller
     {
 //      implicit userid =>
         implicit request =>
-       Ok(formDataImpl(uri, blankNode, Edit, formuri, database)) .
+       makeJSONResult(formDataImpl(uri, blankNode, Edit, formuri, database))
+    }
+
+  private def makeJSONResult(json: String) =
+    Ok(json) .
          as( AcceptsJSONLD.mimeType + "; charset=" + myCustomCharset.charset )
          .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
-    }
 
-  /** /sparql-form service; like /form-data spits raw JSON data,
-   *  like /sparql has input a SPARQL query */
-  def sparqlForm(query:String, Edit:String="", formuri:String ="", database:String ="TDB") = Action {
-	  Ok("TODO") // TODO <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    }
+  /**
+   * /sparql-form service;
+   *  like /sparql has input a SPARQL query
+   */
+  def sparqlForm(query: String, Edit: String = "", formuri: String = "", database: String = "TDB") = Action {
+    makeJSONResult(
+      createHTMLFormFromSPARQL(
+        query,
+        editable = Edit != "",
+        formuri).toString() )
+  }
 
   def searchOrDisplayAction(q: String) = {
 //          withUser {
@@ -502,10 +511,41 @@ trait ApplicationTrait extends Controller
       }
   }
 
-  /** cf issue https://github.com/jmvanel/semantic_forms/issues/115 */
-    def sparqlDataPOST = Action {
-      Ok("TODO") // TODO <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    }
+  /**
+   * service /sparql-data, like /form-data spits raw JSON data,
+   *  cf issue https://github.com/jmvanel/semantic_forms/issues/115
+   */
+  def sparqlDataPOST = Action {
+    // TODO pasted from sparqlConstructPOST
+    implicit request =>
+      println(s"""sparqlConstruct: sparql: request $request
+            accepts ${request.acceptedTypes} """)
+      val lang = chooseLanguage(request)
+      val body: AnyContent = request.body
+
+      // Expecting body as FormUrlEncoded
+      val formBody: Option[Map[String, Seq[String]]] = body.asFormUrlEncoded
+      val result = formBody.map { map =>
+
+        val query0 = map.getOrElse("query", Seq())
+        val query = query0.mkString("\n")
+        println(s"""sparql: $query""")
+
+        val Edit = map.getOrElse("Edit", Seq()).headOption.getOrElse("")
+        val formuri = map.getOrElse("formuri", Seq()).headOption.getOrElse("")
+
+        makeJSONResult(
+          createJSONFormFromSPARQL(
+            query,
+            editable = Edit != "",
+            formuri))
+      }
+
+      result match {
+        case Some(r) => r
+        case None    => BadRequest("sparqlDataPOST: BadRequest: noting in form Body")
+      }
+  }
   
   /** select UI */
   def select(query: String) =

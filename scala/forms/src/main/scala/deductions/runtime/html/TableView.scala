@@ -228,28 +228,29 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     val form = time("createAbstractForm",
       createAbstractForm(
           uri, editable, lang, blankNode, formGroup, formuri))
-    val ops1 = ops
-    val config1 = config
-    val htmlFormGen = time("new Form2HTML",
-      new Form2HTMLBanana[Rdf] {
-        val ops = ops1
-      	val config = config1 
-      }
-    )
+    val htmlFormGen = makeHtmlFormGen
     val htmlForm = htmlFormGen.
       generateHTML(form, hrefPrefix, editable, actionURI, graphURI,
         actionURI2, lang)
     ( htmlForm, form )
   }
 
+  /** TODO Why not inheritate from Form2HTML ? */
+  private def makeHtmlFormGen = {
+    val ops1 = ops
+    val config1 = config
+    time("new Form2HTML",
+      new Form2HTMLBanana[Rdf] {
+        val ops = ops1
+        val config = config1
+      })
+  }
+
   private def createAbstractForm(
-//      graphArg: Rdf#Graph, 
       uri: String, editable: Boolean,
     lang: String, blankNode: String, formGroup: Rdf#URI, formuri: String="")
     (implicit graph: Rdf#Graph)
-    : 
-//    FormModule[Rdf#Node, Rdf#URI]#
-    FormSyntax = {
+    :  FormSyntax = {
     val subjectNode = if (blankNode == "true")
       /* Jena TDB specific:
            * Jena supports "concrete bnodes" in SPARQL syntax as pseudo URIs in the "_" URI scheme
@@ -273,6 +274,13 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     graf2form(graph1, uri, graphURI = graphURI)._1.toString
   }
 
+  def createHTMLFormFromSPARQL(query: String,
+                               editable: Boolean = false,
+                               formuri: String = ""): NodeSeq = {
+    val formSyntax = createFormFromSPARQL(query, editable, formuri)
+    makeHtmlFormGen.generateHTML(formSyntax)
+  }
+
   //  override 
 //  def toPlainString(n: Rdf#Node): String = {
 //    val v = foldNode(n)(
@@ -282,5 +290,4 @@ trait TableViewModule[Rdf <: RDF, DATASET]
 //    )
 //    v
 //  }
-
 }

@@ -39,6 +39,7 @@ import deductions.runtime.utils.RDFPrefixes
 
 /** one of EditionMode, DisplayMode, CreationMode */
 abstract sealed class FormMode { val editable = true }
+object FormMode{ def apply( editable:Boolean = true) = if(editable) EditionMode else DisplayMode }
 object EditionMode extends FormMode { override def toString() = "EditionMode" }
 object DisplayMode extends FormMode {
   override def toString() = "DisplayMode"
@@ -100,6 +101,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     with FormConfigurationReverseProperties[Rdf, DATASET]
     with RDFListInference[Rdf, DATASET]
     with ThumbnailInference[Rdf, DATASET]
+    with FormSyntaxFromSPARQL[Rdf, DATASET]
     with RDFPrefixes[Rdf]
     with Timer {
 
@@ -192,7 +194,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       ) yield {
         logger.debug(s"makeEntriesFromRawDataForForm subject $subject, prop $prop")
           time(s"makeEntriesForSubject(${prop})",
-          makeEntriesForSubject(subject, prop, formMode, valuesFromFormGroup))
+          makeEntriesForSubject(subject, prop, formMode))
       }
       val fields = entries.flatten
       val fields2 = addTypeTriple(subject, classs, fields)
@@ -335,8 +337,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    */
   private def makeEntriesForSubject(
       subject: Rdf#Node, prop: Rdf#Node,
-      formMode: FormMode,
-      valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)])
+      formMode: FormMode
+//      valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)]
+      )
 	  (implicit graph: Rdf#Graph)
   : Seq[Entry] = {
     logger.debug(s"makeEntriesForSubject subject $subject, prop $prop")
@@ -345,9 +348,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val objects = objectsQuery(subject, prop.asInstanceOf[Rdf#URI]) ; logger.debug(s"makeEntriesForSubject subject $subject, objects $objects")
     val result = mutable.ArrayBuffer[Entry]()
     for (obj <- objects)
-      result += makeEntryFromTriple(subject, prop, obj, formMode, valuesFromFormGroup)
+      result += makeEntryFromTriple(subject, prop, obj, formMode)
 
-    if (objects isEmpty) result += makeEntryFromTriple(subject, prop, nullURI, formMode, valuesFromFormGroup)
+    if (objects isEmpty) result += makeEntryFromTriple(subject, prop, nullURI, formMode)
 
     logger.debug("result: Entry's " + result)
     result
@@ -357,8 +360,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     subject: Rdf#Node,
     prop: Rdf#Node,
     objet: Rdf#Node,
-    formMode: FormMode,
-    valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)] // formGroup: Rdf#URI
+    formMode: FormMode
+//    valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)] // formGroup: Rdf#URI
     )(implicit graph: Rdf#Graph): Entry = {
 
     val xsdPrefix = XSDPrefix[Rdf].prefixIri
