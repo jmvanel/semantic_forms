@@ -342,109 +342,21 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     logger.debug(s"makeEntriesForSubject subject $subject, prop $prop")
     implicit val prlng = preferedLanguage
 
-//    case class PrecomputationsFromProperty(prop: Rdf#Node) {
-//      val label: String = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.label, terminalPart(prop))
-//      val comment: String = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.comment, "")
-//      val propClasses: Set[Rdf#Node] = objectsQuery(prop, rdf_type)
-//      val ranges: Set[Rdf#Node] = getRDFSranges(prop)
-//      val rangeClasses: Set[Rdf#Node] = objectsQueries(ranges, rdf_type)
-//    }
-    val precomputProp = PrecomputationsFromProperty(prop)
-
     val objects = objectsQuery(subject, prop.asInstanceOf[Rdf#URI]) ; logger.debug(s"makeEntriesForSubject subject $subject, objects $objects")
     val result = mutable.ArrayBuffer[Entry]()
     for (obj <- objects)
-      addOneEntry(obj, formMode, valuesFromFormGroup)
+      result += makeEntryFromTriple(subject, prop, obj, formMode, valuesFromFormGroup)
 
-    if (objects isEmpty) addOneEntry(nullURI, formMode, valuesFromFormGroup)
-
-    //////// end of populating result of makeEntriesForSubject() ////////
-
-    def firstType = firstNodeOrElseNullURI(precomputProp.ranges)
-
-    def addOneEntry(objet : Rdf#Node,
-      formMode: FormMode,
-      valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)] // formGroup: Rdf#URI
-      ) = {
-
-      val xsdPrefix = XSDPrefix[Rdf].prefixIri
-      val rdf = RDFPrefix[Rdf]
-      val rdfs = RDFSPrefix[Rdf]
-
-      import precomputProp.{ prop => _, _ }
-
-      def rdfListEntry = makeRDFListEntry(label, comment, prop, objet , subject=subject )
-
-      def literalEntry = {
-        val value = getLiteralNodeOrElse(objet, literalInitialValue)
-        // TODO match graph pattern for interval datatype ; see issue #17
-        // case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
-        new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
-          value,
-          type_ = firstType,
-          lang = getLang(objet).toString(),
-          valueLabel = nodeToString(value) )
-      }
-
-      val NullResourceEntry = new ResourceEntry("", "", nullURI, ResourceValidator(Set()) )
-      def resourceEntry = {
-        if (showRDFtype || prop != rdf.typ)
-          time(s"""resourceEntry objet "$objet" """,
-            foldNode(objet)(
-              objet => {
-                new ResourceEntry(label, comment, prop, ResourceValidator(ranges), objet,
-                  alreadyInDatabase = true,
-                  valueLabel = instanceLabel(objet, graph, preferedLanguage),
-                  type_ = firstType,
-                  isImage = isImageTriple(subject, prop, objet, firstType),
-                  thumbnail = getURIimage(objet)
-                )},
-              objet => makeBN(label, comment, prop, ResourceValidator(ranges), objet,
-                typ = firstType),
-              objet => literalEntry))
-        else NullResourceEntry
-      }
-
-      def makeBN(label: String, comment: String,
-          property: ObjectProperty, validator: ResourceValidator,
-          value: Rdf#BNode,
-          typ: Rdf#Node = nullURI) = {
-        new BlankNodeEntry(label, comment, prop, ResourceValidator(ranges), value,
-            type_ = typ, valueLabel = instanceLabel(value, graph, preferedLanguage)) {
-          override def getId: String = fromBNode(value.asInstanceOf[Rdf#BNode])
-        }
-      }
-
-      val entry = rangeClasses match {
-        case _ if objet.isLiteral => literalEntry
-        case _ if rangeClasses.exists { c => c.toString startsWith (xsdPrefix) } => literalEntry
-        case _ if rangeClasses.contains(rdfs.Literal) => literalEntry
-        case _ if propClasses.contains(owl.DatatypeProperty) => literalEntry
-        case _ if ranges.contains(rdfs.Literal) => literalEntry
-
-        case _ if propClasses.contains(owl.ObjectProperty) => resourceEntry
-        case _ if rangeClasses.contains(owl.Class) => resourceEntry
-        case _ if rangeClasses.contains(rdf.Property) => resourceEntry
-        case _ if ranges.contains(owl.Thing) => resourceEntry
-        case _ if isURI(objet) => resourceEntry
-
-        case _ if rdfListEntry.isDefined => rdfListEntry.get
-        case _ if isBN(objet) => makeBN(label, comment, prop,
-            ResourceValidator(ranges), toBN(objet), firstType)
-        case _ if objet.toString.startsWith("_:") => resourceEntry // ??????????????? rather makeBN() ???
-
-        case _ => literalEntry
-      }
-      result += entry
-    }
+    if (objects isEmpty) result += makeEntryFromTriple(subject, prop, nullURI, formMode, valuesFromFormGroup)
 
     logger.debug("result: Entry's " + result)
     result
   }
 
   protected def makeEntryFromTriple(
-    subject: Rdf#Node, objet: Rdf#Node,
+    subject: Rdf#Node,
     prop: Rdf#Node,
+    objet: Rdf#Node,
     formMode: FormMode,
     valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)] // formGroup: Rdf#URI
     )(implicit graph: Rdf#Graph): Entry = {
@@ -521,7 +433,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     }
   }
 
-  case class PrecomputationsFromProperty(prop: Rdf#Node)(implicit graph: Rdf#Graph) {
+  private case class PrecomputationsFromProperty(prop: Rdf#Node)(implicit graph: Rdf#Graph) {
     val label: String = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.label, terminalPart(prop))
     val comment: String = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.comment, "")
     val propClasses: Set[Rdf#Node] = objectsQuery(prop, rdf_type)
