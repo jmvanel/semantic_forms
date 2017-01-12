@@ -228,7 +228,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     val form = time("createAbstractForm",
       createAbstractForm(
           uri, editable, lang, blankNode, formGroup, formuri))
-    val htmlFormGen = makeHtmlFormGen
+    val htmlFormGen = makeHtmlFormGenerator
     val htmlForm = htmlFormGen.
       generateHTML(form, hrefPrefix, editable, actionURI, graphURI,
         actionURI2, lang)
@@ -236,7 +236,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
   }
 
   /** TODO Why not inheritate from Form2HTML ? */
-  private def makeHtmlFormGen = {
+  private def makeHtmlFormGenerator = {
     val ops1 = ops
     val config1 = config
     time("new Form2HTML",
@@ -278,7 +278,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
                                editable: Boolean = false,
                                formuri: String = ""): NodeSeq = {
     val formSyntax = createFormFromSPARQL(query, editable, formuri)
-    makeHtmlFormGen.generateHTML(formSyntax)
+    makeHtmlFormGenerator.generateHTML(formSyntax)
   }
 
   //  override 
