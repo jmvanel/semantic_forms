@@ -4,6 +4,7 @@ http://www.gnu.org/licenses/lgpl.html
 $Id$
  */
 package deductions.runtime.abstract_syntax
+
 import scala.collection.mutable
 import scala.util.Try
 import scala.util.Failure
@@ -135,7 +136,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     createFormDetailed2( step1, formGroup )
   }
 
-  def addRDFSLabelComment(propertiesList: Seq[Rdf#Node]): Seq[Rdf#Node] = {
+  private [abstract_syntax] def addRDFSLabelComment(propertiesList: Seq[Rdf#Node]): Seq[Rdf#Node] = {
     if (addRDFS_label_comment &&
       !propertiesList.contains(rdfs.label)) {
       Seq(rdfs.label, rdfs.comment) ++ propertiesList
@@ -175,7 +176,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
 
-    def makeEntries2(step1: RawDataForForm[Rdf#Node]): Seq[Entry] = {
+    def makeEntriesFromRawDataForForm(step1: RawDataForForm[Rdf#Node]): Seq[Entry] = {
       val subject = step1.subject
       val props = step1.propertiesList
       val classs = step1.classs
@@ -188,43 +189,22 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       val entries = for (
         prop <- props if prop != displayLabelPred
       ) yield {
-        logger.debug(s"createForm subject $subject, prop $prop")
-        val ranges = objectsQuery(prop, rdfs.range)
-        val rangesSize = ranges.size
-        System.err.println(
-          if (rangesSize > 1) {
-            s"""WARNING: ranges $ranges for property $prop are multiple;
-            taking first if not owl:Thing"""
-          } else if (rangesSize == 0) {
-            "WARNING: There is no range for property " + prop
-          } else "")
-
-        val ranges2 = if (rangesSize > 1) {
-          val owlThing = prefixesMap2("owl")("Thing")
-          if (ranges.contains(owlThing)) {
-            System.err.println(
-              s"""WARNING: ranges $ranges for property $prop contain owl:Thing;
-               removing owl:Thing, and take first remaining: <${(ranges - owlThing).head}>""")
-          }
-          ranges - owlThing
-        } else ranges
-
-        val res = time(s"makeEntries(${prop})",
-          makeEntriesForSubject(subject, prop, ranges2, formMode, valuesFromFormGroup))
-        res
+        logger.debug(s"makeEntriesFromRawDataForForm subject $subject, prop $prop")
+          time(s"makeEntriesForSubject(${prop})",
+          makeEntriesForSubject(subject, prop, formMode, valuesFromFormGroup))
       }
       val fields = entries.flatten
       val fields2 = addTypeTriple(subject, classs, fields)
       addInverseTriples(fields2, step1)
     }
     
-    val fields3 = makeEntries2(step1)
+    val fields3 = makeEntriesFromRawDataForForm(step1)
     val subject = step1.subject
     val classs = step1.classs
 
     // set a FormSyntax.title for each group in propertiesGroups
     val entriesFromPropertiesGroups = for( (node, rawDataForForm ) <- step1.propertiesGroups ) yield
-    	node -> makeEntries2(rawDataForForm)
+    	node -> makeEntriesFromRawDataForForm(rawDataForForm)
     val pgs = for( (n, m) <- entriesFromPropertiesGroups ) yield {
       FormSyntax(n, m, title=instanceLabel(n, allNamedGraph, "en"))
     }
@@ -241,7 +221,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     res
   }
 
-  def addInverseTriples(fields2: Seq[Entry],
+  protected def addInverseTriples(fields2: Seq[Entry],
       step1: RawDataForForm[Rdf#Node]): Seq[Entry]
 
   /**
@@ -262,6 +242,30 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         for ( fs <- formSyntax.propertiesGroups ) updateOneFormFromConfig(fs, formConfig)
     }
     formSyntax
+  }
+
+  private def getRDFSranges(prop: Rdf#Node)(implicit graph: Rdf#Graph): Set[Rdf#Node] = {
+    val ranges = objectsQuery(prop, rdfs.range)
+    val rangesSize = ranges.size
+    System.err.print(
+      if (rangesSize > 1) {
+        s"""WARNING: ranges $ranges for property $prop are multiple;
+            taking first if not owl:Thing
+            """
+      } else if (rangesSize == 0) {
+        s"""WARNING: There is no range for property $prop
+            """
+      } else "")
+
+    if (rangesSize > 1) {
+      val owlThing = prefixesMap2("owl")("Thing")
+      if (ranges.contains(owlThing)) {
+        System.err.println(
+          s"""WARNING: ranges $ranges for property $prop contain owl:Thing;
+               removing owl:Thing, and take first remaining: <${(ranges - owlThing).head}>""")
+      }
+      ranges - owlThing
+    } else ranges
   }
 
   /** non recursive update */
@@ -307,7 +311,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    * add Triple: <subject> rdf:type <classs>
    *  @return augmented fields argument
    */
-  def addTypeTriple(subject: Rdf#Node, classs: Rdf#Node, // URI,
+  private def addTypeTriple(subject: Rdf#Node, classs: Rdf#Node, // URI,
     fields: Iterable[Entry])
     (implicit graph: Rdf#Graph)
   : Seq[Entry] = {
@@ -328,31 +332,35 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    * try to get rdfs:label, comment, rdf:type,
    * or else display terminal Part of URI as label;
    */
-  private def makeEntriesForSubject(subject: Rdf#Node, prop: Rdf#Node, ranges: Set[Rdf#Node],
-    formMode: FormMode,
-    valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)])
+  private def makeEntriesForSubject(
+      subject: Rdf#Node, prop: Rdf#Node,
+      formMode: FormMode,
+      valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)])
 	  (implicit graph: Rdf#Graph)
   : Seq[Entry] = {
-    logger.debug(s"makeEntries subject $subject, prop $prop")
+    logger.debug(s"makeEntriesForSubject subject $subject, prop $prop")
     implicit val prlng = preferedLanguage
-    
-    val label = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.label, terminalPart(prop))
-    val comment = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.comment, "")
-    
+
     val rdf_type = RDFPrefix[Rdf].typ
-    val propClasses = rdfh.objectsQuery(prop, rdf_type)
-    val objects = objectsQuery(subject, prop.asInstanceOf[Rdf#URI])
-    logger.debug(s"makeEntries subject $subject, objects $objects")
-    val rangeClasses = objectsQueries(ranges, rdf_type)
-    val result = scala.collection.mutable.ArrayBuffer[Entry]()
+    case class PrecomputationsFromProperty(prop: Rdf#Node) {
+      val label: String = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.label, terminalPart(prop))
+      val comment: String = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.comment, "")
+      val propClasses: Set[Rdf#Node] = objectsQuery(prop, rdf_type)
+      val ranges: Set[Rdf#Node] = getRDFSranges(prop)
+      val rangeClasses: Set[Rdf#Node] = objectsQueries(ranges, rdf_type)
+    }
+    val precomputProp = PrecomputationsFromProperty(prop)
+
+    val objects = objectsQuery(subject, prop.asInstanceOf[Rdf#URI]) ; logger.debug(s"makeEntriesForSubject subject $subject, objects $objects")
+    val result = mutable.ArrayBuffer[Entry]()
     for (obj <- objects)
       addOneEntry(obj, formMode, valuesFromFormGroup)
 
     if (objects isEmpty) addOneEntry(nullURI, formMode, valuesFromFormGroup)
 
-    //////// end of populating result of makeEntries() ////////
+    //////// end of populating result of makeEntriesForSubject() ////////
 
-    def firstType = firstNodeOrElseNullURI(ranges)
+    def firstType = firstNodeOrElseNullURI(precomputProp.ranges)
 
     def addOneEntry(object_ : Rdf#Node,
       formMode: FormMode,
@@ -362,6 +370,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       val xsdPrefix = XSDPrefix[Rdf].prefixIri
       val rdf = RDFPrefix[Rdf]
       val rdfs = RDFSPrefix[Rdf]
+
+      import precomputProp.{ prop => _, _ }
 
       def rdfListEntry = makeRDFListEntry(label, comment, prop, object_ , subject=subject )
 

@@ -18,8 +18,8 @@ import scala.util.control.NonFatal
 trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
 
   implicit val ops: RDFOps[Rdf]
-  val rdfh: RDFHelpers[Rdf] = this
-  import rdfh.{ ops => _, _ }
+//  val rdfh: RDFHelpers[Rdf] = this
+//  import rdfh.{ ops => _, _ }
   import ops.{ rdf => _, _ }
 
   /** recursively iterate on the Rdf#Node through rdf:first and rdf:rest */
