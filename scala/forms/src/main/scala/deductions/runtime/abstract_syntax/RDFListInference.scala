@@ -23,6 +23,7 @@ trait RDFListInference[Rdf <: RDF, DATASET]
     type_ : Rdf#Node = nullURI,
     inverseTriple: Boolean = false,
     subject: Rdf#Node = nullURI,
+    subjectLabel: String = "",
     mandatory: Boolean = false,
     openChoice: Boolean = true,
     widgetType: WidgetType = Text): Option[RDFListEntry] = {
@@ -52,6 +53,7 @@ trait RDFListInference[Rdf <: RDF, DATASET]
         type_ : Rdf#Node,
         inverseTriple: Boolean,
         subject: Rdf#Node,
+        subjectLabel: String,
         mandatory: Boolean,
         openChoice: Boolean,
         widgetType: WidgetType,

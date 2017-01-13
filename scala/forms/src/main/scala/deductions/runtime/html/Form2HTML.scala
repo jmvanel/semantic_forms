@@ -138,7 +138,7 @@ import config._
       if (field.subject != nullURI && field.subject != form.subject) {
         val subjectField =
           // NOTE: over-use of class ResourceEntry to display the subject instead of normally the object triple:
-          ResourceEntry(value=field.subject, valueLabel=field.subject.toString())
+          ResourceEntry(value=field.subject, valueLabel=field.subjectLabel)
         createHTMLField(subjectField, editable, hrefPrefix, lang)
       } else NodeSeq.Empty
     }

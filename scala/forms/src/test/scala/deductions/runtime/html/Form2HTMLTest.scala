@@ -33,6 +33,7 @@ class Form2HTMLTest
     val fh = new Form2HTMLBanana[Rdf] with DefaultConfiguration {
       val ops = ops1
       val config = new DefaultConfiguration {}
+      val nullURI = URI("")
     }
     val xhtml = fh.generateHTML(createFormWithGivenProps())
     Files.write(Paths.get("tmp.form.html"), xhtml.toString().getBytes);

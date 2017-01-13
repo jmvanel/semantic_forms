@@ -128,6 +128,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   
   /** create Form abstract syntax from an instance (subject) URI;
    *  the Form Specification is inferred from the class of instance;
+   *  TODO : add lang argument
    *  NO transaction, should be called within a transaction */
   def createForm(subject: Rdf#Node,
     editable: Boolean = false,
@@ -151,7 +152,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    * For each given property (props)
    *  look at its rdfs:range ?D
    *  see if ?D is a datatype or an OWL or RDFS class;
-   *  
+   * 
+   * TODO : add lang argument
+   * 
    * used directly for creating an empty Form from a class URI,
    * and indirectly for other cases;
    * NO transaction, should be called within a transaction
@@ -168,6 +171,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     createFormDetailed2( step1, formGroup )
   }
   
+  /**  TODO : add lang argument */
   private def createFormDetailed2(
 		  step1: RawDataForForm[Rdf#Node],
 		  formGroup: Rdf#URI = nullURI)
@@ -209,11 +213,11 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val entriesFromPropertiesGroups = for( (node, rawDataForForm ) <- step1.propertiesGroups ) yield
     	node -> makeEntriesFromRawDataForForm(rawDataForForm)
     val pgs = for( (n, m) <- entriesFromPropertiesGroups ) yield {
-      FormSyntax(n, m, title=instanceLabel(n, allNamedGraph, "en"))
+      FormSyntax(n, m, title=instanceLabel(n, allNamedGraph, preferedLanguage))
     }
     val formSyntax = FormSyntax(subject, fields3, classs, propertiesGroups=pgs.toSeq,
         thumbnail = getURIimage(subject),
-        title = instanceLabel( subject, allNamedGraph, "en" ) )
+        title = instanceLabel( subject, allNamedGraph, preferedLanguage ) )
     
     addAllPossibleValues(formSyntax, valuesFromFormGroup)
     
@@ -381,6 +385,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
         value,
         subject=subject,
+        subjectLabel = instanceLabel(subject, graph, preferedLanguage),
         type_ = firstType,
         lang = getLang(objet).toString(),
         valueLabel = nodeToString(value))
@@ -396,6 +401,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
                 subject=subject,
                 alreadyInDatabase = true,
                 valueLabel = instanceLabel(objet, graph, preferedLanguage),
+                subjectLabel = instanceLabel(subject, graph, preferedLanguage),
                 type_ = firstType,
                 isImage = isImageTriple(subject, prop, objet, firstType),
                 thumbnail = getURIimage(objet))
@@ -412,6 +418,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
                typ: Rdf#Node = nullURI) = {
       new BlankNodeEntry(label, comment, prop, ResourceValidator(ranges), value,
     		subject=subject,
+    		subjectLabel = instanceLabel(subject, graph, preferedLanguage),
         type_ = typ, valueLabel = instanceLabel(value, graph, preferedLanguage)) {
         override def getId: String = fromBNode(value.asInstanceOf[Rdf#BNode])
       }

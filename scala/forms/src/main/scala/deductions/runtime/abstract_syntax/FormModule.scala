@@ -79,6 +79,7 @@ trait FormModule[NODE, URI <: NODE] {
 	  val type_ : NODE
 //	  val type_ : Seq[NODE] // TODO <<<<<<<<<<<<<<<<
 	  val value: NODE
+    val subjectLabel: String = ""
 	  var widgetType: WidgetType
 	  /** true <=> user has possibility to type any (valid) data */
 	  var openChoice: Boolean
@@ -117,6 +118,7 @@ trait FormModule[NODE, URI <: NODE] {
     type_ : NODE = nullURI,
     inverseTriple: Boolean= false,
     subject: NODE = nullURI,
+    override val subjectLabel: String = "",
     val mandatory: Boolean = false,
     var openChoice: Boolean = true,
     var widgetType: WidgetType = URIWidget,
@@ -163,6 +165,7 @@ trait FormModule[NODE, URI <: NODE] {
     var possibleValues: Seq[(NODE, NODE)] = Seq(),
     override val valueLabel: String = "",
     subject: NODE = nullURI,
+    override val subjectLabel: String = "",
     val mandatory: Boolean = false,
     var openChoice: Boolean = true,
     var widgetType: WidgetType = URIWidget,
@@ -194,6 +197,7 @@ trait FormModule[NODE, URI <: NODE] {
     type_ : NODE = nullURI,
     var possibleValues: Seq[(NODE, NODE)] = Seq(),
     subject: NODE = nullURI,
+    override val subjectLabel: String = "",
     val mandatory: Boolean = false,
     var openChoice: Boolean = true,
     var widgetType: WidgetType = Text,
@@ -234,6 +238,7 @@ trait FormModule[NODE, URI <: NODE] {
       type_ : NODE = nullURI,
       inverseTriple: Boolean = false,
       subject: NODE = nullURI,
+      override val subjectLabel: String = "",
       val mandatory: Boolean = false,
       var openChoice: Boolean = true,
       var widgetType: WidgetType = ListWidget,
