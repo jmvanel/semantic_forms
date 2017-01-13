@@ -16,6 +16,7 @@ import deductions.runtime.utils.I18NMessages
 import deductions.runtime.utils.Timer
 import deductions.runtime.services.Configuration
 import org.apache.commons.codec.digest.DigestUtils
+import deductions.runtime.abstract_syntax.FormModule
 
 /**
  * different modes: display or edit;
@@ -24,6 +25,7 @@ import org.apache.commons.codec.digest.DigestUtils
 private [html] trait Form2HTML[NODE, URI <: NODE]
     extends Form2HTMLDisplay[NODE, URI]
     with Form2HTMLEdit[NODE, URI]
+    with FormModule[NODE, URI]
     with Timer
     with JavaScript
     {
@@ -91,10 +93,11 @@ import config._
           (preceding, field) <- (lastEntry +: fields) zip fields // do not display NullResourceEntry
           if (field.property.toString != "")
         ) yield {
-          <div class={ css.cssClasses.formLabelAndInputCSSClass }>
-            { makeFieldLabel(preceding, field) }
-            { makeFieldDataOrInput(field, hrefPrefix, editable, lang) }
-          </div>
+          <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
+            makeFieldSubject(field) ++
+            makeFieldLabel(preceding, field) ++
+            makeFieldDataOrInput(field, hrefPrefix, editable, lang)
+          }</div>
         }
         s
       } else Text("\n")
@@ -131,22 +134,32 @@ import config._
       tabs . +: (tabsNames)
     }
 
-    val res = hidden ++
+    def makeFieldSubject(field: FormEntry): NodeSeq = {
+      if (field.subject != nullURI && field.subject != form.subject) {
+        val subjectField =
+          // NOTE: over-use of class ResourceEntry to display the subject instead of normally the object triple:
+          ResourceEntry(value=field.subject, valueLabel=field.subject.toString())
+        createHTMLField(subjectField, editable, hrefPrefix, lang)
+      } else NodeSeq.Empty
+    }
+
+    val res: NodeSeq = hidden ++
       <div class={ css.cssClasses.formRootCSSClass }>
         {
           css.localCSS ++
             Text("\n") ++
             (if (inlineJavascriptInForm)
               localJS
-            else Text("")) ++
-            Text("\n")
-        }
-        <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
-        {
-          if( groupFields ) {
-              makeFieldsGroups()
-          } else
-          makeFieldsLabelAndData(form.fields)
+            else NodeSeq.Empty) ++
+            Text("\n") ++
+            <input type="hidden" name="uri" value={ urlEncode(form.subject) }/> ++
+            <div>{form.title}</div> ++
+            {
+              if (groupFields) {
+                makeFieldsGroups()
+              } else
+                makeFieldsLabelAndData(form.fields)
+            }
         }
       </div>
     return res
@@ -209,6 +222,7 @@ import config._
     else
        createHTMLField(field, editable, hrefPrefix, lang)
   }
+
 }
 
 object Form2HTML {

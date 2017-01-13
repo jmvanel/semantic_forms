@@ -380,6 +380,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       // case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
       new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
         value,
+        subject=subject,
         type_ = firstType,
         lang = getLang(objet).toString(),
         valueLabel = nodeToString(value))
@@ -392,6 +393,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
           foldNode(objet)(
             objet => {
               new ResourceEntry(label, comment, prop, ResourceValidator(ranges), objet,
+                subject=subject,
                 alreadyInDatabase = true,
                 valueLabel = instanceLabel(objet, graph, preferedLanguage),
                 type_ = firstType,
@@ -409,6 +411,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
                value: Rdf#BNode,
                typ: Rdf#Node = nullURI) = {
       new BlankNodeEntry(label, comment, prop, ResourceValidator(ranges), value,
+    		subject=subject,
         type_ = typ, valueLabel = instanceLabel(value, graph, preferedLanguage)) {
         override def getId: String = fromBNode(value.asInstanceOf[Rdf#BNode])
       }

@@ -137,6 +137,7 @@ trait ApplicationTrait extends Controller
         query,
         editable = Edit != "",
         formuri).toString() )
+    .as("text/html; charset=utf-8")
   }
 
   def searchOrDisplayAction(q: String) = {

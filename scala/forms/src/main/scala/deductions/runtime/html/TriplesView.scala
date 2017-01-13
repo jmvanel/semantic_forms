@@ -105,7 +105,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
       {
         val ops = ops1
         val config = config1
-//        lazy val original:Configuration = TableViewModule.this
+        val nullURI = URI("")
       } .
         generateHTMLJustFields(form,
           hrefPrefix, editable, graphURIActual)
@@ -243,6 +243,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
       new Form2HTMLBanana[Rdf] {
         val ops = ops1
         val config = config1
+        val nullURI = URI("")
       })
   }
 

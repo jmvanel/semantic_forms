@@ -16,17 +16,22 @@ trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
 
   import ops._
 
-  def createJSONFormFromSPARQL(query: String,
-                               editable: Boolean = false,
-                               formuri: String = ""): String = {
-    formSyntax2JSON(createFormFromSPARQL(query, editable, formuri))
+  def createJSONFormFromSPARQL(
+    query: String,
+    editable: Boolean = false,
+    formuri: String = ""): String = {
+    formSyntax2JSON(
+      createFormFromSPARQL (
+        query, editable, formuri))
   }
 
   def createFormFromSPARQL(query: String,
                            editable: Boolean = false,
                            formuri: String = ""): FormSyntax = {
-
+        println( s"""query:
+        $query""")
     val tryGraph = sparqlConstructQueryGraph(query)
+            println( s"tryGraph: $tryGraph")
     tryGraph match {
       case Success(graph) =>
         val triples = getTriples(graph).toSeq
@@ -46,7 +51,7 @@ trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
     triples: Seq[Rdf#Triple],
     editable: Boolean = false,
     formuri: String = "")(implicit graph: Rdf#Graph): FormSyntax = {
-
+    println( s"triples: $triples")
     val formEntries = wrapInReadTransaction(
       triples.map {
         triple =>
