@@ -10,16 +10,16 @@ case class HTTPrequest(
      */
     host: String = "",
     /**
- * The client IP address.
- *
- * the last untrusted proxy
- * from the Forwarded-Headers or the X-Forwarded-*-Headers.
- */
+     * The client IP address.
+     *
+     * the last untrusted proxy
+     * from the Forwarded-Headers or the X-Forwarded-*-Headers.
+     */
     remoteAddress: String = "",
 
     rawQueryString: String = "") {
 
-  def absoluteURL(rawURI: String ="", secure: Boolean = false): String =
+  def absoluteURL(rawURI: String = "", secure: Boolean = false): String =
     "http" + (if (secure) "s" else "") + "://" +
       this.host + rawURI // + this.appendFragment
 }

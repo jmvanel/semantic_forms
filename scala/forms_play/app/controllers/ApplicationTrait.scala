@@ -28,13 +28,12 @@ import views.MainXmlWithHead
 import play.api.mvc.Codec
 import play.api.GlobalSettings
 import deductions.runtime.utils.HTTPrequest
+import play.api.mvc.Results
 
-object Global extends GlobalSettings {
-
-//  override def onBadRequest(request: RequestHeader, error: String) = {
-//    BadRequest("Bad Request: " + error)
-//  }  
-    
+object Global extends GlobalSettings with Results {
+  override def onBadRequest(request: RequestHeader, error: String) = {
+    Future{ BadRequest("""Bad Request: "$error" """) }
+  }
 }
 
 /** main controller */
@@ -110,18 +109,36 @@ trait ApplicationTrait extends Controller
           .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
     }
 
+  /** /form-data service; like /form but raw JSON data */
   def formData(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
 //    withUser
     Action
     {
 //      implicit userid =>
         implicit request =>
-       Ok(formDataImpl(uri, blankNode, Edit, formuri, database)) .
+       makeJSONResult(formDataImpl(uri, blankNode, Edit, formuri, database))
+    }
+
+  private def makeJSONResult(json: String) =
+    Ok(json) .
          as( AcceptsJSONLD.mimeType + "; charset=" + myCustomCharset.charset )
          .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
-    }
+
+  /**
+   * /sparql-form service: Create HTML form from SPARQL (construct);
+   *  like /sparql has input a SPARQL query;
+   *  like /form and /display has input Edit, formuri & database
+   */
+  def sparqlForm(query: String, Edit: String = "", formuri: String = "", database: String = "TDB") = Action {
+    makeJSONResult(
+      createHTMLFormFromSPARQL(
+        query,
+        editable = Edit != "",
+        formuri).toString() )
+    .as("text/html; charset=utf-8")
+  }
 
   def searchOrDisplayAction(q: String) = {
 //          withUser {
@@ -495,6 +512,43 @@ trait ApplicationTrait extends Controller
       }
   }
 
+  /**
+   * service /sparql-data, like /form-data spits raw JSON data for a view,
+   * but from a SPARQL CONSTRUCT query,
+   *  cf issue https://github.com/jmvanel/semantic_forms/issues/115
+   */
+  def sparqlDataPOST = Action {
+    // TODO pasted from sparqlConstructPOST
+    implicit request =>
+      println(s"""sparqlConstruct: sparql: request $request
+            accepts ${request.acceptedTypes} """)
+      val lang = chooseLanguage(request)
+      val body: AnyContent = request.body
+
+      // Expecting body as FormUrlEncoded
+      val formBody: Option[Map[String, Seq[String]]] = body.asFormUrlEncoded
+      val result = formBody.map { map =>
+
+        val query0 = map.getOrElse("query", Seq())
+        val query = query0.mkString("\n")
+        println(s"""sparql: $query""")
+
+        val Edit = map.getOrElse("Edit", Seq()).headOption.getOrElse("")
+        val formuri = map.getOrElse("formuri", Seq()).headOption.getOrElse("")
+
+        makeJSONResult(
+          createJSONFormFromSPARQL(
+            query,
+            editable = Edit != "",
+            formuri))
+      }
+
+      result match {
+        case Some(r) => r
+        case None    => BadRequest("sparqlDataPOST: BadRequest: noting in form Body")
+      }
+  }
+  
   /** select UI */
   def select(query: String) =
     withUser {

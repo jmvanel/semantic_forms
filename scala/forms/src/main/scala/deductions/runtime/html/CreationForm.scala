@@ -46,6 +46,7 @@ with FormSyntaxJson[Rdf] {
       {
         val ops = ops1
         val config = config1
+        val nullURI = URI("")
       }
 
       val rawForm = htmlFormatter . generateHTML(

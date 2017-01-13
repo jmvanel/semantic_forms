@@ -24,14 +24,17 @@ trait FormSyntaxJson[Rdf <: RDF]
 
   implicit val entryWrites = new Writes[Entry] {
     def writes(e: Entry) = Json.obj(
+      "subject" -> e.subject,
+      "subjectLabel" -> e.subjectLabel,
+
+      "property" -> e.property,
       "label" -> e.label,
       "comment" -> e.comment,
       "mandatory" -> e.mandatory,
-      "property" -> e.property,
-      "subject" -> e.subject,
-      "type" -> e.type_,
+
       "value" -> nodeToString(e.value),
-      "valueLabel" -> e.valueLabel,
+      "type" -> e.type_,
+
       "widgetType" -> e.widgetType,
       "openChoice" -> e.openChoice,
       "cardinality" -> e.cardinality

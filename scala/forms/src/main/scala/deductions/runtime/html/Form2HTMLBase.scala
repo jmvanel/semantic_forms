@@ -12,10 +12,7 @@ import deductions.runtime.utils.RDFPrefixes
 
 /** generate HTML from abstract Form : common parts for Display & edition */
 trait Form2HTMLBase[NODE, URI <: NODE]
-    extends 
-//    Configuration
-//    with 
-    BasicWidgets
+    extends BasicWidgets
     with CSS {
 
   val config: Configuration

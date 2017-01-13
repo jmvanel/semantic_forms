@@ -87,6 +87,17 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
   def sparqlSelectQuery(query: String, lang: String = "en"): Elem =
     impl.selectSPARQL(query, lang)
 
+  def createJSONFormFromSPARQL(query: String,
+                               editable: Boolean = false,
+                               formuri: String = "") // : FormSyntax
+                               =
+    impl.createJSONFormFromSPARQL(query, editable, formuri)
+
+  def createHTMLFormFromSPARQL(query: String,
+                               editable: Boolean = false,
+                               formuri: String = "") =
+    impl.createHTMLFormFromSPARQL(query, editable, formuri) 
+    
   def sparqlUpdateQuery(queryString: String): Try[Unit] =
     impl.sparqlUpdateQueryTR(queryString)
 
