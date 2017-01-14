@@ -16,6 +16,7 @@ trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
 
   import ops._
 
+  /** create JSON Form From SPARQL */
   def createJSONFormFromSPARQL(
     query: String,
     editable: Boolean = false,

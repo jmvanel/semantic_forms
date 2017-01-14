@@ -77,7 +77,7 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
     impl.sparqlConstructQuery(query, lang)
 
   // TODO lang useful ????
-  def sparqlConstructResult(query: String, lang: String = "en", format: String="turtle"): String = {
+  def sparqlConstructResult(query: String, format: String="turtle", lang: String = "en"): String = {
 	  impl.sparqlConstructResult(query, lang, format)
   }
 
@@ -87,6 +87,7 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
   def sparqlSelectQuery(query: String, lang: String = "en"): Elem =
     impl.selectSPARQL(query, lang)
 
+  /** create JSON Form From SPARQL */
   def createJSONFormFromSPARQL(query: String,
                                editable: Boolean = false,
                                formuri: String = "") // : FormSyntax
