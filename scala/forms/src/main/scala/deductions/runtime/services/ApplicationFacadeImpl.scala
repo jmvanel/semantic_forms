@@ -353,7 +353,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   def sparqlConstructQuery(query: String, lang: String = "en"): Elem = {
     Logger.getRootLogger().info("Global.sparql query  " + query)
     <p>
-		{ sparqlQueryForm(query, "/sparql",
+		{ sparqlQueryForm(query, "/sparql-ui",
 				Seq("CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10") ) }
       <pre>
         {

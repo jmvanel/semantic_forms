@@ -388,7 +388,7 @@ trait ApplicationTrait extends Controller
     uriArgs.find { uri => uri != "" }.getOrElse("")
   }
 
-  /** SPARQL UI */
+  /** SPARQL Construct UI */
   def sparql(query: String) =
 //    withUser
     Action {
@@ -559,7 +559,7 @@ trait ApplicationTrait extends Controller
       }
   }
   
-  /** select UI */
+  /** SPARQL select UI */
   def select(query: String) =
     withUser {
       implicit userid =>
