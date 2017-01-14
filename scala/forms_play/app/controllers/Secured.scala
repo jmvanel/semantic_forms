@@ -23,7 +23,8 @@ trait Secured
 
   val loginActivated = needLogin
 
-  def username(request: RequestHeader) = request.session.get(Security.username)
+  def getUsername(request: RequestHeader): Option[String] =
+    request.session.get(Security.username)
 
   private def onUnauthorized(request: RequestHeader) = {
     if (request.path.startsWith("/form"))
@@ -36,7 +37,7 @@ trait Secured
 
   /** Ensures the controller is only accessible to registered users */
   private def withAuth(fun: => String => Request[AnyContent] => Result): EssentialAction = {
-    Security.Authenticated(username, onUnauthorized) { user =>
+    Security.Authenticated(getUsername, onUnauthorized) { user =>
       Action(request => fun(user)(request))
     }
   }

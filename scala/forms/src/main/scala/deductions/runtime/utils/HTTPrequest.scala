@@ -17,7 +17,10 @@ case class HTTPrequest(
      */
     remoteAddress: String = "",
 
-    rawQueryString: String = "") {
+    rawQueryString: String = "",
+
+    /** YET UNUSED */
+    headers: Map[String, Seq[String]] = Map()) {
 
   def absoluteURL(rawURI: String = "", secure: Boolean = false): String =
     "http" + (if (secure) "s" else "") + "://" +

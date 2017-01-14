@@ -5,5 +5,5 @@ import deductions.runtime.utils.HTTPrequest
 
 trait HTTPrequestHelpers {
   def copyRequest(request: Request[_] ): HTTPrequest =
-    HTTPrequest(request.host, request.remoteAddress, request.rawQueryString)
+    HTTPrequest(request.host, request.remoteAddress, request.rawQueryString, request.headers.toMap)
 }

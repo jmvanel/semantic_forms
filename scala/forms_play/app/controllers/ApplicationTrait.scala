@@ -608,7 +608,7 @@ trait ApplicationTrait extends Controller
           val mimeType =
             if (acceptedTypes.contains(AcceptsTTL))
               turtle
-            // tODO RDF/XML
+            // TODO RDF/XML
             else
               AcceptsJSONLD.mimeType
           val response = ldpGET(uri, request.path, mimeType, copyRequest(request))
