@@ -76,12 +76,13 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
               si.isSuccess
           }))
 
-  println(s"loginForm $loginForm")
+  println(s"Auth: loginForm $loginForm")
 
   /** page for login or signin */
   def login = Action { implicit request =>
-    println( s"""def login request $request,
-      cookies ${request.cookies}""" )
+    println( s"""login: request $request,
+      cookies ${request.cookies}
+      keySet ${request.session.data.keySet}""" )
     val lf = views.html.login( loginForm, registerForm, redirect(request) )
     Ok("<!DOCTYPE html>\n" + lf)
     .as("text/html; charset=utf-8")
@@ -93,13 +94,15 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
    */
   def authenticate = Action { implicit request =>
     loginForm.bindFromRequest.fold(
+ 
       formWithErrors =>
         BadRequest("<!DOCTYPE html>\n" + views.html.login(formWithErrors, registerForm))
                     .as("text/html; charset=utf-8"),
       user => {
         // Redirect to URL before login
         println(s"""authenticate: cookies ${request.cookies}
-          get("to-redirect") ${request.session.get("to-redirect")}""")
+          get("to-redirect") ${request.session.get("to-redirect")}
+          keySet ${request.session.data.keySet}""")
         val previousURL = redirect(request)
         println(s"authenticate: previous url <$previousURL>")
         val call = previousURL match {
@@ -114,11 +117,11 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
         .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
         .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
       }
-    )
+    ) 
   }
 
-  def redirect(request: Request[_]) = request.session.get("to-redirect") . getOrElse(
-        "" )
+  /** get the URL to redirect after authentification */
+  def redirect(request: Request[_]) = request.session.get("to-redirect") . getOrElse("")
 
   /** start a session after registering user Id & password
    *  this is the action of form `registerForm`

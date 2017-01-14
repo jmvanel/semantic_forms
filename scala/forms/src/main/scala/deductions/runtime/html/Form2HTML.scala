@@ -143,7 +143,8 @@ import config._
       } else NodeSeq.Empty
     }
 
-    val res: NodeSeq = hidden ++
+    val htmlResult: NodeSeq =
+      hidden ++
       <div class={ css.cssClasses.formRootCSSClass }>
         {
           css.localCSS ++
@@ -151,9 +152,16 @@ import config._
             (if (inlineJavascriptInForm)
               localJS
             else NodeSeq.Empty) ++
-            Text("\n") ++
-            <input type="hidden" name="uri" value={ urlEncode(form.subject) }/> ++
-            <div>{form.title}</div> ++
+              Text("\n") ++
+              <input type="hidden" name="uri" value={ urlEncode(form.subject) }/> ++
+              <div>
+                {
+                  Text(form.title) ++
+                    (if (form.subject != nullURI)
+                      Text(", at URI ") ++ <a href={ toPlainString(form.subject) }>&lt;{ form.subject }&gt;</a>
+                    else NodeSeq.Empty)
+                }
+              </div> ++
             {
               if (groupFields) {
                 makeFieldsGroups()
@@ -162,7 +170,7 @@ import config._
             }
         }
       </div>
-    return res
+    return htmlResult
   }
 
   /** dispatch to various Entry's: LiteralEntry, ResourceEntry; ..., editable or not */

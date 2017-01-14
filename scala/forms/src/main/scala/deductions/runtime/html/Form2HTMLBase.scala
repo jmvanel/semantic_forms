@@ -17,14 +17,14 @@ trait Form2HTMLBase[NODE, URI <: NODE]
 
   val config: Configuration
   import config._
+
+  def toPlainString(n: NODE): String = n.toString()
   
   type formMod = FormModule[NODE, URI]
   type FormEntry = formMod#Entry
 
   lazy val prefixes = new RDFPrefixes[ImplementationSettings.Rdf]
-		  with ImplementationSettings.RDFModule
-//		  with DefaultConfiguration
-		  {}
+		  with ImplementationSettings.RDFModule	{}
   
   import prefixes._
   
@@ -55,9 +55,6 @@ trait Form2HTMLBase[NODE, URI <: NODE]
           else ""
       s"""${field.comment} - $details"""
   }
-  
-  //  def toPlainString[NODE](n: NODE): String = n.toString()
-  def toPlainString(n: NODE): String = n.toString()
   
   def message(m: String,lang: String): String = I18NMessages.get(m, lang)
 

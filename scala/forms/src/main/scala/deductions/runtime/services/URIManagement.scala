@@ -52,8 +52,9 @@ trait URIManagement extends URIHelpers //extends Configuration
 
   def instanceURIPrefix(request: HTTPrequest): String = {
     val hostname =
-      if (request.host != "" &&
-        request.host.contains("."))
+      if (request.host != "" // if one wants to avoid localhost (but why?)
+      //    && request.host.contains(".")
+      )
         request.host
       else request.remoteAddress
 
