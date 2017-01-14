@@ -4,6 +4,8 @@ import scala.xml.NodeSeq
 import deductions.runtime.html.EnterButtons
 import deductions.runtime.utils.I18NMessages
 import deductions.runtime.utils.HTTPrequest
+import java.net.URLDecoder
+import java.net.URLEncoder
 
 trait ToolsPage extends EnterButtons {
 
@@ -17,7 +19,7 @@ trait ToolsPage extends EnterButtons {
       |PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
       |SELECT * WHERE { graph ?g {
       |  ?sub ?pred ?obj .
-      |}} LIMIT 5""".stripMargin
+      |}} LIMIT 3""".stripMargin
 
     <link href="assets/images/favicon.png" type="image/png" rel="shortcut icon"/>
     <div>
@@ -38,16 +40,15 @@ trait ToolsPage extends EnterButtons {
             Seq("CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10"))
         }
       </p>
+      <p> <a href={
+        s"""http://yasgui.org?endpoint=${URLEncoder.encode(absoluteURI + "/sparql", "UTF-8")},query=${URLEncoder.encode(querySample, "UTF-8")}"""
+      } target="_blank">YasGUI</a> (Yet Another SPARL GUI) </p>
       <p> <a href="/showNamedGraphs">{ I18NMessages.get("showNamedGraphs", lang) }</a> </p>
       <p> <a href="/history">{ I18NMessages.get("Dashboard", lang) }</a> </p>
       {
         implicit val lang1: String = lang
         "Charger / Load" ++ enterURItoDownloadAndDisplay()
       }
-      <p> <a href={
-        s"""http://yasgui.org?endpoint=$absoluteURI/sparql,
-        query=$querySample"""
-      } target="_blank">YasGUI</a> (Yet Another SPARL GUI) </p>
       <p> <a href="..">{ I18NMessages.get("MainPage", lang) }</a> </p>
     </div>
   }
