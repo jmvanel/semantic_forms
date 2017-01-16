@@ -14,6 +14,8 @@ import deductions.runtime.services.CORS
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.views.ToolsPage
+import deductions.runtime.html.TableViewModule
+
 import play.api.Play
 import play.api.http.MediaRange
 import play.api.mvc.Accepting
@@ -47,22 +49,8 @@ trait ApplicationTrait extends Controller
     with RDFPrefixes[ImplementationSettings.Rdf]
     {
 
-//  override lazy val config = new DefaultConfiguration {
-//    override def serverPort = {
-//      val port = Play.current.configuration.
-//        getString("http.port")
-//      port match {
-//        case Some(port) =>
-//          println( s"Running on port $port")
-//          port
-//        case _ =>
-//          val serverPortFromConfig = super.serverPort
-//          println(s"Could not get port from Play configuration; retrieving default port from SF config: $serverPortFromConfig")
-//          serverPortFromConfig
-//      }
-//    }
-//  }
-//  import config._
+	/** a copy of the request with no Play dependency :) */
+  def getRequestCopy()(implicit request: Request[_]): HTTPrequest = copyRequest(request)
 
   def index() =
     withUser {
@@ -79,6 +67,7 @@ trait ApplicationTrait extends Controller
     withUser {
       implicit userid =>
         implicit request =>
+          //        override def getRequest: HTTPrequest = getRequestCopy()
           println(s"""displayURI: $request IP ${request.remoteAddress}, host ${request.host}
             displayURI headers ${request.headers}
             displayURI tags ${request.tags}
@@ -89,8 +78,11 @@ trait ApplicationTrait extends Controller
           val uri = expandOrUnchanged(uri0)
           println(s"expandOrUnchanged $uri")
           val title = labelForURITransaction(uri, lang)
+          //          val v = new TableViewModule[Rdf, DATASET]{}  // TriplesView
           outputMainPage(
-            htmlForm(uri, blanknode, editable = Edit != "", lang, formuri, graphURI = makeAbsoluteURIForSaving(userid)),
+            htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
+              graphURI = makeAbsoluteURIForSaving(userid),
+              request = getRequestCopy()),
             lang, title = title)
     }
 
@@ -689,9 +681,8 @@ trait ApplicationTrait extends Controller
   def toolsPage = {
     Action { implicit request =>
       val lang = chooseLanguage(request)
-      val requestCopy = copyRequest(request)
       Ok(new ToolsPage with DefaultConfiguration {
-        override def getRequest: HTTPrequest = requestCopy
+        override def getRequest: HTTPrequest = getRequestCopy()
       }.getPage(lang) )
         .as("text/html; charset=utf-8")
     }

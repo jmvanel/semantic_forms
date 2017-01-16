@@ -137,10 +137,17 @@ extends
   /** from given Set of Rdf#Node , extract rdf#URI */
   def nodeSeqToURISeq(s: Iterable[Rdf#Node]): Seq[Rdf#URI] = {
     val r = s.collect {
-      case uri if (isURI(uri)) => ops.makeUri(uri.toString)
+      case uri if (isURI(uri)) => makeUri(uri.toString)
     }
     val seq = r.to
     seq
+  }
+
+  /** from given Rdf#Node , make a rdf#URI, or null URI */
+  def nodeToURI(n: Rdf#Node): Rdf#URI = {
+    foldNode(n)(u => u,
+      b => nullURI,
+      l => nullURI)
   }
 
 //  /** from given Set of Rdf#Node , extract rdf#URI */

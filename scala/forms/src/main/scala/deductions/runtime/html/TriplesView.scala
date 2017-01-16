@@ -1,19 +1,19 @@
 package deductions.runtime.html
 
-import scala.concurrent.ExecutionContext.Implicits
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
 import scala.xml.NodeSeq
 import scala.xml.PrettyPrinter
+
 import org.apache.log4j.Logger
 import org.w3.banana.RDF
-import deductions.runtime.abstract_syntax.FormModule
+
 import deductions.runtime.abstract_syntax.FormSyntaxFactory
-import deductions.runtime.sparql_cache.RDFCacheAlgo
-import deductions.runtime.utils.Timer
-//import deductions.runtime.services.ConfigurationCopy
 import deductions.runtime.services.Configuration
+import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.utils.HTTPrequest
+import deductions.runtime.utils.Timer
 
 /**
  * Form for a subject URI with existing triples;
@@ -28,14 +28,13 @@ import deductions.runtime.services.Configuration
 trait TableViewModule[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
     with FormSyntaxFactory[Rdf, DATASET]
+    with Form2HTMLBanana[Rdf]
     with Timer {
 
   val config: Configuration
 
   import ops._
   import rdfStore.transactorSyntax._
-
-  import scala.concurrent.ExecutionContext.Implicits.global
 
   /**
    * wrapper for htmlForm that shows Failure's ;
@@ -49,10 +48,12 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     actionURI2: String = "/save",
     formGroup: String = fromUri(nullURI),
     formuri: String="",
-    database: String = "TDB"): ( NodeSeq, FormSyntax ) = {
+    database: String = "TDB",
+    request: HTTPrequest = HTTPrequest()
+  ): ( NodeSeq, FormSyntax ) = {
 
     htmlFormRaw(uri, unionGraph, hrefPrefix, blankNode, editable, actionURI,
-      lang, graphURI, actionURI2, URI(formGroup), formuri, database) match {
+      lang, graphURI, actionURI2, URI(formGroup), formuri, database, request) match {
         case Success(e) => e
         case Failure(e) => ( <p>htmlFormElem: Exception occured: { e }</p>, FormSyntax(nullURI, Seq() ) )
       }
@@ -100,13 +101,12 @@ trait TableViewModule[Rdf <: RDF, DATASET]
       val form = createAbstractForm(
           uri, editable, lang, blankNode,
         URI(formGroup), formuri )
-      new Form2HTMLBanana[Rdf]
-      //with ConfigurationCopy
-      {
-        val ops = ops1
-        val config = config1
-        val nullURI = URI("")
-      } .
+//      new Form2HTMLBanana[Rdf]
+//      {
+//        val ops = ops1
+//        val config = config1
+//        val nullURI = URI("")
+//      } .
         generateHTMLJustFields(form,
           hrefPrefix, editable, graphURIActual)
     })
@@ -141,7 +141,9 @@ trait TableViewModule[Rdf <: RDF, DATASET]
                           actionURI2: String = "/save",
                           formGroup: Rdf#URI = nullURI,
                           formuri: String="",
-                          database: String = "TDB"): Try[( NodeSeq, FormSyntax)] = {
+                          database: String = "TDB",
+                          request: HTTPrequest = HTTPrequest()
+		  ): Try[( NodeSeq, FormSyntax)] = {
 
     println(s"htmlFormRaw dataset $dataset, graphURI <$graphURI>")
     val tryGraph = if (blankNode != "true") {
@@ -152,7 +154,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     } else Success(emptyGraph)
     val graphURIActual = if (graphURI == "") uri else graphURI
     Success(graf2form(unionGraph, uri, hrefPrefix, blankNode, editable,
-      actionURI, lang, graphURIActual, actionURI2, formGroup, formuri))
+      actionURI, lang, graphURIActual, actionURI2, formGroup, formuri, request))
   }
   
   /**
@@ -215,8 +217,9 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     lang: String = "en", graphURI: String,
     actionURI2: String = "/save",
     formGroup: Rdf#URI = nullURI,
-    formuri: String="")
-    : ( NodeSeq , FormSyntax ) = {
+    formuri: String="",
+    request: HTTPrequest = HTTPrequest()
+		  ) : ( NodeSeq , FormSyntax ) = {
 
     implicit val graph: Rdf#Graph = graphe
     try {
@@ -231,21 +234,22 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     val htmlFormGen = makeHtmlFormGenerator
     val htmlForm = htmlFormGen.
       generateHTML(form, hrefPrefix, editable, actionURI, graphURI,
-        actionURI2, lang)
+        actionURI2, lang, request)
     ( htmlForm, form )
   }
 
   /** TODO Why not inheritate from Form2HTML ? */
-  private def makeHtmlFormGenerator = {
-    val ops1 = ops
-    val config1 = config
-    time("new Form2HTML",
-      new Form2HTMLBanana[Rdf] {
-        val ops = ops1
-        val config = config1
-        val nullURI = URI("")
-      })
-  }
+  private def makeHtmlFormGenerator = this
+//  {
+//    val ops1 = ops
+//    val config1 = config
+//    time("new Form2HTML",
+//      new Form2HTMLBanana[Rdf] {
+//        val ops = ops1
+//        val config = config1
+//        val nullURI = URI("")
+//      })
+//  }
 
   private def createAbstractForm(
       uri: String, editable: Boolean,

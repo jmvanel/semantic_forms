@@ -4,13 +4,15 @@ import scala.xml.NodeSeq
 import deductions.runtime.html.EnterButtons
 import deductions.runtime.utils.I18NMessages
 import deductions.runtime.utils.HTTPrequest
-import java.net.URLDecoder
 import java.net.URLEncoder
+import deductions.runtime.html.BasicWidgets
 
-trait ToolsPage extends EnterButtons {
+trait ToolsPage extends EnterButtons
+    with BasicWidgets {
 
-  def getRequest(): HTTPrequest = HTTPrequest()
+  def getRequest(): HTTPrequest = HTTPrequest() // TODO <<<<<<<<<<< remove
   def absoluteURI = getRequest().absoluteURL("")
+  def localSparqlEndpoint = URLEncoder.encode(absoluteURI + "/sparql", "UTF-8")
 
   /** HTML page with 2 SPARQL Queries: select & construct, show Named Graphs, history, YASGUI, etc */
   def getPage(lang: String = "en"): NodeSeq = {
@@ -41,7 +43,7 @@ trait ToolsPage extends EnterButtons {
         }
       </p>
       <p> <a href={
-        s"""http://yasgui.org?endpoint=${URLEncoder.encode(absoluteURI + "/sparql", "UTF-8")},query=${URLEncoder.encode(querySample, "UTF-8")}"""
+        s"""http://yasgui.org?endpoint=$localSparqlEndpoint,query=${URLEncoder.encode(querySample, "UTF-8")}"""
       } target="_blank">YasGUI</a> (Yet Another SPARL GUI) </p>
       <p> <a href="/showNamedGraphs">{ I18NMessages.get("showNamedGraphs", lang) }</a> </p>
       <p> <a href="/history">{ I18NMessages.get("Dashboard", lang) }</a> </p>

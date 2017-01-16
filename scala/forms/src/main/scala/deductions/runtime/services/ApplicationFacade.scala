@@ -20,15 +20,17 @@ import scala.util.Try
 trait ApplicationFacade[Rdf <: RDF, DATASET]
 		extends ApplicationFacadeInterface {
 
+//  def getRequest: HTTPrequest
+
   val impl: ApplicationFacadeImpl[Rdf, DATASET]
   
   def htmlForm(uri: String, blankNode: String = "",
     editable: Boolean = false,
     lang: String = "en", formuri: String = "",
     graphURI: String = "",
-    database: String = "TDB" ) =
-    impl.htmlForm(uri: String, blankNode,
-      editable, lang, formuri, graphURI, database)
+    database: String = "TDB", request:HTTPrequest = HTTPrequest() ) =
+    impl.htmlForm(uri, blankNode,
+      editable, lang, formuri, graphURI, database, request )
 
   def formDataImpl(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB"): String =
     impl.formData(uri, blankNode, Edit, formuri, database)

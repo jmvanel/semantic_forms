@@ -4,6 +4,7 @@ import scala.xml.Elem
 import java.net.URLEncoder
 import scala.xml.NodeSeq
 
+/** GUI integration: rdfviewer, ... */
 trait BasicWidgets {
 
   def makeBackLinkButton(uri: String, title: String = ""): Elem = {
@@ -15,10 +16,15 @@ trait BasicWidgets {
     </button>
   }
   
-  def makeDrawGraphLink( uri: String): Elem = {
+  def makeDrawGraphLink( uri: String,
+      toolURLprefix: String="/assets/rdfviewer/rdfviewer.html?url=",
+      toolname: String="RDF Viewer",
+      imgWidth:Int=15): Elem = {
+
     // TODO different link when we are on localhost (transmit RDF String then) or in production (or use N3.js
     // http://localhost:9000/download?url=http%3A%2F%2Fjmvanel.free.fr%2Fjmv.rdf%23me
     val link = /*hrefDownloadPrefix + */ URLEncoder.encode( uri, "utf-8")
+
 //      <button type="button" class="btn-primary" readonly="yes" title="Draw RDF graph"
 //    	        onclick={ s"popupgraph( '$link' );" }>
 //    	<form action={ s"/assets/rdfviewer/rdfviewer.html?url=$link" }>
@@ -27,10 +33,10 @@ trait BasicWidgets {
 //    	</form >
 
     if( uri != "" )
-    <a class="btn btn-default" href={ s"/assets/rdfviewer/rdfviewer.html?url=$link" }
-    title={"Draw RDF graph for " + uri}
+    <a class="btn btn-default" href={ s"$toolURLprefix$link" }
+    title={s"Draw RDF graph with $toolname for $uri"}
     target="_blank">
-			<img width="15" border="0" src="https://www.w3.org/RDF/icons/rdf_flyer.svg"
+			<img width={imgWidth.toString()} border="0" src="https://www.w3.org/RDF/icons/rdf_flyer.svg"
            alt="RDF Resource Description Framework Flyer Icon"/>
     </a>
     else <div></div>

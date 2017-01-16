@@ -17,6 +17,7 @@ import deductions.runtime.abstract_syntax.FormSyntaxJson
 
 trait CreationFormAlgo[Rdf <: RDF, DATASET]
 extends RDFCacheAlgo[Rdf, DATASET]
+with Form2HTMLBanana[Rdf] // #Node, Rdf#URI]
 with UnfilledFormFactory[Rdf, DATASET]
 with HTML5TypesTrait[Rdf]
 with RDFPrefixes[Rdf]
@@ -30,6 +31,15 @@ with FormSyntaxJson[Rdf] {
   /** TODO also defined elsewhere */
   var actionURI = "/save"
 
+//  override def toPlainString(n: Rdf#Node): String =
+//    foldNode(n)(fromUri(_),
+//        bn => {
+//          val s = fromBNode(bn)
+//          if( s.startsWith( "_:" ) ) s
+//          else "_:" + s
+//        },
+//        fromLiteral(_)._1)
+
   /**
    * create an XHTML input form for a new instance from a class URI;
    *  transactional TODO classUri should be an Option
@@ -42,12 +52,13 @@ with FormSyntaxJson[Rdf] {
       val form = createData(classUri, lang, formSpecURI, graphURI, request)
       val ops1 = ops
       val config1 = config
-      val htmlFormatter = new Form2HTMLBanana[Rdf]
-      {
-        val ops = ops1
-        val config = config1
-        val nullURI = URI("")
-      }
+      val htmlFormatter = this
+//      new Form2HTMLBanana[Rdf]
+//      {
+//        val ops = ops1
+//        val config = config1
+//        val nullURI = URI("")
+//      }
 
       val rawForm = htmlFormatter . generateHTML(
           form, hrefPrefix = "",
