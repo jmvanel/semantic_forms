@@ -141,7 +141,9 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
                editable: Boolean = false,
                lang: String = "en", formuri: String="",
                graphURI: String = "",
-               database: String = "TDB" ): NodeSeq = {
+               database: String = "TDB",
+               request:HTTPrequest = HTTPrequest() )
+  : NodeSeq = {
     Logger.getRootLogger().info(
         s"""ApplicationFacadeImpl.htmlForm URI $uri0 blankNode "$blankNode"
               editable=$editable lang=$lang graphURI <$graphURI>""")
@@ -173,12 +175,12 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
               lang = lang,
               formuri = formuri,
               graphURI = graphURI,
-              database = database)
+              database = database,
+              request=request)
           val formItself = formBoth . _1
           val formSyntax = formBoth . _2
 
             Text("\n") ++
-//            titleEditDisplayDownloadLinks(uri, lang, editable) ++
             titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable) ++
             <div>{status}</div> ++
             formItself

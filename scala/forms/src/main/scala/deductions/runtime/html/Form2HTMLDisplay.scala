@@ -1,8 +1,12 @@
 package deductions.runtime.html
 
+import java.net.URLEncoder
+
 import scala.xml.NodeSeq
 import scala.xml.Text
 import scala.xml.Unparsed
+//import deductions.runtime.views.ToolsPage
+	import deductions.runtime.utils.HTTPrequest
 
 /** generate HTML from abstract Form for Display (Read only) */
 trait Form2HTMLDisplay[NODE, URI <: NODE]
@@ -11,7 +15,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 	import config._
 	import prefixes._
 
-  def createHTMLiteralReadonlyField(l: formMod#LiteralEntry): NodeSeq =
+	def createHTMLiteralReadonlyField(l: formMod#LiteralEntry): NodeSeq =
     <xml:group>
       <div class="form-cell-display">{ Unparsed(toPlainString(l.value)) }</div>
       <div>{ if (l.lang != "" && l.lang != "No_language") " > " + l.lang }</div>
@@ -19,31 +23,33 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
   def createHTMLResourceReadonlyField(
       resourceEntry: formMod#ResourceEntry,
-      hrefPrefix: String = hrefDisplayPrefix ): NodeSeq = {
+      hrefPrefix: String = hrefDisplayPrefix,
+      request: HTTPrequest = HTTPrequest()
+      ): NodeSeq = {
 
     import resourceEntry._
 
-    val stringValue = value.toString()
-    val css = cssForURI(stringValue)
+    val subjectURIstringValue = value.toString()
+    val css = cssForURI(subjectURIstringValue)
     val alternativeText = "Texte alternatif"
 
     val hyperlinkToObjectURI =
-      <a href={ Form2HTML.createHyperlinkString(hrefPrefix, stringValue) }
+      <a href={ Form2HTML.createHyperlinkString(hrefPrefix, subjectURIstringValue) }
       class={css}
       title={
-        s"""Value ${if (stringValue != valueLabel) stringValue else ""}
+        s"""Value ${if (subjectURIstringValue != valueLabel) subjectURIstringValue else ""}
               of type ${type_.toString()}"""
       } draggable="true"> {
         valueLabel
       }</a>
 
-    val backLinkButton = (if (stringValue.size > 0 && showExpertButtons) {
+    val backLinkButton = (if (subjectURIstringValue.size > 0 && showExpertButtons) {
 				val title = s""" Reverse links for "$label" "$value" """
-				makeBackLinkButton(stringValue, title=title )
+				makeBackLinkButton(subjectURIstringValue, title=title )
       } else NodeSeq.Empty )
 
-    val normalNavigationButton = (if (stringValue.size > 0 && showExpertButtons) {
-      <a class="btn btn-primary" href={ stringValue } title={ s"Normal HTTP link to $value" }
+    val normalNavigationButton = (if (subjectURIstringValue.size > 0 && showExpertButtons) {
+      <a class="btn btn-primary" href={ subjectURIstringValue } title={ s"Normal HTTP link to $value" }
       draggable="true"><i class="glyphicon glyphicon-share-alt"></i> </a>
     } else NodeSeq.Empty )
 
@@ -63,7 +69,15 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       Text("\n") ++
       normalNavigationButton ++
       Text("\n") ++
-      makeDrawGraphLink(stringValue) ++
+      makeDrawGraphLink(subjectURIstringValue) ++
+      makeDrawGraphLink(subjectURIstringValue,
+          toolURLprefix=
+            s"https://scenaristeur.github.io/graphe/?endpoint=${request.localSparqlEndpoint}" +
+            s"&sujet=",
+            toolname="scenaristeur/graphe"
+            ,
+            imgWidth=12
+          ) ++
       Text("\n") ++
       thumbnail
   }

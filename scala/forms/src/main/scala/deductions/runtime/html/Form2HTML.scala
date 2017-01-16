@@ -17,6 +17,7 @@ import deductions.runtime.utils.Timer
 import deductions.runtime.services.Configuration
 import org.apache.commons.codec.digest.DigestUtils
 import deductions.runtime.abstract_syntax.FormModule
+import deductions.runtime.utils.HTTPrequest
 
 /**
  * different modes: display or edit;
@@ -43,10 +44,12 @@ import config._
                    hrefPrefix: String = "",
                    editable: Boolean = false,
                    actionURI: String = "/save", graphURI: String = "",
-                   actionURI2: String = "/save", lang: String = "en"): NodeSeq = {
+                   actionURI2: String = "/save", lang: String = "en",
+                   request: HTTPrequest = HTTPrequest()
+		  ): NodeSeq = {
 
     val htmlFormFields = time("generateHTMLJustFields",
-      generateHTMLJustFields(form, hrefPrefix, editable, graphURI, lang))
+      generateHTMLJustFields(form, hrefPrefix, editable, graphURI, lang, request))
 
     def wrapFieldsWithFormHeader(htmlFormFields: NodeSeq): NodeSeq =
       <div class="container">  
@@ -77,7 +80,9 @@ import config._
   def generateHTMLJustFields(form: formMod#FormSyntax,
                              hrefPrefix: String = "",
                              editable: Boolean = false,
-                             graphURI: String = "", lang: String = "en"): NodeSeq = {
+                             graphURI: String = "", lang: String = "en",
+                             request: HTTPrequest = HTTPrequest()
+		  ): NodeSeq = {
 
     implicit val formImpl: formMod#FormSyntax = form
 
@@ -96,7 +101,7 @@ import config._
           <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
             makeFieldSubject(field) ++
             makeFieldLabel(preceding, field) ++
-            makeFieldDataOrInput(field, hrefPrefix, editable, lang)
+            makeFieldDataOrInput(field, hrefPrefix, editable, lang, request)
           }</div>
         }
         s
@@ -175,7 +180,9 @@ import config._
 
   /** dispatch to various Entry's: LiteralEntry, ResourceEntry; ..., editable or not */
   private def createHTMLField(field: formMod#Entry, editable: Boolean,
-    hrefPrefix: String = "", lang: String = "en")(implicit form: FormModule[NODE, URI]#FormSyntax): xml.NodeSeq = {
+    hrefPrefix: String = "", lang: String = "en",
+    request: HTTPrequest = HTTPrequest()
+		  )(implicit form: FormModule[NODE, URI]#FormSyntax): xml.NodeSeq = {
     
     // hack instead of true form separator in the form spec in RDF:
     if (field.label.contains("----"))
@@ -196,7 +203,7 @@ import config._
           if (editable)
             createHTMLResourceEditableField(r, lang)
           else
-            createHTMLResourceReadonlyField(r, hrefPrefix)
+            createHTMLResourceReadonlyField(r, hrefPrefix, request)
 
       case r: formMod#BlankNodeEntry =>
           if (editable)
@@ -219,16 +226,21 @@ import config._
 
   /** make Field Data (display) Or Input (edit) */
   private def makeFieldDataOrInput(field: formMod#Entry, hrefPrefix: String,
-    editable: Boolean, lang: String = "en")(implicit form: FormModule[NODE, URI]#FormSyntax) = {
+    editable: Boolean, lang: String = "en",
+    request: HTTPrequest = HTTPrequest()
+    )(implicit form: FormModule[NODE, URI]#FormSyntax) = {
+
+    def doIt = createHTMLField(field, editable, hrefPrefix, lang, request)
+
     if (shouldAddAddRemoveWidgets(field, editable))
-      createHTMLField(field, editable, hrefPrefix, lang)
+      doIt
     else if (editable)
-      // that's for corporate_risk:
+      // that's for corporate_risk: TODO : simplify <<<<<<<<<<<<<<
        <div class={ css.cssClasses.formInputCSSClass }>
-         { createHTMLField(field, editable, hrefPrefix, lang) }
+         { doIt }
        </div>
     else
-       createHTMLField(field, editable, hrefPrefix, lang)
+       doIt
   }
 
 }
