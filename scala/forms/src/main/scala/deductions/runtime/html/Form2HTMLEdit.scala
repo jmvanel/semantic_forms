@@ -15,9 +15,7 @@ import deductions.runtime.utils.I18NMessages
 /** generate HTML from abstract Form for Edition */
 trait Form2HTMLEdit[NODE, URI <: NODE]
     extends Form2HTMLBase[NODE, URI] {
-  self: HTML5Types 
-//        with Configuration 
-        =>
+  self: HTML5Types =>
 
   val config: Configuration
   import config._
@@ -42,7 +40,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
         case _ => makeHTML_Id(field)
       }
       <div class={ css.cssClasses.formAddDivCSSClass }>
-      <button class="btn btn-primary" readonly="yes" size="1" title={
+      <button type="button" class="btn btn-primary" readonly="yes" size="1" title={
         "Add another value for " + field.label } onClick={
         s""" cloneWidget( "$widgetName" ); return false;"""
       }><i class="glyphicon glyphicon-plus"></i></button>
