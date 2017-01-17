@@ -31,10 +31,18 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
     val subjectURIstringValue = value.toString()
     val css = cssForURI(subjectURIstringValue)
-    val alternativeText = "Texte alternatif"
+
+    /* provide draggable hyperlinks to form's fields, suitable to drop in social media */
+    val hyperlinkToField = {
+      val id = urlEncode(resourceEntry.property).replace("%", "-")
+      /*  ID and NAME tokens must begin with a letter ([A-Za-z]) and may be followed by any number of letters, 
+       *  digits ([0-9]), hyphens ("-"), underscores ("_"), colons (":"), and periods ("."). */
+      <a href={ "#" + id } draggable="true">^\</a>
+      <a id={ id }></a>
+    }
 
     val hyperlinkToObjectURI =
-      <a href={ Form2HTML.createHyperlinkString(hrefPrefix, subjectURIstringValue) }
+      <a href={ createHyperlinkString(hrefPrefix, subjectURIstringValue) }
       class={css}
       title={
         s"""Value ${if (subjectURIstringValue != valueLabel) subjectURIstringValue else ""}
@@ -63,6 +71,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
         }/>
       else NodeSeq.Empty
       }
+      hyperlinkToField ++
       hyperlinkToObjectURI ++
       Text("\n") ++
       backLinkButton ++
