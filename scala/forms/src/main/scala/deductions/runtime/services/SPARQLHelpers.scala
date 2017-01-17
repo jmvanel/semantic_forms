@@ -427,6 +427,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     val result = sparqlSelectQuery(queryString, ds)
     val output = result match {
       case Success(res) =>
+        if(!res.isEmpty){
         val header = res.head.map { node => literalNodeToString(node) }
         println(s"sparqlSelectXML: header $header")
 
@@ -464,7 +465,15 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
               }
             </results>
           </sparql>
-        xml
+        xml     
+        }else{
+           val xml =
+              <sparql xmlns="http://www.w3.org/2005/sparql-results#">
+            		<head></head>
+								<results></results>
+							</sparql>
+              xml
+        }
       case Failure(f) => <sparql>
                            { f.getLocalizedMessage }
                          </sparql>

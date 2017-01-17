@@ -346,12 +346,12 @@ trait ApplicationTrait extends Controller
 
 	private def renderResult(output: Accepting => Result, default: Accepting = AcceptsTTL)(implicit request: RequestHeader): Result = {
     render {
-      case AcceptsTTL    => output(AcceptsTTL)
-      case AcceptsJSONLD => output(AcceptsJSONLD)
-      case AcceptsRDFXML => output(AcceptsRDFXML)
-      case Accepts.Json  => output(Accepts.Json)
-      case Accepts.Xml   => output(Accepts.Xml)
-      case AcceptsSPARQLresults => output(AcceptsSPARQLresults)
+      case AcceptsTTL()    => output(AcceptsTTL)
+      case AcceptsJSONLD() => output(AcceptsJSONLD)
+      case AcceptsRDFXML() => output(AcceptsRDFXML)
+      case Accepts.Json()  => output(Accepts.Json)
+      case Accepts.Xml()   => output(Accepts.Xml)
+      case AcceptsSPARQLresults() => output(AcceptsSPARQLresults)
       case _             => output(default)
     }
   }
@@ -411,8 +411,7 @@ trait ApplicationTrait extends Controller
 
           // TODO better try a parse of the query
           def checkSPARQLqueryType(query: String) =
-            if (query.contains("select") ||
-              query.contains("SELECT"))
+            if (query.toLowerCase().contains("select") )
               "select"
             else
               "construct"
@@ -469,8 +468,7 @@ trait ApplicationTrait extends Controller
 
         // TODO better try a parse of the query
         def checkSPARQLqueryType(query: String) =
-          if (query.contains("select") ||
-            query.contains("SELECT"))
+          if (query.toLowerCase().contains("select") )
             "select"
           else
             "construct"
@@ -497,7 +495,7 @@ trait ApplicationTrait extends Controller
     val mime = computeMIME(acceptedTypes, defaultMIME)
     println(s"sparqlConstruct: computed mime ${mime}")
 
-    val resultFormat = mimeAbbrevs(defaultMIMEaPriori) // preferredMedia.getOrElse(defaultMIME))
+    val resultFormat = mimeAbbrevs(defaultMIME) // preferredMedia.getOrElse(defaultMIME))
     println(s"sparqlConstruct: output(accepts=$acceptedTypes) => result format: $resultFormat")
     if (preferredMedia.isDefined &&
       !mimeSet.contains(preferredMedia.get))
