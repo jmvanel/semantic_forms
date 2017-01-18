@@ -17,7 +17,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
 	def createHTMLiteralReadonlyField(l: formMod#LiteralEntry): NodeSeq =
     <xml:group>
-      <div class="form-cell-display">{ Unparsed(toPlainString(l.value)) }</div>
+      <div class="">{ Unparsed(toPlainString(l.value)) }</div>
       <div>{ if (l.lang != "" && l.lang != "No_language") " > " + l.lang }</div>
     </xml:group>
 
@@ -85,7 +85,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
             s"&sujet=",
             toolname="scenaristeur/graphe"
             ,
-            imgWidth=12
+            imgWidth=6
           ) ++
       Text("\n") ++
       thumbnail

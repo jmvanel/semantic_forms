@@ -1,3 +1,6 @@
+Application and database administration
+=======================================
+
 # Running auxiliary programs
 
 There are lots of auxiliary Scala programs, or Java ones from Jena, Lucene, etc.
@@ -48,6 +51,8 @@ java -cp $JARS tdb.tdbdump --loc=TDB > dump.nq
 **CAUTION:**
 The server must not be started, because Jena TDB does not allow access to the database on disk from 2 different processes.
 
+Be sure to read previous paragrah (Running auxiliary programs)[Running auxiliary programs] before running the commands below.
+ 
 
 ## Loading RDF content
 
