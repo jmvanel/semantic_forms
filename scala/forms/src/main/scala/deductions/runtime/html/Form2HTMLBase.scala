@@ -9,6 +9,7 @@ import deductions.runtime.services.Configuration
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.utils.I18NMessages
 import deductions.runtime.utils.RDFPrefixes
+import java.net.URLEncoder
 
 /** generate HTML from abstract Form : common parts for Display & edition */
 trait Form2HTMLBase[NODE, URI <: NODE]
@@ -102,4 +103,15 @@ trait Form2HTMLBase[NODE, URI <: NODE]
   def makeHTML_Id(entry: formMod#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) =
     "f" + form.fields.indexOf(entry)
 
+  /** TODO pasted from object Form2HTML */
+  def urlEncode(node: Any) = URLEncoder.encode(node.toString, "utf-8")
+
+  def createHyperlinkString(hrefPrefix: String, uri: String, blanknode: Boolean = false): String = {
+    if (hrefPrefix == "")
+      uri
+    else {
+      val suffix = if (blanknode) "&blanknode=true" else ""
+      hrefPrefix + urlEncode(uri) + suffix
+    }
+  }
 }

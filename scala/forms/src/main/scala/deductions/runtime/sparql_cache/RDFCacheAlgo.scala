@@ -83,7 +83,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   def retrieveURINoTransaction(uri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
     for (graph <- rdfStore.getGraph(dataset, uri)) yield {
       val uriGraphIsEmpty = graph.size == 0
-      println(s"retrieveURINoTransaction.uriGraphIsEmpty: $uriGraphIsEmpty <$uri>")
+      println(s"retrieveURINoTransaction: stored Graph Is Empty: $uriGraphIsEmpty URI <$uri>")
       if (uriGraphIsEmpty) {
         val mirrorURI = getMirrorURI(uri)
         if (mirrorURI == "") {
@@ -245,6 +245,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
 
       // NOTE: Jena RDF loader can throw an exception "Failed to determine the content type"
       val graphTry = rdfLoader.load(new java.net.URL(uri.toString()))
+      println(s"storeURINoTransaction: after rdfLoader.load($uri): $graphTry")
 
        val graph = graphTry . getOrElse {
             println(s"Trying RDFa for <$uri>")

@@ -27,14 +27,16 @@ trait FormHeader[Rdf <: RDF]
   def titleEditDisplayDownloadLinksThumbnail(formSyntax: FormSyntax, lang: String, editable: Boolean = false)(implicit graph: Rdf#Graph): NodeSeq = {
     def mess(m: String) = I18NMessages.get(m, lang)
     val uri = nodeToString(formSyntax.subject)
-    val href = hrefDisplayPrefix + URLEncoder.encode(uri, "utf-8")
 
+    // show the button to change the current editable state
     val linkToShow = (if (editable) {
-      <a class="btn btn-warning" href={ href } title={ mess("display_URI") }>
-        <i class="glyphicon glyphicon-remove"></i>
+      val hrefDisplay = hrefDisplayPrefix + URLEncoder.encode(uri, "utf-8")
+      <a class="btn btn-warning" href={ hrefDisplay } title={ mess("display_URI") }>
+        <i class="glyphicon"></i>
       </a>
     } else {
-      <a class="btn btn-primary" href={ href } title={ mess("edit_URI") }>
+      val hrefEdit = hrefEditPrefix + URLEncoder.encode(uri, "utf-8")
+      <a class="btn btn-primary" href={ hrefEdit } title={ mess("edit_URI") }>
         <i class="glyphicon glyphicon-edit"></i>
       </a>
     })
