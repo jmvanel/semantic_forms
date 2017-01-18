@@ -88,36 +88,40 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
     .as("text/html; charset=utf-8")
   }
 
-  /** start a session after login if user Id & password are OK
+  /**
+   * start a session after login if user Id & password are OK
    * this is the action of form `loginForm`;
    * actual recording in database declared in Form() registerForm
    */
   def authenticate = Action { implicit request =>
     loginForm.bindFromRequest.fold(
- 
+
       formWithErrors =>
         BadRequest("<!DOCTYPE html>\n" + views.html.login(formWithErrors, registerForm))
-                    .as("text/html; charset=utf-8"),
+          .as("text/html; charset=utf-8"),
       user => {
-        // Redirect to URL before login
-        println(s"""authenticate: cookies ${request.cookies}
+        request.getQueryString("xhr") match {
+          case Some(value) => Ok(s"Authentication OK for user $user")
+          case None =>
+            // Redirect to URL before login
+            println(s"""authenticate: cookies ${request.cookies}
           get("to-redirect") ${request.session.get("to-redirect")}
           keySet ${request.session.data.keySet}""")
-        val previousURL = redirect(request)
-        println(s"authenticate: previous url <$previousURL>")
-        val call = previousURL match {
-          case (url) if(
-              url != "" &&
-              ! url.endsWith("/login") &&
-              ! url.endsWith("/authenticate") ) => Call("GET", url)
-          case _ => routes.Application.index
+            val previousURL = redirect(request)
+            println(s"authenticate: previous url <$previousURL>")
+            val call = previousURL match {
+              case (url) if (
+                url != "" &&
+                !url.endsWith("/login") &&
+                !url.endsWith("/authenticate")) => Call("GET", url)
+              case _ => routes.Application.index
+            }
+            Redirect(call).withSession(Security.username -> user._1)
+              .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+              .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
+              .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
         }
-        Redirect(call).withSession(Security.username -> user._1)
-        .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
-        .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
-        .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
-      }
-    ) 
+      })
   }
 
   /** get the URL to redirect after authentification */
