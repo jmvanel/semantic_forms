@@ -100,7 +100,7 @@ import org.w3.banana._
   /**
    * expand possibly Prefixed URI (like foaf:name),
    *  @return Some(URI("http://xmlns.com/foaf/0.1/name")),
-   *  or output None
+   *  or output None if no prefix is found
    */
   def expand(possiblyPrefixedURI: String): Option[Rdf#URI] = {
     val uri_string = possiblyPrefixedURI // URLEncoder.encode(possiblyPrefixedURI, "UTF-8")

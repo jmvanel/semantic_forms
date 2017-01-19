@@ -46,8 +46,7 @@ trait ApplicationTrait extends Controller
     with MainXmlWithHead
     with CORS
     with HTTPrequestHelpers
-    with RDFPrefixes[ImplementationSettings.Rdf]
-    {
+    with RDFPrefixes[ImplementationSettings.Rdf] {
 
 	/** a copy of the request with no Play dependency :) */
   def getRequestCopy()(implicit request: Request[_]): HTTPrequest = copyRequest(request)
