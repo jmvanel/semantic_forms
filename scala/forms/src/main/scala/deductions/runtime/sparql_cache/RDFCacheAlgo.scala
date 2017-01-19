@@ -124,7 +124,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * according to timestamp download if outdated;
    * with NO transaction
    */
-  def updateLocalVersion(uri: Rdf#URI, dataset: DATASET) = {
+  private def updateLocalVersion(uri: Rdf#URI, dataset: DATASET) = {
 //      dataset.rw({
         val localTimestamp = dataset2.r{
           getTimestampFromDataset(uri, dataset2)
@@ -171,7 +171,9 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    *  and store the timestamp from HTTP HEAD request;
    * transactional,
    * load also the direct owl:imports , but not recursively ( as EulerGUI IDE does )
-   */
+   * 
+   * TODO rename
+   * readStoreUriContentInNamedGraph  */
   def storeContentInNamedGraph(uri: String): Rdf#Graph = {
     storeUriInNamedGraph(URI(uri))
   }
@@ -181,15 +183,18 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    *  and store the timestamp from HTTP HEAD request;
    * transactional,
    * load also the direct owl:imports , but not recursively ( as EulerGUI IDE does )
+   * 
+   * TODO rename
+   * readStoreUriInNamedGraph
    */
   def storeUriInNamedGraph(uri: Rdf#URI): Rdf#Graph = {
-    storeURI(uri)
+    readStoreURIinOwnGraph(uri)
   }
 
   /** store given URI in self graph; also store imported Ontologies by owl:imports
    *  NOTE: the dataset is provided by the parent trait;
    *  with transaction */
-  private def storeURI(uri: Rdf#URI): Rdf#Graph = {
+  private def readStoreURIinOwnGraph(uri: Rdf#URI): Rdf#Graph = {
     val graphFromURI = storeURI(uri, uri, dataset)
     println("RDFCacheAlgo.storeURI " + uri + " size: " + graphFromURI.size)
     val r = dataset.rw({
@@ -219,6 +224,9 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * with Jena Riot for smart reading of any format,
    * (use content-type or else file extension)
    * cf https://github.com/w3c/banana-rdf/issues/105
+   * 
+   * TODO rename
+   * readStoreURI
    */
   def storeURI(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
     val r = dataset.rw({
@@ -235,6 +243,9 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   /**
    * read from uri and store in TDB, no matter what the syntax is;
    * can also load an URI with the # part
+   * 
+   * TODO rename
+   * readStoreURINoTransaction
    */
   def storeURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
     Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")

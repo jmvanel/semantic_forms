@@ -19,8 +19,9 @@ forms:sioc-Post_Form
   form:showProperties (
 	rdfs:label rdfs:comment
 	sioc:content
-	sioc:about
 	dct:subject
+        sioc:has_reply
+        sioc:has_container
   ) ;
   # to implement in semforms: "reverse" properties :
   form:showReverseProperties ()
@@ -30,3 +31,32 @@ forms:owl-dct-subject1
 	:fieldAppliesToProperty dct:subject ;
 	:widgetClass form:DBPediaLookup .
 
+# NOTE: forms are not inherited :(
+sioc:Container-formFromClass
+        form:classDomain     sioc:Container ;
+        form:showProperties  (
+          rdfs:label rdfs:comment
+          sioc:container_of
+	  dct:subject
+          sioc:has_parent
+          sioc:parent_of ) .
+
+forms:owl-dct-subject2
+	:fieldAppliesToForm sioc:Container-formFromClass ;
+	:fieldAppliesToProperty dct:subject ;
+	:widgetClass form:DBPediaLookup .
+
+# NOTE: forms are not inherited :(
+sioc:Thread-formFromClass
+        form:classDomain     sioc:Thread ;
+        form:showProperties  (
+          rdfs:label rdfs:comment
+          sioc:container_of
+	  dct:subject
+          sioc:has_parent
+          sioc:parent_of ) .
+
+forms:owl-dct-subject3
+	:fieldAppliesToForm sioc:Thread-formFromClass ;
+	:fieldAppliesToProperty dct:subject ;
+	:widgetClass form:DBPediaLookup .
