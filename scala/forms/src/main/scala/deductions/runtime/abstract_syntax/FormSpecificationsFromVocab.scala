@@ -7,8 +7,9 @@ package deductions.runtime.abstract_syntax
 
 import java.io.File
 import java.io.FileOutputStream
-import java.io.FileReader
+import java.io.StringReader
 
+import scala.io.Source
 import scala.language.existentials
 import scala.language.postfixOps
 
@@ -17,8 +18,8 @@ import org.w3.banana.RDF
 
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.RDFPrefixes
 
 /** input file for vocabulary; output in new file with ".formspec.ttl" suffix */
 object FormSpecificationsFromVocabApp extends RDFStoreLocalJena1Provider
@@ -51,9 +52,16 @@ trait FormSpecificationsFromVocab[Rdf <: RDF, DATASET]
 
   /** generate Form Specifications (skeletons to be hand edited) from an RDFS/OWL vocabulary */
   def makeFormSpecificationsFromVocabFile(vocabFile: File): Unit = {
-    val reader = new FileReader(vocabFile)
-    turtleReader.read(reader, "").map {
+    val bufferedSource = Source.fromFile(vocabFile)
+    val content = bufferedSource.getLines().mkString("\n")
+    bufferedSource.close()
+    val reader = new StringReader(content)
+    val res = turtleReader.read(reader, "")
+    println(s"turtle Reader: ${res}")
+
+    res.map {
       graph =>
+        println(s"graph size ${graph.size}")
         val formSpecifications = makeFormSpecificationsFromVocab(graph)
         val formspecFile = new File(vocabFile.getAbsolutePath + ".formspec.ttl")
         val os = new FileOutputStream(formspecFile)

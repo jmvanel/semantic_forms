@@ -34,9 +34,7 @@ object Auth extends AuthTrait {
 trait AuthTrait
 extends ImplementationSettings.RDFModule
 with RDFStoreLocalJena1Provider
-with Auth[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-//with DefaultConfiguration
-{
+with Auth[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
   println(s"object Auth")
   /** NOTE otherwise we get "Lock obtain timed out", because
    *  LUCENE transactions would overlap with main database TDB/ */
@@ -101,7 +99,13 @@ extends ApplicationFacadeImpl[Rdf, DATASET]
           .as("text/html; charset=utf-8"),
       user => {
         request.getQueryString("xhr") match {
-          case Some(value) => Ok(s"Authentication OK for user $user")
+          case Some(value) =>
+            println(s"Authentication OK for user $user, no redirect")
+            Ok(s"Authentication OK for user $user, no redirect")
+              .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+              .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
+              .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
+              
           case None =>
             // Redirect to URL before login
             println(s"""authenticate: cookies ${request.cookies}
