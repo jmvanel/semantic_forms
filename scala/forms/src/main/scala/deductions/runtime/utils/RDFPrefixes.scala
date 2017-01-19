@@ -16,7 +16,6 @@ import org.w3.banana._
  *  TODO possibility to add prefix-URI pairs;
  *  TODO use prefix.cc like in EulerGUI */
   trait RDFPrefixes[Rdf <: RDF] {
-//  this: Configuration =>
 
   implicit val ops: RDFOps[Rdf]
   import ops._
@@ -49,28 +48,20 @@ import org.w3.banana._
 
   lazy val prefixesList = List(
 		  // prefixes for ontologies
-    rdf,
-    rdfs,
+    rdf, rdfs,
     xsd,
-    DCPrefix[Rdf],
-    DCTPrefix[Rdf],
-    foaf,
-    LDPPrefix[Rdf],
-    IANALinkPrefix[Rdf],
-    WebACLPrefix[Rdf],
-    CertPrefix[Rdf],
-    owl,
+    DCPrefix[Rdf], DCTPrefix[Rdf],
+    foaf, Prefix[Rdf]("doap", "http://usefulinc.com/ns/doap#"),
+    LDPPrefix[Rdf], IANALinkPrefix[Rdf], WebACLPrefix[Rdf], CertPrefix[Rdf],
+    owl, skos,
     schema,
-    Prefix[Rdf]("doap", "http://usefulinc.com/ns/doap#"),
     sioc, content,
     dbo,
     Prefix[Rdf]("vcard", "http://www.w3.org/2006/vcard/ns#"),
-    skos,
 
     // for specific form specs (FOAF, etc)
     Prefix[Rdf]("forms", "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#" ), // "http://deductions-software.com/ontologies/forms#"),
-    // form vocabulary
-    form,
+    form,    // form vocabulary
 
     Prefix[Rdf]("pair", prefixAV ),
 
@@ -83,7 +74,7 @@ import org.w3.banana._
     // prefixes for resources
 
     Prefix[Rdf]("dbpedia", "http://dbpedia.org/resource/"),
-    text
+    text // Jena text search
     )
   
   lazy val prefixesMap: Map[String, Rdf#URI] =

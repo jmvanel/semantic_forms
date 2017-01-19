@@ -17,15 +17,28 @@ class TestJenaRDFDataMgr extends FunSuite with TestJenaRDFDataMgrRaw {
   test("JenaHelpers.storeURI") { test() }
 }
 
+object JenaRDFDataMgrApp extends TestJenaRDFDataMgrRaw with App {
+readURL2( args(0) )
+}
+
 trait TestJenaRDFDataMgrRaw extends ImplementationSettings.RDFModule {
   import ops._
 
+  val graphUri = ops.makeUri("urn:foaf")
+
   def test() {
-    val uri = ops.makeUri("file:///home/jmv/ontologies/foaf.n3")
-    val graphUri = ops.makeUri("urn:foaf")
-    lazy val dataset = TDBFactory.createDataset("TDB")
-    //    lazy val store = JenaStore(dataset, defensiveCopy = false)
-    //    store.writeTransaction {
+    val uri = "file:///home/jmv/ontologies/foaf.n3"
+    readURL(uri)
+  }
+
+  def readURL2(uriString: String) {
+   val g = RDFDataMgr.loadGraph("http://dbpedia.org/resource/Rome");
+   println("size " + g.size());
+  }
+  
+  def readURL(uriString: String) {
+	  val uri = makeUri(uriString)
+    lazy val dataset = TDBFactory.createDataset("TDB_test")
     rdfStore.rw(dataset, {
       Logger.getRootLogger().info(s"storeURI uri $uri ")
       try {
