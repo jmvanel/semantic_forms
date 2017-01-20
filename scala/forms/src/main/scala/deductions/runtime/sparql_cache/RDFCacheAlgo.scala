@@ -100,7 +100,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
               println(s"Graph at URI <$uri> could not be downloaded, trying local TDB (exception ${t.getLocalizedMessage}, ${t.getClass} cause ${t.getCause}).")
               val tryGraph = search_only(fromUri(uri))
               tryGraph match {
-                case Success(g)   => g
+                case Success(g) if( g.size > 1 ) => g  // 1 because there is always urn:displayLabel
+                case Success(g) => throw t
                 case Failure(err) => throw err
               }
 
