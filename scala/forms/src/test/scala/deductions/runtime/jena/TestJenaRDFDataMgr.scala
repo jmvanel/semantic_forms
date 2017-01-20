@@ -18,7 +18,7 @@ class TestJenaRDFDataMgr extends FunSuite with TestJenaRDFDataMgrRaw {
 }
 
 object JenaRDFDataMgrApp extends TestJenaRDFDataMgrRaw with App {
-readURL2( args(0) )
+  readURL2(args(0))
 }
 
 trait TestJenaRDFDataMgrRaw extends ImplementationSettings.RDFModule {
@@ -32,12 +32,12 @@ trait TestJenaRDFDataMgrRaw extends ImplementationSettings.RDFModule {
   }
 
   def readURL2(uriString: String) {
-   val g = RDFDataMgr.loadGraph("http://dbpedia.org/resource/Rome");
-   println("size " + g.size());
+    val g = RDFDataMgr.loadGraph("http://dbpedia.org/resource/Rome");
+    println("size " + g.size());
   }
-  
+
   def readURL(uriString: String) {
-	  val uri = makeUri(uriString)
+    val uri = makeUri(uriString)
     lazy val dataset = TDBFactory.createDataset("TDB_test")
     rdfStore.rw(dataset, {
       Logger.getRootLogger().info(s"storeURI uri $uri ")

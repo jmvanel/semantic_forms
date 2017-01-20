@@ -32,6 +32,6 @@ trait TestJenaHelpersRaw
     }
     val uri = ops.makeUri(s"file://${new File(".").getAbsolutePath}/src/test/resources/foaf.n3")
     val graphUri = uri
-    jh.storeURI(uri, graphUri, dataset1)
+    jh.readStoreURI(uri, graphUri, dataset1)
   }
 }

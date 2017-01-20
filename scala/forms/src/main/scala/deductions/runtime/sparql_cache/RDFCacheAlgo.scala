@@ -172,11 +172,9 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    *  and store the timestamp from HTTP HEAD request;
    * transactional,
    * load also the direct owl:imports , but not recursively ( as EulerGUI IDE does )
-   * 
-   * TODO rename
-   * readStoreUriContentInNamedGraph  */
-  def storeContentInNamedGraph(uri: String): Rdf#Graph = {
-    storeUriInNamedGraph(URI(uri))
+   */
+  def readStoreUriContentInNamedGraph(uri: String): Rdf#Graph = {
+    readStoreUriInNamedGraph(URI(uri))
   }
 
   /**
@@ -184,11 +182,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    *  and store the timestamp from HTTP HEAD request;
    * transactional,
    * load also the direct owl:imports , but not recursively ( as EulerGUI IDE does )
-   * 
-   * TODO rename
-   * readStoreUriInNamedGraph
    */
-  def storeUriInNamedGraph(uri: Rdf#URI): Rdf#Graph = {
+  def readStoreUriInNamedGraph(uri: Rdf#URI): Rdf#Graph = {
     readStoreURIinOwnGraph(uri)
   }
 
@@ -196,7 +191,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    *  NOTE: the dataset is provided by the parent trait;
    *  with transaction */
   private def readStoreURIinOwnGraph(uri: Rdf#URI): Rdf#Graph = {
-    val graphFromURI = storeURI(uri, uri, dataset)
+    val graphFromURI = readStoreURI(uri, uri, dataset)
     println("RDFCacheAlgo.storeURI " + uri + " size: " + graphFromURI.size)
     val r = dataset.rw({
       val it = find(graphFromURI, ANY, owl.imports, ANY)
@@ -225,11 +220,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * with Jena Riot for smart reading of any format,
    * (use content-type or else file extension)
    * cf https://github.com/w3c/banana-rdf/issues/105
-   * 
-   * TODO rename
-   * readStoreURI
    */
-  def storeURI(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
+  def readStoreURI(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
     val r = dataset.rw({
       storeURINoTransaction(uri, graphUri, dataset)
     })
@@ -248,7 +240,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * TODO rename
    * readStoreURINoTransaction
    */
-  def storeURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
+  private def storeURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
     Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
 
     if (isDownloadableURI(uri)) {

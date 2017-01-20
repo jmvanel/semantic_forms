@@ -21,7 +21,7 @@ class InstanceLabelsInferenceMemoryTest extends FunSuite
 
   test("TDB contains label") {
     val uri = URI("http://jmvanel.free.fr/jmv.rdf#me")
-    storeUriInNamedGraph(uri)
+    readStoreUriInNamedGraph(uri)
     val res = {
       dataset.rw({
         val lab = instanceLabel(uri, allNamedGraph, "fr")

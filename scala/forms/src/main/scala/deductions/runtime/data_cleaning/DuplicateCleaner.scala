@@ -478,7 +478,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       val uris = for (file <- files) yield {
         println(s"Load file $file")
         val uri = uriFromFile(file)
-        storeURI( URI(uri), globalNamedGraph, dataset) // : Rdf#Graph
+        readStoreURI( URI(uri), globalNamedGraph, dataset) // : Rdf#Graph
         println(s"Loaded file $file => $uri")
         uri
       }

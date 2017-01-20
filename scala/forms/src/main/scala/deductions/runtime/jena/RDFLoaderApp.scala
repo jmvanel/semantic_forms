@@ -12,6 +12,6 @@ object RDFLoaderApp extends {
 
   import ops._
   val uris = args map { p => URI(p) }
-  uris map { storeUriInNamedGraph(_) }
+  uris map { readStoreUriInNamedGraph(_) }
   println(s"loaded +${uris.mkString("; ")}")
 }
