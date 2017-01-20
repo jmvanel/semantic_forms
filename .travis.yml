@@ -18,7 +18,8 @@ sudo: false
 language: scala
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION -jvm-opts .travis-jvmopts validate
+  - cd scala/forms ; sbt ++$TRAVIS_SCALA_VERSION -jvm-opts .travis-jvmopts validate
+# TODO start PLay! app & run selenium scripts
 
 jdk:
   - oraclejdk8
