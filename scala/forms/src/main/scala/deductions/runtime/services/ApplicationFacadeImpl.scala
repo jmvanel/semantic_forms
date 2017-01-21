@@ -16,7 +16,7 @@ import org.w3.banana.io.RDFWriter
 import org.w3.banana.io.Turtle
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.html.CreationFormAlgo
-import deductions.runtime.html.TableViewModule
+import deductions.runtime.html.TriplesViewModule
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.I18NMessages
 import play.api.libs.iteratee.Enumerator
@@ -56,7 +56,7 @@ import deductions.runtime.utils.HTTPrequest
  */
 trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
-    with TableViewModule[Rdf, DATASET]
+    with TriplesViewModule[Rdf, DATASET]
     with CreationFormAlgo[Rdf, DATASET]
     with StringSearchSPARQL[Rdf, DATASET]
     with ReverseLinksSearchSPARQL[Rdf, DATASET]
@@ -129,7 +129,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
 
 
-  /** Naked form from TableView, plus:
+  /** Naked form from TriplesViewModule, plus:
    *
    * - title and links on top of the form,
    * - page URI (graph) statistics,
@@ -158,7 +158,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
               makeUri(uri), datasetOrDefault)
 
             // TODO should be done in FormSaver 
-            println(s"Search in $uri duplicate graph rooted at blank node: size " +
+            println(s"Search in <$uri> duplicate graph rooted at blank node: size " +
                 ops.getTriples(resRetrieve.get).size)
             manageBlankNodesReload(resRetrieve.getOrElse(emptyGraph),
                 URI(uri), datasetOrDefault)

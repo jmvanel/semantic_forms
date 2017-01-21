@@ -6,7 +6,7 @@ import scala.util.Failure
 import org.w3.banana.RDF
 import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
 import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
-import deductions.runtime.html.TableViewModule
+import deductions.runtime.html.TriplesViewModule
 import deductions.runtime.html.CreationFormAlgo
 import deductions.runtime.services.StringSearchSPARQL
 import deductions.runtime.utils.I18NMessages
@@ -18,7 +18,7 @@ trait RegisterPage[Rdf <: RDF, DATASET]
     extends StringSearchSPARQL[Rdf, DATASET]
     with InstanceLabelsInferenceMemory[Rdf, DATASET]
     with PreferredLanguageLiteral[Rdf]
-    with TableViewModule[Rdf, DATASET]
+    with TriplesViewModule[Rdf, DATASET]
     with CreationFormAlgo[Rdf, DATASET]
 //    with Configuration
     {

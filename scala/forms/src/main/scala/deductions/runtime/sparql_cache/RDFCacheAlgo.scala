@@ -82,13 +82,15 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    */
   def retrieveURINoTransaction(uri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
     for (graph <- rdfStore.getGraph(dataset, uri)) yield {
-      val uriGraphIsEmpty = graph.size == 0
-      println(s"retrieveURINoTransaction: stored Graph Is Empty: $uriGraphIsEmpty URI <$uri>")
-      if (uriGraphIsEmpty) {
+      val nothingStoredLocally = graph.size == 0
+      println(s"retrieveURINoTransaction: stored Graph Is Empty: $nothingStoredLocally URI <$uri>")
+
+      if (nothingStoredLocally) { // then read unconditionally from URI and store in TDB
+
         val mirrorURI = getMirrorURI(uri)
         if (mirrorURI == "") {
           try {
-            val g = storeURINoTransaction(uri, uri, dataset)
+            val g = readStoreURINoTransaction(uri, uri, dataset)
             if (g.size > 0) {
               println("Graph at URI was downloaded, new addition: " + uri + " , size " + g.size)
               addTimestampToDataset(uri, dataset2)
@@ -114,7 +116,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
           // TODO find in Mirror URI the relevant triples ( but currently AFAIK the graph returned by this function is not used )
           emptyGraph
         }
-      } else {
+
+      } else { // get a chance to get more recent RDF data
         updateLocalVersion(uri, dataset)
         graph
       }
@@ -122,49 +125,50 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   }
 
   /**
-   * according to timestamp download if outdated;
-   * with NO transaction
+   * according to stored and HTTP timestamps, download if outdated;
+   * with NO transaction,
+   * @return a graph with more recent RDF data or None
    */
-  private def updateLocalVersion(uri: Rdf#URI, dataset: DATASET) = {
-//      dataset.rw({
-        val localTimestamp = dataset2.r{
-          getTimestampFromDataset(uri, dataset2)
-        } . get
-        localTimestamp match {
-          case Success(longLocalTimestamp) => {
-            println(s"updateLocalVersion: $uri local TDB Timestamp: ${new Date(longLocalTimestamp) } - $longLocalTimestamp .")
-            val lastModifiedTuple = lastModified(uri.toString(), httpHeadTimeout)
-            println(s"$uri last Modified: ${new Date(lastModifiedTuple._2)} - $lastModifiedTuple .")
-            
-            if (lastModifiedTuple._1) {
-            	if (lastModifiedTuple._2 > longLocalTimestamp
-            	    || longLocalTimestamp == Long.MaxValue ) {
-            		storeURINoTransaction(uri, uri, dataset)
-            		println(s"$uri was outdated by timestamp; downloaded.")
-//            		addTimestampToDatasetNoTransaction(uri, dataset)
-            		addTimestampToDataset(uri, dataset2)
-            	}
-            } else if (! lastModifiedTuple._1 ||
-                lastModifiedTuple._2 == Long.MaxValue ) {
-              lastModifiedTuple._3 match {
-                case Some(connection) => 
-                val etag = headerField( fromUri(uri), "ETag": String, connection )
-                val etagFromDataset = dataset2.r{ getETagFromDataset(uri, dataset2) } .get
-                if(etag != etagFromDataset) {
-                	storeURINoTransaction(uri, uri, dataset)
-                  println(s"$uri was outdated by ETag; downloaded.")
-                  dataset2.rw{ addETagToDatasetNoTransaction(uri, etag, dataset2) }
-                }
-                case None =>
-                storeURINoTransaction(uri, uri, dataset)
-              }
-            }
+  private def updateLocalVersion(uri: Rdf#URI, dataset: DATASET): Option[Rdf#Graph] = {
+    val localTimestamp = dataset2.r { getTimestampFromDataset(uri, dataset2) }.get
+
+    localTimestamp match {
+      case Success(longLocalTimestamp) => {
+        println(s"updateLocalVersion: $uri local TDB Timestamp: ${new Date(longLocalTimestamp)} - $longLocalTimestamp .")
+        val lastModifiedTuple = lastModified(uri.toString(), httpHeadTimeout)
+        println(s"$uri last Modified: ${new Date(lastModifiedTuple._2)} - $lastModifiedTuple .")
+
+        if (lastModifiedTuple._1) {
+          if (lastModifiedTuple._2 > longLocalTimestamp
+            || longLocalTimestamp == Long.MaxValue) {
+            val graph = readStoreURINoTransaction(uri, uri, dataset)
+            println(s"$uri was outdated by timestamp; downloaded.")
+            // PENDING: maybe do this in Future
+            addTimestampToDataset(uri, dataset2)
+            Some(graph)
+          } else None
+        } else if (!lastModifiedTuple._1 ||
+          lastModifiedTuple._2 == Long.MaxValue) {
+          lastModifiedTuple._3 match {
+            case Some(connection) =>
+              val etag = headerField(fromUri(uri), "ETag": String, connection)
+              val etagFromDataset = dataset2.r { getETagFromDataset(uri, dataset2) }.get
+              if (etag != etagFromDataset) {
+                val graph = readStoreURINoTransaction(uri, uri, dataset)
+                println(s"$uri was outdated by ETag; downloaded.")
+                // PENDING: maybe do this in Future
+                dataset2.rw { addETagToDatasetNoTransaction(uri, etag, dataset2) }
+                Some(graph)
+              } else None
+            case None =>
+              Some(readStoreURINoTransaction(uri, uri, dataset))
           }
-          case Failure(fail) =>
-            storeURINoTransaction(uri, uri, dataset)
-            println(s"$uri had no localTimestamp ($fail); downloaded.")
-        }
-//      })
+        } else None
+      }
+      case Failure(fail) =>
+        println(s"$uri had no localTimestamp ($fail); download it:")
+        Some(readStoreURINoTransaction(uri, uri, dataset))
+    }
   }
 
   /**
@@ -200,7 +204,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
           Logger.getRootLogger().info(s"Before Loading imported Ontology $importedOntology")
           foldNode(importedOntology.subject)(ontoMain => Some(ontoMain), x => None, x => None) match {
             case Some(ontoMain) =>
-              foldNode(importedOntology.objectt)(onto => storeURINoTransaction(onto, onto, dataset),
+              foldNode(importedOntology.objectt)(onto => readStoreURINoTransaction(onto, onto, dataset),
                 identity, identity)
             case None =>
           }
@@ -223,7 +227,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    */
   def readStoreURI(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
     val r = dataset.rw({
-      storeURINoTransaction(uri, graphUri, dataset)
+      readStoreURINoTransaction(uri, graphUri, dataset)
     })
     r match {
       case Success(g) => g
@@ -234,13 +238,10 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   }
       
   /**
-   * read from uri and store in TDB, no matter what the syntax is;
+   * read unconditionally from URI and store in TDB, no matter what the syntax is;
    * can also load an URI with the # part
-   * 
-   * TODO rename
-   * readStoreURINoTransaction
    */
-  private def storeURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
+  private def readStoreURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
     Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
 
     if (isDownloadableURI(uri)) {

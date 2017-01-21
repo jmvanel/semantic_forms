@@ -23,9 +23,9 @@ import deductions.runtime.utils.Timer
  *  - the HTML renderer deductions.runtime.html.Form2HTML;
  *  transactional
  *
- * named TableView because originally it was an HTML table.
+ * Was named TableView because originally it was an HTML table.
  */
-trait TableViewModule[Rdf <: RDF, DATASET]
+trait TriplesViewModule[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
     with FormSyntaxFactory[Rdf, DATASET]
     with Form2HTMLBanana[Rdf]
@@ -52,7 +52,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     request: HTTPrequest = HTTPrequest()
   ): ( NodeSeq, FormSyntax ) = {
 
-    htmlFormRaw(uri, unionGraph, hrefPrefix, blankNode, editable, actionURI,
+    htmlFormRawTry(uri, unionGraph, hrefPrefix, blankNode, editable, actionURI,
       lang, graphURI, actionURI2, URI(formGroup), formuri, database, request) match {
         case Success(e) => e
         case Failure(e) => ( <p>htmlFormElem: Exception occured: { e }</p>, FormSyntax(nullURI, Seq() ) )
@@ -132,7 +132,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
    *  @param blankNode if "true" given uri is a blanknode
    *  
    */
-  private def htmlFormRaw(uri: String, unionGraph: Rdf#Graph = allNamedGraph,
+  private def htmlFormRawTry(uri: String, unionGraph: Rdf#Graph = allNamedGraph,
                           hrefPrefix: String = "", blankNode: String = "",
                           editable: Boolean = false,
                           actionURI: String = "/save",
@@ -238,18 +238,7 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     ( htmlForm, form )
   }
 
-  /** TODO Why not inheritate from Form2HTML ? */
   private def makeHtmlFormGenerator = this
-//  {
-//    val ops1 = ops
-//    val config1 = config
-//    time("new Form2HTML",
-//      new Form2HTMLBanana[Rdf] {
-//        val ops = ops1
-//        val config = config1
-//        val nullURI = URI("")
-//      })
-//  }
 
   private def createAbstractForm(
       uri: String, editable: Boolean,
@@ -286,13 +275,4 @@ trait TableViewModule[Rdf <: RDF, DATASET]
     makeHtmlFormGenerator.generateHTML(formSyntax)
   }
 
-  //  override 
-//  def toPlainString(n: Rdf#Node): String = {
-//    val v = foldNode(n)(
-//      uri => fromUri(uri),
-//      bn => fromBNode(bn),
-//      lit => { val (v, typ, langOption) = fromLiteral(lit); v }
-//    )
-//    v
-//  }
 }
