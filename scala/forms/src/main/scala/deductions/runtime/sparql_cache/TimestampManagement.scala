@@ -99,7 +99,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
       val connection0 = new URL(url).openConnection()
       connection0 match {
         case connection: HttpURLConnection if( ! url.startsWith("file:/") ) =>
-          println(s"lastModified: http:// ")
+          println(s"lastModified: HTTP URL")
           connection.setConnectTimeout(timeout);
           connection.setReadTimeout(timeout);
           connection.setRequestMethod("HEAD");
@@ -109,7 +109,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
             val dateString = headerField(url, headerName, connection)
             if (dateString != "") {
               val date: java.util.Date = DateUtils.parseDate(dateString) // from apache http-components
-              println("RDFCacheAlgo.lastModified: responseCode: " + responseCode +
+              println("TimestampManagement.lastModified(): responseCode: " + responseCode +
                 ", date: " + date + ", dateString " + dateString)
               (true, 200 <= responseCode && responseCode <= 399, date.getTime())
             } else (false, false, Long.MaxValue)
@@ -144,7 +144,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
   String = {
     val headerString = connection.getHeaderField(headerName)
     if (headerString != null) {
-      println("RDFCacheAlgo.tryHeaderField: " +
+      println("TimestampManagement.tryHeaderField: " +
         s", header: $headerName = " + headerString +
         "; url: " + url)
         headerString
@@ -164,7 +164,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
     val list = sparqlSelectQueryVariablesNT(queryString, Seq("etag") )
     val v = list.headOption.getOrElse(Seq())
     val vv = v.headOption.getOrElse(Literal(""))
-    vv.toString()
+    nodeToString(vv)
   }
 
   /** No Transaction */

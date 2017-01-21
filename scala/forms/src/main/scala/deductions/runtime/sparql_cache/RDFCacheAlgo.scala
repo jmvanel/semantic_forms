@@ -132,6 +132,14 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   private def updateLocalVersion(uri: Rdf#URI, dataset: DATASET): Option[Rdf#Graph] = {
     val localTimestamp = dataset2.r { getTimestampFromDataset(uri, dataset2) }.get
 
+    /*
+     * TODO:
+     * - code too complex;
+     * - probably code belongs TimestampManagement
+     * - dbpedia.org has no ETag nor Last-Modified HTTP header fields, but it has Expires;
+     *   we should use Expires
+     *  see http://stackoverflow.com/questions/5321876/which-one-to-use-expire-header-last-modified-header-or-etags
+     */
     localTimestamp match {
       case Success(longLocalTimestamp) => {
         println(s"updateLocalVersion: $uri local TDB Timestamp: ${new Date(longLocalTimestamp)} - $longLocalTimestamp .")
@@ -142,8 +150,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
           if (lastModifiedTuple._2 > longLocalTimestamp
             || longLocalTimestamp == Long.MaxValue) {
             val graph = readStoreURINoTransaction(uri, uri, dataset)
-            println(s"$uri was outdated by timestamp; downloaded.")
-            // PENDING: maybe do this in Future
+            println(s"updateLocalVersion: <$uri> was outdated by timestamp; downloaded.")
+            // PENDING: maybe do this in a Future
             addTimestampToDataset(uri, dataset2)
             Some(graph)
           } else None
@@ -155,8 +163,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
               val etagFromDataset = dataset2.r { getETagFromDataset(uri, dataset2) }.get
               if (etag != etagFromDataset) {
                 val graph = readStoreURINoTransaction(uri, uri, dataset)
-                println(s"$uri was outdated by ETag; downloaded.")
-                // PENDING: maybe do this in Future
+                println(s"updateLocalVersion: <$uri> was outdated by ETag; downloaded.")
+                // PENDING: maybe do this in a Future
                 dataset2.rw { addETagToDatasetNoTransaction(uri, etag, dataset2) }
                 Some(graph)
               } else None
@@ -166,7 +174,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
         } else None
       }
       case Failure(fail) =>
-        println(s"$uri had no localTimestamp ($fail); download it:")
+        println(s"updateLocalVersion: <$uri> had no local Timestamp ($fail); download it:")
         Some(readStoreURINoTransaction(uri, uri, dataset))
     }
   }
