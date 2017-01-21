@@ -12,25 +12,22 @@ import deductions.runtime.jena.ApplicationFacadeJena
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.CORS
 import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.HTTPrequest
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.views.ToolsPage
-import deductions.runtime.html.TableViewModule
-
-import play.api.Play
+import play.api.GlobalSettings
 import play.api.http.MediaRange
 import play.api.mvc.Accepting
 import play.api.mvc.Action
-import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.mvc.AnyContent
+import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.mvc.Codec
 import play.api.mvc.Controller
 import play.api.mvc.Request
 import play.api.mvc.RequestHeader
 import play.api.mvc.Result
-import views.MainXmlWithHead
-import play.api.mvc.Codec
-import play.api.GlobalSettings
-import deductions.runtime.utils.HTTPrequest
 import play.api.mvc.Results
+import views.MainXmlWithHead
 
 object Global extends GlobalSettings with Results {
   override def onBadRequest(request: RequestHeader, error: String) = {
@@ -46,8 +43,7 @@ trait ApplicationTrait extends Controller
     with MainXmlWithHead
     with CORS
     with HTTPrequestHelpers
-    with RDFPrefixes[ImplementationSettings.Rdf]
-    {
+    with RDFPrefixes[ImplementationSettings.Rdf] {
 
 	/** a copy of the request with no Play dependency :) */
   def getRequestCopy()(implicit request: Request[_]): HTTPrequest = copyRequest(request)
@@ -76,9 +72,8 @@ trait ApplicationTrait extends Controller
             displayURI: Edit "$Edit" """)
           val lang = chooseLanguage(request)
           val uri = expandOrUnchanged(uri0)
-          println(s"expandOrUnchanged $uri")
+          println(s"displayURI: expandOrUnchanged $uri")
           val title = labelForURITransaction(uri, lang)
-          //          val v = new TableViewModule[Rdf, DATASET]{}  // TriplesView
           outputMainPage(
             htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
               graphURI = makeAbsoluteURIForSaving(userid),

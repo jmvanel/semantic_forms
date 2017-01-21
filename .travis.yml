@@ -1,0 +1,32 @@
+# sbt/travis documentation
+# * http://www.scala-sbt.org/0.13/docs/Travis-CI-with-sbt.html
+# * http://docs.travis-ci.com/user/languages/scala/
+# * http://blog.travis-ci.com/2014-12-17-faster-builds-with-container-based-infrastructure/
+#
+# SBT Concurrency:
+# By default, SBT runs tasks concurrently and sets the limit of
+# parallel tasks by looking at the number of cores available.  Note
+# however, that each tasks uses more memory as well, so machines with
+# more cores will need to allocate more memory to SBT.  On Travis,
+# there is currently 2 cores and so the default SBT java settings are
+# adequate. The rule seems to be to set the flag -XmxN, where N =
+# No. cores / 4 - eg with 8 cores(4 real, with hyper threading 8) -
+# -Xmx2048m
+
+sudo: false
+
+language: scala
+
+script:
+  - cd scala/forms ; sbt ++$TRAVIS_SCALA_VERSION -jvm-opts .travis-jvmopts test
+# TODO start PLay! app & run selenium scripts
+
+jdk:
+  - oraclejdk8
+
+scala:
+  - 2.11.8
+
+notifications:
+  irc: "chat.freenode.net#semantic_forms"
+

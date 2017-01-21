@@ -71,7 +71,9 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
             title={ placeholder }
             onkeyup={if (lookupActivatedFor(resourceEntry)) "onkeyupComplete(this);" else null}
             size={inputSize.toString()}
-						dropzone="copy">
+						dropzone="copy"
+            autocomplete={if (lookupActivatedFor(resourceEntry)) "off" else null}
+            >
           </input>
           { if (lookupActivatedFor(resourceEntry))
             <script type="text/javascript" >

@@ -16,7 +16,6 @@ import org.w3.banana._
  *  TODO possibility to add prefix-URI pairs;
  *  TODO use prefix.cc like in EulerGUI */
   trait RDFPrefixes[Rdf <: RDF] {
-//  this: Configuration =>
 
   implicit val ops: RDFOps[Rdf]
   import ops._
@@ -45,31 +44,24 @@ import org.w3.banana._
   lazy val form = Prefix[Rdf]("form", "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#") // http://deductions-software.com/ontologies/forms.owl.ttl#" )
   lazy val dbo = Prefix[Rdf]("dbo", "http://dbpedia.org/ontology/")
   lazy val vs = Prefix[Rdf]("vs", "http://www.w3.org/2003/06/sw-vocab-status/ns#")
+  lazy val content = Prefix[Rdf]("content", "http://purl.org/rss/1.0/modules/content/")
 
   lazy val prefixesList = List(
-      // prefixes for ontologies
-    rdf,
-    rdfs,
+		  // prefixes for ontologies
+    rdf, rdfs,
     xsd,
-    DCPrefix[Rdf],
-    DCTPrefix[Rdf],
-    foaf,
-    LDPPrefix[Rdf],
-    IANALinkPrefix[Rdf],
-    WebACLPrefix[Rdf],
-    CertPrefix[Rdf],
-    owl,
+    DCPrefix[Rdf], DCTPrefix[Rdf],
+    foaf, Prefix[Rdf]("doap", "http://usefulinc.com/ns/doap#"),
+    LDPPrefix[Rdf], IANALinkPrefix[Rdf], WebACLPrefix[Rdf], CertPrefix[Rdf],
+    owl, skos,
     schema,
-    Prefix[Rdf]("doap", "http://usefulinc.com/ns/doap#"),
-    sioc,
+    sioc, content,
     dbo,
     Prefix[Rdf]("vcard", "http://www.w3.org/2006/vcard/ns#"),
-    skos,
 
     // for specific form specs (FOAF, etc)
     Prefix[Rdf]("forms", "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#" ), // "http://deductions-software.com/ontologies/forms#"),
-    // form vocabulary
-    form,
+    form,    // form vocabulary
 
     Prefix[Rdf]("pair", prefixAV ),
 
@@ -82,7 +74,7 @@ import org.w3.banana._
     // prefixes for resources
 
     Prefix[Rdf]("dbpedia", "http://dbpedia.org/resource/"),
-    text
+    text // Jena text search
     )
   
   lazy val prefixesMap: Map[String, Rdf#URI] =
@@ -108,7 +100,7 @@ import org.w3.banana._
   /**
    * expand possibly Prefixed URI (like foaf:name),
    *  @return Some(URI("http://xmlns.com/foaf/0.1/name")),
-   *  or output None
+   *  or output None if no prefix is found
    */
   def expand(possiblyPrefixedURI: String): Option[Rdf#URI] = {
     val uri_string = possiblyPrefixedURI // URLEncoder.encode(possiblyPrefixedURI, "UTF-8")

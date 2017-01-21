@@ -18,7 +18,6 @@ trait Lookup[Rdf <: RDF, DATASET]
     with PreferredLanguageLiteral[Rdf]
     with SPARQLHelpers[Rdf, DATASET]
     with RDFPrefixes[Rdf] {
-  // RDFHelpers[Rdf
 
   import ops._
   import sparqlOps._
@@ -64,10 +63,10 @@ trait Lookup[Rdf <: RDF, DATASET]
       urilangs
     })
     val list = transaction.get
-    if (mime.contains("xml"))
-      formatXML(list)
+    if (mime.contains("json"))
+      formatJSON(list)
     else
-      formatJSONLD(list)
+      formatXML(list)
   }
 
   private def formatXML(list: List[(Rdf#Node, String)]): String = {
@@ -85,7 +84,7 @@ trait Lookup[Rdf <: RDF, DATASET]
     xml.toString
   }
 
-  private def formatJSONLD(list: List[(Rdf#Node, String)]): String = {
+  private def formatJSON(list: List[(Rdf#Node, String)]): String = {
     val list2 = list.map {
       case (uri, label) => Json.obj("Label" -> label, "URI" -> uri.toString())
     }
@@ -101,7 +100,9 @@ trait Lookup[Rdf <: RDF, DATASET]
   private val indexBasedQuery = new SPARQLQueryMaker[Rdf] {
     override def makeQueryString(searchStrings: String*): String = {
       val search = searchStrings(0)
-      val clas = searchStrings(1)
+      val clas = if( searchStrings.size > 1 )
+        "<" + expandOrUnchanged(searchStrings(1)) + ">"
+        else "?CLASS"
       s"""
          |${declarePrefix(text)}
          |${declarePrefix(rdfs)}
@@ -109,7 +110,7 @@ trait Lookup[Rdf <: RDF, DATASET]
          |  graph ?g {
          |    ?thing text:query '${prepareSearchString(search).trim()}' .
          |    ?thing ?p ?o .
-         |    ?thing a ?class .
+         |    ?thing a $clas .
          |  }
          |}
          |GROUP BY ?thing
@@ -122,14 +123,11 @@ trait Lookup[Rdf <: RDF, DATASET]
 
   import scala.language.reflectiveCalls
 
-  /**
+  /** search String Or Class
    * transactional
    */
   def searchStringOrClass(search: String, clas: String = ""): List[Seq[Rdf#Node]] = {
-    val queryString0 = indexBasedQuery.makeQueryString(search)
-    val queryString = if (clas != "") {
-      queryString0.replaceFirst("""\?class""", "<" + expandOrUnchanged(clas) + ">")
-    } else queryString0
+    val queryString = indexBasedQuery.makeQueryString(search, clas)
     println(s"searchStringOrClass(search=$search, clas $clas, queryString $queryString")
     val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariables(queryString, Seq("thing"))
     res

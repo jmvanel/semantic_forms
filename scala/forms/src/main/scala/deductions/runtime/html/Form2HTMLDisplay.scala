@@ -37,8 +37,12 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       val id = urlEncode(resourceEntry.property).replace("%", "-")
       /*  ID and NAME tokens must begin with a letter ([A-Za-z]) and may be followed by any number of letters, 
        *  digits ([0-9]), hyphens ("-"), underscores ("_"), colons (":"), and periods ("."). */
-      <a href={ "#" + id } draggable="true">^\</a>
+      if( subjectURIstringValue != "" ) {
+      <a href={ "#" + id } draggable="true">
+      <i class="glyphicon glyphicon-link"></i>
+      </a>
       <a id={ id }></a>
+      } else NodeSeq.Empty
     }
 
     val hyperlinkToObjectURI =
@@ -47,7 +51,11 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       title={
         s"""Value ${if (subjectURIstringValue != valueLabel) subjectURIstringValue else ""}
               of type ${type_.toString()}"""
-      } draggable="true"> {
+      } draggable="true"
+      data-uri-subject={resourceEntry.subject.toString()}
+      data-uri-value={resourceEntry.value.toString()}
+      data-uri-type={resourceEntry.type_.toString()}
+      >{
         valueLabel
       }</a>
 

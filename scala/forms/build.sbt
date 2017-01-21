@@ -10,15 +10,16 @@ version := "1.0-SNAPSHOT"
 
 scalaVersion :=  "2.11.8"
 // scalaVersion :=  "2.12.0"
+val jenaVersion =  "3.1.0"
 
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 libraryDependencies += "org.w3" %%  "banana-jena" % "0.9.0-SNAPSHOT"
 
-libraryDependencies += "org.apache.jena" % "apache-jena-libs" % "3.1.1" // exclude("org.slf4j", "slf4j-api" )
-libraryDependencies += "org.apache.jena" % "jena-permissions" % "3.1.1"
-libraryDependencies += "org.apache.jena" % "jena-text" % "3.1.1"
+libraryDependencies += "org.apache.jena" % "apache-jena-libs" % jenaVersion // exclude("org.slf4j", "slf4j-api" )
+libraryDependencies += "org.apache.jena" % "jena-permissions" % jenaVersion
+libraryDependencies += "org.apache.jena" % "jena-text" % jenaVersion
 
 libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
 libraryDependencies += "org.apache.lucene" % "lucene-suggest" % "4.9.1"

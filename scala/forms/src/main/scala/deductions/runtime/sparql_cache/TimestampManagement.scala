@@ -14,6 +14,7 @@ import org.w3.banana.RDF
 
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.services.SPARQLHelpers
+import java.util.Date
 
 trait TimestampManagement[Rdf <: RDF, DATASET]
 extends RDFStoreLocalProvider[Rdf, DATASET]
@@ -26,6 +27,25 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
   import rdfStore.graphStoreSyntax._
   import rdfStore.sparqlEngineSyntax._
   import scala.concurrent.ExecutionContext.Implicits.global
+
+  //// Expires ////
+
+  def isDocumentExpired(connectionOption: Option[HttpURLConnection]) = {
+    val opt = connectionOption.map {
+      conn =>
+        val expires = getHeaderField("Expires", conn)
+        println( s"""isDocumentExpired: Expires: "$expires"""" )
+        val resulTest = Try {
+        val expireDate = DateUtils.parseDate(expires)
+        val currentDate = new Date
+        currentDate.getTime > expireDate.getTime
+        }
+        resulTest.getOrElse(false)
+    }
+    opt.getOrElse(false)
+  }
+
+    //// Last-Modified ////
 
   /**
    * add or replace timestamp for URI in dataset (actually a dedicated Graph timestampGraphURI ),
@@ -99,17 +119,17 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
       val connection0 = new URL(url).openConnection()
       connection0 match {
         case connection: HttpURLConnection if( ! url.startsWith("file:/") ) =>
-          println(s"lastModified: http:// ")
+          println(s"lastModified: HTTP URL")
           connection.setConnectTimeout(timeout);
           connection.setReadTimeout(timeout);
           connection.setRequestMethod("HEAD");
           val responseCode = connection.getResponseCode()
 
           def tryHeaderField(headerName: String): (Boolean, Boolean, Long) = {
-            val dateString = headerField(url, headerName, connection)
+            val dateString = getHeaderField( headerName, connection)
             if (dateString != "") {
               val date: java.util.Date = DateUtils.parseDate(dateString) // from apache http-components
-              println("RDFCacheAlgo.lastModified: responseCode: " + responseCode +
+              println("TimestampManagement.lastModified(): responseCode: " + responseCode +
                 ", date: " + date + ", dateString " + dateString)
               (true, 200 <= responseCode && responseCode <= 399, date.getTime())
             } else (false, false, Long.MaxValue)
@@ -140,13 +160,13 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
     }
   }
 
-  def headerField(url: String, headerName: String, connection: HttpURLConnection):
+  private [sparql_cache] def getHeaderField(headerName: String, connection: HttpURLConnection):
   String = {
     val headerString = connection.getHeaderField(headerName)
     if (headerString != null) {
-      println("RDFCacheAlgo.tryHeaderField: " +
+      println("TimestampManagement.tryHeaderField: " +
         s", header: $headerName = " + headerString +
-        "; url: " + url)
+        "; url: " + connection.getURL )
         headerString
     } else ""
   }
@@ -164,7 +184,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
     val list = sparqlSelectQueryVariablesNT(queryString, Seq("etag") )
     val v = list.headOption.getOrElse(Seq())
     val vv = v.headOption.getOrElse(Literal(""))
-    vv.toString()
+    nodeToString(vv)
   }
 
   /** No Transaction */

@@ -12,6 +12,7 @@
 <tr><td rowspan="1" colspan="3">Basic features</td></tr>
 </thead><tbody>
 
+<!-- We suppose an empty SPARQL database -->
 <!--login -->
 <tr>
 	<td>open</td>
@@ -53,7 +54,7 @@
 <tr>
 	<td>type</td>
 	<td>name=displayuri</td>
-	<td>http://jmvanel.free.fr/jmv.rdf#me</td>
+	<td>https://www.w3.org/People/Berners-Lee/card#i</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
@@ -61,6 +62,17 @@
 	<td></td>
 </tr>
 
+<!-- <td>http://jmvanel.free.fr/jmv.rdf#me</td> -->
+<tr>
+	<td>type</td>
+	<td>name=displayuri</td>
+	<td>http://jmvanel.free.fr/jmv.rdf#me</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>name=Display</td>
+	<td></td>
+</tr>
 <tr>
 	<td>verifyText</td>
 	<td>css=div.row &gt; h3</td>
@@ -77,7 +89,7 @@
 	<td></td>
 </tr>
 
-<!-- Edit same FOAF RDF -->
+<!-- Edit the same FOAF RDF -->
 <tr>
 	<td>clickAndWait</td>
 	<td>css=i.glyphicon.glyphicon-edit</td>
@@ -90,7 +102,7 @@
 </tr>
 <tr>
 	<td>verifyText</td>
-	<td>css=option[title=&quot;http://www.w3.org/People/Berners-Lee/card#i&quot;]</td>
+	<td>css=option[title=&quot;https://www.w3.org/People/Berners-Lee/card#i&quot;]</td>
 	<td>Tim Berners-Lee</td>
 </tr>
 
@@ -131,12 +143,14 @@
 </tr>
 <tr>
 	<td>assertElementPresent</td>
-	<td>xpath=//form // div / label [text() = "nom de famille" ]</td>
+	<td>xpath=//form // div / label [ text() = "nom de famille" or
+					  text() = "lastName" ]</td>
 	<td>nom de famille</td>
 </tr>
 <tr>
 	<td>assertElementPresent</td>
-	<td>xpath=//form/div//label [text() = "connaît"]</td>
+	<td>xpath=//form/div//label [ text() = "connaît" or
+				      text() = "knows" ]</td>
 	<td></td>
 </tr>
 
@@ -153,7 +167,8 @@
 </tr>
 <tr>
 	<td>assertElementPresent</td>
-	<td>// div / label  [text() = "espèce"]</td>
+	<td>// div / label  [ text() = "espèce" or
+			      text() = "species" ]</td>
 	<td></td>
 </tr>
 

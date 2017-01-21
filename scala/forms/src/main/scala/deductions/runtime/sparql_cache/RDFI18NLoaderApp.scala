@@ -62,6 +62,6 @@ trait RDFI18NLoaderTrait[Rdf <: RDF, DATASET]
     )
     import ops._
     val translations = translations0 map { p => URI(p) }
-    translations map { storeURI(_, i18NGraph, dataset) }
+    translations map { readStoreURI(_, i18NGraph, dataset) }
   }
 }

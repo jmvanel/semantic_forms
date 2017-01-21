@@ -67,7 +67,8 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
         List( uriNodeToURI(tryClassFromConfig.getOrElse(nullURI)) )
       } else
         classesOfSubject
-    println(s">>> computePropsFromConfig( classOfSubjectOrFromConfig=$classesOfSubjectOrFromConfig) => formConfiguration=$formConfiguration, $propsFromConfig")
+    println(s""">>> computePropsFromConfig( classOfSubjectOrFromConfig=$classesOfSubjectOrFromConfig) =>
+               formConfiguration=<$formConfiguration>, props From Config $propsFromConfig""")
 
     val propsFromSubject = fieldsFromSubject(subject, graph)
  

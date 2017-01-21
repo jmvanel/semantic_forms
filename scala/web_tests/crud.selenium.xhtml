@@ -57,8 +57,17 @@
 	<td></td>
 </tr>
 <tr>
+	<td>assertElementPresent</td>
+	<td>xpath=//form // div [ label [ text() = "prénom" or
+					  text() = "firstName"
+					]] // input [ @type != "button" ] </td>
+	<td></td>
+</tr>
+<tr>
 	<td>type</td>
-	<td>xpath=//form // div [label [ text() = "prénom"]] // input [ type != "button" ] </td>
+	<td>xpath=//form // div [label [ text() = "prénom" or
+					 text() = "firstName"
+					]] // input [ @type != "button" ] </td>
 	<td>Victime 1</td>
 </tr>
 <!-- id=f0  / @value -->
@@ -80,19 +89,20 @@
 	<td></td>
 </tr>
 <tr>
-	<td>assertText</td>
-	<td>link=Personne</td>
-	<td>Personne</td>
+	<td>assertElementPresent</td>
+	<td>xpath=//a [ @href ] [ contains( text(), "Person" ) ] </td>
+	<td></td>
 </tr>
+
 <tr>
 	<td>assertText</td>
 	<td>link=Jean-Marc Vanel</td>
 	<td>Jean-Marc Vanel</td>
 </tr>
 <tr>
-	<td>assertText</td>
-	<td>css=div.form-cell-display</td>
-	<td>Victime 1</td>
+	<td>assertElementPresent</td>
+	<td>// div [ text() = "Victime 1"]</td>
+	<td></td>
 </tr>
 
 <!--logout -->

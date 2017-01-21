@@ -124,7 +124,7 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
     vocabularies map {
       voc =>
         try {
-          storeUriInNamedGraph(voc)
+          readStoreUriInNamedGraph(voc)
             println("JVM Total memory (bytes): " +
               Runtime.getRuntime().totalMemory());
             System.gc()

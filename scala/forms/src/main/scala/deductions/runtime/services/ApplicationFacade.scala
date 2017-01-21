@@ -20,7 +20,6 @@ import scala.util.Try
 trait ApplicationFacade[Rdf <: RDF, DATASET]
 		extends ApplicationFacadeInterface {
 
-//  def getRequest: HTTPrequest
 
   val impl: ApplicationFacadeImpl[Rdf, DATASET]
   

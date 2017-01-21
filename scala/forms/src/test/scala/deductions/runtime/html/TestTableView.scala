@@ -16,7 +16,7 @@ import deductions.runtime.jena.ImplementationSettings
 
 class TestTableView extends FunSuite
     with ImplementationSettings.RDFModule
-    with TableViewModule[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with TriplesViewModule[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RDFStoreLocalJena1Provider
     with BeforeAndAfter //    with DefaultConfiguration
     {

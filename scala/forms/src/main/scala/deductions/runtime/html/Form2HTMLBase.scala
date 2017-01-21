@@ -35,7 +35,9 @@ trait Form2HTMLBase[NODE, URI <: NODE]
     if (preceding.label != field.label)
       <label class={ css.cssClasses.formLabelCSSClass } title={
         labelTooltip(field)
-      } for={ makeHTMLNameResource(field) }>{
+      } for={ makeHTMLNameResource(field) }
+      draggable="true"
+      data-uri-property={field.property.toString()}>{
         val label = field.label
         // hack before implementing real separators
         if (label.contains("----"))
