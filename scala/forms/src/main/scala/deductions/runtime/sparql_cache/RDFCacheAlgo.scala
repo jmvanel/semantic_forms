@@ -129,22 +129,25 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * with NO transaction,
    * @return a graph with more recent RDF data or None
    */
-  private def updateLocalVersion(uri: Rdf#URI, dataset: DATASET): Option[Rdf#Graph] = {
+  private def updateLocalVersion(uri: Rdf#URI, dataset: DATASET)
+  : Option[Rdf#Graph] = {
     val localTimestamp = dataset2.r { getTimestampFromDataset(uri, dataset2) }.get
 
-    /*
-     * TODO:
+    /* TODO:
      * - code too complex;
      * - probably code belongs TimestampManagement
-     * - dbpedia.org has no ETag nor Last-Modified HTTP header fields, but it has Expires;
-     *   we should use Expires
      *  see http://stackoverflow.com/questions/5321876/which-one-to-use-expire-header-last-modified-header-or-etags
      */
     localTimestamp match {
       case Success(longLocalTimestamp) => {
         println(s"updateLocalVersion: $uri local TDB Timestamp: ${new Date(longLocalTimestamp)} - $longLocalTimestamp .")
         val lastModifiedTuple = lastModified(uri.toString(), httpHeadTimeout)
-        println(s"$uri last Modified: ${new Date(lastModifiedTuple._2)} - $lastModifiedTuple .")
+        println(s"updateLocalVersion: <$uri> last Modified: ${new Date(lastModifiedTuple._2)} - $lastModifiedTuple .")
+
+        if( isDocumentExpired( connectionOption = lastModifiedTuple._3 ) ) {
+          println(s"updateLocalVersion: <$uri> was outdated by Expires HTPP header field")
+          return Some(readStoreURINoTransaction(uri, uri, dataset))
+        }
 
         if (lastModifiedTuple._1) {
           if (lastModifiedTuple._2 > longLocalTimestamp
@@ -159,7 +162,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
           lastModifiedTuple._2 == Long.MaxValue) {
           lastModifiedTuple._3 match {
             case Some(connection) =>
-              val etag = headerField(fromUri(uri), "ETag": String, connection)
+              val etag = getHeaderField("ETag", connection)
               val etagFromDataset = dataset2.r { getETagFromDataset(uri, dataset2) }.get
               if (etag != etagFromDataset) {
                 val graph = readStoreURINoTransaction(uri, uri, dataset)

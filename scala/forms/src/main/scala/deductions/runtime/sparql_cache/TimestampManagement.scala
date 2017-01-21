@@ -14,6 +14,7 @@ import org.w3.banana.RDF
 
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.services.SPARQLHelpers
+import java.util.Date
 
 trait TimestampManagement[Rdf <: RDF, DATASET]
 extends RDFStoreLocalProvider[Rdf, DATASET]
@@ -26,6 +27,21 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
   import rdfStore.graphStoreSyntax._
   import rdfStore.sparqlEngineSyntax._
   import scala.concurrent.ExecutionContext.Implicits.global
+
+  //// Expires ////
+
+  def isDocumentExpired(connectionOption: Option[HttpURLConnection]) = {
+    val opt = connectionOption.map {
+      conn =>
+        val expires = getHeaderField("Expires", conn)
+        val expireDate = DateUtils.parseDate(expires)
+        val currentDate = new Date
+        currentDate.getTime > expireDate.getTime
+    }
+    opt.getOrElse(false)
+  }
+
+    //// Last-Modified ////
 
   /**
    * add or replace timestamp for URI in dataset (actually a dedicated Graph timestampGraphURI ),
@@ -106,7 +122,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
           val responseCode = connection.getResponseCode()
 
           def tryHeaderField(headerName: String): (Boolean, Boolean, Long) = {
-            val dateString = headerField(url, headerName, connection)
+            val dateString = getHeaderField( headerName, connection)
             if (dateString != "") {
               val date: java.util.Date = DateUtils.parseDate(dateString) // from apache http-components
               println("TimestampManagement.lastModified(): responseCode: " + responseCode +
@@ -140,13 +156,13 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
     }
   }
 
-  def headerField(url: String, headerName: String, connection: HttpURLConnection):
+  private [sparql_cache] def getHeaderField(headerName: String, connection: HttpURLConnection):
   String = {
     val headerString = connection.getHeaderField(headerName)
     if (headerString != null) {
       println("TimestampManagement.tryHeaderField: " +
         s", header: $headerName = " + headerString +
-        "; url: " + url)
+        "; url: " + connection.getURL )
         headerString
     } else ""
   }
