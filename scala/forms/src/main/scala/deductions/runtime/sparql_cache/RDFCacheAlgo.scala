@@ -79,6 +79,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * or download and store URI only if corresponding graph is empty,
    * or local timestamp is older;
    * timestamp is saved in another Dataset
+   *  @return the more recent RDF data if any, or the old data
    */
   def retrieveURINoTransaction(uri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
     for (graph <- rdfStore.getGraph(dataset, uri)) yield {
@@ -117,9 +118,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
           emptyGraph
         }
 
-      } else { // get a chance to get more recent RDF data
-        updateLocalVersion(uri, dataset)
-        graph
+      } else { // get a chance for more recent RDF data
+        updateLocalVersion(uri, dataset) . getOrElse(graph)
       }
     }
   }
@@ -250,22 +250,22 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
 
       // NOTE: Jena RDF loader can throw an exception "Failed to determine the content type"
       val graphTry = rdfLoader.load(new java.net.URL(uri.toString()))
-      println(s"storeURINoTransaction: after rdfLoader.load($uri): $graphTry")
+      println(s"readStoreURINoTransaction: after rdfLoader.load($uri): $graphTry")
 
        val graph = graphTry . getOrElse {
             println(s"Trying RDFa for <$uri>")
             microdataLoader.load(
               new java.net.URL(uri.toString())) .get
           }
-      println(s"storeURINoTransaction: $graph")
+      println(s"readStoreURINoTransaction: graph $graph")
 
-      Logger.getRootLogger().info(s"Before storeURI uri $uri graphUri $graphUri")
+      Logger.getRootLogger().info(s"readStoreURINoTransaction: Before appendToGraph uri <$uri> graphUri <$graphUri>")
       rdfStore.appendToGraph( dataset, graphUri, graph)
-      Logger.getRootLogger().info(s"storeURI uri $uri : stored into graphUri $graphUri")
+      Logger.getRootLogger().info(s"readStoreURINoTransaction: uri <$uri> : stored into graphUri <$graphUri>")
       graph
 
     } else {
-      val message = s"Load uri $uri is not possible, not a downloadable URI."
+      val message = s"Load uri <$uri> is not possible, not a downloadable URI."
       Logger.getRootLogger().warn(message)
       emptyGraph
     }
