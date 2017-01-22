@@ -94,7 +94,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     // TODO for comprehension like in htmlForm()
 
     val (graphURIActual, _) = doRetrieveURI(uri, blankNode, graphURI)
-    val htmlFormTry = dataset.rw({
+    val htmlFormTry = rdfStore.rw( dataset, {
       implicit val graph: Rdf#Graph = allNamedGraph
       val ops1 = ops
       val config1 = config
@@ -180,7 +180,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
       // TODO find another way of reporting download failures: 
       //      graphDownloaded <- tryGraph
       
-      form <- dataset.rw({
+      form <- rdfStore.rw( dataset, {
         graf2form(allNamedGraph, uri, hrefPrefix, blankNode, editable,
           actionURI, lang, graphURIActual, actionURI2, formGroup)
       })

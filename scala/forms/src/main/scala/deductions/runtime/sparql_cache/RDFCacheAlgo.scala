@@ -54,7 +54,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
 
   /** with transaction */
   def isGraphInUse(uri: Rdf#URI) = {
-    dataset.r({
+    rdfStore.r( dataset, {
       for (graph <- rdfStore.getGraph( dataset, uri)) yield {
         val uriGraphIsEmpty = graph.size == 0
         println("uriGraphIsEmpty " + uriGraphIsEmpty)
@@ -69,7 +69,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * with transaction
    */
   def retrieveURI(uri: Rdf#URI, dataset: DATASET = dataset): Try[Rdf#Graph] = {
-    dataset.rw({
+    rdfStore.rw( dataset, {
       retrieveURINoTransaction(uri: Rdf#URI, dataset: DATASET)
     }).flatMap { identity }
   }
@@ -168,7 +168,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
                 val graph = readStoreURINoTransaction(uri, uri, dataset)
                 println(s"updateLocalVersion: <$uri> was outdated by ETag; downloaded.")
                 // PENDING: maybe do this in a Future
-                dataset2.rw { addETagToDatasetNoTransaction(uri, etag, dataset2) }
+                rdfStore.rw( dataset2, { addETagToDatasetNoTransaction(uri, etag, dataset2) })
                 Some(graph)
               } else None
             case None =>
@@ -208,7 +208,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   private def readStoreURIinOwnGraph(uri: Rdf#URI): Rdf#Graph = {
     val graphFromURI = readStoreURI(uri, uri, dataset)
     println("RDFCacheAlgo.storeURI " + uri + " size: " + graphFromURI.size)
-    val r = dataset.rw({
+    val r = rdfStore.rw( dataset, {
       val it = find(graphFromURI, ANY, owl.imports, ANY)
       for (importedOntology <- it) {
         try {
@@ -237,7 +237,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * cf https://github.com/w3c/banana-rdf/issues/105
    */
   def readStoreURI(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
-    val r = dataset.rw({
+    val r = rdfStore.rw( dataset, {
       readStoreURINoTransaction(uri, graphUri, dataset)
     })
     r match {

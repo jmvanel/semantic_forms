@@ -56,7 +56,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
              lang: String,
              search: String*
              )(implicit queryMaker: SPARQLQueryMaker[Rdf] ): Future[NodeSeq] = {
-    val elem0 = dataset.rw({
+    val elem0 = rdfStore.rw( dataset, {
       println(s"search 1: starting TRANSACTION for dataset $dataset")
     	val uris = search_onlyNT(search :_* )
     	val graph: Rdf#Graph = allNamedGraph
@@ -84,7 +84,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
   = {
     val uris = search_only2(search)
     val elem0 =
-      dataset.rw({
+      rdfStore.rw( dataset, {
     	  val graph: Rdf#Graph = allNamedGraph
         <div class={css.tableCSSClasses.formRootCSSClass}> {
     	    css.localCSS ++
@@ -212,7 +212,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
   = {
     println(s"search 2: starting TRANSACTION for dataset $dataset")
     val transaction =
-      dataset.r({
+      rdfStore.r( dataset, {
     	  search_onlyNT(search :_* )
       })
     val tryIteratorRdfNode = transaction // .flatMap { identity }

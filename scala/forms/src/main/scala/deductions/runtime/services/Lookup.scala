@@ -53,7 +53,7 @@ trait Lookup[Rdf <: RDF, DATASET]
 
     println(s"lookup(search=$search, clas=$clas => $res")
     println(s"lookup: starting TRANSACTION for dataset $dataset")
-    val transaction = dataset.r({
+    val transaction = rdfStore.r( dataset, {
       val urilangs = res.map {
         uris =>
           val uri = uris.head

@@ -61,7 +61,7 @@ trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DAT
   /** used in Play! app , but blocking ! transactional */
   def focusOnURI(uri: String, mime: String="text/turtle"): String = {
     try {
-      val transaction = dataset.r({
+      val transaction = rdfStore.r( dataset, {
         val triples = search_only(uri)
         triples
       })

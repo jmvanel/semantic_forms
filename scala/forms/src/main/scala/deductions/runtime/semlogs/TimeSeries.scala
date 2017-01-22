@@ -35,7 +35,7 @@ with SPARQLHelpers[Rdf, DATASET] {
       removedTriples: Seq[Rdf#Triple], ipAdress: String, isCreation: Boolean)(implicit userURI: String) = {
     // TODO future
     if (!addedTriples.isEmpty)
-      dataset2.rw({
+      rdfStore.rw( dataset2, {
         val (graphUri, metadata ) = makeGraphURIAndMetadata(addedTriples, removedTriples)
         rdfStore.appendToGraph( dataset2, metadataGraph, metadata)
        

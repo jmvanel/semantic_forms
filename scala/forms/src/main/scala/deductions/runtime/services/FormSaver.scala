@@ -120,7 +120,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
     /** transactional */
     def doSave(graphURI: String)
     ( implicit userURI: String = graphURI ) {
-      val transaction = dataset.rw({
+      val transaction = rdfStore.rw( dataset, {
         time("removeTriples",
           rdfStore.removeTriples( dataset,
             URI(graphURI),
@@ -135,7 +135,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
         callSaveListeners(triplesToAdd, triplesToRemove)
         
         Future {
-          dataset.rw({
+          rdfStore.rw( dataset, {
             addTypes(triplesToAdd.toSeq,
               Some(URI(graphURI)))
           })

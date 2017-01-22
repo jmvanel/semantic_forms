@@ -37,7 +37,7 @@ trait RDFI18NLoaderTrait[Rdf <: RDF, DATASET]
 
   /** TRANSACTIONAL */
   def resetRDFI18NTranslations() {
-    val r = dataset.rw({
+    val r = rdfStore.rw( dataset, {
       rdfStore.removeGraph( dataset, i18NGraph)
     })
   }

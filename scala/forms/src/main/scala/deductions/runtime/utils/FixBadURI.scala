@@ -63,9 +63,9 @@ trait FixBadURI[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
 
   def fix() = {
     val names =
-      dataset.r {
+      rdfStore.r( dataset, {
         listGraphNames
-      }.get.toIterable
+      }).get.toIterable
     System.err.println("names size " + names.size)
 
     for (uri <- names) {
@@ -87,7 +87,7 @@ trait FixBadURI[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
   }
 
   def fixGraph(graphURI: Rdf#URI, newGraphURI: Rdf#URI) {
-    dataset.rw {
+      rdfStore.rw( dataset, {
       val gr = rdfStore.getGraph( dataset, graphURI).get
       val trs = gr.triples
       for (tr <- trs) {
@@ -108,7 +108,7 @@ trait FixBadURI[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
           System.err.println("Could not remove Triples from " + s"<$newGraphURI>")
       }
       rdfStore.appendToGraph( dataset, newGraphURI, makeGraph(triples))
-    }
+    })
 
   }
   def fixTriple(tr: Rdf#Triple): Rdf#Triple = {

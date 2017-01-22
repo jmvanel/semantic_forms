@@ -38,7 +38,7 @@ trait RDFStoreHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DA
    * cf https://github.com/w3c/banana-rdf/issues/105
    */
   def storeURI(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
-    val r = dataset.rw({
+    val r = rdfStore.rw( dataset, {
       storeURINoTransaction(uri, graphUri, dataset)
     })
     r match {

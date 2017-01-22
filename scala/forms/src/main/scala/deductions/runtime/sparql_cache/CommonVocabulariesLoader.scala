@@ -100,7 +100,7 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
    *  basicVocabs are not supposed to change often ..
    */
   def resetCommonVocabularies() {
-    val r = dataset.rw({
+    val r = rdfStore.rw( dataset, {
       largerVocabs map {
         voc =>
           try {

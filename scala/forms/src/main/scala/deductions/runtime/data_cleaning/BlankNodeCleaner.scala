@@ -150,7 +150,7 @@ extends BlankNodeCleanerBase[Rdf, DATASET] {
     
     for (name <- names) {
       val graphURI = URI(name)
-      dataset.rw({
+      rdfStore.rw( dataset, {
         val graph = rdfStore.getGraph( dataset, graphURI).get
         println(s"graph <$graphURI> size ${graph.size}")
 

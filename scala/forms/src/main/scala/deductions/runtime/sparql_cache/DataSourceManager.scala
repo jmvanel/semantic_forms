@@ -37,7 +37,7 @@ trait DataSourceManager[Rdf <: RDF, DATASET]
   def replaceSameLanguageTriples(url: URL, graphURIString: String)
     (implicit graph: Rdf#Graph)
     : Int = {
-    val r1 = dataset.rw({
+    val r1 = rdfStore.rw( dataset, {
       val graphURI = URI(graphURIString)
       for (givenGraph <- rdfStore.getGraph( dataset, graphURI)) yield {
         val ops1: RDFOps[Rdf]= ops

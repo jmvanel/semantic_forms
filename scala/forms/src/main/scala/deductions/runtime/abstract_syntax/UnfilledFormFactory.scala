@@ -24,29 +24,30 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
    * create Form from a class URI,
    *  looking up for Form Configuration within RDF graph
    */
-  def createFormFromClass(classs: Rdf#URI,
+  def createFormFromClass(classe: Rdf#URI,
     formSpecURI0: String = "" , request: HTTPrequest= HTTPrequest() )
   	  (implicit graph: Rdf#Graph) : FormSyntax = {
 
     // if classs argument is not an owl:Class, check if it is a form:specification, then use it as formSpecURI
-    val checkIsOWLClass = ops.find( graph, classs, rdf.typ, owl.Class)
-    val checkIsRDFSClass = ops.find( graph, classs, rdf.typ, rdfs.Class)
-    val checkIsFormSpec = ops.find( graph, classs, rdf.typ, form("specification") )
-    val formSpecURI = if( checkIsOWLClass.isEmpty && checkIsRDFSClass.isEmpty
+    val checkIsOWLClass = ops.find( graph, classe, rdf.typ, owl.Class)
+    val checkIsRDFSClass = ops.find( graph, classe, rdf.typ, rdfs.Class)
+    val checkIsFormSpec = ops.find( graph, classe, rdf.typ, form("specification") )
+    val ( formSpecURI, classs ) = if( checkIsOWLClass.isEmpty && checkIsRDFSClass.isEmpty
         && ! checkIsFormSpec.isEmpty )
-      fromUri(classs) else formSpecURI0
+      (fromUri(classe), nullURI ) else (formSpecURI0, classe)
 
     val (propsListInFormConfig, formConfig) =
       if (formSpecURI != "") {
         (propertiesListFromFormConfiguration(URI(formSpecURI)),
           URI(formSpecURI))
       } else {
-        lookPropertiesListInConfiguration(classs)
+        lookPropertiesListInConfiguration(classe)
       }
 
-    println(s">>> UnfilledFormFactory.createFormFromClass: formSpecURI <$formSpecURI> classs <$classs>")
+    println(s""">>> UnfilledFormFactory.createFormFromClass: formSpecURI <$formSpecURI> classs <$classs>
+    		props List In Form Config size ${propsListInFormConfig.size}""")
     val classFromSpecsOrGiven =
-      if (formSpecURI != "" && classs == URI("") ) {
+      if (formSpecURI != "" && classs == nullURI ) {
         val classFromSpecs = lookClassInFormSpec( URI(formSpecURI), graph)
         uriNodeToURI(classFromSpecs)
       } else classs
