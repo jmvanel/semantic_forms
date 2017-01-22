@@ -53,12 +53,6 @@ with FormSyntaxJson[Rdf] {
       val ops1 = ops
       val config1 = config
       val htmlFormatter = this
-//      new Form2HTMLBanana[Rdf]
-//      {
-//        val ops = ops1
-//        val config = config1
-//        val nullURI = URI("")
-//      }
 
       val rawForm = htmlFormatter . generateHTML(
           form, hrefPrefix = "",
@@ -71,6 +65,7 @@ with FormSyntaxJson[Rdf] {
     })
   }
 
+  /** raw Data for instance creation */
   def createData(classUri: String, lang: String = "en",
                  formSpecURI: String = "", graphURI: String = "",
                  request: HTTPrequest = HTTPrequest()) : FormSyntax = {

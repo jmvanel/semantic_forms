@@ -137,15 +137,17 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
    *
    * TODO extract as WrappedHTMLForm
    * TRANSACTIONAL */
-  def htmlForm(uri0: String, blankNode: String = "",
+  def htmlForm(uri0: String,
+		           blankNode: String = "",
                editable: Boolean = false,
-               lang: String = "en", formuri: String="",
+               lang: String = "en",
+               formuri: String="",
                graphURI: String = "",
                database: String = "TDB",
                request:HTTPrequest = HTTPrequest() )
   : NodeSeq = {
     Logger.getRootLogger().info(
-        s"""ApplicationFacadeImpl.htmlForm URI $uri0 blankNode "$blankNode"
+        s"""ApplicationFacadeImpl.htmlForm URI <$uri0> blankNode "$blankNode"
               editable=$editable lang=$lang graphURI <$graphURI>""")
     val uri = uri0.trim()
     if (uri != null && uri != "")
