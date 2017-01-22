@@ -53,7 +53,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
   private def findPassword(userid: String): Option[(String)] = {
     val userURI = URI(userid)
 
-    val pwds = dataset3.r({
+    val pwds = rdfStore.r( dataset3, {
       println1( s"""findPassword: find( makeIGraph(
         $passwordsGraph
         ), $userURI, passwordPred, ANY)""" )
@@ -108,7 +108,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
    */
   def signin(agentURI: String, password: String): Try[String] = {
     println1("Authentication.signin: userId " + agentURI)
-    val res = dataset3.rw({
+    val res = rdfStore.rw( dataset3, {
       val mGraph = passwordsGraph
       mGraph += makeTriple(URI(agentURI), passwordPred,
         makeLiteral(hashPassword(password), xsd.string))

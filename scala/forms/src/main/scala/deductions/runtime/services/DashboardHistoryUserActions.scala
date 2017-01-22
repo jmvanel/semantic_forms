@@ -64,7 +64,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
           dateAsLong(row1) >
           dateAsLong(row2)
       }
-      dataset.rw({ // for calling instanceLabel()
+      rdfStore.rw( dataset, { // for calling instanceLabel()
       for (row <- sorted) yield {
         println( "row " + row(1).toString() )
             if (row(1).toString().length() > 3 ) {

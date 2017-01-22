@@ -48,7 +48,7 @@ with FormSyntaxJson[Rdf] {
     formSpecURI: String = "", graphURI: String= "", request: HTTPrequest= HTTPrequest() )
       : Try[NodeSeq] = {
     import scala.concurrent.ExecutionContext.Implicits.global
-    dataset.rw({
+    rdfStore.rw( dataset, {
       val form = createData(classUri, lang, formSpecURI, graphURI, request)
       val ops1 = ops
       val config1 = config

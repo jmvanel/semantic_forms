@@ -60,7 +60,7 @@ trait LDP[Rdf <: RDF, DATASET]
     println(s"LDP GET: (uri <$uri>, rawURI <$rawURI>, request $request)")
     val queryString = makeQueryString(uri, rawURI, request)
     println("LDP GET: queryString\n" + queryString)
-    val r = dataset.r {
+    val r = rdfStore.r( dataset, {
       for {
         graph <- sparqlConstructQuery(queryString)
         s <- {
@@ -68,7 +68,7 @@ trait LDP[Rdf <: RDF, DATASET]
           writer.asString(graph, uri)
         }
       } yield s
-    }
+    })
     r.get.get
   }
 
@@ -128,7 +128,7 @@ trait LDP[Rdf <: RDF, DATASET]
     println(s"putTriples: content: ${content.get}")
     println(s"putTriples: contentType: ${contentType}")
     println(s"putTriples: slug: ${slug}")
-    val r = dataset.rw {
+    val r = rdfStore.rw( dataset, {
       val reader =
           if (contentType.get.contains("text/turtle"))
             turtleReader
@@ -146,7 +146,7 @@ trait LDP[Rdf <: RDF, DATASET]
           res
         }
       } yield res2
-    }
+    })
     println("putTriples: transaction result " + r)
     //    r.flatMap{ res:Failure[ Try[Unit]](err) => Success(putURI)}
     //    r.flatMap{ case res:Failure[Try[Unit]](err) => Success(putURI)}

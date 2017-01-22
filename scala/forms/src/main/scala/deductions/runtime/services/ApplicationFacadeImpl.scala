@@ -330,7 +330,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     uriOption match {
       case Some(url1) =>
       val uri = URLDecoder.decode(url1, "utf-8")
-      val res = dataset.rw({
+      val res = rdfStore.rw( dataset, {
         replaceInstanceLabel( URI(uri), allNamedGraph, // TODO reuse allNamedGraph
             lang )
     	})

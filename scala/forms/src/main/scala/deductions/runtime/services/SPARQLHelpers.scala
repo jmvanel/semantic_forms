@@ -95,7 +95,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   /** wrap In RW Transaction */
   def wrapInTransaction[T](sourceCode: => T) = {
-    val transaction = dataset.rw({
+    val transaction = rdfStore.rw( dataset, {
       sourceCode
     })
     transaction
@@ -103,7 +103,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   /** wrap In R Transaction */
   def wrapInReadTransaction[T](sourceCode: => T) = {
-    val transaction = dataset.r({
+    val transaction = rdfStore.r( dataset, {
       sourceCode
     })
     transaction
@@ -116,7 +116,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   /** transactional, output Turtle String
    *  @param format = "turtle" or "rdfxml" or "jsonld" */
   def sparqlConstructQueryTR(queryString: String, format: String="turtle"): String = {
-    val transaction = dataset.r({
+    val transaction = rdfStore.r( dataset, {
       graph2String(sparqlConstructQuery(queryString), "", format)
     })
     transaction.get

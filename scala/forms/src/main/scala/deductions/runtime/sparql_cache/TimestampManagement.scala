@@ -52,7 +52,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
    *  with transaction
    */
   def addTimestampToDataset(uri: Rdf#URI, dataset: DATASET) = {
-    dataset.rw({
+    rdfStore.rw( dataset, {
       addTimestampToDatasetNoTransaction(uri, dataset)
     })
   }

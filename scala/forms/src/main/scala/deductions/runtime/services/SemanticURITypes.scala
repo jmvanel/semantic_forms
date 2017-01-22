@@ -47,7 +47,7 @@ trait SemanticURITypesTrait[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[R
   def getSemanticURItypesFromStoreOrInternet(uri: String)
   (implicit graph: Rdf#Graph)
   : Future[Iterator[(Rdf#Node, SemanticURIGuesser.SemanticURIType)]] = {
-    val res = dataset.r({
+    val res = rdfStore.r( dataset, {
       val triples: Iterator[Rdf#Triple] = find(graph,
         makeUri(uri), ANY, ANY)
       val semanticURItypes =
@@ -73,7 +73,7 @@ trait SemanticURITypesTrait[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[R
   def getSemanticURItypesFromStore(uri: String)
   (implicit graph: Rdf#Graph)
   : Seq[(Rdf#Node, SemanticURIGuesser.SemanticURIType)] = {
-    val res = dataset.r({
+    val res = rdfStore.r( dataset, {
       val triples: Iterator[Rdf#Triple] = find(graph,
         makeUri(uri), ANY, ANY)
       val semanticURItypes =
