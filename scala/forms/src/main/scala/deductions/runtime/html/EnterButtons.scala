@@ -103,17 +103,18 @@ Thesis
     </div>
 
   def suggestedClassesForCreation: NodeSeq = {
-    <option label="foaf:Person" selected="selected"> { prefixesMap2("foaf")("Person") } </option>
-    <option label="foaf:Project">                    { prefixesMap2("foaf")("Project") } </option>
-    <option label="foaf:Group">                      { prefixesMap2("foaf")("Group") } </option>
+    <option label="foaf:Person short" selected="selected"> { forms("personForm") } </option>
+    <option label="foaf:Person"> { foaf.Person } </option>
+    <option label="foaf:Project">                    { foaf.Project } </option>
+    <option label="foaf:Group">                      { foaf.Group } </option>
     <option label="doap:Project"> http://usefulinc.com/ns/doap#Project </option>
-    <option label="foaf:Organization">               { prefixesMap2("foaf")("Organization") } </option>
+    <option label="foaf:Organization">               { foaf.Organization } </option>
     <option label="cco:Skill">                       { prefixesMap2("cco")("Skill") } </option>
-    <option label="sioc:Post"> http://rdfs.org/sioc/ns#Post </option>
+    <option label="sioc:Post">                       { sioc("Post") } </option>
     <option label=" cal:Vevent "> http://www.w3.org/2002/12/cal/ical#Vevent </option>
-    <option label="owl:Class"> http://www.w3.org/2002/07/owl#Class </option>
-    <option label="owl:DatatypeProperty"> http://www.w3.org/2002/07/owl#DatatypeProperty </option>
-    <option label="owl:ObjectProperty"> http://www.w3.org/2002/07/owl#ObjectProperty </option>
+    <option label="owl:Class">                       { prefixesMap2("owl")("Class") } </option>
+    <option label="owl:DatatypeProperty">            { prefixesMap2("owl")("DatatypeProperty") } </option>
+    <option label="owl:ObjectProperty">              { prefixesMap2("owl")("ObjectProperty") } </option>
     <option label="bioc:Planting">                   { prefixesMap2("bioc")("Planting") } </option>
 
   }
