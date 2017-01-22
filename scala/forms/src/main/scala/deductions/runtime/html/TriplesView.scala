@@ -101,12 +101,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
       val form = createAbstractForm(
           uri, editable, lang, blankNode,
         URI(formGroup), formuri )
-//      new Form2HTMLBanana[Rdf]
-//      {
-//        val ops = ops1
-//        val config = config1
-//        val nullURI = URI("")
-//      } .
+
         generateHTMLJustFields(form,
           hrefPrefix, editable, graphURIActual)
     })
@@ -223,8 +218,10 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
 
     implicit val graph: Rdf#Graph = graphe
     try {
-    	println(s"TableViewModule.graf2form(graph: graph size: ${graph.size}, graphURI <$graphURI>")      
-      //    	println(s"TableViewModule.graf2form(graph: graph : ${graph}, graphURI <$graphURI>")      
+      // DANGEROUS with large database !
+      //    	println(s"TableViewModule.graf2form(graph: graph first triple: ${getTriples(graph).headOption}, graphURI <$graphURI>")
+      //    	println(s"TableViewModule.graf2form(graph: graph first triple: ${ops.graphSize(graph)}, graphURI <$graphURI>")
+      println(s"TableViewModule.graf2form(graph: graph : ${graph}, graphURI <$graphURI>")
     } catch {
       case t: Throwable => "graf2form : getting graph.size" + t.getLocalizedMessage()
     }
