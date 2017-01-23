@@ -23,16 +23,15 @@ import deductions.runtime.utils.HTTPrequest
  * different modes: display or edit;
  *  takes in account datatype
  */
-private [html] trait Form2HTML[NODE, URI <: NODE]
+private[html] trait Form2HTML[NODE, URI <: NODE]
     extends Form2HTMLDisplay[NODE, URI]
     with Form2HTMLEdit[NODE, URI]
     with FormModule[NODE, URI]
     with Timer
-    with JavaScript
-    {
+    with JavaScript {
   self: HTML5Types =>
 
-import config._
+  import config._
 
   /**
    * render the given Form Syntax as HTML;
@@ -45,26 +44,25 @@ import config._
                    editable: Boolean = false,
                    actionURI: String = "/save", graphURI: String = "",
                    actionURI2: String = "/save", lang: String = "en",
-                   request: HTTPrequest = HTTPrequest()
-		  ): NodeSeq = {
+                   request: HTTPrequest = HTTPrequest()): NodeSeq = {
 
     val htmlFormFields = time("generateHTMLJustFields",
       generateHTMLJustFields(form, hrefPrefix, editable, graphURI, lang, request))
 
     def wrapFieldsWithFormHeader(htmlFormFields: NodeSeq): NodeSeq =
-      <div class="container">  
-      	<div class="row">
-					<form action={ actionURI } method="POST">
-        		<p class="text-right">
-          		<input value={ mess("SAVE") } type="submit" class="btn btn-primary btn-lg"/>
-        		</p>
+      <div class="container">
+        <div class="row">
+          <form action={ actionURI } method="POST">
+            <p class="text-right">
+              <input value={ mess("SAVE") } type="submit" class="btn btn-primary btn-lg"/>
+            </p>
             { htmlFormFields }
-        		<p class="text-right">
-          		<input value={ mess("SAVE") } type="submit" formaction={ actionURI2 } class="btn btn-primary btn-lg pull-right"/>
-        		</p>
-      		</form>
-				</div>
-			</div>
+            <p class="text-right">
+              <input value={ mess("SAVE") } type="submit" formaction={ actionURI2 } class="btn btn-primary btn-lg pull-right"/>
+            </p>
+          </form>
+        </div>
+      </div>
     def mess(m: String): String = message(m, lang)
 
     if (editable)
@@ -81,8 +79,7 @@ import config._
                              hrefPrefix: String = "",
                              editable: Boolean = false,
                              graphURI: String = "", lang: String = "en",
-                             request: HTTPrequest = HTTPrequest()
-		  ): NodeSeq = {
+                             request: HTTPrequest = HTTPrequest()): NodeSeq = {
 
     implicit val formImpl: formMod#FormSyntax = form
 
@@ -100,17 +97,17 @@ import config._
         ) yield {
           <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
             makeFieldSubject(field) ++
-            makeFieldLabel(preceding, field) ++
-            makeFieldDataOrInput(field, hrefPrefix, editable, lang, request)
+              makeFieldLabel(preceding, field) ++
+              makeFieldDataOrInput(field, hrefPrefix, editable, lang, request)
           }</div>
         }
         s
       } else Text("\n")
     }
 
-   /**
+    /*
      * makeFieldsGroups Builds a groups of HTML fields to be used with the jQuery UI tabs generator
-     * 
+     *
      * @return NodeSeq Fragment HTML contenant un groupe de champs
      */
     def makeFieldsGroups(): NodeSeq = {
@@ -120,7 +117,7 @@ import config._
 
       // http://jqueryui.com/accordion/ or http://jqueryui.com/tabs/
       val tabsNames = <ul>{
-        for( pgs <- map) yield {
+        for (pgs <- map) yield {
           val label = pgs.title
           <li><a href={ "#" + makeHref(label) }>{ label }</a></li>
         }
@@ -130,33 +127,35 @@ import config._
         val label = pgs.title
         println(s"Fields Group $label")
         Seq(
-          <div class="sf-fields-group"  id={  makeHref(label) } >,
-           <div class="sf-fields-group-title">{ label }</div>,
+          <div class="sf-fields-group" id={ makeHref(label) }>
+            ,
+            <div class="sf-fields-group-title">{ label }</div>
+            ,
             { makeFieldsLabelAndData(pgs.fields) }
           </div>)
       }
       val tabs: Seq[Elem] = r.flatten.toSeq
-      tabs . +: (tabsNames)
+      tabs.+:(tabsNames)
     }
 
     def makeFieldSubject(field: FormEntry): NodeSeq = {
       if (field.subject != nullURI && field.subject != form.subject) {
         val subjectField =
           // NOTE: over-use of class ResourceEntry to display the subject instead of normally the object triple:
-          ResourceEntry(value=field.subject, valueLabel=field.subjectLabel)
+          ResourceEntry(value = field.subject, valueLabel = field.subjectLabel)
         createHTMLField(subjectField, editable, hrefPrefix, lang)
       } else NodeSeq.Empty
     }
 
     val htmlResult: NodeSeq =
       hidden ++
-      <div class={ css.cssClasses.formRootCSSClass }>
-        {
-          css.localCSS ++
-            Text("\n") ++
-            (if (inlineJavascriptInForm)
-              localJS
-            else NodeSeq.Empty) ++
+        <div class={ css.cssClasses.formRootCSSClass }>
+          {
+            css.localCSS ++
+              Text("\n") ++
+              (if (inlineJavascriptInForm)
+                localJS
+              else NodeSeq.Empty) ++
               Text("\n") ++
               <input type="hidden" name="uri" value={ urlEncode(form.subject) }/> ++
               <div>
@@ -167,49 +166,48 @@ import config._
                     else NodeSeq.Empty)
                 }
               </div> ++
-            {
-              if (groupFields) {
-                makeFieldsGroups()
-              } else
-                makeFieldsLabelAndData(form.fields)
-            }
-        }
-      </div>
+              {
+                if (groupFields) {
+                  makeFieldsGroups()
+                } else
+                  makeFieldsLabelAndData(form.fields)
+              }
+          }
+        </div>
     return htmlResult
   }
 
   /** dispatch to various Entry's: LiteralEntry, ResourceEntry; ..., editable or not */
   private def createHTMLField(field: formMod#Entry, editable: Boolean,
-    hrefPrefix: String = "", lang: String = "en",
-    request: HTTPrequest = HTTPrequest()
-		  )(implicit form: FormModule[NODE, URI]#FormSyntax): xml.NodeSeq = {
-    
+                              hrefPrefix: String = "", lang: String = "en",
+                              request: HTTPrequest = HTTPrequest())(implicit form: FormModule[NODE, URI]#FormSyntax): xml.NodeSeq = {
+
     // hack instead of true form separator in the form spec in RDF:
     if (field.label.contains("----"))
       return <hr style="background:#F87431; border:0; height:4px"/> // Text("----")
 
     val xmlField = field match {
       case l: formMod#LiteralEntry =>
-          if (editable)
-            createHTMLiteralEditableField(l)
-          else
-            createHTMLiteralReadonlyField(l)
-            
+        if (editable)
+          createHTMLiteralEditableField(l)
+        else
+          createHTMLiteralReadonlyField(l)
+
       case r: formMod#ResourceEntry =>
         /* link to a known resource of the right type,
            * or (TODO) create a sub-form for a blank node of an ancillary type (like a street address),
            * or just create a new resource with its type, given by range, or derived
            * (like in N3Form in EulerGUI ) */
-          if (editable)
-            createHTMLResourceEditableField(r, lang)
-          else
-            createHTMLResourceReadonlyField(r, hrefPrefix, request)
+        if (editable)
+          createHTMLResourceEditableField(r, lang)
+        else
+          createHTMLResourceReadonlyField(r, hrefPrefix, request)
 
       case r: formMod#BlankNodeEntry =>
-          if (editable)
-            createHTMLBlankNodeEditableField(r)
-          else
-            createHTMLBlankNodeReadonlyField(r, hrefPrefix)
+        if (editable)
+          createHTMLBlankNodeEditableField(r)
+        else
+          createHTMLBlankNodeReadonlyField(r, hrefPrefix)
 
       case r: formMod#RDFListEntry => <p>RDF List: {
         r.values.fields.map {
@@ -226,9 +224,8 @@ import config._
 
   /** make Field Data (display) Or Input (edit) */
   private def makeFieldDataOrInput(field: formMod#Entry, hrefPrefix: String,
-    editable: Boolean, lang: String = "en",
-    request: HTTPrequest = HTTPrequest()
-    )(implicit form: FormModule[NODE, URI]#FormSyntax) = {
+                                   editable: Boolean, lang: String = "en",
+                                   request: HTTPrequest = HTTPrequest())(implicit form: FormModule[NODE, URI]#FormSyntax) = {
 
     def doIt = createHTMLField(field, editable, hrefPrefix, lang, request)
 
@@ -236,11 +233,11 @@ import config._
       doIt
     else if (editable)
       // that's for corporate_risk: TODO : simplify <<<<<<<<<<<<<<
-       <div class={ css.cssClasses.formInputCSSClass }>
-         { doIt }
-       </div>
+      <div class={ css.cssClasses.formInputCSSClass }>
+        { doIt }
+      </div>
     else
-       doIt
+      doIt
   }
 
 }
