@@ -5,7 +5,7 @@
 see
 https://jqueryui.com/autocomplete/
 https://github.com/RubenVerborgh/dbpedia-lookup-page
-alternate implementation, abandoned: http://blog.teamtreehouse.com/creating-autocomplete-dropdowns-datalist-element 
+alternate implementation, abandoned: http://blog.teamtreehouse.com/creating-autocomplete-dropdowns-datalist-element
 TODO: translate in Scala:
 https://github.com/scala-js/scala-js-jquery
 https://www.google.fr/search?q=ajax+example+scala.js
@@ -16,11 +16,39 @@ var urlReqPrefix = "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?Query
       resultsCount + "&QueryString=" ;
 // var urlReqPrefix = "/lookup?q=";
 
-/** onkeyup callback on <input> tag 
+/** onkeyup callback on <input> tag
 function onkeyupComplete( element ) {
   console.log( "onkeyupComplete " + this );
 };
 */
+
+$(document).ready(function() {
+	localStorage.setItem('lookup', 'dbpedia');
+})
+
+function XHRDbpedia () {
+    return new Promise (function(resolve, reject) {
+        $.when($.ajax({
+            url: "http://lookup.dbpedia.org/api/search/PrefixSearch",
+            data: { MaxHits: resultsCount, QueryString: request.term },
+            dataType: "json",
+            timeout: 5000
+        }))
+         .then(function(response) { resolve(response) })
+         .catch(function(error) { reject(error) })
+    })
+}
+
+function f1 (response) {
+    callback(response.results.map(function (m) {
+        console.log( "response " + m );
+        topics[m.label] = m.uri;
+        return { "label": m.label + " - " +
+                  cutStringAfterCharacter(m.description, '.'), "value": m.uri }
+      }
+}
+
+function f2
 
 function addDBPediaLookup( inputElementURI ) {
       console.log( "addDBPediaLookup " + inputElementURI );
@@ -28,7 +56,7 @@ function addDBPediaLookup( inputElementURI ) {
       var inputElementId = inputElementURI.substring(1);
       var inputElement = document.getElementById(inputElementId);
       inputElement.hasLookup = true;
-      var topics = {}, // NOTE topics is populated but not used 
+      var topics = {}, // NOTE topics is populated but not used
           $topics = $(inputElementURI).autocomplete({
         autoFocus: true,
        select: function( event, ui ) {
@@ -48,15 +76,32 @@ function addDBPediaLookup( inputElementURI ) {
             url: "http://lookup.dbpedia.org/api/search/PrefixSearch",
             data: { MaxHits: resultsCount, QueryString: request.term },
             dataType: "json",
-            success: function (response) {
+            timeout: 5000
+          }).done(function (response) {
               callback(response.results.map(function (m) {
-                console.log( "response " + m );
-                topics[m.label] = m.uri;
-                return { "label": m.label + " - " +
-                          cutStringAfterCharacter(m.description, '.'), "value": m.uri }
-              }));
-            }
-          });
+                  console.log( "response " + m );
+                  topics[m.label] = m.uri;
+                  return { "label": m.label + " - " +
+                            cutStringAfterCharacter(m.description, '.'), "value": m.uri }
+                }));
+              }).fail(function (error) {
+                  $.ajax({
+                    url: "/lookup",
+                    data: { MaxHits: resultsCount, QueryString: request.term },
+                    dataType: "json",
+                    timeout: 5000
+                  }).done(function (response) {
+                      callback(response.results.map(function (m) {
+                          console.log( "response " + m );
+                          topics[m.label] = m.uri;
+                          return { "label": m.label + " - " +
+                                    cutStringAfterCharacter(m.description, '.'), "value": m.uri }
+                        }));
+                      }).fail(function (error) {
+
+                      });
+
+              });
         }
       }).keyup(function (event) {
         console.log( "Topic typed-0" );
@@ -71,4 +116,3 @@ function cutStringAfterCharacter( s, c) {
   var n = s.indexOf(c);
   return s.substring(0, n != -1 ? n : s.length);
 };
-
