@@ -230,24 +230,45 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
   private def addRestructuringCommentNoTr(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI],
                                           comment: String = mergeMarker,
                                           graphToWrite: Rdf#URI = URI("")) = {
-    val restrucProp = restruc("restructructionComment")
-    val dupsComment = for (
-      duplicateURI <- duplicateURIs
-    ) yield {
-      val oldLabel = instanceLabel(duplicateURI, originalGraph, "fr")
-      abbreviateTurtle(duplicateURI) + s" ($oldLabel)"
+
+    val restructurationCommentTriple = {
+
+      val dupsComment = for (
+        duplicateURI <- duplicateURIs
+      ) yield {
+        val oldLabel = instanceLabel(duplicateURI, originalGraph, "fr")
+        abbreviateTurtle(duplicateURI) + s" ($oldLabel)"
+      }
+      val restructurationComment =
+        s"""
+          |Fusion $comment le ${new Date}
+          ||vers $uriTokeep
+          |à partir de
+          |${dupsComment.mkString(",\n")}
+    """.stripMargin
+      val restrucProp = restruc("restructurationComment")
+      Triple(
+        uriTokeep,
+        restrucProp,
+        Literal(restructurationComment))
     }
-    val restructructionComment = s"""Fusion $comment le ${new Date}
-    vers $uriTokeep
-    à partir de
-    ${dupsComment.mkString(",\n")}
-    """
-    val restructructionCommentTriple = Triple(
-      uriTokeep,
-      restrucProp,
-      Literal(restructructionComment))
+
+    val newLabel = instanceLabel(uriTokeep, originalGraph, "fr")
+    val dupsTriples = {
+      for (
+        duplicateURI <- duplicateURIs;
+        oldLabel = instanceLabel(duplicateURI, originalGraph, "fr") if (oldLabel != newLabel)
+      ) yield {
+        Triple(uriTokeep, restruc("oldLabel"), Literal(oldLabel))
+      }
+    }
+
+    val newLabelTriple = Triple(uriTokeep, restruc("newLabel"), Literal(newLabel))
+
+    val tripleList = newLabelTriple :: restructurationCommentTriple :: dupsTriples.toList
+
     rdfStore.appendToGraph(dataset, graphToWrite,
-      makeGraph(List(restructructionCommentTriple)))
+      makeGraph(tripleList))
   }
 
   private def addRestructuringComment(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI],

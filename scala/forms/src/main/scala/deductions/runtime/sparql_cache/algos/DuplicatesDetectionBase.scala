@@ -198,7 +198,7 @@ with RDFHelpers[Rdf]
     propsStrings ++ propsAndRangeFromUnionOf
   }
 
-  /** add details from restructructionComment;
+  /** add details from restructurationComment;
    *  TODO pasted from previous rdfsPropertiesAndRangesFromClassList */
   def rdfsPropertiesAndRangesFromClassListDetails(classe: Rdf#Node, graph: Rdf#Graph): List[String] = {
     def rdfsPropertyAndRange(prop: Rdf#Node) = {
@@ -209,7 +209,7 @@ with RDFHelpers[Rdf]
 
     def displayProp(prop: Rdf#Node) = {
             rdfsPropertyAndRange(prop) + " - " +
-        (getStringHeadOrElse(prop, restruc("restructructionComment"), "")(graph)).replace('\n', ',')
+        (getStringHeadOrElse(prop, restruc("restructurationComment"), "")(graph)).replace('\n', ',')
     }
 
     val propsFromRdfsDomain = {
