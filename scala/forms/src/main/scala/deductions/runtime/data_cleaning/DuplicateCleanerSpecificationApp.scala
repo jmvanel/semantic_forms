@@ -39,9 +39,6 @@ object DuplicateCleanerSpecificationApp extends {
     with SPARQLHelpers[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with CSVImporter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
-  //  val config = new DefaultConfiguration {
-  //    override val useTextQuery = false
-  //  }
   import config._
   import ops._
 
@@ -51,6 +48,8 @@ object DuplicateCleanerSpecificationApp extends {
   println(s"databaseLocation $databaseLocation")
 
   duplicateCleanerSpecificationApp()
+
+  ////  functions  ////
 
   def duplicateCleanerSpecificationApp() = {
     possiblyDeleteDatabaseLocation()
@@ -83,7 +82,10 @@ object DuplicateCleanerSpecificationApp extends {
     outputGraph(auxiliaryOutput, csvSpecification + ".aux.ttl", outputDir)
   }
 
-  /** read CSV file with columns restruc:property & restruc:replacingProperty */
+  /**
+   * read CSV file with columns restruc:property & restruc:replacingProperty
+   *  @return URI Merge Specifications, a list of case classe instances
+   */
   private def readCSVFile(file: String): URIMergeSpecifications = {
     val graph = run(new FileInputStream(file),
       URI("urn:/owl/transform/"), List())
@@ -103,7 +105,7 @@ object DuplicateCleanerSpecificationApp extends {
          |   }
          | }""".stripMargin
     val variables = Seq("P", "RP", "LAB", "COMM");
-    val res = runSparqlSelectNodes(queryString, variables, graph: Rdf#Graph)
+    val res = runSparqlSelectNodes(queryString, variables, graph)
     res.map { s =>
       URIMergeSpecification(uriNodeToURI(s(0)), uriNodeToURI(s(1)),
         literalNodeToString(s(2)), literalNodeToString(s(3)))

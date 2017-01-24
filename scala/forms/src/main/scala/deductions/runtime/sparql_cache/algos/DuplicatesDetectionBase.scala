@@ -185,6 +185,7 @@ with RDFHelpers[Rdf]
     } . toList
 
     val q = queryRdfsPropertiesUnionOfFromClass.replace("<CLASS>", s"<${classe}>")
+    println( s"rdfsPropertiesAndRangesFromClassList: query $q")
     val res: List[Seq[Rdf#Node]] = runSparqlSelectNodes( q, List("PROP"), graph)
     val propsFromUnionOf = res . map {
       list => list.head
@@ -241,7 +242,7 @@ with RDFHelpers[Rdf]
 
 
      
-  val queryRdfsPropertiesUnionOfFromClass = """
+  val queryRdfsPropertiesUnionOfFromClass = s"""
       ${declarePrefix(rdfs)}
       ${declarePrefix(rdf)}
       ${declarePrefix(owl)}

@@ -58,13 +58,14 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
 
   /**
    * merges Duplicates automatically among instances of given class URI,
-   * based on criterium: instanceLabel() giving identical result;
+   * based on criteria : instanceLabel() giving identical result;
    * moreover if class URI == owl:ObjectProperty the rdfs:range's must be equal
    * includes transactions
+   * @return execution report
    */
   def removeAllDuplicates(classURI: Rdf#URI, lang: String = ""): String = {
 
-    val instanceLabels2URIsMap: Map[String, Seq[Rdf#URI]] =
+    val instanceLabels2URIsMap =
       rdfStore.rw(dataset, {
         indexInstanceLabels(classURI, lang)
       }).get
@@ -72,9 +73,11 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     var duplicatesCount = 0
     var propertiesHavingDuplicates = 0
 
+    println(s"instanceLabels2URIsMap size ${instanceLabels2URIsMap.size}")
     val instanceLabels2URIsMap2 = rdfStore.rw(dataset, {
       checkRdfsRanges(instanceLabels2URIsMap, classURI)
     }).get
+    println(s"instanceLabels2URIsMap 2 size ${instanceLabels2URIsMap2.size}")
 
 //    println( s"DDDDDDDDDDD indexInstanceLabels: Auteur 2 : ${instanceLabels2URIsMap2.getOrElse("Auteur", "")} ")
 
@@ -104,15 +107,16 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
   }
 
   /**
-   * remove Duplicates From Specifications:
-   * after calling [[removeDuplicatesFromSeq]] on given merge Specifications,
-   *  replace multiple rdfs:labels with the given new label from mergeSpecifications;
-   *  add a merge Marker to rdfs:label's
+   * remove Duplicates for 1 URI To keep, from possibly multiple merge Specifications:
+   * - calling [[removeDuplicatesFromSeq]] on given merge Specifications,
+   * - replace multiple rdfs:labels with the given new label from mergeSpecifications;
+   * - add a merge Marker to rdfs:label's
    */
   def removeDuplicatesFromSpec(uriTokeep: Rdf#URI,
                                mergeSpecifications0: URIMergeSpecifications,
                                auxiliaryOutput: Rdf#MGraph = makeEmptyMGraph()): Unit = {
-    println(s"uriTokeep <$uriTokeep>")
+
+    println(s"\nuriTokeep <$uriTokeep>")
     for (mergeSpecification <- mergeSpecifications0) {
       val assertion = mergeSpecification.replacedURI != "" &&
         mergeSpecification.replacingURI != ""
@@ -130,12 +134,12 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     val duplicateURIs: List[Rdf#URI] =
       for (mergeSpecification <- mergeSpecifications) yield mergeSpecification.replacedURI
 
-
-    // TODO extract <<<<<<<<<<<<<<<<<<<<<
-
       val named_graph = removeDuplicatesFromSeq(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI],
       auxiliaryOutput)
 
+    if( uriTokeep.toString().contains("OngletAcces/conditionAcces/procedureAcces/cursusRequis"))
+      println(s">>>> 2:OngletAcces/conditionAcces/procedureAcces/cursusRequis") // DEBUG <<<<<<<<<<<<<<<<<<<<<<<<<<
+      
     //  create and replace triples for new rdfs:label
 
     val newLabels = for (
@@ -143,7 +147,8 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       newLabel = mergeSpecification.newLabel;
       if (newLabel != "")
     ) yield mergeSpecification.newLabel
-    if (newLabels.size > 1) System.err.println(s"WARING! several new Labels for $uriTokeep: $newLabels")
+    if (newLabels.size > 1)
+      System.err.println(s"WARNING! several new Labels for $uriTokeep: $newLabels")
     val newLabel = newLabels.headOption.getOrElse("")
 
     val transaction = rdfStore.rw(dataset, {
@@ -177,12 +182,6 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     })
   }
 
-  def zz(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI],
-      auxiliaryOutput: Rdf#MGraph) = {
-          val named_graph = removeDuplicatesFromSeq(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI],
-      auxiliaryOutput)
-  }
-    
   /**
    * add a merge Marker to rdfs:label's;
    *  replaces existing triple(s) <replacingURI> rdfs.label ?LAB
@@ -199,6 +198,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       val label = if (newLabel != "") {
         newLabel
       } else {
+        println(s"storeLabelWithMergeMarker: WARNING: no new label provided for URI <replacingURI> , taking its rdfs:label")
         implicit val graph = allNamedGraph: Rdf#Graph
         getStringHeadOrElse(replacingURI, rdfs.label)
       }
@@ -259,17 +259,20 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
   }
 
   /**
-   * remove Duplicates in given duplicate URI's
+   * generic algorithm to remove Duplicates in given duplicate URI's
    *  the algorithm:
-   * - from triples <duplicateURIs> ?P ?O
-   *   create triples <uriTokeep> ?P ?O
-   * - delete triples <duplicateURIs> ?P ?O
+   *  <pre>
+   * - from triples &lt;duplicateURIs> ?P ?O
+   *   create triples &lt;uriTokeep> ?P ?O
+   *   delete triples &lt;duplicateURIs> ?P ?O
    *
-   * - from reverse triples ?S ?P1 <duplicateURIs>
-   *   create triples ?S ?P1 <uriTokeep>
-   * - delete triples ?S ?P1 <duplicateURIs>
+   * - from reverse triples ?S ?P1 &lt;duplicateURIs>
+   *   create triples ?S ?P1 &lt;uriTokeep>
+   *   delete triples ?S ?P1 &lt;duplicateURIs>
+   *  </pre>
    *
    * includes transactions
+   * @return named graph 
    */
   private def removeDuplicatesFromSeq(
     uriTokeep: Rdf#URI,
@@ -437,7 +440,9 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     })
   }
  
-  /** DOES NOT include transactions */
+  /** index Instance by Labels;
+   * @return a map of Instance Labels to sequences of URI
+   * DOES NOT include transactions */
   private def indexInstanceLabels(classURI: Rdf#URI,
                           lang: String): Map[String, Seq[Rdf#URI]] = {
     val classTriples = find(allNamedGraph, ANY, rdf.typ, classURI) . toList
@@ -519,13 +524,15 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     os.close()
   }
 
-  /** if class URI == owl:ObjectProperty the rdfs:range's must be equal */
+  /** if class URI == owl:ObjectProperty, the rdfs:range's must be equal */
   private def checkRdfsRanges(instanceLabels2URIsMap: Map[String, Seq[Rdf#URI]],
                               classURI: Rdf#URI): Map[String, Seq[Rdf#URI]] = {
     if (classURI == owl.ObjectProperty) {
       instanceLabels2URIsMap.filter {
-        pair =>
-          val (label, uris) = pair
+        case (label, uris) =>
+          if( label == "Parcours d'accès au métier" )
+        	  println(s">>>> label Parcours d'accès au métier ") // DEBUG <<<<<<<<<<<<<<<<<<<<<<<<<<
+
 //          if(label == "Auteur") println( s"DDDDDDDDDDD checkRdfsRanges: Auteur 2 : ${uris}")
           val groupedByRdfsRange = uris.groupBy { uri =>
             val ranges = find(allNamedGraph, uri, rdfs.range, ANY).

@@ -600,7 +600,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   /**
    * RDF graph to String
-   *  @param format = "turtle" or "rdfxml" or "jsonld"
+   *  @param format "turtle" or "rdfxml" or "jsonld"
    */
   def graph2String(triples: Try[Rdf#Graph], baseURI: String, format: String = "turtle"): String = {
     Logger.getRootLogger().info(s"graph2String: base URI $baseURI ${triples}")
