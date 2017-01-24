@@ -19,7 +19,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
 
   val config: Configuration
   import config._
-  
+
   val inputSize = 90
   val xsdPrefix = "http://www.w3.org/2001/XMLSchema#"
 
@@ -29,7 +29,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
     editable && field.defaults.multivalue && field.openChoice && showPlusButtons &&
     isFirstFieldForProperty(field)
   }
-  
+
   def createAddRemoveWidgets(field: formMod#Entry, editable: Boolean)
   (implicit form: FormModule[NODE, URI]#FormSyntax): Elem = {
     if (shouldAddAddRemoveWidgets(field, editable)) {
@@ -50,7 +50,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
 
   /** tell if given Entry is configured for lookup (completion) */
   def lookupActivatedFor(r: formMod#Entry) = r.widgetType == DBPediaLookup
-  
+
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   def createHTMLResourceEditableField(resourceEntry: formMod#ResourceEntry, lang: String = "en"
       )(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
@@ -69,7 +69,6 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
             data-type={ type_.toString() }
             placeholder={ placeholder }
             title={ placeholder }
-            onkeyup={if (lookupActivatedFor(resourceEntry)) "onkeyupComplete(this);" else null}
             size={inputSize.toString()}
 						dropzone="copy"
             autocomplete={if (lookupActivatedFor(resourceEntry)) "off" else null}
@@ -77,7 +76,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
           </input>
           { if (lookupActivatedFor(resourceEntry))
             <script type="text/javascript" >
-              addDBPediaLookup('#{ makeHTML_Id(resourceEntry) }'); 
+              addDBPediaLookup('#{ makeHTML_Id(resourceEntry) }');
             </script> }
 					</div>
 				else new Text("") // format: ON
@@ -88,7 +87,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
       , Text("\n")
     ). flatten
   }
-  
+
   /** Placeholder for a resource URI */
   private def resourcePlaceholder(resourceEntry: formMod#ResourceEntry, lang: String = "en") = {
     resourceOrBN_Placeholder(resourceEntry, lang )  +
@@ -154,7 +153,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
       </div>
     } else new Text("\n")
   }
-  
+
   def makeDatalistIdForEntryProperty(r: formMod#Entry) = urlEncode(r.property.toString()) + "__property"
 
 
@@ -164,7 +163,7 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   def createHTMLiteralEditableField(lit: formMod#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     import lit._
-    
+
     val placeholder = {
         val typ0 = type_.toString()
         val typ = if (
