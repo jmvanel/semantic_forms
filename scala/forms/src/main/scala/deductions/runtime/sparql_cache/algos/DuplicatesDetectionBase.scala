@@ -237,7 +237,7 @@ with RDFHelpers[Rdf]
     }
 
     //    if( classe.toString().endsWith("Concours/age/#class")) println
-    propsStrings ++ propsAndRangeFromUnionOf
+     propsStrings ++ propsAndRangeFromUnionOf
   }
 
 

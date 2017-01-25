@@ -18,6 +18,7 @@ import deductions.runtime.services.SPARQLHelpers
 import deductions.runtime.services.URIManagement
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.RDFPrefixes
+import deductions.runtime.utils.Maps
 
 /**
  * merge Duplicates among instances of given class URI;
@@ -33,7 +34,8 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     with PreferredLanguageLiteral[Rdf]
     with RDFPrefixes[Rdf]
     with SPARQLHelpers[Rdf, DATASET]
-    with URIManagement {
+    with URIManagement
+    with Maps {
 
 	val config: Configuration
   import config._
@@ -253,15 +255,23 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
         Literal(restructurationComment))
     }
 
-    val newLabel = instanceLabel(uriTokeep, originalGraph, "fr")
+    val newLabel = {
+//      for (
+//        duplicateURI <- duplicateURIs;
+//        )
+//      find( allNamedGraph, 
+//      if( )
+      instanceLabel(uriTokeep, originalGraph, "fr")
+    }
     val dupsTriples = {
       for (
         duplicateURI <- duplicateURIs;
         oldLabel = instanceLabel(duplicateURI, originalGraph, "fr") if (oldLabel != newLabel)
       ) yield {
-        Triple(uriTokeep, restruc("oldLabel"), Literal(oldLabel))
+        List( Triple(uriTokeep, restruc("mergedFrom"),duplicateURI ),
+        Triple(uriTokeep, restruc("oldLabel"), Literal(oldLabel)) )
       }
-    }
+    } . flatten
 
     val newLabelTriple = Triple(uriTokeep, restruc("newLabel"), Literal(newLabel))
 
@@ -486,7 +496,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     }
     println( s"indexInstanceLabels: ${labelsToURIsmap.size} labels in instances for class $classURI")
 
-    val r1 = labelsToURIsmap.map {
+    val mergedItemsList = labelsToURIsmap.map {
       case (groupLabel, list) =>
         list.map {
           uri =>
@@ -498,25 +508,14 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
             }
         }
     }
-    val r2 = r1 . flatten .toList // . toMap
-    val r3: Map[String, List[Rdf#Node]] = r2 . map {
+    val r2 = mergedItemsList . flatten .toList
+    val mergedItemsMap: Map[String, List[Rdf#Node]] = r2 . map {
       case Some((label, uri)) => (label, List( uri))
       case _ => ( "", List(nullURI ))
     } . toMap
-          // ????
-    
-//    val labelsToURIsmapFromOldLabel = for (
-//      classTriple <- classTriples ;
-//      uri0 = classTriple.subject if (uri0.isURI);
-//      uri = uri0.asInstanceOf[Rdf#URI];
-////      res = find( allNamedGraph, uri, restruc("oldLabel"), groupLabel )
-////      find( allNamedGraph, res.
-//      // ?????????
-//    ) yield {
-//      ""
-//    }
+
 //    println( s"DDDDDDDDDDD indexInstanceLabels: Auteur: ${res.getOrElse("Auteur", "")} ")
-    labelsToURIsmap // ++ r3
+    mergeMapsOfLists(labelsToURIsmap, mergedItemsMap)
   }
   
   def dumpAllNamedGraph(mess: String="") = 
