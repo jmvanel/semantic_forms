@@ -59,11 +59,11 @@ function addDBPediaLookup( inputElementURI ) {
               }).fail(function (error){
                   $.ajax({
                       url: "/lookup",
-                      data: { MaxHits: resultsCount, QueryString: request.term },
+                      data: { MaxHits: resultsCount, QueryString: request.term + "*" },
                       dataType: "json",
                       timeout: 5000
                   }).done(function() {
-                      console.log('FALLBACK')
+                    console.log('FALLBACK' + response.results )
                   })
               });
           }
