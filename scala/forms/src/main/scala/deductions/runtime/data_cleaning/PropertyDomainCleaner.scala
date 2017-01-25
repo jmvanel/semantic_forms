@@ -37,7 +37,7 @@ trait PropertyDomainCleaner[Rdf <: RDF, DATASET]
    * replace multiple rdfs:domain's with a single rdfs:domain being a owl:unionOf ;
    * includes transaction
    */
-  def processMultipleRdfsDomains(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI]) = {
+  def processMultipleRdfsDomains(uriTokeep: Rdf#Node, duplicateURIs: Seq[Rdf#Node]) = {
     println(s"processMultipleRdfsDomains: uriTokeep <$uriTokeep>, duplicateURIs ${duplicateURIs.mkString(", ")}")
     val transaction = rdfStore.rw(dataset, {
       if (isProperty(uriTokeep)) replaceMultipleRdfsDomains(uriTokeep)
@@ -46,7 +46,7 @@ trait PropertyDomainCleaner[Rdf <: RDF, DATASET]
   }
 
   /** replace multiple rdfs:domain's with a single rdfs:domain being a owl:unionOf */
-  def replaceMultipleRdfsDomains(property: Rdf#URI) = {
+  def replaceMultipleRdfsDomains(property: Rdf#Node) = {
     val triples = find(allNamedGraph, property, rdfs.domain, ANY).toList
     println(s"replaceMultipleRdfsDomains: triples $triples")
     if (triples.size > 1) {

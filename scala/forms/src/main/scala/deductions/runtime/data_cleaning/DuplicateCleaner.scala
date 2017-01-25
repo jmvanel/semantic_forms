@@ -163,7 +163,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
 //          if (!labelsFromReplacedURI.isEmpty) {
             val newTriples = for (removedQuad <- labelsFromReplacedURI)
               yield Triple(mergeSpecification.replacingURI, skos("altLabel"), removedQuad._1.objectt);
-            rdfStore.appendToGraph(dataset, named_graph, makeGraph(newTriples))
+            rdfStore.appendToGraph(dataset, nodeToURI(named_graph), makeGraph(newTriples))
 //          }
         }
 
@@ -171,7 +171,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
         if (mergeSpecification.comment != "") {
           val commentTriple = Triple(mergeSpecification.replacingURI,
             rdfs.comment, Literal(mergeSpecification.comment))
-          rdfStore.appendToGraph(dataset, named_graph, makeGraph(List(commentTriple)))
+          rdfStore.appendToGraph(dataset, nodeToURI(named_graph), makeGraph(List(commentTriple)))
         }
       }
       addRestructuringCommentNoTr(uriTokeep, duplicateURIs, mergeMarkerSpec)
@@ -188,10 +188,10 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
    *  
    * NEEDS Transaction
    */
-  private def storeLabelWithMergeMarker(replacingURI: Rdf#URI,
+  private def storeLabelWithMergeMarker(replacingURI: Rdf#Node,
                                         newLabel: String = "",
                                         merge_marker: String = mergeMarker,
-                                        graphToWrite: Rdf#URI = URI("")) = {
+                                        graphToWrite: Rdf#Node = URI("")) = {
     if (replacingURI.toString() != "") {
       //      println(s"DDDDDDDDDDDDDDD replacingURI <$replacingURI>")
 
@@ -211,10 +211,10 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     }
   }
 
-  private def storeLabelWithMergeMarkerTR(replacingURI: Rdf#URI,
+  private def storeLabelWithMergeMarkerTR(replacingURI: Rdf#Node,
                                           newLabel: String = "",
                                           merge_marker: String = mergeMarker,
-                                          graphToWrite: Rdf#URI = URI("")) = {
+                                          graphToWrite: Rdf#Node = URI("")) = {
     val transaction = rdfStore.rw(dataset, {
       storeLabelWithMergeMarker(replacingURI,
         newLabel,
@@ -227,7 +227,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
    * add restructuring comment (annotation property),
    *  telling with URI's have been merged; DOES NOT include transaction
    */
-  private def addRestructuringCommentNoTr(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI],
+  private def addRestructuringCommentNoTr(uriTokeep: Rdf#Node, duplicateURIs: Seq[Rdf#Node],
                                           comment: String = mergeMarker,
                                           graphToWrite: Rdf#URI = URI("")) = {
 
@@ -271,7 +271,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       makeGraph(tripleList))
   }
 
-  private def addRestructuringComment(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI],
+  private def addRestructuringComment(uriTokeep: Rdf#Node, duplicateURIs: Seq[Rdf#Node],
         comment: String=mergeMarker,
         graphToWrite: Rdf#URI=URI("")) = {    
     val transaction = rdfStore.rw(dataset, {
@@ -296,9 +296,9 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
    * @return named graph 
    */
   private def removeDuplicatesFromSeq(
-    uriTokeep: Rdf#URI,
-    duplicateURIs: Seq[Rdf#URI],
-    auxiliaryOutput: Rdf#MGraph = makeEmptyMGraph()): Rdf#URI = {
+    uriTokeep: Rdf#Node,
+    duplicateURIs: Seq[Rdf#Node],
+    auxiliaryOutput: Rdf#MGraph = makeEmptyMGraph()): Rdf#Node = {
 
     if (uriTokeep != nullURI) {
       copySubjectPropertyPairs(uriTokeep, duplicateURIs)
@@ -362,7 +362,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
    *
    * @return the URI's considered as non-duplicate, and for each a list of the duplicates
    */
-  protected def tellDuplicates(uris: Seq[Rdf#URI]): (Rdf#URI, Seq[Rdf#URI]) = {
+  protected def tellDuplicates(uris: Seq[Rdf#Node]): (Rdf#Node, Seq[Rdf#Node]) = {
     if (uris.size <= 1)
       // nothing to do by caller! no Duplicates
       return (ops.URI(""), Seq())
@@ -374,7 +374,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       }
     }
     /* @return the first URI matching one of the prefixes. */
-    def filterURIsByStartsWith(uris: Seq[Rdf#URI], prefixes: Seq[String]): Option[Rdf#URI] = {
+    def filterURIsByStartsWith(uris: Seq[Rdf#Node], prefixes: Seq[String]): Option[Rdf#Node] = {
       val candidates = for (
         prefix <- prefixes;
         matching <- uris filter { u => u.toString().startsWith(prefix) }
@@ -386,7 +386,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       httpURIs0 filter { u => !u.toString().startsWith(instanceURIPrefix) }
     }
 
-    val nonDuplicateURI: Rdf#URI =
+    val nonDuplicateURI: Rdf#Node =
       //      if (httpURIs.size > 1)
       //        throw new RuntimeException(s"several HTTP URI's: ${uris.mkString(", ")}")
       //      else
@@ -414,7 +414,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
    * includes transaction;
    * @return quads of duplicate URI's
    */
-  private def copyPropertyValuePairs(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI]) = {
+  private def copyPropertyValuePairs(uriTokeep: Rdf#Node, duplicateURIs: Seq[Rdf#Node]) = {
     rdfStore.rw(dataset, {
       val duplicateQuads = for (duplicateURI <- duplicateURIs) yield {
         /* SPARQL query to get the original graph name */
@@ -444,7 +444,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
    * copy Subject Property Pairs with uriTokeep as object;
    * includes transaction
    */
-  private def copySubjectPropertyPairs(uriTokeep: Rdf#URI, duplicateURIs: Seq[Rdf#URI]) = {
+  private def copySubjectPropertyPairs(uriTokeep: Rdf#Node, duplicateURIs: Seq[Rdf#Node]) = {
     rdfStore.rw(dataset, {
       for (duplicateURI <- duplicateURIs) {
         /* SPARQL query to get the original graph name */
@@ -465,28 +465,58 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
    * @return a map of Instance Labels to sequences of URI
    * DOES NOT include transactions */
   private def indexInstanceLabels(classURI: Rdf#URI,
-                          lang: String): Map[String, Seq[Rdf#URI]] = {
+                          lang: String): Map[String, Seq[Rdf#Node]] = {
     val classTriples = find(allNamedGraph, ANY, rdf.typ, classURI) . toList
     println( s"indexInstanceLabels: ${classTriples.size} instances for class $classURI")
 
     // NOTE: this looks laborious !!!!
     var count = 0
-    val v = for (
+    val labelURIpairs = for (
       classTriple <- classTriples;
       uri0 = classTriple.subject if (uri0.isURI);
-      uri = uri0.asInstanceOf[Rdf#URI];
+      uri = uri0 ; // .asInstanceOf[Rdf#URI];
       label = instanceLabel(uri, allNamedGraph, lang)
     ) yield {
       count = count + 1
       (label, uri)
     }
-    val res = v.toList.groupBy(_._1).map {
+    val labelsToURIsmap = labelURIpairs.toList.groupBy(_._1).map {
       case (s, list) => (s,
         list.map { case (s, node) => node })
     }
-    println( s"indexInstanceLabels: ${res.size} labels in instances for class $classURI")
+    println( s"indexInstanceLabels: ${labelsToURIsmap.size} labels in instances for class $classURI")
+
+    val r1 = labelsToURIsmap.map {
+      case (groupLabel, list) =>
+        list.map {
+          uri =>
+            val mergedItemTripleOption = find(allNamedGraph, ANY, restruc("oldLabel"), Literal(groupLabel)).toList
+            mergedItemTripleOption.headOption.map {
+              mergedItemTriple =>
+                val mergedURI = mergedItemTriple.subject
+                (groupLabel, mergedURI)
+            }
+        }
+    }
+    val r2 = r1 . flatten .toList // . toMap
+    val r3: Map[String, List[Rdf#Node]] = r2 . map {
+      case Some((label, uri)) => (label, List( uri))
+      case _ => ( "", List(nullURI ))
+    } . toMap
+          // ????
+    
+//    val labelsToURIsmapFromOldLabel = for (
+//      classTriple <- classTriples ;
+//      uri0 = classTriple.subject if (uri0.isURI);
+//      uri = uri0.asInstanceOf[Rdf#URI];
+////      res = find( allNamedGraph, uri, restruc("oldLabel"), groupLabel )
+////      find( allNamedGraph, res.
+//      // ?????????
+//    ) yield {
+//      ""
+//    }
 //    println( s"DDDDDDDDDDD indexInstanceLabels: Auteur: ${res.getOrElse("Auteur", "")} ")
-    res
+    labelsToURIsmap // ++ r3
   }
   
   def dumpAllNamedGraph(mess: String="") = 
@@ -546,8 +576,8 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
   }
 
   /** if class URI == owl:ObjectProperty, the rdfs:range's must be equal */
-  private def checkRdfsRanges(instanceLabels2URIsMap: Map[String, Seq[Rdf#URI]],
-                              classURI: Rdf#URI): Map[String, Seq[Rdf#URI]] = {
+  private def checkRdfsRanges(instanceLabels2URIsMap: Map[String, Seq[Rdf#Node]],
+                              classURI: Rdf#URI): Map[String, Seq[Rdf#Node]] = {
     if (classURI == owl.ObjectProperty) {
       instanceLabels2URIsMap.filter {
         case (label, uris) =>

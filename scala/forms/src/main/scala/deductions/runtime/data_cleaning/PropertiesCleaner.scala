@@ -31,8 +31,8 @@ extends BlankNodeCleanerBase[Rdf, DATASET] {
    *  includes transaction
    */
   def processKeepingTrackOfDuplicates(
-      uriTokeep: Rdf#URI,
-      duplicateURIs: Seq[Rdf#URI],
+      uriTokeep: Rdf#Node,
+      duplicateURIs: Seq[Rdf#Node],
       auxiliaryOutput : Rdf#MGraph = makeEmptyMGraph()
   ): Unit = {
 //	  println(s"processKeepingTrackOfDuplicates: uriTokeep $uriTokeep duplicateURIs ${duplicateURIs.mkString(", ")}")

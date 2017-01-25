@@ -143,7 +143,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    *  TODO remove all such triples in any named graph,
    *  and re-create given triple in first named graph having a such triple
    */
-  def replaceRDFTriple(triple: Rdf#Triple, graphURI: Rdf#URI, dataset: DATASET) = {
+  def replaceRDFTriple(triple: Rdf#Triple, graphURI: Rdf#Node, dataset: DATASET) = {
     val uri = triple.subject
     val property = triple.predicate
     // TESTED
@@ -167,7 +167,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     val result = sparqlUpdateQuery(queryString, dataset)
     //    println(s"replaceRDFTriple: result: $result")
 
-    rdfStore.appendToGraph(dataset, graphURI, makeGraph(Seq(triple)))
+    rdfStore.appendToGraph(dataset, nodeToURI(graphURI), makeGraph(Seq(triple)))
   }
 
   def getRDFList(subject: String): List[Rdf#Node] = {
