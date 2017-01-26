@@ -96,7 +96,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
                 BNode(objectStringFromUser.substring(2))
             else {
               if (objectStringFromUser != "")
-                println(s"objectStringFromUser $objectStringFromUser changed: spaces removed")
+                println(s"""objectStringFromUser "$objectStringFromUser" changed: spaces removed""")
                 URI( // UnfilledFormFactory.
                     makeURIFromString(objectStringFromUser) )
             }
