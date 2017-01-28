@@ -39,7 +39,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
 
 	val config: Configuration
   import config._
-  import ops._
+      import ops._
    
   var originalGraph = emptyGraph
 
@@ -79,26 +79,23 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     val instanceLabels2URIsMap2 = rdfStore.rw(dataset, {
       checkRdfsRanges(instanceLabels2URIsMap, classURI)
     }).get
-    println(s"instanceLabels2URIsMap 2 size ${instanceLabels2URIsMap2.size}")
+    println(s"instanceLabels2URIsMap 2, after checkRdfsRanges: size ${instanceLabels2URIsMap2.size}")
 
-//    println( s"DDDDDDDDDDD indexInstanceLabels: Auteur 2 : ${instanceLabels2URIsMap2.getOrElse("Auteur", "")} ")
-
-    for (labelAndURIs <- instanceLabels2URIsMap2) {
-      val label = labelAndURIs._1
-      println(s"""Looking at label "$label" """)
+    for( (label, allDuplicateURIs) <- instanceLabels2URIsMap2) {
+      println(s"""\n>>>> Looking at label "$label" """)
       try {
-        val (uriTokeep, duplicateURIs) = tellDuplicates(labelAndURIs._2)
+        val (uriTokeep, duplicateURIs) = tellURItoKeepAmongDuplicates(allDuplicateURIs)
         if (!duplicateURIs.isEmpty) {
           propertiesHavingDuplicates = propertiesHavingDuplicates + 1
           duplicatesCount = duplicatesCount + duplicateURIs.size
-          println(s"""Deleting duplicates for "${label}" uriTokeep <$uriTokeep>, delete count ${duplicateURIs.size}""")
-
-          val named_graph = removeDuplicatesFromSeq(uriTokeep, duplicateURIs)
-
-          storeLabelWithMergeMarkerTR(uriTokeep, merge_marker = mergeMarker,
+          println(s"""Deleting duplicates for "${label}" uriTokeep <$uriTokeep>, delete count ${duplicateURIs.size}
+            ${duplicateURIs.mkString("<", ">, <" ,">")}""")
+          val ( convergenceURI, duplicateURIs2 ) = managePriorMerges(uriTokeep, duplicateURIs)
+          val named_graph = removeDuplicatesFromSeq(convergenceURI, duplicateURIs2)
+          storeLabelWithMergeMarkerTR(convergenceURI, merge_marker = mergeMarker,
             graphToWrite = named_graph)
 
-          addRestructuringComment(uriTokeep, duplicateURIs)
+          addRestructuringComment( convergenceURI, duplicateURIs2 )
         }
       } catch {
         case t: Throwable =>
@@ -195,24 +192,26 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
                                         merge_marker: String = mergeMarker,
                                         graphToWrite: Rdf#Node = URI("")) = {
     if (replacingURI.toString() != "") {
-      //      println(s"DDDDDDDDDDDDDDD replacingURI <$replacingURI>")
-
       val label = if (newLabel != "") {
         newLabel
       } else {
-        println(s"storeLabelWithMergeMarker: WARNING: no new label provided for URI <replacingURI> , taking its rdfs:label")
+        println(s"storeLabelWithMergeMarker: WARNING: no new label provided for URI <$replacingURI> , taking its rdfs:label")
         implicit val graph = allNamedGraph: Rdf#Graph
         getStringHeadOrElse(replacingURI, rdfs.label)
       }
       if (label != "") {
-        val newLabelTriple = Triple(replacingURI,
-          rdfs.label, Literal(label + merge_marker))
-        //      println(s"DDDDDDDDDDDDDDD newLabelTriple $newLabelTriple")
+        val newLabelTriple = Triple(replacingURI, rdfs.label, Literal(label + merge_marker))
         replaceRDFTriple(newLabelTriple, graphToWrite, dataset)
       }
     }
   }
 
+  /**
+   * add a merge Marker to rdfs:label's;
+   *  replaces existing triple(s) <replacingURI> rdfs.label ?LAB
+   *  
+   * WITH Transaction
+   */
   private def storeLabelWithMergeMarkerTR(replacingURI: Rdf#Node,
                                           newLabel: String = "",
                                           merge_marker: String = mergeMarker,
@@ -227,7 +226,10 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
 
   /**
    * add restructuring comment (annotation property),
-   *  telling with URI's have been merged; DOES NOT include transaction
+   *  telling with URI's have been merged
+   *  and other traceabilility items: restruc:oldLabel , restruc:mergedFrom ;
+   *  called both for merging with and without specification
+   *  DOES NOT include transaction
    */
   private def addRestructuringCommentNoTr(uriTokeep: Rdf#Node, duplicateURIs: Seq[Rdf#Node],
                                           comment: String = mergeMarker,
@@ -256,12 +258,16 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     }
 
     val newLabel = {
-//      for (
-//        duplicateURI <- duplicateURIs;
-//        )
-//      find( allNamedGraph, 
-//      if( )
-      instanceLabel(uriTokeep, originalGraph, "fr")
+      val groupLabel = instanceLabel(uriTokeep, originalGraph, "fr")
+      val mergedItemTripleOption = find(allNamedGraph, ANY, restruc("oldLabel"), Literal(groupLabel)).toList
+      val label = mergedItemTripleOption.headOption.map {
+        mergedItemTriple =>
+          val mergedURI = mergedItemTriple.subject
+          val label = instanceLabel(mergedURI, originalGraph, "fr")
+          println(s""">>>> addRestructuringCommentNoTr: newLabel found for <$uriTokeep> from merged URI <$mergedURI> : "${label}" """)
+          label
+      }
+      label.getOrElse(groupLabel)
     }
     val dupsTriples = {
       for (
@@ -279,6 +285,21 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
 
     rdfStore.appendToGraph(dataset, graphToWrite,
       makeGraph(tripleList))
+  }
+
+  /** detect prior merges by specification
+   *  @return the convergence URI, not necessarily `uriTokeep` */
+  def managePriorMerges(uriTokeep: Rdf#Node, duplicateURIs: Seq[Rdf#Node]): (Rdf#Node, Seq[Rdf#Node] ) = {
+		  val groupLabel = instanceLabel(uriTokeep, originalGraph, "fr")
+      val mergedItemTripleOption = find(originalGraph, ANY, restruc("oldLabel"), Literal(groupLabel)).toList
+      println( s""">>>> managePriorMerges: uriTokeep $uriTokeep groupLabel "$groupLabel" mergedItemTripleOption ${mergedItemTripleOption}""" )
+      val opt = mergedItemTripleOption.headOption.map {
+        mergedItemTriple =>
+        mergedItemTriple.subject
+      }
+		  if( opt.isDefined ) println( s">>>> managePriorMerges: opt $opt merges ${duplicateURIs.mkString("<", ">, <", ">")}" )
+		  val duplicateURIs2 = if( opt.isDefined ) uriTokeep +: duplicateURIs else duplicateURIs
+      ( opt.getOrElse(uriTokeep), duplicateURIs2 )
   }
 
   private def addRestructuringComment(uriTokeep: Rdf#Node, duplicateURIs: Seq[Rdf#Node],
@@ -372,7 +393,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
    *
    * @return the URI's considered as non-duplicate, and for each a list of the duplicates
    */
-  protected def tellDuplicates(uris: Seq[Rdf#Node]): (Rdf#Node, Seq[Rdf#Node]) = {
+  protected def tellURItoKeepAmongDuplicates(uris: Seq[Rdf#Node]): (Rdf#Node, Seq[Rdf#Node]) = {
     if (uris.size <= 1)
       // nothing to do by caller! no Duplicates
       return (ops.URI(""), Seq())
@@ -471,7 +492,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     })
   }
  
-  /** index Instance by Labels;
+  /** index Instance by Labels (for merging Duplicates automatically);
    * @return a map of Instance Labels to sequences of URI
    * DOES NOT include transactions */
   private def indexInstanceLabels(classURI: Rdf#URI,
@@ -515,7 +536,8 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     } . toMap
 
 //    println( s"DDDDDDDDDDD indexInstanceLabels: Auteur: ${res.getOrElse("Auteur", "")} ")
-    mergeMapsOfLists(labelsToURIsmap, mergedItemsMap)
+//    mergeMapsOfLists(labelsToURIsmap, mergedItemsMap)
+    labelsToURIsmap
   }
   
   def dumpAllNamedGraph(mess: String="") = 
@@ -581,7 +603,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       instanceLabels2URIsMap.filter {
         case (label, uris) =>
           if( label == "Parcours d'accès au métier" )
-        	  println(s">>>> label Parcours d'accès au métier ") // DEBUG <<<<<<<<<<<<<<<<<<<<<<<<<<
+        	  println(s""">>>> checkRdfsRanges: label "Parcours d'accès au métier" """) // DEBUG <<<<<<<<<<<<<<<<<<<<<<<<<<
 
 //          if(label == "Auteur") println( s"DDDDDDDDDDD checkRdfsRanges: Auteur 2 : ${uris}")
           val groupedByRdfsRange = uris.groupBy { uri =>
@@ -603,4 +625,5 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
       }
     }
   }
+
 }
