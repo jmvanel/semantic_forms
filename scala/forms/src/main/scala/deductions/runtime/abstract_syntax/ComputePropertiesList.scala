@@ -67,7 +67,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
         List( uriNodeToURI(tryClassFromConfig.getOrElse(nullURI)) )
       } else
         classesOfSubject
-    println(s""">>> computePropsFromConfig( classOfSubjectOrFromConfig=$classesOfSubjectOrFromConfig) =>
+    logger.debug(s""">>> computePropsFromConfig( classOfSubjectOrFromConfig=$classesOfSubjectOrFromConfig) =>
                formConfiguration=<$formConfiguration>, props From Config $propsFromConfig""")
 
     val propsFromSubject = fieldsFromSubject(subject, graph)
@@ -86,13 +86,13 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
 
 
     def makeRawDataForForm(rawDataForFormList: List[RawDataForForm[Rdf#Node]]): RawDataForForm[Rdf#Node] = {
-      println(s"""makeRawDataForForm: rawDataForFormList size ${rawDataForFormList.size}
+      logger.debug(s"""makeRawDataForForm: rawDataForFormList size ${rawDataForFormList.size}
         ${rawDataForFormList.mkString("\n")}""")
       val propertiesGroupsList = for (rawDataForForm <- rawDataForFormList) yield {
         rawDataForForm.propertiesGroups
       }
       val propertiesGroupsMap = propertiesGroupsList.flatten.toMap
-      println(s"""makeRawDataForForm: size ${propertiesGroupsMap.size}
+      logger.debug(s"""makeRawDataForForm: size ${propertiesGroupsMap.size}
         ${propertiesGroupsMap.keySet}""")
 
       RawDataForForm[Rdf#Node](
@@ -122,7 +122,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
         formConfiguration,
         subject, editable)
     else NullRawDataForForm
-    println(s"computePropertiesList rawDataFromSpecif $rawDataFromSpecif")
+    logger.debug(s"computePropertiesList rawDataFromSpecif $rawDataFromSpecif")
 
     return prependPropertyGroup(globalDataForForm, Literal("Short form"), rawDataFromSpecif)
 //    makeRawDataForForm( rawDataFromSpecif ++ propsFromClasses )
@@ -139,7 +139,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
 
     if (formuri == "") {
       val (propertiesList, formConfiguration) = lookPropertiesListInConfiguration(classs)
-      println(s"computePropsFromConfig: $propertiesList")
+      logger.debug( s"computePropsFromConfig: $propertiesList")
       (propertiesList, formConfiguration, Success(classs))
     } else {
       val (propertiesList, formConfiguration, tryGraph) = lookPropertiesListFromDatabaseOrDownload(formuri)

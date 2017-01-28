@@ -4,21 +4,21 @@ import scala.collection.Iterable
 import scala.collection.Seq
 import scala.collection.Set
 import scala.collection.mutable
+import scala.language.postfixOps
+import scala.util.Failure
+import scala.util.Success
 import scala.util.Try
+
 import org.w3.banana.OWLPrefix
+import org.w3.banana.PointedGraph
 import org.w3.banana.RDF
-import org.w3.banana.RDFSPrefix
 import org.w3.banana.SparqlEngine
 import org.w3.banana.SparqlOps
+
 import deductions.runtime.dataset.RDFOPerationsDB
 import deductions.runtime.services.SPARQLHelpers
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.utils.Timer
-import scala.util.Success
-import scala.util.Failure
-import scala.language.postfixOps
-import org.w3.banana.PointedGraph
-import org.apache.log4j.Logger
 
 /**
  * populate Fields in form by inferring possible values from given rdfs:range's URI,
@@ -36,13 +36,11 @@ trait RangeInference[Rdf <: RDF, DATASET]
 
   implicit val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]
   implicit val sparqlOps: SparqlOps[Rdf]
-//  private val rdfs = RDFSPrefix[Rdf]
-  val logger:Logger // = Logger.getRootLogger()
   
   import ops._
-  import sparqlOps._
   import sparqlGraph._
   import sparqlGraph.sparqlEngineSyntax._
+  import sparqlOps._
 
   /** add Possible Values to all entry Fields */
   def addAllPossibleValues(
@@ -140,7 +138,6 @@ trait RangeInference[Rdf <: RDF, DATASET]
     }
     
     import org.w3.banana.binder._
-    import org.w3.banana.syntax._
 
     /** process owl:union appearing as rdfs:range of a property
      * Typical declaration processed:
@@ -295,7 +292,6 @@ trait RangeInference[Rdf <: RDF, DATASET]
 
   // ========
 
-  import sparqlGraph.sparqlEngineSyntax._
 
   /** @return list of VALUE & LABEL */
   def possibleValuesFromFormGroup(formGroup: Rdf#URI,

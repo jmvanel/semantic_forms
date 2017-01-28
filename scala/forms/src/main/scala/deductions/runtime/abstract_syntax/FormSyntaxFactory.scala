@@ -116,7 +116,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   import ops._
 
   val literalInitialValue = ""
-  val logger:Logger // = Logger.getRootLogger()
   private val rdf_type = RDFPrefix[Rdf].typ
 
   override def makeURI(n: Rdf#Node): Rdf#URI = URI(foldNode(n)(
@@ -254,7 +253,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   private def getRDFSranges(prop: Rdf#Node)(implicit graph: Rdf#Graph): Set[Rdf#Node] = {
     val ranges = objectsQuery(prop, rdfs.range)
     val rangesSize = ranges.size
-    System.err.print(
+    logger.debug(
       if (rangesSize > 1) {
         s"""WARNING: ranges $ranges for property $prop are multiple;
             taking first if not owl:Thing
