@@ -28,9 +28,9 @@ libraryDependencies += "org.apache.lucene" % "lucene-demo" % "4.9.1"
 // libraryDependencies += "net.rootdev" % "java-rdfa" % "0.4.3-SNAPSHOT"
 libraryDependencies += "net.rootdev" % "java-rdfa" % "0.4.2"
 
-libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "0.11"
-//libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "2.0.5"
-// See more at: https://typesafe.com/blog/akka-http-preview#sthash.IZR1O9fx.dpuf
+//libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "0.11"
+// libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "2.0.5"
+// See more at: http://search.maven.org/#search%7Cga%7C1%7Cakka-http-core ; https://typesafe.com/blog/akka-http-preview#sthash.IZR1O9fx.dpuf
 
 libraryDependencies += "org.scala-lang.modules" %% "scala-async" % "0.9.6"
 libraryDependencies += "com.typesafe.play" %% "play-json" % "2.3.10"
@@ -38,6 +38,11 @@ libraryDependencies += "com.typesafe.play" %% "play-json" % "2.3.10"
 libraryDependencies += "org.apache.commons" % "commons-csv" % "1.4"
 libraryDependencies += "org.apache.any23" % "apache-any23-csvutils" %  "1.1" // "1.0" // 
 
+// libraryDependencies ++= Seq(
+//   "org.apache.logging.log4j" % "log4j-slf4j-impl" % "2.4.1",
+//   "org.apache.logging.log4j" % "log4j-api" % "2.4.1",
+//   "org.apache.logging.log4j" % "log4j-core" % "2.4.1"
+// )
 
 // for debugging the SBT test suite:
 // required for the javaOptions to be passed in (??)

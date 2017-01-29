@@ -6,6 +6,7 @@ lazy val semantic_forms =  RootProject(file("../forms"))
 lazy val semantic_forms_play = (project in file("."))
         .dependsOn(semantic_forms)
 	.enablePlugins(PlayScala)
+  .disablePlugins(PlayLogback)
 
 scalaVersion := "2.11.8"
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
@@ -18,7 +19,7 @@ connectInput in run := true
 
 routesGenerator := StaticRoutesGenerator
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test
+// libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test
 libraryDependencies += "org.scalatestplus" %% "play" % "1.4.0" % Test
 // libraryDependencies += specs2 % Test
 
