@@ -7,7 +7,7 @@ import deductions.runtime.services.DefaultConfiguration
 /** object Application in another file to facilitate redefinition */
 object Application extends {
   override val config = new DefaultConfiguration {
-    override def serverPort = {
+    override val serverPort = {
       val port = Play.current.configuration.
         getString("http.port")
       port match {

@@ -226,11 +226,13 @@ If you want to change the HTTP ports, etc, look in the Play! documentation:
 https://www.playframework.com/documentation/2.4.x/ProductionConfiguration
 
 
-If you want to change the log settings:
+## Change the log settings
+`semantic_forms` uses Log4J 2 for logging. By default it prints very little.
+If you want to apply your log settings:
 ```
-cp conf/log4j.properties myconf.properties
+cp conf/log4j2.debug.properties myconf.properties
 vi myconf.properties
-nohup bin/semantic_forms_play -Dlog4j.configuration=myconf.properties -mem 50 &
+nohup bin/semantic_forms_play -Dlog4j.configurationFile=myconf.properties -mem 50 &
 ```
 
 To download Java from the server with no browser (see http://stackoverflow.com/questions/10268583/downloading-java-jdk-on-linux-via-wget-is-shown-license-page-instead):

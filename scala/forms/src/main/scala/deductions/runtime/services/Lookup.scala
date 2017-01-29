@@ -42,27 +42,22 @@ trait Lookup[Rdf <: RDF, DATASET]
    */
   def lookup(search: String, lang: String = "en", clas: String = "", mime: String): String = {
     
-//    val queryString0 = indexBasedQuery.makeQueryString(search)
-//    val queryString = if (clas != "") {
-//      queryString0.replaceFirst("""\?class""", "<" + expandOrUnchanged(clas) + ">")
-//    } else queryString0
-//    println(s"lookup(search=$search, clas $clas, queryString $queryString")
-//    val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariables(queryString, Seq("thing"))
-    
     val res = searchStringOrClass(search, clas)
 
-    println(s"lookup(search=$search, clas=$clas => $res")
+    println(s"lookup(search=$search, clas=<$clas> => $res")
     println(s"lookup: starting TRANSACTION for dataset $dataset")
-    val transaction = rdfStore.r( dataset, {
-      val urilangs = res.map {
+    val transaction = rdfStore.rw( dataset, {
+      val urilabels = res.map {
         uris =>
           val uri = uris.head
           val label = instanceLabel(uri, allNamedGraph, lang)
           (uri, label)
       }
-      urilangs
+      urilabels
     })
+    println(s"lookup: leaved TRANSACTION for dataset $dataset")
     val list = transaction.get
+
     if (mime.contains("json"))
       formatJSON(list)
     else
@@ -100,9 +95,11 @@ trait Lookup[Rdf <: RDF, DATASET]
   private val indexBasedQuery = new SPARQLQueryMaker[Rdf] {
     override def makeQueryString(searchStrings: String*): String = {
       val search = searchStrings(0)
-      val clas = if( searchStrings.size > 1 )
-        "<" + expandOrUnchanged(searchStrings(1)) + ">"
-        else "?CLASS"
+      val clas = if( searchStrings.size > 1 ) {
+        val classe = searchStrings(1)
+        if( classe == "" ) "?CLASS"
+        else "<" + expandOrUnchanged(classe) + ">"
+      } else "?CLASS"
       s"""
          |${declarePrefix(text)}
          |${declarePrefix(rdfs)}

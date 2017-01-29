@@ -41,7 +41,7 @@ GET     /esearch            controllers.Application.extSearch(q:String ?= "")
 GET     /tools			    controllers.Application.toolsPage
 GET     /showNamedGraphs    controllers.Application.showNamedGraphsAction
 GET     /showTriplesInGraph controllers.Application.showTriplesInGraphAction(uri: String)
-GET     /history            controllers.Application.makeHistoryUserActionsAction(userURI: String?= "")
+GET     /history            controllers.Application.makeHistoryUserActionsAction(limit: String?= "")
 
 # authentication
 

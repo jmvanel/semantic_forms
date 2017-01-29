@@ -49,7 +49,7 @@ with SPARQLHelpers[Rdf, DATASET] {
     def domainsFromClass(classs: Rdf#Node): List[Rdf#Node] = {
       if (classs != owl.Thing) {
         val relevantPredicates = getSubjects(graph, rdfs.domain, classs).toSeq
-        println(s"""Predicates with domain = Class <$classs> , relevant Predicates size ${relevantPredicates.size}  ; ${relevantPredicates.mkString(", ")}""")
+        logger.debug(s"""Predicates with domain = Class <$classs> , relevant Predicates size ${relevantPredicates.size}  ; ${relevantPredicates.mkString(", ")}""")
         relevantPredicates.distinct.toList ++
         unionOfDomainsFromClass(classs)
       } else List()

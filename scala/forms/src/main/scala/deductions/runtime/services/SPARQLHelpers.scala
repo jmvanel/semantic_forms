@@ -143,7 +143,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    *  TODO remove all such triples in any named graph,
    *  and re-create given triple in first named graph having a such triple
    */
-  def replaceRDFTriple(triple: Rdf#Triple, graphURI: Rdf#URI, dataset: DATASET) = {
+  def replaceRDFTriple(triple: Rdf#Triple, graphURI: Rdf#Node, dataset: DATASET) = {
     val uri = triple.subject
     val property = triple.predicate
     // TESTED
@@ -167,7 +167,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     val result = sparqlUpdateQuery(queryString, dataset)
     //    println(s"replaceRDFTriple: result: $result")
 
-    rdfStore.appendToGraph(dataset, graphURI, makeGraph(Seq(triple)))
+    rdfStore.appendToGraph(dataset, nodeToURI(graphURI), makeGraph(Seq(triple)))
   }
 
   def getRDFList(subject: String): List[Rdf#Node] = {
@@ -314,11 +314,11 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   /** run SPARQL on given dataset, knowing result variables; transactional */
   def sparqlSelectQueryVariables(queryString: String, variables: Seq[String],
                                  ds: DATASET = dataset): List[Seq[Rdf#Node]] = {
-    println("RRRRRRRRRRRRRRRR sparqlSelectQueryVariables")
+    logger.debug("RRRRRRRRRR sparqlSelectQueryVariables before transaction")
     val transaction = ds.r({
       sparqlSelectQueryVariablesNT(queryString, variables, ds)
     })
-    println("RRRRRRRRRRRRRRRR")
+    logger.debug("RRRRRRRRRR sparqlSelectQueryVariables after transaction")
     transaction.get
   }
 
@@ -353,11 +353,13 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
             filter(node => !node.toString().contains(""">>>> Failure: """))
 
         case Failure(failure: org.apache.jena.query.QueryParseException) =>
-          println(s"sparqlSelectQueryVariablesNT: queryString: $queryString")
+          logger.error(s"sparqlSelectQueryVariablesNT: QueryParseException: $failure, queryString: $queryString")
           List(Seq(
             Literal(failure.getLocalizedMessage),
             Literal(queryString)))
-        case Failure(failure) => List(Seq(Literal(failure.getLocalizedMessage)))
+        case Failure(failure) =>
+          logger.error(s"sparqlSelectQueryVariablesNT: QueryParseException: $failure, queryString: $queryString")
+          List(Seq(Literal(failure.getLocalizedMessage)))
       }
 
     },
@@ -600,7 +602,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   /**
    * RDF graph to String
-   *  @param format = "turtle" or "rdfxml" or "jsonld"
+   *  @param format "turtle" or "rdfxml" or "jsonld"
    */
   def graph2String(triples: Try[Rdf#Graph], baseURI: String, format: String = "turtle"): String = {
     Logger.getRootLogger().info(s"graph2String: base URI $baseURI ${triples}")

@@ -1,36 +1,32 @@
 package deductions.runtime.services
 
 import java.net.URLDecoder
+
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Failure
 import scala.util.Try
+
 import org.apache.log4j.Logger
 import org.w3.banana.FOAFPrefix
 import org.w3.banana.RDF
 import org.w3.banana.TryW
+
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.semlogs.LogAPI
 import deductions.runtime.utils.Timer
-import deductions.runtime.abstract_syntax.UnfilledFormFactory
 
 trait FormSaver[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
     with TypeAddition[Rdf, DATASET]
     with HttpParamsManager[Rdf]
     with LogAPI[Rdf]
-//    with Configuration
     with SaveListenersManager[Rdf]
     with Timer
     with URIManagement {
 
   import ops._
-  import sparqlOps._
-  import rdfStore.transactorSyntax._
-  import rdfStore.graphStoreSyntax._
-
-  val logger:Logger //  = Logger.getRootLogger()
 
   /** save triples in named graph given by HTTP parameter "graphURI";
    *  other HTTP parameters are original triples in Turtle;
@@ -96,7 +92,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
                 BNode(objectStringFromUser.substring(2))
             else {
               if (objectStringFromUser != "")
-                println(s"objectStringFromUser $objectStringFromUser changed: spaces removed")
+                println(s"""objectStringFromUser "$objectStringFromUser" changed: spaces removed""")
                 URI( // UnfilledFormFactory.
                     makeURIFromString(objectStringFromUser) )
             }

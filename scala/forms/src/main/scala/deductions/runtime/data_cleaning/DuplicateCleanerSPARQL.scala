@@ -37,7 +37,7 @@ trait DuplicateCleanerSPARQL[Rdf <: RDF, DATASET]
    * - D1 /= R and D1 /= R
    * - D1 /= D2
    */
-  val detectMergeableObjectProperties1 = """
+  val detectMergeableObjectProperties1 = s"""
     |${declarePrefix(rdfs)}
     |${declarePrefix(rdf)}
     |${declarePrefix(owl)}

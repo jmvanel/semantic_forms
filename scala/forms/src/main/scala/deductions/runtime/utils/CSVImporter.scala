@@ -268,6 +268,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       "Action" -> URI(restruc.prefixIri + "replacingProperty"),
 
           "Nouveau libellé" -> rdfs.label,
+          "Libellé" -> rdfs.label,
           "Propriété à renommer" -> rdfs.label,
           "Commentaire fusion" -> rdfs.comment
   )

@@ -17,7 +17,6 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   import ops._
   import rdfStore.graphStoreSyntax._
   import rdfStore.transactorSyntax._
-  private val logger: Logger = Logger.getRootLogger()
 
   lazy val datasetForLabels = dataset
   /* TODO : does not work because the transaction has been started on the other dataset ! 

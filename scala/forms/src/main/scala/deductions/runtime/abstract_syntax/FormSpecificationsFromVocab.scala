@@ -26,10 +26,11 @@ object FormSpecificationsFromVocabApp extends RDFStoreLocalJena1Provider
     with App
     with FormSpecificationsFromVocab
     [ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+
   val config = new DefaultConfiguration {
     override val useTextQuery = false
   }
-  val logger: Logger = Logger.getRootLogger()
+
   if (args.size == 0) {
     println("Usage: input file for vocabulary; output in new file with '.formspec.ttl' suffix")
     System.exit(-1)

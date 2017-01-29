@@ -2,42 +2,42 @@ package deductions.runtime.services
 
 import java.net.URLDecoder
 import java.net.URLEncoder
+import java.io.ByteArrayInputStream
+import java.io.OutputStream
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
+import scala.xml.NodeSeq
 import scala.xml.Elem
 import scala.xml.Text
 
-import org.apache.log4j.Logger
 import org.w3.banana.RDF
 import org.w3.banana.io.RDFWriter
 import org.w3.banana.io.Turtle
+import org.w3.banana.io.JsonLdCompacted
+import org.w3.banana.io.JsonLdExpanded
+import org.w3.banana.io.JsonLdFlattened
+
+import play.api.libs.iteratee.Enumerator
+
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.html.CreationFormAlgo
 import deductions.runtime.html.TriplesViewModule
+import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.I18NMessages
-import play.api.libs.iteratee.Enumerator
-import org.w3.banana.io.JsonLdExpanded
-import java.io.OutputStream
-import org.w3.banana.io.JsonLdFlattened
-import deductions.runtime.user.RegisterPage
-import scala.util.Try
-import scala.xml.NodeSeq
-import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
-import java.io.ByteArrayInputStream
-import scala.util.Failure
 import deductions.runtime.views.FormHeader
 import deductions.runtime.views.ToolsPage
+import deductions.runtime.user.RegisterPage
 import deductions.runtime.semlogs.TimeSeries
 import deductions.runtime.semlogs.LogAPI
 import deductions.runtime.html.CSS
 import deductions.runtime.data_cleaning.BlankNodeCleanerIncremental
 import scala.util.control.NonFatal
 import scala.util.control.NonFatal
-import org.w3.banana.io.JsonLdCompacted
 import deductions.runtime.sparql_cache.algos.StatisticsGraph
 import deductions.runtime.utils.HTTPrequest
 
@@ -88,9 +88,6 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   //  if( activateUserInputHistory )
   addSaveListener(this) // for TimeSeries
 
-  
-  val logger = Logger.getRootLogger()
-
   implicit val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   implicit val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]
 
@@ -117,7 +114,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     override def asString(graph: Rdf#Graph, base: String): Try[String] = ???
   }
 
-  Logger.getRootLogger().info(s"in Global")
+  logger.info(s"in Global")
 
   lazy val search = this
 
@@ -146,7 +143,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
                database: String = "TDB",
                request:HTTPrequest = HTTPrequest() )
   : NodeSeq = {
-    Logger.getRootLogger().info(
+    logger.info(
         s"""ApplicationFacadeImpl.htmlForm URI <$uri0> blankNode "$blankNode"
               editable=$editable lang=$lang graphURI <$graphURI>""")
     val uri = uri0.trim()
@@ -355,7 +352,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
   /** XHTML wrapper around SPARQL result */
   def sparqlConstructQuery(query: String, lang: String = "en"): Elem = {
-    Logger.getRootLogger().info("Global.sparql query  " + query)
+    logger.info("Global.sparql query  " + query)
     <p>
 		{ sparqlQueryForm(query, "/sparql-ui",
 				Seq("CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10") ) }
@@ -376,7 +373,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   /** SPARQL result
    *  @param format = "turtle" or "rdfxml" or "jsonld" */
   def sparqlConstructResult(query: String, lang: String = "en", format: String="turtle"): String = {
-    Logger.getRootLogger().info("Global.sparql query  " + query)
+    logger.info("Global.sparql query  " + query)
     try {
       if (query != "")
         sparqlConstructQueryTR(query, format)
@@ -388,7 +385,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   
   /** Display result of a SPARQL select */
   def selectSPARQL(query: String, lang: String = "en"): Elem = {
-    Logger.getRootLogger().info("sparql query  " + query)
+    logger.info("sparql query  " + query)
     <p>
 		{ sparqlQueryForm(query, "/select-ui",
 				Seq("SELECT * WHERE {{ GRAPH ?G {{?S ?P ?O . }} }} LIMIT 10" )) }
@@ -452,7 +449,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     putTriples(uri, link, contentType,
       slug, content, request)
 
-  def makeHistoryUserActions(userURI: String, lang: String, request: HTTPrequest): NodeSeq =
-    makeTableHistoryUserActions(lang, request)(userURI)
+  def makeHistoryUserActions(limit: String, lang: String, request: HTTPrequest): NodeSeq =
+    makeTableHistoryUserActions(lang, request)(limit)
 
 }

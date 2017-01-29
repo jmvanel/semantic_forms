@@ -52,7 +52,7 @@ trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DAT
          |    { ?s ?p1 <$search> . } # "reverse" triples
          |  }
          |}""".stripMargin
-    println("search_only " + queryString)
+    logger.debug("search_only " + queryString)
     val res = sparqlConstructQuery(queryString)
     println( "search_only: after sparqlConstructQuery" )
     res

@@ -185,6 +185,7 @@ with RDFHelpers[Rdf]
     } . toList
 
     val q = queryRdfsPropertiesUnionOfFromClass.replace("<CLASS>", s"<${classe}>")
+    println( s"rdfsPropertiesAndRangesFromClassList: query $q")
     val res: List[Seq[Rdf#Node]] = runSparqlSelectNodes( q, List("PROP"), graph)
     val propsFromUnionOf = res . map {
       list => list.head
@@ -197,7 +198,7 @@ with RDFHelpers[Rdf]
     propsStrings ++ propsAndRangeFromUnionOf
   }
 
-  /** add details from restructructionComment;
+  /** add details from restructurationComment;
    *  TODO pasted from previous rdfsPropertiesAndRangesFromClassList */
   def rdfsPropertiesAndRangesFromClassListDetails(classe: Rdf#Node, graph: Rdf#Graph): List[String] = {
     def rdfsPropertyAndRange(prop: Rdf#Node) = {
@@ -208,7 +209,7 @@ with RDFHelpers[Rdf]
 
     def displayProp(prop: Rdf#Node) = {
             rdfsPropertyAndRange(prop) + " - " +
-        (getStringHeadOrElse(prop, restruc("restructructionComment"), "")(graph)).replace('\n', ',')
+        (getStringHeadOrElse(prop, restruc("restructurationComment"), "")(graph)).replace('\n', ',')
     }
 
     val propsFromRdfsDomain = {
@@ -236,12 +237,12 @@ with RDFHelpers[Rdf]
     }
 
     //    if( classe.toString().endsWith("Concours/age/#class")) println
-    propsStrings ++ propsAndRangeFromUnionOf
+     propsStrings ++ propsAndRangeFromUnionOf
   }
 
 
      
-  val queryRdfsPropertiesUnionOfFromClass = """
+  val queryRdfsPropertiesUnionOfFromClass = s"""
       ${declarePrefix(rdfs)}
       ${declarePrefix(rdf)}
       ${declarePrefix(owl)}
