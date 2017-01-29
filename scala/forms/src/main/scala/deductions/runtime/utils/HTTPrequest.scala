@@ -11,6 +11,7 @@ case class HTTPrequest(
      * The HTTP host (domain, optionally port)
      */
     host: String = "",
+
     /**
      * The client IP address.
      *
@@ -23,7 +24,9 @@ case class HTTPrequest(
 
     /** YET UNUSED */
     headers: Map[String, Seq[String]] = Map(),
-    cookies: List[Cookie] = List()) {
+    cookies: List[Cookie] = List()
+
+		) {
 
   def absoluteURL(rawURI: String = "", secure: Boolean = false): String =
     "http" + (if (secure) "s" else "") + "://" +

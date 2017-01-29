@@ -67,7 +67,6 @@ trait ApplicationTrait extends Controller
     withUser {
       implicit userid =>
         implicit request =>
-          //        override def getRequest: HTTPrequest = getRequestCopy()
           println(s"""displayURI: $request IP ${request.remoteAddress}, host ${request.host}
             displayURI headers ${request.headers}
             displayURI tags ${request.tags}
@@ -193,7 +192,8 @@ trait ApplicationTrait extends Controller
           println(s"userInfo $userInfo, userid $userid")
           val content = htmlForm(
             uri, editable = true,
-            lang = chooseLanguage(request), graphURI = makeAbsoluteURIForSaving(userid))
+            lang = chooseLanguage(request), graphURI = makeAbsoluteURIForSaving(userid),
+            request=copyRequest(request) )
           Ok("<!DOCTYPE html>\n" + mainPage(content, userInfo, lang))
             .as("text/html; charset=utf-8").
             withHeaders("Access-Control-Allow-Origin" -> "*") // TODO dbpedia only
@@ -677,7 +677,7 @@ trait ApplicationTrait extends Controller
     Action { implicit request =>
       val lang = chooseLanguage(request)
       Ok(new ToolsPage with DefaultConfiguration {
-        override def getRequest: HTTPrequest = getRequestCopy()
+//        override def getRequest: HTTPrequest = getRequestCopy()
       }.getPage(lang) )
         .as("text/html; charset=utf-8")
     }
