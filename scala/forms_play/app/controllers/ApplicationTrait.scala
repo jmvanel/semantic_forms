@@ -45,6 +45,8 @@ trait ApplicationTrait extends Controller
     with HTTPrequestHelpers
     with RDFPrefixes[ImplementationSettings.Rdf] {
 
+	implicit val myCustomCharset = Codec.javaSupported("utf-8")
+
 	/** a copy of the request with no Play dependency :) */
   def getRequestCopy()(implicit request: Request[_]): HTTPrequest = copyRequest(request)
 
@@ -54,8 +56,10 @@ trait ApplicationTrait extends Controller
         implicit request =>
           val lang = chooseLanguageObject(request).language
           val userInfo = displayUser(userid, "", "", lang)
-          Ok("<!DOCTYPE html>\n" + mainPage(<p>...</p>, userInfo, lang))
-            .as("text/html; charset=utf-8")
+          val route = routes.Application.makeHistoryUserActionsAction("")
+          Redirect(route)
+//          Ok("<!DOCTYPE html>\n" + mainPage(<p>...</p>, userInfo, lang))
+//            .as("text/html; charset=utf-8")
     }
 
   def displayURI(uri0: String, blanknode: String = "", Edit: String = "",
@@ -325,8 +329,6 @@ trait ApplicationTrait extends Controller
 
 
   //// factor out the conneg stuff ////
-
-  implicit val myCustomCharset = Codec.javaSupported("utf-8")
 
   private val AcceptsTTL = Accepting("text/turtle")
 	private val AcceptsJSONLD = Accepting("application/ld+json")

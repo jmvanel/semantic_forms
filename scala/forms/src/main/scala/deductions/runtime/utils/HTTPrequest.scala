@@ -22,7 +22,8 @@ case class HTTPrequest(
     rawQueryString: String = "",
 
     /** YET UNUSED */
-    headers: Map[String, Seq[String]] = Map()) {
+    headers: Map[String, Seq[String]] = Map(),
+    cookies: List[Cookie] = List()) {
 
   def absoluteURL(rawURI: String = "", secure: Boolean = false): String =
     "http" + (if (secure) "s" else "") + "://" +
@@ -31,3 +32,9 @@ case class HTTPrequest(
   def localSparqlEndpoint = URLEncoder.encode(absoluteURL("/sparql"), "UTF-8")
 
 }
+
+/** Borrowed from Play */
+case class Cookie(
+  name: String, value: String, maxAge: Option[Int] = None, path: String = "/",
+  domain: Option[String] = None, secure: Boolean = false, httpOnly: Boolean = true)
+
