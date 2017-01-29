@@ -1,7 +1,7 @@
 package deductions.runtime
 
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.LogManager
 
 package object abstract_syntax {
-  val logger: Logger = Logger.getLogger("abstract_syntax")
+  val logger = LogManager.getLogger("abstract_syntax")
 }

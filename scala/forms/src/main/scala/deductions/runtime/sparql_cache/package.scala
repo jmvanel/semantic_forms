@@ -1,7 +1,7 @@
 package deductions.runtime
 
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.LogManager
 
 package object sparql_cache {
-  val logger: Logger = Logger.getLogger("sparql_cache")
+  val logger = LogManager.getLogger("sparql_cache")
 }

@@ -1,12 +1,10 @@
 package deductions.runtime
 
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.Logger
+import org.apache.logging.log4j.LogManager
 
 /** semantic logs: application logs (especially user actions) stored in SPARQL */
 package object semlogs {
-  private[semlogs] val logger: Logger = Logger.getLogger(
-    // classOf[LogAPI]  ) // 
-    //    "deductions.runtime.semlogs")
-    "semlogs")
-  println(s">>>> package object semlogs: logger $logger")
+  private[semlogs] val logger: Logger = LogManager.getLogger("semlogs")
+  println(s""">>>> package object semlogs: logger "$logger" ${logger.getClass} ${logger.getMessageFactory}""")
 }

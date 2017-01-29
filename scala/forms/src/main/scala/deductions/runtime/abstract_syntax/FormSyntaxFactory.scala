@@ -306,7 +306,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       formPrefix("exactlyOne") -> exactlyOne
     }
     for (t <- triples) {
-      logger.log(Level.OFF, "updateFormForClass formConfig " + t)
+      logger.debug("updateFormForClass formConfig " + t)
       if (t.predicate == formPrefix("defaultCardinality")) {
         formSyntax.defaults.defaultCardinality = uriToCardinalities.getOrElse(t.objectt, zeroOrOne)
       }
