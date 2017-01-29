@@ -60,10 +60,11 @@ with SPARQLHelpers[Rdf, DATASET] {
          ( graphUri, metadata ) 
   }
 
-  /**get Metadata for user updates:
+  /**get Metadata for all user updates:
    * subject, timestamp, triple count;
    * ordered by recent first;
-   * transactional */
+   * transactional
+   * TODO replace userURI (unused) by limit */
   def getMetadata()
     (implicit userURI: String)
         : List[Seq[Rdf#Node]] = {
@@ -84,10 +85,15 @@ with SPARQLHelpers[Rdf, DATASET] {
       # ORDER BY DESC(xsd:nonNegativeInteger(?TS))
       ORDER BY DESC(xsd:integer(?TS))
     """
-    println("getMetadata: query " + query)
+    logger.debug("getMetadata: query " + query)
     val res = sparqlSelectQueryVariables( query,
         Seq("SUBJECT", "TIME", "COUNT", "USER"), dataset2 )
-    println("getMetadata: res " + res)
+
+//    def msg(path: String) = println( s">>>> getMetadata: path $path: " + getClass().getClassLoader().getResource( path ) )
+//    msg("conf/logback.xml")
+//    msg("logback.xml")
+//    msg("log4j.properties")
+    logger.debug("getMetadata: res " + res)
     res
   }
 
