@@ -40,7 +40,9 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
 
   private def mess(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
 
-  /** leverage on ParameterizedSPARQL.makeHyperlinkForURI() */
+  /** leverage on ParameterizedSPARQL.makeHyperlinkForURI()
+   * TODO replace userURI (unused) by limit
+   */
   def makeTableHistoryUserActions(lang: String="en", request: HTTPrequest)(userURI: String): NodeSeq = {
     val metadata = getMetadata()(userURI)
     implicit val queryMaker = qm
@@ -66,7 +68,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       }
       rdfStore.rw( dataset, { // for calling instanceLabel()
       for (row <- sorted) yield {
-        println( "row " + row(1).toString() )
+        logger.debug( "row " + row(1).toString() )
             if (row(1).toString().length() > 3 ) {
               val date = new Date(dateAsLong(row))
               val dateFormat = new SimpleDateFormat(

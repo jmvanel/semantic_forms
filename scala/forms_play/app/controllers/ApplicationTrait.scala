@@ -273,7 +273,7 @@ trait ApplicationTrait extends Controller
             lang)
     }
 
-  def makeAbsoluteURIForSaving(userid: String): String = userid
+  private def makeAbsoluteURIForSaving(userid: String): String = userid
 
   /** creation form as raw JSON data
    *  TODO add database HTTP param. */
@@ -328,12 +328,12 @@ trait ApplicationTrait extends Controller
 
   implicit val myCustomCharset = Codec.javaSupported("utf-8")
 
-  val AcceptsTTL = Accepting("text/turtle")
-	val AcceptsJSONLD = Accepting("application/ld+json")
-	val AcceptsRDFXML = Accepting("application/rdf+xml")
-	val AcceptsSPARQLresults = Accepting("application/sparql-results+json")
+  private val AcceptsTTL = Accepting("text/turtle")
+	private val AcceptsJSONLD = Accepting("application/ld+json")
+	private val AcceptsRDFXML = Accepting("application/rdf+xml")
+	private val AcceptsSPARQLresults = Accepting("application/sparql-results+json")
 
-	val turtle = AcceptsTTL.mimeType
+	private val turtle = AcceptsTTL.mimeType
 
 	// format = "turtle" or "rdfxml" or "jsonld"
 	val mimeAbbrevs = Map( AcceptsTTL -> "turtle", AcceptsJSONLD -> "jsonld", AcceptsRDFXML -> "rdfxml",
@@ -681,12 +681,13 @@ trait ApplicationTrait extends Controller
     }
   }
 
-  def makeHistoryUserActionsAction(userURI: String) =
+  def makeHistoryUserActionsAction(limit: String) =
     withUser {
       implicit userid =>
         implicit request =>
           val lang = chooseLanguage(request)
-          outputMainPage(makeHistoryUserActions(userURI, lang, copyRequest(request) ), lang)
+          println("makeHistoryUserActionsAction: cookies: " + request.cookies.mkString("; "))
+          outputMainPage(makeHistoryUserActions(limit, lang, copyRequest(request) ), lang)
     }
 
 }
