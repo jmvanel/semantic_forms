@@ -77,11 +77,12 @@ trait ApplicationTrait extends Controller
           val uri = expandOrUnchanged(uri0)
           println(s"displayURI: expandOrUnchanged $uri")
           val title = labelForURITransaction(uri, lang)
+          val userInfo = displayUser(userid, uri, title, lang)
           outputMainPage(
             htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
               graphURI = makeAbsoluteURIForSaving(userid),
               request = getRequestCopy()),
-            lang, title = title)
+            lang, title = title, userInfo=userInfo)
     }
 
   def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
@@ -271,10 +272,11 @@ trait ApplicationTrait extends Controller
           println("create: " + uri)
           println( s"formSpecURI from HTTP request: <$formSpecURI>")
           val lang = chooseLanguage(request)
+          val userInfo = displayUser(userid, uri, s"Create a $uri", lang)
           outputMainPage(
             create(uri, chooseLanguage(request),
               formSpecURI, makeAbsoluteURIForSaving(userid), copyRequest(request) ),
-            lang)
+            lang, userInfo=userInfo)
     }
 
   private def makeAbsoluteURIForSaving(userid: String): String = userid
