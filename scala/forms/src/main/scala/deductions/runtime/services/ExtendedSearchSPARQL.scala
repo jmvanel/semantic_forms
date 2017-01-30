@@ -29,7 +29,7 @@ trait ExtendedSearchSPARQL[Rdf <: RDF, DATASET]
     	val search = searchStrings(0)
       val q = s"""
        |# ${declarePrefix(foaf)}
-       |SELECT DISTINCT ?thing WHERE {
+       |SELECT DISTINCT ?thing (COUNT(*) as ?count) WHERE {
        | graph ?g {
        |    # "backward" links distance 2
        |    ?TOPIC ?PRED <$search> .
@@ -57,8 +57,10 @@ trait ExtendedSearchSPARQL[Rdf <: RDF, DATASET]
        |  }
        | }
        |}
-""".stripMargin
-      println("extendedSearch: query: " + q)
+       |GROUP BY ?thing
+       |ORDER BY DESC(?count)
+       """.stripMargin
+      logger.debug("extendedSearch: query: " + q)
       q
     }
   }

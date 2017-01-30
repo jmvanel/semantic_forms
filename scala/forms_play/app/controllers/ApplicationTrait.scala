@@ -30,11 +30,11 @@ import play.api.mvc.Results
 import views.MainXmlWithHead
 import java.net.URLEncoder
 
-object Global extends GlobalSettings with Results {
-  override def onBadRequest(request: RequestHeader, error: String) = {
-    Future{ BadRequest("""Bad Request: "$error" """) }
-  }
-}
+//object Global extends GlobalSettings with Results {
+//  override def onBadRequest(request: RequestHeader, error: String) = {
+//    Future{ BadRequest("""Bad Request: "$error" """) }
+//  }
+//}
 
 /** main controller */
 trait ApplicationTrait extends Controller
