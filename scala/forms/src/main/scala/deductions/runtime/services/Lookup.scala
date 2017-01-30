@@ -8,6 +8,7 @@ import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 import deductions.runtime.utils.RDFPrefixes
 import play.api.libs.json.Json
 import play.api.libs.json.JsArray
+import play.api.libs.json.JsObject
 
 /**
  * API for a lookup web service similar to dbPedia lookup
@@ -58,10 +59,15 @@ trait Lookup[Rdf <: RDF, DATASET]
     println(s"lookup: leaved TRANSACTION for dataset $dataset")
     val list = transaction.get
 
-    if (mime.contains("json"))
-      formatJSON(list)
-    else
+    if (mime.contains("xml"))
       formatXML(list)
+    else
+      formatJSON(list)
+      
+//    if (mime.contains("json"))
+//      formatJSON(list)
+//    else
+//      formatXML(list)
   }
 
   private def formatXML(list: List[(Rdf#Node, String)]): String = {
@@ -83,8 +89,13 @@ trait Lookup[Rdf <: RDF, DATASET]
     val list2 = list.map {
       case (uri, label) => Json.obj("Label" -> label, "URI" -> uri.toString())
     }
-    val responses = new JsArray(list2)
-    Json.prettyPrint(responses)
+    println(s"list2 $list - $list2")
+//    val responses = new JsArray(list2)
+//    println(s"responses $responses")
+    val results =  Json.obj(
+//        new JsObject( Seq(
+            "results" -> list2 )
+    Json.prettyPrint(results) // responses)
   }
 
   /**
