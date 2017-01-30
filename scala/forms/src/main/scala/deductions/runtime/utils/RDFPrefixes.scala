@@ -102,6 +102,8 @@ import org.w3.banana._
    * expand possibly Prefixed URI (like foaf:name),
    *  @return Some(URI("http://xmlns.com/foaf/0.1/name")),
    *  or output None if no prefix is found
+   *
+   *  TODO move to URIHelpers
    */
   def expand(possiblyPrefixedURI: String): Option[Rdf#URI] = {
     val uri_string = possiblyPrefixedURI // URLEncoder.encode(possiblyPrefixedURI, "UTF-8")
@@ -111,11 +113,15 @@ import org.w3.banana._
         if (possiblyPrefixedURI.startsWith(":")) {
           Some("")
         } else {
-          val uri = new jURI(uri_string)
-          if (uri.isAbsolute() && !commonSchemes.contains(uri.getScheme)) {
-            // then it's possibly a Prefixed URI like foaf:name
-            Some(uri.getScheme)
-          } else None
+          if (uri_string.endsWith(":"))
+            Some(uri_string.substring(0, uri_string.length - 1))
+          else {
+            val uri = new jURI(uri_string)
+            if (uri.isAbsolute() && !commonSchemes.contains(uri.getScheme)) {
+              // then it's possibly a Prefixed URI like foaf:name
+              Some(uri.getScheme)
+            } else None
+          }
         }
 
       prefixOption match {
