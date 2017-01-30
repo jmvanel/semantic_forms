@@ -30,26 +30,32 @@ trait ExtendedSearchSPARQL[Rdf <: RDF, DATASET]
       val q = s"""
        |${declarePrefix(foaf)}
        |SELECT DISTINCT ?thing WHERE {
-       |  graph ?g {
+       | graph ?g {
        |    # "backward" links distance 2
        |    ?TOPIC ?PRED <$search> .
        |    ?thing ?PRED2  ?TOPIC .
-       |    # ?S a foaf:Person .
-       |} OPTIONAL {
+       | }
+       | OPTIONAL {
        |  graph ?g {
        |    # "forward-backward" links distance 2
        |    <$search> ?PRED3 ?TOPIC2 .
        |    ?thing ?PRED4 ?TOPIC2 .
-       |    # ?S a foaf:Person .
        |  }
-       |}
+       | }
        | OPTIONAL {
        |  graph ?g {
        |    # "forward" links distance 2
        |    <$search> ?PRED4 ?TOPIC3 .
        |    ?TOPIC3 ?PRED5 ?thing .
        |  }
-       |}
+       | }
+       | OPTIONAL {
+       |  graph ?g {
+       |    # "backward-forward" links distance 2
+       |    ?TOPIC4 ?PRED6 <$search> .
+       |    ?TOPIC4 ?PRED7 ?thing . 
+       |  }
+       | }
        |}
 """.stripMargin
       println("extendedSearch: query: " + q)
