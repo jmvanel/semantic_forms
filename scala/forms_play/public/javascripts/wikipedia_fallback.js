@@ -57,7 +57,7 @@ function addDBPediaLookup( inputElementURI ) {
       var inputElement = document.getElementById(inputElementId);
       inputElement.hasLookup = true;
       var topics = {}, // NOTE topics is populated but not used
-          $topics = $(inputElementURI).autocomplete({
+      $topics = $(inputElementURI).autocomplete({
         autoFocus: true,
        select: function( event, ui ) {
             console.log( "Topic chosen label event " + (event) );
@@ -98,7 +98,12 @@ function addDBPediaLookup( inputElementURI ) {
                                     cutStringAfterCharacter(m.description, '.'), "value": m.uri }
                         }));
                       }).fail(function (error) {
-
+                          $.ajax({
+                            url: "/lookup",
+                            data: { MaxHits: resultsCount, QueryString: request.term },
+                            dataType: "json",
+                            timeout: 5000
+                          })
                       });
 
               });
