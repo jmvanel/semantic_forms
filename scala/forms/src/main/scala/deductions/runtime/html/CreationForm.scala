@@ -2,18 +2,16 @@ package deductions.runtime.html
 
 import scala.util.Try
 import scala.xml.NodeSeq
+
 import org.w3.banana.RDF
-import deductions.runtime.abstract_syntax.UnfilledFormFactory
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.sparql_cache.RDFCacheAlgo
-import org.w3.banana.RDFOps
-import deductions.runtime.services.Configuration
-//import deductions.runtime.services.ConfigurationCopy
-import deductions.runtime.utils.RDFPrefixes
-import deductions.runtime.utils.I18NMessages
-import deductions.runtime.utils.HTTPrequest
-import play.api.libs.json.Json
+
 import deductions.runtime.abstract_syntax.FormSyntaxJson
+import deductions.runtime.abstract_syntax.UnfilledFormFactory
+import deductions.runtime.services.Configuration
+import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.utils.HTTPrequest
+import deductions.runtime.utils.I18NMessages
+import deductions.runtime.utils.RDFPrefixes
 
 trait CreationFormAlgo[Rdf <: RDF, DATASET]
 extends RDFCacheAlgo[Rdf, DATASET]
@@ -27,18 +25,8 @@ with FormSyntaxJson[Rdf] {
   val config: Configuration
 
   import ops._
-  import rdfStore.transactorSyntax._
   /** TODO also defined elsewhere */
   var actionURI = "/save"
-
-//  override def toPlainString(n: Rdf#Node): String =
-//    foldNode(n)(fromUri(_),
-//        bn => {
-//          val s = fromBNode(bn)
-//          if( s.startsWith( "_:" ) ) s
-//          else "_:" + s
-//        },
-//        fromLiteral(_)._1)
 
   /**
    * create an XHTML input form for a new instance from a class URI;
@@ -47,7 +35,6 @@ with FormSyntaxJson[Rdf] {
   def create(classUri: String, lang: String = "en",
     formSpecURI: String = "", graphURI: String= "", request: HTTPrequest= HTTPrequest() )
       : Try[NodeSeq] = {
-    import scala.concurrent.ExecutionContext.Implicits.global
     rdfStore.rw( dataset, {
       val form = createData(classUri, lang, formSpecURI, graphURI, request)
       val ops1 = ops
