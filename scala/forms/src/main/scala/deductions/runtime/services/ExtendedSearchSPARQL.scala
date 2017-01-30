@@ -28,7 +28,7 @@ trait ExtendedSearchSPARQL[Rdf <: RDF, DATASET]
     override def makeQueryString(searchStrings: String*): String = {
     	val search = searchStrings(0)
       val q = s"""
-       |${declarePrefix(foaf)}
+       |# ${declarePrefix(foaf)}
        |SELECT DISTINCT ?thing WHERE {
        | graph ?g {
        |    # "backward" links distance 2
@@ -45,7 +45,7 @@ trait ExtendedSearchSPARQL[Rdf <: RDF, DATASET]
        | OPTIONAL {
        |  graph ?g {
        |    # "forward" links distance 2
-       |    <$search> ?PRED4 ?TOPIC3 .
+       |    <$search> ?PRED41 ?TOPIC3 .
        |    ?TOPIC3 ?PRED5 ?thing .
        |  }
        | }

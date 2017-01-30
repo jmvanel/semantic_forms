@@ -28,6 +28,7 @@ import play.api.mvc.RequestHeader
 import play.api.mvc.Result
 import play.api.mvc.Results
 import views.MainXmlWithHead
+import java.net.URLEncoder
 
 object Global extends GlobalSettings with Results {
   override def onBadRequest(request: RequestHeader, error: String) = {
@@ -573,20 +574,21 @@ trait ApplicationTrait extends Controller
           }
     }
 
-  def backlinksAction(q: String = "") = Action.async {
-	  implicit request =>
-	  val fut: Future[Elem] = backlinks(q)
-    val extendedSearchLink = <p>
-                               <a href={ "/esearch?q=" + q }>
-                                 Extended Search for &lt;{ q }
-                                 &gt;
-                               </a>
-                             </p>
-    fut.map { res =>
-    val lang = chooseLanguage(request)
-    outputMainPage(
-        NodeSeq fromSeq Seq(extendedSearchLink, res), lang)
-    }
+  def backlinksAction(uri: String = "") = Action.async {
+    implicit request =>
+      val fut: Future[Elem] = backlinks(uri)
+
+      // create link for extended Search
+      val extendedSearchLink = <p>
+                                 <a href={ "/esearch?q=" + URLEncoder.encode(uri, "utf-8") }>
+                                   Extended Search for &lt;{ uri }&gt;
+                                 </a>
+                               </p>
+      fut.map { res =>
+        val lang = chooseLanguage(request)
+        outputMainPage(
+          NodeSeq fromSeq Seq(extendedSearchLink, res), lang)
+      }
   }
 
   def extSearch(q: String = "") = Action.async {
