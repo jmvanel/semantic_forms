@@ -178,7 +178,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   : FormSyntax = {
 
     val formConfig = step1.formURI
-    println(s">>>> createFormDetailed2 formConfig $formConfig")
+    logger.info(s">>>> createFormDetailed2 formConfig <$formConfig>")
     
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
 
@@ -220,10 +220,10 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     
     addAllPossibleValues(formSyntax, valuesFromFormGroup)
     
-    logger.debug(s"createForm " + this)
-    val res = time(s"updateFormFromConfig()",
-      updateFormFromConfig(formSyntax, formConfig))
-    logger.debug(s"createForm 2 " + this)
+    logger.debug(s"createFormDetailed2: createForm " + this)
+    val res = time(s"createFormDetailed2: updateFormFromConfig(formConfig=$formConfig)",
+      updateFormFromConfig(formSyntax, formConfig), logger.isDebugEnabled() )
+    logger.debug(s"createFormDetailed2: createForm 2 " + this)
     res
   }
 
@@ -266,7 +266,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     if (rangesSize > 1) {
       val owlThing = prefixesMap2("owl")("Thing")
       if (ranges.contains(owlThing)) {
-        System.err.println(
+        logger.warn(
           s"""WARNING: ranges $ranges for property $prop contain owl:Thing;
                removing owl:Thing, and take first remaining: <${(ranges - owlThing).head}>""")
       }

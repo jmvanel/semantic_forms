@@ -64,7 +64,7 @@ trait FormConfigurationFactory[Rdf <: RDF, DATASET]
   (implicit graph: Rdf#Graph)
   : Seq[Rdf#URI] = {
     val props = getObjects(graph, formConfiguration, rdfProperty)
-    for (p <- props) { println( s"rdfProperty: $rdfProperty " + p) }
+    for (p <- props) { logger.debug( s"listFromFormConfiguration: rdfProperty: <$rdfProperty> <$p>") }
     val propertiesListFirst = props.headOption
     val propertiesList = nodeSeqToURISeq(rdfListToSeq(propertiesListFirst))
     propertiesList
@@ -75,15 +75,13 @@ trait FormConfigurationFactory[Rdf <: RDF, DATASET]
   (implicit graph: Rdf#Graph)
   : Option[Rdf#Node] = {
     val forms = getSubjects(graph, formPrefix("classDomain"), classs) . toList
-    Logger.getRootLogger().debug("forms " + forms.mkString( "; "))
+    logger.debug("lookFormSpecInConfiguration: forms " + forms.mkString( "; "))
     val formSpecOption = forms.flatMap {
       form => ops.foldNode(form)(uri => Some(uri), bn => Some(bn), lit => None)
     }.headOption
     if( forms.size > 1 )
-    	Logger.getRootLogger().warn(
-    	    s"WARNING: several form specs for $classs; chosen $formSpecOption")
-//    Logger.getRootLogger().debug
-    println( s"lookFormSpecInConfiguration: found for $classs $formSpecOption" )
+      logger.warn(s"WARNING: several form specs for $classs; chosen $formSpecOption")
+    logger.info( s"lookFormSpecInConfiguration: found for <$classs> : $formSpecOption" )
     formSpecOption
   }
 
