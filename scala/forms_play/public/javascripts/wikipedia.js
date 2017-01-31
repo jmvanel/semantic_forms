@@ -47,8 +47,8 @@ $(document).ready(function() {
                         console.log("response :");
                         console.log(m);
                         topics[m.label] = m.uri;
-                        return { "label": m.Label /* + " - " +
-                        cutStringAfterCharacter(m.description, '.') */, "value": m.URI }
+                        return { "label": m.label /* + " - " +
+                        cutStringAfterCharacter(m.description, '.') */, "value": m.uri }
                     }));
                 }).fail(function (error){
                     $.ajax({
