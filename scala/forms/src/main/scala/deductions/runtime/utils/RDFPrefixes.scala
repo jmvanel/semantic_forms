@@ -56,6 +56,7 @@ import org.w3.banana._
     LDPPrefix[Rdf], IANALinkPrefix[Rdf], WebACLPrefix[Rdf], CertPrefix[Rdf],
     owl, skos,
     schema,
+    Prefix[Rdf]("gr", "http://purl.org/goodrelations/v1#"),
     sioc, content,
     dbo,
     Prefix[Rdf]("vcard", "http://www.w3.org/2006/vcard/ns#"),
