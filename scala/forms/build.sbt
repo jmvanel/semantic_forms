@@ -17,7 +17,7 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 libraryDependencies += "org.w3" %%  "banana-jena" % "0.9.0-SNAPSHOT"
 
-libraryDependencies += "org.apache.jena" % "apache-jena-libs" % jenaVersion  exclude("log4j", "log4j") exclude("org.slf4j", "slf4j-api" )
+libraryDependencies += "org.apache.jena" % "apache-jena-libs" % jenaVersion  exclude("log4j", "log4j") exclude("org.slf4j", "slf4j-api" ) exclude( "org.apache.logging.log4j" , "log4j-slf4j-impl" )
 libraryDependencies += "org.apache.jena" % "jena-permissions" % jenaVersion
 libraryDependencies += "org.apache.jena" % "jena-text" % jenaVersion
 
@@ -39,7 +39,7 @@ libraryDependencies += "org.apache.commons" % "commons-csv" % "1.4"
 libraryDependencies += "org.apache.any23" % "apache-any23-csvutils" %  "1.1" // "1.0" // 
 
 libraryDependencies ++= Seq(
-  "org.apache.logging.log4j" % "log4j-slf4j-impl" % "2.8",
+  // "org.apache.logging.log4j" % "log4j-slf4j-impl" % "2.8",
   "org.apache.logging.log4j" % "log4j-api" % "2.8",
   "org.apache.logging.log4j" % "log4j-core" % "2.8"
 )

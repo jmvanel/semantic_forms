@@ -225,7 +225,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
   // : Try[Iterator[Rdf#Node]] 
   = {
     val queryString = queryMaker.makeQueryString(search :_* )
-    println( s"search_onlyNT(search='$search') \n$queryString \n\tdataset Class ${dataset.getClass().getName}" )
+    logger.debug( s"search_onlyNT(search='$search') \n$queryString \n\tdataset Class ${dataset.getClass().getName}" )
     sparqlSelectQueryVariablesNT(queryString, Seq("thing") )
   }
 

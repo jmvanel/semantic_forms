@@ -10,7 +10,8 @@ import org.w3.banana.jena.JenaModule
 
 /**
  * Buttons for loading/display/edit, search, and create;
- *  this the default HTML UI before the form
+ * this the default HTML UI before the form
+ * TODO probably move to views
  */
 trait EnterButtons //extends Configuration
 {
@@ -102,16 +103,19 @@ Thesis
       </div>
     </div>
 
+  /** NOTE currently the label is NOT displayed by Firefox :( , only by Chrome */
   def suggestedClassesForCreation: NodeSeq = {
     <option label="foaf:Person short" selected="selected"> { forms("personForm") } </option>
-    <option label="foaf:Person"> { foaf.Person } </option>
+    <option label="foaf:Person long"> http://www.virtual-assembly.org/ontologies/1.0/forms#PersonForm </option>
     <option label="foaf:Project">                    { foaf.Project } </option>
+    <option label="Desc. Of A Software (DOAS)">      { prefixesMap2("doas")("Description") } </option>
     <option label="foaf:Group">                      { foaf.Group } </option>
-    <option label="doap:Project"> http://usefulinc.com/ns/doap#Project </option>
+    <option label="doap:Project">                    { prefixesMap2("doap")("Project") } </option>
     <option label="foaf:Organization">               { foaf.Organization } </option>
     <option label="cco:Skill">                       { prefixesMap2("cco")("Skill") } </option>
+    <option label="sioc:Thread">                     { sioc("Thread") } </option>
     <option label="sioc:Post">                       { sioc("Post") } </option>
-    <option label=" cal:Vevent "> http://www.w3.org/2002/12/cal/ical#Vevent </option>
+    <option label="ical:Vevent">                     { prefixesMap2("ical")("Vevent") } </option>
     <option label="owl:Class">                       { prefixesMap2("owl")("Class") } </option>
     <option label="owl:DatatypeProperty">            { prefixesMap2("owl")("DatatypeProperty") } </option>
     <option label="owl:ObjectProperty">              { prefixesMap2("owl")("ObjectProperty") } </option>

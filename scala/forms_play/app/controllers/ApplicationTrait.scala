@@ -28,12 +28,13 @@ import play.api.mvc.RequestHeader
 import play.api.mvc.Result
 import play.api.mvc.Results
 import views.MainXmlWithHead
+import java.net.URLEncoder
 
-object Global extends GlobalSettings with Results {
-  override def onBadRequest(request: RequestHeader, error: String) = {
-    Future{ BadRequest("""Bad Request: "$error" """) }
-  }
-}
+//object Global extends GlobalSettings with Results {
+//  override def onBadRequest(request: RequestHeader, error: String) = {
+//    Future{ BadRequest("""Bad Request: "$error" """) }
+//  }
+//}
 
 /** main controller */
 trait ApplicationTrait extends Controller
@@ -77,11 +78,12 @@ trait ApplicationTrait extends Controller
           val uri = expandOrUnchanged(uri0)
           println(s"displayURI: expandOrUnchanged $uri")
           val title = labelForURITransaction(uri, lang)
+          val userInfo = displayUser(userid, uri, title, lang)
           outputMainPage(
             htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
               graphURI = makeAbsoluteURIForSaving(userid),
               request = getRequestCopy()),
-            lang, title = title)
+            lang, title = title, userInfo=userInfo)
     }
 
   def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
@@ -271,10 +273,11 @@ trait ApplicationTrait extends Controller
           println("create: " + uri)
           println( s"formSpecURI from HTTP request: <$formSpecURI>")
           val lang = chooseLanguage(request)
+          val userInfo = displayUser(userid, uri, s"Create a $uri", lang)
           outputMainPage(
             create(uri, chooseLanguage(request),
               formSpecURI, makeAbsoluteURIForSaving(userid), copyRequest(request) ),
-            lang)
+            lang, userInfo=userInfo)
     }
 
   private def makeAbsoluteURIForSaving(userid: String): String = userid
@@ -571,20 +574,21 @@ trait ApplicationTrait extends Controller
           }
     }
 
-  def backlinksAction(q: String = "") = Action.async {
-	  implicit request =>
-	  val fut: Future[Elem] = backlinks(q)
-    val extendedSearchLink = <p>
-                               <a href={ "/esearch?q=" + q }>
-                                 Extended Search for &lt;{ q }
-                                 &gt;
-                               </a>
-                             </p>
-    fut.map { res =>
-    val lang = chooseLanguage(request)
-    outputMainPage(
-        NodeSeq fromSeq Seq(extendedSearchLink, res), lang)
-    }
+  def backlinksAction(uri: String = "") = Action.async {
+    implicit request =>
+      val fut: Future[Elem] = backlinks(uri)
+
+      // create link for extended Search
+      val extendedSearchLink = <p>
+                                 <a href={ "/esearch?q=" + URLEncoder.encode(uri, "utf-8") }>
+                                   Extended Search for &lt;{ uri }&gt;
+                                 </a>
+                               </p>
+      fut.map { res =>
+        val lang = chooseLanguage(request)
+        outputMainPage(
+          NodeSeq fromSeq Seq(extendedSearchLink, res), lang)
+      }
   }
 
   def extSearch(q: String = "") = Action.async {

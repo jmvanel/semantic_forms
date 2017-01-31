@@ -56,12 +56,14 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
       )(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     import resourceEntry._
     val placeholder = resourcePlaceholder(resourceEntry, lang)
+    val hasLookup = if (lookupActivatedFor(resourceEntry) ) "hasLookup" else ""
     Seq(
       Text("\n"),
     		// format: OFF
         if (openChoice)
           <div class={ css.cssClasses.formDivInputCSSClass }>
-          <input class={ css.cssClasses.formInputCSSClass }
+          <input class={ css.cssClasses.formInputCSSClass +
+            " " + hasLookup }
             value={ value.toString }
             name={ makeHTMLNameResource(resourceEntry) }
             id={ makeHTML_Id(resourceEntry) }
@@ -74,10 +76,12 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
             autocomplete={if (lookupActivatedFor(resourceEntry)) "off" else null}
             >
           </input>
-          { if (lookupActivatedFor(resourceEntry))
-            <script type="text/javascript" >
-              addDBPediaLookup('#{ makeHTML_Id(resourceEntry) }');
-            </script> }
+          { 
+//            if (lookupActivatedFor(resourceEntry))
+//            <script type="text/javascript" >
+//              addDBPediaLookup('#{ makeHTML_Id(resourceEntry) }');
+//            </script> 
+            }
 					</div>
 				else new Text("") // format: ON
       ,

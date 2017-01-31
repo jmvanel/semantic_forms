@@ -7,7 +7,10 @@ import scala.xml.NodeSeq.seqToNodeSeq
 
 trait MainXml extends ToolsPage with EnterButtons {
 
-  /** main Page with a single content (typically a form) */
+  /**
+   * main Page with a single content (typically a form)
+   *  TODO probably move to views
+   */
   def mainPage(content: NodeSeq, userInfo: NodeSeq, lang: String = "en", title: String = "") = {
     <html>
       { head(title)(lang) }
@@ -98,8 +101,10 @@ trait MainXml extends ToolsPage with EnterButtons {
       <input type="submit" name="create" id="create" value={ label }/>
     </form>
 
+  /** TODO extract to separate resource */
   private val javascriptCode = scala.xml.Unparsed(""" $(".form-horizontal").tabs(); """)
 
+  /** TODO extract to separate resource */
   def javascriptCSSImports: NodeSeq = {
     <!--
     <script src="assets/javascripts/jquery-ui.min.js"></script>

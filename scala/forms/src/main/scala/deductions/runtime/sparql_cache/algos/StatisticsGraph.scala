@@ -36,7 +36,7 @@ trait StatisticsGraph[Rdf <: RDF] extends RDFHelpers[Rdf]
       objects,
       { objectsCount2 }
       objects from page URI,
-      { if (classe != "") "type $classe" }
+      { if (classe != "") s"type(s) $classe" }
     </p>
   }
 
