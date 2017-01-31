@@ -1,15 +1,14 @@
-package deductions.runtime.html
+package deductions.runtime.views
+
+import scala.xml.NodeSeq
 
 import deductions.runtime.utils.I18NMessages
-import scala.xml.NodeSeq
-import deductions.runtime.views.ToolsPage
 import scala.xml.NodeSeq.seqToNodeSeq
 
 trait MainXml extends ToolsPage with EnterButtons {
 
   /**
    * main Page with a single content (typically a form)
-   *  TODO probably move to views
    */
   def mainPage(content: NodeSeq, userInfo: NodeSeq, lang: String = "en", title: String = "") = {
     <html>

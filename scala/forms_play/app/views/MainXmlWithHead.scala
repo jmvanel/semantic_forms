@@ -6,7 +6,7 @@ import scala.xml.Node
 import scala.xml.XML
 
 import controllers.routes
-import deductions.runtime.html.MainXml
+import deductions.runtime.views.MainXml
 
 trait MainXmlWithHead extends MainXml {
 
