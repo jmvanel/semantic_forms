@@ -59,7 +59,7 @@ import org.w3.banana._
     sioc, content,
     dbo,
     Prefix[Rdf]("vcard", "http://www.w3.org/2006/vcard/ns#"),
-
+    Prefix[Rdf]("ical", "http://www.w3.org/2002/12/cal/ical#"),
     forms,  // for specific form specs (FOAF, etc)
     //                    "http://deductions-software.com/ontologies/forms#"),
     form,   // form vocabulary
@@ -69,6 +69,7 @@ import org.w3.banana._
     restruc,
     tasks,
     Prefix[Rdf]("", "http://data.onisep.fr/ontologies/" ),
+    Prefix[Rdf]("doas", "http://deductions.github.io/doas.owl.ttl#"),
     Prefix[Rdf]("bioc", "http://deductions.github.io/biological-collections.owl.ttl#"),
     Prefix[Rdf]("cco", "http://purl.org/ontology/cco/core#" ),
 
