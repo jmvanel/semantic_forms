@@ -108,7 +108,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
 
   /** compute Instance Label and store it in TDB */
   private def computeInstanceLabeAndStoreInTDB(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
-    logger.debug( s"compute displayLabel for $node" )
+    logger.debug( s"compute displayLabel for <$node>" )
     if( node.toString() == "" ) return ""
 
     val label = super.instanceLabel(node, graph, lang)

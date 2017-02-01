@@ -188,8 +188,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       val classs = step1.classs
       val formMode: FormMode = if (step1.editable) EditionMode else DisplayMode
 
-      logger.debug(s"createForm subject $subject, props $props")
-      logger.debug("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
+      logger.debug(s"createForm subject <$subject>, props $props")
+      logger.debug(s"""FormSyntaxFactory: preferedLanguage: "$preferedLanguage""" )
       implicit val lang = preferedLanguage
 
       val entries = for (
@@ -218,11 +218,11 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         thumbnail = getURIimage(subject),
         title = instanceLabel( subject, allNamedGraph, preferedLanguage ) )
     
-    addAllPossibleValues(formSyntax, valuesFromFormGroup)
+    if( step1.editable ) addAllPossibleValues(formSyntax, valuesFromFormGroup)
     
     logger.debug(s"createFormDetailed2: createForm " + this)
     val res = time(s"createFormDetailed2: updateFormFromConfig(formConfig=$formConfig)",
-      updateFormFromConfig(formSyntax, formConfig), logger.isDebugEnabled() )
+      updateFormFromConfig(formSyntax, formConfig))
     logger.debug(s"createFormDetailed2: createForm 2 " + this)
     res
   }
@@ -267,7 +267,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       val owlThing = prefixesMap2("owl")("Thing")
       if (ranges.contains(owlThing)) {
         logger.warn(
-          s"""WARNING: ranges $ranges for property $prop contain owl:Thing;
+          s"""WARNING: ranges $ranges for property <$prop> contain owl:Thing;
                removing owl:Thing, and take first remaining: <${(ranges - owlThing).head}>""")
       }
       ranges - owlThing
@@ -345,7 +345,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       )
 	  (implicit graph: Rdf#Graph)
   : Seq[Entry] = {
-    logger.debug(s"makeEntriesForSubject subject $subject, prop $prop")
+    logger.debug(s"makeEntriesForSubject subject <$subject>, prop <$prop>")
     implicit val prlng = preferedLanguage
 
     val objects = objectsQuery(subject, prop.asInstanceOf[Rdf#URI]) ; logger.debug(s"makeEntriesForSubject subject $subject, objects $objects")
