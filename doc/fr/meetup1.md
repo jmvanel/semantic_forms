@@ -14,10 +14,10 @@ Autour de Semantic_forms on fera :
 Souvent, le logiciel libre est à la traîne du commercial. Pour SF, ce n'est pas le cas!
 - navigation sur le LOD sans quitter l'application
 - modèles de données (OWL) totalement flexibles y compris pour l'utilisateur final
-- capacités d'annotation illimitées sans détruire les données LOD importées in les donnes saisies
-- totalement dans l'esprit et les recommandations du W3C: cardinalité libre, I18N
+- capacités d'annotation illimitées sans détruire les données LOD importées ni les données saisies
+- totalement dans l'esprit et les recommandations du W3C: cardinalité libre, I18N, typage dynamique sans restrictions
 
-# l'application générique
+# L'application générique
 - navigation du LOD (Linked Open Data)
 - édition, création à partir d’une classe OWL
 - capacités collaboratives
@@ -37,7 +37,7 @@ voir:
 https://github.com/jmvanel/semantic_forms/wiki/Manuel-utilisateur
 
 ## Capacités collaboratives
-- l'historique des modifications
+- historique des modifications
 - la recherche dépend de ce qui a été consulté
 
 # Les capacités de framework
