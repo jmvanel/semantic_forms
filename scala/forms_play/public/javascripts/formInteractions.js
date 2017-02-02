@@ -7,6 +7,8 @@ function cloneWidget(widget) {
         parent = widget.parent();
     addedWidget.val('');
     parent.prepend(addedWidget, widget);
+    console.log(widget.parent().children.length);
+    addedWidget.attr('id', widget.attr('id')+'-1')
     addedWidget.focus();
 }
 

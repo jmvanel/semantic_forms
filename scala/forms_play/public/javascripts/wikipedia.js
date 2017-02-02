@@ -16,6 +16,19 @@ var urlReqPrefix = "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?Query
       resultsCount + "&QueryString=" ;
 // var urlReqPrefix = "/lookup?q=";
 
+// function XHRCompletion (url) {
+//     return new Promise (function(resolve, reject) {
+//         $.when($.ajax({
+//             url: "http://lookup.dbpedia.org/api/search/PrefixSearch",
+//             data: { MaxHits: resultsCount, QueryString: request.term },
+//             dataType: "json",
+//             timeout: 5000
+//         }))
+//          .then(function(response) { resolve(response) })
+//          .catch(function(error) { reject(error) })
+//     })
+// }
+
 $(document).ready(function() {
     var topics = [];
     $(".form-horizontal").on('focus', '.hasLookup', function() {
@@ -35,10 +48,9 @@ $(document).ready(function() {
             },
             source: function(request, callback) {
                 $.ajax({
+                    // url: "http://lookup.dbpedia.org/api/search/PrefixSearch",
                     url: "/lookup",
                     data: { MaxHits: resultsCount, QueryString: request.term + "*" },
-                    // url: "http://lookup.dbpedia.org/api/search/PrefixSearch",
-                    // data: { MaxHits: resultsCount, QueryString: request.term },
                     dataType: "json",
                     timeout: 5000
                 }).done(function (response) {
@@ -52,10 +64,8 @@ $(document).ready(function() {
                     }));
                 }).fail(function (error){
                     $.ajax({
-                        url: "http://lookup.dbpedia.org/api/search/PrefixSearch",
-                        data: { MaxHits: resultsCount, QueryString: request.term },
-                        // url: "/lookup",
-                        // data: { MaxHits: resultsCount, QueryString: request.term + "*" },
+                        url: "/lookup",
+                        data: { MaxHits: resultsCount, QueryString: request.term + "*" },
                         dataType: "json",
                         timeout: 5000
                     }).done(function(response) {
@@ -65,8 +75,8 @@ $(document).ready(function() {
                             console.log( "response :");
                             console.log(JSON.parse(m));
                             topics[m.label] = m.uri;
-                            return { "label": m.label + " - " +
-                            cutStringAfterCharacter(m.description, '.'), "value": m.uri }
+                            return { "label": m.label /* + " - " +
+                            cutStringAfterCharacter(m.description, '.') */, "value": m.uri }
                         }))
                     });
                 })
