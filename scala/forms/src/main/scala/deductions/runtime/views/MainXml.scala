@@ -101,7 +101,11 @@ trait MainXml extends ToolsPage with EnterButtons {
     </form>
 
   /** TODO extract to separate resource */
-  private val javascriptCode = scala.xml.Unparsed(""" $(".form-horizontal").tabs(); """)
+  private val javascriptCode = scala.xml.Unparsed("""
+		  $(document).ready(function () {
+		    $(".form-horizontal").tabs();
+		  };
+		  """)
 
   /** TODO extract to separate resource */
   def javascriptCSSImports: NodeSeq = {
@@ -133,10 +137,7 @@ trait MainXml extends ToolsPage with EnterButtons {
     <script src="assets/rdfviewer/md5.min.js" type="text/javascript"></script>
     <script src="assets/javascripts/d3.v2.min.js" type="text/javascript"></script>
     <script type='text/javascript'>
-      $(document).ready(function (){{
-      { javascriptCode }
-      }}
-      )
+      { /* javascriptCode TODO */ }
     </script>
   }
 }
