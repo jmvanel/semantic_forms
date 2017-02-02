@@ -1,6 +1,7 @@
 # Introduction
 ̀Semantic_forms` est un projet Open Source d'application de gestion de données et navigation du LOD.
 https://github.com/jmvanel/semantic_forms/releases
+
 https://github.com/jmvanel/semantic_forms/wiki
 
 Autour de Semantic_forms on fera :
@@ -14,7 +15,7 @@ Autour de Semantic_forms on fera :
 Souvent, le logiciel libre est à la traîne du commercial. Pour SF, ce n'est pas le cas!
 - navigation sur le LOD sans quitter l'application
 - modèles de données (OWL) totalement flexibles y compris pour l'utilisateur final
-- capacités d'annotation illimitées sans détruire les données LOD importées ni les données saisies
+- capacités d'annotation illimitées sans détruire les données LOD importées ni les données saisies par les autres utilisateurs
 - totalement dans l'esprit et les recommandations du W3C: cardinalité libre, I18N, typage dynamique sans restrictions
 
 # L'application générique
@@ -39,8 +40,10 @@ https://github.com/jmvanel/semantic_forms/wiki/Manuel-utilisateur
 ## Capacités collaboratives
 - historique des modifications
 - la recherche dépend de ce qui a été consulté
-
-# Les capacités de framework
+EN CHANTIER
+- préférences utilisateur
+- assistant importation XML JSON tableurs
+# Les capacités du framework
 - le service de formulaires /form
 - le service de données enrichies /form-data
 - création de formulaires de spécification
