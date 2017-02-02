@@ -41,10 +41,11 @@ import org.w3.banana._
   lazy val sioc =     Prefix[Rdf]("sioc", "http://rdfs.org/sioc/ns#")
   lazy val schema = Prefix[Rdf]("schema", "http://schema.org/")
   lazy val text = Prefix[Rdf]("text", "http://jena.apache.org/text#" )
-  lazy val form = Prefix[Rdf]("form", "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#") // http://deductions-software.com/ontologies/forms.owl.ttl#" )
   lazy val dbo = Prefix[Rdf]("dbo", "http://dbpedia.org/ontology/")
   lazy val vs = Prefix[Rdf]("vs", "http://www.w3.org/2003/06/sw-vocab-status/ns#")
   lazy val content = Prefix[Rdf]("content", "http://purl.org/rss/1.0/modules/content/")
+
+  lazy val form = Prefix[Rdf]("form", "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#") // http://deductions-software.com/ontologies/forms.owl.ttl#" )
   lazy val forms = Prefix[Rdf]("forms", "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#" )
 
   lazy val prefixesList = List(
@@ -56,10 +57,11 @@ import org.w3.banana._
     LDPPrefix[Rdf], IANALinkPrefix[Rdf], WebACLPrefix[Rdf], CertPrefix[Rdf],
     owl, skos,
     schema,
+    Prefix[Rdf]("gr", "http://purl.org/goodrelations/v1#"),
     sioc, content,
     dbo,
     Prefix[Rdf]("vcard", "http://www.w3.org/2006/vcard/ns#"),
-
+    Prefix[Rdf]("ical", "http://www.w3.org/2002/12/cal/ical#"),
     forms,  // for specific form specs (FOAF, etc)
     //                    "http://deductions-software.com/ontologies/forms#"),
     form,   // form vocabulary
@@ -69,6 +71,7 @@ import org.w3.banana._
     restruc,
     tasks,
     Prefix[Rdf]("", "http://data.onisep.fr/ontologies/" ),
+    Prefix[Rdf]("doas", "http://deductions.github.io/doas.owl.ttl#"),
     Prefix[Rdf]("bioc", "http://deductions.github.io/biological-collections.owl.ttl#"),
     Prefix[Rdf]("cco", "http://purl.org/ontology/cco/core#" ),
 

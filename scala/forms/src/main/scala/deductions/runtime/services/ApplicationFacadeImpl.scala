@@ -40,6 +40,7 @@ import scala.util.control.NonFatal
 import scala.util.control.NonFatal
 import deductions.runtime.sparql_cache.algos.StatisticsGraph
 import deductions.runtime.utils.HTTPrequest
+import deductions.runtime.views.Results
 
 /**
  * a Web Application Facade,
@@ -79,6 +80,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with FormJSON[Rdf, DATASET]
     with ToolsPage
     with CSS
+    with Results
     {
  
   val config: Configuration
@@ -260,7 +262,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
   def wordsearchFuture(q: String = "", lang: String = "", clas: String = ""): Future[Elem] = {
     val fut = searchString(q, hrefDisplayPrefix, lang, clas)
-    wrapSearchResults(fut, q)
+    wrapSearchResults(fut, q, mess= s"In class <$clas>, searched for" )
   }
 
   def rdfDashboardFuture(q: String = "", lang: String = ""): Future[NodeSeq] = {
@@ -426,17 +428,16 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     wrapSearchResults(fut, q)
   }
 
-  /** TODO should be in package hmtl */
-  private def wrapSearchResults(fut: Future[NodeSeq], q: String, mess:String= "Searched for"): Future[Elem] =
-    fut.map { v =>
-      <section class="label-search-results">
-        <p class="label-search-header">{mess} "{ q }" :</p>
-        <div>
-        { css.localCSS }
-        { v }
-        </div>
-      </section>
-    }
+//  private def wrapSearchResults(fut: Future[NodeSeq], q: String, mess:String= "Searched for"): Future[Elem] =
+//    fut.map { v =>
+//      <section class="label-search-results">
+//        <p class="label-search-header">{mess} "{ q }" :</p>
+//        <div>
+//        { css.localCSS }
+//        { v }
+//        </div>
+//      </section>
+//    }
 
   def esearchFuture(q: String = ""): Future[Elem] = {
     val fut = extendedSearch(q)
