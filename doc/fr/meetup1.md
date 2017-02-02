@@ -1,5 +1,6 @@
 # Introduction
 ̀Semantic_forms` est un projet Open Source d'application de gestion de données et navigation du LOD.
+
 https://github.com/jmvanel/semantic_forms/releases
 
 https://github.com/jmvanel/semantic_forms/wiki
@@ -38,20 +39,25 @@ voir:
 https://github.com/jmvanel/semantic_forms/wiki/Manuel-utilisateur
 
 ## Capacités collaboratives
+- affichage des contributions de tous
 - historique des modifications
 - la recherche dépend de ce qui a été consulté
-EN CHANTIER
-- préférences utilisateur
-- assistant importation XML JSON tableurs
+
 # Les capacités du framework
 - le service de formulaires /form
 - le service de données enrichies /form-data
 - création de formulaires de spécification
 - gestion des données utilisateur: saisie, compte
+
 Sur ces sujets, voir:
 https://github.com/jmvanel/semantic_forms/wiki/Application-development-manual
 
-# Spécifications du W3C
+# EN CHANTIER
+- préférences utilisateur
+- assistant importation XML, JSON, tableurs
+- et 70 issues ! https://github.com/jmvanel/semantic_forms/issues
+
+# Autour des spécifications du W3C
 - La création, la recherche et la réutilisation d'ontologies OWL
 - initiation à SPARQL
 - RDFa
