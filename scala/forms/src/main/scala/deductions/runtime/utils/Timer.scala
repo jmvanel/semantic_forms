@@ -12,7 +12,6 @@ trait Timer {
       val start = System.currentTimeMillis()
       val res = sourceCode
       val end = System.currentTimeMillis()
-      //      sys.error(s"""Time elapsed: "$mess": ${end - start}ms""")
       System.err.println(s"""Time elapsed: "$mess": ${end - start}ms""")
       System.err.flush()
       res

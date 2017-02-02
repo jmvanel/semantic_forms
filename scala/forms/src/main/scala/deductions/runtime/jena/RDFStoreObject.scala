@@ -100,6 +100,7 @@ trait RDFStoreLocalJenaProvider
 
   /**
    * NOTES:
+   *  - NEEDS transaction
    *  - no need of a transaction here, as getting Union Graph is anyway part of a transaction
    *  - Union Graph in Jena should be re-done for each use (not 100% sure, but safer anyway)
    */

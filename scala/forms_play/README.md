@@ -179,9 +179,9 @@ See https://docs.oracle.com/javase/8/docs/technotes/guides/management/jconsole.h
 ## Debug
 See [playframework documentation/2.4.x/IDE](https://www.playframework.com/documentation/2.4.x/IDE)
 
-Start SBT with -jvm-debug argument; then type run. Then start a remote debug in eclipse or another IDE with port 9999.
+Start SBT like below; then type run. Then start a remote debug in eclipse or another IDE with port 9999.
 ```
-    sbt  -jvm-debug 9999
+export SBT_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9999" && sbt
 ```
 
 ## Test
@@ -229,7 +229,7 @@ https://www.playframework.com/documentation/2.4.x/ProductionConfiguration
 ## Change the log settings
 `semantic_forms` uses Log4J 2 for logging. By default it prints very little.
 If you want to apply your log settings:
-```
+```shell
 cp conf/log4j2.debug.properties myconf.properties
 vi myconf.properties
 nohup bin/semantic_forms_play -Dlog4j.configurationFile=myconf.properties -mem 50 &

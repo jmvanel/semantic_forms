@@ -85,17 +85,14 @@ trait Lookup[Rdf <: RDF, DATASET]
     xml.toString
   }
 
+  /** The keys are NOT exactly the same as the XML tags :( */
   private def formatJSON(list: List[(Rdf#Node, String)]): String = {
     val list2 = list.map {
-      case (uri, label) => Json.obj("Label" -> label, "URI" -> uri.toString())
+      case (uri, label) => Json.obj("label" -> label, "uri" -> uri.toString())
     }
     println(s"list2 $list - $list2")
-//    val responses = new JsArray(list2)
-//    println(s"responses $responses")
-    val results =  Json.obj(
-//        new JsObject( Seq(
-            "results" -> list2 )
-    Json.prettyPrint(results) // responses)
+    val results =  Json.obj( "results" -> list2 )
+    Json.prettyPrint(results)
   }
 
   /**

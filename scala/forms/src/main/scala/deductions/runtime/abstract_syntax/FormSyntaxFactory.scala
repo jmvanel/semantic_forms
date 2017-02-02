@@ -178,7 +178,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   : FormSyntax = {
 
     val formConfig = step1.formURI
-    println(s">>>> createFormDetailed2 formConfig $formConfig")
+    logger.info(s">>>> createFormDetailed2 formConfig <$formConfig>")
     
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
 
@@ -188,8 +188,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       val classs = step1.classs
       val formMode: FormMode = if (step1.editable) EditionMode else DisplayMode
 
-      logger.debug(s"createForm subject $subject, props $props")
-      logger.debug("FormSyntaxFactory: preferedLanguage: " + preferedLanguage)
+      logger.debug(s"createForm subject <$subject>, props $props")
+      logger.debug(s"""FormSyntaxFactory: preferedLanguage: "$preferedLanguage""" )
       implicit val lang = preferedLanguage
 
       val entries = for (
@@ -218,12 +218,12 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         thumbnail = getURIimage(subject),
         title = instanceLabel( subject, allNamedGraph, preferedLanguage ) )
     
-    addAllPossibleValues(formSyntax, valuesFromFormGroup)
+    if( step1.editable ) addAllPossibleValues(formSyntax, valuesFromFormGroup)
     
-    logger.debug(s"createForm " + this)
-    val res = time(s"updateFormFromConfig()",
+    logger.debug(s"createFormDetailed2: createForm " + this)
+    val res = time(s"createFormDetailed2: updateFormFromConfig(formConfig=$formConfig)",
       updateFormFromConfig(formSyntax, formConfig))
-    logger.debug(s"createForm 2 " + this)
+    logger.debug(s"createFormDetailed2: createForm 2 " + this)
     res
   }
 
@@ -266,8 +266,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     if (rangesSize > 1) {
       val owlThing = prefixesMap2("owl")("Thing")
       if (ranges.contains(owlThing)) {
-        System.err.println(
-          s"""WARNING: ranges $ranges for property $prop contain owl:Thing;
+        logger.warn(
+          s"""WARNING: ranges $ranges for property <$prop> contain owl:Thing;
                removing owl:Thing, and take first remaining: <${(ranges - owlThing).head}>""")
       }
       ranges - owlThing
@@ -345,7 +345,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       )
 	  (implicit graph: Rdf#Graph)
   : Seq[Entry] = {
-    logger.debug(s"makeEntriesForSubject subject $subject, prop $prop")
+    logger.debug(s"makeEntriesForSubject subject <$subject>, prop <$prop>")
     implicit val prlng = preferedLanguage
 
     val objects = objectsQuery(subject, prop.asInstanceOf[Rdf#URI]) ; logger.debug(s"makeEntriesForSubject subject $subject, objects $objects")
