@@ -14,7 +14,7 @@ import java.net.URLEncoder
 /** generate HTML from abstract Form : common parts for Display & edition */
 trait Form2HTMLBase[NODE, URI <: NODE]
     extends BasicWidgets
-    with CSS {
+    with CSSClasses {
 
   val config: Configuration
   import config._

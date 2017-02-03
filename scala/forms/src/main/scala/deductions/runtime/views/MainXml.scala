@@ -5,6 +5,7 @@ import scala.xml.NodeSeq
 import deductions.runtime.utils.I18NMessages
 import scala.xml.NodeSeq.seqToNodeSeq
 
+/** HTML page skeleton */
 trait MainXml extends ToolsPage with EnterButtons {
 
   /**
@@ -12,7 +13,7 @@ trait MainXml extends ToolsPage with EnterButtons {
    */
   def mainPage(content: NodeSeq, userInfo: NodeSeq, lang: String = "en", title: String = "") = {
     <html>
-      { head(title)(lang) }
+      <head>{ head(title)(lang) }</head>
       <body>
         {
           userInfo ++
@@ -41,8 +42,6 @@ trait MainXml extends ToolsPage with EnterButtons {
       </a>
       &nbsp; Version =timestamp=
     </p>
-
-  //  def message(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
 
   /**
    * main Page Header for generic app:
@@ -99,45 +98,4 @@ trait MainXml extends ToolsPage with EnterButtons {
       }/>
       <input type="submit" name="create" id="create" value={ label }/>
     </form>
-
-  /** TODO extract to separate resource */
-  private val javascriptCode = scala.xml.Unparsed("""
-		  $(document).ready(function () {
-		    $(".form-horizontal").tabs();
-		  };
-		  """)
-
-  /** TODO extract to separate resource */
-  def javascriptCSSImports: NodeSeq = {
-    <!--
-    <script src="assets/javascripts/jquery-ui.min.js"></script>
-    <script src="assets/javascripts/jquery.min.js" type="text/javascript"></script>
-    <link rel="stylesheet" href="assets/stylesheets/jquery-ui.min.css"></link>
--->
-    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css"></link>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
-
-    <!-- bootstrap -->
-    <link rel="stylesheet" href="assets/stylesheets/bootstrap.min.css"></link>
-    <link rel="stylesheet" href="assets/stylesheets/bootstrap-theme.min.css"></link>
-    <script src="assets/javascripts/bootstrap.min.js" type="text/javascript"></script>
-
-    <!--link rel="stylesheet" href="assets/stylesheets/select2.css"/>
-      <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-beta.3/css/select2.min.css" rel="stylesheet"/>
-      <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-beta.3/js/select2.min.js"></script>
-      <script src="assets/javascripts/select2.js" type="text/javascript"></script -->
-    <script src="assets/javascripts/wikipedia.js" type="text/javascript"></script>
-    <script src="assets/javascripts/formInteractions.js" type="text/javascript"></script>
-    <script src="assets/javascripts/drawgraph.js" type="text/javascript"></script>
-    <script src="assets/rdfviewer/rdf.js" type="text/javascript"></script>
-
-    <!-- RDFViewer -->
-    <script src="assets/rdfviewer/rdf.js" type="text/javascript"></script>
-    <script src="assets/rdfviewer/md5.min.js" type="text/javascript"></script>
-    <script src="assets/javascripts/d3.v2.min.js" type="text/javascript"></script>
-    <script type='text/javascript'>
-      { /* javascriptCode TODO */ }
-    </script>
-  }
 }

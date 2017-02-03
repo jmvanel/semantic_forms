@@ -9,7 +9,7 @@ import scala.xml.Node
  */
 trait JavaScript {
 
-  /** native javascript Code (written now in Scala.JS) */
+  /** native javascript Code (written also in Scala.JS) */
   private lazy val javascriptCode_native: Node =
     // Prevent Scala from escaping double quotes in XML unnecessarily
     scala.xml.Unparsed(
@@ -63,11 +63,7 @@ function launchEditorWindow( elem /* input */ ) {
 };
   """)
 
-  /**
-   * NOTE: with Scala 2.11.7, it is not possible to declare this private:
-   *  that triggers an AbstractMethodException
-   */
-  lazy val javascriptCode: Node = javascriptCode_native
+  private lazy val javascriptCode: Node = javascriptCode_native
 
   /** compiled from Scala.js */
   lazy private val javascriptCodeScalaJS: Node = {

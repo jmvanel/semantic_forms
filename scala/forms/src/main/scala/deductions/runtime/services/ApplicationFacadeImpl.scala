@@ -34,7 +34,7 @@ import deductions.runtime.views.ToolsPage
 import deductions.runtime.user.RegisterPage
 import deductions.runtime.semlogs.TimeSeries
 import deductions.runtime.semlogs.LogAPI
-import deductions.runtime.html.CSS
+import deductions.runtime.html.CSSClasses
 import deductions.runtime.data_cleaning.BlankNodeCleanerIncremental
 import scala.util.control.NonFatal
 import scala.util.control.NonFatal
@@ -79,7 +79,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with StatisticsGraph[Rdf]
     with FormJSON[Rdf, DATASET]
     with ToolsPage
-    with CSS
+    with CSSClasses
     with Results
     {
  

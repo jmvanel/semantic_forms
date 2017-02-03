@@ -12,7 +12,6 @@ import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
 import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.html.CSS
 import deductions.runtime.html.Form2HTML
 import deductions.runtime.html.Form2HTMLDisplay
 
@@ -39,7 +38,6 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     with InstanceLabelsInferenceMemory[Rdf, DATASET]
     with PreferredLanguageLiteral[Rdf]
     with SPARQLHelpers[Rdf, DATASET]
-    with CSS
     with Form2HTMLDisplay[Rdf#Node, Rdf#URI] {
 
   import config._
