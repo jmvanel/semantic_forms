@@ -48,9 +48,8 @@ $(document).ready(function() {
             },
             source: function(request, callback) {
                 $.ajax({
-                    // url: "http://lookup.dbpedia.org/api/search/PrefixSearch",
-                    url: "/lookup",
-                    data: { MaxHits: resultsCount, QueryString: request.term + "*" },
+                    url: "http://lookup.dbpedia.org/api/search/PrefixSearch",
+                    data: { MaxHits: resultsCount, QueryString: request.term },
                     dataType: "json",
                     timeout: 5000
                 }).done(function (response) {
@@ -75,8 +74,8 @@ $(document).ready(function() {
                             console.log( "response :");
                             console.log(JSON.parse(m));
                             topics[m.label] = m.uri;
-                            return { "label": m.label /* + " - " +
-                            cutStringAfterCharacter(m.description, '.') */, "value": m.uri }
+                            return { "label": m.label + " - " +
+                            cutStringAfterCharacter(m.description, '.'), "value": m.uri }
                         }))
                     });
                 })
