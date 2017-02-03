@@ -9,6 +9,8 @@ import deductions.runtime.services.ApplicationFacadeInterface
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.utils.HTTPrequest
+import deductions.runtime.html.Form2HTMLBanana
+import org.w3.banana.RDFOps
 
 /**
  * ApplicationFacade implemeted with Jena,
@@ -21,8 +23,7 @@ trait ApplicationFacadeJena
 
   val config: Configuration
   val conf = config
-  //  def getRequest(): HTTPrequest
-  //  val getRequest1: () => HTTPrequest
+  val ops1 = ops
 
   override val impl: ApplicationFacadeImpl[Rdf, DATASET] = try {
     /**
@@ -38,23 +39,13 @@ trait ApplicationFacadeJena
       with RDFStoreLocalUserManagement[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 
     new ApplicationFacadeImplJena {
-
-      //      override def getRequest: HTTPrequest = getRequest1()
-
-      //      /** Overridden just for some logging */
-      //      override def htmlForm(uri0: String, blankNode: String = "",
-      //        editable: Boolean = false,
-      //        lang: String = "en", formuri: String = "",
-      //        graphURI: String = "", database: String = "TDB"): NodeSeq = {
-      //        println(s""">> ApplicationFacadeImplJena 
-      //                max  Memory  ${Runtime.getRuntime.maxMemory()}
-      //                totalMemory  ${Runtime.getRuntime.totalMemory()}""")
-      //        val name = "TDB/journal.jrnl"
-      //        println(s"$name  : ${new java.io.File(name).length()} bytes")
-      //        super.htmlForm(uri0: String, blankNode,
-      //          editable, lang: String, graphURI = graphURI, database = database)
-      //      }
+      val htmlGenerator = new Form2HTMLBanana[ImplementationSettings.Rdf] {
+        implicit val ops: RDFOps[ImplementationSettings.Rdf] = ops1
+        val config = conf
+        val nullURI = ops.URI("")
+      }
     }
+
   } catch {
     case t: Throwable =>
       t.printStackTrace()

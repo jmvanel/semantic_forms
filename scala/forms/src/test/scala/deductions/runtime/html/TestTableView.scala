@@ -21,6 +21,13 @@ class TestTableView extends FunSuite
     with BeforeAndAfter //    with DefaultConfiguration
     {
   val config = new DefaultConfiguration {}
+  val conf = config
+  val ops1 = ops
+  val htmlGenerator = new Form2HTMLBanana[ImplementationSettings.Rdf] {
+    implicit val ops = ops1
+    val config = conf
+    val nullURI = ops.URI("")
+  }
 
   val logger = Logger.getRootLogger()
   lazy implicit val allNamedGraphs = allNamedGraph

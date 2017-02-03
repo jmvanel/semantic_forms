@@ -32,7 +32,8 @@ sbt test
 - pas de fonctions longues (+ d'un écran)
 - pas de classes longues (+ de 400 lignes)
 - le moins possible de variables mutables
-- ne pas rattraper les exceptions trop tôt; pluôt utiliser une structure Try[TypeDuRésultat] comme valeur de retour
+- ne pas rattraper les exceptions trop tôt; plutôt utiliser une structure Try[TypeDuRésultat] comme valeur de retour
+- private : compartimenter aux maximum le code (il est bien plus facile d'ouvrir ultérieurement que l'inverse)
 
 # Refactoring
 Définition: changement qui ne change pas la logique du code ni, donc, les résultats.

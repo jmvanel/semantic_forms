@@ -28,13 +28,14 @@ import deductions.runtime.utils.Timer
 trait TriplesViewModule[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
     with FormSyntaxFactory[Rdf, DATASET]
-    with Form2HTMLBanana[Rdf]
+//    with Form2HTMLBanana[Rdf]
     with Timer {
 
   val config: Configuration
+  val htmlGenerator: Form2HTMLBanana[Rdf]
+  import htmlGenerator._
 
   import ops._
-  import rdfStore.transactorSyntax._
 
   /**
    * wrapper for htmlForm that shows Failure's ;
@@ -228,14 +229,14 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     val form = time("createAbstractForm",
       createAbstractForm(
           uri, editable, lang, blankNode, formGroup, formuri))
-    val htmlFormGen = makeHtmlFormGenerator
-    val htmlForm = htmlFormGen.
+//    val htmlFormGen = makeHtmlFormGenerator
+    val htmlForm = // htmlFormGen.
       generateHTML(form, hrefPrefix, editable, actionURI, graphURI,
         actionURI2, lang, request)
     ( htmlForm, form )
   }
 
-  private def makeHtmlFormGenerator = this
+//  private def makeHtmlFormGenerator = this
 
   private def createAbstractForm(
       uri: String, editable: Boolean,
@@ -269,7 +270,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
                                editable: Boolean = false,
                                formuri: String = ""): NodeSeq = {
     val formSyntax = createFormFromSPARQL(query, editable, formuri)
-    makeHtmlFormGenerator.generateHTML(formSyntax)
+    generateHTML(formSyntax)
   }
 
 }

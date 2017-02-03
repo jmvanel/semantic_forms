@@ -15,14 +15,15 @@ import deductions.runtime.utils.RDFPrefixes
 
 trait CreationFormAlgo[Rdf <: RDF, DATASET]
 extends RDFCacheAlgo[Rdf, DATASET]
-with Form2HTMLBanana[Rdf] // #Node, Rdf#URI]
+//with Form2HTMLBanana[Rdf]
 with UnfilledFormFactory[Rdf, DATASET]
 with HTML5TypesTrait[Rdf]
 with RDFPrefixes[Rdf]
 with FormSyntaxJson[Rdf] {
 
-  
   val config: Configuration
+  val htmlGenerator: Form2HTMLBanana[Rdf]
+  import htmlGenerator._
 
   import ops._
   /** TODO also defined elsewhere */
@@ -39,9 +40,10 @@ with FormSyntaxJson[Rdf] {
       val form = createData(classUri, lang, formSpecURI, graphURI, request)
       val ops1 = ops
       val config1 = config
-      val htmlFormatter = this
+//      val htmlFormatter = this
 
-      val rawForm = htmlFormatter . generateHTML(
+      val rawForm = // htmlFormatter .
+        generateHTML(
           form, hrefPrefix = "",
           editable = true,
           actionURI = actionURI,

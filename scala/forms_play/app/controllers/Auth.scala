@@ -22,6 +22,7 @@ import play.api.i18n.Lang
 import play.api.i18n.I18nSupport
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
+import deductions.runtime.html.Form2HTMLBanana
 
 object Auth extends AuthTrait {
   val config = new DefaultConfiguration {
@@ -29,6 +30,7 @@ object Auth extends AuthTrait {
     override val needLoginForDisplaying = true
     override val useTextQuery = false
   }
+  val htmlGenerator: Form2HTMLBanana[ImplementationSettings.Rdf] = ??? // unused here !
 }
 
 trait AuthTrait
