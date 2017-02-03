@@ -262,12 +262,32 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       // NOTE: Jena RDF loader can throw an exception "Failed to determine the content type"
       val graphTry = rdfLoader.load(new java.net.URL(uri.toString()))
       println(s"readStoreURINoTransaction: after rdfLoader.load($uri): $graphTry")
-
-       val graph = graphTry . getOrElse {
+      
+      val graph = graphTry . getOrElse {
             println(s"Trying RDFa for <$uri>")
             microdataLoader.load(
-              new java.net.URL(uri.toString())) .get
+              new java.net.URL(uri.toString())) 
+              match {
+              case Success(s : Rdf#Graph) => s
+              case Failure(f) =>{ 
+                
+                println("START MESSAGE")
+                println(f.getMessage)
+                println("END MESSAGE")
+                
+                //catch only "pure" HTML web page
+                if (f.getMessage.contains("Failed to determine the content type:")) {
+                  val newTripleWithURL = List( makeTriple(uri, rdf.typ , foaf.Document))
+                  val newGraphWithUrl : Rdf#Graph = makeGraph(newTripleWithURL)
+                  newGraphWithUrl
+                }
+                else emptyGraph
+                  
+              }
+            }
+              
           }
+      
       println(s"readStoreURINoTransaction: graph $graph")
 
       Logger.getRootLogger().info(s"readStoreURINoTransaction: Before appendToGraph uri <$uri> graphUri <$graphUri>")
