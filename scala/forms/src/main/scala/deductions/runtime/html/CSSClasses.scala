@@ -1,7 +1,7 @@
 package deductions.runtime.html
 
 /** CSS for forms */
-trait CSS {
+trait CSSClasses {
 
   lazy val cssClasses = tableCSSClasses
 

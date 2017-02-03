@@ -1,6 +1,6 @@
 package deductions.runtime.services
 
-import deductions.runtime.html.CSS
+import deductions.runtime.html.CSSClasses
 
 /**
  * All Configuration flags and values for the library;
@@ -63,7 +63,7 @@ trait Configuration {
   /** considered if useTextQuery */
   def solrIndexing: Boolean
 
-  def css: CSS
+  def css: CSSClasses
 
   def radioForIntervals: Boolean //  = false 
   //  def activateUserInputHistory = false
