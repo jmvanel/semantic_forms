@@ -21,20 +21,22 @@ import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.utils.FileUtils
 import deductions.runtime.utils.RDFPrefixes
 
-class TestCreationForm2Jena extends FunSuite with TestForJena
-with TestCreationForm2[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
-    val config = new DefaultConfiguration{}
+class TestCreationForm2Jena extends {
+    override val config = new DefaultConfiguration{}
 }
+with FunSuite with TestForJena
+with TestCreationForm2[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 
 trait TestForJena extends JenaModule
   with RDFStoreLocalJena1Provider
 
 /** Test Creation Form with form specification */
 trait TestCreationForm2[Rdf <: RDF, DATASET] extends FunSuite
-    //    with TurtleWriterModule
     with CreationFormAlgo[Rdf, DATASET]
     with GraphTest[Rdf]
     with BeforeAndAfterAll {
+
+//	override val config = new DefaultConfiguration{}
 
   // TODO PASTED code:
 	val conf = config
@@ -62,8 +64,8 @@ trait TestCreationForm2[Rdf <: RDF, DATASET] extends FunSuite
     val uri = "http://xmlns.com/foaf/0.1/Person"
     retrieveURI(makeUri(uri), dataset)
     // NOTE: without form_specs/foaf.form.ttl
-      rdfStore.rw(dataset, {
-      rdfStore.appendToGraph( dataset, makeUri("test"), personFormSpec)
+    rdfStore.rw(dataset, {
+      rdfStore.appendToGraph(dataset, makeUri("test"), personFormSpec)
     })
     val form = create(uri, lang = "fr")
     val file = "creation.form.2.html"

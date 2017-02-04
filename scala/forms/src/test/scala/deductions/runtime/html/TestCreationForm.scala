@@ -32,22 +32,21 @@ import org.w3.banana.RDFOps
  * Test Creation Form from class URI, without form specification
  * NOTE: the TDB database is used here
  */
-class TestCreationForm extends FunSuite
+class TestCreationForm extends {
+  override val config = new DefaultConfiguration{}
+}   with FunSuite
     with ImplementationSettings.RDFModule
     with CreationFormAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with GraphTestEnum[ImplementationSettings.Rdf]
-    //    with BeforeAndAfterAll
     with RDFStoreLocalJena1Provider
     with SPARQLHelpers[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with InstanceLabelsInferenceMemory[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with BeforeAndAfter
-    with Configuration // [Rdf <: RDF, DATASET]
+    with Configuration
     with DefaultConfiguration {
 
-	val config = new DefaultConfiguration{}
-
 	// TODO PASTED code:
-	  val conf = config
+	val conf = config
   val ops1 = ops
   val htmlGenerator = new Form2HTMLBanana[ImplementationSettings.Rdf] {
     implicit val ops = ops1
