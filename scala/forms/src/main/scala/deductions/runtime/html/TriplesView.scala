@@ -28,7 +28,6 @@ import deductions.runtime.utils.Timer
 trait TriplesViewModule[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
     with FormSyntaxFactory[Rdf, DATASET]
-//    with Form2HTMLBanana[Rdf]
     with Timer {
 
   val config: Configuration

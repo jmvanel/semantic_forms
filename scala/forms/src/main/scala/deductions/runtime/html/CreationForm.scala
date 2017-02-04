@@ -15,7 +15,6 @@ import deductions.runtime.utils.RDFPrefixes
 
 trait CreationFormAlgo[Rdf <: RDF, DATASET]
 extends RDFCacheAlgo[Rdf, DATASET]
-//with Form2HTMLBanana[Rdf]
 with UnfilledFormFactory[Rdf, DATASET]
 with HTML5TypesTrait[Rdf]
 with RDFPrefixes[Rdf]

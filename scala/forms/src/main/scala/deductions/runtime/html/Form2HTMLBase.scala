@@ -12,7 +12,7 @@ import deductions.runtime.utils.RDFPrefixes
 import java.net.URLEncoder
 
 /** generate HTML from abstract Form : common parts for Display & edition */
-trait Form2HTMLBase[NODE, URI <: NODE]
+private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     extends BasicWidgets
     with CSSClasses {
 
@@ -26,7 +26,6 @@ trait Form2HTMLBase[NODE, URI <: NODE]
 
   lazy val prefixes = new RDFPrefixes[ImplementationSettings.Rdf]
 		  with ImplementationSettings.RDFModule	{}
-  
   import prefixes._
   
   def makeFieldLabel(preceding: formMod#Entry, field: formMod#Entry)
@@ -50,7 +49,7 @@ trait Form2HTMLBase[NODE, URI <: NODE]
       }> -- </label>
   }
 
-  def labelTooltip(field: formMod#Entry) = {
+  private def labelTooltip(field: formMod#Entry) = {
     val details = if( displayTechnicalSemWebDetails )
         s"""
           property: ${field.property} -
@@ -101,12 +100,12 @@ trait Form2HTMLBase[NODE, URI <: NODE]
   def makeHTMLNameBN(re: formMod#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = makeHTMLName(re)
   def makeHTMNameLiteral(lit: formMod#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax) =
     makeHTMLName(lit)
-   
+
   def makeHTML_Id(entry: formMod#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) =
     "f" + form.fields.indexOf(entry)
 
-  /** TODO pasted from object Form2HTML */
-  def urlEncode(node: Any) = URLEncoder.encode(node.toString, "utf-8")
+  /** URL Encode the RDF node */
+  def urlEncode(node: Any) = Form2HTML.urlEncode(node) // URLEncoder.encode(node.toString, "utf-8")
 
   def createHyperlinkString(hrefPrefix: String, uri: String, blanknode: Boolean = false): String = {
     if (hrefPrefix == "")
