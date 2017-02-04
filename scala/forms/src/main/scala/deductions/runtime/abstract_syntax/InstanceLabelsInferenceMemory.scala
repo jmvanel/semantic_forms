@@ -54,6 +54,13 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     }
   }
 
+  /** NON transactional */
+  private def labelForURI(uri: String, language: String)
+  (implicit graph: Rdf#Graph)
+    : String = {
+      instanceLabel(URI(uri), graph, language)
+  }
+
   override def instanceLabels(list: Seq[Rdf#Node], lang: String = "")
   (implicit graph: Rdf#Graph): Seq[String] =
     list.toList map { node => instanceLabel(node, graph, lang) }

@@ -180,7 +180,7 @@ See https://docs.oracle.com/javase/8/docs/technotes/guides/management/jconsole.h
 See [playframework documentation/2.4.x/IDE](https://www.playframework.com/documentation/2.4.x/IDE)
 
 Start SBT like below; then type run. Then start a remote debug in eclipse or another IDE with port 9999.
-```
+```shell
 export SBT_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9999" && sbt
 ```
 

@@ -13,7 +13,7 @@ import deductions.runtime.utils.I18NMessages
 
 
 /** generate HTML from abstract Form for Edition */
-trait Form2HTMLEdit[NODE, URI <: NODE]
+private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
     extends Form2HTMLBase[NODE, URI] {
   self: HTML5Types =>
 
@@ -76,12 +76,6 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
             autocomplete={if (lookupActivatedFor(resourceEntry)) "off" else null}
             >
           </input>
-          { 
-//            if (lookupActivatedFor(resourceEntry))
-//            <script type="text/javascript" >
-//              addDBPediaLookup('#{ makeHTML_Id(resourceEntry) }');
-//            </script> 
-            }
 					</div>
 				else new Text("") // format: ON
       ,

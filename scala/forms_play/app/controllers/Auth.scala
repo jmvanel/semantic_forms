@@ -30,7 +30,7 @@ object Auth extends AuthTrait {
     override val needLoginForDisplaying = true
     override val useTextQuery = false
   }
-  val htmlGenerator: Form2HTMLBanana[ImplementationSettings.Rdf] = ??? // unused here !
+//  val htmlGenerator: Form2HTMLBanana[ImplementationSettings.Rdf] = Form2HTMLObject.makeForm2HTML() // unused here !
 }
 
 trait AuthTrait
@@ -45,8 +45,11 @@ with Auth[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 /** Controller for registering account, login, logout;
  *  see https://www.playframework.com/documentation/2.4.x/ScalaSessionFlash */
 trait Auth[Rdf <: RDF, DATASET]
-extends ApplicationFacadeImpl[Rdf, DATASET]
- with Controller
+extends
+//ApplicationFacadeImpl[Rdf, DATASET]
+// with
+ Controller
+ with Authentication[Rdf, DATASET]
  with RDFStoreLocalUserManagement[Rdf, DATASET] {
   
 	/** checks user password in RDF database */

@@ -114,6 +114,14 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     }
   }
 
+  def createHTMLFormFromSPARQL(query: String,
+                               editable: Boolean = false,
+                               formuri: String = ""): NodeSeq = {
+    val formSyntax = createFormFromSPARQL(query, editable, formuri)
+    generateHTML(formSyntax)
+  }
+
+
   /**
    * create a form for given URI with background knowledge in RDFStoreObject.store;
    *  by default user inputs will be saved in named graph uri, except if given graphURI argument;
@@ -235,8 +243,6 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     ( htmlForm, form )
   }
 
-//  private def makeHtmlFormGenerator = this
-
   private def createAbstractForm(
       uri: String, editable: Boolean,
     lang: String, blankNode: String, formGroup: Rdf#URI, formuri: String="")
@@ -253,23 +259,8 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     createForm(subjectNode, editable, formGroup, formuri)
   }
 
-  def htmlFormString(uri: String,
-    editable: Boolean = false,
-    actionURI: String = "/save", graphURI: String)(implicit allNamedGraphs: Rdf#Graph): String = {
-    val f = htmlFormElem(uri, editable = editable, actionURI = actionURI)
-    val pp = new PrettyPrinter(80, 2)
-    pp.formatNodes(f)
-  }
-
-  def graf2formString(graph1: Rdf#Graph, uri: String, graphURI: String): String = {
-    graf2form(graph1, uri, graphURI = graphURI)._1.toString
-  }
-
-  def createHTMLFormFromSPARQL(query: String,
-                               editable: Boolean = false,
-                               formuri: String = ""): NodeSeq = {
-    val formSyntax = createFormFromSPARQL(query, editable, formuri)
-    generateHTML(formSyntax)
-  }
+//  private def graf2formString(graph1: Rdf#Graph, uri: String, graphURI: String): String = {
+//    graf2form(graph1, uri, graphURI = graphURI)._1.toString
+//  }
 
 }
