@@ -33,7 +33,7 @@ trait NamedGraphsCleaner[Rdf <: RDF, DATASET]
     ) { removeGraphIfDBPedia(namedGraph) }
   }
 
-  private def removeGraphIfDBPedia(namedGraph: Rdf#Node) = {
+  private def removeGraphIfDBPedia(namedGraph: Rdf#Node): Option[String] = {
     foldNode(namedGraph)(
       uri => {
         println(s"Considering Graph $uri");
@@ -44,10 +44,11 @@ trait NamedGraphsCleaner[Rdf <: RDF, DATASET]
           })
           val res = result.flatten
           res  match {
-            case Success(_) => println(s" : removed !")
-            case Failure(e) => println(s" : NOT removed ! $e")
+            case Success(_) => val s = Some(s" : removed !") ; logger.debug(s) ; s
+            case Failure(e) => val s = Some(s" : NOT removed ! $e") ; logger.debug(s) ; s
           }
-        }},
+        } else None
+      },
       _ => None,
       _ => None)
   }

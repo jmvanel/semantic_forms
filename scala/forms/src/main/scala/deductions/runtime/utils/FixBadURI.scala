@@ -53,10 +53,9 @@ trait FixBadURI[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
 
   val fileNameOrUri = "dump.nq";
   def listGraphNames(): Iterator[String]
-  //  val corrections = scala.collection.mutable.Buffer[(Rdf#Triple, Rdf#Triple)]()
-  val triples = ArrayBuffer[Rdf#Triple]()
-  val triplesToRemove = ArrayBuffer[Rdf#Triple]()
-  var corrections = 0
+  private val triples = ArrayBuffer[Rdf#Triple]()
+  private val triplesToRemove = ArrayBuffer[Rdf#Triple]()
+  private var corrections = 0
 
   import ops._
   import rdfStore.transactorSyntax._
@@ -133,7 +132,7 @@ trait FixBadURI[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
 
   //// unused below
 
-  def readJena2 = {
+  def readJena2() = {
     val ds = RDFDataMgr.loadDataset(fileNameOrUri)
     println("Dataset " + ds)
     val names = ds.listNames()
@@ -163,7 +162,7 @@ trait FixBadURI[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
     }
   }
 
-  def badAlgo = {
+  def badAlgo() = {
     var corrections = 0
     for (line <- Source.fromFile("dump.nq").getLines()) {
       val parts = line.split(" +")

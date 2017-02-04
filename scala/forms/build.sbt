@@ -13,7 +13,11 @@ scalaVersion :=  "2.11.8"
 val jenaVersion =  "3.1.0"
 
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
-scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
+scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-Xlint:_")
+
+// Scala code checkers
+// wartremoverErrors ++= Warts.unsafe
+// libraryDependencies += "com.lightbend" %% "abide-core" % "0.1-SNAPSHOT" % "abide"
 
 libraryDependencies += "org.w3" %%  "banana-jena" % "0.9.0-SNAPSHOT"
 

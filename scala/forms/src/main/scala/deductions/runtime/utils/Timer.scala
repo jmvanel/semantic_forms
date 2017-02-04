@@ -21,7 +21,7 @@ trait Timer {
 
 object Timer {
   private var start: Long = 0
-  def startTimer = start = System.currentTimeMillis()
+  def startTimer() = start = System.currentTimeMillis()
   def endTimer(mess: String = "Timer") = {
     val end = System.currentTimeMillis()
     println(s"""Time elapsed: "$mess": ${end - start}ms""")

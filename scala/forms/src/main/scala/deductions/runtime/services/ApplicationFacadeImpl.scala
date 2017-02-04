@@ -87,25 +87,12 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   val config: Configuration
   import config._
 
-  //  val v = new TimeSeries[Rdf, DATASET]{}
-  //  if( activateUserInputHistory )
   addSaveListener(this) // for TimeSeries
 
   implicit val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   implicit val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]
 
   import ops._
-
-//  val ops1 = ops
-//  addSaveListener(new LogAPI[Rdf] {
-//    implicit val ops = ops1
-//    def notifyDataEvent(addedTriples: Seq[Rdf#Triple],
-//    		removedTriples: Seq[Rdf#Triple])(implicit userURI: String): Unit = {
-//      addedTriples.headOption match {
-//        case Some(tr) => instanceLabel( tr.subject, graph, lang) 
-//      }
-//    }
-//  } )
   
   // Members declared in org.w3.banana.JsonLDWriterModule
   implicit val jsonldExpandedWriter = new RDFWriter[Rdf, scala.util.Try, JsonLdExpanded] {
@@ -119,89 +106,9 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
   logger.info(s"in Global")
 
-  lazy val search = this
-
-  lazy val dl = this
-  lazy val fs = this
-  lazy val cf = this
-
   import rdfStore.transactorSyntax._
 
 
-
-  /** Naked form from TriplesViewModule, plus:
-   *
-   * - title and links on top of the form,
-   * - page URI (graph) statistics,
-   * - behavior (manageBlankNodesReload, Exception management)
-   *
-   * TODO extract as WrappedHTMLForm
-   * TRANSACTIONAL */
-  private def htmlForm_old(uri0: String,
-		           blankNode: String = "",
-               editable: Boolean = false,
-               lang: String = "en",
-               formuri: String="",
-               graphURI: String = "",
-               database: String = "TDB",
-               request:HTTPrequest = HTTPrequest() )
-  : NodeSeq = {
-    logger.info(
-        s"""ApplicationFacadeImpl.htmlForm URI <$uri0> blankNode "$blankNode"
-              editable=$editable lang=$lang graphURI <$graphURI>""")
-    val uri = uri0.trim()
-    if (uri != null && uri != "")
-      try {
-        val datasetOrDefault = getDatasetOrDefault(database)
-        val res = rdfStore.rw( datasetOrDefault, {
-          val status = if (blankNode != "true") {
-            val resRetrieve = retrieveURINoTransaction(
-              // if( blankNode=="true") makeUri("_:" + uri ) else makeUri(uri),
-              makeUri(uri), datasetOrDefault)
-
-            // TODO should be done in FormSaver 
-            println(s"Search in <$uri> duplicate graph rooted at blank node: size " +
-                ops.getTriples(resRetrieve.get).size)
-            manageBlankNodesReload(resRetrieve.getOrElse(emptyGraph),
-                URI(uri), datasetOrDefault)
-
-            val status = resRetrieve match {
-              case Failure(e) => e.getLocalizedMessage
-              case Success(g) => formatHTMLStatistics(URI(uri), g, lang)
-            }
-            status
-          } else ""
-
-          implicit val graph = allNamedGraph
-          val formBoth = htmlFormElemRaw(uri, graph, hrefDisplayPrefix, blankNode, editable = editable,
-              lang = lang,
-              formuri = formuri,
-              graphURI = graphURI,
-              database = database,
-              request=request)
-          val formItself = formBoth . _1
-          val formSyntax = formBoth . _2
-
-            Text("\n") ++
-            titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable) ++
-            <div>{status}</div> ++
-            formItself
-        })
-        res.get
-      } catch {
-        case e: Exception => // e.g. org.apache.jena.riot.RiotException
-          <p style="color:red">
-        <pre>
-            {
-              e.getLocalizedMessage() + " " + printTrace(e).replaceAll( "\\)", ")\n")
-            }<br/>
-            Cause:{ if (e.getCause() != null) e.getCause().getLocalizedMessage() }
-            </pre>
-          </p>
-      }
-    else
-      <div class="row">Enter an URI</div>
-  }
 
   /** NON transactional */
   def labelForURI(uri: String, language: String)
@@ -267,7 +174,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     
   def downloadAsString(url: String, mime: String="text/turtle"): String = {
     println( s"download url $url mime $mime")
-    val res = dl.focusOnURI(url, mime)
+    val res = focusOnURI(url, mime)
     println(s"""download result "$res" """)
     res
   }
@@ -313,7 +220,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 //    println(s"ApplicationFacadeImpl.save: map :$request, userid <$userid>")
     val mainSubjectURI = try {
       implicit val userURI: String = userid
-      fs.saveTriples(request)
+      saveTriples(request)
     } catch {
       case t: Throwable =>
         println("Exception in saveTriples: " + t)
@@ -357,7 +264,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
         {
           try {
         	  if( query != "" )
-        		  dl.sparqlConstructQueryTR(query)
+        		  sparqlConstructQueryTR(query)
           } catch {
             case NonFatal(e) => e.printStackTrace() // TODO: handle error?
           }
@@ -401,7 +308,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       <table class="sf-sparql-table">
 
         { if( query != "" ) {
-          val rowsTry = dl.sparqlSelectQuery(query)
+          val rowsTry = sparqlSelectQuery(query)
           rowsTry match {
             case Success(rows) =>
               val printedRows = for (row <- rows) yield {

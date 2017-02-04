@@ -60,7 +60,7 @@ trait URIManagement extends URIHelpers //extends Configuration
 
     val serverPortPart = if (hostname.contains(":")) "" else ":" + serverPort
     val urip = "http://" + hostname + serverPortPart + "/" + relativeURIforCreatedResourcesByForm
-    println1(s"instance URI Prefix $urip - $request")
+    println1(s"instance URI Prefix <$urip> - $request")
     urip
   }
 
