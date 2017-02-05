@@ -31,22 +31,25 @@ var urlReqPrefix = "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?Query
 
 $(document).ready(function() {
     var topics = [];
-    $(".form-horizontal").on('focus', '.hasLookup', function() {
+    $(".form-horizontal").on('focus', '.hasLookup', function(event) {
         $(this).autocomplete({
             autoFocus: true,
+            minlength: 3,
             select: function( event, ui ) {
-                console.log( "Topic chosen label event " + (event) );
-                console.log( "Topic chosen label ui" + JSON.stringify(ui) );
-                console.log( "Topic chosen label " + ui.item.label);
-                // ", topics[ui.label] " + topics[ui.item.label] +
-                // ", topics[ui.value] " + topics[ui.item.value] +
-                // ", ui.value " + ui.item.value );
-                // console.log( "typeof inputElement " + typeof inputElement );
-                // console.log( "  inputElement.value ", inputElement.value );
-                // console.log( "  inputElementURI ", inputElementURI );
-                cloneWidget($(this));
+                console.log( "Topic chosen label event ");
+                console.log($(this));
+                console.log( "Topic chosen label ui");
+                console.log(ui);
+                $emptyFields = $(this).siblings().filter(function(index) { return $(this).val() == ''}).length;
+                console.log('Champs vides : '+ $emptyFields);
+                if ($emptyFields === 0) {
+                    addedWidget = cloneWidget($(this))
+                }
             },
             source: function(request, callback) {
+                console.log("Déclenche l'événement :")
+                console.log($(event.target));
+                console.log(event.target.value);
                 $.ajax({
                     url: "http://lookup.dbpedia.org/api/search/PrefixSearch",
                     data: { MaxHits: resultsCount, QueryString: request.term },
@@ -55,9 +58,7 @@ $(document).ready(function() {
                 }).done(function (response) {
                     console.log(response)
                     callback(response.results.map(function (m) {
-                        console.log("response :");
-                        console.log(m);
-                        topics[m.label] = m.uri;
+                        // topics[m.label] = m.uri;
                         return { "label": m.label /* + " - " +
                         cutStringAfterCharacter(m.description, '.') */, "value": m.uri }
                     }));
@@ -71,27 +72,18 @@ $(document).ready(function() {
                         console.log('Done');
                         var topics = [];
                         callback(response.results.map(function (m) {
-                            console.log( "response :");
-                            console.log(JSON.parse(m));
-                            topics[m.label] = m.uri;
+                            // topics[m.label] = m.uri;
                             return { "label": m.label + " - " +
                             cutStringAfterCharacter(m.description, '.'), "value": m.uri }
                         }))
                     });
                 })
-                //   })
-                //   .keyup(function (event) {
-                //     console.log( "Topic typed-0" );
-                //     var label = $topics.val();
-                //     if (label) {
-                //       console.log( "Topic typed " + label + " " + topics[label]);
-                //     }
             }
         })
     });
 });
 
-function cutStringAfterCharacter( s, c) {
+function cutStringAfterCharacter(s, c) {
     if (!(s === null)) {
         var n = s.indexOf(c);
         return s.substring(0, n != -1 ? n : s.length);
