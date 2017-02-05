@@ -435,7 +435,5 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val rangeClasses: Set[Rdf#Node] = objectsQueries(ranges, rdf_type)
   }
       
-//  private def isURIorBN(node: Rdf#Node) = foldNode(node)(identity, identity, x => None) != None
   private def firstNodeOrElseNullURI(set: Set[Rdf#Node]): Rdf#Node = set.headOption.getOrElse(nullURI)
-
 }

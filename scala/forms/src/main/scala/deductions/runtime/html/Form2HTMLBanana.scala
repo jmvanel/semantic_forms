@@ -10,6 +10,7 @@ import deductions.runtime.services.Configuration
  */
 trait Form2HTMLBanana[Rdf <: RDF]
     extends Form2HTML[Rdf#Node, Rdf#URI]
+    with HtmlGeneratorInterface[Rdf#Node, Rdf#URI]
     with HTML5TypesTrait[Rdf] {
 
   implicit val ops: RDFOps[Rdf]

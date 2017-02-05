@@ -31,7 +31,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     with Timer {
 
   val config: Configuration
-  val htmlGenerator: Form2HTMLBanana[Rdf]
+  val htmlGenerator: HtmlGeneratorInterface[Rdf#Node, Rdf#URI] // Form2HTMLBanana[Rdf]
   import htmlGenerator._
 
   import ops._

@@ -39,7 +39,8 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
    *  @param actionURI, actionURI2 HTML actions for the 2 submit buttons
    *  @param graphURI URI for named graph to save user inputs
    */
-  private[html] def generateHTML(form: FormModule[NODE, URI]#FormSyntax,
+//  private[html] 
+  def generateHTML(form: FormModule[NODE, URI]#FormSyntax,
                    hrefPrefix: String = "",
                    editable: Boolean = false,
                    actionURI: String = "/save", graphURI: String = "",
@@ -75,7 +76,8 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
    * generate HTML, but Just Fields;
    *  this lets application developers create their own submit button(s) and <form> tag
    */
-  private[html] def generateHTMLJustFields(form: formMod#FormSyntax,
+//  private[html] 
+  def generateHTMLJustFields(form: formMod#FormSyntax,
                              hrefPrefix: String = "",
                              editable: Boolean = false,
                              graphURI: String = "", lang: String = "en",
