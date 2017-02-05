@@ -1,7 +1,7 @@
 package deductions.runtime.abstract_syntax
 
 import org.w3.banana.RDF
-import org.w3.banana._
+
 import deductions.runtime.services.SPARQLHelpers
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.utils.RDFPrefixes

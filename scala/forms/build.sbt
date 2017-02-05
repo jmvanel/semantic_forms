@@ -13,10 +13,12 @@ scalaVersion :=  "2.11.8"
 val jenaVersion =  "3.1.0"
 
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
-scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-Xlint:_")
+scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-explaintypes", "-language:_", "-Xlint:_")
 
 // Scala code checkers
+
 // wartremoverErrors ++= Warts.unsafe
+// wartremoverErrors ++= Warts.allBut(Wart.DefaultArguments, Wart.Var)
 // libraryDependencies += "com.lightbend" %% "abide-core" % "0.1-SNAPSHOT" % "abide"
 
 libraryDependencies += "org.w3" %%  "banana-jena" % "0.9.0-SNAPSHOT"
@@ -72,4 +74,4 @@ resolvers += "apache-repo-releases" at "https://repository.apache.org/content/re
 // resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
 
 // for i18n? resolvers += "bintray" at "http://jcenter.bintray.com"
-scalariformSettings
+// scalariformSettings

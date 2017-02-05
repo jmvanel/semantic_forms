@@ -13,7 +13,6 @@ import scala.io.Source
 import scala.language.existentials
 import scala.language.postfixOps
 
-import org.apache.log4j.Logger
 import org.w3.banana.RDF
 
 import deductions.runtime.jena.ImplementationSettings

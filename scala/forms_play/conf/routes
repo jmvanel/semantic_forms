@@ -2,6 +2,8 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
+# GET /bla controllers.HomeController.bla()
+
 GET     /display            controllers.Application.displayURI(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="")
 # GET     /display2            controllers.Application.displayURI2(displayuri:String)
 

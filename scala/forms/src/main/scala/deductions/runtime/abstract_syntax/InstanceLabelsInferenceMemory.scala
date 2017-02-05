@@ -1,11 +1,11 @@
 package deductions.runtime.abstract_syntax
 
-import org.w3.banana.RDF
-import deductions.runtime.sparql_cache.RDFCacheAlgo
-import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.dataset.DatasetHelper
-import org.apache.log4j.Logger
 import scala.util.Success
+
+import org.w3.banana.RDF
+
+import deductions.runtime.dataset.DatasetHelper
+import deductions.runtime.utils.RDFHelpers
 
 /** wraps InstanceLabelsInference to cache Instance Labels in TDB */
 trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
@@ -16,8 +16,6 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     with InstanceLabelsFromLabelProperty[Rdf, DATASET] {
 
   import ops._
-  import rdfStore.graphStoreSyntax._
-  import rdfStore.transactorSyntax._
 
   lazy val datasetForLabels = dataset
   /* TODO : does not work because the transaction has been started on the other dataset ! 
