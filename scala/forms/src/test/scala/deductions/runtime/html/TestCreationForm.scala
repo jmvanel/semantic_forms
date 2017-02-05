@@ -45,15 +45,18 @@ class TestCreationForm extends {
     with Configuration
     with DefaultConfiguration {
 
-	// TODO PASTED code:
-	val conf = config
-  val ops1 = ops
-  val htmlGenerator = new Form2HTMLBanana[ImplementationSettings.Rdf] {
-    implicit val ops = ops1
-    val config = conf
-    val nullURI = ops.URI("")
-  }
-	  
+	// PASTED code:
+//	val conf = config
+//  val ops1 = ops
+//  val htmlGenerator = new Form2HTMLBanana[ImplementationSettings.Rdf] {
+//    implicit val ops = ops1
+//    val config = conf
+//    val nullURI = ops.URI("")
+//  }
+	override val htmlGenerator =
+    Form2HTMLObject.makeDefaultForm2HTML(config)(ops)
+
+    
   override val lookup_domain_unionOf = true
   val logger = Logger.getRootLogger()
   import ops._

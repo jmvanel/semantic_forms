@@ -38,15 +38,17 @@ trait TestCreationForm2[Rdf <: RDF, DATASET] extends FunSuite
 
 //	override val config = new DefaultConfiguration{}
 
-  // TODO PASTED code:
-	val conf = config
-  val ops1 = ops
-  val htmlGenerator = new Form2HTMLBanana[Rdf] {
-    implicit val ops = ops1
-    val config = conf
-    val nullURI = ops.URI("")
-  }
-	  
+  // PASTED code:
+//	val conf = config
+//  val ops1 = ops
+//  val htmlGenerator = new Form2HTMLBanana[Rdf] {
+//    implicit val ops = ops1
+//    val config = conf
+//    val nullURI = ops.URI("")
+//  }
+	override lazy val htmlGenerator =
+			Form2HTMLObject.makeDefaultForm2HTML(config)(ops)
+  
 	  
   implicit val turtleWriter: RDFWriter[Rdf, Try, Turtle]
 

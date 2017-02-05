@@ -26,16 +26,13 @@ trait Form2HTMLBanana[Rdf <: RDF]
       fromLiteral(_)._1)
 }
 
-//object Form2HTMLObject {
-//  def makeForm2HTML()
-//  // (implicit ops: RDFOps[ImplementationSettings.Rdf], config: Configuration)
-//  = {
-//    val ops1 = ops
-//    val config1 = config
-//    new Form2HTMLBanana[ImplementationSettings.Rdf] {
-//      val nullURI = ops.URI("")
-//      val ops: org.w3.banana.RDFOps[deductions.runtime.jena.ImplementationSettings.Rdf] = ops1
-//      val config: Configuration = config1
-//    }
-//  }
-//}
+object Form2HTMLObject {
+  def makeDefaultForm2HTML[Rdf <: RDF](configuration: Configuration)(implicit ops: RDFOps[Rdf]): HtmlGeneratorInterface[Rdf#Node, Rdf#URI] = {
+    lazy val ops1 = ops
+    new Form2HTMLBanana[Rdf] {
+      lazy val nullURI = ops.URI("")
+      lazy val ops: org.w3.banana.RDFOps[Rdf] = ops1
+      lazy val config: Configuration = configuration
+    }
+  }
+}
