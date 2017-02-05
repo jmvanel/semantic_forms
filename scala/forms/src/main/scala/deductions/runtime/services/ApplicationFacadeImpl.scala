@@ -41,6 +41,7 @@ import scala.util.control.NonFatal
 import deductions.runtime.sparql_cache.algos.StatisticsGraph
 import deductions.runtime.utils.HTTPrequest
 import deductions.runtime.views.Results
+import deductions.runtime.html.TriplesViewWithTitle
 
 /**
  * a Web Application Facade,
@@ -57,7 +58,7 @@ import deductions.runtime.views.Results
  */
 trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
-    with TriplesViewModule[Rdf, DATASET]
+    with TriplesViewWithTitle[Rdf, DATASET]
     with CreationFormAlgo[Rdf, DATASET]
     with StringSearchSPARQL[Rdf, DATASET]
     with ReverseLinksSearchSPARQL[Rdf, DATASET]
@@ -136,7 +137,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
    *
    * TODO extract as WrappedHTMLForm
    * TRANSACTIONAL */
-  def htmlForm(uri0: String,
+  private def htmlForm_old(uri0: String,
 		           blankNode: String = "",
                editable: Boolean = false,
                lang: String = "en",
@@ -253,12 +254,6 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   //      //    val enum = makeEnumerator(elems) // [ , ]
   //      elems
   //    }
-
-  def printTrace(e: Exception): String = {
-    var s = ""
-    for (i <- e.getStackTrace()) { s = s + " " + i }
-    s
-  }
 
   def wordsearchFuture(q: String = "", lang: String = "", clas: String = ""): Future[Elem] = {
     val fut = searchString(q, hrefDisplayPrefix, lang, clas)

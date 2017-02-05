@@ -19,7 +19,7 @@ import org.apache.commons.codec.digest.DigestUtils
 import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.utils.HTTPrequest
 
-/**
+/** Abstract Form Syntax to HTML;
  * different modes: display or edit;
  *  takes in account datatype
  */
@@ -39,17 +39,17 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
    *  @param actionURI, actionURI2 HTML actions for the 2 submit buttons
    *  @param graphURI URI for named graph to save user inputs
    */
-  def generateHTML(form: FormModule[NODE, URI]#FormSyntax,
+  private[html] def generateHTML(form: FormModule[NODE, URI]#FormSyntax,
                    hrefPrefix: String = "",
                    editable: Boolean = false,
                    actionURI: String = "/save", graphURI: String = "",
                    actionURI2: String = "/save", lang: String = "en",
                    request: HTTPrequest = HTTPrequest()): NodeSeq = {
 
-    val htmlFormFields = time("generateHTMLJustFields",
+   val htmlFormFields = time("generateHTMLJustFields",
       generateHTMLJustFields(form, hrefPrefix, editable, graphURI, lang, request))
 
-    def wrapFieldsWithFormHeader(htmlFormFields: NodeSeq): NodeSeq =
+    def wrapFieldsWithFormTag(htmlFormFields: NodeSeq): NodeSeq =
       <div class="container">
         <div class="row">
           <form action={ actionURI } method="POST">
@@ -66,7 +66,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
     def mess(m: String): String = message(m, lang)
 
     if (editable)
-      wrapFieldsWithFormHeader(htmlFormFields)
+      wrapFieldsWithFormTag(htmlFormFields)
     else
       htmlFormFields
   }
@@ -75,7 +75,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
    * generate HTML, but Just Fields;
    *  this lets application developers create their own submit button(s) and <form> tag
    */
-  def generateHTMLJustFields(form: formMod#FormSyntax,
+  private[html] def generateHTMLJustFields(form: formMod#FormSyntax,
                              hrefPrefix: String = "",
                              editable: Boolean = false,
                              graphURI: String = "", lang: String = "en",

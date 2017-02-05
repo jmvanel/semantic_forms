@@ -39,7 +39,7 @@ libraryDependencies += "org.apache.commons" % "commons-csv" % "1.4"
 libraryDependencies += "org.apache.any23" % "apache-any23-csvutils" %  "1.1" // "1.0" // 
 
 libraryDependencies ++= Seq(
-  // "org.apache.logging.log4j" % "log4j-slf4j-impl" % "2.8",
+  "org.apache.logging.log4j" % "log4j-slf4j-impl" % "2.8",
   "org.apache.logging.log4j" % "log4j-api" % "2.8",
   "org.apache.logging.log4j" % "log4j-core" % "2.8"
 )

@@ -13,15 +13,19 @@ import deductions.runtime.html.BasicWidgets
 import deductions.runtime.services.ApplicationFacadeImpl
 import deductions.runtime.services.Configuration
 import deductions.runtime.utils.I18NMessages
+import deductions.runtime.utils.RDFHelpers
 
 trait FormHeader[Rdf <: RDF]
     extends FormModule[Rdf#Node, Rdf#URI]
+//with InstanceLabelsInferenceMemory[Rdf, DATASET]
+with RDFHelpers[Rdf]
     with BasicWidgets {
 
-  self: ApplicationFacadeImpl[Rdf, _] =>
+//  self: ApplicationFacadeImpl[Rdf, _] =>
 
   val config: Configuration
   import config._
+  import ops._
 
   /** title and links on top of the form: Edit, Display, Download Links */
   def titleEditDisplayDownloadLinksThumbnail(formSyntax: FormSyntax, lang: String, editable: Boolean = false)(implicit graph: Rdf#Graph): NodeSeq = {
@@ -50,7 +54,9 @@ trait FormHeader[Rdf <: RDF]
     <div class="container">
       <div class="row">
         <h3>
-          { labelForURI(uri, lang) }
+          { formSyntax.title
+//      labelForURI(uri, lang)
+      }
           <strong>
             { linkToShow }
             { expertLinks }
@@ -84,4 +90,10 @@ trait FormHeader[Rdf <: RDF]
     </div>
   }
 
+///** NON transactional */
+//  private def labelForURI(uri: String, language: String)
+//  (implicit graph: Rdf#Graph)
+//    : String = {
+//      instanceLabel(URI(uri), graph, language)
+//  }
 }
