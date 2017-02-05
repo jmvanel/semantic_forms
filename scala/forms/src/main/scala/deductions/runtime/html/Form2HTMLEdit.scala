@@ -40,10 +40,10 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
         case _ => makeHTML_Id(field)
       }
       <div class={ css.cssClasses.formAddDivCSSClass }>
-      <button type="button" class="btn btn-primary" readonly="yes" size="1" title={
-        "Add another value for " + field.label } onClick={
-        s""" cloneWidget( "$widgetName" ); return false;"""
-      }><i class="glyphicon glyphicon-plus"></i></button>
+      <button type="button" class="btn btn-primary add-widget" readonly="yes" size="1" title={
+        "Add another value for " + field.label } >
+        <i class="glyphicon glyphicon-plus"></i>
+      </button>
 			</div>
     } else <span></span>
   }
@@ -72,15 +72,15 @@ trait Form2HTMLEdit[NODE, URI <: NODE]
             placeholder={ placeholder }
             title={ placeholder }
             size={inputSize.toString()}
-						dropzone="copy"
+			dropzone="copy"
             autocomplete={if (lookupActivatedFor(resourceEntry)) "off" else null}
             >
           </input>
-          { 
+          {
 //            if (lookupActivatedFor(resourceEntry))
 //            <script type="text/javascript" >
 //              addDBPediaLookup('#{ makeHTML_Id(resourceEntry) }');
-//            </script> 
+//            </script>
             }
 					</div>
 				else new Text("") // format: ON

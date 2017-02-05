@@ -3,13 +3,18 @@
 
 /** button with an action to duplicate the original HTML widget with an empty content */
 function cloneWidget(widget) {
-    var addedWidget = widget.clone(true),
-        parent = widget.parent();
-    addedWidget.val('');
-    parent.prepend(addedWidget, widget);
-    console.log(widget.parent().children.length);
-    addedWidget.attr('id', widget.attr('id')+'-1')
+    var addedWidget = $("<input type='text' />"),
+        parent = widget.parent(),
+        cardinal = widget.parent().children().length;
+    console.log("nombre de widgets : "+cardinal);
+    addedWidget
+        .val('')
+        .addClass('hasLookup form-control ui-autocomplete-input')
+        .attr('id', widget.attr('id')+'-'+cardinal)
+        .attr('name', widget.attr('name'));
     addedWidget.focus();
+    parent.prepend(addedWidget, widget);
+    return addedWidget;
 }
 
 function backlinks(uri) {
