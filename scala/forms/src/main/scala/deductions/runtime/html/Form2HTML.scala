@@ -98,9 +98,11 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
           if (field.property.toString != "")
         ) yield {
           <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
+            if (preceding.valueLabel != "" && field.valueLabel != "")
             makeFieldSubject(field) ++
               makeFieldLabel(preceding, field) ++
               makeFieldDataOrInput(field, hrefPrefix, editable, lang, request)
+              else NodeSeq.Empty
           }</div>
         }
         s
