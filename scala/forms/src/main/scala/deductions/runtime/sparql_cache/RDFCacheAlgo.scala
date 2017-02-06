@@ -270,7 +270,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
             microdataLoader.load(
               new java.net.URL(uri.toString())) 
               match {
-              case Success(s : Rdf#Graph) => s
+              case Success(s) => s
               case Failure(f) =>{ 
                 
                 println("START MESSAGE")
@@ -283,7 +283,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
                   val newGraphWithUrl : Rdf#Graph = makeGraph(newTripleWithURL)
                   newGraphWithUrl
                 }
-                else emptyGraph
+                else throw f
                   
               }
             }
