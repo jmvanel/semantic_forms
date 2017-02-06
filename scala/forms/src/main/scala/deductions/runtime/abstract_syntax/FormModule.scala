@@ -39,7 +39,9 @@ trait FormModule[NODE, URI <: NODE] {
 //      propertiesGroups: collection.Map[NODE, Seq[Entry]] = collection.Map[NODE, Seq[Entry]](),
       propertiesGroups: collection.Seq[FormSyntax] = collection.Seq[FormSyntax](),
       val title: String = "",
-      val thumbnail: Option[NODE] = None
+      val thumbnail: Option[NODE] = None,
+      val formURI: Option[NODE] = None,
+      val formLabel: String = ""
       ) {
     
     /** Map from property to possible Values  */
@@ -86,6 +88,7 @@ trait FormModule[NODE, URI <: NODE] {
 		val subject: NODE
     val cardinality: Cardinality
 
+    /** filled, not not used*/
     private val triples: mutable.Buffer[Triple] = mutable.ListBuffer[Triple]()
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]): Entry
     override def toString(): String = {
