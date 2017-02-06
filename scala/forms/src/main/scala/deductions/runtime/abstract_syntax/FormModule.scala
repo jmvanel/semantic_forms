@@ -92,7 +92,7 @@ trait FormModule[NODE, URI <: NODE] {
     private val triples: mutable.Buffer[Triple] = mutable.ListBuffer[Triple]()
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]): Entry
     override def toString(): String = {
-      s"""${getClass.getSimpleName} "$label", "$comment" $widgetType, openChoice: $openChoice"""
+      s"""${getClass.getSimpleName} label "$label", "$comment" "$widgetType", openChoice: $openChoice"""
     }
     def addTriple(s: NODE, p: URI, o: NODE) = {
       val t = Triple(s, p, o)
@@ -131,7 +131,7 @@ trait FormModule[NODE, URI <: NODE] {
       extends Entry {
     override def toString(): String = {
       "RES " + super.toString +
-      s""" : <$value>, valueLabel "$valueLabel" possibleValues count:${possibleValues.size} """
+      s"""; <$value>, valueLabel "$valueLabel" possibleValues count=${possibleValues.size} """
     }
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = {
       val ret = new ResourceEntry(label, comment,

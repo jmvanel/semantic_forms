@@ -98,11 +98,14 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
           if (field.property.toString != "")
         ) yield {
           <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
-            if (preceding.valueLabel != "" && field.valueLabel != "")
-            makeFieldSubject(field) ++
-              makeFieldLabel(preceding, field) ++
-              makeFieldDataOrInput(field, hrefPrefix, editable, lang, request)
-              else NodeSeq.Empty
+            if( field.label == "Ville" ) println(s""">>>> field $field
+                field.value.toString() "${field.value.toString()}" """) // TODO debug <<<<<<<<<<<<
+            if ( editable || toPlainString(field.value) != "" )
+              makeFieldSubject(field) ++
+                makeFieldLabel(preceding, field) ++
+                makeFieldDataOrInput(field, hrefPrefix, editable, lang, request)
+            else // Text(s"ELIM field $field")//
+              NodeSeq.Empty
           }</div>
         }
         s
