@@ -186,23 +186,30 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       addInverseTriples(fields2, step1)
     }
     
-    val fields3 = makeEntriesFromRawDataForForm(step1)
+    //// compute Form Syntax ////
+
+    val fieldsCompleteList = makeEntriesFromRawDataForForm(step1)
     val subject = step1.subject
     val classs = step1.classs
 
     // set a FormSyntax.title for each group in propertiesGroups
     val entriesFromPropertiesGroups = for( (node, rawDataForForm ) <- step1.propertiesGroups ) yield
     	node -> makeEntriesFromRawDataForForm(rawDataForForm)
-    val pgs = for( (n, m) <- entriesFromPropertiesGroups ) yield {
+    val propertiesGroups = for( (n, m) <- entriesFromPropertiesGroups ) yield {
       FormSyntax(n, m, title=instanceLabel(n, allNamedGraph, preferedLanguage))
     }
-    val formSyntax = FormSyntax(subject, fields3, classs, propertiesGroups=pgs.toSeq,
+    val formSyntax = FormSyntax(subject, fieldsCompleteList, classs, propertiesGroups=propertiesGroups.toSeq,
         thumbnail = getURIimage(subject),
-        title = instanceLabel( subject, allNamedGraph, preferedLanguage ) )
+        title = instanceLabel( subject, allNamedGraph, preferedLanguage ),
+        formURI = step1.formURI,
+        formLabel= step1.formURI match {
+          case None => ""
+          case Some(uri) => instanceLabel( uri, allNamedGraph, preferedLanguage )
+        } )
     
     if( step1.editable ) addAllPossibleValues(formSyntax, valuesFromFormGroup)
-    
     logger.debug(s"createFormDetailed2: createForm " + this)
+    
     val res = time(s"createFormDetailed2: updateFormFromConfig(formConfig=$formConfig)",
       updateFormFromConfig(formSyntax, formConfig))
     logger.debug(s"createFormDetailed2: createForm 2 " + this)
@@ -315,7 +322,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     } else fields.toSeq
   }
 
-  /** make form Entries for given subject and property,
+  /** make form Entries (possibly several lines in form) for given subject and property,
    * thus taking in account multi-valued properties;
    * try to get rdfs:label, comment, rdf:type,
    * or else display terminal Part of URI as label;
@@ -341,6 +348,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     result
   }
 
+  /** make Entry (a single line in form) From Triple */
   protected def makeEntryFromTriple(
     subject: Rdf#Node,
     prop: Rdf#Node,

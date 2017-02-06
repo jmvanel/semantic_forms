@@ -149,6 +149,8 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
       } else NodeSeq.Empty
     }
 
+    /// output begins ////
+
     val htmlResult: NodeSeq =
       hidden ++
         <div class={ css.cssClasses.formRootCSSClass }>

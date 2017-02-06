@@ -27,12 +27,23 @@ trait Form2HTMLBanana[Rdf <: RDF]
 }
 
 object Form2HTMLObject {
-  def makeDefaultForm2HTML[Rdf <: RDF](configuration: Configuration)(implicit ops: RDFOps[Rdf]): HtmlGeneratorInterface[Rdf#Node, Rdf#URI] = {
+  def makeDefaultForm2HTML[Rdf <: RDF](configuration: Configuration)(implicit ops: RDFOps[Rdf]):
+  Form2HTMLBanana[Rdf] // Note: implements HtmlGeneratorInterface[Rdf#Node, Rdf#URI]
+  = {
     lazy val ops1 = ops
     new Form2HTMLBanana[Rdf] {
       lazy val nullURI = ops.URI("")
       lazy val ops: org.w3.banana.RDFOps[Rdf] = ops1
       lazy val config: Configuration = configuration
+
+      // example of overriding a function implementing the form:
+
+//      override def makeBackLinkButton(uri: String, title: String = "") = {
+//        val tit = if (title == "") s" Reverse links for &lt;$uri&gt;" else title
+//        <button type="button" class="btn btn-info" readonly="yes" title={ tit } data-value={ s"$uri" } onclick={ s"backlinks( '$uri' )" } id={ s"BACK-$uri" }>
+//          bla
+//        </button>
+//  }
     }
   }
 }
