@@ -1,10 +1,11 @@
 package deductions.runtime.abstract_syntax
 
+import scala.util.Success
+
 import org.w3.banana.RDF
-import deductions.runtime.sparql_cache.RDFCacheAlgo
-import deductions.runtime.utils.RDFHelpers
+
 import deductions.runtime.dataset.DatasetHelper
-import org.apache.log4j.Logger
+import deductions.runtime.utils.RDFHelpers
 
 /** wraps InstanceLabelsInference to cache Instance Labels in TDB */
 trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
@@ -15,8 +16,6 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     with InstanceLabelsFromLabelProperty[Rdf, DATASET] {
 
   import ops._
-  import rdfStore.graphStoreSyntax._
-  import rdfStore.transactorSyntax._
 
   lazy val datasetForLabels = dataset
   /* TODO : does not work because the transaction has been started on the other dataset ! 
@@ -93,6 +92,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
           if( node_label_boolean._2._2)
             storeInstanceLabel(node_label_boolean._1,
                 node_label_boolean._2._1, graph, lang)
+                else Success(Unit)
       }
       println("labelsComputedOrFromTDB 2")
       val ret = labelsComputedOrFromTDB . map {
@@ -145,7 +145,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
       val computedDisplayLabel = (node -- displayLabelPred ->- Literal(label)).graph
       val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
       rdfStore.appendToGraph(datasetForLabels, labelsGraphUri, computedDisplayLabel)
-    }
+    } else Success(Unit)
   }
   
   def cleanStoredLabels(lang: String) {

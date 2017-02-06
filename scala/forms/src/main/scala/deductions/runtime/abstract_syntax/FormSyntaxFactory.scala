@@ -6,36 +6,18 @@ $Id$
 package deductions.runtime.abstract_syntax
 
 import scala.collection.mutable
-import scala.util.Try
-import scala.util.Failure
-import scala.util.Success
-import scala.language.postfixOps
 import scala.language.existentials
+import scala.language.postfixOps
 
-import org.apache.log4j.Logger
-import org.apache.log4j.Level
-
-import org.w3.banana.OWLPrefix
-import org.w3.banana.PointedGraph
 import org.w3.banana.RDF
-import org.w3.banana.RDFDSL
-import org.w3.banana.RDFOps
 import org.w3.banana.RDFPrefix
 import org.w3.banana.RDFSPrefix
 import org.w3.banana.XSDPrefix
-import org.w3.banana.diesel._
-import org.w3.banana.Prefix
-import org.w3.banana.SparqlOps
-import org.w3.banana.RDFOpsModule
-import org.w3.banana.syntax._
-import org.w3.banana.SparqlEngine
-import org.w3.banana.LocalNameException
 
-import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.utils.Timer
 import deductions.runtime.services.Configuration
-import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.utils.RDFPrefixes
+import deductions.runtime.utils.Timer
 
 /** one of EditionMode, DisplayMode, CreationMode */
 abstract sealed class FormMode { val editable = true }
@@ -190,7 +172,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
       logger.debug(s"createForm subject <$subject>, props $props")
       logger.debug(s"""FormSyntaxFactory: preferedLanguage: "$preferedLanguage""" )
-      implicit val lang = preferedLanguage
+//      implicit val lang = preferedLanguage
 
       val entries = for (
         prop <- props if prop != displayLabelPred
@@ -346,9 +328,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 	  (implicit graph: Rdf#Graph)
   : Seq[Entry] = {
     logger.debug(s"makeEntriesForSubject subject <$subject>, prop <$prop>")
-    implicit val prlng = preferedLanguage
+//    implicit val prlng = preferedLanguage
 
-    val objects = objectsQuery(subject, prop.asInstanceOf[Rdf#URI]) ; logger.debug(s"makeEntriesForSubject subject $subject, objects $objects")
+    val objects = objectsQuery(subject, uriNodeToURI(prop) ); logger.debug(s"makeEntriesForSubject subject $subject, objects $objects")
     val result = mutable.ArrayBuffer[Entry]()
     for (obj <- objects)
       result += makeEntryFromTriple(subject, prop, obj, formMode)
@@ -407,7 +389,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
             },
             objet => makeBN(label, comment, prop, ResourceValidator(ranges), objet,
               typ = firstType),
-            objet => literalEntry))
+            _ => literalEntry))
       else NullResourceEntry
     }
 
@@ -415,11 +397,11 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
                property: ObjectProperty, validator: ResourceValidator,
                value: Rdf#BNode,
                typ: Rdf#Node = nullURI) = {
-      new BlankNodeEntry(label, comment, prop, ResourceValidator(ranges), value,
+      new BlankNodeEntry(label, comment, property, validator, value,
     		subject=subject,
     		subjectLabel = instanceLabel(subject, graph, preferedLanguage),
         type_ = typ, valueLabel = instanceLabel(value, graph, preferedLanguage)) {
-        override def getId: String = fromBNode(value.asInstanceOf[Rdf#BNode])
+        override def getId: String = nodeToString(value)
       }
     }
 
@@ -453,18 +435,5 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val rangeClasses: Set[Rdf#Node] = objectsQueries(ranges, rdf_type)
   }
       
-  private def isURIorBN(node: Rdf#Node) = foldNode(node)(identity, identity, x => None) != None
   private def firstNodeOrElseNullURI(set: Set[Rdf#Node]): Rdf#Node = set.headOption.getOrElse(nullURI)
-
-  private def getHeadValueOrElse(subjects: Set[Rdf#Node], predicate: Rdf#URI)
-  (implicit graph: Rdf#Graph)
-  : Rdf#Node = {
-	  val rdfh = this
-    val values = objectsQueries(subjects, predicate)
-    values.headOption match {
-      case Some(x) => x
-      case _ => nullURI
-    }
-  }
-
 }

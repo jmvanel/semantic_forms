@@ -44,7 +44,7 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
 
   /** TRANSACTIONAL */
   def resetCommonFormSpecifications() {
-    val r = rdfStore.rw( dataset, {
+    rdfStore.rw( dataset, {
       rdfStore.removeGraph(dataset, formSpecificationsGraph)
     })
   }
@@ -80,7 +80,7 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
           val from = new java.net.URL(obj.toString()).openStream()
           val form_spec_graph: Rdf#Graph = turtleReader.read(from, base = obj.toString()) getOrElse sys.error(
             s"couldn't read ${obj.toString()}")
-          val r = rdfStore.rw( dataset, {
+          rdfStore.rw( dataset, {
             rdfStore.appendToGraph(dataset, formSpecificationsGraph, form_spec_graph)
           })
           println("Added form_spec " + obj)

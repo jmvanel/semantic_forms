@@ -44,6 +44,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
   /** lots of boiler plate for vocabularies !!!!!!!!!!! */
   object CCOPrefix {
     def apply[Rdf <: RDF: RDFOps](implicit ops: RDFOps[Rdf]) = new CCOPrefix(ops)
+//    def apply()(implicit ops: RDFOps[Rdf]) = new CCOPrefix(ops)
   }
   class CCOPrefix[Rdf <: RDF](ops: RDFOps[Rdf])
       extends PrefixBuilder("cco", "http://purl.org/ontology/cco/core#")(ops) {
@@ -79,7 +80,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
 
   private var headerURIs: IndexedSeq[URI] = _
 
-  private var csv: CSV = CSV.getInstance
+  private val csv: CSV = CSV.getInstance
 
   /** TODO consider using R2RML vocab' */
   private def csvPredicate(p: String) = URI(CSV.NS + p)
@@ -328,7 +329,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       
     } else {
 
-      var datatype =
+      val datatype =
         if (isInteger(cell)) {
           xsd.integer
         } else if (isFloat(cell)) {

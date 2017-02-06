@@ -5,9 +5,6 @@ $Id$
  */
 package deductions.runtime.abstract_syntax
 
-import org.w3.banana._
-import org.w3.banana.diesel._
-import org.w3.banana.syntax._
 import scala.collection.mutable
 
 object FormModule {

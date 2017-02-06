@@ -132,7 +132,7 @@ trait RDFStoreLocalJenaProvider
 /** TODO implement independently of Jena */
 trait RDFGraphPrinter extends RDFStoreLocalJena1Provider {
   import rdfStore.transactorSyntax._
-  def printGraphList {
+  def printGraphList() {
     rdfStore.r(dataset, {
       val lgn = dataset.asDatasetGraph().listGraphNodes()
       Logger.getRootLogger().info(s"listGraphNodes size ${lgn.size}")

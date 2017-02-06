@@ -1,12 +1,12 @@
 package deductions.runtime.abstract_syntax
 
-import org.apache.log4j.Logger
+import scala.util.Try
+
 import org.w3.banana.Prefix
 import org.w3.banana.RDF
-//import deductions.runtime.services.Configuration
-import deductions.runtime.utils.RDFHelpers
+
 import deductions.runtime.sparql_cache.RDFCacheAlgo
-import scala.util.Try
+import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.utils.RDFPrefixes
 
 /**
