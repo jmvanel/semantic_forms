@@ -59,8 +59,8 @@ $(document).ready(function() {
                     console.log(response)
                     callback(response.results.map(function (m) {
                         // topics[m.label] = m.uri;
-                        return { "label": m.label /* + " - " +
-                        cutStringAfterCharacter(m.description, '.') */, "value": m.uri }
+                        return { "label": m.label + " - " +
+                        cutStringAfterCharacter(m.description, '.'), "value": m.uri }
                     }));
                 }).fail(function (error){
                     $.ajax({
@@ -73,8 +73,8 @@ $(document).ready(function() {
                         var topics = [];
                         callback(response.results.map(function (m) {
                             // topics[m.label] = m.uri;
-                            return { "label": m.label + " - " +
-                            cutStringAfterCharacter(m.description, '.'), "value": m.uri }
+                            return { "label": m.label /* + " - " +
+                            cutStringAfterCharacter(m.description, '.') */, "value": m.uri }
                         }))
                     });
                 })
