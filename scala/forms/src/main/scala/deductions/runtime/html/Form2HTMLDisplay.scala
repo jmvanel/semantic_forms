@@ -79,6 +79,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
         }/>
       else NodeSeq.Empty
       }
+
       hyperlinkToField ++
       hyperlinkToObjectURI ++
       Text("\n") ++

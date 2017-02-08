@@ -189,7 +189,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
   /** dispatch to various Entry's: LiteralEntry, ResourceEntry; ..., editable or not */
   private def createHTMLField(field: formMod#Entry, editable: Boolean,
                               hrefPrefix: String = "", lang: String = "en",
-                              request: HTTPrequest = HTTPrequest())(implicit form: FormModule[NODE, URI]#FormSyntax): xml.NodeSeq = {
+                              request: HTTPrequest = HTTPrequest())(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
 
     // hack instead of true form separator in the form spec in RDF:
     if (field.label.contains("----"))
@@ -228,7 +228,8 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
       case _ => <p>Should not happen! createHTMLField({ field })</p>
     }
 
-    Seq(createAddRemoveWidgets(field, editable)) ++ xmlField
+    Seq(createAddRemoveWidgets(field, editable)) ++
+    <div class="sf-value-block">{ xmlField } </div>
   }
 
   /** make Field Data (display) Or Input (edit) */

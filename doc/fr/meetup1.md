@@ -10,7 +10,12 @@ Autour de Semantic_forms on fera :
 - un atelier de déploiement d'un projet perso. avec
   - choix d'un modèle de données
   - création de formulaires
-  - affichage de rendu via requête SPARQL , avec ou sans templating
+  - affichage de rendu via requête SPARQL, avec ou sans templating
+
+# Le web sémantique
+Deux communautés
+- OWL et modèles "riches"
+- LOD (Linked OPen Data)
 
 # Originalités de  ̀Semantic_forms`
 Souvent, le logiciel libre est à la traîne du commercial. Pour SF, ce n'est pas le cas!
@@ -18,6 +23,8 @@ Souvent, le logiciel libre est à la traîne du commercial. Pour SF, ce n'est pa
 - modèles de données (OWL) totalement flexibles y compris pour l'utilisateur final
 - capacités d'annotation illimitées sans détruire les données LOD importées ni les données saisies par les autres utilisateurs
 - totalement dans l'esprit et les recommandations du W3C: cardinalité libre, I18N, typage dynamique sans restrictions
+
+[Autres cadriciels web sémantique](../en/other_semantic_frameworks.md)
 
 # L'application générique
 - navigation du LOD (Linked Open Data)
@@ -52,7 +59,7 @@ https://github.com/jmvanel/semantic_forms/wiki/Manuel-utilisateur
 Sur ces sujets, voir:
 https://github.com/jmvanel/semantic_forms/wiki/Application-development-manual
 
-# EN CHANTIER
+# Fonctionnalités à venir
 - préférences utilisateur
 - assistant importation XML, JSON, tableurs
 - et 70 issues ! https://github.com/jmvanel/semantic_forms/issues
@@ -62,3 +69,7 @@ https://github.com/jmvanel/semantic_forms/wiki/Application-development-manual
 - initiation à SPARQL
 - RDFa
 - LDP
+
+
+http://lov.okfn.org/dataset/lov/vocabs
+
