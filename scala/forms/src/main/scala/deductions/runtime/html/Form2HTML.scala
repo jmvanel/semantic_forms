@@ -229,6 +229,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
     }
 
     Seq(createAddRemoveWidgets(field, editable)) ++
+    // Jeremy M recommended img-rounded from Bootstrap, but not effect
     <div class="sf-value-block">{ xmlField } </div>
   }
 

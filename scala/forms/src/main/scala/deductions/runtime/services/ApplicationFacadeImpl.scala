@@ -119,11 +119,11 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   /** NOTE this creates a transaction; do not use it too often */
   def labelForURITransaction(uri: String, language: String)
   : String = {
-//    println( s"labelForURITransaction $uri, $language"  )
+//    logger.info( s"labelForURITransaction $uri, $language"  )
     val res = rdfStore.r(dataset, {
       instanceLabel(URI(uri), allNamedGraph, language)
     }).getOrElse(uri)
-//    println( s"result $res"  )
+//    logger.info( s"result $res"  )
     res
   }
 
@@ -173,9 +173,9 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   }
     
   def downloadAsString(url: String, mime: String="text/turtle"): String = {
-    println( s"download url $url mime $mime")
+    logger.info( s"download url $url mime $mime")
     val res = focusOnURI(url, mime)
-    println(s"""download result "$res" """)
+    logger.info(s"""download result "$res" """)
     res
   }
 
@@ -195,16 +195,16 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     // and http://greweb.me/2012/11/play-framework-enumerator-outputstream/
     Enumerator.outputStream { os =>
       val graph = search_only(url)
-      println(s"after search_only($url)")
+      logger.info(s"after search_only($url)")
       val r = graph.map { graph =>
         /* non blocking */
         val writer: RDFWriter[Rdf, Try, Turtle] = turtleWriter
-        println("before writer.write()")
+        logger.info("before writer.write()")
         val ret = writer.write(graph, os, base = url)
-        println("after writer.write()")
+        logger.info("after writer.write()")
         os.close()
       }
-      println("after graph.map()")
+      logger.info("after graph.map()")
     }
   }
 
@@ -217,17 +217,17 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   def saveForm(request: Map[String, Seq[String]], lang: String = "",
       userid: String, graphURI: String = "", host: String= "")
   : Option[String] = {
-//    println(s"ApplicationFacadeImpl.save: map :$request, userid <$userid>")
+    logger.info(s"ApplicationFacadeImpl.saveForm: request :$request, userid <$userid>")
     val mainSubjectURI = try {
       implicit val userURI: String = userid
       saveTriples(request)
     } catch {
       case t: Throwable =>
-        println("Exception in saveTriples: " + t)
+        logger.error("Exception in saveTriples: " + t)
         throw t
     }
     val uriOption = (request).getOrElse("uri", Seq()).headOption
-    println(s"ApplicationFacadeImpl.save: uriOption $uriOption, graphURI $graphURI")
+    logger.info(s"ApplicationFacadeImpl.saveForm: uriOption $uriOption, graphURI $graphURI")
     uriOption match {
       case Some(url1) =>
       val uri = URLDecoder.decode(url1, "utf-8")
@@ -236,7 +236,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
             lang )
     	})
     	logger.info( s"Save: normal! $uriOption" )
-      case _ => logger.info( s"Save:  NOT normal! $uriOption" )
+      case _ => logger.error( s"Save:  NOT normal! $uriOption request $request" )
     }
     
     // associate userid with graphURI

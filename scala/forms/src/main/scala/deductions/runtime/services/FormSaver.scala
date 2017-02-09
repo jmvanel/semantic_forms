@@ -38,11 +38,11 @@ trait FormSaver[Rdf <: RDF, DATASET]
       ( implicit userURI: String = "" ): Option[String]
       = {
     logger.debug(s"FormSaver.saveTriples httpParamsMap $httpParamsMap")
-    println(s"""saveTriples: userURI <$userURI>""" )
+    logger.debug(s"""saveTriples: userURI <$userURI>""" )
     val uriArgs = httpParamsMap.getOrElse("uri", Seq())
     val encodedSubjectUriOption = uriArgs.find { uri => uri != "" }
     val graphURIOption = httpParamsMap.getOrElse("graphURI", Seq()).headOption
-    println(s"FormSaver.saveTriples uri $encodedSubjectUriOption, graphURI $graphURIOption")
+    logger.debug(s"FormSaver.saveTriples uri encoded $encodedSubjectUriOption, graphURI $graphURIOption")
 
     val triplesToAdd = ArrayBuffer[Rdf#Triple]()
     val triplesToRemove = ArrayBuffer[Rdf#Triple]()
@@ -51,6 +51,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
     lazy val subjectUriOption = encodedSubjectUriOption match {
       case Some(uri0) =>
         val subjectUri = URLDecoder.decode(uri0, "utf-8")
+        logger.debug(s"FormSaver.saveTriples subjectUri $subjectUri")
 
         // named graph in which to save:
         val graphURI =
@@ -82,9 +83,9 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
     /** process a single triple from the form */
     def computeDatabaseChanges(originalTriple: Rdf#Triple, objectsFromUser: Seq[String]) {
-      val foaf = FOAFPrefix[Rdf]
-      if (originalTriple.predicate == foaf.firstName)
-        println(foaf.firstName)
+//      val foaf = FOAFPrefix[Rdf]
+//      if (originalTriple.predicate == foaf.firstName) logger.debug(foaf.firstName)
+      logger.debug("computeDatabaseChanges: originalTriple: $originalTriple, objectsFromUser $objectsFromUser")
       objectsFromUser.map { objectStringFromUser =>
         // NOTE: a single element in objects
         val objectFromUser = foldNode(originalTriple.objectt)(
@@ -92,7 +93,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
                 BNode(objectStringFromUser.substring(2))
             else {
               if (objectStringFromUser != "")
-                println(s"""objectStringFromUser "$objectStringFromUser" changed: spaces removed""")
+                logger.debug(s"""computeDatabaseChanges: objectStringFromUser "$objectStringFromUser" changed: spaces removed""")
                 URI( // UnfilledFormFactory.
                     makeURIFromString(objectStringFromUser) )
             }
@@ -126,7 +127,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
             rdfStore.appendToGraph( dataset,
               URI(graphURI),
               makeGraph(triplesToAdd)))
-//        println( s"doSave: triplesToAdd ${triplesToAdd.mkString(", ")}")
+        logger.debug( s"doSave: triplesToAdd ${triplesToAdd.mkString(", ")}")
         /* TODO maybe in the hook here: return the future to print later that it has been done */
         callSaveListeners(triplesToAdd, triplesToRemove)
         
@@ -147,9 +148,9 @@ trait FormSaver[Rdf <: RDF, DATASET]
             ${triplesToAdd.mkString(", ")}
             and removed ${triplesToRemove.size}
             ${triplesToRemove.mkString(", ")}
-          in graph $graphURI""")
+          in graph <$graphURI>""")
       }
-      f.onFailure { case t => println(s"doSave: Failure $t") }
+      f.onFailure { case t => logger.error(s"doSave: Failure $t") }
     }
 
     return subjectUriOption
