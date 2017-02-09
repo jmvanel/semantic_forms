@@ -93,22 +93,20 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
     def makeFieldsLabelAndData(fields: Seq[FormEntry]): NodeSeq = {
       if (!fields.isEmpty) {
         val lastEntry = fields.last
-        val s: Seq[Elem] = for (
+        val fieldsHTML = for (
           (preceding, field) <- (lastEntry +: fields) zip fields // do not display NullResourceEntry
           if (field.property.toString != "")
         ) yield {
-          <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
-            if( field.label == "Ville" ) println(s""">>>> field $field
-                field.value.toString() "${field.value.toString()}" """) // TODO debug <<<<<<<<<<<<
-            if ( editable || toPlainString(field.value) != "" )
+          if (editable || toPlainString(field.value) != "")
+            <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
               makeFieldSubject(field) ++
                 makeFieldLabel(preceding, field) ++
                 makeFieldDataOrInput(field, hrefPrefix, editable, lang, request)
-            else // Text(s"ELIM field $field")//
-              NodeSeq.Empty
-          }</div>
+            }</div>
+          else
+            Text("\n")
         }
-        s
+        fieldsHTML
       } else Text("\n")
     }
 
