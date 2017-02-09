@@ -115,12 +115,22 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
         else uriLabelCouples
       val columnsFormResults = uriLabelCouples2 .
         map(uriLabelCouple => {
-          val node = uriLabelCouple._1  
+          val node = uriLabelCouple._1
+          foldNode(node) ( node =>
           makeHyperlinkForURI(
               node, lang, graph,
               hrefPrefix = hrefPrefix,
               label = uriLabelCouple._2,
-              sortAnd1rowPerElement = sortAnd1rowPerElement )
+              sortAnd1rowPerElement = sortAnd1rowPerElement ),
+              node =>
+          makeHyperlinkForURI(
+              node, lang, graph,
+              hrefPrefix = hrefPrefix,
+              label = uriLabelCouple._2,
+              sortAnd1rowPerElement = sortAnd1rowPerElement ),
+          lit => <div>{ lit.toString() // fromLiteral(lit)._1
+            }</div>
+          )
         })
         columnsFormResults 
     }</div><!-- end of wrapping div displayResults -->
