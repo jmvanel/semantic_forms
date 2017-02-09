@@ -121,7 +121,7 @@ trait ApplicationTrait extends Controller
          .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
 
   /**
-   * /sparql-form service: Create HTML form from SPARQL (construct);
+   * /sparql-form service: Create HTML form or view from SPARQL (construct);
    *  like /sparql has input a SPARQL query;
    *  like /form and /display has input Edit, formuri & database
    */
@@ -265,13 +265,13 @@ trait ApplicationTrait extends Controller
     withUser {
       implicit userid =>
         implicit request =>
-          logger.info("create: " + request)
+          logger.info(s"create: request $request")
           // URI of RDF class from which to create instance
           val uri0 = getFirstNonEmptyInMap(request.queryString, "uri")
           val uri = expandOrUnchanged(uri0)
           // URI of form Specification
           val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formuri")
-          logger.info("create: " + uri)
+          logger.info(s"""create: "$uri" """)
           logger.info( s"formSpecURI from HTTP request: <$formSpecURI>")
           val lang = chooseLanguage(request)
           val userInfo = displayUser(userid, uri, s"Create a $uri", lang)
@@ -375,10 +375,11 @@ trait ApplicationTrait extends Controller
     }
   }
 
-  private def getFirstNonEmptyInMap(map: Map[String, Seq[String]],
-                            uri: String): String = {
+  private def getFirstNonEmptyInMap(
+    map: Map[String, Seq[String]],
+    uri: String): String = {
     val uriArgs = map.getOrElse(uri, Seq())
-    uriArgs.find { uri => uri != "" }.getOrElse("")
+    uriArgs.find { uri => uri != "" }.getOrElse("") . trim()
   }
 
   /** SPARQL Construct UI */

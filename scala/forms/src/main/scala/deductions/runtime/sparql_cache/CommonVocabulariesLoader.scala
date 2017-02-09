@@ -90,8 +90,9 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
       prefixesMap("skos") ::
       prefixesMap("vcard") ::
       URI(githubcontent + "/jmvanel/semantic_forms/master/scala/forms/form_specs/additions_to_vocabs.ttl" ) ::
-      URI("http://deductions.github.io/task-management.owl.ttl" ) ::
-      URI("http://deductions.github.io/biological-collections.owl.ttl" ) ::
+      prefixesMap("tm") ::
+      prefixesMap("bioc") ::
+      prefixesMap("doas") ::
       Nil
       // "http://purl.org/ontology/mo/"
    

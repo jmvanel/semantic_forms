@@ -81,10 +81,13 @@ import org.w3.banana._
     text // Jena text search
     )
   
+    /** map from RDF prefix to Rdf#URI */
   lazy val prefixesMap: Map[String, Rdf#URI] =
     prefixesList.map{ pf =>
       // println(s"prefix ${pf.prefixName} : ${pf.prefixIri}")
       pf.prefixName -> URI(pf.prefixIri) }.toMap
+
+  /** map from RDF prefix to Prefix[Rdf] */
   lazy val prefixesMap2: Map[String, Prefix[Rdf]] =
     prefixesList.map{ pf => pf.prefixName -> pf }.toMap
   lazy val urisMap: Map[String, String] =
