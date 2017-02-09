@@ -41,10 +41,11 @@ import org.w3.banana._
   lazy val sioc =     Prefix[Rdf]("sioc", "http://rdfs.org/sioc/ns#")
   lazy val schema = Prefix[Rdf]("schema", "http://schema.org/")
   lazy val text = Prefix[Rdf]("text", "http://jena.apache.org/text#" )
-  lazy val form = Prefix[Rdf]("form", "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#") // http://deductions-software.com/ontologies/forms.owl.ttl#" )
   lazy val dbo = Prefix[Rdf]("dbo", "http://dbpedia.org/ontology/")
   lazy val vs = Prefix[Rdf]("vs", "http://www.w3.org/2003/06/sw-vocab-status/ns#")
   lazy val content = Prefix[Rdf]("content", "http://purl.org/rss/1.0/modules/content/")
+
+  lazy val form = Prefix[Rdf]("form", "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#") // http://deductions-software.com/ontologies/forms.owl.ttl#" )
   lazy val forms = Prefix[Rdf]("forms", "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#" )
 
   lazy val prefixesList = List(
@@ -104,6 +105,8 @@ import org.w3.banana._
    * expand possibly Prefixed URI (like foaf:name),
    *  @return Some(URI("http://xmlns.com/foaf/0.1/name")),
    *  or output None if no prefix is found
+   *
+   *  TODO move to URIHelpers
    */
   def expand(possiblyPrefixedURI: String): Option[Rdf#URI] = {
     val uri_string = possiblyPrefixedURI // URLEncoder.encode(possiblyPrefixedURI, "UTF-8")
@@ -113,11 +116,15 @@ import org.w3.banana._
         if (possiblyPrefixedURI.startsWith(":")) {
           Some("")
         } else {
-          val uri = new jURI(uri_string)
-          if (uri.isAbsolute() && !commonSchemes.contains(uri.getScheme)) {
-            // then it's possibly a Prefixed URI like foaf:name
-            Some(uri.getScheme)
-          } else None
+          if (uri_string.endsWith(":"))
+            Some(uri_string.substring(0, uri_string.length - 1))
+          else {
+            val uri = new jURI(uri_string)
+            if (uri.isAbsolute() && !commonSchemes.contains(uri.getScheme)) {
+              // then it's possibly a Prefixed URI like foaf:name
+              Some(uri.getScheme)
+            } else None
+          }
         }
 
       prefixOption match {

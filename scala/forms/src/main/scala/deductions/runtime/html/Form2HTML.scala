@@ -19,7 +19,7 @@ import org.apache.commons.codec.digest.DigestUtils
 import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.utils.HTTPrequest
 
-/**
+/** Abstract Form Syntax to HTML;
  * different modes: display or edit;
  *  takes in account datatype
  */
@@ -39,6 +39,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
    *  @param actionURI, actionURI2 HTML actions for the 2 submit buttons
    *  @param graphURI URI for named graph to save user inputs
    */
+//  private[html] 
   def generateHTML(form: FormModule[NODE, URI]#FormSyntax,
                    hrefPrefix: String = "",
                    editable: Boolean = false,
@@ -46,10 +47,10 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
                    actionURI2: String = "/save", lang: String = "en",
                    request: HTTPrequest = HTTPrequest()): NodeSeq = {
 
-    val htmlFormFields = time("generateHTMLJustFields",
+   val htmlFormFields = time("generateHTMLJustFields",
       generateHTMLJustFields(form, hrefPrefix, editable, graphURI, lang, request))
 
-    def wrapFieldsWithFormHeader(htmlFormFields: NodeSeq): NodeSeq =
+    def wrapFieldsWithFormTag(htmlFormFields: NodeSeq): NodeSeq =
       <div class="container">
         <div class="row">
           <form action={ actionURI } method="POST">
@@ -66,7 +67,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
     def mess(m: String): String = message(m, lang)
 
     if (editable)
-      wrapFieldsWithFormHeader(htmlFormFields)
+      wrapFieldsWithFormTag(htmlFormFields)
     else
       htmlFormFields
   }
@@ -75,6 +76,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
    * generate HTML, but Just Fields;
    *  this lets application developers create their own submit button(s) and <form> tag
    */
+//  private[html] 
   def generateHTMLJustFields(form: formMod#FormSyntax,
                              hrefPrefix: String = "",
                              editable: Boolean = false,
@@ -91,17 +93,20 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
     def makeFieldsLabelAndData(fields: Seq[FormEntry]): NodeSeq = {
       if (!fields.isEmpty) {
         val lastEntry = fields.last
-        val s: Seq[Elem] = for (
+        val fieldsHTML = for (
           (preceding, field) <- (lastEntry +: fields) zip fields // do not display NullResourceEntry
           if (field.property.toString != "")
         ) yield {
-          <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
-            makeFieldSubject(field) ++
-              makeFieldLabel(preceding, field) ++
-              makeFieldDataOrInput(field, hrefPrefix, editable, lang, request)
-          }</div>
+          if (editable || toPlainString(field.value) != "")
+            <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
+              makeFieldSubject(field) ++
+                makeFieldLabel(preceding, field) ++
+                makeFieldDataOrInput(field, hrefPrefix, editable, lang, request)
+            }</div>
+          else
+            Text("\n")
         }
-        s
+        fieldsHTML
       } else Text("\n")
     }
 
@@ -147,6 +152,8 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
       } else NodeSeq.Empty
     }
 
+    /// output begins ////
+
     val htmlResult: NodeSeq =
       hidden ++
         <div class={ css.cssClasses.formRootCSSClass }>
@@ -180,7 +187,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
   /** dispatch to various Entry's: LiteralEntry, ResourceEntry; ..., editable or not */
   private def createHTMLField(field: formMod#Entry, editable: Boolean,
                               hrefPrefix: String = "", lang: String = "en",
-                              request: HTTPrequest = HTTPrequest())(implicit form: FormModule[NODE, URI]#FormSyntax): xml.NodeSeq = {
+                              request: HTTPrequest = HTTPrequest())(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
 
     // hack instead of true form separator in the form spec in RDF:
     if (field.label.contains("----"))
@@ -219,7 +226,9 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
       case _ => <p>Should not happen! createHTMLField({ field })</p>
     }
 
-    Seq(createAddRemoveWidgets(field, editable)) ++ xmlField
+    Seq(createAddRemoveWidgets(field, editable)) ++
+    // Jeremy M recommended img-rounded from Bootstrap, but not effect
+    <div class="sf-value-block">{ xmlField } </div>
   }
 
   /** make Field Data (display) Or Input (edit) */

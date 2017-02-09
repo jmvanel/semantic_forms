@@ -1,6 +1,6 @@
 package deductions.runtime.services
 
-import deductions.runtime.html.CSS
+import deductions.runtime.html.CSSClasses
 
 trait DefaultConfiguration extends Configuration {
   /**
@@ -63,7 +63,7 @@ trait DefaultConfiguration extends Configuration {
   /** when #useTextQuery is true, use Text indexing with SOLR */
   override def solrIndexing: Boolean = false
 
-  override val css: CSS = new CSS {}
+  override val css: CSSClasses = new CSSClasses {}
   override val radioForIntervals = false
 
   //  override val activateUserInputHistory = false

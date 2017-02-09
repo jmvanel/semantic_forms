@@ -1,14 +1,12 @@
 package deductions.runtime.abstract_syntax
 
 import scala.collection.Seq
-import org.w3.banana.FOAFPrefix
+
 import org.w3.banana.PointedGraph
 import org.w3.banana.RDF
-import org.w3.banana.RDFPrefix
-import org.w3.banana.RDFSPrefix
+
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.utils.RDFPrefixes
-import deductions.runtime.jena.ImplementationSettings
 
 /**
  * populate Fields in form by inferring possible label from:

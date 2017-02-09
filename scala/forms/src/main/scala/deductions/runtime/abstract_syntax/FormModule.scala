@@ -5,9 +5,6 @@ $Id$
  */
 package deductions.runtime.abstract_syntax
 
-import org.w3.banana._
-import org.w3.banana.diesel._
-import org.w3.banana.syntax._
 import scala.collection.mutable
 
 object FormModule {
@@ -42,7 +39,9 @@ trait FormModule[NODE, URI <: NODE] {
 //      propertiesGroups: collection.Map[NODE, Seq[Entry]] = collection.Map[NODE, Seq[Entry]](),
       propertiesGroups: collection.Seq[FormSyntax] = collection.Seq[FormSyntax](),
       val title: String = "",
-      val thumbnail: Option[NODE] = None
+      val thumbnail: Option[NODE] = None,
+      val formURI: Option[NODE] = None,
+      val formLabel: String = ""
       ) {
     
     /** Map from property to possible Values  */
@@ -89,10 +88,11 @@ trait FormModule[NODE, URI <: NODE] {
 		val subject: NODE
     val cardinality: Cardinality
 
+    /** filled, not not used*/
     private val triples: mutable.Buffer[Triple] = mutable.ListBuffer[Triple]()
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]): Entry
     override def toString(): String = {
-      s"""${getClass.getSimpleName} "$label", "$comment" $widgetType, openChoice: $openChoice"""
+      s"""${getClass.getSimpleName} label "$label", "$comment" "$widgetType", openChoice: $openChoice"""
     }
     def addTriple(s: NODE, p: URI, o: NODE) = {
       val t = Triple(s, p, o)
@@ -131,7 +131,7 @@ trait FormModule[NODE, URI <: NODE] {
       extends Entry {
     override def toString(): String = {
       "RES " + super.toString +
-      s""" : <$value>, valueLabel "$valueLabel" possibleValues count:${possibleValues.size} """
+      s"""; <$value>, valueLabel "$valueLabel" possibleValues count=${possibleValues.size} """
     }
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = {
       val ret = new ResourceEntry(label, comment,

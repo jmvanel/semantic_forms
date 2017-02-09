@@ -1,10 +1,10 @@
 package deductions.runtime.views
 
 import scala.xml.NodeSeq
-import deductions.runtime.html.EnterButtons
+import java.net.URLEncoder
+
 import deductions.runtime.utils.I18NMessages
 import deductions.runtime.utils.HTTPrequest
-import java.net.URLEncoder
 import deductions.runtime.html.BasicWidgets
 
 trait ToolsPage extends EnterButtons

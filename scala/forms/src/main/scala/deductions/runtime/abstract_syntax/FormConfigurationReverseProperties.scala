@@ -1,14 +1,10 @@
 package deductions.runtime.abstract_syntax
 
 import org.w3.banana.RDF
-//import deductions.runtime.services.Configuration
 import deductions.runtime.utils.RDFHelpers
 
 trait FormConfigurationReverseProperties[Rdf <: RDF, DATASET]
-    extends
-//Configuration
-//    with 
-    FormConfigurationFactory[Rdf, DATASET]
+    extends FormConfigurationFactory[Rdf, DATASET]
     with FormModule[Rdf#Node, Rdf#URI] {
 
   import ops._

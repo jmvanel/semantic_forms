@@ -38,6 +38,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
     override def makeQueryString(searchStrings: String*): String = {
       val search =  searchStrings(0)
       val clas = searchStrings(1)
+      val limit = if( clas != "" ) "" else "LIMIT 15"
 
       val textQuery = if( searchStrings(0).length() > 0 )
         s"?thing text:query ( '${prepareSearchString(search).trim()}' ) ."
@@ -55,7 +56,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
          |}
          |GROUP BY ?thing
          |ORDER BY DESC(?count)
-         |LIMIT 10""".stripMargin
+         |$limit""".stripMargin
 
       if (clas != "") {
         queryString0.replaceFirst("""\?class""", "<" + expandOrUnchanged(clas) + ">")

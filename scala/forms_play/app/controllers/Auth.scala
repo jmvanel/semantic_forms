@@ -22,19 +22,22 @@ import play.api.i18n.Lang
 import play.api.i18n.I18nSupport
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
+import deductions.runtime.html.Form2HTMLBanana
 
+// class
 object Auth extends AuthTrait {
   val config = new DefaultConfiguration {
     override val needLoginForEditing = true
     override val needLoginForDisplaying = true
     override val useTextQuery = false
   }
+//  val htmlGenerator: Form2HTMLBanana[ImplementationSettings.Rdf] = Form2HTMLObject.makeForm2HTML() // unused here !
 }
 
 trait AuthTrait
 extends ImplementationSettings.RDFModule
 with RDFStoreLocalJena1Provider
-with Auth[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+with AuthTrait2[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
   println(s"object Auth")
   /** NOTE otherwise we get "Lock obtain timed out", because
    *  LUCENE transactions would overlap with main database TDB/ */
@@ -42,9 +45,12 @@ with Auth[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
 /** Controller for registering account, login, logout;
  *  see https://www.playframework.com/documentation/2.4.x/ScalaSessionFlash */
-trait Auth[Rdf <: RDF, DATASET]
-extends ApplicationFacadeImpl[Rdf, DATASET]
- with Controller
+trait AuthTrait2[Rdf <: RDF, DATASET]
+extends
+//ApplicationFacadeImpl[Rdf, DATASET]
+// with
+ Controller
+ with Authentication[Rdf, DATASET]
  with RDFStoreLocalUserManagement[Rdf, DATASET] {
   
 	/** checks user password in RDF database */

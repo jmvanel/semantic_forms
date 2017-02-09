@@ -68,7 +68,7 @@ trait ApplicationTrait extends Controller
     withUser {
       implicit userid =>
         implicit request =>
-          println(s"""displayURI: $request IP ${request.remoteAddress}, host ${request.host}
+          logger.info(s"""displayURI: $request IP ${request.remoteAddress}, host ${request.host}
             displayURI headers ${request.headers}
             displayURI tags ${request.tags}
             userid <$userid>
@@ -76,7 +76,7 @@ trait ApplicationTrait extends Controller
             displayURI: Edit "$Edit" """)
           val lang = chooseLanguage(request)
           val uri = expandOrUnchanged(uri0)
-          println(s"displayURI: expandOrUnchanged $uri")
+          logger.info(s"displayURI: expandOrUnchanged $uri")
           val title = labelForURITransaction(uri, lang)
           val userInfo = displayUser(userid, uri, title, lang)
           outputMainPage(
@@ -92,7 +92,7 @@ trait ApplicationTrait extends Controller
     {
       implicit userid =>
         implicit request =>
-          println(s"""form: request $request : "$Edit" formuri <$formuri> """)
+          logger.info(s"""form: request $request : "$Edit" formuri <$formuri> """)
           val lang = chooseLanguage(request)
           Ok(htmlForm(uri, blankNode, editable = Edit != "", lang, formuri,
               graphURI = makeAbsoluteURIForSaving(userid), database=database))
@@ -191,7 +191,7 @@ trait ApplicationTrait extends Controller
           val pageURI = uri
           val pageLabel = labelForURI(uri, lang)
           val userInfo = displayUser(userid, pageURI, pageLabel, lang)
-          println(s"userInfo $userInfo, userid $userid")
+          logger.info(s"userInfo $userInfo, userid $userid")
           val content = htmlForm(
             uri, editable = true,
             lang = chooseLanguage(request), graphURI = makeAbsoluteURIForSaving(userid),
@@ -209,13 +209,14 @@ trait ApplicationTrait extends Controller
           val lang = chooseLanguage(request)
 //          outputMainPage(save(request, userid, graphURI=makeAbsoluteURIForSaving(userid)), lang)
           val uri = saveOnly(request, userid, graphURI=makeAbsoluteURIForSaving(userid))
-          println(s"saveAction: uri $uri")
+          logger.info(s"saveAction: uri $uri")
           val call = routes.Application.displayURI(uri)
           Redirect(call)
           /* TODO */
           // recordForHistory( userid, request.remoteAddress, request.host )
     }
 
+  /** save Only, no display */
   private def saveOnly(request: Request[_], userid: String, graphURI: String = ""): String = {
     val body = request.body
     val host  = request.host
@@ -223,7 +224,7 @@ trait ApplicationTrait extends Controller
       case form: AnyContentAsFormUrlEncoded =>
         val lang = chooseLanguage(request)
         val map = form.data
-        println(s"ApplicationTrait.save: ${body.getClass}, map $map")
+        logger.debug(s"ApplicationTrait.saveOnly: ${body.getClass}, map $map")
         // cf http://danielwestheide.com/blog/2012/12/26/the-neophytes-guide-to-scala-part-6-error-handling-with-try.html
         val subjectUriTryOption = Try {
           saveForm(map, lang, userid, graphURI, host)
@@ -264,14 +265,14 @@ trait ApplicationTrait extends Controller
     withUser {
       implicit userid =>
         implicit request =>
-          println("create: " + request)
+          logger.info("create: " + request)
           // URI of RDF class from which to create instance
           val uri0 = getFirstNonEmptyInMap(request.queryString, "uri")
           val uri = expandOrUnchanged(uri0)
           // URI of form Specification
           val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formuri")
-          println("create: " + uri)
-          println( s"formSpecURI from HTTP request: <$formSpecURI>")
+          logger.info("create: " + uri)
+          logger.info( s"formSpecURI from HTTP request: <$formSpecURI>")
           val lang = chooseLanguage(request)
           val userInfo = displayUser(userid, uri, s"Create a $uri", lang)
           outputMainPage(
@@ -288,14 +289,14 @@ trait ApplicationTrait extends Controller
     withUser {
       implicit userid =>
         implicit request =>
-          println("create: " + request)
+          logger.info("create: " + request)
           // URI of RDF class from which to create instance
           val uri0 = getFirstNonEmptyInMap(request.queryString, "uri")
           val uri = expandOrUnchanged(uri0)
           // URI of form Specification
           val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formuri")
-          println("create: " + uri)
-          println( s"formSpecURI from HTTP request: <$formSpecURI>")
+          logger.info("create: " + uri)
+          logger.info( s"formSpecURI from HTTP request: <$formSpecURI>")
 
           Ok( createDataAsJSON( uri, chooseLanguage(request),
                        formSpecURI, makeAbsoluteURIForSaving(userid), copyRequest(request) ) ) .
@@ -386,8 +387,8 @@ trait ApplicationTrait extends Controller
     Action {
 //      implicit userid =>
         implicit request =>
-          println("sparql: " + request)
-          println("sparql: " + query)
+          logger.info("sparql: " + request)
+          logger.info("sparql: " + query)
           val lang = chooseLanguage(request)
           outputMainPage(
 //        		  { sparqlQueryForm(query, "/sparql-ui",
@@ -404,7 +405,7 @@ trait ApplicationTrait extends Controller
 //    withUser {
 //      implicit userid =>
         implicit request =>
-          println(s"""sparqlConstruct: sparql: request $request
+          logger.info(s"""sparqlConstruct: sparql: request $request
             sparql: $query
             accepts ${request.acceptedTypes} """)
           val lang = chooseLanguage(request)
@@ -453,7 +454,7 @@ trait ApplicationTrait extends Controller
    */
   def sparqlConstructPOST = Action {
     implicit request =>
-      println(s"""sparqlConstruct: sparql: request $request
+      logger.info(s"""sparqlConstruct: sparql: request $request
             accepts ${request.acceptedTypes} """)
       val lang = chooseLanguage(request)
       val body: AnyContent = request.body
@@ -464,7 +465,7 @@ trait ApplicationTrait extends Controller
 
         val query0 = map.getOrElse("query", Seq())
         val query = query0 . mkString("\n")
-        println(s"""sparql: $query""" )
+        logger.info(s"""sparql: $query""" )
 
         // TODO better try a parse of the query
         def checkSPARQLqueryType(query: String) =
@@ -493,20 +494,20 @@ trait ApplicationTrait extends Controller
     val defaultMIMEaPriori = if (isSelect) AcceptsSPARQLresults else AcceptsJSONLD
     val defaultMIME = preferredMedia.getOrElse(defaultMIMEaPriori)
     val mime = computeMIME(acceptedTypes, defaultMIME)
-    println(s"sparqlConstruct: computed mime ${mime}")
+    logger.info(s"sparqlConstruct: computed mime ${mime}")
 
     val resultFormat = mimeAbbrevs(defaultMIME) // preferredMedia.getOrElse(defaultMIME))
-    println(s"sparqlConstruct: output(accepts=$acceptedTypes) => result format: $resultFormat")
+    logger.info(s"sparqlConstruct: output(accepts=$acceptedTypes) => result format: $resultFormat")
     if (preferredMedia.isDefined &&
       !mimeSet.contains(preferredMedia.get))
-      println(s"CAUTION: preferredMedia $preferredMedia not in this application's list: ${mimeAbbrevs.keys.mkString(", ")}")
+      logger.info(s"CAUTION: preferredMedia $preferredMedia not in this application's list: ${mimeAbbrevs.keys.mkString(", ")}")
     val result = if (isSelect)
       sparqlSelectConneg(query, resultFormat, dataset)
     else
       sparqlConstructResult(query, resultFormat)
 
-    println(s"outputSPARQL: mime.mimeType ${mime.mimeType}")
-    println(s"result $result".split("\n").take(5).mkString("\n"))
+    logger.info(s"outputSPARQL: mime.mimeType ${mime.mimeType}")
+    logger.info(s"result $result".split("\n").take(5).mkString("\n"))
     Ok(result)
       .as(s"${mime.mimeType}")
     // .as(s"${mime.mimeType}; charset=utf-8")
@@ -520,7 +521,7 @@ trait ApplicationTrait extends Controller
   def sparqlDataPOST = Action {
     // TODO pasted from sparqlConstructPOST
     implicit request =>
-      println(s"""sparqlConstruct: sparql: request $request
+      logger.info(s"""sparqlConstruct: sparql: request $request
             accepts ${request.acceptedTypes} """)
       val lang = chooseLanguage(request)
       val body: AnyContent = request.body
@@ -531,7 +532,7 @@ trait ApplicationTrait extends Controller
 
         val query0 = map.getOrElse("query", Seq())
         val query = query0.mkString("\n")
-        println(s"""sparql: $query""")
+        logger.info(s"""sparql: $query""")
 
         val Edit = map.getOrElse("Edit", Seq()).headOption.getOrElse("")
         val formuri = map.getOrElse("formuri", Seq()).headOption.getOrElse("")
@@ -554,8 +555,8 @@ trait ApplicationTrait extends Controller
     withUser {
       implicit userid =>
         implicit request =>
-          println("sparql: " + request)
-          println("sparql: " + query)
+          logger.info("sparql: " + request)
+          logger.info("sparql: " + query)
           val lang = chooseLanguage(request)
           outputMainPage(
             sparqlSelectQuery(query, lang), lang)
@@ -565,8 +566,8 @@ trait ApplicationTrait extends Controller
     withUser {
       implicit userid =>
         implicit request =>
-          println("sparql update: " + request)
-          println("sparql: " + update)
+          logger.info("sparql update: " + request)
+          logger.info("sparql: " + update)
           val res = sparqlUpdateQuery(update)
           res match {
             case Success(s) => Ok(s"$res")
@@ -603,9 +604,9 @@ trait ApplicationTrait extends Controller
     withUser {
       implicit userid =>
         implicit request =>
-          println("LDP GET: request " + request)
+          logger.info("LDP GET: request " + request)
           val acceptedTypes = request.acceptedTypes
-          println(s"acceptedTypes $acceptedTypes")
+          logger.info(s"acceptedTypes $acceptedTypes")
           val mimeType =
             if (acceptedTypes.contains(AcceptsTTL))
               turtle
@@ -613,9 +614,9 @@ trait ApplicationTrait extends Controller
             else
               AcceptsJSONLD.mimeType
           val response = ldpGET(uri, request.path, mimeType, copyRequest(request))
-          println("LDP: GET: result " + response)
+          logger.info("LDP: GET: result " + response)
           val contentType = mimeType + "; charset=utf-8"
-          println(s"contentType $contentType")
+          logger.info(s"contentType $contentType")
           Ok(response)
             //          .as(contentType)
             //          .as(MimeTypes.JSON)
@@ -631,7 +632,7 @@ trait ApplicationTrait extends Controller
     withUser {
       implicit userid =>
         implicit request =>
-          println("LDP: " + request)
+          logger.info("LDP: " + request)
           val slug = request.headers.get("Slug")
           val link = request.headers.get("Link")
           val contentType = request.contentType
@@ -640,14 +641,14 @@ trait ApplicationTrait extends Controller
             if (asText != None) asText
             else {
               val raw = request.body.asRaw.get
-              println(s"""LDP: raw: "$raw" size ${raw.size}""")
+              logger.info(s"""LDP: raw: "$raw" size ${raw.size}""")
               raw.asBytes(raw.size.toInt).map {
                 arr => new String(arr.toArray, "UTF-8")
               }
             }
           }
-          println(s"LDP: slug: $slug, link $link")
-          println(s"LDP: content: $content")
+          logger.info(s"LDP: slug: $slug, link $link")
+          logger.info(s"LDP: content: $content")
           val serviceCalled =
             ldpPOST(uri, link, contentType, slug, content, copyRequest(request) ).getOrElse("default")
           Ok(serviceCalled).as("text/plain; charset=utf-8")
@@ -658,11 +659,11 @@ trait ApplicationTrait extends Controller
 
   def lookupService(search: String, clas: String = "") = {
     Action { implicit request =>
-      println(s"""Lookup: $request
+      logger.info(s"""Lookup: $request
             accepts ${request.acceptedTypes} """)
       val lang = chooseLanguage(request)
       val mime = request.acceptedTypes.headOption.map { typ => typ.toString() }.getOrElse(Accepts.Xml.mimeType)
-      println(s"mime $mime")
+      logger.info(s"mime $mime")
       Ok(lookup(search, lang, clas, mime)).as(s"$mime; charset=utf-8")
       .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
     }
@@ -670,7 +671,7 @@ trait ApplicationTrait extends Controller
 
   def httpOptions(path: String) = {
 	  Action { implicit request =>
-      println("OPTIONS: " + request)
+      logger.info("OPTIONS: " + request)
       Ok("OPTIONS: " + request)
         .as("text/html; charset=utf-8")
         .withHeaders(corsHeaders.toList:_*)
@@ -692,7 +693,7 @@ trait ApplicationTrait extends Controller
       implicit userid =>
         implicit request =>
           val lang = chooseLanguage(request)
-          println("makeHistoryUserActionsAction: cookies: " + request.cookies.mkString("; "))
+          logger.info("makeHistoryUserActionsAction: cookies: " + request.cookies.mkString("; "))
           outputMainPage(makeHistoryUserActions(limit, lang, copyRequest(request) ), lang)
     }
 

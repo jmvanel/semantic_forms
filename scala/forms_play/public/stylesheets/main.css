@@ -1,0 +1,7 @@
+.sf-value-block {
+border: 1px solid #ccc;
+display: inline-block;
+border-size:2px;
+border-style:solid;
+border-color:black;
+}

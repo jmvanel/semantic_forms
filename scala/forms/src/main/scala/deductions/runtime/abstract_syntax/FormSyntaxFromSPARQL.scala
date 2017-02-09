@@ -29,14 +29,16 @@ trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
   def createFormFromSPARQL(query: String,
                            editable: Boolean = false,
                            formuri: String = ""): FormSyntax = {
-        println( s"""query:
+    logger.debug( s"""query:
         $query""")
     val tryGraph = sparqlConstructQueryGraph(query)
-            println( s"tryGraph: $tryGraph")
+    logger.debug( s"tryGraph: $tryGraph")
     tryGraph match {
       case Success(graph) =>
         val triples = getTriples(graph).toSeq
-        val fs = createFormFromTriples(triples, editable, formuri)(allNamedGraph)
+        val fs = wrapInReadTransaction {
+          createFormFromTriples(triples, editable, formuri)(allNamedGraph)
+        } . get
         FormSyntax(subject = nullURI, fields = fs.fields, title = s"""From query:
       $query""")
       case Failure(f) => FormSyntax(subject = nullURI,
@@ -52,13 +54,15 @@ trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
     triples: Seq[Rdf#Triple],
     editable: Boolean = false,
     formuri: String = "")(implicit graph: Rdf#Graph): FormSyntax = {
-    println( s"triples: $triples")
-    val formEntries = wrapInReadTransaction(
+    logger.debug( s"triples: $triples")
+    val formEntries =
+//      wrapInReadTransaction(
       triples.map {
         triple =>
           val (subject, prop, objet) = fromTriple(triple)
           makeEntryFromTriple(subject, prop, objet, formMode = FormMode(editable))
-      }).get
+      }
+//    ).get
     FormSyntax(subject = nullURI, fields = formEntries)
   }
 }

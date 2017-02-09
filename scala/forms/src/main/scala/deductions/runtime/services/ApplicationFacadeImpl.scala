@@ -34,12 +34,14 @@ import deductions.runtime.views.ToolsPage
 import deductions.runtime.user.RegisterPage
 import deductions.runtime.semlogs.TimeSeries
 import deductions.runtime.semlogs.LogAPI
-import deductions.runtime.html.CSS
+import deductions.runtime.html.CSSClasses
 import deductions.runtime.data_cleaning.BlankNodeCleanerIncremental
 import scala.util.control.NonFatal
 import scala.util.control.NonFatal
 import deductions.runtime.sparql_cache.algos.StatisticsGraph
 import deductions.runtime.utils.HTTPrequest
+import deductions.runtime.views.Results
+import deductions.runtime.html.TriplesViewWithTitle
 
 /**
  * a Web Application Facade,
@@ -56,7 +58,7 @@ import deductions.runtime.utils.HTTPrequest
  */
 trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
-    with TriplesViewModule[Rdf, DATASET]
+    with TriplesViewWithTitle[Rdf, DATASET]
     with CreationFormAlgo[Rdf, DATASET]
     with StringSearchSPARQL[Rdf, DATASET]
     with ReverseLinksSearchSPARQL[Rdf, DATASET]
@@ -78,31 +80,19 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with StatisticsGraph[Rdf]
     with FormJSON[Rdf, DATASET]
     with ToolsPage
-    with CSS
+    with CSSClasses
+    with Results
     {
  
   val config: Configuration
   import config._
 
-  //  val v = new TimeSeries[Rdf, DATASET]{}
-  //  if( activateUserInputHistory )
   addSaveListener(this) // for TimeSeries
 
   implicit val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   implicit val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]
 
   import ops._
-
-//  val ops1 = ops
-//  addSaveListener(new LogAPI[Rdf] {
-//    implicit val ops = ops1
-//    def notifyDataEvent(addedTriples: Seq[Rdf#Triple],
-//    		removedTriples: Seq[Rdf#Triple])(implicit userURI: String): Unit = {
-//      addedTriples.headOption match {
-//        case Some(tr) => instanceLabel( tr.subject, graph, lang) 
-//      }
-//    }
-//  } )
   
   // Members declared in org.w3.banana.JsonLDWriterModule
   implicit val jsonldExpandedWriter = new RDFWriter[Rdf, scala.util.Try, JsonLdExpanded] {
@@ -116,89 +106,9 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
   logger.info(s"in Global")
 
-  lazy val search = this
-
-  lazy val dl = this
-  lazy val fs = this
-  lazy val cf = this
-
   import rdfStore.transactorSyntax._
 
 
-
-  /** Naked form from TriplesViewModule, plus:
-   *
-   * - title and links on top of the form,
-   * - page URI (graph) statistics,
-   * - behavior (manageBlankNodesReload, Exception management)
-   *
-   * TODO extract as WrappedHTMLForm
-   * TRANSACTIONAL */
-  def htmlForm(uri0: String,
-		           blankNode: String = "",
-               editable: Boolean = false,
-               lang: String = "en",
-               formuri: String="",
-               graphURI: String = "",
-               database: String = "TDB",
-               request:HTTPrequest = HTTPrequest() )
-  : NodeSeq = {
-    logger.info(
-        s"""ApplicationFacadeImpl.htmlForm URI <$uri0> blankNode "$blankNode"
-              editable=$editable lang=$lang graphURI <$graphURI>""")
-    val uri = uri0.trim()
-    if (uri != null && uri != "")
-      try {
-        val datasetOrDefault = getDatasetOrDefault(database)
-        val res = rdfStore.rw( datasetOrDefault, {
-          val status = if (blankNode != "true") {
-            val resRetrieve = retrieveURINoTransaction(
-              // if( blankNode=="true") makeUri("_:" + uri ) else makeUri(uri),
-              makeUri(uri), datasetOrDefault)
-
-            // TODO should be done in FormSaver 
-            println(s"Search in <$uri> duplicate graph rooted at blank node: size " +
-                ops.getTriples(resRetrieve.get).size)
-            manageBlankNodesReload(resRetrieve.getOrElse(emptyGraph),
-                URI(uri), datasetOrDefault)
-
-            val status = resRetrieve match {
-              case Failure(e) => e.getLocalizedMessage
-              case Success(g) => formatHTMLStatistics(URI(uri), g, lang)
-            }
-            status
-          } else ""
-
-          implicit val graph = allNamedGraph
-          val formBoth = htmlFormElemRaw(uri, graph, hrefDisplayPrefix, blankNode, editable = editable,
-              lang = lang,
-              formuri = formuri,
-              graphURI = graphURI,
-              database = database,
-              request=request)
-          val formItself = formBoth . _1
-          val formSyntax = formBoth . _2
-
-            Text("\n") ++
-            titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable) ++
-            <div>{status}</div> ++
-            formItself
-        })
-        res.get
-      } catch {
-        case e: Exception => // e.g. org.apache.jena.riot.RiotException
-          <p style="color:red">
-        <pre>
-            {
-              e.getLocalizedMessage() + " " + printTrace(e).replaceAll( "\\)", ")\n")
-            }<br/>
-            Cause:{ if (e.getCause() != null) e.getCause().getLocalizedMessage() }
-            </pre>
-          </p>
-      }
-    else
-      <div class="row">Enter an URI</div>
-  }
 
   /** NON transactional */
   def labelForURI(uri: String, language: String)
@@ -209,11 +119,11 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   /** NOTE this creates a transaction; do not use it too often */
   def labelForURITransaction(uri: String, language: String)
   : String = {
-//    println( s"labelForURITransaction $uri, $language"  )
+//    logger.info( s"labelForURITransaction $uri, $language"  )
     val res = rdfStore.r(dataset, {
       instanceLabel(URI(uri), allNamedGraph, language)
     }).getOrElse(uri)
-//    println( s"result $res"  )
+//    logger.info( s"result $res"  )
     res
   }
 
@@ -252,15 +162,9 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   //      elems
   //    }
 
-  def printTrace(e: Exception): String = {
-    var s = ""
-    for (i <- e.getStackTrace()) { s = s + " " + i }
-    s
-  }
-
   def wordsearchFuture(q: String = "", lang: String = "", clas: String = ""): Future[Elem] = {
     val fut = searchString(q, hrefDisplayPrefix, lang, clas)
-    wrapSearchResults(fut, q)
+    wrapSearchResults(fut, q, mess= s"In class <$clas>, searched for" )
   }
 
   def rdfDashboardFuture(q: String = "", lang: String = ""): Future[NodeSeq] = {
@@ -269,9 +173,9 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   }
     
   def downloadAsString(url: String, mime: String="text/turtle"): String = {
-    println( s"download url $url mime $mime")
-    val res = dl.focusOnURI(url, mime)
-    println(s"""download result "$res" """)
+    logger.info( s"download url $url mime $mime")
+    val res = focusOnURI(url, mime)
+    logger.info(s"""download result "$res" """)
     res
   }
 
@@ -291,16 +195,16 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     // and http://greweb.me/2012/11/play-framework-enumerator-outputstream/
     Enumerator.outputStream { os =>
       val graph = search_only(url)
-      println(s"after search_only($url)")
+      logger.info(s"after search_only($url)")
       val r = graph.map { graph =>
         /* non blocking */
         val writer: RDFWriter[Rdf, Try, Turtle] = turtleWriter
-        println("before writer.write()")
+        logger.info("before writer.write()")
         val ret = writer.write(graph, os, base = url)
-        println("after writer.write()")
+        logger.info("after writer.write()")
         os.close()
       }
-      println("after graph.map()")
+      logger.info("after graph.map()")
     }
   }
 
@@ -313,17 +217,17 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   def saveForm(request: Map[String, Seq[String]], lang: String = "",
       userid: String, graphURI: String = "", host: String= "")
   : Option[String] = {
-//    println(s"ApplicationFacadeImpl.save: map :$request, userid <$userid>")
+    logger.info(s"ApplicationFacadeImpl.saveForm: request :$request, userid <$userid>")
     val mainSubjectURI = try {
       implicit val userURI: String = userid
-      fs.saveTriples(request)
+      saveTriples(request)
     } catch {
       case t: Throwable =>
-        println("Exception in saveTriples: " + t)
+        logger.error("Exception in saveTriples: " + t)
         throw t
     }
     val uriOption = (request).getOrElse("uri", Seq()).headOption
-    println(s"ApplicationFacadeImpl.save: uriOption $uriOption, graphURI $graphURI")
+    logger.info(s"ApplicationFacadeImpl.saveForm: uriOption $uriOption, graphURI $graphURI")
     uriOption match {
       case Some(url1) =>
       val uri = URLDecoder.decode(url1, "utf-8")
@@ -332,7 +236,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
             lang )
     	})
     	logger.info( s"Save: normal! $uriOption" )
-      case _ => logger.info( s"Save:  NOT normal! $uriOption" )
+      case _ => logger.error( s"Save:  NOT normal! $uriOption request $request" )
     }
     
     // associate userid with graphURI
@@ -360,7 +264,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
         {
           try {
         	  if( query != "" )
-        		  dl.sparqlConstructQueryTR(query)
+        		  sparqlConstructQueryTR(query)
           } catch {
             case NonFatal(e) => e.printStackTrace() // TODO: handle error?
           }
@@ -404,7 +308,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       <table class="sf-sparql-table">
 
         { if( query != "" ) {
-          val rowsTry = dl.sparqlSelectQuery(query)
+          val rowsTry = sparqlSelectQuery(query)
           rowsTry match {
             case Success(rows) =>
               val printedRows = for (row <- rows) yield {
@@ -426,17 +330,16 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     wrapSearchResults(fut, q)
   }
 
-  /** TODO should be in package hmtl */
-  private def wrapSearchResults(fut: Future[NodeSeq], q: String, mess:String= "Searched for"): Future[Elem] =
-    fut.map { v =>
-      <section class="label-search-results">
-        <p class="label-search-header">{mess} "{ q }" :</p>
-        <div>
-        { css.localCSS }
-        { v }
-        </div>
-      </section>
-    }
+//  private def wrapSearchResults(fut: Future[NodeSeq], q: String, mess:String= "Searched for"): Future[Elem] =
+//    fut.map { v =>
+//      <section class="label-search-results">
+//        <p class="label-search-header">{mess} "{ q }" :</p>
+//        <div>
+//        { css.localCSS }
+//        { v }
+//        </div>
+//      </section>
+//    }
 
   def esearchFuture(q: String = ""): Future[Elem] = {
     val fut = extendedSearch(q)

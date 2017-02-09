@@ -10,7 +10,7 @@ case class HTTPrequest(
     /**
      * The HTTP host (domain, optionally port)
      */
-    host: String = "",
+    host: String = "localhost",
 
     /**
      * The client IP address.

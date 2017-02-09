@@ -28,13 +28,13 @@ import deductions.runtime.utils.Timer
 trait TriplesViewModule[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
     with FormSyntaxFactory[Rdf, DATASET]
-    with Form2HTMLBanana[Rdf]
     with Timer {
 
   val config: Configuration
+  val htmlGenerator: HtmlGeneratorInterface[Rdf#Node, Rdf#URI] // Form2HTMLBanana[Rdf]
+  import htmlGenerator._
 
   import ops._
-  import rdfStore.transactorSyntax._
 
   /**
    * wrapper for htmlForm that shows Failure's ;
@@ -113,6 +113,14 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
       throw e
     }
   }
+
+  def createHTMLFormFromSPARQL(query: String,
+                               editable: Boolean = false,
+                               formuri: String = ""): NodeSeq = {
+    val formSyntax = createFormFromSPARQL(query, editable, formuri)
+    generateHTML(formSyntax)
+  }
+
 
   /**
    * create a form for given URI with background knowledge in RDFStoreObject.store;
@@ -228,14 +236,12 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     val form = time("createAbstractForm",
       createAbstractForm(
           uri, editable, lang, blankNode, formGroup, formuri))
-    val htmlFormGen = makeHtmlFormGenerator
-    val htmlForm = htmlFormGen.
+//    val htmlFormGen = makeHtmlFormGenerator
+    val htmlForm = // htmlFormGen.
       generateHTML(form, hrefPrefix, editable, actionURI, graphURI,
         actionURI2, lang, request)
     ( htmlForm, form )
   }
-
-  private def makeHtmlFormGenerator = this
 
   private def createAbstractForm(
       uri: String, editable: Boolean,
@@ -253,23 +259,8 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     createForm(subjectNode, editable, formGroup, formuri)
   }
 
-  def htmlFormString(uri: String,
-    editable: Boolean = false,
-    actionURI: String = "/save", graphURI: String)(implicit allNamedGraphs: Rdf#Graph): String = {
-    val f = htmlFormElem(uri, editable = editable, actionURI = actionURI)
-    val pp = new PrettyPrinter(80, 2)
-    pp.formatNodes(f)
-  }
-
-  def graf2formString(graph1: Rdf#Graph, uri: String, graphURI: String): String = {
-    graf2form(graph1, uri, graphURI = graphURI)._1.toString
-  }
-
-  def createHTMLFormFromSPARQL(query: String,
-                               editable: Boolean = false,
-                               formuri: String = ""): NodeSeq = {
-    val formSyntax = createFormFromSPARQL(query, editable, formuri)
-    makeHtmlFormGenerator.generateHTML(formSyntax)
-  }
+//  private def graf2formString(graph1: Rdf#Graph, uri: String, graphURI: String): String = {
+//    graf2form(graph1, uri, graphURI = graphURI)._1.toString
+//  }
 
 }

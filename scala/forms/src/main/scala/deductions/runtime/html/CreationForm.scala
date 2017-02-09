@@ -15,14 +15,14 @@ import deductions.runtime.utils.RDFPrefixes
 
 trait CreationFormAlgo[Rdf <: RDF, DATASET]
 extends RDFCacheAlgo[Rdf, DATASET]
-with Form2HTMLBanana[Rdf] // #Node, Rdf#URI]
 with UnfilledFormFactory[Rdf, DATASET]
 with HTML5TypesTrait[Rdf]
 with RDFPrefixes[Rdf]
 with FormSyntaxJson[Rdf] {
 
-  
   val config: Configuration
+  val htmlGenerator: HtmlGeneratorInterface[Rdf#Node, Rdf#URI] // Form2HTMLBanana[Rdf]
+  import htmlGenerator._
 
   import ops._
   /** TODO also defined elsewhere */
@@ -37,11 +37,7 @@ with FormSyntaxJson[Rdf] {
       : Try[NodeSeq] = {
     rdfStore.rw( dataset, {
       val form = createData(classUri, lang, formSpecURI, graphURI, request)
-      val ops1 = ops
-      val config1 = config
-      val htmlFormatter = this
-
-      val rawForm = htmlFormatter . generateHTML(
+      val rawForm = generateHTML(
           form, hrefPrefix = "",
           editable = true,
           actionURI = actionURI,
@@ -73,6 +69,7 @@ with FormSyntaxJson[Rdf] {
     formSyntax2JSON(formSyntax)
   }
 
+  /** make form Header about Editing */
   def makeEditingHeader(classUri: String, lang: String,
                         formSpecURI: String, graphURI: String): NodeSeq = {
     <div class="sf-form-header">

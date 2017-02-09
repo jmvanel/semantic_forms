@@ -1,16 +1,17 @@
 package controllers
 
 import scala.concurrent.duration.DurationInt
-import org.scalatest.FunSuite
+
+import org.scalatestplus.play.OneAppPerSuite
+import org.scalatestplus.play.PlaySpec
+
 import akka.util.Timeout
+import deductions.runtime.html.Form2HTMLBanana
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.DefaultConfiguration
 import play.api.test.FakeRequest
 import play.api.test.Helpers
 import play.api.test.Helpers.contentAsString
-import play.api.test.FakeApplication
-import deductions.runtime.services.DefaultConfiguration
-import org.scalatestplus.play.PlaySpec
-import org.scalatestplus.play.OneAppPerTest
-import org.scalatestplus.play.OneAppPerSuite
 
 class TestAuth
     extends PlaySpec
@@ -33,6 +34,7 @@ class TestAuth
   val config1 = config
   val auth = new AuthTrait {
     val config = config1
+    		val htmlGenerator: Form2HTMLBanana[ImplementationSettings.Rdf] = ???
   }
 
   "Auth service" must {

@@ -104,7 +104,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
               val tryGraph = search_only(fromUri(uri))
               tryGraph match {
                 case Success(g) if( g.size > 1 ) => g  // 1 because there is always urn:displayLabel
-                case Success(g) => throw t
+                case Success(_) => throw t
                 case Failure(err) => throw err
               }
 
@@ -208,19 +208,21 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   private def readStoreURIinOwnGraph(uri: Rdf#URI): Rdf#Graph = {
     val graphFromURI = readStoreURI(uri, uri, dataset)
     println("RDFCacheAlgo.storeURI " + uri + " size: " + graphFromURI.size)
-    val r = rdfStore.rw( dataset, {
+    rdfStore.rw( dataset, {
       val it = find(graphFromURI, ANY, owl.imports, ANY)
       for (importedOntology <- it) {
         try {
-          Logger.getRootLogger().info(s"Before Loading imported Ontology $importedOntology")
-          foldNode(importedOntology.subject)(ontoMain => Some(ontoMain), x => None, x => None) match {
-            case Some(ontoMain) =>
+          logger.info(s"Before Loading imported Ontology $importedOntology")
+          foldNode(importedOntology.subject)(ontoMain => Some(ontoMain), _ => None, _ => None) match {
+            case Some( _ ) =>
               foldNode(importedOntology.objectt)(onto => readStoreURINoTransaction(onto, onto, dataset),
-                identity, identity)
-            case None =>
+                _ => emptyGraph,
+                _ => emptyGraph
+                ) ; Unit
+            case None => Unit
           }
         } catch {
-          case e: Throwable => println(e)
+          case e: Throwable => logger.error(e)
         }
       }
     })
@@ -262,12 +264,32 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       // NOTE: Jena RDF loader can throw an exception "Failed to determine the content type"
       val graphTry = rdfLoader.load(new java.net.URL(uri.toString()))
       println(s"readStoreURINoTransaction: after rdfLoader.load($uri): $graphTry")
-
-       val graph = graphTry . getOrElse {
+      
+      val graph = graphTry . getOrElse {
             println(s"Trying RDFa for <$uri>")
             microdataLoader.load(
-              new java.net.URL(uri.toString())) .get
+              new java.net.URL(uri.toString())) 
+              match {
+              case Success(s) => s
+              case Failure(f) =>{ 
+                
+                println("START MESSAGE")
+                println(f.getMessage)
+                println("END MESSAGE")
+                
+                //catch only "pure" HTML web page
+                if (f.getMessage.contains("Failed to determine the content type:")) {
+                  val newTripleWithURL = List( makeTriple(uri, rdf.typ , foaf.Document))
+                  val newGraphWithUrl : Rdf#Graph = makeGraph(newTripleWithURL)
+                  newGraphWithUrl
+                }
+                else throw f
+                  
+              }
+            }
+              
           }
+      
       println(s"readStoreURINoTransaction: graph $graph")
 
       Logger.getRootLogger().info(s"readStoreURINoTransaction: Before appendToGraph uri <$uri> graphUri <$graphUri>")

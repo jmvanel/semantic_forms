@@ -8,7 +8,6 @@ import scala.language.postfixOps
 
 import org.w3.banana.RDF
 
-import deductions.runtime.services.Configuration
 import deductions.runtime.services.URIManagement
 import deductions.runtime.utils.HTTPrequest
 

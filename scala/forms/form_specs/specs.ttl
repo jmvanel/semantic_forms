@@ -1,4 +1,3 @@
-# @prefix form: <http://deductions-software.com/ontologies/forms.owl.ttl#> .
 @prefix form: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 @prefix av: <http://www.assemblee-virtuelle.org/ontologies/v1.owl#> .

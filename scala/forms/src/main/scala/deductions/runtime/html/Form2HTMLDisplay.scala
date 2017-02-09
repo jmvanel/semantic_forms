@@ -15,7 +15,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 	import config._
 	import prefixes._
 
-	def createHTMLiteralReadonlyField(l: formMod#LiteralEntry): NodeSeq =
+	private[html] def createHTMLiteralReadonlyField(l: formMod#LiteralEntry): NodeSeq =
     <xml:group>
       <div class="">{ Unparsed(toPlainString(l.value)) }</div>
       <div>{ if (l.lang != "" && l.lang != "No_language") " > " + l.lang }</div>
@@ -79,6 +79,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
         }/>
       else NodeSeq.Empty
       }
+
       hyperlinkToField ++
       hyperlinkToObjectURI ++
       Text("\n") ++
@@ -101,7 +102,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
 
 
-  def createHTMLBlankNodeReadonlyField(
+  private[html] def createHTMLBlankNodeReadonlyField(
     r: formMod#BlankNodeEntry,
     hrefPrefix: String) =
     <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString, true) }>{

@@ -11,7 +11,7 @@ trait BasicWidgets {
     // format: OFF
     val tit = if (title == "") s" Reverse links for &lt;$uri&gt;" else title
     <button type="button" 
-    		class="btn btn-info" readonly="yes" title={ tit } data-value="$uri" onclick={ s"backlinks( '$uri' )" } id={ s"BACK-$uri" }>
+    		class="btn btn-info" readonly="yes" title={ tit } data-value={s"$uri"} onclick={ s"backlinks( '$uri' )" } id={ s"BACK-$uri" }>
       <i class="glyphicon glyphicon-search"></i> 
     </button>
   }
