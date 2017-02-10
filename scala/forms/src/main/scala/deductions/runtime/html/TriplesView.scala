@@ -14,6 +14,8 @@ import deductions.runtime.services.Configuration
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.HTTPrequest
 import deductions.runtime.utils.Timer
+import deductions.runtime.semlogs.TimeSeries
+import deductions.runtime.views.TableFromListListRDFNodes
 
 /**
  * Form for a subject URI with existing triples;
@@ -28,6 +30,8 @@ import deductions.runtime.utils.Timer
 trait TriplesViewModule[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
     with FormSyntaxFactory[Rdf, DATASET]
+    with TimeSeries[Rdf, DATASET]
+    with TableFromListListRDFNodes[Rdf]
     with Timer {
 
   val config: Configuration
@@ -155,6 +159,10 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
       Logger.getRootLogger().info(s"After retrieveURINoTransaction(makeUri($uri), store)")
       res
     } else Success(emptyGraph)
+
+    logger.info(
+        s">>>> htmlFormRawTry: getMetadataAboutSubject($uri) = ${makeHtmlTable( getMetadataAboutSubject(URI(uri)) )}")
+
     val graphURIActual = if (graphURI == "") uri else graphURI
     Success(graf2form(unionGraph, uri, hrefPrefix, blankNode, editable,
       actionURI, lang, graphURIActual, actionURI2, formGroup, formuri, request))

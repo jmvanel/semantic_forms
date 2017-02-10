@@ -27,6 +27,14 @@ with SPARQLHelpers[Rdf, DATASET] {
    * by metadata we mean just 2 triples, one telling the user,
    * one for the timestamp, whose subject is the new named graph.
    * These triples are queried in #getMetadata() .
+   * Here is a typical set of quads that is produced by a save action (in CRUD Selenium test):
+   * <pre>
+<http://localhost:9000/ldp/1486136803523-89228787433384#1486136808956> <urn:user> <aa> <urn:semantic_forms/metadataGraph> .
+<http://localhost:9000/ldp/1486136803523-89228787433384#1486136808956> <urn:timestamp> "1486136808956"^^<http://www.w3.org/2001/XMLSchema#integer> <urn:semantic_forms/metadataGraph> .
+<http://localhost:9000/ldp/1486136803523-89228787433384> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> <http://localhost:9000/ldp/1486136803523-89228787433384#1486136808956> .
+<http://localhost:9000/ldp/1486136803523-89228787433384> <http://xmlns.com/foaf/0.1/givenName> "Victime 1" <http://localhost:9000/ldp/1486136803523-89228787433384#1486136808956> .
+<http://localhost:9000/ldp/1486136803523-89228787433384> <http://xmlns.com/foaf/0.1/knows> <http://jmvanel.free.fr/jmv.rdf#me> <http://localhost:9000/ldp/1486136803523-89228787433384#1486136808956> .
+   * </pre>
    *
    * This is just an example of what can be saved:
    * another implementation could save other triples (typically an aggregated value), but always
@@ -78,7 +86,7 @@ with SPARQLHelpers[Rdf, DATASET] {
         GRAPH <$metadataGraph> {
           ?GR <$timestampURI> ?TS ;
               <$userPredURI> ?USER
-              # ; <urn:ip> ?IP ; <urn:action> ?ACTION
+              # TODO add after storing IP: <urn:ip> ?IP ; <urn:action> ?ACTION
               .
         }
         GRAPH ?GR {
@@ -93,7 +101,38 @@ with SPARQLHelpers[Rdf, DATASET] {
     res
   }
 
-
+  /** get Metadata About Subject, searching in history (TDB2) for all user updates,
+   *  and keeping the most recent for each triple;
+   * transactional
+   * @return
+   * property, object, timestamp, user;
+   * ordered by recent first
+   */
+  def getMetadataAboutSubject(subject: Rdf#Node, limit: Int =100, offset: Int = 0)
+  : List[Seq[Rdf#Node]] = {
+        val query = s"""
+      ${declarePrefix(xsd)}
+      SELECT ?PROP ?OBJECT (max(?TS) as ?TIME ) ?USER
+      WHERE {
+        GRAPH <$metadataGraph> {
+          ?GR <$timestampURI> ?TS ;
+              <$userPredURI> ?USER .
+        }
+        GRAPH ?GR {
+         <$subject> ?PROP ?OBJECT . }
+      }
+      GROUP BY ?OBJECT ?PROP ?USER
+      ORDER BY DESC(xsd:integer(?TS))
+      LIMIT $limit
+      OFFSET $offset
+    """
+    logger.debug("getMetadata: query " + query)
+    val res = sparqlSelectQueryVariables( query,
+        Seq("PROP", "OBJECT", "TIME", "USER"), dataset2 )
+    logger.debug("getMetadata: res " + res)
+    res
+  }
+  
   /** get Time Series from accumulated values with timestamp;
    *  used only in https://github.com/jmvanel/corporate_risk and in test
    *  @return a Map from label to a seq of time & value pairs;
