@@ -5,7 +5,6 @@ import java.util.Date
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
-
 import org.apache.log4j.Logger
 import org.w3.banana.OWLPrefix
 import org.w3.banana.RDF
@@ -14,11 +13,11 @@ import org.w3.banana.io.RDFLoader
 import org.w3.banana.io.RDFReader
 import org.w3.banana.io.RDFXML
 import org.w3.banana.io.Turtle
-
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.services.BrowsableGraph
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.SPARQLHelpers
+import deductions.runtime.services.URIManagement
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.jena.MicrodataLoaderModule
 
@@ -38,7 +37,9 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     with TimestampManagement[Rdf, DATASET]
     with MirrorManagement[Rdf, DATASET]
     with BrowsableGraph[Rdf, DATASET]
-    with RDFHelpers[Rdf] {
+    with RDFHelpers[Rdf]
+    with URIManagement{
+
 
   import config._
   import ops._
@@ -275,13 +276,17 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
                 
                 println("START MESSAGE")
                 println(f.getMessage)
+                println(uri.toString.contains("/ldp/"))
                 println("END MESSAGE")
                 
                 //catch only "pure" HTML web page
                 if (f.getMessage.contains("Failed to determine the content type:")) {
-                  val newTripleWithURL = List( makeTriple(uri, rdf.typ , foaf.Document))
-                  val newGraphWithUrl : Rdf#Graph = makeGraph(newTripleWithURL)
-                  newGraphWithUrl
+                  if (!uri.toString.contains("/ldp/")) {
+                    val newTripleWithURL = List(makeTriple(uri, rdf.typ, foaf.Document))
+                    val newGraphWithUrl: Rdf#Graph = makeGraph(newTripleWithURL)
+                    newGraphWithUrl
+                  }
+                  else emptyGraph
                 }
                 else throw f
                   
