@@ -41,4 +41,22 @@ trait BasicWidgets {
     </a>
     else <div></div>
   }
+  
+  // Test WebVOWL  
+   def makeDrawGraphLinkVOWL( uri: String,
+      toolURLprefix: String="http://visualdataweb.de/webvowl/#iri=",
+      toolname: String="Web VOWL",
+      imgWidth:Int=15): Elem = {
+
+    val link = URLEncoder.encode( uri, "utf-8")
+
+    if( uri != "" )
+    <a class="btn btn-default" href={ s"$toolURLprefix$link" }
+    title={s"Draw VOWL graph with $toolname for $uri"}
+    target="_blank">
+			<img width={imgWidth.toString()} border="0" src="https://www.w3.org/RDF/icons/rdf_flyer.svg"
+           alt="Web VOWL"/>
+    </a>
+    else <div></div>
+  }
 }
