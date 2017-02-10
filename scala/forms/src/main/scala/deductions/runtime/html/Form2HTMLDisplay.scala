@@ -73,10 +73,12 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       val thumbnail = resourceEntry.thumbnail
       val imageURL = if (isImage) Some(value)
       else thumbnail
-      if (isImage || thumbnail.isDefined)
-        <img src={ imageURL.get.toString() } css="sf-thumbnail" height="40" alt={
+      if (isImage || thumbnail.isDefined){
+        <a class="image-popup-vertical-fit" href={ imageURL.get.toString() } title={s"Image of $valueLabel: ${value.toString()}"}>
+          <img src={ imageURL.get.toString() } css="sf-thumbnail" height="40" alt={
           s"Image of $valueLabel: ${value.toString()}"
-        }/>
+        }/></a>
+      }
       else NodeSeq.Empty
       }
 
