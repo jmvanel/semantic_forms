@@ -43,3 +43,8 @@ See also a broad review of Frameworks for semantic web applications:
 [Frameworks for semantic web applications](http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/html/semantic_based_apps_review.html)
 including more details on this project goal in the introduction.
 
+YourKit supports open source projects with its full-featured Java Profiler.
+YourKit, LLC is the creator of <a href="https://www.yourkit.com/java/profiler/">YourKit Java Profiler</a>
+and <a href="https://www.yourkit.com/.net/profiler/">YourKit .NET Profiler</a>,
+innovative and intelligent tools for profiling Java and .NET applications.
+[[https://www.yourkit.com/images/yklogo.png|alt=yourkit]]
