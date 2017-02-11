@@ -50,7 +50,13 @@ with RDFHelpers[Rdf]
         new Text("  "),
         makeDrawGraphLink(uri))
     } else new Text(""))
+    
+    val expertLinksOWL = (if (showExpertButtons) {
+      new Text("  ")
+      makeDrawGraphLinkVOWL(uri)
+    } else new Text(""))
 
+    
     <div class="container">
       <div class="row">
         <h3>
@@ -60,12 +66,15 @@ with RDFHelpers[Rdf]
           <strong>
             { linkToShow }
             { expertLinks }
+            { expertLinksOWL }         
           </strong>
           {
-            if (formSyntax.thumbnail.isDefined)
+            if (formSyntax.thumbnail.isDefined){
+              <a class="image-popup-vertical-fit" href={  formSyntax.thumbnail.get.toString() } title={s"Image of ${formSyntax.title}: ${formSyntax.subject.toString()}"}>
               <img src={ formSyntax.thumbnail.get.toString() } css="sf-thumbnail" height="40" alt={
                 s"Image of ${formSyntax.title}: ${formSyntax.subject.toString()}"
-              }/>
+              }/></a>
+                }
               else NodeSeq.Empty
           }
         </h3>

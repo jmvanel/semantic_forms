@@ -10,7 +10,7 @@ cd $SRC
 git pull --verbose
 
 DATE=`date`
-MainXml=../forms/src/main/scala/deductions/runtime/html/MainXml.scala
+MainXml=../forms/src/main/scala/deductions/runtime/views/MainXml.scala
 sed -e "s/=timestamp=/$DATE/" $MainXml > /tmp/MainXml.scala
 cp $MainXml /tmp/MainXml.orig.scala 
 cp /tmp/MainXml.scala $MainXml

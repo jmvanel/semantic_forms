@@ -6,9 +6,7 @@ import org.w3.banana.RDF
 
 import deductions.runtime.semlogs.LogAPI
 
-trait SaveListenersManager[Rdf <: RDF]
-//    extends Configuration
-    {
+trait SaveListenersManager[Rdf <: RDF] {
   val config: Configuration
 
   type SaveListener = LogAPI[Rdf]

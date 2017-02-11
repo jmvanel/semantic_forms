@@ -1,11 +1,12 @@
 package deductions.runtime.semlogs
 
-import org.w3.banana.RDF
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import java.util.Date
-import org.w3.banana.RDFSPrefix
-import deductions.runtime.services.SPARQLHelpers
 import java.math.BigInteger
+import java.util.Date
+
+import org.w3.banana.RDF
+
+import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.services.SPARQLHelpers
 
 /** swallow and regurgitate user input, to build a history;
  *  a callback is installed in FormSaver via addSaveListener() in ApplicationFacadeImpl */
@@ -14,19 +15,20 @@ with LogAPI[Rdf]
 with SPARQLHelpers[Rdf, DATASET] {
 
   import ops._
-  import rdfStore.transactorSyntax._
-  import rdfStore.graphStoreSyntax._
-  import rdfStore.sparqlEngineSyntax._
-  import scala.concurrent.ExecutionContext.Implicits.global
 
   val timestampURI = URI("urn:timestamp")
   val userPredURI = URI("urn:user")
   val metadataGraph = URI( "urn:semantic_forms/metadataGraph" ) // "urn:x-arq:DefaultGraph")
-  
-  /** reference implementation:
+
+
+  /** reference implementation of `notifyDataEvent`:
    * save all `addedTriples` to a specific new named graph,
-   * and add timestamp metadata to metadata graph;
-   * this is just an example:
+   * and add timestamp metadata to metadata graph `metadataGraph`;
+   * by metadata we mean just 2 triples, one telling the user,
+   * one for the timestamp, whose subject is the new named graph.
+   * These triples are queried in #getMetadata() .
+   *
+   * This is just an example of what can be saved:
    * another implementation could save other triples (typically an aggregated value), but always
    * in the named graph whose name is computed by makeGraphURIAndMetadata();
    * transactional
@@ -38,10 +40,11 @@ with SPARQLHelpers[Rdf, DATASET] {
       rdfStore.rw( dataset2, {
         val (graphUri, metadata ) = makeGraphURIAndMetadata(addedTriples, removedTriples)
         rdfStore.appendToGraph( dataset2, metadataGraph, metadata)
-       
-        // TODO: add only modified triples (configurable)
+        logger.debug(s"notifyDataEvent: saved to graph <$metadataGraph> : metadata $metadata")
+
         val graph = makeGraph(addedTriples)
         rdfStore.appendToGraph( dataset2, graphUri, graph)
+        logger.debug(s"notifyDataEvent: saved to new graph <$graphUri> : added Triples: $addedTriples")
       })
       Unit
   }
@@ -61,7 +64,7 @@ with SPARQLHelpers[Rdf, DATASET] {
   }
 
   /**get Metadata for all user updates:
-   * subject, timestamp, triple count;
+   * subject, timestamp, triple count, user;
    * ordered by recent first;
    * transactional
    * TODO replace userURI (unused) by limit */
@@ -81,18 +84,11 @@ with SPARQLHelpers[Rdf, DATASET] {
         GRAPH ?GR {
          ?SUBJECT ?P ?O . } }
       GROUP BY ?SUBJECT ?USER
-      # ORDER BY ASC(?TS)
-      # ORDER BY DESC(xsd:nonNegativeInteger(?TS))
       ORDER BY DESC(xsd:integer(?TS))
     """
     logger.debug("getMetadata: query " + query)
     val res = sparqlSelectQueryVariables( query,
         Seq("SUBJECT", "TIME", "COUNT", "USER"), dataset2 )
-
-//    def msg(path: String) = println( s">>>> getMetadata: path $path: " + getClass().getClassLoader().getResource( path ) )
-//    msg("conf/logback.xml")
-//    msg("logback.xml")
-//    msg("log4j.properties")
     logger.debug("getMetadata: res " + res)
     res
   }
@@ -120,10 +116,10 @@ with SPARQLHelpers[Rdf, DATASET] {
             <${rdfs.label}> ?LAB .
         }
       }  """
-    println("query " + query)
+    logger.info("getTimeSeries: query " + query)
     val res = sparqlSelectQueryVariables( query, Seq("TS", "AV", "LAB"), dataset2 )
     // res is a  List[Set[Rdf.Node]] each Set containing: Long, Float, String
-//    println("res " + res)
+//    logger.info("res " + res)
 
     val res2 = res.groupBy{ elem => foldNode(elem.toSeq(2))(
         _=> "", _=> "", lit => fromLiteral(lit)._1 )
@@ -131,7 +127,7 @@ with SPARQLHelpers[Rdf, DATASET] {
     for( (label, values ) <- res2 ) yield {
       val time2value = values . map {
         v =>
-//          println( "v " + v )
+//          logger.info( "v " + v )
           val vv = v.toSeq ; (
             vv(0).as[BigInteger].get,
             vv(1).as[Double].get )

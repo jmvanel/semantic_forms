@@ -116,6 +116,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
       val columnsFormResults = uriLabelCouples2 .
         map(uriLabelCouple => {
           val node = uriLabelCouple._1
+          <div class="sf-value-block">{
           foldNode(node) ( node =>
           makeHyperlinkForURI(
               node, lang, graph,
@@ -128,11 +129,11 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
               hrefPrefix = hrefPrefix,
               label = uriLabelCouple._2,
               sortAnd1rowPerElement = sortAnd1rowPerElement ),
-          lit => <div>{ lit.toString() // fromLiteral(lit)._1
-            }</div>
+          lit => <div>{ lit.toString() }</div>
           )
+          }</div>
         })
-        columnsFormResults 
+        columnsFormResults // ?? . flatten
     }</div><!-- end of wrapping div displayResults -->
   }
 
