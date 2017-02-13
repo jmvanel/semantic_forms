@@ -20,6 +20,7 @@ import deductions.runtime.services.SPARQLHelpers
 import deductions.runtime.services.URIManagement
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.jena.MicrodataLoaderModule
+import deductions.runtime.utils.HTTPrequest
 
 /** */
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
@@ -82,7 +83,9 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * timestamp is saved in another Dataset
    *  @return the more recent RDF data if any, or the old data
    */
-  def retrieveURINoTransaction(uri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
+  def retrieveURINoTransaction(uri: Rdf#URI, dataset: DATASET,
+      request:HTTPrequest = HTTPrequest()
+  ): Try[Rdf#Graph] = {
     for (graph <- rdfStore.getGraph(dataset, uri)) yield {
       val nothingStoredLocally = graph.size == 0
       println(s"retrieveURINoTransaction: stored Graph Is Empty: $nothingStoredLocally URI <$uri>")
@@ -92,7 +95,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
         val mirrorURI = getMirrorURI(uri)
         if (mirrorURI == "") {
           try {
-            val g = readStoreURINoTransaction(uri, uri, dataset)
+            val g = readStoreURINoTransaction(uri, uri, dataset, request)
             if (g.size > 0) {
               println("Graph at URI was downloaded, new addition: " + uri + " , size " + g.size)
               addTimestampToDataset(uri, dataset2)
@@ -255,7 +258,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * read unconditionally from URI and store in TDB, no matter what the syntax is;
    * can also load an URI with the # part
    */
-  private def readStoreURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
+  private def readStoreURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET,
+      request:HTTPrequest = HTTPrequest()): Rdf#Graph = {
     Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
 
     if (isDownloadableURI(uri)) {
@@ -264,38 +268,42 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
 
       // NOTE: Jena RDF loader can throw an exception "Failed to determine the content type"
       val graphTry = rdfLoader.load(new java.net.URL(uri.toString()))
-      println(s"readStoreURINoTransaction: after rdfLoader.load($uri): $graphTry")
+      logger.info(s"readStoreURINoTransaction: after rdfLoader.load($uri): $graphTry")
       
       val graph = graphTry . getOrElse {
-            println(s"Trying RDFa for <$uri>")
+            logger.info(s"Trying RDFa for <$uri>")
             microdataLoader.load(
               new java.net.URL(uri.toString())) 
               match {
               case Success(s) => s
               case Failure(f) =>{ 
                 
-                println("START MESSAGE")
-                println(f.getMessage)
-                println(uri.toString.contains("/ldp/"))
-                println("END MESSAGE")
+                logger.info("readStoreURINoTransaction: START MESSAGE")
+                logger.info(f.getMessage)
+                logger.info(s""" uri.toString.contains("/ldp/") ${uri.toString.contains("/ldp/")} """)
+                logger.info("END MESSAGE")
                 
-                //catch only "pure" HTML web page
+                // catch only "pure" HTML web page: TODO make a function isPureHTMLwebPage(uri: URI, request: Request): Boolean
                 if (f.getMessage.contains("Failed to determine the content type:")) {
-                  if (!uri.toString.contains("/ldp/")) {
+
+                  // if (!uri.toString.contains("/ldp/")) {
+                  if (! fromUri(uri) .startsWith( request.absoluteURL("") ) ) {
+                    // then it's really a "pure" HTML web page (and not a locally managed URL and data)
                     val newTripleWithURL = List(makeTriple(uri, rdf.typ, foaf.Document))
                     val newGraphWithUrl: Rdf#Graph = makeGraph(newTripleWithURL)
                     newGraphWithUrl
-                  }
-                  else emptyGraph
+
+                  } else
+                    // it's a locally managed URL and data, no need to download anything
+                    emptyGraph
                 }
                 else throw f
-                  
               }
             }
               
           }
       
-      println(s"readStoreURINoTransaction: graph $graph")
+      logger.info(s"readStoreURINoTransaction: graph $graph")
 
       Logger.getRootLogger().info(s"readStoreURINoTransaction: Before appendToGraph uri <$uri> graphUri <$graphUri>")
       rdfStore.appendToGraph( dataset, graphUri, graph)
