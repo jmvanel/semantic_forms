@@ -174,7 +174,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
                 }
               </div> ++
               {
-                if (groupFields) {
+                if (request.headers.contains("tabs")) {
                   makeFieldsGroups()
                 } else
                   makeFieldsLabelAndData(form.fields)
