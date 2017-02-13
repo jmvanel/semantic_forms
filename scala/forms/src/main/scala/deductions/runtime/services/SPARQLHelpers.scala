@@ -56,11 +56,11 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   def sparqlConstructQuery(queryString: String): Try[Rdf#Graph] = {
     val result = for {
       query <- {
-        println("sparqlConstructQuery: before parseConstruct")
+        logger.debug("sparqlConstructQuery: before parseConstruct")
         parseConstruct(queryString)
       }
       es <- {
-        println("sparqlConstructQuery: before executeConstruct")
+        logger.debug("sparqlConstructQuery: before executeConstruct")
         dataset.executeConstruct(query, Map())
       }
     } yield es
@@ -81,13 +81,13 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   def sparqlUpdateQuery(queryString: String, ds: DATASET = dataset): Try[Unit] = {
     val result = for {
       query <- {
-        //        println(s"sparqlUpdateQuery: before parseUpdate $queryString")
+        //        logger.debug(s"sparqlUpdateQuery: before parseUpdate $queryString")
         parseUpdate(queryString)
       }
       es <- {
-        //        println("sparqlUpdateQuery: before executeUpdate")
+        //        logger.debug("sparqlUpdateQuery: before executeUpdate")
         val result = ds.executeUpdate(query, Map())
-        println(s"sparqlUpdateQuery: AFTER executeUpdate : $result")
+        logger.debug(s"sparqlUpdateQuery: AFTER executeUpdate : $result")
         result
       }
     } yield es
@@ -163,9 +163,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
          |     <$uri> <$property> ?ts .
          |   }
          | }""".stripMargin
-    println(s"""replaceRDFTriple: $triple in <$graphURI> """)
+    logger.debug(s"""replaceRDFTriple: $triple in <$graphURI> """)
     val result = sparqlUpdateQuery(queryString, dataset)
-    //    println(s"replaceRDFTriple: result: $result")
+    //    logger.debug(s"replaceRDFTriple: result: $result")
 
     rdfStore.appendToGraph(dataset, nodeToURI(graphURI), makeGraph(Seq(triple)))
   }
@@ -179,9 +179,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    } }
   """
     val q = queryRdfList.replace("<SUBJECT>", s"$subject")
-    //    println(s"getRDFList: q $q")
+    //    logger.debug(s"getRDFList: q $q")
     val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariablesNT(q, List("ELEM"))
-    //    println(s"getRDFList: res $res")
+    //    logger.debug(s"getRDFList: res $res")
     res.flatten
   }
 
@@ -209,11 +209,11 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     //         |     <$uri> ?property ?obj .
     //         |   }
     //         | }""".stripMargin
-    //    println( s"removeQuadsWithSubject $uri " + sparqlSelectQuery( queryString1 ) )
+    //    logger.debug( s"removeQuadsWithSubject $uri " + sparqlSelectQuery( queryString1 ) )
 
-    //    println( s"removeQuadsWithSubject size() $size()" )
+    //    logger.debug( s"removeQuadsWithSubject size() $size()" )
     val res = sparqlUpdateQuery(queryString, ds)
-    println(s"removeQuadsWithSubject res ${res}")
+    logger.debug(s"removeQuadsWithSubject res ${res}")
   }
 
   /**
@@ -241,7 +241,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    */
   def removeFromQuadQuery(s: Rdf#NodeMatch, p: Rdf#NodeMatch, o: Rdf#NodeMatch): List[Quad] = {
     val quads = quadQuery(s, p, o).toList // : Iterable[Quad]
-    //    println(s"removeFromQuadQuery: from $s $p $o: triples To remove $quads")
+    //    logger.debug(s"removeFromQuadQuery: from $s $p $o: triples To remove $quads")
     quads.map {
       tripleToRemove =>
         rdfStore.removeTriples(dataset, tripleToRemove._2,
@@ -265,7 +265,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     def makeQuad(result: Seq[Rdf#Node]): Quad = {
       var resultIndex = 0
       def processNodeMatch(nodeMatch: Rdf#NodeMatch): Rdf#Node = {
-        //    	  println(s"processNodeMatch BEFORE result $result , resultIndex $resultIndex , nodeMatch $nodeMatch" )
+        //    	  logger.debug(s"processNodeMatch BEFORE result $result , resultIndex $resultIndex , nodeMatch $nodeMatch" )
         val res = foldNodeMatch(nodeMatch)(
           {
             val node = result(resultIndex)
@@ -273,14 +273,14 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
             node
           },
           node => node)
-        //          println(s"processNodeMatch result $result nodeMatch $nodeMatch" )
+        //          logger.debug(s"processNodeMatch result $result nodeMatch $nodeMatch" )
         res
       }
       val triple = Triple(
         processNodeMatch(s),
         makeURI(processNodeMatch(p)),
         processNodeMatch(o))
-      //      println(s"processNodeMatch BEFORE makeURI(result(resultIndex)) , resultIndex $resultIndex size ${result.size}" )
+      //      logger.debug(s"processNodeMatch BEFORE makeURI(result(resultIndex)) , resultIndex $resultIndex size ${result.size}" )
       (triple, makeURI(result(resultIndex)))
     }
 
@@ -301,11 +301,11 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
          |     .
          |   }
          | }""".stripMargin
-    //    println( s"sparqlTerms $sparqlTerms" )
-    //    println( s"variables $variables" )
-    //    println( "quadQuery " + queryString ) 
+    //    logger.debug( s"sparqlTerms $sparqlTerms" )
+    //    logger.debug( s"variables $variables" )
+    //    logger.debug( "quadQuery " + queryString ) 
     val selectRes = sparqlSelectQueryVariablesNT(queryString, variables, dataset)
-    //    println( s"selectRes $selectRes" )
+    //    logger.debug( s"selectRes $selectRes" )
     selectRes map { makeQuad(_) }
   }
 
@@ -328,15 +328,15 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     time("sparqlSelectQueryVariablesNT", {
 
       val solutionsTry = for {
-        query <- Try(parseSelect(queryString))
-        es <- Try(ds.executeSelect(query.get, Map()))
+        query <- parseSelect(queryString)
+        es <- ds.executeSelect(query, Map())
       } yield es
-      //      println( s"sparqlSelectQueryVariablesNT: $solutionsTry" )
-      val solutionsTry2 = solutionsTry.flatten
+      //      logger.debug( s"sparqlSelectQueryVariablesNT: $solutionsTry" )
+      val solutionsTry2 = solutionsTry
 
       solutionsTry2 match {
         case Success(solutions) =>
-          //    println( "solutionsTry.isSuccess " + solutionsTry.isSuccess )
+          //    logger.debug( "solutionsTry.isSuccess " + solutionsTry.isSuccess )
           val answers: Rdf#Solutions = solutions
           val results = answers.iterator.toIterable.map {
             row =>
@@ -361,14 +361,12 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
           logger.error(s"sparqlSelectQueryVariablesNT: QueryParseException: $failure, queryString: $queryString")
           List(Seq(Literal(failure.getLocalizedMessage)))
       }
-
-    },
-      false)
+    }, logger.isDebugEnabled() )
   }
 
   /**
    * run SPARQL on given dataset; transactional;
-   * the fisrt row is the variables' list
+   * the first row is the variables' list
    *  used in SPARQL results Web page
    */
   def sparqlSelectQuery(queryString: String,
@@ -378,10 +376,43 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         query <- parseSelect(queryString)
         es <- ds.executeSelect(query, Map())
       } yield es
+      makeListofListsFromSolutions(solutionsTry)
+    })
+    logger.debug("sparqlSelectQuery: before transaction.get")
+    transaction.get
+  }
 
-      val res = solutionsTry.map {
-        solutions =>
-          val solsIterable = solutions.iterator.toIterable
+  /**
+   * run SPARQL SELECT on given dataset; transactional;
+   * the first row is the variables' list
+   *  used in trait InstanceLabelsFromLabelProperty
+   */
+  def sparqlSelectQueryCompiled(query: Rdf#SelectQuery,
+                        ds: DATASET = dataset): Try[List[List[Rdf#Node]]] = {
+    val transaction = ds.r({
+      val solutionsTry = for {
+        es <- ds.executeSelect(query, Map())
+      } yield es
+      makeListofListsFromSolutions(solutionsTry)
+    })
+    logger.debug("sparqlSelectQuery: before transaction.get")
+    transaction.get
+  }
+
+  /** @param addHeaderRow the first row is the variables' list */
+  def makeListofListsFromSolutions(solutionsTry: Try[Rdf#Solutions],
+                                   addHeaderRow: Boolean = true) = {
+    val res = solutionsTry.map {
+      solutions =>
+        val solsIterable = solutions.iterator.toIterable
+        val results = solsIterable map {
+          row =>
+            val variables = row.varnames().toList
+            for (variable <- variables) yield row(variable).get.as[Rdf#Node].get
+        }
+        logger.debug("sparqlSelectQuery: after results")
+
+        if (addHeaderRow) {
           val r = solsIterable.headOption.map {
             row =>
               val names = row.varnames().toList
@@ -391,22 +422,12 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
               headerRow
           }
           val headerRow = r.toList
-
-          val results = solsIterable map {
-            row =>
-              val variables = row.varnames().toList
-              for (variable <- variables) yield row(variable).get.as[Rdf#Node].get
-          }
-          println("sparqlSelectQuery: after results")
-
           headerRow ++ results.to[List]
-      }
-      println("sparqlSelectQuery: before res")
-      res
-      //      println( "after res" )
-    })
-    println("sparqlSelectQuery: before transaction.get")
-    transaction.get
+
+        } else results.to[List]
+    }
+    logger.debug("makeListofListsFromSolutions: before res")
+    res
   }
 
   /**
@@ -416,7 +437,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   def sparqlSelectConneg(queryString: String,
                          format: String = "xml",
                          ds: DATASET = dataset): String = {
-    println(s"format $format")
+    logger.debug(s"format $format")
     format match {
       case "jsonld" => sparqlSelectJSON(queryString, ds)
       case "turtle" => sparqlSelectJSON(queryString, ds) // should not happen
@@ -437,7 +458,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       case Success(res) =>
         if (!res.isEmpty) {
           val header = res.head.map { node => literalNodeToString(node) }
-          println(s"sparqlSelectXML: header $header")
+          logger.debug(s"sparqlSelectXML: header $header")
 
           val xml =
             <sparql xmlns="http://www.w3.org/2005/sparql-results#">
@@ -458,7 +479,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
                               <literal xml:lang={ litTuple._3.toString() } datatype={ litTuple._2.toString() }>{ litTuple._1 }</literal>
                             })
                       }
-                      // println(s"sparqlSelectXML: listOfElements $listOfElements")
+                      // logger.debug(s"sparqlSelectXML: listOfElements $listOfElements")
                       val bindings = header.zip(listOfElements).map {
                         pair =>
                           <binding name={ pair._1 }>
@@ -499,7 +520,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       case Success(res) =>
         if (!res.isEmpty) {
           val header = res.head.map { node => literalNodeToString(node) }
-          println(s"sparqlSelectJSON: header $header")
+          logger.debug(s"sparqlSelectJSON: header $header")
           val headValue = Json.obj("vars" -> JsArray(header.map { s => JsString(s) }))
           val bindings = res.drop(1).map {
             list =>
@@ -549,7 +570,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       Map()).get
     val results: Iterator[Seq[Rdf#URI]] = answers.toIterable map {
       row =>
-        //        println(s"row $row")
+        //        logger.debug(s"row $row")
         for (variable <- variables) yield {
           val cell = row(variable)
           cell match {
@@ -574,7 +595,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       row =>
         val varnames = row.varnames()
         //        if (varnames.contains("COMM")) 
-        //        println(s"row $row")
+        //        logger.debug(s"row $row")
         //        val effectiveVariables = varnames.intersect(variables.toSet)
         for (variable <- variables) yield {
           val cell = if (varnames.contains(variable)) {
@@ -585,7 +606,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
               case Failure(error) => Literal(error.getLocalizedMessage)
             }
           } else Literal("")
-          //          println (s", cell $cell")
+          //          logger.debug (s", cell $cell")
           cell
         }
     }

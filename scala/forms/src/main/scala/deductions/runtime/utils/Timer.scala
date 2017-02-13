@@ -1,5 +1,7 @@
 package deductions.runtime.utils
 
+import org.apache.log4j.Logger
+
 /**
  * measure any code fragment
  * @author jmv
@@ -17,6 +19,10 @@ trait Timer {
       res
     } else sourceCode
   }
+  
+//  def time[T](mess: String, sourceCode: => T)(implicit logger: Logger): T = {
+//    time(mess, sourceCode, activate = logger.isDebugEnabled())
+//  }
 }
 
 object Timer {

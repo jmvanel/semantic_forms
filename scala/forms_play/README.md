@@ -35,7 +35,7 @@ tar xvzf sbt-0.13.12.tgz
 ```
 Then SBT will download the rest.
 - download the source from [Banana-RDf fork on github](https://github.com/deductions/banana-rdf) (temporary, until my Pull Request in Banana-RDF is accepted)
-  - build this project with SBT : change directory to `banana-rdf` ; type in the SBT console : `publishLocal`
+  - build this project with SBT : change directory to `banana-rdf` ; type in the SBT console : `+ publishLocal`
 - download the source from [semantic\_forms on github](https://github.com/jmvanel/semantic_forms/)
 - build and run the `semantic_forms` project itself with SBT: change directory to `scala/forms_play` within the source downloaded from github;
 - type in the SBT console : `~ run`
@@ -161,9 +161,9 @@ sbt gen-ensime
 
 Useful SBT plugins you may install for developppement purposes (add in ~/.sbt/0.13/plugins/plugins.sbt ):
 
-	addSbtPlugin("org.ensime" % "ensime-sbt" % "0.3.3")
+	addSbtPlugin("org.ensime" % "ensime-sbt" % "1.9.0")
 	addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.8.2")
-	addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.10")
+	addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.3.0")
 
 Commands to run with these useful plugins:
 
