@@ -35,7 +35,9 @@ tar xvzf sbt-0.13.12.tgz
 ```
 Then SBT will download the rest.
 - download the source from [Banana-RDf fork on github](https://github.com/deductions/banana-rdf) (temporary, until my Pull Request in Banana-RDF is accepted)
-  - build this project with SBT : change directory to `banana-rdf` ; type in the SBT console : `+ publishLocal`
+  - build this project with SBT : change directory to `banana-rdf` ; type in the SBT console :
+    ```++2.11.8
+       publishLocal```
 - download the source from [semantic\_forms on github](https://github.com/jmvanel/semantic_forms/)
 - build and run the `semantic_forms` project itself with SBT: change directory to `scala/forms_play` within the source downloaded from github;
 - type in the SBT console : `~ run`
