@@ -29,7 +29,7 @@
     <script src="assets/magnific-popup/jquery.magnific-popup.min.js" type="text/javascript"> </script>
     <script type='text/javascript'>
       $(document).ready( function (){
-        //$(".form-horizontal").tabs();
+        $(".form-horizontal").tabs();
         $(".form-group").on('click', '.add-widget', function(event) {
             $model = $(this).parent().parent().find('.col-xs-9').first().children().last()
             console.log('Clonage du champ :');
