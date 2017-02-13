@@ -42,6 +42,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
 
   /** leverage on ParameterizedSPARQL.makeHyperlinkForURI()
    * TODO replace userURI (unused) by limit
+   * TODO reuse makeHtmlTable
    */
   def makeTableHistoryUserActions(lang: String="en", request: HTTPrequest)(userURI: String): NodeSeq = {
     val metadata = getMetadata()(userURI)
