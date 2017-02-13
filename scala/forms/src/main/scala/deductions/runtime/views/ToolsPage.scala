@@ -28,19 +28,23 @@ trait ToolsPage extends EnterButtons
       <p>
         SPARQL select{
           // TODO: the URL here appears also in Play! route!
-          sparqlQueryForm("", "/select-ui", Seq(
+          sparqlQueryForm(false, "", "/select-ui", Seq(
             "SELECT * WHERE { GRAPH ?G {?S ?P ?O . } } LIMIT 100",
             "SELECT DISTINCT ?CLASS WHERE { GRAPH ?G { [] a  ?CLASS . } } LIMIT 100",
             "SELECT DISTINCT ?PROP WHERE { GRAPH ?G { [] ?PROP [] . } } LIMIT 100"
           ))
         }
+
       </p>
       <p>
         SPARQL construct{
           // TODO: the URL here appears also in Play! route!
-          sparqlQueryForm("", "/sparql-ui",
+          sparqlQueryForm(true, "", "/sparql-ui",
             Seq("CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10"))
-        }
+           
+         }  
+       
+
       </p>
       <p> <a href={
         s"""http://yasgui.org?endpoint=$localSparqlEndpoint,query=${URLEncoder.encode(querySample, "UTF-8")}"""
@@ -56,15 +60,24 @@ trait ToolsPage extends EnterButtons
   }
 
   /** HTML Form for a sparql Query */
-  def sparqlQueryForm(query: String, action: String, sampleQueries: Seq[String]): NodeSeq =
-    <form role="form" action={ action }>
-      <div>action { action }</div>
-      <textarea name="query" style="min-width:80em; min-height:8em" title="To get started, uncomment one of these lines.">{
+  def sparqlQueryForm(viewButton: Boolean, query: String, action: String, sampleQueries: Seq[String]): NodeSeq =
+    <form role="form" action={action}>
+      <div>action { action }</div>				    
+			    <textarea name="query" style="min-width:80em; min-height:8em" title="To get started, uncomment one of these lines.">{          
         if (query != "")
-          query
+          query          
         else
-          for (sampleQuery <- sampleQueries) yield "# " + sampleQuery + "\n"
+          for (sampleQuery <- sampleQueries) yield "# " + sampleQuery + "\n" 
       }</textarea>
-      <input type="submit" value="Submit"/>
-    </form>
-}
+      <input type="submit" value="Submit" formaction ="/sparql-ui"/>
+			
+			{	if (viewButton)					
+      <input type="submit" value="View" formaction ="/sparql-form"/>
+			}
+			
+			</form>
+
+      
+   
+                        
+   }
