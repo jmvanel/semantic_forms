@@ -86,7 +86,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
         res.get
       } catch {
         case e: Exception => // e.g. org.apache.jena.riot.RiotException
-          <p style="color:red">
+          <p class="sf-color-error-message">
             <pre>
               {
                 e.getLocalizedMessage() + "\n" + printTrace(e).replaceAll("\\)", ")\n")

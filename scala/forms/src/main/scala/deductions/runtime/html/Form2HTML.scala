@@ -51,19 +51,20 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
       generateHTMLJustFields(form, hrefPrefix, editable, graphURI, lang, request))
 
     def wrapFieldsWithFormTag(htmlFormFields: NodeSeq): NodeSeq =
-      <div class="container">
+
+      <form action={ actionURI } method="POST">
         <div class="row">
-          <form action={ actionURI } method="POST">
-            <p class="text-right">
-              <input value={ mess("SAVE") } type="submit" class="btn btn-primary btn-lg"/>
-            </p>
-            { htmlFormFields }
-            <p class="text-right">
-              <input value={ mess("SAVE") } type="submit" formaction={ actionURI2 } class="btn btn-primary btn-lg pull-right"/>
-            </p>
-          </form>
+          <div class="col col-sm-4 col-sm-offset-4"><input value={ mess("SAVE") } type="submit" class="form-control btn btn-primary "/></div> <!--class="pull-right"-->
         </div>
-      </div>
+        <br></br>
+        { htmlFormFields }
+
+        <div class="row">
+          <div class="col col-sm-4 col-sm-offset-4"><input value={ mess("SAVE") } type="submit" class="form-control btn btn-primary "/></div> <!--class="pull-right"-->
+        </div>
+
+      </form>
+
     def mess(m: String): String = message(m, lang)
 
     if (editable)
@@ -98,7 +99,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
           if (field.property.toString != "")
         ) yield {
           if (editable || toPlainString(field.value) != "")
-            <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
+            <div class={ css.cssClasses.formLabelAndInputCSSClass + " col col-md-12 sf-space-form" }>{
               makeFieldSubject(field) ++
                 makeFieldLabel(preceding, field) ++
                 makeFieldDataOrInput(field, hrefPrefix, editable, lang, request)
@@ -156,16 +157,16 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
 
     val htmlResult: NodeSeq =
       hidden ++
-        <div class={ css.cssClasses.formRootCSSClass }>
+        <div class={ css.cssClasses.formRootCSSClass + "row" } >
           {
-            css.localCSS ++
-              Text("\n") ++
+            //css.localCSS ++
+              //Text("\n") ++
               (if (inlineJavascriptInForm)
                 localJS
               else NodeSeq.Empty) ++
               Text("\n") ++
               <input type="hidden" name="uri" value={ urlEncode(form.subject) }/> ++
-              <div>
+              <div class="form-group">
                 {
                   Text(form.title) ++
                     (if (form.subject != nullURI)
@@ -191,7 +192,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
 
     // hack instead of true form separator in the form spec in RDF:
     if (field.label.contains("----"))
-      return <hr style="background:#F87431; border:0; height:4px"/> // Text("----")
+      return <hr class="sf-separator"/> // Text("----")
 
     val xmlField = field match {
       case l: formMod#LiteralEntry =>

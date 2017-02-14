@@ -22,6 +22,7 @@ trait EnterButtons {
     <div class="row">
       <div class="col-md-12">
         <form role="form" action="/display">
+          <div class="col-md-1"></div>
           <div class="form-group">
             <label class="col-md-2 control-label" for="Display">{ messageI18N("Display") }</label>
             <div class="col-md-6">
@@ -32,13 +33,14 @@ trait EnterButtons {
                 <option label="H. Story FOAF profile"> http://bblfish.net/people/henry/card#me </option>
               </datalist>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-2">
               <input class="btn btn-primary" type="submit" name="Display" value={ messageI18N("Display") }/>
               <input class="btn btn-primary" type="submit" name="Edit" value={ messageI18N("Edit") }/>
              <label class="checkbox-inline"> <input type="checkbox" name="tabs" value="true" />Group field</label>
             </div>
-            <input type="submit" style="display:none"/>
+            <!--input type="submit" style="display:none"/-->
           </div>
+          <div class="col-md-1"></div>
         </form>
       </div>
     </div>
@@ -48,6 +50,7 @@ trait EnterButtons {
     <div class="row">
       <div class="col-md-12">
         <form role="form" action="/wordsearch">
+          <div class="col-md-1"></div>
           <div class="form-group">
             <label class="col-md-2 control-label" for="q" title="Search URI whose value (object triple) matches (Lucene search) or (known RDF class)">
               { messageI18N("String_to_search") }
@@ -58,11 +61,12 @@ trait EnterButtons {
               } dropzone="copy"/>
               <input class="form-control" type="text" name="clas" placeholder={ messageI18N("Class_placeholder") }/>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-2">
               <input class="btn btn-primary" type="submit" value={ messageI18N("Search") }/>
             </div>
-            <input type="submit" style="display:none"/>
+            <!--input type="submit" style="display:none"/-->
           </div>
+          <div class="col-md-1"></div>
         </form>
       </div>
     </div>
@@ -72,6 +76,7 @@ trait EnterButtons {
     <div class="row">
       <div class="col-md-12">
         <form role="form" action="/create">
+          <div class="col-md-1"></div>
           <div class="form-group">
             <label class="col-md-2 control-label" for="uri">{ messageI18N("Create_instance_of") }</label>
             <div class="col-md-6">
@@ -115,11 +120,12 @@ trait EnterButtons {
                 </optgroup>
               </select>
             </div>
-            <div class="col-md-4">
-              <input class="btn btn-primary" style="position: relative; top: 18px;" type="submit" value={ messageI18N("Create") }/>
+            <div class="col-md-2">
+              <input class="btn btn-primary sf-button-create"  type="submit" value={ messageI18N("Create") }/>
             </div>
-            <input type="submit" style="display:none"/>
+            <!--input type="submit" style="display:none"/-->
           </div>
+          <div class="col-md-1"></div>
         </form>
       </div>
     </div>
