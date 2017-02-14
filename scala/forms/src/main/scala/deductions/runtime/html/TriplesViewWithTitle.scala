@@ -12,6 +12,7 @@ import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.sparql_cache.algos.StatisticsGraph
 import deductions.runtime.utils.HTTPrequest
 import deductions.runtime.views.FormHeader
+import scala.util.Try
 
 trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
@@ -47,7 +48,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
       try {
         val datasetOrDefault = getDatasetOrDefault(database)
         val res = rdfStore.rw( datasetOrDefault, {
-          val status = if (blankNode != "true") {
+          val ( tryGraph: Try[Rdf#Graph] , status /* String or NodeSeq */ ) = if (blankNode != "true") {
             val resRetrieve = retrieveURINoTransaction(
               // if( blankNode=="true") makeUri("_:" + uri ) else makeUri(uri),
               makeUri(uri), datasetOrDefault)
@@ -62,8 +63,9 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
               case Failure(e) => e.getLocalizedMessage
               case Success(g) => formatHTMLStatistics(URI(uri), g, lang)
             }
-            status
-          } else ""
+            (resRetrieve, status)
+          } else
+            ( Success(emptyGraph), "" )
 
           implicit val graph = allNamedGraph
           val formBoth = htmlFormElemRaw(uri, graph, hrefDisplayPrefix, blankNode, editable = editable,
@@ -71,7 +73,8 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
               formuri = formuri,
               graphURI = graphURI,
               database = database,
-              request=request)
+              request=request, inputGraph=tryGraph)
+          println(s">>>> after htmlFormElemRaw")
           val formItself = formBoth . _1
           val formSyntax = formBoth . _2
 
@@ -84,11 +87,11 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
       } catch {
         case e: Exception => // e.g. org.apache.jena.riot.RiotException
           <p style="color:red">
-        <pre>
-            {
-              e.getLocalizedMessage() + " " + printTrace(e).replaceAll( "\\)", ")\n")
-            }<br/>
-            Cause:{ if (e.getCause() != null) e.getCause().getLocalizedMessage() }
+            <pre>
+              {
+                e.getLocalizedMessage() + "\n" + printTrace(e).replaceAll("\\)", ")\n")
+              }<br/>
+              Cause:{ if (e.getCause() != null) e.getCause().getLocalizedMessage() }
             </pre>
           </p>
       }

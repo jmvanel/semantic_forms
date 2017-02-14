@@ -14,6 +14,8 @@ import deductions.runtime.services.Configuration
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.HTTPrequest
 import deductions.runtime.utils.Timer
+import deductions.runtime.semlogs.TimeSeries
+import deductions.runtime.views.TableFromListListRDFNodes
 
 /**
  * Form for a subject URI with existing triples;
@@ -28,6 +30,8 @@ import deductions.runtime.utils.Timer
 trait TriplesViewModule[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
     with FormSyntaxFactory[Rdf, DATASET]
+    with TimeSeries[Rdf, DATASET]
+    with TableFromListListRDFNodes[Rdf]
     with Timer {
 
   val config: Configuration
@@ -49,11 +53,12 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     formGroup: String = fromUri(nullURI),
     formuri: String="",
     database: String = "TDB",
-    request: HTTPrequest = HTTPrequest()
+    request: HTTPrequest = HTTPrequest(),
+    inputGraph: Try[Rdf#Graph] = Success(emptyGraph)
   ): ( NodeSeq, FormSyntax ) = {
 
     htmlFormRawTry(uri, unionGraph, hrefPrefix, blankNode, editable, actionURI,
-      lang, graphURI, actionURI2, URI(formGroup), formuri, database, request) match {
+      lang, graphURI, actionURI2, URI(formGroup), formuri, database, request, inputGraph) match {
         case Success(e) => e
         case Failure(e) => ( <p>htmlFormElem: Exception occured: { e }</p>, FormSyntax(nullURI, Seq() ) )
       }
@@ -145,16 +150,22 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
                           formGroup: Rdf#URI = nullURI,
                           formuri: String="",
                           database: String = "TDB",
-                          request: HTTPrequest = HTTPrequest()
+                          request: HTTPrequest = HTTPrequest(),
+                          inputGraph: Try[Rdf#Graph] = Success(emptyGraph)
 		  ): Try[( NodeSeq, FormSyntax)] = {
 
-    println(s"htmlFormRaw dataset $dataset, graphURI <$graphURI>")
-    val tryGraph = if (blankNode != "true") {
-    	val datasetOrDefault = getDatasetOrDefault(database)
-      val res = retrieveURINoTransaction(makeUri(uri), datasetOrDefault)
-      Logger.getRootLogger().info(s"After retrieveURINoTransaction(makeUri($uri), store)")
-      res
-    } else Success(emptyGraph)
+    logger.debug(
+        s">>>> htmlFormRawTry: getMetadataAboutSubject($uri) = ${makeHtmlTable( getMetadataAboutSubject(URI(uri)) )}")
+    logger.debug(
+      s"htmlFormRawTry dataset $dataset, graphURI <$graphURI>")
+
+//    val tryGraph = if (blankNode != "true" && inputGraph == Success(emptyGraph)) {
+//    	val datasetOrDefault = getDatasetOrDefault(database)
+//      val res = retrieveURINoTransaction(makeUri(uri), datasetOrDefault)
+//      Logger.getRootLogger().info(s"After retrieveURINoTransaction(makeUri($uri), store)")
+//      res
+//    } else inputGraph // Success(emptyGraph)
+
     val graphURIActual = if (graphURI == "") uri else graphURI
     Success(graf2form(unionGraph, uri, hrefPrefix, blankNode, editable,
       actionURI, lang, graphURIActual, actionURI2, formGroup, formuri, request))

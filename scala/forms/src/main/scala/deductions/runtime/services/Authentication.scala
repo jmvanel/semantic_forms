@@ -5,12 +5,12 @@ import java.security.MessageDigest
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
-
 import org.w3.banana.RDF
-
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.RDFPrefixes
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter
+
+
 
 /** facade for user Authentication management;
  *  wraps the TDB database
@@ -112,6 +112,13 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
       val mGraph = passwordsGraph
       mGraph += makeTriple(URI(agentURI), passwordPred,
         makeLiteral(hashPassword(password), xsd.string))
+      agentURI
+    })
+    val res2 = rdfStore.rw(dataset, {
+      val userUri =  makeURIFromString(agentURI)
+      val newTripleForUser = List(makeTriple(URI(userUri), rdf.typ, foaf.OnlineAccount))
+      val newGraphForUser: Rdf#Graph = makeGraph(newTripleForUser)
+      rdfStore.appendToGraph( dataset, URI(agentURI), newGraphForUser)
       agentURI
     })
     res

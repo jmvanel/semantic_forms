@@ -9,6 +9,7 @@ lazy val semantic_forms_play = (project in file("."))
   .disablePlugins(PlayLogback)
 
 scalaVersion := "2.11.8"
+// scalaVersion :=  "2.12.1"
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
 
 fork in run := true

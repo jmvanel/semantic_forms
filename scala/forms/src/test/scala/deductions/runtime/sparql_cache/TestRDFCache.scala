@@ -37,9 +37,9 @@ class TestRDFCache extends FunSuite with RDFCache
 
   test("save to enpoint cache and check with SPARQL that endpoint is populated.") {
     val uriNode = makeUri(uri)
-    val g = retrieveURI(uriNode, dataset)
-    println("graph from " + uri + " size " + g.get.size)
+    val gr = retrieveURI(uriNode, dataset)
     val r = rdfStore.rw(dataset, {
+      println("graph from " + uri + " size " + gr.get.size)
       val g = rdfStore.getGraph(dataset, uriNode)
       g
     })

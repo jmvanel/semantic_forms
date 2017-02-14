@@ -20,6 +20,7 @@ trait TimestampManagement[Rdf <: RDF, DATASET]
 extends RDFStoreLocalProvider[Rdf, DATASET]
     with SPARQLHelpers[Rdf, DATASET] {
 
+  /** timestamp Graph URI and property */
   val timestampGraphURI = "http://deductions-software.com/timestampGraph"
 
   import ops._

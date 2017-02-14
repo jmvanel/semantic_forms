@@ -85,7 +85,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
     def computeDatabaseChanges(originalTriple: Rdf#Triple, objectsFromUser: Seq[String]) {
 //      val foaf = FOAFPrefix[Rdf]
 //      if (originalTriple.predicate == foaf.firstName) logger.debug(foaf.firstName)
-      logger.debug("computeDatabaseChanges: originalTriple: $originalTriple, objectsFromUser $objectsFromUser")
+      logger.debug(s"computeDatabaseChanges: originalTriple: $originalTriple, objectsFromUser $objectsFromUser")
       objectsFromUser.map { objectStringFromUser =>
         // NOTE: a single element in objects
         val objectFromUser = foldNode(originalTriple.objectt)(

@@ -9,7 +9,7 @@ version := "1.0-SNAPSHOT"
 //        .dependsOn(forms_js)
 
 scalaVersion :=  "2.11.8"
-// scalaVersion :=  "2.12.0"
+// scalaVersion :=  "2.12.1"
 val jenaVersion =  "3.1.0"
 
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
@@ -21,7 +21,7 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-explaintypes",
 // wartremoverErrors ++= Warts.allBut(Wart.DefaultArguments, Wart.Var)
 // libraryDependencies += "com.lightbend" %% "abide-core" % "0.1-SNAPSHOT" % "abide"
 
-libraryDependencies += "org.w3" %%  "banana-jena" % "0.9.0-SNAPSHOT"
+libraryDependencies += "org.w3" %%  "banana-jena" % "0.8.4-SNAPSHOT" // 9.0-SNAPSHOT"
 
 libraryDependencies += "org.apache.jena" % "apache-jena-libs" % jenaVersion  exclude("log4j", "log4j") exclude("org.slf4j", "slf4j-api" ) exclude( "org.apache.logging.log4j" , "log4j-slf4j-impl" )
 libraryDependencies += "org.apache.jena" % "jena-permissions" % jenaVersion
@@ -39,7 +39,12 @@ libraryDependencies += "net.rootdev" % "java-rdfa" % "0.4.2"
 // See more at: http://search.maven.org/#search%7Cga%7C1%7Cakka-http-core ; https://typesafe.com/blog/akka-http-preview#sthash.IZR1O9fx.dpuf
 
 libraryDependencies += "org.scala-lang.modules" %% "scala-async" % "0.9.6"
-libraryDependencies += "com.typesafe.play" %% "play-json" % "2.3.10"
+
+//libraryDependencies += "com.typesafe.play" %% "play-json" % "2.3.10"
+// 
+libraryDependencies += "com.typesafe.play" %% "play-json" % "2.5.12"
+// libraryDependencies += "com.typesafe.play" %% "play-json" % "2.6.0-M2"
+
 // libraryDependencies += "com.netaporter" %% "scala-i18n" % "0.1"
 libraryDependencies += "org.apache.commons" % "commons-csv" % "1.4"
 libraryDependencies += "org.apache.any23" % "apache-any23-csvutils" %  "1.1" // "1.0" // 
