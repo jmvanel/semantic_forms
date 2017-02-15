@@ -12,6 +12,10 @@ scalaVersion := "2.11.8"
 // scalaVersion :=  "2.12.1"
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
 
+        publishArtifact in (Compile, packageDoc) := false
+        publishArtifact in packageDoc := false
+        sources in (Compile,doc) := Seq.empty
+
 fork in run := true
 javaOptions in run ++= Seq(
     "-Xms256M", "-Xmx2G", "-XX:MaxPermSize=1024M", "-XX:+UseConcMarkSweepGC")

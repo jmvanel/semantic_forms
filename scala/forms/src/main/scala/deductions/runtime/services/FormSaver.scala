@@ -83,8 +83,9 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
     /** process a single triple from the form */
     def computeDatabaseChanges(originalTriple: Rdf#Triple, objectsFromUser: Seq[String]) {
-//      val foaf = FOAFPrefix[Rdf]
-//      if (originalTriple.predicate == foaf.firstName) logger.debug(foaf.firstName)
+      val foaf = FOAFPrefix[Rdf]
+      if (originalTriple.objectt == foaf.Document ) // predicate == foaf.firstName)
+        logger.debug( "DDDDDDDDDDD "+ foaf.Document)
       logger.debug(s"computeDatabaseChanges: originalTriple: $originalTriple, objectsFromUser $objectsFromUser")
       objectsFromUser.map { objectStringFromUser =>
         // NOTE: a single element in objects
@@ -121,12 +122,12 @@ trait FormSaver[Rdf <: RDF, DATASET]
         time("removeTriples",
           rdfStore.removeTriples( dataset,
             URI(graphURI),
-            triplesToRemove.toIterable))
+            triplesToRemove.toIterable), logger.isDebugEnabled() )
         val res =
           time("appendToGraph",
             rdfStore.appendToGraph( dataset,
               URI(graphURI),
-              makeGraph(triplesToAdd)))
+              makeGraph(triplesToAdd)), logger.isDebugEnabled())
         logger.debug( s"doSave: triplesToAdd ${triplesToAdd.mkString(", ")}")
         /* TODO maybe in the hook here: return the future to print later that it has been done */
         callSaveListeners(triplesToAdd, triplesToRemove)
@@ -147,7 +148,8 @@ trait FormSaver[Rdf <: RDF, DATASET]
           logger.info(s""" Successfully stored ${triplesToAdd.size} triples
             ${triplesToAdd.mkString(", ")}
             and removed ${triplesToRemove.size}
-            ${triplesToRemove.mkString(", ")}
+            triplesToRemove:
+            ${triplesToRemove.mkString("\n")}
           in graph <$graphURI>""")
       }
       f.onFailure { case t => logger.error(s"doSave: Failure $t") }
