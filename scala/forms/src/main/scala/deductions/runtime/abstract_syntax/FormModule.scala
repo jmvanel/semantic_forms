@@ -87,6 +87,7 @@ trait FormModule[NODE, URI <: NODE] {
 	  /** for multi-subject forms */
 		val subject: NODE
     val cardinality: Cardinality
+    val htmlName: String
 
     /** filled, not not used*/
     private val triples: mutable.Buffer[Triple] = mutable.ListBuffer[Triple]()
@@ -126,7 +127,8 @@ trait FormModule[NODE, URI <: NODE] {
     /** is the value itself an Image? */
     val isImage: Boolean = false,
     /** possible thumbnail Image for the value */
-    val thumbnail: Option[NODE] = None
+    val thumbnail: Option[NODE] = None,
+    val htmlName: String = ""
     )
       extends Entry {
     override def toString(): String = {
@@ -171,7 +173,8 @@ trait FormModule[NODE, URI <: NODE] {
     var widgetType: WidgetType = URIWidget,
     val cardinality: Cardinality = zeroOrMore,
     val isImage: Boolean = false,
-    val thumbnail: Option[NODE] = None )
+    val thumbnail: Option[NODE] = None,
+    val htmlName: String = "" )
 
       extends Entry {
     override def toString(): String = {
@@ -202,7 +205,8 @@ trait FormModule[NODE, URI <: NODE] {
     var openChoice: Boolean = true,
     var widgetType: WidgetType = Text,
     val cardinality: Cardinality = zeroOrMore,
-    override val valueLabel: String = "")
+    override val valueLabel: String = "",
+    val htmlName: String = "")
 
       extends Entry {
 
@@ -243,7 +247,8 @@ trait FormModule[NODE, URI <: NODE] {
       var openChoice: Boolean = true,
       var widgetType: WidgetType = ListWidget,
       val values: FormSyntax,
-    val cardinality: Cardinality = exactlyOne
+      val cardinality: Cardinality = exactlyOne,
+      val htmlName: String = ""
       ) extends Entry {
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = this
   }

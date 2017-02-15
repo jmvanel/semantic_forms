@@ -24,6 +24,7 @@ trait FormJSON[Rdf <: RDF, DATASET]
         createForm(subject, editable, formuri = formuri)
       })
       .get
-    formSyntax2JSON(formSyntax)
+      formSyntax2JSONString(formSyntax)
+
   }
 }

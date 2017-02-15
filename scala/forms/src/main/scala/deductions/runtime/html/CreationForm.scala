@@ -66,7 +66,7 @@ with FormSyntaxJson[Rdf] {
     val formSyntax = rdfStore.rw( dataset, {
       createData(classUri, lang, formSpecURI, graphURI, request)
     }) . get
-    formSyntax2JSON(formSyntax)
+    formSyntax2JSONString(formSyntax)
   }
 
   /** make form Header about Editing */
