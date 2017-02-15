@@ -16,7 +16,7 @@ trait MainXml extends ToolsPage with EnterButtons {
       <head>{ head(title)(lang) }</head>
       <body>
         {mainPageHeader(lang, userInfo)}
-        <div class="container sf-padding-content-to-footer">
+        <div class="container sf-complete-form">
         {content}
         </div>
         {pageBottom(lang)}

@@ -60,7 +60,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
         { htmlFormFields }
 
         <div class="row">
-          <div class="col col-sm-4 col-sm-offset-4"><input value={ mess("SAVE") } type="submit" class="form-control btn btn-primary "/></div> <!--class="pull-right"-->
+          <div class="col col-sm-4 col-sm-offset-4"><input value={ mess("SAVE") } formaction={ actionURI2 }  type="submit" class="form-control btn btn-primary "/></div> <!--class="pull-right"-->
         </div>
 
       </form>
@@ -157,7 +157,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
 
     val htmlResult: NodeSeq =
       hidden ++
-        <div class={ css.cssClasses.formRootCSSClass + "row" } >
+        <div class={"row" + css.cssClasses.formRootCSSClass  } >
           {
             //css.localCSS ++
               //Text("\n") ++

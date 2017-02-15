@@ -72,7 +72,7 @@ with FormSyntaxJson[Rdf] {
   /** make form Header about Editing */
   def makeEditingHeader(classUri: String, lang: String,
                         formSpecURI: String, graphURI: String): NodeSeq = {
-    <div class="message">
+    <div class="message sf-form-heaer">
       { I18NMessages.get("CREATING", lang) }
       { abbreviateTurtle(classUri) }
     </div>

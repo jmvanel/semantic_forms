@@ -11,14 +11,14 @@
     border:0;
     height:4px;
 }
-.sf-color-error-message{
+.sf-error-message{
     color:red;
 }
 .sf-button-create{
     position: relative;
     top: 18px;
 }
-.sf-padding-content-to-footer{
+.sf-complete-form{
     padding-bottom: 70px;
 }
 .sf-space-form{

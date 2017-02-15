@@ -1,0 +1,98 @@
+body {
+  font-family: Helvetica, sans-serif;
+  margin: 0; }
+
+h1, h2, h3, h4 {
+  font-family: "Quicksand", sans-serif; }
+
+h2, h3, h4 {
+  color: rgba(0, 0, 0, 0.2); }
+
+a,
+a:hover,
+a:active {
+  text-decoration: none; }
+
+a {
+  //color: #93DAFE;
+  color: #2c85fe;
+}
+
+a:hover {
+  background: #FFCC00;
+  color: white; }
+
+header {
+  background: #93DAFE;
+  padding: 10px;
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 2px 2px; }
+  header h1 {
+    color: #FFFFFF;
+    margin: 0; }
+
+section#page {
+  padding: 20px; }
+  section#page .form-auth label, section#page .form-register label {
+    visibility: hidden; }
+  section#page .form-auth .btn-password-forgot, section#page .form-register .btn-password-forgot {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.3);
+    border: 0;
+    box-shadow: none;
+    font-weight: bold; }
+  section#page .form-auth .btn-password-forgot:hover, section#page .form-register .btn-password-forgot:hover {
+    color: rgba(0, 0, 0, 0.8); }
+  section#page .create-menu ul, section#page .create-menu li {
+    list-style: none;
+    margin: 0;
+    padding: 0; }
+  section#page .create-menu .section-title {
+    background-color: #93DAFE;
+    color: #FFF;
+    display: block;
+    padding: 6px 12px;
+    font-size: 18px;
+    margin: 4px; }
+  section#page .create-menu .section-content {
+    margin: 4px; }
+    section#page .create-menu .section-content a {
+      display: block;
+      padding: 5px; }
+  section#page .create-advanced {
+    margin: 20px auto; }
+
+.search-results .search-results-item {
+  padding: 10px 0 10px 0;
+  border-bottom: 1px solid #DDD; }
+  .search-results .search-results-item a.uri {
+    color: #93DAFE; }
+  .search-results .search-results-item .detail {
+    color: #AAA;
+    font-size: 14px;
+    margin-top: 10px; }
+
+.result-full {
+  font-size: 16px;
+  font-family: Quicksand, sans-serif; }
+  .result-full img.thumb {
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2), 0px 1px 7px rgba(0, 0, 0, 0.1); }
+  .result-full .row {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
+    .result-full .row .result-field-label {
+      font-weight: bold;
+      text-align: right;
+      opacity: .3; }
+    .result-full .row .col {
+      padding: 10px; }
+
+footer {
+  background: #f5f5f5;
+  color: #717171;
+  text-align: center;
+  padding: 20px; }
+  footer a {
+    color: rgba(0, 0, 0, 0.2);
+    font-weight: bold; }
+
+/*# sourceMappingURL=styles.css.map */

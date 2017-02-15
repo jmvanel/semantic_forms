@@ -36,7 +36,7 @@ trait EnterButtons {
             <div class="col-md-2">
               <input class="btn btn-primary" type="submit" name="Display" value={ messageI18N("Display") }/>
               <input class="btn btn-primary" type="submit" name="Edit" value={ messageI18N("Edit") }/>
-             <label class="checkbox-inline"> <input type="checkbox" name="tabs" value="true" />Group field</label>
+             <label class="checkbox-inline"> <input type="checkbox" name="tabs" value="true" />Group fields</label>
             </div>
             <!--input type="submit" style="display:none"/-->
           </div>
