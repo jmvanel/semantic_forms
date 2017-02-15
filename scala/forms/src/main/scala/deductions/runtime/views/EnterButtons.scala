@@ -104,7 +104,7 @@ trait EnterButtons {
                   <optgroup label="Ressource">
                     <option label="Bien ou service"> { prefixesMap2("gr")("Offering") }</option>
                     Logiciel
-                    <option label="Desc. Of A Software (DOAS)">      { prefixesMap2("doas")("Description") } </option>
+                    <option label="Desc. Of A Software (DOAS)">      { prefixesMap2("doas")("Software") } </option>
                     Compétence
                     <option label="cco:Skill">                       { prefixesMap2("cco")("Skill") } </option>
                     <option label="Document">                        { foaf.Document } </option>

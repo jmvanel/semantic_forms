@@ -286,7 +286,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
                 // catch only "pure" HTML web page: TODO make a function isPureHTMLwebPage(uri: URI, request: Request): Boolean
                 if (f.getMessage.contains("Failed to determine the content type:")) {
 
-                  // if (!uri.toString.contains("/ldp/")) {
+                  // test if it's a locally managed URL; TODO move the test to top of function 
                   if (! fromUri(uri) .startsWith( request.absoluteURL("") ) ) {
                     // then it's really a "pure" HTML web page (and not a locally managed URL and data)
                     val newTripleWithURL = List(makeTriple(uri, rdf.typ, foaf.Document))
