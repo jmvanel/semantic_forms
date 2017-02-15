@@ -286,9 +286,8 @@ trait ApplicationTrait extends Controller
   /** creation form as raw JSON data
    *  TODO add database HTTP param. */
   def createData() =
-    withUser {
-      implicit userid =>
-        implicit request =>
+    	  Action { implicit request =>
+//    withUser {       implicit userid =>        implicit request =>
           logger.info("create: " + request)
           // URI of RDF class from which to create instance
           val uri0 = getFirstNonEmptyInMap(request.queryString, "uri")
@@ -299,7 +298,9 @@ trait ApplicationTrait extends Controller
           logger.info( s"formSpecURI from HTTP request: <$formSpecURI>")
 
           Ok( createDataAsJSON( uri, chooseLanguage(request),
-                       formSpecURI, makeAbsoluteURIForSaving(userid), copyRequest(request) ) ) .
+                       formSpecURI,
+//                       makeAbsoluteURIForSaving(userid),
+                       copyRequest(request) ) ) .
                        as( AcceptsJSONLD.mimeType + "; charset=" + myCustomCharset.charset )
     }
 
