@@ -29,6 +29,7 @@ import play.api.mvc.Result
 import play.api.mvc.Results
 import views.MainXmlWithHead
 import java.net.URLEncoder
+import deductions.runtime.services.Configuration
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -45,6 +46,9 @@ trait ApplicationTrait extends Controller
     with CORS
     with HTTPrequestHelpers
     with RDFPrefixes[ImplementationSettings.Rdf] {
+
+	val config: Configuration
+  import config._
 
 	implicit val myCustomCharset = Codec.javaSupported("utf-8")
 
@@ -201,20 +205,31 @@ trait ApplicationTrait extends Controller
             withHeaders("Access-Control-Allow-Origin" -> "*") // TODO dbpedia only
     }
 
-  /** */
-  def saveAction() =
-    withUser {
-      implicit userid =>
-        implicit request =>
-          val lang = chooseLanguage(request)
-//          outputMainPage(save(request, userid, graphURI=makeAbsoluteURIForSaving(userid)), lang)
-          val uri = saveOnly(request, userid, graphURI=makeAbsoluteURIForSaving(userid))
-          logger.info(s"saveAction: uri $uri")
-          val call = routes.Application.displayURI(uri)
-          Redirect(call)
-          /* TODO */
-          // recordForHistory( userid, request.remoteAddress, request.host )
+  /** save the HTML form;
+   *  intranet mode (needLoginForEditing == false): no cookies session, just receive a `graph` HTTP param. */
+  def saveAction() = {
+    def save(userid: String)(implicit request: Request[_]) = {
+      val lang = chooseLanguage(request)
+      val uri = saveOnly(request, userid, graphURI = makeAbsoluteURIForSaving(userid))
+      logger.info(s"saveAction: uri $uri")
+      val call = routes.Application.displayURI(uri)
+      Redirect(call)
+      /* TODO */
+      // recordForHistory( userid, request.remoteAddress, request.host )
     }
+    if (needLoginForEditing)
+      withUser {
+        implicit userid =>
+          implicit request =>
+            save(userid)
+      }
+    else
+      Action { implicit request => {
+        val user = request.headers.toMap.getOrElse("graph", Seq("anonymous") ). headOption.getOrElse("anonymous")
+        save(user)
+      }}
+  }
+
 
   /** save Only, no display */
   private def saveOnly(request: Request[_], userid: String, graphURI: String = ""): String = {
