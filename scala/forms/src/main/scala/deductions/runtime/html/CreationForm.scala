@@ -36,7 +36,7 @@ with FormSyntaxJson[Rdf] {
     formSpecURI: String = "", graphURI: String= "", request: HTTPrequest= HTTPrequest() )
       : Try[NodeSeq] = {
     rdfStore.rw( dataset, {
-      val form = createData(classUri, lang, formSpecURI, graphURI, request)
+      val form = createData(classUri, lang, formSpecURI, request)
       val rawForm = generateHTML(
           form, hrefPrefix = "",
           editable = true,
@@ -50,7 +50,8 @@ with FormSyntaxJson[Rdf] {
 
   /** raw Data for instance creation */
   def createData(classUri: String, lang: String = "en",
-                 formSpecURI: String = "", graphURI: String = "",
+                 formSpecURI: String = "",
+//                 graphURI: String = "",
                  request: HTTPrequest = HTTPrequest()) : FormSyntax = {
     val classURI = URI(classUri)
     retrieveURINoTransaction(classURI, dataset)
@@ -61,18 +62,19 @@ with FormSyntaxJson[Rdf] {
   }
 
   def createDataAsJSON(classUri: String, lang: String = "en",
-                       formSpecURI: String = "", graphURI: String = "",
+                       formSpecURI: String = "",
+//                       graphURI: String = "",
                        request: HTTPrequest = HTTPrequest()) = {
     val formSyntax = rdfStore.rw( dataset, {
-      createData(classUri, lang, formSpecURI, graphURI, request)
+      createData(classUri, lang, formSpecURI, request)
     }) . get
-    formSyntax2JSON(formSyntax)
+    formSyntax2JSONString(formSyntax)
   }
 
   /** make form Header about Editing */
   def makeEditingHeader(classUri: String, lang: String,
                         formSpecURI: String, graphURI: String): NodeSeq = {
-    <div class="sf-form-header">
+    <div class="message sf-form-heaer">
       { I18NMessages.get("CREATING", lang) }
       { abbreviateTurtle(classUri) }
     </div>

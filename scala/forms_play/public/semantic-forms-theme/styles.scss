@@ -1,0 +1,129 @@
+$avBlue: #93DAFE;
+
+body {
+  font-family: Helvetica, sans-serif;
+  margin: 0;
+}
+
+h1, h2, h3, h4 {
+  font-family: "Quicksand", sans-serif;
+}
+
+h2, h3, h4 {
+  color: rgba(0, 0, 0, .2);
+}
+
+a,
+a:hover,
+a:active {
+  text-decoration: none;
+}
+
+a {
+  color: $avBlue;
+}
+
+a:hover {
+  background: #FFCC00;
+  color: white;
+}
+
+header {
+  background: $avBlue;
+  padding: 20px;
+  box-shadow: rgba(0, 0, 0, .3) 0px 2px 2px;
+  h1 {
+    color: #FFFFFF;
+    margin: 0;
+  }
+}
+
+section#page {
+  padding: 20px;
+  .form-auth, .form-register {
+    label {
+      visibility: hidden;
+    }
+    .btn-password-forgot {
+      font-size: 12px;
+      color: rgba(0, 0, 0, .3);
+      border: 0;
+      box-shadow: none;
+      font-weight: bold;
+    }
+    .btn-password-forgot:hover {
+      color: rgba(0, 0, 0, .8);
+    }
+  }
+  .create-menu {
+    ul, li {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .section-title {
+      background-color: #93DAFE;
+      color: #FFF;
+      display: block;
+      padding: 6px 12px;
+      font-size: 18px;
+      margin: 4px;
+    }
+    .section-content {
+      margin: 4px;
+      a {
+        display: block;
+        padding: 5px;
+      }
+    }
+  }
+  .create-advanced {
+    margin: 20px auto;
+  }
+}
+
+.search-results {
+  .search-results-item {
+    a.uri {
+      color: $avBlue;
+    }
+    .detail {
+      color: #AAA;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    padding: 10px 0 10px 0;
+    border-bottom: 1px solid #DDD;
+  }
+}
+
+.result-full {
+  font-size: 16px;
+  font-family: Quicksand, sans-serif;
+  img.thumb {
+    border: 1px solid rgba(0, 0, 0, .3);
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2), 0px 1px 7px rgba(0, 0, 0, 0.1);
+  }
+  .row {
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+    .result-field-label {
+      font-weight: bold;
+      text-align: right;
+      opacity: .3;
+    }
+    .col {
+      padding: 10px;
+    }
+  }
+}
+
+footer {
+  background: #f5f5f5;
+  color: #CCC;
+  text-align: center;
+  padding: 20px;
+  a {
+    color: rgba(0, 0, 0, .2);
+    font-weight: bold;
+  }
+}

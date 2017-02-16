@@ -21,7 +21,7 @@ trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
     query: String,
     editable: Boolean = false,
     formuri: String = ""): String = {
-    formSyntax2JSON(
+    formSyntax2JSONString(
       createFormFromSPARQL (
         query, editable, formuri))
   }

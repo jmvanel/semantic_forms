@@ -29,6 +29,7 @@ import play.api.mvc.Result
 import play.api.mvc.Results
 import views.MainXmlWithHead
 import java.net.URLEncoder
+import deductions.runtime.services.Configuration
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -45,6 +46,9 @@ trait ApplicationTrait extends Controller
     with CORS
     with HTTPrequestHelpers
     with RDFPrefixes[ImplementationSettings.Rdf] {
+
+	val config: Configuration
+  import config._
 
 	implicit val myCustomCharset = Codec.javaSupported("utf-8")
 
@@ -201,20 +205,31 @@ trait ApplicationTrait extends Controller
             withHeaders("Access-Control-Allow-Origin" -> "*") // TODO dbpedia only
     }
 
-  /** */
-  def saveAction() =
-    withUser {
-      implicit userid =>
-        implicit request =>
-          val lang = chooseLanguage(request)
-//          outputMainPage(save(request, userid, graphURI=makeAbsoluteURIForSaving(userid)), lang)
-          val uri = saveOnly(request, userid, graphURI=makeAbsoluteURIForSaving(userid))
-          logger.info(s"saveAction: uri $uri")
-          val call = routes.Application.displayURI(uri)
-          Redirect(call)
-          /* TODO */
-          // recordForHistory( userid, request.remoteAddress, request.host )
+  /** save the HTML form;
+   *  intranet mode (needLoginForEditing == false): no cookies session, just receive a `graph` HTTP param. */
+  def saveAction() = {
+    def save(userid: String)(implicit request: Request[_]) = {
+      val lang = chooseLanguage(request)
+      val uri = saveOnly(request, userid, graphURI = makeAbsoluteURIForSaving(userid))
+      logger.info(s"saveAction: uri <$uri>")
+      val call = routes.Application.displayURI(uri)
+      Redirect(call)
+      /* TODO */
+      // recordForHistory( userid, request.remoteAddress, request.host )
     }
+    if (needLoginForEditing)
+      withUser {
+        implicit userid =>
+          implicit request =>
+            save(userid)
+      }
+    else
+      Action { implicit request => {
+        val user = request.headers.toMap.getOrElse("graph", Seq("anonymous") ). headOption.getOrElse("anonymous")
+        save(user)
+      }}
+  }
+
 
   /** save Only, no display */
   private def saveOnly(request: Request[_], userid: String, graphURI: String = ""): String = {
@@ -283,24 +298,25 @@ trait ApplicationTrait extends Controller
 
   private def makeAbsoluteURIForSaving(userid: String): String = userid
 
-  /** creation form as raw JSON data
-   *  TODO add database HTTP param. */
+  /**
+   * creation form as raw JSON data
+   *  TODO add database HTTP param.
+   */
   def createData() =
-    withUser {
-      implicit userid =>
-        implicit request =>
-          logger.info("create: " + request)
-          // URI of RDF class from which to create instance
-          val uri0 = getFirstNonEmptyInMap(request.queryString, "uri")
-          val uri = expandOrUnchanged(uri0)
-          // URI of form Specification
-          val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formuri")
-          logger.info("create: " + uri)
-          logger.info( s"formSpecURI from HTTP request: <$formSpecURI>")
+    Action { implicit request =>
+      logger.info("create: " + request)
+      // URI of RDF class from which to create instance
+      val uri0 = getFirstNonEmptyInMap(request.queryString, "uri")
+      val uri = expandOrUnchanged(uri0)
+      // URI of form Specification
+      val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formuri")
+      logger.info("create: " + uri)
+      logger.info(s"formSpecURI from HTTP request: <$formSpecURI>")
 
-          Ok( createDataAsJSON( uri, chooseLanguage(request),
-                       formSpecURI, makeAbsoluteURIForSaving(userid), copyRequest(request) ) ) .
-                       as( AcceptsJSONLD.mimeType + "; charset=" + myCustomCharset.charset )
+      Ok(createDataAsJSON(uri, chooseLanguage(request),
+        formSpecURI,
+        copyRequest(request))).
+        as(AcceptsJSONLD.mimeType + "; charset=" + myCustomCharset.charset)
     }
 
   /**
@@ -383,19 +399,18 @@ trait ApplicationTrait extends Controller
   }
 
   /** SPARQL Construct UI */
-  def sparql(query: String) =
-//    withUser
-    Action {
-//      implicit userid =>
-        implicit request =>
-          logger.info("sparql: " + request)
-          logger.info("sparql: " + query)
-          val lang = chooseLanguage(request)
-          outputMainPage(
-//        		  { sparqlQueryForm(query, "/sparql-ui",
-//        				  Seq("CONSTRUCT {?S ?P ?O . } WHERE {{ GRAPH ?G {{?S ?P ?O . }} }} LIMIT 10" )) } ++
-              sparqlConstructQuery(query, lang), lang)
+  def sparql(query: String) = {
+    logger.info("sparql: " + query)
+    def doAction(implicit request: Request[_]) = {
+      logger.info("sparql: " + request)
+      val lang = chooseLanguage(request)
+      outputMainPage(sparqlConstructQuery(query, lang), lang)
     }
+    if (needLoginForDisplaying)
+      Action { implicit request => doAction }
+    else
+      withUser { implicit userid => implicit request => doAction }
+  }
 
   /**
    * SPARQL GET compliant, construct or select

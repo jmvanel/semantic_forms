@@ -85,6 +85,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     with ThumbnailInference[Rdf, DATASET]
     with FormSyntaxFromSPARQL[Rdf, DATASET]
     with RDFPrefixes[Rdf]
+    with UniqueFieldID[Rdf]
     with Timer {
 
   val config: Configuration
@@ -363,6 +364,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
     val precomputProp = PrecomputationsFromProperty(prop)
     import precomputProp.{ prop => _, _ }
+    val htmlName: String = makeHTMLName( makeTriple(subject, uriNodeToURI(prop), objet) )
 
     def rdfListEntry = makeRDFListEntry(label, comment, prop, objet, subject = subject)
     def firstType = firstNodeOrElseNullURI(precomputProp.ranges)
@@ -377,7 +379,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         subjectLabel = instanceLabel(subject, graph, preferedLanguage),
         type_ = firstType,
         lang = getLang(objet).toString(),
-        valueLabel = nodeToString(value))
+        valueLabel = nodeToString(value),
+        htmlName=htmlName)
     }
 
     val NullResourceEntry = new ResourceEntry("", "", nullURI, ResourceValidator(Set()))
@@ -393,7 +396,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
                 subjectLabel = instanceLabel(subject, graph, preferedLanguage),
                 type_ = firstType,
                 isImage = isImageTriple(subject, prop, objet, firstType),
-                thumbnail = getURIimage(objet))
+                thumbnail = getURIimage(objet),
+                htmlName=htmlName
+                )
             },
             objet => makeBN(label, comment, prop, ResourceValidator(ranges), objet,
               typ = firstType),
@@ -408,7 +413,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       new BlankNodeEntry(label, comment, property, validator, value,
     		subject=subject,
     		subjectLabel = instanceLabel(subject, graph, preferedLanguage),
-        type_ = typ, valueLabel = instanceLabel(value, graph, preferedLanguage)) {
+        type_ = typ, valueLabel = instanceLabel(value, graph, preferedLanguage),
+        htmlName=htmlName) {
         override def getId: String = nodeToString(value)
       }
     }

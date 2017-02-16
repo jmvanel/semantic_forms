@@ -15,12 +15,11 @@ trait MainXml extends ToolsPage with EnterButtons {
     <html>
       <head>{ head(title)(lang) }</head>
       <body>
-        {
-          userInfo ++
-            mainPageHeader(lang) ++
-            content ++
-            pageBottom(lang)
-        }
+        {mainPageHeader(lang, userInfo)}
+        <div class="container sf-complete-form">
+        {content}
+        </div>
+        {pageBottom(lang)}
       </body>
     </html>
   }
@@ -31,33 +30,48 @@ trait MainXml extends ToolsPage with EnterButtons {
   def pageBottom(lang: String = "en"): NodeSeq = linkToToolsPage(lang)
 
   def linkToToolsPage(lang: String = "en") =
-    <p>
-      ---<br/>
-      <a href="/tools">{ I18NMessages.get("Tools", lang) }</a>
-      -&nbsp;<a href="https://github.com/jmvanel/semantic_forms/wiki/User_manual">User Manual</a>
-      -&nbsp;<a href="https://github.com/jmvanel/semantic_forms/wiki/Manuel-utilisateur">Manuel utilisateur</a>
-      { I18NMessages.get("POWERED", lang) }
-      <a href="https://github.com/jmvanel/semantic_forms/blob/master/scala/forms_play/README.md#play-framework-implementations">
-        semantic_forms
-      </a>
-      &nbsp; Version =timestamp=
-    </p>
+
+          <footer class="navbar navbar-default navbar-fixed-bottom sf-footer">
+            <a href="/tools">{ I18NMessages.get("Tools", lang) }</a> /
+            <a href="https://github.com/jmvanel/semantic_forms/wiki/User_manual">User Manual</a> /
+            <a href="https://github.com/jmvanel/semantic_forms/wiki/Manuel-utilisateur">Manuel utilisateur</a> /
+            { I18NMessages.get("POWERED", lang) }
+            <a href="https://github.com/jmvanel/semantic_forms/blob/master/scala/forms_play/README.md#play-framework-implementations">
+              semantic_forms
+            </a> /
+            Version =timestamp=
+          </footer>
+
+
 
   /**
    * main Page Header for generic app:
    *  enter URI, search, create instance
    */
-  def mainPageHeader(implicit lang: String = "en"): NodeSeq = {
-    <div><h3>
-           <a href="/" title="Open a new Semantic_forms in a new tab." target="_blank">{
-             messageI18N("Welcome")
-           }</a>
-         </h3></div>
+  def mainPageHeader(implicit lang: String = "en",userInfo: NodeSeq): NodeSeq = {
+    <header class="col col-sm-12">
+      <div class="raw">
+        <div class="col col-sm-9">
+          <a href="/" title="Open a new Semantic_forms in a new tab." target="_blank">
+            <h1>
+           {
+              messageI18N("Welcome")
+              }
+            </h1>
+          </a>
+        </div>
+        <div class="col col-sm-3">
+          {userInfo}
+        </div>
+      </div>
+
+    </header>
     <div> {
       enterURItoDownloadAndDisplay() ++
         enterSearchTerm() ++
         enterClassForCreatingInstance()
     } </div>
+    <hr></hr>
   }
 
   /**
@@ -75,8 +89,8 @@ trait MainXml extends ToolsPage with EnterButtons {
       <body>
         {
           Seq(
-            userInfo,
-            mainPageHeader(lang),
+
+            mainPageHeader(lang,userInfo),
 
             <div class="content">
               <div class="left-panel">{ contentLeft }</div>

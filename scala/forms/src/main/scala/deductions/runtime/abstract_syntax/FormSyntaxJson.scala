@@ -6,12 +6,14 @@ import deductions.runtime.utils.RDFHelpers
 import play.api.libs.json.JsString
 import play.api.libs.json.Json
 import play.api.libs.json.Writes
+import play.api.libs.json.JsValue
 
 trait FormSyntaxJson[Rdf <: RDF]
     extends FormModule[Rdf#Node, Rdf#URI]
     with RDFHelpers[Rdf] {
 
-  def formSyntax2JSON(formSyntax: FormSyntax) : String = Json.prettyPrint(Json.toJson(formSyntax))
+  def formSyntax2JSONString(formSyntax: FormSyntax) : String = Json.prettyPrint(formSyntax2JSON(formSyntax))
+  def formSyntax2JSON(formSyntax: FormSyntax): JsValue = Json.toJson(formSyntax)
 
   implicit val nodeWrites = new Writes[Rdf#Node] {
     def writes(n: Rdf#Node) = new JsString(n.toString())
@@ -40,7 +42,8 @@ trait FormSyntaxJson[Rdf <: RDF]
 
       "widgetType" -> e.widgetType,
       "openChoice" -> e.openChoice,
-      "cardinality" -> e.cardinality
+      "cardinality" -> e.cardinality,
+      "htmlName" -> e.htmlName
       // , "possibleValues" -> e.possibleValues
       )
   }

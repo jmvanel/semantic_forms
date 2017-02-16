@@ -1,7 +1,26 @@
-.sf-value-block {
-border: 1px solid #ccc;
-display: inline-block;
-border-size:2px;
-border-style:solid;
-border-color:black;
+/*.sf-value-block {
+    border: 1px solid #ccc;
+    display: inline-block;
+    border-size:2px;
+    border-style:solid;
+    border-color:black;
+}*/
+
+.sf-separator{
+    background:#F87431;
+    border:0;
+    height:4px;
+}
+.sf-error-message{
+    color:red;
+}
+.sf-button-create{
+    position: relative;
+    top: 18px;
+}
+.sf-complete-form{
+    padding-bottom: 70px;
+}
+.sf-space-form{
+    padding-bottom: 10px;
 }

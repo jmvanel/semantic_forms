@@ -70,7 +70,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     }
   }
 
-    /** leveraging on HTTP parameter being the original triple from TDB,
+  /** leveraging on HTTP parameter being the original triple from TDB,
    * in N-Triple syntax, we generate here the HTTP parameter from the original triple;
    * see HttpParamsManager#httpParam2Triple for the reverse operation */
   def makeHTMLName(ent: formMod#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): String = {
@@ -91,7 +91,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     urlEncode(rawResult)
   }
 
-  /** make HTML name for a resource */
+  /** make HTML name for a triple */
   def makeHTMLNameResource(re: formMod#Entry)(implicit form:
       FormModule[NODE, URI]#FormSyntax) =
     makeHTMLName(re)
