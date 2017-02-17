@@ -310,8 +310,8 @@ trait ApplicationTrait extends Controller
       val uri = expandOrUnchanged(uri0)
       // URI of form Specification
       val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formuri")
-      logger.info("create: " + uri)
-      logger.info(s"formSpecURI from HTTP request: <$formSpecURI>")
+      logger.info(s"create: <$uri>")
+      logger.info(s"create: formSpecURI from HTTP request: <$formSpecURI>")
 
       Ok(createDataAsJSON(uri, chooseLanguage(request),
         formSpecURI,

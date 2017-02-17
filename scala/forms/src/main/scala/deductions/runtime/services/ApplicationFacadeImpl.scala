@@ -236,7 +236,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
             lang )
     	})
     	logger.info( s"Save: normal! $uriOption" )
-      case _ => logger.error( s"Save:  NOT normal! $uriOption request $request" )
+      case _ => logger.error( s"Save:  NOT normal! uriOption: $uriOption request $request" )
     }
     
     // associate userid with graphURI
