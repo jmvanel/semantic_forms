@@ -24,3 +24,9 @@
 .sf-space-form{
     padding-bottom: 10px;
 }
+.sf-suggestion-search {
+    background-image: url(../images/ripple.gif);
+    background-repeat: no-repeat;
+    background-position: right 0;
+    background-size: contain;
+}
