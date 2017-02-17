@@ -211,7 +211,7 @@ trait FormModule[NODE, URI <: NODE] {
       extends Entry {
 
     override def toString(): String = {
-      super.toString + s""" := "$value" """
+      super.toString + s""" := '$value' """
     }
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = {
       val ret = new LiteralEntry(label, comment,

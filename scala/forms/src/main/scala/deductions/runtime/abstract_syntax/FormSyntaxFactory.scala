@@ -338,7 +338,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     logger.debug(s"makeEntriesForSubject subject <$subject>, prop <$prop>")
 //    implicit val prlng = preferedLanguage
 
-    val objects = objectsQuery(subject, uriNodeToURI(prop) ); logger.debug(s"makeEntriesForSubject subject $subject, objects $objects")
+    val objects = objectsQuery(subject, uriNodeToURI(prop) ); logger.debug(s"makeEntriesForSubject subject <$subject>, objects: $objects")
     val result = mutable.ArrayBuffer[Entry]()
     for (obj <- objects)
       result += makeEntryFromTriple(subject, prop, obj, formMode)
@@ -353,7 +353,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   protected def makeEntryFromTriple(
     subject: Rdf#Node,
     prop: Rdf#Node,
-    objet: Rdf#Node,
+    objet0: Rdf#Node,
     formMode: FormMode
 //    valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)] // formGroup: Rdf#URI
     )(implicit graph: Rdf#Graph): Entry = {
@@ -364,9 +364,39 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
     val precomputProp = PrecomputationsFromProperty(prop)
     import precomputProp.{ prop => _, _ }
+    
+    def rdfListEntry = makeRDFListEntry(label, comment, prop, objet0, subject = subject)
+
+    def chooseRDFNodeType =
+        rangeClasses match {
+      case _ if objet0.isLiteral => Literal("")
+      case _ if rangeClasses.exists { c => c.toString startsWith (xsdPrefix) } => Literal("")
+      case _ if rangeClasses.contains(rdfs.Literal) => Literal("")
+      case _ if propClasses.contains(owl.DatatypeProperty) => Literal("")
+      case _ if ranges.contains(rdfs.Literal) => Literal("")
+
+      case _ if propClasses.contains(owl.ObjectProperty) => nullURI
+      case _ if rangeClasses.contains(owl.Class) => nullURI
+      case _ if rangeClasses.contains(rdf.Property) => nullURI
+      case _ if ranges.contains(owl.Thing) => nullURI
+      case _ if isURI(objet0) => nullURI
+
+      case _ if rdfListEntry.isDefined => rdf.List
+      case _ if isBN(objet0) => BNode("")
+      case _ if objet0.toString.startsWith("_:") => BNode("")
+
+      case _                                    => Literal("")
+    }
+
+    val objet =
+      if (objet0 == nullURI)
+        chooseRDFNodeType
+      else
+        objet0
+    
+//    println(s""">>>> makeEntryFromTriple: prop $prop objet "$objet" ${objet.getClass()} """)
     val htmlName: String = makeHTMLName( makeTriple(subject, uriNodeToURI(prop), objet) )
 
-    def rdfListEntry = makeRDFListEntry(label, comment, prop, objet, subject = subject)
     def firstType = firstNodeOrElseNullURI(precomputProp.ranges)
 
     def literalEntry = {
