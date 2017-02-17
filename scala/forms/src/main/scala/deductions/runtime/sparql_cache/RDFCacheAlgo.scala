@@ -269,36 +269,38 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       // NOTE: Jena RDF loader can throw an exception "Failed to determine the content type"
       val graphTry = rdfLoader.load(new java.net.URL(uri.toString()))
       logger.info(s"readStoreURINoTransaction: after rdfLoader.load($uri): $graphTry")
-      
-      val graph = graphTry . getOrElse {
-            logger.info(s"Trying RDFa for <$uri>")
-            microdataLoader.load(
-              new java.net.URL(uri.toString())) 
-              match {
-              case Success(s) => s
-              case Failure(f) =>{ 
-                
-                logger.info("readStoreURINoTransaction: START MESSAGE")
-                logger.info(f.getMessage)
-                logger.info(s""" uri.toString.contains("/ldp/") ${uri.toString.contains("/ldp/")} """)
-                logger.info("END MESSAGE")
-                
-                // catch only "pure" HTML web page: TODO make a function isPureHTMLwebPage(uri: URI, request: Request): Boolean
-                if (f.getMessage.contains("Failed to determine the content type:")) {
 
-                  // test if it's a locally managed URL; TODO move the test to top of function 
-                  if (! fromUri(uri) .startsWith( request.absoluteURL("") ) ) {
-                    // then it's really a "pure" HTML web page (and not a locally managed URL and data)
+      val graph = graphTry.getOrElse {
+        logger.info(s"Trying RDFa for <$uri>")
+        microdataLoader.load(
+          new java.net.URL(uri.toString())) match {
+            case Success(s) => s
+            case Failure(f) => {
+
+              logger.info("readStoreURINoTransaction: START MESSAGE")
+              logger.info(f.getMessage)
+              logger.info(s""" uri.toString.contains("/ldp/") ${uri.toString.contains("/ldp/")} """)
+              logger.info("END MESSAGE")
+
+              // catch only "pure" HTML web page: TODO make a function isPureHTMLwebPage(uri: URI, request: Request): Boolean
+              if (f.getMessage.contains("Failed to determine the content type:")) {
+
+                /* test if it's a locally managed URL; TODO move the test to top of function;
+                 * indeed the test is independent of the exception */
+                if (!fromUri(uri).startsWith(request.absoluteURL(""))) {
+                  // then it's really a "pure" HTML web page (and not a locally managed URL and data)
+                  logger.info(s"<$uri> is a pure HTML web page (no RDFa or microformats");
+                  { // TODO move this towards root in call stack, to put this triple in user graph
                     val newTripleWithURL = List(makeTriple(uri, rdf.typ, foaf.Document))
                     val newGraphWithUrl: Rdf#Graph = makeGraph(newTripleWithURL)
                     newGraphWithUrl
-
-                  } else
-                    // it's a locally managed URL and data, no need to download anything
-                    emptyGraph
-                }
-                else throw f
-              }
+                  }
+                  emptyGraph
+                } else
+                  // it's a locally managed URL and data, no need to download anything
+                  emptyGraph
+              } else throw f
+            }
             }
               
           }

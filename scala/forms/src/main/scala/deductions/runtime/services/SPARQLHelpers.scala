@@ -401,7 +401,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   /** @param addHeaderRow the first row is the variables' list */
   def makeListofListsFromSolutions(solutionsTry: Try[Rdf#Solutions],
-                                   addHeaderRow: Boolean = true) = {
+                                   addHeaderRow: Boolean = true): Try[List[List[Rdf#Node]]] = {
     val res = solutionsTry.map {
       solutions =>
         val solsIterable = solutions.iterator.toIterable
