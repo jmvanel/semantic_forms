@@ -367,13 +367,15 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     
     def rdfListEntry = makeRDFListEntry(label, comment, prop, objet0, subject = subject)
 
-    def chooseRDFNodeType =
+    val nullLiteral = Literal("")
+    val nullBNode = BNode("")
+    val chooseRDFNodeType =
         rangeClasses match {
-      case _ if objet0.isLiteral => Literal("")
-      case _ if rangeClasses.exists { c => c.toString startsWith (xsdPrefix) } => Literal("")
-      case _ if rangeClasses.contains(rdfs.Literal) => Literal("")
-      case _ if propClasses.contains(owl.DatatypeProperty) => Literal("")
-      case _ if ranges.contains(rdfs.Literal) => Literal("")
+      case _ if objet0.isLiteral => nullLiteral
+      case _ if rangeClasses.exists { c => c.toString startsWith (xsdPrefix) } => nullLiteral
+      case _ if rangeClasses.contains(rdfs.Literal) => nullLiteral
+      case _ if propClasses.contains(owl.DatatypeProperty) => nullLiteral
+      case _ if ranges.contains(rdfs.Literal) => nullLiteral
 
       case _ if propClasses.contains(owl.ObjectProperty) => nullURI
       case _ if rangeClasses.contains(owl.Class) => nullURI
@@ -382,10 +384,10 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       case _ if isURI(objet0) => nullURI
 
       case _ if rdfListEntry.isDefined => rdf.List
-      case _ if isBN(objet0) => BNode("")
-      case _ if objet0.toString.startsWith("_:") => BNode("")
+      case _ if isBN(objet0) => nullBNode
+      case _ if objet0.toString.startsWith("_:") => nullBNode
 
-      case _                                    => Literal("")
+      case _                                    => nullLiteral
     }
 
     val objet =
@@ -449,26 +451,35 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       }
     }
 
-    rangeClasses match {
-      case _ if objet.isLiteral => literalEntry
-      case _ if rangeClasses.exists { c => c.toString startsWith (xsdPrefix) } => literalEntry
-      case _ if rangeClasses.contains(rdfs.Literal) => literalEntry
-      case _ if propClasses.contains(owl.DatatypeProperty) => literalEntry
-      case _ if ranges.contains(rdfs.Literal) => literalEntry
-
-      case _ if propClasses.contains(owl.ObjectProperty) => resourceEntry
-      case _ if rangeClasses.contains(owl.Class) => resourceEntry
-      case _ if rangeClasses.contains(rdf.Property) => resourceEntry
-      case _ if ranges.contains(owl.Thing) => resourceEntry
-      case _ if isURI(objet) => resourceEntry
-
-      case _ if rdfListEntry.isDefined => rdfListEntry.get
-      case _ if isBN(objet) => makeBN(label, comment, prop,
-        ResourceValidator(ranges), toBN(objet), firstType)
-      case _ if objet.toString.startsWith("_:") => resourceEntry // ??????????????? rather makeBN() ???
-
-      case _                                    => literalEntry
+    chooseRDFNodeType match {
+      case `nullURI` => resourceEntry
+      case `nullLiteral` => literalEntry
+      case `nullBNode` => resourceEntry // ??????????????? rather makeBN() ???
+      case rdf.List => rdfListEntry.get
+      case _       => literalEntry
     }
+
+//    val res = rangeClasses match {
+//      case _ if objet.isLiteral => literalEntry
+//      case _ if rangeClasses.exists { c => c.toString startsWith (xsdPrefix) } => literalEntry
+//      case _ if rangeClasses.contains(rdfs.Literal) => literalEntry
+//      case _ if propClasses.contains(owl.DatatypeProperty) => literalEntry
+//      case _ if ranges.contains(rdfs.Literal) => literalEntry
+//
+//      case _ if propClasses.contains(owl.ObjectProperty) => resourceEntry
+//      case _ if rangeClasses.contains(owl.Class) => resourceEntry
+//      case _ if rangeClasses.contains(rdf.Property) => resourceEntry
+//      case _ if ranges.contains(owl.Thing) => resourceEntry
+//      case _ if isURI(objet) => resourceEntry
+//
+//      case _ if rdfListEntry.isDefined => rdfListEntry.get
+//      case _ if isBN(objet) => makeBN(label, comment, prop,
+//        ResourceValidator(ranges), toBN(objet), firstType)
+//      case _ if objet.toString.startsWith("_:") => resourceEntry // ??????????????? rather makeBN() ???
+//
+//      case _                                    => literalEntry
+//    }
+//    assert( res == res1)
   }
 
   private case class PrecomputationsFromProperty(prop: Rdf#Node)(implicit graph: Rdf#Graph) {
