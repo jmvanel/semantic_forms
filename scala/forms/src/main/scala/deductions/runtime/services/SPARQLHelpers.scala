@@ -51,6 +51,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   /**
    * sparql Construct Query;
+   * used in SPARQL results Web page
    * NEEDS transaction
    */
   def sparqlConstructQuery(queryString: String): Try[Rdf#Graph] = {
@@ -118,11 +119,11 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    * transactional, output Turtle String
    *  @param format = "turtle" or "rdfxml" or "jsonld"
    */
-  def sparqlConstructQueryTR(queryString: String, format: String = "turtle"): String = {
+  def sparqlConstructQueryTR(queryString: String, format: String = "turtle"):  Try[String] = {
     val transaction = rdfStore.r(dataset, {
       graph2String(sparqlConstructQuery(queryString), "", format)
     })
-    transaction.get
+    transaction // .get
   }
 
   /** transactional */

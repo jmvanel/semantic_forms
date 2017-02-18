@@ -274,17 +274,15 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     </p>
   }
 
-  /** SPARQL result
-   *  @param format = "turtle" or "rdfxml" or "jsonld" */
-  def sparqlConstructResult(query: String, lang: String = "en", format: String="turtle"): String = {
+  /**
+   * SPARQL result
+   *  @param format = "turtle" or "rdfxml" or "jsonld"
+   */
+  def sparqlConstructResult(query: String, lang: String = "en", format: String = "turtle"): String = {
     logger.info("Global.sparql query  " + query)
-    try {
-      if (query != "")
-        sparqlConstructQueryTR(query, format)
-      else "Empty query !!!"
-    } catch {
-      case NonFatal(e) => "sparqlConstructResult: " + e.getMessage() // TODO: handle error?
-    }
+    if (query != "")
+      sparqlConstructQueryTR(query, format).toString
+    else "Empty query result !!!"
   }
   
   /** Display result of a SPARQL select */
