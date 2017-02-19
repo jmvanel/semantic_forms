@@ -580,10 +580,10 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     } """
     val ttl = sparqlConstructQueryTR(queryString)
     val outputFile = outputDir + File.separator + new File(file).getName + suffix
-    println(s"""Writing ${ttl.length()} chars in output File
+    println(s"""Writing ${ttl.toString.length()} chars in output File
       $outputFile""")
     val fw = new FileWriter(new File(outputFile))
-    fw.write(ttl)
+    fw.write(ttl.toString())
     fw.close()
   }
 

@@ -61,7 +61,7 @@ trait ToolsPage extends EnterButtons
 
   /** HTML Form for a sparql Query */
   def sparqlQueryForm(viewButton: Boolean, query: String, action: String, sampleQueries: Seq[String]): NodeSeq =
-    <form role="form" action={action}>
+    <form role="form">
       <div>action { action }</div>				    
 			    <textarea name="query" style="min-width:80em; min-height:8em" title="To get started, uncomment one of these lines.">{          
         if (query != "")
@@ -69,7 +69,7 @@ trait ToolsPage extends EnterButtons
         else
           for (sampleQuery <- sampleQueries) yield "# " + sampleQuery + "\n" 
       }</textarea>
-      <input type="submit" value="Submit" formaction ="/sparql-ui"/>
+      <input type="submit" value="Submit" formaction ={action}/>
 			
 			{	if (viewButton)					
       <input type="submit" value="View" formaction ="/sparql-form"/>

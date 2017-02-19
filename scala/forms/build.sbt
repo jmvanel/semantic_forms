@@ -10,7 +10,7 @@ version := "1.0-SNAPSHOT"
 
 scalaVersion :=  "2.11.8"
 // scalaVersion :=  "2.12.1"
-val jenaVersion =  "3.1.0"
+val jenaVersion =  "3.2.0" // "3.1.0"
 
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-explaintypes", "-language:_", "-Xlint:_")

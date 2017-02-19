@@ -39,7 +39,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
    *  @param actionURI, actionURI2 HTML actions for the 2 submit buttons
    *  @param graphURI URI for named graph to save user inputs
    */
-//  private[html] 
+//  private[html]
   def generateHTML(form: FormModule[NODE, URI]#FormSyntax,
                    hrefPrefix: String = "",
                    editable: Boolean = false,
@@ -52,7 +52,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
 
     def wrapFieldsWithFormTag(htmlFormFields: NodeSeq): NodeSeq =
 
-      <form action={ actionURI } method="POST">
+      <form class="sf-standard-form" action={ actionURI } method="POST">
         <div class="row">
           <div class="col col-sm-4 col-sm-offset-4"><input value={ mess("SAVE") } type="submit" class="form-control btn btn-primary "/></div> <!--class="pull-right"-->
         </div>
@@ -77,7 +77,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
    * generate HTML, but Just Fields;
    *  this lets application developers create their own submit button(s) and <form> tag
    */
-//  private[html] 
+//  private[html]
   def generateHTMLJustFields(form: formMod#FormSyntax,
                              hrefPrefix: String = "",
                              editable: Boolean = false,

@@ -31,10 +31,16 @@ var urlReqPrefix = "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?Query
 
 $(document).ready(function() {
     var topics = [];
-    $(".form-horizontal").on('focus', '.hasLookup', function(event) {
+    $(".sf-standard-form").on('focus', '.hasLookup', function(event) {
         $(this).autocomplete({
             autoFocus: true,
             minlength: 3,
+            search: function() {
+                $(this).addClass('sf-suggestion-search')
+            },
+            open: function() {
+                $(this).removeClass('sf-suggestion-search')
+            },
             select: function( event, ui ) {
                 console.log( "Topic chosen label event ");
                 console.log($(this));

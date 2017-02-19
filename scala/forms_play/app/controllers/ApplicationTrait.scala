@@ -30,6 +30,7 @@ import play.api.mvc.Results
 import views.MainXmlWithHead
 import java.net.URLEncoder
 import deductions.runtime.services.Configuration
+import java.net.URI
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -296,7 +297,13 @@ trait ApplicationTrait extends Controller
             lang, userInfo=userInfo)
     }
 
-  private def makeAbsoluteURIForSaving(userid: String): String = userid
+  private def makeAbsoluteURIForSaving(userid: String): String = {
+    val uri = new URI(userid)
+    if (uri.isAbsolute())
+      userid
+    else
+      "user:" + userid
+  }
 
   /**
    * creation form as raw JSON data
@@ -310,8 +317,8 @@ trait ApplicationTrait extends Controller
       val uri = expandOrUnchanged(uri0)
       // URI of form Specification
       val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formuri")
-      logger.info("create: " + uri)
-      logger.info(s"formSpecURI from HTTP request: <$formSpecURI>")
+      logger.info(s"create: <$uri>")
+      logger.info(s"create: formSpecURI from HTTP request: <$formSpecURI>")
 
       Ok(createDataAsJSON(uri, chooseLanguage(request),
         formSpecURI,

@@ -45,14 +45,25 @@ with SPARQLHelpers[Rdf, DATASET] {
     val inferedProperties = scala.collection.mutable.ListBuffer[Rdf#Node]()
     val propertiesGroups = scala.collection.mutable.HashMap.empty[Rdf#Node, RawDataForForm[Rdf#Node]]
     		
-    /** retrieve rdfs:domain's From given Class */
-    def domainsFromClass(classs: Rdf#Node): List[Rdf#Node] = {
+    /* retrieve properties from rdfs:domain's From given Class */
+    def propertiesFromDomainsFromClass(classs: Rdf#Node): List[Rdf#Node] = {
       if (classs != owl.Thing) {
         val relevantPredicates = getSubjects(graph, rdfs.domain, classs).toSeq
         logger.debug(s"""Predicates with domain = Class <$classs> , relevant Predicates size ${relevantPredicates.size}  ; ${relevantPredicates.mkString(", ")}""")
-        relevantPredicates.distinct.toList ++
+        filterObsoletePredicates(relevantPredicates.distinct).toList ++
         unionOfDomainsFromClass(classs)
       } else List()
+    }
+
+    def filterObsoletePredicates(predicates: Seq[Rdf#Node]): Seq[Rdf#Node] = {
+      val vs = Prefix[Rdf]("vs", "http://www.w3.org/2003/06/sw-vocab-status/ns#")
+      predicates.filter {
+        predicate =>
+          val status = getObjects(graph, predicate, vs("term_status")).toSeq
+          ! status.contains(Literal("archaic"))
+      }
+      // vs:term_status "archaic"
+      // @prefix vs: <http://www.w3.org/2003/06/sw-vocab-status/ns#> .
     }
 
     /**
@@ -61,6 +72,7 @@ with SPARQLHelpers[Rdf, DATASET] {
      */
     def unionOfDomainsFromClass(classe: Rdf#Node): List[Rdf#Node] = {
       if (lookup_domain_unionOf) {
+        // TODO store compiled query
         val queryString = s"""
         ${declarePrefix(owl)}
         ${declarePrefix(rdfs)}
@@ -78,9 +90,9 @@ with SPARQLHelpers[Rdf, DATASET] {
           .
           }
         } """
-        println(s"unionOfDomainsFromClass queryString $queryString")
+        logger.debug(s"unionOfDomainsFromClass queryString $queryString")
         val res = sparqlSelectQueryVariablesNT(queryString, Seq("PRED"), dataset)
-        println(s"unionOfDomainsFromClass res $res")
+        logger.debug(s"unionOfDomainsFromClass res $res")
         res map { li => li.head }
       } else List()
     }
@@ -88,15 +100,15 @@ with SPARQLHelpers[Rdf, DATASET] {
     /** recursively process super-classes and owl:equivalentClass until reaching owl:Thing */
     def processSuperClasses(classs: Rdf#Node) {
       if (classs != owl.Thing) {
-        val domains = domainsFromClass(classs)
+        val domains = propertiesFromDomainsFromClass(classs)
         inferedProperties ++= domains
         propertiesGroups += ( classs -> RawDataForForm(domains, classs, URI("") ) )
         
         val superClasses = getObjects(graph, classs, rdfs.subClassOf)
-        println(s"process Super Classes of <$classs> size ${superClasses.size} ; ${superClasses.mkString(", ")}")
-        superClasses foreach (sc => inferedProperties ++= domainsFromClass(sc))
+        logger.info(s"process Super Classes of <$classs> size ${superClasses.size} ; ${superClasses.mkString(", ")}")
+        superClasses foreach (sc => inferedProperties ++= propertiesFromDomainsFromClass(sc))
         val equivalentClasses = getObjects(graph, classs, owl.equivalentClass)
-        equivalentClasses foreach (sc => inferedProperties ++= domainsFromClass(sc))
+        equivalentClasses foreach (sc => inferedProperties ++= propertiesFromDomainsFromClass(sc))
         superClasses foreach (sc => processSuperClasses(sc))
       }
     }
@@ -138,7 +150,7 @@ with SPARQLHelpers[Rdf, DATASET] {
           val doms = find(graph, toConcreteNodeMatch(prop), toConcreteNodeMatch(rdfs.domain), ANY)
           if (doms.size == 0) {
             inferedProperties += prop.asInstanceOf[Rdf#URI]
-            println(s"addDomainlessProperties: <$uri> add <$prop>")
+            logger.info(s"addDomainlessProperties: <$uri> add <$prop>")
           }
         }
       }
