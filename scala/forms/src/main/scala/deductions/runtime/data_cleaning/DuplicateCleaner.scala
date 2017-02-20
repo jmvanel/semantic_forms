@@ -19,6 +19,8 @@ import deductions.runtime.services.URIManagement
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.utils.Maps
+import scala.util.Success
+import scala.util.Failure
 
 /**
  * merge Duplicates among instances of given class URI;
@@ -56,7 +58,10 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
 
   type URIMergeSpecifications = List[URIMergeSpecification]
   case class URIMergeSpecification(replacedURI: Rdf#URI, replacingURI: Rdf#URI,
-    newLabel: String = "", comment: String = "")
+    newLabel: String = "", comment: String = "") {
+	  def isRenaming() = newLabel != ""
+	  def isreplacing() = replacedURI != nullURI
+	}
 
   /**
    * merges Duplicates automatically among instances of given class URI,
@@ -183,25 +188,28 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
 
   /**
    * add a merge Marker to rdfs:label's;
-   *  replaces existing triple(s) <replacingURI> rdfs.label ?LAB
-   *  
+   *  replaces existing triple(s)
+   *  <replacingURI> rdfs.label ?LAB
+   *
    * NEEDS Transaction
    */
-  private def storeLabelWithMergeMarker(replacingURI: Rdf#Node,
-                                        newLabel: String = "",
-                                        merge_marker: String = mergeMarker,
-                                        graphToWrite: Rdf#Node = URI("")) = {
-    if (replacingURI.toString() != "") {
+  private[data_cleaning] def storeLabelWithMergeMarker(
+    uri: Rdf#Node,
+    newLabel: String = "",
+    merge_marker: String = mergeMarker,
+    graphToWrite: Rdf#Node = URI("")) = {
+    if (uri.toString() != "") {
       val label = if (newLabel != "") {
         newLabel
       } else {
-        println(s"storeLabelWithMergeMarker: WARNING: no new label provided for URI <$replacingURI> , taking its rdfs:label")
+        println(s"storeLabelWithMergeMarker: WARNING: no new label provided for URI <$uri> , taking its rdfs:label")
         implicit val graph = allNamedGraph: Rdf#Graph
-        getStringHeadOrElse(replacingURI, rdfs.label)
+        getStringHeadOrElse(uri, rdfs.label)
       }
       if (label != "") {
-        val newLabelTriple = Triple(replacingURI, rdfs.label, Literal(label + merge_marker))
-        replaceRDFTriple(newLabelTriple, graphToWrite, dataset)
+        val newLabelTriple = Triple(uri, rdfs.label, Literal(label + merge_marker))
+//        replaceRDFTriple(newLabelTriple, graphToWrite, dataset)
+        replaceRDFTripleAnyGraph(newLabelTriple, dataset)
       }
     }
   }
@@ -569,22 +577,26 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
   /* TODO move to global utility, and use Jena utility */
   def uriFromFile(filename: String) =
              org.apache.jena.riot.system.IRIResolver.resolveFileURL(filename)
-//    new File(file).toURI().toASCIIString()
-  
+  //    new File(file).toURI().toASCIIString()
+
   /** output modified data (actually all triples in TDB) in /tmp */
-  def outputModifiedTurtle(file: String, outputDir: String = "/tmp" , suffix:String="") = {
+  def outputModifiedTurtle(file: String, outputDir: String = "/tmp", suffix: String = "") = {
     val queryString = """
     CONSTRUCT { ?S ?P ?O }
     WHERE {
       GRAPH ?GR { ?S ?P ?O }
     } """
-    val ttl = sparqlConstructQueryTR(queryString)
-    val outputFile = outputDir + File.separator + new File(file).getName + suffix
-    println(s"""Writing ${ttl.toString.length()} chars in output File
-      $outputFile""")
-    val fw = new FileWriter(new File(outputFile))
-    fw.write(ttl.toString())
-    fw.close()
+    val tryTTL = sparqlConstructQueryTR(queryString)
+    tryTTL match {
+      case Success(ttl) =>
+        val outputFile = outputDir + File.separator + new File(file).getName + suffix
+        println(s"""Writing ${ttl.toString.length()} chars in output File
+          $outputFile""")
+        val fw = new FileWriter(new File(outputFile))
+        fw.write(ttl.toString())
+        fw.close()
+      case Failure(f) => System.err.println(s"Error: $f")
+    }
   }
 
   def outputGraph(auxiliaryOutput: Rdf#Graph, file: String, outputDir: String = "." ) = {

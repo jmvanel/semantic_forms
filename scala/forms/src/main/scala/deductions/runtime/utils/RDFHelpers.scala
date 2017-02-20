@@ -303,7 +303,8 @@ extends
    * @ jmvanel nothing giving you that out-of-the-box right now
    * I'd write a new typeclass to handle that
    * it's super easy to do */
-  def makeTurtleTerm( node: Rdf#Node ) = foldNode(node)(
+  def makeTurtleTerm( node: Rdf#Node ) =
+    foldNode(node)(
       uri => s"<${fromUri(uri)}>",
       bn => s"<_:${fromBNode(bn)}>",
       // TODO: datatype
