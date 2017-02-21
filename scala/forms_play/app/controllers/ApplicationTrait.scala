@@ -31,6 +31,7 @@ import views.MainXmlWithHead
 import java.net.URLEncoder
 import deductions.runtime.services.Configuration
 import java.net.URI
+import deductions.runtime.services.URIManagement
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -46,7 +47,8 @@ trait ApplicationTrait extends Controller
     with MainXmlWithHead
     with CORS
     with HTTPrequestHelpers
-    with RDFPrefixes[ImplementationSettings.Rdf] {
+    with RDFPrefixes[ImplementationSettings.Rdf]
+    with URIManagement {
 
 	val config: Configuration
   import config._
@@ -251,30 +253,6 @@ trait ApplicationTrait extends Controller
         }
     }
   }
-  
-//  /** UNUSED */
-//  private def save(request: Request[_], userid: String, graphURI: String = "" ): NodeSeq = {
-//      val body = request.body
-//      body match {
-//        case form: AnyContentAsFormUrlEncoded =>
-//          val lang = chooseLanguage(request)
-//          val map = form.data
-//          println(s"ApplicationTrait.save: ${body.getClass}, map $map")
-//          // cf http://danielwestheide.com/blog/2012/12/26/the-neophytes-guide-to-scala-part-6-error-handling-with-try.html
-//          val subjectUriTryOption = Try {
-//            saveForm( map, lang, userid, graphURI )
-//          }
-//          println(s"ApplicationTrait.save: uriOption $subjectUriTryOption, userid $userid")
-//          subjectUriTryOption match {
-//            case Success(Some(url1)) =>
-//              htmlForm( URLDecoder.decode(url1, "utf-8"),
-//              editable = false,
-//              lang = lang )
-//            case _ => <p>Save: not normal: { subjectUriTryOption }</p>
-//          }
-//        case _ => <p>Save: not normal: { getClass() }</p>
-//      }
-//  }
 
   /** creation form - generic SF application */
   def createAction() =
@@ -296,14 +274,6 @@ trait ApplicationTrait extends Controller
               formSpecURI, makeAbsoluteURIForSaving(userid), copyRequest(request) ),
             lang, userInfo=userInfo)
     }
-
-  private def makeAbsoluteURIForSaving(userid: String): String = {
-    val uri = new URI(userid)
-    if (uri.isAbsolute())
-      userid
-    else
-      "user:" + userid
-  }
 
   /**
    * creation form as raw JSON data

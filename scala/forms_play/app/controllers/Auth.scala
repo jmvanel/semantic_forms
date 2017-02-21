@@ -46,10 +46,7 @@ with AuthTrait2[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 /** Controller for registering account, login, logout;
  *  see https://www.playframework.com/documentation/2.4.x/ScalaSessionFlash */
 trait AuthTrait2[Rdf <: RDF, DATASET]
-extends
-//ApplicationFacadeImpl[Rdf, DATASET]
-// with
- Controller
+extends Controller
  with Authentication[Rdf, DATASET]
  with RDFStoreLocalUserManagement[Rdf, DATASET] {
   
@@ -74,9 +71,9 @@ extends
         (s"User already exists, or no email with this id",
           result => result match {
             case (userid, password, confirmPassword) =>
-              println( s"""case $userid, $password, $confirmPassword""")
+              println( s"""registerForm: case "$userid", $password, $confirmPassword""")
               val si = signin( userid, password )
-              println( s"""For this ID <$userid> , URI associated is: "$si".""" )
+              println( s"""For this ID "$userid", URI associated is: "$si".""" )
               si.isSuccess
           }))
 
@@ -151,10 +148,13 @@ extends
             .as("text/html; charset=utf-8")
         },
         // TODO also Redirect to the URL before login
-      user => Redirect(routes.Application.index).withSession(Security.username -> user._1)
+      user => {
+        println(s"register: user: $user")
+        Redirect(routes.Application.index).withSession(Security.username -> makeURIPartFromString(user._1))
           .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
+      }
     )
   }
 
