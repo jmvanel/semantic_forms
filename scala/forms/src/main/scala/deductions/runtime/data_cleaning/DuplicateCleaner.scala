@@ -21,6 +21,7 @@ import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.utils.Maps
 import scala.util.Success
 import scala.util.Failure
+import org.apache.commons.lang3.StringUtils
 
 /**
  * merge Duplicates among instances of given class URI;
@@ -508,22 +509,25 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     val classTriples = find(allNamedGraph, ANY, rdf.typ, classURI) . toList
     println( s"indexInstanceLabels: ${classTriples.size} instances for class $classURI")
 
-    // NOTE: this looks laborious !!!!
+    // make (label, uri) pairs; NOTE: this looks laborious !!!!
     var count = 0
     val labelURIpairs = for (
       classTriple <- classTriples;
       uri0 = classTriple.subject if (uri0.isURI);
-      uri = uri0 ; // .asInstanceOf[Rdf#URI];
+      uri = uri0 ;
       label = instanceLabel(uri, allNamedGraph, lang)
     ) yield {
       count = count + 1
       (label, uri)
     }
-    val labelsToURIsmap = labelURIpairs.toList.groupBy(_._1).map {
+    // group By similar labels (strip Accents)
+    val labelsToURIsmap = labelURIpairs.toList.groupBy {
+      pair => StringUtils.stripAccents(pair._1)
+    } . map {
       case (s, list) => (s,
         list.map { case (s, node) => node })
     }
-    println( s"indexInstanceLabels: ${labelsToURIsmap.size} labels in instances for class $classURI")
+    println( s"indexInstanceLabels: ${labelsToURIsmap.size} different labels in instances for class <$classURI>")
 
     val mergedItemsList = labelsToURIsmap.map {
       case (groupLabel, list) =>

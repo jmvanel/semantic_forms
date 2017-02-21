@@ -67,7 +67,7 @@ object DuplicateCleanerSpecificationApp extends {
 
     val auxiliaryOutput: Rdf#MGraph = makeEmptyMGraph()
 
-    { // remove Duplicates From Spec
+    { // remove Duplicates From Spec (and possibly rename)
       val propertyChangesGroupedByReplacingURI =
         propertyChanges.groupBy(uriMergeSpecification =>
           uriMergeSpecification.replacingURI)
