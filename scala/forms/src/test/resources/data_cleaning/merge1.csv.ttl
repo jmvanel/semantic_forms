@@ -1,0 +1,10 @@
+<http://data.onisep.fr/ontologies/StructureEnseignement/annee>
+        a       <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/2000/01/rdf-schema#domain>
+                <http://data.onisep.fr/ontologies/StructureEnseignement> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Année de référence nombre d'élèves" ;
+        <http://www.w3.org/2000/01/rdf-schema#range>
+                <http://www.w3.org/2001/XMLSchema#long> ;
+        <http://deductions.sf.net/ametys.ttl#name>
+                "annee" .
