@@ -46,7 +46,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   import ops._
   import rdfStore.transactorSyntax._
 
-  lazy val xsd = XSDPrefix[Rdf]
+  lazy val xsretrieveURINoTransactiond = XSDPrefix[Rdf]
   lazy val owl = OWLPrefix[Rdf]
 
   /** with transaction */
@@ -88,7 +88,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   ): Try[Rdf#Graph] = {
     for (graph <- rdfStore.getGraph(dataset, uri)) yield {
       val nothingStoredLocally = graph.size == 0
-      println(s"retrieveURINoTransaction: stored Graph Is Empty: $nothingStoredLocally URI <$uri>")
+      println(s"""retrieveURINoTransaction: stored Graph Is Empty: $nothingStoredLocally for URI <$uri>""")
 
       if (nothingStoredLocally) { // then read unconditionally from URI and store in TDB
 
@@ -97,7 +97,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
           try {
             val g = readStoreURINoTransaction(uri, uri, dataset, request)
             if (g.size > 0) {
-              println("Graph at URI was downloaded, new addition: " + uri + " , size " + g.size)
+              println(s"""Graph at URI <$uri>, size ${g.size}
+              Either new addition was downloaded, or locally managed data""")
               addTimestampToDataset(uri, dataset2)
             } else
               println(s"Download Graph at URI <$uri> was tried, but it's empty.")
@@ -297,9 +298,9 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
                     newGraphWithUrl
                   }
                   emptyGraph
-                } else
-                  // it's a locally managed URL and data, no need to download anything
-                  emptyGraph
+                } else // it's a locally managed URL and data, no need to download anything
+                  // used by formatHTMLStatistics():
+                  makeGraph( find( allNamedGraph, uri, ANY, ANY) .toIterable )
               } else throw f
             }
             }

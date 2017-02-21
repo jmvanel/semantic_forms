@@ -47,40 +47,42 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
     if (uri != null && uri != "")
       try {
         val datasetOrDefault = getDatasetOrDefault(database)
-        val res = rdfStore.rw( datasetOrDefault, {
-          val ( tryGraph: Try[Rdf#Graph] , status /* String or NodeSeq */ ) = if (blankNode != "true") {
-            val resRetrieve = retrieveURINoTransaction(
-              // if( blankNode=="true") makeUri("_:" + uri ) else makeUri(uri),
-              makeUri(uri), datasetOrDefault)
+        val res = rdfStore.rw(datasetOrDefault, {
+          val (tryGraph: Try[Rdf#Graph],
+            failureOrStatistics /* String or NodeSeq */ ) =
+            if (blankNode != "true") {
+              val resRetrieve = retrieveURINoTransaction(
+                // if( blankNode=="true") makeUri("_:" + uri ) else makeUri(uri),
+                makeUri(uri), datasetOrDefault)
 
-            // TODO should be done in FormSaver 
-            println(s"Search in <$uri> duplicate graph rooted at blank node: size " +
+              // TODO should be done in FormSaver 
+              println(s"Search in <$uri> duplicate graph rooted at blank node: size " +
                 ops.getTriples(resRetrieve.get).size)
-            manageBlankNodesReload(resRetrieve.getOrElse(emptyGraph),
+              manageBlankNodesReload(resRetrieve.getOrElse(emptyGraph),
                 URI(uri), datasetOrDefault)
 
-            val status = resRetrieve match {
-              case Failure(e) => e.getLocalizedMessage
-              case Success(g) => formatHTMLStatistics(URI(uri), g, lang)
-            }
-            (resRetrieve, status)
-          } else
-            ( Success(emptyGraph), "" )
+              val failureOrStatistics = resRetrieve match {
+                case Failure(e) => e.getLocalizedMessage
+                case Success(g) => formatHTMLStatistics(URI(uri), g, lang)
+              }
+              (resRetrieve, failureOrStatistics)
+            } else
+              (Success(emptyGraph), "")
 
           implicit val graph = allNamedGraph
           val formBoth = htmlFormElemRaw(uri, graph, hrefDisplayPrefix, blankNode, editable = editable,
-              lang = lang,
-              formuri = formuri,
-              graphURI = graphURI,
-              database = database,
-              request=request, inputGraph=tryGraph)
+            lang = lang,
+            formuri = formuri,
+            graphURI = graphURI,
+            database = database,
+            request = request, inputGraph = tryGraph)
           println(s">>>> after htmlFormElemRaw")
-          val formItself = formBoth . _1
-          val formSyntax = formBoth . _2
+          val formItself = formBoth._1
+          val formSyntax = formBoth._2
 
-            Text("\n") ++
+          Text("\n") ++
             titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable) ++
-            <div>{status}</div> ++
+            <div>{ failureOrStatistics }</div> ++
             formItself
         })
         res.get
