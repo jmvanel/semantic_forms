@@ -114,7 +114,7 @@ trait Lookup[Rdf <: RDF, DATASET]
         s"?thing text:query ( '${prepareSearchString(search).trim()}' ) ."
       else ""
 
-      s"""
+      val queryWithlinksCount = s"""
          |${declarePrefix(text)}
          |${declarePrefix(rdfs)}
          |SELECT DISTINCT ?thing (COUNT(*) as ?count) WHERE {
@@ -128,6 +128,21 @@ trait Lookup[Rdf <: RDF, DATASET]
          |ORDER BY DESC(?count)
          |LIMIT 10
          |""".stripMargin
+
+      val queryWithoutlinksCount = s"""
+         |${declarePrefix(text)}
+         |${declarePrefix(rdfs)}
+         |SELECT DISTINCT ?thing WHERE {
+         |  graph ?g {
+         |    $textQuery
+         |    ?thing ?p ?o .
+         |    ?thing a $clas .
+         |  }
+         |}
+         |LIMIT 15
+         |""".stripMargin
+
+     return queryWithoutlinksCount
     }
   }
 
