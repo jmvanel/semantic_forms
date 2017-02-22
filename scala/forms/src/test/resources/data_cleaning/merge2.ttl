@@ -1,0 +1,23 @@
+<http://data.onisep.fr/ontologies/OngletGestionIdeoStructure>
+        a       <http://www.w3.org/2002/07/owl#Class> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Onglet Gestion Idéo" ;
+        <http://www.w3.org/2000/01/rdf-schema#subClassOf>
+                <http://deductions.sf.net/ametys.ttl#Onglet> ;
+        <http://deductions.sf.net/ametys.ttl#abstract>
+                "true" ;
+        <http://deductions.sf.net/ametys.ttl#description>
+                "Onglet Gestion Idéo Structure" ;
+        <http://deductions.sf.net/ametys.ttl#subClassOf>
+                "OngletGestionIdeo" .
+
+<http://data.onisep.fr/ontologies/OngletGestionONISEPAbstractTypeFormation>
+        a       <http://www.w3.org/2002/07/owl#Class> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Onglet Gestion Ideo" ;
+        <http://www.w3.org/2000/01/rdf-schema#subClassOf>
+                <http://deductions.sf.net/ametys.ttl#Onglet> ;
+        <http://deductions.sf.net/ametys.ttl#abstract>
+                "true" ;
+        <http://deductions.sf.net/ametys.ttl#subClassOf>
+                "OngletGestionONISEP" .

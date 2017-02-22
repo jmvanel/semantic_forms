@@ -40,7 +40,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
       val clas = searchStrings(1)
       val limit = if( clas != "" ) "" else "LIMIT 15"
 
-      val textQuery = if( searchStrings(0).length() > 0 )
+      val textQuery = if( search.length() > 0 )
         s"?thing text:query ( '${prepareSearchString(search).trim()}' ) ."
       else ""
 

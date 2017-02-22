@@ -108,12 +108,18 @@ trait Lookup[Rdf <: RDF, DATASET]
         if( classe == "" ) "?CLASS"
         else "<" + expandOrUnchanged(classe) + ">"
       } else "?CLASS"
-      s"""
+
+      // TODO pasted from StringSearchSPARQL :((((
+      val textQuery = if( search.length() > 0 )
+        s"?thing text:query ( '${prepareSearchString(search).trim()}' ) ."
+      else ""
+
+      val queryWithlinksCount = s"""
          |${declarePrefix(text)}
          |${declarePrefix(rdfs)}
          |SELECT DISTINCT ?thing (COUNT(*) as ?count) WHERE {
          |  graph ?g {
-         |    ?thing text:query '${prepareSearchString(search).trim()}' .
+         |    $textQuery
          |    ?thing ?p ?o .
          |    ?thing a $clas .
          |  }
@@ -122,6 +128,21 @@ trait Lookup[Rdf <: RDF, DATASET]
          |ORDER BY DESC(?count)
          |LIMIT 10
          |""".stripMargin
+
+      val queryWithoutlinksCount = s"""
+         |${declarePrefix(text)}
+         |${declarePrefix(rdfs)}
+         |SELECT DISTINCT ?thing WHERE {
+         |  graph ?g {
+         |    $textQuery
+         |    ?thing ?p ?o .
+         |    ?thing a $clas .
+         |  }
+         |}
+         |LIMIT 15
+         |""".stripMargin
+
+     return queryWithoutlinksCount
     }
   }
 
@@ -133,7 +154,7 @@ trait Lookup[Rdf <: RDF, DATASET]
    */
   def searchStringOrClass(search: String, clas: String = ""): List[Seq[Rdf#Node]] = {
     val queryString = indexBasedQuery.makeQueryString(search, clas)
-    println(s"searchStringOrClass(search=$search, clas $clas, queryString $queryString")
+    println(s"""searchStringOrClass(search="$search", clas <$clas>, queryString "$queryString" """)
     val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariables(queryString, Seq("thing"))
     res
   }

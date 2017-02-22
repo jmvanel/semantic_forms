@@ -140,20 +140,11 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    *  thus enforcing cardinality one;
    *  NEEDS Transaction;
    *  See also [[deductions.runtime.dataset.DatasetHelper#replaceObjects]]
-   *
-   *  TODO remove all such triples in any named graph,
-   *  and re-create given triple in first named graph having a such triple
    */
   def replaceRDFTriple(triple: Rdf#Triple, graphURI: Rdf#Node, dataset: DATASET) = {
     val uri = triple.subject
     val property = triple.predicate
-    // TESTED
-    //    val queryString0 = s"""
-    //      WITH <$graphURI>
-    //      DELETE { <$uri> <$property> ?ts . }
-    //      # INSERT { <$uri> <$property> ??? . }
-    //      WHERE { <$uri> <$property> ?ts . }
-    //      """
+
     val queryString = s"""
          | DELETE {
          |   graph <$graphURI> {
@@ -166,9 +157,33 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
          | }""".stripMargin
     logger.debug(s"""replaceRDFTriple: $triple in <$graphURI> """)
     val result = sparqlUpdateQuery(queryString, dataset)
-    //    logger.debug(s"replaceRDFTriple: result: $result")
 
     rdfStore.appendToGraph(dataset, nodeToURI(graphURI), makeGraph(Seq(triple)))
+  }
+
+  /** remove all triples having same subject and property in any named graph,
+   *  and re-create given triple in named graph having a such triple */
+  def replaceRDFTripleAnyGraph(triple: Rdf#Triple, dataset: DATASET) = {
+    val uri = triple.subject
+    val property = triple.predicate
+    val objet = triple.objectt
+
+    val queryString = s"""
+         | DELETE {
+         |   graph ?GR {
+         |     <$uri> <$property> ?ts .
+         |   }}
+         | INSERT {
+         |   graph ?GR {
+         |     <$uri> <$property> ${makeTurtleTerm(objet)} .
+         | }}
+         | WHERE {
+         |   graph ?GR {
+         |     <$uri> <$property> ?ts .
+         |   }
+         | }""".stripMargin
+    logger.debug(s"""replaceRDFTripleAnyGraph: $triple""")
+    val result = sparqlUpdateQuery(queryString, dataset)
   }
 
   def getRDFList(subject: String): List[Rdf#Node] = {

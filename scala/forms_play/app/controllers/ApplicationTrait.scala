@@ -31,6 +31,7 @@ import views.MainXmlWithHead
 import java.net.URLEncoder
 import deductions.runtime.services.Configuration
 import java.net.URI
+import deductions.runtime.services.URIManagement
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -46,7 +47,8 @@ trait ApplicationTrait extends Controller
     with MainXmlWithHead
     with CORS
     with HTTPrequestHelpers
-    with RDFPrefixes[ImplementationSettings.Rdf] {
+    with RDFPrefixes[ImplementationSettings.Rdf]
+    with URIManagement {
 
 	val config: Configuration
   import config._
@@ -70,26 +72,53 @@ trait ApplicationTrait extends Controller
 
   def displayURI(uri0: String, blanknode: String = "", Edit: String = "",
                  formuri: String = "") =
-    withUser {
-      implicit userid =>
-        implicit request =>
-          logger.info(s"""displayURI: $request IP ${request.remoteAddress}, host ${request.host}
+    if (needLoginForDisplaying || ( needLoginForEditing && Edit !="" ))
+      withUser {
+        implicit userid =>
+          implicit request =>
+            //          logger.info(
+            println(
+              s"""displayURI: $request IP ${request.remoteAddress}, host ${request.host}
             displayURI headers ${request.headers}
             displayURI tags ${request.tags}
+            displayURI cookies ${request.cookies.toList}
             userid <$userid>
             formuri <$formuri>
             displayURI: Edit "$Edit" """)
+            val lang = chooseLanguage(request)
+            val uri = expandOrUnchanged(uri0)
+            logger.info(s"displayURI: expandOrUnchanged $uri")
+            val title = labelForURITransaction(uri, lang)
+            val userInfo = displayUser(userid, uri, title, lang)
+            outputMainPage(
+              htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
+                graphURI = makeAbsoluteURIForSaving(userid),
+                request = getRequestCopy()),
+              lang, title = title, userInfo = userInfo)
+      }
+    else
+      Action { implicit request =>
+        {
           val lang = chooseLanguage(request)
           val uri = expandOrUnchanged(uri0)
           logger.info(s"displayURI: expandOrUnchanged $uri")
           val title = labelForURITransaction(uri, lang)
+//          val userid = request.cookies.get("PLAY_SESSION").getOrElse(default).value
+          // ,5bee33caf69545b483ef04aaa1caff8b13e0a4f4-username=")
+          val usernameFromSession = for( cookie <- request.cookies.get("PLAY_SESSION");
+          value = cookie.value ) yield { substringAfter(value, "username=")}
+          val userid = usernameFromSession.getOrElse("anonymous")
           val userInfo = displayUser(userid, uri, title, lang)
           outputMainPage(
             htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
               graphURI = makeAbsoluteURIForSaving(userid),
               request = getRequestCopy()),
-            lang, title = title, userInfo=userInfo)
-    }
+            lang, title = title, userInfo = userInfo)
+        }
+      }
+
+   def substringAfter(s:String,k:String) = { s.indexOf(k) match { case -1 => ""; case i => s.substring(i+k.length)  } }
+
 
   def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
 //        Action // 
@@ -251,30 +280,6 @@ trait ApplicationTrait extends Controller
         }
     }
   }
-  
-//  /** UNUSED */
-//  private def save(request: Request[_], userid: String, graphURI: String = "" ): NodeSeq = {
-//      val body = request.body
-//      body match {
-//        case form: AnyContentAsFormUrlEncoded =>
-//          val lang = chooseLanguage(request)
-//          val map = form.data
-//          println(s"ApplicationTrait.save: ${body.getClass}, map $map")
-//          // cf http://danielwestheide.com/blog/2012/12/26/the-neophytes-guide-to-scala-part-6-error-handling-with-try.html
-//          val subjectUriTryOption = Try {
-//            saveForm( map, lang, userid, graphURI )
-//          }
-//          println(s"ApplicationTrait.save: uriOption $subjectUriTryOption, userid $userid")
-//          subjectUriTryOption match {
-//            case Success(Some(url1)) =>
-//              htmlForm( URLDecoder.decode(url1, "utf-8"),
-//              editable = false,
-//              lang = lang )
-//            case _ => <p>Save: not normal: { subjectUriTryOption }</p>
-//          }
-//        case _ => <p>Save: not normal: { getClass() }</p>
-//      }
-//  }
 
   /** creation form - generic SF application */
   def createAction() =
@@ -296,14 +301,6 @@ trait ApplicationTrait extends Controller
               formSpecURI, makeAbsoluteURIForSaving(userid), copyRequest(request) ),
             lang, userInfo=userInfo)
     }
-
-  private def makeAbsoluteURIForSaving(userid: String): String = {
-    val uri = new URI(userid)
-    if (uri.isAbsolute())
-      userid
-    else
-      "user:" + userid
-  }
 
   /**
    * creation form as raw JSON data

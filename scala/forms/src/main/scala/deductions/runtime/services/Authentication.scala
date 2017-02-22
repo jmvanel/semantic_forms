@@ -107,18 +107,29 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
    * TODO check already existing account;
    */
   def signin(agentURI: String, password: String): Try[String] = {
+    println1(s"""Authentication.signin: userId "$agentURI"""")
+    val userUri =  makeURIPartFromString(agentURI)
+    val res = rdfStore.rw( dataset3, {
+      val mGraph = passwordsGraph
+      mGraph += makeTriple(URI(userUri), passwordPred,
+        makeLiteral(hashPassword(password), xsd.string))
+      userUri
+    })
+    val res2 = rdfStore.rw(dataset, {
+      val newTripleForUser = List(makeTriple(URI(userUri), rdf.typ, foaf.OnlineAccount))
+      val newGraphForUser: Rdf#Graph = makeGraph(newTripleForUser)
+      rdfStore.appendToGraph( dataset, URI(userUri), newGraphForUser)
+      userUri
+    })
+    res
+  }
+
+  def signinOLD(agentURI: String, password: String): Try[String] = {
     println1("Authentication.signin: userId " + agentURI)
     val res = rdfStore.rw( dataset3, {
       val mGraph = passwordsGraph
       mGraph += makeTriple(URI(agentURI), passwordPred,
         makeLiteral(hashPassword(password), xsd.string))
-      agentURI
-    })
-    val res2 = rdfStore.rw(dataset, {
-      val userUri =  makeURIFromString(agentURI)
-      val newTripleForUser = List(makeTriple(URI(userUri), rdf.typ, foaf.OnlineAccount))
-      val newGraphForUser: Rdf#Graph = makeGraph(newTripleForUser)
-      rdfStore.appendToGraph( dataset, URI(agentURI), newGraphForUser)
       agentURI
     })
     res

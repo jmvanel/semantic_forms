@@ -53,29 +53,45 @@ object DuplicateCleanerSpecificationApp extends {
 
   def duplicateCleanerSpecificationApp() = {
     possiblyDeleteDatabaseLocation()
-
+    println( "args" + args.mkString(", ") )
     val args2 = args.map { new File(_).getCanonicalPath }
 
     loadFilesFromArgs(args2)
-    //    val r = rdfStore.rw(dataset, {
-    //      originalGraph = union(Seq(allNamedGraph))
-    //      println(s"originalGraph size ${originalGraph.size()}")
-    //    })
 
     val csvSpecification = args2(0)
     val propertyChanges = readCSVFile(csvSpecification)
     println(s"""DuplicateCleanerSpecificationApp:
       CSV input $csvSpecification,
       Change Specifications: size ${propertyChanges.size}""")
+//    println(s"""DuplicateCleanerSpecificationApp: ${propertyChanges.mkString("\n")}""")
 
     val auxiliaryOutput: Rdf#MGraph = makeEmptyMGraph()
 
-    val propertyChangesGroupedByReplacingURI =
-      propertyChanges.groupBy(uriMergeSpecification =>
-        uriMergeSpecification.replacingURI)
-    println(s""" Change Specifications Grouped By Replacing URI : size: ${propertyChangesGroupedByReplacingURI.size}""")
-    for ((uriTokeep, uriMergeSpecifications) <- propertyChangesGroupedByReplacingURI)
-      removeDuplicatesFromSpec(uriTokeep, uriMergeSpecifications, auxiliaryOutput)
+    { // remove Duplicates From Spec (and possibly rename)
+      val propertyChangesGroupedByReplacingURI =
+        propertyChanges.groupBy(uriMergeSpecification =>
+          uriMergeSpecification.replacingURI)
+      println(s""" Change Specifications Grouped By Replacing URI : size: ${propertyChangesGroupedByReplacingURI.size}""")
+      for ((uriTokeep, uriMergeSpecifications) <- propertyChangesGroupedByReplacingURI)
+        if( uriTokeep != nullURI)
+          removeDuplicatesFromSpec(uriTokeep, uriMergeSpecifications, auxiliaryOutput)
+    }
+
+    { // pure rename From Spec
+      val propertyChangesGroupedByReplacedURI =
+        propertyChanges.groupBy(uriMergeSpecification =>
+          uriMergeSpecification.replacedURI)
+      println(s""" Change Specifications Grouped By Replaced URI (for renamings): size: ${propertyChangesGroupedByReplacedURI.size}""")
+      wrapInTransaction {
+        for (
+          (uriTokeep, uriMergeSpecifications) <- propertyChangesGroupedByReplacedURI;
+          uriMergeSpecification <- uriMergeSpecifications.headOption if(uriMergeSpecification.isRenaming())
+        ) {
+          storeLabelWithMergeMarker(uriTokeep, uriMergeSpecification.newLabel,
+            merge_marker = "", URI("urn:renamings"))
+        }
+      }
+    }
 
     val outputDir = new File(csvSpecification).getParent
     outputModifiedTurtle(csvSpecification + ".ttl", outputDir)
@@ -97,12 +113,10 @@ object DuplicateCleanerSpecificationApp extends {
          | ${declarePrefix(restruc)}
          | SELECT ?P ?RP ?LAB ?COMM
          | WHERE {
-         |   ?S restruc:replacingProperty ?RP ;
-         |     restruc:property ?P .
-         |   OPTIONAL {
-         |     ?S rdfs:label ?LAB ;
-         |        rdfs:comment ?COMM .
-         |   }
+         |   ?S restruc:property ?P .
+         |   OPTIONAL { ?S restruc:replacingProperty ?RP }
+         |   OPTIONAL { ?S rdfs:label ?LAB }
+         |   OPTIONAL { ?S rdfs:comment ?COMM }
          | }""".stripMargin
     val variables = Seq("P", "RP", "LAB", "COMM");
     val res = runSparqlSelectNodes(queryString, variables, graph)

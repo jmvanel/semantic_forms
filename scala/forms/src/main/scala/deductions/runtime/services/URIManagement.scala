@@ -9,15 +9,14 @@ import java.net.NetworkInterface
 import scala.collection.JavaConversions._
 import java.net.Inet4Address
 import deductions.runtime.utils.HTTPrequest
+import java.net.URI
 
 /**
  * Management of URI policy: how are URI created by the application
  *
  * * @author j.m. Vanel
  */
-trait URIManagement extends URIHelpers //extends Configuration
-//    with URIHelpers
-{
+trait URIManagement extends URIHelpers {
 
   val config: Configuration
   import config._
@@ -30,13 +29,31 @@ trait URIManagement extends URIHelpers //extends Configuration
    * make URI From String, if not already an absolute URI,
    *  by prepending instance URI Prefix and URL Encoding
    */
-  def makeURIFromString(objectStringFromUser: String): String = {
-    if (isAbsoluteURI(objectStringFromUser))
-      objectStringFromUser
+  def makeURIFromString(stringFromUser: String): String = {
+    if (isAbsoluteURI(stringFromUser))
+      stringFromUser
     else {
       instanceURIPrefix +
-        // urlencode takes care of other forbidden character in "candidate" URI
-        URLEncoder.encode(objectStringFromUser.replaceAll(" ", "_"), "UTF-8")
+        makeURIPartFromString(stringFromUser)
+    }
+  }
+
+  /** urlencode takes care of other forbidden character in "candidate" URI */
+  def makeURIPartFromString(stringFromUser: String): String = {
+		  URLEncoder.encode(stringFromUser.replaceAll(" ", "_"), "UTF-8")
+  }
+
+  /** make Absolute URI For Saving in user named graph:
+   *  prefix URI scheme mailto or user, if not already absolute */
+  def makeAbsoluteURIForSaving(userid: String): String = {
+    val uri = new URI(userid)
+    if (uri.isAbsolute())
+      userid
+    else {
+      (if (userid.contains("@"))
+        "mailto:"
+      else
+        "user:") + userid
     }
   }
 
