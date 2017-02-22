@@ -56,7 +56,7 @@ trait EnterButtons {
               { messageI18N("String_to_search") }
             </label>
             <div class="col-md-6">
-              <input class="form-control" type="text" name="q" placeholder={
+              <input class="form-control" type="text" id="q" name="q" placeholder={
                 messageI18N("Search_placeholder")
               } dropzone="copy"/>
               <input class="form-control" type="text" name="clas" placeholder={ messageI18N("Class_placeholder") }/>

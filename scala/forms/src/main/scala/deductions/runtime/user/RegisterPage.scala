@@ -57,7 +57,7 @@ trait RegisterPage[Rdf <: RDF, DATASET]
               Nouveau compte
             </a>
             - ou 
-        	-<a href="/searchid" title="Peut-être votre identité est déjà enregistrée ici?">
+        	-<a href="#" onclick="document.getElementById('q').focus();" title="Peut-être votre identité est déjà enregistrée ici?">
             Chercher mon identité sur ce site
           </a>
           </div>
