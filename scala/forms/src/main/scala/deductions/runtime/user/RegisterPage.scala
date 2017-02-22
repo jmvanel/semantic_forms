@@ -32,7 +32,7 @@ trait RegisterPage[Rdf <: RDF, DATASET]
       lang: String = "en"): NodeSeq = {
     <div class="userInfo"> {
       if (needLogin) {
-        if (userid != "") {
+        if (userid != "" && ! userid.startsWith("anonymous") ) {
           val userLabel = rdfStore.rw( dataset, {
             instanceLabel(URI(userid), allNamedGraph, lang)
             // TODO link to User profile

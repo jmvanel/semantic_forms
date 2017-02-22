@@ -72,26 +72,53 @@ trait ApplicationTrait extends Controller
 
   def displayURI(uri0: String, blanknode: String = "", Edit: String = "",
                  formuri: String = "") =
-    withUser {
-      implicit userid =>
-        implicit request =>
-          logger.info(s"""displayURI: $request IP ${request.remoteAddress}, host ${request.host}
+    if (needLoginForDisplaying || ( needLoginForEditing && Edit !="" ))
+      withUser {
+        implicit userid =>
+          implicit request =>
+            //          logger.info(
+            println(
+              s"""displayURI: $request IP ${request.remoteAddress}, host ${request.host}
             displayURI headers ${request.headers}
             displayURI tags ${request.tags}
+            displayURI cookies ${request.cookies.toList}
             userid <$userid>
             formuri <$formuri>
             displayURI: Edit "$Edit" """)
+            val lang = chooseLanguage(request)
+            val uri = expandOrUnchanged(uri0)
+            logger.info(s"displayURI: expandOrUnchanged $uri")
+            val title = labelForURITransaction(uri, lang)
+            val userInfo = displayUser(userid, uri, title, lang)
+            outputMainPage(
+              htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
+                graphURI = makeAbsoluteURIForSaving(userid),
+                request = getRequestCopy()),
+              lang, title = title, userInfo = userInfo)
+      }
+    else
+      Action { implicit request =>
+        {
           val lang = chooseLanguage(request)
           val uri = expandOrUnchanged(uri0)
           logger.info(s"displayURI: expandOrUnchanged $uri")
           val title = labelForURITransaction(uri, lang)
+//          val userid = request.cookies.get("PLAY_SESSION").getOrElse(default).value
+          // ,5bee33caf69545b483ef04aaa1caff8b13e0a4f4-username=")
+          val usernameFromSession = for( cookie <- request.cookies.get("PLAY_SESSION");
+          value = cookie.value ) yield { substringAfter(value, "username=")}
+          val userid = usernameFromSession.getOrElse("anonymous")
           val userInfo = displayUser(userid, uri, title, lang)
           outputMainPage(
             htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
               graphURI = makeAbsoluteURIForSaving(userid),
               request = getRequestCopy()),
-            lang, title = title, userInfo=userInfo)
-    }
+            lang, title = title, userInfo = userInfo)
+        }
+      }
+
+   def substringAfter(s:String,k:String) = { s.indexOf(k) match { case -1 => ""; case i => s.substring(i+k.length)  } }
+
 
   def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
 //        Action // 
