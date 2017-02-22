@@ -43,13 +43,18 @@ trait URIManagement extends URIHelpers {
 		  URLEncoder.encode(stringFromUser.replaceAll(" ", "_"), "UTF-8")
   }
 
-/** make Absolute URI For Saving in user named graph */
+  /** make Absolute URI For Saving in user named graph:
+   *  prefix URI scheme mailto or user, if not already absolute */
   def makeAbsoluteURIForSaving(userid: String): String = {
     val uri = new URI(userid)
     if (uri.isAbsolute())
       userid
-    else
-      "user:" + userid
+    else {
+      (if (userid.contains("@"))
+        "mailto:"
+      else
+        "user:") + userid
+    }
   }
 
   /** make a human readable String From given URI */
