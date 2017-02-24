@@ -22,7 +22,7 @@
     padding-bottom: 70px;
 }
 .sf-space-form{
-    padding-bottom: 10px;
+    /*margin-bottom: 10px;*/
 }
 .sf-suggestion-search {
     background-image: url(../images/ripple.gif);
