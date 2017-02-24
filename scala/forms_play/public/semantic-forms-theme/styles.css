@@ -88,11 +88,11 @@ section#page {
 
 footer {
   background: #f5f5f5;
-  color: #717171;
+  color: black;
   text-align: center;
   padding: 20px; }
   footer a {
-    color: rgba(0, 0, 0, 0.2);
+    color: #717171;
     font-weight: bold; }
 
 /*# sourceMappingURL=styles.css.map */
