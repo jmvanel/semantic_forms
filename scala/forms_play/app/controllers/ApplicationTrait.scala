@@ -103,12 +103,12 @@ trait ApplicationTrait extends Controller
           val uri = expandOrUnchanged(uri0)
           logger.info(s"displayURI: expandOrUnchanged $uri")
           val title = labelForURITransaction(uri, lang)
-//          val userid = request.cookies.get("PLAY_SESSION").getOrElse(default).value
-          // ,5bee33caf69545b483ef04aaa1caff8b13e0a4f4-username=")
+
           val usernameFromSession = for( cookie <- request.cookies.get("PLAY_SESSION");
           value = cookie.value ) yield { substringAfter(value, "username=")}
           val userid = usernameFromSession.getOrElse("anonymous")
           val userInfo = displayUser(userid, uri, title, lang)
+
           outputMainPage(
             htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
               graphURI = makeAbsoluteURIForSaving(userid),

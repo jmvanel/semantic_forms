@@ -105,7 +105,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
       sortAnd1rowPerElement:Boolean = false )
   (implicit queryMaker: SPARQLQueryMaker[Rdf] )
   : NodeSeq = {
-    val wrappingClass = ""
+    val wrappingClass = "row sf-triple-block"
     <div class={wrappingClass} >{
       val res = res0.toList
 //      println(s"displayResults:\n${res.mkString("\n")}")
@@ -116,7 +116,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
       val columnsFormResults = uriLabelCouples2 .
         map(uriLabelCouple => {
           val node = uriLabelCouple._1
-          <div class="sf-value-block">{
+          <div class="col col-sm-4 sf-value-block">{
           foldNode(node) ( node =>
           makeHyperlinkForURI(
               node, lang, graph,
