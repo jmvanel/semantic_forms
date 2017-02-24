@@ -175,7 +175,10 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
                 }
               </div> ++
               {
-                if (request.rawQueryString.contains("tabs=true")) {
+//                if (request.rawQueryString.contains("tabs=true")) {
+//                println(s">>>> queryString ${request.queryString}")
+                if (request.queryString.contains("tabs")) {
+//                	println(s">>>> makeFieldsGroups")
                   makeFieldsGroups()
                 } else
                   makeFieldsLabelAndData(form.fields)
