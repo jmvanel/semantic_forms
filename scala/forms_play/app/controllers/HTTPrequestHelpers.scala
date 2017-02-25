@@ -8,7 +8,8 @@ import deductions.runtime.utils.Cookie
 trait HTTPrequestHelpers {
   def copyRequest(request: Request[_]): HTTPrequest = {
     import request._
-    HTTPrequest(host, remoteAddress, rawQueryString,
+    HTTPrequest(host, remoteAddress,
+      rawQueryString, queryString,
       headers.toMap, cookies.toList.map { cookie => copyCookie(cookie) })
   }
 

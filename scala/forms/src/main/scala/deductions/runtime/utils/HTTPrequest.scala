@@ -22,6 +22,8 @@ case class HTTPrequest(
 
     rawQueryString: String = "",
 
+    queryString: Map[String, Seq[String]] = Map(),
+
     /** YET UNUSED */
     headers: Map[String, Seq[String]] = Map(),
     cookies: List[Cookie] = List()) {
