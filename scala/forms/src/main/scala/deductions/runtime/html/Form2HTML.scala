@@ -175,7 +175,10 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
                 }
               </div> ++
               {
-                if (request.rawQueryString.contains("tabs=true")) {
+//                if (request.rawQueryString.contains("tabs=true")) {
+//                println(s">>>> queryString ${request.queryString}")
+                if (request.queryString.contains("tabs")) {
+//                	println(s">>>> makeFieldsGroups")
                   makeFieldsGroups()
                 } else
                   makeFieldsLabelAndData(form.fields)
@@ -229,7 +232,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
 
     Seq(createAddRemoveWidgets(field, editable)) ++
     // Jeremy M recommended img-rounded from Bootstrap, but not effect
-    <div class="sf-value-block">{ xmlField } </div>
+    <div class="sf-value-block col col-sm-4">{ xmlField } </div>
   }
 
   /** make Field Data (display) Or Input (edit) */
