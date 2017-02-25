@@ -340,12 +340,16 @@ The features are listed here for convenience, but from now on, we manage feature
 - 31 write a small help page explaining the role of local database in relation with the external data downloaded
 - 32 TEST : Gatling stress scenario(s)
 - 40 popup an editor for editing large texts
+- 2.2 show statistics about the current document : # of triples, # of properties, # of URI's
+- 19 Add simple login : WIP, also done in https://github.com/jmvanel/corporate\_risk/
+- 19.1 record who did what : a solution is to use a named graph for each user  : done in https://github.com/jmvanel/corporate\_risk/
+- 20 Inferences for forms : eliminate archaic properties
+- 32 TEST : write Selenium scenario(s)
 
 ## Unimplemented features 
 The features are listed here for convenience, but from now on, we manage features on 
 [Github issues](https://github.com/jmvanel/semantic_forms/issues).
 
-- 2.2 show statistics about the current document : # of triples, # of properties, # of URI's
 - 2.3 when document pointed by URI entered by user has no triple with that URI as subject, show a list of URI's in the document like the search results
 - 7. use HTTP HEAD to distinguish RDF content types and others, and have different hyperlinks and styles for HTML, RDF, and image URL's - WIP
 - 7.1 have icons to distinguish content types, to display near hyperlinks for HTML, RDF, image, etc URL's
@@ -355,16 +359,12 @@ The features are listed here for convenience, but from now on, we manage feature
 - 16 Dashboard : # of triples, # of of resources; # of resources of each type - TODO
 - 17.1 add FlintSPARQLEditor, but this implies to launch SPARQL HTTP server like Fuseki, or BigData, or to use the SPARQL protocol in the semantic\_forms server
 - 18 Search : search also in URI strings - TODO
-- 19 Add simple login : WIP, done in https://github.com/jmvanel/corporate\_risk/
-- 19.1 record who did what : a solution is to use a named graph for each user  : done in https://github.com/jmvanel/corporate\_risk/
-- 20 Inferences for forms : eliminate archaic properties
 - 23 display the "reverse" triples ( called in-going links in BigData workbench ) : TODO , but there is a reverse links button on each triple
 - 26 (HTML) : add component to enter an ordered RDF list : use same mechanism as multiple values, but send a Turtle list in parentheses; by JavaScript : TODO
 - 28 for each URI, display a summary of the resource (rdfs:label, foaf:name, etc : this can use existing specifications of properties in form by class : [foaf.form.ttl](../forms/form_specs/foaf.form.ttl)
 - 29 have a kind of merge in case of diverging modifications in the local endpoint and the original URI : TODO
 - 30 (from Dario) : Separation of the attributes of a peer and the list of connected peers: on the left a list with the peer in question and all peers (connected) in its ecosystem and on the right a list of attributes the selected peer : TODO
 	* in the left list one should be able to click on a peer so that it becomes the selected peer and its ecosystem appears (and updating on the right with its attributes)
-- 32 TEST : write Selenium scenario(s) : TODO
 
 - 33 framework to orchestrate a series of questions to user when the data is not present in database : in https://github.com/jmvanel/corporate\_risk/ there are form groups and automatic navigation to  next form by SAVE button - TODO componentize this
 - 35 enforce mandatory properties ( by JavaScript )

@@ -39,21 +39,26 @@ trait URIManagement extends URIHelpers {
   }
 
   /** urlencode takes care of other forbidden character in "candidate" URI */
-  def makeURIPartFromString(stringFromUser: String): String = {
-		  URLEncoder.encode(stringFromUser.replaceAll(" ", "_"), "UTF-8")
-  }
+  def makeURIPartFromString(stringFromUser: String): String =
+    if (stringFromUser.contains("@"))
+      stringFromUser
+    else
+      URLEncoder.encode(stringFromUser.replaceAll(" ", "_"), "UTF-8")
 
-  /** make Absolute URI For Saving in user named graph:
-   *  prefix URI scheme mailto or user, if not already absolute */
+  /**
+   * make Absolute URI For Saving in user named graph:
+   *  add URI scheme mailto or user, if not already absolute
+   */
   def makeAbsoluteURIForSaving(userid: String): String = {
     val uri = new URI(userid)
     if (uri.isAbsolute())
       userid
     else {
       (if (userid.contains("@"))
-        "mailto:"
-      else
-        "user:") + userid
+         "mailto:"
+       else
+         "user:"
+      ) + userid
     }
   }
 
