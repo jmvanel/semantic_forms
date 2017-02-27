@@ -108,7 +108,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
         URI(formGroup), formuri )
 
         generateHTMLJustFields(form,
-          hrefPrefix, editable, graphURIActual)
+          hrefPrefix, editable, graphURIActual, request=HTTPrequest() )
     })
     htmlFormTry match {
       case Success(e) => e
@@ -123,7 +123,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
                                editable: Boolean = false,
                                formuri: String = ""): NodeSeq = {
     val formSyntax = createFormFromSPARQL(query, editable, formuri)
-    generateHTML(formSyntax)
+    generateHTML(formSyntax, request=HTTPrequest())
   }
 
 

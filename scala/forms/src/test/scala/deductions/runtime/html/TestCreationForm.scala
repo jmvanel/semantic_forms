@@ -53,9 +53,9 @@ class TestCreationForm extends {
 //    val config = conf
 //    val nullURI = ops.URI("")
 //  }
-	override val htmlGenerator =
-    Form2HTMLObject.makeDefaultForm2HTML(config)(ops)
 
+	override lazy val htmlGenerator =
+    Form2HTMLObject.makeDefaultForm2HTML(config)(ops)
     
   override val lookup_domain_unionOf = true
   val logger = Logger.getRootLogger()
