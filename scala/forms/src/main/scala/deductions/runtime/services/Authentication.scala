@@ -17,7 +17,8 @@ import javax.xml.bind.annotation.adapters.HexBinaryAdapter
  * @author jmv
  */
 trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
-    with RDFPrefixes[Rdf] {
+    with RDFPrefixes[Rdf]
+    with URIManagement {
 
   def passwordsGraph: Rdf#MGraph
 
@@ -108,6 +109,8 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
    */
   def signin(agentURI: String, password: String): Try[String] = {
     println1(s"""Authentication.signin: userId "$agentURI"""")
+
+    // TODO ? probably use makeAbsoluteURIForSaving(userUri) instead of userUri here and everywhere
     val userUri =  makeURIPartFromString(agentURI)
     val res = rdfStore.rw( dataset3, {
       val mGraph = passwordsGraph
@@ -116,7 +119,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
       userUri
     })
     val res2 = rdfStore.rw(dataset, {
-      val newTripleForUser = List(makeTriple(URI(userUri), rdf.typ, foaf.OnlineAccount))
+      val newTripleForUser = List(makeTriple(URI(makeAbsoluteURIForSaving(userUri)), rdf.typ, foaf.OnlineAccount))
       val newGraphForUser: Rdf#Graph = makeGraph(newTripleForUser)
       rdfStore.appendToGraph( dataset, URI(userUri), newGraphForUser)
       userUri

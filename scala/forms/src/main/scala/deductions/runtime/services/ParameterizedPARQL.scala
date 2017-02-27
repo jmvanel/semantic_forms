@@ -47,8 +47,13 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
   /**
    * Generic SPARQL SELECT with single result columns (must be named "thing"),
    * generate a column of HTML hyperlinks for given search string;
-   *  search and display results as an XHTML element
-   *  transactional
+   * search and display results as an XHTML element
+   * transactional
+   * @param hrefPrefix URL prefix for creating hyperlinks ((URI of each query result is concatenated)
+   *  
+   * TODO
+   * - displayResults should be a function argument
+   * - result2 is very similar!
    */
   def search(hrefPrefix: String, 
              lang: String,
@@ -76,6 +81,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    * search and display results as an XHTML element;
    * generate rows of HTML hyperlinks for given search string;
    * transactional
+   * @param hrefPrefix URL prefix for creating hyperlinks ((URI of each query result is concatenated)
    */
   def search2(search: String, hrefPrefix: String = "",
               lang: String = "")(implicit queryMaker: SPARQLQueryMaker[Rdf] ): Elem
@@ -97,7 +103,10 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
 
   /**
    * generate a row of HTML hyperlinks for given list of RDF Node;
-   *  non TRANSACTIONAL */
+   * non TRANSACTIONAL
+   * TODO
+   * - be able to add HTML at the end of the row, or even in-between
+   *   (for issues "Named graph view" : https://github.com/jmvanel/semantic_forms/issues/136 , etc) */
   private def displayResults(res0: Iterable[Rdf#Node],
       hrefPrefix: String = hrefDisplayPrefix,
       lang: String = "",
@@ -108,7 +117,6 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     val wrappingClass = "row sf-triple-block"
     <div class={wrappingClass} >{
       val res = res0.toList
-//      println(s"displayResults:\n${res.mkString("\n")}")
       val uriLabelCouples = res.map(uri => (uri, instanceLabel(uri, graph, lang)))
       val uriLabelCouples2 = if( sortAnd1rowPerElement )
         uriLabelCouples. sortBy(c => c._2)
@@ -116,18 +124,20 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
       val columnsFormResults = uriLabelCouples2 .
         map(uriLabelCouple => {
           val node = uriLabelCouple._1
+          val label = uriLabelCouple._2
           <div class="col col-sm-4 sf-value-block">{
-          foldNode(node) ( node =>
-          makeHyperlinkForURI(
+          foldNode(node) (
+          node =>
+            makeHyperlinkForURI(
               node, lang, graph,
               hrefPrefix = hrefPrefix,
-              label = uriLabelCouple._2,
+              label = label,
               sortAnd1rowPerElement = sortAnd1rowPerElement ),
-              node =>
-          makeHyperlinkForURI(
+          node =>
+            makeHyperlinkForURI(
               node, lang, graph,
               hrefPrefix = hrefPrefix,
-              label = uriLabelCouple._2,
+              label = label,
               sortAnd1rowPerElement = sortAnd1rowPerElement ),
           lit => <div>{ lit.toString() }</div>
           )
