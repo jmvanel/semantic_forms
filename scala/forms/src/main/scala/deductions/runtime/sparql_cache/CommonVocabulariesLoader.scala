@@ -85,7 +85,7 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
       /* geo: , con: */
       URI("http://www.w3.org/2003/01/geo/wgs84_pos#") ::
       URI("http://www.w3.org/2000/10/swap/pim/contact#") ::
-      URI(githubcontent + "/assemblee-virtuelle/pair/master/PAIR_1.0.owl.ttl" ) ::
+      // URI(githubcontent + "/assemblee-virtuelle/pair/master/PAIR_1.0.owl.ttl" ) ::
       URI("http://purl.org/ontology/cco/cognitivecharacteristics.n3") ::
       prefixesMap("skos") ::
       prefixesMap("vcard") ::

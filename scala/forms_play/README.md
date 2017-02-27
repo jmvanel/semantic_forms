@@ -32,11 +32,14 @@ Some people speak of "triple store", or "graph database", or "triple database", 
 ```shell
 wget https://dl.bintray.com/sbt/native-packages/sbt/0.13.13/sbt-0.13.13.tgz
 tar xvzf sbt-0.13.13.tgz
+# or use Linux package manager if you prefer:
+sudo apt-get install sbt
 ```
+
 Then SBT will download the rest.
 - download the source from [Banana-RDf fork on github](https://github.com/deductions/banana-rdf) (temporary, until my Pull Request in Banana-RDF is accepted)
   - build this project with SBT : change directory to `banana-rdf` ; type in the SBT console :
-    ```
+```
        ++2.11.8
        publishLocal
 ```
