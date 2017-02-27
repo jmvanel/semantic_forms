@@ -110,18 +110,26 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
   def signin(agentURI: String, password: String): Try[String] = {
     println1(s"""Authentication.signin: userId "$agentURI"""")
 
-    // TODO ? probably use makeAbsoluteURIForSaving(userUri) instead of userUri here and everywhere
+    // TODO ? probably use absoluteURIForSaving instead of userUri everywhere
     val userUri =  makeURIPartFromString(agentURI)
+    val absoluteURIForSaving = URI(makeAbsoluteURIForSaving(userUri))
+
+    /* NOTE: here we are putting password triple in named graph <userUri>,
+     * which is generally a NON absolute URI;
+     * but the passwords graph and database is probably only accessed by API (never by SPARQL),
+     * so this is not a problem */
     val res = rdfStore.rw( dataset3, {
       val mGraph = passwordsGraph
       mGraph += makeTriple(URI(userUri), passwordPred,
         makeLiteral(hashPassword(password), xsd.string))
       userUri
     })
+
+    // annotate the user graph URI as a foaf:OnlineAccount
     val res2 = rdfStore.rw(dataset, {
-      val newTripleForUser = List(makeTriple(URI(makeAbsoluteURIForSaving(userUri)), rdf.typ, foaf.OnlineAccount))
+      val newTripleForUser = List(makeTriple(absoluteURIForSaving, rdf.typ, foaf.OnlineAccount))
       val newGraphForUser: Rdf#Graph = makeGraph(newTripleForUser)
-      rdfStore.appendToGraph( dataset, URI(userUri), newGraphForUser)
+      rdfStore.appendToGraph( dataset, absoluteURIForSaving, newGraphForUser)
       userUri
     })
     res
