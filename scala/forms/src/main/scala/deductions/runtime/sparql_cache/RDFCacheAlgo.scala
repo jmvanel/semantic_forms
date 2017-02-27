@@ -46,7 +46,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   import ops._
   import rdfStore.transactorSyntax._
 
-  lazy val xsretrieveURINoTransactiond = XSDPrefix[Rdf]
+  lazy val xsd = XSDPrefix[Rdf]
   lazy val owl = OWLPrefix[Rdf]
 
   /** with transaction */
@@ -278,34 +278,21 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
             case Success(s) => s
             case Failure(f) => {
 
-              logger.info("readStoreURINoTransaction: START MESSAGE")
-              logger.info(f.getMessage)
-              logger.info(s""" uri.toString.contains("/ldp/") ${uri.toString.contains("/ldp/")} """)
-              logger.info("END MESSAGE")
+              logger.error("readStoreURINoTransaction: START MESSAGE")
+              logger.error(f.getMessage)
+              logger.error(s""" uri.toString.contains("/ldp/") ${uri.toString.contains("/ldp/")} """)
+              logger.error("END MESSAGE")
 
               // catch only "pure" HTML web page: TODO make a function isPureHTMLwebPage(uri: URI, request: Request): Boolean
               if (f.getMessage.contains("Failed to determine the content type:")) {
-
-                /* test if it's a locally managed URL;
-                 * TODO move the test towards root in call stack, and put this triple in user graph;
-                 * indeed the test is independent of the exception */
-                if (!fromUri(uri).startsWith(request.absoluteURL(""))) {
-                  // then it's really a "pure" HTML web page (and not a locally managed URL and data)
-                  logger.info(s"<$uri> is a pure HTML web page (no RDFa or microformats");
-                  { // TODO reactivate <<<<
-                    val newTripleWithURL = List(makeTriple(uri, rdf.typ, foaf.Document))
-                    val newGraphWithUrl: Rdf#Graph = makeGraph(newTripleWithURL)
-                    newGraphWithUrl
-                  }
-                  emptyGraph
-                } else // it's a locally managed URL and data, no need to download anything
-                  // used by formatHTMLStatistics():
-                  makeGraph( find( allNamedGraph, uri, ANY, ANY) .toIterable )
-              } else throw f
+                logger.info(s"<$uri> is a pure HTML web page (no RDFa or microformats");
+                val tryGraph = getLocallyManagedUrlAndData(uri, request)
+                tryGraph . get
+              } else
+                throw f
             }
-            }
-              
           }
+      }
       
       logger.info(s"readStoreURINoTransaction: graph $graph")
 
@@ -321,5 +308,18 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     }
   }
 
+  /** test if it's a locally managed URL */
+  private def getLocallyManagedUrlAndData(uri: Rdf#URI, request: HTTPrequest) =
+    if (!fromUri(uri).startsWith(request.absoluteURL(""))) {
+      // then it's really a "pure" HTML web page (and not a locally managed URL and data)
+      { // TODO reactivate <<<<
+        val newTripleWithURL = List(makeTriple(uri, rdf.typ, foaf.Document))
+        val newGraphWithUrl: Rdf#Graph = makeGraph(newTripleWithURL)
+        newGraphWithUrl
+      }
+      None
+    } else // it's a locally managed user URL and data, no need to download anything
+      // used by formatHTMLStatistics():
+      Some(makeGraph(find(allNamedGraph, uri, ANY, ANY).toIterable))
 }
 
