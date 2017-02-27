@@ -41,7 +41,7 @@ with FormSyntaxJson[Rdf] {
           form, hrefPrefix = "",
           editable = true,
           actionURI = actionURI,
-          lang=lang, graphURI=graphURI)
+          lang=lang, graphURI=graphURI, request=request)
 
           Seq( makeEditingHeader(fromUri(uriNodeToURI(form.classs)), lang, formSpecURI, graphURI),
               rawForm ) . flatten

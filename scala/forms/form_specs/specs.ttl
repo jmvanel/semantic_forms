@@ -14,7 +14,7 @@
 
 foaf: form:ontologyHasFormSpecification <foaf.form.ttl> .
 owl:  form:ontologyHasFormSpecification <owl.form.ttl> .
-av:   form:ontologyHasFormSpecification <https://raw.githubusercontent.com/assemblee-virtuelle/pair/master/form.ttl> .
+# av:   form:ontologyHasFormSpecification <https://raw.githubusercontent.com/assemblee-virtuelle/pair/master/form.ttl> .
 cob:  form:ontologyHasFormSpecification <cob.form.ttl> .
 sioc: form:ontologyHasFormSpecification <sioc.form.ttl> .
 bioc: form:ontologyHasFormSpecification <https://deductions.github.io/biological-collections.form.ttl> .

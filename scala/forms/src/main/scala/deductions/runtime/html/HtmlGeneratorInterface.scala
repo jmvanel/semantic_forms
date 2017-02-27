@@ -19,12 +19,16 @@ trait HtmlGeneratorInterface[NODE, URI <: NODE] {
                    editable: Boolean = false,
                    actionURI: String = "/save", graphURI: String = "",
                    actionURI2: String = "/save", lang: String = "en",
-                   request: HTTPrequest = HTTPrequest()): NodeSeq
+                   request: HTTPrequest
+                   //= HTTPrequest()
+                   ): NodeSeq
 
   /** generate HTML form given Form Syntax, without a form header, just fields */
   def generateHTMLJustFields(form: FormModule[NODE, URI]#FormSyntax,
                              hrefPrefix: String = "",
                              editable: Boolean = false,
                              graphURI: String = "", lang: String = "en",
-                             request: HTTPrequest = HTTPrequest()): NodeSeq
+                             request: HTTPrequest
+                             //= HTTPrequest()
+                             ): NodeSeq
 }
