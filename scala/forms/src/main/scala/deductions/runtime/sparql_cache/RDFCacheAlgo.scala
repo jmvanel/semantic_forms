@@ -84,48 +84,55 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    *  @return the more recent RDF data if any, or the old data
    */
   def retrieveURINoTransaction(uri: Rdf#URI, dataset: DATASET,
-      request:HTTPrequest = HTTPrequest()
-  ): Try[Rdf#Graph] = {
-    for (graph <- rdfStore.getGraph(dataset, uri)) yield {
-      val nothingStoredLocally = graph.size == 0
-      println(s"""retrieveURINoTransaction: stored Graph Is Empty: $nothingStoredLocally for URI <$uri>""")
+                               request: HTTPrequest = HTTPrequest()): Try[Rdf#Graph] = {
 
-      if (nothingStoredLocally) { // then read unconditionally from URI and store in TDB
+    val tryGraphLocallyManagedData = getLocallyManagedUrlAndData(uri, request)
 
-        val mirrorURI = getMirrorURI(uri)
-        if (mirrorURI == "") {
-          try {
-            val g = readStoreURINoTransaction(uri, uri, dataset, request)
-            if (g.size > 0) {
-              println(s"""Graph at URI <$uri>, size ${g.size}
+    tryGraphLocallyManagedData match {
+      case Some(tgr) => Success(tgr)
+
+      case None =>
+        for (graph <- rdfStore.getGraph(dataset, uri)) yield {
+          val nothingStoredLocally = graph.size == 0
+          println(s"""retrieveURINoTransaction: stored Graph Is Empty: $nothingStoredLocally for URI <$uri>""")
+
+          if (nothingStoredLocally) { // then read unconditionally from URI and store in TDB
+
+            val mirrorURI = getMirrorURI(uri)
+            if (mirrorURI == "") {
+              try {
+                val g = readStoreURINoTransaction(uri, uri, dataset, request)
+                if (g.size > 0) {
+                  println(s"""Graph at URI <$uri>, size ${g.size}
               Either new addition was downloaded, or locally managed data""")
-              addTimestampToDataset(uri, dataset2)
-            } else
-              println(s"Download Graph at URI <$uri> was tried, but it's empty.")
-            g
-          } catch {
-            case t: Exception =>
-              println(s"Graph at URI <$uri> could not be downloaded, trying local TDB (exception ${t.getLocalizedMessage}, ${t.getClass} cause ${t.getCause}).")
-              val tryGraph = search_only(fromUri(uri))
-              tryGraph match {
-                case Success(g) if( g.size > 1 ) => g  // 1 because there is always urn:displayLabel
-                case Success(_) => throw t
-                case Failure(err) => throw err
+                  addTimestampToDataset(uri, dataset2)
+                } else
+                  println(s"Download Graph at URI <$uri> was tried, but it's empty.")
+                g
+              } catch {
+                case t: Exception =>
+                  println(s"Graph at URI <$uri> could not be downloaded, trying local TDB (exception ${t.getLocalizedMessage}, ${t.getClass} cause ${t.getCause}).")
+                  val tryGraph = search_only(fromUri(uri))
+                  tryGraph match {
+                    case Success(g) if (g.size > 1) => g // 1 because there is always urn:displayLabel
+                    case Success(_)                 => throw t
+                    case Failure(err)               => throw err
+                  }
+
+                case t: Throwable =>
+                  // for Java-RDFa release 0.4.2 :
+                  println(s"Graph at URI <$uri> could not be downloaded, exception: $t"); emptyGraph
               }
+            } else {
+              println(s"mirrorURI found: $mirrorURI")
+              // TODO find in Mirror URI the relevant triples ( but currently AFAIK the graph returned by this function is not used )
+              emptyGraph
+            }
 
-            case t: Throwable =>
-              // for Java-RDFa release 0.4.2 :
-              println(s"Graph at URI <$uri> could not be downloaded, exception: $t") ; emptyGraph
+          } else { // get a chance for more recent RDF data
+            updateLocalVersion(uri, dataset).getOrElse(graph)
           }
-        } else {
-          println(s"mirrorURI found: $mirrorURI")
-          // TODO find in Mirror URI the relevant triples ( but currently AFAIK the graph returned by this function is not used )
-          emptyGraph
         }
-
-      } else { // get a chance for more recent RDF data
-        updateLocalVersion(uri, dataset) . getOrElse(graph)
-      }
     }
   }
 
@@ -283,12 +290,12 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
               logger.error(s""" uri.toString.contains("/ldp/") ${uri.toString.contains("/ldp/")} """)
               logger.error("END MESSAGE")
 
-              // catch only "pure" HTML web page: TODO make a function isPureHTMLwebPage(uri: URI, request: Request): Boolean
-              if (f.getMessage.contains("Failed to determine the content type:")) {
-                logger.info(s"<$uri> is a pure HTML web page (no RDFa or microformats");
-                val tryGraph = getLocallyManagedUrlAndData(uri, request)
-                tryGraph . get
-              } else
+              // catch only "pure" HTML web page: TODO? make a function isPureHTMLwebPage(uri: URI, request: Request): Boolean
+//              if (f.getMessage.contains("Failed to determine the content type:")) {
+//                logger.info(s"<$uri> is a pure HTML web page (no RDFa or microformats");
+//                val tryGraph = getLocallyManagedUrlAndData(uri, request)
+//                tryGraph . get
+//              } else
                 throw f
             }
           }
@@ -309,7 +316,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   }
 
   /** test if it's a locally managed URL */
-  private def getLocallyManagedUrlAndData(uri: Rdf#URI, request: HTTPrequest) =
+  private def getLocallyManagedUrlAndData(uri: Rdf#URI, request: HTTPrequest): Option[Rdf#Graph] =
     if (!fromUri(uri).startsWith(request.absoluteURL(""))) {
       // then it's really a "pure" HTML web page (and not a locally managed URL and data)
       { // TODO reactivate <<<<
