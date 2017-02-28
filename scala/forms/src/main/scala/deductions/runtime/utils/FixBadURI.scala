@@ -4,18 +4,16 @@ import scala.collection.JavaConversions.asScalaIterator
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
 
-//import com.hp.hpl.jena.util.FileManager
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.riot.RDFDataMgr
 import org.apache.jena.util.FileManager
 import org.w3.banana.RDF
-//import org.w3.banana.jena.Jena
-//import org.w3.banana.jena.JenaModule
+
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.services.DefaultConfiguration
 
 
 /**
@@ -39,16 +37,17 @@ object FixBadURIApp extends  {
 } with ImplementationSettings.RDFModule
     with FixBadURI[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RDFStoreLocalJena1Provider
-    //    with JenaHelpers 
+    with URIHelpers
     with App {
 
   import config._
   
-  fix
   def listGraphNames() = dataset.listNames()
+  fix
 }
 
-trait FixBadURI[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
+trait FixBadURI[Rdf <: RDF, DATASET]
+		extends RDFCacheAlgo[Rdf, DATASET]
     with RDFStoreLocalProvider[Rdf, DATASET] {
 
   val fileNameOrUri = "dump.nq";
@@ -58,25 +57,29 @@ trait FixBadURI[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
   private var corrections = 0
 
   import ops._
-  import rdfStore.transactorSyntax._
 
   def fix() = {
     val names =
-      rdfStore.r( dataset, {
-        listGraphNames
-      }).get.toIterable
-    System.err.println("names size " + names.size)
+      wrapInReadTransaction {
+        listGraphNames.toIterable.toSeq
+      }.get
+    // println("Graph names size " + names.size) // CAUTION: Exception here because of Blank node for graph name !?! 
 
+    println(s"maxMemory ${Runtime.getRuntime.maxMemory()} bytes")
+    
     for (uri <- names) {
-      System.err.println("Graph name " + uri)
+      println(s"Graph name <$uri>")
       val graphURI = URI(uri)
-      if (fixURI(graphURI) == graphURI) {
-        fixGraph(graphURI)
-      } else {
-        System.err.println("  Bad graph URI: " + graphURI)
-        fixGraph(graphURI, fixURI(graphURI))
-        rdfStore.removeGraph( dataset, graphURI)
+      wrapInTransaction {
+        if (fixURI(graphURI) == graphURI) {
+          fixGraph(graphURI)
+        } else {
+          System.err.println(s"  Bad graph URI: <$graphURI>")
+          fixGraph(graphURI, fixURI(graphURI))
+          rdfStore.removeGraph(dataset, graphURI)
+        }
       }
+      println(s"\ttotalMemory, freeMemory ${(Runtime.getRuntime.totalMemory(),Runtime.getRuntime.freeMemory() )} bytes")
     }
     System.err.println("" + corrections + " corrections")
   }
@@ -86,37 +89,61 @@ trait FixBadURI[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
   }
 
   def fixGraph(graphURI: Rdf#URI, newGraphURI: Rdf#URI) {
-      rdfStore.rw( dataset, {
-      val gr = rdfStore.getGraph( dataset, graphURI).get
+//    rdfStore.rw(dataset, {
+      val gr = rdfStore.getGraph(dataset, graphURI).get
       val trs = gr.triples
       for (tr <- trs) {
         val newTriple = fixTriple(tr)
         // System.err.println(tr)
         // System.err.println( "NEW " + newTriple)
-        if (newTriple != tr) {
-          System.err.println(newTriple)
-          triplesToRemove += tr
-          triples += newTriple
-          corrections = corrections + 1
+        //        if (newTriple != tr ) {
+        newTriple match {
+          case Some(newTriple) =>
+            if (compareTriples(tr, newTriple)) {
+              triples += newTriple
+            } else {
+            	System.err.println(s"$tr => newTriple $newTriple")
+            	triplesToRemove += tr
+            	corrections = corrections + 1
+            }
+          case None =>
+            System.err.println(s"$tr => Triple eliminated")
         }
       }
       try {
-        rdfStore.removeTriples( dataset, newGraphURI, triplesToRemove.toIterable)
+        rdfStore.removeTriples(dataset, newGraphURI, triplesToRemove.toIterable)
       } catch {
         case t: Throwable =>
           System.err.println("Could not remove Triples from " + s"<$newGraphURI>")
       }
-      rdfStore.appendToGraph( dataset, newGraphURI, makeGraph(triples))
-    })
-
+      rdfStore.appendToGraph(dataset, newGraphURI, makeGraph(triples))
+//    })
   }
-  def fixTriple(tr: Rdf#Triple): Rdf#Triple = {
+  
+  /** fix Triple: remove spaces;
+   *  if not Absolute URI return None */
+  def fixTriple(tr: Rdf#Triple): Option[Rdf#Triple] = {
     val subject = tr.subject
     val predicate = tr.predicate
     val objet = tr.objectt
-    val newSubject = fixNode(subject)
-    val newObject = fixNode(objet)
-    Triple(newSubject, predicate, newObject)
+    val objectFixed = fixNode(objet)
+    if( objectFixed != objet )
+      System.err.println(s"""objectFixed $objectFixed
+          in triple $tr""")
+    tr match {
+      case tr if isAbsoluteURI(subject) =>
+      val newSubject = fixNode(subject)
+      val newObject = fixNode(objet)
+      Some(Triple(newSubject, predicate, newObject))
+
+      case tr if subject.isBNode =>
+      Some(Triple(subject, predicate, fixNode(objet) ))
+
+      case _ =>
+      System.err.println(s"subject is NOT Absolute URI nor BN ($subject) !!!")
+      None
+    } 
+
   }
 
   def fixNode(n: Rdf#Node) = {
@@ -132,7 +159,7 @@ trait FixBadURI[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
 
   //// unused below
 
-  def readJena2() = {
+  private def readJena2() = {
     val ds = RDFDataMgr.loadDataset(fileNameOrUri)
     println("Dataset " + ds)
     val names = ds.listNames()
@@ -151,7 +178,7 @@ trait FixBadURI[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
     }
   }
 
-  def readJena = {
+  private def readJena = {
     val model = ModelFactory.createDefaultModel();
     val is = FileManager.get().open(fileNameOrUri);
     if (is != null) {
@@ -162,7 +189,7 @@ trait FixBadURI[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
     }
   }
 
-  def badAlgo() = {
+  private def badAlgo() = {
     var corrections = 0
     for (line <- Source.fromFile("dump.nq").getLines()) {
       val parts = line.split(" +")

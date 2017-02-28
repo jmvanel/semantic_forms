@@ -17,8 +17,8 @@ javacOptions ++= Seq("-source","1.7", "-target","1.7")
         sources in (Compile,doc) := Seq.empty
 
 fork in run := true
-javaOptions in run ++= Seq(
-    "-Xms256M", "-Xmx2G", "-XX:MaxPermSize=1024M", "-XX:+UseConcMarkSweepGC")
+// CAUTION here: this is for run and runMain; what is given with sbt -J-Xmx12G is *not* in effect for run! 
+javaOptions in run ++= Seq( "-Xms256M", "-Xmx8G", "-XX:MaxPermSize=1024M", "-XX:+UseConcMarkSweepGC")
 
 connectInput in run := true
 

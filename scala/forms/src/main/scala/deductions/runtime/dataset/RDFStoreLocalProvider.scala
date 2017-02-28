@@ -78,7 +78,7 @@ extends RDFOPerationsDB[Rdf, DATASET] {
   import scala.collection.JavaConverters._
 
   /** TODO move this to Banana */
-  def listGraphs(ds: DATASET = dataset): Seq[String] = {
+  def listGraphNames(ds: DATASET = dataset): Seq[String] = {
     ds match {
       case ds: org.apache.jena.query.Dataset =>
         ds.listNames() . asScala . toSeq

@@ -23,7 +23,7 @@ trait BadNamedGraphCleaner[Rdf <: RDF, DATASET]
   /** */
   def cleanBadNamedGraphs() = {
     for (
-      badGraphName <- listGraphs() if (!isCorrectURI(badGraphName))
+      badGraphName <- listGraphNames() if (!isCorrectURI(badGraphName))
     //        graphToRecreate <- rdfStore.getGraph( dataset, URI(badGraphName) )
     ) {
       println(s"badGraphName <$badGraphName>")
