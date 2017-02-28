@@ -318,8 +318,9 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   /** test if it's a locally managed URL */
   private def getLocallyManagedUrlAndData(uri: Rdf#URI, request: HTTPrequest): Option[Rdf#Graph] =
     if (!fromUri(uri).startsWith(request.absoluteURL(""))) {
-      // then it's really a "pure" HTML web page (and not a locally managed URL and data)
-      { // TODO reactivate <<<<
+      // then it can be a "pure" HTML web page, or an RDF document
+      
+      { // TODO reactivate but not here <<<<
         val newTripleWithURL = List(makeTriple(uri, rdf.typ, foaf.Document))
         val newGraphWithUrl: Rdf#Graph = makeGraph(newTripleWithURL)
         newGraphWithUrl

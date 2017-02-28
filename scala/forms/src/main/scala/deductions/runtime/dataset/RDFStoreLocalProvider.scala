@@ -30,6 +30,8 @@ trait RDFOPerationsDB[Rdf <: RDF, DATASET] {
 trait RDFStoreLocalProvider[Rdf <: RDF, DATASET]
 extends RDFOPerationsDB[Rdf, DATASET] {
 
+  import ops._
+
 //  CURRENTLY unused, but could be:  val config: Configuration
 
   /** relative or absolute file path for the database 
@@ -72,6 +74,17 @@ extends RDFOPerationsDB[Rdf, DATASET] {
       createDatabase(database, useTextQuery)
   }
 
+
+  import scala.collection.JavaConverters._
+
+  /** TODO move this to Banana */
+  def listGraphNames(ds: DATASET = dataset): Seq[String] = {
+    ds match {
+      case ds: org.apache.jena.query.Dataset =>
+        ds.listNames() . asScala . toSeq
+      case _ => Seq()
+    }
+  }
 }
 
 trait RDFStoreLocalUserManagement[Rdf <: RDF, DATASET]

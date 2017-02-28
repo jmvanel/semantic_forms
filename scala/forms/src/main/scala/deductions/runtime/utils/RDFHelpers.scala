@@ -30,8 +30,8 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
         list match {
           case rdf.nil => result
           case _ =>
-            val first = ops.getObjects(graph, list, rdf.first)
-            val rest = ops.getObjects(graph, list, rdf.rest)
+            val first = getObjects(graph, list, rdf.first)
+            val rest = getObjects(graph, list, rdf.rest)
             result ++ first ++ rdfListToSeq(rest.headOption, result)
         }
     }
@@ -124,10 +124,8 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
 
 
 trait RDFHelpers0[Rdf <: RDF]
-extends
-//Configuration
-//      with 
-      URIManagement {
+extends URIManagement {
+
   implicit val ops: RDFOps[Rdf]
   import ops._
   
@@ -162,17 +160,23 @@ extends
   private def extractURIs(nodes: Set[Rdf#Node]): Set[Rdf#URI] = {
     nodes.map {
       node =>
-        ops.foldNode(node)(
+        foldNode(node)(
           identity, identity, x => None)
     }
       .filter(_ != None)
       .map { node => node.asInstanceOf[Rdf#URI] }
   }
 
-  def isURI(node: Rdf#Node) = ops.foldNode(node)(identity, x => None, x => None) != None
+  def isURI(node: Rdf#Node) = foldNode(node)(identity, x => None, x => None) != None
   def isBN(node: Rdf#Node) = foldNode(node)(x => None, identity, x => None) != None
   def toBN(node: Rdf#Node): Rdf#BNode = foldNode(node)(x => BNode(""), identity, x => BNode(""))
-
+  def isCorrectURI(node: Rdf#Node): Boolean =
+    foldNode(node)(uri =>
+      isCorrectURI(fromUri(uri)), x => None, x => None) != None
+  def isAbsoluteURI(node: Rdf#Node): Boolean =
+    foldNode(node)(uri =>
+      isAbsoluteURI(fromUri(uri)), x => None, x => None) != None
+      
   /** use case : when we know that the node is a literal */
   def literalNodeToString(node: Rdf#Node): String =
     foldNode(node)(
@@ -190,6 +194,11 @@ extends
       bn => fromBNode(bn),
       literal => fromLiteral(literal)._1)
  
+  def compareTriples( tr1: Rdf#Triple,tr2: Rdf#Triple ): Boolean =
+    tr1.subject == tr2.subject &&
+    tr1.objectt == tr2.objectt &&
+    tr1.predicate == tr2.predicate
+    
   def isDownloadableURI(uri: Rdf#URI) = {
     val u = fromUri(uri)
     (
@@ -205,15 +214,15 @@ extends
   }
   
   def getStringOrElse(n: Rdf#Node, default: String =""): String = {
-    ops.foldNode(n)(_ => default, _ => default, l => {
-      val v = ops.fromLiteral(l)
+    foldNode(n)(_ => default, _ => default, l => {
+      val v = fromLiteral(l)
       v._1
     })
   }
 
   def getLiteralNodeOrElse(n: Rdf#Node, default: String): Rdf#Node = {
-    val d = ops.Literal(default)
-    ops.foldNode(n)(_ => d, _ => d, l => l)
+    val d = Literal(default)
+    foldNode(n)(_ => d, _ => d, l => l)
   }
 
   /**
@@ -257,10 +266,10 @@ extends
     }
     
   def printGraph(graph: Rdf#Graph) {
-    val iterable = ops.getTriples(graph)
+    val iterable = getTriples(graph)
     for (t <- iterable) {
       println(t)
-      val (subj, pred, obj) = ops.fromTriple(t)
+      val (subj, pred, obj) = fromTriple(t)
     }
   }
 

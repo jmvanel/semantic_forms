@@ -13,6 +13,15 @@ trait URIHelpers {
     }
   }
 
+  def isCorrectURI(uri: String): Boolean = {
+    try {
+      val u = new java.net.URI(uri)
+      true
+    } catch {
+      case t: Throwable => false
+    }
+  }
+
   /** like the Banana function */
   def lastSegment(uri: String): String = {
     try {

@@ -5,7 +5,9 @@ import java.security.MessageDigest
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
+
 import org.w3.banana.RDF
+
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.RDFPrefixes
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter
@@ -17,7 +19,8 @@ import javax.xml.bind.annotation.adapters.HexBinaryAdapter
  * @author jmv
  */
 trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
-    with RDFPrefixes[Rdf] {
+    with RDFPrefixes[Rdf]
+    with URIManagement {
 
   def passwordsGraph: Rdf#MGraph
 
@@ -101,6 +104,16 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
     }
   }
 
+  def listUsers(): List[Rdf#Node] = {
+    val pwds = rdfStore.r(dataset3, {
+      println1(s"""listUsers: find( makeIGraph(
+        $passwordsGraph) , passwordPred, ANY)""")
+      find(makeIGraph(passwordsGraph), ANY, passwordPred, ANY)
+    }).get
+
+    pwds.map { tr => tr.subject }.toList
+  }
+
   /**
    * record password in database; @return user Id if success
    * store hash , not password
@@ -108,23 +121,33 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
    */
   def signin(agentURI: String, password: String): Try[String] = {
     println1(s"""Authentication.signin: userId "$agentURI"""")
+
+    // TODO ? probably use absoluteURIForSaving instead of userUri everywhere
     val userUri =  makeURIPartFromString(agentURI)
+    val absoluteURIForSaving = URI(makeAbsoluteURIForSaving(userUri))
+
+    /* NOTE: here we are putting password triple in named graph <userUri>,
+     * which is generally a NON absolute URI;
+     * but the passwords graph and database is probably only accessed by API (never by SPARQL),
+     * so this is not a problem */
     val res = rdfStore.rw( dataset3, {
       val mGraph = passwordsGraph
       mGraph += makeTriple(URI(userUri), passwordPred,
         makeLiteral(hashPassword(password), xsd.string))
       userUri
     })
+
+    // annotate the user graph URI as a foaf:OnlineAccount
     val res2 = rdfStore.rw(dataset, {
-      val newTripleForUser = List(makeTriple(URI(userUri), rdf.typ, foaf.OnlineAccount))
+      val newTripleForUser = List(makeTriple(absoluteURIForSaving, rdf.typ, foaf.OnlineAccount))
       val newGraphForUser: Rdf#Graph = makeGraph(newTripleForUser)
-      rdfStore.appendToGraph( dataset, URI(userUri), newGraphForUser)
+      rdfStore.appendToGraph( dataset, absoluteURIForSaving, newGraphForUser)
       userUri
     })
     res
   }
 
-  def signinOLD(agentURI: String, password: String): Try[String] = {
+  private def signinOLD(agentURI: String, password: String): Try[String] = {
     println1("Authentication.signin: userId " + agentURI)
     val res = rdfStore.rw( dataset3, {
       val mGraph = passwordsGraph
