@@ -21,7 +21,8 @@ trait UserDataRecovery[Rdf <: RDF, DATASET]
 
   import ops._
 
-  /** */
+  /** user that were in a non absolute URI graph like JohnDoe
+   * are moved to user:JohnDoe  */
   def recoverUserData = {
     val users = listUsers()
     println(s"recoverUserData: users count ${users.size}")

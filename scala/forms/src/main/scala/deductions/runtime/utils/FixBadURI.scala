@@ -43,7 +43,10 @@ object FixBadURIApp extends  {
   import config._
   
   def listGraphNames() = dataset.listNames()
-  fix
+  if( args.size == 0 )
+    fix
+  else
+    fixGraph( ops.URI(args(0)) )
 }
 
 trait FixBadURI[Rdf <: RDF, DATASET]
