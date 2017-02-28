@@ -16,7 +16,9 @@ sed -e "s/=timestamp=/$DATE/" $MainXml > /tmp/MainXml.scala
 cp $MainXml /tmp/MainXml.orig.scala 
 cp /tmp/MainXml.scala $MainXml
 
-$SBT dist
+$SBT -J-Xmx2G dist
+echo $SBT RETURN CODE $?
+
 cp /tmp/MainXml.orig.scala $MainXml
 echo "sofware recompiled!"
 
