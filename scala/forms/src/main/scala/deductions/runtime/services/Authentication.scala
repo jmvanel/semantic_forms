@@ -5,7 +5,9 @@ import java.security.MessageDigest
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
+
 import org.w3.banana.RDF
+
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.RDFPrefixes
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter
@@ -102,6 +104,16 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
     }
   }
 
+  def listUsers(): List[Rdf#Node] = {
+    val pwds = rdfStore.r(dataset3, {
+      println1(s"""listUsers: find( makeIGraph(
+        $passwordsGraph) , passwordPred, ANY)""")
+      find(makeIGraph(passwordsGraph), ANY, passwordPred, ANY)
+    }).get
+
+    pwds.map { tr => tr.subject }.toList
+  }
+
   /**
    * record password in database; @return user Id if success
    * store hash , not password
@@ -135,7 +147,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
     res
   }
 
-  def signinOLD(agentURI: String, password: String): Try[String] = {
+  private def signinOLD(agentURI: String, password: String): Try[String] = {
     println1("Authentication.signin: userId " + agentURI)
     val res = rdfStore.rw( dataset3, {
       val mGraph = passwordsGraph
