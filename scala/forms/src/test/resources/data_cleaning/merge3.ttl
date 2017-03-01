@@ -1,0 +1,51 @@
+# Merge destination:
+<http://data.onisep.fr/ontologies/SMS/handicapAutismeAccueil/priseEnChargeHandicap/#class>
+        a       <http://www.w3.org/2002/07/owl#Class> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Type de prise en charge @ Autisme et troubles envahissants du développement : Accueil" ;
+        <http://www.w3.org/2000/01/rdf-schema#subClassOf>
+                <http://deductions.sf.net/ametys.ttl#Details> ;
+        <http://deductions.sf.net/ametys.ttl#embeddedIn>
+                <http://data.onisep.fr/ontologies/SMS/handicapAutismeAccueil> ;
+        <http://deductions.sf.net/ametys.ttl#label>
+                "Type de prise en charge" .
+
+# Merge origin (to be removed)
+<http://data.onisep.fr/ontologies/SMS/handicapMultipleAccueil/priseEnChargeHandicap/#class>
+        a       <http://www.w3.org/2002/07/owl#Class> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Type de prise en charge @ Gestion de Troubles multiples associés : Accueil" ;
+        <http://www.w3.org/2000/01/rdf-schema#subClassOf>
+                <http://deductions.sf.net/ametys.ttl#Details> ;
+        <http://deductions.sf.net/ametys.ttl#embeddedIn>
+                <http://data.onisep.fr/ontologies/SMS/handicapMultipleAccueil> ;
+        <http://deductions.sf.net/ametys.ttl#label>
+                "Type de prise en charge" .
+
+
+# properties
+
+<http://data.onisep.fr/ontologies/SMS/handicapAutismeAccueil/priseEnChargeHandicap>
+        a       <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/2000/01/rdf-schema#domain>
+                <http://data.onisep.fr/ontologies/SMS/handicapAutismeAccueil> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Type de prise en charge" ;
+        <http://www.w3.org/2000/01/rdf-schema#range>
+                <http://data.onisep.fr/ontologies/SMS/handicapAutismeAccueil/priseEnChargeHandicap/#class> ;
+        <http://deductions.sf.net/ametys.ttl#subform-type>
+                "repeater" .
+
+<http://data.onisep.fr/ontologies/SMS/handicapMultipleAccueil/priseEnChargeHandicap>
+        a       <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/2000/01/rdf-schema#domain>
+                <http://data.onisep.fr/ontologies/SMS/handicapMultipleAccueil> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Type de prise en charge" ;
+        <http://www.w3.org/2000/01/rdf-schema#range>
+                <http://data.onisep.fr/ontologies/SMS/handicapMultipleAccueil/priseEnChargeHandicap/#class> ;
+        <http://deductions.sf.net/ametys.ttl#subform-type>
+                "repeater" .
+
+
+

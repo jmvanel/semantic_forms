@@ -23,7 +23,7 @@ sbt "runMain tdb.tdbdump --loc=TDB" > dump.nq
 *SBT trick*
 If you need to run a program from the Unix shell with the classpath of semantic\_forms
 ```
-CLASSPATH=`sbt "export runtime:fullClasspath"`
+JARS=`sbt "export runtime:fullClasspath"`
 ```
 outputs the classpath as a colon-separated list perfect if you want to use it for invoking Scala.
 
