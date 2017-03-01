@@ -1,0 +1,4 @@
+Action,Libellé,Id,Contexte,type(rdfs:range),Empreinte(propriétés),Description,Validation,Nouveau libellé,Commentaire fusion 
+:SMS/handicapAutismeAccueil/priseEnChargeHandicap/#class,Type de prise en charge @ Autisme et troubles envahissants du développement : Accueil,:SMS/handicapAutismeAccueil/priseEnChargeHandicap/#class,"Type: Type prise en charge handicap, Détails: Detail prise en charge handicap, Commentaire: xsd:string",,:DetailPriseEnChargeHandicap; :TypePriseEnChargeHandicap; commentaire,,Hélène,,
+:SMS/handicapAutismeAccueil/priseEnChargeHandicap/#class,Type de prise en charge @ Gestion de Troubles multiples associés : Accueil,:SMS/handicapMultipleAccueil/priseEnChargeHandicap/#class,"Type: Type prise en charge handicap, Détails: Detail prise en charge handicap, Commentaire: xsd:string",,:DetailPriseEnChargeHandicap; :TypePriseEnChargeHandicap; commentaire,,Hélène,,
+

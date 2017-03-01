@@ -1,0 +1,40 @@
+<http://data.onisep.fr/ontologies/SMS/handicapMultipleAccueil/priseEnChargeHandicap>
+        a       <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/2000/01/rdf-schema#domain>
+                <http://data.onisep.fr/ontologies/SMS/handicapMultipleAccueil> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Type de prise en charge" ;
+        <http://www.w3.org/2000/01/rdf-schema#range>
+                <http://data.onisep.fr/ontologies/SMS/handicapAutismeAccueil/priseEnChargeHandicap/#class> ;
+        <http://deductions.sf.net/ametys.ttl#subform-type>
+                "repeater" .
+
+<http://data.onisep.fr/ontologies/SMS/handicapAutismeAccueil/priseEnChargeHandicap/#class>
+        a       <http://www.w3.org/2002/07/owl#Class> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Type de prise en charge @ Autisme et troubles envahissants du développement : Accueil" ;
+        <http://www.w3.org/2000/01/rdf-schema#subClassOf>
+                <http://deductions.sf.net/ametys.ttl#Details> ;
+        <http://deductions.github.io/restruc.owl.ttl#mergedFrom>
+                <http://data.onisep.fr/ontologies/SMS/handicapMultipleAccueil/priseEnChargeHandicap/#class> ;
+        <http://deductions.github.io/restruc.owl.ttl#newLabel>
+                "Type de prise en charge @ Autisme et troubles envahissants du développement : Accueil" ;
+        <http://deductions.github.io/restruc.owl.ttl#oldLabel>
+                "Type de prise en charge @ Gestion de Troubles multiples associés : Accueil" ;
+        <http://deductions.github.io/restruc.owl.ttl#restructurationComment>
+                "\nFusion  (FS) le Wed Mar 01 20:59:32 CET 2017\n|vers http://data.onisep.fr/ontologies/SMS/handicapAutismeAccueil/priseEnChargeHandicap/#class\nà partir de\n:SMS/handicapMultipleAccueil/priseEnChargeHandicap/#class (Type de prise en charge @ Gestion de Troubles multiples associés : Accueil),\n:SMS/handicapAutismeAccueil/priseEnChargeHandicap/#class (Type de prise en charge @ Autisme et troubles envahissants du développement : Accueil)\n    " ;
+        <http://deductions.sf.net/ametys.ttl#embeddedIn>
+                <http://data.onisep.fr/ontologies/SMS/handicapAutismeAccueil> , <http://data.onisep.fr/ontologies/SMS/handicapMultipleAccueil> ;
+        <http://deductions.sf.net/ametys.ttl#label>
+                "Type de prise en charge" .
+
+<http://data.onisep.fr/ontologies/SMS/handicapAutismeAccueil/priseEnChargeHandicap>
+        a       <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/2000/01/rdf-schema#domain>
+                <http://data.onisep.fr/ontologies/SMS/handicapAutismeAccueil> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Type de prise en charge" ;
+        <http://www.w3.org/2000/01/rdf-schema#range>
+                <http://data.onisep.fr/ontologies/SMS/handicapAutismeAccueil/priseEnChargeHandicap/#class> ;
+        <http://deductions.sf.net/ametys.ttl#subform-type>
+                "repeater" .
