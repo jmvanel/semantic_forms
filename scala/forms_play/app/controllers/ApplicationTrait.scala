@@ -236,7 +236,8 @@ trait ApplicationTrait extends Controller
     }
 
   /** save the HTML form;
-   *  intranet mode (needLoginForEditing == false): no cookies session, just receive a `graph` HTTP param. */
+   *  intranet mode (needLoginForEditing == false): no cookies session, just receive a `graph` HTTP param.
+   *  TODO: this pattern should be followed for each page or service */
   def saveAction() = {
     def save(userid: String)(implicit request: Request[_]) = {
       val lang = chooseLanguage(request)
@@ -620,9 +621,11 @@ trait ApplicationTrait extends Controller
     outputMainPage(r, lang))
   }
 
+  /** LDP GET */
   def ldp(uri: String) =
-    withUser {
-      implicit userid =>
+    Action // withUser 
+    {
+//      implicit userid =>
         implicit request =>
           logger.info("LDP GET: request " + request)
           val acceptedTypes = request.acceptedTypes
