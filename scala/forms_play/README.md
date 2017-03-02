@@ -234,8 +234,9 @@ https://www.playframework.com/documentation/2.4.x/ProductionConfiguration
 
 
 ## Change the log settings
+
 `semantic_forms` uses Log4J 2 for logging. By default it prints very little.
-If you want to apply your log settings:
+If you want to apply your log settings, copy one the configuration files in conf/ (or use one as is):
 ```shell
 cp conf/log4j2.debug.properties myconf.properties
 vi myconf.properties

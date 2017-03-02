@@ -64,6 +64,10 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
 	  def isreplacing() = replacedURI != nullURI
 	}
 
+type InstanceLabels2URIsMap = Map[String, Seq[Rdf#Node]]
+type MergeGroup = ( String, Seq[Rdf#Node] )
+type MergeGroups = Seq[MergeGroup]
+
   /**
    * merges Duplicates automatically among instances of given class URI,
    * based on criteria : instanceLabel() giving identical result;
@@ -73,7 +77,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
    */
   def removeAllDuplicates(classURI: Rdf#URI, lang: String = ""): String = {
 
-    val instanceLabels2URIsMap =
+    val instanceLabels2URIsMap: InstanceLabels2URIsMap =
       rdfStore.rw(dataset, {
         indexInstanceLabels(classURI, lang)
       }).get
@@ -82,10 +86,13 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
     var propertiesHavingDuplicates = 0
 
     println(s"instanceLabels2URIsMap size ${instanceLabels2URIsMap.size}")
-    val instanceLabels2URIsMap2 = rdfStore.rw(dataset, {
-      checkRdfsRanges(instanceLabels2URIsMap, classURI)
+    println(s"""instanceLabels2URIsMap "Type de prise en charge" : ${instanceLabels2URIsMap.getOrElse("Type de prise en charge", Seq())}""")
+
+    val instanceLabels2URIsMap2: MergeGroups = rdfStore.rw(dataset, {
+      checkRdfsRangesEqual(instanceLabels2URIsMap, classURI)
     }).get
     println(s"instanceLabels2URIsMap 2, after checkRdfsRanges: size ${instanceLabels2URIsMap2.size}")
+//    println(s"""instanceLabels2URIsMap "Type de prise en charge" 2 : ${instanceLabels2URIsMap2.getOrElse("Type de prise en charge", Seq())}""")
 
     for( (label, allDuplicateURIs) <- instanceLabels2URIsMap2) {
       println(s"""\n>>>> Looking at label "$label" """)
@@ -505,7 +512,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
    * @return a map of Instance Labels to sequences of URI
    * DOES NOT include transactions */
   private def indexInstanceLabels(classURI: Rdf#URI,
-                          lang: String): Map[String, Seq[Rdf#Node]] = {
+                          lang: String): InstanceLabels2URIsMap  = {
     val classTriples = find(allNamedGraph, ANY, rdf.typ, classURI) . toList
     println( s"indexInstanceLabels: ${classTriples.size} instances for class $classURI")
 
@@ -613,24 +620,37 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
   }
 
   /** if class URI == owl:ObjectProperty, the rdfs:range's must be equal */
-  private def checkRdfsRanges(instanceLabels2URIsMap: Map[String, Seq[Rdf#Node]],
-                              classURI: Rdf#URI): Map[String, Seq[Rdf#Node]] = {
-    if (classURI == owl.ObjectProperty) {
-      instanceLabels2URIsMap.filter {
-        case (label, uris) =>
-          if( label == "Parcours d'accès au métier" )
-        	  println(s""">>>> checkRdfsRanges: label "Parcours d'accès au métier" """) // DEBUG <<<<<<<<<<<<<<<<<<<<<<<<<<
-
-//          if(label == "Auteur") println( s"DDDDDDDDDDD checkRdfsRanges: Auteur 2 : ${uris}")
-          val groupedByRdfsRange = uris.groupBy { uri =>
-            val ranges = find(allNamedGraph, uri, rdfs.range, ANY).
-              map { _.objectt }.toSeq.headOption
-            ranges
-          }
-          groupedByRdfsRange.size == 1 // uris.size
+  private def checkRdfsRangesEqual(instanceLabels2URIsMap: InstanceLabels2URIsMap,
+                                   metaClassURI: Rdf#URI) : MergeGroups = {
+    if (metaClassURI == owl.ObjectProperty) {
+      val pairsGroupedByRdfsRange = for ((label, uris) <- instanceLabels2URIsMap) yield {
+        val groupedByRdfsRange = uris.groupBy { uri =>
+          val rangeHeadOption = find(allNamedGraph, uri, rdfs.range, ANY).
+            map { _.objectt }.toSeq.headOption
+          rangeHeadOption
+        }
+        groupedByRdfsRange . values . map {
+          group => ( label, group )
+        }
       }
-    } else instanceLabels2URIsMap
+      pairsGroupedByRdfsRange .flatten . toSeq
+    } else instanceLabels2URIsMap.toSeq
   }
+
+//  private def checkRdfsRangesEqual_OLD(instanceLabels2URIsMap:InstanceLabels2URIsMap,
+//		  metaClassURI: Rdf#URI)  = {
+//    if (metaClassURI == owl.ObjectProperty) {
+//      instanceLabels2URIsMap.filter {
+//        case (label, uris) =>
+//          val groupedByRdfsRange = uris.groupBy { uri =>
+//            val rangeHeadOption = find(allNamedGraph, uri, rdfs.range, ANY).
+//              map { _.objectt }.toSeq.headOption
+//            rangeHeadOption
+//          }
+//          groupedByRdfsRange.size == 1 // uris.size
+//      }
+//    } else instanceLabels2URIsMap
+//  }
 
   protected def possiblyDeleteDatabaseLocation() = {
     Try {
