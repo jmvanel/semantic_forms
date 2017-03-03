@@ -55,9 +55,8 @@ libraryDependencies ++= Seq(
   "org.apache.logging.log4j" % "log4j-core" % "2.8"
 )
 
-// for debugging the SBT test suite:
-// required for the javaOptions to be passed in (??)
-// fork := true
+// necessary to set the working directory when running tests from starting SBT in parent directory
+fork := true
 
 // javaOptions in test ++= Seq( "-Xdebug" , "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9999" )
 
