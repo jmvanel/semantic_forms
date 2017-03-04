@@ -48,7 +48,8 @@ trait ApplicationTrait extends Controller
     with CORS
     with HTTPrequestHelpers
     with RDFPrefixes[ImplementationSettings.Rdf]
-    with URIManagement {
+    with URIManagement
+    with RequestUtils {
 
 	val config: Configuration
   import config._
@@ -66,8 +67,6 @@ trait ApplicationTrait extends Controller
           val userInfo = displayUser(userid, "", "", lang)
           outputMainPage(makeHistoryUserActions("10", lang, copyRequest(request) ), lang,
               userInfo = userInfo)
-//          val route = routes.Application.
-//          Redirect(route)
     }
 
   def displayURI(uri0: String, blanknode: String = "", Edit: String = "",
@@ -104,10 +103,11 @@ trait ApplicationTrait extends Controller
           logger.info(s"displayURI: expandOrUnchanged $uri")
           val title = labelForURITransaction(uri, lang)
 
-          val usernameFromSession = for( cookie <- request.cookies.get("PLAY_SESSION");
-          value = cookie.value ) yield { substringAfter(value, "username=")}
-          val userid = usernameFromSession.getOrElse("anonymous")
-          val userInfo = displayUser(userid, uri, title, lang)
+          def userInfoHTML(request: Request[_]) = {
+            val userid = userId(request)
+            ( displayUser(userid, uri, title, lang), userid)
+          }
+          val (userInfo, userid) = userInfoHTML(request)
 
           outputMainPage(
             htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
@@ -116,9 +116,6 @@ trait ApplicationTrait extends Controller
             lang, title = title, userInfo = userInfo)
         }
       }
-
-   def substringAfter(s:String,k:String) = { s.indexOf(k) match { case -1 => ""; case i => s.substring(i+k.length)  } }
-
 
   def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
 //        Action // 
@@ -137,10 +134,7 @@ trait ApplicationTrait extends Controller
 
   /** /form-data service; like /form but raw JSON data */
   def formData(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
-//    withUser
-    Action
-    {
-//      implicit userid =>
+    Action {
         implicit request =>
        makeJSONResult(formDataImpl(uri, blankNode, Edit, formuri, database))
     }
@@ -169,9 +163,6 @@ trait ApplicationTrait extends Controller
   }
 
   def searchOrDisplayAction(q: String) = {
-//          withUser {
-//	    implicit userid =>
-//      implicit request => {
     def isURI(q: String): Boolean = q.contains(":")
     
     if (isURI(q))
@@ -336,6 +327,7 @@ trait ApplicationTrait extends Controller
         implicit request =>
           def output(accepts: Accepting): Result = {
             val mime = computeMIME(accepts, AcceptsJSONLD)
+            println(log("downloadAction", request))
             Ok.chunked(
                 // TODO >>>>>>> add database arg.
               download(url, mime.mimeType)).
@@ -589,6 +581,8 @@ trait ApplicationTrait extends Controller
         implicit request =>
           logger.info("sparql update: " + request)
           logger.info("sparql: " + update)
+          println(log("update", request))
+
           val res = sparqlUpdateQuery(update)
           res match {
             case Success(s) => Ok(s"$res")
