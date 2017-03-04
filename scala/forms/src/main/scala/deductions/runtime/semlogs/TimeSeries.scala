@@ -74,10 +74,9 @@ with SPARQLHelpers[Rdf, DATASET] {
   /**get Metadata for all user updates:
    * subject, timestamp, triple count, user;
    * ordered by recent first;
-   * transactional
-   * TODO replace userURI (unused) by limit */
+   * transactional */
   def getMetadata()
-    (implicit userURI: String)
+    (implicit limit: String= "50")
         : List[Seq[Rdf#Node]] = {
     val query = s"""
       ${declarePrefix(xsd)}
@@ -93,6 +92,7 @@ with SPARQLHelpers[Rdf, DATASET] {
          ?SUBJECT ?P ?O . } }
       GROUP BY ?SUBJECT ?USER
       ORDER BY DESC(xsd:integer(?TS))
+      LIMIT $limit
     """
     logger.debug("getMetadata: query " + query)
     val res = sparqlSelectQueryVariables( query,

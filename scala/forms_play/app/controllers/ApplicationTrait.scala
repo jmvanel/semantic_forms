@@ -64,10 +64,10 @@ trait ApplicationTrait extends Controller
         implicit request =>
           val lang = chooseLanguageObject(request).language
           val userInfo = displayUser(userid, "", "", lang)
-          val route = routes.Application.makeHistoryUserActionsAction("")
-          Redirect(route)
-//          Ok("<!DOCTYPE html>\n" + mainPage(<p>...</p>, userInfo, lang))
-//            .as("text/html; charset=utf-8")
+          outputMainPage(makeHistoryUserActions("10", lang, copyRequest(request) ), lang,
+              userInfo = userInfo)
+//          val route = routes.Application.
+//          Redirect(route)
     }
 
   def displayURI(uri0: String, blanknode: String = "", Edit: String = "",
