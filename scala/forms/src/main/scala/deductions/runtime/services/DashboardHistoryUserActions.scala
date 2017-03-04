@@ -41,11 +41,10 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   private def mess(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
 
   /** leverage on ParameterizedSPARQL.makeHyperlinkForURI()
-   * TODO replace userURI (unused) by limit
    * TODO reuse makeHtmlTable
    */
-  def makeTableHistoryUserActions(lang: String="en", request: HTTPrequest)(userURI: String): NodeSeq = {
-    val metadata = getMetadata()(userURI)
+  def makeTableHistoryUserActions(lang: String="en", request: HTTPrequest)(limit: String): NodeSeq = {
+    val metadata = getMetadata()(limit)
     implicit val queryMaker = qm
     implicit val _ = lang
     <table class="table">

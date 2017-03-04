@@ -40,18 +40,20 @@ trait InstanceLabelsInference2[Rdf <: RDF]
    *  NON transactional
    */
   def instanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String = ""): String = {
-    if(node == nullURI ) return ""
+    if (node == nullURI) return ""
 
     val pgraph = PointedGraph(node, graph)
+    def valueForProp(prop: Rdf#URI) = (pgraph / prop).as[String].getOrElse("")
 
-    val firstName = (pgraph / foaf.firstName).as[String].getOrElse("")
-    val lastName = (pgraph / foaf.lastName).as[String].getOrElse("")
+    val givenName = valueForProp(foaf.givenName)
+    val familyName = valueForProp(foaf.familyName)
+    val n = givenName + " " + familyName
 
-    val n = firstName + " " + lastName
     if (n.size > 1) n
     else {
-      val givenName = (pgraph / foaf.givenName).as[String].getOrElse("")
-      val familyName = (pgraph / foaf.familyName).as[String].getOrElse("")
+      val firstName = valueForProp(foaf.firstName)
+      val lastName = valueForProp(foaf.lastName)
+
       val n = givenName + " " + familyName
       if (n.size > 1) n
       else {
@@ -65,9 +67,9 @@ trait InstanceLabelsInference2[Rdf <: RDF]
         val s = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, skos("prefLabel"), "")
         if (s != "") return s
 
-//        val cl = instanceClassLabel( node, graph, lang)
-////        println( s"""instanceClassLabel $node "$cl" """ )
-//        if (cl != "") return cl
+        //        val cl = instanceClassLabel( node, graph, lang)
+        ////        println( s"""instanceClassLabel $node "$cl" """ )
+        //        if (cl != "") return cl
         last_segment(node)
       }
     }

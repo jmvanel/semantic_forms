@@ -6,6 +6,7 @@ import org.w3.banana.RDF
 
 import deductions.runtime.dataset.DatasetHelper
 import deductions.runtime.utils.RDFHelpers
+import deductions.runtime.utils.RDFPrefixes
 
 /** wraps InstanceLabelsInference to cache Instance Labels in TDB */
 trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
@@ -13,7 +14,8 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     with PreferredLanguageLiteral[Rdf]
     with RDFHelpers[Rdf]
     with DatasetHelper[Rdf, DATASET]
-    with InstanceLabelsFromLabelProperty[Rdf, DATASET] {
+    with InstanceLabelsFromLabelProperty[Rdf, DATASET]
+    with RDFPrefixes[Rdf] {
 
   import ops._
 
@@ -29,6 +31,20 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     if (labelFromTDB == "" || labelFromTDB == "Thing" || isLabelLikeURI(node, labelFromTDB ) )
       computeInstanceLabeAndStoreInTDB(node, graph, lang)
     else labelFromTDB
+  }
+
+  def instanceDescription(subjectNode: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
+    def stringFromPred(predNode: Rdf#Node): Option[String] =
+      for (
+        commentTriple <- find(allNamedGraph, subjectNode, predNode, ANY).toSeq.headOption;
+        comment = foldNode(commentTriple.objectt)(
+          _ => "",
+          _ => "",
+          literal => fromLiteral(literal)._1)
+      ) yield comment
+
+    stringFromPred(rdfs.comment)
+      .getOrElse(stringFromPred(dct("description")).getOrElse(""))
   }
 
   /** NON transactional, needs rw transaction */

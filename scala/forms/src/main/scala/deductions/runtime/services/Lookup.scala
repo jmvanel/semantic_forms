@@ -52,7 +52,8 @@ trait Lookup[Rdf <: RDF, DATASET]
         uris =>
           val uri = uris.head
           val label = instanceLabel(uri, allNamedGraph, lang)
-          (uri, label)
+          val desc = instanceDescription(uri, allNamedGraph, lang)
+          (uri, label, desc)
       }
       urilabels
     })
@@ -70,12 +71,13 @@ trait Lookup[Rdf <: RDF, DATASET]
 //      formatXML(list)
   }
 
-  private def formatXML(list: List[(Rdf#Node, String)]): String = {
+  private def formatXML(list: List[(Rdf#Node, String, String)]): String = {
     val elems = list.map {
-      case (uri, label) =>
+      case (uri, label, desc) =>
         <Result>
           <Label>{ label }</Label>
           <URI>{ uri }</URI>
+          <Description>{ desc }</Description>
         </Result>
     }
     val xml =
@@ -86,9 +88,12 @@ trait Lookup[Rdf <: RDF, DATASET]
   }
 
   /** The keys are NOT exactly the same as the XML tags :( */
-  private def formatJSON(list: List[(Rdf#Node, String)]): String = {
+  private def formatJSON(list: List[(Rdf#Node, String, String)]): String = {
     val list2 = list.map {
-      case (uri, label) => Json.obj("label" -> label, "uri" -> uri.toString())
+      case (uri, label, desc) => Json.obj(
+          "label" -> label,
+          "uri" -> uri.toString(),
+          "description" -> desc)
     }
     println(s"list2 $list - $list2")
     val results =  Json.obj( "results" -> list2 )

@@ -159,13 +159,6 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     logger.debug(
       s"htmlFormRawTry dataset $dataset, graphURI <$graphURI>")
 
-//    val tryGraph = if (blankNode != "true" && inputGraph == Success(emptyGraph)) {
-//    	val datasetOrDefault = getDatasetOrDefault(database)
-//      val res = retrieveURINoTransaction(makeUri(uri), datasetOrDefault)
-//      Logger.getRootLogger().info(s"After retrieveURINoTransaction(makeUri($uri), store)")
-//      res
-//    } else inputGraph // Success(emptyGraph)
-
     val graphURIActual = if (graphURI == "") uri else graphURI
     Success(graf2form(unionGraph, uri, hrefPrefix, blankNode, editable,
       actionURI, lang, graphURIActual, actionURI2, formGroup, formuri, request))
@@ -247,8 +240,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     val form = time("createAbstractForm",
       createAbstractForm(
           uri, editable, lang, blankNode, formGroup, formuri))
-//    val htmlFormGen = makeHtmlFormGenerator
-    val htmlForm = // htmlFormGen.
+    val htmlForm =
       generateHTML(form, hrefPrefix, editable, actionURI, graphURI,
         actionURI2, lang, request)
     ( htmlForm, form )
