@@ -191,6 +191,11 @@ Start SBT like below; then type run. Then start a remote debug in eclipse or ano
 export SBT_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9999" && sbt
 ```
 
+If the application is non responsive, then to this this get a stack dump of all the thread:
+```shell
+kill -3 `cat RUNNING_PID`
+```
+ 
 ## Test
 ```script
  get --method=OPTIONS --save-headers http://localhost:9000/bla

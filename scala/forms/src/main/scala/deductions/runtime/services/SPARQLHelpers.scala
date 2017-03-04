@@ -96,8 +96,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   }
 
   /** wrap In RW Transaction */
-  def wrapInTransaction[T](sourceCode: => T) = {
-    val transaction = rdfStore.rw(dataset, {
+  def wrapInTransaction[T](sourceCode: => T, ds:DATASET=dataset) = {
+    val transaction = rdfStore.rw(ds, {
       sourceCode
     })
     transaction
