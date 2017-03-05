@@ -82,6 +82,7 @@ trait RDFStoreLocalJenaProvider
         dir.mkdirs()
       }
 
+      println(s"RDFStoreLocalJena1Provider: dataset create: database_location $database_location in ${System.getProperty("user.dir")}")
       val dts = TDBFactory.createDataset(Paths.get(database_location).toString())
       //      Logger.getRootLogger.info
       println(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
@@ -121,7 +122,7 @@ trait RDFStoreLocalJenaProvider
 
   /** make an MGraph from a Dataset */
   def makeMGraph(graphURI: Rdf#URI, ds: DATASET = dataset): Rdf#MGraph = {
-    println(s"makeMGraph( $graphURI")
+    logger.debug(s"makeMGraph( $graphURI")
     val nm = ds.getNamedModel(fromUri(graphURI))
     nm.getGraph
   }
