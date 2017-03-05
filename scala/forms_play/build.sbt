@@ -2,9 +2,14 @@ organization := "deductions"
 name := "semantic_forms_play"
 version := "1.0-SNAPSHOT"
 
-lazy val semantic_forms =  RootProject(file("../forms"))
-lazy val semantic_forms_play = (project in file("."))
-        .dependsOn(semantic_forms)
+// necessary for running from this directory:
+lazy val forms =  RootProject(file("../forms"))
+
+// for running from parent directory
+// lazy val forms = (project in file("../forms"))
+
+lazy val forms_play = (project in file("."))
+        .dependsOn(forms)
 	.enablePlugins(PlayScala)
   .disablePlugins(PlayLogback)
 
@@ -19,6 +24,7 @@ javacOptions ++= Seq("-source","1.7", "-target","1.7")
 fork in run := true
 // CAUTION here: this is for run and runMain; what is given with sbt -J-Xmx12G is *not* in effect for run! 
 javaOptions in run ++= Seq( "-Xms256M", "-Xmx8G", "-XX:MaxPermSize=1024M", "-XX:+UseConcMarkSweepGC")
+baseDirectory in run := file(".")
 
 connectInput in run := true
 
