@@ -1,16 +1,12 @@
 package controllers
 
-import play.api.mvc.Request
 import play.api.i18n.Lang
-import java.util.Date
-import java.text.DateFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import play.api.mvc.Request
 
 /**
  * @author jmv
  */
-trait LanguageManagement {
+trait LanguageManagement extends RequestUtils {
   
   def chooseLanguage(request: Request[_]): String = {
     chooseLanguageObject(request).language
@@ -21,9 +17,7 @@ trait LanguageManagement {
     val resLang = if (languages.length > 0) languages(0) else Lang("en")
     println(
 //    logger.info(
-        LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")) +
-//        DateFormat.getInstance.format(new Date()) +
-        s" chooseLanguage: IP ${request.remoteAddress} $request\t$resLang, id ${request.id}, host ${request.host}")
+        log("chooseLanguage", request) + s"\t$resLang" )
     resLang
   }
   
