@@ -222,25 +222,36 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       "Rencontré à" -> av.metAt,
 
       // GV
-      
-      /*	",SUIVI,SITE WEB,PRINT SIGNA,
-      Nom structure pour admnistration,Nom pour communication,
-      Prénom interlocuteur référent,Nom interlocuteur référent,Numéro contact,Adresse e-mail,
-      Prénom interlocuteur référent 2,Nom interlocuteur référent 2,Numéro contact 2,Adresse e-mail 2,
-      Activité,Site Web,Bâtiment,Espace,Arrivée,Contribution au projet proposée,Contribution réalisée,
-      Nombre salariés,
-      Page Facebook,Compte twitter,NB de mentions presses,Ventes ou services,Structure juridique signature convention,
-      Numéro de clé au PC
-      http://dbpedia.org/ontology/longName
-      */
-      "Nom structure pour admnistration" ->  foaf.name,
-      "Nom pour communication" -> URI("http://dbpedia.org/ontology/longName"),
+
+      "Nom structure pour administration" -> av("administrativeName"), // foaf.name,
+      "Nom pour communication" ->  foaf.name, // URI("http://dbpedia.org/ontology/longName"),
+
       "Prénom interlocuteur référent" -> foaf.givenName,
       "Nom interlocuteur référent" -> foaf.familyName,
       "Numéro contact" -> foaf.phone,
       "Adresse e-mail" -> foaf.mbox,
+
       "Page Facebook" -> av("facebook"),
       "Compte twitter" -> av("twitter"),
+      "Linkedin" -> av("linkedin"),
+      "Facebook" -> av("Facebook"),
+
+      "SUIVI" -> av("status"),
+      "Thématiques" -> foaf.status,
+      "Activité" -> dc("subject"),
+      "Bâtiment" -> av("building"),
+      "Espace" -> av("room"),
+      "Arrivée" -> av("arrivalDate"),
+      "Contribution au projet proposée" -> av( "proposedContribution"),
+      "Contribution réalisée" -> av( "realisedContribution"),
+      "Nombre salariés" -> av( "empoyeesCount"),
+      "NB de mentions presses" -> av( "pressReferencesCount"),
+      "Structure juridique signature convention" -> av( "conventionType"),
+      "Numéro de clé au PC" -> av("keyNumber"),
+      "Propose du Bénévolat" -> av("volunteeringProposals"),
+      "Projets au sein des GV" -> foaf.currentProject,
+      "URL logo" -> foaf.img,
+      "Assurance 2017" -> xsd.boolean,
 
       // Tasks management
 

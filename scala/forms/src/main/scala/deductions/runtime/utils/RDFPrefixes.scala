@@ -48,12 +48,13 @@ import org.w3.banana._
   lazy val form = Prefix[Rdf]("form", "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#") // http://deductions-software.com/ontologies/forms.owl.ttl#" )
   lazy val forms = Prefix[Rdf]("forms", "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#" )
   lazy val dct = DCTPrefix[Rdf]
-
+	lazy val dc = DCPrefix[Rdf]
+  
   lazy val prefixesList = List(
 		  // prefixes for ontologies
     rdf, rdfs,
     xsd,
-    DCPrefix[Rdf], dct,
+    dc, dct,
     foaf, Prefix[Rdf]("doap", "http://usefulinc.com/ns/doap#"),
     LDPPrefix[Rdf], IANALinkPrefix[Rdf], WebACLPrefix[Rdf], CertPrefix[Rdf],
     owl, skos,

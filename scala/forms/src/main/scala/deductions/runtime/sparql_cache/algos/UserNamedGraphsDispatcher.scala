@@ -26,7 +26,7 @@ with RDFHelpers[Rdf] {
       |       BIND (REPLACE(CONCAT('user:', ?FN, '_', ?LN), ' ', '_') AS ?USER_GRAPH)
       |}}
       |""".stripMargin
-      
+
     val queryMailtoScheme = s"""
       |${declarePrefix(foaf)}
       |DELETE { GRAPH <$inputGraphName> {

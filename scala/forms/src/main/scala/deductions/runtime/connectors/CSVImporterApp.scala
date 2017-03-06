@@ -85,6 +85,8 @@ object CSVImporterApp extends {
     val os = new FileOutputStream(outputFile)
     turtleWriter.write(graph, os, fromUri(documentURI))
   }
+  
+  println(s"""Saved in SPARQL in graph URI <$documentURI>""")
   rdfStore.appendToGraph(dataset, documentURI, graph)
 
   /**
