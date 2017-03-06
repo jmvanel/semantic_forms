@@ -11,7 +11,7 @@ import org.w3.banana.RDFSPrefix
 
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.utils.CSVImporter
+import deductions.runtime.connectors.CSVImporter
 
 object ReplaceSubclassWithPropertyApp extends  {
   override val config = new DefaultConfiguration {
