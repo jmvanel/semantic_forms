@@ -12,6 +12,7 @@ import deductions.runtime.services.DefaultConfiguration
 import play.api.test.FakeRequest
 import play.api.test.Helpers
 import play.api.test.Helpers.contentAsString
+import deductions.runtime.html.Form2HTMLObject
 
 class TestAuth
     extends PlaySpec
@@ -27,6 +28,9 @@ class TestAuth
     override val useTextQuery = false
   }
 
+  lazy val htmlGenerator: Form2HTMLBanana[ImplementationSettings.Rdf] =
+    		      Form2HTMLObject.makeDefaultForm2HTML(config)(ops)
+
   val loginName = // "http://jmvanel.free.fr/jmv.rdf#me" // 
     "devil@hell.com"
   val pw = "bla"
@@ -34,7 +38,8 @@ class TestAuth
   val config1 = config
   val auth = new AuthTrait {
     val config = config1
-    		val htmlGenerator: Form2HTMLBanana[ImplementationSettings.Rdf] = ???
+    		val htmlGenerator: Form2HTMLBanana[ImplementationSettings.Rdf] =
+    		      Form2HTMLObject.makeDefaultForm2HTML(config)(ops)
   }
 
   "Auth service" must {

@@ -36,7 +36,7 @@ object Auth extends AuthTrait {
 
 trait AuthTrait
 extends ImplementationSettings.RDFModule
-with RDFStoreLocalJena1Provider
+with ImplementationSettings.RDFCache // RDFStoreLocalJena1Provider
 with AuthTrait2[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
   println(s"object Auth")
   /** NOTE otherwise we get "Lock obtain timed out", because
