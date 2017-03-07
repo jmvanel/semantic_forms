@@ -34,18 +34,22 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   }
 
   def instanceDescription(subjectNode: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
-    def stringFromPred(predNode: Rdf#Node): Option[String] =
-      for (
-        commentTriple <- find(allNamedGraph, subjectNode, predNode, ANY).toSeq.headOption;
-        comment = foldNode(commentTriple.objectt)(
-          _ => "",
-          _ => "",
-          literal => fromLiteral(literal)._1)
-      ) yield comment
-
-    stringFromPred(rdfs.comment)
-      .getOrElse(stringFromPred(dct("description")).getOrElse(""))
+    stringFromPred(subjectNode, rdfs.comment)
+      .getOrElse(stringFromPred(subjectNode, dct("description")).getOrElse(""))
   }
+
+  def instanceImage(subjectNode: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
+	  stringFromPred(subjectNode, foaf.img ).getOrElse("")
+  }
+
+  private def stringFromPred(subjectNode: Rdf#Node, predNode: Rdf#Node): Option[String] =
+    for (
+      commentTriple <- find(allNamedGraph, subjectNode, predNode, ANY).toSeq.headOption;
+      comment = foldNode(commentTriple.objectt)(
+        _ => "",
+        _ => "",
+        literal => fromLiteral(literal)._1)
+    ) yield comment
 
   /** NON transactional, needs rw transaction */
   def instanceLabelFromTDB(node: Rdf#Node, lang: String): String = {
