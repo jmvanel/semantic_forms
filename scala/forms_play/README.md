@@ -197,8 +197,8 @@ kill -3 `cat RUNNING_PID`
 ```
  
 ## Test
-```script
- get --method=OPTIONS --save-headers http://localhost:9000/bla
+```shell
+ wget --method=OPTIONS --save-headers http://localhost:9000/bla
 
  # Do this (just once) to test URL that are protected by login:
  wget --keep-session-cookies --save-cookies cookies.txt \
@@ -225,6 +225,15 @@ The typical content of a cookie file is:
 localhost:9000  FALSE   /       FALSE   0       PLAY_SESSION    f80b8a633c4debe1871ca7f23195b9766414fb79-username=foo
 ```
 
+Another example: HTTP POST on service /update
+```shell
+cat << DDDD > big-query.rq
+update=INSERT { <a:a> <a:a> <a:a>} WHERE { GRAPH ?G { [] ?PROP [] . } }
+DDDD
+wget  --load-cookies cookies.txt \
+--post-file=big-query.rq http://localhost:9000/update
+```
+ 
 
 # Administration of a server instance from the sources
 There is a script that updates the server from the sources, and more: it stops the server, updates the application from sources, and restarts the server :

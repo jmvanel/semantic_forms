@@ -31,7 +31,7 @@ GET     /select-ui          controllers.Application.select( query:String )
 POST    /select-ui          controllers.Application.select( query:String )
 
 GET     /update             controllers.Application.update( update:String )
-POST    /update             controllers.Application.update( update:String )
+POST    /update             controllers.Application.update( update:String ?="" )
 
 
 GET     /wordsearch         controllers.Application.wordsearchAction(q:String ?= "", clas: String ?= "")
