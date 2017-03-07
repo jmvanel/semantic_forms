@@ -509,7 +509,8 @@ trait ApplicationTrait extends Controller
     val mime = computeMIME(acceptedTypes, defaultMIME)
     logger.info(s"sparqlConstruct: computed mime ${mime}")
 
-    val resultFormat = mimeAbbrevs(defaultMIME) // preferredMedia.getOrElse(defaultMIME))
+//    val resultFormat = mimeAbbrevs(defaultMIME)
+    val resultFormat = mimeAbbrevs.getOrElse(defaultMIME, defaultMIMEaPriori.mimeType )
     logger.info(s"sparqlConstruct: output(accepts=$acceptedTypes) => result format: $resultFormat")
     if (preferredMedia.isDefined &&
       !mimeSet.contains(preferredMedia.get))
