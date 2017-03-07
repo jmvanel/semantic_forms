@@ -587,7 +587,9 @@ trait ApplicationTrait extends Controller
           val res = sparqlUpdateQuery(update)
           res match {
             case Success(s) => Ok(s"$res")
-            case Failure(f) => InternalServerError(s"$res")
+            case Failure(f) =>
+              logger.error(res.toString())
+              BadRequest(f.toString())
           }
     }
 
