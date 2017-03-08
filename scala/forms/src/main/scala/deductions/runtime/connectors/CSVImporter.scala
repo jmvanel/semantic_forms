@@ -17,7 +17,9 @@ import org.w3.banana.XSDPrefix
 import deductions.runtime.services.Configuration
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.utils.URIHelpers
+
 import org.w3.banana.PrefixBuilder
+import org.w3.banana._
 
 import scala.collection.JavaConversions.asScalaBuffer
 import scala.collection.JavaConversions.asScalaIterator
@@ -72,7 +74,9 @@ trait CSVImporter[Rdf <: RDF, DATASET]
 	  val postal_code = apply("postal-code")
 	  val locality =  apply("locality")
   }
+
   private val vcard = VCardPrefix[Rdf]
+  private val gvoi = Prefix[Rdf]("gvoi", "http://assemblee-virtuelle.github.io/grands-voisins-v2/gv.owl.ttl#")
 
   ///////////////////////////////////
   
@@ -193,6 +197,9 @@ trait CSVImporter[Rdf <: RDF, DATASET]
    *  use labels on properties to propose properties to user,
    *  manage prefixes globally, maybe using prefix.cc */
   val columnsMappings = Map(
+
+      // AV
+
       // foaf:Person
       "Prénom" -> foaf.givenName,
       "Nom" -> foaf.familyName,
@@ -221,9 +228,9 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       "Idée 2" -> av.idea,
       "Rencontré à" -> av.metAt,
 
-      // GV
+      // GV (gvoi: prefix)
 
-      "Nom structure pour administration" -> av("administrativeName"), // foaf.name,
+      "Nom structure pour administration" -> gvoi("administrativeName"), // foaf.name,
       "Nom pour communication" ->  foaf.name, // URI("http://dbpedia.org/ontology/longName"),
 
       "Prénom interlocuteur référent" -> foaf.givenName,
@@ -231,24 +238,24 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       "Numéro contact" -> foaf.phone,
       "Adresse e-mail" -> foaf.mbox,
 
-      "Page Facebook" -> av("facebook"),
-      "Compte twitter" -> av("twitter"),
-      "Linkedin" -> av("linkedin"),
-      "Facebook" -> av("Facebook"),
+      "Page Facebook" -> gvoi("facebook"),
+      "Compte twitter" -> gvoi("twitter"),
+      "Linkedin" -> gvoi("linkedin"),
+      "Facebook" -> gvoi("Facebook"),
 
-      "SUIVI" -> av("status"),
+      "SUIVI" -> gvoi("status"),
       "Thématiques" -> foaf.status,
       "Activité" -> dc("subject"),
-      "Bâtiment" -> av("building"),
-      "Espace" -> av("room"),
-      "Arrivée" -> av("arrivalDate"),
-      "Contribution au projet proposée" -> av( "proposedContribution"),
-      "Contribution réalisée" -> av( "realisedContribution"),
-      "Nombre salariés" -> av( "employeesCount"),
-      "NB de mentions presses" -> av( "pressReferencesCount"),
-      "Structure juridique signature convention" -> av( "conventionType"),
-      "Numéro de clé au PC" -> av("keyNumber"),
-      "Propose du Bénévolat" -> av("volunteeringProposals"),
+      "Bâtiment" -> gvoi("building"),
+      "Espace" -> gvoi("room"),
+      "Arrivée" -> gvoi("arrivalDate"),
+      "Contribution au projet proposée" -> gvoi( "proposedContribution"),
+      "Contribution réalisée" -> gvoi( "realisedContribution"),
+      "Nombre salariés" -> gvoi( "employeesCount"),
+      "NB de mentions presses" -> gvoi( "pressReferencesCount"),
+      "Structure juridique signature convention" -> gvoi( "conventionType"),
+      "Numéro de clé au PC" -> gvoi("keyNumber"),
+      "Propose du Bénévolat" -> gvoi("volunteeringProposals"),
       "Projets au sein des GV" -> foaf.currentProject,
       "URL logo" -> foaf.img,
       "Assurance 2017" -> xsd.boolean,
