@@ -77,10 +77,16 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
     	fieldsFromClasses(classesOfSubjectOrFromConfig, subject, editable, graph)
     }
 
+    val  propsFromClasses2 =
+      if( propsFromConfig . isEmpty )
+      propsFromClasses. map { pp => pp.propertiesList } . flatten
+      else
+        Seq()
+        
     val propertiesList0 = (
         propsFromConfig ++
         propsFromSubject ++
-        propsFromClasses. map { pp => pp.propertiesList } . flatten
+        propsFromClasses2
     ).distinct
     val propertiesList = addRDFSLabelComment(propertiesList0)
     val reversePropertiesList = reversePropertiesListFromFormConfiguration(formConfiguration)

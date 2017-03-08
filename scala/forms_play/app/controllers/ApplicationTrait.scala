@@ -581,10 +581,17 @@ trait ApplicationTrait extends Controller
       implicit userid =>
         implicit request =>
           logger.info("sparql update: " + request)
-          logger.info("sparql: " + update)
+          logger.info(s"sparql: update '$update'")
           println(log("update", request))
-
-          val res = sparqlUpdateQuery(update)
+          val update2 = if( update == "" ) {
+            println(s"""contentType ${request.contentType}
+            ${request.mediaType}
+            ${request.body.getClass}
+            """)
+            request.body.asText.getOrElse("")
+          } else update
+          logger.info(s"sparql: update2 '$update2'")
+          val res = sparqlUpdateQuery(update2)
           res match {
             case Success(s) => Ok(s"$res")
             case Failure(f) =>

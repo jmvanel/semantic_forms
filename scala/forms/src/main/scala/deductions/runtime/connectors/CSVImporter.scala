@@ -118,7 +118,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       for( pv <- propertyValueForEachRow ) {
     	  list += Triple(rowSubject, pv._1, pv._2)
       }
-      list += Triple(documentURI, csvPredicate(CSV.ROW), rowSubject)
+//      list += Triple(documentURI, csvPredicate(CSV.ROW), rowSubject)
       list += Triple(rowSubject, csvPredicate(CSV.ROW_POSITION), Literal( String.valueOf(index) ) )
       index = index + 1
     }
@@ -244,7 +244,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       "Arrivée" -> av("arrivalDate"),
       "Contribution au projet proposée" -> av( "proposedContribution"),
       "Contribution réalisée" -> av( "realisedContribution"),
-      "Nombre salariés" -> av( "empoyeesCount"),
+      "Nombre salariés" -> av( "employeesCount"),
       "NB de mentions presses" -> av( "pressReferencesCount"),
       "Structure juridique signature convention" -> av( "conventionType"),
       "Numéro de clé au PC" -> av("keyNumber"),
