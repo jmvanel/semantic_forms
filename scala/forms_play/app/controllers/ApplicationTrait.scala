@@ -302,14 +302,14 @@ trait ApplicationTrait extends Controller
     Action { implicit request =>
       logger.info("create: " + request)
       // URI of RDF class from which to create instance
-      val uri0 = getFirstNonEmptyInMap(request.queryString, "uri")
-      val uri = expandOrUnchanged(uri0)
+      val classUri0 = getFirstNonEmptyInMap(request.queryString, "uri")
+      val classUri = expandOrUnchanged(classUri0)
       // URI of form Specification
       val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formuri")
-      logger.info(s"create: <$uri>")
+      logger.info(s"create: class URI <$classUri>")
       logger.info(s"create: formSpecURI from HTTP request: <$formSpecURI>")
 
-      Ok(createDataAsJSON(uri, chooseLanguage(request),
+      Ok(createDataAsJSON(classUri, chooseLanguage(request),
         formSpecURI,
         copyRequest(request))).
         as(AcceptsJSONLD.mimeType + "; charset=" + myCustomCharset.charset)
