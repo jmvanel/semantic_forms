@@ -21,6 +21,8 @@ All tools below should be described this way.
 - [Semantic_MediaWiki](https://www.semantic-mediawiki.org/wiki/Semantic_MediaWiki) a plugin to Wikipedia's MediaWiki
 - Web Protégé forms: http://protegewiki.stanford.edu/wiki/PropertyFormPortlet#Examples ; alas one has to edit XML for portlet technology to create forms; apparently based on MongoDB, not SPARQL : https://github.com/protegeproject/webprotege/blob/master/pom.xml
 
+- https://github.com/dhlab-basel/Knora
+
 # Semi-Open source
 - Virtuoso, powers dbpedia.org; semi-SQL and RDF
 
