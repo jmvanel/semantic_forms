@@ -1,26 +1,29 @@
-package deductions.runtime.utils
+package deductions.runtime.connectors
 
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.lang.Character.toUpperCase
 import java.util.StringTokenizer
-import scala.collection.JavaConversions.asScalaBuffer
-import scala.collection.JavaConversions.asScalaIterator
-import scala.collection.JavaConversions.mapAsScalaMap
 import scala.collection.mutable.ArrayBuffer
 import scala.language.postfixOps
 import org.apache.any23.vocab.CSV
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.CSVRecord
-import org.w3.banana.FOAFPrefix
 import org.w3.banana.RDF
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFPrefix
-import org.w3.banana.RDFSPrefix
 import org.w3.banana.XSDPrefix
 import deductions.runtime.services.Configuration
+import deductions.runtime.utils.RDFPrefixes
+import deductions.runtime.utils.URIHelpers
+
 import org.w3.banana.PrefixBuilder
+import org.w3.banana._
+
+import scala.collection.JavaConversions.asScalaBuffer
+import scala.collection.JavaConversions.asScalaIterator
+import scala.collection.JavaConversions.mapAsScalaMap
 
 /** made from CSVExtractor from Any23;
  *  TODO: probably should be in another SBT project */
@@ -71,7 +74,9 @@ trait CSVImporter[Rdf <: RDF, DATASET]
 	  val postal_code = apply("postal-code")
 	  val locality =  apply("locality")
   }
+
   private val vcard = VCardPrefix[Rdf]
+  private val gvoi = Prefix[Rdf]("gvoi", "http://assemblee-virtuelle.github.io/grands-voisins-v2/gv.owl.ttl#")
 
   ///////////////////////////////////
   
@@ -117,7 +122,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       for( pv <- propertyValueForEachRow ) {
     	  list += Triple(rowSubject, pv._1, pv._2)
       }
-      list += Triple(documentURI, csvPredicate(CSV.ROW), rowSubject)
+//      list += Triple(documentURI, csvPredicate(CSV.ROW), rowSubject)
       list += Triple(rowSubject, csvPredicate(CSV.ROW_POSITION), Literal( String.valueOf(index) ) )
       index = index + 1
     }
@@ -192,6 +197,9 @@ trait CSVImporter[Rdf <: RDF, DATASET]
    *  use labels on properties to propose properties to user,
    *  manage prefixes globally, maybe using prefix.cc */
   val columnsMappings = Map(
+
+      // AV
+
       // foaf:Person
       "Prénom" -> foaf.givenName,
       "Nom" -> foaf.familyName,
@@ -220,26 +228,37 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       "Idée 2" -> av.idea,
       "Rencontré à" -> av.metAt,
 
-      // GV
-      
-      /*	",SUIVI,SITE WEB,PRINT SIGNA,
-      Nom structure pour admnistration,Nom pour communication,
-      Prénom interlocuteur référent,Nom interlocuteur référent,Numéro contact,Adresse e-mail,
-      Prénom interlocuteur référent 2,Nom interlocuteur référent 2,Numéro contact 2,Adresse e-mail 2,
-      Activité,Site Web,Bâtiment,Espace,Arrivée,Contribution au projet proposée,Contribution réalisée,
-      Nombre salariés,
-      Page Facebook,Compte twitter,NB de mentions presses,Ventes ou services,Structure juridique signature convention,
-      Numéro de clé au PC
-      http://dbpedia.org/ontology/longName
-      */
-      "Nom structure pour admnistration" ->  foaf.name,
-      "Nom pour communication" -> URI("http://dbpedia.org/ontology/longName"),
+      // GV (gvoi: prefix)
+
+      "Nom structure pour administration" -> gvoi("administrativeName"), // foaf.name,
+      "Nom pour communication" ->  foaf.name, // URI("http://dbpedia.org/ontology/longName"),
+
       "Prénom interlocuteur référent" -> foaf.givenName,
       "Nom interlocuteur référent" -> foaf.familyName,
       "Numéro contact" -> foaf.phone,
       "Adresse e-mail" -> foaf.mbox,
-      "Page Facebook" -> av("facebook"),
-      "Compte twitter" -> av("twitter"),
+
+      "Page Facebook" -> gvoi("facebook"),
+      "Compte twitter" -> gvoi("twitter"),
+      "Linkedin" -> gvoi("linkedin"),
+      "Facebook" -> gvoi("Facebook"),
+
+      "SUIVI" -> gvoi("status"),
+      "Thématiques" -> foaf.status,
+      "Activité" -> dc("subject"),
+      "Bâtiment" -> gvoi("building"),
+      "Espace" -> gvoi("room"),
+      "Arrivée" -> gvoi("arrivalDate"),
+      "Contribution au projet proposée" -> gvoi( "proposedContribution"),
+      "Contribution réalisée" -> gvoi( "realisedContribution"),
+      "Nombre salariés" -> gvoi( "employeesCount"),
+      "NB de mentions presses" -> gvoi( "pressReferencesCount"),
+      "Structure juridique signature convention" -> gvoi( "conventionType"),
+      "Numéro de clé au PC" -> gvoi("keyNumber"),
+      "Propose du Bénévolat" -> gvoi("volunteeringProposals"),
+      "Projets au sein des GV" -> foaf.currentProject,
+      "URL logo" -> foaf.img,
+      "Assurance 2017" -> xsd.boolean,
 
       // Tasks management
 

@@ -22,6 +22,9 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
   /**
    * create Form from a class URI,
    *  looking up for Form Configuration within RDF graph
+   *  
+   *  TODO check URI arguments: they must valid be absolute
+   *  TODO return Try
    */
   def createFormFromClass(classe: Rdf#URI,
     formSpecURI0: String = "" , request: HTTPrequest= HTTPrequest() )
@@ -52,7 +55,12 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
       } else classs
     println(s">>> UnfilledFormFactory.createFormFromClass: classFromSpecsOrGiven <$classFromSpecsOrGiven>")
 
-    val newId = makeId(request)
+    val instanceURI = getFirstNonEmptyInMap(request.queryString, "subjecturi")
+    val newId = if (instanceURI == "")
+      makeId(request)
+    else
+      instanceURI
+
     if (propsListInFormConfig.isEmpty) {
       val props = fieldsFromClass(classFromSpecsOrGiven, graph).propertiesList
       createFormDetailed(makeUri(newId), addRDFSLabelComment(props), classFromSpecsOrGiven, CreationMode)
@@ -61,4 +69,11 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
         CreationMode, formConfig = formConfig)
   }
 
+  // TODO put in reusable trait
+  private def getFirstNonEmptyInMap(
+    map: Map[String, Seq[String]],
+    uri: String): String = {
+    val uriArgs = map.getOrElse(uri, Seq())
+    uriArgs.find { uri => uri != "" }.getOrElse("") . trim()
+  }
 }

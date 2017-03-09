@@ -136,7 +136,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    *  see if ?D is a datatype or an OWL or RDFS class;
    * 
    * TODO : add lang argument
-   * 
+   * TODO: propertiesList argument IS NOT USED !!!!
+   *
    * used directly for creating an empty Form from a class URI,
    * and indirectly for other cases;
    * NO transaction, should be called within a transaction

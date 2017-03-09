@@ -1,4 +1,4 @@
-package deductions.runtime.jena
+package deductions.runtime.connectors
 
 import java.io.File
 import java.io.FileInputStream
@@ -6,9 +6,9 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
-
 import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.utils.CSVImporter
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
 
 /**
  * App to transform CSV into a Turtle file;
@@ -32,9 +32,6 @@ object CSVImporterApp extends {
     with DefaultConfiguration
     with CSVImporter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
-  //  val config = new DefaultConfiguration {
-  //    override val useTextQuery = false
-  //  }
   import ops._
 
   println(s"Arguments: ${args.mkString(", ")}")
@@ -88,6 +85,8 @@ object CSVImporterApp extends {
     val os = new FileOutputStream(outputFile)
     turtleWriter.write(graph, os, fromUri(documentURI))
   }
+  
+  println(s"""Saved in SPARQL in graph URI <$documentURI>""")
   rdfStore.appendToGraph(dataset, documentURI, graph)
 
   /**

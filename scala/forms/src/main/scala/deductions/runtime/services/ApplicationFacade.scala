@@ -49,10 +49,8 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
     impl.create(classUri, lang, formSpecURI, graphURI, request: HTTPrequest).get
 
   def createDataAsJSON(classUri: String, lang: String, formSpecURI: String,
-//      graphURI: String, 
       request: HTTPrequest ): String =
     impl.createDataAsJSON(classUri, lang, formSpecURI,
-//        graphURI, 
         request: HTTPrequest)
 
   def lookup(search: String, lang: String = "en", clas: String ="", mime: String=""): String =

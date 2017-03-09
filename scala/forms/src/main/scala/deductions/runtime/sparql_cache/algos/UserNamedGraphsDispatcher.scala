@@ -1,11 +1,22 @@
 package deductions.runtime.sparql_cache.algos
 
-import org.w3.banana.RDF 
+import org.w3.banana.RDF
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.services.SPARQLHelpers
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.DefaultConfigurationProvider
 
-trait UserNamedGraphsDispatcher[Rdf <: RDF, DATASET] extends SPARQLHelpers[Rdf, DATASET]
-with RDFHelpers[Rdf] {
+object UserNamedGraphsDispatcherApp
+    extends App
+    with DefaultConfigurationProvider
+    with ImplementationSettings.RDFCache // RDFModule 
+    with UserNamedGraphsDispatcher[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+  dispatchToUserNamedGraphs(args(0))
+}
+
+trait UserNamedGraphsDispatcher[Rdf <: RDF, DATASET]
+    extends SPARQLHelpers[Rdf, DATASET]
+    with RDFHelpers[Rdf] {
 
   def dispatchToUserNamedGraphs(inputGraphName: String) = {
     val queryUserScheme = s"""
@@ -26,26 +37,36 @@ with RDFHelpers[Rdf] {
       |       BIND (REPLACE(CONCAT('user:', ?FN, '_', ?LN), ' ', '_') AS ?USER_GRAPH)
       |}}
       |""".stripMargin
-      
+
     val queryMailtoScheme = s"""
       |${declarePrefix(foaf)}
-      |DELETE { GRAPH <$inputGraphName> {
-      | ?PER ?P ?O .
-      |}}
+      |#DELETE { GRAPH <$inputGraphName> {
+      |# ?PER ?P ?O .
+      |# ?O ?P1 ?O1.
+      |#}}
       |
       |INSERT { GRAPH ?USER_GRAPH {
       | ?PER ?P ?O .
+      | ?O ?P1 ?O1.
+      | ?S ?P3 ?O3 .
       |}}
       |
       |WHERE { GRAPH <$inputGraphName> {
       |  ?PER a foaf:Person ;
       |       foaf:mbox ?MB ;
       |       ?P ?O .
-      |       BIND (CONCAT('mailto:', ?MB), ' ', '_') AS ?USER_GRAPH)
+      |  # direct triples
+      |  OPTIONAL {?O ?P1 ?O1 }
+      |  # inverse triples and direct from there (use case pair:hasResponsible)
+      |  OPTIONAL {
+      |  ?S ?P2 ?PER .
+      |  ?S ?P3 ?O3 . }
+      |  BIND ( URI(CONCAT('mailto:', ?MB )) AS ?USER_GRAPH )
       |}}
       |""".stripMargin
 
-    println(s"dispatchToUserNamedGraphs: ${sparqlUpdateQueryTR(queryMailtoScheme)}")
+    println(s"dispatchToUserNamedGraphs: query $queryMailtoScheme")
+    println(s"dispatchToUserNamedGraphs: inputGraphName $inputGraphName, return status: ${sparqlUpdateQueryTR(queryMailtoScheme)}")
 
   }
 }

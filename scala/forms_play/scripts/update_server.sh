@@ -16,9 +16,14 @@ sed -e "s/=timestamp=.*/=timestamp= $DATE/" $MainXml > /tmp/MainXml.scala
 cp $MainXml /tmp/MainXml.orig.scala 
 cp /tmp/MainXml.scala $MainXml
 
+echo  which $SBT ; which $SBT
+echo launching $SBT -J-Xmx2G dist
 $SBT -J-Xmx2G dist
-echo $SBT RETURN CODE $?
-
+SBT_RETURN_CODE=$?
+echo $SBT RETURN CODE: $SBT_RETURN_CODE
+if test $SBT_RETURN_CODE -ne 0
+then echo "Trouble in SBT!" ; exit
+else
 cp /tmp/MainXml.orig.scala $MainXml
 echo "sofware recompiled!"
 
@@ -44,3 +49,5 @@ ln -s ../TDBsandbox3 TDB3
 PORT=9111
 echo To start the server on port $PORT in directory ~/deploy/$APPVERS , paste this:
 echo cd  ~/deploy/$APPVERS \; nohup bin/${APP} -J-Xmx100M -J-server -Dhttp.port=$PORT &
+fi
+

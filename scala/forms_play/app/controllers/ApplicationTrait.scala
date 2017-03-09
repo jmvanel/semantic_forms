@@ -302,14 +302,14 @@ trait ApplicationTrait extends Controller
     Action { implicit request =>
       logger.info("create: " + request)
       // URI of RDF class from which to create instance
-      val uri0 = getFirstNonEmptyInMap(request.queryString, "uri")
-      val uri = expandOrUnchanged(uri0)
+      val classUri0 = getFirstNonEmptyInMap(request.queryString, "uri")
+      val classUri = expandOrUnchanged(classUri0)
       // URI of form Specification
       val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formuri")
-      logger.info(s"create: <$uri>")
+      logger.info(s"create: class URI <$classUri>")
       logger.info(s"create: formSpecURI from HTTP request: <$formSpecURI>")
 
-      Ok(createDataAsJSON(uri, chooseLanguage(request),
+      Ok(createDataAsJSON(classUri, chooseLanguage(request),
         formSpecURI,
         copyRequest(request))).
         as(AcceptsJSONLD.mimeType + "; charset=" + myCustomCharset.charset)
@@ -509,7 +509,8 @@ trait ApplicationTrait extends Controller
     val mime = computeMIME(acceptedTypes, defaultMIME)
     logger.info(s"sparqlConstruct: computed mime ${mime}")
 
-    val resultFormat = mimeAbbrevs(defaultMIME) // preferredMedia.getOrElse(defaultMIME))
+//    val resultFormat = mimeAbbrevs(defaultMIME)
+    val resultFormat = mimeAbbrevs.getOrElse(defaultMIME, defaultMIMEaPriori.mimeType )
     logger.info(s"sparqlConstruct: output(accepts=$acceptedTypes) => result format: $resultFormat")
     if (preferredMedia.isDefined &&
       !mimeSet.contains(preferredMedia.get))
@@ -580,13 +581,22 @@ trait ApplicationTrait extends Controller
       implicit userid =>
         implicit request =>
           logger.info("sparql update: " + request)
-          logger.info("sparql: " + update)
+          logger.info(s"sparql: update '$update'")
           println(log("update", request))
-
-          val res = sparqlUpdateQuery(update)
+          val update2 = if( update == "" ) {
+            println(s"""contentType ${request.contentType}
+            ${request.mediaType}
+            ${request.body.getClass}
+            """)
+            request.body.asText.getOrElse("")
+          } else update
+          logger.info(s"sparql: update2 '$update2'")
+          val res = sparqlUpdateQuery(update2)
           res match {
             case Success(s) => Ok(s"$res")
-            case Failure(f) => InternalServerError(s"$res")
+            case Failure(f) =>
+              logger.error(res.toString())
+              BadRequest(f.toString())
           }
     }
 

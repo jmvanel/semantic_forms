@@ -25,6 +25,8 @@ trait Lookup[Rdf <: RDF, DATASET]
   import rdfStore.sparqlEngineSyntax._
   import rdfStore.transactorSyntax._
 
+  type Results = List[(Rdf#Node, String, String, String, String)]
+
   /**
    * This is dbPedia's output format, that could be used:
    *
@@ -53,7 +55,9 @@ trait Lookup[Rdf <: RDF, DATASET]
           val uri = uris.head
           val label = instanceLabel(uri, allNamedGraph, lang)
           val desc = instanceDescription(uri, allNamedGraph, lang)
-          (uri, label, desc)
+          val img = instanceImage(uri, allNamedGraph, lang)
+          val typ = instanceTypeLabel(uri, allNamedGraph, lang)
+          (uri, label, desc, img, typ)
       }
       urilabels
     })
@@ -71,13 +75,15 @@ trait Lookup[Rdf <: RDF, DATASET]
 //      formatXML(list)
   }
 
-  private def formatXML(list: List[(Rdf#Node, String, String)]): String = {
+  private def formatXML(list: Results): String = {
     val elems = list.map {
-      case (uri, label, desc) =>
+      case (uri, label, desc, img, typ) =>
         <Result>
           <Label>{ label }</Label>
           <URI>{ uri }</URI>
           <Description>{ desc }</Description>
+          <Image>{ img }</Image>
+          <Type>{ typ }</Type>
         </Result>
     }
     val xml =
@@ -88,12 +94,15 @@ trait Lookup[Rdf <: RDF, DATASET]
   }
 
   /** The keys are NOT exactly the same as the XML tags :( */
-  private def formatJSON(list: List[(Rdf#Node, String, String)]): String = {
+  private def formatJSON(list: Results): String = {
     val list2 = list.map {
-      case (uri, label, desc) => Json.obj(
+      case (uri, label, desc, img, typ) => Json.obj(
           "label" -> label,
           "uri" -> uri.toString(),
-          "description" -> desc)
+          "description" -> desc,
+          "image" -> img,
+          "type" -> typ
+          )
     }
     println(s"list2 $list - $list2")
     val results =  Json.obj( "results" -> list2 )

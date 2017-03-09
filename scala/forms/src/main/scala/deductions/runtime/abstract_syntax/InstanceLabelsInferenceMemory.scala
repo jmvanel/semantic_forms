@@ -34,18 +34,37 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   }
 
   def instanceDescription(subjectNode: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
-    def stringFromPred(predNode: Rdf#Node): Option[String] =
-      for (
-        commentTriple <- find(allNamedGraph, subjectNode, predNode, ANY).toSeq.headOption;
-        comment = foldNode(commentTriple.objectt)(
-          _ => "",
-          _ => "",
-          literal => fromLiteral(literal)._1)
-      ) yield comment
-
-    stringFromPred(rdfs.comment)
-      .getOrElse(stringFromPred(dct("description")).getOrElse(""))
+    stringFromLiteralPred(subjectNode, rdfs.comment)
+      .getOrElse(stringFromLiteralPred(subjectNode, dct("description")).getOrElse(""))
   }
+
+  def instanceImage(subjectNode: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
+	  stringFromLiteralPred(subjectNode, foaf.img ).getOrElse("")
+  }
+
+  def instanceTypeLabel(subjectNode: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
+	  stringFromObjectPred(subjectNode, rdf.typ ).getOrElse("")
+  }
+
+  private def stringFromObjectPred(subjectNode: Rdf#Node, predNode: Rdf#Node): Option[String] = {
+    for (
+      triple <- find(allNamedGraph, subjectNode, predNode, ANY).toSeq.headOption;
+      result = foldNode(triple.objectt)(
+        uri => instanceLabel(uri, allNamedGraph, "fr"),
+        bn => instanceLabel(bn, allNamedGraph, "fr"),
+        literal => "")
+    ) yield result
+  }
+
+  /** by Literal Predicate we mean a Predicate whose range is Literal */
+  private def stringFromLiteralPred(subjectNode: Rdf#Node, predNode: Rdf#Node): Option[String] =
+    for (
+      triple <- find(allNamedGraph, subjectNode, predNode, ANY).toSeq.headOption;
+      result = foldNode(triple.objectt)(
+        _ => "",
+        _ => "",
+        literal => fromLiteral(literal)._1)
+    ) yield result
 
   /** NON transactional, needs rw transaction */
   def instanceLabelFromTDB(node: Rdf#Node, lang: String): String = {

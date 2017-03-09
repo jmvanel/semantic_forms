@@ -6,7 +6,7 @@ import deductions.runtime.sparql_cache.RDFCacheAlgo
 import java.io.File
 import deductions.runtime.services.SPARQLHelpers
 import java.io.FileWriter
-import deductions.runtime.utils.CSVImporter
+import deductions.runtime.connectors.CSVImporter
 import java.io.FileInputStream
 import deductions.runtime.services.DefaultConfiguration
 
