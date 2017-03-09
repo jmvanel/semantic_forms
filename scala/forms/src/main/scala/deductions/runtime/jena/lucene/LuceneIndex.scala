@@ -16,13 +16,15 @@ import org.w3.banana.RDFSPrefix
 
 import deductions.runtime.services.Configuration
 import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.utils.RDFPrefixes
+import org.w3.banana.Prefix
 
 /**
  * see https://jena.apache.org/documentation/query/text-query.html
  * see [[StringSearchSPARQL]] for search query
  */
 trait LuceneIndex // [Rdf <: RDF]
-//    extends Configuration
+    extends RDFPrefixes[ImplementationSettings.Rdf]
 {
   val config: Configuration
   import config._
@@ -30,6 +32,7 @@ trait LuceneIndex // [Rdf <: RDF]
   implicit val ops: RDFOps[ImplementationSettings.Rdf]
   import ops._
 
+  /** cf trait InstanceLabelsInference */
   val rdfIndexing: EntityDefinition = {
     val rdfs = RDFSPrefix[ImplementationSettings.Rdf]
     val foaf = FOAFPrefix[ImplementationSettings.Rdf]
@@ -40,8 +43,17 @@ trait LuceneIndex // [Rdf <: RDF]
     entMap.set("text", foaf.lastName)
     entMap.set("text", foaf.name)
     entMap.set("text", rdfs.comment)
-    /* cf trait InstanceLabelsInference */
     entMap.set("text", URI("http://dbpedia.org/ontology/abstract"))
+
+    // for Grands Voisins:
+    lazy val gvoi = Prefix[ImplementationSettings.Rdf]("gvoi",
+        "http://assemblee-virtuelle.github.io/grands-voisins-v2/gv.owl.ttl#" )
+    entMap.set("text", dc("subject"))
+    entMap.set("text", gvoi("administrativeName"))
+    entMap.set("text", gvoi("proposedContribution"))
+    entMap.set("text", gvoi("realisedContribution"))
+    entMap.set("text", foaf.status)
+
     entMap
   }
 
