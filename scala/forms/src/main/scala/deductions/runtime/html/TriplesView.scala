@@ -56,7 +56,6 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     request: HTTPrequest = HTTPrequest(),
     inputGraph: Try[Rdf#Graph] = Success(emptyGraph)
   ): ( NodeSeq, FormSyntax ) = {
-
     htmlFormRawTry(uri, unionGraph, hrefPrefix, blankNode, editable, actionURI,
       lang, graphURI, actionURI2, URI(formGroup), formuri, database, request, inputGraph) match {
         case Success(e) => e
@@ -90,11 +89,13 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
    */
   def htmlFormElemJustFields(uri: String, hrefPrefix: String = "", blankNode: String = "",
     editable: Boolean = false,
-    lang: String = "en",
+    lang0: String = "en",
     graphURI: String = "",
     formGroup: String = fromUri(nullURI),
     formuri: String="" )
     : NodeSeq = {
+
+    implicit val lang = lang0
 
     // TODO for comprehension like in htmlForm()
 
@@ -104,8 +105,8 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
       val ops1 = ops
       val config1 = config
       val form = createAbstractForm(
-          uri, editable, lang, blankNode,
-        URI(formGroup), formuri )
+          uri, editable, blankNode,
+          URI(formGroup), formuri )
 
         generateHTMLJustFields(form,
           hrefPrefix, editable, graphURIActual, request=HTTPrequest() )
@@ -221,7 +222,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     hrefPrefix: String = "", blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",
-    lang: String = "en", graphURI: String,
+    lang0: String = "en", graphURI: String,
     actionURI2: String = "/save",
     formGroup: Rdf#URI = nullURI,
     formuri: String="",
@@ -229,6 +230,8 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
 		  ) : ( NodeSeq , FormSyntax ) = {
 
     implicit val graph: Rdf#Graph = graphe
+    implicit val lang = lang0
+
     try {
       // DANGEROUS with large database !
       //    	println(s"TableViewModule.graf2form(graph: graph first triple: ${getTriples(graph).headOption}, graphURI <$graphURI>")
@@ -238,8 +241,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
       case t: Throwable => "graf2form : getting graph.size" + t.getLocalizedMessage()
     }
     val form = time("createAbstractForm",
-      createAbstractForm(
-          uri, editable, lang, blankNode, formGroup, formuri))
+      createAbstractForm(uri, editable, blankNode, formGroup, formuri))
     val htmlForm =
       generateHTML(form, hrefPrefix, editable, actionURI, graphURI,
         actionURI2, lang, request)
@@ -248,8 +250,8 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
 
   private def createAbstractForm(
       uri: String, editable: Boolean,
-    lang: String, blankNode: String, formGroup: Rdf#URI, formuri: String="")
-    (implicit graph: Rdf#Graph)
+      blankNode: String, formGroup: Rdf#URI, formuri: String="")
+    (implicit graph: Rdf#Graph, lang: String )
     :  FormSyntax = {
     val subjectNode = if (blankNode == "true")
       /* Jena TDB specific:
@@ -258,7 +260,6 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
       BNode(uri)
     else URI(uri)
 
-    preferedLanguage = lang
     createForm(subjectNode, editable, formGroup, formuri)
   }
 

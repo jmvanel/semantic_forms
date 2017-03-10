@@ -18,18 +18,22 @@ trait PreferredLanguageLiteral[Rdf <: RDF] {
    *  use application language
    */
   def getLiteralInPreferedLanguageFromSubjectAndPredicate(subject: Rdf#Node,
-    predicate: Rdf#Node, default: String)(implicit graph: Rdf#Graph,
-      preferedLanguage: String = "en"): String = {
-    //    println("getPreferedLanguageFromSubjectAndPredicate: " + subject + " " + predicate) // debug
-    ops.getObjects(graph, subject, predicate.asInstanceOf[Rdf#URI]) . toList match {
-      case ll if ll isEmpty => default
-      case ll => getPreferedLanguageLiteral(ll)
-    }
+                                                          predicate: Rdf#Node, default: String)(implicit graph: Rdf#Graph,
+                                                                                                lang: String = "en"): String = {
+    // println("getPreferedLanguageFromSubjectAndPredicate: " + subject + " " + predicate + s" lang $lang") // debug
+    foldNode(predicate)(
+      predURI =>
+        getObjects(graph, subject, predURI).toList match {
+          case ll if ll isEmpty => default
+          case ll               => getPreferedLanguageLiteral(ll)
+        },
+      _ => "", _ => "")
   }
 
   /** get preferred Language value From RDF Values that are language marked or not */
   private def getPreferedLanguageLiteral(values: Iterable[Rdf#Node])(implicit graph: Rdf#Graph,
-    preferedLanguage: String = "en"): String = {
+    lang: String = "en"): String = {
+//      println(s""">>>> getPreferedLanguageLiteral "$lang" values $values""")
 
     def computeValues(): (String, String, String) = {
       var preferedLanguageValue = ""
@@ -43,7 +47,7 @@ trait PreferredLanguageLiteral[Rdf <: RDF] {
             // println("getPreferedLanguageFromValues: " + (raw, uri, langOption) )
             langOption match {
               case Some(language) =>
-                if (language == preferedLanguage) preferedLanguageValue = raw
+                if (language == lang) preferedLanguageValue = raw
                 else if (language == "en")
                   enValue = raw
               case None => noLanguageValue = raw

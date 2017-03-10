@@ -90,9 +90,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
   val config: Configuration
   import config._
-
-  // TODO not thread safe: form is not rebuilt for each HTTP request 
-  var preferedLanguage: String = "en"
   
   val defaults: FormDefaults = FormModule.formDefaults
   
@@ -115,7 +112,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   def createForm(subject: Rdf#Node,
     editable: Boolean = false,
     formGroup: Rdf#URI = nullURI, formuri: String="")
-    (implicit graph: Rdf#Graph)
+    (implicit graph: Rdf#Graph, lang: String="en" )
   : FormSyntax = {
 
     val step1 = computePropertiesList(subject, editable, formuri)
@@ -154,15 +151,17 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     createFormDetailed2( step1, formGroup )
   }
   
-  /**  TODO : add lang argument */
+  /** */
   private def createFormDetailed2(
 		  step1: RawDataForForm[Rdf#Node],
 		  formGroup: Rdf#URI = nullURI)
-    (implicit graph: Rdf#Graph)
+    (implicit graph: Rdf#Graph,  lang: String="")
   : FormSyntax = {
 
     val formConfig = step1.formURI
-    logger.info(s">>>> createFormDetailed2 formConfig <$formConfig>")
+    logger.info(
+//println(
+    s">>>> createFormDetailed2 formConfig <$formConfig> lang $lang")
     
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
 
@@ -173,8 +172,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       val formMode: FormMode = if (step1.editable) EditionMode else DisplayMode
 
       logger.debug(s"createForm subject <$subject>, props $props")
-      logger.debug(s"""FormSyntaxFactory: preferedLanguage: "$preferedLanguage""" )
-//      implicit val lang = preferedLanguage
+      logger.debug(
+          s"""FormSyntaxFactory: language: "$lang""" )
 
       val entries = for (
         prop <- props if prop != displayLabelPred
@@ -198,15 +197,15 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val entriesFromPropertiesGroups = for( (node, rawDataForForm ) <- step1.propertiesGroups ) yield
     	node -> makeEntriesFromRawDataForForm(rawDataForForm)
     val propertiesGroups = for( (n, m) <- entriesFromPropertiesGroups ) yield {
-      FormSyntax(n, m, title=instanceLabel(n, allNamedGraph, preferedLanguage))
+      FormSyntax(n, m, title=instanceLabel(n, allNamedGraph, lang))
     }
     val formSyntax = FormSyntax(subject, fieldsCompleteList, classs, propertiesGroups=propertiesGroups.toSeq,
         thumbnail = getURIimage(subject),
-        title = instanceLabel( subject, allNamedGraph, preferedLanguage ),
+        title = instanceLabel( subject, allNamedGraph, lang ),
         formURI = step1.formURI,
         formLabel= step1.formURI match {
           case None => ""
-          case Some(uri) => instanceLabel( uri, allNamedGraph, preferedLanguage )
+          case Some(uri) => instanceLabel( uri, allNamedGraph, lang )
         } )
     
     if( step1.editable ) addAllPossibleValues(formSyntax, valuesFromFormGroup)
@@ -334,10 +333,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       formMode: FormMode
 //      valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)]
       )
-	  (implicit graph: Rdf#Graph)
+	  (implicit graph: Rdf#Graph, lang:String)
   : Seq[Entry] = {
-    logger.debug(s"makeEntriesForSubject subject <$subject>, prop <$prop>")
-//    implicit val prlng = preferedLanguage
+    logger.debug( s"makeEntriesForSubject subject <$subject>, prop <$prop> lang $lang")
 
     val objects = objectsQuery(subject, uriNodeToURI(prop) ); logger.debug(s"makeEntriesForSubject subject <$subject>, objects: $objects")
     val result = mutable.ArrayBuffer[Entry]()
@@ -357,7 +355,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     objet0: Rdf#Node,
     formMode: FormMode
 //    valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)] // formGroup: Rdf#URI
-    )(implicit graph: Rdf#Graph): Entry = {
+    )(implicit graph: Rdf#Graph, lang:String): Entry = {
 
     val xsdPrefix = XSDPrefix[Rdf].prefixIri
     val rdf = RDFPrefix[Rdf]
@@ -409,7 +407,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
         value,
         subject=subject,
-        subjectLabel = instanceLabel(subject, graph, preferedLanguage),
+        subjectLabel = instanceLabel(subject, graph, lang),
         type_ = firstType,
         lang = getLang(objet).toString(),
         valueLabel = nodeToString(value),
@@ -425,8 +423,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
               new ResourceEntry(label, comment, prop, ResourceValidator(ranges), objet,
                 subject=subject,
                 alreadyInDatabase = true,
-                valueLabel = instanceLabel(objet, graph, preferedLanguage),
-                subjectLabel = instanceLabel(subject, graph, preferedLanguage),
+                valueLabel = instanceLabel(objet, graph, lang),
+                subjectLabel = instanceLabel(subject, graph, lang),
                 type_ = firstType,
                 isImage = isImageTriple(subject, prop, objet, firstType),
                 thumbnail = getURIimage(objet),
@@ -445,8 +443,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
                typ: Rdf#Node = nullURI) = {
       new BlankNodeEntry(label, comment, property, validator, value,
     		subject=subject,
-    		subjectLabel = instanceLabel(subject, graph, preferedLanguage),
-        type_ = typ, valueLabel = instanceLabel(value, graph, preferedLanguage),
+    		subjectLabel = instanceLabel(subject, graph, lang),
+        type_ = typ, valueLabel = instanceLabel(value, graph, lang),
         htmlName=htmlName) {
         override def getId: String = nodeToString(value)
       }
@@ -459,31 +457,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       case rdf.List => rdfListEntry.get
       case _       => literalEntry
     }
-
-//    val res = rangeClasses match {
-//      case _ if objet.isLiteral => literalEntry
-//      case _ if rangeClasses.exists { c => c.toString startsWith (xsdPrefix) } => literalEntry
-//      case _ if rangeClasses.contains(rdfs.Literal) => literalEntry
-//      case _ if propClasses.contains(owl.DatatypeProperty) => literalEntry
-//      case _ if ranges.contains(rdfs.Literal) => literalEntry
-//
-//      case _ if propClasses.contains(owl.ObjectProperty) => resourceEntry
-//      case _ if rangeClasses.contains(owl.Class) => resourceEntry
-//      case _ if rangeClasses.contains(rdf.Property) => resourceEntry
-//      case _ if ranges.contains(owl.Thing) => resourceEntry
-//      case _ if isURI(objet) => resourceEntry
-//
-//      case _ if rdfListEntry.isDefined => rdfListEntry.get
-//      case _ if isBN(objet) => makeBN(label, comment, prop,
-//        ResourceValidator(ranges), toBN(objet), firstType)
-//      case _ if objet.toString.startsWith("_:") => resourceEntry // ??????????????? rather makeBN() ???
-//
-//      case _                                    => literalEntry
-//    }
-//    assert( res == res1)
   }
 
-  private case class PrecomputationsFromProperty(prop: Rdf#Node)(implicit graph: Rdf#Graph) {
+  private case class PrecomputationsFromProperty(prop: Rdf#Node)(implicit graph: Rdf#Graph, lang:String) {
     val label: String = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.label, terminalPart(prop))
     val comment: String = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.comment, "")
     val propClasses: Set[Rdf#Node] = objectsQuery(prop, rdf_type)

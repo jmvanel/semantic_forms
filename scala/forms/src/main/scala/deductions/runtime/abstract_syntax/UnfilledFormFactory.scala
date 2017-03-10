@@ -28,7 +28,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
    */
   def createFormFromClass(classe: Rdf#URI,
     formSpecURI0: String = "" , request: HTTPrequest= HTTPrequest() )
-  	  (implicit graph: Rdf#Graph) : FormSyntax = {
+  	  (implicit graph: Rdf#Graph, lang:String) : FormSyntax = {
 
     // if classs argument is not an owl:Class, check if it is a form:specification, then use it as formSpecURI
     val checkIsOWLClass = ops.find( graph, classe, rdf.typ, owl.Class)

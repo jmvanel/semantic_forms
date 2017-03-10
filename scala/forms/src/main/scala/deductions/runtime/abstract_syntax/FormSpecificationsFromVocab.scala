@@ -78,7 +78,7 @@ trait FormSpecificationsFromVocab[Rdf <: RDF, DATASET]
       classTriple <- find(vocabGraph, ANY, rdf.typ, owl.Class);
       _ = println(s"makeFormSpecificationsFromVocab: class Triple $classTriple");
       classe = classTriple.subject;
-      formSyntax = createFormFromClass(makeURI(classe));
+      formSyntax = createFormFromClass(makeURI(classe))(graph, "en");
       _ = println(s"makeFormSpecificationsFromVocab: formSyntax $formSyntax")
     ) yield {
       union(Seq(
