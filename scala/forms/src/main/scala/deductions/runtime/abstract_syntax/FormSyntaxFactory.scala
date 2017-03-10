@@ -145,7 +145,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     formMode: FormMode,
     formGroup: Rdf#URI = nullURI,
     formConfig: Rdf#Node = URI(""))
-    (implicit graph: Rdf#Graph) : FormSyntax = {
+    (implicit graph: Rdf#Graph, lang:String) : FormSyntax = {
 
 		val step1 = computePropertiesList(subject, formMode.editable, fromUri(uriNodeToURI(formConfig)), classs )
     createFormDetailed2( step1, formGroup )

@@ -23,7 +23,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
    * create Form from a class URI,
    *  looking up for Form Configuration within RDF graph
    *  
-   *  TODO check URI arguments: they must valid be absolute
+   *  TODO check URI arguments: they must be valid, absolute
    *  TODO return Try
    */
   def createFormFromClass(classe: Rdf#URI,
