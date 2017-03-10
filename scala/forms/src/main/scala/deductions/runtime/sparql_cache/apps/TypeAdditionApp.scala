@@ -1,15 +1,13 @@
-package deductions.runtime.jena
+package deductions.runtime.sparql_cache.apps
 
 import scala.collection.mutable.ArraySeq
 import scala.language.postfixOps
 import scala.util.Try
-
 import org.w3.banana.RDF
-//import org.w3.banana.jena.Jena
-//import org.w3.banana.jena.JenaModule
 
-import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.services.TypeAddition
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.DefaultConfiguration
 
 /**
  * deductions.runtime.jenaTypeAdditionApp
@@ -25,7 +23,7 @@ object TypeAdditionApp extends  {
   }
 } with ImplementationSettings.RDFModule
     with App
-    with RDFStoreLocalJena1Provider
+    with ImplementationSettings.RDFCache
     with TypeAdditionAppTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
 
