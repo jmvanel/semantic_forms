@@ -1,13 +1,14 @@
-package deductions.runtime.jena
+package deductions.runtime.sparql_cache.apps
 
 import deductions.runtime.data_cleaning.NamedGraphsCleaner
+import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.DefaultConfiguration
 
 object NamedGraphsCleanerApp extends {
   override val config = new DefaultConfiguration {
     override val useTextQuery = false
   }
-} with RDFStoreLocalJena1Provider
+} with ImplementationSettings.RDFCache
     with App
     with NamedGraphsCleaner[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
   cleanDBPediaGraphs()

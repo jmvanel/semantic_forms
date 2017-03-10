@@ -1,7 +1,8 @@
-package deductions.runtime.jena
+package deductions.runtime.sparql_cache.apps
 
 import deductions.runtime.sparql_cache.algos.ChildrenDocumentsFetcher
 import java.net.URL
+import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.DefaultConfiguration
 
 /** will be used for machine learning */
@@ -9,7 +10,7 @@ object ChildrenFetcherApp extends {
   override val config = new DefaultConfiguration {
     override val useTextQuery = false
   }
-} with RDFStoreLocalJena1Provider with App
+} with ImplementationSettings.RDFCache with App
     with ChildrenDocumentsFetcher[ImplementationSettings.Rdf] {
 
   //  val config = new DefaultConfiguration {

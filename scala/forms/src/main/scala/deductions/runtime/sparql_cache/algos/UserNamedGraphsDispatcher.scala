@@ -55,7 +55,7 @@ trait UserNamedGraphsDispatcher[Rdf <: RDF, DATASET]
       |  ?PER a foaf:Person ;
       |       foaf:mbox ?MB ;
       |       ?P ?O .
-      |  # direct triples
+      |  # direct triples 2 steps from ?PER
       |  OPTIONAL {?O ?P1 ?O1 }
       |  # inverse triples and direct from there (use case pair:hasResponsible)
       |  OPTIONAL {
@@ -65,8 +65,37 @@ trait UserNamedGraphsDispatcher[Rdf <: RDF, DATASET]
       |}}
       |""".stripMargin
 
-    println(s"dispatchToUserNamedGraphs: query $queryMailtoScheme")
-    println(s"dispatchToUserNamedGraphs: inputGraphName $inputGraphName, return status: ${sparqlUpdateQueryTR(queryMailtoScheme)}")
+    val queryOrganizationScheme = s"""
+      |${declarePrefix(foaf)}
+      |#DELETE { GRAPH <$inputGraphName> {
+      |# ?PER ?P ?O .
+      |# ?O ?P1 ?O1.
+      |#}}
+      |
+      |INSERT { GRAPH ?ORGA {
+      | ?PER ?P ?O .
+      | ?O ?P1 ?O1.
+      | ?ORGA ?P3 ?O3 .
+      |}}
+      |
+      |WHERE { GRAPH <$inputGraphName> {
+      |  ?PER a foaf:Person ;
+      |       foaf:mbox ?MB ;
+      |       ?P ?O .
+      |  # direct triples 2 steps from ?PER
+      |  OPTIONAL {?O ?P1 ?O1 }
+      |  # inverse triples and direct from there (use case gvoi:hasResponsible)
+      |  OPTIONAL {
+      |    ?ORGA ?P2 ?PER .
+      |    ?ORGA ?P3 ?O3 .
+      |    ?ORGA a foaf:Organization .
+      |  }
+      |}}
+      |""".stripMargin
+    
+   val query = queryOrganizationScheme
+    println(s"dispatchToUserNamedGraphs: query $query")
+    println(s"dispatchToUserNamedGraphs: inputGraphName $inputGraphName, return status: ${sparqlUpdateQueryTR(query)}")
 
   }
 }

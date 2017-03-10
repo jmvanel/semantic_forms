@@ -1,8 +1,11 @@
-package deductions.runtime.jena
+package deductions.runtime.sparql_cache.apps
 
-import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.utils.RDFPrefixes
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.jena.RDFCache
+import deductions.runtime.services.DefaultConfiguration
 
+/** download & Store Uri In self-Named Graph */
 object RDFLoaderApp extends {
   override val config = new DefaultConfiguration {
     override val useTextQuery = false

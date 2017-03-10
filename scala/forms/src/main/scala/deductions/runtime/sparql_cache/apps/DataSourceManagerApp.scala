@@ -1,12 +1,10 @@
-package deductions.runtime.jena
+package deductions.runtime.sparql_cache.apps
 
 import java.net.URL
-
 import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaModule
-
-import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.sparql_cache.DataSourceManager
+import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.jena.ImplementationSettings
 
 /** deductions.runtime.jena.DataSourceManagerApp */
 object DataSourceManagerApp extends {
@@ -14,7 +12,7 @@ object DataSourceManagerApp extends {
   }
 } with ImplementationSettings.RDFModule
     with DataSourceManager[Jena, ImplementationSettings.DATASET] with App
-    with RDFStoreLocalJena1Provider {
+    with ImplementationSettings.RDFCache {
 
   import config._
 

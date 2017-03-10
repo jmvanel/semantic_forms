@@ -37,7 +37,9 @@ trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
       case Success(graph) =>
         val triples = getTriples(graph).toSeq
         val fs = wrapInReadTransaction {
-          createFormFromTriples(triples, editable, formuri)(allNamedGraph)
+          createFormFromTriples(triples, editable, formuri)(allNamedGraph,
+              "en" // TODO <<<<<<<<<<<<<<<<
+              )
         } . get
         FormSyntax(subject = nullURI, fields = fs.fields, title = s"""From query:
       $query""")
@@ -53,7 +55,7 @@ trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
   private def createFormFromTriples(
     triples: Seq[Rdf#Triple],
     editable: Boolean = false,
-    formuri: String = "")(implicit graph: Rdf#Graph): FormSyntax = {
+    formuri: String = "")(implicit graph: Rdf#Graph, lang:String): FormSyntax = {
     logger.debug( s"triples: $triples")
     val formEntries =
 //      wrapInReadTransaction(
