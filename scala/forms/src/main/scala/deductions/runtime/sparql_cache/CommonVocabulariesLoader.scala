@@ -98,11 +98,11 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
    
   /**
    * TRANSACTIONAL
-   *  basicVocabs are not supposed to change often ..
+   *  #basicVocabs (FOAF etc) are not supposed to change often, so they are not removed ..
    */
-  def resetCommonVocabularies() {
+  def resetCommonVocabularies(except:List[Rdf#URI] = List()) {
     val r = rdfStore.rw( dataset, {
-      largerVocabs map {
+      (largerVocabs diff except) map {
         voc =>
           try {
             rdfStore.removeGraph( dataset, voc)

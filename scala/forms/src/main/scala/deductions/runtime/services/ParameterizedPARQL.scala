@@ -14,6 +14,7 @@ import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.html.Form2HTML
 import deductions.runtime.html.Form2HTMLDisplay
+import java.net.URLEncoder
 
 
 trait SPARQLQueryMaker[Rdf <: RDF] {
@@ -132,7 +133,10 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
               node, lang, graph,
               hrefPrefix = hrefPrefix,
               label = label,
-              sortAnd1rowPerElement = sortAnd1rowPerElement ),
+              sortAnd1rowPerElement = sortAnd1rowPerElement ) ++
+              <div style="font-size:10px; opacity:.8;">{ val uriString = fromUri(node)
+              URLEncoder.encode( s"DROP GRAPH <$uriString>", "utf-8") }</div>
+            ,
           node =>
             makeHyperlinkForURI(
               node, lang, graph,
@@ -143,7 +147,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
           )
           }</div>
         })
-        columnsFormResults // ?? . flatten
+        columnsFormResults
     }</div><!-- end of wrapping div displayResults -->
   }
 
