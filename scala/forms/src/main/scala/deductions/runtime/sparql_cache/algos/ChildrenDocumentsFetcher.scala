@@ -11,15 +11,20 @@ import org.w3.banana.RDFSPrefix
 import org.w3.banana.io.RDFWriter
 import org.w3.banana.io.NTriples
 import java.nio.file.StandardOpenOption
+import deductions.runtime.utils.RDFPrefixes
 
 trait ChildrenDocumentsFetcher[Rdf <: RDF]
-//    extends RDFLoader[Rdf, Try]
-{
+extends RDFPrefixes[Rdf] {
   implicit val rdfLoader: RDFLoader[Rdf, Try]
 
   implicit val ops: RDFOps[Rdf]
   import ops._
 
+  lazy val cco = Prefix[Rdf]("cco", "http://purl.org/ontology/cco/core#")
+
+  implicit val ntriplesWriter: RDFWriter[Rdf, Try, NTriples]
+
+  
   /** fetch documents ?D such that:
    *  <url> ?P ?D .
    * where ?P is in list propertyFilter */
@@ -59,14 +64,6 @@ trait ChildrenDocumentsFetcher[Rdf <: RDF]
     }
   }
 
-  
-  lazy val foafPrefix = "http://xmlns.com/foaf/0.1/"
-  lazy val foaf = FOAFPrefix[Rdf]
-  lazy val cco = Prefix[Rdf]("cco", "http://purl.org/ontology/cco/core#")
-  lazy val rdfs = RDFSPrefix[Rdf]
-  lazy val dbo = Prefix[Rdf]("dbo", "http://dbpedia.org/ontology/")
-
-  implicit val ntriplesWriter: RDFWriter[Rdf, Try, NTriples]
 
   /** will be used for machine learning */
   def fetchDBPediaAbstractFromInterestsAndExpertise(url: URL, lang: String="fr" ): List[Rdf#Triple] = {
