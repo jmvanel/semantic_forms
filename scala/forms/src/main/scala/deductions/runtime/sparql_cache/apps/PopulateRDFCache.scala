@@ -1,15 +1,11 @@
-package deductions.runtime.sparql_cache
+package deductions.runtime.sparql_cache.apps
 
 import org.w3.banana.RDF
-
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.DependenciesForApps
-
-trait SitesURLForDownload {
-  val githubcontent: String = "https://raw.githubusercontent.com"
-}
+import deductions.runtime.sparql_cache.CommonVocabulariesLoaderTrait
+import deductions.runtime.sparql_cache.FormSpecificationsLoaderTrait
+import deductions.runtime.services.DefaultConfiguration
 
 /**
  * Populate RDF Cache with commonly used vocabularies, formS pecifications and I18N Translations;

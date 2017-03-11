@@ -33,9 +33,7 @@ object FormSpecificationsLoader
 trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
     with RDFPrefixes[Rdf]
-    with SitesURLForDownload
-//    with Configuration
-    {
+    with SitesURLForDownload {
 
   import ops._
   import rdfStore.transactorSyntax._

@@ -1,14 +1,14 @@
 package deductions.runtime.sparql_cache
-//import deductions.runtime.jena.RDFStoreObject
-import org.scalatest.FunSuite
-import deductions.runtime.utils.FileUtils
-import org.w3.banana.SparqlOpsModule
-import org.scalatest.Ignore
+
 import org.scalatest.BeforeAndAfterAll
+import org.scalatest.FunSuite
+import org.w3.banana.SparqlOpsModule
 import org.w3.banana.jena.JenaModule
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
+
 import deductions.runtime.jena.RDFCache
+import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.FileUtils
 
 //@Ignore
 class TestRDFCache extends FunSuite with RDFCache

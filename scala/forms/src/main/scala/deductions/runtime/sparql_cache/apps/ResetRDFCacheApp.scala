@@ -3,7 +3,6 @@ package deductions.runtime.sparql_cache.apps
 import org.w3.banana.RDFOpsModule
 import deductions.runtime.sparql_cache.CommonVocabulariesLoaderTrait
 import deductions.runtime.sparql_cache.FormSpecificationsLoaderTrait
-import deductions.runtime.sparql_cache.RDFI18NLoaderTrait
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.jena.ImplementationSettings
 
