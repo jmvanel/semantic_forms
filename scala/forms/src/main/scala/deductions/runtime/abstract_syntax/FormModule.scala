@@ -132,8 +132,8 @@ trait FormModule[NODE, URI <: NODE] {
     )
       extends Entry {
     override def toString(): String = {
-      "RES " + super.toString +
-      s"""; <$value>, valueLabel "$valueLabel" possibleValues count=${possibleValues.size} """
+      "RESOURCE " + super.toString +
+      s"""; <$value>, valueLabel "$valueLabel", image <$thumbnail> possibleValues count=${possibleValues.size} """
     }
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = {
       val ret = new ResourceEntry(label, comment,

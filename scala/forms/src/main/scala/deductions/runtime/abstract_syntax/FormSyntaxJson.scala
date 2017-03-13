@@ -28,31 +28,61 @@ trait FormSyntaxJson[Rdf <: RDF]
   }
 
   implicit val entryWrites = new Writes[Entry] {
-    def writes(e: Entry) = Json.obj(
-      "subject" -> e.subject,
-      "subjectLabel" -> e.subjectLabel,
+    def writes(e: Entry) = {
+      println(s"entryWrites: e getClass ${e.getClass()} $e")
+      e match {
+        case r: ResourceEntry =>
+          Json.obj(
+            "subject" -> e.subject,
+            "subjectLabel" -> e.subjectLabel,
 
-      "property" -> e.property,
-      "label" -> e.label,
-      "comment" -> e.comment,
-      "mandatory" -> e.mandatory,
+            "property" -> e.property,
+            "label" -> e.label,
+            "comment" -> e.comment,
+            "mandatory" -> e.mandatory,
 
-      "value" -> nodeToString(e.value),
-      "type" -> e.type_,
+            "value" -> nodeToString(e.value),
+            "type" -> e.type_,
 
-      "widgetType" -> e.widgetType,
-      "openChoice" -> e.openChoice,
-      "cardinality" -> e.cardinality,
-      "htmlName" -> e.htmlName
-      // , "possibleValues" -> e.possibleValues
-      )
+            "widgetType" -> e.widgetType,
+            "openChoice" -> e.openChoice,
+            "cardinality" -> e.cardinality,
+            "htmlName" -> e.htmlName,
+            // , "possibleValues" -> e.possibleValues
+            "valueLabel" -> r.valueLabel,
+            //      if (r.thumbnail != null)
+            "thumbnail" -> r.thumbnail,
+            "isImage" -> r.isImage)
+        case r: Entry =>
+          /** TODO this code is pasted from other case above */
+          Json.obj(
+            "subject" -> e.subject,
+            "subjectLabel" -> e.subjectLabel,
+
+            "property" -> e.property,
+            "label" -> e.label,
+            "comment" -> e.comment,
+            "mandatory" -> e.mandatory,
+
+            "value" -> nodeToString(e.value),
+            "type" -> e.type_,
+
+            "widgetType" -> e.widgetType,
+            "openChoice" -> e.openChoice,
+            "cardinality" -> e.cardinality,
+            "htmlName" -> e.htmlName // , "possibleValues" -> e.possibleValues
+            )
+      }
+    }
   }
 
+  /** TODO this code is not used by Play JSON lib */
   implicit val resourceEntryWrites = new Writes[ResourceEntry] {
     def writes(e: ResourceEntry) = Json.obj(
       "valueLabel" -> e.valueLabel,
       "thumbnail" -> e.thumbnail,
-      "isImage" -> e.isImage )
+      "isImage" -> e.isImage
+    )
   }
 
   implicit val formSyntaxWrites = new Writes[FormSyntax] {
