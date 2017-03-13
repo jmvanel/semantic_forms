@@ -118,8 +118,7 @@ trait ApplicationTrait extends Controller
       }
 
   def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
-//        Action // 
-        withUser
+		  withUser
     {
       implicit userid =>
         implicit request =>
@@ -136,7 +135,8 @@ trait ApplicationTrait extends Controller
   def formData(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
     Action {
         implicit request =>
-       makeJSONResult(formDataImpl(uri, blankNode, Edit, formuri, database))
+        val lang = chooseLanguage(request)
+       makeJSONResult(formDataImpl(uri, blankNode, Edit, formuri, database, lang))
     }
 
   private def makeJSONResult(json: String) = makeResultMimeType(json, AcceptsJSONLD.mimeType)
