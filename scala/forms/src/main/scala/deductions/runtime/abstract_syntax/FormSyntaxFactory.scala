@@ -108,7 +108,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   
   /** create Form abstract syntax from an instance (subject) URI;
    *  the Form Specification is inferred from the class of instance;
-   *  TODO : add lang argument
    *  NO transaction, should be called within a transaction */
   def createForm(subject: Rdf#Node,
     editable: Boolean = false,
@@ -304,7 +303,7 @@ forms:givenName--personPerson
 	:fieldAppliesToProperty foaf:givenName ;
         :cardinality :exactlyOne .
             	   */
-                val formSpecGraph = PointedGraph(t.subject, Graph(triplesInFormConfig))
+                val formSpecGraph = PointedGraph(t.subject, allNamedGraph) // Graph(triplesInFormConfig))
                 for (
                   card <- (formSpecGraph / formPrefix("cardinality")).takeOnePointedGraph;
                   cardinality = uriToCardinalities(card.pointer);

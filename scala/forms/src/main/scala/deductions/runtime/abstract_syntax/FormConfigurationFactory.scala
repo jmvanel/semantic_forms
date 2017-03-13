@@ -11,6 +11,8 @@ import deductions.runtime.utils.RDFPrefixes
 
 /**
  * Lookup Form specifications from RDF graph; TODO rename FormSpecificationFactory
+ * 
+ * TODO rename ForSpecificationFactory
  */
 trait FormConfigurationFactory[Rdf <: RDF, DATASET]
     extends
