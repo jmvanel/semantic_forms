@@ -30,6 +30,11 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
   /** save triples in named graph given by HTTP parameter "graphURI";
    *  other HTTP parameters are original triples in Turtle;
+   *
+   * Important HTTP parameters:
+   * - uri: (main) subject URI
+   * - graphURI: URI of named graph in which save triples will be saved
+   * 
    * transactional
    * @param map a raw map of HTTP response parameters
    * @return main subject URI
@@ -49,18 +54,18 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
     // PENDING: require subject URI in parameter "uri" is probably not necessary (case of sub-forms and inverse triples)
     lazy val subjectUriOption = encodedSubjectUriOption match {
-      case Some(uri0) =>
-        val subjectUri = URLDecoder.decode(uri0, "utf-8")
+      case Some(subjectUri0) =>
+        val subjectUri = URLDecoder.decode(subjectUri0, "utf-8")
         logger.debug(s"FormSaver.saveTriples subjectUri $subjectUri")
 
         // named graph in which to save:
         val graphURI =
           if (graphURIOption == Some("")) subjectUri
-          else URLDecoder.decode(graphURIOption.getOrElse(uri0), "utf-8") // TODO no decode
+          else URLDecoder.decode(graphURIOption.getOrElse(subjectUri0), "utf-8") // TODO no decode
  
         httpParamsMap.map {
           case (param0, objects) =>
-            val param = URLDecoder.decode(param0, "utf-8") // TODO no decode
+            val param = URLDecoder.decode(param0, "utf-8") // TODO no decode ??
             logger.debug(s"saveTriples: httpParam decoded: $param")
             if (param != "url" &&
               param != "uri" &&
@@ -80,6 +85,9 @@ trait FormSaver[Rdf <: RDF, DATASET]
         Some(subjectUri)
       case _ => None
     }
+
+    //// end of saveTriples() body ////
+
 
     /** process a single triple from the form */
     def computeDatabaseChanges(originalTriple: Rdf#Triple, objectsFromUser: Seq[String]) {

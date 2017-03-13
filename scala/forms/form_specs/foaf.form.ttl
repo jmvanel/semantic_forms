@@ -29,17 +29,30 @@ forms:personForm
 	cco:expertise
   ) .
 
-forms:topic_interest
+forms:topic_interest--personPerson
 	:fieldAppliesToForm forms:personForm ;
 	:fieldAppliesToForm forms:organizationForm ;
 	:fieldAppliesToProperty foaf:topic_interest ;
 	:widgetClass form:DBPediaLookup .
 
-forms:cco-expertise
+forms:cco-expertise--personPerson
 	:fieldAppliesToForm forms:personForm ;
 	:fieldAppliesToForm forms:organizationForm ;
 	:fieldAppliesToProperty cco:expertise ;
 	:widgetClass form:DBPediaLookup .
+
+
+forms:givenName--personPerson
+	:fieldAppliesToForm forms:personForm ;
+	:fieldAppliesToProperty foaf:givenName ;
+        :cardinality :exactlyOne .
+forms:familyName--personPerson
+	:fieldAppliesToForm forms:personForm ;
+	:fieldAppliesToProperty foaf:familyName ;
+        :cardinality :exactlyOne .
+
+
+####
 
 forms:projectForm
   a form:specification ;

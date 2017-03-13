@@ -86,7 +86,7 @@ trait FormModule[NODE, URI <: NODE] {
 	  val defaults: FormDefaults = FormModule.formDefaults
 	  /** for multi-subject forms */
 		val subject: NODE
-    val cardinality: Cardinality
+    var cardinality: Cardinality
     val htmlName: String
 
     /** filled, not not used*/
@@ -123,7 +123,7 @@ trait FormModule[NODE, URI <: NODE] {
     val mandatory: Boolean = false,
     var openChoice: Boolean = true,
     var widgetType: WidgetType = URIWidget,
-    val cardinality: Cardinality = zeroOrMore,
+    var cardinality: Cardinality = zeroOrMore,
     /** is the value itself an Image? */
     val isImage: Boolean = false,
     /** possible thumbnail Image for the value */
@@ -171,7 +171,7 @@ trait FormModule[NODE, URI <: NODE] {
     val mandatory: Boolean = false,
     var openChoice: Boolean = true,
     var widgetType: WidgetType = URIWidget,
-    val cardinality: Cardinality = zeroOrMore,
+    var cardinality: Cardinality = zeroOrMore,
     val isImage: Boolean = false,
     val thumbnail: Option[NODE] = None,
     val htmlName: String = "" )
@@ -204,7 +204,7 @@ trait FormModule[NODE, URI <: NODE] {
     val mandatory: Boolean = false,
     var openChoice: Boolean = true,
     var widgetType: WidgetType = Text,
-    val cardinality: Cardinality = zeroOrMore,
+    var cardinality: Cardinality = zeroOrMore,
     override val valueLabel: String = "",
     val htmlName: String = "")
 
@@ -247,7 +247,7 @@ trait FormModule[NODE, URI <: NODE] {
       var openChoice: Boolean = true,
       var widgetType: WidgetType = ListWidget,
       val values: FormSyntax,
-      val cardinality: Cardinality = exactlyOne,
+      var cardinality: Cardinality = exactlyOne,
       val htmlName: String = ""
       ) extends Entry {
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = this
