@@ -126,3 +126,10 @@ foaf:primaryTopic
 	foaf:maker
 	dct:subject
   ) .
+forms:primaryTopic
+  rdfs:label "primaryTopic dans formulaire Document"@fr ;
+  rdfs:label "primaryTopic in form Document"@en ;
+	:fieldAppliesToForm :form-Document ;
+	:fieldAppliesToProperty foaf:primaryTopic ;
+	:widgetClass form:DBPediaLookup .
+
