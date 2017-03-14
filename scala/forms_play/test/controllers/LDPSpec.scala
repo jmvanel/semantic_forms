@@ -23,6 +23,7 @@ import play.api.test._
 import play.api.test.Helpers._
 import org.scalatestplus.play.OneAppPerSuite
 import akka.stream.Materializer
+import scala.language.postfixOps
 
 /** 
  *  https://www.playframework.com/documentation/2.4.x/ScalaTestingWithScalaTest

@@ -12,8 +12,7 @@ case class HTTPrequest(
      */
     host: String = "localhost",
 
-    /**
-     * The client IP address.
+    /* The client IP address.
      *
      * the last untrusted proxy
      * from the Forwarded-Headers or the X-Forwarded-*-Headers.
@@ -24,7 +23,7 @@ case class HTTPrequest(
 
     queryString: Map[String, Seq[String]] = Map(),
 
-    /** YET UNUSED */
+    /* YET UNUSED */
     headers: Map[String, Seq[String]] = Map(),
     cookies: List[Cookie] = List()) {
 

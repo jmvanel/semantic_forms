@@ -89,7 +89,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
     //// end of saveTriples() body ////
 
 
-    /** process a single triple from the form */
+    /* process a single triple from the form */
     def computeDatabaseChanges(originalTriple: Rdf#Triple, objectsFromUser: Seq[String]) {
       val foaf = FOAFPrefix[Rdf]
       if (originalTriple.objectt == foaf.Document ) // predicate == foaf.firstName)
@@ -123,7 +123,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
       }
     }
 
-    /** transactional */
+    /* transactional */
     def doSave(graphURI: String)
     ( implicit userURI: String = graphURI ) {
       val transaction = rdfStore.rw( dataset, {

@@ -66,8 +66,7 @@ with SPARQLHelpers[Rdf, DATASET] {
       // @prefix vs: <http://www.w3.org/2003/06/sw-vocab-status/ns#> .
     }
 
-    /**
-     * retrieve rdfs:domain's being unionOf from given Class
+    /* retrieve rdfs:domain's being unionOf from given Class
      *  NOTE: SPARQL query that covers also what domainsFromClass() does
      */
     def unionOfDomainsFromClass(classe: Rdf#Node): List[Rdf#Node] = {
@@ -97,7 +96,7 @@ with SPARQLHelpers[Rdf, DATASET] {
       } else List()
     }
 
-    /** recursively process super-classes and owl:equivalentClass until reaching owl:Thing */
+    /* recursively process super-classes and owl:equivalentClass until reaching owl:Thing */
     def processSuperClasses(classs: Rdf#Node) {
       if (classs != owl.Thing) {
         val domains = propertiesFromDomainsFromClass(classs)
@@ -113,8 +112,7 @@ with SPARQLHelpers[Rdf, DATASET] {
       }
     }
 
-    /**
-     * get the ontology prefix,
+    /* get the ontology prefix,
      * taking in account if it ends with #, or with / like FOAF .
      *  TODO : related to URI cache
      */
@@ -131,8 +129,7 @@ with SPARQLHelpers[Rdf, DATASET] {
       }
     }
 
-    /**
-     * add Domainless Properties;
+    /* add Domainless Properties;
      * properties without Domain are supposed to be applicable to any class in the same ontology
      *  ( use case : DOAP )
      */

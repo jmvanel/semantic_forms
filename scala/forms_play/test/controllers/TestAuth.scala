@@ -13,6 +13,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers
 import play.api.test.Helpers.contentAsString
 import deductions.runtime.html.Form2HTMLObject
+import scala.language.postfixOps
 
 class TestAuth
     extends PlaySpec

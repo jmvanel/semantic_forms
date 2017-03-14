@@ -54,7 +54,7 @@ trait FormSyntaxJson[Rdf <: RDF]
             "thumbnail" -> r.thumbnail,
             "isImage" -> r.isImage)
         case r: Entry =>
-          /** TODO this code is pasted from other case above */
+          /* TODO this code is pasted from other case above */
           Json.obj(
             "subject" -> e.subject,
             "subjectLabel" -> e.subjectLabel,

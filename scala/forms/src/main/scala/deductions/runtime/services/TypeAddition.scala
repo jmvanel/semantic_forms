@@ -44,7 +44,7 @@ trait TypeAddition[Rdf <: RDF, DATASET]
     val objectt = triple.objectt
     val pgObjectt = PointedGraph[Rdf](objectt, graph)
 
-    /** these triples are added in given graph URI:  ?O a ?C */
+    /* these triples are added in given graph URI:  ?O a ?C */
     def addTypeValue() = {
       val existingTypes = (pgObjectt / rdf.typ).nodes
       if (existingTypes isEmpty) {

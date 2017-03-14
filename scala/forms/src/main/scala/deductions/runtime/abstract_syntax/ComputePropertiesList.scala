@@ -13,7 +13,7 @@ case class RawDataForForm[Node](
     editable: Boolean = false,
     formURI: Option[Node] = None,
     reversePropertiesList: Seq[Node] = Seq(),
-    /** properties Groups come from multiple super-classes */
+    /* properties Groups come from multiple super-classes */
     propertiesGroups: collection.Map[Node, RawDataForForm[Node]] = collection.Map[Node, RawDataForForm[Node]]()) {
 
   def setSubject(subject: Node, editable: Boolean): RawDataForForm[Node] = {
@@ -115,10 +115,9 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
         propertiesGroups = propertiesGroupsMap)
     }
 
-    /** local function to mix:
+    /* local function to mix:
      *  - stuff from the context: propertiesList, classe sOf Subject Or Formm Specif,
-     *    subject, editable, form URI
-     *   */
+     *    subject, editable, form URI */
     def prependPropertyGroup(globalDataForForm: RawDataForForm[Rdf#Node], key: Rdf#Node,
                              addedDataForForm: RawDataForForm[Rdf#Node]) =
       globalDataForForm.copy(
@@ -128,7 +127,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
 
     val globalDataForForm = makeRawDataForForm(propsFromClasses)
 
-    /** RawDataForForm from Form Specification */
+    /* RawDataForForm from Form Specification */
     val rawDataFromSpecif: RawDataForForm[Rdf#Node] = if (formConfiguration != nullURI)
       RawDataForForm[Rdf#Node](
         propsFromConfig,
