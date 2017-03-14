@@ -3,11 +3,17 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 @prefix cco: <http://purl.org/ontology/cco/core#> .
+@prefix org:        <http://www.w3.org/ns/org#> .
+
 @prefix  form: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
+
+# TODO: self hosted URI's :
 @prefix      : <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
 @prefix forms: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#> .
 
 # form specifications for FOAF
+
+#### Person ####
 
 forms:personForm
   a form:specification ;
@@ -26,6 +32,7 @@ forms:personForm
 	foaf:topic_interest
 	foaf:knows
 	foaf:currentProject
+org:memberOf
 	cco:expertise
   ) .
 
@@ -52,7 +59,7 @@ forms:familyName--personPerson
         :cardinality :exactlyOne .
 
 
-####
+#### Project ####
 
 forms:projectForm
   a form:specification ;
@@ -69,6 +76,8 @@ forms:projectForm
 	foaf:age
 	dct:subject
   ) .
+
+#### Organization ####
 
 forms:organizationForm
   a form:specification ;
@@ -91,7 +100,19 @@ forms:organizationForm
 forms:dc_subject
 	:fieldAppliesToForm :projectForm ;
 	:fieldAppliesToForm :organizationForm ;
+	:fieldAppliesToForm :form-Document ;
 	:fieldAppliesToProperty dct:subject ;
 	:widgetClass form:DBPediaLookup .
 
+#### Document ####
 
+forms:form-Document
+  a form:specification ;
+  form:classDomain foaf:Document ;
+  form:showProperties (
+	rdfs:label rdfs:comment
+foaf:primaryTopic
+
+	foaf:maker
+	dct:subject
+  ) .

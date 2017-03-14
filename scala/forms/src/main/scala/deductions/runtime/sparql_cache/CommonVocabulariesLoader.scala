@@ -71,6 +71,7 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
   val largerVocabs: List[Rdf#URI] =
     URI(githubcontent + "/edumbill/doap/master/schema/doap.rdf") ::
       URI("http://rdfs.org/sioc/ns#") ::
+      URI(orgVocab.prefixIri) ::
       URI("http://topbraid.org/schema/schema.ttl") ::
       /* NOTES
        * schema.rdfs.org is down on 25 april 2016
