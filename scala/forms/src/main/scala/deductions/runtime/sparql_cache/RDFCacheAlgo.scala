@@ -41,6 +41,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     with RDFHelpers[Rdf]
     with URIManagement{
 
+	val activateMicrodataLoading = false
 
   import config._
   import ops._
@@ -263,7 +264,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   }
       
   /**
-   * read unconditionally from URI and store in TDB, no matter what the syntax is;
+   * read unconditionally from URI and store in TDB,
+   * no matter what the concrete syntax is;
    * can also load an URI with the # part
    */
   private def readStoreURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET,
@@ -279,33 +281,19 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       logger.info(s"readStoreURINoTransaction: after rdfLoader.load($uri): $graphTry")
 
       val graph = graphTry.getOrElse {
-        logger.info(s"Trying RDFa for <$uri>")
-        microdataLoader.load(
-          new java.net.URL(uri.toString())) match {
-            case Success(s) => s
-            case Failure(f) => {
-
-              logger.error("readStoreURINoTransaction: START MESSAGE")
-              logger.error(f.getMessage)
-              logger.error(s""" uri.toString.contains("/ldp/") ${uri.toString.contains("/ldp/")} """)
-              logger.error("END MESSAGE")
-
-              // catch only "pure" HTML web page: TODO? make a function isPureHTMLwebPage(uri: URI, request: Request): Boolean
-//              if (f.getMessage.contains("Failed to determine the content type:")) {
-//                logger.info(s"<$uri> is a pure HTML web page (no RDFa or microformats");
-//                val tryGraph = getLocallyManagedUrlAndData(uri, request)
-//                tryGraph . get
-//              } else
-                throw f
-            }
-          }
+        if(activateMicrodataLoading)
+          microdataLoading(uri)
+        else
+          emptyGraph
       }
       
       logger.info(s"readStoreURINoTransaction: graph $graph")
 
+      // TODO only this should be in the transaction  !!!!!!!!!!
       Logger.getRootLogger().info(s"readStoreURINoTransaction: Before appendToGraph uri <$uri> graphUri <$graphUri>")
       rdfStore.appendToGraph( dataset, graphUri, graph)
       Logger.getRootLogger().info(s"readStoreURINoTransaction: uri <$uri> : stored into graphUri <$graphUri>")
+
       graph
 
     } else {
@@ -313,6 +301,29 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       Logger.getRootLogger().warn(message)
       emptyGraph
     }
+  }
+
+  private def microdataLoading(uri: Rdf#URI): Rdf#Graph = {
+    logger.info(s"Trying RDFa for <$uri>")
+    microdataLoader.load(
+      new java.net.URL(uri.toString())) match {
+        case Success(s) => s
+        case Failure(f) => {
+
+          logger.error("readStoreURINoTransaction: START MESSAGE")
+          logger.error(f.getMessage)
+          logger.error(s""" uri.toString.contains("/ldp/") ${uri.toString.contains("/ldp/")} """)
+          logger.error("END MESSAGE")
+
+          // catch only "pure" HTML web page: TODO? make a function isPureHTMLwebPage(uri: URI, request: Request): Boolean
+          //              if (f.getMessage.contains("Failed to determine the content type:")) {
+          //                logger.info(s"<$uri> is a pure HTML web page (no RDFa or microformats");
+          //                val tryGraph = getLocallyManagedUrlAndData(uri, request)
+          //                tryGraph . get
+          //              } else
+          throw f
+        }
+      }
   }
 
   /** test if it's a locally managed URL */
