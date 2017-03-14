@@ -24,10 +24,14 @@ object FormSpecificationsLoader
 
   import config._
 
-  if (args.size == 0)
-    loadCommonFormSpecifications()
-  else
-    loadFormSpecifications(args(0))
+  resetCommonFormSpecifications()
+  val ret = wrapInTransaction{
+    if (args.size == 0)
+      loadCommonFormSpecifications()
+    else
+      loadFormSpecifications(args(0))}
+  println(s"DONE load Common Form Specifications in named graph <$formSpecificationsGraphURI> : $ret")
+  close(dataset)
 }
 
 trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
@@ -38,13 +42,14 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
   import ops._
   import rdfStore.transactorSyntax._
 
-  val formSpecificationsGraph = URI("urn:form_specs")
+  val formSpecificationsGraphURI = URI("urn:form_specs")
 
   /** TRANSACTIONAL */
   def resetCommonFormSpecifications() {
-    rdfStore.rw( dataset, {
-      rdfStore.removeGraph(dataset, formSpecificationsGraph)
-    })
+    val ret = wrapInTransaction {
+      rdfStore.removeGraph(dataset, formSpecificationsGraphURI)
+    }
+    println(s"DONE reset Common Form Specifications in named graph <$formSpecificationsGraphURI> : $ret")
   }
 
   /**
@@ -53,9 +58,9 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
    *  non TRANSACTIONAL
    */
   def loadCommonFormSpecifications() {
-    val all_form_specs = githubcontent +
+    val all_form_specs_document = githubcontent +
       "/jmvanel/semantic_forms/master/scala/forms/form_specs/specs.ttl"
-    loadFormSpecifications(all_form_specs)
+    loadFormSpecifications(all_form_specs_document)
   }
 
   /** non TRANSACTIONAL */
@@ -64,28 +69,27 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
       val from = new java.net.URL(form_specs).openStream()
       val form_specs_graph: Rdf#Graph =
         turtleReader.read(from, base = form_specs) getOrElse sys.error(
-          s"couldn't read $form_specs")
-      //    import deductions.runtime.abstract_syntax.FormSyntaxFactory._
+          s"couldn't read form_specs <$form_specs>")
+
       val formPrefix = form
-      /* Retrieving triple :
-     * foaf: form:ontologyHasFormSpecification <foaf.form.ttl> . */
+      /* Retrieving such triples:
+       * foaf: form:ontologyHasFormSpecification <foaf.form.ttl> . */
       val triples: Iterator[Rdf#Triple] = find(form_specs_graph, ANY, formPrefix("ontologyHasFormSpecification"), ANY)
-      val objects = for (triple <- triples) yield {
-        triple._3 // getObject
-      }
-      for (obj <- objects) {
+      val formSpecifications = for (triple <- triples) yield triple.objectt
+
+      for (formSpecification <- formSpecifications) {
         try {
-          val from = new java.net.URL(obj.toString()).openStream()
-          val form_spec_graph: Rdf#Graph = turtleReader.read(from, base = obj.toString()) getOrElse sys.error(
-            s"couldn't read ${obj.toString()}")
+          val from = new java.net.URL(formSpecification.toString()).openStream()
+          val form_spec_graph: Rdf#Graph = turtleReader.read(from, base = formSpecification.toString()) getOrElse sys.error(
+            s"couldn't read form Specification <${formSpecification.toString()}>")
           rdfStore.rw( dataset, {
-            rdfStore.appendToGraph(dataset, formSpecificationsGraph, form_spec_graph)
+            rdfStore.appendToGraph(dataset, formSpecificationsGraphURI, form_spec_graph)
           })
-          println("Added form_spec " + obj)
+          println(s"Added form_spec <$formSpecification> in named graph <$formSpecificationsGraphURI> (${form_spec_graph.size} triples)")
         } catch {
           case e: Exception =>
             System.err.println(s"""!!!! Error in loadFormSpecifications:
-            $obj
+            $formSpecification
             $e
             ${e.printStackTrace()}""")
         }
