@@ -37,6 +37,8 @@ org:memberOf
   ) .
 
 forms:topic_interest--personPerson
+  rdfs:label "topic_interest dans formulaire Person"@fr ;
+  rdfs:label "topic_interest in form Person"@en ;
 	:fieldAppliesToForm forms:personForm ;
 	:fieldAppliesToForm forms:organizationForm ;
 	:fieldAppliesToProperty foaf:topic_interest ;
@@ -64,6 +66,8 @@ forms:familyName--personPerson
 forms:projectForm
   a form:specification ;
   form:classDomain foaf:Project ;
+  rdfs:label "Projet - formulaire"@fr ;
+  rdfs:label "Project - form"@en ;
   form:showProperties (
 	rdfs:label rdfs:comment
 	foaf:homepage
@@ -80,6 +84,8 @@ forms:projectForm
 #### Organization ####
 
 forms:organizationForm
+  rdfs:label "Organisation - formulaire"@fr ;
+  rdfs:label "Organization - form"@en ;
   a form:specification ;
   form:classDomain foaf:Organization ;
   form:showProperties (
@@ -98,6 +104,8 @@ forms:organizationForm
 
 
 forms:dc_subject
+  rdfs:label "dct:subject dans formulaire Person, etc"@fr ;
+  rdfs:label "dct:subject in form Person, etc"@en ;
 	:fieldAppliesToForm :projectForm ;
 	:fieldAppliesToForm :organizationForm ;
 	:fieldAppliesToForm :form-Document ;
@@ -107,6 +115,8 @@ forms:dc_subject
 #### Document ####
 
 forms:form-Document
+  rdfs:label "Document - formulaire"@fr ;
+  rdfs:label "Document - form"@en ;
   a form:specification ;
   form:classDomain foaf:Document ;
   form:showProperties (
