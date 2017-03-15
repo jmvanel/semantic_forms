@@ -278,8 +278,8 @@ object UpLoad extends WidgetType
 
 
 sealed class Cardinality
-object zeroOrMore extends Cardinality { override def toString() = "0 Or More" }
-object oneOrMore extends Cardinality { override def toString() = "1 Or More" }
-object zeroOrOne extends Cardinality { override def toString() = "0 Or 1" }
-object exactlyOne extends Cardinality { override def toString() = "exactly 1" }
+object zeroOrMore extends Cardinality { override def toString() = "0:*" }
+object oneOrMore extends Cardinality { override def toString() = "1:*" }
+object zeroOrOne extends Cardinality { override def toString() = "0:1" }
+object exactlyOne extends Cardinality { override def toString() = "1:1" }
 
