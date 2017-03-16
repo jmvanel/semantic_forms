@@ -18,7 +18,7 @@ import scala.concurrent.Future
 trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
     with TriplesViewModule[Rdf, DATASET]
-    with FormHeader[Rdf]
+    with FormHeader[Rdf, DATASET]
     with StatisticsGraph[Rdf]
     with BlankNodeCleanerIncremental[Rdf, DATASET] {
   

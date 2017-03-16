@@ -71,7 +71,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with Lookup[Rdf, DATASET]
     with Authentication[Rdf, DATASET] //with ApplicationFacadeInterface
     with RegisterPage[Rdf, DATASET]
-    with FormHeader[Rdf]
+    with FormHeader[Rdf, DATASET]
     with TimeSeries[Rdf, DATASET]
     with NamedGraphsSPARQL[Rdf, DATASET]
     with TriplesInGraphSPARQL[Rdf, DATASET]

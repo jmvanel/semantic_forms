@@ -42,8 +42,8 @@ trait BasicWidgets {
     else <div></div>
   }
   
-  // Test WebVOWL  
-   def makeDrawGraphLinkVOWL( uri: String,
+  /** make link to  WebVOWL */
+  def makeDrawGraphLinkVOWL( uri: String,
       toolURLprefix: String="http://visualdataweb.de/webvowl/#iri=",
       toolname: String="Web VOWL",
       imgWidth:Int=15): Elem = {

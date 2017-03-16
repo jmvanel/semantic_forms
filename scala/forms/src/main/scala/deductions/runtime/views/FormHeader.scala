@@ -14,18 +14,23 @@ import deductions.runtime.services.ApplicationFacadeImpl
 import deductions.runtime.services.Configuration
 import deductions.runtime.utils.I18NMessages
 import deductions.runtime.utils.RDFHelpers
+import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFPrefixes
+import org.w3.banana.PointedGraph
+import org.w3.banana.OWLPrefix
 
-trait FormHeader[Rdf <: RDF]
+trait FormHeader[Rdf <: RDF, DATASET]
     extends FormModule[Rdf#Node, Rdf#URI]
-//with InstanceLabelsInferenceMemory[Rdf, DATASET]
-with RDFHelpers[Rdf]
-    with BasicWidgets {
+    with RDFStoreLocalProvider[Rdf, DATASET]
+    with RDFHelpers[Rdf]
+    with BasicWidgets
+    with RDFPrefixes[Rdf] {
 
 //  self: ApplicationFacadeImpl[Rdf, _] =>
 
   val config: Configuration
   import config._
-  import ops._
+      import ops._
 
   /** title and links on top of the form: Edit, Display, Download Links */
   def titleEditDisplayDownloadLinksThumbnail(formSyntax: FormSyntax, lang: String, editable: Boolean = false)(implicit graph: Rdf#Graph): NodeSeq = {
@@ -51,7 +56,7 @@ with RDFHelpers[Rdf]
         makeDrawGraphLink(uri))
     } else new Text(""))
     
-    val expertLinksOWL = (if (showExpertButtons) {
+    val expertLinksOWL = (if (showExpertButtons && isOWLURI(uri) ) {
       new Text("  ")
       makeDrawGraphLinkVOWL(uri)
     } else new Text(""))
@@ -97,6 +102,20 @@ with RDFHelpers[Rdf]
         </a>
       </div>
     </div>
+  }
+
+  private lazy val owl = OWLPrefix[Rdf]
+
+  def isOWLURI(uri: String): Boolean = {
+    val triples = find(allNamedGraph, URI(uri), ANY, ANY).toList
+//    val v = URI(uri) / rdf.typ
+    val pg = PointedGraph( URI(uri), allNamedGraph )
+    val types = ( pg / rdf.typ ) . nodes . toList
+    println( s"isOWLURI: $types" )
+    types . contains( owl.Class) ||
+    types . contains( owl.ObjectProperty) ||
+    types . contains( owl.DatatypeProperty) ||
+    types . contains( owl.Ontology)
   }
 
 ///** NON transactional */
