@@ -29,12 +29,9 @@ libraryDependencies += "net.rootdev" % "java-rdfa" % "0.4.2"
 
 libraryDependencies += "org.scala-lang.modules" %% "scala-async" % "0.9.6"
 
-//libraryDependencies += "com.typesafe.play" %% "play-json" % "2.3.10"
-// 
 libraryDependencies += "com.typesafe.play" %% "play-json" % "2.5.12"
 // libraryDependencies += "com.typesafe.play" %% "play-json" % "2.6.0-M2"
 
-// libraryDependencies += "com.netaporter" %% "scala-i18n" % "0.1"
 libraryDependencies += "org.apache.commons" % "commons-csv" % "1.4"
 libraryDependencies += "org.apache.any23" % "apache-any23-csvutils" %  "1.1" // "1.0" // 
 
