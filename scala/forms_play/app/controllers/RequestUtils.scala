@@ -11,6 +11,7 @@ trait RequestUtils {
 		  LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")) +
       s""" $mess: IP ${request.remoteAddress}, userId "${userId(request)}", $request, id ${request.id}, host ${request.host}"""
 
+  /** TODO remove ( moved to case class HTTPrequest ) */
   def userId(request: Request[_]): String = {
     val usernameFromSession = for (
       cookie <- request.cookies.get("PLAY_SESSION");

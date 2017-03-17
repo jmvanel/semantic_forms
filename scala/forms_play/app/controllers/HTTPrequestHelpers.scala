@@ -8,9 +8,12 @@ import deductions.runtime.utils.Cookie
 trait HTTPrequestHelpers {
   def copyRequest(request: Request[_]): HTTPrequest = {
     import request._
+    val cookiesMap = cookies.map { cookie => (cookie.name -> copyCookie(cookie)) } . toMap
     HTTPrequest(host, remoteAddress,
       rawQueryString, queryString,
-      headers.toMap, cookies.toList.map { cookie => copyCookie(cookie) })
+//      headers.toMap, cookies.toList.map { cookie => copyCookie(cookie) }
+      headers.toMap, cookiesMap
+      )
   }
 
   def copyCookie(cookie: play.api.mvc.Cookie): Cookie = {
