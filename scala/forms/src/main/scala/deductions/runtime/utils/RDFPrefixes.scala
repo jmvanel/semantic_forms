@@ -49,7 +49,8 @@ import org.w3.banana._
   lazy val forms = Prefix[Rdf]("forms", "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#" )
   lazy val dct = DCTPrefix[Rdf]
 	lazy val dc = DCPrefix[Rdf]
-  
+  lazy val orgVocab = Prefix[Rdf]("org", "http://www.w3.org/ns/org#" )
+
   lazy val prefixesList = List(
 		  // prefixes for ontologies
     rdf, rdfs,

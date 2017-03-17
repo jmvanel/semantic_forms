@@ -45,37 +45,47 @@ trait CSVImporter[Rdf <: RDF, DATASET]
   private val xsd = XSDPrefix[Rdf]
 
   /** lots of boiler plate for vocabularies !!!!!!!!!!! */
-  object CCOPrefix {
-    def apply[Rdf <: RDF: RDFOps](implicit ops: RDFOps[Rdf]) = new CCOPrefix(ops)
-//    def apply()(implicit ops: RDFOps[Rdf]) = new CCOPrefix(ops)
-  }
-  class CCOPrefix[Rdf <: RDF](ops: RDFOps[Rdf])
+//  object CCOPrefix {
+////    def apply[Rdf <: RDF: RDFOps](implicit ops: RDFOps[Rdf]) = new CCOPrefix(ops)
+//    def apply()
+//    //(implicit ops: RDFOps[Rdf]) 
+//    = new CCOPrefix(ops)
+//  }
+  class CCOPrefix
+  //[Rdf <: RDF]
+  (ops: RDFOps[Rdf])
       extends PrefixBuilder("cco", "http://purl.org/ontology/cco/core#")(ops) {
     val expertise = apply("expertise")
   }
-  private val cco = CCOPrefix[Rdf]
+  private val cco = new CCOPrefix(ops) // CCOPrefix//[Rdf]
   
-  object AVPrefix {
-    def apply[Rdf <: RDF: RDFOps](implicit ops: RDFOps[Rdf]) = new AVPrefix(ops)
+  object AVPrefix extends AVPrefix(ops){
+    def apply
+//    [Rdf <: RDF: RDFOps]
+//    (implicit ops: RDFOps[Rdf])
+    = new AVPrefix(ops)
   }
-  class AVPrefix[Rdf <: RDF](ops: RDFOps[Rdf])
+  class AVPrefix// [Rdf <: RDF]
+  (ops: RDFOps[Rdf])
       extends PrefixBuilder("av", prefixAVontology )(ops) {
       val idea = apply("idea")
       val contributesToOrganization = apply("contributesToOrganization")
       val metAt = apply("metAt")
   }
-  private val av = AVPrefix[Rdf]
+  private val av = AVPrefix // [Rdf]
 
-  object VCardPrefix {
-    def apply[Rdf <: RDF: RDFOps](implicit ops: RDFOps[Rdf]) = new VCardPrefix(ops)
-  }
-  class VCardPrefix[Rdf <: RDF](ops: RDFOps[Rdf])
+//  object VCardPrefix {
+//    def apply[Rdf <: RDF: RDFOps](implicit ops: RDFOps[Rdf]) = new VCardPrefix(ops)
+//  }
+  class VCardPrefix
+//  [Rdf <: RDF]
+  (ops: RDFOps[Rdf])
       extends PrefixBuilder("vcard", "http://www.w3.org/2006/vcard/ns#" )(ops) {
 	  val postal_code = apply("postal-code")
 	  val locality =  apply("locality")
   }
 
-  private val vcard = VCardPrefix[Rdf]
+  private val vcard = new VCardPrefix(ops)//[Rdf]
   private val gvoi = Prefix[Rdf]("gvoi", "http://assemblee-virtuelle.github.io/grands-voisins-v2/gv.owl.ttl#")
 
   ///////////////////////////////////

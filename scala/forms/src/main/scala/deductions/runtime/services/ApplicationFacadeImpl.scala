@@ -71,7 +71,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with Lookup[Rdf, DATASET]
     with Authentication[Rdf, DATASET] //with ApplicationFacadeInterface
     with RegisterPage[Rdf, DATASET]
-    with FormHeader[Rdf]
+    with FormHeader[Rdf, DATASET]
     with TimeSeries[Rdf, DATASET]
     with NamedGraphsSPARQL[Rdf, DATASET]
     with TriplesInGraphSPARQL[Rdf, DATASET]
@@ -209,14 +209,14 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   }
 
   def edit(url: String): NodeSeq = {
-    htmlForm(url, editable = true)
+    htmlForm(url, editable = true)._1
   }
 
   /** save Form data in TDB
    *  @return main subject URI like [[FormSaver.saveTriples]] */
   def saveForm(request: Map[String, Seq[String]], lang: String = "",
       userid: String, graphURI: String = "", host: String= "")
-  : Option[String] = {
+  : (Option[String], Boolean) = {
     logger.info(s"ApplicationFacadeImpl.saveForm: request :$request, userid <$userid>")
     val mainSubjectURI = try {
       implicit val userURI: String = userid

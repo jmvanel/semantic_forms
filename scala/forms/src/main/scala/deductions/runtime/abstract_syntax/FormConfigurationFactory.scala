@@ -8,9 +8,12 @@ import org.w3.banana.RDF
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.utils.RDFPrefixes
+import deductions.runtime.utils.HTTPrequest
 
 /**
  * Lookup Form specifications from RDF graph; TODO rename FormSpecificationFactory
+ * 
+ * TODO rename ForSpecificationFactory
  */
 trait FormConfigurationFactory[Rdf <: RDF, DATASET]
     extends
@@ -49,7 +52,7 @@ trait FormConfigurationFactory[Rdf <: RDF, DATASET]
       (implicit graph: Rdf#Graph):
        (Seq[Rdf#URI], Rdf#Node, Try[Rdf#Graph]) = {
     val formConfiguration = URI(formuri)
-    val tryGraph = retrieveURINoTransaction( formConfiguration, dataset)
+    val tryGraph = retrieveURINoTransaction( formConfiguration, dataset, HTTPrequest() )
     val propertiesList = propertiesListFromFormConfiguration(formConfiguration)
     (propertiesList, formConfiguration, tryGraph)
   }

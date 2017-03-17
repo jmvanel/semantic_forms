@@ -1,12 +1,11 @@
-package deductions.runtime.sparql_cache
+package deductions.runtime.sparql_cache.apps
 
 import org.w3.banana.RDF
-
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.jena.RDFCache
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.DependenciesForApps
+import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.sparql_cache.SitesURLForDownload
+import deductions.runtime.services.DefaultConfiguration
 
 /** */
 object RDFI18NLoaderApp
@@ -16,14 +15,6 @@ object RDFI18NLoaderApp
   loadFromGitHubRDFI18NTranslations()
 }
 
-//object RDFI18NLoaderAppOLD
-//    extends ImplementationSettings.RDFModule
-//    with RDFCache with App
-//    with RDFI18NLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-//    with RDFStoreLocalJena1Provider {
-//  val config = new DefaultConfiguration {}
-//  loadFromGitHubRDFI18NTranslations()
-//}
 
 trait RDFI18NLoaderTrait[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
@@ -62,6 +53,9 @@ trait RDFI18NLoaderTrait[Rdf <: RDF, DATASET]
     )
     import ops._
     val translations = translations0 map { p => URI(p) }
-    translations map { readStoreURI(_, i18NGraph, dataset) }
+    translations map {
+      uri => readStoreURI( uri, i18NGraph, dataset)
+      println(s"DONE <$uri>")
+      }
   }
 }

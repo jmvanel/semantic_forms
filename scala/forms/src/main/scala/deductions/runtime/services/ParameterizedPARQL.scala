@@ -102,6 +102,8 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     elem
   }
 
+  ///////////// TODO extract all this in ResultsDisplay /////////////////////
+
   /**
    * generate a row of HTML hyperlinks for given list of RDF Node;
    * non TRANSACTIONAL
@@ -187,40 +189,40 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
   /** make HTML hyperlink For given URI;
    *  this links to semantic_forms page for displaying this URI;
    * NOTE: this duplicates code in Form2HTMLDisplay.createHTMLResourceReadonlyField() */
-  private def makeHyperlinkForURIOLD( node: Rdf#Node, lang: String, graph: Rdf#Graph,
-      hrefPrefix: String = hrefDisplayPrefix,
-      label: String = "",
-      sortAnd1rowPerElement:Boolean = false )
-    (implicit queryMaker: SPARQLQueryMaker[Rdf] ): NodeSeq = {
-    val uriString = node.toString
-    val blanknode = !isURI(node)
-    val displayLabel =
-      if( label != "" )
-          label
-        else
-          instanceLabel(node, graph, lang)
-
-    <div title={ node.toString() } class={
-      if( sortAnd1rowPerElement ) "form-row" else "form-value"
-    }> {
-      val css= cssForURI(uriString)
-      def hyperlink =
-                <a href={
-                Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode)
-              } class={css}>
-              { displayLabel } </a>
-      val nodeRendering = foldNode(node)(
-                x => hyperlink,
-                x => hyperlink,
-                x => Text( x.toString() ))
-                
-            	val columns_for_URI = queryMaker.columnsForURI( node,
-            	    displayLabel )
-//            	println( "displayResults " + node + columns_for_URI )
-            	
-            	nodeRendering ++ columns_for_URI // ++ <br/> 
-    } </div><!-- end of row div -->   	
-  }
+//  private def makeHyperlinkForURIOLD( node: Rdf#Node, lang: String, graph: Rdf#Graph,
+//      hrefPrefix: String = hrefDisplayPrefix,
+//      label: String = "",
+//      sortAnd1rowPerElement:Boolean = false )
+//    (implicit queryMaker: SPARQLQueryMaker[Rdf] ): NodeSeq = {
+//    val uriString = node.toString
+//    val blanknode = !isURI(node)
+//    val displayLabel =
+//      if( label != "" )
+//          label
+//        else
+//          instanceLabel(node, graph, lang)
+//
+//    <div title={ node.toString() } class={
+//      if( sortAnd1rowPerElement ) "form-row" else "form-value"
+//    }> {
+//      val css= cssForURI(uriString)
+//      def hyperlink =
+//                <a href={
+//                Form2HTML.createHyperlinkString(hrefPrefix, uriString, blanknode)
+//              } class={css}>
+//              { displayLabel } </a>
+//      val nodeRendering = foldNode(node)(
+//                x => hyperlink,
+//                x => hyperlink,
+//                x => Text( x.toString() ))
+//                
+//            	val columns_for_URI = queryMaker.columnsForURI( node,
+//            	    displayLabel )
+////            	println( "displayResults " + node + columns_for_URI )
+//            	
+//            	nodeRendering ++ columns_for_URI // ++ <br/> 
+//    } </div><!-- end of row div -->   	
+//  }
 
   /**
    * TRANSACTIONAL

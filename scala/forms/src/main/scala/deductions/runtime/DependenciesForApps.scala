@@ -4,6 +4,7 @@ import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.jena.RDFCache
+import deductions.runtime.sparql_cache.SitesURLForDownload
 
 /**
  * Dependencies For Apps, be it simple command line or Web app;
@@ -17,6 +18,7 @@ import deductions.runtime.jena.RDFCache
 trait DependenciesForApps
   extends DependenciesForAppsNoCache
   with RDFCache
+  with SitesURLForDownload
 
 /**
  * NOTES:

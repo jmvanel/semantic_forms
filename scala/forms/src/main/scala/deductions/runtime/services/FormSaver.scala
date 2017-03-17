@@ -30,12 +30,17 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
   /** save triples in named graph given by HTTP parameter "graphURI";
    *  other HTTP parameters are original triples in Turtle;
+   *
+   * Important HTTP parameters:
+   * - uri: (main) subject URI
+   * - graphURI: URI of named graph in which save triples will be saved
+   * 
    * transactional
    * @param map a raw map of HTTP response parameters
    * @return main subject URI
    */
   def saveTriples(httpParamsMap: Map[String, Seq[String]])
-      ( implicit userURI: String = "" ): Option[String]
+      ( implicit userURI: String = "" ): ( Option[String], Boolean)
       = {
     logger.debug(s"FormSaver.saveTriples httpParamsMap $httpParamsMap")
     logger.debug(s"""saveTriples: userURI <$userURI>""" )
@@ -46,21 +51,22 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
     val triplesToAdd = ArrayBuffer[Rdf#Triple]()
     val triplesToRemove = ArrayBuffer[Rdf#Triple]()
+    var typeChange = false
 
     // PENDING: require subject URI in parameter "uri" is probably not necessary (case of sub-forms and inverse triples)
     lazy val subjectUriOption = encodedSubjectUriOption match {
-      case Some(uri0) =>
-        val subjectUri = URLDecoder.decode(uri0, "utf-8")
+      case Some(subjectUri0) =>
+        val subjectUri = URLDecoder.decode(subjectUri0, "utf-8")
         logger.debug(s"FormSaver.saveTriples subjectUri $subjectUri")
 
         // named graph in which to save:
         val graphURI =
           if (graphURIOption == Some("")) subjectUri
-          else URLDecoder.decode(graphURIOption.getOrElse(uri0), "utf-8") // TODO no decode
+          else URLDecoder.decode(graphURIOption.getOrElse(subjectUri0), "utf-8") // TODO no decode
  
         httpParamsMap.map {
           case (param0, objects) =>
-            val param = URLDecoder.decode(param0, "utf-8") // TODO no decode
+            val param = URLDecoder.decode(param0, "utf-8") // TODO no decode ??
             logger.debug(s"saveTriples: httpParam decoded: $param")
             if (param != "url" &&
               param != "uri" &&
@@ -77,15 +83,18 @@ trait FormSaver[Rdf <: RDF, DATASET]
             }
         }
         doSave(graphURI)
-        Some(subjectUri)
-      case _ => None
+        ( Some(subjectUri), typeChange)
+      case _ => (None, typeChange)
     }
 
-    /** process a single triple from the form */
+    //// end of saveTriples() body ////
+
+
+    /* process a single triple from the form */
     def computeDatabaseChanges(originalTriple: Rdf#Triple, objectsFromUser: Seq[String]) {
       val foaf = FOAFPrefix[Rdf]
-      if (originalTriple.objectt == foaf.Document ) // predicate == foaf.firstName)
-        logger.debug( "DDDDDDDDDDD "+ foaf.Document)
+//      if (originalTriple.objectt == foaf.Document ) // predicate == foaf.firstName)
+//        logger.debug( "DDDDDDDDDDD "+ foaf.Document)
       logger.debug(s"computeDatabaseChanges: originalTriple: $originalTriple, objectsFromUser $objectsFromUser")
       objectsFromUser.map { objectStringFromUser =>
         // NOTE: a single element in objects
@@ -101,11 +110,18 @@ trait FormSaver[Rdf <: RDF, DATASET]
           },
           _ => BNode(objectStringFromUser.replaceAll(" ", "_")), // ?? really do this ?
           _ => Literal(objectStringFromUser))
+
+        // TODO : compare != always true !!!!!!
         if (originalTriple.objectt != objectStringFromUser) {
-          if (objectStringFromUser != "")
+          if (objectStringFromUser != "") {
             triplesToAdd +=
               makeTriple(originalTriple.subject, originalTriple.predicate,
                 objectFromUser)
+                if( originalTriple.predicate == rdf.typ ) {
+                  println(s">>>> computeDatabaseChanges: typeChange! ($objectFromUser)")
+                  typeChange = true
+                }
+          }
           if (originalTriple.objectt.toString() != "")
             triplesToRemove += originalTriple
           logger.debug("computeDatabaseChanges: predicate " + originalTriple.predicate + ", originalTriple.objectt: \"" +
@@ -115,7 +131,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
       }
     }
 
-    /** transactional */
+    /* transactional */
     def doSave(graphURI: String)
     ( implicit userURI: String = graphURI ) {
       val transaction = rdfStore.rw( dataset, {
@@ -139,7 +155,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
           })
         }
         res
-      }) // .flatMap { identity }
+      })
 
       val f = transaction.asFuture
 

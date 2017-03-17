@@ -3,11 +3,17 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 @prefix cco: <http://purl.org/ontology/cco/core#> .
+@prefix org:        <http://www.w3.org/ns/org#> .
+
 @prefix  form: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
+
+# TODO: self hosted URI's :
 @prefix      : <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
 @prefix forms: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#> .
 
 # form specifications for FOAF
+
+#### Person ####
 
 forms:personForm
   a form:specification ;
@@ -26,24 +32,42 @@ forms:personForm
 	foaf:topic_interest
 	foaf:knows
 	foaf:currentProject
+org:memberOf
 	cco:expertise
   ) .
 
-forms:topic_interest
+forms:topic_interest--personPerson
+  rdfs:label "topic_interest dans formulaire Person"@fr ;
+  rdfs:label "topic_interest in form Person"@en ;
 	:fieldAppliesToForm forms:personForm ;
 	:fieldAppliesToForm forms:organizationForm ;
 	:fieldAppliesToProperty foaf:topic_interest ;
 	:widgetClass form:DBPediaLookup .
 
-forms:cco-expertise
+forms:cco-expertise--personPerson
 	:fieldAppliesToForm forms:personForm ;
 	:fieldAppliesToForm forms:organizationForm ;
 	:fieldAppliesToProperty cco:expertise ;
 	:widgetClass form:DBPediaLookup .
 
+
+forms:givenName--personPerson
+	:fieldAppliesToForm forms:personForm ;
+	:fieldAppliesToProperty foaf:givenName ;
+        :cardinality :exactlyOne .
+forms:familyName--personPerson
+	:fieldAppliesToForm forms:personForm ;
+	:fieldAppliesToProperty foaf:familyName ;
+        :cardinality :exactlyOne .
+
+
+#### Project ####
+
 forms:projectForm
   a form:specification ;
   form:classDomain foaf:Project ;
+  rdfs:label "Projet - formulaire"@fr ;
+  rdfs:label "Project - form"@en ;
   form:showProperties (
 	rdfs:label rdfs:comment
 	foaf:homepage
@@ -57,7 +81,11 @@ forms:projectForm
 	dct:subject
   ) .
 
+#### Organization ####
+
 forms:organizationForm
+  rdfs:label "Organisation - formulaire"@fr ;
+  rdfs:label "Organization - form"@en ;
   a form:specification ;
   form:classDomain foaf:Organization ;
   form:showProperties (
@@ -76,9 +104,32 @@ forms:organizationForm
 
 
 forms:dc_subject
+  rdfs:label "dct:subject dans formulaire Person, etc"@fr ;
+  rdfs:label "dct:subject in form Person, etc"@en ;
 	:fieldAppliesToForm :projectForm ;
 	:fieldAppliesToForm :organizationForm ;
+	:fieldAppliesToForm :form-Document ;
 	:fieldAppliesToProperty dct:subject ;
 	:widgetClass form:DBPediaLookup .
 
+#### Document ####
+
+forms:form-Document
+  rdfs:label "Document - formulaire"@fr ;
+  rdfs:label "Document - form"@en ;
+  a form:specification ;
+  form:classDomain foaf:Document ;
+  form:showProperties (
+	rdfs:label rdfs:comment
+foaf:primaryTopic
+
+	foaf:maker
+	dct:subject
+  ) .
+forms:primaryTopic
+  rdfs:label "primaryTopic dans formulaire Document"@fr ;
+  rdfs:label "primaryTopic in form Document"@en ;
+	:fieldAppliesToForm :form-Document ;
+	:fieldAppliesToProperty foaf:primaryTopic ;
+	:widgetClass form:DBPediaLookup .
 

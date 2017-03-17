@@ -18,6 +18,7 @@ import deductions.runtime.services.Configuration
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.utils.Timer
+import org.w3.banana.PointedGraph
 
 /** one of EditionMode, DisplayMode, CreationMode */
 abstract sealed class FormMode { val editable = true }
@@ -107,7 +108,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   
   /** create Form abstract syntax from an instance (subject) URI;
    *  the Form Specification is inferred from the class of instance;
-   *  TODO : add lang argument
    *  NO transaction, should be called within a transaction */
   def createForm(subject: Rdf#Node,
     editable: Boolean = false,
@@ -210,8 +210,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     
     if( step1.editable ) addAllPossibleValues(formSyntax, valuesFromFormGroup)
     logger.debug(s"createFormDetailed2: createForm " + this)
-    
-    val res = time(s"createFormDetailed2: updateFormFromConfig(formConfig=$formConfig)",
+
+    val res = time(
+      s"createFormDetailed2: updateFormFromConfig(formConfig=$formConfig)",
       updateFormFromConfig(formSyntax, formConfig))
     logger.debug(s"createFormDetailed2: createForm 2 " + this)
     res
@@ -222,8 +223,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
   /**
    * update given Form,
-   * looking up for field Configurations within given RDF graph
-   * eg in :
+   * looking up for field Configurations within given RDF graph, eg in :
    *  <pre>
    *  &lt;topic_interest> :fieldAppliesToForm &lt;personForm> ;
    *   :fieldAppliesToProperty foaf:topic_interest ;
@@ -264,8 +264,19 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     } else ranges
   }
 
-  /** non recursive update */
-  private def updateOneFormFromConfig(formSyntax: FormSyntax, formConfig: Rdf#Node)(implicit graph: Rdf#Graph) = {
+  /** non recursive update of given `formSyntax` from given `formSpecif`;
+   * see form_specs/foaf.form.ttl for an example of form specification */
+  private def updateOneFormFromConfig(formSyntax: FormSyntax, formSpecif: Rdf#Node)(implicit graph: Rdf#Graph): Unit = {
+
+	  // TODO try the Object - semantic mapping of Banana-RDF
+    val uriToCardinalities = Map[Rdf#Node, Cardinality] {
+      formPrefix("zeroOrMore") -> zeroOrMore;
+      formPrefix("oneOrMore") -> oneOrMore;
+      formPrefix("zeroOrOne") -> zeroOrOne;
+      formPrefix("exactlyOne") -> exactlyOne
+    }
+    val triplesInFormConfig = find(graph, formSpecif, ANY, ANY).toSeq
+
     for (field <- formSyntax.fields) {
       val fieldSpecs = lookFieldSpecInConfiguration(field.property)
       if (!fieldSpecs.isEmpty)
@@ -274,7 +285,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
             val triples = find(graph, fieldSpec.subject, ANY, ANY).toSeq
             for (t <- triples)
               field.addTriple(t.subject, t.predicate, t.objectt)
-            // TODO each feature should be in a different file
+            // TODO each feature should be in a different file ??
             def replace[T](s: Seq[T], occurence: T, replacement: T): Seq[T] =
               s.map { i => if (i == occurence) replacement else i }
             for (t <- triples) {
@@ -284,23 +295,55 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
                 rep.widgetType = DBPediaLookup
                 formSyntax.fields = replace(formSyntax.fields, field, rep)
               }
+
+              if (t.predicate == formPrefix("cardinality")) {
+            	  /* Decode such RDF:
+forms:givenName--personPerson
+	:fieldAppliesToForm forms:personForm ;
+	:fieldAppliesToProperty foaf:givenName ;
+        :cardinality :exactlyOne .
+            	   */
+                val formSpecGraph = PointedGraph(t.subject, allNamedGraph) // Graph(triplesInFormConfig))
+                for (
+                  card <- (formSpecGraph / formPrefix("cardinality")).takeOnePointedGraph;
+                  cardinality = uriToCardinalities(card.pointer);
+                  prop <- (formSpecGraph / formPrefix("fieldAppliesToProperty")).takeOnePointedGraph;
+                  property = prop.pointer;
+                  formPointedGraph <- (formSpecGraph / formPrefix("fieldAppliesToForm")).takeOnePointedGraph;
+                  form = formPointedGraph.pointer
+                ) {
+                  field.cardinality = cardinality
+                  println(s"updateOneFormFromConfig: prop $prop: $cardinality, form $form")
+                }
+              }
+
             }
         }
     }
-    val triples = find(graph, formConfig, ANY, ANY).toSeq
-    // TODO try the Object - semantic mapping of Banana-RDF
-    val uriToCardinalities = Map[Rdf#Node, Cardinality] {
-      formPrefix("zeroOrMore") -> zeroOrMore;
-      formPrefix("oneOrMore") -> oneOrMore;
-      formPrefix("zeroOrOne") -> zeroOrOne;
-      formPrefix("exactlyOne") -> exactlyOne
-    }
-    for (t <- triples) {
+
+    for (t <- triplesInFormConfig) {
       logger.debug("updateFormForClass formConfig " + t)
       if (t.predicate == formPrefix("defaultCardinality")) {
         formSyntax.defaults.defaultCardinality = uriToCardinalities.getOrElse(t.objectt, zeroOrOne)
       }
     }
+    
+//    for (t <- triplesInFormConfig) {
+//      logger.debug("updateFormForClass formConfig " + t)
+//      if (t.predicate == formPrefix("cardinality")) {
+//        val formSpecGraph = PointedGraph( t.subject , Graph(triplesInFormConfig))
+//  
+//        for( card <- ( formSpecGraph / formPrefix("cardinality")) . takeOnePointedGraph;
+//        cardinality = uriToCardinalities(card.pointer);
+//        prop <- ( formSpecGraph / formPrefix("fieldAppliesToProperty") ) . takeOnePointedGraph;
+//        property = prop.pointer;
+//        formPointedGraph <- ( formSpecGraph / formPrefix("fieldAppliesToForm") ) . takeOnePointedGraph;
+//        form = formPointedGraph.pointer
+//        ) {
+//          formSyntax.fields(0).cardinality = cardinality
+//        }
+//      }
+//    }
   }
           
   /**

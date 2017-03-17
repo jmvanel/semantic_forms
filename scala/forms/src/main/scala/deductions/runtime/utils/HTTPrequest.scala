@@ -12,8 +12,7 @@ case class HTTPrequest(
      */
     host: String = "localhost",
 
-    /**
-     * The client IP address.
+    /* The client IP address.
      *
      * the last untrusted proxy
      * from the Forwarded-Headers or the X-Forwarded-*-Headers.
@@ -24,16 +23,28 @@ case class HTTPrequest(
 
     queryString: Map[String, Seq[String]] = Map(),
 
-    /** YET UNUSED */
+    /* YET UNUSED */
     headers: Map[String, Seq[String]] = Map(),
-    cookies: List[Cookie] = List()) {
+//    cookies: List[Cookie] = List())
+    cookies: Map[String, Cookie] = Map()
+    ) {
 
   def absoluteURL(rawURI: String = "", secure: Boolean = false): String =
     "http" + (if (secure) "s" else "") + "://" +
       this.host + rawURI // + this.appendFragment
 
+  def userId(): String = {
+    val usernameFromSession = for (
+      cookie <- cookies.get("PLAY_SESSION");
+      value = cookie.value
+    ) yield { substringAfter(value, "username=") }
+    usernameFromSession.getOrElse("anonymous")
+  }
+
+  def substringAfter(s: String, k: String) = { s.indexOf(k) match { case -1 => ""; case i => s.substring(i + k.length) } }
   def localSparqlEndpoint = URLEncoder.encode(absoluteURL("/sparql"), "UTF-8")
 
+  
 }
 
 /** Borrowed from Play */

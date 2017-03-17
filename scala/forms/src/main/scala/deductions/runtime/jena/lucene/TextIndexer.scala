@@ -20,20 +20,23 @@ private[lucene] class TextIndexerClass extends jena.textindexer(Array[String]())
     with DefaultConfiguration {
 
   val config = new DefaultConfiguration {
-    override val useTextQuery = false
+    override val useTextQuery = true
   }
   import config._
 
   val config1 = config
+  // NOTE: this triggers configureLuceneIndex()
   val rdfStoreProvider = new ImplementationSettings.RDFCache {
     val config = config1
   }
-
   val dataset0 = rdfStoreProvider.dataset
   val datasetWithLuceneConfigured = dataset0
+
   val graphWithLuceneConfigured = datasetWithLuceneConfigured.asDatasetGraph()
-  println("datasetWithLuceneConfigured.asDatasetGraph() " + graphWithLuceneConfigured.getClass)
+    println("datasetWithLuceneConfigured.asDatasetGraph() getClass " + graphWithLuceneConfigured.getClass)
   val datasetGraphText: DatasetGraphText = graphWithLuceneConfigured.asInstanceOf[DatasetGraphText]
+
+  // overrride jena.textindexer fields
   dataset = datasetGraphText
   textIndex = dataset.getTextIndex()
 

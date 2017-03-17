@@ -90,8 +90,8 @@ trait FormSyntaxFactoryTest[Rdf <: RDF, DATASET] extends FormSyntaxFactory[Rdf, 
   }
   
   def createFormWithGivenProps() = {
-    implicit val graph = // emptyGraph // 
-      makeGraphwithFOAFvocabandData()    
+    implicit val graph = makeGraphwithFOAFvocabandData()
+    implicit val lang = "en"
     val factory = this
     println((graph.triples).mkString("\n"))
     val res = dataset.r({
@@ -121,6 +121,7 @@ trait FormSyntaxFactoryTest[Rdf <: RDF, DATASET] extends FormSyntaxFactory[Rdf, 
     val formspec = new FileInputStream("form_specs/foaf.form.ttl")
     val graph1 = turtleReader.read(formspec, "").get
     implicit val graph = union(Seq(graph1, graph2))
+    implicit val lang = "en"
     //  val fact = new UnfilledFormFactory[Rdf](graph)
     val fact = this // new FormSyntaxFactory[Rdf](graph)
     val os = new FileOutputStream("/tmp/graph.nt")

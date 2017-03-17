@@ -69,8 +69,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
     val owl = OWLPrefix[Rdf]
     val rdfh: RDFHelpers[Rdf] = this
 
-    /**
-     * modify entry to populate possibleValues,
+    /* modify entry to populate possibleValues,
      * by taking ?LIST from triples:
      * ?RANGE owl:oneOf ?LIST
      */
@@ -90,8 +89,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
         entryField.openChoice = false
       }
 
-      /**
-       * fill Possible Values into `possibleValues`
+      /* fill Possible Values into `possibleValues`
        * from given RDF List `enumerated`, which typically comes
        *  from existing triples with relevant rdf:type
        */
@@ -139,7 +137,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
     
     import org.w3.banana.binder._
 
-    /** process owl:union appearing as rdfs:range of a property
+    /* process owl:union appearing as rdfs:range of a property
      * Typical declaration processed:
      *
      * :implies a owl:ObjectProperty ;
@@ -191,7 +189,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
           }
       }
       
-    /** populate possible Values From Instances */
+    /* populate possible Values From Instances */
     def populateFromInstances(): Seq[ResourceWithLabel[Rdf]] = {
       val possibleValues = time(
     		s"populateFromInstances ${entryField.label}",
@@ -227,8 +225,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
       } else Seq()
     }
     
-    /**
-     * populate From configuration in TDB
+    /* populate From configuration in TDB
      *  TODO ? merge given possibleValues with existing ones
      */
     def populateFromTDB(): Seq[ResourceWithLabel[Rdf]] = {
@@ -240,7 +237,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
       }
     }
 
-    /** this function does the job! */
+    /* this function does the job! */
     def setPossibleValues() : Seq[(Rdf#Node, Rdf#Node)] = {
       val fieldType = entryField.type_
       val possibleValues = {
@@ -269,7 +266,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
       possibleValues
     }
 
-    /** record Possible Values */
+    /* record Possible Values */
     def recordPossibleValues(resourcesWithLabel: Seq[ResourceWithLabel[Rdf]],
                              classesAndLabels:  Map[Rdf#Node, Seq[ ResourceWithLabel[Rdf]]]
     ): Seq[(Rdf#Node, Rdf#Node)] = {

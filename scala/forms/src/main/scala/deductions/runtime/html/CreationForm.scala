@@ -51,9 +51,11 @@ with FormSyntaxJson[Rdf] {
   /** raw Data for instance creation */
   def createData(classUri: String, lang0: String = "en",
                  formSpecURI: String = "",
-                 request: HTTPrequest = HTTPrequest()) : FormSyntax = {
+                 request: HTTPrequest
+//                 = HTTPrequest()
+                 ) : FormSyntax = {
     val classURI = URI(classUri)
-    retrieveURINoTransaction(classURI, dataset)
+    retrieveURINoTransaction(classURI, dataset, request)
     implicit val lang = lang0
     implicit val graph: Rdf#Graph = allNamedGraph
     val form = createFormFromClass(classURI, formSpecURI, request)

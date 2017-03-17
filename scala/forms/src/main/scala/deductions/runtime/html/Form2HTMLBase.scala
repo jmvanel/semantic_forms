@@ -32,9 +32,21 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
   (implicit form: FormModule[NODE, URI]#FormSyntax) = {
     // display field label only if different from preceding
     if (preceding.label != field.label)
-      <label class={ css.cssClasses.formLabelCSSClass } title={
+      // PENDING is it correct HTML5 ?
+      <label for={ makeHTMLNameResource(field) }
+        class={ css.cssClasses.formLabelCSSClass }
+        >
+      <a href={field.property.toString()}
+    title={
         labelTooltip(field)
-      } for={ makeHTMLNameResource(field) }
+      }
+    target="_blank"
+    style= {"""
+/* Do not show labels like links */
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+"""}
       draggable="true"
       data-uri-property={field.property.toString()}>{
         val label = field.label
@@ -42,7 +54,8 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
         if (label.contains("----"))
           label.substring(1).replaceAll("-(-)+", "")
         else label
-      }</label>
+      }</a>
+      </label>
     else
       <label class={ css.cssClasses.formLabelCSSClass } title={
         field.comment + " - " + field.property

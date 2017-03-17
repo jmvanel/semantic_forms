@@ -24,29 +24,35 @@ object FormSpecificationsLoader
 
   import config._
 
-  if (args.size == 0)
-    loadCommonFormSpecifications()
-  else
-    loadFormSpecifications(args(0))
+  resetCommonFormSpecifications()
+    if (args.size == 0)
+      loadCommonFormSpecifications()
+    else
+      loadFormSpecification(args(0))
+  println(s"DONE load Common Form Specifications in named graph <$formSpecificationsGraphURI>")
+  close(dataset)
 }
 
 trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
     with RDFPrefixes[Rdf]
-    with SitesURLForDownload
-//    with Configuration
-    {
+    with SitesURLForDownload {
 
   import ops._
   import rdfStore.transactorSyntax._
 
-  val formSpecificationsGraph = URI("urn:form_specs")
+  val all_form_specs_document = githubcontent +
+  "/jmvanel/semantic_forms/master/scala/forms/form_specs/specs.ttl"
+  val formSpecificationsGraphURI = URI( 
+      // all_form_specs_document +"#" ) //
+      "urn:form_specs")
 
   /** TRANSACTIONAL */
   def resetCommonFormSpecifications() {
-    rdfStore.rw( dataset, {
-      rdfStore.removeGraph(dataset, formSpecificationsGraph)
-    })
+    val ret = wrapInTransaction {
+      rdfStore.removeGraph(dataset, formSpecificationsGraphURI)
+    }
+    println(s"DONE reset Common Form Specifications in named graph <$formSpecificationsGraphURI> : $ret")
   }
 
   /**
@@ -55,39 +61,36 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
    *  non TRANSACTIONAL
    */
   def loadCommonFormSpecifications() {
-    val all_form_specs = githubcontent +
-      "/jmvanel/semantic_forms/master/scala/forms/form_specs/specs.ttl"
-    loadFormSpecifications(all_form_specs)
+    loadFormSpecification(all_form_specs_document)
   }
 
   /** non TRANSACTIONAL */
-  def loadFormSpecifications(form_specs: String) {
+  def loadFormSpecification(form_specs: String) {
     try {
       val from = new java.net.URL(form_specs).openStream()
       val form_specs_graph: Rdf#Graph =
         turtleReader.read(from, base = form_specs) getOrElse sys.error(
-          s"couldn't read $form_specs")
-      //    import deductions.runtime.abstract_syntax.FormSyntaxFactory._
+          s"couldn't read form_specs <$form_specs>")
+
       val formPrefix = form
-      /* Retrieving triple :
-     * foaf: form:ontologyHasFormSpecification <foaf.form.ttl> . */
+      /* Retrieving such triples:
+       * foaf: form:ontologyHasFormSpecification <foaf.form.ttl> . */
       val triples: Iterator[Rdf#Triple] = find(form_specs_graph, ANY, formPrefix("ontologyHasFormSpecification"), ANY)
-      val objects = for (triple <- triples) yield {
-        triple._3 // getObject
-      }
-      for (obj <- objects) {
+      val formSpecifications = for (triple <- triples) yield triple.objectt
+
+      for (formSpecification <- formSpecifications) {
         try {
-          val from = new java.net.URL(obj.toString()).openStream()
-          val form_spec_graph: Rdf#Graph = turtleReader.read(from, base = obj.toString()) getOrElse sys.error(
-            s"couldn't read ${obj.toString()}")
-          rdfStore.rw( dataset, {
-            rdfStore.appendToGraph(dataset, formSpecificationsGraph, form_spec_graph)
-          })
-          println("Added form_spec " + obj)
+          val from = new java.net.URL(formSpecification.toString()).openStream()
+          val form_spec_graph: Rdf#Graph = turtleReader.read(from, base = formSpecification.toString()) getOrElse sys.error(
+            s"couldn't read form Specification <${formSpecification.toString()}>")
+          val ret = wrapInTransaction {
+            rdfStore.appendToGraph(dataset, formSpecificationsGraphURI, form_spec_graph)
+          }
+          println(s"Added form_spec <$formSpecification> in named graph <$formSpecificationsGraphURI> (${form_spec_graph.size} triples) $ret")
         } catch {
           case e: Exception =>
             System.err.println(s"""!!!! Error in loadFormSpecifications:
-            $obj
+            $formSpecification
             $e
             ${e.printStackTrace()}""")
         }

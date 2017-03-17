@@ -74,7 +74,7 @@ with SKOS2CSV[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
   /** format report as CSV */
   def formatCSV(): String = {
-    /** format Label Group as CSV */
+    /* format Label Group as CSV */
     def formatCSVLines(labelAndList: (String, List[Rdf#Node])) = {
       val list = labelAndList._2
 //      println(s"list size ${list.size}")

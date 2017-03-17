@@ -52,6 +52,7 @@ trait LuceneIndex // [Rdf <: RDF]
     entMap.set("text", gvoi("administrativeName"))
     entMap.set("text", gvoi("proposedContribution"))
     entMap.set("text", gvoi("realisedContribution"))
+    entMap.set("text", gvoi("building"))
     entMap.set("text", foaf.status)
 
     entMap

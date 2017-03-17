@@ -25,6 +25,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
    *  
    *  TODO check URI arguments: they must be valid, absolute
    *  TODO return Try
+   *  TODO use HTTP request param graphURI
    */
   def createFormFromClass(classe: Rdf#URI,
     formSpecURI0: String = "" , request: HTTPrequest= HTTPrequest() )
@@ -61,6 +62,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
     else
       instanceURI
 
+    // TODO properties List argument IS NOT USED !!!!
     if (propsListInFormConfig.isEmpty) {
       val props = fieldsFromClass(classFromSpecsOrGiven, graph).propertiesList
       createFormDetailed(makeUri(newId), addRDFSLabelComment(props), classFromSpecsOrGiven, CreationMode)

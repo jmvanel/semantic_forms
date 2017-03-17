@@ -68,7 +68,7 @@ trait ApplicationTrait extends Controller
           outputMainPage(makeHistoryUserActions("10", lang, copyRequest(request) ), lang,
               userInfo = userInfo)
     }
-
+	/** @param Edit edit mode <==> param not "" */
   def displayURI(uri0: String, blanknode: String = "", Edit: String = "",
                  formuri: String = "") =
     if (needLoginForDisplaying || ( needLoginForEditing && Edit !="" ))
@@ -92,7 +92,7 @@ trait ApplicationTrait extends Controller
             outputMainPage(
               htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
                 graphURI = makeAbsoluteURIForSaving(userid),
-                request = getRequestCopy()),
+                request = getRequestCopy()) . _1 ,
               lang, title = title, userInfo = userInfo)
       }
     else
@@ -103,30 +103,29 @@ trait ApplicationTrait extends Controller
           logger.info(s"displayURI: expandOrUnchanged $uri")
           val title = labelForURITransaction(uri, lang)
 
-          def userInfoHTML(request: Request[_]) = {
-            val userid = userId(request)
-            ( displayUser(userid, uri, title, lang), userid)
+          val userid = getRequestCopy(). userId()
+          def userInfoHTML(request: Request[_]): NodeSeq = {
+            displayUser(userid, uri, title, lang)
           }
-          val (userInfo, userid) = userInfoHTML(request)
+          val userInfo = userInfoHTML(request)
 
           outputMainPage(
             htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
               graphURI = makeAbsoluteURIForSaving(userid),
-              request = getRequestCopy()),
+              request = getRequestCopy()) . _1,
             lang, title = title, userInfo = userInfo)
         }
       }
 
   def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
-//        Action // 
-        withUser
+		  withUser
     {
       implicit userid =>
         implicit request =>
           logger.info(s"""form: request $request : "$Edit" formuri <$formuri> """)
           val lang = chooseLanguage(request)
           Ok(htmlForm(uri, blankNode, editable = Edit != "", lang, formuri,
-              graphURI = makeAbsoluteURIForSaving(userid), database=database))
+              graphURI = makeAbsoluteURIForSaving(userid), database=database) . _1 )
           .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
@@ -136,7 +135,8 @@ trait ApplicationTrait extends Controller
   def formData(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
     Action {
         implicit request =>
-       makeJSONResult(formDataImpl(uri, blankNode, Edit, formuri, database))
+        val lang = chooseLanguage(request)
+       makeJSONResult(formDataImpl(uri, blankNode, Edit, formuri, database, lang))
     }
 
   private def makeJSONResult(json: String) = makeResultMimeType(json, AcceptsJSONLD.mimeType)
@@ -220,7 +220,7 @@ trait ApplicationTrait extends Controller
           val content = htmlForm(
             uri, editable = true,
             lang = chooseLanguage(request), graphURI = makeAbsoluteURIForSaving(userid),
-            request=copyRequest(request) )
+            request=copyRequest(request) ). _1
           Ok("<!DOCTYPE html>\n" + mainPage(content, userInfo, lang))
             .as("text/html; charset=utf-8").
             withHeaders("Access-Control-Allow-Origin" -> "*") // TODO dbpedia only
@@ -232,9 +232,10 @@ trait ApplicationTrait extends Controller
   def saveAction() = {
     def save(userid: String)(implicit request: Request[_]) = {
       val lang = chooseLanguage(request)
-      val uri = saveOnly(request, userid, graphURI = makeAbsoluteURIForSaving(userid))
+      val (uri, typeChanges) = saveOnly(request, userid, graphURI = makeAbsoluteURIForSaving(userid))
       logger.info(s"saveAction: uri <$uri>")
-      val call = routes.Application.displayURI(uri)
+      val call = routes.Application.displayURI(uri,
+          Edit=if(typeChanges) "edit" else "" )
       Redirect(call)
       /* TODO */
       // recordForHistory( userid, request.remoteAddress, request.host )
@@ -254,7 +255,7 @@ trait ApplicationTrait extends Controller
 
 
   /** save Only, no display */
-  private def saveOnly(request: Request[_], userid: String, graphURI: String = ""): String = {
+  private def saveOnly(request: Request[_], userid: String, graphURI: String = ""): (String, Boolean) = {
     val body = request.body
     val host  = request.host
     body match {
@@ -267,8 +268,8 @@ trait ApplicationTrait extends Controller
           saveForm(map, lang, userid, graphURI, host)
         }
         subjectUriTryOption match {
-            case Success(Some(url1)) => url1
-            case _ => ""
+            case Success((Some(url1), typeChange)) => (url1, typeChange)
+            case _ => ("", false)
         }
     }
   }

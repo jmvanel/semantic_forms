@@ -4,22 +4,11 @@ organization := "deductions"
 name := "semantic_forms"
 version := "1.0-SNAPSHOT"
 
-//lazy val forms_js =  RootProject(file("../forms_js"))
-//lazy val semantic_forms = (project in file("."))
-//        .dependsOn(forms_js)
-
-scalaVersion :=  "2.11.8"
-// scalaVersion :=  "2.12.1"
+scalaVersion :=  "2.11.8" // scalaVersion :=  "2.12.1"
 val jenaVersion =  "3.2.0" // "3.1.0"
 
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-explaintypes", "-language:_", "-Xlint:_")
-
-// Scala code checkers
-
-// wartremoverErrors ++= Warts.unsafe
-// wartremoverErrors ++= Warts.allBut(Wart.DefaultArguments, Wart.Var)
-// libraryDependencies += "com.lightbend" %% "abide-core" % "0.1-SNAPSHOT" % "abide"
 
 libraryDependencies += "org.w3" %%  "banana-jena" % "0.8.4-SNAPSHOT" // 9.0-SNAPSHOT"
 
@@ -40,12 +29,9 @@ libraryDependencies += "net.rootdev" % "java-rdfa" % "0.4.2"
 
 libraryDependencies += "org.scala-lang.modules" %% "scala-async" % "0.9.6"
 
-//libraryDependencies += "com.typesafe.play" %% "play-json" % "2.3.10"
-// 
 libraryDependencies += "com.typesafe.play" %% "play-json" % "2.5.12"
 // libraryDependencies += "com.typesafe.play" %% "play-json" % "2.6.0-M2"
 
-// libraryDependencies += "com.netaporter" %% "scala-i18n" % "0.1"
 libraryDependencies += "org.apache.commons" % "commons-csv" % "1.4"
 libraryDependencies += "org.apache.any23" % "apache-any23-csvutils" %  "1.1" // "1.0" // 
 
@@ -72,10 +58,3 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % Test
 
 resolvers += "apache-repo-releases" at "https://repository.apache.org/content/repositories/releases/"
 
-// resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
-// resolvers += "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/"
-// resolvers += Resolver.mavenLocal
-// resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
-
-// for i18n? resolvers += "bintray" at "http://jcenter.bintray.com"
-// scalariformSettings

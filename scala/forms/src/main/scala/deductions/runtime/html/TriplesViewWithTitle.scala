@@ -18,7 +18,7 @@ import scala.concurrent.Future
 trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
     with TriplesViewModule[Rdf, DATASET]
-    with FormHeader[Rdf]
+    with FormHeader[Rdf, DATASET]
     with StatisticsGraph[Rdf]
     with BlankNodeCleanerIncremental[Rdf, DATASET] {
   
@@ -41,37 +41,39 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
                formuri: String = "",
                graphURI: String = "",
                database: String = "TDB",
-               request: HTTPrequest = HTTPrequest()): NodeSeq = {
+               request: HTTPrequest = HTTPrequest()): (NodeSeq, Boolean) = {
     logger.info(
       s"""ApplicationFacadeImpl.htmlForm URI <$uri0> blankNode "$blankNode"
               editable=$editable lang=$lang graphURI <$graphURI>""")
     val uri = uri0.trim()
+    var typeChange = false
     if (uri != null && uri != "")
       try {
         val datasetOrDefault = getDatasetOrDefault(database)
         val result: Try[NodeSeq] = {
 
-          val t1 = wrapInTransaction({
+          val transaction1 = wrapInTransaction({
 
             if (blankNode != "true") {
-              val resRetrieve = retrieveURINoTransaction( // if( blankNode=="true") makeUri("_:" + uri ) else makeUri(uri),
-                makeUri(uri), datasetOrDefault)
+              val tryGraph = retrieveURINoTransaction( // if( blankNode=="true") makeUri("_:" + uri ) else makeUri(uri),
+                makeUri(uri), datasetOrDefault, request)
 
-              val failureOrStatistics = resRetrieve match {
+              val failureOrStatistics = tryGraph match {
                 case Failure(e) => e.getLocalizedMessage
                 case Success(g) => formatHTMLStatistics(URI(uri), g, lang)
               }
-              (resRetrieve, failureOrStatistics)
+              (tryGraph, failureOrStatistics)
             } else
               (Success(emptyGraph), "")
           }, datasetOrDefault)
 
           val (tryGraph: Try[Rdf#Graph],
-            failureOrStatistics /* String or NodeSeq */ ) = t1.get
+            failureOrStatistics /* String or NodeSeq */ ) = transaction1.get
 
           tryGraph match {
             case Success(gr) =>
               import scala.concurrent.ExecutionContext.Implicits.global
+              typeChange = gr.size == 1 && gr.triples.head . objectt == foaf.Document
               Future {
                 // TODO should be done in FormSaver 
                 println(s"Search in <$uri> duplicate graph rooted at blank node: size " +
@@ -82,10 +84,11 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
             case Failure(f) => logger.error(s"manageBlankNodesReload: $f")
           }
 
-          // or wrapInReadTransaction ?
-          wrapInTransaction({
+          val editable2 = editable || typeChange
+          
+          wrapInTransaction({  // or wrapInReadTransaction ?
             implicit val graph = allNamedGraph
-            val formBoth = htmlFormElemRaw(uri, graph, hrefDisplayPrefix, blankNode, editable = editable,
+            val formBoth = htmlFormElemRaw(uri, graph, hrefDisplayPrefix, blankNode, editable = editable2,
               lang = lang,
               formuri = formuri,
               graphURI = graphURI,
@@ -96,26 +99,27 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
             val formSyntax = formBoth._2
 
             Text("\n") ++
-              titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable) ++
+              titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable2) ++
               <div>{ failureOrStatistics }</div> ++
               formItself
           }, datasetOrDefault)
         }
 
-        result.get
+        val resultXML = result.get
+        (resultXML, typeChange)
       } catch {
         case e: Exception => // e.g. org.apache.jena.riot.RiotException
-          <p class="sf-error-message">
+          (<p class="sf-error-message">
             <pre>
               {
                 e.getLocalizedMessage() + "\n" + printTrace(e).replaceAll("\\)", ")\n")
               }<br/>
               Cause:{ if (e.getCause() != null) e.getCause().getLocalizedMessage() }
             </pre>
-          </p>
+          </p>, false)
       }
     else
-      <div class="row">Enter an URI</div>
+      (<div class="row">Enter an URI</div>, false)
   }
 
   /** PASTED !!! */

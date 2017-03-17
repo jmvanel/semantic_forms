@@ -26,7 +26,7 @@ class TestBrowsableGraph
   }
   import ops._
 
-  def test {
+  def test() {
     lazy val bg = this // new BrowsableGraph[Rdf, Store] {}
 
     val uri = "http://jmvanel.free.fr/jmv.rdf#me"

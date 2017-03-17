@@ -3,6 +3,8 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 @prefix cco: <http://purl.org/ontology/cco/core#> .
+@prefix org:        <http://www.w3.org/ns/org#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
 
 # Additions to FOAF vocab' ;
 # the forms system will propose possible values based on rdfs:range,
@@ -24,3 +26,15 @@
 foaf:currentProject rdfs:range foaf:Project .
 foaf:pastProject rdfs:range foaf:Project .
 
+# To avoid a owl:sameClass inference 
+org:memberOf a owl:ObjectProperty ;
+	:label "membre de"@fr;
+	:range foaf:Organization ;
+	:domain foaf:Agent .
+
+org:headOf a owl:ObjectProperty ;
+    rdfs:label "head of"@en;
+    rdfs:label "responsable de"@fr;
+    rdfs:domain foaf:Person;
+    rdfs:range  foaf:Organization;
+    rdfs:subPropertyOf org:memberOf .
