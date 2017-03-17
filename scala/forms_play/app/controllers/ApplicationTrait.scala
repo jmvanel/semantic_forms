@@ -103,11 +103,11 @@ trait ApplicationTrait extends Controller
           logger.info(s"displayURI: expandOrUnchanged $uri")
           val title = labelForURITransaction(uri, lang)
 
-          def userInfoHTML(request: Request[_]) = {
-            val userid = userId(request)
-            ( displayUser(userid, uri, title, lang), userid)
+          val userid = getRequestCopy(). userId()
+          def userInfoHTML(request: Request[_]): NodeSeq = {
+            displayUser(userid, uri, title, lang)
           }
-          val (userInfo, userid) = userInfoHTML(request)
+          val userInfo = userInfoHTML(request)
 
           outputMainPage(
             htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,

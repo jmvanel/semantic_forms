@@ -21,6 +21,8 @@ import deductions.runtime.services.URIManagement
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.jena.MicrodataLoaderModule
 import deductions.runtime.utils.HTTPrequest
+import deductions.runtime.jena.ImplementationSettings
+import org.apache.jena.riot.RiotException
 
 /** */
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
@@ -73,7 +75,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    */
   def retrieveURI(uri: Rdf#URI, dataset: DATASET = dataset): Try[Rdf#Graph] = {
     rdfStore.rw( dataset, {
-      retrieveURINoTransaction(uri: Rdf#URI, dataset: DATASET)
+      retrieveURINoTransaction(uri, dataset, HTTPrequest())
     }).flatMap { identity }
   }
 
@@ -85,7 +87,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    *  @return the more recent RDF data if any, or the old data
    */
   def retrieveURINoTransaction(uri: Rdf#URI, dataset: DATASET,
-                               request: HTTPrequest = HTTPrequest()): Try[Rdf#Graph] = {
+                               request: HTTPrequest
+                               ): Try[Rdf#Graph] = {
 
     val tryGraphLocallyManagedData = getLocallyManagedUrlAndData(uri, request)
 
@@ -93,7 +96,6 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       case Some(tgr) => Success(tgr)
 
       case None =>
-//      for (graphStoredLocally <- rdfStore.getGraph(dataset, uri)) yield {
         val tryGraphFromRdfStore = rdfStore.getGraph(dataset, uri)
         tryGraphFromRdfStore match {
           case Failure(f) => Failure(f)
@@ -101,7 +103,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
             {
           val graphSize = graphStoredLocally.size
           val nothingStoredLocally = graphSize == 0
-          println(s"""retrieveURINoTransaction: graph at URI <$uri> size $graphSize""")
+          println(s"""retrieveURINoTransaction: TDB graph at URI <$uri> size $graphSize""")
 
           val vvv = if (nothingStoredLocally) { // then read unconditionally from URI and store in TDB
         	  println(s"""retrieveURINoTransaction: stored Graph Is Empty for URI <$uri>""")
@@ -115,10 +117,25 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
                   addTimestampToDataset(uri, dataset2)
                 } else
                   println(s"Download Graph at URI <$uri> was tried, but it's faulty: $graphDownloaded")
-                graphDownloaded
+                  
+                println(s"""retrieveURINoTransaction: downloaded graph from URI <$uri> $graphDownloaded
+                    size ${if( graphDownloaded.isSuccess) graphDownloaded.get.size}""")
+                    graphDownloaded  match {
+                      case Success(gr) => Success(gr)
+                      case Failure(f) =>
+                {
 //              } catch {
 //                case t: Exception =>
-//                  println(s"Graph at URI <$uri> could not be downloaded, trying local TDB (exception ${t.getLocalizedMessage}, ${t.getClass} cause ${t.getCause}).")
+                  println(s"Graph at URI <$uri> could not be downloaded, (exception ${f.getLocalizedMessage}, ${f.getClass} cause ${f.getCause}).")
+                        //                  request.headers.getOrElse("Content-Type", "")
+                        //                  println(s"retrieveURINoTransaction: headers ${request.headers}")
+                        f match {
+                          case ex: ImplementationSettings.RDFReadException if (ex.getMessage().contains("text/html")) =>
+                            /* Failure(org.apache.jena.riot.RiotException: Failed to determine the content type: (
+                               URI=http://ihmia.afihm.org/programme/index.html : stream=text/html)) */
+                            Success(pureHTMLwebPageAnnotateAsDocument(uri, request))
+                          case _ => graphDownloaded
+                        }
 //                  val tryGraph = search_only(fromUri(uri))
 //                  tryGraph match {
 //                    case Success(g) if (g.size > 1) => Success(g) // 1 because there is always urn:displayLabel
@@ -130,6 +147,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
 //                  // for Java-RDFa release 0.4.2 :
 //                  println(s"Graph at URI <$uri> could not be downloaded, exception: $t"); Failure(t)
 //              }
+                }
+                }
             } else {
               println(s"mirrorURI found: $mirrorURI")
               // TODO find in Mirror URI the relevant triples ( but currently AFAIK the graph returned by this function is not used )
@@ -137,6 +156,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
             }
         	  vv
           } else { // get a chance for more recent RDF data
+            // TODO really needed here ???
             val res = updateLocalVersion(uri, dataset).getOrElse(graphStoredLocally)
             Success(res)
           }
@@ -337,17 +357,23 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
 
   /** test if it's a locally managed URL */
   private def getLocallyManagedUrlAndData(uri: Rdf#URI, request: HTTPrequest): Option[Rdf#Graph] =
-    if (!fromUri(uri).startsWith(request.absoluteURL(""))) {
+    if (!fromUri(uri).startsWith(request.absoluteURL(""))) { // TODO ? "ldp"
       // then it can be a "pure" HTML web page, or an RDF document
-      
-      { // TODO reactivate but not here <<<<
-        val newTripleWithURL = List(makeTriple(uri, rdf.typ, foaf.Document))
-        val newGraphWithUrl: Rdf#Graph = makeGraph(newTripleWithURL)
-        newGraphWithUrl
-      }
       None
-    } else // it's a locally managed user URL and data, no need to download anything
+    } else {
+      // it's a locally managed user URL and data, no need to download anything
       // used by formatHTMLStatistics():
+      // TODO test rather: Some(rdfStore.getGraph( dataset, uri ).getOrElse(emptyGraph))
       Some(makeGraph(find(allNamedGraph, uri, ANY, ANY).toIterable))
+    }
+
+  def pureHTMLwebPageAnnotateAsDocument(uri: Rdf#URI, request: HTTPrequest): Rdf#Graph = {
+    val newGraphWithUrl: Rdf#Graph = makeGraph(List(makeTriple(uri, rdf.typ, foaf.Document)))
+    rdfStore.appendToGraph(dataset,
+      URI(makeAbsoluteURIForSaving(request.userId())),
+      newGraphWithUrl)
+    println(s"getLocallyManagedUrlAndData: saved $newGraphWithUrl in graph <${makeAbsoluteURIForSaving(request.userId())}>")
+    newGraphWithUrl
+  }
 }
 

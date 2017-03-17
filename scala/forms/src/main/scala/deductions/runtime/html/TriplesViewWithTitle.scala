@@ -55,7 +55,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
 
             if (blankNode != "true") {
               val resRetrieve = retrieveURINoTransaction( // if( blankNode=="true") makeUri("_:" + uri ) else makeUri(uri),
-                makeUri(uri), datasetOrDefault)
+                makeUri(uri), datasetOrDefault, request)
 
               val failureOrStatistics = resRetrieve match {
                 case Failure(e) => e.getLocalizedMessage

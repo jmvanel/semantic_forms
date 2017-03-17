@@ -9,11 +9,12 @@ trait HTTPrequestHelpers {
   def copyRequest(request: Request[_]): HTTPrequest = {
     import request._
     val cookiesMap = cookies.map { cookie => (cookie.name -> copyCookie(cookie)) } . toMap
-    HTTPrequest(host, remoteAddress,
+    val res = HTTPrequest(host, remoteAddress,
       rawQueryString, queryString,
-//      headers.toMap, cookies.toList.map { cookie => copyCookie(cookie) }
       headers.toMap, cookiesMap
       )
+    println(s"copyRequest: cookiesMap $cookiesMap , userId ${res.userId()}")
+    res
   }
 
   def copyCookie(cookie: play.api.mvc.Cookie): Cookie = {

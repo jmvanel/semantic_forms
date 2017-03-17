@@ -5,20 +5,21 @@ import java.time.format.DateTimeFormatter
 
 import play.api.mvc.Request
 
-trait RequestUtils {
+trait RequestUtils extends HTTPrequestHelpers {
 
   def log(mess: String, request: Request[_]) =
 		  LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")) +
-      s""" $mess: IP ${request.remoteAddress}, userId "${userId(request)}", $request, id ${request.id}, host ${request.host}"""
+      s""" $mess: IP ${request.remoteAddress}, userId "${
+         copyRequest(request).userId()
+        }", $request, id ${request.id}, host ${request.host}"""
 
-  /** TODO remove ( moved to case class HTTPrequest ) */
-  def userId(request: Request[_]): String = {
-    val usernameFromSession = for (
-      cookie <- request.cookies.get("PLAY_SESSION");
-      value = cookie.value
-    ) yield { substringAfter(value, "username=") }
-    usernameFromSession.getOrElse("anonymous")
-  }
+//  def userId(request: Request[_]): String = {
+//    val usernameFromSession = for (
+//      cookie <- request.cookies.get("PLAY_SESSION");
+//      value = cookie.value
+//    ) yield { substringAfter(value, "username=") }
+//    usernameFromSession.getOrElse("anonymous")
+//  }
 
   def substringAfter(s: String, k: String) = { s.indexOf(k) match { case -1 => ""; case i => s.substring(i + k.length) } }
 }
