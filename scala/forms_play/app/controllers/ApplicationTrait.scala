@@ -92,7 +92,7 @@ trait ApplicationTrait extends Controller
             outputMainPage(
               htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
                 graphURI = makeAbsoluteURIForSaving(userid),
-                request = getRequestCopy()),
+                request = getRequestCopy()) . _1 ,
               lang, title = title, userInfo = userInfo)
       }
     else
@@ -112,7 +112,7 @@ trait ApplicationTrait extends Controller
           outputMainPage(
             htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
               graphURI = makeAbsoluteURIForSaving(userid),
-              request = getRequestCopy()),
+              request = getRequestCopy()) . _1,
             lang, title = title, userInfo = userInfo)
         }
       }
@@ -125,7 +125,7 @@ trait ApplicationTrait extends Controller
           logger.info(s"""form: request $request : "$Edit" formuri <$formuri> """)
           val lang = chooseLanguage(request)
           Ok(htmlForm(uri, blankNode, editable = Edit != "", lang, formuri,
-              graphURI = makeAbsoluteURIForSaving(userid), database=database))
+              graphURI = makeAbsoluteURIForSaving(userid), database=database) . _1 )
           .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
@@ -220,7 +220,7 @@ trait ApplicationTrait extends Controller
           val content = htmlForm(
             uri, editable = true,
             lang = chooseLanguage(request), graphURI = makeAbsoluteURIForSaving(userid),
-            request=copyRequest(request) )
+            request=copyRequest(request) ). _1
           Ok("<!DOCTYPE html>\n" + mainPage(content, userInfo, lang))
             .as("text/html; charset=utf-8").
             withHeaders("Access-Control-Allow-Origin" -> "*") // TODO dbpedia only

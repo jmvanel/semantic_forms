@@ -23,7 +23,7 @@ trait ApplicationFacadeInterface {
     editable: Boolean = false,
     lang: String = "en", formuri: String = "",
     graphURI: String = "",
-    database: String = "TDB", request: HTTPrequest = HTTPrequest()): NodeSeq
+    database: String = "TDB", request: HTTPrequest = HTTPrequest()): (NodeSeq, Boolean)
 
   def saveForm(request: Map[String, Seq[String]], lang: String = "",
     userid: String = "", graphURI: String = "", host: String = ""): (Option[String], Boolean)

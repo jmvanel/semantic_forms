@@ -209,7 +209,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   }
 
   def edit(url: String): NodeSeq = {
-    htmlForm(url, editable = true)
+    htmlForm(url, editable = true)._1
   }
 
   /** save Form data in TDB

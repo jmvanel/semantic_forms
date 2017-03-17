@@ -118,7 +118,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
               makeTriple(originalTriple.subject, originalTriple.predicate,
                 objectFromUser)
                 if( originalTriple.predicate == rdf.typ ) {
-                  println(s">>>> computeDatabaseChanges: typeChange! ")
+                  println(s">>>> computeDatabaseChanges: typeChange! ($objectFromUser)")
                   typeChange = true
                 }
           }
