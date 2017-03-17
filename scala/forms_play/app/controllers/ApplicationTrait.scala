@@ -68,7 +68,7 @@ trait ApplicationTrait extends Controller
           outputMainPage(makeHistoryUserActions("10", lang, copyRequest(request) ), lang,
               userInfo = userInfo)
     }
-
+	/** @param Edit edit mode <==> param not "" */
   def displayURI(uri0: String, blanknode: String = "", Edit: String = "",
                  formuri: String = "") =
     if (needLoginForDisplaying || ( needLoginForEditing && Edit !="" ))
@@ -232,9 +232,10 @@ trait ApplicationTrait extends Controller
   def saveAction() = {
     def save(userid: String)(implicit request: Request[_]) = {
       val lang = chooseLanguage(request)
-      val uri = saveOnly(request, userid, graphURI = makeAbsoluteURIForSaving(userid))
+      val (uri, typeChanges) = saveOnly(request, userid, graphURI = makeAbsoluteURIForSaving(userid))
       logger.info(s"saveAction: uri <$uri>")
-      val call = routes.Application.displayURI(uri)
+      val call = routes.Application.displayURI(uri,
+          Edit=if(typeChanges) "edit" else "" )
       Redirect(call)
       /* TODO */
       // recordForHistory( userid, request.remoteAddress, request.host )
@@ -254,7 +255,7 @@ trait ApplicationTrait extends Controller
 
 
   /** save Only, no display */
-  private def saveOnly(request: Request[_], userid: String, graphURI: String = ""): String = {
+  private def saveOnly(request: Request[_], userid: String, graphURI: String = ""): (String, Boolean) = {
     val body = request.body
     val host  = request.host
     body match {
@@ -267,8 +268,8 @@ trait ApplicationTrait extends Controller
           saveForm(map, lang, userid, graphURI, host)
         }
         subjectUriTryOption match {
-            case Success(Some(url1)) => url1
-            case _ => ""
+            case Success((Some(url1), typeChange)) => (url1, typeChange)
+            case _ => ("", false)
         }
     }
   }

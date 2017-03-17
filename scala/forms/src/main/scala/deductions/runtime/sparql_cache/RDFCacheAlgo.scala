@@ -108,27 +108,22 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
           val vvv = if (nothingStoredLocally) { // then read unconditionally from URI and store in TDB
         	  println(s"""retrieveURINoTransaction: stored Graph Is Empty for URI <$uri>""")
             val mirrorURI = getMirrorURI(uri)
-            val vv = if (mirrorURI == "") {
-//              try {
-                val graphDownloaded = readStoreURINoTransaction(uri, uri, dataset, request)
-                val vv = if (graphDownloaded.isSuccess) {
-                  println(s"""Graph at URI <$uri>, size ${graphDownloaded.get.size}
+                val vv = if (mirrorURI == "") {
+                  val graphDownloaded = readStoreURINoTransaction(uri, uri, dataset, request)
+                  val vv = if (graphDownloaded.isSuccess) {
+                    println(s"""Graph at URI <$uri>, size ${graphDownloaded.get.size}
                     Either new addition was downloaded, or locally managed data""")
-                  addTimestampToDataset(uri, dataset2)
-                } else
-                  println(s"Download Graph at URI <$uri> was tried, but it's faulty: $graphDownloaded")
-                  
-                println(s"""retrieveURINoTransaction: downloaded graph from URI <$uri> $graphDownloaded
-                    size ${if( graphDownloaded.isSuccess) graphDownloaded.get.size}""")
-                    graphDownloaded  match {
-                      case Success(gr) => Success(gr)
-                      case Failure(f) =>
-                {
-//              } catch {
-//                case t: Exception =>
-                  println(s"Graph at URI <$uri> could not be downloaded, (exception ${f.getLocalizedMessage}, ${f.getClass} cause ${f.getCause}).")
-                        //                  request.headers.getOrElse("Content-Type", "")
-                        //                  println(s"retrieveURINoTransaction: headers ${request.headers}")
+                    addTimestampToDataset(uri, dataset2)
+                  } else
+                    println(s"Download Graph at URI <$uri> was tried, but it's faulty: $graphDownloaded")
+
+                  println(s"""retrieveURINoTransaction: downloaded graph from URI <$uri> $graphDownloaded
+                    size ${if (graphDownloaded.isSuccess) graphDownloaded.get.size}""")
+                  graphDownloaded match {
+                    case Success(gr) => Success(gr)
+                    case Failure(f) =>
+                      {
+                        println(s"Graph at URI <$uri> could not be downloaded, (exception ${f.getLocalizedMessage}, ${f.getClass} cause ${f.getCause}).")
                         f match {
                           case ex: ImplementationSettings.RDFReadException if (ex.getMessage().contains("text/html")) =>
                             /* Failure(org.apache.jena.riot.RiotException: Failed to determine the content type: (
@@ -136,19 +131,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
                             Success(pureHTMLwebPageAnnotateAsDocument(uri, request))
                           case _ => graphDownloaded
                         }
-//                  val tryGraph = search_only(fromUri(uri))
-//                  tryGraph match {
-//                    case Success(g) if (g.size > 1) => Success(g) // 1 because there is always urn:displayLabel
-//                    case Success(_)                 => Failure(t)
-//                    case Failure(err)               => Failure(err)
-//                  }
-//
-//                case t: Throwable =>
-//                  // for Java-RDFa release 0.4.2 :
-//                  println(s"Graph at URI <$uri> could not be downloaded, exception: $t"); Failure(t)
-//              }
-                }
-                }
+                      }
+                  }
             } else {
               println(s"mirrorURI found: $mirrorURI")
               // TODO find in Mirror URI the relevant triples ( but currently AFAIK the graph returned by this function is not used )

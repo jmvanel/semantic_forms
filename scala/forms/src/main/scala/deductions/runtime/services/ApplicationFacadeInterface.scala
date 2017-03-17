@@ -26,7 +26,7 @@ trait ApplicationFacadeInterface {
     database: String = "TDB", request: HTTPrequest = HTTPrequest()): NodeSeq
 
   def saveForm(request: Map[String, Seq[String]], lang: String = "",
-    userid: String = "", graphURI: String = "", host: String = ""): Option[String]
+    userid: String = "", graphURI: String = "", host: String = ""): (Option[String], Boolean)
 
   def create(uri: String, lang: String = "en",
     formSpecURI: String = "", graphURI: String = "", request: HTTPrequest = HTTPrequest()): NodeSeq

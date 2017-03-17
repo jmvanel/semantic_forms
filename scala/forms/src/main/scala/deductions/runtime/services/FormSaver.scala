@@ -40,7 +40,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
    * @return main subject URI
    */
   def saveTriples(httpParamsMap: Map[String, Seq[String]])
-      ( implicit userURI: String = "" ): Option[String]
+      ( implicit userURI: String = "" ): ( Option[String], Boolean)
       = {
     logger.debug(s"FormSaver.saveTriples httpParamsMap $httpParamsMap")
     logger.debug(s"""saveTriples: userURI <$userURI>""" )
@@ -51,6 +51,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
     val triplesToAdd = ArrayBuffer[Rdf#Triple]()
     val triplesToRemove = ArrayBuffer[Rdf#Triple]()
+    var typeChange = false
 
     // PENDING: require subject URI in parameter "uri" is probably not necessary (case of sub-forms and inverse triples)
     lazy val subjectUriOption = encodedSubjectUriOption match {
@@ -82,8 +83,8 @@ trait FormSaver[Rdf <: RDF, DATASET]
             }
         }
         doSave(graphURI)
-        Some(subjectUri)
-      case _ => None
+        ( Some(subjectUri), typeChange)
+      case _ => (None, typeChange)
     }
 
     //// end of saveTriples() body ////
@@ -92,8 +93,8 @@ trait FormSaver[Rdf <: RDF, DATASET]
     /* process a single triple from the form */
     def computeDatabaseChanges(originalTriple: Rdf#Triple, objectsFromUser: Seq[String]) {
       val foaf = FOAFPrefix[Rdf]
-      if (originalTriple.objectt == foaf.Document ) // predicate == foaf.firstName)
-        logger.debug( "DDDDDDDDDDD "+ foaf.Document)
+//      if (originalTriple.objectt == foaf.Document ) // predicate == foaf.firstName)
+//        logger.debug( "DDDDDDDDDDD "+ foaf.Document)
       logger.debug(s"computeDatabaseChanges: originalTriple: $originalTriple, objectsFromUser $objectsFromUser")
       objectsFromUser.map { objectStringFromUser =>
         // NOTE: a single element in objects
@@ -109,11 +110,18 @@ trait FormSaver[Rdf <: RDF, DATASET]
           },
           _ => BNode(objectStringFromUser.replaceAll(" ", "_")), // ?? really do this ?
           _ => Literal(objectStringFromUser))
+
+        // TODO : compare != always true !!!!!!
         if (originalTriple.objectt != objectStringFromUser) {
-          if (objectStringFromUser != "")
+          if (objectStringFromUser != "") {
             triplesToAdd +=
               makeTriple(originalTriple.subject, originalTriple.predicate,
                 objectFromUser)
+                if( originalTriple.predicate == rdf.typ ) {
+                  println(s">>>> computeDatabaseChanges: typeChange! ")
+                  typeChange = true
+                }
+          }
           if (originalTriple.objectt.toString() != "")
             triplesToRemove += originalTriple
           logger.debug("computeDatabaseChanges: predicate " + originalTriple.predicate + ", originalTriple.objectt: \"" +
@@ -147,7 +155,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
           })
         }
         res
-      }) // .flatMap { identity }
+      })
 
       val f = transaction.asFuture
 

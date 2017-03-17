@@ -216,7 +216,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
    *  @return main subject URI like [[FormSaver.saveTriples]] */
   def saveForm(request: Map[String, Seq[String]], lang: String = "",
       userid: String, graphURI: String = "", host: String= "")
-  : Option[String] = {
+  : (Option[String], Boolean) = {
     logger.info(s"ApplicationFacadeImpl.saveForm: request :$request, userid <$userid>")
     val mainSubjectURI = try {
       implicit val userURI: String = userid
