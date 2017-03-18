@@ -46,12 +46,5 @@ object Common {
     "org.apache.any23" % "apache-any23-csvutils" %  "1.1" // "1.0" // 
   )
 
-// necessary to set the working directory when running tests from starting SBT in parent directory
-fork := true
-
-// javaOptions in test ++= Seq( "-Xdebug" , "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9999" )
-
-parallelExecution in Test := false
-
 }
 

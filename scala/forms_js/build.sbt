@@ -1,12 +1,11 @@
+import sbt.Keys._
+import sbt._
+import Common._
+
 enablePlugins(ScalaJSPlugin)
 scalaJSOptimizerOptions ~= { _.withDisableOptimizer(true) }
 
-organization := "deductions"
 name := "forms_js"
-version := "1.0-SNAPSHOT"
-
-scalaVersion :=  "2.11.8"
-scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 // lazy val root = project.enablePlugins(ScalaJSPlugin)
 // TODO banana JS:	libraryDependencies += "org.w3" %%  "banana-jena" % "0.8.2-SNAPSHOT"
