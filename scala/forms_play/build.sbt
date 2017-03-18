@@ -3,10 +3,10 @@ name := "semantic_forms_play"
 version := "1.0-SNAPSHOT"
 
 // necessary for running from this directory:
-lazy val forms =  RootProject(file("../forms"))
+// lazy val forms =  RootProject(file("../forms"))
 
 // for running from parent directory
-// lazy val forms = (project in file("../forms"))
+lazy val forms = (project in file("../forms"))
 
 lazy val forms_play = (project in file("."))
         .dependsOn(forms)
