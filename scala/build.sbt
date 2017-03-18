@@ -2,6 +2,7 @@ name := "semantic_forms-root"
 
 organization in ThisBuild := "deductions"
 version in ThisBuild := "1.0-SNAPSHOT" // "1.10-SNAPSHOT"
+
 scalaVersion in ThisBuild := "2.11.8" // scalaVersion :=  "2.12.1"
 javacOptions ++= Seq("-source","1.7", "-target","1.7")
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-explaintypes", "-language:_", "-Xlint:_")

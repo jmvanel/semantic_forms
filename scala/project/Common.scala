@@ -18,34 +18,33 @@ object Common {
   val junitDependency = "junit" % "junit" % "4.12" % Test
   val scalatestDependency = "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 
-  libraryDependencies := Seq( bananaDependency,
+  val commonDependencies = Seq( bananaDependency,
 	jenaDependency, jenaPermissionsDependency, jenaTextDependency,
 	xmlDependency,
-	junitDependency, scalatestDependency  )
 
-libraryDependencies += "org.apache.lucene" % "lucene-suggest" % "4.9.1"
-libraryDependencies += "org.apache.lucene" % "lucene-demo" % "4.9.1"
+	junitDependency, scalatestDependency,
 
-// libraryDependencies += "net.rootdev" % "java-rdfa" % "0.4.3-SNAPSHOT"
-libraryDependencies += "net.rootdev" % "java-rdfa" % "0.4.2"
+    "com.typesafe.play" %% "play-json" % "2.5.12",
 
-//libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "0.11"
-// libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % "2.0.5"
-// See more at: http://search.maven.org/#search%7Cga%7C1%7Cakka-http-core ; https://typesafe.com/blog/akka-http-preview#sthash.IZR1O9fx.dpuf
+    "org.apache.logging.log4j" % "log4j-slf4j-impl" % "2.8",
+    "org.apache.logging.log4j" % "log4j-api" % "2.8",
+    "org.apache.logging.log4j" % "log4j-core" % "2.8" ,
 
-libraryDependencies += "org.scala-lang.modules" %% "scala-async" % "0.9.6"
+    "org.apache.lucene" % "lucene-suggest" % "4.9.1" ,
+    "org.apache.lucene" % "lucene-demo" % "4.9.1" ,
 
-libraryDependencies += "com.typesafe.play" %% "play-json" % "2.5.12"
-// libraryDependencies += "com.typesafe.play" %% "play-json" % "2.6.0-M2"
+    // "net.rootdev" % "java-rdfa" % "0.4.3-SNAPSHOT"
+    "net.rootdev" % "java-rdfa" % "0.4.2" ,
 
-libraryDependencies += "org.apache.commons" % "commons-csv" % "1.4"
-libraryDependencies += "org.apache.any23" % "apache-any23-csvutils" %  "1.1" // "1.0" // 
+    //"com.typesafe.akka" %% "akka-http-core-experimental" % "0.11"
+    // "com.typesafe.akka" %% "akka-http-core-experimental" % "2.0.5"
+    // See more at: http://search.maven.org/#search%7Cga%7C1%7Cakka-http-core ; https://typesafe.com/blog/akka-http-preview#sthash.IZR1O9fx.dpuf
 
-libraryDependencies ++= Seq(
-  "org.apache.logging.log4j" % "log4j-slf4j-impl" % "2.8",
-  "org.apache.logging.log4j" % "log4j-api" % "2.8",
-  "org.apache.logging.log4j" % "log4j-core" % "2.8"
-)
+    "org.scala-lang.modules" %% "scala-async" % "0.9.6" ,
+
+    "org.apache.commons" % "commons-csv" % "1.4" ,
+    "org.apache.any23" % "apache-any23-csvutils" %  "1.1" // "1.0" // 
+  )
 
 // necessary to set the working directory when running tests from starting SBT in parent directory
 fork := true
