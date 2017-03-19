@@ -102,8 +102,8 @@ trait ApplicationTrait extends Controller
           val uri = expandOrUnchanged(uri0)
           logger.info(s"displayURI: expandOrUnchanged $uri")
           val title = labelForURITransaction(uri, lang)
-
-          val userid = getRequestCopy(). userId()
+          val requestCopy = getRequestCopy()
+          val userid = requestCopy . userId()
           def userInfoHTML(request: Request[_]): NodeSeq = {
             displayUser(userid, uri, title, lang)
           }
@@ -112,7 +112,7 @@ trait ApplicationTrait extends Controller
           outputMainPage(
             htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
               graphURI = makeAbsoluteURIForSaving(userid),
-              request = getRequestCopy()) . _1,
+              request = requestCopy) . _1,
             lang, title = title, userInfo = userInfo)
         }
       }
@@ -153,13 +153,18 @@ trait ApplicationTrait extends Controller
    *  like /sparql has input a SPARQL query;
    *  like /form and /display has input Edit, formuri & database
    */
-  def sparqlForm(query: String, Edit: String = "", formuri: String = "", database: String = "TDB") = Action {
-    makeJSONResult(
-      createHTMLFormFromSPARQL(
-        query,
-        editable = Edit != "",
-        formuri).toString() )
-    .as("text/html; charset=utf-8")
+  def sparqlForm(query: String, Edit: String = "", formuri: String = "", database: String = "TDB") =
+    Action { implicit request =>
+    val requestCopy = getRequestCopy()
+    val userid = requestCopy . userId()
+    val lang = chooseLanguage(request)
+    val userInfo = displayUser(userid, "", "", lang)
+      outputMainPage(
+        createHTMLFormFromSPARQL(
+          query,
+          editable = Edit != "",
+          formuri),
+        lang, userInfo)
   }
 
   def searchOrDisplayAction(q: String) = {
