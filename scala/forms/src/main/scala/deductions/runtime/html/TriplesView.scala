@@ -120,6 +120,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     }
   }
 
+  /** create HTML Form or view From SPARQL CONSTRUCT query */
   def createHTMLFormFromSPARQL(query: String,
                                editable: Boolean = false,
                                formuri: String = ""): NodeSeq = {

@@ -12,11 +12,12 @@ For now, the display looks like this,
 plus a textbox to enter a URL semantics, eg a FOAF profile or DBpedia URI : 
 [example.form.foaf.html](http://htmlpreview.github.io/?https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/example.form.foaf.html)
 
-This README is like an administrator Manual.
+This README is a guide for building and working from source code.
 For other documentations, see:
 
-- the [wiki](https://github.com/jmvanel/semantic_forms/wiki) for User manual and Developer manual.
+- the [wiki](https://github.com/jmvanel/semantic_forms/wiki) for User manual and Developer manuals (application and core).
 - [Installation of the `semantic_forms` generic application](../../doc/en/install.md) from zip distribution (easy and no compilation)
+- [administrator Manual](../../doc/en/administration.md)
 
 
 ## Terminology
@@ -44,8 +45,15 @@ Then SBT will download the rest.
        publishLocal
 ```
 - download the source from [semantic\_forms on github](https://github.com/jmvanel/semantic_forms/)
-- build and run the `semantic_forms` project itself with SBT: change directory to `scala/forms_play` within the source downloaded from github;
-- type in the SBT console : `~ run`
+- build and run the `semantic_forms` project itself with SBT: change directory to `scala/` within the source downloaded from github;
+- type in the SBT console :
+```
+projects
+project forms_play
+run
+```
+NOTE: we moved to Multi-project build in SBT on 20167-03-18 . The common settings are in
+scala/project/Common.scala .
 
 The default port is 9000, so you can direct your browser to [http://localhost:9000](http://localhost:9000) .
 To run on another port than 9000 :
@@ -197,6 +205,14 @@ kill -3 `cat RUNNING_PID`
 ```
  
 ## Test
+
+### Unit tests
+```shell
+cd scala/forms
+sbt test
+```
+
+### Testing web services
 ```shell
  wget --method=OPTIONS --save-headers http://localhost:9000/bla
 
@@ -234,6 +250,9 @@ wget  --load-cookies cookies.txt \
 --post-file=big-query.rq http://localhost:9000/update
 ```
  
+### Testing web application with Selenium
+Selenium tests are in `scala/web_tests` .
+
 
 # Administration of a server instance from the sources
 There is a script that updates the server from the sources, and more: it stops the server, updates the application from sources, and restarts the server :

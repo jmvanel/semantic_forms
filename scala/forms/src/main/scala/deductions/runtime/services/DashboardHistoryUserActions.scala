@@ -74,7 +74,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
               val dateFormat = new SimpleDateFormat(
                 "EEEE dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
               <tr>{
-                <td>{ makeHyperlinkForURI(row(0), lang, allNamedGraph) }</td>
+                <td>{ makeHyperlinkForURI(row(0), lang, allNamedGraph, "???") }</td>
                 <td>{ "Edit" /* TODO */ }</td>
                 <td>{ dateFormat.format(date) }</td>
                 <td>{ makeStringFromLiteral(row(2)) }</td>

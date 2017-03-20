@@ -5,5 +5,6 @@ echo "SELECT DISTINCT ?g WHERE { GRAPH ?g { ?s ?p ?o } . }" > /tmp/graphs.rq
 echo "If you have EULERGUI or Jena TDB installed, can also run with java -cp \$EULERGUI_JAR ..."
 
 sbt <<EOF
-runMain tdb.tdbquery --loc=TDB --verbose --query=/tmp/graphs.rq
+  project forms_play
+  runMain tdb.tdbquery --loc=TDB --verbose --query=/tmp/graphs.rq
 EOF

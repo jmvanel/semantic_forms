@@ -2,7 +2,7 @@
 
 echo "update semantic_forms Play! server when code has changed"
 # SRC=$HOME/src/semantic_forms/scala/forms_play/
-SRC=$PWD
+SRC=$PWD/forms_play
 APP=semantic_forms_play
 APPVERS=${APP}-1.0-SNAPSHOT
 SBT=sbt
@@ -17,8 +17,13 @@ cp $MainXml /tmp/MainXml.orig.scala
 cp /tmp/MainXml.scala $MainXml
 
 echo  which $SBT ; which $SBT
-echo launching $SBT -J-Xmx2G dist
-$SBT -J-Xmx2G dist
+cd $SRC/..
+echo Launching $SBT -J-Xmx2G 'project forms_play' 'dist'
+# $SBT -J-Xmx2G 'project forms_play' 'dist'
+$SBT -J-Xmx2G << EOF
+  project forms_play
+  dist
+EOF
 SBT_RETURN_CODE=$?
 echo $SBT RETURN CODE: $SBT_RETURN_CODE
 if test $SBT_RETURN_CODE -ne 0

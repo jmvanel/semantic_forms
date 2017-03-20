@@ -30,12 +30,12 @@ sbt publishLocal
 
 echo "==== build semantic_forms from sources ===="
 echo "See https://github.com/jmvanel/semantic_forms/tree/master/scala/forms_play/#how-to-run"
-cd ~/src/semantic_forms/scala/forms_play
+cd ~/src/semantic_forms/scala
 echo type Control-D to stop the server
-sbt run
+sbt "project forms_play" run
 
 echo "==== load content into TDB: basic ontologies and forms; persons, dbPedia, ===="
-sbt "runMain deductions.runtime.sparql_cache.PopulateRDFCache"
+sbt "project forms_play" "runMain deductions.runtime.sparql_cache.PopulateRDFCache"
 
 echo browse http://localhost:9000/display?displayuri=http%3A%2F%2Fjmvanel.free.fr%2Fjmv.rdf%23me&Display=Afficher
 
