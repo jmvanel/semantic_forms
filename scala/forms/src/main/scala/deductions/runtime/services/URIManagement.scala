@@ -19,7 +19,11 @@ import java.net.URI
 trait URIManagement extends URIHelpers {
 
   val config: Configuration
-  import config._
+//  import config._
+  import config.defaultInstanceURIHostPrefix
+  import config.relativeURIforCreatedResourcesByForm
+  import config.serverPort
+  import config.useLocalHostPrefixForURICreation
 
   def makeId(request: HTTPrequest): String = {
     makeId(instanceURIPrefix(request))
@@ -93,7 +97,7 @@ trait URIManagement extends URIHelpers {
    * NOTE: must not be a val because of test, otherwise Play test says
    *  "There is no started application"
    */
-  def instanceURIPrefix: String = {
+  def servicesURIPrefix: String = {
     val hostNameUsed =
       if (useLocalHostPrefixForURICreation) {
         val hostNameFromAPI = InetAddress.getLocalHost().getHostName()
@@ -143,8 +147,10 @@ trait URIManagement extends URIHelpers {
           result
         }
       } else defaultInstanceURIHostPrefix
-    hostNameUsed + ":" + serverPort + "/" + relativeURIforCreatedResourcesByForm
+    hostNameUsed + ":" + serverPort + "/"
   }
+
+  def instanceURIPrefix: String = servicesURIPrefix + relativeURIforCreatedResourcesByForm
 
   def getNetworkInterfaceInfo(netif: NetworkInterface): String = {
     if (netif == null) {
