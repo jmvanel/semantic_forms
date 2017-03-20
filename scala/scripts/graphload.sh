@@ -12,7 +12,8 @@ function graphload {
   OLD_DIR=$PWD
   cd $SFDIR
   JAVA_OPTS="-Xmx4800m" sbt <<EOF
-    runMain tdb.tdbupdate --loc=TDB --verbose --update=/tmp/load_graph.rq
+     project forms_play
+     runMain tdb.tdbupdate --loc=TDB --verbose --update=/tmp/load_graph.rq
 EOF
 
   echo "Local SPARQL database in TDB/ : chargé $MESS."
