@@ -1,1 +1,1 @@
-../../scripts/download-dbpedia.sh
+../../../scripts/download-dbpedia.sh
