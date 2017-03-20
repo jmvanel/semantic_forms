@@ -262,12 +262,16 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 				Seq("CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10") ) }
       <pre>
         {
-          try {
+//          try {
         	  if( query != "" )
         		  sparqlConstructQueryTR(query)
-          } catch {
-            case NonFatal(e) => e.printStackTrace() // TODO: handle error?
-          }
+        		  match {
+        		    case Success(str) => str
+        		    case Failure(f) => f.getLocalizedMessage
+        		  }
+//          } catch {
+//            case NonFatal(e) => e.printStackTrace() // TODO: handle error?
+//          }
           /* TODO Future !!!!!!!!!!!!!!!!!!! */
         }
       </pre>
@@ -284,42 +288,37 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       sparqlConstructQueryTR(query, format).toString
     else "Empty query result !!!"
   }
-  
+
   /** Display result of a SPARQL select */
   def selectSPARQL(query: String, lang: String = "en"): Elem = {
     logger.info("sparql query  " + query)
     <p>
-		{ sparqlQueryForm(false,query, "/select-ui",
-				Seq("SELECT * WHERE {{ GRAPH ?G {{?S ?P ?O . }} }} LIMIT 10" )) }
+      {
+        sparqlQueryForm(false, query, "/select-ui",
+          Seq("SELECT * WHERE {{ GRAPH ?G {{?S ?P ?O . }} }} LIMIT 10"))
+      }
       <br></br>
-      <!--script type="text/css">
-        table {{ border-collapse:collapse; width:90%; }}
-        th, td {{ border:1px solid black; width:20%; }}
-        td {{ text-align:center; }}
-       caption {{ font-weight:bold }}
-      </script-->
-
       <style type="text/css">
-      {cssRules}
+        { cssRules }
       </style>
-
-      <table class="sf-sparql-table">
-
-        { if( query != "" ) {
+      {
+        if (query != "") {
           val rowsTry = sparqlSelectQuery(query)
           rowsTry match {
             case Success(rows) =>
-              val printedRows = for (row <- rows) yield {
-                <tr>
-                  { for (cell <- row) yield <td> { cell } </td> }
-                </tr>
-              }
-              printedRows
-            case Failure(e) => e.toString()
-          }
+              <div>Result: {rows.size} rows</div>
+              <table class="sf-sparql-table">{
+                val printedRows = for (row <- rows) yield {
+                  <tr>
+                    { for (cell <- row) yield <td> { cell } </td> }
+                  </tr>
+                }
+                printedRows
+              }</table>
+            case Failure(e)=> e.toString()
           }
         }
-      </table>
+      }
     </p>
   }
 

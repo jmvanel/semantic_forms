@@ -647,8 +647,13 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       if (format == "jsonld") jsonldCompactedWriter
       else if (format == "rdfxml") rdfXMLWriter
       else turtleWriter
-    val ret = writer.asString(triples.get, base = baseURI)
-    ret.get
+
+      triples match {
+        case Success(graph) =>
+          s"# graph size ${graph.size}\n" +
+        writer.asString( graph, base = baseURI) . getOrElse("graph2String: trouble in writing graph")
+        case Failure(f) => f.getLocalizedMessage
+      }
   }
 
   def dumpGraph(implicit graph: Rdf#Graph) = {
