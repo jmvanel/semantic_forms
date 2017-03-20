@@ -5,7 +5,7 @@ import scala.xml.NodeSeq
 import deductions.runtime.utils.I18NMessages
 import scala.xml.NodeSeq.seqToNodeSeq
 
-/** HTML page skeleton */
+/** HTML page skeleton for the generic SF application */
 trait MainXml extends ToolsPage with EnterButtons {
 
   /**
@@ -48,7 +48,7 @@ trait MainXml extends ToolsPage with EnterButtons {
    * main Page Header for generic app:
    *  enter URI, search, create instance
    */
-  def mainPageHeader(implicit lang: String = "en",userInfo: NodeSeq): NodeSeq = {
+  def mainPageHeader(implicit lang: String = "en", userInfo: NodeSeq): NodeSeq = {
     <header class="col col-sm-12">
       <div class="raw">
         <div class="col col-sm-9">
