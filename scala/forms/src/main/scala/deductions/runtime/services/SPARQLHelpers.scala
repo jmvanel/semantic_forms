@@ -540,7 +540,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
           val headValue = Json.obj("vars" -> JsArray(header.map { s => JsString(s) }))
           val bindings = res.drop(1).map {
             list =>
-              val listOfJSOjects = list.map {
+              val listOfJSONobjects = list.map {
                 node =>
                   foldNode(node)(
                     uri => Json.obj("type" -> "uri",
@@ -556,7 +556,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
                         "xml:lang" -> litTuple._3.toString())
                     })
               }
-              val v = header.zip(listOfJSOjects).map {
+              val v = header.zip(listOfJSONobjects).map {
                 pair => Json.obj(pair._1 -> pair._2)
               }
               val binding = v.fold(Json.obj())((a, b) => a ++ b)
@@ -567,7 +567,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
             "head" -> headValue,
             "results" -> resultsValue)
         } else
-          Json.toJson(Json.toJson("Empty result"))
+          Json.obj()
       case Failure(f) => Json.toJson(f.getLocalizedMessage)
     }
     Json.prettyPrint(output)
