@@ -7,9 +7,11 @@ import deductions.runtime.utils.I18NMessages
 import deductions.runtime.utils.HTTPrequest
 import deductions.runtime.html.BasicWidgets
 import scala.xml.Unparsed
+import deductions.runtime.services.URIManagement
 
 trait ToolsPage extends EnterButtons
-    with BasicWidgets {
+    with BasicWidgets
+    with URIManagement {
 
   def getRequest(): HTTPrequest = HTTPrequest() // TODO <<<<<<<<<<< remove
   def absoluteURI = getRequest().absoluteURL("")
@@ -90,6 +92,9 @@ trait ToolsPage extends EnterButtons
 
     val sparqlServicePrefix = "/sparlq?query="
     val buttonId = textareaId+"-button"
+    println(s"servicesURIPrefix $servicesURIPrefix")
+    val servicesURL = s"$toolURLprefix$servicesURIPrefix$sparqlServicePrefix"
+    println(s"servicesURL $servicesURL")
 
     <button id={buttonId}
     class="btn btn-default" title={ s"Draw RDF graph with $toolname" } target="_blank">
@@ -106,7 +111,8 @@ trait ToolsPage extends EnterButtons
     console.log( 'elementById ' + textarea);
     var query = textarea.value;
     console.log( 'query in textarea ' + query);
-    var url = '$toolURLprefix$sparqlServicePrefix ' + window.encodeURIComponent(query) ;
+    console.log( 'services URL $servicesURL' );
+    var url = '$servicesURL' + window.encodeURIComponent(query) ;
     console.log( 'URL ' + url );
     // console.log( 'startsWith ' + ( '$sparqlServicePrefix' . startsWith ('/') ) );
     if( ! '$sparqlServicePrefix' . startsWith ('/') )
