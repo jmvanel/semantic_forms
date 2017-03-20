@@ -1,1 +1,1 @@
-../../scripts/populate_with_dbpedia.sh
+../../../scripts/populate_with_dbpedia.sh
