@@ -254,7 +254,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     mainSubjectURI
   }
 
-  /** XHTML wrapper around SPARQL result */
+  /** XHTML wrapper around SPARQL Construct result */
   def sparqlConstructQuery(query: String, lang: String = "en"): Elem = {
     logger.info("Global.sparql query  " + query)
     <p>
@@ -307,6 +307,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
           rowsTry match {
             case Success(rows) =>
               <div>Result: {rows.size} rows</div>
+
               <table class="sf-sparql-table">{
                 val printedRows = for (row <- rows) yield {
                   <tr>

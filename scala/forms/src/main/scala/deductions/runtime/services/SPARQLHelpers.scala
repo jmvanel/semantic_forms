@@ -421,24 +421,38 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     val res = solutionsTry.map {
       solutions =>
         val solsIterable = solutions.iterator.toIterable
+        val columnsMap: scala.collection.mutable.Map[Int, List[String]] = scala.collection.mutable.Map()
+
         val results = solsIterable map {
           row =>
             val variables = row.varnames().toList
+            columnsMap.put( variables.size, variables)
             for (variable <- variables) yield row(variable).get.as[Rdf#Node].get
         }
         logger.debug("sparqlSelectQuery: after results")
 
         if (addHeaderRow) {
-          val r = solsIterable.headOption.map {
-            row =>
-              val names = row.varnames().toList
-              val headerRow = names.map {
+          val columnsCount = columnsMap.keys.max
+          val actualColumnsList = columnsMap(columnsCount)
+
+//          val r1 = solsIterable.headOption.map {
+//            row =>
+//              val names = row.varnames().toList
+//              val headerRow = names.map {
+//                name => Literal(name)
+//              }
+//              headerRow
+//          }
+//          val headerRow1 = r1.toList
+
+          val r = actualColumnsList .map {
                 name => Literal(name)
               }
-              headerRow
-          }
           val headerRow = r.toList
-          headerRow ++ results.to[List]
+          val rrr = headerRow :: results.to[List]
+
+          // headerRow ++ results.to[List]
+          rrr
 
         } else results.to[List]
     }
