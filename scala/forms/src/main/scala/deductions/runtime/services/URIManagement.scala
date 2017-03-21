@@ -103,9 +103,9 @@ trait URIManagement extends URIHelpers {
         val hostNameFromAPI = InetAddress.getLocalHost().getCanonicalHostName // getHostName()
         println( s"hostNameFromAPI $hostNameFromAPI")
         if (hostNameFromAPI.contains("."))
-          "http://" + InetAddress.getLocalHost().getHostName()
+          "http://" + hostNameFromAPI
         else {
-          // the server is not registered on DNS: get the actual IPV4 port
+          // the server is not registered on DNS or in /etc/hosts : get the actual IPV4 port
           val nis = NetworkInterface.getNetworkInterfaces().toList
           val adresses = for (
             networkInterface <- nis;
