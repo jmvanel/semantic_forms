@@ -507,7 +507,8 @@ trait ApplicationTrait extends Controller
   }
 
   /** output SPARQL query as Play! Result;
-   *  priority to accepted MIME type */
+   *  priority to accepted MIME type
+   *  TODO move to Play! independant trait */
   private def outputSPARQL(query: String, acceptedTypes: Seq[MediaRange], isSelect: Boolean): Result = {
     val preferredMedia = acceptedTypes.map { media => Accepting(media.toString()) }.headOption
     val defaultMIMEaPriori = if (isSelect) AcceptsSPARQLresults else AcceptsJSONLD
