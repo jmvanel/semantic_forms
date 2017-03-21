@@ -100,7 +100,8 @@ trait URIManagement extends URIHelpers {
   def servicesURIPrefix: String = {
     val hostNameUsed =
       if (useLocalHostPrefixForURICreation) {
-        val hostNameFromAPI = InetAddress.getLocalHost().getHostName()
+        val hostNameFromAPI = InetAddress.getLocalHost().getCanonicalHostName // getHostName()
+        println( s"hostNameFromAPI $hostNameFromAPI")
         if (hostNameFromAPI.contains("."))
           "http://" + InetAddress.getLocalHost().getHostName()
         else {
@@ -143,10 +144,10 @@ trait URIManagement extends URIHelpers {
           }
           val result = "http://" + adresses2.toList.headOption.getOrElse("127.0.0.1")
           // "http://" + InetAddress.getLocalHost().getHostAddress()
-          println1(s"hostNameUsed $result")
           result
         }
       } else defaultInstanceURIHostPrefix
+    println1(s"hostNameUsed $hostNameUsed")
     hostNameUsed + ":" + serverPort + "/"
   }
 
