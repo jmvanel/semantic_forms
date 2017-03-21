@@ -386,7 +386,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    *  used in SPARQL results Web page
    */
   def sparqlSelectQuery(queryString: String,
-                        ds: DATASET = dataset): Try[List[List[Rdf#Node]]] = {
+                        ds: DATASET = dataset): Try[List[Iterable[Rdf#Node]]] = {
     val transaction = ds.r({
       val solutionsTry = for {
         query <- parseSelect(queryString)
@@ -404,7 +404,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    *  used in trait InstanceLabelsFromLabelProperty
    */
   def sparqlSelectQueryCompiled(query: Rdf#SelectQuery,
-                        ds: DATASET = dataset): Try[List[List[Rdf#Node]]] = {
+                        ds: DATASET = dataset): Try[List[Iterable[Rdf#Node]]] = {
     val transaction = ds.r({
       val solutionsTry = for {
         es <- ds.executeSelect(query, Map())
@@ -417,28 +417,48 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   /** @param addHeaderRow the first row is the variables' list */
   def makeListofListsFromSolutions(solutionsTry: Try[Rdf#Solutions],
-                                   addHeaderRow: Boolean = true): Try[List[List[Rdf#Node]]] = {
+                                   addHeaderRow: Boolean = true): Try[List[Iterable[Rdf#Node]]] = {
+    import scala.collection._
     val res = solutionsTry.map {
       solutions =>
         val solsIterable = solutions.iterator.toIterable
-        val results = solsIterable map {
+
+//        val columnsMap2: scala.collection.mutable.SortedSet[String] = scala.collection.mutable.SortedSet()
+//        val columnsMap2: scala.collection.mutable.Set[String] = scala.collection.mutable.Set()
+        val columnsMap2: mutable.TreeSet[String] = mutable.TreeSet()
+        solsIterable foreach {
           row =>
             val variables = row.varnames().toList
-            for (variable <- variables) yield row(variable).get.as[Rdf#Node].get
+            columnsMap2 ++= variables
+        }
+        println(s"columnsMap2 $columnsMap2")
+
+        val results: Iterable[Iterable[Rdf#Node]] = solsIterable . map {
+          row =>
+//            val variables = row.varnames().toList
+//            for (variable <- columnsMap2) yield row(variable).getOrElse(Literal("") ).as[Rdf#Node].get
+            val rowSeq: mutable.Buffer[Rdf#Node] = mutable.Buffer()
+            for (variable <- columnsMap2) rowSeq += row(variable).getOrElse(Literal("") ).as[Rdf#Node].get
+//            println(s"rowSeq $rowSeq")
+            rowSeq
         }
         logger.debug("sparqlSelectQuery: after results")
 
         if (addHeaderRow) {
-          val r = solsIterable.headOption.map {
-            row =>
-              val names = row.varnames().toList
-              val headerRow = names.map {
-                name => Literal(name)
-              }
-              headerRow
+//          val columnsCount = columnsMap.keys.max
+//          val actualColumnsList = columnsMap(columnsCount)
+
+          implicit val literalIsOrdered: Ordering[Rdf#Literal] = Ordering.by(lit => fromLiteral(lit)._1 )
+          val r = columnsMap2 .map {
+        	  name =>
+        	  println(s"name $name")
+        	  Literal(name)
           }
-          val headerRow = r.toList
-          headerRow ++ results.to[List]
+          val headerRow = r . toList // . sorted
+     		  println(s"headerRow $headerRow ")
+
+          val rrr = headerRow :: results.to[List]
+          rrr
 
         } else results.to[List]
     }
@@ -456,8 +476,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     logger.debug(s"format $format")
     format match {
       case "jsonld" => sparqlSelectJSON(queryString, ds)
-      case "turtle" => sparqlSelectJSON(queryString, ds) // should not happen
-      case "rdfxml" => sparqlSelectXML(queryString, ds) // should not happen
+      case "turtle" => sparqlSelectJSON(queryString, ds) // ??? should not happen
+      case "rdfxml" => sparqlSelectXML(queryString, ds) // ??? should not happen
       case "xml"    => sparqlSelectXML(queryString, ds)
       case "json"   => sparqlSelectJSON(queryString, ds)
       case _        => sparqlSelectJSON(queryString, ds)
@@ -537,10 +557,10 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         if (!res.isEmpty) {
           val header = res.head.map { node => literalNodeToString(node) }
           logger.debug(s"sparqlSelectJSON: header $header")
-          val headValue = Json.obj("vars" -> JsArray(header.map { s => JsString(s) }))
+          val headValue = Json.obj("vars" -> JsArray(header.toSeq.map { s => JsString(s) }))
           val bindings = res.drop(1).map {
             list =>
-              val listOfJSOjects = list.map {
+              val listOfJSONobjects = list.map {
                 node =>
                   foldNode(node)(
                     uri => Json.obj("type" -> "uri",
@@ -556,7 +576,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
                         "xml:lang" -> litTuple._3.toString())
                     })
               }
-              val v = header.zip(listOfJSOjects).map {
+              val v = header.zip(listOfJSONobjects).map {
                 pair => Json.obj(pair._1 -> pair._2)
               }
               val binding = v.fold(Json.obj())((a, b) => a ++ b)
@@ -567,7 +587,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
             "head" -> headValue,
             "results" -> resultsValue)
         } else
-          Json.toJson(Json.toJson("Empty result"))
+          Json.obj()
       case Failure(f) => Json.toJson(f.getLocalizedMessage)
     }
     Json.prettyPrint(output)
