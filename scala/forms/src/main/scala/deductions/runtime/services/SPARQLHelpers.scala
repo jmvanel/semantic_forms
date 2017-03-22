@@ -431,7 +431,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
             val variables = row.varnames().toList
             columnsMap2 ++= variables
         }
-        println(s"columnsMap2 $columnsMap2")
+//        println(s"columnsMap2 $columnsMap2")
 
         val results: Iterable[Iterable[Rdf#Node]] = solsIterable . map {
           row =>

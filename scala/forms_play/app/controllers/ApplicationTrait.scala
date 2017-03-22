@@ -408,6 +408,11 @@ trait ApplicationTrait extends Controller
       logger.info("sparql: " + request)
       val lang = chooseLanguage(request)
       outputMainPage(sparqlConstructQuery(query, lang), lang)
+
+      // TODO factorize
+      .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+      .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
+      .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
     }
     if (needLoginForDisplaying)
       Action { implicit request => doAction }
