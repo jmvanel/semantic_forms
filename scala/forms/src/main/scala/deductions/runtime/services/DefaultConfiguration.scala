@@ -18,7 +18,8 @@ trait DefaultConfiguration extends Configuration {
 
   /** URI Prefix prepended to newly created resource instances */
   override val defaultInstanceURIHostPrefix =
-    "http://ldp.virtual-assembly.org"
+//    "http://ldp.virtual-assembly.org"
+    "http://semantic-forms.cc"
 
   override val relativeURIforCreatedResourcesByForm = "ldp/"
   override val relativeURIforCreatedResourcesByLDP = relativeURIforCreatedResourcesByForm
