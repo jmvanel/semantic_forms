@@ -13,12 +13,11 @@ trait ToolsPage extends EnterButtons
     with BasicWidgets
     with URIManagement {
 
-  def getRequest(): HTTPrequest = HTTPrequest() // TODO <<<<<<<<<<< remove
-  def absoluteURI = getRequest().absoluteURL("")
-  def localSparqlEndpoint = URLEncoder.encode(absoluteURI + "/sparql", "UTF-8")
-
   /** HTML page with 2 SPARQL Queries: select & construct, show Named Graphs, history, YASGUI, etc */
-  def getPage(lang: String = "en"): NodeSeq = {
+  def getPage(lang: String = "en", request: HTTPrequest ): NodeSeq = {
+		def absoluteURI = request.absoluteURL("")
+		def localSparqlEndpoint = URLEncoder.encode(absoluteURI + "/sparql", "UTF-8")
+
     val querySample =
       """|PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
       |PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>

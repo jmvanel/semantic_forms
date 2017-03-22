@@ -724,7 +724,7 @@ trait ApplicationTrait extends Controller
       val config1 = config
       Ok(new ToolsPage {
         override val config: Configuration = config1
-      }.getPage(lang) )
+      }.getPage(lang, copyRequest(request)) )
         .as("text/html; charset=utf-8")
     }
   }
