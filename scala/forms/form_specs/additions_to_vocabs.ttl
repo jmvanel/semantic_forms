@@ -28,9 +28,9 @@ foaf:pastProject rdfs:range foaf:Project .
 
 # To avoid a owl:sameClass inference 
 org:memberOf a owl:ObjectProperty ;
-	:label "membre de"@fr;
-	:range foaf:Organization ;
-	:domain foaf:Agent .
+	rdfs:label "membre de"@fr;
+	rdfs:range foaf:Organization ;
+	rdfs:domain foaf:Agent .
 
 org:headOf a owl:ObjectProperty ;
     rdfs:label "head of"@en;

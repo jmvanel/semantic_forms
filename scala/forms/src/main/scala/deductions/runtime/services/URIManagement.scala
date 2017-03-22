@@ -98,7 +98,13 @@ trait URIManagement extends URIHelpers {
    *  "There is no started application"
    */
   def servicesURIPrefix: String = {
-    val hostNameUsed =
+    servicesURIPrefix2._1
+  }
+
+  /** @return services URI Prefix, is DNS (not IP) */
+  def servicesURIPrefix2: (String, Boolean) = {
+
+    val (hostNameUsed, isDNS: Boolean) =
       if (useLocalHostPrefixForURICreation) {
         val hostNameFromAPI = InetAddress.getLocalHost().getCanonicalHostName // getHostName()
         println( s"hostNameFromAPI $hostNameFromAPI")
@@ -133,22 +139,22 @@ trait URIManagement extends URIHelpers {
           }
           println1(s"intranetAdresses $intranetAdresses")
           println1(s"internetAdresses $internetAdresses")
-          val adresses2 = if (!internetAdresses.isEmpty) {
+          val (adresses2, isDNS) = if (!internetAdresses.isEmpty) {
             if (internetAdresses.size > 1)
               System.err.println(s"CAUTION: several Internet Adresses: $internetAdresses")
-            internetAdresses
+            (internetAdresses, true)
           } else {
             if (intranetAdresses.size > 1)
               System.err.println(s"CAUTION: several Intranet Adresses: $intranetAdresses")
-            intranetAdresses
+            (intranetAdresses, false)
           }
           val result = "http://" + adresses2.toList.headOption.getOrElse("127.0.0.1")
           // "http://" + InetAddress.getLocalHost().getHostAddress()
-          result
+          (result, isDNS)
         }
-      } else defaultInstanceURIHostPrefix
+      } else (defaultInstanceURIHostPrefix, true)
     println1(s"hostNameUsed $hostNameUsed")
-    hostNameUsed + ":" + serverPort + "/"
+    ( hostNameUsed + ":" + serverPort + "/" , isDNS)
   }
 
   def instanceURIPrefix: String = servicesURIPrefix + relativeURIforCreatedResourcesByForm
