@@ -92,7 +92,8 @@ trait ToolsPage extends EnterButtons
 
     val sparqlServicePrefix = URLEncoder.encode("/sparlq?query=", "UTF-8")
     val buttonId = textareaId+"-button"
-    println(s"servicesURIPrefix $servicesURIPrefix")
+    val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
+    println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
     val servicesURIPrefixEncoded = URLEncoder.encode(servicesURIPrefix, "UTF-8")
     val servicesURL = s"$toolURLprefix$servicesURIPrefixEncoded$sparqlServicePrefix"
     println(s"servicesURL $servicesURL")
@@ -116,7 +117,7 @@ trait ToolsPage extends EnterButtons
     var url = '$servicesURL' + window.encodeURIComponent(query) ;
     console.log( 'URL ' + url );
     // console.log( 'startsWith ' + ( '$sparqlServicePrefix' . startsWith ('/') ) );
-    if( ! ${servicesURIPrefix.contains(":")} )
+    if( $isDNS )
       window.open( url , '_blank' );
     else
       console.log( 'RDFViewer works only on a hosted Internet serverURL !!!' );
