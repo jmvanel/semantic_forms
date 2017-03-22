@@ -104,12 +104,12 @@ trait URIManagement extends URIHelpers {
   /** @return services URI Prefix, is DNS (not IP) */
   def servicesURIPrefix2: (String, Boolean) = {
 
-    val (hostNameUsed, isDNS: Boolean) =
+    val (hostNameUsed: String, isDNS: Boolean) =
       if (useLocalHostPrefixForURICreation) {
         val hostNameFromAPI = InetAddress.getLocalHost().getCanonicalHostName // getHostName()
         println( s"hostNameFromAPI $hostNameFromAPI")
         if (hostNameFromAPI.contains("."))
-          "http://" + hostNameFromAPI
+          ("http://" + hostNameFromAPI, true)
         else {
           // the server is not registered on DNS or in /etc/hosts : get the actual IPV4 port
           val nis = NetworkInterface.getNetworkInterfaces().toList
