@@ -281,12 +281,21 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   /**
    * SPARQL result
    *  @param format = "turtle" or "rdfxml" or "jsonld"
+   *  
+   *  TODO move to non-Play! project
    */
   def sparqlConstructResult(query: String, lang: String = "en", format: String = "turtle"): String = {
     logger.info("Global.sparql query  " + query)
     if (query != "")
-      sparqlConstructQueryTR(query, format).toString
-    else "Empty query result !!!"
+      sparqlConstructQueryTR(query, format)
+      // TODO this code is in several places !!!!!! make function printTry( tr: Try[_] , mime:String)
+      match {
+        case Success(s) => s
+        case Failure(f) =>
+          if( format == "turtle")
+          s"# $f" else "{error: \"" + f + "\" }"
+      }
+    else "# Empty query result !!!"
   }
 
   /** Display result of a SPARQL select */
