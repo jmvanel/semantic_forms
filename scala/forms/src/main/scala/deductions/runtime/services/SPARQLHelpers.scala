@@ -663,17 +663,26 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    */
   def graph2String(triples: Try[Rdf#Graph], baseURI: String, format: String = "turtle"): String = {
     Logger.getRootLogger().info(s"graph2String: base URI $baseURI ${triples}")
-    val writer =
-      if (format == "jsonld") jsonldCompactedWriter
-      else if (format == "rdfxml") rdfXMLWriter
-      else turtleWriter
+    triples match {
+      case Success(graph) =>
+        val graphSize = graph.size
+        val (writer, stats) =
+          if (format == "jsonld")
+            (jsonldCompactedWriter, "")
+          else if (format == "rdfxml")
+            (rdfXMLWriter, s"<!-- graph size ${graphSize} -->\n")
+          else
+            (turtleWriter, s"# graph size ${graphSize}\n")
 
-      triples match {
-        case Success(graph) =>
-          s"# graph size ${graph.size}\n" +
-        writer.asString( graph, base = baseURI) . getOrElse("graph2String: trouble in writing graph")
-        case Failure(f) => f.getLocalizedMessage
-      }
+        stats + {
+          val tryString = writer.asString(graph, base = baseURI)
+          tryString match {
+            case Success(s) => s
+            case Failure(f) => s"graph2String: trouble in writing graph: $f"
+          }
+        }
+      case Failure(f) => f.getLocalizedMessage
+    }
   }
 
   def dumpGraph(implicit graph: Rdf#Graph) = {

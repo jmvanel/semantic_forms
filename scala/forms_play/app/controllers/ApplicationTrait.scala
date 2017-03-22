@@ -535,7 +535,8 @@ trait ApplicationTrait extends Controller
     logger.info(s"outputSPARQL: mime.mimeType ${mime.mimeType}")
     logger.info(s"result $result".split("\n").take(5).mkString("\n"))
     Ok(result)
-      .as(s"${mime.mimeType}")
+      .as(s"${resultFormat}")
+//      .as(s"${mime.mimeType}")
     // .as(s"${mime.mimeType}; charset=utf-8")
   }
           
