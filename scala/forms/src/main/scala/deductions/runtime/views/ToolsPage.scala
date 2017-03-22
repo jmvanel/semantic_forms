@@ -90,10 +90,11 @@ trait ToolsPage extends EnterButtons
                toolname: String = "RDF Viewer",
                imgWidth: Int = 15): NodeSeq = {
 
-    val sparqlServicePrefix = "/sparlq?query="
+    val sparqlServicePrefix = URLEncoder.encode("/sparlq?query=", "UTF-8")
     val buttonId = textareaId+"-button"
     println(s"servicesURIPrefix $servicesURIPrefix")
-    val servicesURL = s"$toolURLprefix$servicesURIPrefix$sparqlServicePrefix"
+    val servicesURIPrefixEncoded = URLEncoder.encode(servicesURIPrefix, "UTF-8")
+    val servicesURL = s"$toolURLprefix$servicesURIPrefixEncoded$sparqlServicePrefix"
     println(s"servicesURL $servicesURL")
 
     <button id={buttonId}
@@ -115,7 +116,7 @@ trait ToolsPage extends EnterButtons
     var url = '$servicesURL' + window.encodeURIComponent(query) ;
     console.log( 'URL ' + url );
     // console.log( 'startsWith ' + ( '$sparqlServicePrefix' . startsWith ('/') ) );
-    if( ! '$sparqlServicePrefix' . startsWith ('/') )
+    if( ! ${servicesURIPrefix.contains(":")} )
       window.open( url , '_blank' );
     else
       console.log( 'RDFViewer works only on a hosted Internet serverURL !!!' );
