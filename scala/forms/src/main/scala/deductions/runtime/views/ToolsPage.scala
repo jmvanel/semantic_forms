@@ -113,7 +113,7 @@ trait ToolsPage extends EnterButtons
     var query = textarea.value;
     console.log( 'query in textarea ' + query);
     console.log( 'services URL $servicesURL' );
-    var url = '$servicesURL' + window.encodeURIComponent(query) ;
+    var url = '$servicesURL' + window.encodeURIComponent( window.encodeURIComponent(query)) ;
     console.log( 'URL ' + url );
     // console.log( 'startsWith ' + ( '$sparqlServicePrefix' . startsWith ('/') ) );
     if( $isDNS )
