@@ -76,6 +76,7 @@ import org.w3.banana._
     Prefix[Rdf]("", "http://data.onisep.fr/ontologies/" ),
     Prefix[Rdf]("doas", "http://deductions.github.io/doas.owl.ttl#"),
     Prefix[Rdf]("bioc", "http://deductions.github.io/biological-collections.owl.ttl#"),
+    Prefix[Rdf]("seeds", "http://deductions.github.io/seeds.owl.ttl#"),
     Prefix[Rdf]("cco", "http://purl.org/ontology/cco/core#" ),
 
     // prefixes for resources

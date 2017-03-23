@@ -8,6 +8,7 @@
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix tm: <http://deductions.github.io/task-management.owl.ttl#> .
 @prefix doas: <http://deductions.github.io/doas.owl.ttl#> .
+@prefix seeds: <http://deductions.github.io/seeds.owl.ttl#> .
 
 # list of form specifications for various classes in common vocabularies
 # NOTE : it's the relative URI's of the Turtle documents, not the URI's of the forms themselves
@@ -18,6 +19,7 @@ owl:  form:ontologyHasFormSpecification <owl.form.ttl> .
 cob:  form:ontologyHasFormSpecification <cob.form.ttl> .
 sioc: form:ontologyHasFormSpecification <sioc.form.ttl> .
 bioc: form:ontologyHasFormSpecification <https://deductions.github.io/biological-collections.form.ttl> .
+seeds: form:ontologyHasFormSpecification <https://deductions.github.io/seeds.form.ttl> .
 tm:   form:ontologyHasFormSpecification <https://deductions.github.io/task-management.form.ttl> .
 skos: form:ontologyHasFormSpecification <skos.form.ttl> .
 doas: form:ontologyHasFormSpecification <http://deductions.github.io/doas.form.ttl> .

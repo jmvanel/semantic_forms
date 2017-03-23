@@ -93,6 +93,7 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
       URI(githubcontent + "/jmvanel/semantic_forms/master/scala/forms/form_specs/additions_to_vocabs.ttl" ) ::
       prefixesMap("tm") ::
       prefixesMap("bioc") ::
+      prefixesMap("seeds") ::
       prefixesMap("doas") ::
       Nil
       // "http://purl.org/ontology/mo/"
