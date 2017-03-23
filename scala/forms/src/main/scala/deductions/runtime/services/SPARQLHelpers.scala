@@ -573,7 +573,12 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
                         "type" -> "literal",
                         "value" -> litTuple._1,
                         "datatype" -> litTuple._2.toString(),
-                        "xml:lang" -> litTuple._3.toString())
+                        "xml:lang" -> {
+                        litTuple._3 match {
+                          case Some(lang) => lang.toString()
+                          case None => ""
+                        }}
+                        )
                     })
               }
               val v = header.zip(listOfJSONobjects).map {
@@ -587,7 +592,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
             "head" -> headValue,
             "results" -> resultsValue)
         } else
-          Json.obj()
+          Json.obj("head" -> "", "results" -> "" )
       case Failure(f) => Json.toJson(f.getLocalizedMessage)
     }
     Json.prettyPrint(output)

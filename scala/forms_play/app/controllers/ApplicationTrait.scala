@@ -442,24 +442,6 @@ trait ApplicationTrait extends Controller
               "construct"
 
           val isSelect = (checkSPARQLqueryType(query) == "select")
-
-//          val defaultMIME = if (isSelect) Accepts.Xml else AcceptsJSONLD
-//          val accepts = request.acceptedTypes
-//          val mime = AcceptsSPARQLresults
-
-//          def output(accepts: Accepting): Result = {
-//            val format = mimeAbbrevs(accepts)
-//            println(s"sparqlConstruct: output(accepts=$accepts) => format: $format")
-//            val (result, defaultMIME) = if (isSelect)
-//              (sparqlSelectConneg(query, format, dataset), AcceptsSPARQLresults) // Accepts.Xml)
-//            else
-//              (sparqlConstructResult(query, lang, format), AcceptsJSONLD)
-//
-//            val mime = computeMIME(accepts, defaultMIME)
-//            println( s"sparqlConstruct (output): mime.mimeType ${mime.mimeType}")
-//            Ok(result).as(s"${mime.mimeType}; charset=utf-8")
-//          }
-//          println( s"sparqlConstruct: mime ${mime}")
           
           outputSPARQL(query, request.acceptedTypes, isSelect)
 //          renderResult(output, default = mime)
