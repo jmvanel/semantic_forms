@@ -15,7 +15,7 @@ trait HtmlGeneratorInterface[NODE, URI <: NODE] {
 
   /** generate HTML form given Form Syntax, adding a form header (title, etc) */
   def generateHTML(form: FormModule[NODE, URI]#FormSyntax,
-                   hrefPrefix: String = "",
+                   hrefPrefix: String,
                    editable: Boolean = false,
                    actionURI: String = "/save", graphURI: String = "",
                    actionURI2: String = "/save", lang: String = "en",
@@ -25,7 +25,7 @@ trait HtmlGeneratorInterface[NODE, URI <: NODE] {
 
   /** generate HTML form given Form Syntax, without a form header, just fields */
   def generateHTMLJustFields(form: FormModule[NODE, URI]#FormSyntax,
-                             hrefPrefix: String = "",
+                             hrefPrefix: String,
                              editable: Boolean = false,
                              graphURI: String = "", lang: String = "en",
                              request: HTTPrequest

@@ -19,7 +19,7 @@ trait ReverseLinksSearchSPARQL[Rdf <: RDF, DATASET]
          |}""".stripMargin
   }
 
-  def backlinks(uri: String, hrefPrefix: String = ""): Future[NodeSeq] =
+  def backlinks(uri: String, hrefPrefix: String = config.hrefDisplayPrefix): Future[NodeSeq] =
     search(hrefPrefix,
       "fr", // TODO <<<<<<<<<<<<<<
       uri)

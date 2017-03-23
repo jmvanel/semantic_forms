@@ -35,7 +35,7 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
       , lang: String="en"): String =
     impl.formData(uri, blankNode, Edit, formuri, database, lang)
 
-  def htmlFormElemJustFields(uri: String, hrefPrefix: String = "", blankNode: String = "",
+  def htmlFormElemJustFields(uri: String, hrefPrefix: String, blankNode: String = "",
     editable: Boolean = false,
     lang: String = "en", formuri: String
     , graphURI: String = ""

@@ -120,7 +120,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
   /** URL Encode the RDF node */
   def urlEncode(node: Any) = Form2HTML.urlEncode(node) // URLEncoder.encode(node.toString, "utf-8")
 
-  def createHyperlinkString(hrefPrefix: String, uri: String, blanknode: Boolean = false): String = {
+  def createHyperlinkString(hrefPrefix: String = config.hrefDisplayPrefix, uri: String, blanknode: Boolean = false): String = {
     if (hrefPrefix == "")
       uri
     else {

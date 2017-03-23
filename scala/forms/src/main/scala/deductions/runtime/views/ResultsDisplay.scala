@@ -33,7 +33,7 @@ trait ResultsDisplay[Rdf <: RDF, DATASET] {
    * - be able to add HTML at the end of the row, or even in-between
    *   (for issues "Named graph view" : https://github.com/jmvanel/semantic_forms/issues/136 , etc) */
   def displayResults(res0: Iterable[Rdf#Node],
-      hrefPrefix: String,
+      hrefPrefix: String = config.hrefDisplayPrefix,
       lang: String = "",
       graph: Rdf#Graph,
       sortAnd1rowPerElement:Boolean = false )
@@ -80,7 +80,7 @@ trait ResultsDisplay[Rdf <: RDF, DATASET] {
    * NOTE: this duplicates code in Form2HTMLDisplay.createHTMLResourceReadonlyField() */
 //  protected
   def makeHyperlinkForURI( node: Rdf#Node, lang: String, graph: Rdf#Graph,
-      hrefPrefix: String,
+      hrefPrefix: String = config.hrefDisplayPrefix,
       label: String = "",
       sortAnd1rowPerElement:Boolean = false )
     (implicit queryMaker: SPARQLQueryMaker[Rdf] ): NodeSeq = {
@@ -94,7 +94,7 @@ trait ResultsDisplay[Rdf <: RDF, DATASET] {
   }
 
   /** call createHTMLResourceReadonlyField() in trait Form2HTMLDisplay */
-  private def displayNode(uri: Rdf#URI, hrefPrefix: String,
+  private def displayNode(uri: Rdf#URI, hrefPrefix: String = config.hrefDisplayPrefix,
 		  label: String,
       property: Rdf#URI,
       type_ : Rdf#Node

@@ -106,7 +106,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
   private[html] def createHTMLBlankNodeReadonlyField(
     r: formMod#BlankNodeEntry,
-    hrefPrefix: String) =
+    hrefPrefix: String = config.hrefDisplayPrefix) =
     <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString, true) }>{
       r.valueLabel
     }</a>

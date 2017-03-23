@@ -84,7 +84,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
       plainSPARQLquery
   }
 
-  def searchString(searchString: String, hrefPrefix: String = "",
+  def searchString(searchString: String, hrefPrefix: String = config.hrefDisplayPrefix,
                    lang: String = "", classURI: String = ""): Future[NodeSeq] =
     search(hrefPrefix, lang, searchString, classURI)
 

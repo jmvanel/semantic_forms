@@ -44,7 +44,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
    * wrapper for htmlForm that shows Failure's ;
    *  non TRANSACTIONAL
    */
-  def htmlFormElemRaw(uri: String, unionGraph: Rdf#Graph=allNamedGraph, hrefPrefix: String = "", blankNode: String = "",
+  def htmlFormElemRaw(uri: String, unionGraph: Rdf#Graph=allNamedGraph, hrefPrefix: String = config.hrefDisplayPrefix, blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",
     lang: String = "en",
@@ -67,7 +67,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
    * wrapper for htmlForm that shows Failure's ;
    *  TRANSACTIONAL
    */
-  def htmlFormElem(uri: String, hrefPrefix: String = "", blankNode: String = "",
+  def htmlFormElem(uri: String, hrefPrefix: String = config.hrefDisplayPrefix, blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",
     lang: String = "en",
@@ -87,7 +87,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
    * see deductions.runtime.html.Form2HTML.generateHTMLJustFields() .
    * TRANSACTIONAL
    */
-  def htmlFormElemJustFields(uri: String, hrefPrefix: String = "", blankNode: String = "",
+  def htmlFormElemJustFields(uri: String, hrefPrefix: String = config.hrefDisplayPrefix, blankNode: String = "",
     editable: Boolean = false,
     lang0: String = "en",
     graphURI: String = "",
@@ -125,7 +125,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
                                editable: Boolean = false,
                                formuri: String = ""): NodeSeq = {
     val formSyntax = createFormFromSPARQL(query, editable, formuri)
-    generateHTML(formSyntax, request=HTTPrequest())
+    generateHTML(formSyntax, request=HTTPrequest(), hrefPrefix = config.hrefDisplayPrefix)
   }
 
 
@@ -143,7 +143,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
    *  
    */
   private def htmlFormRawTry(uri: String, unionGraph: Rdf#Graph = allNamedGraph,
-                          hrefPrefix: String = "", blankNode: String = "",
+                          hrefPrefix: String = config.hrefDisplayPrefix, blankNode: String = "",
                           editable: Boolean = false,
                           actionURI: String = "/save",
                           lang: String = "en",
@@ -172,7 +172,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
    *  @param blankNode if "true" given uri is a blanknode
    *  TRANSACTIONAL
    */
-  private def htmlForm(uri: String, hrefPrefix: String = "", blankNode: String = "",
+  private def htmlForm(uri: String, hrefPrefix: String = config.hrefDisplayPrefix, blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",
     lang: String = "en",
@@ -220,7 +220,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
    *  TODO non blocking
    */
   private def graf2form(graphe: Rdf#Graph, uri: String,
-    hrefPrefix: String = "", blankNode: String = "",
+    hrefPrefix: String = config.hrefDisplayPrefix, blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",
     lang0: String = "en", graphURI: String,

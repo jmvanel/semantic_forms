@@ -86,7 +86,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    * transactional
    * @param hrefPrefix URL prefix for creating hyperlinks ((URI of each query result is concatenated)
    */
-  def search2(search: String, hrefPrefix: String = "",
+  def search2(search: String, hrefPrefix: String = config.hrefDisplayPrefix,
               lang: String = "")(implicit queryMaker: SPARQLQueryMaker[Rdf] ): Elem
   = {
     val uris = search_only2(search)

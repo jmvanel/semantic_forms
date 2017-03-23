@@ -41,7 +41,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
    */
 //  private[html]
   def generateHTML(form: FormModule[NODE, URI]#FormSyntax,
-                   hrefPrefix: String = "",
+                   hrefPrefix: String = config.hrefDisplayPrefix,
                    editable: Boolean = false,
                    actionURI: String = "/save", graphURI: String = "",
                    actionURI2: String = "/save", lang: String = "en",
@@ -79,7 +79,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
    */
 //  private[html]
   def generateHTMLJustFields(form: formMod#FormSyntax,
-                             hrefPrefix: String = "",
+                             hrefPrefix: String = config.hrefDisplayPrefix,
                              editable: Boolean = false,
                              graphURI: String = "", lang: String = "en",
                              request: HTTPrequest = HTTPrequest()): NodeSeq = {
@@ -190,7 +190,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
 
   /** dispatch to various Entry's: LiteralEntry, ResourceEntry; ..., editable or not */
   private def createHTMLField(field: formMod#Entry, editable: Boolean,
-                              hrefPrefix: String = "", lang: String = "en",
+                              hrefPrefix: String = config.hrefDisplayPrefix, lang: String = "en",
                               request: HTTPrequest = HTTPrequest())(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
 
     // hack instead of true form separator in the form spec in RDF:
@@ -236,7 +236,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
   }
 
   /** make Field Data (display) Or Input (edit) */
-  private def makeFieldDataOrInput(field: formMod#Entry, hrefPrefix: String,
+  private def makeFieldDataOrInput(field: formMod#Entry, hrefPrefix: String = config.hrefDisplayPrefix,
                                    editable: Boolean, lang: String = "en",
                                    request: HTTPrequest = HTTPrequest())(implicit form: FormModule[NODE, URI]#FormSyntax) = {
 
