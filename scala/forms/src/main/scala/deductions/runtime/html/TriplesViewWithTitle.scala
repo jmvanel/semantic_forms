@@ -72,8 +72,11 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
 
           tryGraph match {
             case Success(gr) =>
+
+              // FEATURE: annotate plain Web site
               import scala.concurrent.ExecutionContext.Implicits.global
               typeChange = gr.size == 1 && gr.triples.head . objectt == foaf.Document
+
               Future {
                 // TODO should be done in FormSaver 
                 println(s"Search in <$uri> duplicate graph rooted at blank node: size " +
@@ -84,8 +87,9 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
             case Failure(f) => logger.error(s"manageBlankNodesReload: $f")
           }
 
+          // FEATURE: annotate plain Web site
           val editable2 = editable || typeChange
-          
+
           wrapInTransaction({  // or wrapInReadTransaction ?
             implicit val graph = allNamedGraph
             val formBoth = htmlFormElemRaw(uri, graph, hrefDisplayPrefix, blankNode, editable = editable2,

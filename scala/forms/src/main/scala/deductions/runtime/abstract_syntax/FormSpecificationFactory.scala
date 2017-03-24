@@ -15,7 +15,7 @@ import deductions.runtime.utils.HTTPrequest
  * 
  * TODO rename ForSpecificationFactory
  */
-trait FormConfigurationFactory[Rdf <: RDF, DATASET]
+trait FormSpecificationFactory[Rdf <: RDF, DATASET]
     extends
     RDFCacheAlgo[Rdf, DATASET]
     with RDFHelpers[Rdf]

@@ -4,7 +4,7 @@ import org.w3.banana.RDF
 import deductions.runtime.utils.RDFHelpers
 
 trait FormConfigurationReverseProperties[Rdf <: RDF, DATASET]
-    extends FormConfigurationFactory[Rdf, DATASET]
+    extends FormSpecificationFactory[Rdf, DATASET]
     with FormModule[Rdf#Node, Rdf#URI] {
 
   import ops._

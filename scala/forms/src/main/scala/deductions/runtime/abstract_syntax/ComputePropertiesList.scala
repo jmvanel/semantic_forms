@@ -62,13 +62,14 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
       computePropsFromConfig(classesOfSubject, formuri)
 
     val classesOfSubjectOrFromConfig =
-      if (classesOfSubject . isEmpty && formuri != "") { // GOOD !!!!!!!!!!!!!!!!!
-      // if (classesOfSubject . isEmpty && formuri != nullURI ) { // BAD !!!!!!!!!!!!!!!!
+      if (classesOfSubject . isEmpty && formuri != "") {
         println(s"computePropertiesList tryClassFromConfig $tryClassFromConfig")
         List( uriNodeToURI(tryClassFromConfig.getOrElse(nullURI)) )
       } else
         classesOfSubject
-    logger.debug(s""">>> computePropsFromConfig( classOfSubjectOrFromConfig=$classesOfSubjectOrFromConfig) =>
+
+      logger.debug(
+        s""">>> computePropsFromConfig( classOfSubjectOrFromConfig=$classesOfSubjectOrFromConfig) =>
                formConfiguration=<$formConfiguration>, props From Config $propsFromConfig""")
 
     val propsFromSubject = fieldsFromSubject(subject, graph)
@@ -110,7 +111,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
 
       RawDataForForm[Rdf#Node](
         propertiesList, classesOfSubjectOrFromConfig.head, subject, editable,
-        formuri match { case "" => None; case uri => Some(URI(uri)) },
+        formuri match { case "" => Some(formConfiguration); case uri => Some(URI(uri)) },
         reversePropertiesList,
         propertiesGroups = propertiesGroupsMap)
     }
