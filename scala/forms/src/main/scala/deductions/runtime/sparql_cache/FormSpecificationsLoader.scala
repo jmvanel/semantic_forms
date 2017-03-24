@@ -71,10 +71,13 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
     try {
       setTimeoutsFromConfig()
 
-      val from = new java.net.URL(form_specs).openStream()
+      // NOTE: don't know why this triggers sometimes: [error] java.net.SocketTimeoutException: connect timed out
+      // val from = new java.net.URL(form_specs).openStream()
+
       val form_specs_graph: Rdf#Graph =
-        turtleReader.read(from, base = form_specs) getOrElse sys.error(
-          s"couldn't read form_specs <$form_specs>")
+//    turtleReader.read(from, base = form_specs) 
+        rdfLoader.load(new java.net.URL(form_specs)) . getOrElse (sys.error(
+          s"couldn't read form_specs <$form_specs>"))
 
       val formPrefix = form
       /* Retrieving such triples:
@@ -84,9 +87,11 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
 
       for (formSpecification <- formSpecifications) {
         try {
-          val from = new java.net.URL(formSpecification.toString()).openStream()
-          val form_spec_graph: Rdf#Graph = turtleReader.read(from, base = formSpecification.toString()) getOrElse sys.error(
-            s"couldn't read form Specification <${formSpecification.toString()}>")
+//          val from = new java.net.URL(formSpecification.toString()).openStream()
+          val form_spec_graph: Rdf#Graph =
+            // turtleReader.read(from, base = formSpecification.toString())
+            rdfLoader.load(new java.net.URL(nodeToString(formSpecification))) . getOrElse (sys.error(
+            s"couldn't read form Specification <${formSpecification.toString()}>"))
           val ret = wrapInTransaction {
             rdfStore.appendToGraph(dataset, formSpecificationsGraphURI, form_spec_graph)
           }
