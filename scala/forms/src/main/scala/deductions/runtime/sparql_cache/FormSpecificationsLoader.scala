@@ -8,6 +8,7 @@ import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.DependenciesForApps
+import deductions.runtime.utils.HTTPHelpers
 
 /**
  * @author jmv
@@ -36,7 +37,8 @@ object FormSpecificationsLoader
 trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
     with RDFPrefixes[Rdf]
-    with SitesURLForDownload {
+    with SitesURLForDownload
+        with HTTPHelpers {
 
   import ops._
   import rdfStore.transactorSyntax._
@@ -67,6 +69,8 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
   /** non TRANSACTIONAL */
   def loadFormSpecification(form_specs: String) {
     try {
+      setTimeoutsFromConfig()
+
       val from = new java.net.URL(form_specs).openStream()
       val form_specs_graph: Rdf#Graph =
         turtleReader.read(from, base = form_specs) getOrElse sys.error(

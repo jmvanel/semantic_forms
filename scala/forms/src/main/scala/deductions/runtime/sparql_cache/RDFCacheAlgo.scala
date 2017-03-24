@@ -23,6 +23,7 @@ import deductions.runtime.jena.MicrodataLoaderModule
 import deductions.runtime.utils.HTTPrequest
 import deductions.runtime.jena.ImplementationSettings
 import org.apache.jena.riot.RiotException
+import deductions.runtime.utils.HTTPHelpers
 
 /** */
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
@@ -41,7 +42,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     with MirrorManagement[Rdf, DATASET]
     with BrowsableGraph[Rdf, DATASET]
     with RDFHelpers[Rdf]
-    with URIManagement{
+    with URIManagement
+    with HTTPHelpers {
 
 	val activateMicrodataLoading = false
 
@@ -286,9 +288,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
 
     if (isDownloadableURI(uri)) {
-      System.setProperty("sun.net.client.defaultReadTimeout", defaultReadTimeout.toString)
-      System.setProperty("sun.net.client.defaultConnectTimeout", defaultConnectTimeout.toString)
-
+      setTimeoutsFromConfig()
       // NOTE: Jena RDF loader can throw an exception "Failed to determine the content type"
       val graphTry = rdfLoader.load(new java.net.URL(uri.toString()))
       logger.info(s"readStoreURINoTransaction: after rdfLoader.load($uri): $graphTry")
