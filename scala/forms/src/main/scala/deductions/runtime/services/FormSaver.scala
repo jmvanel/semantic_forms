@@ -120,7 +120,9 @@ trait FormSaver[Rdf <: RDF, DATASET]
         val newUserInput: Boolean = !emptyUserInput && differingUserInput
 
         logger.debug(s""">> originalData $originalData, emptyUserInput $emptyUserInput, differingUserInput $differingUserInput, originalDataNonEmpty $originalDataNonEmpty, newUserInput $newUserInput, objectStringFromUser $objectStringFromUser""")
-        if (differingUserInput && !emptyUserInput)
+
+        // NOTE: do not mandate differingUserInput, because of the case of pre-filled rdfs:type
+        if (!emptyUserInput)
           triplesToAdd +=
             makeTriple(originalTriple.subject, originalTriple.predicate, objectFromUser)
 
