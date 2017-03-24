@@ -16,6 +16,7 @@ import org.w3.banana.TryW
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.semlogs.LogAPI
 import deductions.runtime.utils.Timer
+import deductions.runtime.utils.RDFHelpers
 
 trait FormSaver[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
@@ -23,10 +24,13 @@ trait FormSaver[Rdf <: RDF, DATASET]
     with HttpParamsManager[Rdf]
     with LogAPI[Rdf]
     with SaveListenersManager[Rdf]
+    with RDFHelpers[Rdf]
     with Timer
     with URIManagement {
 
   import ops._
+
+  private lazy val foaf = FOAFPrefix[Rdf]
 
   /** save triples in named graph given by HTTP parameter "graphURI";
    *  other HTTP parameters are original triples in Turtle;
@@ -37,8 +41,8 @@ trait FormSaver[Rdf <: RDF, DATASET]
    * 
    * transactional
    * @param map a raw map of HTTP response parameters
-   * @return main subject URI
-   */
+   * @return main subject URI,
+   *         type change flag */
   def saveTriples(httpParamsMap: Map[String, Seq[String]])
       ( implicit userURI: String = "" ): ( Option[String], Boolean)
       = {
@@ -73,7 +77,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
               param != "graphURI") {
               val try_ = Try {
                 val comingBackTriple = httpParam2Triple(param)
-                logger.debug(s"saveTriples: triple from httpParam: $comingBackTriple")
+                logger.debug(s"saveTriples: triple from httpParam: {$comingBackTriple }")
                 computeDatabaseChanges(comingBackTriple, objects)
               }
               try_ match {
@@ -89,44 +93,48 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
     //// end of saveTriples() body ////
 
-
     /* process a single triple from the form */
     def computeDatabaseChanges(originalTriple: Rdf#Triple, objectsFromUser: Seq[String]) {
-      val foaf = FOAFPrefix[Rdf]
-//      if (originalTriple.objectt == foaf.Document ) // predicate == foaf.firstName)
-//        logger.debug( "DDDDDDDDDDD "+ foaf.Document)
+      //      if (originalTriple.objectt == foaf.Document ) // predicate == foaf.firstName) logger.debug( "DDDDDDDDDDD "+ foaf.Document)
       logger.debug(s"computeDatabaseChanges: originalTriple: $originalTriple, objectsFromUser $objectsFromUser")
       objectsFromUser.map { objectStringFromUser =>
         // NOTE: a single element in objects
         val objectFromUser = foldNode(originalTriple.objectt)(
-          _ => { if( objectStringFromUser.startsWith("_:") )
-                BNode(objectStringFromUser.substring(2))
+          _ => {
+            if (objectStringFromUser.startsWith("_:"))
+              BNode(objectStringFromUser.substring(2))
             else {
               if (objectStringFromUser != "")
                 logger.debug(s"""computeDatabaseChanges: objectStringFromUser "$objectStringFromUser" changed: spaces removed""")
-                URI( // UnfilledFormFactory.
-                    makeURIFromString(objectStringFromUser) )
+              URI( // UnfilledFormFactory.
+                makeURIFromString(objectStringFromUser))
             }
           },
           _ => BNode(objectStringFromUser.replaceAll(" ", "_")), // ?? really do this ?
           _ => Literal(objectStringFromUser))
 
-        // TODO : compare != always true !!!!!!
-        if (originalTriple.objectt != objectStringFromUser) {
-          if (objectStringFromUser != "") {
-            triplesToAdd +=
-              makeTriple(originalTriple.subject, originalTriple.predicate,
-                objectFromUser)
-                if( originalTriple.predicate == rdf.typ ) {
-                  println(s">>>> computeDatabaseChanges: typeChange! ($objectFromUser)")
-                  typeChange = true
-                }
-          }
-          if (originalTriple.objectt.toString() != "")
-            triplesToRemove += originalTriple
-          logger.debug("computeDatabaseChanges: predicate " + originalTriple.predicate + ", originalTriple.objectt: \"" +
-            originalTriple.objectt.toString() + "\"" +
-            ", objectStringFromUser \"" + objectStringFromUser + "\"")
+        val originalData = nodeToString(originalTriple.objectt)
+        val emptyUserInput: Boolean = objectStringFromUser == ""
+        val differingUserInput: Boolean = objectStringFromUser != originalData
+        val originalDataNonEmpty: Boolean = originalData != ""
+        val newUserInput: Boolean = !emptyUserInput && differingUserInput
+
+        logger.debug(s""">> originalData $originalData, emptyUserInput $emptyUserInput, differingUserInput $differingUserInput, originalDataNonEmpty $originalDataNonEmpty, newUserInput $newUserInput, objectStringFromUser $objectStringFromUser""")
+        if (differingUserInput && !emptyUserInput)
+          triplesToAdd +=
+            makeTriple(originalTriple.subject, originalTriple.predicate, objectFromUser)
+
+        if (originalDataNonEmpty && differingUserInput)
+          triplesToRemove += originalTriple
+
+        logger.debug("computeDatabaseChanges: predicate " + originalTriple.predicate + ", originalTriple.objectt: \"" +
+          originalTriple.objectt.toString() + "\"" +
+          ", objectStringFromUser \"" + objectStringFromUser + "\"")
+
+        // FEATURE: annotate plain Web site
+        if (originalTriple.predicate == rdf.typ && differingUserInput) {
+          println(s">>>> computeDatabaseChanges: typeChange! ($objectFromUser)")
+          typeChange = true
         }
       }
     }

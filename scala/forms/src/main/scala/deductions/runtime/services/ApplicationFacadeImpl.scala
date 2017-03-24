@@ -213,7 +213,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   }
 
   /** save Form data in TDB
-   *  @return main subject URI like [[FormSaver.saveTriples]] */
+   *  @return main subject URI like [[FormSaver.saveTriples]],
+   *  type change flag */
   def saveForm(request: Map[String, Seq[String]], lang: String = "",
       userid: String, graphURI: String = "", host: String= "")
   : (Option[String], Boolean) = {
