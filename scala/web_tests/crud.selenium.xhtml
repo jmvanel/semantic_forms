@@ -58,21 +58,20 @@
 </tr>
 <tr>
 	<td>assertElementPresent</td>
-	<td>xpath=//form // div [ label [ text() = "prénom" or
-					  text() = "firstName" or
-				 	  text() = "Given name"
+	<td>xpath=//form // div [ label [ . // text() = "prénom" or
+					  . // text() = "firstName" or
+				 	  . // text() = "Given name"
 					]] // input [ @type != "button" ] </td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>xpath=//form // div [label [ text() = "prénom" or
-					 text() = "firstName" or
-					 text() = "Given name"
+	<td>xpath=//form // div [label [ . // text() = "prénom" or
+					 . // text() = "firstName" or
+					 . // text() = "Given name"
 					]] // input [ @type != "button" ] </td>
 	<td>Victime 1</td>
 </tr>
-<!-- id=f0  / @value -->
 <tr>
 	<td>select</td>
 	<td>id=http://xmlns.com/foaf/0.1/knows</td>
