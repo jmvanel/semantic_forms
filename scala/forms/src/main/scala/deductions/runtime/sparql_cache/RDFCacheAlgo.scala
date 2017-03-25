@@ -357,7 +357,10 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       URI(makeAbsoluteURIForSaving(request.userId())),
       newGraphWithUrl)
     println(s"getLocallyManagedUrlAndData: saved $newGraphWithUrl in graph <${makeAbsoluteURIForSaving(request.userId())}>")
-    newGraphWithUrl
+
+    newGraphWithUrl .
+    // NOTE: after user added triples, this way typeChange will not be triggered
+    union( makeGraph(find(allNamedGraph, uri, ANY, ANY).toIterable))
   }
 }
 

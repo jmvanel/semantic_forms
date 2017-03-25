@@ -52,12 +52,12 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
         val datasetOrDefault = getDatasetOrDefault(database)
         val result: Try[NodeSeq] = {
 
-          val transaction1 = wrapInTransaction({
+          // 1. retrieve or check URI from Internet
 
+          val transaction1 = wrapInTransaction({
             if (blankNode != "true") {
               val tryGraph = retrieveURINoTransaction( // if( blankNode=="true") makeUri("_:" + uri ) else makeUri(uri),
                 makeUri(uri), datasetOrDefault, request)
-
               val failureOrStatistics = tryGraph match {
                 case Failure(e) => e.getLocalizedMessage
                 case Success(g) => formatHTMLStatistics(URI(uri), g, lang)
@@ -76,9 +76,9 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
               // FEATURE: annotate plain Web site
               import scala.concurrent.ExecutionContext.Implicits.global
               typeChange = gr.size == 1 && gr.triples.head . objectt == foaf.Document
+//              println(s">>>> htmlForm typeChange $typeChange") ; printGraph( gr )
 
-              Future {
-                // TODO should be done in FormSaver 
+              Future { // TODO should be done in FormSaver
                 println(s"Search in <$uri> duplicate graph rooted at blank node: size " +
                   ops.getTriples(gr).size)
                 manageBlankNodesReload(gr,
@@ -87,20 +87,21 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
             case Failure(f) => logger.error(s"manageBlankNodesReload: $f")
           }
 
+          // 2. generate form and its header
+
           // FEATURE: annotate plain Web site
           val editable2 = editable || typeChange
 
           wrapInTransaction({  // or wrapInReadTransaction ?
             implicit val graph = allNamedGraph
-            val formBoth = htmlFormElemRaw(uri, graph, hrefDisplayPrefix, blankNode, editable = editable2,
+            val (formItself, formSyntax) = htmlFormElemRaw(
+              uri, graph, hrefDisplayPrefix, blankNode, editable = editable2,
               lang = lang,
               formuri = formuri,
               graphURI = graphURI,
               database = database,
               request = request, inputGraph = tryGraph)
             println(s">>>> after htmlFormElemRaw")
-            val formItself = formBoth._1
-            val formSyntax = formBoth._2
 
             Text("\n") ++
               titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable2) ++
@@ -113,6 +114,9 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
         (resultXML, typeChange)
       } catch {
         case e: Exception => // e.g. org.apache.jena.riot.RiotException
+
+        // 3. display errors
+
           (<p class="sf-error-message">
             <pre>
               {
