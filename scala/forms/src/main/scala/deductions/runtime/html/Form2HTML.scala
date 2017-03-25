@@ -157,7 +157,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
 
     val htmlResult: NodeSeq =
       hidden ++
-        <div class={"row" + css.cssClasses.formRootCSSClass  } >
+        <div class={"row " + css.cssClasses.formRootCSSClass  } >
           {
             //css.localCSS ++
               //Text("\n") ++

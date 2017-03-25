@@ -19,13 +19,17 @@ trait EnterButtons {
   protected def messageI18N(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
 
   def enterURItoDownloadAndDisplay()(implicit lang: String = "en") = {
-    <div class="row">
-      <div class="col-md-12">
+
+    <div class="row sf-margin-top-10">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-md-offset-1">
+
         <form role="form" action="/display">
-          <div class="col-md-1"></div>
-          <div class="form-group">
-            <label class="col-md-2 control-label" for="Display">{ messageI18N("Display") }</label>
-            <div class="col-md-6">
+
+            <div class="col-xs-2 col-sm-2 col-md-1">
+              <label class="control-label" for="Display">{ messageI18N("Display") }</label>
+            </div>
+
+            <div class="col-xs-10 col-sm-10 col-md-5">
               <input class="form-control" type="text" name="displayuri" list="start_uris" dropzone="copy string:text/plain"/>
               <datalist id="start_uris">
                 <option label="J.M. Vanel FOAF profile"> http://jmvanel.free.fr/jmv.rdf#me </option>
@@ -33,53 +37,64 @@ trait EnterButtons {
                 <option label="H. Story FOAF profile"> http://bblfish.net/people/henry/card#me </option>
               </datalist>
             </div>
-            <div class="col-md-2">
-              <input class="btn btn-primary" type="submit" name="Display" value={ messageI18N("Display") }/>
-              <input class="btn btn-primary" type="submit" name="Edit" value={ messageI18N("Edit") }/>
-             <label class="checkbox-inline"> <input type="checkbox" name="tabs" value="true" />Group fields</label>
-            </div>
+
+
+              <div class="col-xs-4 col-sm-4  col-md-1" >
+                <input class="form-control btn btn-primary" type="submit" name="Display" value={ messageI18N("Display") }/>
+              </div>
+              <div class="col-xs-4 col-sm-4 col-md-1">
+                <input class="form-control btn btn-primary" type="submit" name="Edit" value={ messageI18N("Edit") }/>
+              </div>
+              <div class="col-xs-4 col-sm-3 col-md-1">
+                <label class="checkbox-inline"> <input type="checkbox" name="tabs" value="true" />Group fields</label>
+              </div>
+
             <!--input type="submit" style="display:none"/-->
-          </div>
-          <div class="col-md-1"></div>
         </form>
+
       </div>
     </div>
   }
 
   def enterSearchTerm()(implicit lang: String = "en") = {
-    <div class="row">
-      <div class="col-md-12">
-        <form role="form" action="/wordsearch">
-          <div class="col-md-1"></div>
-          <div class="form-group">
-            <label class="col-md-2 control-label" for="q" title="Search URI whose value (object triple) matches (Lucene search) or (known RDF class)">
-              { messageI18N("String_to_search") }
-            </label>
-            <div class="col-md-6">
+
+    <div class="row sf-margin-top-10">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-md-offset-1">
+        <form  role="form" action="/wordsearch">
+
+            <div class="col-xs-2 col-sm-2 col-md-1">
+              <label class="control-label" for="q" title="Search URI whose value (object triple) matches (Lucene search) or (known RDF class)">
+                { messageI18N("String_to_search") }
+              </label>
+            </div>
+
+            <div class="col-xs-10 col-sm-10 col-md-5">
               <input class="form-control" type="text" id="q" name="q" placeholder={
                 messageI18N("Search_placeholder")
               } dropzone="copy"/>
               <input class="form-control" type="text" name="clas" placeholder={ messageI18N("Class_placeholder") }/>
             </div>
-            <div class="col-md-2">
-              <input class="btn btn-primary" type="submit" value={ messageI18N("Search") }/>
+
+            <div class="col-sm-4 col-sm-offset-4 col-md-2 col-md-offset-0">
+              <input class="form-control btn btn-primary" type="submit" value={ messageI18N("Search") }/>
             </div>
             <!--input type="submit" style="display:none"/-->
-          </div>
-          <div class="col-md-1"></div>
         </form>
       </div>
     </div>
   }
 
   def enterClassForCreatingInstance()(implicit lang: String = "en") =
-    <div class="row">
-      <div class="col-md-12">
+
+    <div class="row sf-margin-top-10">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-md-offset-1">
         <form role="form" action="/create">
-          <div class="col-md-1"></div>
-          <div class="form-group">
-            <label class="col-md-2 control-label" for="uri">{ messageI18N("Create_instance_of") }</label>
-            <div class="col-md-6">
+
+            <div class="col-xs-2 col-sm-2 col-md-1">
+              <label class=" control-label" for="uri">{ messageI18N("Create_instance_of") }</label>
+            </div>
+
+            <div class="col-xs-10 col-sm-10 col-md-5">
               <input class="form-control" type="text" name="uri" placeholder={
                 messageI18N("Paste_ontology")
               } dropzone="copy"></input>
@@ -89,12 +104,12 @@ trait EnterButtons {
                 </optgroup>
               </select>
             </div>
-            <div class="col-md-2">
-              <input class="btn btn-primary sf-button-create"  type="submit" value={ messageI18N("Create") }/>
+
+            <div class="col-sm-4 col-sm-offset-4 col-md-2 col-md-offset-0">
+              <input class="form-control btn btn-primary sf-button-create"  type="submit" value={ messageI18N("Create") }/>
             </div>
             <!--input type="submit" style="display:none"/-->
-          </div>
-          <div class="col-md-1"></div>
+
         </form>
       </div>
     </div>

@@ -16,10 +16,10 @@
 .sf-error-message{
     color:red;
 }
-.sf-button-create{
+/*.sf-button-create{
     position: relative;
     top: 18px;
-}
+}*/
 .sf-complete-form{
     padding-bottom: 70px;
 }
@@ -32,3 +32,8 @@
     background-position: right 0;
     background-size: contain;
 }
+
+.sf-margin-top-5 {margin-top: 5px}
+.sf-margin-top-10 {margin-top: 10px}
+.sf-margin-top-15 {margin-top: 15px}
+.sf-margin-top-20 {margin-top: 20px}
