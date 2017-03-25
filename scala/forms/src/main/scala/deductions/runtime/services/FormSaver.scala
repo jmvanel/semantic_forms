@@ -133,7 +133,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
           originalTriple.objectt.toString() + "\"" +
           ", objectStringFromUser \"" + objectStringFromUser + "\"")
 
-        // FEATURE: annotate plain Web site
+        // FEATURE: change type triggers edit mode
         if (originalTriple.predicate == rdf.typ && differingUserInput) {
           println(s">>>> computeDatabaseChanges: typeChange! ($objectFromUser)")
           typeChange = true
