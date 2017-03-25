@@ -49,9 +49,10 @@ trait MainXml extends ToolsPage with EnterButtons {
    *  enter URI, search, create instance
    */
   def mainPageHeader(implicit lang: String = "en", userInfo: NodeSeq): NodeSeq = {
-    <header class="col col-sm-12">
-      <div class="raw">
-        <div class="col col-sm-9">
+
+    <header>
+      <div class="row">
+        <div class="col col-sm-8 col-sm-offset-1">
           <a href="/" title="Open a new Semantic_forms in a new tab." target="_blank">
             <h1>
            {
@@ -66,8 +67,8 @@ trait MainXml extends ToolsPage with EnterButtons {
       </div>
 
     </header>
-    <div> {
-      enterURItoDownloadAndDisplay() ++
+    <div class="container-fluid "> {
+        enterURItoDownloadAndDisplay() ++
         enterSearchTerm() ++
         enterClassForCreatingInstance()
     } </div>
