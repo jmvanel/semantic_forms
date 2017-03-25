@@ -29,7 +29,7 @@ trait EnterButtons {
               <label class="control-label" for="Display">{ messageI18N("Display") }</label>
             </div>
 
-            <div class="col-xs-10 col-sm-10 col-md-5">
+            <div class="col-xs-10 col-sm-10 col-md-6">
               <input class="form-control" type="text" name="displayuri" list="start_uris" dropzone="copy string:text/plain"/>
               <datalist id="start_uris">
                 <option label="J.M. Vanel FOAF profile"> http://jmvanel.free.fr/jmv.rdf#me </option>
@@ -68,7 +68,7 @@ trait EnterButtons {
               </label>
             </div>
 
-            <div class="col-xs-10 col-sm-10 col-md-5">
+            <div class="col-xs-10 col-sm-10 col-md-6">
               <input class="form-control" type="text" id="q" name="q" placeholder={
                 messageI18N("Search_placeholder")
               } dropzone="copy"/>
@@ -94,7 +94,7 @@ trait EnterButtons {
               <label class=" control-label" for="uri">{ messageI18N("Create_instance_of") }</label>
             </div>
 
-            <div class="col-xs-10 col-sm-10 col-md-5">
+            <div class="col-xs-10 col-sm-10 col-md-6">
               <input class="form-control" type="text" name="uri" placeholder={
                 messageI18N("Paste_ontology")
               } dropzone="copy"></input>
