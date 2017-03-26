@@ -33,10 +33,11 @@ trait RegisterPage[Rdf <: RDF, DATASET]
     <div class="userInfo"> {
       if (needLogin) {
         if (userid != "" && ! userid.startsWith("anonymous") ) {
-          val userLabel = rdfStore.rw( dataset, {
-            instanceLabel(URI(userid), allNamedGraph, lang)
+//          val userLabel = rdfStore.rw( dataset, {
+          val userLabel = wrapInReadTransaction {
+            makeInstanceLabel(URI(userid), allNamedGraph, lang)
             // TODO link to User profile
-          })
+          }
           val displayUserLabel = userLabel match {
             case Success(lab) => s"${I18NMessages.get("User", lang)}: $lab"
             case Failure(e) => s"No label for user (!?): $e"

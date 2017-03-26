@@ -28,7 +28,7 @@ trait InstanceLabelsInference2[Rdf <: RDF]
   import ops._
 
   def instanceLabels(list: Seq[Rdf#Node], lang: String = "")(implicit graph: Rdf#Graph): Seq[String] =
-    list.map { node => instanceLabel(node, graph, lang) }
+    list.map { node => makeInstanceLabel(node, graph, lang) }
 
   /**
    * display a summary of the resource (rdfs:label, foaf:name, etc,
@@ -39,7 +39,7 @@ trait InstanceLabelsInference2[Rdf <: RDF]
    *
    *  NON transactional
    */
-  def instanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String = ""): String = {
+  def makeInstanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String = ""): String = {
     if (node == nullURI) return ""
 
     val pgraph = PointedGraph(node, graph)

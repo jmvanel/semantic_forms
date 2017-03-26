@@ -24,7 +24,7 @@ class InstanceLabelsInferenceMemoryTest extends FunSuite
     readStoreUriInNamedGraph(uri)
     val res = {
       rdfStore.rw( dataset, {
-        val lab = instanceLabel(uri, allNamedGraph, "fr")
+        val lab = makeInstanceLabel(uri, allNamedGraph, "fr")
         println(s"label for $uri: $lab")
         // TODO check that the value is stored in TDB
       })

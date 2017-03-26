@@ -53,7 +53,7 @@ trait Lookup[Rdf <: RDF, DATASET]
       val urilabels = res.map {
         uris =>
           val uri = uris.head
-          val label = instanceLabel(uri, allNamedGraph, lang)
+          val label = makeInstanceLabel(uri, allNamedGraph, lang)
           val desc = instanceDescription(uri, allNamedGraph, lang)
           val img = instanceImage(uri, allNamedGraph, lang)
           val typ = instanceTypeLabel(uri, allNamedGraph, lang)

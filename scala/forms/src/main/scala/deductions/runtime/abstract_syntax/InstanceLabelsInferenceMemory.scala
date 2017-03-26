@@ -26,7 +26,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   val displayLabelPred = URI("urn:displayLabel")
 
   /** NON transactional, needs rw transaction */
-  override def instanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
+  override def makeInstanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
     val labelFromTDB = instanceLabelFromTDB(node, lang)
     if (labelFromTDB == "" || labelFromTDB == "Thing" || isLabelLikeURI(node, labelFromTDB ) )
       computeInstanceLabeAndStoreInTDB(node, graph, lang)
@@ -50,8 +50,8 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     for (
       triple <- find(allNamedGraph, subjectNode, predNode, ANY).toSeq.headOption;
       result = foldNode(triple.objectt)(
-        uri => instanceLabel(uri, allNamedGraph, "fr"),
-        bn => instanceLabel(bn, allNamedGraph, "fr"),
+        uri => makeInstanceLabel(uri, allNamedGraph, "fr"),
+        bn => makeInstanceLabel(bn, allNamedGraph, "fr"),
         literal => "")
     ) yield result
   }
@@ -92,12 +92,12 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   private def labelForURI(uri: String, language: String)
   (implicit graph: Rdf#Graph)
     : String = {
-      instanceLabel(URI(uri), graph, language)
+      makeInstanceLabel(URI(uri), graph, language)
   }
 
   override def instanceLabels(list: Seq[Rdf#Node], lang: String = "")
   (implicit graph: Rdf#Graph): Seq[String] =
-    list.toList map { node => instanceLabel(node, graph, lang) }
+    list.toList map { node => makeInstanceLabel(node, graph, lang) }
     // list.map { node => instanceLabelFromTDB(node, lang)
 
   /** this was tried during trials to fix a ConcurrentModificationException,
@@ -116,7 +116,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
           (
             (if (recompute) {
               recomputeCount = recomputeCount + 1
-              super.instanceLabel(node_label._1, graph, lang)
+              super.makeInstanceLabel(node_label._1, graph, lang)
             } else node_label._2),
             recompute)
         }
@@ -153,15 +153,15 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     logger.debug( s"compute displayLabel for <$node>" )
     if( node.toString() == "" ) return ""
 
-    val label = super.instanceLabel(node, graph, lang)
+    val label = super.makeInstanceLabel(node, graph, lang)
 //    println(s"computeInstanceLabeAndStoreInTDB: $node .toString() , computed label $label")
 //    println(s"$node .toString().endsWith( label.substring(label.length()-1) = ${label.substring(0, label.length()-1)}")
     val label2 = if( label == "" || isLabelLikeURI(node: Rdf#Node, label) ) {
       val v = instanceLabelFromLabelProperty(node)
       v match {
         case Some(node) =>
-          foldNode(node)( uri => instanceLabel(uri, graph, lang),
-              _ => instanceLabel(node, graph, lang),
+          foldNode(node)( uri => makeInstanceLabel(uri, graph, lang),
+              _ => makeInstanceLabel(node, graph, lang),
               lab => fromLiteral(lab)._1 )
         case _ => label
       }

@@ -42,7 +42,7 @@ trait ResultsDisplay[Rdf <: RDF, DATASET] {
     val wrappingClass = "row sf-triple-block"
     <div class={wrappingClass} >{
       val res = res0.toList
-      val uriLabelCouples = res.map(uri => (uri, instanceLabel(uri, graph, lang)))
+      val uriLabelCouples = res.map(uri => (uri, makeInstanceLabel(uri, graph, lang)))
       val uriLabelCouples2 = if( sortAnd1rowPerElement )
         uriLabelCouples. sortBy(c => c._2)
         else uriLabelCouples
@@ -88,7 +88,7 @@ trait ResultsDisplay[Rdf <: RDF, DATASET] {
       if( label != "" )
           label
         else
-          instanceLabel(node, graph, lang)
+          makeInstanceLabel(node, graph, lang)
      displayNode(uriNodeToURI(node), hrefPrefix, displayLabel,
          property = nullURI, type_ = nullURI )
   }

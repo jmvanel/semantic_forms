@@ -256,7 +256,7 @@ type MergeGroups = Seq[MergeGroup]
       val dupsComment = for (
         duplicateURI <- duplicateURIs
       ) yield {
-        val oldLabel = instanceLabel(duplicateURI, originalGraph, "fr")
+        val oldLabel = makeInstanceLabel(duplicateURI, originalGraph, "fr")
         abbreviateTurtle(duplicateURI) + s" ($oldLabel)"
       }
       val restructurationComment =
@@ -274,12 +274,12 @@ type MergeGroups = Seq[MergeGroup]
     }
 
     val newLabel = {
-      val groupLabel = instanceLabel(uriTokeep, originalGraph, "fr")
+      val groupLabel = makeInstanceLabel(uriTokeep, originalGraph, "fr")
       val mergedItemTripleOption = find(allNamedGraph, ANY, restruc("oldLabel"), Literal(groupLabel)).toList
       val label = mergedItemTripleOption.headOption.map {
         mergedItemTriple =>
           val mergedURI = mergedItemTriple.subject
-          val label = instanceLabel(mergedURI, originalGraph, "fr")
+          val label = makeInstanceLabel(mergedURI, originalGraph, "fr")
           println(s""">>>> addRestructuringCommentNoTr: newLabel found for <$uriTokeep> from merged URI <$mergedURI> : "${label}" """)
           label
       }
@@ -288,7 +288,7 @@ type MergeGroups = Seq[MergeGroup]
     val dupsTriples = {
       for (
         duplicateURI <- duplicateURIs;
-        oldLabel = instanceLabel(duplicateURI, originalGraph, "fr") if (oldLabel != newLabel)
+        oldLabel = makeInstanceLabel(duplicateURI, originalGraph, "fr") if (oldLabel != newLabel)
       ) yield {
         List( Triple(uriTokeep, restruc("mergedFrom"),duplicateURI ),
         Triple(uriTokeep, restruc("oldLabel"), Literal(oldLabel)) )
@@ -306,7 +306,7 @@ type MergeGroups = Seq[MergeGroup]
   /** detect prior merges by specification
    *  @return the convergence URI, not necessarily `uriTokeep` */
   def managePriorMerges(uriTokeep: Rdf#Node, duplicateURIs: Seq[Rdf#Node]): (Rdf#Node, Seq[Rdf#Node] ) = {
-		  val groupLabel = instanceLabel(uriTokeep, originalGraph, "fr")
+		  val groupLabel = makeInstanceLabel(uriTokeep, originalGraph, "fr")
       val mergedItemTripleOption = find(originalGraph, ANY, restruc("oldLabel"), Literal(groupLabel)).toList
       println( s""">>>> managePriorMerges: uriTokeep $uriTokeep groupLabel "$groupLabel" mergedItemTripleOption ${mergedItemTripleOption}""" )
       val opt = mergedItemTripleOption.headOption.map {
@@ -522,7 +522,7 @@ type MergeGroups = Seq[MergeGroup]
       classTriple <- classTriples;
       uri0 = classTriple.subject if (uri0.isURI);
       uri = uri0 ;
-      label = instanceLabel(uri, allNamedGraph, lang)
+      label = makeInstanceLabel(uri, allNamedGraph, lang)
     ) yield {
       count = count + 1
       (label, uri)

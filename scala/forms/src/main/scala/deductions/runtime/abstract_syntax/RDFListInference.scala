@@ -35,8 +35,8 @@ trait RDFListInference[Rdf <: RDF, DATASET]
     println(s"makeRDFListEntry list $nodesList")
     val entriesList: Seq[Entry] = nodesList . map {
       node => ops.foldNode(node)(
-          uri => ResourceEntry(value=uri, valueLabel=instanceLabel(node, graph, "en")),
-          bn => BlankNodeEntry(value=bn, valueLabel=instanceLabel(node, graph, "en")),
+          uri => ResourceEntry(value=uri, valueLabel=makeInstanceLabel(node, graph, "en")),
+          bn => BlankNodeEntry(value=bn, valueLabel=makeInstanceLabel(node, graph, "en")),
           lit => LiteralEntry(value=lit)
       )
     }
