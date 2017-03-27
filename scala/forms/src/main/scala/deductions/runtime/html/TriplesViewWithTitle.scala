@@ -54,21 +54,27 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
 
           // 1. retrieve or check URI from Internet
 
-          val transaction1 = wrapInTransaction({
-            if (blankNode != "true") {
-              val tryGraph = retrieveURINoTransaction( // if( blankNode=="true") makeUri("_:" + uri ) else makeUri(uri),
-                makeUri(uri), datasetOrDefault, request)
+//          val transaction1 = wrapInTransaction({
+            val (tryGraph: Try[Rdf#Graph], failureOrStatistics /* String or NodeSeq */ ) =
+              if (blankNode != "true") {
+              val tryGraph = retrieveURINoTransaction(
+                makeUri(uri), datasetOrDefault, request, transactionsInside=true)
               val failureOrStatistics = tryGraph match {
                 case Failure(e) => e.getLocalizedMessage
-                case Success(g) => formatHTMLStatistics(URI(uri), g, lang)
+                case Success(g) =>
+                  val res = wrapInReadTransaction{ formatHTMLStatistics(URI(uri), g, lang) }
+                  res match {
+                    case Success(xmlNodes) => xmlNodes
+                    case Failure(e) => <p> Error in formatHTMLStatistics: {e}</p>
+                  }
               }
               (tryGraph, failureOrStatistics)
             } else
-              (Success(emptyGraph), "")
-          }, datasetOrDefault)
+              (Success(emptyGraph), "") // ??? makeUri("_:" + uri ) else makeUri(uri),
+//          } , datasetOrDefault)
 
-          val (tryGraph: Try[Rdf#Graph],
-            failureOrStatistics /* String or NodeSeq */ ) = transaction1.get
+//          val (tryGraph: Try[Rdf#Graph],
+//            failureOrStatistics /* String or NodeSeq */ ) = transaction1.get
 
           tryGraph match {
             case Success(gr) =>

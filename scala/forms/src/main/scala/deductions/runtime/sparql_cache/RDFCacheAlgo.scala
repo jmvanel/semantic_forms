@@ -107,8 +107,15 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
           case Failure(f) => Failure(f)
           case Success(graphStoredLocally) =>
             {
-          val graphSize = graphStoredLocally.size
-          val nothingStoredLocally = graphSize == 0
+          val graphSize = wrapInReadTransaction {
+            graphStoredLocally.size
+          }
+              val nothingStoredLocally = graphSize match {
+                case Success(i) => i == 0
+                case Failure(f) =>
+                  System.err.println(s"retrieveURINoTransaction: $f")
+                  true
+              }
           println(s"""retrieveURINoTransaction: TDB graph at URI <$uri> size $graphSize""")
 
           val vvv = if (nothingStoredLocally) { // then read unconditionally from URI and store in TDB
