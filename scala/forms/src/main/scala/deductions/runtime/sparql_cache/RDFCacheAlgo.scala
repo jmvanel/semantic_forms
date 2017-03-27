@@ -282,6 +282,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * read unconditionally from URI and store in TDB,
    * no matter what the concrete syntax is;
    * can also load an URI with the # part
+   * 
+   * TODO: split read (no Transaction needed) & Store (Transaction needed)
    */
   private def readStoreURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET,
       request:HTTPrequest = HTTPrequest()): Try[Rdf#Graph] = {
@@ -312,7 +314,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     } else {
       val message = s"Load uri <$uri> is not possible, not a downloadable URI."
       Logger.getRootLogger().warn(message)
-      Success(emptyGraph)
+      Success(emptyGraph)  // TODO return Failure( new Exception("") )
     }
   }
 

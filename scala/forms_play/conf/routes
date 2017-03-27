@@ -2,6 +2,11 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
+# Home page
+GET     /                   controllers.Application.index
+
+GET /robots.txt             controllers.Assets.at(path="/public", file="robots.txt")
+
 # GET /bla controllers.HomeController.bla()
 
 GET     /display            controllers.Application.displayURI(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="")
@@ -53,9 +58,6 @@ GET     /authenticate               controllers.Auth.authenticate
 POST    /register                   controllers.Auth.register
 GET     /register                   controllers.Auth.register
 GET     /logout                     controllers.Auth.logout
-
-# Home page
-GET     /                   controllers.Application.index
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
