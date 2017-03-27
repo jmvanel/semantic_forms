@@ -160,9 +160,9 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
               Success(emptyGraph)
             }
         	  vv
-              } else { // something Stored Locally: get a chance for more recent RDF data
+              } else { // something Stored Locally: get a chance for more recent RDF data, that will be shown next time
                 Future {
-                  val res = updateLocalVersion(uri, dataset).getOrElse(graphStoredLocally)
+                  val res = wrapInTransaction {updateLocalVersion(uri, dataset).getOrElse(graphStoredLocally) }
                 }
                 Success(graphStoredLocally)
               }
@@ -189,16 +189,17 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     localTimestamp match {
       case Success(longLocalTimestamp) => {
         println(s"updateLocalVersion: $uri local TDB Timestamp: ${new Date(longLocalTimestamp)} - $longLocalTimestamp .")
-        val lastModifiedTuple = lastModified(uri.toString(), httpHeadTimeout)
-        println(s"updateLocalVersion: <$uri> last Modified: ${new Date(lastModifiedTuple._2)} - $lastModifiedTuple .")
+        val // lastModifiedTuple
+        ( noError, timestamp, connectionOption ) = lastModified(uri.toString(), httpHeadTimeout)
+        println(s"updateLocalVersion: <$uri> last Modified: ${new Date(timestamp)} - no Error: $noError .")
 
-        if( isDocumentExpired( connectionOption = lastModifiedTuple._3 ) ) {
+        if( isDocumentExpired( connectionOption ) ) {
           println(s"updateLocalVersion: <$uri> was outdated by Expires HTPP header field")
           return readStoreURINoTransaction(uri, uri, dataset)
         }
 
-        if (lastModifiedTuple._1) {
-          if (lastModifiedTuple._2 > longLocalTimestamp
+        if ( noError ) {
+          if ( timestamp > longLocalTimestamp
             || longLocalTimestamp == Long.MaxValue) {
             val graph = // readStoreURINoTransaction(uri, uri, dataset)
               {
@@ -210,23 +211,23 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
             addTimestampToDataset(uri, dataset2)
             graph
           } else Success(emptyGraph) // ????
-        } else if (!lastModifiedTuple._1 ||
-          lastModifiedTuple._2 == Long.MaxValue) {
-          lastModifiedTuple._3 match {
+        } else if (! noError ||
+          timestamp == Long.MaxValue) {
+          connectionOption match {
             case Some(connection) =>
               val etag = getHeaderField("ETag", connection)
               val etagFromDataset = dataset2.r { getETagFromDataset(uri, dataset2) }.get
               if (etag != etagFromDataset) {
                 val graph = readStoreURINoTransaction(uri, uri, dataset)
-                println(s"updateLocalVersion: <$uri> was outdated by ETag; downloaded.")
-                // PENDING: maybe do this in a Future
+                println(s"""updateLocalVersion: <$uri> was outdated by ETag; downloaded.
+                  etag $etag!= etagFromDataset $etagFromDataset""")
                 rdfStore.rw( dataset2, { addETagToDatasetNoTransaction(uri, etag, dataset2) })
                 graph
-              } else Success(emptyGraph) // ???? None
+              } else Success(emptyGraph)
             case None =>
               readStoreURINoTransaction(uri, uri, dataset)
           }
-        } else Success(emptyGraph) // ???? None
+        } else Success(emptyGraph)
       }
       case Failure(fail) =>
         println(s"updateLocalVersion: <$uri> had no local Timestamp ($fail); download it:")
