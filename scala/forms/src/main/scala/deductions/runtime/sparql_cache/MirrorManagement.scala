@@ -3,6 +3,7 @@ package deductions.runtime.sparql_cache
 import org.w3.banana.RDF
 
 import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.services.SPARQLHelpers
 
 /**
  * Within the SPARQL TDB cache,
@@ -17,7 +18,8 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
  *
  * <u1> ?P ?O .
  */
-trait MirrorManagement[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET] {
+trait MirrorManagement[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
+  with SPARQLHelpers[Rdf, DATASET] {
 
   import ops._
 
@@ -26,11 +28,15 @@ trait MirrorManagement[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, D
   val DBPEDIA_VERSION = "2015-10"
   val DBPEDIA_NAMED_GRAPH = // s"http://dbpedia.org/$DBPEDIA_VERSION"
   s"dbpedia:${System.getProperty("user.home")}/data/dbpedia.org/$DBPEDIA_VERSION/labels_en_uris_fr.ttl"
+
   lazy val DBPEDIA_NAMED_GRAPH_EXISTS: Boolean = {
-    val tg = rdfStore.getGraph(dataset, URI(DBPEDIA_NAMED_GRAPH))
-    val ret = tg.isSuccess && tg.get.size > 0
-    println( s"DBPEDIA_NAMED_GRAPH=<$DBPEDIA_NAMED_GRAPH>, DBPEDIA_NAMED_GRAPH_EXISTS: $ret")
-    ret
+    val v = wrapInReadTransaction {
+      val tg = rdfStore.getGraph(dataset, URI(DBPEDIA_NAMED_GRAPH))
+      val ret = tg.isSuccess && tg.get.size > 0
+      println(s"DBPEDIA_NAMED_GRAPH=<$DBPEDIA_NAMED_GRAPH>, DBPEDIA_NAMED_GRAPH_EXISTS: $ret")
+      ret
+    }
+    v.getOrElse(false)
   }
 
   /**
