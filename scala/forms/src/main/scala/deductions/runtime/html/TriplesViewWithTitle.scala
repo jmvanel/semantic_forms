@@ -73,11 +73,13 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
           tryGraph match {
             case Success(gr) =>
 
+              wrapInReadTransaction {
               // FEATURE: annotate plain Web site
-              import scala.concurrent.ExecutionContext.Implicits.global
               typeChange = gr.size == 1 && gr.triples.head . objectt == foaf.Document
 //              println(s">>>> htmlForm typeChange $typeChange") ; printGraph( gr )
+              }
 
+              import scala.concurrent.ExecutionContext.Implicits.global
               Future { // TODO should be done in FormSaver
                 println(s"Search in <$uri> duplicate graph rooted at blank node: size " +
                   ops.getTriples(gr).size)
