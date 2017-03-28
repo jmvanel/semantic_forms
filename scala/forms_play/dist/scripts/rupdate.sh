@@ -14,7 +14,9 @@ wget --keep-session-cookies --save-cookies cookies.txt \
     $SERVER/register
 rm register
 
-wget --load-cookies cookies.txt \
+wget --save-headers \
+	--content-on-error \
+	--load-cookies cookies.txt \
 	--method=POST \
 	--body-data="query=$QUERY" \
 	$SERVER/update
@@ -22,5 +24,4 @@ wget --load-cookies cookies.txt \
 echo "SPARQL database <$SERVER> : Removed (Enlevé) graph <$GRAPH> ; RETURN_CODE: $?"
 echo result: ; cat update
 rm update
-
-
+echo
