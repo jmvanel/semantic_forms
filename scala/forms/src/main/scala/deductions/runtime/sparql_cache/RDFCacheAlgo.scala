@@ -391,7 +391,14 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       // it's a locally managed user URL and data, no need to download anything
       // used by formatHTMLStatistics():
       // TODO test rather: Some(rdfStore.getGraph( dataset, uri ).getOrElse(emptyGraph))
-      Some(makeGraph(find(allNamedGraph, uri, ANY, ANY).toIterable))
+
+      val gr1 = wrapInReadTransaction { makeGraph(find(allNamedGraph, uri, ANY, ANY).toIterable ) }
+      gr1 match {
+        case Success(gr) => Some(gr)
+        case Failure(f) =>
+          println( s"getLocallyManagedUrlAndData: $f")
+          None
+      }
     }
 
   /** needs Write transaction */
