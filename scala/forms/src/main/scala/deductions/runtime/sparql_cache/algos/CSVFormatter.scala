@@ -49,7 +49,7 @@ trait CSVFormatter[Rdf <: RDF, DATASET]
   def detailLines(n: Rdf#Node)(implicit graph: Rdf#Graph): String = {
     val propertiesAndRangesFromClass = rdfsPropertiesAndRangesFromClassListDetails(n, graph)
 
-    val classLabel = instanceLabel(n, graph, "fr")
+    val classLabel = makeInstanceLabel(n, graph, "fr")
     val firstColumns = s"\t'$classLabel' (P)\t\t\t"
     if (propertiesAndRangesFromClass.isEmpty)
       ""

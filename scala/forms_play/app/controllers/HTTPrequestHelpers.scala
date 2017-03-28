@@ -13,7 +13,7 @@ trait HTTPrequestHelpers {
       rawQueryString, queryString,
       headers.toMap, cookiesMap
       )
-    println(s"copyRequest: cookiesMap $cookiesMap , userId ${res.userId()}")
+//    println(s"copyRequest: cookiesMap $cookiesMap , userId ${res.userId()}")
     res
   }
 

@@ -32,6 +32,7 @@ import java.net.URLEncoder
 import deductions.runtime.services.Configuration
 import java.net.URI
 import deductions.runtime.services.URIManagement
+import play.api.mvc.EssentialAction
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -571,21 +572,30 @@ trait ApplicationTrait extends Controller
             sparqlSelectQuery(query, lang), lang)
     }
 
-  def update(update: String) =
+  def updateGET(updateQuery: String): EssentialAction = update(updateQuery)
+  def updatePOST(): EssentialAction = update("")
+  
+  private def update(update: String) =
     withUser {
       implicit userid =>
         implicit request =>
           logger.info("sparql update: " + request)
           logger.info(s"sparql: update '$update'")
           println(log("update", request))
-          val update2 = if( update == "" ) {
-            println(s"""contentType ${request.contentType}
-            ${request.mediaType}
-            ${request.body.getClass}
+          val update2 =
+            if (update == "") {
+              println(s"""contentType ${request.contentType}
+                ${request.mediaType}
+                ${request.body.getClass}
             """)
-            request.body.asText.getOrElse("")
-          } else update
+              val bodyAsText = request.body.asText.getOrElse("")
+              if( bodyAsText != "" )
+                bodyAsText
+              else
+                request.body.asFormUrlEncoded.getOrElse(Map()).getOrElse("query", Seq("")).headOption.getOrElse("")
+            } else update
           logger.info(s"sparql: update2 '$update2'")
+          val lang = chooseLanguage(request) // for logging
           val res = sparqlUpdateQuery(update2)
           res match {
             case Success(s) => Ok(s"$res")

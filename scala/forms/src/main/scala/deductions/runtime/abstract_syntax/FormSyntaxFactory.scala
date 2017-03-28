@@ -197,15 +197,15 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val entriesFromPropertiesGroups = for( (node, rawDataForForm ) <- step1.propertiesGroups ) yield
     	node -> makeEntriesFromRawDataForForm(rawDataForForm)
     val propertiesGroups = for( (n, m) <- entriesFromPropertiesGroups ) yield {
-      FormSyntax(n, m, title=instanceLabel(n, allNamedGraph, lang))
+      FormSyntax(n, m, title=makeInstanceLabel(n, allNamedGraph, lang))
     }
     val formSyntax = FormSyntax(subject, fieldsCompleteList, classs, propertiesGroups=propertiesGroups.toSeq,
         thumbnail = getURIimage(subject),
-        title = instanceLabel( subject, allNamedGraph, lang ),
+        title = makeInstanceLabel( subject, allNamedGraph, lang ),
         formURI = step1.formURI,
         formLabel= step1.formURI match {
           case None => ""
-          case Some(uri) => instanceLabel( uri, allNamedGraph, lang )
+          case Some(uri) => makeInstanceLabel( uri, allNamedGraph, lang )
         } )
     
     if( step1.editable ) addAllPossibleValues(formSyntax, valuesFromFormGroup)
@@ -450,7 +450,7 @@ forms:givenName--personPerson
       new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
         value,
         subject=subject,
-        subjectLabel = instanceLabel(subject, graph, lang),
+        subjectLabel = makeInstanceLabel(subject, graph, lang),
         type_ = firstType,
         lang = getLang(objet).toString(),
         valueLabel = nodeToString(value),
@@ -466,8 +466,8 @@ forms:givenName--personPerson
               new ResourceEntry(label, comment, prop, ResourceValidator(ranges), objet,
                 subject=subject,
                 alreadyInDatabase = true,
-                valueLabel = instanceLabel(objet, graph, lang),
-                subjectLabel = instanceLabel(subject, graph, lang),
+                valueLabel = makeInstanceLabel(objet, graph, lang),
+                subjectLabel = makeInstanceLabel(subject, graph, lang),
                 type_ = firstType,
                 isImage = isImageTriple(subject, prop, objet, firstType),
                 thumbnail = getURIimage(objet),
@@ -486,8 +486,8 @@ forms:givenName--personPerson
                typ: Rdf#Node = nullURI) = {
       new BlankNodeEntry(label, comment, property, validator, value,
     		subject=subject,
-    		subjectLabel = instanceLabel(subject, graph, lang),
-        type_ = typ, valueLabel = instanceLabel(value, graph, lang),
+    		subjectLabel = makeInstanceLabel(subject, graph, lang),
+        type_ = typ, valueLabel = makeInstanceLabel(value, graph, lang),
         htmlName=htmlName) {
         override def getId: String = nodeToString(value)
       }

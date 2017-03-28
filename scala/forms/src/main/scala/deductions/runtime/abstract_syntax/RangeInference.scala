@@ -177,8 +177,8 @@ trait RangeInference[Rdf <: RDF, DATASET]
             foldNode(enum)(
 //              uri => (uri, instanceLabelFromTDB(uri, lang)),
 //              x => (x, instanceLabelFromTDB(x, lang)),
-              uri => (uri, instanceLabel(uri, graph, lang)),
-              x => (x, instanceLabel(x, graph, lang)),
+              uri => (uri, makeInstanceLabel(uri, graph, lang)),
+              x => (x, makeInstanceLabel(x, graph, lang)),
               x => (x, ""))
         }
 //        println(s"""fillPossibleValues uriAndInstanceLabels class ${uriAndInstanceLabels.getClass} size """ )

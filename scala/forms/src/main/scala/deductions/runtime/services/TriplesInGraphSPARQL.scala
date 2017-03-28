@@ -12,12 +12,15 @@ trait TriplesInGraphSPARQL[Rdf <: RDF, DATASET]
 
   private implicit val searchStringQueryMaker = new SPARQLQueryMaker[Rdf] {
     override def makeQueryString( graphURI: String*): String =
+      /* LIMIT 500 because of computed labels Graph urn:/semforms/labelsGraphUri/ 
+       * in the case of a large database , e.g. dbPedia mirror */
     s"""
          |SELECT DISTINCT ?thing ?p ?o WHERE {
          |  graph <${graphURI(0)}> {
          |    ?thing ?p ?o .
          |  }
-         |}""".stripMargin
+         |}
+         |LIMIT 500""".stripMargin
          
     override def variables = Seq("thing", "p", "o")
     
