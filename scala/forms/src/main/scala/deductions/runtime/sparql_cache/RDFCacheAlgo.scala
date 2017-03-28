@@ -2,9 +2,11 @@ package deductions.runtime.sparql_cache
 
 import java.util.Date
 
+import scala.concurrent.Future
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
+
 import org.apache.log4j.Logger
 import org.w3.banana.OWLPrefix
 import org.w3.banana.RDF
@@ -13,18 +15,17 @@ import org.w3.banana.io.RDFLoader
 import org.w3.banana.io.RDFReader
 import org.w3.banana.io.RDFXML
 import org.w3.banana.io.Turtle
+
 import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.jena.MicrodataLoaderModule
 import deductions.runtime.services.BrowsableGraph
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.SPARQLHelpers
 import deductions.runtime.services.URIManagement
-import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.jena.MicrodataLoaderModule
-import deductions.runtime.utils.HTTPrequest
-import deductions.runtime.jena.ImplementationSettings
-import org.apache.jena.riot.RiotException
 import deductions.runtime.utils.HTTPHelpers
-import scala.concurrent.Future
+import deductions.runtime.utils.HTTPrequest
+import deductions.runtime.utils.RDFHelpers
 
 /** */
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
@@ -122,8 +123,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
         	  println(s"""retrieveURINoTransaction: stored Graph Is Empty for URI <$uri>""")
             val mirrorURI = getMirrorURI(uri)
                 val vv = if (mirrorURI == "") {
-                  val graphDownloaded = // readStoreURINoTransaction(uri, uri, dataset, request)
-                    {
+                  val graphDownloaded = {
                       val graphTry = readURI(uri, uri, dataset, request)
                       if(transactionsInside)
                         storeURI(graphTry, uri, uri, dataset)
@@ -305,6 +305,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     val graphTry = readURI(uri, graphUri, dataset, request)
     storeURINoTransaction(graphTry, uri, graphUri, dataset)
   }
+   /** read unconditionally from URI and store in TDB, Transaction inside */
   private def readStoreURITry(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET,
                               request: HTTPrequest = HTTPrequest()): Try[Rdf#Graph] = {
     val graphTry = readURI(uri, graphUri, dataset, request)
@@ -381,7 +382,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       }
   }
 
-  /** test if it's a locally managed URL */
+  /** test if it's a locally managed URL, that is created locally and 100% located here */
   private def getLocallyManagedUrlAndData(uri: Rdf#URI, request: HTTPrequest): Option[Rdf#Graph] =
     if (!fromUri(uri).startsWith(request.absoluteURL(""))) { // TODO ? "ldp"
       // then it can be a "pure" HTML web page, or an RDF document
