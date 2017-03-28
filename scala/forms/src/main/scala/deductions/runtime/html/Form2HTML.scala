@@ -101,7 +101,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
           if (editable || toPlainString(field.value) != "")
             <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
               makeFieldSubject(field) ++
-                makeFieldLabel(preceding, field) ++
+                makeFieldLabel(preceding, field, editable) ++
                 makeFieldDataOrInput(field, hrefPrefix, editable, lang, request)
             }</div>
           else
@@ -247,7 +247,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
       doIt
     else if (editable)
       // that's for corporate_risk: TODO : simplify <<<<<<<<<<<<<<
-      <div class={ css.cssClasses.formInputCSSClass }>
+      <div >
         { doIt }
       </div>
     else

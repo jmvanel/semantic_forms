@@ -28,7 +28,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
 		  with ImplementationSettings.RDFModule	{}
   import prefixes._
   
-  def makeFieldLabel(preceding: formMod#Entry, field: formMod#Entry)
+  def makeFieldLabel(preceding: formMod#Entry, field: formMod#Entry, editable: Boolean)
   (implicit form: FormModule[NODE, URI]#FormSyntax) = {
     // display field label only if different from preceding
     if (preceding.label != field.label)
@@ -56,10 +56,19 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
         else label
       }</a>
       </label>
-    else
+    else if(editable){
       <label class={ css.cssClasses.formLabelCSSClass } title={
-        field.comment + " - " + field.property
+      field.comment + " - " + field.property
       }> -- </label>
+        <div class={css.cssClasses.formAddDivCSSClass}></div>
+    }
+    else {
+      <label class={ css.cssClasses.formLabelCSSClass } title={
+      field.comment + " - " + field.property
+      }> -- </label>
+    }
+
+
   }
 
   private def labelTooltip(field: formMod#Entry) = {
