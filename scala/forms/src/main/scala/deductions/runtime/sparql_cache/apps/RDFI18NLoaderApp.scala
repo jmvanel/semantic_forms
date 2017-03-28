@@ -6,6 +6,9 @@ import deductions.runtime.DependenciesForApps
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.sparql_cache.SitesURLForDownload
 import deductions.runtime.services.DefaultConfiguration
+import org.w3.banana.RDFPrefix
+import org.w3.banana.Prefix
+import deductions.runtime.utils.RDFHelpers
 
 /** */
 object RDFI18NLoaderApp
@@ -18,6 +21,7 @@ object RDFI18NLoaderApp
 
 trait RDFI18NLoaderTrait[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
+    with RDFHelpers[Rdf]
     with SitesURLForDownload {
 
   import ops._
@@ -37,25 +41,36 @@ trait RDFI18NLoaderTrait[Rdf <: RDF, DATASET]
    *  TRANSACTIONAL */
   def loadFromGitHubRDFI18NTranslations() {
 
-    /* TODO : do not hardcode the URL's but read:
-     * https://raw.githubusercontent.com/jmvanel/rdf-i18n/blob/master/translations_list.ttl
-     * TODO use code to load all languages from rdf-i18n (see implementation in EulerGUI)
-     * */
+    /* do not hardcode the URL's but read:
+     * https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/translations_list.ttl
+     * and query ?S lingvoj:translatedResource ?RES */
+	  val translationDocURL = s"${githubcontent}/jmvanel/rdf-i18n/master/translations_list.ttl"
 
-    val translations0 = List(
-      s"${githubcontent}/jmvanel/rdf-i18n/master/foaf/foaf.fr.ttl",
-      s"${githubcontent}/jmvanel/rdf-i18n/master/foaf/foaf.it.ttl",
-      s"${githubcontent}/jmvanel/rdf-i18n/master/foaf/foaf.tr.ttl",
-      s"${githubcontent}/jmvanel/rdf-i18n/master/rdfs/rdfs.fr.ttl",
-      s"${githubcontent}/jmvanel/rdf-i18n/master/rdfs/rdfs.it.ttl",
-      s"${githubcontent}/jmvanel/rdf-i18n/master/rdf/rdf.fr.ttl",
-      s"${githubcontent}/jmvanel/rdf-i18n/master/contact/contact.fr.ttl"
-    )
-    import ops._
-    val translations = translations0 map { p => URI(p) }
-    translations map {
-      uri => readStoreURI( uri, i18NGraph, dataset)
-      println(s"DONE <$uri>")
-      }
+     val translationDoc = rdfLoader.load(new java.net.URL(translationDocURL)) . getOrElse (sys.error(
+          s"couldn't read translation Doc URL <$translationDocURL>"))
+
+     println(s"translationDoc $translationDoc" )
+
+     val lingvoj = Prefix[Rdf]( "lingvoj", "http://www.lingvoj.org/ontology#")
+     val trtr = find( translationDoc, ANY, lingvoj("translatedResource"), ANY )
+     val translations1 = trtr . map { tr => tr.objectt } . toList
+     println(s"trtr $trtr" )
+
+    //   val translations0 = List(
+    //      s"${githubcontent}/jmvanel/rdf-i18n/master/foaf/foaf.fr.ttl",
+    //      s"${githubcontent}/jmvanel/rdf-i18n/master/foaf/foaf.it.ttl",
+    //      s"${githubcontent}/jmvanel/rdf-i18n/master/foaf/foaf.tr.ttl",
+    //      s"${githubcontent}/jmvanel/rdf-i18n/master/rdfs/rdfs.fr.ttl",
+    //      s"${githubcontent}/jmvanel/rdf-i18n/master/rdfs/rdfs.it.ttl",
+    //      s"${githubcontent}/jmvanel/rdf-i18n/master/rdf/rdf.fr.ttl",
+    //      s"${githubcontent}/jmvanel/rdf-i18n/master/contact/contact.fr.ttl"
+    //    )
+    //    val translations = translations0 map { p => URI(p) }
+    translations1.map {
+      uri =>
+        println(s"BEFORE loading <$uri> into <$i18NGraph>")
+        readStoreURI(uriNodeToURI(uri), i18NGraph, dataset)
+        println(s"DONE loaded <$uri> into <$i18NGraph>")
+    }
   }
 }
