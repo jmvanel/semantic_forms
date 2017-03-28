@@ -162,7 +162,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
         	  vv
               } else { // something Stored Locally: get a chance for more recent RDF data, that will be shown next time
                 Future {
-                  val res = wrapInTransaction {updateLocalVersion(uri, dataset).getOrElse(graphStoredLocally) }
+                  val res = // wrapInTransaction {
+                    updateLocalVersion(uri, dataset).getOrElse(graphStoredLocally)
                 }
                 Success(graphStoredLocally)
               }
@@ -180,37 +181,27 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   private def updateLocalVersion(uri: Rdf#URI, dataset: DATASET)
   : Try[Rdf#Graph] = {
     val localTimestamp = dataset2.r { getTimestampFromDataset(uri, dataset2) }.get
-
-    /* TODO:
-     * - code too complex;
-     * - probably code belongs TimestampManagement
-     *  see http://stackoverflow.com/questions/5321876/which-one-to-use-expire-header-last-modified-header-or-etags
-     */
+    /* see http://stackoverflow.com/questions/5321876/which-one-to-use-expire-header-last-modified-header-or-etags
+     * TODO: code too complex */
     localTimestamp match {
       case Success(longLocalTimestamp) => {
         println(s"updateLocalVersion: $uri local TDB Timestamp: ${new Date(longLocalTimestamp)} - $longLocalTimestamp .")
-        val // lastModifiedTuple
-        ( noError, timestamp, connectionOption ) = lastModified(uri.toString(), httpHeadTimeout)
+        val ( noError, timestamp, connectionOption ) = lastModified(uri.toString(), httpHeadTimeout)
         println(s"updateLocalVersion: <$uri> last Modified: ${new Date(timestamp)} - no Error: $noError .")
 
         if( isDocumentExpired( connectionOption ) ) {
           println(s"updateLocalVersion: <$uri> was outdated by Expires HTPP header field")
-          return readStoreURINoTransaction(uri, uri, dataset)
+          return readStoreURITry(uri, uri, dataset)
         }
 
-        if ( noError ) {
-          if ( timestamp > longLocalTimestamp
-            || longLocalTimestamp == Long.MaxValue) {
-            val graph = // readStoreURINoTransaction(uri, uri, dataset)
-              {
-                val graphTry = readURI(uri, uri, dataset)
-                storeURINoTransaction(graphTry, uri, uri, dataset)
-              }
+        if ( noError && ( timestamp > longLocalTimestamp
+            || longLocalTimestamp == Long.MaxValue) ) {
+            val graph = readStoreURITry(uri, uri, dataset)
             println(s"updateLocalVersion: <$uri> was outdated by timestamp; downloaded.")
-            // PENDING: maybe do this in a Future
-            addTimestampToDataset(uri, dataset2)
+            addTimestampToDataset(uri, dataset2)  // PENDING: maybe do this in a Future
             graph
-          } else Success(emptyGraph) // ????
+//          } else Success(emptyGraph) // ????
+
         } else if (! noError ||
           timestamp == Long.MaxValue) {
           connectionOption match {
@@ -218,20 +209,20 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
               val etag = getHeaderField("ETag", connection)
               val etagFromDataset = dataset2.r { getETagFromDataset(uri, dataset2) }.get
               if (etag != etagFromDataset) {
-                val graph = readStoreURINoTransaction(uri, uri, dataset)
+                val graph = readStoreURITry(uri, uri, dataset)
                 println(s"""updateLocalVersion: <$uri> was outdated by ETag; downloaded.
-                  etag $etag!= etagFromDataset $etagFromDataset""")
+                  etag "$etag" != etagFromDataset "$etagFromDataset" """)
                 rdfStore.rw( dataset2, { addETagToDatasetNoTransaction(uri, etag, dataset2) })
                 graph
               } else Success(emptyGraph)
             case None =>
-              readStoreURINoTransaction(uri, uri, dataset)
+              readStoreURITry(uri, uri, dataset)
           }
         } else Success(emptyGraph)
       }
       case Failure(fail) =>
         println(s"updateLocalVersion: <$uri> had no local Timestamp ($fail); download it:")
-        readStoreURINoTransaction(uri, uri, dataset)
+        readStoreURITry(uri, uri, dataset)
     }
   }
 
@@ -314,7 +305,12 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     val graphTry = readURI(uri, graphUri, dataset, request)
     storeURINoTransaction(graphTry, uri, graphUri, dataset)
   }
-
+  private def readStoreURITry(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET,
+                              request: HTTPrequest = HTTPrequest()): Try[Rdf#Graph] = {
+    val graphTry = readURI(uri, graphUri, dataset, request)
+    storeURI(graphTry, uri, graphUri, dataset)
+  }
+  
   private def storeURINoTransaction(
     graphTry: Try[Rdf#Graph], uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
     logger.info(s"readStoreURINoTransaction: Before appendToGraph uri <$uri> graphUri <$graphUri>")

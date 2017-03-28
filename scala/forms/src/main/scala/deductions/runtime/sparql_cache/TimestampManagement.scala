@@ -183,7 +183,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
          |    <$uri> <ETag> ?etag .
          |  }
          |}""".stripMargin
-    val list = sparqlSelectQueryVariablesNT(queryString, Seq("etag") )
+    val list = sparqlSelectQueryVariablesNT(queryString, Seq("etag"), ds=dataset )
     val v = list.headOption.getOrElse(Seq())
     val vv = v.headOption.getOrElse(Literal(""))
     nodeToString(vv)
