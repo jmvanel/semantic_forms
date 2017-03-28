@@ -99,7 +99,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
           if (field.property.toString != "")
         ) yield {
           if (editable || toPlainString(field.value) != "")
-            <div class={ css.cssClasses.formLabelAndInputCSSClass + " col col-md-12 sf-space-form" }>{
+            <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
               makeFieldSubject(field) ++
                 makeFieldLabel(preceding, field) ++
                 makeFieldDataOrInput(field, hrefPrefix, editable, lang, request)
@@ -157,7 +157,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
 
     val htmlResult: NodeSeq =
       hidden ++
-        <div class={"row " + css.cssClasses.formRootCSSClass  } >
+        <div class={css.cssClasses.formRootCSSClass  } >
           {
             //css.localCSS ++
               //Text("\n") ++
@@ -167,13 +167,14 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
               Text("\n") ++
               <input type="hidden" name="uri" value={ urlEncode(form.subject) }/> ++
               <div class="form-group">
+                <div class="col-xs-12">
                 {
                   Text(form.title) ++
                     (if (form.subject != nullURI)
                       Text(", at URI ") ++ <a href={ toPlainString(form.subject) }>&lt;{ form.subject }&gt;</a>
                     else NodeSeq.Empty)
                 }
-              </div> ++
+              </div></div> ++
               {
 //                if (request.rawQueryString.contains("tabs=true")) {
 //                println(s">>>> queryString ${request.queryString}")
@@ -232,7 +233,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
 
     Seq(createAddRemoveWidgets(field, editable)) ++
     // Jeremy M recommended img-rounded from Bootstrap, but not effect
-    <div class="sf-value-block col col-sm-4">{ xmlField } </div>
+    <div class="sf-value-block col-xs-12 col-sm-9 col-md-9">{ xmlField } </div>
   }
 
   /** make Field Data (display) Or Input (edit) */

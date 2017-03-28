@@ -36,13 +36,13 @@ trait CSSClasses {
     formRootCSSClass = "form-horizontal",
     formFieldCSSClass = "",
     formLabelAndInputCSSClass = "form-group",
-    formLabelCSSClass = "control-label col-xs-1",
-    formDivInputCSSClass = "col-xs-9",
+    formLabelCSSClass = "col-xs-3 col-sm-2 col-md-2 control-label",
+    formDivInputCSSClass = "col-xs-8",
     formInputCSSClass = "form-control",
-    formDivEditInputCSSClass = "col-xs-1",
-    formAddDivCSSClass = "col-xs-1",
-    formSelectDivCSSClass = "col-xs-1",
-    formSelectCSSClass = "form-select")
+    formDivEditInputCSSClass = "col-xs-4",
+    formAddDivCSSClass = "col-xs-1 col-sm-1 col-md-1",
+    formSelectDivCSSClass = "col-xs-4",
+    formSelectCSSClass = "form-control form-select")
 
   /** TODO use the LDP prefix; distinguish 1) dbpedia URI's 2) other external links 3) internal links */
   def cssForURI(uri: String) = {

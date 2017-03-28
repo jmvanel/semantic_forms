@@ -105,7 +105,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
 
             Text("\n") ++
               titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable2) ++
-              <div>{ failureOrStatistics }</div> ++
+              <div class="row"><div class="col-xs-12">{ failureOrStatistics }</div></div> ++
               formItself
           }, datasetOrDefault)
         }

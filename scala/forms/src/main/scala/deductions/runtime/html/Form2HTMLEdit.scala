@@ -231,7 +231,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
 
         <div class={ css.cssClasses.formDivEditInputCSSClass }>
 				{ if( showEditButtons )
-        <input type="button" value="EDIT"
+        <input class="btn btn-primary" type="button" value="EDIT"
 				onClick={
           s"""launchEditorWindow( document.getElementById( "$htmlId" ));"""
         } title="Click to edit multiline text in popup window as Markdown text">

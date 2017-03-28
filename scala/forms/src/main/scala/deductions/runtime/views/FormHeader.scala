@@ -61,33 +61,32 @@ trait FormHeader[Rdf <: RDF, DATASET]
       makeDrawGraphLinkVOWL(uri)
     } else new Text(""))
 
-    
-    <div class="container">
       <div class="row">
-        <h3>
-          { formSyntax.title
-//      labelForURI(uri, lang)
-      }
-          <strong>
-            { linkToShow }
-            { expertLinks }
-            { expertLinksOWL }         
-          </strong>
-          {
+        <div class="col-xs-12">
+          <h3>
+            { formSyntax.title
+            //      labelForURI(uri, lang)
+            }
+            <strong>
+              { linkToShow }
+              { expertLinks }
+              { expertLinksOWL }
+            </strong>
+            {
             if (formSyntax.thumbnail.isDefined){
               <a class="image-popup-vertical-fit" href={  formSyntax.thumbnail.get.toString() } title={s"Image of ${formSyntax.title}: ${formSyntax.subject.toString()}"}>
-              <img src={ formSyntax.thumbnail.get.toString() } css="sf-thumbnail" height="40" alt={
-                s"Image of ${formSyntax.title}: ${formSyntax.subject.toString()}"
+                <img src={ formSyntax.thumbnail.get.toString() } css="sf-thumbnail" height="40" alt={
+              s"Image of ${formSyntax.title}: ${formSyntax.subject.toString()}"
               }/></a>
-                }
-              else NodeSeq.Empty
-          }
-        </h3>
+            }
+            else NodeSeq.Empty
+            }
+          </h3>
+        </div>
       </div>
-    </div>
-    <div class="sf-links-row">
+    <div class="row sf-links-row">
       <!--div class="col-md-6"-->
-      <div class="sf-local-rdf-link">
+      <div class="col-xs-12 sf-local-rdf-link">
         {
           val message = if (uri.contains("/ldp/"))
             "Download local URI"
@@ -96,7 +95,7 @@ trait FormHeader[Rdf <: RDF, DATASET]
           <a href={ uri }>{ message }</a>
         }
       </div>
-      <div class="sf-local-rdf-link">
+      <div class="col-xs-12 sf-local-rdf-link">
         <a href={ hrefDownloadPrefix + URLEncoder.encode(uri, "utf-8") } title={ mess("Triples_tooltip") }>
           { mess("Triples") }
         </a>
