@@ -9,7 +9,9 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.services.SPARQLHelpers
 
 /** swallow and regurgitate user input, to build a history;
- *  a callback is installed in FormSaver via addSaveListener() in ApplicationFacadeImpl */
+ *  a callback is installed in FormSaver via addSaveListener() in ApplicationFacadeImpl
+ *  
+ * See also trait DashboardHistoryUserActions for a view */
 trait TimeSeries[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET] 
 with LogAPI[Rdf] 
 with SPARQLHelpers[Rdf, DATASET] {

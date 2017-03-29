@@ -91,6 +91,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * or local timestamp is older;
    * timestamp is saved in another Dataset
    *  @return the more recent RDF data if any, or the old data
+   *  
+   *  TODO rename retrieveURIBody
    */
   def retrieveURINoTransaction(uri: Rdf#URI, dataset: DATASET,
                                request: HTTPrequest,
@@ -407,11 +409,13 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     rdfStore.appendToGraph(dataset,
       URI(makeAbsoluteURIForSaving(request.userId())),
       newGraphWithUrl)
-    println(s"getLocallyManagedUrlAndData: saved $newGraphWithUrl in graph <${makeAbsoluteURIForSaving(request.userId())}>")
+    println(s"pureHTMLwebPageAnnotateAsDocument: saved $newGraphWithUrl in graph <${makeAbsoluteURIForSaving(request.userId())}>")
     val it = wrapInReadTransaction { find(allNamedGraph, uri, ANY, ANY)  } . getOrElse( Iterator.empty )
-    newGraphWithUrl .
+    val ret = newGraphWithUrl .
     // NOTE: after user added triples, this way typeChange will not be triggered
     union( makeGraph(it.toIterable))
+    println( s"pureHTMLwebPageAnnotateAsDocument: ret $ret" )
+    ret
   }
 }
 

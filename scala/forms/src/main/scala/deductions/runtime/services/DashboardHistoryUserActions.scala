@@ -33,7 +33,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   import rdfStore.sparqlEngineSyntax._
   import rdfStore.transactorSyntax._
 
-  val qm = new SPARQLQueryMaker[Rdf] {
+  implicit val queryMaker = new SPARQLQueryMaker[Rdf] {
     override def makeQueryString(search: String*): String = ""
     override def variables = Seq("SUBJECT", "TIME", "COUNT")
   }
@@ -45,7 +45,6 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
    */
   def makeTableHistoryUserActions(lang: String="en", request: HTTPrequest)(limit: String): NodeSeq = {
     val metadata = getMetadata()(limit)
-    implicit val queryMaker = qm
     implicit val _ = lang
     <table class="table">
       <thead>
