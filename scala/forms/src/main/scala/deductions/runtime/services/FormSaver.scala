@@ -25,12 +25,13 @@ trait FormSaver[Rdf <: RDF, DATASET]
     with LogAPI[Rdf]
     with SaveListenersManager[Rdf]
     with RDFHelpers[Rdf]
+    with SPARQLHelpers[Rdf, DATASET]
     with Timer
     with URIManagement {
 
   import ops._
 
-  private lazy val foaf = FOAFPrefix[Rdf]
+//  private lazy val foaf = FOAFPrefix[Rdf]
 
   /** save triples in named graph given by HTTP parameter "graphURI";
    *  other HTTP parameters are original triples in Turtle;
@@ -144,7 +145,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
     /* transactional */
     def doSave(graphURI: String)
     ( implicit userURI: String = graphURI ) {
-      val transaction = rdfStore.rw( dataset, {
+      val transaction = wrapInTransaction {
         time("removeTriples",
           rdfStore.removeTriples( dataset,
             URI(graphURI),
@@ -165,7 +166,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
           })
         }
         res
-      })
+      }
 
       val f = transaction.asFuture
 

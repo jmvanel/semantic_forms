@@ -406,9 +406,9 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   /** needs Write transaction */
   def pureHTMLwebPageAnnotateAsDocument(uri: Rdf#URI, request: HTTPrequest): Rdf#Graph = {
     val newGraphWithUrl: Rdf#Graph = makeGraph(List(makeTriple(uri, rdf.typ, foaf.Document)))
-    rdfStore.appendToGraph(dataset,
+    wrapInTransaction { rdfStore.appendToGraph(dataset,
       URI(makeAbsoluteURIForSaving(request.userId())),
-      newGraphWithUrl)
+      newGraphWithUrl) }
     println(s"pureHTMLwebPageAnnotateAsDocument: saved $newGraphWithUrl in graph <${makeAbsoluteURIForSaving(request.userId())}>")
     val it = wrapInReadTransaction { find(allNamedGraph, uri, ANY, ANY)  } . getOrElse( Iterator.empty )
     val ret = newGraphWithUrl .

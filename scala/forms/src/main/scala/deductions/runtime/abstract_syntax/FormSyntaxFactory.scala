@@ -171,7 +171,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       val classs = step1.classs
       val formMode: FormMode = if (step1.editable) EditionMode else DisplayMode
 
-      logger.debug(s"createForm subject <$subject>, props $props")
+      logger.debug(
+//      println(
+          s"createForm subject <$subject>, classs <$classs>, props $props")
       logger.debug(
           s"""FormSyntaxFactory: language: "$lang""" )
 

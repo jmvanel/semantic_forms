@@ -54,9 +54,9 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
 
           // 1. retrieve or check URI from Internet
 
-//          val transaction1 = wrapInTransaction({
             val (tryGraph: Try[Rdf#Graph], failureOrStatistics /* String or NodeSeq */ ) =
               if (blankNode != "true") {
+                // TODO pass datasetOrDefault)
               val tryGraph = retrieveURINoTransaction(
                 makeUri(uri), datasetOrDefault, request, transactionsInside=true)
               val failureOrStatistics = tryGraph match {
@@ -71,10 +71,6 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
               (tryGraph, failureOrStatistics)
             } else
               (Success(emptyGraph), "") // ??? makeUri("_:" + uri ) else makeUri(uri),
-//          } , datasetOrDefault)
-
-//          val (tryGraph: Try[Rdf#Graph],
-//            failureOrStatistics /* String or NodeSeq */ ) = transaction1.get
 
           tryGraph match {
             case Success(gr) =>
