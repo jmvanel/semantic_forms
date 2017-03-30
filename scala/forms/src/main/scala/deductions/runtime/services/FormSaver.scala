@@ -156,17 +156,16 @@ trait FormSaver[Rdf <: RDF, DATASET]
               URI(graphURI),
               makeGraph(triplesToAdd)), logger.isDebugEnabled())
         logger.debug( s"doSave: triplesToAdd ${triplesToAdd.mkString(", ")}")
-        /* TODO maybe in the hook here: return the future to print later that it has been done */
-        callSaveListeners(triplesToAdd, triplesToRemove)
-        
-        Future {
-          rdfStore.rw( dataset, {
-            addTypes(triplesToAdd.toSeq,
-              Some(URI(graphURI)))
-          })
-        }
         res
       }
+
+      Future { wrapInTransaction {
+    	  addTypes(triplesToAdd.toSeq,
+    			  Some(URI(graphURI)))
+      } }
+
+      /* TODO maybe: in the hook here: return the future to print later what has been done */
+      callSaveListeners(triplesToAdd, triplesToRemove)
 
       val f = transaction.asFuture
 

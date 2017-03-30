@@ -28,14 +28,18 @@ trait TypeAddition[Rdf <: RDF, DATASET]
   private val rdfs = RDFSPrefix[Rdf]
   private val foaf = FOAFPrefix[Rdf]
 
-  /** NON transactional */
+  /** add Type triples, inferred from rdfs:range's
+   *
+   * NON transactional */
   def addTypes(triples: Seq[Rdf#Triple], graphURI: Option[Rdf#URI]) = {
     val graph = allNamedGraph
     val v = for (triple <- triples) yield addType(triple, graphURI, graph)
     v.flatten
   }
 
-  /** input a triple ?S ?P ?O , where the type(s) ?C of ?O is inferred from rdfs:range of ?P,
+  /** @param triple ?S ?P ?O
+   *
+   * the type(s) ?C of ?O is inferred from rdfs:range of ?P,
    *  and then these triples are added in given graph URI:
    *  ?O a ?C
    *  NON transactional */

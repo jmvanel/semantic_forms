@@ -93,7 +93,7 @@ with SPARQLHelpers[Rdf, DATASET] {
         GRAPH ?GR {
          ?SUBJECT ?P ?O . } }
       GROUP BY ?SUBJECT ?USER
-      ORDER BY DESC(xsd:integer(?TS))
+      ORDER BY DESC(xsd:integer(?TIME))
       LIMIT $limit
     """
     logger.debug("getMetadata: query " + query)
