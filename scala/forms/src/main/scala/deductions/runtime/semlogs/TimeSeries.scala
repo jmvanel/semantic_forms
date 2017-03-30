@@ -80,6 +80,13 @@ with SPARQLHelpers[Rdf, DATASET] {
   def getMetadata()
     (implicit limit: String= "50")
         : List[Seq[Rdf#Node]] = {
+
+    val IntRegEx = "(\\d+)".r
+    val limitClause = limit match {
+      case IntRegEx(limit) => "LIMIT " + limit
+      case _ => ""
+    }
+
     val query = s"""
       ${declarePrefix(xsd)}
       SELECT ?SUBJECT (max(?TS) as ?TIME ) (count(?O) AS ?COUNT) ?USER
@@ -94,7 +101,7 @@ with SPARQLHelpers[Rdf, DATASET] {
          ?SUBJECT ?P ?O . } }
       GROUP BY ?SUBJECT ?USER
       ORDER BY DESC(xsd:integer(?TIME))
-      LIMIT $limit
+      $limitClause
     """
     logger.debug("getMetadata: query " + query)
     val res = sparqlSelectQueryVariables( query,
