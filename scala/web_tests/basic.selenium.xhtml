@@ -75,7 +75,7 @@
 </tr>
 <tr>
 	<td>verifyText</td>
-	<td>css=div.row &gt; h3</td>
+	<td>// h3</td>
 	<td>Jean-Marc Vanel</td>
 </tr>
 <tr>
@@ -143,14 +143,14 @@
 </tr>
 <tr>
 	<td>assertElementPresent</td>
-	<td>xpath=//form // div / label [ text() = "nom de famille" or
-					  text() = "lastName" ]</td>
+	<td>xpath=//form // div / label [ . // text() = "nom de famille" or
+					  . // text() = "lastName" ]</td>
 	<td>nom de famille</td>
 </tr>
 <tr>
 	<td>assertElementPresent</td>
-	<td>xpath=//form/div//label [ text() = "connaît" or
-				      text() = "knows" ]</td>
+	<td>xpath=//form/div//label [ . // text() = "connaît" or
+				      . // text() = "knows" ]</td>
 	<td></td>
 </tr>
 
@@ -167,8 +167,8 @@
 </tr>
 <tr>
 	<td>assertElementPresent</td>
-	<td>// div / label  [ text() = "espèce" or
-			      text() = "species" ]</td>
+	<td>// div / label  [ . // text() = "espèce" or
+			      . // text() = "species" ]</td>
 	<td></td>
 </tr>
 
