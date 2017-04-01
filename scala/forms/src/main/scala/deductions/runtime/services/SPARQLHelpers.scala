@@ -667,7 +667,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    *  @param format "turtle" or "rdfxml" or "jsonld"
    */
   def graph2String(triples: Try[Rdf#Graph], baseURI: String, format: String = "turtle"): String = {
-    Logger.getRootLogger().info(s"graph2String: base URI $baseURI ${triples}")
+    logger.info(s"graph2String: base URI <$baseURI>, format $format, ${triples}")
     triples match {
       case Success(graph) =>
         val graphSize = graph.size

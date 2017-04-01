@@ -365,6 +365,8 @@ trait ApplicationTrait extends Controller
 	val mimeAbbrevs = Map( AcceptsTTL -> "turtle", AcceptsJSONLD -> "jsonld", AcceptsRDFXML -> "rdfxml",
 	    Accepts.Json -> "json", Accepts.Xml -> "xml", AcceptsSPARQLresults -> "json" )
 
+	 val simpleString2mimeMap = mimeAbbrevs.map(_.swap)
+
 	private def renderResult(output: Accepting => Result, default: Accepting = AcceptsTTL)(implicit request: RequestHeader): Result = {
     render {
       case AcceptsTTL()    => output(AcceptsTTL)
@@ -424,6 +426,8 @@ trait ApplicationTrait extends Controller
   /**
    * SPARQL GET compliant, construct or select
    * conneg => RDF/XML, Turtle or json-ld
+   * 
+   * TODO rename sparqlService
    */
   def sparqlConstruct(query: String) =
         Action {
@@ -496,31 +500,31 @@ trait ApplicationTrait extends Controller
 
   /** output SPARQL query as Play! Result;
    *  priority to accepted MIME type
+   *  @param acceptedTypes from Accept HTTP header
    *  TODO move to Play! independant trait */
   private def outputSPARQL(query: String, acceptedTypes: Seq[MediaRange], isSelect: Boolean): Result = {
     val preferredMedia = acceptedTypes.map { media => Accepting(media.toString()) }.headOption
     val defaultMIMEaPriori = if (isSelect) AcceptsSPARQLresults else AcceptsJSONLD
     val defaultMIME = preferredMedia.getOrElse(defaultMIMEaPriori)
-    val mime = computeMIME(acceptedTypes, defaultMIME)
-    logger.info(s"sparqlConstruct: computed mime ${mime}")
 
-//    val resultFormat = mimeAbbrevs(defaultMIME)
-    val resultFormat = mimeAbbrevs.getOrElse(defaultMIME, defaultMIMEaPriori.mimeType )
-    logger.info(s"sparqlConstruct: output(accepts=$acceptedTypes) => result format: $resultFormat")
+    // TODO implicit class ResultFormat(val format: String)
+    val resultFormat: String = mimeAbbrevs.getOrElse(defaultMIME, 
+        mimeAbbrevs.get( defaultMIMEaPriori) . get )
+    logger.info(s"""sparqlConstruct: output(accepts=$acceptedTypes) => result format: "$resultFormat" """)
+
     if (preferredMedia.isDefined &&
       !mimeSet.contains(preferredMedia.get))
       logger.info(s"CAUTION: preferredMedia $preferredMedia not in this application's list: ${mimeAbbrevs.keys.mkString(", ")}")
+
     val result = if (isSelect)
       sparqlSelectConneg(query, resultFormat, dataset)
     else
       sparqlConstructResult(query, resultFormat)
 
-    logger.info(s"outputSPARQL: mime.mimeType ${mime.mimeType}")
     logger.info(s"result $result".split("\n").take(5).mkString("\n"))
     Ok(result)
-      .as(s"${resultFormat}")
-//      .as(s"${mime.mimeType}")
-    // .as(s"${mime.mimeType}; charset=utf-8")
+      .as(s"${simpleString2mimeMap.getOrElse(resultFormat, defaultMIMEaPriori).mimeType }")
+    // charset=utf-8" ?
   }
           
   /**
