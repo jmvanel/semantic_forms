@@ -363,7 +363,9 @@ forms:givenName--personPerson
         // TODO not I18N:
         "type", "class",
         rdf.typ, ResourceValidator(Set(owl.Class)), classs,
-        alreadyInDatabase = alreadyInDatabase)
+        alreadyInDatabase = alreadyInDatabase,
+        htmlName=makeHTMLName( makeTriple(subject, rdf.typ, nullURI) )
+    	)
       (fields ++ Seq(classFormEntry)).toSeq
     } else fields.toSeq
   }
