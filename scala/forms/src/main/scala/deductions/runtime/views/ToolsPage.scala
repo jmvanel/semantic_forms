@@ -77,7 +77,6 @@ trait ToolsPage extends EnterButtons
 			{	if (viewButton)
 			  Seq(
       <input type="submit" value="View" formaction ="/sparql-form"/> ,
-      <div>- </div> ,
         makeLink(textareaId, "/assets/rdfviewer/rdfviewer.html?url=" )
 			)}
 			</form>
@@ -89,7 +88,7 @@ trait ToolsPage extends EnterButtons
                toolname: String = "RDF Viewer",
                imgWidth: Int = 15): NodeSeq = {
 
-    val sparqlServicePrefix = URLEncoder.encode("/sparql?query=", "UTF-8")
+    val sparqlServicePrefix = URLEncoder.encode("sparql?query=", "UTF-8")
     val buttonId = textareaId+"-button"
     val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
     println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
