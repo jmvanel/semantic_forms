@@ -329,8 +329,7 @@ trait ApplicationTrait extends Controller
    *  cf https://www.playframework.com/documentation/2.3.x/ScalaStream
    */
   def downloadAction(url: String, database: String = "TDB") =
-    withUser {
-      implicit userid =>
+    Action {
         implicit request =>
           def output(accepts: Accepting): Result = {
             val mime = computeMIME(accepts, AcceptsJSONLD)
