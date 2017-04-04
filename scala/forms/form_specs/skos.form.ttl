@@ -19,14 +19,14 @@ forms:skos-Concept
   form:classDomain skos:Concept ;
   form:showProperties (
 	skos:prefLabel skos:altLabel rdfs:comment
-	:broader
-	:narrower
-	:related
-	:topConceptOf
+	skos:broader
+	skos:narrower
+	skos:related
+	skos:topConceptOf
   ) ;
   form:showReverseProperties (
-	:broader
-	:narrower
+	skos:broader
+	skos:narrower
   )
 .
 
