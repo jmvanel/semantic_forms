@@ -679,8 +679,11 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
           else
             (turtleWriter, s"# graph size ${graphSize}\n")
 
+//        println( s">>>> graph2String baseURI $baseURI, graph $graph" )
+
         stats + {
-          val tryString = writer.asString(graph, base = baseURI)
+          val tryString = writer.asString(graph, base = "") // baseURI)
+//        println( s">>>> graph2String tryString $tryString" )
           tryString match {
             case Success(s) => s
             case Failure(f) => s"graph2String: trouble in writing graph: $f"
