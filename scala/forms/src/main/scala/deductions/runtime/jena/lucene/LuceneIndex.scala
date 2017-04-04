@@ -43,7 +43,11 @@ trait LuceneIndex // [Rdf <: RDF]
     entMap.set("text", foaf.lastName)
     entMap.set("text", foaf.name)
     entMap.set("text", rdfs.comment)
-    entMap.set("text", URI("http://dbpedia.org/ontology/abstract"))
+
+    entMap.set("text", dbo("abstract"))
+    entMap.set("text", skos("prefLabel"))
+    entMap.set("text", skos("altLabel"))
+    entMap.set("text", skos("hiddenLabel"))
 
     // for Grands Voisins:
     lazy val gvoi = Prefix[ImplementationSettings.Rdf]("gvoi",
