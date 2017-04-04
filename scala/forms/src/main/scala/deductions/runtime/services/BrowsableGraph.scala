@@ -65,8 +65,12 @@ trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DAT
         val triples = search_only(uri)
         triples
       })
-      // TODO RDF/XML
-      val format = if( mime.contains("turtle")) "turtle" else "jsonld"
+      val format = if( mime.contains("turtle"))
+        "turtle"
+        else if( mime.contains("rdf+xml"))
+          "rdfxml"
+        else
+          "jsonld"
 
       graph2String(transaction.get, uri, format=format)
     } catch {
