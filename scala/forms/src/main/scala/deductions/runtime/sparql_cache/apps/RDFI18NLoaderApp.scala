@@ -12,9 +12,9 @@ import deductions.runtime.utils.RDFHelpers
 
 /** */
 object RDFI18NLoaderApp
-    extends { override val config = new DefaultConfiguration {} }
-    with DependenciesForApps
+    extends { override val config = new DefaultConfiguration {} } with DependenciesForApps
     with RDFI18NLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+  resetRDFI18NTranslations()
   loadFromGitHubRDFI18NTranslations()
 }
 
