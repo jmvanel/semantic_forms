@@ -35,9 +35,13 @@ with FormSyntaxJson[Rdf] {
   def create(classUri: String, lang: String = "en",
     formSpecURI: String = "", graphURI: String= "", request: HTTPrequest= HTTPrequest() )
       : Try[NodeSeq] = {
-    rdfStore.rw( dataset, {
-      val form = createData(classUri, lang, formSpecURI, request)
-      val rawForm = generateHTML(
+
+    val formTry = wrapInTransaction {
+      createData(classUri, lang, formSpecURI, request)
+    }
+
+    for( form <- formTry ) yield {
+          val rawForm = generateHTML(
           form, hrefPrefix = "",
           editable = true,
           actionURI = actionURI,
@@ -45,8 +49,9 @@ with FormSyntaxJson[Rdf] {
 
           Seq( makeEditingHeader(fromUri(uriNodeToURI(form.classs)), lang, formSpecURI, graphURI),
               rawForm ) . flatten
-    })
+    }
   }
+
 
   /** raw Data for instance creation */
   def createData(classUri: String, lang0: String = "en",

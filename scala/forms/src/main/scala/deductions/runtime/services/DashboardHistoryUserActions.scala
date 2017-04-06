@@ -65,23 +65,23 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
           dateAsLong(row1) >
           dateAsLong(row2)
       }
-      rdfStore.rw( dataset, { // for calling instanceLabel()
-      for (row <- sorted) yield {
-        logger.debug( "row " + row(1).toString() )
-            if (row(1).toString().length() > 3 ) {
-              val date = new Date(dateAsLong(row))
-              val dateFormat = new SimpleDateFormat(
-                "EEEE dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
-              <tr>{
-                <td>{ makeHyperlinkForURI(row(0), lang, allNamedGraph, config.hrefDisplayPrefix) }</td>
-                <td>{ "Edit" /* TODO */ }</td>
-                <td>{ dateFormat.format(date) }</td>
-                <td>{ makeStringFromLiteral(row(2)) }</td>
-                <td>{ row(3) }</td>
-              }</tr>
-            } else <tr/>
-      }
-      }) . get
+      wrapInTransaction { // for calling instanceLabel()
+                    for (row <- sorted) yield {
+                      logger.debug("row " + row(1).toString())
+                      if (row(1).toString().length() > 3) {
+                        val date = new Date(dateAsLong(row))
+                        val dateFormat = new SimpleDateFormat(
+                          "EEEE dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
+                        <tr>{
+                          <td>{ makeHyperlinkForURI(row(0), lang, allNamedGraph, config.hrefDisplayPrefix) }</td>
+                          <td>{ "Edit" /* TODO */ }</td>
+                          <td>{ dateFormat.format(date) }</td>
+                          <td>{ makeStringFromLiteral(row(2)) }</td>
+                          <td>{ row(3) }</td>
+                        }</tr>
+                      } else <tr/>
+                    }
+                  }.get
     }
     </tbody></table>
   }

@@ -163,6 +163,19 @@ Converting RDF file in any syntax in JSON-LD. This is particularly useful, as "c
 
     java -cp $JARS riotcmd.riot --out=json-ld ~/data/sioc1.rdf 1> ~/data/sioc1.jsonld
 
+Moreover, the error meages are more accurate than  CWM and rapper.
+
+### Remote shell commands
+
+These commands connect to the database, with admin account, by SPARQL Update protocol:
+
+```shell
+# remove a named graph
+scripts/rgraphremove.sh
+# any SPARQL Update command
+scripts/rupdate.sh
+```
+
 ### Misc.
 In the case when one wants to override some triples that are already loaded in graph G, and taking in account the language of the literals:
 
