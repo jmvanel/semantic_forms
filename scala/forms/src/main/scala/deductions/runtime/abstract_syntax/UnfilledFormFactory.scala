@@ -31,10 +31,15 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
     formSpecURI0: String = "" , request: HTTPrequest= HTTPrequest() )
   	  (implicit graph: Rdf#Graph, lang:String) : FormSyntax = {
 
+    wrapInReadTransaction {
+//      println( s">>>> createFormFromClass <$classe> " + ops.getSubjects(graph, rdf.typ, foaf.Person ) )
+
     // if classs argument is not an owl:Class, check if it is a form:specification, then use it as formSpecURI
-    val checkIsOWLClass = ops.find( graph, classe, rdf.typ, owl.Class)
-    val checkIsRDFSClass = ops.find( graph, classe, rdf.typ, rdfs.Class)
-    val checkIsFormSpec = ops.find( graph, classe, rdf.typ, form("specification") )
+    val checkIsOWLClass = find( graph, classe, rdf.typ, owl.Class)
+    val checkIsRDFSClass = find( graph, classe, rdf.typ, rdfs.Class)
+    val checkIsFormSpec = find( graph, classe, rdf.typ, form("specification") ) . toList
+//    println( s">>>> createFormFromClass checkIsFormSpec $checkIsFormSpec" )
+
     val ( formSpecURI, classs ) = if( checkIsOWLClass.isEmpty && checkIsRDFSClass.isEmpty
         && ! checkIsFormSpec.isEmpty )
       (fromUri(classe), nullURI ) else (formSpecURI0, classe)
@@ -47,7 +52,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
         lookPropertiesListInConfiguration(classe)
       }
 
-    println(s""">>> UnfilledFormFactory.createFormFromClass: formSpecURI <$formSpecURI> classs <$classs>
+    logger.info( s""">>> UnfilledFormFactory.createFormFromClass: formSpecURI <$formSpecURI> classs <$classs>
     		props List In Form Config size ${propsListInFormConfig.size}""")
     val classFromSpecsOrGiven =
       if (formSpecURI != "" && classs == nullURI ) {
@@ -69,6 +74,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
     } else
       createFormDetailed(makeUri(newId), propsListInFormConfig.toSeq, classFromSpecsOrGiven,
         CreationMode, formConfig = formConfig)
+  } . getOrElse( FormSyntax( nullURI, Seq() ) )
   }
 
   // TODO put in reusable trait

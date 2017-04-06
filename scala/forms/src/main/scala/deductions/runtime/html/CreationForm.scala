@@ -12,6 +12,7 @@ import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.HTTPrequest
 import deductions.runtime.utils.I18NMessages
 import deductions.runtime.utils.RDFPrefixes
+import scala.util.Success
 
 trait CreationFormAlgo[Rdf <: RDF, DATASET]
 extends RDFCacheAlgo[Rdf, DATASET]
@@ -30,37 +31,33 @@ with FormSyntaxJson[Rdf] {
 
   /**
    * create an XHTML input form for a new instance from a class URI;
-   *  transactional TODO classUri should be an Option
+   *  transactional
+   *  TODO classUri should be an Option
    */
   def create(classUri: String, lang: String = "en",
-    formSpecURI: String = "", graphURI: String= "", request: HTTPrequest= HTTPrequest() )
-      : Try[NodeSeq] = {
+             formSpecURI: String = "", graphURI: String = "", request: HTTPrequest = HTTPrequest()): Try[NodeSeq] = {
 
-    val formTry = wrapInTransaction {
-      createData(classUri, lang, formSpecURI, request)
-    }
+    val form = createData(classUri, lang, formSpecURI, request)
 
-    for( form <- formTry ) yield {
-          val rawForm = generateHTML(
-          form, hrefPrefix = "",
-          editable = true,
-          actionURI = actionURI,
-          lang=lang, graphURI=graphURI, request=request)
+    val rawForm = generateHTML(
+      form, hrefPrefix = "",
+      editable = true,
+      actionURI = actionURI,
+      lang = lang, graphURI = graphURI, request = request)
 
-          Seq( makeEditingHeader(fromUri(uriNodeToURI(form.classs)), lang, formSpecURI, graphURI),
-              rawForm ) . flatten
-    }
+    Success(
+      Seq(
+        makeEditingHeader(fromUri(uriNodeToURI(form.classs)), lang, formSpecURI, graphURI),
+        rawForm).flatten)
   }
 
-
-  /** raw Data for instance creation */
+  /** raw Data for instance creation; transactions Inside */
   def createData(classUri: String, lang0: String = "en",
                  formSpecURI: String = "",
                  request: HTTPrequest
-//                 = HTTPrequest()
                  ) : FormSyntax = {
     val classURI = URI(classUri)
-    retrieveURINoTransaction(classURI, dataset, request)
+    retrieveURINoTransaction(classURI, dataset, request, transactionsInside = true)
     implicit val lang = lang0
     implicit val graph: Rdf#Graph = allNamedGraph
     val form = createFormFromClass(classURI, formSpecURI, request)
