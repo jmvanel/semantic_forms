@@ -240,6 +240,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
 
       // GV (gvoi: prefix)
 
+      "n° arrivee" -> gvoi("arrivalNumber"),
       "Nom structure pour administration" -> gvoi("administrativeName"), // foaf.name,
       "Nom pour communication" ->  foaf.name, // URI("http://dbpedia.org/ontology/longName"),
 
@@ -251,11 +252,11 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       "Page Facebook" -> gvoi("facebook"),
       "Compte twitter" -> gvoi("twitter"),
       "Linkedin" -> gvoi("linkedin"),
-      "Facebook" -> gvoi("Facebook"),
+      "facebook" -> gvoi("facebook"),
 
       "SUIVI" -> gvoi("status"),
       "Thématiques" -> foaf.status,
-      "Activité" -> dc("subject"),
+      "Activité" -> gvoi("description"), // dc("subject"),
       "Bâtiment" -> gvoi("building"),
       "Espace" -> gvoi("room"),
       "Arrivée" -> gvoi("arrivalDate"),
@@ -268,8 +269,23 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       "Propose du Bénévolat" -> gvoi("volunteeringProposals"),
       "Projets au sein des GV" -> foaf.currentProject,
       "URL logo" -> foaf.img,
-      "Assurance 2017" -> xsd.boolean,
+      "Assurance 2017" -> gvoi("insuranceStatus"), // xsd.boolean,
+      "Raisons du départ" -> gvoi("departureReasons"),
 
+      /* n° arrivee,SUIVI,SITE WEB,PRINT,Nom structure pour administration,Nom pour communication,Prénom interlocuteur référent,
+       * Nom interlocuteur référent,Slack,Numéro contact,Adresse e-mail,Prénom interlocuteur référent 2,
+       * Nom interlocuteur référent 2,Numéro contact 2,Adresse e-mail 2,Activité,Site Web,Bâtiment,Espace,Arrivée,
+       * Contribution au projet proposée,Contribution réalisée,Nombre salariés,
+       * facebook,Compte twitter,
+       * "Linkedin",NB de mentions presses,Ventes ou services,Structure juridique signature convention,
+       * Numéro de clé au PC,Propose du Bénévolat,Projets au sein des GV,URL logo,Assurance 2017,N° contrat Link,Thématiques 
+
+n° arrivee	SUIVI	SITE WEB	PRINT	Nom structure pour administration	Nom pour communication	Prénom interlocuteur référent	Nom interlocuteur référent	
+Slack	Numéro contact	Adresse e-mail	Prénom interlocuteur référent 2	Nom interlocuteur référent 2	Numéro contact 2	Adresse e-mail 2	
+Activité	Site Web	Bâtiment	Espace	Arrivée	Contribution au projet proposée	Contribution réalisée	Nombre salariés	facebook	Compte twitter	"Linkedin"	
+NB de mentions presses	Ventes ou services	Structure juridique signature convention	Numéro de clé au PC	Propose du Bénévolat	Projets au sein des GV	URL logo	Assurance 2017	N° contrat Link	Thématiques 	Raisons du départ
+       */
+      
       // Tasks management
 
       "Tâche" ->  rdfs.label,
