@@ -717,9 +717,9 @@ trait ApplicationTrait extends Controller
     Action { implicit request =>
       val lang = chooseLanguage(request)
       val config1 = config
-      Ok(new ToolsPage {
+      outputMainPage(new ToolsPage {
         override val config: Configuration = config1
-      }.getPage(lang, copyRequest(request)) )
+      }.getPage(lang, copyRequest(request)),lang )
         .as("text/html; charset=utf-8")
     }
   }
