@@ -79,11 +79,9 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * or download and store URI, only if corresponding graph is empty,
    * with transaction
    */
-  def retrieveURI(uri: Rdf#URI, dataset: DATASET = dataset): Try[Rdf#Graph] = {
-    wrapInTransaction {
-      retrieveURINoTransaction(uri, dataset, HTTPrequest())
-    }.flatten
-  }
+  def retrieveURI(uri: Rdf#URI, dataset: DATASET = dataset): Try[Rdf#Graph] =
+      retrieveURINoTransaction(uri, dataset, HTTPrequest(), transactionsInside=true)
+
 
   /**
    * retrieve URI from a graph named by the URI itself;
@@ -96,7 +94,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    */
   def retrieveURINoTransaction(uri: Rdf#URI, dataset: DATASET,
                                request: HTTPrequest,
-                               transactionsInside: Boolean = false
+                               transactionsInside: Boolean //  = false
                                ): Try[Rdf#Graph] = {
 
     val tryGraphLocallyManagedData = getLocallyManagedUrlAndData(uri, request)
