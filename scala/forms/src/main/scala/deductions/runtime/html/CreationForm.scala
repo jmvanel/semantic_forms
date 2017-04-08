@@ -68,9 +68,10 @@ with FormSyntaxJson[Rdf] {
                        formSpecURI: String = "",
 //                       graphURI: String = "",
                        request: HTTPrequest = HTTPrequest()) = {
-    val formSyntax = rdfStore.rw( dataset, {
+    val formSyntax =
+//      rdfStore.rw( dataset, {
       createData(classUri, lang, formSpecURI, request)
-    }) . get
+//    }) . get
     formSyntax2JSONString(formSyntax)
   }
 
