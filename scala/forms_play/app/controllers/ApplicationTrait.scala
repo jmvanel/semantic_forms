@@ -179,10 +179,10 @@ trait ApplicationTrait extends Controller
     
   /** generate a Main Page wrapping given XHTML content */
   private def outputMainPage( content: NodeSeq,
-      lang: String, userInfo: NodeSeq = <div/>, title: String = "" )
+      lang: String, userInfo: NodeSeq = <div/>, title: String = "", displaySearch:Boolean = true )
   (implicit request: Request[_]) = {
       Ok( "<!DOCTYPE html>\n" +
-        mainPage( content, userInfo, lang, title )
+        mainPage( content, userInfo, lang, title, displaySearch)
       ).withHeaders("Access-Control-Allow-Origin" -> "*") // for dbpedia lookup
       .as("text/html; charset=utf-8")
   }
@@ -717,10 +717,11 @@ trait ApplicationTrait extends Controller
     Action { implicit request =>
       val lang = chooseLanguage(request)
       val config1 = config
-      Ok(new ToolsPage {
+      outputMainPage( new ToolsPage {
         override val config: Configuration = config1
-      }.getPage(lang, copyRequest(request)) )
+      }.getPage(lang, copyRequest(request)),lang, displaySearch = false)
         .as("text/html; charset=utf-8")
+
     }
   }
 

@@ -1,8 +1,10 @@
 package deductions.runtime.views
 
-import scala.xml.NodeSeq
+import deductions.runtime.services.Configuration
 
+import scala.xml.NodeSeq
 import deductions.runtime.utils.I18NMessages
+
 import scala.xml.NodeSeq.seqToNodeSeq
 
 /** HTML page skeleton for the generic SF application */
@@ -11,18 +13,18 @@ trait MainXml extends ToolsPage with EnterButtons {
   /**
    * main Page with a single content (typically a form)
    */
-  def mainPage(content: NodeSeq, userInfo: NodeSeq, lang: String = "en", title: String = "") = {
+  def mainPage(content: NodeSeq, userInfo: NodeSeq, lang: String = "en", title: String = "", displaySearch: Boolean = true) = {
     <html>
       <head>{ head(title)(lang) }</head>
       <body>
-        {mainPageHeader(lang, userInfo)}
+        {mainPageHeader(lang, userInfo, displaySearch)}
         <div class="container sf-complete-form">
         {content}
         </div>
         {pageBottom(lang)}
       </body>
     </html>
-  }
+      }
 
   def head(title: String = "")(implicit lang: String = "en"): NodeSeq = <head></head>
 
@@ -48,7 +50,7 @@ trait MainXml extends ToolsPage with EnterButtons {
    * main Page Header for generic app:
    *  enter URI, search, create instance
    */
-  def mainPageHeader(implicit lang: String = "en", userInfo: NodeSeq): NodeSeq = {
+  def mainPageHeader(implicit lang: String = "en", userInfo: NodeSeq, displaySearch: Boolean = true): NodeSeq = {
 
     <header>
       <div class="row">
@@ -68,9 +70,11 @@ trait MainXml extends ToolsPage with EnterButtons {
 
     </header>
     <div class="container-fluid "> {
-        enterURItoDownloadAndDisplay() ++
-        enterSearchTerm() ++
-        enterClassForCreatingInstance()
+      if (displaySearch){
+          enterURItoDownloadAndDisplay() ++
+          enterSearchTerm() ++
+          enterClassForCreatingInstance()
+      }
     } </div>
     <hr></hr>
   }
