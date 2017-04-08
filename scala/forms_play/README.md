@@ -249,7 +249,9 @@ DDDD
 wget  --load-cookies cookies.txt \
 --post-file=big-query.rq http://localhost:9000/update
 ```
-## Profiling with JMC
+
+## Profiling with JMC
+
 Start SF normally, from SBT or from the zip distribution.
 
 ```shell
