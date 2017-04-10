@@ -105,10 +105,7 @@ trait ApplicationTrait extends Controller
           val title = labelForURITransaction(uri, lang)
           val requestCopy = getRequestCopy()
           val userid = requestCopy . userId()
-          def userInfoHTML(request: Request[_]): NodeSeq = {
-            displayUser(userid, uri, title, lang)
-          }
-          val userInfo = userInfoHTML(request)
+          val userInfo = displayUser(userid, uri, title, lang)
 
           outputMainPage(
             htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,

@@ -13,11 +13,19 @@ trait MainXml extends ToolsPage with EnterButtons {
   /**
    * main Page with a single content (typically a form)
    */
-  def mainPage(content: NodeSeq, userInfo: NodeSeq, lang: String = "en", title: String = "", displaySearch: Boolean = true) = {
+  def mainPage(content: NodeSeq, userInfo: NodeSeq, lang: String = "en", title: String = "", displaySearch: Boolean = true,
+      messages: NodeSeq =
+        <p>New feature considered:
+<a href="https://github.com/jmvanel/semantic_forms/issues/152">
+Checker for good practices in RDF and OWL #152
+</a>
+</p>
+      ) = {
     <html>
       <head>{ head(title)(lang) }</head>
       <body>
         {mainPageHeader(lang, userInfo, displaySearch)}
+        { messages }
         <div class="container sf-complete-form">
         {content}
         </div>

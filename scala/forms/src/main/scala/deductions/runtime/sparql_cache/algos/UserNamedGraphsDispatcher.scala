@@ -75,6 +75,7 @@ trait UserNamedGraphsDispatcher[Rdf <: RDF, DATASET]
       |INSERT { GRAPH ?ORGA {
       | ?PER ?P ?O .
       | ?O ?P1 ?O1.
+      |
       | ?ORGA ?P3 ?O3 .
       |}}
       |
