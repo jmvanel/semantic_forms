@@ -6,7 +6,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
-import deductions.runtime.services.DefaultConfiguration
+//import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 
@@ -24,12 +24,12 @@ import deductions.runtime.jena.RDFStoreLocalJena1Provider
  * - abbreviated Turtle terms with well-known prefixes (eg dbpedia:Paris) are understood in cells
  */
 object CSVImporterApp extends {
-  override val config = new DefaultConfiguration {
-    override val useTextQuery = true // false
-  }
+//  override val config = new DefaultConfiguration {
+//    override val useTextQuery = true // false
+//  }
 } with App
     with RDFStoreLocalJena1Provider
-    with DefaultConfiguration
+//    with DefaultConfiguration
     with CSVImporter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
   import ops._

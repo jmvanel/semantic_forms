@@ -10,13 +10,11 @@ import org.apache.any23.vocab.CSV
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.CSVRecord
-//import org.apache.commons.csv.Constants
 
 import org.w3.banana.RDF
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFPrefix
 import org.w3.banana.XSDPrefix
-import deductions.runtime.services.Configuration
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.utils.URIHelpers
 
@@ -30,13 +28,8 @@ import scala.collection.JavaConversions.mapAsScalaMap
 /** made from CSVExtractor from Any23;
  *  TODO: probably should be in another SBT project */
 trait CSVImporter[Rdf <: RDF, DATASET]
-		extends 
-//		Constants with
-		URIHelpers
+		extends URIHelpers
 		with RDFPrefixes[Rdf] {
-
-  val config: Configuration
-  import config._
 
   implicit val ops: RDFOps[Rdf]
   import ops._
@@ -48,40 +41,14 @@ trait CSVImporter[Rdf <: RDF, DATASET]
 //  val Constants = new org.apache.commons.csv.Constants()
   val TAB = '\t'
 
-  /** lots of boiler plate for vocabularies !!!!!!!!!!!
+  /** boiler plate for vocabularies !!!!!!!!!!!
    *  TODO move to RDFPrefixes */
-//  object CCOPrefix {
-////    def apply[Rdf <: RDF: RDFOps](implicit ops: RDFOps[Rdf]) = new CCOPrefix(ops)
-//    def apply()
-//    //(implicit ops: RDFOps[Rdf]) 
-//    = new CCOPrefix(ops)
-//  }
-  class CCOPrefix
-  //[Rdf <: RDF]
-  (ops: RDFOps[Rdf])
+  class CCOPrefix (ops: RDFOps[Rdf])
       extends PrefixBuilder("cco", "http://purl.org/ontology/cco/core#")(ops) {
     val expertise = apply("expertise")
   }
   private val cco = new CCOPrefix(ops) // CCOPrefix//[Rdf]
   
-  object AVPrefix extends AVPrefix(ops){
-    def apply
-//    [Rdf <: RDF: RDFOps]
-//    (implicit ops: RDFOps[Rdf])
-    = new AVPrefix(ops)
-  }
-  class AVPrefix// [Rdf <: RDF]
-  (ops: RDFOps[Rdf])
-      extends PrefixBuilder("av", prefixAVontology )(ops) {
-      val idea = apply("idea")
-      val contributesToOrganization = apply("contributesToOrganization")
-      val metAt = apply("metAt")
-  }
-  private val av = AVPrefix // [Rdf]
-
-//  object VCardPrefix {
-//    def apply[Rdf <: RDF: RDFOps](implicit ops: RDFOps[Rdf]) = new VCardPrefix(ops)
-//  }
   class VCardPrefix
 //  [Rdf <: RDF]
   (ops: RDFOps[Rdf])
@@ -219,8 +186,8 @@ trait CSVImporter[Rdf <: RDF, DATASET]
 
       "Prénom" -> foaf.givenName,
       "Nom" -> foaf.familyName,
-      "organisation 1" -> av.contributesToOrganization,
-      "organisation 2" -> av.contributesToOrganization,
+      "organisation 1" -> URI( "pair:contributesToOrganization"),
+      "organisation 2" -> URI( "pair:contributesToOrganization"),
 
       // foaf:Organization or foaf:Person     
       "Email" -> foaf.mbox,
@@ -240,9 +207,9 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       "compétence 2" -> cco.expertise,
       "autre" -> cco.expertise,
       
-      "Idée 1" -> av.idea,
-      "Idée 2" -> av.idea,
-      "Rencontré à" -> av.metAt,
+      "Idée 1" ->  URI( "pair:idea"),
+      "Idée 2" ->  URI( "pair:idea"),
+      "Rencontré à" ->  URI( "pair:metAt"),
 
       // GV (gvoi: prefix)
 
