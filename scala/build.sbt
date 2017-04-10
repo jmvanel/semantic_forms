@@ -15,6 +15,7 @@ lazy val generic_app = project
 
 lazy val projects_catalog = project
 lazy val contacts_management = project
+lazy val connectors = project
 
 // lazy val web_tests = project
 // lazy val forms_js = project
