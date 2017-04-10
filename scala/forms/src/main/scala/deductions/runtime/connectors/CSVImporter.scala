@@ -10,6 +10,8 @@ import org.apache.any23.vocab.CSV
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.CSVRecord
+//import org.apache.commons.csv.Constants
+
 import org.w3.banana.RDF
 import org.w3.banana.RDFOps
 import org.w3.banana.RDFPrefix
@@ -29,8 +31,7 @@ import scala.collection.JavaConversions.mapAsScalaMap
  *  TODO: probably should be in another SBT project */
 trait CSVImporter[Rdf <: RDF, DATASET]
 		extends 
-//		Configuration
-//		with 
+//		Constants with
 		URIHelpers
 		with RDFPrefixes[Rdf] {
 
@@ -44,7 +45,11 @@ trait CSVImporter[Rdf <: RDF, DATASET]
 //  private val rdfs = RDFSPrefix[Rdf]
   private val xsd = XSDPrefix[Rdf]
 
-  /** lots of boiler plate for vocabularies !!!!!!!!!!! */
+//  val Constants = new org.apache.commons.csv.Constants()
+  val TAB = '\t'
+
+  /** lots of boiler plate for vocabularies !!!!!!!!!!!
+   *  TODO move to RDFPrefixes */
 //  object CCOPrefix {
 ////    def apply[Rdf <: RDF: RDFOps](implicit ops: RDFOps[Rdf]) = new CCOPrefix(ops)
 //    def apply()
@@ -107,10 +112,13 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       documentURI: URI,
       /* property Value pair to add For Each Row */
       propertyValueForEachRow: List[(Rdf#URI, Rdf#Node)] = List() ): Rdf#Graph = {
-    
+
     val rowType = csvPredicate(CSV.ROW_TYPE)
-    
-    csvParser = new CSVParser( new InputStreamReader(in) , CSVFormat.DEFAULT .withHeader() )
+    val csvFormat = CSVFormat.DEFAULT.withHeader()
+    // for BASES DE DONNÉES NOMENCLATURALES ET TAXONOMIQUES (BDNT) flore et fonge de France
+    // CSVFormat.DEFAULT.withDelimiter(TAB).withHeader()
+
+    csvParser = new CSVParser( new InputStreamReader(in), csvFormat)
     val header: java.util.Map[String, Integer] = csvParser.getHeaderMap
     headerURIs = processHeader(header, documentURI)
     
@@ -127,12 +135,11 @@ trait CSVImporter[Rdf <: RDF, DATASET]
     }
     for( record <- csvParser.getRecords ) {
       val rowSubject = URI( rowSubjectPrefix + index)
-      list += Triple(rowSubject, rdf.typ, rowType)
+      // list += Triple(rowSubject, rdf.typ, rowType)
       produceRowStatements(rowSubject, record, list)
       for( pv <- propertyValueForEachRow ) {
     	  list += Triple(rowSubject, pv._1, pv._2)
       }
-//      list += Triple(documentURI, csvPredicate(CSV.ROW), rowSubject)
       list += Triple(rowSubject, csvPredicate(CSV.ROW_POSITION), Literal( String.valueOf(index) ) )
       index = index + 1
     }
@@ -201,16 +208,15 @@ trait CSVImporter[Rdf <: RDF, DATASET]
     } else None
   }
 
-  /** columns Mappings from Guillaume's column names to well-known RDF properties
+  /** columns Mappings from column names to well-known RDF properties
    *  TODO
    *  make this Map an argument
    *  use labels on properties to propose properties to user,
    *  manage prefixes globally, maybe using prefix.cc */
   val columnsMappings = Map(
 
-      // AV
+      // AV, Guillaume's column names
 
-      // foaf:Person
       "Prénom" -> foaf.givenName,
       "Nom" -> foaf.familyName,
       "organisation 1" -> av.contributesToOrganization,
@@ -316,7 +322,23 @@ NB de mentions presses	Ventes ou services	Structure juridique signature conventi
           "Nouveau libellé" -> rdfs.label,
           "Libellé" -> rdfs.label,
           "Propriété à renommer" -> rdfs.label,
-          "Commentaire fusion" -> rdfs.comment
+          "Commentaire fusion" -> rdfs.comment,
+
+    // TAXREF => Darwin Core
+
+    "Numéro nomenclatural" -> dwc("TAXREF-num"),
+    "Numéro nomenclatural du nom retenu" -> dwc("TAXREF-num-ret"),
+    "Numéro taxonomique" -> dwc(""),
+    "Numéro INPN" -> dwc("INPN-num"),
+    // "C ode rang" -> dwc(""),
+    "Famille (APG III)" -> dwc("family"),
+    // "Nom avec auteur" -> dwc(""),
+    // "Année et bibliographie" -> dwc(""),
+    "Nom retenu avec auteur" -> foaf.name,
+    //"Présent dans Taxref" -> dwc(""),
+    "Permalien" -> rdfs.seeAlso,
+    "Genre" -> dwc("genus"),
+    "Epithète espèce" -> dwc("specificEpithet")
   )
 
   /** manage Mapping from Column name to URI */

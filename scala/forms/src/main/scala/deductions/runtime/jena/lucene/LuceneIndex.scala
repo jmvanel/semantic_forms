@@ -49,6 +49,9 @@ trait LuceneIndex // [Rdf <: RDF]
     entMap.set("text", skos("altLabel"))
     entMap.set("text", skos("hiddenLabel"))
 
+    entMap.set("text", dwc("genus"))
+    entMap.set("text", dwc("specificEpithet"))
+
     // for Grands Voisins:
     lazy val gvoi = Prefix[ImplementationSettings.Rdf]("gvoi",
         "http://assemblee-virtuelle.github.io/grands-voisins-v2/gv.owl.ttl#" )

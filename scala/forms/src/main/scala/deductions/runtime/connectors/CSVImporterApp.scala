@@ -25,7 +25,7 @@ import deductions.runtime.jena.RDFStoreLocalJena1Provider
  */
 object CSVImporterApp extends {
   override val config = new DefaultConfiguration {
-    override val useTextQuery = false
+    override val useTextQuery = true // false
   }
 } with App
     with RDFStoreLocalJena1Provider
@@ -85,8 +85,9 @@ object CSVImporterApp extends {
     val os = new FileOutputStream(outputFile)
     turtleWriter.write(graph, os, fromUri(documentURI))
   }
-  
-  println(s"""Saved in SPARQL in graph URI <$documentURI>""")
+
+  println(s"""Remove graph URI <$documentURI> and populate it""")
+  rdfStore.removeGraph(dataset, documentURI)
   rdfStore.appendToGraph(dataset, documentURI, graph)
 
   /**

@@ -274,7 +274,7 @@ Link: https://docs.oracle.com/javacomponents/jmc-5-5/jfr-runtime-guide/run.htm#J
 
 ### Testing web application with Selenium
 Selenium tests are in `scala/web_tests` .
-One must run before these tests.
+One must run `scripts/populateRDFCache.sh` before these tests.
 
 # Administration of a server instance from the sources
 There is a script that updates the server from the sources, and more: it stops the server, updates the application from sources, and restarts the server :
