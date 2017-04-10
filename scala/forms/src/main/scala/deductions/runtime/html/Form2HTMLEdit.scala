@@ -39,7 +39,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
         case r: formMod#ResourceEntry => makeHTMLIdResourceSelect(r)
         case _ => makeHTML_Id(field)
       }
-      <div class={ css.cssClasses.formAddDivCSSClass }>
+      <div class={ css.cssClasses.formAddDivCSSClass } > <!-- TODO : hidden="true" -->
       <button type="button" class="btn btn-primary add-widget" readonly="yes" size="1" title={
         "Add another value for " + field.label } >
         <i class="glyphicon glyphicon-plus"></i>

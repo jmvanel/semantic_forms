@@ -11,7 +11,8 @@ function cloneWidget(widget) {
         .val('')
         .addClass('hasLookup form-control ui-autocomplete-input')
         .attr('id', widget.attr('id')+'-'+cardinal)
-        .attr('name', widget.attr('name'));
+        .attr('name', widget.attr('name'))
+        .attr('hidden', 'false');
     parent.prepend(addedWidget, widget);
     addedWidget.focus();
     return addedWidget;
