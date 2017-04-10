@@ -127,6 +127,7 @@ trait ApplicationTrait extends Controller
           .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
+          .as("text/html; charset=utf-8")
     }
 
   /** /form-data service; like /form but raw JSON data */
