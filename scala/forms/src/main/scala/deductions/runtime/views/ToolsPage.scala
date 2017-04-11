@@ -7,7 +7,7 @@ import deductions.runtime.utils.I18NMessages
 import deductions.runtime.utils.HTTPrequest
 import deductions.runtime.html.BasicWidgets
 import scala.xml.Unparsed
-import deductions.runtime.services.URIManagement
+import deductions.runtime.utils.URIManagement
 
 trait ToolsPage extends EnterButtons
     with BasicWidgets

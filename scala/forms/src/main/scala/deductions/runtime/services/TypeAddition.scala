@@ -8,6 +8,7 @@ import org.w3.banana.RDFSPrefix
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.utils.URIHelpers
 import deductions.runtime.abstract_syntax.UnfilledFormFactory
+import deductions.runtime.utils.URIManagement
 
 /**
  * ensure that types inferred from ontologies are added to objects of given triples

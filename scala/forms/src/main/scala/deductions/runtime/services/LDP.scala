@@ -15,6 +15,7 @@ import org.w3.banana.io.Turtle
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.utils.HTTPrequest
 import org.w3.banana.io.RDFXML
+import deductions.runtime.utils.URIManagement
 
 /**
  * A simple (partial) LDP implementation backed by SPARQL

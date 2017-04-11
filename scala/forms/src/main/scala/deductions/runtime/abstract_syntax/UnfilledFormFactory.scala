@@ -8,7 +8,7 @@ import scala.language.postfixOps
 
 import org.w3.banana.RDF
 
-import deductions.runtime.services.URIManagement
+import deductions.runtime.utils.URIManagement
 import deductions.runtime.utils.HTTPrequest
 
 /** Factory for an Unfilled Form */

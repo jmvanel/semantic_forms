@@ -11,6 +11,7 @@ import org.w3.banana.RDF
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.RDFPrefixes
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter
+import deductions.runtime.utils.URIManagement
 
 
 

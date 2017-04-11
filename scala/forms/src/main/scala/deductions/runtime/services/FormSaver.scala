@@ -17,6 +17,7 @@ import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.semlogs.LogAPI
 import deductions.runtime.utils.Timer
 import deductions.runtime.utils.RDFHelpers
+import deductions.runtime.utils.URIManagement
 
 trait FormSaver[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]

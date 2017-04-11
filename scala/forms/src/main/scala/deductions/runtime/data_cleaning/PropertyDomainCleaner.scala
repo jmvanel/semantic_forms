@@ -12,7 +12,7 @@ import deductions.runtime.dataset.RDFOPerationsDB
 import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
 
-import deductions.runtime.services.URIManagement
+import deductions.runtime.utils.URIManagement
 import org.w3.banana.binder.PGBinder
 import org.w3.banana.OWLPrefix
 
