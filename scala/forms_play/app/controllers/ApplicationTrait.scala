@@ -31,7 +31,7 @@ import views.MainXmlWithHead
 import java.net.URLEncoder
 import deductions.runtime.services.Configuration
 import java.net.URI
-import deductions.runtime.services.URIManagement
+import deductions.runtime.utils.URIManagement
 import play.api.mvc.EssentialAction
 
 //object Global extends GlobalSettings with Results {
