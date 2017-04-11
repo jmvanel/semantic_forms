@@ -51,7 +51,7 @@ import org.w3.banana._
 	lazy val dc = DCPrefix[Rdf]
   lazy val orgVocab = Prefix[Rdf]("org", "http://www.w3.org/ns/org#" )
 
-  val dwc = Prefix[Rdf]("dwc", "http://rs.tdwg.org/dwc/terms/")
+  lazy val dwc = Prefix[Rdf]("dwc", "http://rs.tdwg.org/dwc/terms/")
 
 
   lazy val prefixesList = List(
