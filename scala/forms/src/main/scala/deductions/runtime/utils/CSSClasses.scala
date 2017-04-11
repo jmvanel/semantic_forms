@@ -1,4 +1,4 @@
-package deductions.runtime.html
+package deductions.runtime.utils
 
 /** CSS for forms */
 trait CSSClasses {

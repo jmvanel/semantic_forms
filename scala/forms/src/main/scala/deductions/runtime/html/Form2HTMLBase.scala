@@ -10,6 +10,7 @@ import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.utils.I18NMessages
 import deductions.runtime.utils.RDFPrefixes
 import java.net.URLEncoder
+import deductions.runtime.utils.CSSClasses
 
 /** generate HTML from abstract Form : common parts for Display & edition */
 private[html] trait Form2HTMLBase[NODE, URI <: NODE]
