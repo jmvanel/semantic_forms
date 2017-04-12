@@ -56,7 +56,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
       )(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     import resourceEntry._
     val placeholder = resourcePlaceholder(resourceEntry, lang)
-    val hasLookup = if (lookupActivatedFor(resourceEntry) ) "hasLookup" else ""
+    val hasLookup = if (lookupActivatedFor(resourceEntry) ) "hasLookup" else "sfLookup"
     Seq(
       Text("\n"),
     		// format: OFF
@@ -70,7 +70,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
             list={ makeHTMLIdForDatalist(resourceEntry) }
             data-type={ type_.toString() }
             placeholder={ placeholder }
-            title={ placeholder }
+            title={ type_.toString() }
             size={inputSize.toString()}
 			dropzone="copy"
             autocomplete={if (lookupActivatedFor(resourceEntry)) "off" else null}
