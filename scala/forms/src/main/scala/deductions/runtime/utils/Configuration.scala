@@ -26,8 +26,7 @@ trait Configuration {
   def defaultConnectTimeout: Int
   def httpHeadTimeout: Int
 
-  //  def formVocabPrefix: String
-  def prefixAVontology: String = "prefixAVontology"
+//  def prefixAVontology: String = "prefixAVontology"
 
   def needLoginForEditing: Boolean
   def needLoginForDisplaying: Boolean

@@ -20,8 +20,6 @@ extends RDFPrefixes[Rdf] {
   implicit val ops: RDFOps[Rdf]
   import ops._
 
-  lazy val cco = Prefix[Rdf]("cco", "http://purl.org/ontology/cco/core#")
-
   implicit val ntriplesWriter: RDFWriter[Rdf, Try, NTriples]
 
   

@@ -87,8 +87,22 @@ import org.w3.banana._
     Prefix[Rdf]("dbpedia", "http://dbpedia.org/resource/"),
     text // Jena text search
     )
+
+  class CCOPrefix(ops: RDFOps[Rdf])
+      extends PrefixBuilder("cco", "http://purl.org/ontology/cco/core#")(ops) {
+    val expertise = apply("expertise")
+  }
+  lazy val cco = new CCOPrefix(ops)
   
-    /** map from RDF prefix to Rdf#URI */
+  class VCardPrefix(ops: RDFOps[Rdf])
+      extends PrefixBuilder("vcard", "http://www.w3.org/2006/vcard/ns#" )(ops) {
+	  val postal_code = apply("postal-code")
+	  val locality =  apply("locality")
+  }
+  lazy val vcard = new VCardPrefix(ops)//[Rdf]
+
+
+  /** map from RDF prefix to Rdf#URI */
   lazy val prefixesMap: Map[String, Rdf#URI] =
     prefixesList.map{ pf =>
       // println(s"prefix ${pf.prefixName} : ${pf.prefixIri}")

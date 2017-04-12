@@ -136,7 +136,7 @@ trait EnterButtons {
     <option label="owl:ObjectProperty">              { prefixesMap2("owl")("ObjectProperty") } </option>
     <option label="bioc:Planting">                   { prefixesMap2("bioc")("Planting") } </option>
   }
-
+/*
   val avOptgroup =
     <optgroup label="Assemblée Virtuelle">
       <optgroup label="Acteur">
@@ -169,4 +169,5 @@ trait EnterButtons {
         <option label="av:Resource"> { prefixAVontology }Resource </option>
       </optgroup>
     </optgroup>
+    */
 }
