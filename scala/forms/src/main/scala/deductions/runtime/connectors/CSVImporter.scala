@@ -111,12 +111,11 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       in: InputStream,
       documentURI: URI,
       /* property Value pair to add For Each Row */
-      propertyValueForEachRow: List[(Rdf#URI, Rdf#Node)] = List() ): Rdf#Graph = {
+      propertyValueForEachRow: List[(Rdf#URI, Rdf#Node)] = List(),
+      separator: Char = ','): Rdf#Graph = {
 
     val rowType = csvPredicate(CSV.ROW_TYPE)
-    val csvFormat = CSVFormat.DEFAULT.withHeader()
-    // for BASES DE DONNÉES NOMENCLATURALES ET TAXONOMIQUES (BDNT) flore et fonge de France
-    // CSVFormat.DEFAULT.withDelimiter(TAB).withHeader()
+    val csvFormat = CSVFormat.DEFAULT.withDelimiter(separator).withHeader()
 
     csvParser = new CSVParser( new InputStreamReader(in), csvFormat)
     val header: java.util.Map[String, Integer] = csvParser.getHeaderMap

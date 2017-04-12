@@ -18,6 +18,7 @@ import deductions.runtime.jena.RDFStoreLocalJena1Provider
  *  2 - URL or File ( in Turtle ) for adding details to each row; for example it contains:
  *  		<any:ROW> a foaf:Person .
  *    which will add this triple to every row.
+ *  3 separator ( comma by default)
  *
  * Features: like Any23, plus:
  * - abbreviated Turtle terms with well-known prefixes (eg foaf:name) are understood as columns names
@@ -72,8 +73,10 @@ object CSVImporterApp extends {
       }
       r.toList
     }
-    run(in, documentURI,
-      propertyValueForEachRow)
+  val separator = if (args.size > 3) args(3)(0) else ','
+	  println(s"separator '$separator'")
+	  run(in, documentURI,
+      propertyValueForEachRow, separator)
   } else
     run(in, documentURI)
 
