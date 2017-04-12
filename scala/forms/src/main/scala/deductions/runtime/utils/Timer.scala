@@ -1,7 +1,5 @@
 package deductions.runtime.utils
 
-import org.apache.log4j.Logger
-
 /**
  * measure any code fragment
  * @author jmv

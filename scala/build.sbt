@@ -7,7 +7,7 @@ scalaVersion in ThisBuild := "2.11.8" // scalaVersion :=  "2.12.1"
 javacOptions in ThisBuild := Seq("-source","1.8", "-target","1.8")
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-explaintypes", "-language:_", "-Xlint:_")
 
-lazy val forms = project // (project in file("forms")) // 
+lazy val forms = project
 lazy val forms_play = (project in file("forms_play")) // .dependsOn(forms) .enablePlugins(PlayScala) .disablePlugins(PlayLogback)
 
 lazy val core = project
@@ -16,6 +16,7 @@ lazy val generic_app = project
 lazy val projects_catalog = project
 lazy val contacts_management = project
 lazy val connectors = project
+lazy val utils = project
 
 // lazy val web_tests = project
 // lazy val forms_js = project

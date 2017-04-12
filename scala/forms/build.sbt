@@ -4,6 +4,9 @@ import Common._
 
 name := "semantic_forms"
 
+lazy val utils = project.in(file("../utils"))
+lazy val forms = project.in(file(".")) .dependsOn(utils)
+
 libraryDependencies ++= commonDependencies
 
 // necessary to set the working directory when running tests from starting SBT in parent directory
