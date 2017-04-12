@@ -9,9 +9,11 @@ function cloneWidget(widget) {
     console.log("nombre de widgets : "+cardinal);
     addedWidget
         .val('')
-        .addClass('hasLookup form-control ui-autocomplete-input')
+        .attr('class',widget.attr('class'))
+        //.addClass( widget.attr('id'))
         .attr('id', widget.attr('id')+'-'+cardinal)
         .attr('name', widget.attr('name'))
+        .attr('title', widget.attr('title'))
         .attr('hidden', 'false');
     parent.prepend(addedWidget, widget);
     addedWidget.focus();
