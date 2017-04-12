@@ -6,7 +6,6 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
-import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 
@@ -18,19 +17,14 @@ import deductions.runtime.jena.RDFStoreLocalJena1Provider
  *  2 - URL or File ( in Turtle ) for adding details to each row; for example it contains:
  *  		<any:ROW> a foaf:Person .
  *    which will add this triple to every row.
- *  3 separator ( comma by default)
  *
  * Features: like Any23, plus:
  * - abbreviated Turtle terms with well-known prefixes (eg foaf:name) are understood as columns names
  * - abbreviated Turtle terms with well-known prefixes (eg dbpedia:Paris) are understood in cells
  */
-object CSVImporterApp extends {
-  override val config = new DefaultConfiguration{}
-//    override val useTextQuery = true // false
-//  }
-} with App
+object CSVImporterApp extends App
     with RDFStoreLocalJena1Provider
-//    with DefaultConfiguration
+    with DefaultConfiguration
     with CSVImporter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
   import ops._
@@ -73,10 +67,8 @@ object CSVImporterApp extends {
       }
       r.toList
     }
-  val separator = if (args.size > 3) args(3)(0) else ','
-	  println(s"separator '$separator'")
-	  run(in, documentURI,
-      propertyValueForEachRow, separator)
+    run(in, documentURI,
+      propertyValueForEachRow)
   } else
     run(in, documentURI)
 

@@ -1,15 +1,13 @@
-package deductions.runtime.services
+package deductions.runtime.utils
 
 import java.net.InetAddress
 import java.net.URLDecoder
 import java.net.URLEncoder
-
-import deductions.runtime.utils.URIHelpers
 import java.net.NetworkInterface
 import scala.collection.JavaConversions._
 import java.net.Inet4Address
-import deductions.runtime.utils.HTTPrequest
 import java.net.URI
+import deductions.runtime.services.Configuration
 
 /**
  * Management of URI policy: how are URI created by the application

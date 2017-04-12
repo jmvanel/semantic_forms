@@ -22,7 +22,7 @@ import deductions.runtime.jena.MicrodataLoaderModule
 import deductions.runtime.services.BrowsableGraph
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.SPARQLHelpers
-import deductions.runtime.services.URIManagement
+import deductions.runtime.utils.URIManagement
 import deductions.runtime.utils.HTTPHelpers
 import deductions.runtime.utils.HTTPrequest
 import deductions.runtime.utils.RDFHelpers

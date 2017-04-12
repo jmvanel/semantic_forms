@@ -10,7 +10,7 @@ import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.Authentication
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.services.SPARQLHelpers
-import deductions.runtime.services.URIManagement
+import deductions.runtime.utils.URIManagement
 import deductions.runtime.utils.RDFHelpers
 
 /** See also [[FixBadURIApp]] */

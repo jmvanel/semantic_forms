@@ -31,7 +31,7 @@ import views.MainXmlWithHead
 import java.net.URLEncoder
 import deductions.runtime.services.Configuration
 import java.net.URI
-import deductions.runtime.services.URIManagement
+import deductions.runtime.utils.URIManagement
 import play.api.mvc.EssentialAction
 
 //object Global extends GlobalSettings with Results {
@@ -127,6 +127,7 @@ trait ApplicationTrait extends Controller
           .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
+          .as("text/html; charset=utf-8")
     }
 
   /** /form-data service; like /form but raw JSON data */

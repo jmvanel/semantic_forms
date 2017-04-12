@@ -62,7 +62,7 @@ with SPARQLHelpers[Rdf, DATASET] {
   /** make Graph URI And associated metadata for saving data at a current date & time;
    * the graph URI is for saving actual data in this named graph;
    * the metadata has the graph URI as subject */
-  def makeGraphURIAndMetadata(addedTriples: Seq[Rdf#Triple], 
+  private def makeGraphURIAndMetadata(addedTriples: Seq[Rdf#Triple], 
       removedTriples: Seq[Rdf#Triple])(implicit userURI: String): (Rdf#URI, Rdf#Graph)= {
 	  val timestamp = (new Date).getTime
 			  val graphName = addedTriples.head.subject.toString() + "#" + timestamp

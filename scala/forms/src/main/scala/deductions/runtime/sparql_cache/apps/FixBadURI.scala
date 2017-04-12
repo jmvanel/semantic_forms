@@ -1,18 +1,17 @@
-package deductions.runtime.utils
+package deductions.runtime.sparql_cache.apps
 
-import scala.collection.JavaConversions.asScalaIterator
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
+import scala.collection.JavaConversions._
+//import scala.collection.JavaConverters
 
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.riot.RDFDataMgr
 import org.apache.jena.util.FileManager
 import org.w3.banana.RDF
-
-import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.utils.URIHelpers
 import deductions.runtime.services.DefaultConfiguration
 
 
@@ -36,13 +35,13 @@ object FixBadURIApp extends  {
   }
 } with ImplementationSettings.RDFModule
     with FixBadURI[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with RDFStoreLocalJena1Provider
+    with ImplementationSettings.RDFCache // RDFStoreLocalJena1Provider
     with URIHelpers
     with App {
 
   import config._
   
-  def listGraphNames() = dataset.listNames()
+  def listGraphNames() = listNames(dataset)
   if( args.size == 0 )
     fix
   else
@@ -51,7 +50,8 @@ object FixBadURIApp extends  {
 
 trait FixBadURI[Rdf <: RDF, DATASET]
 		extends RDFCacheAlgo[Rdf, DATASET]
-    with RDFStoreLocalProvider[Rdf, DATASET] {
+//    with RDFStoreLocalProvider[Rdf, DATASET]
+{
 
   val fileNameOrUri = "dump.nq";
   def listGraphNames(): Iterator[String]
@@ -161,7 +161,7 @@ trait FixBadURI[Rdf <: RDF, DATASET]
   }
 
   //// unused below
-
+  
   private def readJena2() = {
     val ds = RDFDataMgr.loadDataset(fileNameOrUri)
     println("Dataset " + ds)

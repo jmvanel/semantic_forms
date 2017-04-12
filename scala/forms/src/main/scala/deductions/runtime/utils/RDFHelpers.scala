@@ -6,12 +6,14 @@ import org.w3.banana.RDFOps
 import org.w3.banana.RDFPrefix
 import org.w3.banana.binder.PGBinder
 import org.w3.banana.OWLPrefix
+import org.w3.banana.Prefix
+
 import scala.util.Success
 import scala.util.Failure
-import org.w3.banana.Prefix
+
 import deductions.runtime.services.Configuration
-import deductions.runtime.abstract_syntax.UnfilledFormFactory
-import deductions.runtime.services.URIManagement
+//import deductions.runtime.abstract_syntax.UnfilledFormFactory
+
 import scala.util.control.NonFatal
 
 /** */

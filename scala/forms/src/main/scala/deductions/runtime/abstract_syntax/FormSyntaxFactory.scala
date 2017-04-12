@@ -87,6 +87,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     with FormSyntaxFromSPARQL[Rdf, DATASET]
     with RDFPrefixes[Rdf]
     with UniqueFieldID[Rdf]
+    with UserTraceability[Rdf, DATASET]
     with Timer {
 
   val config: Configuration

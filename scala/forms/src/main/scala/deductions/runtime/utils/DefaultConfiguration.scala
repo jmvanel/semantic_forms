@@ -1,6 +1,6 @@
 package deductions.runtime.services
 
-import deductions.runtime.html.CSSClasses
+import deductions.runtime.utils.CSSClasses
 
 /** Default Configuration Provider for various pure RDF programs */
 trait DefaultConfigurationProvider {

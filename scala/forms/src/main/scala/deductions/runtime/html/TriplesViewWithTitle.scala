@@ -114,7 +114,8 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
           }, datasetOrDefault)
         }
 
-        val resultXML = result.get
+        val resultXML =  <div> {result.get } </div>
+
         (resultXML, typeChange)
       } catch {
         case e: Exception => // e.g. org.apache.jena.riot.RiotException

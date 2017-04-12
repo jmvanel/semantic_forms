@@ -15,7 +15,7 @@ import deductions.runtime.abstract_syntax.InstanceLabelsInference2
 import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
 import deductions.runtime.services.Configuration
 import deductions.runtime.services.SPARQLHelpers
-import deductions.runtime.services.URIManagement
+import deductions.runtime.utils.URIManagement
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.utils.Maps
