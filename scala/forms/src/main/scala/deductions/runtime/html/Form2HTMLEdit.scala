@@ -10,6 +10,7 @@ import deductions.runtime.abstract_syntax.DBPediaLookup
 import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.services.Configuration
 import deductions.runtime.utils.I18NMessages
+import org.joda.time.DateTime
 
 
 /** generate HTML from abstract Form for Edition */
@@ -76,6 +77,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
             autocomplete={if (lookupActivatedFor(resourceEntry)) "off" else null}
             >
           </input>
+            {makeUserInfoOnTriples(resourceEntry.metadata,resourceEntry.timeMetadata)}
 		  </div>
 		else new Text("") // format: ON
       ,
@@ -128,6 +130,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
         title={ placeholder }
         >
         </input>
+          {makeUserInfoOnTriples(r.metadata,r.timeMetadata)}
 				</div>
       }else new Text("\n")
       ,
@@ -161,7 +164,6 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   def createHTMLiteralEditableField(lit: formMod#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     import lit._
-
     val placeholder = {
         val typ0 = type_.toString()
         val typ = if (
@@ -227,7 +229,9 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
         size={
           inputSize.toString()
         } dropzone="copy" id={ htmlId }>
-        </input></div>
+        </input>
+          {makeUserInfoOnTriples(lit.metadata,lit.timeMetadata)}
+        </div>
 
         <div class={ css.cssClasses.formDivEditInputCSSClass }>
 				{ if( showEditButtons )
@@ -301,6 +305,16 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
 		  { makeHTMLOptionsSequence(field) }
 		  </datalist>
 	  } else <div></div>
+  }
+
+  private def makeUserInfoOnTriples(userMetadata: String,timeMetadata: Long): Elem ={
+    val time :String = new DateTime(timeMetadata).toDateTime.toString("dd/MM/yyyy HH:mm")
+    if (timeMetadata != -1){
+      <p>
+        modifié par:{userMetadata} le {time}
+      </p>
+    }
+    else <p></p>
   }
 
 }

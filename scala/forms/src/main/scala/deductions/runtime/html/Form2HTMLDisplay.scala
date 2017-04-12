@@ -2,6 +2,8 @@ package deductions.runtime.html
 
 import java.net.URLEncoder
 
+import org.joda.time.DateTime
+
 import scala.xml.NodeSeq
 import scala.xml.Text
 import scala.xml.Unparsed
@@ -17,7 +19,8 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
 	private[html] def createHTMLiteralReadonlyField(l: formMod#LiteralEntry): NodeSeq =
     <xml:group>
-      <div class="">{ Unparsed(toPlainString(l.value)) }</div>
+      <div class={css.cssClasses.formDivInputCSSClass}>{ Unparsed(toPlainString(l.value)) } {makeUserInfoOnTriples(l.metadata,l.timeMetadata)}</div>
+
       <div>{ if (l.lang != "" && l.lang != "No_language") " > " + l.lang }</div>
     </xml:group>
 
@@ -99,16 +102,26 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
             imgWidth=6
           ) ++
       Text("\n") ++
-      thumbnail
+      thumbnail ++
+      {makeUserInfoOnTriples(resourceEntry.metadata,resourceEntry.timeMetadata)}
   }
 
-
+  private def makeUserInfoOnTriples(userMetadata: String,timeMetadata: Long) ={
+    val time :String = new DateTime(timeMetadata).toDateTime.toString("dd/MM/yyyy HH:mm")
+    if (timeMetadata != -1){
+      <p>
+        modifié par:{userMetadata} le {time}
+      </p>
+    }
+    else <p></p>
+  }
 
   private[html] def createHTMLBlankNodeReadonlyField(
     r: formMod#BlankNodeEntry,
     hrefPrefix: String = config.hrefDisplayPrefix) =
     <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString, true) }>{
       r.valueLabel
-    }</a>
+    }</a> ++
+        {makeUserInfoOnTriples(r.metadata,r.timeMetadata)}
 
 }

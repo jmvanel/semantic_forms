@@ -88,6 +88,8 @@ trait FormModule[NODE, URI <: NODE] {
 		val subject: NODE
     var cardinality: Cardinality
     val htmlName: String
+    var metadata: String =""
+    var timeMetadata: Long = -1
 
     /** filled, not not used*/
     private val triples: mutable.Buffer[Triple] = mutable.ListBuffer[Triple]()

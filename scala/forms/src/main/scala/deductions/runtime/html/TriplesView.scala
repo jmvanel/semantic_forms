@@ -5,11 +5,9 @@ import scala.util.Success
 import scala.util.Try
 import scala.xml.NodeSeq
 import scala.xml.PrettyPrinter
-
 import org.apache.log4j.Logger
 import org.w3.banana.RDF
-
-import deductions.runtime.abstract_syntax.FormSyntaxFactory
+import deductions.runtime.abstract_syntax.{FormSyntaxFactory, UserTraceability}
 import deductions.runtime.services.Configuration
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.HTTPrequest
@@ -32,6 +30,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     with FormSyntaxFactory[Rdf, DATASET]
     with TimeSeries[Rdf, DATASET]
     with TableFromListListRDFNodes[Rdf]
+    with UserTraceability[Rdf, DATASET]
     with Timer {
 
   val config: Configuration
@@ -243,6 +242,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     }
     val form = time("createAbstractForm",
       createAbstractForm(uri, editable, blankNode, formGroup, formuri))
+    val formWithInfo = addUserInfoOnTriples(form)
     val htmlForm =
       generateHTML(form, hrefPrefix, editable, actionURI, graphURI,
         actionURI2, lang, request)
