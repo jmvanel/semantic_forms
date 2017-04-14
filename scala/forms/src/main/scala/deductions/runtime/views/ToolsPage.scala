@@ -30,7 +30,7 @@ trait ToolsPage extends EnterButtons
       <p>
         SPARQL select {
           // TODO: the URL here appears also in Play! route!
-          sparqlQueryForm(false, "", "/select-ui", Seq(
+          sparqlQueryForm(lang,false, "", "/select-ui", Seq(
             "SELECT * WHERE { GRAPH ?G {?S ?P ?O . } } LIMIT 100",
             "SELECT DISTINCT ?CLASS WHERE { GRAPH ?G { [] a  ?CLASS . } } LIMIT 100",
             "SELECT DISTINCT ?PROP WHERE { GRAPH ?G { [] ?PROP [] . } } LIMIT 100"
@@ -41,7 +41,7 @@ trait ToolsPage extends EnterButtons
       <p>
         SPARQL construct {
           // TODO: the URL here appears also in Play! route!
-          sparqlQueryForm(true, "", "/sparql-ui",
+          sparqlQueryForm(lang,true, "", "/sparql-ui",
             Seq("CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10"))
            
          }  
@@ -62,7 +62,7 @@ trait ToolsPage extends EnterButtons
   }
 
   /** HTML Form for a sparql Query, with execution buttons */
-  def sparqlQueryForm(viewButton: Boolean, query: String, action: String, sampleQueries: Seq[String]): NodeSeq = {
+  def sparqlQueryForm(lang:String = "en",viewButton: Boolean, query: String, action: String, sampleQueries: Seq[String]): NodeSeq = {
     val textareaId = s"query-$action" . replaceAll("/", "-")
     println( "textareaId " + textareaId);
     <form role="form">
@@ -72,14 +72,23 @@ trait ToolsPage extends EnterButtons
         else
           for (sampleQuery <- sampleQueries) yield "# " + sampleQuery + "\n" 
       }</textarea>
-      <input type="submit" value="Submit" formaction ={action}/>
-			
-			{	if (viewButton)
-			  Seq(
-      <input type="submit" value="View" formaction ="/sparql-form"/> ,
-        makeLink(textareaId, "/assets/rdfviewer/rdfviewer.html?url=" )
-			)}
-			</form>
+
+      <div class="row ">
+        <div class="col-md-1">
+          <input type="submit" value={ I18NMessages.get("Submit", lang) }  formaction ={action} />
+        </div>
+        {	if (viewButton)
+        Seq(
+            <input type="submit" value={ I18NMessages.get("View", lang) } formaction ="/sparql-form"/>,
+            <input type="submit" value={ I18NMessages.get("Map", lang) } />,
+            <input type="submit" value={ I18NMessages.get("Table", lang) } />,
+            <input type="submit" value={ I18NMessages.get("Tree", lang) } />,
+
+          makeLink(textareaId, "/assets/rdfviewer/rdfviewer.html?url=" )
+
+        )}
+      </div>
+    </form>
   }
 
   /** NOTE: this cannot work in localhost (because of rdfviewer limitations);

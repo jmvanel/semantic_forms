@@ -715,7 +715,7 @@ trait ApplicationTrait extends Controller
     withUser {
       implicit userid =>
         implicit request =>
-          val lang = chooseLanguage(request)
+          val lang = chooseLanguageObject(request).language
           val config1 = config
           val userInfo = displayUser(userid, "", "", lang)
           outputMainPage( new ToolsPage {
