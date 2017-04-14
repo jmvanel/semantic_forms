@@ -119,7 +119,8 @@ with SPARQLHelpers[Rdf, DATASET] {
    */
   def getMetadataAboutSubject(subject: Rdf#Node, limit: Int =100, offset: Int = 0)
   : List[Seq[Rdf#Node]] = {
-        val query = s"""
+
+    val query = s"""
       ${declarePrefix(xsd)}
       SELECT ?PROP ?OBJECT (max(?TS) as ?TIME ) ?USER
       WHERE {
@@ -135,7 +136,7 @@ with SPARQLHelpers[Rdf, DATASET] {
       LIMIT $limit
       OFFSET $offset
     """
-    logger.debug("getMetadata: query " + query)
+    logger.debug(s"getMetadataAboutSubject: query $query")
     val res = sparqlSelectQueryVariables( query,
         Seq("PROP", "OBJECT", "TIME", "USER"), dataset2 )
     logger.debug("getMetadata: res " + res)
