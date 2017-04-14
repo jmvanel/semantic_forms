@@ -712,13 +712,16 @@ trait ApplicationTrait extends Controller
   }
 
   def toolsPage = {
-    Action { implicit request =>
-      val lang = chooseLanguage(request)
-      val config1 = config
-      outputMainPage( new ToolsPage {
-        override val config: Configuration = config1
-      }.getPage(lang, copyRequest(request)),lang, displaySearch = false)
-        .as("text/html; charset=utf-8")
+    withUser {
+      implicit userid =>
+        implicit request =>
+          val lang = chooseLanguage(request)
+          val config1 = config
+          val userInfo = displayUser(userid, "", "", lang)
+          outputMainPage( new ToolsPage {
+            override val config: Configuration = config1
+          }.getPage(lang, copyRequest(request)),lang, displaySearch = false, userInfo = userInfo)
+            .as("text/html; charset=utf-8")
 
     }
   }
