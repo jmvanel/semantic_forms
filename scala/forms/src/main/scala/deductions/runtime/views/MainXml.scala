@@ -77,14 +77,22 @@ Checker for good practices in RDF and OWL #152
       </div>
 
     </header>
-    <div class="container-fluid "> {
-      if (displaySearch){
+
+      <div class="row sf-margin-top-10">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-md-offset-1">
+          <div class="col-xs-6 col-sm-4  col-md-1" >
+            <button type="button" class="form-control btn btn-primary" data-toggle="collapse" data-target="#collapseDisplay">{ messageI18N("Display") }</button>
+          </div>
+        </div>
+      </div>
+      <div class="collapse" id="collapseDisplay">{
+        if (displaySearch){
           enterURItoDownloadAndDisplay() ++
-          enterSearchTerm() ++
-          enterClassForCreatingInstance()
-      }
-    } </div>
-    <hr></hr>
+            enterSearchTerm() ++
+            enterClassForCreatingInstance()
+        }
+        }</div>
+      <hr></hr>
   }
 
   /**
