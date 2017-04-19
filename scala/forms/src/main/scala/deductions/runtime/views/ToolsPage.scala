@@ -73,20 +73,18 @@ trait ToolsPage extends EnterButtons
           for (sampleQuery <- sampleQueries) yield "# " + sampleQuery + "\n" 
       }</textarea>
 
-      <div class="row ">
-        <div class="col-md-1">
-          <input type="submit" value={ I18NMessages.get("Submit", lang) }  formaction ={action} />
+      <div class="container">
+        <div class="btn-group">
+          <input class ="btn btn-primary" type="submit" value={ I18NMessages.get("Submit", lang) }  formaction ={action} />
+          {	if (viewButton)
+          Seq(
+              <input class ="btn btn-primary" type="submit" value={ I18NMessages.get("View", lang) } formaction ="/sparql-form"/>,
+              <input class ="btn btn-primary" type="submit" value={ I18NMessages.get("Map", lang) } />,
+              <input class ="btn btn-primary" type="submit" value={ I18NMessages.get("Table", lang) } />,
+              <input class ="btn btn-primary" type="submit" value={ I18NMessages.get("Tree", lang) } />,
+              makeLink(textareaId, "/assets/rdfviewer/rdfviewer.html?url=" )
+          )}
         </div>
-        {	if (viewButton)
-        Seq(
-            <input type="submit" value={ I18NMessages.get("View", lang) } formaction ="/sparql-form"/>,
-            <input type="submit" value={ I18NMessages.get("Map", lang) } />,
-            <input type="submit" value={ I18NMessages.get("Table", lang) } />,
-            <input type="submit" value={ I18NMessages.get("Tree", lang) } />,
-
-          makeLink(textareaId, "/assets/rdfviewer/rdfviewer.html?url=" )
-
-        )}
       </div>
     </form>
   }
@@ -124,7 +122,7 @@ trait ToolsPage extends EnterButtons
     var url = '$servicesURL' + window.encodeURIComponent( window.encodeURIComponent(query)) ;
     console.log( 'URL ' + url );
     // console.log( 'startsWith ' + ( '$sparqlServicePrefix' . startsWith ('/') ) );
-    if( $isDNS )
+    if($isDNS)
       window.open( url , '_blank' );
     else
       console.log( 'RDFViewer works only on a hosted Internet serverURL !!!' );
