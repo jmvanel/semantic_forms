@@ -123,9 +123,9 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
         logger.debug(s""">> originalData $originalData, emptyUserInput $emptyUserInput, differingUserInput $differingUserInput, originalDataNonEmpty $originalDataNonEmpty, newUserInput $newUserInput, objectStringFromUser $objectStringFromUser""")
 
-        if (!emptyUserInput && differingUserInput &&
+        if( !emptyUserInput && differingUserInput ||
             // NOTE: the case of pre-filled rdfs:type
-            originalTriple.predicate != rdf.typ)
+            originalTriple.predicate == rdf.typ)
           triplesToAdd +=
             makeTriple(originalTriple.subject, originalTriple.predicate, objectFromUser)
 
