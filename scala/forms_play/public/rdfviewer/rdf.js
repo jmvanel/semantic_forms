@@ -81,7 +81,7 @@ function edgePoint(rect, a, b) {
     comparePoint = a
     if (pointInBox(rect,b))
         comparePoint = b;
-    
+
     lines = [[[rect.x,rect.y], // top horizontal
               [rect.x+rect.width,rect.y]],
              [[rect.x,rect.y+rect.height], // bottom horizontal
@@ -93,19 +93,19 @@ function edgePoint(rect, a, b) {
     intersects = lines.map(function(x) {
         return polygonIntersect(x[0],x[1],a,b);
     });
-    if (pointInLine(intersects[0],a,b)  && 
+    if (pointInLine(intersects[0],a,b)  &&
         intersects[0][0] >= rect.x &&
         intersects[0][0] <= rect.x + rect.width) {
         return intersects[0];
-    } else if (pointInLine(intersects[1],a,b) && 
+    } else if (pointInLine(intersects[1],a,b) &&
                intersects[1][0] >= rect.x &&
                intersects[1][0] <= rect.x + rect.width) {
         return intersects[1];
-    } else if (pointInLine(intersects[2],a,b) && 
+    } else if (pointInLine(intersects[2],a,b) &&
                intersects[2][1] >= rect.y &&
                intersects[2][1] <= rect.y + rect.height) {
         return intersects[2];
-    } else if (pointInLine(intersects[3],a,b) && 
+    } else if (pointInLine(intersects[3],a,b) &&
                intersects[3][1] >= rect.y &&
                intersects[3][1] <= rect.y + rect.height) {
         return intersects[3];
@@ -150,12 +150,12 @@ function conditionalize(fn, condition) {
 }
 
 var decorators = {
-    anchor: function (callback) { 
-        return function(d) { 
-            var label = callback(d); 
+    anchor: function (callback) {
+        return function(d) {
+            var label = callback(d);
             label = '<a href="'+d.uri+'">'+label+"</a>";
             return label;
-        }; 
+        };
     }
 }
 var labelers = [
@@ -174,8 +174,8 @@ var labelers = [
         return label;
     },
     function(resource) {
-        return resource.uri 
-            && (resource.types.map(function(d){return d.uri}).indexOf(RDFS+'Datatype') != -1) 
+        return resource.uri
+            && (resource.types.map(function(d){return d.uri}).indexOf(RDFS+'Datatype') != -1)
             && (resource.value(OWL+'onDatatype'));
     }),
     conditionalize(function(resource) {
@@ -202,7 +202,7 @@ var labelers = [
         return label;
     },
     function(resource) {
-        return resource.uri && resource.uri.indexOf("_:") == 0 
+        return resource.uri && resource.uri.indexOf("_:") == 0
             && (resource.types.map(function(d){return d.uri}).indexOf(OWL+'Class') != -1
                 || resource.types.map(function(d){return d.uri}).indexOf(RDFS+'Datatype') != -1)
     }),
@@ -252,7 +252,7 @@ var labelers = [
         return label;
     },
     function(resource) {
-        return resource.uri && resource.type == 'resource' 
+        return resource.uri && resource.type == 'resource'
             && resource.types.map(function(d){return d.uri}).indexOf(OWL+'Restriction') != -1
     }),
     conditionalize(decorators.anchor(function(d) {
@@ -294,7 +294,7 @@ function Graph() {
     this.edges = [];
     this.predicates = [];
     this.entities = [];
-    
+
 }
 Graph.prototype.makeLink = function(source, target,arrow) {
     link = {};
@@ -330,6 +330,8 @@ Graph.prototype.getSP = function(s, p) {
 
 Graph.prototype.getResource = function(uri) {
     var result = this.resources[uri];
+    console.log('result', result);
+    console.log('uri', uri);
     if (result == null) {
         result = {};
         result.value = function(uri) {
@@ -348,11 +350,14 @@ Graph.prototype.getResource = function(uri) {
         result.uri = uri;
         result.label = ' ';
         result.depth = -1;
-        result.localPart = result.uri.split("#");
+        if (typeof result.uri != 'undefined')
+          result.localPart = result.uri.split("#");
+        if (typeof result.localPart != 'undefined') {
         result.localPart = result.localPart[result.localPart.length-1];
         result.localPart = result.localPart.split("/");
         result.localPart = result.localPart[result.localPart.length-1];
         result.label = result.localPart;
+        }
         if (extraLabels[uri]) {
             result.label = extraLabels[uri];
         }
@@ -368,7 +373,9 @@ function squashLists(d) {
     var resources = {};
 
     d3.entries(d).forEach(function(subj){
-        if (subj.value['http://www.w3.org/1999/02/22-rdf-syntax-ns#first']) {
+        // console.log('squashLists subj ' + JSON.stringify( subj ) );
+        if ( subj.value != null &&
+            subj.value['http://www.w3.org/1999/02/22-rdf-syntax-ns#first']) {
             lists[subj.key] = subj.value;
         }
         else resources[subj.key] = subj.value;
@@ -378,29 +385,58 @@ function squashLists(d) {
 
     d3.entries(resources).forEach(function(subj) {
 
-        if (subj.key == 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil')
+        if (subj.key == 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil' || subj.key == '@context')
             return;
         result[subj.key] = {};
         d3.entries(subj.value).forEach(function(pred) {
             var list = [];
             result[subj.key][pred.key] = list;
-            pred.value.forEach(function(obj) {
-                if (lists[obj.value]) {
-                    var o = obj.value;
-                    //console.log(o);
-                    while (o) {
-                        o = lists[o];
-                        //console.log(o);
-                        list.push(o['http://www.w3.org/1999/02/22-rdf-syntax-ns#first'][0])
-                        o = o['http://www.w3.org/1999/02/22-rdf-syntax-ns#rest'][0].value;
-                        //console.log(o);
-                        if (o == 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil')
-                            o = null;
-                    }
-                } else {
-                    list.push(obj);
-                }
-            })
+            console.log('pred.value', JSON.stringify(pred.value));
+            console.log(' pred.value.forEach ' + pred.value.forEach )
+            // if (Array.isArray(pred.value)) {
+            if (typeof  pred.value.forEach != 'undefined') {
+              pred.value.forEach(function(obj) {
+                  if (lists[obj.value]) {
+                      var o = obj.value;
+                      console.log(o);
+                      while (o) {
+                          o = lists[o];
+                          //console.log(o);
+                          list.push(o['http://www.w3.org/1999/02/22-rdf-syntax-ns#first'][0])
+                          o = o['http://www.w3.org/1999/02/22-rdf-syntax-ns#rest'][0].value;
+                          //console.log(o);
+                          if (o == 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil')
+                              o = null;
+                      }
+                  } else {
+                      console.log(obj);
+                      list.push(obj);
+                  }
+              })
+            }
+            // } else if (typeof pred.value == 'object') {
+            //   //return pred.value;
+            //   for (var obj in pred.value) {
+            //     if (lists[obj.value]) {
+            //         var o = obj.value;
+            //         console.log(o);
+            //         while (o) {
+            //             o = lists[o];
+            //             //console.log(o);
+            //             list.push(o['http://www.w3.org/1999/02/22-rdf-syntax-ns#first'][0])
+            //             o = o['http://www.w3.org/1999/02/22-rdf-syntax-ns#rest'][0].value;
+            //             //console.log(o);
+            //             if (o == 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil')
+            //                 o = null;
+            //         }
+            //     } else {
+            //         console.log('OBJ', obj);
+            //         var currentObj = {obj: pred.value[obj]};
+            //         console.log('OBJ', pred.value[obj]);
+            //         list.push(currentObj);
+            //     }
+            //   }
+            // }
         })
     })
     //console.log(result);
@@ -412,6 +448,7 @@ function squashLists(d) {
 Graph.prototype.load = function(d) {
     var g = this
     d = squashLists(d);
+    // console.log('SquashedLists', d);
     d3.entries(d).forEach(function(subj) {
         d3.entries(subj.value).forEach(function(pred) {
             pred.value.forEach(function(obj) {
@@ -475,9 +512,11 @@ Graph.prototype.load = function(d) {
         sp.predicate=true;
     }
     d3.values(g.resources).filter(function(resource){
-        return (resource.type == 'resource' 
+        // console.log('hideSP resource.uri' + resource.uri);
+        return (resource.type == 'resource'
                 && resource.types.map(function(d){return d.uri}).indexOf(OWL+'Restriction') != -1) ||
-               (resource.uri.indexOf("_:") == 0 && resource.types
+               ( (typeof resource.uri != 'undefined') &&
+                resource.uri.indexOf("_:") == 0 && resource.types
                 && (resource.types.map(function(d){return d.uri}).indexOf(OWL+'Class') != -1
                     || resource.types.map(function(d){return d.uri}).indexOf(OWL+'Datatype') != -1))
     }).forEach(function(resource){
@@ -512,7 +551,7 @@ Graph.prototype.load = function(d) {
             l.display = false;
         });
     });
-    
+
     g.predicates = d3.values(g.resources).filter(function(node) {
         if (node.type == 'predicate' && !node.isPredicate) {
             node.display = node.display && node.subject.display;
@@ -531,32 +570,35 @@ Graph.prototype.load = function(d) {
     g.nodes = d3.values(g.resources).filter(function(node) {
         return (!node.isPredicate && node.display);
     });
-    
+
     g.entities = d3.values(g.resources).filter(function(node) {
         return (node.type == 'resource' && !node.isPredicate && node.display);
     }).sort(function(a,b) {
         return a.objectOf.length - b.objectOf.length;
     });
-    
-    //console.log(g.entities)    
+
+    //console.log(g.entities)
     g.edges = d3.values(g.edges).filter(function(l) {
         return l.display && l.source.display && l.target.display;
     });
 }
 
 function loader(url, doLoad) {
-    $.getJSON("http://rdf-translator.appspot.com/convert/detect/rdf-json/"+url, doLoad)
+    $.getJSON(url, doLoad)
         .error(function() {
-            $.getJSON("http://rdf-translator.appspot.com/convert/xml/rdf-json/"+url, doLoad)
-                .error(function() {
-                    $.getJSON("http://rdf-translator.appspot.com/convert/n3/rdf-json/"+url, doLoad)
-                        .error(function() {
-                            alert("Could not load "+url); 
-                        });
-                });
+          $.getJSON("http://rdf-translator.appspot.com/convert/detect/rdf-json/"+url, doLoad)
+              .error(function() {
+                $.getJSON("http://rdf-translator.appspot.com/convert/xml/rdf-json/"+url, doLoad)
+                    .error(function() {
+                        $.getJSON("http://rdf-translator.appspot.com/convert/n3/rdf-json/"+url, doLoad)
+                            .error(function() {
+                                alert("Could not load "+url);
+                            });
+                    });
+              });
         });
 }
-    
+
 function loadGraph(url, fn) {
     function doLoad(d) {
         graph = new Graph();
@@ -573,9 +615,9 @@ function makeNodeSVG(entities, vis, nodeWidth, graph) {
     node = node.append("svg:foreignObject")
         .attr('width',nodeWidth)
         .attr('height','1000');
-    
+
     node.append("xhtml:body").attr('xmlns',"http://www.w3.org/1999/xhtml");
-    
+
     var body = node.selectAll("body")
         //.style("max-width",nodeWidth+"px")
     var resource = body//.append("div")
@@ -611,7 +653,7 @@ function makeNodeSVG(entities, vis, nodeWidth, graph) {
             }
         })
         .attr("href",function(d) { return d.uri});
-    
+
     var attrs = resource.selectAll("td.attr")
         .data(function(d) {
             var entries = d3.entries(d.attribs);
@@ -670,7 +712,7 @@ function makeLinkSVG(edges, vis) {
         .attr("y1", function(d) { return d.source.y; })
         .attr("x2", function(d) { return d.target.x; })
         .attr("y2", function(d) { return d.target.y; });
-    
+
     result.arrowhead = result.link.filter(function(d) {
         return d.arrow;
     })
@@ -702,10 +744,10 @@ function viewHierarchyRDF(element, w, h, url, nodeWidth) {
             else if (b > a) return 1;
             else return 0;
         });
-    
+
     var diagonal = d3.svg.diagonal()
         .projection(function(d) { return [d.y, d.x]; });
-    
+
     var vis = d3.select(element).append("svg:svg")
         .attr("width", w)
         .attr("height", h)
@@ -726,18 +768,18 @@ function viewHierarchyRDF(element, w, h, url, nodeWidth) {
         .enter().append("svg:path")
         .attr("class", "link")
         .attr("d", diagonal);
-    
+
     var node = vis.selectAll("g.node")
         .data(nodes)
         .enter().append("svg:g")
         .attr("class", "node")
-        .attr("transform", function(d) { 
+        .attr("transform", function(d) {
             return "translate(" + d.y + "," + d.x + ")";
         })
-    
+
     node.append("svg:circle")
         .attr("r", 4.5);
-    
+
     node.append("svg:text")
         .attr("dx", function(d) { return d.children ? -8 : 8; })
         .attr("dy", 3)
@@ -745,7 +787,7 @@ function viewHierarchyRDF(element, w, h, url, nodeWidth) {
         .text(function(d) {
             //console.log(d.label);
             //console.log(d);
-            return d.label; 
+            return d.label;
         });
     });
 }
@@ -809,7 +851,7 @@ function viewrdf(element, w, h, url,nodeWidth) {
 
     loadGraph(url, function(graph) {
 
-        function pan(dx, dy) {       
+        function pan(dx, dy) {
             transMatrix[4] += dx;
             transMatrix[5] += dy;
 
@@ -850,13 +892,13 @@ function viewrdf(element, w, h, url,nodeWidth) {
         function handleMouseMove(evt) {
             if(evt.preventDefault)
                 evt.preventDefault();
-    
+
             evt.returnValue = false;
-    
+
             var svgDoc = evt.target.ownerDocument;
 
             var g = getRoot(svgDoc);
-    
+
             if(state == 'pan' && enablePan) {
                 // Pan mode
                 var p = getEventPoint(evt).matrixTransform(stateTf);
@@ -906,16 +948,16 @@ function viewrdf(element, w, h, url,nodeWidth) {
             .nodes(graph.nodes)
             .links(graph.edges);
             //.size([w, h]);
-        
+
         var links = makeLinkSVG(graph.edges, vis);
         links.link.call(force.drag);
-        
+
         var predicates = makePredicateSVG(graph.predicates, vis);
         predicates.call(force.drag);
-        
+
         var node = makeNodeSVG(graph.entities, vis, nodeWidth, graph);
         node.call(force.drag);
-        
+
         svg.append("circle")
             .attr("cx",50)
             .attr("cy",50)
@@ -938,7 +980,7 @@ function viewrdf(element, w, h, url,nodeWidth) {
             .attr("class","button")
             .on("click",function(){pan(-50,0)})
             .attr("d","M90 50 l-20 -12 a70,40 0 0,1 0,24z")
-  
+
         svg.append("circle")
             .attr("class","compass")
             .attr("cx","50")
@@ -1011,7 +1053,7 @@ function viewrdf(element, w, h, url,nodeWidth) {
                 if (ept != null) {
                     d.x1 = ept[0]
                 }
-                return d.x1; 
+                return d.x1;
             })
             .attr("y1", function(d) {
                 var box = makeCenteredBox(d.source);
@@ -1022,7 +1064,7 @@ function viewrdf(element, w, h, url,nodeWidth) {
                 if (ept != null) {
                     d.y1 = ept[1]
                 }
-                return d.y1; 
+                return d.y1;
             })
             .attr("x2", function(d) {
                 var box = makeCenteredBox(d.target);
@@ -1033,9 +1075,9 @@ function viewrdf(element, w, h, url,nodeWidth) {
                 if (ept != null) {
                     d.x2 = ept[0]
                 }
-                return d.x2; 
+                return d.x2;
             })
-            .attr("y2", function(d) { 
+            .attr("y2", function(d) {
                 var box = makeCenteredBox(d.target);
                 var ept = edgePoint(box,
                                 [d.source.x,d.source.y],
@@ -1044,7 +1086,7 @@ function viewrdf(element, w, h, url,nodeWidth) {
                 if (ept != null) {
                     d.y2 = ept[1]
                 }
-                return d.y2; 
+                return d.y2;
             });
 
         node.attr("height",function(d) {
