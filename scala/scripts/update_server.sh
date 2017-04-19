@@ -6,12 +6,13 @@ SRC=$PWD/forms_play
 APP=semantic_forms_play
 APPVERS=${APP}-1.0-SNAPSHOT
 SBT=sbt
+MainXml=$SRC/../forms/src/main/scala/deductions/runtime/views/MainXml.scala
 
 cd $SRC
+git checkout -- $MainXml
 git pull --verbose
 
 DATE=`date`
-MainXml=$SRC/../forms/src/main/scala/deductions/runtime/views/MainXml.scala
 sed -e "s/=timestamp=.*/=timestamp= $DATE/" $MainXml > /tmp/MainXml.scala
 cp $MainXml /tmp/MainXml.orig.scala 
 cp /tmp/MainXml.scala $MainXml
