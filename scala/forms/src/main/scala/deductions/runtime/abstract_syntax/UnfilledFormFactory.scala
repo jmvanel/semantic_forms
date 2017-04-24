@@ -26,12 +26,14 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
    *  TODO check URI arguments: they must be valid, absolute
    *  TODO return Try
    *  TODO use HTTP request param graphURI
+   *  
+   *  Transaction inside (RW)
    */
   def createFormFromClass(classe: Rdf#URI,
     formSpecURI0: String = "" , request: HTTPrequest= HTTPrequest() )
   	  (implicit graph: Rdf#Graph, lang:String) : FormSyntax = {
 
-    wrapInReadTransaction {
+    wrapInTransaction {
 //      println( s">>>> createFormFromClass <$classe> " + ops.getSubjects(graph, rdf.typ, foaf.Person ) )
 
     // if classs argument is not an owl:Class, check if it is a form:specification, then use it as formSpecURI

@@ -97,7 +97,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
                                transactionsInside: Boolean //  = false
                                ): Try[Rdf#Graph] = {
 
-    val tryGraphLocallyManagedData = getLocallyManagedUrlAndData(uri, request)
+    val tryGraphLocallyManagedData = getLocallyManagedUrlAndData(uri, request, transactionsInside: Boolean)
 
     tryGraphLocallyManagedData match {
       case Some(tgr) => Success(tgr)
@@ -106,17 +106,20 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
         val tryGraphFromRdfStore = rdfStore.getGraph(dataset, uri)
         tryGraphFromRdfStore match {
           case Failure(f) => Failure(f)
-          case Success(graphStoredLocally) =>
-            {
-          val graphSize = wrapInReadTransaction {
-            graphStoredLocally.size
-          }
-              val nothingStoredLocally = graphSize match {
+          case Success(graphStoredLocally) => {
+            val graphSize = if (transactionsInside)
+              wrapInReadTransaction {
+                graphStoredLocally.size
+              }
+            else
+              graphStoredLocally.size
+          val nothingStoredLocally = graphSize match {
                 case Success(i) => i == 0
                 case Failure(f) =>
                   System.err.println(s"retrieveURINoTransaction: $f")
                   true
-              }
+                case i: Int => i == 0
+          }
           println(s"""retrieveURINoTransaction: TDB graph at URI <$uri> size $graphSize""")
 
           val vvv = if (nothingStoredLocally) { // then read unconditionally from URI and store in TDB
@@ -383,7 +386,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   }
 
   /** test if it's a locally managed URL, that is created locally and 100% located here */
-  private def getLocallyManagedUrlAndData(uri: Rdf#URI, request: HTTPrequest): Option[Rdf#Graph] =
+  private def getLocallyManagedUrlAndData(uri: Rdf#URI, request: HTTPrequest, transactionsInside: Boolean): Option[Rdf#Graph] =
     if (!fromUri(uri).startsWith(request.absoluteURL(""))) { // TODO ? "ldp"
       // then it can be a "pure" HTML web page, or an RDF document
       None
@@ -392,11 +395,16 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       // used by formatHTMLStatistics():
       // TODO test rather: Some(rdfStore.getGraph( dataset, uri ).getOrElse(emptyGraph))
 
-      val gr1 = wrapInReadTransaction { makeGraph(find(allNamedGraph, uri, ANY, ANY).toIterable ) }
+      val gr1 =
+        if (transactionsInside)
+          wrapInReadTransaction { makeGraph(find(allNamedGraph, uri, ANY, ANY).toIterable) }
+        else
+          Success(makeGraph(find(allNamedGraph, uri, ANY, ANY).toIterable))
+
       gr1 match {
         case Success(gr) => Some(gr)
         case Failure(f) =>
-          println( s"getLocallyManagedUrlAndData: $f")
+          logger.error(s"getLocallyManagedUrlAndData: $f")
           None
       }
     }
