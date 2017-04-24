@@ -33,6 +33,10 @@ import deductions.runtime.services.Configuration
 import java.net.URI
 import deductions.runtime.utils.URIManagement
 import play.api.mvc.EssentialAction
+import scala.io.Source
+import scala.xml.Unparsed
+import java.nio.file.Files
+import java.io.File
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -180,9 +184,19 @@ trait ApplicationTrait extends Controller
       lang: String, userInfo: NodeSeq = <div/>, title: String = "", displaySearch:Boolean = true )
   (implicit request: Request[_]) = {
       Ok( "<!DOCTYPE html>\n" +
-        mainPage( content, userInfo, lang, title, displaySearch)
+        mainPage( content, userInfo, lang, title, displaySearch,
+            messages = getDefaultAppMessage() )
       ).withHeaders("Access-Control-Allow-Origin" -> "*") // for dbpedia lookup
       .as("text/html; charset=utf-8")
+  }
+
+  private def getDefaultAppMessage(): NodeSeq = {
+    val messagesFile = "messages.html"
+    if (new File(messagesFile).exists()) {
+      try { scala.xml.XML.loadFile(messagesFile) }
+      catch { case e: Exception => <p>Exception in reading message file: { e }</p> }
+    } else
+      <p>...</p>
   }
 
   def wordsearchAction(q: String = "", clas: String = "") = Action.async {
