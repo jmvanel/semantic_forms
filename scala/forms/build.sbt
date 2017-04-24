@@ -3,11 +3,14 @@
 
 // name := "semantic_forms"
 
-lazy val forms = project.in(file("."))
-	.dependsOn(utils  % "compile->compile" )
-	.aggregate(utils)
-lazy val utils = project.in(file("../utils"))
+// lazy val forms = project.in(file("."))
+	// .dependsOn(utils  % "compile->compile" )
+	// .dependsOn(utils, connectors )
+	// .dependsOn(connectors )
+	// .aggregate(utils)
+// lazy val utils = project.in(file("../utils"))
 // lazy val utils = project.in(file("utils"))
+// lazy val connectors = project.in(file("../connectors"))
 
 import Common._
 libraryDependencies ++= commonDependencies

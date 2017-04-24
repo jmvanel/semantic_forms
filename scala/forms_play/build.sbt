@@ -8,17 +8,16 @@ name := "semantic_forms_play"
 // lazy val forms =  RootProject(file("../forms"))
 
 // for running from parent directory
-lazy val forms = (project in file("../forms")).dependsOn(utils)
-lazy val utils = project.in(file("../utils"))
+// lazy val forms = (project in file("../forms")) // .dependsOn(utils, connectors)
+// lazy val utils = project.in(file("../utils"))
+// lazy val connectors = project.in(file("../connectors"))
 
-lazy val forms_play = (project in file("."))
-        .dependsOn(forms)
-	.enablePlugins(PlayScala)
-  .disablePlugins(PlayLogback)
+// lazy val forms_play = (project in file(".")) .dependsOn(forms) .enablePlugins(PlayScala) .disablePlugins(PlayLogback)
 
-        publishArtifact in (Compile, packageDoc) := false
-        publishArtifact in packageDoc := false
-        sources in (Compile,doc) := Seq.empty
+
+publishArtifact in (Compile, packageDoc) := false
+publishArtifact in packageDoc := false
+sources in (Compile,doc) := Seq.empty
 
 fork in run := true
 // CAUTION here: this is for run and runMain; what is given with sbt -J-Xmx12G is *not* in effect for run! 

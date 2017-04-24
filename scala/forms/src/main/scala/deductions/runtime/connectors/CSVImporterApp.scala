@@ -29,8 +29,7 @@ object CSVImporterApp extends {
 //    override val useTextQuery = true // false
 //  }
 } with App
-    with RDFStoreLocalJena1Provider
-//    with DefaultConfiguration
+    with ImplementationSettings.RDFCache
     with CSVImporter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
   import ops._
