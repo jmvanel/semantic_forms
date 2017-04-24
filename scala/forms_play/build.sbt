@@ -8,7 +8,8 @@ name := "semantic_forms_play"
 // lazy val forms =  RootProject(file("../forms"))
 
 // for running from parent directory
-lazy val forms = (project in file("../forms"))
+lazy val forms = (project in file("../forms")).dependsOn(utils)
+lazy val utils = project.in(file("../utils"))
 
 lazy val forms_play = (project in file("."))
         .dependsOn(forms)

@@ -47,7 +47,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       extends PrefixBuilder("cco", "http://purl.org/ontology/cco/core#")(ops) {
     val expertise = apply("expertise")
   }
-  private val cco = new CCOPrefix(ops) // CCOPrefix//[Rdf]
+  // private val cco = new CCOPrefix(ops) // CCOPrefix//[Rdf]
   
   class VCardPrefix
 //  [Rdf <: RDF]
@@ -57,7 +57,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
 	  val locality =  apply("locality")
   }
 
-  private val vcard = new VCardPrefix(ops)//[Rdf]
+  // private val vcard = new VCardPrefix(ops)//[Rdf]
   private val gvoi = Prefix[Rdf]("gvoi", "http://assemblee-virtuelle.github.io/grands-voisins-v2/gv.owl.ttl#")
 
   ///////////////////////////////////

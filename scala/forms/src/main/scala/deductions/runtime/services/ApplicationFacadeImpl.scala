@@ -233,6 +233,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       case Some(url1) =>
       val uri = URLDecoder.decode(url1, "utf-8")
       val res = rdfStore.rw( dataset, {
+        // NOTE: purpose here: update Instance Label if rdfs:label has changed
         replaceInstanceLabel( URI(uri), allNamedGraph, // TODO reuse allNamedGraph
             lang )
     	})
