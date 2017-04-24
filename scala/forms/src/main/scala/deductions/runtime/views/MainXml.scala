@@ -81,13 +81,13 @@ Checker for good practices in RDF and OWL #152
         <div class="col-xs-12 col-sm-12 col-md-12 col-md-offset-1">
           <div class="col-xs-6 col-sm-4  col-md-1" >{
             if (displaySearch){
-              <button type="button" class="form-control btn btn-primary" data-toggle="collapse" data-target="#collapseDisplay">{ messageI18N("Display") }</button>
+              <button type="button" class="form-control btn btn-primary" data-toggle="collapse" data-target="#collapseDisplay">{ messageI18N("Reduce") }</button>
             }
             }
           </div>
         </div>
       </div>
-      <div class="collapse" id="collapseDisplay">{
+      <div class="collapse in" id="collapseDisplay">{
         if (displaySearch){
             enterURItoDownloadAndDisplay() ++
             enterSearchTerm() ++
