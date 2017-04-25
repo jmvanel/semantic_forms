@@ -52,7 +52,7 @@ trait FormSpecificationFactory[Rdf <: RDF, DATASET]
       (implicit graph: Rdf#Graph):
        (Seq[Rdf#URI], Rdf#Node, Try[Rdf#Graph]) = {
     val formConfiguration = URI(formuri)
-    val tryGraph = retrieveURINoTransaction( formConfiguration, dataset, HTTPrequest(), transactionsInside=false )
+    val tryGraph = retrieveURIBody( formConfiguration, dataset, HTTPrequest(), transactionsInside=false )
     val propertiesList = propertiesListFromFormConfiguration(formConfiguration)
     (propertiesList, formConfiguration, tryGraph)
   }

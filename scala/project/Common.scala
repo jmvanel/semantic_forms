@@ -16,7 +16,7 @@ object Common {
   val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
 
   val junitDependency = "junit" % "junit" % "4.12" % Test
-  val scalatestDependency = "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+  val scalatestDependency = "org.scalatest" %% "scalatest" % "3.0.3" % "test"
 
   val commonDependencies = Seq( bananaDependency,
 	jenaDependency, jenaPermissionsDependency, jenaTextDependency,

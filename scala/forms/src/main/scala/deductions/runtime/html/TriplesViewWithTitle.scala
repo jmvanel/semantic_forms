@@ -57,7 +57,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
             val (tryGraph: Try[Rdf#Graph], failureOrStatistics /* String or NodeSeq */ ) =
               if (blankNode != "true") {
                 // TODO pass datasetOrDefault)
-              val tryGraph = retrieveURINoTransaction(
+              val tryGraph = retrieveURIBody(
                 makeUri(uri), datasetOrDefault, request, transactionsInside=true)
               val failureOrStatistics = tryGraph match {
                 case Failure(e) => e.getLocalizedMessage

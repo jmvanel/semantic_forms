@@ -80,7 +80,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * with transaction
    */
   def retrieveURI(uri: Rdf#URI, dataset: DATASET = dataset): Try[Rdf#Graph] =
-      retrieveURINoTransaction(uri, dataset, HTTPrequest(), transactionsInside=true)
+      retrieveURIBody(uri, dataset, HTTPrequest(), transactionsInside=true)
 
 
   /**
@@ -89,12 +89,10 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * or local timestamp is older;
    * timestamp is saved in another Dataset
    *  @return the more recent RDF data if any, or the old data
-   *  
-   *  TODO rename retrieveURIBody
    */
-  def retrieveURINoTransaction(uri: Rdf#URI, dataset: DATASET,
+  def retrieveURIBody(uri: Rdf#URI, dataset: DATASET,
                                request: HTTPrequest,
-                               transactionsInside: Boolean //  = false
+                               transactionsInside: Boolean
                                ): Try[Rdf#Graph] = {
 
     val tryGraphLocallyManagedData = getLocallyManagedUrlAndData(uri, request, transactionsInside: Boolean)
