@@ -1,18 +1,19 @@
 package deductions.runtime.services
 
 import scala.language.postfixOps
+
 import org.w3.banana.FOAFPrefix
 import org.w3.banana.PointedGraph
 import org.w3.banana.RDF
 import org.w3.banana.RDFSPrefix
+
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.utils.URIHelpers
-import deductions.runtime.abstract_syntax.UnfilledFormFactory
 import deductions.runtime.utils.URIManagement
 
 /**
  * ensure that types inferred from ontologies are added to objects of given triples
- *  USE CASE: when user as entered a new value V for an object property,
+ *  USE CASE: when user has entered a new value V for an object property,
  *  associate an rdf:type to this value,
  *  so that the form for V will be correctly populated.
  */
@@ -22,12 +23,9 @@ trait TypeAddition[Rdf <: RDF, DATASET]
 		with URIManagement {
 
   import ops._
-  import sparqlOps._
-  import rdfStore.transactorSyntax._
-  import rdfStore.graphStoreSyntax._
 
-  private val rdfs = RDFSPrefix[Rdf]
-  private val foaf = FOAFPrefix[Rdf]
+  private lazy val rdfs = RDFSPrefix[Rdf]
+  private lazy val foaf = FOAFPrefix[Rdf]
 
   /** add Type triples, inferred from rdfs:range's
    *
@@ -68,12 +66,14 @@ trait TypeAddition[Rdf <: RDF, DATASET]
       } else Seq()
     }
 
-    /** if there is not already some rdfs.label, foaf.lastName, foaf.familyName properties set,
+    /* if there is not already some rdfs.label, foaf.lastName, foaf.familyName properties set,
      * add a triple
      * ?O rdfs.label ?LAB ,
      * where ?LAB is computed from URI string of ?O
      * NOTE: related to InstanceLabelsInference2#instanceLabel(), but here we actually add a triple,
-     * because we are in a callback for user edits */
+     * because we are in a callback for user edits
+     * 
+     * TODO use also for plain HTML page annotation */
     def addRDFSLabelValue() = {
       val existingValues = (pgObjectt / rdfs.label).nodes
       val existingValues2 = (pgObjectt / foaf.lastName).nodes
@@ -82,16 +82,13 @@ trait TypeAddition[Rdf <: RDF, DATASET]
         existingValues2.isEmpty &&
         existingValues3.isEmpty &&
         ( ! isAbsoluteURI(objectt.toString()) ||
-          objectt.toString().startsWith( // UnfilledFormFactory.
-              instanceURIPrefix )
+          objectt.toString().startsWith( instanceURIPrefix )
         )  ) {
-//        ! objectt.toString().contains(":")) {
        if (isAbsoluteURI(objectt.toString()))
     	   println("isAbsoluteURI " + objectt)
         val labelTriple = makeTriple(
             objectt, rdfs.label,
-            Literal( // UnfilledFormFactory.
-                makeStringFromURI( objectt.toString() ) )
+            Literal( makeStringFromURI( objectt.toString() ) )
         )
         rdfStore.appendToGraph( dataset, makeGraphForSaving(), ops.makeGraph(Seq(labelTriple)))
       }
@@ -111,7 +108,7 @@ trait TypeAddition[Rdf <: RDF, DATASET]
       val pgObjectt = PointedGraph[Rdf](objectt, graph)
       val existingTypes = (pgObjectt / rdf.typ).nodes
       if (existingTypes isEmpty) {
-        addRDFSLabelValue()
+        addRDFSLabelValue() // PENDING move out of the if() block
         addTypeValue()
       } else Seq()
     } else Seq()
