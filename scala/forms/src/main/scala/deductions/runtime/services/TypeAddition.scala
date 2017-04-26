@@ -66,53 +66,55 @@ trait TypeAddition[Rdf <: RDF, DATASET]
       } else Seq()
     }
 
-    /* if there is not already some rdfs.label, foaf.lastName, foaf.familyName properties set,
-     * add a triple
-     * ?O rdfs.label ?LAB ,
-     * where ?LAB is computed from URI string of ?O
-     * NOTE: related to InstanceLabelsInference2#instanceLabel(), but here we actually add a triple,
-     * because we are in a callback for user edits
-     * 
-     * TODO use also for plain HTML page annotation */
-    def addRDFSLabelValue() = {
-      val existingValues = (pgObjectt / rdfs.label).nodes
-      val existingValues2 = (pgObjectt / foaf.lastName).nodes
-      val existingValues3 = (pgObjectt / foaf.familyName).nodes
-      if (existingValues.isEmpty &&
-        existingValues2.isEmpty &&
-        existingValues3.isEmpty &&
-        ( ! isAbsoluteURI(objectt.toString()) ||
-          objectt.toString().startsWith( instanceURIPrefix )
-        )  ) {
-       if (isAbsoluteURI(objectt.toString()))
-    	   println("isAbsoluteURI " + objectt)
-        val labelTriple = makeTriple(
-            objectt, rdfs.label,
-            Literal( makeStringFromURI( objectt.toString() ) )
-        )
-        rdfStore.appendToGraph( dataset, makeGraphForSaving(), ops.makeGraph(Seq(labelTriple)))
-      }
-    }
+    //// body of function addType()
 
-    def makeGraphForSaving() = {
+    val result = if (objectt.isURI) {
+      val pgObjectt = PointedGraph[Rdf](objectt, graph)
+      val existingTypes = (pgObjectt / rdf.typ).nodes
+      if (existingTypes isEmpty) {
+        addRDFSLabelValue(objectt, graphURI) // PENDING move out of the if() block
+        addTypeValue()
+      } else Seq()
+    } else Seq()
+    result
+  }
+
+  /**
+   * if there is not already some rdfs.label, foaf.lastName, foaf.familyName properties set,
+   * add a triple
+   * ?O rdfs.label ?LAB ,
+   * where ?LAB is computed from URI string of ?O
+   * NOTE: related to InstanceLabelsInference2#instanceLabel(), but here we actually add a triple,
+   * because we are in a callback for user edits
+   *
+   * TODO use also for plain HTML page annotation
+   */
+  def addRDFSLabelValue(objectt: Rdf#Node, graphURI: Option[Rdf#URI], graph: Rdf#Graph = allNamedGraph) = {
+    val pgObjectt = PointedGraph[Rdf](objectt, graph)
+
+    val existingValues = (pgObjectt / rdfs.label).nodes
+    val existingValues2 = (pgObjectt / foaf.lastName).nodes
+    val existingValues3 = (pgObjectt / foaf.familyName).nodes
+    if (existingValues.isEmpty &&
+      existingValues2.isEmpty &&
+      existingValues3.isEmpty &&
+      (!isAbsoluteURI(objectt.toString()) ||
+        objectt.toString().startsWith(instanceURIPrefix))) {
+      if (isAbsoluteURI(objectt.toString()))
+        println("isAbsoluteURI " + objectt)
+      val labelTriple = makeTriple(
+        objectt, rdfs.label,
+        Literal(makeStringFromURI(objectt.toString())))
+      rdfStore.appendToGraph(dataset, makeGraphForSaving(objectt, graphURI), ops.makeGraph(Seq(labelTriple)))
+    }
+  }
+
+  def makeGraphForSaving(objectt: Rdf#Node, graphURI: Option[Rdf#URI]) = {
       graphURI.getOrElse(
         foldNode(objectt)(
           u => u,
           bn => URI(""),
           lit => URI("")))
     }
-
-    ////
-
-    val result = if (objectt.isURI) {
-      val pgObjectt = PointedGraph[Rdf](objectt, graph)
-      val existingTypes = (pgObjectt / rdf.typ).nodes
-      if (existingTypes isEmpty) {
-        addRDFSLabelValue() // PENDING move out of the if() block
-        addTypeValue()
-      } else Seq()
-    } else Seq()
-    result
-  }
 }
 

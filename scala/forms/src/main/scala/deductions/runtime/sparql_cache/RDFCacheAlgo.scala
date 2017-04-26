@@ -409,17 +409,22 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
 
   /** needs Write transaction */
   def pureHTMLwebPageAnnotateAsDocument(uri: Rdf#URI, request: HTTPrequest): Rdf#Graph = {
-    val newGraphWithUrl: Rdf#Graph = makeGraph(List(makeTriple(uri, rdf.typ, foaf.Document)))
-    wrapInTransaction { rdfStore.appendToGraph(dataset,
-      URI(makeAbsoluteURIForSaving(request.userId())),
-      newGraphWithUrl) }
+    val newGraphWithUrl = makeGraph(List(makeTriple(uri, rdf.typ, foaf.Document)))
+    wrapInTransaction {
+      rdfStore.appendToGraph(
+        dataset,
+        URI(makeAbsoluteURIForSaving(request.userId())),
+        newGraphWithUrl)
+    }
     println(s"pureHTMLwebPageAnnotateAsDocument: saved $newGraphWithUrl in graph <${makeAbsoluteURIForSaving(request.userId())}>")
-    val it = wrapInReadTransaction { find(allNamedGraph, uri, ANY, ANY)  } . getOrElse( Iterator.empty )
-    val ret = newGraphWithUrl .
-    // NOTE: after user added triples, this way typeChange will not be triggered
-    union( makeGraph(it.toIterable))
-    println( s"pureHTMLwebPageAnnotateAsDocument: ret $ret" )
-    ret
+    val currentPageTriplesIterator = wrapInReadTransaction {
+      find(allNamedGraph, uri, ANY, ANY)
+    }.getOrElse(Iterator.empty) . toIterable
+    val result = newGraphWithUrl.
+      // NOTE: after user added triples, this way typeChange will not be triggered
+      union(makeGraph(currentPageTriplesIterator))
+    println(s"pureHTMLwebPageAnnotateAsDocument: ret $result")
+    result
   }
 }
 
