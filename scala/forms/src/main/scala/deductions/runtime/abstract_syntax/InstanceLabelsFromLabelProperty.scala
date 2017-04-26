@@ -47,47 +47,29 @@ trait InstanceLabelsFromLabelProperty[Rdf <: RDF, DATASET]
        parseSelect("SELECT ?Z WHERE{<aa> <bb> <cc> .}").get
   }
 
-  def instanceLabelFromLabelProperty(node: Rdf#Node): Option[Rdf#Node] = instanceLabelFromLabelPropertyNew(node)
-
-  private def instanceLabelFromLabelPropertyNew(node: Rdf#Node): Option[Rdf#Node] = {
+  def instanceLabelFromLabelProperty(node: Rdf#Node): Option[Rdf#Node] = {
     ops.foldNode(node)(
       node => {
         if (node == nullURI )
           None
         else {
         	val bindings: Map[String, Rdf#Node] = Map("?thing" -> node )
+//        	println( s">>>> instanceLabelFromLabelProperty ?thing node $node compiledQuery $compiledQuery" )
         	val solutionsTry = for {
         		es <- dataset.executeSelect(compiledQuery, bindings)
         	} yield es
-        	makeListofListsFromSolutions(solutionsTry, addHeaderRow=false) match {
-        	  case Success(List( List(lab, _*), _*)) => Some(lab)
-        	  case _ => None 
-        	}
+          makeListofListsFromSolutions(solutionsTry, addHeaderRow = false) match {
+            case Success(List(Seq(lab, _*), _*)) =>
+              //      	  println( s">>>> instanceLabelFromLabelProperty label $lab" )
+              Some(lab)
+            case res =>
+              //        	    println( s">>>> instanceLabelFromLabelProperty result $res" )
+              None
+          }
         }
       },
       _ => None,
       _ => None)
   }
-  
-//  private def instanceLabelFromLabelProperty_OLD(node: Rdf#Node): Option[Rdf#Node] = {
-//    ops.foldNode(node)(
-//      node => {
-//        if (node == ops.URI(""))
-//          None
-//        else {
-//          val q = query.replaceAll("\\<thing\\>", "<" + fromUri(node) + ">")
-//          // println(s"query $q")
-//          val res = for (
-//            nodes <- sparqlSelectQueryVariablesNT(q, List("LABEL_URI"));
-//            node <- nodes
-//          ) yield {
-//            node
-//          }
-//          res.headOption
-//        }
-//      },
-//      _ => None,
-//      _ => None)
-//  }
 
 }
