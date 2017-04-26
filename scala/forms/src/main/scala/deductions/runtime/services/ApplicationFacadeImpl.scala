@@ -120,7 +120,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   def labelForURITransaction(uri: String, language: String)
   : String = {
 //    logger.info( s"labelForURITransaction $uri, $language"  )
-    val res = rdfStore.r(dataset, {
+    val res = rdfStore.rw(dataset, {
       makeInstanceLabel(URI(uri), allNamedGraph, language)
     }).getOrElse(uri)
 //    logger.info( s"result $res"  )
