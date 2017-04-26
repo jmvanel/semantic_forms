@@ -7,12 +7,20 @@ function cloneWidget(widget) {
         parent = widget.parent(),
         cardinal = widget.parent().children().length;
     console.log("nombre de widgets : "+cardinal);
+
+    var widgetName = decodeURIComponent(widget.attr("name")).split("+")
+    if (widgetName[2][0] == '<' ){
+        widgetName = widgetName[0] +'+'+widgetName[1]+'+<>+.'
+    }else{
+        widgetName = widgetName[0] +'+'+widgetName[1]+'+""+.'
+    }
+
     addedWidget
         .val('')
         .attr('class',widget.attr('class'))
         //.addClass( widget.attr('id'))
         .attr('id', widget.attr('id')+'-'+cardinal)
-        .attr('name', widget.attr('name'))
+        .attr('name', widgetName)
         .attr('title', widget.attr('title'))
         .attr('hidden', 'false');
     parent.prepend(addedWidget, widget);
