@@ -84,13 +84,13 @@ trait TypeAddition[Rdf <: RDF, DATASET]
    * add a triple
    * ?O rdfs.label ?LAB ,
    * where ?LAB is computed from URI string of ?O
-   * NOTE: related to InstanceLabelsInference2#instanceLabel(), but here we actually add a triple,
-   * because we are in a callback for user edits
-   *
-   * TODO use also for plain HTML page annotation
+   * NOTES:
+   * - related to InstanceLabelsInference2#instanceLabel(), but here we actually add a triple,
+   *     because we are in a callback for user edits
+   * - used also for plain HTML page annotation
    */
-  def addRDFSLabelValue(objectt: Rdf#Node, graphURI: Option[Rdf#URI], graph: Rdf#Graph = allNamedGraph) = {
-    val pgObjectt = PointedGraph[Rdf](objectt, graph)
+  def addRDFSLabelValue(resource: Rdf#Node, graphURI: Option[Rdf#URI], graph: Rdf#Graph = allNamedGraph) = {
+    val pgObjectt = PointedGraph[Rdf](resource, graph)
 
     val existingValues = (pgObjectt / rdfs.label).nodes
     val existingValues2 = (pgObjectt / foaf.lastName).nodes
@@ -98,14 +98,14 @@ trait TypeAddition[Rdf <: RDF, DATASET]
     if (existingValues.isEmpty &&
       existingValues2.isEmpty &&
       existingValues3.isEmpty &&
-      (!isAbsoluteURI(objectt.toString()) ||
-        objectt.toString().startsWith(instanceURIPrefix))) {
-      if (isAbsoluteURI(objectt.toString()))
-        println("isAbsoluteURI " + objectt)
+      (!isAbsoluteURI(resource.toString()) ||
+        resource.toString().startsWith(instanceURIPrefix))) {
+      if (isAbsoluteURI(resource.toString()))
+        println("isAbsoluteURI " + resource)
       val labelTriple = makeTriple(
-        objectt, rdfs.label,
-        Literal(makeStringFromURI(objectt.toString())))
-      rdfStore.appendToGraph(dataset, makeGraphForSaving(objectt, graphURI), ops.makeGraph(Seq(labelTriple)))
+        resource, rdfs.label,
+        Literal(makeStringFromURI(resource.toString())))
+      rdfStore.appendToGraph(dataset, makeGraphForSaving(resource, graphURI), ops.makeGraph(Seq(labelTriple)))
     }
   }
 

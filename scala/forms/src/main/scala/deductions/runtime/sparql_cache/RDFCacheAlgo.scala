@@ -26,6 +26,7 @@ import deductions.runtime.utils.URIManagement
 import deductions.runtime.utils.HTTPHelpers
 import deductions.runtime.utils.HTTPrequest
 import deductions.runtime.utils.RDFHelpers
+import deductions.runtime.services.TypeAddition
 
 /** */
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
@@ -45,7 +46,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     with BrowsableGraph[Rdf, DATASET]
     with RDFHelpers[Rdf]
     with URIManagement
-    with HTTPHelpers {
+    with HTTPHelpers
+    with TypeAddition[Rdf, DATASET] {
 
 	import scala.concurrent.ExecutionContext.Implicits.global
    
@@ -407,14 +409,17 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       }
     }
 
-  /** needs Write transaction */
+  /** transaction inside (Write)
+   * TODO: graphURI should be obtained from the HTTP request, or else from user Id */
   def pureHTMLwebPageAnnotateAsDocument(uri: Rdf#URI, request: HTTPrequest): Rdf#Graph = {
+    val graphURI = URI(makeAbsoluteURIForSaving(request.userId()))
     val newGraphWithUrl = makeGraph(List(makeTriple(uri, rdf.typ, foaf.Document)))
     wrapInTransaction {
       rdfStore.appendToGraph(
         dataset,
-        URI(makeAbsoluteURIForSaving(request.userId())),
+        graphURI,
         newGraphWithUrl)
+      addRDFSLabelValue(uri, Some(graphURI))
     }
     println(s"pureHTMLwebPageAnnotateAsDocument: saved $newGraphWithUrl in graph <${makeAbsoluteURIForSaving(request.userId())}>")
     val currentPageTriplesIterator = wrapInReadTransaction {
