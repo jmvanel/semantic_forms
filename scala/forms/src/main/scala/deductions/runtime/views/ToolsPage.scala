@@ -100,7 +100,8 @@ trait ToolsPage extends EnterButtons
     val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
     println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
     val servicesURIPrefixEncoded = URLEncoder.encode(servicesURIPrefix, "UTF-8")
-    val servicesURL = s"$toolURLprefix$servicesURIPrefixEncoded$sparqlServicePrefix"
+    val toolURLprefixEncoded = URLEncoder.encode(toolURLprefix, "UTF-8")
+    val servicesURL = s"$toolURLprefixEncoded$servicesURIPrefixEncoded$sparqlServicePrefix"
     println(s"servicesURL $servicesURL")
 
     <button id={buttonId}

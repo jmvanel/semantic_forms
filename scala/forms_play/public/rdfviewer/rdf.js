@@ -592,7 +592,10 @@ function loader(url, doLoad) {
                     .error(function() {
                         $.getJSON("http://rdf-translator.appspot.com/convert/n3/rdf-json/"+url, doLoad)
                             .error(function() {
-                                alert("Could not load "+url);
+                                $.getJSON("http://rdf-translator.appspot.com/convert/json-ld/rdf-json/"+url, doLoad)
+                                    .error(function() {
+                                        alert("Could not load "+url);
+                                });
                             });
                     });
               });
