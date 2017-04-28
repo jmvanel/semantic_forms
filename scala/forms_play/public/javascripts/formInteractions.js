@@ -9,11 +9,10 @@ function cloneWidget(widget) {
     console.log("nombre de widgets : "+cardinal);
 
     var widgetName = decodeURIComponent(widget.attr("name")).split("+")
-    if (widgetName[2][0] == '<' ){
+    if (widgetName[2][0] == '<' )
         widgetName = widgetName[0] +'+'+widgetName[1]+'+<>+.'
-    }else{
+    else
         widgetName = widgetName[0] +'+'+widgetName[1]+'+""+.'
-    }
 
     addedWidget
         .val('')
