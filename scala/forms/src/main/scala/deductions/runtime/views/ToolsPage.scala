@@ -95,14 +95,15 @@ trait ToolsPage extends EnterButtons
                toolname: String = "RDF Viewer",
                imgWidth: Int = 15): NodeSeq = {
 
-    val sparqlServicePrefix = URLEncoder.encode("sparql?query=", "UTF-8")
+    val sparqlServicePrefix = URLEncoder.encode( URLEncoder.encode("sparql?query=", "UTF-8"), "UTF-8")
     val buttonId = textareaId+"-button"
     val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
     println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
-    val servicesURIPrefixEncoded = URLEncoder.encode(servicesURIPrefix, "UTF-8")
-    val toolURLprefixEncoded = URLEncoder.encode(toolURLprefix, "UTF-8")
-    val servicesURL = s"$toolURLprefixEncoded$servicesURIPrefixEncoded$sparqlServicePrefix"
-    println(s"servicesURL $servicesURL")
+    val servicesURIPrefixEncoded = URLEncoder.encode( URLEncoder.encode(servicesURIPrefix, "UTF-8"), "UTF-8")
+    val toolURLprefixEncoded = URLEncoder.encode( URLEncoder.encode(toolURLprefix, "UTF-8"), "UTF-8")
+    // val servicesURL = s"$toolURLprefixEncoded$servicesURIPrefixEncoded$sparqlServicePrefix"
+    val servicesURL = s"$toolURLprefix$servicesURIPrefixEncoded$sparqlServicePrefix"
+    println(s">>>> servicesURL $servicesURL")
 
     <button id={buttonId}
     class="btn btn-default" title={ s"Draw RDF graph with $toolname" } target="_blank">

@@ -584,6 +584,7 @@ Graph.prototype.load = function(d) {
 }
 
 function loader(url, doLoad) {
+    console.log("loader: " + url );
     $.getJSON(url, doLoad)
         .error(function() {
           $.getJSON("http://rdf-translator.appspot.com/convert/detect/rdf-json/"+url, doLoad)
