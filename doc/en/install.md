@@ -73,6 +73,11 @@ You can change the default port (9000) to e.g. 9999 like this:
 
 There is no need to be administrator.
 
+You can set detailed loggin running like this:
+```shell
+PORT=9000
+bin/semantic_forms_play -J-Xmx2000M -J-server -Dhttp.port=$PORT -Dlog4j.configurationFile=conf/log4j2.debug.properties
+```
 
 # Work with the `semantic_forms` distribution
 

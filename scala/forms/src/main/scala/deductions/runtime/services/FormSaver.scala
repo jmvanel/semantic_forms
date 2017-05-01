@@ -108,8 +108,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
             else {
               if (objectStringFromUser != "")
                 logger.debug(s"""computeDatabaseChanges: objectStringFromUser "$objectStringFromUser" changed: spaces removed""")
-              URI( // UnfilledFormFactory.
-                makeURIFromString(objectStringFromUser))
+              URI( makeURIFromString(objectStringFromUser) )
             }
           },
           _ => BNode(objectStringFromUser.replaceAll(" ", "_")), // ?? really do this ?

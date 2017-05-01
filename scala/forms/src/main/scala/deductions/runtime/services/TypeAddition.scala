@@ -101,7 +101,7 @@ trait TypeAddition[Rdf <: RDF, DATASET]
       (!isAbsoluteURI(resource.toString()) ||
         resource.toString().startsWith(instanceURIPrefix))) {
       if (isAbsoluteURI(resource.toString()))
-        println("isAbsoluteURI " + resource)
+        println("addRDFSLabelValue: isAbsoluteURI " + resource)
       val labelTriple = makeTriple(
         resource, rdfs.label,
         Literal(makeStringFromURI(resource.toString())))

@@ -99,24 +99,27 @@ trait URIManagement extends URIHelpers {
     servicesURIPrefix2._1
   }
 
-  /** @return services URI Prefix, is DNS (not IP) */
+  /** @return services URI Prefix, is DNS (not IP)
+   *  TODO : also take in account the HTTPrequest class */
   def servicesURIPrefix2: (String, Boolean) = {
 
     val (hostNameUsed: String, isDNS: Boolean) =
       if (useLocalHostPrefixForURICreation) {
         val hostNameFromAPI = InetAddress.getLocalHost().getCanonicalHostName // getHostName()
-        println( s"hostNameFromAPI $hostNameFromAPI")
+        println( s"servicesURIPrefix2: hostNameFromAPI <$hostNameFromAPI>")
+
         if (hostNameFromAPI.contains("."))
           ("http://" + hostNameFromAPI, true)
+
         else {
           // the server is not registered on DNS or in /etc/hosts : get the actual IPV4 port
           val nis = NetworkInterface.getNetworkInterfaces().toList
           val adresses = for (
             networkInterface <- nis;
-            _ = println1(getNetworkInterfaceInfo(networkInterface));
+            _ = println1("servicesURIPrefix2: "+getNetworkInterfaceInfo(networkInterface));
             adress <- networkInterface.getInetAddresses;
             hostAddress = adress.getHostAddress;
-            _ = println1(s"ni $networkInterface hostAddress $hostAddress")
+            _ = println1(s"servicesURIPrefix2: ni $networkInterface hostAddress $hostAddress")
           ) yield adress
 
           val internetAdresses = adresses.filter { adress =>
@@ -135,23 +138,27 @@ trait URIManagement extends URIHelpers {
                 hostAddress.startsWith("192.168."))
             )
           }
-          println1(s"intranetAdresses $intranetAdresses")
-          println1(s"internetAdresses $internetAdresses")
+          println1(s"servicesURIPrefix2: intranetAdresses $intranetAdresses")
+          println1(s"servicesURIPrefix2: internetAdresses $internetAdresses")
           val (adresses2, isDNS) = if (!internetAdresses.isEmpty) {
             if (internetAdresses.size > 1)
               System.err.println(s"CAUTION: several Internet Adresses: $internetAdresses")
             (internetAdresses, true)
           } else {
             if (intranetAdresses.size > 1)
-              System.err.println(s"CAUTION: several Intranet Adresses: $intranetAdresses")
+              System.err.println(s"CAUTION: servicesURIPrefix2: several Intranet Adresses: $intranetAdresses")
             (intranetAdresses, false)
           }
-          val result = "http://" + adresses2.toList.headOption.getOrElse("127.0.0.1")
+          println1(s"servicesURIPrefix2: adresses2 $adresses2")
+          val result = {
+            val adress22 = adresses2.toList.headOption.getOrElse("127.0.0.1")
+            "http://" + adress22.toString().replaceFirst("^/", "")
+          }
           // "http://" + InetAddress.getLocalHost().getHostAddress()
           (result, isDNS)
         }
       } else (defaultInstanceURIHostPrefix, true)
-    println1(s"hostNameUsed $hostNameUsed")
+    println1(s"servicesURIPrefix2: hostNameUsed <$hostNameUsed>")
     ( hostNameUsed + ":" + serverPort + "/" , isDNS)
   }
 
@@ -202,6 +209,6 @@ trait URIManagement extends URIHelpers {
     return ipAddress;
   }
 
-  def println1(mess: String) = if (false) println(mess)
+  def println1(mess: String) = if (logActive) println(mess)
 
 }

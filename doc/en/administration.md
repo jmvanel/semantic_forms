@@ -1,6 +1,20 @@
 Application and database administration
 =======================================
 
+# Introduction
+
+Typically you have downloaded the zipped application (or build it from sources).
+
+Then run the generic server like this:
+
+```shell
+PORT=9000
+bin/semantic_forms_play -J-Xmx2000M -J-server -Dhttp.port=$PORT
+```
+
+For more details on running the zipped application, see [installation](install.md).
+
+
 # Running auxiliary programs
 
 There are lots of auxiliary Scala programs, or Java ones from Jena, Lucene, etc.
