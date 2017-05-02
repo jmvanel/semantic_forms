@@ -9,8 +9,8 @@ import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.DefaultConfiguration
 
 /**
- * ReplaceSubclassWithProperty : App Example with hard-coded list of super-classes
- * to disconnect from their sub-classes
+ * ReplaceSubclassWithProperty : App Example with hard-coded criterion on super-classes
+ * to be disconnected from their sub-classes
  */
 object ReplaceSubclassWithPropertyAppExample extends {
   override val config = new DefaultConfiguration {
@@ -29,19 +29,27 @@ object ReplaceSubclassWithPropertyAppExample extends {
   import ops._
   private lazy val owl = OWLPrefix[Rdf]
 
-  val superClasses0 = for (
-    classeTriple <- ops.find(graph, ANY, rdf.typ, owl.Class);
-    classe = classeTriple.subject;
-    label = rdfsLabel(classe, graph) if (
-      // hard-coded list of super-classes TODO
-      label.startsWith("Onglet") ||
-      label.startsWith("Emplacement"))
-  ) yield { classe }
+  /** hard-coded criterion on super-classes
+ * to be disconnected from their sub-classes
+ * @return list of super-classes */
+  def getSuperClassesToProcess() = {
+    val superClasses0 = for (
+      classeTriple <- ops.find(graph, ANY, rdf.typ, owl.Class);
+      classe = classeTriple.subject;
+      superClassesTriples <- ops.find(graph, classe, rdfs.subClassOf, ANY);
+      superClass = superClassesTriples.objectt;
+      label = rdfsLabel(classe, graph) if (
+        label.startsWith("Onglet") ||
+        label.startsWith("Emplacement")) ||
+        fromUri(uriNodeToURI(superClass)).endsWith("_spécifiques")
+    ) yield { classe }
 
-  val superClasses = superClasses0.map {
-    n => makeURIFromNode(n)
-  }.toList
+    superClasses0.map {
+      n => makeURIFromNode(n)
+    }.toList
+  }
 
+  val superClasses = getSuperClassesToProcess()
   val classPairs = getWrongSubclassePairs()
   println(s"class Pairs: ${classPairs.mkString(", ")}")
   replaceSubclasses(graph, classPairs)

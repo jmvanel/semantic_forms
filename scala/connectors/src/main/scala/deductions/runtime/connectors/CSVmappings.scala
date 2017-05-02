@@ -16,7 +16,7 @@ trait CSVmappings[Rdf <: RDF]	extends RDFPrefixes[Rdf] {
    *  make this Map an argument
    *  use labels on properties to propose properties to user,
    *  manage prefixes globally, maybe using prefix.cc */
-  val columnsMappings = Map(
+  lazy val columnsMappings = Map(
 
       // AV, Guillaume's column names
 
@@ -152,9 +152,9 @@ NB de mentions presses	Ventes ou services	Structure juridique signature conventi
       val metAt = apply("metAt")
   }
   private object AVPrefix extends AVPrefix(ops){ def apply = new AVPrefix(ops) }
-  private val av = AVPrefix
+  private lazy val av = AVPrefix
 
-  private val gvoi = Prefix[Rdf]("gvoi", "http://assemblee-virtuelle.github.io/grands-voisins-v2/gv.owl.ttl#")
+  private lazy val gvoi = Prefix[Rdf]("gvoi", "http://assemblee-virtuelle.github.io/grands-voisins-v2/gv.owl.ttl#")
 
 
 }
