@@ -36,12 +36,16 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
       conn =>
         val expires = getHeaderField("Expires", conn)
         println( s"""isDocumentExpired: Expires: "$expires"""" )
-        val resulTest = Try {
-        val expireDate = DateUtils.parseDate(expires)
-        val currentDate = new Date
-        currentDate.getTime > expireDate.getTime
+        if( expires == "" )
+          false
+        else {
+          val resulTest = Try {
+            val expireDate = DateUtils.parseDate(expires)
+            val currentDate = new Date
+            currentDate.getTime > expireDate.getTime
+          }
+          resulTest.getOrElse(false)
         }
-        resulTest.getOrElse(false)
     }
     opt.getOrElse(false)
   }
