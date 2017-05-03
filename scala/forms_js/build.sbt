@@ -1,6 +1,6 @@
 import sbt.Keys._
 import sbt._
-// import Common._
+// import Common._ // TODO
 
 scalaVersion in ThisBuild := "2.11.8" // scalaVersion :=  "2.12.1"
 
@@ -9,11 +9,9 @@ scalaJSOptimizerOptions ~= { _.withDisableOptimizer(true) }
 
 name := "forms_js"
 
-// lazy val root = project.enablePlugins(ScalaJSPlugin)
-// TODO banana JS:	libraryDependencies += "org.w3" %%  "banana-jena" % "0.8.2-SNAPSHOT"
-
 libraryDependencies ++= Seq(
-  "org.scala-js" %%% "scalajs-dom" % "0.9.1"
+  "org.scala-js" %%% "scalajs-dom" % "0.9.1" ,
+  "org.w3" %%  "banana-plantain" % "0.8.4-SNAPSHOT"
 )
 
 resolvers += "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/"
