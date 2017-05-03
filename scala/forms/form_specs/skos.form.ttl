@@ -12,7 +12,7 @@
 
 # form specifications for SKOS
 
-forms:skos-Concept
+forms:skos-Concept_Form
   a form:specification ;
   rdfs:label "Concept SKOS"@fr ;
   rdfs:label "SKOS Concept"@en ;
@@ -29,4 +29,20 @@ forms:skos-Concept
 	skos:narrower
   )
 .
+
+forms:skos-narrower
+	:fieldAppliesToForm forms:skos-Concept_Form ;
+	:fieldAppliesToProperty skos:narrower ;
+	:widgetClass form:DBPediaLookup .
+
+forms:skos-broader
+	:fieldAppliesToForm forms:skos-Concept_Form ;
+	:fieldAppliesToProperty skos:broader ;
+	:widgetClass form:DBPediaLookup .
+
+forms:skos-related
+	:fieldAppliesToForm forms:skos-Concept_Form ;
+	:fieldAppliesToProperty skos:related ;
+	:widgetClass form:DBPediaLookup .
+
 
