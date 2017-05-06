@@ -50,6 +50,7 @@ import org.w3.banana._
   lazy val dct = DCTPrefix[Rdf]
 	lazy val dc = DCPrefix[Rdf]
   lazy val orgVocab = Prefix[Rdf]("org", "http://www.w3.org/ns/org#" )
+  lazy val geo = Prefix[Rdf]("geo", "http://www.w3.org/2003/01/geo/wgs84_pos#" )
 
   lazy val dwc = Prefix[Rdf]("dwc", "http://rs.tdwg.org/dwc/terms/")
 
@@ -80,8 +81,10 @@ import org.w3.banana._
     Prefix[Rdf]("doas", "http://deductions.github.io/doas.owl.ttl#"),
     Prefix[Rdf]("bioc", "http://deductions.github.io/biological-collections.owl.ttl#"),
     Prefix[Rdf]("seeds", "http://deductions.github.io/seeds.owl.ttl#"),
-    Prefix[Rdf]("cco", "http://purl.org/ontology/cco/core#" ),
+    Prefix[Rdf]("nature", "http://deductions.github.io/nature_observation.owl.ttl#"),
 
+    Prefix[Rdf]("cco", "http://purl.org/ontology/cco/core#" ),
+    geo,
     // prefixes for resources
 
     Prefix[Rdf]("dbpedia", "http://dbpedia.org/resource/"),
