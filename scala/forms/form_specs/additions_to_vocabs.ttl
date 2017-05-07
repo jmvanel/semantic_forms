@@ -5,9 +5,11 @@
 @prefix cco: <http://purl.org/ontology/cco/core#> .
 @prefix org:        <http://www.w3.org/ns/org#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 # Additions to FOAF vocab' ;
-# the forms system will propose possible values based on rdfs:range,
+# the forms system infers possible values based on rdfs:range,
 # so, to work well we need some additions to ontologie(s).
 
 # NOTES:
@@ -20,7 +22,7 @@
 # - 
 # - anyway, we currentlmy try to avoid using and entering owl:inverseOf properties,
 #	because nothing is implemented, not even specified,
-#	and it is alway possible to enter the link on one side of the relation. 
+#	and it is always possible to enter the link on one side of the relation. 
 
 # For forms:personForm
 foaf:currentProject rdfs:range foaf:Project .
@@ -38,3 +40,11 @@ org:headOf a owl:ObjectProperty ;
     rdfs:domain foaf:Person;
     rdfs:range  foaf:Organization;
     rdfs:subPropertyOf org:memberOf .
+
+geo:long
+    a owl:DatatypeProperty ;
+    rdfs:range xsd:float .
+
+geo:lat
+    a owl:DatatypeProperty ;
+    rdfs:range xsd:float .

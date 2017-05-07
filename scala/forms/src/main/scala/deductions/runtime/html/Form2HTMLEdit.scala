@@ -219,29 +219,25 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
 
       case _ =>
         <div class={ css.cssClasses.formDivInputCSSClass }>
-        <input class={ css.cssClasses.formInputCSSClass } value={
-          toPlainString(value)
-        } name={ makeHTMNameLiteral(lit) } type={
-          xsd2html5TnputType(type_.toString())
-        }
-        placeholder={ placeholder }
-        title={ placeholder }
-        size={
-          inputSize.toString()
-        } dropzone="copy" id={ htmlId }>
-        </input>
-          {makeUserInfoOnTriples(lit.metadata,lit.timeMetadata)}
+          <input class={ css.cssClasses.formInputCSSClass } value={
+            toPlainString(value)
+          } name={ makeHTMNameLiteral(lit) } type={
+            xsd2html5TnputType(type_.toString())
+          } placeholder={ placeholder } title={ placeholder } size={
+            inputSize.toString()
+          } dropzone="copy" id={ htmlId } data-uri-property={ lit.property.toString() }>
+          </input>
+          { makeUserInfoOnTriples(lit.metadata, lit.timeMetadata) }
         </div>
-
         <div class={ css.cssClasses.formDivEditInputCSSClass }>
-				{ if( showEditButtons )
-        <input class="btn btn-primary" type="button" value="EDIT"
-				onClick={
-          s"""launchEditorWindow( document.getElementById( "$htmlId" ));"""
-        } title="Click to edit multiline text in popup window as Markdown text">
-        </input>
-				}
-				</div>
+          {
+            if (showEditButtons)
+              <input class="btn btn-primary" type="button" value="EDIT" onClick={
+                s"""launchEditorWindow( document.getElementById( "$htmlId" ));"""
+              } title="Click to edit multiline text in popup window as Markdown text">
+              </input>
+          }
+        </div>
     }
     Text("\n") ++ elem
   }
