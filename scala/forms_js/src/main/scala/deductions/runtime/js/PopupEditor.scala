@@ -8,7 +8,8 @@ import scala.scalajs.js
 import js.Dynamic.literal
 import org.scalajs.dom.raw.BeforeUnloadEvent
 
-@JSExport
+// @JSExport
+/** outdated, currently we use the JavaScript in forms_play/public/ */
 object PopupEditor extends JSApp {
 
   @JSExport
