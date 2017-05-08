@@ -2,6 +2,7 @@ package deductions.runtime.js
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExportTopLevel
+import scala.scalajs.js.annotation.JSExport
 
 import org.scalajs.dom
 import org.scalajs.dom.raw.Geolocation
@@ -12,17 +13,21 @@ import org.scalajs.dom.html.Input
 // for for loop with NodeList:
 import org.scalajs.dom.ext._
 
-@JSExportTopLevel("GPS")
+@JSExportTopLevel("GPS2")
 object GPS2 {
 
   // TODO later depend on utils
   val geoPrefix = "http://www.w3.org/2003/01/geo/wgs84_pos#"
 
-  /** TODO not sure if the updated <input> content goes to the server ... */
-  def listenToSubmitEventFillGeoCoordinates = {
-    getSaveButtons.addEventListener("submit",
+  /** listen To Submit Event and Fill Geo Coordinates
+   *  TODO not sure if the updated <input> content goes to the server ... */
+  @JSExport
+  def listenToSubmitEventFillGeoCoordinates(): Unit = {
+		  dom.window.console.log("""listenToSubmitEventFillGeoCoordinates (Scala.js) """)
+//    getSaveButtons.addEventListener("submit",
+    getSaveButtons.addEventListener("click",
       (e: dom.Event) => {
-        println("""EventListener("submit") """)
+    	  dom.window.console.log("""EventListener("submit") """)
         fillGeoCoordinates },
       false); // Modern browsers
   }
