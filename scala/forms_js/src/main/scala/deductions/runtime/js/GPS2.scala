@@ -19,21 +19,32 @@ object GPS2 {
   // TODO later depend on utils
   val geoPrefix = "http://www.w3.org/2003/01/geo/wgs84_pos#"
 
-  /** listen To Submit Event and Fill Geo Coordinates
-   *  TODO not sure if the updated <input> content goes to the server ... */
+  /**
+   * listen To Submit Event and Fill Geo Coordinates
+   *  TODO not sure if the updated <input> content goes to the server ...
+   */
   @JSExport
   def listenToSubmitEventFillGeoCoordinates(): Unit = {
-		  dom.window.console.log("""listenToSubmitEventFillGeoCoordinates (Scala.js) """)
-//    getSaveButtons.addEventListener("submit",
-    getSaveButtons.addEventListener("click",
-      (e: dom.Event) => {
-    	  dom.window.console.log("""EventListener("submit") """)
-        fillGeoCoordinates },
-      false); // Modern browsers
+    dom.window.console.log("""listenToSubmitEventFillGeoCoordinates (Scala.js) """)
+    val buttons = getSaveButtons
+    dom.window.console.log(s"""GPS2 Buttons: ${buttons.size} $buttons""")
+    for (button <- buttons) {
+      //    getSaveButtons.addEventListener("submit",
+      button.addEventListener("onclick",
+        (e: dom.Event) => {
+          dom.window.console.log("""GPS2 Event("submit") """)
+          fillGeoCoordinates
+        },
+        false); // Modern browsers
+      dom.window.console.log(s"GPS2 Button: Event added!!")
+      dom.window.console.log(button)
+    }
   }
 
   private def getSaveButtons = {
-    dom.document.querySelector("[type=submit]")
+    // QUESTION: why is the second criterion value=SAUVER not used ? 
+    //    dom.document.querySelectorAll("[type=submit], [value=SAUVER]")
+    dom.document.querySelectorAll("[value=SAUVER]")
   }
 
   /**
