@@ -5,6 +5,8 @@ import scala.scalajs.js.annotation.JSExportTopLevel
 import scala.scalajs.js.annotation.JSExport
 
 import org.scalajs.dom
+import org.scalajs.dom.window
+import org.scalajs.dom.document
 import org.scalajs.dom.raw.Geolocation
 import org.scalajs.dom.raw.Position
 import org.scalajs.dom.raw.PositionError
@@ -17,7 +19,7 @@ import org.scalajs.dom.ext._
 object GPS2 {
 
   // TODO later depend on utils
-  val geoPrefix = "http://www.w3.org/2003/01/geo/wgs84_pos#"
+  val geoRDFPrefix = "http://www.w3.org/2003/01/geo/wgs84_pos#"
 
   /**
    * listen To Submit Event and Fill Geo Coordinates
@@ -25,26 +27,30 @@ object GPS2 {
    */
   @JSExport
   def listenToSubmitEventFillGeoCoordinates(): Unit = {
-    dom.window.console.log("""listenToSubmitEventFillGeoCoordinates (Scala.js) """)
+     window.addEventListener("load", (e: dom.Event) => fillGeoCoordinates)
+  }
+
+  private def listenToSubmitEventFillGeoCoordinates_OLD(): Unit = {
+    window.console.log("""listenToSubmitEventFillGeoCoordinates (Scala.js) """)
     val buttons = getSaveButtons
-    dom.window.console.log(s"""GPS2 Buttons: ${buttons.size} $buttons""")
+    window.console.log(s"""GPS2 Buttons: ${buttons.size} $buttons""")
     for (button <- buttons) {
       //    getSaveButtons.addEventListener("submit",
       button.addEventListener("onclick",
         (e: dom.Event) => {
-          dom.window.console.log("""GPS2 Event("submit") """)
+          window.console.log("""GPS2 Event("submit") """)
           fillGeoCoordinates
         },
         false); // Modern browsers
-      dom.window.console.log(s"GPS2 Button: Event added!!")
-      dom.window.console.log(button)
+      window.console.log(s"GPS2 Button: Event added !")
+      window.console.log(button)
     }
   }
 
   private def getSaveButtons = {
     // QUESTION: why is the second criterion value=SAUVER not used ? 
     //    dom.document.querySelectorAll("[type=submit], [value=SAUVER]")
-    dom.document.querySelectorAll("[value=SAUVER]")
+    document.querySelectorAll("[value=SAUVER]")
   }
 
   /**
@@ -52,9 +58,9 @@ object GPS2 {
    */
   private def fillGeoCoordinates {
     val matchesLongitude = dom.document.querySelectorAll(
-      s"input[data-uri-property=${geoPrefix}long]")
+      s"input[data-uri-property=${geoRDFPrefix}long]")
     val matchesLatitude = dom.document.querySelectorAll(
-      s"input[data-uri-property=${geoPrefix}lat]")
+      s"input[data-uri-property=${geoRDFPrefix}lat]")
 
     val coordsOption = GPS.geoLocation()
 
