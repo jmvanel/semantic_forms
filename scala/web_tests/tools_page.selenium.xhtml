@@ -11,6 +11,7 @@
 <thead>
 <tr><td rowspan="1" colspan="3">test_tools</td></tr>
 </thead><tbody>
+<!--login-->
 <tr>
 	<td>open</td>
 	<td>/login</td>
@@ -41,6 +42,7 @@
 	<td>id=password</td>
 	<td>aa</td>
 </tr>
+<!--Open tools page-->
 <tr>
 	<td>clickAndWait</td>
 	<td>css=input.btn.btn-primary</td>
@@ -49,6 +51,12 @@
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Outils</td>
+	<td></td>
+</tr>
+<!--Execute SELECT query-->
+<tr>
+	<td>assertElementPresent</td>
+	<td>xpath= //form[1]/textarea</td>
 	<td></td>
 </tr>
 <tr>
@@ -66,9 +74,16 @@
 	<td>3000</td>
 	<td></td>
 </tr>
+<!--Open tools page-->
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Outils</td>
+	<td></td>
+</tr>
+<!--Execute CONSTRUCT query-->
+<tr>
+	<td>assertElementPresent</td>
+	<td>xpath=//form[2]/textarea</td>
 	<td></td>
 </tr>
 <tr>
@@ -82,20 +97,21 @@
 	<td></td>
 </tr>
 <tr>
-	<td>pause </td>
+	<td>pause</td>
 	<td>3000</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value='Vue']</td>
+	<td>xpath=(//input[@value='Vue'])</td>
 	<td></td>
 </tr>
 <tr>
-	<td>pause </td>
+	<td>pause</td>
 	<td>3000</td>
 	<td></td>
 </tr>
+<!--Open YasGUI-->
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Outils</td>
