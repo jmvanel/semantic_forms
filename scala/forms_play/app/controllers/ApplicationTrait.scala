@@ -745,8 +745,9 @@ trait ApplicationTrait extends Controller
       implicit userid =>
         implicit request =>
           val lang = chooseLanguage(request)
+          val userInfo = displayUser(userid, "", "", lang)
           logger.info("makeHistoryUserActionsAction: cookies: " + request.cookies.mkString("; "))
-          outputMainPage(makeHistoryUserActions(limit, lang, copyRequest(request) ), lang)
+          outputMainPage(makeHistoryUserActions(limit, lang, copyRequest(request) ), lang, userInfo = userInfo)
     }
 
 }
