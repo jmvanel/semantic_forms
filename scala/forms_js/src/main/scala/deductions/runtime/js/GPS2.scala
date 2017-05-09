@@ -58,12 +58,13 @@ object GPS2 {
    */
   private def fillGeoCoordinates {
     val matchesLongitude = dom.document.querySelectorAll(
-      s"input[data-uri-property=${geoRDFPrefix}long]")
+      s"input[data-uri-property='${geoRDFPrefix}long']")
     val matchesLatitude = dom.document.querySelectorAll(
-      s"input[data-uri-property=${geoRDFPrefix}lat]")
+      s"input[data-uri-property='${geoRDFPrefix}lat']")
 
+    window.console.log(s"fillGeoCoordinates: before GPS.geoLocation: matchesLongitude $matchesLongitude")
     val coordsOption = GPS.geoLocation()
-
+    window.console.log(s"fillGeoCoordinates: after GPS.geoLocation : $coordsOption")
     for (
       coords <- coordsOption;
       long <- matchesLongitude;
