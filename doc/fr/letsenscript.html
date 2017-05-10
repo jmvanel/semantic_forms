@@ -7,7 +7,7 @@
 	<meta name="author" content="Jean-Marc Vanel "/>
 	<meta name="created" content="2017-05-10T10:45:47.704972118"/>
 	<meta name="changedby" content="Jean-Marc Vanel "/>
-	<meta name="changed" content="2017-05-10T11:35:11.647444537"/>
+	<meta name="changed" content="2017-05-10T12:13:28.553258515"/>
 	<style type="text/css">
 		h1 { direction: inherit }
 		p { direction: inherit }
@@ -48,7 +48,8 @@ Starting new HTTPS connection
 Please
 enter in your domain name(s) (comma and/or space separated)&nbsp;
 (Enter 'c'<br/>
-to cancel):semantic-forms.cc,<a href="http://www.semantic-forms.cc/" target="_blank">www.</a><br/>
+to
+cancel):semantic-forms.cc,</font><a href="http://www.semantic-forms.cc/" target="_blank"><font face="monospace, monospace">www.semantic-forms.cc</font></a><font face="monospace, monospace"><br/>
 Attempting
 to parse the version 0.12.0 renewal configuration file found at
 /etc/letsencrypt/renewal/www.s<br/>
@@ -94,7 +95,7 @@ IMPORTANT NOTES:<br/>
 Congratulations! </font><font face="monospace, monospace"><b>Your
 certificate and chain have been saved at<br/>
 &nbsp;&nbsp;
-/etc/letsencrypt/live/</b></font><a href="http://www.semantic-forms.cc/fullchain.pem" target="_blank"><font face="monospace, monospace"><b>http://www.semantic-forms.cc/fullchain.pem</b></font></a><font face="monospace, monospace">.
+/etc/letsencrypt/live</b></font><font face="monospace, monospace"><b>/www.semantic-forms.cc/fullchain.pem.</b></font><font face="monospace, monospace">
 Your<br/>
 &nbsp;&nbsp; cert will expire on 2017-06-27. To obtain a
 new or tweaked version<br/>
@@ -125,7 +126,8 @@ Donating to EFF:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs
 Encrypt,</b></font> qui est une autorité de certification ).<br/>
 <br/>
 &nbsp;<font face="monospace, monospace">sudo
-openssl x509 -in /etc/letsencrypt/archive/<a href="http://www.semantic-forms.cc/fullchain2.pem" target="_blank">www.s</a>
+openssl x509 -in
+/etc/letsencrypt/archive</font><font face="monospace, monospace">/www.semantic-forms.cc/fullchain2.pem</font><font face="monospace, monospace">
 -text<br/>
 Certificate:<br/>
 &nbsp;&nbsp;&nbsp; Data:<br/>
@@ -178,7 +180,7 @@ framework</b></h2>
 /bin/bash -c &quot;cd /etc/letsencrypt/live/<a href="http://www.semantic-forms.cc/" target="_blank">www.sema</a>
 ; openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out
 cert_and_key.p12 -CAfile chain.pem -caname root -passout
-pass:lazy+lester&quot;<br/>
+pass:junior_wells&quot;<br/>
 </font><br/>
 ça produit dans ce
 répertoire: cert_and_key.p12<br/>
@@ -188,7 +190,7 @@ répertoire: cert_and_key.p12<br/>
 /etc/letsencrypt/live/</font><a href="http://www.semantic-forms.cc/" target="_blank"><font face="monospace, monospace">http://www.semantic-forms.cc/</font></a><font face="monospace, monospace">
 ; </font><font face="monospace, monospace">\</font></p>
 <p style="margin-bottom: 0cm">               <font face="monospace, monospace">keytool
--importkeystore -srcstorepass lazy+lester -destkeystore </font><font face="monospace, monospace">\</font></p>
+-importkeystore -srcstorepass junior_wells -destkeystore </font><font face="monospace, monospace">\</font></p>
 <p style="margin-bottom: 0cm">               <font face="monospace, monospace">keyStore.jks
 -srckeystore cert_and_key.p12 -srcstoretype PKCS12 -storepass
 </font><font face="monospace, monospace"><b>junior_wells</b></font><font face="monospace, monospace">&quot;<br/>
