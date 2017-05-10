@@ -11,10 +11,13 @@ trait Results {
   val config: Configuration
   import config._
 
-  def wrapSearchResults(fut: Future[NodeSeq], q: String, mess: String = "Searched for"): Future[Elem] =
+  /** Add header and wrapper tag to Search Results
+   *  @param query string or, in the case of backlinks, URI */
+  def wrapSearchResults(fut: Future[NodeSeq], query: String,
+      mess: NodeSeq = <div>Searched for</div>): Future[Elem] =
     fut.map { v =>
       <section class="label-search-results">
-        <p class="label-search-header">{ mess } "{ q }" :</p>
+        <p class="label-search-header">{ mess } "{ query }" :</p>
         <div>
           { css.localCSS }
           { v }
