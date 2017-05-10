@@ -37,3 +37,13 @@
 .sf-margin-top-10 {margin-top: 10px}
 .sf-margin-top-15 {margin-top: 15px}
 .sf-margin-top-20 {margin-top: 20px}
+
+input.form-control[type='text']
+      .form-value{ display: table-cell; width: 500px;
+    border-collapse: separate;
+    border-width: 10px; }
+.sf-external-link {color: Darkred !important; background-color: lightyellow;}
+.sf-internal-link{}
+.sf-sparql-table td { padding:0px 10px; }
+.sf-sparql-table tr:first-of-type { font-weight:bold; }
+
