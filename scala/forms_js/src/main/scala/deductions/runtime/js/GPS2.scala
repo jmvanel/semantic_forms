@@ -16,68 +16,29 @@ import org.scalajs.dom.html.Input
 import org.scalajs.dom.ext._
 
 @JSExportTopLevel("GPS2")
-object GPS2 {
-
-  // TODO later depend on utils
-  val geoRDFPrefix = "http://www.w3.org/2003/01/geo/wgs84_pos#"
+object GPS2 extends GPS {
 
   /**
-   * listen To Submit Event and Fill Geo Coordinates
-   *  TODO not sure if the updated <input> content goes to the server ...
+   * Fill Geo Coordinates in form
    */
   @JSExport
   def listenToSubmitEventFillGeoCoordinates(): Unit = {
      window.addEventListener("load", (e: dom.Event) => fillGeoCoordinates)
   }
 
-  private def listenToSubmitEventFillGeoCoordinates_OLD(): Unit = {
-    window.console.log("""listenToSubmitEventFillGeoCoordinates (Scala.js) """)
-    val buttons = getSaveButtons
-    window.console.log(s"""GPS2 Buttons: ${buttons.size} $buttons""")
-    for (button <- buttons) {
-      //    getSaveButtons.addEventListener("submit",
-      button.addEventListener("onclick",
-        (e: dom.Event) => {
-          window.console.log("""GPS2 Event("submit") """)
-          fillGeoCoordinates
-        },
-        false); // Modern browsers
-      window.console.log(s"GPS2 Button: Event added !")
-      window.console.log(button)
-    }
-  }
-
-  private def getSaveButtons = {
-    // QUESTION: why is the second criterion value=SAUVER not used ? 
-    //    dom.document.querySelectorAll("[type=submit], [value=SAUVER]")
-    document.querySelectorAll("[value=SAUVER]")
-  }
-
   /**
    * fill longitude & latitude from HTML5 API into relevant geo:long & geo:lat triples
    */
   private def fillGeoCoordinates {
-    val matchesLongitude = dom.document.querySelectorAll(
-      s"input[data-uri-property='${geoRDFPrefix}long']")
-    val matchesLatitude = dom.document.querySelectorAll(
-      s"input[data-uri-property='${geoRDFPrefix}lat']")
+	  val window = dom.document.defaultView
+    val nav = window.navigator
+    val geo: Geolocation = nav.geolocation
 
-    window.console.log(s"fillGeoCoordinates: before GPS.geoLocation: matchesLongitude $matchesLongitude")
-    val coordsOption = GPS.geoLocation()
-    window.console.log(s"fillGeoCoordinates: after GPS.geoLocation : $coordsOption")
-    for (
-      coords <- coordsOption;
-      long <- matchesLongitude;
-      lat <- matchesLatitude
-    ) {
-      fillOneCoordinate(long, coords._1.toString())
-      fillOneCoordinate(lat, coords._2.toString())
-    }
+   /* obtain longitude & latitude from HTML5 API
+    * cf http://stackoverflow.com/questions/40483880/geolocation-in-scala-js */
+    geo.watchPosition( fillCoords _, onError _)
   }
 
-  private def fillOneCoordinate(l: Node, coord: String) = l match {
-    case input: Input => input.value = coord
-    case el           => dom.window.console.info(s"fillGeoCoordinates: $el unexpected")
-  }
+  def onError(p: PositionError) = println("geoLocation: Error")
 
 }

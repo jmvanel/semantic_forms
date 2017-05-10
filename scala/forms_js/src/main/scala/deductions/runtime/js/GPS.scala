@@ -1,40 +1,46 @@
 package deductions.runtime.js
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation.JSExportTopLevel
 
 import org.scalajs.dom
-import org.scalajs.dom.raw.Geolocation
+// for for loop with NodeList:
+import org.scalajs.dom.ext.PimpedNodeList
+import org.scalajs.dom.html.Input
+import org.scalajs.dom.raw.Node
 import org.scalajs.dom.raw.Position
-import org.scalajs.dom.raw.PositionError
 
-@JSExportTopLevel("GPS")
-object GPS {
+trait GPS {
 
-  /** obtain longitude & latitude from HTML5 API
-   * cf http://stackoverflow.com/questions/40483880/geolocation-in-scala-js
-   */
-  def geoLocation(): Option[(Double, Double)] = {
-    val window = dom.document.defaultView
-    val nav = window.navigator
-    val geo: Geolocation = nav.geolocation
-    var longitude, latitude = 0.0
+	// TODO later depend on utils
+  val geoRDFPrefix = "http://www.w3.org/2003/01/geo/wgs84_pos#"
 
-    def onSuccess(p: Position) = {
-      longitude = p.coords.longitude
-      latitude = p.coords.latitude
-      println(s"latitude=${p.coords.latitude}")
-      println(s"longitude=${p.coords.longitude}")
+
+  /** callback for Geo HTML5 function */
+  def fillCoords(p: Position) = {
+    val longitude = p.coords.longitude
+    val latitude = p.coords.latitude
+    println(s"latitude=${latitude}")
+    println(s"longitude=${longitude}")
+
+    val matchesLongitudeInput = dom.document.querySelectorAll(
+      s"input[data-uri-property='${geoRDFPrefix}long']")
+    val matchesLatitudeInput = dom.document.querySelectorAll(
+      s"input[data-uri-property='${geoRDFPrefix}lat']")
+
+    dom.window.console.info(s"matchesLongitudeInput $matchesLongitudeInput" )
+    dom.window.console.info(s"matchesLatitudeInput $matchesLatitudeInput" )
+
+    for (
+      long <- matchesLongitudeInput;
+      lat <- matchesLatitudeInput
+    ) {
+      fillOneCoordinate(long, longitude.toString())
+      fillOneCoordinate(lat, latitude.toString())
     }
-
-    def onError(p: PositionError) = println("geoLocation: Error")
-
-    geo.getCurrentPosition(onSuccess _, onError _)
-
-    if(longitude ==0 && latitude ==0)
-      None 
-    else
-      Some(longitude, latitude)
   }
 
+  private def fillOneCoordinate(l: Node, coord: String) = l match {
+    case input: Input => input.value = coord
+    case el           => dom.window.console.info(s"fillGeoCoordinates: $el unexpected")
+  }
 }
