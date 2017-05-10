@@ -1,0 +1,236 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 5.2.2.2 (Linux)"/>
+	<meta name="author" content="Jean-Marc Vanel "/>
+	<meta name="created" content="2017-05-10T10:45:47.704972118"/>
+	<meta name="changedby" content="Jean-Marc Vanel "/>
+	<meta name="changed" content="2017-05-10T12:13:28.553258515"/>
+	<style type="text/css">
+		h1 { direction: inherit }
+		p { direction: inherit }
+		h2 { direction: inherit }
+		h2.cjk { font-family: "Noto Sans CJK SC Regular" }
+		h2.ctl { font-family: "FreeSans" }
+	</style>
+</head>
+<body lang="fr-FR" dir="ltr">
+<h1>Installer un certification dans une application Play&nbsp;!</h1>
+<h2 class="western">Installer certbot</h2>
+<p><br/>
+<font face="monospace, monospace">sudo apt-get install
+software-properties-common<br/>
+sudo add-apt-repository
+ppa:certbot/certbot<br/>
+sudo apt-get update<br/>
+sudo apt-get
+install certbot</font><br/>
+<br/>
+cf
+<a href="https://certbot.eff.org/#ubuntuxenial-other" target="_blank">https://certbot.eff.org/#ubunt</a>u<br/>
+<br/>
+<br/>
+<br/>
+
+</p>
+<h2 class="western">Créer le certif'</h2>
+<p><br/>
+<a href="https://certbot.eff.org/docs/using.html#standalone" target="_blank">https://certbot.eff.org/docs/using.html#standalone</a></p>
+<p><br/>
+<font face="monospace, monospace">sudo certbot certonly
+--standalone --preferred-challenges http<br/>
+Saving debug log to
+/var/log/letsencrypt/letsencry<br/>
+Starting new HTTPS connection
+(1): <a href="http://acme-v01.api.letsencrypt.org/" target="_blank">acme-v01.api.letsencrypt.org</a><br/>
+Please
+enter in your domain name(s) (comma and/or space separated)&nbsp;
+(Enter 'c'<br/>
+to
+cancel):semantic-forms.cc,</font><a href="http://www.semantic-forms.cc/" target="_blank"><font face="monospace, monospace">www.semantic-forms.cc</font></a><font face="monospace, monospace"><br/>
+Attempting
+to parse the version 0.12.0 renewal configuration file found at
+/etc/letsencrypt/renewal/www.s<br/>
+<br/>
+------------------------------<br/>
+</font><font face="monospace, monospace"><b>You
+have an existing certificate that contains a portion of the domains
+you<br/>
+requested (ref: /etc/letsencrypt/renewal/www.s<br/>
+</b></font><font face="monospace, monospace"><br/>
+It
+contains these names: <a href="http://www.semantic-forms.cc/" target="_blank">www.semantic-forms.cc</a><br/>
+<br/>
+You
+requested these names for the new certificate:
+semantic-forms.cc,<br/>
+<a href="http://www.semantic-forms.cc/" target="_blank">www.semantic-forms.cc</a>.<br/>
+<br/>
+Do
+you want to expand and replace this existing certificate with the
+new<br/>
+certificate?<br/>
+------------------------------<br/>
+(E)xpand/(C)ancel:
+</font><font face="monospace, monospace"><b>E</b></font><font face="monospace, monospace"><br/>
+Renewing
+an existing certificate<br/>
+Performing the following
+challenges:<br/>
+http-01 challenge for semantic-forms.cc<br/>
+http-01
+challenge for <a href="http://www.semantic-forms.cc/" target="_blank">www.semantic-forms.cc</a><br/>
+Waiting
+for verification...<br/>
+Cleaning up challenges<br/>
+Generating key
+(2048 bits): /etc/letsencrypt/keys/0001_key<br/>
+Creating CSR:
+/etc/letsencrypt/csr/0001_csr-<br/>
+<br/>
+IMPORTANT NOTES:<br/>
+&nbsp;-
+Congratulations! </font><font face="monospace, monospace"><b>Your
+certificate and chain have been saved at<br/>
+&nbsp;&nbsp;
+/etc/letsencrypt/live</b></font><font face="monospace, monospace"><b>/www.semantic-forms.cc/fullchain.pem.</b></font><font face="monospace, monospace">
+Your<br/>
+&nbsp;&nbsp; cert will expire on 2017-06-27. To obtain a
+new or tweaked version<br/>
+&nbsp;&nbsp; of this certificate in the
+future, simply run certbot again. To<br/>
+&nbsp;&nbsp;
+non-interactively renew *all* of your certificates, run &quot;certbot<br/>
+&nbsp;&nbsp;
+renew&quot;<br/>
+&nbsp;- If you like Certbot, please consider
+supporting our work by:<br/>
+<br/>
+&nbsp;&nbsp; Donating to ISRG /
+Let's Encrypt:&nbsp;&nbsp; <a href="https://letsencrypt.org/donate" target="_blank">https://letsencrypt.org/donate</a><br/>
+&nbsp;&nbsp;
+Donating to EFF:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="https://eff.org/donate-le" target="_blank">https://eff.org/donate-le</a><br/>
+</font><br/>
+<br/>
+
+</p>
+<h2 class="western">Vérification que le certif' est bon</h2>
+<h2 class="western"><br/>
+<br/>
+
+</h2>
+<p style="margin-bottom: 0cm">( il est bien issu de <font face="monospace, monospace"><b>Let's
+Encrypt,</b></font> qui est une autorité de certification ).<br/>
+<br/>
+&nbsp;<font face="monospace, monospace">sudo
+openssl x509 -in
+/etc/letsencrypt/archive</font><font face="monospace, monospace">/www.semantic-forms.cc/fullchain2.pem</font><font face="monospace, monospace">
+-text<br/>
+Certificate:<br/>
+&nbsp;&nbsp;&nbsp; Data:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Version: 3 (0x2)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Serial Number:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+03:8f:96:c1:40:64:48:cd:80:c7:<br/>
+&nbsp;&nbsp;&nbsp; Signature
+Algorithm: sha256WithRSAEncryption<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</font><font face="monospace, monospace"><b>Issuer: C=US, O=Let's
+Encrypt, CN=Let's Encrypt Authority X3</b></font><font face="monospace, monospace"><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Validity<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Not Before: Mar 29 09:29:00 2017 GMT<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Not After : Jun 27 09:29:00 2017 GMT<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Subject: CN=semantic-forms.cc<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Subject Public Key Info:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Public Key Algorithm: rsaEncryption<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Public-Key: (2048 bit)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Modulus:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+00:c4:5e:2d:ee:90:f7:ea:70:75:<br/>
+</font><br/>
+<br/>
+
+</p>
+<h2 class="western"><br/>
+<b>Adapter le certif' pour Java et Play
+framework</b></h2>
+<p><br/>
+<br/>
+
+</p>
+<p>J'applique la recette
+:<br/>
+<a href="http://stackoverflow.com/questions/38339977/how-to-configure-a-play-application-to-use-lets-encrypt-certificate" target="_blank">http://stackoverflow.com/questlets-encrypt-certificate</a></p>
+<p style="margin-bottom: 0cm">Créer le fichier p12 :<br/>
+<br/>
+<font face="monospace, monospace">sudo
+/bin/bash -c &quot;cd /etc/letsencrypt/live/<a href="http://www.semantic-forms.cc/" target="_blank">www.sema</a>
+; openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out
+cert_and_key.p12 -CAfile chain.pem -caname root -passout
+pass:junior_wells&quot;<br/>
+</font><br/>
+ça produit dans ce
+répertoire: cert_and_key.p12<br/>
+<br/>
+<font face="monospace, monospace">sudo
+/bin/bash -c &quot;cd
+/etc/letsencrypt/live/</font><a href="http://www.semantic-forms.cc/" target="_blank"><font face="monospace, monospace">http://www.semantic-forms.cc/</font></a><font face="monospace, monospace">
+; </font><font face="monospace, monospace">\</font></p>
+<p style="margin-bottom: 0cm">               <font face="monospace, monospace">keytool
+-importkeystore -srcstorepass junior_wells -destkeystore </font><font face="monospace, monospace">\</font></p>
+<p style="margin-bottom: 0cm">               <font face="monospace, monospace">keyStore.jks
+-srckeystore cert_and_key.p12 -srcstoretype PKCS12 -storepass
+</font><font face="monospace, monospace"><b>junior_wells</b></font><font face="monospace, monospace">&quot;<br/>
+[sudo]
+password for jmv: <br/>
+Entry for alias 1 successfully
+imported.<br/>
+Import command completed:&nbsp; 1 entries successfully
+imported, 0 entries failed or cancelled</font><br/>
+<br/>
+ça produit
+dans ce répertoire: keyStore.jks</p>
+<h2 class="western"><br/>
+<b>Démarrer le serveur Play! Framework</b></h2>
+<p style="margin-bottom: 0cm"><br/>
+<font face="monospace, monospace">sudo
+chmod go+r /etc/letsencrypt/live/<br/>
+sudo chmod go+x
+/etc/letsencrypt/live/<br/>
+<br/>
+cd
+~jmv/deploy/</font><font face="monospace, monospace">semantic_forms_play-1.0-SNAPSHOT</font><font face="monospace, monospace"><br/>
+</font><font face="monospace, monospace">nohup
+bin/semantic_forms_play -Dhttp.port=8444 -Dhttps.port=8443 \</font></p>
+<p style="margin-bottom: 0cm"><font face="monospace, monospace">-Dplay.server.https.keyStore.path=/etc/letsencrypt/live/www.semantic-forms.cc/keyStore.jks
+\</font></p>
+<p style="margin-bottom: 0cm"><font face="monospace, monospace">-Dplay.server.https.keyStore.password=junior_wells
+\</font></p>
+<p style="margin-bottom: 0cm"><font face="monospace, monospace">-Djdk.tls.ephemeralDHKeySize=2048
+-Djdk.tls.rejectClientInitiatedRenegotiation=true</font><font face="monospace, monospace"><br/>
+<br/>
+</font>Et
+alors, avec un téléphone ou un ordi, aller sur
+:<font face="monospace, monospace"><br/>
+</font><a href="https://semantic-forms.cc:8443/" target="_blank"><font face="monospace, monospace"><b>https://semantic-forms.cc:</b></font><font face="monospace, monospace"><b>8</b></font><font face="monospace, monospace"><b>443</b></font></a></p>
+<p style="margin-bottom: 0cm"><br/>
+
+</p>
+<p style="margin-bottom: 0cm"><br/>
+
+</p>
+</body>
+</html>

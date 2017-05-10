@@ -92,3 +92,6 @@ scripts/start.sh
 
 But run `scripts/load_dump_no_erase.sh` if you have already RDF content .
 
+## Utiliser un certificat Let's'Enscript
+
+[Procédure de création et utilisation certificat](letsenscript.html)

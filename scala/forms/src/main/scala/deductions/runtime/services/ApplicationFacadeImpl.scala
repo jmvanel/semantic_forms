@@ -164,7 +164,9 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
   def wordsearchFuture(q: String = "", lang: String = "", clas: String = ""): Future[Elem] = {
     val fut = searchString(q, hrefDisplayPrefix, lang, clas)
-    wrapSearchResults(fut, q, mess= s"In class <$clas>, searched for" )
+    wrapSearchResults(fut, q,
+        mess=
+          <div>In class &lt;{clas}&gt;, searched for</div> )
   }
 
   def rdfDashboardFuture(q: String = "", lang: String = ""): Future[NodeSeq] = {
@@ -334,9 +336,13 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     </p>
   }
 
-  def backlinksFuture(q: String = ""): Future[Elem] = {
-    val fut = backlinks(q, hrefDisplayPrefix)
-    wrapSearchResults(fut, q)
+  def backlinksFuture(query: String = ""): Future[Elem] = {
+    val fut = backlinks(query, hrefDisplayPrefix)
+    val label = labelForURITransaction( query, language="en"/* TODO pass arg. language */)
+    wrapSearchResults(fut, "", mess=
+      <div>Searched for {label}
+      <a href={ createHyperlinkString( uri=query ) }> {label} </a>
+      &lt;{query}&gt; </div> )
   }
 
 //  private def wrapSearchResults(fut: Future[NodeSeq], q: String, mess:String= "Searched for"): Future[Elem] =
@@ -352,7 +358,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
   def esearchFuture(q: String = ""): Future[Elem] = {
     val fut = extendedSearch(q)
-    wrapSearchResults(fut, q, mess= "Extended search for")
+    wrapSearchResults(fut, q, mess= <div>"Extended search for</div>)
   }
 
   def ldpPOST(uri: String, link: Option[String], contentType: Option[String],

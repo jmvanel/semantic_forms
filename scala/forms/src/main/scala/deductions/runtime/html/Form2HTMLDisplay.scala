@@ -48,7 +48,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       } else NodeSeq.Empty
     }
 
-    val hyperlinkToObjectURI =
+    val hyperlinkToSubjectURI =
       <a href={ createHyperlinkString(hrefPrefix, subjectURIstringValue) }
       class={css}
       title={
@@ -86,7 +86,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       }
 
       hyperlinkToField ++
-      hyperlinkToObjectURI ++
+      hyperlinkToSubjectURI ++
       Text("\n") ++
       backLinkButton ++
       Text("\n") ++
