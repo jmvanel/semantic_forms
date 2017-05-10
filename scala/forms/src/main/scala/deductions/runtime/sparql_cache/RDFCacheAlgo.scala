@@ -27,6 +27,8 @@ import deductions.runtime.utils.HTTPHelpers
 import deductions.runtime.utils.HTTPrequest
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.services.TypeAddition
+import org.apache.jena.riot.web.HttpOp
+import org.apache.http.impl.client.HttpClients
 
 /** */
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
@@ -49,9 +51,14 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     with HTTPHelpers
     with TypeAddition[Rdf, DATASET] {
 
-	import scala.concurrent.ExecutionContext.Implicits.global
-   
-	val activateMicrodataLoading = false
+  import scala.concurrent.ExecutionContext.Implicits.global
+
+  val activateMicrodataLoading = false;
+  {
+    HttpOp.setDefaultHttpClient(HttpClients.createMinimal())
+    //	  logger.warn(
+    println(">>>> RDFCacheAlgo: setDefaultHttpClient(createMinimal())")
+  }
 
   import config._
   import ops._
@@ -67,8 +74,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
 
   /** with transaction */
   def isGraphInUse(uri: Rdf#URI) = {
-    rdfStore.r( dataset, {
-      for (graph <- rdfStore.getGraph( dataset, uri)) yield {
+    rdfStore.r(dataset, {
+      for (graph <- rdfStore.getGraph(dataset, uri)) yield {
         val uriGraphIsEmpty = graph.size == 0
         println("uriGraphIsEmpty " + uriGraphIsEmpty)
         !uriGraphIsEmpty
@@ -82,8 +89,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * with transaction
    */
   def retrieveURI(uri: Rdf#URI, dataset: DATASET = dataset): Try[Rdf#Graph] =
-      retrieveURIBody(uri, dataset, HTTPrequest(), transactionsInside=true)
-
+    retrieveURIBody(uri, dataset, HTTPrequest(), transactionsInside = true)
 
   /**
    * retrieve URI from a graph named by the URI itself;
@@ -93,9 +99,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    *  @return the more recent RDF data if any, or the old data
    */
   def retrieveURIBody(uri: Rdf#URI, dataset: DATASET,
-                               request: HTTPrequest,
-                               transactionsInside: Boolean
-                               ): Try[Rdf#Graph] = {
+                      request: HTTPrequest,
+                      transactionsInside: Boolean): Try[Rdf#Graph] = {
 
     val tryGraphLocallyManagedData = getLocallyManagedUrlAndData(uri, request, transactionsInside: Boolean)
 
@@ -113,65 +118,65 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
               }
             else
               graphStoredLocally.size
-          val nothingStoredLocally = graphSize match {
-                case Success(i) => i == 0
-                case Failure(f) =>
-                  System.err.println(s"retrieveURINoTransaction: $f")
-                  true
-                case i: Int => i == 0
-          }
-          println(s"""retrieveURINoTransaction: TDB graph at URI <$uri> size $graphSize""")
+            val nothingStoredLocally = graphSize match {
+              case Success(i) => i == 0
+              case Failure(f) =>
+                System.err.println(s"retrieveURINoTransaction: $f")
+                true
+              case i: Int => i == 0
+            }
+            println(s"""retrieveURINoTransaction: TDB graph at URI <$uri> size $graphSize""")
 
-          val vvv = if (nothingStoredLocally) { // then read unconditionally from URI and store in TDB
-        	  println(s"""retrieveURINoTransaction: stored Graph Is Empty for URI <$uri>""")
-            val mirrorURI = getMirrorURI(uri)
-                val vv = if (mirrorURI == "") {
-                  val graphDownloaded = {
-                      val graphTry = readURI(uri, uri, dataset, request)
-                      if(transactionsInside)
-                        storeURI(graphTry, uri, uri, dataset)
-                      else
-                        storeURINoTransaction(graphTry, uri, uri, dataset)
-                    }
-                  val vv = if (graphDownloaded.isSuccess) {
-                    println(s"""Graph at URI <$uri>, size ${graphDownloaded.get.size}
+            val vvv = if (nothingStoredLocally) { // then read unconditionally from URI and store in TDB
+              println(s"""retrieveURINoTransaction: stored Graph Is Empty for URI <$uri>""")
+              val mirrorURI = getMirrorURI(uri)
+              val vv = if (mirrorURI == "") {
+                val graphDownloaded = {
+                  val graphTry = readURI(uri, uri, dataset, request)
+                  if (transactionsInside)
+                    storeURI(graphTry, uri, uri, dataset)
+                  else
+                    storeURINoTransaction(graphTry, uri, uri, dataset)
+                }
+                val vv = if (graphDownloaded.isSuccess) {
+                  println(s"""Graph at URI <$uri>, size ${graphDownloaded.get.size}
                     Either new addition was downloaded, or locally managed data""")
-                    addTimestampToDataset(uri, dataset2)
-                  } else
-                    println(s"Download Graph at URI <$uri> was tried, but it's faulty: $graphDownloaded")
+                  addTimestampToDataset(uri, dataset2)
+                } else
+                  println(s"Download Graph at URI <$uri> was tried, but it's faulty: $graphDownloaded")
 
-                  println(s"""retrieveURINoTransaction: downloaded graph from URI <$uri> $graphDownloaded
+                println(s"""retrieveURINoTransaction: downloaded graph from URI <$uri> $graphDownloaded
                     size ${if (graphDownloaded.isSuccess) graphDownloaded.get.size}""")
-                  graphDownloaded match {
-                    case Success(gr) => Success(gr)
-                    case Failure(f) => {
-                        println(s"Graph at URI <$uri> could not be downloaded, (exception ${f.getLocalizedMessage}, ${f.getClass} cause ${f.getCause}).")
-                        f match {
-                          case ex: ImplementationSettings.RDFReadException if (ex.getMessage().contains("text/html")) =>
-                            /* Failure(org.apache.jena.riot.RiotException: Failed to determine the content type: (
+                graphDownloaded match {
+                  case Success(gr) => Success(gr)
+                  case Failure(f) => {
+                    println(s"Graph at URI <$uri> could not be downloaded, (exception ${f.getLocalizedMessage}, ${f.getClass} cause ${f.getCause}).")
+                    f match {
+                      case ex: ImplementationSettings.RDFReadException if (ex.getMessage().contains("text/html")) =>
+                        /* Failure(org.apache.jena.riot.RiotException: Failed to determine the content type: (
                                URI=http://ihmia.afihm.org/programme/index.html : stream=text/html)) */
 
-                            // TODO pass transactionsInside
-                            Success(pureHTMLwebPageAnnotateAsDocument(uri, request))
-                          case _ => graphDownloaded
-                        }
-                      }
+                        // TODO pass transactionsInside
+                        Success(pureHTMLwebPageAnnotateAsDocument(uri, request))
+                      case _ => graphDownloaded
+                    }
                   }
-            } else {
-              println(s"mirrorURI found: $mirrorURI")
-              // TODO find in Mirror URI the relevant triples ( but currently AFAIK the graph returned by this function is not used )
-              Success(emptyGraph)
-            }
-        	  vv
-              } else { // something Stored Locally: get a chance for more recent RDF data, that will be shown next time
-                Future {
-                  val res = // wrapInTransaction {
-                    updateLocalVersion(uri, dataset).getOrElse(graphStoredLocally)
                 }
-                Success(graphStoredLocally)
+              } else {
+                println(s"mirrorURI found: $mirrorURI")
+                // TODO find in Mirror URI the relevant triples ( but currently AFAIK the graph returned by this function is not used )
+                Success(emptyGraph)
               }
-          vvv
-        }
+              vv
+            } else { // something Stored Locally: get a chance for more recent RDF data, that will be shown next time
+              Future {
+                val res = // wrapInTransaction {
+                  updateLocalVersion(uri, dataset).getOrElse(graphStoredLocally)
+              }
+              Success(graphStoredLocally)
+            }
+            vvv
+          }
         }
     }
   }
@@ -181,31 +186,30 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * with NO transaction,
    * @return a graph with more recent RDF data or None
    */
-  private def updateLocalVersion(uri: Rdf#URI, dataset: DATASET)
-  : Try[Rdf#Graph] = {
+  private def updateLocalVersion(uri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
     val localTimestamp = dataset2.r { getTimestampFromDataset(uri, dataset2) }.get
     /* see http://stackoverflow.com/questions/5321876/which-one-to-use-expire-header-last-modified-header-or-etags
      * TODO: code too complex */
     localTimestamp match {
       case Success(longLocalTimestamp) => {
         println(s"updateLocalVersion: $uri local TDB Timestamp: ${new Date(longLocalTimestamp)} - $longLocalTimestamp .")
-        val ( noError, timestamp, connectionOption ) = lastModified(uri.toString(), httpHeadTimeout)
+        val (noError, timestamp, connectionOption) = lastModified(uri.toString(), httpHeadTimeout)
         println(s"updateLocalVersion: <$uri> last Modified: ${new Date(timestamp)} - no Error: $noError .")
 
-        if( isDocumentExpired( connectionOption ) ) {
+        if (isDocumentExpired(connectionOption)) {
           println(s"updateLocalVersion: <$uri> was outdated by Expires HTPP header field")
           return readStoreURITry(uri, uri, dataset)
         }
 
-        if ( noError && ( timestamp > longLocalTimestamp
-            || longLocalTimestamp == Long.MaxValue) ) {
-            val graph = readStoreURITry(uri, uri, dataset)
-            println(s"updateLocalVersion: <$uri> was outdated by timestamp; downloaded.")
-            addTimestampToDataset(uri, dataset2)  // PENDING: maybe do this in a Future
-            graph
-//          } else Success(emptyGraph) // ????
+        if (noError && (timestamp > longLocalTimestamp
+          || longLocalTimestamp == Long.MaxValue)) {
+          val graph = readStoreURITry(uri, uri, dataset)
+          println(s"updateLocalVersion: <$uri> was outdated by timestamp; downloaded.")
+          addTimestampToDataset(uri, dataset2) // PENDING: maybe do this in a Future
+          graph
+          //          } else Success(emptyGraph) // ????
 
-        } else if (! noError ||
+        } else if (!noError ||
           timestamp == Long.MaxValue) {
           connectionOption match {
             case Some(connection) =>
@@ -215,7 +219,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
                 val graph = readStoreURITry(uri, uri, dataset)
                 println(s"""updateLocalVersion: <$uri> was outdated by ETag; downloaded.
                   etag "$etag" != etagFromDataset "$etagFromDataset" """)
-                rdfStore.rw( dataset2, { addETagToDatasetNoTransaction(uri, etag, dataset2) })
+                rdfStore.rw(dataset2, { addETagToDatasetNoTransaction(uri, etag, dataset2) })
                 graph
               } else Success(emptyGraph)
             case None =>
@@ -249,8 +253,10 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     readStoreURIinOwnGraph(uri)
   }
 
-  /** store given URI in self graph; also store imported Ontologies by owl:imports
-   *  with transaction */
+  /**
+   * store given URI in self graph; also store imported Ontologies by owl:imports
+   *  with transaction
+   */
   private def readStoreURIinOwnGraph(uri: Rdf#URI): Rdf#Graph = {
     val graphFromURI = readStoreURI(uri, uri, dataset)
     println("RDFCacheAlgo.storeURI " + uri + " size: " + graphFromURI.size)
@@ -260,11 +266,10 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
         try {
           logger.info(s"Before Loading imported Ontology $importedOntology")
           foldNode(importedOntology.subject)(ontoMain => Some(ontoMain), _ => None, _ => None) match {
-            case Some( uri /* : Rdf#URI */ ) =>
+            case Some(uri /* : Rdf#URI */ ) =>
               foldNode(importedOntology.objectt)(onto => readStoreURINoTransaction(onto, onto, dataset),
                 _ => emptyGraph,
-                _ => emptyGraph
-                ) ; Unit
+                _ => emptyGraph); Unit
             case None => Unit
           }
         } catch {
@@ -275,7 +280,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     addTimestampToDataset(uri, dataset2)
     graphFromURI
   }
-  
+
   /**
    * store URI in a named graph,
    * transactional,
@@ -285,7 +290,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * cf https://github.com/w3c/banana-rdf/issues/105
    */
   def readStoreURI(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
-    val r = rdfStore.rw( dataset, {
+    val r = rdfStore.rw(dataset, {
       readStoreURINoTransaction(uri, graphUri, dataset)
     })
     r.flatten match {
@@ -308,13 +313,13 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     val graphTry = readURI(uri, graphUri, dataset, request)
     storeURINoTransaction(graphTry, uri, graphUri, dataset)
   }
-   /** read unconditionally from URI and store in TDB, Transaction inside */
+  /** read unconditionally from URI and store in TDB, Transaction inside */
   private def readStoreURITry(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET,
                               request: HTTPrequest = HTTPrequest()): Try[Rdf#Graph] = {
     val graphTry = readURI(uri, graphUri, dataset, request)
     storeURI(graphTry, uri, graphUri, dataset)
   }
-  
+
   private def storeURINoTransaction(
     graphTry: Try[Rdf#Graph], uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
     logger.info(s"readStoreURINoTransaction: Before appendToGraph uri <$uri> graphUri <$graphUri>")
@@ -332,13 +337,13 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     }.flatten
   }
 
-	/**
+  /**
    * read unconditionally from URI,
    * no matter what the concrete syntax is;
    * can also load an URI with the # part
    */
   private def readURI(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET,
-      request:HTTPrequest = HTTPrequest()): Try[Rdf#Graph] = {
+                      request: HTTPrequest = HTTPrequest()): Try[Rdf#Graph] = {
     Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
 
     if (isDownloadableURI(uri)) {
@@ -348,20 +353,20 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       logger.info(s"readStoreURINoTransaction: after rdfLoader.load($uri): $graphTry")
 
       // TODO
-//      val graph = graphTry.getOrElse {
-//        if(activateMicrodataLoading)
-//          microdataLoading(uri)
-//        else
-//          emptyGraph
-//      }
+      //      val graph = graphTry.getOrElse {
+      //        if(activateMicrodataLoading)
+      //          microdataLoading(uri)
+      //        else
+      //          emptyGraph
+      //      }
       graphTry
     } else {
       val message = s"Load uri <$uri> is not possible, not a downloadable URI."
       logger.warn(message)
-      Success(emptyGraph)  // TODO return Failure( new Exception("") )
+      Success(emptyGraph) // TODO return Failure( new Exception("") )
     }
   }
-  
+
   private def microdataLoading(uri: Rdf#URI): Rdf#Graph = {
     logger.info(s"Trying RDFa for <$uri>")
     microdataLoader.load(
@@ -409,8 +414,10 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       }
     }
 
-  /** transaction inside (Write)
-   * TODO: graphURI should be obtained from the HTTP request, or else from user Id */
+  /**
+   * transaction inside (Write)
+   * TODO: graphURI should be obtained from the HTTP request, or else from user Id
+   */
   def pureHTMLwebPageAnnotateAsDocument(uri: Rdf#URI, request: HTTPrequest): Rdf#Graph = {
     val graphURI = URI(makeAbsoluteURIForSaving(request.userId()))
     val newGraphWithUrl = makeGraph(List(makeTriple(uri, rdf.typ, foaf.Document)))
@@ -424,7 +431,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     println(s"pureHTMLwebPageAnnotateAsDocument: saved $newGraphWithUrl in graph <${makeAbsoluteURIForSaving(request.userId())}>")
     val currentPageTriplesIterator = wrapInReadTransaction {
       find(allNamedGraph, uri, ANY, ANY)
-    }.getOrElse(Iterator.empty) . toIterable
+    }.getOrElse(Iterator.empty).toIterable
     val result = newGraphWithUrl.
       // NOTE: after user added triples, this way typeChange will not be triggered
       union(makeGraph(currentPageTriplesIterator))
