@@ -32,8 +32,9 @@ forms:personForm
 	foaf:topic_interest
 	foaf:knows
 	foaf:currentProject
-org:memberOf
+	org:memberOf
 	cco:expertise
+	rdfs:seeAlso
   ) .
 
 forms:topic_interest--personPerson
@@ -79,6 +80,7 @@ forms:projectForm
 	foaf:holdsAccount
 	foaf:age
 	dct:subject
+	rdfs:seeAlso
   ) .
 
 #### Organization ####
@@ -100,6 +102,7 @@ forms:organizationForm
 	foaf:age
 	dct:subject
 	foaf:topic_interest
+	rdfs:seeAlso
   ) .
 
 
@@ -125,6 +128,7 @@ foaf:primaryTopic
 
 	foaf:maker
 	dct:subject
+	rdfs:seeAlso
   ) .
 forms:primaryTopic
   rdfs:label "primaryTopic dans formulaire Document"@fr ;

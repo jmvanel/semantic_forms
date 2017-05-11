@@ -22,6 +22,7 @@ forms:sioc-Post_Form
 	dct:subject
         sioc:has_reply
         sioc:has_container
+	rdfs:seeAlso
   ) ;
   # to implement in semforms: "reverse" properties :
   form:showReverseProperties ()
@@ -39,7 +40,9 @@ sioc:Container-formFromClass
           sioc:container_of
 	  dct:subject
           sioc:has_parent
-          sioc:parent_of ) .
+          sioc:parent_of
+	rdfs:seeAlso
+) .
 
 forms:owl-dct-subject2
 	:fieldAppliesToForm sioc:Container-formFromClass ;
@@ -54,7 +57,9 @@ sioc:Thread-formFromClass
           sioc:container_of
 	  dct:subject
           sioc:has_parent
-          sioc:parent_of ) .
+          sioc:parent_of
+	rdfs:seeAlso
+) .
 
 forms:owl-dct-subject3
 	:fieldAppliesToForm sioc:Thread-formFromClass ;

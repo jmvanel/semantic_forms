@@ -23,6 +23,7 @@ forms:skos-Concept_Form
 	skos:narrower
 	skos:related
 	skos:topConceptOf
+	rdfs:seeAlso
   ) ;
   form:showReverseProperties (
 	skos:broader

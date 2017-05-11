@@ -19,6 +19,7 @@ forms:owl-ClassForm
   form:showProperties (
 	rdfs:label rdfs:comment
 	dct:subject
+	rdfs:seeAlso
   ) ;
   # to implement in semforms: "reverse" properties :
   form:showReverseProperties (
@@ -38,6 +39,7 @@ forms:owl-DatatypePropertyForm
 	rdfs:label rdfs:comment
 	rdfs:domain rdfs:range
 	dct:subject
+	rdfs:seeAlso
   )
 .
 forms:owl-dct-subject2
@@ -53,6 +55,7 @@ forms:owl-ObjectPropertyForm
 	# TODO implement in semforms: constraint that rdfs:range is a reference type
 	rdfs:domain rdfs:range
 	dct:subject
+	rdfs:seeAlso
   )
 .
 forms:owl-dct-subject3
