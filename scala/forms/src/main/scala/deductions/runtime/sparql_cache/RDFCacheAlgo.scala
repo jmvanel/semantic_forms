@@ -29,6 +29,13 @@ import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.services.TypeAddition
 import org.apache.jena.riot.web.HttpOp
 import org.apache.http.impl.client.HttpClients
+import java.net.URL
+import java.net.HttpURLConnection
+import org.apache.http.client.methods.HttpHead
+import org.apache.http.client.ResponseHandler
+import org.apache.http.HttpResponse
+import org.apache.http.client.ClientProtocolException
+import org.apache.http.util.EntityUtils
 
 /** */
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
@@ -54,11 +61,11 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   import scala.concurrent.ExecutionContext.Implicits.global
 
   val activateMicrodataLoading = false;
-  {
-    HttpOp.setDefaultHttpClient(HttpClients.createMinimal())
-    //	  logger.warn(
-    println(">>>> RDFCacheAlgo: setDefaultHttpClient(createMinimal())")
-  }
+//  {
+//    HttpOp.setDefaultHttpClient(HttpClients.createMinimal())
+//    //	  logger.warn(
+//    println(">>>> RDFCacheAlgo: setDefaultHttpClient(createMinimal())")
+//  }
 
   import config._
   import ops._
@@ -347,23 +354,91 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
 
     if (isDownloadableURI(uri)) {
-      setTimeoutsFromConfig()
-      // NOTE: Jena RDF loader can throw an exception "Failed to determine the content type"
-      val graphTry = rdfLoader.load(new java.net.URL(uri.toString()))
-      logger.info(s"readStoreURINoTransaction: after rdfLoader.load($uri): $graphTry")
+      // To avoid troubles with Jena cf https://issues.apache.org/jira/browse/JENA-1335
+      val contentType = getContentTypeFromHEADRequest(fromUri(uri))
+    	println(s""">>>> readURI: contentType for <$uri> "$contentType" """)
+      if (!contentType.startsWith("text/html")) {
+        setTimeoutsFromConfig()
+        // NOTE: Jena RDF loader can throw an exception "Failed to determine the content type"
+        val graphTry = rdfLoader.load(new java.net.URL(uri.toString()))
+//        logger.info
+        println(s"readStoreURINoTransaction: after rdfLoader.load($uri): $graphTry")
 
-      // TODO
-      //      val graph = graphTry.getOrElse {
-      //        if(activateMicrodataLoading)
-      //          microdataLoading(uri)
-      //        else
-      //          emptyGraph
-      //      }
-      graphTry
+        // TODO
+        //      val graph = graphTry.getOrElse {
+        //        if(activateMicrodataLoading)
+        //          microdataLoading(uri)
+        //        else
+        //          emptyGraph
+        //      }
+        graphTry
+      } else {
+        Success(emptyGraph)
+      }
     } else {
       val message = s"Load uri <$uri> is not possible, not a downloadable URI."
       logger.warn(message)
       Success(emptyGraph) // TODO return Failure( new Exception("") )
+    }
+  }
+
+  /** from Apache HTTP client doc */
+  def getContentTypeFromHEADRequest(arg: String): String = {
+    val httpclient = HttpClients.createDefault();
+    try {
+      val httpHead = new HttpHead(arg)
+      httpHead.setHeader( "Accept",
+          "application/rdf+xml, text/turtle; charset=utf-8, application/ld+json; charset=utf-8")
+
+      System.out.println("Executing request " + httpHead.getRequestLine());
+      // Create a custom response handler
+      val responseHandler = new ResponseHandler[String]() {
+        override
+        def handleResponse(response: HttpResponse):String = {
+        // throws ClientProtocolException, IOException
+          val status = response.getStatusLine().getStatusCode();
+          if (status >= 200 && status < 300) {
+            response.getFirstHeader("Content-Type").getValue
+//            val entity = response.getEntity();
+//            return if (entity != null) EntityUtils.toString(entity) else null;
+          } else {
+            throw new ClientProtocolException("Unexpected response status: " + status);
+          }
+        }
+      };
+      val responseBody = httpclient.execute(httpHead, responseHandler);
+      System.out.println("----------------------------------------");
+      System.out.println(responseBody);
+      responseBody
+    } finally {
+      httpclient.close();
+    }
+  }
+      
+  private def getContentTypeFromHEADRequest_OLD2(url: String) = {
+    val headMethod = new HttpHead(url);
+    val header = headMethod.getFirstHeader("Content-Type")
+//            val responseCode = headMethod.getResponseCode()
+//      	println(s">>>> getContentTypeFromHEADRequest: response Code for <$url> $responseCode")
+    header.getValue();
+  }
+
+  private def getContentTypeFromHEADRequest_OLD(url: String) = {
+    val connection = new URL(url).openConnection()
+    connection.setConnectTimeout(defaultConnectTimeout)
+    connection.setReadTimeout(defaultReadTimeout)
+    println(s">>>> getContentTypeFromHEADRequest: $defaultConnectTimeout, $defaultReadTimeout")
+
+    connection match {
+      case connection: HttpURLConnection =>
+      connection.setRequestProperty( "Accept",
+          "application/rdf+xml, text/turtle; charset=utf-8, application/ld+json; charset=utf-8")
+        connection.setRequestMethod("HEAD")
+        connection.setInstanceFollowRedirects(true)
+        val responseCode = connection.getResponseCode()
+      	println(s">>>> getContentTypeFromHEADRequest: response Code for <$url> $responseCode")
+        connection.getHeaderField("Content-Type")
+      case _ => ""
     }
   }
 

@@ -126,9 +126,9 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
       connection0 match {
         case connection: HttpURLConnection if( ! url.startsWith("file:/") ) =>
           println(s"lastModified: HTTP URL")
-          connection.setConnectTimeout(timeout);
-          connection.setReadTimeout(timeout);
-          connection.setRequestMethod("HEAD");
+          connection.setConnectTimeout(timeout)
+          connection.setReadTimeout(timeout)
+          connection.setRequestMethod("HEAD")
           val responseCode = connection.getResponseCode()
 
           def tryHeaderField(headerName: String): (Boolean, Boolean, Long) = {

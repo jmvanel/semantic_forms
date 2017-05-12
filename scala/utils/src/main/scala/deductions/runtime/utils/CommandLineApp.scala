@@ -6,6 +6,8 @@ object CommandLineApp extends App {
     |================================
     |deductions.runtime.sparql_cache.PopulateRDFCache  load well-know ontologies
     |deductions.runtime.jena.ResetRDFCache             delete named graph related to common vocabularies, default form specifications, and IN18 translations
+    |deductions.runtime.sparql_cache.apps.RDFLoaderApp
+    |
     |tdb.tdbloader                                     load given RDF file or URL (Jena TDB)
     |tdb.tdbdump                                       dump all RDF in duads (Jena TDB)
     |tdb.tdbupdate                                     SPARQL update (Jena TDB)
@@ -15,11 +17,13 @@ object CommandLineApp extends App {
     |                                                    SELECT DISTINCT ?g WHERE { GRAPH ?g { ?s ?p ?o } . }
     |                                                    SELECT DISTINCT ?s ?p ?o ?g WHERE { GRAPH ?g { ?s ?p ?o } . OPTIONAL { ?s ?p ?o }
     |                                                      FILTER regex( ?o, '${SEARCH}', 'i') }
+    |riotcmd.riot
     |deductions.runtime.jena.lucene.TextIndexerRDF     index all RDF with Lucene or SORL
     |org.apache.lucene.demo.SearchFiles                simple text search from lucene-demo
     |
     |deductions.runtime.sparql_cache.RDFI18NLoader     update the I18N translations of the RDF vocabularies
     |deductions.runtime.sparql_cache.FormSpecificationsLoader  update the Common Form Specifications
+    |deductions.runtime.sparql_cache.CommonVocabulariesLoader
     |deductions.runtime.jena.DataSourceManagerApp      Replace Same Language triples from given RDF file or URL in given graph
     |deductions.runtime.abstract_syntax.FormSpecificationsFromVocabApp	Create squeleton form specifications from an RDFS/OWL vocabulary
     |
