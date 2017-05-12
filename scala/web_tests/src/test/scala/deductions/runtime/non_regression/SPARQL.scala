@@ -2,9 +2,9 @@ import com.github.agourlay.cornichon.CornichonFeature
 
 class ReadmeExample extends CornichonFeature {
 
-  def feature = Feature("OpenMovieDatabase API"){
+  def feature = Feature("OpenMovieDatabase API") {
 
-    Scenario("list GOT season 1 episodes"){
+    Scenario("list GOT season 1 episodes") {
 
       When I get("http://www.omdbapi.com").withParams(
         "t" -> "Game of Thrones",
@@ -63,4 +63,30 @@ class ReadmeExample extends CornichonFeature {
         """)
     }
   }
-}
+
+
+
+    def feature2 = Feature("SPARQL") {
+
+      Scenario("SPARQL SELECT") {
+
+        When I get("localhost:9000/select-ui").withParams(
+          "query" -> "SELECT = SELECT ?lab WHERE { ?label ?pred foaf:Person   . }LIMIT 10"
+        )
+
+        Then assert status.is(200)
+
+        And assert body.ignoring("Episodes", "Response").is(
+          """
+        {
+          "query": ""SELECT = SELECT ?lab WHERE { ?label ?pred foaf:Person   . }LIMIT 10"
+
+        }
+        """)
+
+
+    }
+  }
+  }
+
+
