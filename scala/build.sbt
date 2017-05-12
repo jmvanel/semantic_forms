@@ -22,7 +22,7 @@ lazy val connectors = project .dependsOn(utils)
 lazy val utils = project
 lazy val forms = project.in(file("forms")) .dependsOn(connectors) .aggregate(connectors)
 
-// lazy val web_tests = project
+lazy val web_tests = project
 lazy val forms_js = project
 // lazy val forms_services = project
 // lazy val social_web = project

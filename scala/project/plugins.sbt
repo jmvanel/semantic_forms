@@ -17,3 +17,5 @@ addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "5.1.0")
 
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.15")
 
+addSbtPlugin("io.gatling" % "gatling-sbt" % "2.1.7")
+
