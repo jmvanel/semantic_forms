@@ -138,8 +138,9 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
               println(s"""retrieveURINoTransaction: stored Graph Is Empty for URI <$uri>""")
               val mirrorURI = getMirrorURI(uri)
               val vv = if (mirrorURI == "") {
+                val graphTry_MIME= readURI(uri, uri, dataset, request)
                 val graphDownloaded = {
-                  val graphTry = readURI(uri, uri, dataset, request). _1
+                  val graphTry = graphTry_MIME . _1
                   if (transactionsInside)
                     storeURI(graphTry, uri, uri, dataset)
                   else
@@ -152,10 +153,16 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
                 } else
                   println(s"Download Graph at URI <$uri> was tried, but it's faulty: $graphDownloaded")
 
+                val contentType = graphTry_MIME._2
                 println(s"""retrieveURINoTransaction: downloaded graph from URI <$uri> $graphDownloaded
-                    size ${if (graphDownloaded.isSuccess) graphDownloaded.get.size}""")
+                    size ${if (graphDownloaded.isSuccess) graphDownloaded.get.size} content Type: $contentType""")
+                val ispureHTML = contentType.startsWith("text/html") // TODO case RDFa
                 graphDownloaded match {
-                  case Success(gr) => Success(gr)
+                  case Success(gr) if( !ispureHTML ) => Success(gr)
+                  case Success(gr) if(  ispureHTML ) =>
+                  // TODO pass transactionsInside
+                  Success(pureHTMLwebPageAnnotateAsDocument(uri, request))
+
                   case Failure(f) => {
                     println(s"Graph at URI <$uri> could not be downloaded, (exception ${f.getLocalizedMessage}, ${f.getClass} cause ${f.getCause}).")
                     f match {
@@ -383,10 +390,10 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   }
 
   /** pasted from Apache HTTP client doc */
-  def getContentTypeFromHEADRequest(arg: String): String = {
+  def getContentTypeFromHEADRequest(url: String): String = {
     val httpclient = HttpClients.createDefault();
     try {
-      val httpHead = new HttpHead(arg)
+      val httpHead = new HttpHead(url)
       httpHead.setHeader( "Accept",
           "application/rdf+xml, text/turtle; charset=utf-8, application/ld+json; charset=utf-8")
 
@@ -397,17 +404,26 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
         def handleResponse(response: HttpResponse):String = {
         // throws ClientProtocolException, IOException
           val status = response.getStatusLine().getStatusCode();
-          if (status >= 200 && status < 300) {
-            response.getFirstHeader("Content-Type").getValue
+          if (
+              (status >= 200 && status < 300) ||
+              status == 406 ||status == 404 // Not Acceptable
+              ) {
+            val ct = response.getFirstHeader("Content-Type")
+            if ( ct == null ) "" else ct.getValue
           } else {
+            System.out.println(s"---- ${response.getStatusLine()}");
             throw new ClientProtocolException("Unexpected response status: " + status);
           }
         }
       };
-      val responseBody = httpclient.execute(httpHead, responseHandler);
+      val responseHandled =
+        if (!url.startsWith("file:")) // NOTE: necessary for deductions.runtime.jena.TestJenaHelpers
+          httpclient.execute(httpHead, responseHandler)
+        else
+          ""
       System.out.println("----------------------------------------");
-      System.out.println(responseBody);
-      responseBody
+      System.out.println(responseHandled);
+      responseHandled
     } finally {
       httpclient.close();
     }
