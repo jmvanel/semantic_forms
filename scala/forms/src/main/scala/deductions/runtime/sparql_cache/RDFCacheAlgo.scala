@@ -139,7 +139,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
               val mirrorURI = getMirrorURI(uri)
               val vv = if (mirrorURI == "") {
                 val graphDownloaded = {
-                  val graphTry = readURI(uri, uri, dataset, request)
+                  val graphTry = readURI(uri, uri, dataset, request). _1
                   if (transactionsInside)
                     storeURI(graphTry, uri, uri, dataset)
                   else
@@ -317,13 +317,13 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    */
   private def readStoreURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET,
                                         request: HTTPrequest = HTTPrequest()): Try[Rdf#Graph] = {
-    val graphTry = readURI(uri, graphUri, dataset, request)
+    val graphTry = readURI(uri, graphUri, dataset, request) . _1
     storeURINoTransaction(graphTry, uri, graphUri, dataset)
   }
   /** read unconditionally from URI and store in TDB, Transaction inside */
   private def readStoreURITry(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET,
                               request: HTTPrequest = HTTPrequest()): Try[Rdf#Graph] = {
-    val graphTry = readURI(uri, graphUri, dataset, request)
+    val graphTry = readURI(uri, graphUri, dataset, request) . _1
     storeURI(graphTry, uri, graphUri, dataset)
   }
 
@@ -350,7 +350,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * can also load an URI with the # part
    */
   private def readURI(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET,
-                      request: HTTPrequest = HTTPrequest()): Try[Rdf#Graph] = {
+                      request: HTTPrequest = HTTPrequest()): (Try[Rdf#Graph], String) = {
     Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
 
     if (isDownloadableURI(uri)) {
@@ -371,18 +371,18 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
         //        else
         //          emptyGraph
         //      }
-        graphTry
+        (graphTry, contentType)
       } else {
-        Success(emptyGraph)
+        (Success(emptyGraph), contentType)
       }
     } else {
       val message = s"Load uri <$uri> is not possible, not a downloadable URI."
       logger.warn(message)
-      Success(emptyGraph) // TODO return Failure( new Exception("") )
+      ( Success(emptyGraph), "" ) // TODO return Failure( new Exception("") )
     }
   }
 
-  /** from Apache HTTP client doc */
+  /** pasted from Apache HTTP client doc */
   def getContentTypeFromHEADRequest(arg: String): String = {
     val httpclient = HttpClients.createDefault();
     try {
@@ -399,8 +399,6 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
           val status = response.getStatusLine().getStatusCode();
           if (status >= 200 && status < 300) {
             response.getFirstHeader("Content-Type").getValue
-//            val entity = response.getEntity();
-//            return if (entity != null) EntityUtils.toString(entity) else null;
           } else {
             throw new ClientProtocolException("Unexpected response status: " + status);
           }
@@ -414,34 +412,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       httpclient.close();
     }
   }
-      
-  private def getContentTypeFromHEADRequest_OLD2(url: String) = {
-    val headMethod = new HttpHead(url);
-    val header = headMethod.getFirstHeader("Content-Type")
-//            val responseCode = headMethod.getResponseCode()
-//      	println(s">>>> getContentTypeFromHEADRequest: response Code for <$url> $responseCode")
-    header.getValue();
-  }
-
-  private def getContentTypeFromHEADRequest_OLD(url: String) = {
-    val connection = new URL(url).openConnection()
-    connection.setConnectTimeout(defaultConnectTimeout)
-    connection.setReadTimeout(defaultReadTimeout)
-    println(s">>>> getContentTypeFromHEADRequest: $defaultConnectTimeout, $defaultReadTimeout")
-
-    connection match {
-      case connection: HttpURLConnection =>
-      connection.setRequestProperty( "Accept",
-          "application/rdf+xml, text/turtle; charset=utf-8, application/ld+json; charset=utf-8")
-        connection.setRequestMethod("HEAD")
-        connection.setInstanceFollowRedirects(true)
-        val responseCode = connection.getResponseCode()
-      	println(s">>>> getContentTypeFromHEADRequest: response Code for <$url> $responseCode")
-        connection.getHeaderField("Content-Type")
-      case _ => ""
-    }
-  }
-
+  
   private def microdataLoading(uri: Rdf#URI): Rdf#Graph = {
     logger.info(s"Trying RDFa for <$uri>")
     microdataLoader.load(
