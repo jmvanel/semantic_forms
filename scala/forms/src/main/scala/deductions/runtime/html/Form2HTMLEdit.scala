@@ -223,7 +223,9 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
             toPlainString(value)
           } name={ makeHTMNameLiteral(lit) } type={
             xsd2html5TnputType(type_.toString())
-          } placeholder={ placeholder } title={ placeholder } size={
+          }
+          step = {xsd2html5Step(type_.toString())}
+          placeholder={ placeholder } title={ placeholder } size={
             inputSize.toString()
           } dropzone="copy" id={ htmlId } data-uri-property={ lit.property.toString() }>
           </input>

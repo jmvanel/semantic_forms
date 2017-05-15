@@ -11,6 +11,7 @@ import org.w3.banana.RDFOps
 
 trait HTML5Types {
     def xsd2html5TnputType(xsdDatatype: String): String
+    def xsd2html5Step(xsdDatatype: String): String
 }
 
 /**
@@ -27,6 +28,13 @@ trait HTML5TypesTrait[Rdf <: RDF] extends HTML5Types {
     xsd2html5.getOrElse(URI(xsdDatatype), "text")
   def xsdNode2html5TnputType(xsdDatatype: Rdf#Node): String =
     xsd2html5.getOrElse(xsdDatatype, "text")
+
+    /** TODO set the right delta for each XSD number type */
+    def xsd2html5Step(xsdDatatype: String): String =
+      if(xsd2html5TnputType(xsdDatatype) == "number")
+        "any"
+      else
+        null
 
   /** see http://www.w3.org/TR/html-markup/input.html */
   lazy val xsd2html5 = Map[Rdf#Node, String](
