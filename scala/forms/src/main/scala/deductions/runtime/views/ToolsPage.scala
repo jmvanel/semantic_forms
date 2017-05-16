@@ -100,8 +100,6 @@ trait ToolsPage extends EnterButtons
     val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
     println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
     val servicesURIPrefixEncoded = URLEncoder.encode( URLEncoder.encode(servicesURIPrefix, "UTF-8"), "UTF-8")
-    val toolURLprefixEncoded = URLEncoder.encode( URLEncoder.encode(toolURLprefix, "UTF-8"), "UTF-8")
-    // val servicesURL = s"$toolURLprefixEncoded$servicesURIPrefixEncoded$sparqlServicePrefix"
     val servicesURL = s"$toolURLprefix$servicesURIPrefixEncoded$sparqlServicePrefix"
     println(s">>>> servicesURL $servicesURL")
 
@@ -121,9 +119,10 @@ trait ToolsPage extends EnterButtons
     var query = textarea.value;
     console.log( 'query in textarea ' + query);
     console.log( 'services URL $servicesURL' );
-    var url = '$servicesURL' + window.encodeURIComponent( window.encodeURIComponent(query)) ;
+    var url = '$servicesURL' +
+      window.encodeURIComponent( window.encodeURIComponent(query)) +
+      '%0D%0Aurldecode';
     console.log( 'URL ' + url );
-    // console.log( 'startsWith ' + ( '$sparqlServicePrefix' . startsWith ('/') ) );
     if($isDNS)
       window.open( url , '_blank' );
     else

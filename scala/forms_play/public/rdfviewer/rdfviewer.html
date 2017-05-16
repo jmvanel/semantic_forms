@@ -24,13 +24,11 @@
     <script type="text/javascript">
       $(window).ready(function () {
 	// function restart(){
-	    // var loadVal = $.getUrlVar(
-		// SyntaxError: Unexpected identifier ???????????????
 	    var loadVal = jQuery.getUrlVar("url");
 	    console.log("loadVal " + loadVal);
 	    if (loadVal != null) {
 	      var value = decodeURIComponent(loadVal);
-	      console.log("value " + value);
+	      console.log("value after decodeURIComponent " + value);
 	    };
 	    viewrdf("#chart",1000,1000, value, 300);
 	// }
