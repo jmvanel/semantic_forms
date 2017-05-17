@@ -18,6 +18,7 @@ import deductions.runtime.services.Configuration
 import org.apache.commons.codec.digest.DigestUtils
 import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.utils.HTTPrequest
+import org.w3.banana.binder.FromURI
 
 /** Abstract Form Syntax to HTML;
  * different modes: display or edit;
@@ -167,13 +168,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
               Text("\n") ++
               <input type="hidden" name="uri" value={ urlEncode(form.subject) }/> ++
               <div class="form-group">
-                <div class="col-xs-12">
-                {
-                  Text(form.title) ++
-                    (if (form.subject != nullURI)
-                      Text(", at URI ") ++ <a href={ toPlainString(form.subject) }>&lt;{ form.subject }&gt;</a>
-                    else NodeSeq.Empty)
-                }
+                <div class="col-xs-12"> {dataFormHeader(form) }
               </div></div> ++
               {
 //                if (request.rawQueryString.contains("tabs=true")) {
@@ -187,6 +182,23 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
           }
         </div>
     return htmlResult
+  }
+
+  /** Form Header inside the form box with data fields */
+  private def dataFormHeader(form: formMod#FormSyntax) = {
+    import form._
+    Text(form.title) ++
+      (if (form.subject != nullURI)
+        Text(", at URI ") ++
+        <a href={ toPlainString(form.subject) }>&lt;{ form.subject }&gt;</a>
+      else NodeSeq.Empty) ++
+      <div>{ form.formURI match {
+        case Some(formURI) if formURI != nullURI => "Form specification: " ++
+        createHyperlinkElement( toPlainString(formURI), formLabel)
+        case _ => "Class " ++
+        createHyperlinkElement( toPlainString(classs), toPlainString(classs)) ++
+        " (automatic form)"
+      }}</div>
   }
 
   /** dispatch to various Entry's: LiteralEntry, ResourceEntry; ..., editable or not */

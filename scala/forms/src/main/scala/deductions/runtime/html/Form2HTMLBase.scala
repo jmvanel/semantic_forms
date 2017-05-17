@@ -11,6 +11,7 @@ import deductions.runtime.utils.I18NMessages
 import deductions.runtime.utils.RDFPrefixes
 import java.net.URLEncoder
 import deductions.runtime.utils.CSSClasses
+import scala.xml.NodeSeq
 
 /** generate HTML from abstract Form : common parts for Display & edition */
 private[html] trait Form2HTMLBase[NODE, URI <: NODE]
@@ -137,5 +138,11 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
       val suffix = if (blanknode) "&blanknode=true" else ""
       hrefPrefix + urlEncode(uri) + suffix
     }
+  }
+
+  /** use this instead of createHyperlinkString() */
+  def createHyperlinkElement(uri: String, text: String, hrefPrefix: String = config.hrefDisplayPrefix, blanknode: Boolean = false): NodeSeq = {
+    <a href={createHyperlinkString(hrefPrefix, uri, blanknode)}>
+    {text}</a>
   }
 }
