@@ -2,6 +2,7 @@ import com.github.agourlay.cornichon.CornichonFeature
 
 class ReadmeExample extends CornichonFeature {
 
+/*
   def feature = Feature("OpenMovieDatabase API") {
 
     Scenario("list GOT season 1 episodes") {
@@ -64,27 +65,21 @@ class ReadmeExample extends CornichonFeature {
     }
   }
 
+*/
 
+import java.net.URLEncoder
+lazy val query =
+	"""
+        PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+         SELECT * WHERE {GRAPH ?G {?S ?label ?O  .}} LIMIT 10
+        """
+        // PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+        // SELECT ?label WHERE {GRAPH ?G {?S ?label ?O  .}} LIMIT 10
 
-    def feature2 = Feature("SPARQL") {
-
+    def feature = Feature("SPARQL") {
       Scenario("SPARQL SELECT") {
-
-        When I get("localhost:9000/select-ui").withParams(
-          "query" -> "SELECT = SELECT ?lab WHERE { ?label ?pred foaf:Person   . }LIMIT 10"
-        )
-
+        When I get("http://localhost:9000/sparql?query=" + URLEncoder.encode(query) )
         Then assert status.is(200)
-
-        And assert body.ignoring("Episodes", "Response").is(
-          """
-        {
-          "query": ""SELECT = SELECT ?lab WHERE { ?label ?pred foaf:Person   . }LIMIT 10"
-
-        }
-        """)
-
-
     }
   }
   }
