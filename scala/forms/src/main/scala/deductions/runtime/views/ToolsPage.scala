@@ -42,7 +42,12 @@ trait ToolsPage extends EnterButtons
         SPARQL construct {
           // TODO: the URL here appears also in Play! route!
           sparqlQueryForm(lang,true, "", "/sparql-ui",
-            Seq("CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10"))
+            Seq("CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+              "#Prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>\n" +
+              "#PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+              "#CONSTRUCT { ?sub geo:long ?LON .?sub geo:lat ?LAT . ?sub rdfs:label ?LAB.}\n" +
+              "#WHERE { GRAPH ?GRAPH { ?sub geo:long ?LON .?sub geo:lat ?LAT . ?sub rdfs:label ?LAB.  } }"
+            ))
            
          }  
        
@@ -79,7 +84,7 @@ trait ToolsPage extends EnterButtons
           {	if (viewButton)
           Seq(
               <input class ="btn btn-primary" type="submit" value={ I18NMessages.get("View", lang) } formaction ="/sparql-form"/>,
-              <input class ="btn btn-primary" type="submit" value={ I18NMessages.get("Map", lang) } />,
+            makeLinkCarto(lang, textareaId, "https://advancedcartographywebcomponent.github.io/ACWC-Tree/?geo="),
               <input class ="btn btn-primary" type="submit" value={ I18NMessages.get("Table", lang) } />,
               <input class ="btn btn-primary" type="submit" value={ I18NMessages.get("Tree", lang) } />,
               makeLink(textareaId, "/assets/rdfviewer/rdfviewer.html?url=" )
@@ -131,6 +136,44 @@ trait ToolsPage extends EnterButtons
 }());
 """)}
     </script>
+  }
+
+  def makeLinkCarto(lang:String = "en", textareaId: String, toolURLprefix: String,
+               toolname: String = "RDF Viewer",
+               imgWidth: Int = 15): NodeSeq = {
+
+    val sparqlServicePrefix = URLEncoder.encode( URLEncoder.encode("sparql?query=", "UTF-8"), "UTF-8")
+    val buttonId = textareaId+"-button"
+    val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
+    println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
+    val servicesURIPrefixEncoded = URLEncoder.encode( URLEncoder.encode(servicesURIPrefix, "UTF-8"), "UTF-8")
+    val servicesURL = s"$toolURLprefix$servicesURIPrefixEncoded$sparqlServicePrefix"
+    println(s">>>> servicesURL $servicesURL")
+
+    <input id={buttonId}
+            class="btn btn-primary" type="submit" target="_blank" value={ I18NMessages.get("Map", lang)}>
+    </input>
+      <script>
+        { Unparsed( s"""
+(function() {
+  var textarea = document.getElementById('$textareaId');
+  console.log('textareaId "$textareaId", textarea ' + textarea);
+  var button = document.getElementById('$buttonId');
+  button.addEventListener( 'click', function() {
+    console.log( 'elementById ' + textarea);
+    var query = textarea.value;
+    console.log( 'query in textarea ' + query);
+    console.log( 'services URL $servicesURL' );
+    var url = '$servicesURL' +
+      window.encodeURIComponent( window.encodeURIComponent(query)) +
+      '%0D%0Aurldecode';
+    console.log( 'URL ' + url );
+    window.open( url , '_blank' );
+
+  });
+}());
+""")}
+      </script>
   }
    
                         
