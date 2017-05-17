@@ -2,7 +2,7 @@ import sbt.Keys._
 import sbt._
 // import Common._ // TODO
 
-scalaVersion in ThisBuild := "2.11.8" // scalaVersion :=  "2.12.1"
+scalaVersion in ThisBuild := "2.11.11" // "2.11.8" // "2.12.2"
 
 enablePlugins(ScalaJSPlugin)
 scalaJSOptimizerOptions ~= { _.withDisableOptimizer(true) }
@@ -10,7 +10,7 @@ scalaJSOptimizerOptions ~= { _.withDisableOptimizer(true) }
 name := "forms_js"
 
 libraryDependencies ++= Seq(
-  "org.scala-js" %%% "scalajs-dom" % "0.9.1" ,
+  "org.scala-js" %%% "scalajs-dom" % "0.9.2" ,
   "org.w3" %%  "banana-plantain" % "0.8.4-SNAPSHOT"
 )
 
