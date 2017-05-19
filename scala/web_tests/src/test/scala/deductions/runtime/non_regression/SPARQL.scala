@@ -1,6 +1,6 @@
 import com.github.agourlay.cornichon.CornichonFeature
 
-class ReadmeExample extends CornichonFeature {
+class SPARQL extends CornichonFeature {
 
 /*
   def feature = Feature("OpenMovieDatabase API") {
@@ -80,6 +80,22 @@ lazy val query =
       Scenario("SPARQL SELECT") {
         When I get("http://localhost:9000/sparql?query=" + URLEncoder.encode(query) )
         Then assert status.is(200)
+        headers.name("Access-Control-Allow-Headers").isPresent
+        body.whitelisting.is(
+          """
+            {
+            "results":{
+              "bindings":[{
+                "O":{
+                  "type": "literal",
+                  "value": "FOAF Person - short form",
+                  "datatype" : "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+                }
+              }]
+            }
+          }
+          """
+        )
     }
   }
   }
