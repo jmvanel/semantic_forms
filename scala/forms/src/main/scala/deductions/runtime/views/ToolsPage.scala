@@ -165,9 +165,8 @@ trait ToolsPage extends EnterButtons
     console.log( 'query in textarea ' + query);
     console.log( 'services URL $servicesURL' );
     var url = '$servicesURL' +
-      window.encodeURIComponent( window.encodeURIComponent(query)) +
-      '%0D%0Aurldecode';
-    console.log( 'URL ' + url );
+      window.encodeURIComponent( window.encodeURIComponent(query))
+       console.log( 'URL ' + url );
     window.open( url , '_blank' );
 
   });
