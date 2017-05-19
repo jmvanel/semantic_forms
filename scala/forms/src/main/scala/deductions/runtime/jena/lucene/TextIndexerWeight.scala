@@ -36,7 +36,9 @@ trait TextIndexerWeight extends LuceneIndex {
               val analyzer = textIndex.getAnalyzer
 
               // add weight to existing Lucene Documents
-              val suggester = new AnalyzingInfixSuggester(Version.LUCENE_4_9,
+              val suggester = new AnalyzingInfixSuggester(
+                  // Version.LUCENE_4_9,
+                  Version.LUCENE_6_4_1,
                 directory, analyzer);
               val indexReader = DirectoryReader.open(directory);
 
@@ -46,7 +48,7 @@ trait TextIndexerWeight extends LuceneIndex {
                   // throws IOException;
                   val terms = MultiFields.getTerms(indexReader, "label")
                   if (terms != null) {
-                    new InputIterator.InputIteratorWrapper(terms.iterator(null)) {
+                    new InputIterator.InputIteratorWrapper(terms.iterator()) {
                       override def weight(): Long = {
                         1 // TODO
                       }

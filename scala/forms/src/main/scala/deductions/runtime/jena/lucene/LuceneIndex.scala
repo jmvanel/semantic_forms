@@ -7,8 +7,8 @@ import org.apache.jena.query.text.TextDatasetFactory
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.store.NIOFSDirectory
 import org.apache.lucene.util.Version
-import org.apache.solr.client.solrj.SolrServer
-import org.apache.solr.client.solrj.impl.HttpSolrServer
+//import org.apache.solr.client.solrj.SolrServer
+//import org.apache.solr.client.solrj.impl.HttpSolrServer
 
 import org.w3.banana.FOAFPrefix
 import org.w3.banana.RDFOps
@@ -18,6 +18,7 @@ import deductions.runtime.services.Configuration
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.utils.RDFPrefixes
 import org.w3.banana.Prefix
+import java.nio.file.Paths
 
 /**
  * see https://jena.apache.org/documentation/query/text-query.html
@@ -72,15 +73,22 @@ trait LuceneIndex // [Rdf <: RDF]
     if (useTextQuery) {
       /* this means: in Lucene the URI will be kept in key "uri",
          * the text indexed by SORL will be kept in key "text" */
-      if (solrIndexing) {
-        val server: SolrServer = new HttpSolrServer("http://localhost:7983/new_core")
-        // val pingResult = server.ping; println("pingResult.getStatus " + pingResult.getStatus) // 7983
-        TextDatasetFactory.createSolrIndex(dataset, server, rdfIndexing)
-      } else {
-        val directory = new NIOFSDirectory(new File("LUCENE"))
+//      if (solrIndexing) {
+//        val server: SolrServer = new HttpSolrServer("http://localhost:7983/new_core")
+//        // val pingResult = server.ping; println("pingResult.getStatus " + pingResult.getStatus) // 7983
+//        TextDatasetFactory.createSolrIndex(dataset, server, rdfIndexing)
+//      } else {
+        val directory = new NIOFSDirectory(
+            // new java.nio.file.Path
+//            File
+            Paths.get
+            ("LUCENE"))
         TextDatasetFactory.createLucene(dataset, directory, rdfIndexing,
-          new StandardAnalyzer(Version.LUCENE_4_9))
-      }
+          new StandardAnalyzer())
+//              Version.
+////              LUCENE_4_9))
+//              LUCENE_6_4_1 ))
+//      }
     } else
       dataset
 
