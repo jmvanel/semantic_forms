@@ -83,8 +83,10 @@ trait ToolsPage extends EnterButtons
           <input class ="btn btn-primary" type="submit" value={ I18NMessages.get("Submit", lang) }  formaction ={action} />
           {	if (viewButton)
           Seq(
-              <input class ="btn btn-primary" type="submit" value={ I18NMessages.get("View", lang) } formaction ="/sparql-form"/>,
-            makeLinkCarto(lang, textareaId, "https://advancedcartographywebcomponent.github.io/ACWC-Tree/?geo="),
+              <input class ="btn btn-primary" type="submit" value={ I18NMessages.get("View", lang) }
+              formaction ="/sparql-form"/>,
+              makeLinkCarto(lang, textareaId,
+                "https://advancedcartographywebcomponent.github.io/ACWC-Tree/?geo="),
               <input class ="btn btn-primary" type="submit" value={ I18NMessages.get("Table", lang) } />,
               <input class ="btn btn-primary" type="submit" value={ I18NMessages.get("Tree", lang) } />,
               makeLink(textareaId, "/assets/rdfviewer/rdfviewer.html?url=" )
@@ -142,12 +144,14 @@ trait ToolsPage extends EnterButtons
                toolname: String = "RDF Viewer",
                imgWidth: Int = 15): NodeSeq = {
 
-    val sparqlServicePrefix = URLEncoder.encode( URLEncoder.encode("sparql?query=", "UTF-8"), "UTF-8")
+    val sparqlServicePrefix =
+//        URLEncoder.encode(
+            "sparql?query="
+//        , "UTF-8")
     val buttonId = textareaId+"-button"
     val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
     println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
-    val servicesURIPrefixEncoded = URLEncoder.encode( URLEncoder.encode(servicesURIPrefix, "UTF-8"), "UTF-8")
-    val servicesURL = s"$toolURLprefix$servicesURIPrefixEncoded$sparqlServicePrefix"
+    val servicesURL = s"$toolURLprefix$servicesURIPrefix$sparqlServicePrefix"
     println(s">>>> servicesURL $servicesURL")
 
     <input id={buttonId}
@@ -165,7 +169,11 @@ trait ToolsPage extends EnterButtons
     console.log( 'query in textarea ' + query);
     console.log( 'services URL $servicesURL' );
     var url = '$servicesURL' +
-      window.encodeURIComponent( window.encodeURIComponent(query))
+//      window.encodeURIComponent( 
+      window.encodeURIComponent
+      (query)
+      // )
+      ;
        console.log( 'URL ' + url );
     window.open( url , '_blank' );
 
