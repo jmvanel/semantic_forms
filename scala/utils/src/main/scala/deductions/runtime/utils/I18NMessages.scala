@@ -38,8 +38,6 @@ object I18NMessages {
      * All of this is accomplished with just two lines of code: */
     formatter.applyPattern(template)
 
-    formatter.format(Array(messageArguments)).
-      replace("WrappedArray", "") // HACK !!!!!!!!!!!!!!
-
+    formatter.format( messageArguments.toList )
   }
 }
