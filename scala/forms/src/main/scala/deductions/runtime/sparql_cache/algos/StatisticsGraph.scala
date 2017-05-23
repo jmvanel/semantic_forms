@@ -22,8 +22,8 @@ trait StatisticsGraph[Rdf <: RDF] extends RDFHelpers[Rdf]
     val objectsCount2 = find(graph, focus, ANY, ANY).map { trip => trip.objectt }.toList.distinct.size
     val triplesCount = graph.size
 
-    val classe = getObjects(graph, focus, rdf.typ).toList.map { abbreviateTurtle(_) }.mkString(", ")
-
+    val linkClasse = getObjects(graph, focus, rdf.typ).toList
+    val classe = linkClasse.map { abbreviateTurtle(_) }
     // TODO hyperlinks to subjects, etc
     val subjectsLink = makeHyperlinks(focus, s" $subjectsCount subjects ")
     <p class="sf-statistics">
@@ -36,7 +36,9 @@ trait StatisticsGraph[Rdf <: RDF] extends RDFHelpers[Rdf]
       objects,
       { objectsCount2 }
       objects from page URI,
-      { if (classe != "") s"type(s) $classe" }
+      { for ( a <- 0 until linkClasse.length) yield {
+       <a href={ linkClasse(a).toString }>{ classe(a) }</a>
+     } }
     </p>
   }
 
