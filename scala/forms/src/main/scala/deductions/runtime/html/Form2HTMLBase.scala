@@ -142,7 +142,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
 
   /** use this instead of createHyperlinkString() */
   def createHyperlinkElement(uri: String, text: String, hrefPrefix: String = config.hrefDisplayPrefix, blanknode: Boolean = false): NodeSeq = {
-    <a href={createHyperlinkString(hrefPrefix, uri, blanknode)}>
+    <a  href={createHyperlinkString(hrefPrefix, uri, blanknode)} style="color: rgb(44,133,254);">
     {text}</a>
   }
 }

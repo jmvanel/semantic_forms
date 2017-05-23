@@ -190,7 +190,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
     Text(form.title) ++
       (if (form.subject != nullURI)
         Text(", at URI ") ++
-        <a href={ toPlainString(form.subject) }>&lt;{ form.subject }&gt;</a>
+        <a href={ toPlainString(form.subject) } style="color: rgb(44,133,254);">&lt;{ form.subject }&gt;</a>
       else NodeSeq.Empty) ++
       <div>{ form.formURI match {
         case Some(formURI) if formURI != nullURI => "Form specification: " ++
