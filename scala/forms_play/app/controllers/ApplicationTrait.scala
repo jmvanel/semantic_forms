@@ -119,13 +119,14 @@ trait ApplicationTrait extends Controller
         }
       }
 
-  def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
-		  withUser
-    {
-      implicit userid =>
+  def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "",
+      database: String = "TDB") =
+		  Action {
         implicit request =>
           logger.info(s"""form: request $request : "$Edit" formuri <$formuri> """)
           val lang = chooseLanguage(request)
+          val requestCopy = getRequestCopy()
+          val userid = requestCopy . userId()
           Ok(htmlForm(uri, blankNode, editable = Edit != "", lang, formuri,
               graphURI = makeAbsoluteURIForSaving(userid), database=database) . _1 )
           .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
