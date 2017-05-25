@@ -14,7 +14,7 @@ object FormModule {
 /** Default values for the whole Form or for an `Entry` */
 case class FormDefaults(
     var defaultCardinality: Cardinality = zeroOrMore,
-    /** displaying rdf:type fields is configurable for editing, and displayed unconditionally for non editing */
+    /* displaying rdf:type fields is configurable for editing, and displayed unconditionally for non editing */
     val displayRdfType: Boolean = true) {
   def multivalue: Boolean = defaultCardinality == zeroOrMore ||
     defaultCardinality == oneOrMore
@@ -64,35 +64,34 @@ trait FormModule[NODE, URI <: NODE] {
   val nullURI: URI
   def makeURI(n: NODE): URI = nullURI
 
-  /**
-   * openChoice allows user in form to choose a value not in suggested values
-   *  TODO somehow factor value: Any ?
-   */
+  /** an entry (for an RDF triple) in a form */
    abstract class Entry	{
-	  val label: String
-	  val comment: String
+	  val label: String =""
+	  val comment: String =""
 	  val property: NODE
 	  /** unused yet :( */
-	  val mandatory: Boolean
+	  val mandatory: Boolean = false
 	  /** TODO : several types */
-	  val type_ : NODE
+	  val type_ : NODE = nullURI
 //	  val type_ : Seq[NODE] // TODO <<<<<<<<<<<<<<<<
-	  val value: NODE
+	  val value: NODE = nullURI
     val subjectLabel: String = ""
-	  var widgetType: WidgetType
-	  /** true <=> user has possibility to type any (valid) data */
-	  var openChoice: Boolean
-	  var possibleValues: Seq[(NODE, NODE)]
+	  var widgetType: WidgetType = URIWidget
+	  /** openChoice allows user in form to choose a value not in suggested values
+	   * true <=> user has possibility to type any (valid) data */
+	  var openChoice: Boolean = true
+	  var possibleValues: Seq[(NODE, NODE)] = Seq()
 	  val defaults: FormDefaults = FormModule.formDefaults
 	  /** for multi-subject forms */
-		val subject: NODE
-    var cardinality: Cardinality
-    val htmlName: String
-    var metadata: String =""
+		val subject: NODE = nullURI
+    var cardinality: Cardinality = zeroOrMore
+    val htmlName: String = ""
+    var metadata: String = ""
     var timeMetadata: Long = -1
 
     /** filled, not not used*/
     private val triples: mutable.Buffer[Triple] = mutable.ListBuffer[Triple]()
+
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]): Entry
     override def toString(): String = {
       s"""${getClass.getSimpleName} label "$label", "$comment" "$widgetType", openChoice: $openChoice"""
@@ -109,28 +108,32 @@ trait FormModule[NODE, URI <: NODE] {
     def valueLabel: String = ""
   }
 
+//  def makeEntry( fromProperty: NODE): Entry = {
+//    new Entry{ override val property = fromProperty }
+//  }
 
   /** @param possibleValues a couple of an RDF node id and the label to display, see trait RangeInference */
   case class ResourceEntry(
-		label: String="", comment: String="",
-    property: ObjectProperty = nullURI,
-    validator: ResourceValidator = ResourceValidator(Set()),
-    value: NODE = nullURI, val alreadyInDatabase: Boolean = true,
+		override val label: String="",
+		override val comment: String="",
+    override val property: ObjectProperty = nullURI,
+    override val validator: ResourceValidator = ResourceValidator(Set()),
+    override val value: NODE = nullURI, val alreadyInDatabase: Boolean = true,
     var possibleValues: Seq[(NODE, NODE)] = Seq(),
     override val valueLabel: String = "",
-    type_ : NODE = nullURI,
-    inverseTriple: Boolean= false,
-    subject: NODE = nullURI,
+    override val type_ : NODE = nullURI,
+    override val inverseTriple: Boolean= false,
+    override val subject: NODE = nullURI,
     override val subjectLabel: String = "",
-    val mandatory: Boolean = false,
+    override val mandatory: Boolean = false,
     var openChoice: Boolean = true,
     var widgetType: WidgetType = URIWidget,
     var cardinality: Cardinality = zeroOrMore,
     /** is the value itself an Image? */
-    val isImage: Boolean = false,
+    override val isImage: Boolean = false,
     /** possible thumbnail Image for the value */
-    val thumbnail: Option[NODE] = None,
-    val htmlName: String = ""
+    override val thumbnail: Option[NODE] = None,
+    override val htmlName: String = ""
     )
       extends Entry {
     override def toString(): String = {

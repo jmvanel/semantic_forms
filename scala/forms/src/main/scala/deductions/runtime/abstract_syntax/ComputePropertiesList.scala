@@ -5,33 +5,12 @@ import scala.util.Try
 
 import org.w3.banana.RDF
 
-/** intermediary data for form generation:  properties' List, etc */
-case class RawDataForForm[Node](
-    propertiesList: Seq[Node],
-    classs: Node,
-    subject: Node,
-    editable: Boolean = false,
-    formURI: Option[Node] = None,
-    reversePropertiesList: Seq[Node] = Seq(),
-    /* properties Groups come from multiple super-classes */
-    propertiesGroups: collection.Map[Node, RawDataForForm[Node]] = collection.Map[Node, RawDataForForm[Node]]()) {
-
-  def setSubject(subject: Node, editable: Boolean): RawDataForForm[Node] = {
-    val propertiesGroupsWithSubject = propertiesGroups.map {
-      case (node, rawDataForForm) => (node,
-        rawDataForForm.setSubject(subject, editable))
-    }
-    RawDataForForm[Node](propertiesList, classs, subject, editable, formURI, reversePropertiesList,
-      propertiesGroupsWithSubject)
-  }
-}
-
 /** Step 1 of form generation: compute properties List from Config, Subject, Class (in that order) */
 trait ComputePropertiesList[Rdf <: RDF, DATASET] {
   self: FormSyntaxFactory[Rdf, DATASET] =>
   import ops._
 
-  object NullRawDataForForm extends RawDataForForm[Rdf#Node](Seq(), nullURI, nullURI )
+  object NullRawDataForForm extends RawDataForForm[Rdf#Node, Rdf#URI](Seq(), nullURI, nullURI )
 
   /**
    * create Raw Data For Form from an instance (subject) URI,
@@ -51,7 +30,8 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
   protected def computePropertiesList(subject: Rdf#Node,
                                       editable: Boolean = false,
                                       formuri: String,
-                                      classs: Rdf#URI = nullURI)(implicit graph: Rdf#Graph): RawDataForForm[Rdf#Node] = {
+                                      classs: Rdf#URI = nullURI)(implicit graph: Rdf#Graph):
+                                      RawDataForForm[Rdf#Node, Rdf#URI] = {
 
     val classesOfSubject = {
       val classes = getClasses(subject)
@@ -74,7 +54,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
 
     val propsFromSubject = fieldsFromSubject(subject, graph)
  
-    val propsFromClasses: List[RawDataForForm[Rdf#Node]] = {
+    val propsFromClasses: List[RawDataForForm[Rdf#Node, Rdf#URI]] = {
     	fieldsFromClasses(classesOfSubjectOrFromConfig, subject, editable, graph)
     }
 
@@ -99,7 +79,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
     val reversePropertiesList = reversePropertiesListFromFormConfiguration(formConfiguration)
 
 
-    def makeRawDataForForm(rawDataForFormList: List[RawDataForForm[Rdf#Node]]): RawDataForForm[Rdf#Node] = {
+    def makeRawDataForForm(rawDataForFormList: List[RawDataForForm[Rdf#Node, Rdf#URI]]): RawDataForForm[Rdf#Node, Rdf#URI] = {
       logger.debug(s"""makeRawDataForForm: rawDataForFormList size ${rawDataForFormList.size}
         ${rawDataForFormList.mkString("\n")}""")
       val propertiesGroupsList = for (rawDataForForm <- rawDataForFormList) yield {
@@ -109,8 +89,8 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
       logger.debug(s"""makeRawDataForForm: size ${propertiesGroupsMap.size}
         ${propertiesGroupsMap.keySet}""")
 
-      RawDataForForm[Rdf#Node](
-        propertiesList, classesOfSubjectOrFromConfig.head, subject, editable,
+      RawDataForForm[Rdf#Node, Rdf#URI](
+        makeEntries(propertiesList), classesOfSubjectOrFromConfig.head, subject, editable,
         formuri match { case "" => Some(formConfiguration); case uri => Some(URI(uri)) },
         reversePropertiesList,
         propertiesGroups = propertiesGroupsMap)
@@ -119,8 +99,8 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
     /* local function to mix:
      *  - stuff from the context: propertiesList, classe sOf Subject Or Formm Specif,
      *    subject, editable, form URI */
-    def prependPropertyGroup(globalDataForForm: RawDataForForm[Rdf#Node], key: Rdf#Node,
-                             addedDataForForm: RawDataForForm[Rdf#Node]) =
+    def prependPropertyGroup(globalDataForForm: RawDataForForm[Rdf#Node, Rdf#URI], key: Rdf#Node,
+                             addedDataForForm: RawDataForForm[Rdf#Node, Rdf#URI]) =
       globalDataForForm.copy(
         propertiesGroups =
           globalDataForForm.propertiesGroups +
@@ -129,9 +109,9 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
     val globalDataForForm = makeRawDataForForm(propsFromClasses)
 
     /* RawDataForForm from Form Specification */
-    val rawDataFromSpecif: RawDataForForm[Rdf#Node] = if (formConfiguration != nullURI)
-      RawDataForForm[Rdf#Node](
-        propsFromConfig,
+    val rawDataFromSpecif: RawDataForForm[Rdf#Node, Rdf#URI] = if (formConfiguration != nullURI)
+      RawDataForForm[Rdf#Node, Rdf#URI](
+        makeEntries(propsFromConfig),
         formConfiguration,
         subject, editable)
     else NullRawDataForForm

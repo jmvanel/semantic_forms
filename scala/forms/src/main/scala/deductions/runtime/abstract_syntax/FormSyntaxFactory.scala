@@ -154,7 +154,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   
   /** */
   private def createFormDetailed2(
-		  step1: RawDataForForm[Rdf#Node],
+		  step1: RawDataForForm[Rdf#Node, Rdf#URI],
 		  formGroup: Rdf#URI = nullURI)
     (implicit graph: Rdf#Graph,  lang: String="")
   : FormSyntax = {
@@ -166,7 +166,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
 
-    def makeEntriesFromRawDataForForm(step1: RawDataForForm[Rdf#Node]): Seq[Entry] = {
+    def makeEntriesFromRawDataForForm(step1: RawDataForForm[Rdf#Node, Rdf#URI]): Seq[Entry] = {
       val subject = step1.subject
       val props = step1.propertiesList
       val classs = step1.classs
@@ -222,7 +222,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   }
 
   protected def addInverseTriples(fields2: Seq[Entry],
-      step1: RawDataForForm[Rdf#Node]): Seq[Entry]
+      step1: RawDataForForm[Rdf#Node, Rdf#URI]): Seq[Entry]
 
   /**
    * update given Form,
