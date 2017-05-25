@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class AutoSuggestTest {
     
-	final Version versionLUCENE = Version.LUCENE_4_9;
+//	final Version versionLUCENE = Version.LUCENE_4_9;
 	
 	void fixture(IndexWriter indexWriter) throws Exception {
         Document doc = new Document();
@@ -60,9 +60,9 @@ public class AutoSuggestTest {
     public void analyzingSuggesterTest() throws Exception {
     	System.out.println( "\nanalyzingSuggesterTest" );
 
-        StandardAnalyzer analyzer = new StandardAnalyzer(versionLUCENE);
+        StandardAnalyzer analyzer = new StandardAnalyzer();
         Directory directory = new RAMDirectory();
-        IndexWriterConfig config = new IndexWriterConfig(versionLUCENE, analyzer);
+        IndexWriterConfig config = new IndexWriterConfig(analyzer);
         IndexWriter indexWriter = new IndexWriter(directory, config);
 
         fixture(indexWriter);
@@ -71,7 +71,7 @@ public class AutoSuggestTest {
 
         Dictionary dictionary = new LuceneDictionary(indexReader, "content");
 
-        AnalyzingSuggester analyzingSuggester = new AnalyzingSuggester(new StandardAnalyzer(versionLUCENE));
+        AnalyzingSuggester analyzingSuggester = new AnalyzingSuggester(new StandardAnalyzer());
         analyzingSuggester.build(dictionary);
 
         List<Lookup.LookupResult> lookupResultList = analyzingSuggester.lookup("humpty dum", false, 10);
@@ -88,9 +88,9 @@ public class AutoSuggestTest {
     public void analyzingInfixSuggesterTest() throws Exception {
     	System.out.println( "\nanalyzingInfixSuggesterTest" );
 
-        StandardAnalyzer analyzer = new StandardAnalyzer(versionLUCENE);
+        StandardAnalyzer analyzer = new StandardAnalyzer();
         Directory directory = new RAMDirectory();
-        IndexWriterConfig config = new IndexWriterConfig(versionLUCENE, analyzer);
+        IndexWriterConfig config = new IndexWriterConfig(analyzer);
         IndexWriter indexWriter = new IndexWriter(directory, config);
 
         fixture(indexWriter);
@@ -99,7 +99,7 @@ public class AutoSuggestTest {
 
         Dictionary dictionary = new LuceneDictionary(indexReader, "content");
 
-        AnalyzingInfixSuggester analyzingInfixSuggester = new AnalyzingInfixSuggester(versionLUCENE, directory, analyzer);
+        AnalyzingInfixSuggester analyzingInfixSuggester = new AnalyzingInfixSuggester( Version.LUCENE_CURRENT, directory, analyzer);
         analyzingInfixSuggester.build(dictionary);
 
         List<Lookup.LookupResult> lookupResultList = analyzingInfixSuggester.lookup("put h", false, 10);
@@ -117,9 +117,9 @@ public class AutoSuggestTest {
     public void freeTextSuggesterTest() throws Exception {
     	System.out.println( "\nfreeTextSuggester" );
 
-        StandardAnalyzer analyzer = new StandardAnalyzer(versionLUCENE);
+        StandardAnalyzer analyzer = new StandardAnalyzer();
         Directory directory = new RAMDirectory();
-        IndexWriterConfig config = new IndexWriterConfig(versionLUCENE, analyzer);
+        IndexWriterConfig config = new IndexWriterConfig(analyzer);
         IndexWriter indexWriter = new IndexWriter(directory, config);
 
         fixture(indexWriter);
@@ -145,9 +145,9 @@ public class AutoSuggestTest {
     public void fuzzySuggesterTest() throws Exception {
     	System.out.println( "\nfuzzySuggesterTest" );
 
-        StandardAnalyzer analyzer = new StandardAnalyzer(versionLUCENE);
+        StandardAnalyzer analyzer = new StandardAnalyzer();
         Directory directory = new RAMDirectory();
-        IndexWriterConfig config = new IndexWriterConfig(versionLUCENE, analyzer);
+        IndexWriterConfig config = new IndexWriterConfig(analyzer);
         IndexWriter indexWriter = new IndexWriter(directory, config);
 
         fixture(indexWriter);
@@ -156,7 +156,7 @@ public class AutoSuggestTest {
 
         Dictionary dictionary = new LuceneDictionary(indexReader, "content");
 
-        FuzzySuggester fuzzySuggester = new FuzzySuggester(new StandardAnalyzer(versionLUCENE));
+        FuzzySuggester fuzzySuggester = new FuzzySuggester(new StandardAnalyzer());
         fuzzySuggester.build(dictionary);
 
         List<Lookup.LookupResult> lookupResultList = fuzzySuggester.lookup("hampty", false, 10);

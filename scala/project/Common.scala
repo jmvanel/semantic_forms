@@ -24,7 +24,7 @@ object Common {
 
 	junitDependency, scalatestDependency,
 
-    "com.typesafe.play" %% "play-json" % "2.5.12",
+    "com.typesafe.play" %% "play-json" % "2.5.15",
 
     "org.apache.logging.log4j" % "log4j-slf4j-impl" % "2.8",
     "org.apache.logging.log4j" % "log4j-api" % "2.8",
