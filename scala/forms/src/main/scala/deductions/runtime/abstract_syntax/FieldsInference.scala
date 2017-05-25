@@ -17,7 +17,9 @@ import deductions.runtime.services.SPARQLHelpers
 trait FieldsInference[Rdf <: RDF, DATASET]
 extends RDFHelpers[Rdf]
 with RDFOPerationsDB[Rdf, DATASET]
-with SPARQLHelpers[Rdf, DATASET] {
+with SPARQLHelpers[Rdf, DATASET]
+with RawDataForFormModule[Rdf#Node, Rdf#URI]
+{
 
 	val config: Configuration
   import config._
@@ -31,7 +33,7 @@ with SPARQLHelpers[Rdf, DATASET] {
 
   /** find fields from given RDF class */
   def fieldsFromClasses(classes:  List[Rdf#Node], subject: Rdf#Node, editable: Boolean, graph: Rdf#Graph)
-  : List[RawDataForForm[Rdf#Node]] =
+  : List[RawDataForForm[Rdf#Node, Rdf#URI]] =
 	  for( classs <- classes) yield {
 	    val ff = fieldsFromClass( uriNodeToURI(classs), graph)
 	    ff.setSubject(subject, editable)
@@ -39,11 +41,11 @@ with SPARQLHelpers[Rdf, DATASET] {
 
   /** find fields from given RDF class */
   def fieldsFromClass(classs: Rdf#URI, graph: Rdf#Graph)
-  : RawDataForForm[Rdf#Node]
+  : RawDataForForm[Rdf#Node, Rdf#URI]
   = {
 
     val inferedProperties = scala.collection.mutable.ListBuffer[Rdf#Node]()
-    val propertiesGroups = scala.collection.mutable.HashMap.empty[Rdf#Node, RawDataForForm[Rdf#Node]]
+    val propertiesGroups = scala.collection.mutable.HashMap.empty[Rdf#Node, RawDataForForm[Rdf#Node, Rdf#URI]]
     		
     /* retrieve properties from rdfs:domain's From given Class */
     def propertiesFromDomainsFromClass(classs: Rdf#Node): List[Rdf#Node] = {
@@ -101,7 +103,7 @@ with SPARQLHelpers[Rdf, DATASET] {
       if (classs != owl.Thing) {
         val domains = propertiesFromDomainsFromClass(classs)
         inferedProperties ++= domains
-        propertiesGroups += ( classs -> RawDataForForm(domains, classs, URI("") ) )
+        propertiesGroups += ( classs -> RawDataForForm(makeEntries(domains), classs, URI("") ) )
         
         val superClasses = getObjects(graph, classs, rdfs.subClassOf)
         logger.info(s"process Super Classes of <$classs> size ${superClasses.size} ; ${superClasses.mkString(", ")}")
@@ -156,8 +158,9 @@ with SPARQLHelpers[Rdf, DATASET] {
     processSuperClasses(classs)
     if (showDomainlessProperties) addDomainlessProperties(classs)
     
-    RawDataForForm(inferedProperties.distinct, classs, subject=nullURI, propertiesGroups=propertiesGroups )
-    
-//    inferedProperties.distinct
+    RawDataForForm(
+        makeEntries( inferedProperties.distinct ),
+        classs, subject=nullURI, propertiesGroups=propertiesGroups )
+
   } // end of fieldsFromClass()
 }
