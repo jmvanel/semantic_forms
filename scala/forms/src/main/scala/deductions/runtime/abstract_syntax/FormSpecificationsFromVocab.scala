@@ -19,6 +19,8 @@ import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.utils.RDFPrefixes
+import scala.util.Try
+import java.net.URL
 
 /** input file for vocabulary; output in new file with ".formspec.ttl" suffix */
 object FormSpecificationsFromVocabApp extends RDFStoreLocalJena1Provider
@@ -34,7 +36,13 @@ object FormSpecificationsFromVocabApp extends RDFStoreLocalJena1Provider
     println("Usage: input file for vocabulary; output in new file with '.formspec.ttl' suffix")
     System.exit(-1)
   }
-  makeFormSpecificationsFromVocabFile(new File(args(0)))
+  val file = new File(args(0))
+  val res: Try[Rdf#Graph] = if( file.exists() ) {
+	  readFile(file)
+  } else
+    readTurtleTerm(args(0))
+    
+  makeFormSpecificationsFromVocabFile( res, file )
 }
 
 /**
@@ -51,14 +59,11 @@ trait FormSpecificationsFromVocab[Rdf <: RDF, DATASET]
   import ops._
 
   /** generate Form Specifications (skeletons to be hand edited) from an RDFS/OWL vocabulary */
-  def makeFormSpecificationsFromVocabFile(vocabFile: File): Unit = {
-    val bufferedSource = Source.fromFile(vocabFile)
-    val content = bufferedSource.getLines().mkString("\n")
-    bufferedSource.close()
-    val reader = new StringReader(content)
-    val res = turtleReader.read(reader, "")
-    println(s"turtle Reader: ${res}")
-
+  def makeFormSpecificationsFromVocabFile(
+  res: Try[Rdf#Graph]    ,
+      vocabFile: File
+  ): Unit = {
+    println(s"makeFormSpecificationsFromVocabFile: $res")
     res.map {
       graph =>
         println(s"graph size ${graph.size}")
@@ -70,6 +75,34 @@ trait FormSpecificationsFromVocab[Rdf <: RDF, DATASET]
     }
   }
 
+  def readFile(vocabFile: File): Try[Rdf#Graph]  = {
+		val bufferedSource = Source.fromFile(vocabFile)
+    val content = bufferedSource.getLines().mkString("\n")
+    bufferedSource.close()
+    val reader = new StringReader(content)
+    val res = turtleReader.read(reader, "")
+    println(s"turtle Reader: ${res}")
+    res
+  }
+
+  def readTurtleTerm(term: String): Try[Rdf#Graph] = {
+	  println(s"readTurtleTerm ${expandOrUnchanged(term)}")
+    rdfLoader.load(
+      new URL(expandOrUnchanged(term)))
+  }
+  
+  private def readTurtleTermTurtle(term: String): Try[Rdf#Graph] = {
+    val bufferedSource = Source.fromURL(
+      expandOrUnchanged(term))
+    // PASTED
+    val content = bufferedSource.getLines().mkString("\n")
+    bufferedSource.close()
+    val reader = new StringReader(content)
+    val res = turtleReader.read(reader, "")
+    println(s"turtle Reader: ${res}")
+    res
+  }
+    
   /** generate Form Specifications (skeletons to be hand edited) from an RDFS/OWL vocabulary */
   def makeFormSpecificationsFromVocab(vocabGraph: Rdf#Graph): Rdf#Graph = {
     println(s"makeFormSpecificationsFromVocab: vocabGraph size ${vocabGraph.size}");

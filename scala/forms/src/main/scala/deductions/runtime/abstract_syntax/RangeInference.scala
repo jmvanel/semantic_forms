@@ -86,7 +86,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
         /* normally we have a non empty list of possible values to propose to user,
          * and then there is no open Choice for her. */
         println(s"populateFromOwlOneOf ${entryField.label} set openChoice = false")
-        entryField.openChoice = false
+        // entryField.openChoice = false // TODO <<<<<<<<<<
       }
 
       /* fill Possible Values into `possibleValues`
@@ -230,7 +230,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
      */
     def populateFromTDB(): Seq[ResourceWithLabel[Rdf]] = {
       if (!valuesFromFormGroup.isEmpty) {
-        entryField.openChoice = false
+//        entryField.openChoice = false // TODO <<<<<<<<<<<<<<
       }
       valuesFromFormGroup.map { (couple: (Rdf#Node, Rdf#Node)) =>
         new ResourceWithLabel(couple._1, couple._2)

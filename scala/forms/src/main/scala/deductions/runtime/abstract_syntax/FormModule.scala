@@ -64,30 +64,33 @@ trait FormModule[NODE, URI <: NODE] {
   val nullURI: URI
   def makeURI(n: NODE): URI = nullURI
 
+  val NullResourceEntry = new ResourceEntry("", "", nullURI, ResourceValidator(Set()))
+
+
   /** an entry (for an RDF triple) in a form */
    abstract class Entry	{
-	  val label: String =""
-	  val comment: String =""
+	  val label: String 
+	  val comment: String 
 	  val property: NODE
 	  /** unused yet :( */
-	  val mandatory: Boolean = false
+	  val mandatory: Boolean// = false
 	  /** TODO : several types */
-	  val type_ : NODE = nullURI
+	  val type_ : NODE// = nullURI
 //	  val type_ : Seq[NODE] // TODO <<<<<<<<<<<<<<<<
-	  val value: NODE = nullURI
-    val subjectLabel: String = ""
-	  var widgetType: WidgetType = URIWidget
+	  val value: NODE // = nullURI
+    val subjectLabel: String 
+	  val widgetType: WidgetType // = URIWidget
 	  /** openChoice allows user in form to choose a value not in suggested values
 	   * true <=> user has possibility to type any (valid) data */
-	  var openChoice: Boolean = true
-	  var possibleValues: Seq[(NODE, NODE)] = Seq()
+	  val openChoice: Boolean// = true
+	  val possibleValues: Seq[(NODE, NODE)] // = Seq()
 	  val defaults: FormDefaults = FormModule.formDefaults
 	  /** for multi-subject forms */
-		val subject: NODE = nullURI
-    var cardinality: Cardinality = zeroOrMore
-    val htmlName: String = ""
-    var metadata: String = ""
-    var timeMetadata: Long = -1
+		val subject: NODE// = nullURI
+    val cardinality: Cardinality// = zeroOrMore
+    val htmlName: String 
+    val metadata: String = ""
+    val timeMetadata: Long = -1
 
     /** filled, not not used*/
     private val triples: mutable.Buffer[Triple] = mutable.ListBuffer[Triple]()
@@ -101,38 +104,56 @@ trait FormModule[NODE, URI <: NODE] {
       triples :+ t
     }
 
-    def asResource(): Entry = {
-      this
+    def asResource(): ResourceEntry = {
+      this match {
+        case r:ResourceEntry => r
+        case _ => NullResourceEntry
+      }
     }
 
     def valueLabel: String = ""
   }
 
-//  def makeEntry( fromProperty: NODE): Entry = {
-//    new Entry{ override val property = fromProperty }
-//  }
+  def makeEntry( fromProperty: NODE): Entry = {
+    new Entry{
+      override val property = fromProperty
+       val cardinality: deductions.runtime.abstract_syntax.Cardinality = ???
+   val comment: String = ???
+   val htmlName: String = ???
+   val label: String = ???
+   val mandatory: Boolean = ???
+   val openChoice: Boolean = ???
+   val possibleValues: Seq[(NODE, NODE)] = ???
+   def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]): Entry = ???
+   val subject: NODE = ???
+   val subjectLabel: String = ???
+   val type_ : NODE = ???
+   val value: NODE = ???
+   val widgetType: deductions.runtime.abstract_syntax.WidgetType = ??? 
+    }
+  }
 
   /** @param possibleValues a couple of an RDF node id and the label to display, see trait RangeInference */
   case class ResourceEntry(
 		override val label: String="",
 		override val comment: String="",
     override val property: ObjectProperty = nullURI,
-    override val validator: ResourceValidator = ResourceValidator(Set()),
+    val validator: ResourceValidator = ResourceValidator(Set()),
     override val value: NODE = nullURI, val alreadyInDatabase: Boolean = true,
-    var possibleValues: Seq[(NODE, NODE)] = Seq(),
+    possibleValues: Seq[(NODE, NODE)] = Seq(),
     override val valueLabel: String = "",
     override val type_ : NODE = nullURI,
-    override val inverseTriple: Boolean= false,
+    val inverseTriple: Boolean= false,
     override val subject: NODE = nullURI,
     override val subjectLabel: String = "",
     override val mandatory: Boolean = false,
-    var openChoice: Boolean = true,
-    var widgetType: WidgetType = URIWidget,
-    var cardinality: Cardinality = zeroOrMore,
+    openChoice: Boolean = true,
+    widgetType: WidgetType = URIWidget,
+    cardinality: Cardinality = zeroOrMore,
     /** is the value itself an Image? */
-    override val isImage: Boolean = false,
+    val isImage: Boolean = false,
     /** possible thumbnail Image for the value */
-    override val thumbnail: Option[NODE] = None,
+    val thumbnail: Option[NODE] = None,
     override val htmlName: String = ""
     )
       extends Entry {
@@ -141,13 +162,14 @@ trait FormModule[NODE, URI <: NODE] {
       s"""; <$value>, valueLabel "$valueLabel", image <$thumbnail> possibleValues count=${possibleValues.size} """
     }
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = {
-      val ret = new ResourceEntry(label, comment,
-        property, validator,
-        value, alreadyInDatabase,
-        newPossibleValues, valueLabel, type_)
-      ret.openChoice = this.openChoice
-      ret.widgetType = this.widgetType
-      ret
+//      val ret = new ResourceEntry(label, comment,
+//        property, validator,
+//        value, alreadyInDatabase,
+//        newPossibleValues, valueLabel, type_ )
+      this.copy(possibleValues = newPossibleValues)
+//      ret.openChoice = this.openChoice
+//      ret.widgetType = this.widgetType
+//      ret
     }
 
     def this(e: Entry, validator: ResourceValidator,
@@ -169,14 +191,14 @@ trait FormModule[NODE, URI <: NODE] {
     property: ObjectProperty = nullURI,
     validator: ResourceValidator = ResourceValidator(Set()),
     value: NODE, type_ : NODE = nullURI,
-    var possibleValues: Seq[(NODE, NODE)] = Seq(),
+    possibleValues: Seq[(NODE, NODE)] = Seq(),
     override val valueLabel: String = "",
     subject: NODE = nullURI,
     override val subjectLabel: String = "",
     val mandatory: Boolean = false,
-    var openChoice: Boolean = true,
-    var widgetType: WidgetType = URIWidget,
-    var cardinality: Cardinality = zeroOrMore,
+    openChoice: Boolean = true,
+    widgetType: WidgetType = URIWidget,
+    cardinality: Cardinality = zeroOrMore,
     val isImage: Boolean = false,
     val thumbnail: Option[NODE] = None,
     val htmlName: String = "" )
@@ -187,11 +209,13 @@ trait FormModule[NODE, URI <: NODE] {
     }
     def getId: String = value.toString
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = {
-      val ret = new BlankNodeEntry(label, comment,
-        property, validator, value, type_, newPossibleValues)
-      ret.openChoice = this.openChoice
-      ret.widgetType = this.widgetType
-      ret
+//      val ret = new BlankNodeEntry(label, comment,
+//        property, validator, value, type_, newPossibleValues)
+//      ret.openChoice = this.openChoice
+//      ret.widgetType = this.widgetType
+//      ret
+      this.copy(possibleValues = newPossibleValues)
+//        label, comment, property, validator, value, type_, possibleValues, valueLabel, subject, subjectLabel, mandatory, openChoice, widgetType, cardinality, isImage, thumbnail, htmlName)
     }
   }
 
@@ -203,13 +227,13 @@ trait FormModule[NODE, URI <: NODE] {
     value: NODE = nullURI, // String = "",
     val lang: String = "",
     type_ : NODE = nullURI,
-    var possibleValues: Seq[(NODE, NODE)] = Seq(),
+    possibleValues: Seq[(NODE, NODE)] = Seq(),
     subject: NODE = nullURI,
     override val subjectLabel: String = "",
     val mandatory: Boolean = false,
-    var openChoice: Boolean = true,
-    var widgetType: WidgetType = Text,
-    var cardinality: Cardinality = zeroOrMore,
+    openChoice: Boolean = true,
+    widgetType: WidgetType = Text,
+    cardinality: Cardinality = zeroOrMore,
     override val valueLabel: String = "",
     val htmlName: String = "")
 
@@ -219,16 +243,17 @@ trait FormModule[NODE, URI <: NODE] {
       super.toString + s""" := '$value' """
     }
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = {
-      val ret = new LiteralEntry(label, comment,
-        property, validator,
-        value, lang, type_,
-        newPossibleValues)
-      ret.openChoice = this.openChoice
-      ret.widgetType = this.widgetType
-      ret
+//      val ret = new LiteralEntry(label, comment,
+//        property, validator,
+//        value, lang, type_,
+//        newPossibleValues)
+//      ret.openChoice = this.openChoice
+//      ret.widgetType = this.widgetType
+//      ret
+      this.copy(possibleValues = newPossibleValues)
     }
 
-    override def asResource(): Entry = {
+    override def asResource(): ResourceEntry = {
       new ResourceEntry(this,
         validator = null,
         alreadyInDatabase = true,
@@ -241,18 +266,18 @@ trait FormModule[NODE, URI <: NODE] {
       label: String, comment: String,
       property: ObjectProperty = nullURI,
       value: NODE = nullURI,
-      val alreadyInDatabase: Boolean = true,
-      var possibleValues: Seq[(NODE, NODE)] = Seq(),
+      alreadyInDatabase: Boolean = true,
+      possibleValues: Seq[(NODE, NODE)] = Seq(),
       override val valueLabel: String = "",
       type_ : NODE = nullURI,
       inverseTriple: Boolean = false,
       subject: NODE = nullURI,
       override val subjectLabel: String = "",
       val mandatory: Boolean = false,
-      var openChoice: Boolean = true,
-      var widgetType: WidgetType = ListWidget,
+      openChoice: Boolean = true,
+      widgetType: WidgetType = ListWidget,
       val values: FormSyntax,
-      var cardinality: Cardinality = exactlyOne,
+      cardinality: Cardinality = exactlyOne,
       val htmlName: String = ""
       ) extends Entry {
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = this

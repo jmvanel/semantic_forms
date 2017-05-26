@@ -1,7 +1,7 @@
 package deductions.runtime.abstract_syntax
 
 /** intermediary data for form generation:  properties' List, etc */
-case class RawDataForForm[Node, URI](
+case class RawDataForForm[Node, URI <: Node](
     entriesList: Seq[FormModule[Node, URI]#Entry], // Seq[Node],
     classs: Node, // = nullURI,
     subject: Node, // = nullURI,
@@ -30,17 +30,16 @@ case class RawDataForForm[Node, URI](
 }
 
 trait RawDataForFormModule[Node, URI <: Node] extends FormModule[Node, URI] {
-  
+
   def makeEntries(propertiesList: Seq[Node]): Seq[Entry] =
-    propertiesList . map {
+    propertiesList.map {
       prop =>
-        new Entry { override val property = prop }}
+        //        new Entry { override val property = prop }
+        makeEntry(prop)
+    }
 
   def makeRawDataForForm(propertiesList: Seq[Node]): RawDataForForm[Node, URI] = {
     val entries = makeEntries(propertiesList)
-//    propertiesList . map {
-//      prop =>
-//        new Entry { override val property = prop }}
     RawDataForForm[Node, URI]( entries, nullURI, nullURI)
   }
 }

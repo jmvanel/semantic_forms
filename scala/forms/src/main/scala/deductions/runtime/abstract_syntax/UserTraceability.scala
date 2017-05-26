@@ -54,8 +54,8 @@ trait UserTraceability[Rdf <: RDF, DATASET]
 
     for (field: Entry <- formSyntax.fields){
       if (resultsUser.contains(field.property.toString)){
-        field.metadata = resultsUser(field.property.toString)
-        field.timeMetadata = resultsTimestamp(field.property.toString)
+//        field.metadata = resultsUser(field.property.toString) // TODO <<<<<<<<<
+//        field.timeMetadata = resultsTimestamp(field.property.toString) // TODO <<<<<<<<<
       }
     }
 

@@ -96,6 +96,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   val defaults: FormDefaults = FormModule.formDefaults
   
   import ops._
+//  object NullRawDataForForm extends RawDataForForm[Rdf#Node, Rdf#URI](Seq(), nullURI, nullURI )
+  val NullRawDataForForm = RawDataForForm[Rdf#Node, Rdf#URI](Seq(), nullURI, nullURI )
 
   val literalInitialValue = ""
   private val rdf_type = RDFPrefix[Rdf].typ
@@ -269,7 +271,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
   /** non recursive update of given `formSyntax` from given `formSpecif`;
    * see form_specs/foaf.form.ttl for an example of form specification */
-  private def updateOneFormFromConfig(formSyntax: FormSyntax, formSpecif: Rdf#Node)(implicit graph: Rdf#Graph): Unit = {
+  private def updateOneFormFromConfig(formSyntax: FormSyntax, formSpecif: Rdf#Node)(implicit graph: Rdf#Graph)
+  : Unit // TODO FormSyntax
+  = {
 
 	  // TODO try the Object - semantic mapping of Banana-RDF
     val uriToCardinalities = Map[Rdf#Node, Cardinality] {
@@ -294,9 +298,10 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
             for (t <- triples) {
               if (t.predicate == formPrefix("widgetClass")
                 && t.objectt == formPrefix("DBPediaLookup")) {
-                val rep = field.asResource
-                rep.widgetType = DBPediaLookup
-                formSyntax.fields = replace(formSyntax.fields, field, rep)
+                val fields2 = field.asResource
+//                rep.widgetType = DBPediaLookup
+                fields2.copy(widgetType = DBPediaLookup) // TODO
+                formSyntax.fields = replace(formSyntax.fields, field, fields2)
               }
 
               if (t.predicate == formPrefix("cardinality")) {
@@ -315,7 +320,7 @@ forms:givenName--personPerson
                   formPointedGraph <- (formSpecGraph / formPrefix("fieldAppliesToForm")).takeOnePointedGraph;
                   form = formPointedGraph.pointer
                 ) {
-                  field.cardinality = cardinality
+//                  field.cardinality = cardinality TODO
                   println(s"updateOneFormFromConfig: prop $prop: $cardinality, form $form")
                 }
               }
@@ -462,7 +467,7 @@ forms:givenName--personPerson
         htmlName=htmlName)
     }
 
-    val NullResourceEntry = new ResourceEntry("", "", nullURI, ResourceValidator(Set()))
+//    val NullResourceEntry = new ResourceEntry("", "", nullURI, ResourceValidator(Set()))
     def resourceEntry = {
       if (showRDFtype || prop != rdf.typ)
         time(s"""resourceEntry objet "$objet" """,
