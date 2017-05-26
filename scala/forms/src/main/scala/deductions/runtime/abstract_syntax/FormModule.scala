@@ -88,8 +88,11 @@ trait FormModule[NODE, URI <: NODE] {
 	  /** for multi-subject forms */
 		val subject: NODE// = nullURI
     val cardinality: Cardinality// = zeroOrMore
-    val htmlName: String 
+    val htmlName: String
+
+    /** user URI */
     val metadata: String = ""
+    /** timeStamp of last modification */
     val timeMetadata: Long = -1
 
     /** filled, not not used*/
@@ -112,11 +115,53 @@ trait FormModule[NODE, URI <: NODE] {
     }
 
     def valueLabel: String = ""
+
+    /** clone this
+     *  PENDING bad practice of pasting all fields */
+
+    def makeEntry(
+        fromProperty: NODE = Entry.this.property,
+        fromMetadata: String = Entry.this.metadata,
+        fromTimeMetadata: Long = Entry.this.timeMetadata ): Entry = {
+
+      this match {
+        case r: ResourceEntry => r.copy(
+          property = fromProperty,
+          metadata = fromMetadata,
+          timeMetadata = fromTimeMetadata)
+        case e: LiteralEntry => e.copy(
+          property = fromProperty,
+          metadata = fromMetadata,
+          timeMetadata = fromTimeMetadata)
+        case e: BlankNodeEntry => e.copy()
+        case e: RDFListEntry   => e.copy()
+      }
+//      new Entry {
+//        override val property = fromProperty
+//        override val metadata = fromMetadata
+//
+//        val cardinality: deductions.runtime.abstract_syntax.Cardinality = Entry.this.cardinality
+//        val comment: String = Entry.this.comment
+//        val htmlName: String = Entry.this.htmlName
+//        val label: String = Entry.this.label
+//        val mandatory: Boolean = Entry.this.mandatory
+//        val openChoice: Boolean = Entry.this.openChoice
+//        val possibleValues: Seq[(NODE, NODE)] = Entry.this.possibleValues
+//        def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]): Entry = ???
+//        val subject: NODE = Entry.this.subject
+//        val subjectLabel: String = Entry.this.subjectLabel
+//        val type_ : NODE = Entry.this.type_
+//        val value: NODE = Entry.this.value
+//        val widgetType: deductions.runtime.abstract_syntax.WidgetType = Entry.this.widgetType
+//      }
+    }
   }
 
-  def makeEntry(fromProperty: NODE): Entry = {
+  def makeEntry(fromProperty: NODE = nullURI, fromMetadata: String = ""): Entry = {
     new Entry {
       override val property = fromProperty
+      override val metadata = fromMetadata
+
       val cardinality: deductions.runtime.abstract_syntax.Cardinality = zeroOrMore
       val comment: String = ""
       val htmlName: String = ""
@@ -154,9 +199,12 @@ trait FormModule[NODE, URI <: NODE] {
     val isImage: Boolean = false,
     /** possible thumbnail Image for the value */
     val thumbnail: Option[NODE] = None,
-    override val htmlName: String = ""
+    override val htmlName: String = "",
+
+    override val metadata: String = "",
+    override val timeMetadata: Long = -1
     )
-      extends Entry {
+  extends Entry {
     override def toString(): String = {
       "RESOURCE " + super.toString +
       s"""; <$value>, valueLabel "$valueLabel", image <$thumbnail> possibleValues count=${possibleValues.size} """
@@ -235,7 +283,10 @@ trait FormModule[NODE, URI <: NODE] {
     widgetType: WidgetType = Text,
     cardinality: Cardinality = zeroOrMore,
     override val valueLabel: String = "",
-    val htmlName: String = "")
+    val htmlName: String = "",
+
+    override val metadata: String = "",
+    override val timeMetadata: Long = -1)
 
       extends Entry {
 

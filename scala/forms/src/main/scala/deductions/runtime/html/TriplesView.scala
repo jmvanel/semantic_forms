@@ -4,15 +4,17 @@ import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
 import scala.xml.NodeSeq
-import scala.xml.PrettyPrinter
+
 import org.apache.log4j.Logger
 import org.w3.banana.RDF
-import deductions.runtime.abstract_syntax.{FormSyntaxFactory, UserTraceability}
+
+import deductions.runtime.abstract_syntax.FormSyntaxFactory
+import deductions.runtime.abstract_syntax.UserTraceability
+import deductions.runtime.semlogs.TimeSeries
 import deductions.runtime.services.Configuration
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.HTTPrequest
 import deductions.runtime.utils.Timer
-import deductions.runtime.semlogs.TimeSeries
 import deductions.runtime.views.TableFromListListRDFNodes
 
 /**
@@ -36,7 +38,6 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
   val config: Configuration
   val htmlGenerator: HtmlGeneratorInterface[Rdf#Node, Rdf#URI] // Form2HTMLBanana[Rdf]
   import htmlGenerator._
-
   import ops._
 
   /**
@@ -242,11 +243,17 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     }
     val form = time("createAbstractForm",
       createAbstractForm(uri, editable, blankNode, formGroup, formuri))
+
+    // TODO call addUserInfoOnTriples() in package deductions.runtime.abstract_syntax
     val formWithInfo = addUserInfoOnTriples(form)
+
+//    val htmlForm =
+//      generateHTML(form, hrefPrefix, editable, actionURI, graphURI,
+//        actionURI2, lang, request)
     val htmlForm =
-      generateHTML(form, hrefPrefix, editable, actionURI, graphURI,
+      generateHTML(formWithInfo, hrefPrefix, editable, actionURI, graphURI,
         actionURI2, lang, request)
-    ( htmlForm, form )
+    ( htmlForm, formWithInfo )
   }
 
   private def createAbstractForm(

@@ -1,12 +1,12 @@
 package deductions.runtime.abstract_syntax
 
-import deductions.runtime.semlogs.TimeSeries
-
+import scala.collection.mutable
 import scala.language.existentials
 import scala.language.postfixOps
+
 import org.w3.banana.RDF
 
-import scala.collection.mutable
+import deductions.runtime.semlogs.TimeSeries
 
 
 trait UserTraceability[Rdf <: RDF, DATASET]
@@ -18,7 +18,6 @@ trait UserTraceability[Rdf <: RDF, DATASET]
                             implicit graph: Rdf#Graph,
                             lang: String = "en") : FormSyntax = {
     println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-    println()
     val metadata = getMetadataAboutSubject(formSyntax.subject)
     val resultsUser = mutable.Map[String,String]()
     val resultsTimestamp = mutable.Map[String,Long]()
@@ -50,17 +49,21 @@ trait UserTraceability[Rdf <: RDF, DATASET]
     for (elem <- resultsTimestamp){
     println(elem)
     }
-    println()
 
-    for (field: Entry <- formSyntax.fields){
+//    println(s"YYYYYYYY Before add User Info\n${formSyntax.fields.mkString("\n")}\n")
+    val entries = for (field: Entry <- formSyntax.fields) yield {
       if (resultsUser.contains(field.property.toString)){
-//        field.metadata = resultsUser(field.property.toString) // TODO <<<<<<<<<
-//        field.timeMetadata = resultsTimestamp(field.property.toString) // TODO <<<<<<<<<
-      }
+//    	  println(s"ZZZZ add User Info ${field.label} ${field.value}")
+        field.makeEntry(
+            fromMetadata = resultsUser(field.property.toString),
+            fromTimeMetadata = resultsTimestamp(field.property.toString) )
+//        field.metadata = resultsUser(field.property.toString)
+//        field.timeMetadata = resultsTimestamp(field.property.toString)
+      } else field
     }
+//    println(s"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX After add User Info\n${entries.mkString("\n")}")
 
-    println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-
+    formSyntax . fields = entries
     formSyntax
   }
 }
