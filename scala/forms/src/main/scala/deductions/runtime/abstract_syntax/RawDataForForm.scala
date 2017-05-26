@@ -9,11 +9,9 @@ case class RawDataForForm[Node, URI <: Node](
     formURI: Option[Node] = None,
     reversePropertiesList: Seq[Node] = Seq(),
     /* properties Groups come from multiple super-classes */
-    propertiesGroups: collection.Map[Node, RawDataForForm[Node, URI]] = collection.Map[Node, RawDataForForm[Node, URI]]())
-    extends FormModule[Node, Node]
+    propertiesGroups: collection.Map[Node, RawDataForForm[Node, URI]] =
+      collection.Map[Node, RawDataForForm[Node, URI]]())
     {
-
-//  type Entry = FormModule[Node, Node]#Entry
 
   def setSubject(subject: Node, editable: Boolean): RawDataForForm[Node, URI] = {
     val propertiesGroupsWithSubject = propertiesGroups.map {
@@ -33,9 +31,7 @@ trait RawDataForFormModule[Node, URI <: Node] extends FormModule[Node, URI] {
 
   def makeEntries(propertiesList: Seq[Node]): Seq[Entry] =
     propertiesList.map {
-      prop =>
-        //        new Entry { override val property = prop }
-        makeEntry(prop)
+      prop => makeEntry(prop)
     }
 
   def makeRawDataForForm(propertiesList: Seq[Node]): RawDataForForm[Node, URI] = {

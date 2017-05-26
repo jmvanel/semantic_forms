@@ -114,22 +114,22 @@ trait FormModule[NODE, URI <: NODE] {
     def valueLabel: String = ""
   }
 
-  def makeEntry( fromProperty: NODE): Entry = {
-    new Entry{
+  def makeEntry(fromProperty: NODE): Entry = {
+    new Entry {
       override val property = fromProperty
-       val cardinality: deductions.runtime.abstract_syntax.Cardinality = ???
-   val comment: String = ???
-   val htmlName: String = ???
-   val label: String = ???
-   val mandatory: Boolean = ???
-   val openChoice: Boolean = ???
-   val possibleValues: Seq[(NODE, NODE)] = ???
-   def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]): Entry = ???
-   val subject: NODE = ???
-   val subjectLabel: String = ???
-   val type_ : NODE = ???
-   val value: NODE = ???
-   val widgetType: deductions.runtime.abstract_syntax.WidgetType = ??? 
+      val cardinality: deductions.runtime.abstract_syntax.Cardinality = zeroOrMore
+      val comment: String = ""
+      val htmlName: String = ""
+      val label: String = ""
+      val mandatory: Boolean = false
+      val openChoice: Boolean = true
+      val possibleValues: Seq[(NODE, NODE)] = Seq()
+      def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]): Entry = ???
+      val subject: NODE = nullURI
+      val subjectLabel: String = ""
+      val type_ : NODE = nullURI
+      val value: NODE = nullURI
+      val widgetType: deductions.runtime.abstract_syntax.WidgetType = URIWidget
     }
   }
 
