@@ -29,7 +29,7 @@ trait FormSyntaxJson[Rdf <: RDF]
 
   implicit val entryWrites = new Writes[Entry] {
     def writes(e: Entry) = {
-      println(s"entryWrites: e getClass ${e.getClass()} $e")
+//      println(s"entryWrites: e getClass ${e.getClass()} $e")
       e match {
         case r: ResourceEntry =>
           Json.obj(

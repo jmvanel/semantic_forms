@@ -468,7 +468,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   /**
    * sparql Select with "content negotiation" (conneg)
-   *  @param format = "turtle" or "rdfxml" or "jsonld"
+   * @param format = "turtle" or "rdfxml" or "jsonld"
    */
   def sparqlSelectConneg(queryString: String,
                          format: String = "xml",

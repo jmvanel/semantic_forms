@@ -402,7 +402,6 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       val responseHandler = new ResponseHandler[String]() {
         override
         def handleResponse(response: HttpResponse):String = {
-        // throws ClientProtocolException, IOException
           val status = response.getStatusLine().getStatusCode();
           if (
               (status >= 200 && status < 300) ||
@@ -421,7 +420,6 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
           httpclient.execute(httpHead, responseHandler)
         else
           ""
-      System.out.println("----------------------------------------");
       System.out.println(responseHandled);
       responseHandled
     } finally {
