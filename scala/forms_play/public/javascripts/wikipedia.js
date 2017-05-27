@@ -56,6 +56,14 @@ $(document).ready(function() {
                 console.log("Déclenche l'événement :")
                 console.log($(event.target));
                 console.log(event.target.value);
+
+		// TODO add QueryClass
+		// compare results: QueryClass=person , and ?QueryClass=place
+		// view-source:http://lookup.dbpedia.org/api/search/PrefixSearch?QueryClass=Person&QueryString=berlin
+		// view-source:http://lookup.dbpedia.org/api/search/PrefixSearch?QueryClass=Place&QueryString=berlin
+
+		// QueryClass comes from attribute data-rdf-type in <input> tag , but data-rdf-type is a full URI !
+
                 $.ajax({
                     url: "http://lookup.dbpedia.org/api/search/PrefixSearch",
                     data: { MaxHits: resultsCount, QueryString: request.term },
