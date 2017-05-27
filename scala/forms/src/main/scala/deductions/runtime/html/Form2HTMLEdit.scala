@@ -63,20 +63,21 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
     		// format: OFF
         if (openChoice)
           <div class={ css.cssClasses.formDivInputCSSClass }>
+            {
+      addTripleAttributesToXMLElement(
           <input class={ css.cssClasses.formInputCSSClass +
             " " + hasLookup }
             value={ value.toString }
             name={ makeHTMLNameResource(resourceEntry) }
             id={ makeHTML_Id(resourceEntry) }
             list={ makeHTMLIdForDatalist(resourceEntry) }
-            data-type={ type_.toString() }
             placeholder={ placeholder }
             title={ type_.toString() }
             size={inputSize.toString()}
 			dropzone="copy"
             autocomplete={if (lookupActivatedFor(resourceEntry)) "off" else null}
             >
-          </input>
+          </input> , resourceEntry) }
             {makeUserInfoOnTriples(resourceEntry.metadata,resourceEntry.timeMetadata)}
 		  </div>
 		else new Text("") // format: ON
@@ -119,18 +120,17 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
     Seq(
       if (r.openChoice) {
         <div class={ css.cssClasses.formDivInputCSSClass }>
+        {addTripleAttributesToXMLElement(
         <input class={ css.cssClasses.formInputCSSClass } value={
           r.value.toString
         } name={ makeHTMLNameBN(r) } id={
           makeHTML_Id(r)
-        } data-type={
-          r.type_.toString()
         } size={ inputSize.toString() }
         placeholder={ placeholder }
         title={ placeholder }
         >
-        </input>
-          {makeUserInfoOnTriples(r.metadata,r.timeMetadata)}
+        </input> , r) }
+        {makeUserInfoOnTriples(r.metadata,r.timeMetadata)}
 				</div>
       }else new Text("\n")
       ,
@@ -219,6 +219,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
 
       case _ =>
         <div class={ css.cssClasses.formDivInputCSSClass }>
+        {addTripleAttributesToXMLElement(
           <input class={ css.cssClasses.formInputCSSClass } value={
             toPlainString(value)
           } name={ makeHTMNameLiteral(lit) } type={
@@ -227,8 +228,10 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
           step = {xsd2html5Step(type_.toString())}
           placeholder={ placeholder } title={ placeholder } size={
             inputSize.toString()
-          } dropzone="copy" id={ htmlId } data-uri-property={ lit.property.toString() }>
-          </input>
+          } dropzone="copy" id={ htmlId }
+          >
+          </input> ,
+          lit ) }
           { makeUserInfoOnTriples(lit.metadata, lit.timeMetadata) }
         </div>
         <div class={ css.cssClasses.formDivEditInputCSSClass }>

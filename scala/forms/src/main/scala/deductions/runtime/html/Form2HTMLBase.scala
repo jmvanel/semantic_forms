@@ -12,6 +12,7 @@ import deductions.runtime.utils.RDFPrefixes
 import java.net.URLEncoder
 import deductions.runtime.utils.CSSClasses
 import scala.xml.NodeSeq
+import scala.xml.Elem
 
 /** generate HTML from abstract Form : common parts for Display & edition */
 private[html] trait Form2HTMLBase[NODE, URI <: NODE]
@@ -145,4 +146,19 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     <a  href={createHyperlinkString(hrefPrefix, uri, blanknode)} style="color: rgb(44,133,254);">
     {text}</a>
   }
+
+  def addTripleAttributesToXMLElement(elem: Elem, entry: FormEntry): Elem = {
+    import entry._
+    addAttributesToXMLElement(elem, Map(
+      "data-rdf-subject" -> subject.toString(),
+      "data-rdf-property" -> property.toString(),
+      "data-rdf-object" -> value.toString(),
+      "data-rdf-type" -> type_.toString()))
+  }
+
+  /** add Attributes To XML Element - Note could be reused */
+  private def addAttributesToXMLElement(elem: Elem, config: Map[String, String]): Elem =
+		  elem.copy(attributes = config.foldRight(elem.attributes) {
+		  case ((k, v), next) => new scala.xml.UnprefixedAttribute(k, v, next)
+		  })
 }

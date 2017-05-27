@@ -9,6 +9,7 @@ import scala.xml.Text
 import scala.xml.Unparsed
 //import deductions.runtime.views.ToolsPage
 	import deductions.runtime.utils.HTTPrequest
+	import scala.xml.UnprefixedAttribute
 
 /** generate HTML from abstract Form for Display (Read only) */
 trait Form2HTMLDisplay[NODE, URI <: NODE]
@@ -32,15 +33,15 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
     import resourceEntry._
 
-    val subjectURIstringValue = value.toString()
-    val css = cssForURI(subjectURIstringValue)
+    val objectURIstringValue = value.toString()
+    val css = cssForURI(objectURIstringValue)
 
     /* provide draggable hyperlinks to form's fields, suitable to drop in social media */
     val hyperlinkToField = {
       val id = urlEncode(resourceEntry.property).replace("%", "-")
       /*  ID and NAME tokens must begin with a letter ([A-Za-z]) and may be followed by any number of letters, 
        *  digits ([0-9]), hyphens ("-"), underscores ("_"), colons (":"), and periods ("."). */
-      if( subjectURIstringValue != "" ) {
+      if( objectURIstringValue != "" ) {
       <a href={ "#" + id } draggable="true">
       <i class="glyphicon glyphicon-link"></i>
       </a>
@@ -48,27 +49,25 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       } else NodeSeq.Empty
     }
 
-    val hyperlinkToSubjectURI =
-      <a href={ createHyperlinkString(hrefPrefix, subjectURIstringValue) }
-      class={css}
-      title={
-        s"""Value ${if (subjectURIstringValue != valueLabel) subjectURIstringValue else ""}
-              of type ${type_.toString()}"""
-      } draggable="true"
-      data-uri-subject={resourceEntry.subject.toString()}
-      data-uri-value={resourceEntry.value.toString()}
-      data-uri-type={resourceEntry.type_.toString()}
-      >{
-        valueLabel
-      }</a>
+    //    val atts = new UnprefixedAttribute("", )
 
-    val backLinkButton = (if (subjectURIstringValue.size > 0 && showExpertButtons) {
+    val hyperlinkToObjectURI =
+      addTripleAttributesToXMLElement(
+        <a href={ createHyperlinkString(hrefPrefix, objectURIstringValue) } class={ css } title={
+          s"""Value ${if (objectURIstringValue != valueLabel) objectURIstringValue else ""}
+              of type ${type_.toString()}"""
+        } draggable="true" >{
+          valueLabel
+        }</a>,
+        resourceEntry)
+
+    val backLinkButton = (if (objectURIstringValue.size > 0 && showExpertButtons) {
 				val title = s""" Reverse links for "$label" "$value" """
-				makeBackLinkButton(subjectURIstringValue, title=title )
+				makeBackLinkButton(objectURIstringValue, title=title )
       } else NodeSeq.Empty )
 
-    val normalNavigationButton = (if (subjectURIstringValue.size > 0 && showExpertButtons) {
-      <a class="btn btn-primary" href={ subjectURIstringValue } title={ s"Normal HTTP link to $value" }
+    val normalNavigationButton = (if (objectURIstringValue.size > 0 && showExpertButtons) {
+      <a class="btn btn-primary" href={ objectURIstringValue } title={ s"Normal HTTP link to $value" }
       draggable="true"><i class="glyphicon glyphicon-share-alt"></i> </a>
     } else NodeSeq.Empty )
 
@@ -86,14 +85,14 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       }
 
       hyperlinkToField ++
-      hyperlinkToSubjectURI ++
+      hyperlinkToObjectURI ++
       Text("\n") ++
       backLinkButton ++
       Text("\n") ++
       normalNavigationButton ++
       Text("\n") ++
-      makeDrawGraphLink(subjectURIstringValue) ++
-      makeDrawGraphLink(subjectURIstringValue,
+      makeDrawGraphLink(objectURIstringValue) ++
+      makeDrawGraphLink(objectURIstringValue,
           toolURLprefix=
             s"https://scenaristeur.github.io/graphe/?endpoint=${request.localSparqlEndpoint}" +
             s"&sujet=",
