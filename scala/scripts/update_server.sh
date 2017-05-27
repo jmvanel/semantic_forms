@@ -4,7 +4,8 @@ echo "update semantic_forms Play! server when code has changed"
 # SRC=$HOME/src/semantic_forms/scala/forms_play/
 SRC=$PWD/forms_play
 APP=semantic_forms_play
-APPVERS=${APP}-1.0-SNAPSHOT
+VERSION=2.1-SNAPSHOT
+APPVERS=${APP}-$VERSION
 SBT=sbt
 MainXml=$SRC/../forms/src/main/scala/deductions/runtime/views/MainXml.scala
 

@@ -35,6 +35,7 @@ forms:personForm
 	org:memberOf
 	cco:expertise
 	rdfs:seeAlso
+	foaf:based_near
   ) .
 
 forms:topic_interest--personPerson
