@@ -38,7 +38,6 @@ object I18NMessages {
      * All of this is accomplished with just two lines of code: */
     formatter.applyPattern(template)
 
-    println(s">>>> I18NMessages $messageArguments")
     formatter.format( messageArguments.toArray )
   }
 }

@@ -68,11 +68,6 @@ trait Lookup[Rdf <: RDF, DATASET]
       formatXML(list)
     else
       formatJSON(list)
-      
-//    if (mime.contains("json"))
-//      formatJSON(list)
-//    else
-//      formatXML(list)
   }
 
   private def formatXML(list: Results): String = {

@@ -411,7 +411,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
             if ( ct == null ) "" else ct.getValue
           } else {
             System.out.println(s"---- ${response.getStatusLine()}");
-            throw new ClientProtocolException("Unexpected response status: " + status);
+            throw new ClientProtocolException(
+                s"getContentTypeFromHEADRequest: Unexpected response status: $status");
           }
         }
       };
