@@ -166,6 +166,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 //println(
     s">>>> createFormDetailed2 formConfig <$formConfig> lang $lang")
     
+    // TODO make it functional #170
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
 
     def makeEntriesFromRawDataForForm(step1: RawDataForForm[Rdf#Node, Rdf#URI]): Seq[Entry] = {
@@ -194,10 +195,12 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     
     //// compute Form Syntax ////
 
+    // TODO make it functional #170
     val fieldsCompleteList = makeEntriesFromRawDataForForm(step1)
     val subject = step1.subject
     val classs = step1.classs
 
+    // TODO make it functional #170
     // set a FormSyntax.title for each group in propertiesGroups
     val entriesFromPropertiesGroups = for( (node, rawDataForForm ) <- step1.propertiesGroups ) yield
     	node -> makeEntriesFromRawDataForForm(rawDataForForm)
@@ -213,9 +216,11 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
           case Some(uri) => makeInstanceLabel( uri, allNamedGraph, lang )
         } )
     
+    // TODO make it functional #170
     if( step1.editable ) addAllPossibleValues(formSyntax, valuesFromFormGroup)
     logger.debug(s"createFormDetailed2: createForm " + this)
 
+    // TODO make it functional #170
     val res = time(
       s"createFormDetailed2: updateFormFromConfig(formConfig=$formConfig)",
       updateFormFromConfig(formSyntax, formConfig))
@@ -228,7 +233,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
   /**
    * update given Form,
-   * looking up for field Configurations within given RDF graph, eg in :
+   * looking up for field Specifications within given RDF graph, eg in :
    *  <pre>
    *  &lt;topic_interest> :fieldAppliesToForm &lt;personForm> ;
    *   :fieldAppliesToProperty foaf:topic_interest ;
@@ -479,8 +484,11 @@ forms:givenName--personPerson
                 valueLabel = makeInstanceLabel(objet, graph, lang),
                 subjectLabel = makeInstanceLabel(subject, graph, lang),
                 type_ = firstType,
+
+                // TODO make it functional #170:  modularize in ThumbnailInference, leveraging on addAttributesToXMLElement
                 isImage = isImageTriple(subject, prop, objet, firstType),
                 thumbnail = getURIimage(objet),
+
                 htmlName=htmlName
                 )
             },

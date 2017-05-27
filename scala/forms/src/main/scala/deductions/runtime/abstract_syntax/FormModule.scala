@@ -41,7 +41,8 @@ trait FormModule[NODE, URI <: NODE] {
       val title: String = "",
       val thumbnail: Option[NODE] = None,
       val formURI: Option[NODE] = None,
-      val formLabel: String = ""
+      val formLabel: String = "",
+      val editable: Boolean = false
       ) {
     
     /** Map from property to possible Values  */

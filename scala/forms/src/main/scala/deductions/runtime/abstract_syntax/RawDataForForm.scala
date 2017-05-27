@@ -2,11 +2,13 @@ package deductions.runtime.abstract_syntax
 
 /** intermediary data for form generation:  properties' List, etc */
 case class RawDataForForm[Node, URI <: Node](
-    entriesList: Seq[FormModule[Node, URI]#Entry], // Seq[Node],
+    // TODO make it functional #170 : rename fields like FormSyntax
+    entriesList: Seq[FormModule[Node, URI]#Entry],
     classs: Node, // = nullURI,
     subject: Node, // = nullURI,
     editable: Boolean = false,
     formURI: Option[Node] = None,
+    // PENDING rather a Boolean field of Entry
     reversePropertiesList: Seq[Node] = Seq(),
     /* properties Groups come from multiple super-classes */
     propertiesGroups: collection.Map[Node, RawDataForForm[Node, URI]] =
