@@ -42,7 +42,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
       }
       <div class={ css.cssClasses.formAddDivCSSClass } > <!-- TODO : hidden="true" -->
       <button type="button" class="btn btn-primary add-widget" readonly="yes" size="1" title={
-        "Add another value for " + field.label } >
+        "Add another value for " + field.label } input-class={css.cssClasses.formInputCSSClass} input-name={field.htmlName} input-title={ resourceOrBN_Placeholder(field) }  >
         <i class="glyphicon glyphicon-plus"></i>
       </button>
 			</div>

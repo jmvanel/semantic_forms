@@ -61,8 +61,6 @@ trait UserTraceability[Rdf <: RDF, DATASET]
 //        field.timeMetadata = resultsTimestamp(field.property.toString)
       } else field
     }
-//    println(s"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX After add User Info\n${entries.mkString("\n")}")
-
     formSyntax . fields = entries
     formSyntax
   }
