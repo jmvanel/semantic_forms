@@ -214,13 +214,18 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
                               hrefPrefix: String = config.hrefDisplayPrefix, lang: String = "en",
                               request: HTTPrequest = HTTPrequest())(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
 
+    val editableByUser = if (!field.metadata.isEmpty){
+       field.metadata == request.cookies.get("PLAY_SESSION").get.value.split("=")(1)
+    }
+    else  true
+
     // hack instead of true form separator in the form spec in RDF:
     if (field.label.contains("----"))
       return <hr class="sf-separator"/> // Text("----")
 
     val xmlField = field match {
       case l: formMod#LiteralEntry =>
-        if (editable)
+        if (editable && editableByUser)
           createHTMLiteralEditableField(l)
         else
           createHTMLiteralReadonlyField(l)
@@ -230,13 +235,13 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
            * or (TODO) create a sub-form for a blank node of an ancillary type (like a street address),
            * or just create a new resource with its type, given by range, or derived
            * (like in N3Form in EulerGUI ) */
-        if (editable)
+        if (editable && editableByUser)
           createHTMLResourceEditableField(r, lang)
         else
           createHTMLResourceReadonlyField(r, hrefPrefix, request)
 
       case r: formMod#BlankNodeEntry =>
-        if (editable)
+        if (editable && editableByUser)
           createHTMLBlankNodeEditableField(r)
         else
           createHTMLBlankNodeReadonlyField(r, hrefPrefix)

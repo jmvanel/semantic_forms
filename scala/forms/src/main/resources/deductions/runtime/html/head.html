@@ -40,7 +40,7 @@
                 $model = $(this).parent().parent().find('.sf-value-block').first().children().first().children().first()
                 console.log('Clonage du champ :');
                 console.log($model);
-                cloneWidget($model)
+                cloneWidget($model,$(this))
             });
 
             $('.image-popup-vertical-fit').magnificPopup({
