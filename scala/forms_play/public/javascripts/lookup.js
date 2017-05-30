@@ -24,12 +24,18 @@ $(document).ready(function() {
             },
             source: function(request, callback) {
                 console.log("Déclenche l'événement :")
-                console.log($(event.target));
-                console.log(event.target.value);
-                console.log(event.target.title);
+                var typeName
+                var $el = $(event.target);
+                if ($el) {
+                    var type = $el.attr('data-rdf-type').split('/');
+                    if (type) {
+                        typeName = type[type.length - 1];
+                    }
+                }
+
                 $.ajax({
                     url: "/lookup",
-                    data: { QueryClass: event.target.title, QueryString: request.term + "*" },
+                    data: { QueryClass: typeName, QueryString: request.term + "*" },
                     dataType: "json",
                     timeout: 5000
                 }).done(function(response) {
