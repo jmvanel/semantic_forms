@@ -51,6 +51,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
    val htmlFormFields = time("generateHTMLJustFields",
       generateHTMLJustFields(form, hrefPrefix, editable, graphURI, lang, request))
 
+		/* wrap Fields With HTML <form> Tag */
     def wrapFieldsWithFormTag(htmlFormFields: NodeSeq): NodeSeq =
 
       <form class="sf-standard-form" action={ actionURI } method="POST">
@@ -76,9 +77,10 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
 
   /**
    * generate HTML, but Just Fields;
-   *  this lets application developers create their own submit button(s) and <form> tag
+   * this lets application developers create their own submit button(s) and <form> tag
+   *  
+   * PENDING if inner functions should need to be overridden, they should NOT be inner
    */
-//  private[html]
   def generateHTMLJustFields(form: formMod#FormSyntax,
                              hrefPrefix: String = config.hrefDisplayPrefix,
                              editable: Boolean = false,
@@ -92,6 +94,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
       <input type="hidden" name="graphURI" value={ urlEncode(graphURI) }/>
     } else Seq()
 
+    /* make Fields Label And Data */
     def makeFieldsLabelAndData(fields: Seq[FormEntry]): NodeSeq = {
       if (!fields.isEmpty) {
         val lastEntry = fields.last
@@ -112,8 +115,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
       } else Text("\n")
     }
 
-    /*
-     * makeFieldsGroups Builds a groups of HTML fields to be used with the jQuery UI tabs generator
+    /* makeFieldsGroups Builds a groups of HTML fields to be used with the jQuery UI tabs generator
      *
      * @return NodeSeq Fragment HTML contenant un groupe de champs
      */
@@ -145,6 +147,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
       tabs.+:(tabsNames)
     }
 
+    /* make HTML for Field Subject, if different from form subject */
     def makeFieldSubject(field: FormEntry): NodeSeq = {
       if (field.subject != nullURI && field.subject != form.subject) {
         val subjectField =
@@ -184,7 +187,10 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
     return htmlResult
   }
 
-  /** Form Header inside the form box with data fields */
+  /** Form Header inside the form box with data fields: displays:
+   *  - form title
+   *  - form subject URI
+   *  - class or Form specification */
   private def dataFormHeader(form: formMod#FormSyntax) = {
     import form._
     Text(form.title) ++
@@ -201,7 +207,9 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
       }}</div>
   }
 
-  /** dispatch to various Entry's: LiteralEntry, ResourceEntry; ..., editable or not */
+  /** dispatch to various Entry's: LiteralEntry, ResourceEntry, BlankNodeEntry, RDFListEntry,
+   * editable or not;
+   * should not need to be overriden */
   private def createHTMLField(field: formMod#Entry, editable: Boolean,
                               hrefPrefix: String = config.hrefDisplayPrefix, lang: String = "en",
                               request: HTTPrequest = HTTPrequest())(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
@@ -248,7 +256,8 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
     <div class="sf-value-block col-xs-12 col-sm-9 col-md-9">{ xmlField } </div>
   }
 
-  /** make Field Data (display) Or Input (edit) */
+  /** make Field Data (display) Or Input (edit)
+   *  TODO: does not do much! */
   private def makeFieldDataOrInput(field: formMod#Entry, hrefPrefix: String = config.hrefDisplayPrefix,
                                    editable: Boolean, lang: String = "en",
                                    request: HTTPrequest = HTTPrequest())(implicit form: FormModule[NODE, URI]#FormSyntax) = {

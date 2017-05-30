@@ -25,6 +25,9 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       <div>{ if (l.lang != "" && l.lang != "No_language") " > " + l.lang }</div>
     </xml:group>
 
+  /** create HTML Resource Readonly Field
+   * PENDING if inner val should need to be overridden, they should be directly in trait
+   *  */
   def createHTMLResourceReadonlyField(
       resourceEntry: formMod#ResourceEntry,
       hrefPrefix: String = hrefDisplayPrefix,
@@ -84,23 +87,20 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       else NodeSeq.Empty
       }
 
-      hyperlinkToField ++
-      hyperlinkToObjectURI ++
-      Text("\n") ++
-      backLinkButton ++
-      Text("\n") ++
-      normalNavigationButton ++
-      Text("\n") ++
-      makeDrawGraphLink(objectURIstringValue) ++
-      makeDrawGraphLink(objectURIstringValue,
-          toolURLprefix=
-            s"https://scenaristeur.github.io/graphe/?endpoint=${request.localSparqlEndpoint}" +
-            s"&sujet=",
-            toolname="scenaristeur/graphe"
-            ,
-            imgWidth=6
-          ) ++
-      Text("\n") ++
+    // TODO Text("\n") should be within specific val's
+    hyperlinkToField ++
+    hyperlinkToObjectURI ++ Text("\n") ++
+    backLinkButton ++ Text("\n") ++
+    normalNavigationButton ++ Text("\n") ++
+    makeDrawGraphLink(objectURIstringValue) ++
+//      makeDrawGraphLink(objectURIstringValue,
+//          toolURLprefix=
+//            s"https://scenaristeur.github.io/graphe/?endpoint=${request.localSparqlEndpoint}" +
+//            s"&sujet=",
+//            toolname="scenaristeur/graphe"
+//            ,
+//            imgWidth=6
+//          ) ++ Text("\n") ++
       thumbnail ++
       {makeUserInfoOnTriples(resourceEntry.metadata,resourceEntry.timeMetadata)}
   }
