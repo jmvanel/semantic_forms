@@ -122,10 +122,21 @@ trait ApplicationTrait extends Controller
       }
 
   /** load RDF String in database - TODO conneg !!! */
-  def loadAction(data: String, graphURI: String = "",
-                 database: String = "TDB") = Action {
+  def loadAction() //  data: String, graphURI: String = "",
+  //                 database: String = "TDB") 
+  = Action {
     implicit request =>
-      load(data, graphURI, database: String)
+      val requestCopy = getRequestCopy()
+      println(s"body ${request.getClass} ${request.body}")
+      val body = request.body
+
+      // TODO this code should reused !!!!!
+      body match {
+        case form: AnyContentAsFormUrlEncoded =>
+          println(s"case ${form}")
+          load(requestCopy.copy(queryString = form.data))
+        case _ => Unit
+      }
       Ok("OK")
   }
 
