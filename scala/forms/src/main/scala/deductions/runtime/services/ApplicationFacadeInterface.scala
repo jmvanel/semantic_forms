@@ -40,7 +40,7 @@ trait ApplicationFacadeInterface {
 
   def sparqlConstructQuery(query: String, lang: String = "en"): NodeSeq
 
-  def sparqlSelectQuery(query: String, lang: String = "en"): NodeSeq
+  def selectSPARQL(query: String, lang: String = "en"): NodeSeq
 
   def backlinks(q: String = ""): Future[Elem]
 

@@ -142,9 +142,9 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
                 val graphDownloaded = {
                   val graphTry = graphTry_MIME . _1
                   if (transactionsInside)
-                    storeURI(graphTry, uri, uri, dataset)
+                    storeURI(graphTry, uri, dataset)
                   else
-                    storeURINoTransaction(graphTry, uri, uri, dataset)
+                    storeURINoTransaction(graphTry, uri, dataset)
                 }
                 val vv = if (graphDownloaded.isSuccess) {
                   println(s"""Graph at URI <$uri>, size ${graphDownloaded.get.size}
@@ -325,30 +325,30 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   private def readStoreURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET,
                                         request: HTTPrequest = HTTPrequest()): Try[Rdf#Graph] = {
     val graphTry = readURI(uri, graphUri, dataset, request) . _1
-    storeURINoTransaction(graphTry, uri, graphUri, dataset)
+    storeURINoTransaction(graphTry, graphUri, dataset)
   }
   /** read unconditionally from URI and store in TDB, Transaction inside */
   private def readStoreURITry(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET,
                               request: HTTPrequest = HTTPrequest()): Try[Rdf#Graph] = {
     val graphTry = readURI(uri, graphUri, dataset, request) . _1
-    storeURI(graphTry, uri, graphUri, dataset)
-  }
-
-  private def storeURINoTransaction(
-    graphTry: Try[Rdf#Graph], uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
-    logger.info(s"readStoreURINoTransaction: Before appendToGraph uri <$uri> graphUri <$graphUri>")
-    if (graphTry.isSuccess) rdfStore.appendToGraph(dataset, graphUri, graphTry.get)
-    // TODO: reuse appendToGraph return
-    logger.info(s"readStoreURINoTransaction: uri <$uri> : stored into graphUri <$graphUri>")
-    graphTry
+    storeURI(graphTry, graphUri, dataset)
   }
 
   /** store URI in TDB, including Transaction */
-  private def storeURI(
-    graphTry: Try[Rdf#Graph], uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
+  def storeURI(
+    graphTry: Try[Rdf#Graph], graphUri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
     wrapInTransaction {
-      storeURINoTransaction(graphTry, uri, graphUri, dataset)
+      storeURINoTransaction(graphTry, graphUri, dataset)
     }.flatten
+  }
+
+  private def storeURINoTransaction(
+    graphTry: Try[Rdf#Graph], graphUri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
+    logger.info(s"readStoreURINoTransaction: Before appendToGraph graphUri <$graphUri>")
+    if (graphTry.isSuccess) rdfStore.appendToGraph(dataset, graphUri, graphTry.get)
+    // TODO: reuse appendToGraph return
+    logger.info(s"readStoreURINoTransaction: stored into graphUri <$graphUri>")
+    graphTry
   }
 
   /**

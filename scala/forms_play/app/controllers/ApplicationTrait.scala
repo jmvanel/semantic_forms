@@ -37,6 +37,7 @@ import scala.io.Source
 import scala.xml.Unparsed
 import java.nio.file.Files
 import java.io.File
+import deductions.runtime.services.LoadService
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -54,7 +55,8 @@ trait ApplicationTrait extends Controller
     with HTTPrequestHelpers
     with RDFPrefixes[ImplementationSettings.Rdf]
     with URIManagement
-    with RequestUtils {
+    with RequestUtils
+    with LoadService[ImplementationSettings.Rdf, ImplementationSettings.DATASET]{
 
 	val config: Configuration
   import config._
@@ -118,6 +120,14 @@ trait ApplicationTrait extends Controller
             lang, title = title, userInfo = userInfo)
         }
       }
+
+  /** load RDF String in database - TODO conneg !!! */
+  def loadAction(data: String, graphURI: String = "",
+                 database: String = "TDB") = Action {
+    implicit request =>
+      load(data, graphURI, database: String)
+      Ok("OK")
+  }
 
   def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "",
       database: String = "TDB") =
@@ -585,7 +595,7 @@ trait ApplicationTrait extends Controller
           logger.info("sparql: " + query)
           val lang = chooseLanguage(request)
           outputMainPage(
-            sparqlSelectQuery(query, lang), lang)
+            selectSPARQL(query, lang), lang)
     }
 
   def updateGET(updateQuery: String): EssentialAction = update(updateQuery)
