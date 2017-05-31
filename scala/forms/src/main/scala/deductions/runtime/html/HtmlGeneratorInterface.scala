@@ -1,8 +1,5 @@
 package deductions.runtime.html
 
-import java.net.URLEncoder
-import java.security.MessageDigest
-
 import scala.xml.NodeSeq
 
 import deductions.runtime.abstract_syntax.FormModule

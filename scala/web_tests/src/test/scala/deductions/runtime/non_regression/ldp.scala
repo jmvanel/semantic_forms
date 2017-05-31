@@ -11,7 +11,7 @@ class LDP extends CornichonFeature {
         When I get("http://localhost:9000/ldp/" + uri)
         Then assert status.is(200)
         And assert headers.name("Access-Control-Allow-Origin").isPresent
-
+        And assert body.path("@id").isPresent
       }
     }
   }
