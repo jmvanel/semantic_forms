@@ -223,7 +223,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     logger.info(s"ApplicationFacadeImpl.saveForm: request :$request, userid <$userid>")
     val mainSubjectURI = try {
       implicit val userURI: String = userid
-      saveTriples(request)
+      saveTriples(request,lang)
     } catch {
       case t: Throwable =>
         logger.error("Exception in saveTriples: " + t)

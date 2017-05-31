@@ -45,7 +45,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
    * @param map a raw map of HTTP response parameters
    * @return main subject URI,
    *         type change flag */
-  def saveTriples(httpParamsMap: Map[String, Seq[String]])
+  def saveTriples(httpParamsMap: Map[String, Seq[String]],lang: String = "")
       ( implicit userURI: String = "" ): ( Option[String], Boolean)
       = {
     logger.debug(s"FormSaver.saveTriples httpParamsMap $httpParamsMap")
@@ -80,7 +80,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
               val try_ = Try {
                 val comingBackTriple = httpParam2Triple(param)
                 logger.debug(s"saveTriples: triple from httpParam: {$comingBackTriple }")
-                computeDatabaseChanges(comingBackTriple, objects)
+                computeDatabaseChanges(comingBackTriple, objects,lang)
               }
               try_ match {
                 case f: Failure[_] => logger.error("saveTriples: " + f)
@@ -96,7 +96,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
     //// end of saveTriples() body ////
 
     /* process a single triple from the form */
-    def computeDatabaseChanges(originalTriple: Rdf#Triple, objectsFromUser: Seq[String]) {
+    def computeDatabaseChanges(originalTriple: Rdf#Triple, objectsFromUser: Seq[String],lang: String = "") {
       //      if (originalTriple.objectt == foaf.Document ) // predicate == foaf.firstName) logger.debug( "DDDDDDDDDDD "+ foaf.Document)
       logger.debug(s"computeDatabaseChanges: originalTriple: $originalTriple, objectsFromUser $objectsFromUser")
       objectsFromUser.map { objectStringFromUser =>
@@ -112,7 +112,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
             }
           },
           _ => BNode(objectStringFromUser.replaceAll(" ", "_")), // ?? really do this ?
-          _ => Literal(objectStringFromUser))
+          _ => Literal.tagged(objectStringFromUser,Lang(lang)))
 
         val originalData = nodeToString(originalTriple.objectt)
         val emptyUserInput: Boolean = objectStringFromUser == ""
