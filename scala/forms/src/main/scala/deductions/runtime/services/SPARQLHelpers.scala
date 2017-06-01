@@ -354,6 +354,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         case Success(solutions) =>
           //    logger.debug( "solutionsTry.isSuccess " + solutionsTry.isSuccess )
           val answers: Rdf#Solutions = solutions
+          // TODO nullPointer on empty database
           val results = answers.iterator.toIterable.map {
             row =>
               for (variable <- variables) yield {

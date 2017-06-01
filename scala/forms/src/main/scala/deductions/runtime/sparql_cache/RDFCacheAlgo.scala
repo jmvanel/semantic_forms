@@ -346,6 +346,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     graphTry: Try[Rdf#Graph], graphUri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
     logger.info(s"readStoreURINoTransaction: Before appendToGraph graphUri <$graphUri>")
     if (graphTry.isSuccess) rdfStore.appendToGraph(dataset, graphUri, graphTry.get)
+    else
+      println(s"storeURINoTransaction: $graphTry")
     // TODO: reuse appendToGraph return
     logger.info(s"readStoreURINoTransaction: stored into graphUri <$graphUri>")
     graphTry

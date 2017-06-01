@@ -35,7 +35,7 @@ import deductions.runtime.utils.URIManagement
 import play.api.mvc.EssentialAction
 import scala.io.Source
 import scala.xml.Unparsed
-import java.nio.file.Files
+//import java.nio.file.Files
 import java.io.File
 import deductions.runtime.services.LoadService
 
@@ -56,7 +56,9 @@ trait ApplicationTrait extends Controller
     with RDFPrefixes[ImplementationSettings.Rdf]
     with URIManagement
     with RequestUtils
-    with LoadService[ImplementationSettings.Rdf, ImplementationSettings.DATASET]{
+    with LoadService[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+// with FormSyntaxFromSPARQL[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+{
 
 	val config: Configuration
   import config._
@@ -585,9 +587,9 @@ trait ApplicationTrait extends Controller
         val formuri = map.getOrElse("formuri", Seq()).headOption.getOrElse("")
 
         makeJSONResult(
-          createJSONFormFromSPARQL(
+          createJSONFormFromSPARQLFacade(
             query,
-            editable = Edit != "",
+            editable = (Edit != ""),
             formuri))
       }
 
