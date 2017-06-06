@@ -34,8 +34,6 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
   	  (implicit graph: Rdf#Graph, lang:String) : FormSyntax = {
 
     wrapInTransaction {
-//      println( s">>>> createFormFromClass <$classe> " + ops.getSubjects(graph, rdf.typ, foaf.Person ) )
-
     // if classs argument is not an owl:Class, check if it is a form:specification, then use it as formSpecURI
     val checkIsOWLClass = find( graph, classe, rdf.typ, owl.Class)
     val checkIsRDFSClass = find( graph, classe, rdf.typ, rdfs.Class)
@@ -46,16 +44,19 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
         && ! checkIsFormSpec.isEmpty )
       (fromUri(classe), nullURI ) else (formSpecURI0, classe)
 
-    val (propsListInFormConfig, formConfig) =
-      if (formSpecURI != "") {
-        (propertiesListFromFormConfiguration(URI(formSpecURI)),
-          URI(formSpecURI))
-      } else {
-        lookPropertiesListInConfiguration(classe)
-      }
+//      {
+//        val (propsListInFormConfig, formConfig) =
+//          if (formSpecURI != "") {
+//            (propertiesListFromFormConfiguration(URI(formSpecURI)),
+//              URI(formSpecURI))
+//          } else {
+//            lookPropertiesListInConfiguration(classe)
+//          }
+//
+//        logger.info(s""">>> UnfilledFormFactory.createFormFromClass: formSpecURI <$formSpecURI> classs <$classs>
+//    		props List In Form Config size ${propsListInFormConfig.size}""")
+//      }
 
-    logger.info( s""">>> UnfilledFormFactory.createFormFromClass: formSpecURI <$formSpecURI> classs <$classs>
-    		props List In Form Config size ${propsListInFormConfig.size}""")
     val classFromSpecsOrGiven =
       if (formSpecURI != "" && classs == nullURI ) {
         val classFromSpecs = lookClassInFormSpec( URI(formSpecURI), graph)
@@ -69,13 +70,21 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
     else
       instanceURI
 
-    // TODO properties List argument IS NOT USED !!!!
-    if (propsListInFormConfig.isEmpty) {
-      val props = fieldsFromClass(classFromSpecsOrGiven, graph).propertiesList
-      createFormDetailed(makeUri(newId), addRDFSLabelComment(props), classFromSpecsOrGiven, CreationMode)
-    } else
-      createFormDetailed(makeUri(newId), propsListInFormConfig.toSeq, classFromSpecsOrGiven,
-        CreationMode, formConfig = formConfig)
+//    if (propsListInFormConfig.isEmpty) {
+//      val props = fieldsFromClass(classFromSpecsOrGiven, graph).propertiesList
+//      createFormDetailed(makeUri(newId), 
+////          addRDFSLabelComment(props),
+//          classFromSpecsOrGiven, CreationMode)
+//    } else
+//      createFormDetailed(makeUri(newId),
+////          propsListInFormConfig.toSeq,
+//          classFromSpecsOrGiven,
+//        CreationMode, formConfig = formConfig)
+
+      createFormDetailed(makeUri(newId),
+          classFromSpecsOrGiven,
+        CreationMode, URI(formSpecURI0) )
+      
   } . getOrElse( FormSyntax( nullURI, Seq() ) )
   }
 

@@ -143,7 +143,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    * NO transaction, should be called within a transaction
    */
   def createFormDetailed(subject: Rdf#Node,
-    propertiesList: Iterable[Rdf#Node],
+//    propertiesList: Iterable[Rdf#Node],
     classs: Rdf#URI,
     formMode: FormMode,
     formGroup: Rdf#URI = nullURI,

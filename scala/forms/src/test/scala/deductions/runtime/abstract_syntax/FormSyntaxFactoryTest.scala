@@ -97,8 +97,8 @@ trait FormSyntaxFactoryTest[Rdf <: RDF, DATASET] extends FormSyntaxFactory[Rdf, 
     val res = dataset.r({
       val form = factory.createFormDetailed(
         URI("betehess"),
-        Seq(foaf.title,
-          foaf.name, foaf.knows),
+//        Seq(foaf.title,
+//          foaf.name, foaf.knows),
         URI(""),
         EditionMode)
       form
@@ -127,7 +127,9 @@ trait FormSyntaxFactoryTest[Rdf <: RDF, DATASET] extends FormSyntaxFactory[Rdf, 
     val os = new FileOutputStream("/tmp/graph.nt")
     turtleWriter.write(graph, os, "")
     val res = dataset.r({
-      fact.createFormDetailed(URI("betehess"), Seq(foaf.topic_interest), foaf.Person,
+      fact.createFormDetailed(URI("betehess"),
+//          Seq(foaf.topic_interest), 
+          foaf.Person,
         DisplayMode)
     })
   }
