@@ -371,7 +371,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
         // NOTE: Jena RDF loader can throw an exception "Failed to determine the content type"
         val graphTry = rdfLoader.load(new java.net.URL(uri.toString()))
 //        logger.info
-        println(s"readStoreURINoTransaction: after rdfLoader.load($uri): $graphTry")
+        println(s"readURI: after rdfLoader.load($uri): $graphTry")
 
         // TODO
         //      val graph = graphTry.getOrElse {
@@ -425,7 +425,13 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
           ""
       System.out.println(responseHandled);
       responseHandled
-    } finally {
+    }
+    catch {
+      case t: Throwable =>
+        System.err.println(s"getContentTypeFromHEADRequest($url): ${t.getLocalizedMessage}")
+        "ERROR"
+    }
+    finally {
       httpclient.close();
     }
   }
