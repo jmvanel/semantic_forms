@@ -298,9 +298,11 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
             val triples = find(graph, fieldSpec.subject, ANY, ANY).toSeq
             for (t <- triples)
               field.addTriple(t.subject, t.predicate, t.objectt)
+
             // TODO each feature should be in a different file
             def replace[T](s: Seq[T], occurence: T, replacement: T): Seq[T] =
               s.map { i => if (i == occurence) replacement else i }
+
             for (t <- triples) {
 //            	println( s">>>> updateOneFormFromConfig triple $t" )
               if (t.predicate == formPrefix("widgetClass")
@@ -325,7 +327,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
                   formPointedGraph <- (formSpecGraph / formPrefix("fieldAppliesToForm")).takeOnePointedGraph;
                   form = formPointedGraph.pointer
                 ) {
-//                  field.cardinality = cardinality TODO
+                  val field2 = field.asResource.copy(cardinality = cardinality)
+                  formSyntax.fields = replace(formSyntax.fields, field, field2)
+                  //                  field.cardinality = cardinality
                   println(s"updateOneFormFromConfig: prop $prop: $cardinality, form $form")
                 }
               }
