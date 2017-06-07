@@ -38,6 +38,7 @@ import scala.xml.Unparsed
 //import java.nio.file.Files
 import java.io.File
 import deductions.runtime.services.LoadService
+import play.api.mvc.AnyContentAsRaw
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -129,16 +130,24 @@ trait ApplicationTrait extends Controller
   = Action {
     implicit request =>
       val requestCopy = getRequestCopy()
-      println(s"body ${request.getClass} ${request.body}")
-      val body = request.body
+      println(s"body class ${request.getClass} ${request.body}")
+      
+      val content = getContent(request)
+      load(requestCopy.copy(content = content))
 
-      // TODO this code should reused !!!!!
-      body match {
-        case form: AnyContentAsFormUrlEncoded =>
-          println(s"case ${form}")
-          load(requestCopy.copy(queryString = form.data))
-        case _ => Unit
-      }
+//      val body = request.body
+//      body match {
+//        case form: AnyContentAsFormUrlEncoded =>
+//          println(s"case form ${form}")
+//          load(requestCopy.copy(queryString = form.data))
+//        case b: AnyContentAsRaw =>
+//          println(s"case base ${b}")
+//          load( HTTPrequest(queryString = Map(
+//              "data" -> Seq(b.raw.asBytes.toString.replace("data=", ""))) ) )
+//        case b =>
+//          println(s"case ${b}")
+//          Unit
+//      }
       Ok("OK")
   }
 
@@ -707,17 +716,7 @@ trait ApplicationTrait extends Controller
           val slug = request.headers.get("Slug")
           val link = request.headers.get("Link")
           val contentType = request.contentType
-          val content = {
-            val asText = request.body.asText
-            if (asText != None) asText
-            else {
-              val raw = request.body.asRaw.get
-              logger.info(s"""LDP: raw: "$raw" size ${raw.size}""")
-              raw.asBytes(raw.size.toInt).map {
-                arr => new String(arr.toArray, "UTF-8")
-              }
-            }
-          }
+          val content = getContent(request)
           logger.info(s"LDP: slug: $slug, link $link")
           logger.info(s"LDP: content: $content")
           val serviceCalled =
@@ -726,7 +725,19 @@ trait ApplicationTrait extends Controller
             .withHeaders("Access-Control-Allow-Origin" -> "*")
     }
 
-//  implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(
+  //  implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(
+
+  private def getContent(request: Request[AnyContent]): Option[String] = {
+    val asText = request.body.asText
+    if (asText != None) asText
+    else {
+      val raw = request.body.asRaw.get
+      logger.info(s"""LDP: raw: "$raw" size ${raw.size}""")
+      raw.asBytes(raw.size.toInt).map {
+        arr => new String(arr.toArray, "UTF-8")
+      }
+    }
+  }
 
   def lookupService(search: String, clas: String = "") = {
     Action { implicit request =>
