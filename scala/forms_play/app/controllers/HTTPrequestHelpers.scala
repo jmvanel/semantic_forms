@@ -11,7 +11,7 @@ trait HTTPrequestHelpers {
     val cookiesMap = cookies.map { cookie => (cookie.name -> copyCookie(cookie)) } . toMap
     val res = HTTPrequest(host, remoteAddress,
       rawQueryString, queryString,
-      headers.toMap, cookiesMap
+      headers = headers.toMap, cookies = cookiesMap
       )
 //    println(s"copyRequest: cookiesMap $cookiesMap , userId ${res.userId()}")
     res

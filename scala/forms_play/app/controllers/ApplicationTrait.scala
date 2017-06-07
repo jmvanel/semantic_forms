@@ -39,6 +39,8 @@ import scala.xml.Unparsed
 import java.io.File
 import deductions.runtime.services.LoadService
 import play.api.mvc.AnyContentAsRaw
+import play.api.mvc.AnyContentAsText
+import play.api.mvc.RawBuffer
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -130,24 +132,10 @@ trait ApplicationTrait extends Controller
   = Action {
     implicit request =>
       val requestCopy = getRequestCopy()
-      println(s"body class ${request.getClass} ${request.body}")
-      
+      println(s"body class ${request.getClass} ${request.body}")     
       val content = getContent(request)
+      println(s"content ${content.toString.substring(0, 50) + " ..."}")
       load(requestCopy.copy(content = content))
-
-//      val body = request.body
-//      body match {
-//        case form: AnyContentAsFormUrlEncoded =>
-//          println(s"case form ${form}")
-//          load(requestCopy.copy(queryString = form.data))
-//        case b: AnyContentAsRaw =>
-//          println(s"case base ${b}")
-//          load( HTTPrequest(queryString = Map(
-//              "data" -> Seq(b.raw.asBytes.toString.replace("data=", ""))) ) )
-//        case b =>
-//          println(s"case ${b}")
-//          Unit
-//      }
       Ok("OK")
   }
 
@@ -728,14 +716,17 @@ trait ApplicationTrait extends Controller
   //  implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(
 
   private def getContent(request: Request[AnyContent]): Option[String] = {
-    val asText = request.body.asText
-    if (asText != None) asText
-    else {
-      val raw = request.body.asRaw.get
-      logger.info(s"""LDP: raw: "$raw" size ${raw.size}""")
-      raw.asBytes(raw.size.toInt).map {
-        arr => new String(arr.toArray, "UTF-8")
-      }
+    request.body match {
+      case AnyContentAsText(t) => Some(t)
+      case AnyContentAsFormUrlEncoded(m) =>
+        println(s"getContent 1 request.body AnyContentAsFormUrlEncoded size ${m.size}")
+        m.keySet.headOption
+      case AnyContentAsRaw(raw: RawBuffer) =>
+        println(s"getContent 2 request.body.asRaw ${raw}")
+        raw.asBytes(raw.size.toInt).map {
+          arr => new String(arr.toArray, "UTF-8")
+        }
+      case _ => None
     }
   }
 
