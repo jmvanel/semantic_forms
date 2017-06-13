@@ -29,21 +29,45 @@ trait FormModule[NODE, URI <: NODE] {
    *  - could be used with N3Form(Swing) in EulerGUI,
    *  TODO: put language as a field?
    */
+  def makeEntries(propertiesList: Seq[NODE]): Seq[Entry] =
+    propertiesList.map {
+      prop => makeEntry(prop)
+    }
   case class FormSyntax(
       val subject: NODE,
       var fields: Seq[Entry],
+      val entriesList: Seq[FormModule[NODE, URI]#Entry] = Seq(),
       classs: NODE = nullURI,
       formGroup: URI = nullURI,
       val defaults: FormDefaults = FormModule.formDefaults,
       // TODO maybe : propertiesGroups could be a list of FormSyntax
 //      propertiesGroups: collection.Map[NODE, Seq[Entry]] = collection.Map[NODE, Seq[Entry]](),
       propertiesGroups: collection.Seq[FormSyntax] = collection.Seq[FormSyntax](),
+      propertiesGroupMap: collection.Map[NODE, FormSyntax] =
+      collection.Map[NODE, FormSyntax](),
       val title: String = "",
       val thumbnail: Option[NODE] = None,
       val formURI: Option[NODE] = None,
       val formLabel: String = "",
-      val editable: Boolean = false
+      val editable: Boolean = false,
+      val reversePropertiesList: Seq[NODE] = Seq()
       ) {
+
+
+
+    def setSubject(subject: NODE, editable: Boolean): FormSyntax = {
+
+      val propertiesGroupsWithSubject = propertiesGroupMap.map {
+        case (node, formSyntax) => (node,
+          formSyntax.setSubject(subject, editable))
+      }
+
+      FormSyntax(subject,Seq(),entriesList,classs,formGroup,defaults, propertiesGroupMap = propertiesGroupsWithSubject)
+    }
+
+    def propertiesList: Seq[NODE] = {
+      entriesList . map ( _.property )
+    }
     
     /** Map from property to possible Values  */
 	  val possibleValuesMap = scala.collection.mutable.Map[ NODE, Seq[(NODE, NODE)]]()

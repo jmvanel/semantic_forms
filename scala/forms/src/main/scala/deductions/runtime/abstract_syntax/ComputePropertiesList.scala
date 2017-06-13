@@ -31,7 +31,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
                                       editable: Boolean = false,
                                       formuri: String,
                                       classs: Rdf#URI = nullURI)(implicit graph: Rdf#Graph):
-                                      RawDataForForm[Rdf#Node, Rdf#URI] = {
+                                      FormSyntax = {
 
     val classesOfSubject = {
       val classes = getClasses(subject)
@@ -54,7 +54,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
 
     val propsFromSubject = fieldsFromSubject(subject, graph)
  
-    val propsFromClasses: List[RawDataForForm[Rdf#Node, Rdf#URI]] = {
+    val propsFromClasses: List[FormSyntax] = {
     	fieldsFromClasses(classesOfSubjectOrFromConfig, subject, editable, graph)
     }
 
@@ -79,46 +79,40 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
     val reversePropertiesList = reversePropertiesListFromFormConfiguration(formConfiguration)
 
 
-    def makeRawDataForForm(rawDataForFormList: List[RawDataForForm[Rdf#Node, Rdf#URI]]): RawDataForForm[Rdf#Node, Rdf#URI] = {
-      logger.debug(s"""makeRawDataForForm: rawDataForFormList size ${rawDataForFormList.size}
-        ${rawDataForFormList.mkString("\n")}""")
-      val propertiesGroupsList = for (rawDataForForm <- rawDataForFormList) yield {
-        rawDataForForm.propertiesGroups
+    def makeformSyntax(formSyntaxList: List[FormSyntax]): FormSyntax = {
+      logger.debug(s"""makeformSyntax: formSyntaxList size ${formSyntaxList.size}
+        ${formSyntaxList.mkString("\n")}""")
+      val propertiesGroupsList = for (formSyntax <- formSyntaxList) yield {
+        formSyntax.propertiesGroupMap
       }
-      val propertiesGroupsMap = propertiesGroupsList.flatten.toMap
-      logger.debug(s"""makeRawDataForForm: size ${propertiesGroupsMap.size}
+      val propertiesGroupsMap= propertiesGroupsList.flatten.toMap
+      logger.debug(s"""makeformSyntax: size ${propertiesGroupsMap.size}
         ${propertiesGroupsMap.keySet}""")
 
-      RawDataForForm[Rdf#Node, Rdf#URI](
-        makeEntries(propertiesList), classesOfSubjectOrFromConfig.head, subject, editable,
-        formuri match { case "" => Some(formConfiguration); case uri => Some(URI(uri)) },
-        reversePropertiesList,
-        propertiesGroups = propertiesGroupsMap)
+      FormSyntax(subject,Seq(),makeEntries(propertiesList),classesOfSubjectOrFromConfig.head,editable = editable,formURI = formuri match { case "" => Some(formConfiguration); case uri => Some(URI(uri)) },reversePropertiesList = reversePropertiesList,propertiesGroupMap = propertiesGroupsMap)
+
     }
 
     /* local function to mix:
      *  - stuff from the context: propertiesList, classe sOf Subject Or Formm Specif,
      *    subject, editable, form URI */
-    def prependPropertyGroup(globalDataForForm: RawDataForForm[Rdf#Node, Rdf#URI], key: Rdf#Node,
-                             addedDataForForm: RawDataForForm[Rdf#Node, Rdf#URI]) =
+    def prependPropertyGroup(globalDataForForm: FormSyntax, key: Rdf#Node,
+                             addedDataForForm: FormSyntax) =
       globalDataForForm.copy(
-        propertiesGroups =
-          globalDataForForm.propertiesGroups +
+        propertiesGroupMap =
+          globalDataForForm.propertiesGroupMap +
             (key -> addedDataForForm))
 
-    val globalDataForForm = makeRawDataForForm(propsFromClasses)
+    val globalDataForForm = makeformSyntax(propsFromClasses)
 
-    /* RawDataForForm from Form Specification */
-    val rawDataFromSpecif: RawDataForForm[Rdf#Node, Rdf#URI] = if (formConfiguration != nullURI)
-      RawDataForForm[Rdf#Node, Rdf#URI](
-        makeEntries(propsFromConfig),
-        formConfiguration,
-        subject, editable)
-    else NullRawDataForForm
-    logger.debug(s"computePropertiesList rawDataFromSpecif $rawDataFromSpecif")
+    /* formSyntax from Form Specification */
+    val formSyntaxFromSpecif: FormSyntax = if (formConfiguration != nullURI)
+      FormSyntax(subject,Seq(),makeEntries(propsFromConfig),formConfiguration,editable = editable)
+    else NullFormSyntax
+    logger.debug(s"computePropertiesList formSyntaxFromSpecif $formSyntaxFromSpecif")
 
-    return prependPropertyGroup(globalDataForForm, Literal("Short form"), rawDataFromSpecif)
-//    makeRawDataForForm( rawDataFromSpecif ++ propsFromClasses )
+    return prependPropertyGroup(globalDataForForm, Literal("Short form"), formSyntaxFromSpecif)
+//    makeformSyntax( formSyntaxFromSpecif ++ propsFromClasses )
   }
 
   /**

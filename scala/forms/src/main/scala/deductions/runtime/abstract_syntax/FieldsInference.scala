@@ -18,7 +18,7 @@ trait FieldsInference[Rdf <: RDF, DATASET]
 extends RDFHelpers[Rdf]
 with RDFOPerationsDB[Rdf, DATASET]
 with SPARQLHelpers[Rdf, DATASET]
-with RawDataForFormModule[Rdf#Node, Rdf#URI]
+with FormModule[Rdf#Node, Rdf#URI]
 {
 
 	val config: Configuration
@@ -33,7 +33,7 @@ with RawDataForFormModule[Rdf#Node, Rdf#URI]
 
   /** find fields from given RDF class */
   def fieldsFromClasses(classes:  List[Rdf#Node], subject: Rdf#Node, editable: Boolean, graph: Rdf#Graph)
-  : List[RawDataForForm[Rdf#Node, Rdf#URI]] =
+  : List[FormSyntax] =
 	  for( classs <- classes) yield {
 	    val ff = fieldsFromClass( uriNodeToURI(classs), graph)
 	    ff.setSubject(subject, editable)
@@ -41,12 +41,12 @@ with RawDataForFormModule[Rdf#Node, Rdf#URI]
 
   /** find fields from given RDF class */
   def fieldsFromClass(classs: Rdf#URI, graph: Rdf#Graph)
-  : RawDataForForm[Rdf#Node, Rdf#URI]
+  : FormSyntax
   = {
 
     val inferedProperties = scala.collection.mutable.ListBuffer[Rdf#Node]()
-    val propertiesGroups = scala.collection.mutable.HashMap.empty[Rdf#Node, RawDataForForm[Rdf#Node, Rdf#URI]]
-    		
+    //val propertiesGroups = scala.collection.mutable.HashMap.empty[Rdf#Node, RawDataForForm[Rdf#Node, Rdf#URI]]
+    val propertiesGroups = scala.collection.mutable.HashMap.empty[Rdf#Node,FormSyntax]
     /* retrieve properties from rdfs:domain's From given Class */
     def propertiesFromDomainsFromClass(classs: Rdf#Node): List[Rdf#Node] = {
       if (classs != owl.Thing) {
@@ -103,8 +103,9 @@ with RawDataForFormModule[Rdf#Node, Rdf#URI]
       if (classs != owl.Thing) {
         val domains = propertiesFromDomainsFromClass(classs)
         inferedProperties ++= domains
-        propertiesGroups += ( classs -> RawDataForForm(makeEntries(domains), classs, URI("") ) )
-        
+        //propertiesGroups += ( classs -> RawDataForForm(makeEntries(domains), classs, URI("") ) )
+        propertiesGroups += ( classs -> FormSyntax(URI(""),Seq(),makeEntries(domains),classs) )
+
         val superClasses = getObjects(graph, classs, rdfs.subClassOf)
         logger.info(s"process Super Classes of <$classs> size ${superClasses.size} ; ${superClasses.mkString(", ")}")
         superClasses foreach (sc => inferedProperties ++= propertiesFromDomainsFromClass(sc))
@@ -158,9 +159,10 @@ with RawDataForFormModule[Rdf#Node, Rdf#URI]
     processSuperClasses(classs)
     if (showDomainlessProperties) addDomainlessProperties(classs)
     
-    RawDataForForm(
+    /*RawDataForForm(
         makeEntries( inferedProperties.distinct ),
-        classs, subject=nullURI, propertiesGroups=propertiesGroups )
+        classs, subject=nullURI, propertiesGroups=propertiesGroups )*/
+    FormSyntax(nullURI,Seq(),makeEntries( inferedProperties.distinct ),classs,nullURI,propertiesGroupMap = propertiesGroups)
 
   } // end of fieldsFromClass()
 }

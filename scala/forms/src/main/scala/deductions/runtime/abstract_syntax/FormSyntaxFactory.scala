@@ -97,7 +97,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   
   import ops._
 //  object NullRawDataForForm extends RawDataForForm[Rdf#Node, Rdf#URI](Seq(), nullURI, nullURI )
-  val NullRawDataForForm = RawDataForForm[Rdf#Node, Rdf#URI](Seq(), nullURI, nullURI )
+  //val NullRawDataForForm = RawDataForForm[Rdf#Node, Rdf#URI](Seq(), nullURI, nullURI )
+  val NullFormSyntax = FormSyntax(nullURI,Seq(),Seq())
 
   val literalInitialValue = ""
   private val rdf_type = RDFPrefix[Rdf].typ
@@ -156,7 +157,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   
   /** */
   private def createFormDetailed2(
-		  step1: RawDataForForm[Rdf#Node, Rdf#URI],
+		  step1: FormSyntax,
 		  formGroup: Rdf#URI = nullURI)
     (implicit graph: Rdf#Graph,  lang: String="")
   : FormSyntax = {
@@ -169,7 +170,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     // TODO make it functional #170
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
 
-    def makeEntriesFromRawDataForForm(step1: RawDataForForm[Rdf#Node, Rdf#URI]): Seq[Entry] = {
+    def makeEntriesFromformSyntax(step1: FormSyntax): Seq[Entry] = {
       val subject = step1.subject
       val props = step1.propertiesList
       val classs = step1.classs
@@ -184,7 +185,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       val entries = for (
         prop <- props if prop != displayLabelPred
       ) yield {
-        logger.debug(s"makeEntriesFromRawDataForForm subject $subject, prop $prop")
+        logger.debug(s"makeEntriesFromformSyntax subject $subject, prop $prop")
           time(s"makeEntriesForSubject(${prop})",
           makeEntriesForSubject(subject, prop, formMode))
       }
@@ -196,18 +197,18 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     //// compute Form Syntax ////
 
     // TODO make it functional #170
-    val fieldsCompleteList = makeEntriesFromRawDataForForm(step1)
+    val fieldsCompleteList = makeEntriesFromformSyntax(step1)
     val subject = step1.subject
     val classs = step1.classs
 
     // TODO make it functional #170
     // set a FormSyntax.title for each group in propertiesGroups
-    val entriesFromPropertiesGroups = for( (node, rawDataForForm ) <- step1.propertiesGroups ) yield
-    	node -> makeEntriesFromRawDataForForm(rawDataForForm)
+    val entriesFromPropertiesGroups = for( (node, formSyntax ) <- step1.propertiesGroupMap ) yield
+    	node -> makeEntriesFromformSyntax(formSyntax)
     val propertiesGroups = for( (n, m) <- entriesFromPropertiesGroups ) yield {
       FormSyntax(n, m, title=makeInstanceLabel(n, allNamedGraph, lang))
     }
-    val formSyntax = FormSyntax(subject, fieldsCompleteList, classs, propertiesGroups=propertiesGroups.toSeq,
+    val formSyntax = FormSyntax(subject, fieldsCompleteList,Seq(), classs, propertiesGroups=propertiesGroups.toSeq,
         thumbnail = getURIimage(subject),
         title = makeInstanceLabel( subject, allNamedGraph, lang ),
         formURI = step1.formURI,
@@ -229,7 +230,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   }
 
   protected def addInverseTriples(fields2: Seq[Entry],
-      step1: RawDataForForm[Rdf#Node, Rdf#URI]): Seq[Entry]
+      step1: FormSyntax): Seq[Entry]
 
   /**
    * update given Form,
