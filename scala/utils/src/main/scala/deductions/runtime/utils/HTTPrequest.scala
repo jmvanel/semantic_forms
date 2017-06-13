@@ -23,6 +23,8 @@ case class HTTPrequest(
 
     queryString: Map[String, Seq[String]] = Map(),
 
+    content: Option[String] = None,
+
     /* YET UNUSED */
     headers: Map[String, Seq[String]] = Map(),
 //    cookies: List[Cookie] = List())

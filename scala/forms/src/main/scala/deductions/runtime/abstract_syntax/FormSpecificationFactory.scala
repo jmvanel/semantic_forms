@@ -96,8 +96,9 @@ trait FormSpecificationFactory[Rdf <: RDF, DATASET]
    *   :fieldAppliesToProperty foaf:topic_interest ;
    *   :widgetClass form:DBPediaLookup .
    *  <pre>
+   *
    *  that is, query:
-   *  ?S form:fieldAppliesToProperty prop .
+   *  ?S form:fieldAppliesToProperty <prop> .
    */
   def lookFieldSpecInConfiguration(
     prop: Rdf#Node)(implicit graph: Rdf#Graph): Seq[Rdf#Triple] =

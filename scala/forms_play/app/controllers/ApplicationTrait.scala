@@ -35,8 +35,12 @@ import deductions.runtime.utils.URIManagement
 import play.api.mvc.EssentialAction
 import scala.io.Source
 import scala.xml.Unparsed
-import java.nio.file.Files
+//import java.nio.file.Files
 import java.io.File
+import deductions.runtime.services.LoadService
+import play.api.mvc.AnyContentAsRaw
+import play.api.mvc.AnyContentAsText
+import play.api.mvc.RawBuffer
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -54,7 +58,10 @@ trait ApplicationTrait extends Controller
     with HTTPrequestHelpers
     with RDFPrefixes[ImplementationSettings.Rdf]
     with URIManagement
-    with RequestUtils {
+    with RequestUtils
+    with LoadService[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+// with FormSyntaxFromSPARQL[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+{
 
 	val config: Configuration
   import config._
@@ -118,6 +125,19 @@ trait ApplicationTrait extends Controller
             lang, title = title, userInfo = userInfo)
         }
       }
+
+  /** load RDF String in database - TODO conneg !!! */
+  def loadAction() //  data: String, graphURI: String = "",
+  //                 database: String = "TDB") 
+  = Action {
+    implicit request =>
+      val requestCopy = getRequestCopy()
+      println(s"body class ${request.getClass} ${request.body}")     
+      val content = getContent(request)
+      println(s"content ${content.toString.substring(0, 50) + " ..."}")
+      load(requestCopy.copy(content = content))
+      Ok("OK")
+  }
 
   def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "",
       database: String = "TDB") =
@@ -564,9 +584,9 @@ trait ApplicationTrait extends Controller
         val formuri = map.getOrElse("formuri", Seq()).headOption.getOrElse("")
 
         makeJSONResult(
-          createJSONFormFromSPARQL(
+          createJSONFormFromSPARQLFacade(
             query,
-            editable = Edit != "",
+            editable = (Edit != ""),
             formuri))
       }
 
@@ -585,7 +605,7 @@ trait ApplicationTrait extends Controller
           logger.info("sparql: " + query)
           val lang = chooseLanguage(request)
           outputMainPage(
-            sparqlSelectQuery(query, lang), lang)
+            selectSPARQL(query, lang), lang)
     }
 
   def updateGET(updateQuery: String): EssentialAction = update(updateQuery)
@@ -684,17 +704,7 @@ trait ApplicationTrait extends Controller
           val slug = request.headers.get("Slug")
           val link = request.headers.get("Link")
           val contentType = request.contentType
-          val content = {
-            val asText = request.body.asText
-            if (asText != None) asText
-            else {
-              val raw = request.body.asRaw.get
-              logger.info(s"""LDP: raw: "$raw" size ${raw.size}""")
-              raw.asBytes(raw.size.toInt).map {
-                arr => new String(arr.toArray, "UTF-8")
-              }
-            }
-          }
+          val content = getContent(request)
           logger.info(s"LDP: slug: $slug, link $link")
           logger.info(s"LDP: content: $content")
           val serviceCalled =
@@ -703,7 +713,22 @@ trait ApplicationTrait extends Controller
             .withHeaders("Access-Control-Allow-Origin" -> "*")
     }
 
-//  implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(
+  //  implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(
+
+  private def getContent(request: Request[AnyContent]): Option[String] = {
+    request.body match {
+      case AnyContentAsText(t) => Some(t)
+      case AnyContentAsFormUrlEncoded(m) =>
+        println(s"getContent 1 request.body AnyContentAsFormUrlEncoded size ${m.size}")
+        m.keySet.headOption
+      case AnyContentAsRaw(raw: RawBuffer) =>
+        println(s"getContent 2 request.body.asRaw ${raw}")
+        raw.asBytes(raw.size.toInt).map {
+          arr => new String(arr.toArray, "UTF-8")
+        }
+      case _ => None
+    }
+  }
 
   def lookupService(search: String, clas: String = "") = {
     Action { implicit request =>

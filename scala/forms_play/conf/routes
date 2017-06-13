@@ -12,6 +12,9 @@ GET /robots.txt             controllers.Assets.at(path="/public", file="robots.t
 
 GET     /display            controllers.Application.displayURI(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="")
 # GET     /display2            controllers.Application.displayURI2(displayuri:String)
+POST     /load               controllers.Application.loadAction()
+# data: String )
+# , graphURI: String = "data", database: String = "TDB" )
 
 GET     /edit               controllers.Application.edit( url:String )
 POST    /save               controllers.Application.saveAction()

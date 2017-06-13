@@ -85,7 +85,7 @@ Do not load data in a named graph (argument --graph below) whose name is a relat
 
 - Preloading common vocabularies, and preloading some pre-defined form specifications ( currently FOAF ) : in SBT shell, type:
 ```
-    runMain deductions.runtime.sparql_cache.PopulateRDFCache
+    runMain deductions.runtime.sparql_cache.apps.PopulateRDFCache
     // or, just some forms specs:
     runMain tdb.tdbloader --loc=TDB --graph=urn:form_specs ../forms/form_specs/foaf.form.ttl
 ```

@@ -85,14 +85,15 @@ trait ApplicationFacade[Rdf <: RDF, DATASET]
 	  impl.sparqlConstructResult(query, lang, format)
   }
 
-  def sparqlSelectConneg(queryString: String, format: String="turtle", ds: DATASET ) =
+  def sparqlSelectConnegFacade(queryString: String, format: String="turtle", ds: DATASET ) =
     impl.sparqlSelectConneg(queryString, format, ds)
 
-  def sparqlSelectQuery(query: String, lang: String = "en"): Elem =
+//  def sparqlSelectQuery(query: String, lang: String = "en"): Elem =
+  def selectSPARQL(query: String, lang: String = "en"): Elem =
     impl.selectSPARQL(query, lang)
 
   /** create JSON Form From SPARQL */
-  def createJSONFormFromSPARQL(query: String,
+  def createJSONFormFromSPARQLFacade(query: String,
                                editable: Boolean = false,
                                formuri: String = "") // : FormSyntax
                                =
