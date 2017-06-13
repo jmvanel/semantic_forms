@@ -53,7 +53,7 @@ import org.w3.banana._
   lazy val geo = Prefix[Rdf]("geo", "http://www.w3.org/2003/01/geo/wgs84_pos#" )
 
   lazy val dwc = Prefix[Rdf]("dwc", "http://rs.tdwg.org/dwc/terms/")
-
+  lazy val geoloc = Prefix[Rdf]("geoloc", "http://deductions.github.io/geoloc.owl.ttl#")
 
   lazy val prefixesList = List(
 		  // prefixes for ontologies
@@ -82,6 +82,7 @@ import org.w3.banana._
     Prefix[Rdf]("bioc", "http://deductions.github.io/biological-collections.owl.ttl#"),
     Prefix[Rdf]("seeds", "http://deductions.github.io/seeds.owl.ttl#"),
     Prefix[Rdf]("nature", "http://deductions.github.io/nature_observation.owl.ttl#"),
+    geoloc,
 
     Prefix[Rdf]("cco", "http://purl.org/ontology/cco/core#" ),
     geo,
