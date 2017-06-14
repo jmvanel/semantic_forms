@@ -18,6 +18,12 @@ import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.DefaultConfiguration
 
+/**
+ * arguments:
+ *  - URI of Mobile
+ *  - RDF data URL (typically a SPARQL request)
+ *  - (optional) 2 timestamps defining a time interval (ISO format)
+ */
 object GeoPathApp extends {
   override val config = new DefaultConfiguration {
     override val useTextQuery = false
@@ -27,15 +33,20 @@ object GeoPathApp extends {
     with GeoPath[ImplementationSettings.Rdf] {
   import ops._
 
-  val graph = // URI("data:/geo/")
-    rdfLoader.load(new URL(args(1)))
-    println(s"graph $graph")
-    graph.map {
-      graph =>
-        println("graph.map")
-        val pathLength = getPathLengthForMobile(URI(args(0)), graph)
-        println(s"Path Length For Mobile <${URI(args(0))}> ${pathLength} km")
-    }
+  val dataURL = new URL(args(1))
+  val graph = rdfLoader.load(dataURL)
+  graph.map {
+    graph =>
+      val mobile = URI(args(0))
+      val pathLength =
+        if (args.size == 4) {
+          val begin = args(2)
+          val end = args(3)
+          getPathLengthForMobileInterval(mobile, begin, end, graph)
+        } else
+          getPathLengthForMobile(mobile, graph)
+      println(s"Path Length For Mobile <${mobile}> ${pathLength} km")
+  }
 }
 
 trait GeoPath[Rdf <: RDF]
@@ -54,20 +65,25 @@ trait GeoPath[Rdf <: RDF]
     getPathLength(getPathForMobile(mobile, graph))
   }
 
+  def getPathLengthForMobileInterval(mobile: Rdf#Node, begin: String, end: String, graph: Rdf#Graph): Float = {
+    getPathLength(
+      filterPointsByTimeInterval(
+        getPathForMobile(mobile, graph),
+        begin, end))
+  }
+    
   /** get Path Length in kilometers */
   def getPathLength(graph: Iterable[PointedGraph[Rdf]]): Float = {
     def pow2(v: Float) = v * v
     println(s"in getPathLength size ${graph.size}")
     val coords = for (
       triplesAboutPoint <- graph;
-      point = triplesAboutPoint.pointer;
-      graph = triplesAboutPoint.graph;
 //      _ = println(s"graph size ${graph.size}");
-      long = (triplesAboutPoint / geo("long")).as[Rdf#Literal]  match {
+      long = (triplesAboutPoint / geo("long")).as[Rdf#Literal] match {
         case Success(lit1) => fromLiteral(lit1)._1 . toFloat
         case _ => Float.NaN // 0f
       };     
-      lat = (triplesAboutPoint / geo("lat")).as[Rdf#Literal]  match {
+      lat = (triplesAboutPoint / geo("lat")).as[Rdf#Literal] match {
         case Success(lit1) => fromLiteral(lit1)._1 . toFloat
         case _ => Float.NaN // 0f
       }
@@ -120,6 +136,19 @@ trait GeoPath[Rdf <: RDF]
     val pgraph = PointedGraph(mobile, graph)
     //  ?POINT geoloc:mobile <mobile> .
     (pgraph /- mobileProp)
+  }
+
+  def filterPointsByTimeInterval(
+    points: Iterable[PointedGraph[Rdf]],
+    begin: String, end: String): Iterable[PointedGraph[Rdf]] = {
+    for (
+      triplesAboutPoint <- points;
+      timestamp = (triplesAboutPoint / dct("date")).as[Rdf#Literal] match {
+        case Success(lit1) => fromLiteral(lit1)._1
+        case _             => ""
+      };
+      if (timestamp >= begin && timestamp <= end)
+    ) yield { triplesAboutPoint }
   }
 
   //  private def nextPoint(point: Rdf#Node)(implicit graph: Rdf#Graph) = {
