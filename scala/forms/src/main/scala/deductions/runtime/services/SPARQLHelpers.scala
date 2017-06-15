@@ -28,7 +28,7 @@ import play.api.libs.json.JsString
 import play.api.libs.json.Json
 
 /**
- * TODO separate stuff depending on dataset, and stuff taking a  graph in argument
+ * TODO separate stuff depending on dataset, and stuff taking a graph in argument
  * @author jmv
  */
 trait SPARQLHelpers[Rdf <: RDF, DATASET]
@@ -60,6 +60,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         logger.debug("sparqlConstructQuery: before parseConstruct")
         parseConstruct(queryString)
       }
+//      _ = println( s"sparqlConstructQuery: query $query" )
       es <- {
         logger.debug("sparqlConstructQuery: before executeConstruct")
         dataset.executeConstruct(query, Map())
@@ -630,14 +631,19 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     queryString: String, variables: Seq[String],
     graph: Rdf#Graph): List[Seq[Rdf#Node]] = {
 
-    val query = parseSelect(queryString).get
-    val answers: Rdf#Solutions = sparqlGraph.executeSelect(graph, query,
-      Map()).get
+    val q = parseSelect(queryString)
+    if( q.isFailure )
+    	System.err.println(s"runSparqlSelectNodes $q")
+    val query = q.get
+    val a = sparqlGraph.executeSelect(graph, query, Map())
+    println(s"runSparqlSelectNodes answers $a")
+    val answers = a.get
+//    println(s"runSparqlSelectNodes answers size ${answers.toIterable.size}")
+
     val results = answers.toIterable map {
       row =>
         val varnames = row.varnames()
-        //        if (varnames.contains("COMM")) 
-        //        logger.debug(s"row $row")
+        logger.debug(s"row $row varnames $varnames")
         //        val effectiveVariables = varnames.intersect(variables.toSet)
         for (variable <- variables) yield {
           val cell = if (varnames.contains(variable)) {

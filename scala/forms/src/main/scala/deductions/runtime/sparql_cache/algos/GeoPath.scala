@@ -184,12 +184,12 @@ trait GeoPath[Rdf <: RDF, DATASET]
   private def getMobileList(graph: Rdf#Graph): Iterable[Rdf#Node] = {
     val sparql =
       s"""|${declarePrefix(geoloc)}
-                    |SELECT DISTINCT ?mobile
-                    |WHERE {
-                    | # GRAPH ?GR {
-                    |  ?point geoloc:mobile ?mobile .
-                    | # }
-                    |}
+          |SELECT DISTINCT ?mobile
+          |WHERE {
+          | # GRAPH ?GR {
+          |  ?point geoloc:mobile ?mobile .
+          | # }
+          |}
       """.stripMargin
 
     val res = runSparqlSelectNodes(sparql, Seq("mobile"), graph)
