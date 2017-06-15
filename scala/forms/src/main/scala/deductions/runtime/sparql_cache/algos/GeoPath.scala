@@ -18,6 +18,9 @@ import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.services.SPARQLHelpers
+import java.util.Date
+import java.util.Calendar
+import java.text.SimpleDateFormat
 
 /**
  * arguments:
@@ -34,6 +37,9 @@ object GeoPathApp extends {
     with GeoPath[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
   import ops._
 
+//  println (generateDaysOfMonth(new Date ) ); System.exit(0)
+  
+  val execution = Try {
   val dataURL = new URL(args(0))
   val graph = rdfLoader.load(dataURL)
   println(s"graph $graph")
@@ -52,14 +58,16 @@ object GeoPathApp extends {
 
       if (args.size == 1) {
         println("getPathLengthForAllMobiles")
-        println(
-          getTriples(getPathLengthForAllMobiles(graph)).mkString("\n"))
+//        println( getTriples(getPathLengthForAllMobiles(graph)).mkString("\n"))   
+        println( turtleWriter.asString(getPathLengthForAllMobiles(graph), "") )
       } else {
         val mobile = URI(args(1))
         println(s"""Path Length For Mobile (km)
         <${mobile}>\t$timeColumns\t${pathLength}""")
       }
   }
+  }
+  println( execution )
 }
 
 trait GeoPath[Rdf <: RDF, DATASET]
@@ -81,14 +89,37 @@ trait GeoPath[Rdf <: RDF, DATASET]
     // global distances
     val mobiles = getMobileList(graph)
     val paths = for( mobile <- mobiles) yield {
-      println(s"mobile ${mobile}");
+      println(s"\nmobile ${mobile}");
       val dist = getPathLengthForMobile(mobile, graph)
       Triple(mobile, geoloc("totalDistanceTraveled"), Literal(dist toString(), xsd.float))
     }
-    val gr1 = makeGraph(paths)
-    // per day distances TODO
+
+    println(s"after path");
+
+    // per day distances
+    val paths20 = for (mobile <- mobiles) yield {
+     val days: Seq[(String, String)] = generateDaysOfMonth(new Date())
+     for (day <- days) yield {
+        println(s"\tday ${day}");
+        val begin = day._1
+        val end = day._2
+        val dist = getPathLengthForMobileInterval(mobile, begin, end, graph)
+        if (dist > 0) {
+          val subject = URI(makeURI("TravelStatistic:", nodeToString(mobile), day._1, day._2))
+          (
+            subject
+            -- rdf.typ ->- geoloc("TravelStatistic")
+            -- geoloc("begin") ->- Literal(begin, xsd.dateTime)
+            -- geoloc("end") ->- Literal(end, xsd.dateTime)
+            -- geoloc("distance") ->- Literal(dist.toString(), xsd.float)).graph.triples
+        } else List()
+      }
+    }
+    val paths2 = paths20 . flatten . flatten
+    
     // per half day distances TODO
-    gr1
+
+    makeGraph( paths ++ paths2 )
   }
 
   def getPathLengthForMobile(mobile: Rdf#Node, graph: Rdf#Graph): Float = {
@@ -122,7 +153,8 @@ trait GeoPath[Rdf <: RDF, DATASET]
       (long, lat) }
     
     var distanceInDegrees = 0f
-    val res = coords.reduceLeft(
+    if( coords.size > 1 )
+      coords.reduceLeft(
         (a, b) => {
           val distanceDelta= Math.sqrt(pow2(b._1 - a._1) + pow2(b._2 - a._2)).toFloat
 //          println( s"distanceInDegrees delta=${distanceDelta} a=$a b=$b")
@@ -201,10 +233,41 @@ trait GeoPath[Rdf <: RDF, DATASET]
       uri <- row.headOption
     ) yield uri
     //    val triplesAboutPoint = find(graph, ANY, rdf.typ, geoloc("Mobile"))
-//    Seq(URI("imei:863977030715952"), URI("imei:863977030716091"),
-//    		URI("imei:863977030771070"))
   }
 
+//  private
+  def generateDaysOfMonth(date: Date): Seq[(String, String)] = {
+    def makeBeginEndOfDay(date: Date) = {
+      val begin = Calendar.getInstance
+      begin.setTime(date)
+      begin.set(Calendar.HOUR_OF_DAY, 0)
+      begin.set(Calendar.MINUTE, 0)
+      begin.set(Calendar.SECOND, 0)
+      begin.set(Calendar.MILLISECOND, 0)
+
+      val end = begin.clone().asInstanceOf[Calendar]
+      end.set(Calendar.HOUR_OF_DAY, 24)
+      (begin, end)
+    }    
+    // enumerate days of current mounth
+    val today = makeBeginEndOfDay(date)
+    val begin = today._1
+    val end = today._2
+    val daysInMonth = begin.getActualMaximum(Calendar.DAY_OF_MONTH)
+
+    for( day <- 1 to daysInMonth) yield {
+      val beginOfDay = begin.clone().asInstanceOf[Calendar]
+      beginOfDay.set(Calendar.DAY_OF_MONTH, day)
+      val endOfDay   = end.clone().asInstanceOf[Calendar]
+      endOfDay.set(Calendar.DAY_OF_MONTH, day)
+      val df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+      (df.format(beginOfDay.getTime), df.format(endOfDay.getTime))
+    } 
+  }
+
+  private def makeURI( s:String* ): String =
+    s.mkString("", "/", "")
+  
   //  private def nextPoint(point: Rdf#Node)(implicit graph: Rdf#Graph) = {
   //    val pgraph = PointedGraph(point, graph)
   //    (pgraph /- precedingPointProp).as[Rdf#Node]
