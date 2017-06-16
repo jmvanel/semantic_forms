@@ -21,6 +21,7 @@ import deductions.runtime.services.SPARQLHelpers
 import java.util.Date
 import java.util.Calendar
 import java.text.SimpleDateFormat
+import java.io.FileOutputStream
 
 /**
  * arguments:
@@ -58,8 +59,15 @@ object GeoPathApp extends {
 
       if (args.size == 1) {
         println("getPathLengthForAllMobiles")
-//        println( getTriples(getPathLengthForAllMobiles(graph)).mkString("\n"))   
-        println( turtleWriter.asString(getPathLengthForAllMobiles(graph), "") )
+        // println( getTriples(getPathLengthForAllMobiles(graph)).mkString("\n"))   
+        // println( turtleWriter.asString(getPathLengthForAllMobiles(graph), "") )
+        val fileName = "data.stats.ttl"
+        val os = new FileOutputStream(fileName)
+        val statsGraph = getPathLengthForAllMobiles(graph)
+        turtleWriter.write(statsGraph, os, "")
+        os.close()
+        println(s"getPathLengthForAllMobiles: Written ${statsGraph.size()} triples to ${System.getProperty("user.dir")}/$fileName")
+
       } else {
         val mobile = URI(args(1))
         println(s"""Path Length For Mobile (km)
