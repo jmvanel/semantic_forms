@@ -81,7 +81,7 @@ trait ToolsPage extends EnterButtons
     val buttonsNextRelease = Seq(
       <input class="btn btn-primary" type="submit" value={ I18NMessages.get("View", lang) } formaction="/sparql-form"/>, // deactivate this for release
       makeLinkCarto(lang, textareaId,
-          "http://rawgit.com/Cruis-R/geo-map-component/master/docs/index.html?geo="),
+          "http://rawgit.com/Cruis-R/geo-map-component/master/docs/index.html"),
           //          "https://cruis-r.github.io/geo-map-component/?geo="),
 //        "https://advancedcartographywebcomponent.github.io/ACWC-Tree/?geo="),
       <input class="btn btn-primary" type="submit" value={ I18NMessages.get("Table", lang) }/>,
@@ -161,36 +161,46 @@ trait ToolsPage extends EnterButtons
     val buttonId = textareaId+"-button"
     val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
     println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
-    val servicesURL = s"$toolURLprefix$servicesURIPrefix$sparqlServicePrefix"
-    println(s">>>> servicesURL $servicesURL")
-
-    <input id={buttonId}
-            class="btn btn-primary" type="submit" target="_blank" value={ I18NMessages.get("Map", lang)}>
+//    val servicesURL = s"$toolURLprefix$servicesURIPrefix$sparqlServicePrefix"
+    val dataServicesURL = s"$servicesURIPrefix$sparqlServicePrefix"
+    println(s">>>> servicesURL $dataServicesURL")
+ 
+    <input id={buttonId} type="submit"
+           class="btn btn-primary" target="_blank" value={ I18NMessages.get("Map", lang)}>
     </input>
-      <script>
+    <input class="btn btn-primary" type="checkbox" checked="true" title="points (else path)"
+           id="points-path" />
+    <script>
         { Unparsed( s"""
 (function() {
   var textarea = document.getElementById('$textareaId');
   console.log('textareaId "$textareaId", textarea ' + textarea);
   var button = document.getElementById('$buttonId');
+
+  var pointsCheckbox = document.getElementById('points-path');
+  var pointsOrPath = pointsCheckbox.checked;
+  console.log('pointsOrPath ' + pointsOrPath);
+  if( pointsOrPath )
+    var pointsOrPathValue = 'points';
+  else
+    var pointsOrPathValue = 'path';
+  console.log('pointsOrPathValue ' + pointsOrPathValue);
+
   button.addEventListener( 'click', function() {
     console.log( 'elementById ' + textarea);
     var query = textarea.value;
     console.log( 'query in textarea ' + query);
-    console.log( 'services URL $servicesURL' );
-    var url = '$servicesURL' +
-//      window.encodeURIComponent( 
-      window.encodeURIComponent
-      (query)
-      // )
-      ;
-       console.log( 'URL ' + url );
+    console.log( 'data services URL= $dataServicesURL' );
+    var url = '$toolURLprefix' +
+      '?view=' + pointsOrPathValue +
+      '&geo=' +
+      '$dataServicesURL' + window.encodeURIComponent(query);
+    console.log( 'URL= ' + url );
     window.open( url , '_blank' );
-
   });
 }());
 """)}
-      </script>
+    </script>
   }
    
                         
