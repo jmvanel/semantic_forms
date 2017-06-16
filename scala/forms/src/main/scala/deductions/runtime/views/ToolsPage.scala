@@ -81,7 +81,7 @@ trait ToolsPage extends EnterButtons
     val buttonsNextRelease = Seq(
       <input class="btn btn-primary" type="submit" value={ I18NMessages.get("View", lang) } formaction="/sparql-form"/>, // deactivate this for release
       makeLinkCarto(lang, textareaId,
-          "http://rawgit.com/Cruis-R/geo-map-component/master/docs/index.html/?geo="),
+          "http://rawgit.com/Cruis-R/geo-map-component/master/docs/index.html?geo="),
           //          "https://cruis-r.github.io/geo-map-component/?geo="),
 //        "https://advancedcartographywebcomponent.github.io/ACWC-Tree/?geo="),
       <input class="btn btn-primary" type="submit" value={ I18NMessages.get("Table", lang) }/>,
