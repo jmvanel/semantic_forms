@@ -1,0 +1,40 @@
+package deductions.runtime.html
+
+import scala.xml.NodeSeq
+import scala.collection.mutable
+
+import deductions.runtime.abstract_syntax.FormModule
+import deductions.runtime.utils.UnicityList
+
+/** Table View; base for a future editable Table View */
+trait TableView[NODE, URI <: NODE] {
+
+  type formMod = FormModule[NODE, URI]
+  type FormSyntax = formMod#FormSyntax
+  type Entry = formMod#Entry
+
+  private val properties = UnicityList[NODE]
+  private val rows = UnicityList[NODE]
+  private val m = mutable.Map[(NODE, NODE), Entry]()
+
+  def generate(form: formMod#FormSyntax): NodeSeq = {
+
+    for (entry <- form.fields) { properties.add(entry.property) }
+    for (entry <- form.fields) {
+      rows.add(entry.subject)
+      m((entry.subject, entry.property)) = entry
+    }
+
+    <table>{
+      for (row <- rows.list) yield {
+        <tr>{
+          for (property <- properties.list) yield {
+            <td>{
+              m((row, property)).value
+            }</td>
+          }
+        }</tr>
+      }
+    }</table>
+  }
+}
