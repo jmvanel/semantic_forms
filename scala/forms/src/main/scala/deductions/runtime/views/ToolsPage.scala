@@ -97,7 +97,7 @@ trait ToolsPage extends EnterButtons
       <div class="container">
         <div class="btn-group">
           <input class ="btn btn-primary" type="submit" value={ I18NMessages.get("Submit", lang) }  formaction ={action} />
-          {	if (viewButton) buttons }
+          {	if (viewButton) buttonsNextRelease }
         </div>
       </div>
     </form>
