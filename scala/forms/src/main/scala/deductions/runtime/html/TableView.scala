@@ -8,7 +8,9 @@ import deductions.runtime.utils.UnicityList
 
 /** Table View; base for a future editable Table View */
 trait TableView[NODE, URI <: NODE]
-extends Form2HTMLBase[NODE, URI]
+//extends Form2HTMLBase[NODE, URI]
+extends Form2HTML[NODE, URI]
+with HTML5Types
 with FormModule[NODE, URI] {
 
 //  type formMod = FormModule[NODE, URI]
@@ -49,7 +51,9 @@ with FormModule[NODE, URI] {
             <td>{
               val cellOption = m.get((row, property))
               cellOption match {
-                case Some(entry) => entry.value
+                case Some(entry) =>
+//                  entry.value
+                  createHTMLField( entry, editable=false )(nullFormSyntax)
                 case _           => ""
               }
             }</td>

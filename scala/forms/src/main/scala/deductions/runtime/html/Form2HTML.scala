@@ -207,10 +207,11 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
       }}</div>
   }
 
-  /** dispatch to various Entry's: LiteralEntry, ResourceEntry, BlankNodeEntry, RDFListEntry,
+  /** create HTML data Field, the value part;
+   *  dispatch to various Entry's: LiteralEntry, ResourceEntry, BlankNodeEntry, RDFListEntry,
    * editable or not;
    * should not need to be overriden */
-  private def createHTMLField(field: formMod#Entry, editable: Boolean,
+  def createHTMLField(field: formMod#Entry, editable: Boolean,
                               hrefPrefix: String = config.hrefDisplayPrefix, lang: String = "en",
                               request: HTTPrequest = HTTPrequest())(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
 
