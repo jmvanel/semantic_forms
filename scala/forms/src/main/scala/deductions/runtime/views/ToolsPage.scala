@@ -75,16 +75,13 @@ trait ToolsPage extends EnterButtons
     val textareaId = s"query-$action" . replaceAll("/", "-")
     println( "textareaId " + textareaId);
 
-    val buttons = Seq(
-      <input class="btn btn-primary" type="submit" value={ I18NMessages.get("View", lang) } formaction="/sparql-form"/> )
-
     val buttonsNextRelease = Seq(
-      <input class="btn btn-primary" type="submit" value={ I18NMessages.get("View", lang) } formaction="/sparql-form"/>, // deactivate this for release
+      <input class="btn btn-primary" type="submit" value={ I18NMessages.get("View", lang) }
+             formaction="/sparql-form"/>,
       makeLinkCarto(lang, textareaId,
           "http://rawgit.com/Cruis-R/geo-map-component/master/docs/index.html"),
-          //          "https://cruis-r.github.io/geo-map-component/?geo="),
-//        "https://advancedcartographywebcomponent.github.io/ACWC-Tree/?geo="),
-      <input class="btn btn-primary" type="submit" value={ I18NMessages.get("Table", lang) }/>,
+      <input class="btn btn-primary" type="submit" value={ I18NMessages.get("Table", lang) }
+             formaction="/table"/>,
       <input class="btn btn-primary" type="submit" value={ I18NMessages.get("Tree", lang) }/>,
       makeLink(textareaId, "/assets/rdfviewer/rdfviewer.html?url="))
 

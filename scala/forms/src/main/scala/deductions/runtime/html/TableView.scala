@@ -25,16 +25,29 @@ trait TableView[NODE, URI <: NODE] {
       m((entry.subject, entry.property)) = entry
     }
 
-    <table>{
+    <table>
+      <tr>{
+        for (property <- properties.list) yield {
+          <th>{
+            property // .label
+          }</th>
+        }
+      }</tr>
+{
       for (row <- rows.list) yield {
         <tr>{
           for (property <- properties.list) yield {
             <td>{
-              m((row, property)).value
+              val cellOption = m.get((row, property))
+              cellOption match {
+                case Some(entry) => entry.value
+                case _           => ""
+              }
             }</td>
           }
         }</tr>
       }
-    }</table>
+}
+    </table>
   }
 }

@@ -41,6 +41,10 @@ import deductions.runtime.services.LoadService
 import play.api.mvc.AnyContentAsRaw
 import play.api.mvc.AnyContentAsText
 import play.api.mvc.RawBuffer
+import deductions.runtime.abstract_syntax.FormSyntaxFromSPARQL
+import deductions.runtime.abstract_syntax.FormSyntaxFactory
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.html.TableView
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -48,7 +52,8 @@ import play.api.mvc.RawBuffer
 //  }
 //}
 
-/** main controller */
+/** main controller 
+ *  TODO split HTML pages & HTTP services */
 trait ApplicationTrait extends Controller
     with ApplicationFacadeJena
     with LanguageManagement
@@ -60,7 +65,8 @@ trait ApplicationTrait extends Controller
     with URIManagement
     with RequestUtils
     with LoadService[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-// with FormSyntaxFromSPARQL[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with FormSyntaxFactory[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with FormSyntaxFromSPARQL[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 {
 
 	val config: Configuration
@@ -125,6 +131,26 @@ trait ApplicationTrait extends Controller
             lang, title = title, userInfo = userInfo)
         }
       }
+
+  def table = Action { implicit request =>
+    val requestCopy = getRequestCopy()
+    val userid = requestCopy.userId()
+    val title = "Table view from SPARQL"
+    val lang = chooseLanguage(request)
+    val userInfo = displayUser(userid, "", title, lang)
+    outputMainPage(
+      tableFromSPARQL(requestCopy),
+      lang, title = title, userInfo = userInfo)
+  }
+
+  private def tableFromSPARQL(request: HTTPrequest): NodeSeq = {
+    val query = request.queryString.getOrElse("query", Seq()).headOption.getOrElse("")
+    val formSyntax = createFormFromSPARQL(query,
+      editable = false,
+      formuri = "")
+    val tv = new TableView[ImplementationSettings.Rdf#Node, ImplementationSettings.Rdf#URI] {}
+    tv.generate(formSyntax)
+  }
 
   /** load RDF String in database - TODO conneg !!! */
   def loadAction() //  data: String, graphURI: String = "",
