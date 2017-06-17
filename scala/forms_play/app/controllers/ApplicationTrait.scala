@@ -140,7 +140,8 @@ trait ApplicationTrait extends Controller
     val userInfo = displayUser(userid, "", title, lang)
     outputMainPage(
       tableFromSPARQL(requestCopy),
-      lang, title = title, userInfo = userInfo)
+      lang, title = title, userInfo = userInfo,
+      classForContent="")
   }
 
   private def tableFromSPARQL(request: HTTPrequest): NodeSeq = {
@@ -228,11 +229,14 @@ trait ApplicationTrait extends Controller
     
   /** generate a Main Page wrapping given XHTML content */
   private def outputMainPage( content: NodeSeq,
-      lang: String, userInfo: NodeSeq = <div/>, title: String = "", displaySearch:Boolean = true )
+      lang: String, userInfo: NodeSeq = <div/>, title: String = "", displaySearch:Boolean = true,
+      classForContent: String = "container sf-complete-form"
+	)
   (implicit request: Request[_]) = {
       Ok( "<!DOCTYPE html>\n" +
         mainPage( content, userInfo, lang, title, displaySearch,
-            messages = getDefaultAppMessage() )
+            messages = getDefaultAppMessage(),
+            classForContent )
       ).withHeaders("Access-Control-Allow-Origin" -> "*") // for dbpedia lookup
       .as("text/html; charset=utf-8")
   }
