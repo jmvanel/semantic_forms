@@ -47,6 +47,7 @@ import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.html.TableView
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.html.HTML5TypesTrait
+import deductions.runtime.html.Form2HTMLBanana
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -152,6 +153,7 @@ trait ApplicationTrait extends Controller
       editable = false,
       formuri = "")
     val tv = new TableView[ImplementationSettings.Rdf#Node, ImplementationSettings.Rdf#URI]
+        with Form2HTMLBanana[ImplementationSettings.Rdf]
         with ImplementationSettings.RDFModule
         with HTML5TypesTrait[ImplementationSettings.Rdf] {
       val config = new DefaultConfiguration {}
