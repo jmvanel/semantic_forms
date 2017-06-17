@@ -16,10 +16,15 @@ trait TableView[NODE, URI <: NODE] {
   private val properties = UnicityList[NODE]
   private val rows = UnicityList[NODE]
   private val m = mutable.Map[(NODE, NODE), Entry]()
+  /** used for printing property label in header */
+  private val propertiesMap = mutable.Map[NODE, Entry]()
 
   def generate(form: formMod#FormSyntax): NodeSeq = {
 
-    for (entry <- form.fields) { properties.add(entry.property) }
+    for (entry <- form.fields) {
+      properties.add(entry.property)
+      propertiesMap(entry.property) = entry
+    }
     for (entry <- form.fields) {
       rows.add(entry.subject)
       m((entry.subject, entry.property)) = entry
@@ -29,7 +34,7 @@ trait TableView[NODE, URI <: NODE] {
       <tr>{
         for (property <- properties.list) yield {
           <th>{
-            property // .label
+            propertiesMap(property).label
           }</th>
         }
       }</tr>
