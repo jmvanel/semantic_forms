@@ -45,6 +45,7 @@ import deductions.runtime.abstract_syntax.FormSyntaxFromSPARQL
 import deductions.runtime.abstract_syntax.FormSyntaxFactory
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.html.TableView
+import deductions.runtime.services.DefaultConfiguration
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -149,7 +150,10 @@ trait ApplicationTrait extends Controller
     val formSyntax = createFormFromSPARQL(query,
       editable = false,
       formuri = "")
-    val tv = new TableView[ImplementationSettings.Rdf#Node, ImplementationSettings.Rdf#URI] {}
+    val tv = new TableView[ImplementationSettings.Rdf#Node, ImplementationSettings.Rdf#URI] {
+      val config = new DefaultConfiguration{}
+      val nullURI = ops.URI("")
+    }
     tv.generate(formSyntax)
   }
 

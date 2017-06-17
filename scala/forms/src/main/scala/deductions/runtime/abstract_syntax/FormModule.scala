@@ -82,6 +82,8 @@ trait FormModule[NODE, URI <: NODE] {
     }
   }
 
+  val nullFormSyntax = FormSyntax(nullURI, Seq() )
+
   type DatatypeProperty = URI
   type ObjectProperty = NODE // URI
   case class Triple(val s: NODE, val p: URI, val o: NODE)

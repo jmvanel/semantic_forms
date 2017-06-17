@@ -7,9 +7,11 @@ import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.utils.UnicityList
 
 /** Table View; base for a future editable Table View */
-trait TableView[NODE, URI <: NODE] {
+trait TableView[NODE, URI <: NODE]
+extends Form2HTMLBase[NODE, URI]
+with FormModule[NODE, URI] {
 
-  type formMod = FormModule[NODE, URI]
+//  type formMod = FormModule[NODE, URI]
   type FormSyntax = formMod#FormSyntax
   type Entry = formMod#Entry
 
@@ -34,7 +36,9 @@ trait TableView[NODE, URI <: NODE] {
       <tr>{
         for (property <- properties.list) yield {
           <th>{
-            propertiesMap(property).label
+            val entry = propertiesMap(property)
+            makeFieldLabel(NullResourceEntry, entry, editable = false)(nullFormSyntax)
+            //            propertiesMap(property).label
           }</th>
         }
       }</tr>
