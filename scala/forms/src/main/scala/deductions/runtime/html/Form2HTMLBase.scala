@@ -147,6 +147,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     {text}</a>
   }
 
+  /** add data- HTML5 Attributes corresponding to triple To XML Element */
   def addTripleAttributesToXMLElement(elem: Elem, entry: FormEntry): Elem = {
     import entry._
     addAttributesToXMLElement(elem, Map(

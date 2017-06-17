@@ -19,7 +19,8 @@ with FormModule[NODE, URI] {
 
   private val properties = UnicityList[NODE]
   private val rows = UnicityList[NODE]
-  private val m = mutable.Map[(NODE, NODE), Entry]()
+  private val cellsMap = mutable.Map[(NODE, NODE), Entry]()
+  private val rowsMap = mutable.Map[NODE, Entry]()
   /** used for printing property label in header */
   private val propertiesMap = mutable.Map[NODE, Entry]()
 
@@ -31,36 +32,41 @@ with FormModule[NODE, URI] {
     }
     for (entry <- form.fields) {
       rows.add(entry.subject)
-      m((entry.subject, entry.property)) = entry
+      cellsMap((entry.subject, entry.property)) = entry
+      rowsMap(entry.subject) = entry
     }
 
     <table>
-      <tr>{
-        for (property <- properties.list) yield {
-          <th>{
-            val entry = propertiesMap(property)
-            makeFieldLabel(NullResourceEntry, entry, editable = false)(nullFormSyntax)
-            //            propertiesMap(property).label
-          }</th>
-        }
-      }</tr>
-{
-      for (row <- rows.list) yield {
-        <tr>{
+      <tr>
+        <th>URI</th>
+        {
           for (property <- properties.list) yield {
-            <td>{
-              val cellOption = m.get((row, property))
-              cellOption match {
-                case Some(entry) =>
-//                  entry.value
-                  createHTMLField( entry, editable=false )(nullFormSyntax)
-                case _           => ""
-              }
-            }</td>
+            <th>{
+              val entry = propertiesMap(property)
+              makeFieldLabel(NullResourceEntry, entry, editable = false)(nullFormSyntax)
+            }</th>
           }
-        }</tr>
+        }
+      </tr>
+      {
+        for (row <- rows.list) yield {
+          <tr>{
+            for (property <- properties.list) yield {
+              Seq(
+            		// TODO extract and reuse hyperlinkToObjectURI in Form2HTMLDisplay
+                <td>{ rowsMap(row).subjectLabel }<br/>{ row }</td>,
+                <td>{
+                  val cellOption = cellsMap.get((row, property))
+                  cellOption match {
+                    case Some(entry) =>
+                      createHTMLField(entry, editable = false)(nullFormSyntax)
+                    case _=> ""
+                  }
+                }</td>)
+            }
+          }</tr>
+        }
       }
-}
     </table>
   }
 }
