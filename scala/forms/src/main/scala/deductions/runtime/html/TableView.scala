@@ -50,11 +50,13 @@ with FormModule[NODE, URI] {
       </tr>
       {
         for (row <- rows.list) yield {
-          <tr>{
+          <tr>
+          <td>{
+        	  // TODO extract and reuse hyperlinkToObjectURI in Form2HTMLDisplay
+            rowsMap(row).subjectLabel }<br/>{ row }</td>
+          {
             for (property <- properties.list) yield {
               Seq(
-            		// TODO extract and reuse hyperlinkToObjectURI in Form2HTMLDisplay
-                <td>{ rowsMap(row).subjectLabel }<br/>{ row }</td>,
                 <td>{
                   val cellOption = cellsMap.get((row, property))
                   cellOption match {
