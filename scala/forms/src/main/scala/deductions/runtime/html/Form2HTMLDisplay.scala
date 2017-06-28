@@ -46,8 +46,8 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     hyperlinkToField(resourceEntry) ++
       //hyperlinkToObjectURI ++ Text("\n") ++
       hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue, valueLabel, type_, resourceEntry) ++
-      backLinkButton (objectURIstringValue, label, value) ++
-      normalNavigationButton(objectURIstringValue, value) ++
+      backLinkButton (resourceEntry) ++
+      normalNavigationButton(resourceEntry) ++
       makeDrawGraphLink(objectURIstringValue) ++
       displayThumbnail(resourceEntry) ++
       {makeUserInfoOnTriples(resourceEntry.metadata,resourceEntry.timeMetadata)}
@@ -80,16 +80,20 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       resourceEntry)
   }
 
-  def backLinkButton(objectURIstringValue: String, label: String, value: NODE) = {
+  private def backLinkButton(resourceEntry: formMod#ResourceEntry) = {
+    import resourceEntry._
+    val objectURIstringValue = resourceEntry.value.toString()
     (if (objectURIstringValue.size > 0 && showExpertButtons) {
       val title = s""" Reverse links for "$label" "$value" """
       makeBackLinkButton(objectURIstringValue, title = title)
     } else NodeSeq.Empty)
   }
 
-  def normalNavigationButton(objectURIstringValue: String, value: NODE) = {
+  def normalNavigationButton(resourceEntry: formMod#ResourceEntry) = {
+    val value = resourceEntry.value
+    val objectURIstringValue = resourceEntry.value.toString()
     (if (objectURIstringValue.size > 0 && showExpertButtons) {
-      <a class="btn btn-primary" href={objectURIstringValue} title={s"Normal HTTP link to $value"}
+      <a class="btn btn-primary btn-xs" href={objectURIstringValue} title={s"Normal HTTP link to $value"}
          draggable="true">
         <i class="glyphicon glyphicon-share-alt"></i>
       </a>
@@ -109,6 +113,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
 
   private def makeUserInfoOnTriples(userMetadata: String,timeMetadata: Long) ={
+
     val time :String = new DateTime(timeMetadata).toDateTime.toString("dd/MM/yyyy HH:mm")
     if (timeMetadata != -1){
       <p>

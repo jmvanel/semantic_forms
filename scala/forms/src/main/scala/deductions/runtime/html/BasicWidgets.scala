@@ -11,8 +11,8 @@ trait BasicWidgets {
     // format: OFF
     val tit = if (title == "") s" Reverse links for &lt;$uri&gt;" else title
     <button type="button" 
-    		class="btn btn-info" readonly="yes" title={ tit } data-value={s"$uri"} onclick={ s"backlinks( '$uri' )" } id={ s"BACK-$uri" }>
-      <i class="glyphicon glyphicon-search"></i> 
+    		class="btn btn-info btn-xs" readonly="yes" title={ tit } data-value={s"$uri"} onclick={ s"backlinks( '$uri' )" } id={ s"BACK-$uri" }>
+      <i class="glyphicon glyphicon-search"></i>
     </button>
   }
   
@@ -33,7 +33,7 @@ trait BasicWidgets {
 //    	</form >
 
     if( uri != "" )
-    <a class="btn btn-default" href={ s"$toolURLprefix$link" }
+    <a class="btn btn-default btn-xs" href={ s"$toolURLprefix$link" }
     title={s"Draw RDF graph with $toolname for $uri"}
     target="_blank">
 			<img width={imgWidth.toString()} border="0" src="https://www.w3.org/RDF/icons/rdf_flyer.svg"

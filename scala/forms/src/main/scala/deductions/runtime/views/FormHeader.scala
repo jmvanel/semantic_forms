@@ -40,12 +40,12 @@ trait FormHeader[Rdf <: RDF, DATASET]
     // show the button to change the current editable state
     val linkToShow = (if (editable) {
       val hrefDisplay = hrefDisplayPrefix + URLEncoder.encode(uri, "utf-8")
-      <a class="btn btn-warning" href={ hrefDisplay } title={ mess("display_URI") }>
+      <a class="btn btn-warning btn-xs" href={ hrefDisplay } title={ mess("display_URI") }>
         <i class="glyphicon"></i>
       </a>
     } else {
       val hrefEdit = hrefEditPrefix + URLEncoder.encode(uri, "utf-8")
-      <a class="btn btn-primary" href={ hrefEdit } title={ mess("edit_URI") }>
+      <a class="btn btn-primary btn-xs" href={ hrefEdit } title={ mess("edit_URI") }>
         <i class="glyphicon glyphicon-edit"></i>
       </a>
     })
