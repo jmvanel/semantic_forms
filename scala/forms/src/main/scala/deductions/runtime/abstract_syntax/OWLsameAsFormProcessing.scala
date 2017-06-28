@@ -9,7 +9,7 @@ import org.w3.banana.RDF
 trait OWLsameAsFormProcessing[Rdf <: RDF, DATASET]
     extends GenericSPARQLformProcessing[Rdf, DATASET] {
   import ops._
-  val query: String =
+  private val query: String =
     """|${declarePrefix("owl")}
        |CONTRUCT{
        | ?O ?PP ?OO .
@@ -22,9 +22,9 @@ trait OWLsameAsFormProcessing[Rdf <: RDF, DATASET]
        |    } UNION
        |      ?S owl:sameAs <subject> .
        |      ?S ?PPP ?OOO .
-       |    }""".stripMargin.stripMargin
+       |    }""".stripMargin
 
-  override def step(formSyntax: FormSyntax): FormSyntax = {
+  def addOWLsameAs(formSyntax: FormSyntax): FormSyntax = {
     val subject = nodeToString(formSyntax.subject)
     val query2 = query.replaceAll("<subject>", subject)
 

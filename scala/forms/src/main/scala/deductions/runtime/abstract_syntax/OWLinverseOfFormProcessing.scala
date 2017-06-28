@@ -10,12 +10,12 @@ import org.w3.banana.RDF
 trait OWLinverseOfFormProcessing[Rdf <: RDF, DATASET]
     extends GenericSPARQLformProcessing[Rdf, DATASET] {
   import ops._
-  val query: String =
+  private val query: String =
     """|CONTRUCT{ ?S ?P ?O}
   |WHERE GRAPH {
-  |?GR { ?S ?P ?O} } LIMIT 22""".stripMargin.stripMargin
+  |?GR { ?S ?P ?O} } LIMIT 22""".stripMargin
 
-  override def step(formSyntax: FormSyntax): FormSyntax = {
+  def addOWLinverseOf(formSyntax: FormSyntax): FormSyntax = {
     val subject = nodeToString(formSyntax.subject)
 
     for (

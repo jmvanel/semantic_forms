@@ -88,6 +88,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     with RDFPrefixes[Rdf]
     with UniqueFieldID[Rdf]
     with UserTraceability[Rdf, DATASET]
+    with OWLsameAsFormProcessing[Rdf, DATASET]
     with Timer {
 
   val config: Configuration
@@ -120,7 +121,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   : FormSyntax = {
 
     val step1 = computePropertiesList(subject, editable, formuri)
-    createFormDetailed2( step1, formGroup )
+    val step2 = addOWLsameAs(step1)
+    // TODO val step3 = addOWLinverseOf(step2)   
+    createFormDetailed2( step2, formGroup )
   }
 
   private [abstract_syntax] def addRDFSLabelComment(propertiesList: Seq[Rdf#Node]): Seq[Rdf#Node] = {
