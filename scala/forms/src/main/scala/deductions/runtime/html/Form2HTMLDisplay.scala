@@ -43,28 +43,25 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
 
     // TODO Text("\n") should be within specific val's
-    hyperlinkToField(resourceEntry, value.toString) ++
+    hyperlinkToField(resourceEntry) ++
       //hyperlinkToObjectURI ++ Text("\n") ++
-      hyperlinkToObjectURI(hrefDisplayPrefix, objectURIstringValue, valueLabel, type_, resourceEntry) ++
+      hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue, valueLabel, type_, resourceEntry) ++
       backLinkButton (objectURIstringValue, label, value) ++
       normalNavigationButton(objectURIstringValue, value) ++
       makeDrawGraphLink(objectURIstringValue) ++
-      //      makeDrawGraphLink(objectURIstringValue,
-      //          toolURLprefix=
-      //            s"https://scenaristeur.github.io/graphe/?endpoint=${request.localSparqlEndpoint}" +
-      //            s"&sujet=",
-      //            toolname="scenaristeur/graphe"
-      //            ,
-      //            imgWidth=6
-      //          ) ++ Text("\n") ++
-      thumbnail_(resourceEntry, isImage, value, valueLabel) ++
+      displayThumbnail(resourceEntry) ++
       {makeUserInfoOnTriples(resourceEntry.metadata,resourceEntry.timeMetadata)}
   }
 
-  def hyperlinkToField(resourceEntry: formMod#ResourceEntry, objectURIstringValue: String) = {
+  /** hyperlink To RDF property */
+  def hyperlinkToField(resourceEntry: formMod#ResourceEntry
+//      , objectURIstringValue: String
+      ) = {
     val id = urlEncode(resourceEntry.property).replace("%", "-")
     /*  ID and NAME tokens must begin with a letter ([A-Za-z]) and may be followed by any number of letters,
      *  digits ([0-9]), hyphens ("-"), underscores ("_"), colons (":"), and periods ("."). */
+
+    val objectURIstringValue = resourceEntry.value.toString()
     if( objectURIstringValue != "" ) {
       <a href={ "#" + id } draggable="true">
         <i class="glyphicon glyphicon-link"></i>
@@ -73,7 +70,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     } else NodeSeq.Empty
   }
 
-  def hyperlinkToObjectURI(hrefPrefix: String, objectURIstringValue: String, valueLabel: String, type_ : NODE, resourceEntry: formMod#ResourceEntry) = {
+  def hyperlinkToURI(hrefPrefix: String, objectURIstringValue: String, valueLabel: String, type_ : NODE, resourceEntry: formMod#ResourceEntry) = {
     addTripleAttributesToXMLElement(
       <a href={createHyperlinkString(hrefPrefix, objectURIstringValue)} class={cssForURI(objectURIstringValue)} title=
       {s"""Value ${if (objectURIstringValue != valueLabel) objectURIstringValue else ""}
@@ -99,19 +96,15 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     } else NodeSeq.Empty)
   }
 
-
-  def thumbnail_(resourceEntry: formMod#ResourceEntry, isImage: Boolean, value: NODE, valueLabel: String) = {
-    {
-      val thumbnail = resourceEntry.thumbnail
-      val imageURL = if (isImage) Some(value)
-      else thumbnail
-      if (isImage || thumbnail.isDefined) {
-        <a class="image-popup-vertical-fit" href={imageURL.get.toString()} title={s"Image of $valueLabel: ${value.toString()}"}>
-          <img src={imageURL.get.toString()} css="sf-thumbnail" height="40" alt={s"Image of $valueLabel: ${value.toString()}"}/>
-        </a>
-      }
-      else NodeSeq.Empty
-    }
+  private def displayThumbnail(resourceEntry: formMod#ResourceEntry): NodeSeq = {
+    import resourceEntry._
+    val imageURL = if (isImage) Some(value)
+    else thumbnail
+    if (isImage || thumbnail.isDefined) {
+      <a class="image-popup-vertical-fit" href={ imageURL.get.toString() } title={ s"Image of $valueLabel: ${value.toString()}" }>
+        <img src={ imageURL.get.toString() } css="sf-thumbnail" height="40" alt={ s"Image of $valueLabel: ${value.toString()}" }/>
+      </a>
+    } else NodeSeq.Empty
   }
 
 

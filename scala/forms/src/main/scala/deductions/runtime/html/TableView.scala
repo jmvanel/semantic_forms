@@ -54,7 +54,7 @@ with FormModule[NODE, URI] {
           <td>{
             val entry = rowsMap(row)
             //  reuse hyperlinkToObjectURI in Form2HTMLDisplay
-            hyperlinkToObjectURI(config.hrefDisplayPrefix, entry.subject.toString() /*objectURIstringValue*/,
+            hyperlinkToURI(config.hrefDisplayPrefix, entry.subject.toString() /*objectURIstringValue*/,
                 entry.subjectLabel, // valueLabel,
                 nullURI, // type_ : NODE,
 //                entry)
