@@ -1,14 +1,13 @@
 package deductions.runtime.abstract_syntax
 
 import org.w3.banana.RDF
-
-import deductions.runtime.services.SPARQLHelpers
+import deductions.runtime.dataset.RDFStoreLocalProvider
 
 /**
  * populate Fields in form by inferencing from RDF Lists
  */
 trait RDFListInference[Rdf <: RDF, DATASET]
-    extends SPARQLHelpers[Rdf, DATASET]
+    extends RDFStoreLocalProvider[Rdf, DATASET]
     with FormModule[Rdf#Node, Rdf#URI]
     with PreferredLanguageLiteral[Rdf]
     with InstanceLabelsInference2[Rdf] {

@@ -2,10 +2,15 @@ package deductions.runtime.abstract_syntax
 
 import org.w3.banana.RDF
 
-import deductions.runtime.services.SPARQLHelpers
+import deductions.runtime.utils.RDFHelpers
+import deductions.runtime.utils.RDFPrefixes
+import deductions.runtime.dataset.RDFStoreLocalProvider
 
 trait ThumbnailInference[Rdf <: RDF, DATASET]
-    extends SPARQLHelpers[Rdf, DATASET]
+//    SPARQLHelpers[Rdf, DATASET]
+    extends RDFStoreLocalProvider[Rdf, DATASET]
+    with RDFHelpers[Rdf]
+  	with RDFPrefixes[Rdf]
     with FormModule[Rdf#Node, Rdf#URI] {
 
   import ops._

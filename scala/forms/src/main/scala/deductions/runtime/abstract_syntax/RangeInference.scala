@@ -16,7 +16,6 @@ import org.w3.banana.SparqlEngine
 import org.w3.banana.SparqlOps
 
 import deductions.runtime.dataset.RDFOPerationsDB
-import deductions.runtime.services.SPARQLHelpers
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.utils.Timer
 
@@ -28,10 +27,8 @@ trait RangeInference[Rdf <: RDF, DATASET]
     extends RDFOPerationsDB[Rdf, DATASET]
     with RDFHelpers[Rdf]
     with InstanceLabelsInferenceMemory[Rdf, DATASET]
-//    with InstanceLabelsInference2[Rdf]
     with FormModule[Rdf#Node, Rdf#URI]
     with PossibleValues[Rdf]
-    with SPARQLHelpers[Rdf, DATASET]
     with Timer {
 
   implicit val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]
