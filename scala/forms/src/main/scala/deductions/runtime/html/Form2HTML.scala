@@ -213,7 +213,7 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
    * should not need to be overriden */
   def createHTMLField(field: formMod#Entry, editable: Boolean,
                               hrefPrefix: String = config.hrefDisplayPrefix, lang: String = "en",
-                              request: HTTPrequest = HTTPrequest())(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
+                              request: HTTPrequest = HTTPrequest(), displayInTable: Boolean = false)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
 
     val editableByUser = if (!field.metadata.isEmpty){
        field.metadata == request.cookies.get("PLAY_SESSION").get.value.split("=")(1)
@@ -256,10 +256,19 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
 
       case _ => <p>Should not happen! createHTMLField({ field })</p>
     }
+    if (displayInTable == true) {
+      Seq(createAddRemoveWidgets(field, editable)) ++
+      {xmlField}
+    }
+    else {
 
-    Seq(createAddRemoveWidgets(field, editable)) ++
-    // Jeremy M recommended img-rounded from Bootstrap, but not effect
-    <div class="sf-value-block col-xs-12 col-sm-9 col-md-9">{ xmlField } </div>
+      Seq(createAddRemoveWidgets(field, editable)) ++
+        // Jeremy M recommended img-rounded from Bootstrap, but not effect
+        <div class="sf-value-block col-xs-12 col-sm-9 col-md-9">
+          {xmlField}
+        </div>
+
+    }
   }
 
   /** make Field Data (display) Or Input (edit)
