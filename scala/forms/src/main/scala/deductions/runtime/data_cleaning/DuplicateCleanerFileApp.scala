@@ -40,7 +40,7 @@ object DuplicateCleanerFileApp extends {
 
   def duplicateCleanerFileApp() = {
     possiblyDeleteDatabaseLocation()
-    val args2 = args.map { new File(_).getCanonicalPath }
+    val args2 = args.map { new File(_).getAbsolutePath }
     val classURI = ops.URI(args(0))
     println(s"classURI $classURI")
     val files = loadFilesFromArgs(args2)

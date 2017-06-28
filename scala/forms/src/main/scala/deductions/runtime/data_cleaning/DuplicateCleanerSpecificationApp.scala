@@ -54,7 +54,7 @@ object DuplicateCleanerSpecificationApp extends {
   def duplicateCleanerSpecificationApp() = {
     possiblyDeleteDatabaseLocation()
     println( "args" + args.mkString(", ") )
-    val args2 = args.map { new File(_).getCanonicalPath }
+    val args2 = args.map { new File(_).getAbsolutePath }
 
     loadFilesFromArgs(args2)
 

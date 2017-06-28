@@ -461,7 +461,9 @@ type MergeGroups = Seq[MergeGroup]
    * includes transaction;
    * @return quads of duplicate URI's
    */
-  private def copyPropertyValuePairs(uriTokeep: Rdf#Node, duplicateURIs: Seq[Rdf#Node]) = {
+  private def copyPropertyValuePairs(uriTokeep: Rdf#Node, duplicateURIs: Seq[Rdf#Node]):
+	  Seq[(Rdf#Triple, Rdf#URI)] = {
+
     rdfStore.rw(dataset, {
       val duplicateQuads = for (duplicateURI <- duplicateURIs) yield {
         /* SPARQL query to get the original graph name */
@@ -584,11 +586,12 @@ type MergeGroups = Seq[MergeGroup]
       })
       files
     }
-  
-  /* TODO move to global utility, and use Jena utility */
+
+  /* use Jena utility RIResolver.resolveFileURL()
+   * TODO move to global utility */
   def uriFromFile(filename: String) =
-             org.apache.jena.riot.system.IRIResolver.resolveFileURL(filename)
-  //    new File(file).toURI().toASCIIString()
+    org.apache.jena.riot.system.IRIResolver.resolveFileURL(
+      new File(filename).getCanonicalPath)
 
   /** output modified data (actually all triples in TDB) in /tmp */
   def outputModifiedTurtle(file: String, outputDir: String = "/tmp", suffix: String = "") = {
