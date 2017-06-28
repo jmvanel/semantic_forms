@@ -22,7 +22,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
   private[html] def createHTMLiteralReadonlyField(l: formMod#LiteralEntry): NodeSeq =
     <xml:group>
-      { Unparsed(toPlainString(l.value)) }{makeUserInfoOnTriples(l.metadata,l.timeMetadata)}
+      { Unparsed(toPlainString(l.value)) }{makeUserInfoOnTriples(l)}
       <div>{ if (l.lang != "" && l.lang != "No_language") " > " + l.lang }</div>
     </xml:group>
 
@@ -41,15 +41,14 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     val css = cssForURI(objectURIstringValue)
 
 
-    // TODO Text("\n") should be within specific val's
-    hyperlinkToField(resourceEntry) ++
-      //hyperlinkToObjectURI ++ Text("\n") ++
+
+      hyperlinkToField(resourceEntry) ++
       hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue, valueLabel, type_, resourceEntry) ++
       backLinkButton (resourceEntry) ++
       normalNavigationButton(resourceEntry) ++
       makeDrawGraphLink(objectURIstringValue) ++
       displayThumbnail(resourceEntry) ++
-      {makeUserInfoOnTriples(resourceEntry.metadata,resourceEntry.timeMetadata)}
+      {makeUserInfoOnTriples(resourceEntry)}
   }
 
   /** hyperlink To RDF property */
@@ -111,8 +110,9 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
   }
 
 
-  private def makeUserInfoOnTriples(userMetadata: String,timeMetadata: Long) ={
-
+  private def makeUserInfoOnTriples(resourceEntry: formMod#Entry) ={
+    val userMetadata = resourceEntry.metadata
+    val timeMetadata = resourceEntry.timeMetadata
     val time :String = new DateTime(timeMetadata).toDateTime.toString("dd/MM/yyyy HH:mm")
     if (timeMetadata != -1){
       <p>
@@ -128,6 +128,6 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString, true) }>{
       r.valueLabel
       }</a> ++
-      {makeUserInfoOnTriples(r.metadata,r.timeMetadata)}
+      {makeUserInfoOnTriples(r)}
 
 }
