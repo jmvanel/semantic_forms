@@ -19,7 +19,10 @@ trait ThumbnailInference[Rdf <: RDF, DATASET]
     foaf("thumbnail"),
     foaf("img"),
     dbo("thumbnail"),
-    foaf("depiction"))
+    foaf("depiction"),
+    wikidata("P18"),
+    URI("http://www.wikidata.org/prop/direct/P18")
+  )
 
   def isImageTriple(subject: Rdf#Node, property: Rdf#Node, objet: Rdf#Node, objetType: Rdf#Node): Boolean =
     objetType == foaf("Image") ||

@@ -30,7 +30,8 @@ import org.w3.banana._
   private val prefixAV = "http://www.virtual-assembly.org/ontologies/1.0/pair#"
 
   lazy val rdfs = RDFSPrefix[Rdf]
-  
+  lazy val wikidata =  Prefix[Rdf]("wikidata", "http://www.wikidata.org/entity/")
+
   // TODO remove private
   private lazy val rdf = RDFPrefix[Rdf]
   private lazy val xsd = XSDPrefix[Rdf]
@@ -75,7 +76,6 @@ import org.w3.banana._
     form,   // form vocabulary
 
     Prefix[Rdf]("pair", prefixAV ),
-
     restruc,
     tasks,
     Prefix[Rdf]("", "http://data.onisep.fr/ontologies/" ),
@@ -90,6 +90,9 @@ import org.w3.banana._
     // prefixes for resources
 
     Prefix[Rdf]("dbpedia", "http://dbpedia.org/resource/"),
+    wikidata,
+    Prefix[Rdf]("wd",       "http://www.wikidata.org/entity/"),
+
     text // Jena text search
     )
 
