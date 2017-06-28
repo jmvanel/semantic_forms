@@ -52,8 +52,17 @@ with FormModule[NODE, URI] {
         for (row <- rows.list) yield {
           <tr>
           <td>{
-        	  // TODO extract and reuse hyperlinkToObjectURI in Form2HTMLDisplay
-            rowsMap(row).subjectLabel }<br/>{ row }</td>
+            val entry = rowsMap(row)
+            //  reuse hyperlinkToObjectURI in Form2HTMLDisplay
+            hyperlinkToObjectURI(config.hrefDisplayPrefix, entry.subject.toString() /*objectURIstringValue*/,
+                entry.subjectLabel, // valueLabel,
+                nullURI, // type_ : NODE,
+//                entry)
+                NullResourceEntry)
+            // rowsMap(row).subjectLabel
+            // <br/>{ row }
+            }
+            </td>
           {
             for (property <- properties.list) yield {
               Seq(

@@ -150,11 +150,13 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
   /** add data- HTML5 Attributes corresponding to triple To XML Element */
   def addTripleAttributesToXMLElement(elem: Elem, entry: FormEntry): Elem = {
     import entry._
+    if( entry .property != null )
     addAttributesToXMLElement(elem, Map(
       "data-rdf-subject" -> subject.toString(),
       "data-rdf-property" -> property.toString(),
       "data-rdf-object" -> value.toString(),
       "data-rdf-type" -> type_.toString()))
+      else elem
   }
 
   /** add Attributes To XML Element - Note could be reused */
