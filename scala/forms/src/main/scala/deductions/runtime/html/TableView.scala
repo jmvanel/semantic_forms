@@ -71,7 +71,7 @@ with FormModule[NODE, URI] {
                   val cellOption = cellsMap.get((row, property))
                   cellOption match {
                     case Some(entry) =>
-                      createHTMLField(entry, editable = false)(nullFormSyntax)
+                      createHTMLField(entry, editable = false, displayInTable = true)(nullFormSyntax)
                     case _=> ""
                   }
                 }</td>)

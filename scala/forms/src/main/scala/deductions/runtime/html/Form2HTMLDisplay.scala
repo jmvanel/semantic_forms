@@ -22,8 +22,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
   private[html] def createHTMLiteralReadonlyField(l: formMod#LiteralEntry): NodeSeq =
     <xml:group>
-      <div class={css.cssClasses.formDivInputCSSClass}>{ Unparsed(toPlainString(l.value)) }{makeUserInfoOnTriples(l.metadata,l.timeMetadata)}</div>
-
+      { Unparsed(toPlainString(l.value)) }{makeUserInfoOnTriples(l.metadata,l.timeMetadata)}
       <div>{ if (l.lang != "" && l.lang != "No_language") " > " + l.lang }</div>
     </xml:group>
 
