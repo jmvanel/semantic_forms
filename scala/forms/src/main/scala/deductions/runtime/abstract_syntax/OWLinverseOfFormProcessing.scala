@@ -1,24 +1,23 @@
 package deductions.runtime.abstract_syntax
 
 import org.w3.banana.RDF
-import deductions.runtime.services.SPARQLHelpers
 
-/** a step in Form generation */
-trait GenericFormProcessing[Rdf <: RDF]
-    extends FormModule[Rdf#Node, Rdf#URI] {
-  def step(formSyntax: FormSyntax): FormSyntax
-}
-
-/** starting point for implementing a step in Form generation  */
-trait GenericSPARQLformProcessing[Rdf <: RDF, DATASET]
-    extends GenericFormProcessing[Rdf]
-    with SPARQLHelpers[Rdf, DATASET] {
-
-  val query: String // ="""CONTRUCT{ ?S ?P ?O} WHERE GRAPH { ?GR { ?S ?P ?O} } LIMIT 22""" 
-
+/**
+ * Automatically show inferred values from
+ *  owl:inverseOf axioms
+ *  see https://www.w3.org/TR/2004/REC-owl-guide-20040210/#inverseOf
+ */
+trait OWLinverseOfFormProcessing[Rdf <: RDF, DATASET]
+    extends GenericSPARQLformProcessing[Rdf, DATASET] {
   import ops._
+  val query: String =
+    """|CONTRUCT{ ?S ?P ?O}
+  |WHERE GRAPH {
+  |?GR { ?S ?P ?O} } LIMIT 22""".stripMargin.stripMargin
 
-  def step(formSyntax: FormSyntax): FormSyntax = {
+  override def step(formSyntax: FormSyntax): FormSyntax = {
+    val subject = nodeToString(formSyntax.subject)
+
     for (
       graph <- sparqlConstructQueryGraph(query);
       tr <- getTriples(graph)
@@ -42,7 +41,6 @@ trait GenericSPARQLformProcessing[Rdf <: RDF, DATASET]
         htmlName = "",
         metadata = "",
         timeMetadata = -1)
-
       formSyntax.fields = formSyntax.fields :+ entry
     }
     formSyntax
