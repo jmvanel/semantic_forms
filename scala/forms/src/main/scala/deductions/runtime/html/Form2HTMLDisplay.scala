@@ -89,7 +89,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
   def normalNavigationButton(objectURIstringValue: String, value: NODE) = {
     (if (objectURIstringValue.size > 0 && showExpertButtons) {
-      <a class="btn btn-primary" href={objectURIstringValue} title={s"Normal HTTP link to $value"}
+      <a class="btn btn-primary btn-xs" href={objectURIstringValue} title={s"Normal HTTP link to $value"}
          draggable="true">
         <i class="glyphicon glyphicon-share-alt"></i>
       </a>

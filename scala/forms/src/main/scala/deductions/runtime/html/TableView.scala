@@ -36,7 +36,8 @@ with FormModule[NODE, URI] {
       rowsMap(entry.subject) = entry
     }
 
-    <table>
+
+    <table class="table table-striped table-bordered">
       <tr>
         <th>URI</th>
         {
