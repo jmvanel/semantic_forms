@@ -63,9 +63,8 @@ trait FormHeader[Rdf <: RDF, DATASET]
 
       <div class="row">
         <div class="col-xs-12">
-          <h3>
+          <h3 id="subject">
             { formSyntax.title
-            //      labelForURI(uri, lang)
             }
             <strong>
               { linkToShow }
