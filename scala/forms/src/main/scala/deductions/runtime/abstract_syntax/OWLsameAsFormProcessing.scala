@@ -19,15 +19,21 @@ trait OWLsameAsFormProcessing[Rdf <: RDF, DATASET]
        | ?S ?PPP ?OOO .
        |}
        |WHERE {
-       | GRAPH ?GR {
-       |    { <subject> owl:sameAs ?O .
+       | {
+       |   GRAPH ?GR_ORIG {
+       |     <subject> owl:sameAs ?O .
+       |   }
+       |   GRAPH ?GR_SAMEAS {
        |      ?O ?PP ?OO .
-       |    } UNION {
+       |   }
+       | } UNION {
+       |   # TODO GRAPH ?GR_ORIG2 ... ?GR_SAMEAS2
        |      ?S owl:sameAs <subject> .
        |      ?S ?PPP ?OOO .
-       |    }
-       |   } }
-       |    """.stripMargin
+       | }
+       | FILTER ( ?GR_SAMEAS != <subject> )
+       |}
+       |""".stripMargin
 
   def addOWLsameAs(formSyntax: FormSyntax): FormSyntax = {
     val subject = "<" + nodeToString(formSyntax.subject) + ">"
@@ -39,6 +45,7 @@ trait OWLsameAsFormProcessing[Rdf <: RDF, DATASET]
       _ = println(s"OWLsameAsFormProcessing: After sparqlConstructQueryGraph graph size ${graph.size}") ;
       tr <- getTriples(graph)
     ) {
+    	println(s"OWLsameAsFormProcessing: loop ${tr}") ;
       val entry = ResourceEntry(
         "label",
         "comment",
