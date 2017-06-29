@@ -1,6 +1,7 @@
 package deductions.runtime.abstract_syntax
 
 import org.w3.banana.RDF
+import org.w3.banana.OWLPrefix
 
 /**
  * Automatically show inferred values from
@@ -9,27 +10,32 @@ import org.w3.banana.RDF
 trait OWLsameAsFormProcessing[Rdf <: RDF, DATASET]
     extends GenericSPARQLformProcessing[Rdf, DATASET] {
   import ops._
+  private val owl = OWLPrefix[Rdf]
+
   private val query: String =
-    """|${declarePrefix("owl")}
-       |CONTRUCT{
+    s"""|${declarePrefix(owl)}
+       |CONSTRUCT{
        | ?O ?PP ?OO .
        | ?S ?PPP ?OOO .
        |}
-       |WHERE GRAPH {
-       | ?GR {
+       |WHERE {
+       | GRAPH ?GR {
        |    { <subject> owl:sameAs ?O .
        |      ?O ?PP ?OO .
-       |    } UNION
+       |    } UNION {
        |      ?S owl:sameAs <subject> .
        |      ?S ?PPP ?OOO .
-       |    }""".stripMargin
+       |    }
+       |   } }
+       |    """.stripMargin
 
   def addOWLsameAs(formSyntax: FormSyntax): FormSyntax = {
-    val subject = nodeToString(formSyntax.subject)
+    val subject = "<" + nodeToString(formSyntax.subject) + ">"
     val query2 = query.replaceAll("<subject>", subject)
 
     for (
-      graph <- sparqlConstructQueryGraph(query2);
+//      graph <- sparqlConstructQueryGraph(query2);
+        graph <-  sparqlConstructQuery(query2);
       _ = println(s"OWLsameAsFormProcessing: After sparqlConstructQueryGraph graph size ${graph.size}") ;
       tr <- getTriples(graph)
     ) {
