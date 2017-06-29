@@ -19,6 +19,7 @@ import org.apache.commons.codec.digest.DigestUtils
 import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.utils.HTTPrequest
 import org.w3.banana.binder.FromURI
+import deductions.runtime.utils.Cookie
 
 /** Abstract Form Syntax to HTML;
  * different modes: display or edit;
@@ -216,7 +217,10 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
                               request: HTTPrequest = HTTPrequest(), displayInTable: Boolean = false)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
 
     val editableByUser = if (!field.metadata.isEmpty){
-       field.metadata == request.cookies.get("PLAY_SESSION").get.value.split("=")(1)
+      val cookie = request.cookies.getOrElse("PLAY_SESSION", Cookie("",""))
+      // KO: field.metadata == request.cookies.get("PLAY_SESSION").get.value.split("=")(1)
+      // OK:
+      field.metadata == cookie.value.split("=")(1)
     }
     else  true
 
