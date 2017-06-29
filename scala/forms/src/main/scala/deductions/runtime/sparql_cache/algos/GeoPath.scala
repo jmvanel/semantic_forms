@@ -113,13 +113,15 @@ trait GeoPath[Rdf <: RDF, DATASET]
         val end = day._2
         val dist = getPathLengthForMobileInterval(mobile, begin, end, graph)
         if (dist > 0) {
-          val subject = URI(makeURI("TravelStatistic:", nodeToString(mobile), day._1, day._2))
+          val subject = URI(makeURI("TravelStatistic:", nodeToString(mobile), begin, end))
           (
             subject
             -- rdf.typ ->- geoloc("TravelStatistic")
             -- geoloc("begin") ->- Literal(begin, xsd.dateTime)
             -- geoloc("end") ->- Literal(end, xsd.dateTime)
-            -- geoloc("distance") ->- Literal(dist.toString(), xsd.float)).graph.triples
+            -- geoloc("distance") ->- Literal(dist.toString(), xsd.float)
+            -- geoloc("mobile") ->- mobile
+          ).graph.triples
         } else List()
       }
     }
