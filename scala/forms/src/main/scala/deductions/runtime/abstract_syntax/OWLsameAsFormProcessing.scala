@@ -40,32 +40,67 @@ trait OWLsameAsFormProcessing[Rdf <: RDF, DATASET]
     val query2 = query.replaceAll("<subject>", subject)
 
     for (
-//      graph <- sparqlConstructQueryGraph(query2);
-        graph <-  sparqlConstructQuery(query2);
-      _ = println(s"OWLsameAsFormProcessing: After sparqlConstructQueryGraph graph size ${graph.size}") ;
+      graph <- sparqlConstructQuery(query2);
+      _ = println(s"OWLsameAsFormProcessing: After sparqlConstructQueryGraph graph size ${graph.size}");
       tr <- getTriples(graph)
     ) {
-    	println(s"OWLsameAsFormProcessing: loop ${tr}") ;
-      val entry = ResourceEntry(
-        "label",
-        "comment",
-        property = tr.predicate,
-        value = tr.objectt,
-        valueLabel = "",
-        type_ = nullURI,
-        inverseTriple = false,
-        subject = tr.subject,
-        subjectLabel = "",
-        mandatory = false,
-        openChoice = true,
-        widgetType = URIWidget,
-        cardinality = zeroOrMore,
-        isImage = false,
-        thumbnail = None,
-        htmlName = "",
-        metadata = "",
-        timeMetadata = -1)
-      formSyntax.fields = formSyntax.fields :+ entry
+      //    	println(s"OWLsameAsFormProcessing: loop ${tr}") ;
+      val entry =
+        foldNode(tr.objectt)(
+          uri =>
+            ResourceEntry(
+              "" + tr.predicate,
+              "comment",
+              property = tr.predicate,
+              value = tr.objectt,
+              valueLabel = "" + tr.objectt,
+              type_ = nullURI,
+              inverseTriple = false,
+              subject = tr.subject,
+              subjectLabel = "" + tr.subject,
+              mandatory = false,
+              openChoice = true,
+              widgetType = URIWidget,
+              cardinality = zeroOrMore,
+              isImage = false,
+              thumbnail = None,
+              htmlName = "",
+              metadata = "",
+              timeMetadata = -1),
+
+          bn => BlankNodeEntry(
+            "" + tr.predicate,
+            "comment",
+            property = tr.predicate,
+            value = tr.objectt,
+            valueLabel = "" + tr.objectt,
+            type_ = nullURI,
+            subject = tr.subject,
+            subjectLabel = "" + tr.subject,
+            mandatory = false,
+            openChoice = true,
+            widgetType = URIWidget,
+            cardinality = zeroOrMore,
+            isImage = false,
+            thumbnail = None,
+            htmlName = ""),
+
+          lit => LiteralEntry(
+            "" + tr.predicate,
+            "comment",
+            property = tr.predicate,
+            value = tr.objectt,
+            valueLabel = "" + tr.objectt,
+            type_ = nullURI,
+            subject = tr.subject,
+            subjectLabel = "" + tr.subject,
+            mandatory = false,
+            openChoice = true,
+            widgetType = URIWidget,
+            cardinality = zeroOrMore,
+            htmlName = ""))
+
+        formSyntax.fields = formSyntax.fields :+ entry
     }
     formSyntax
   }

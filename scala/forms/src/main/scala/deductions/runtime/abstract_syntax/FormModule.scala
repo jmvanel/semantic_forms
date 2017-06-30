@@ -73,6 +73,7 @@ trait FormModule[NODE, URI <: NODE] {
     /** TODO <<<<<<<<<< comes from a refactor */
     def propertiesList: Seq[NODE] = {
       entriesList . map ( _.property )
+//      fields . map ( _.property ) // TODO <<<<<<<<<
     }
     
     /** Map from property to possible Values  */
