@@ -29,19 +29,19 @@ trait RDFListInference[Rdf <: RDF, DATASET]
 
     val graph = allNamedGraph
 //    val nodesList = getRDFList(makeTurtleTerm(value)): List[Rdf#Node]
-    val nodesList = nodeSeqToURISeq(rdfListToSeq(Some(value))(allNamedGraph))
+    val nodesListForRDFList = nodeSeqToURISeq(rdfListToSeq(Some(value))(allNamedGraph))
 
-    println(s"makeRDFListEntry list $nodesList")
-    val entriesList: Seq[Entry] = nodesList . map {
+    println(s"makeRDFListEntry list $nodesListForRDFList")
+    val entriesListForRDFList: Seq[Entry] = nodesListForRDFList . map {
       node => ops.foldNode(node)(
           uri => ResourceEntry(value=uri, valueLabel=makeInstanceLabel(node, graph, "en")),
           bn => BlankNodeEntry(value=bn, valueLabel=makeInstanceLabel(node, graph, "en")),
           lit => LiteralEntry(value=lit)
       )
     }
-    val list = FormSyntax(nullURI, entriesList)
+    val list = FormSyntax(nullURI, entriesListForRDFList)
 
-    nodesList match {
+    nodesListForRDFList match {
       case l if !l.isEmpty => Some(RDFListEntry(
         label: String, comment: String,
         property: ObjectProperty,
