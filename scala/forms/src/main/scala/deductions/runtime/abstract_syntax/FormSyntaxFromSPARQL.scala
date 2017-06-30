@@ -52,7 +52,7 @@ trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
 
   }
 
-  private def createFormFromTriples(
+  def createFormFromTriples(
     triples: Seq[Rdf#Triple],
     editable: Boolean = false,
     formuri: String = "")(implicit graph: Rdf#Graph, lang:String): FormSyntax = {
