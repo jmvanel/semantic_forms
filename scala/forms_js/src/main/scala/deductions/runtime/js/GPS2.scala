@@ -39,6 +39,6 @@ object GPS2 extends GPS {
     geo.watchPosition( fillCoords _, onError _)
   }
 
-  def onError(p: PositionError) = println("geoLocation: Error")
+  def onError(p: PositionError) = println(s"geoLocation: Error $p")
 
 }
