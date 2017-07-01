@@ -2,12 +2,22 @@
 
 PASSADMIN=gott-ueber-alles
 
+if [ -z "$1" ]; then
+    echo rupdate.sh QUERY SERVER
+    exit 1
+fi
 QUERY=$1
-SERVER=http://localhost:9000
-SERVER=$2
-# TODO default value for arg. 2
+# default value for arg. 2
+if [ -z "$2" ]; then
+    SERVER=http://localhost:9000
+    echo "default value for server: $SERVER"
+else
+    SERVER=$2
+    echo "server: $SERVER"
+fi
 
-echo "Remove graph <$GRAPH> on SPARQL server $SERVER"
+
+echo "Processing update \"$QUERY\" on SPARQL server <$SERVER>"
 
 wget --keep-session-cookies --save-cookies cookies.txt \
     --post-data "userid=admin&password=$PASSADMIN&confirmPassword=$PASSADMIN" \
@@ -21,7 +31,7 @@ wget --save-headers \
 	--body-data="query=$QUERY" \
 	$SERVER/update
 
-echo "SPARQL database <$SERVER> : Removed (Enlevé) graph <$GRAPH> ; RETURN_CODE: $?"
+echo "SPARQL database <$SERVER> : processed update \"$QUERY\" ; RETURN_CODE: $?"
 echo result: ; cat update
 rm update
 echo

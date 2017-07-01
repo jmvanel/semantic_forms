@@ -176,24 +176,25 @@ framework</b></h2>
 <a href="http://stackoverflow.com/questions/38339977/how-to-configure-a-play-application-to-use-lets-encrypt-certificate" target="_blank">http://stackoverflow.com/questlets-encrypt-certificate</a></p>
 <p style="margin-bottom: 0cm">Créer le fichier p12 :<br/>
 <br/>
-<font face="monospace, monospace">sudo
-/bin/bash -c &quot;cd /etc/letsencrypt/live/<a href="http://www.semantic-forms.cc/" target="_blank">www.sema</a>
-; openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out
-cert_and_key.p12 -CAfile chain.pem -caname root -passout
-pass:junior_wells&quot;<br/>
-</font><br/>
-ça produit dans ce
-répertoire: cert_and_key.p12<br/>
+<pre style="font-size: large ">
+sudo /bin/bash -c \
+  &quot;cd /etc/letsencrypt/live/www.semantic-forms.cc ; \
+  openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem \
+    -out cert_and_key.p12 -CAfile chain.pem \
+    -caname root -passout pass:$ENSCRIPT_PW&quot;<br/>
+</pre>
 <br/>
-<font face="monospace, monospace">sudo
-/bin/bash -c &quot;cd
-/etc/letsencrypt/live/</font><a href="http://www.semantic-forms.cc/" target="_blank"><font face="monospace, monospace">http://www.semantic-forms.cc/</font></a><font face="monospace, monospace">
-; </font><font face="monospace, monospace">\</font></p>
-<p style="margin-bottom: 0cm">               <font face="monospace, monospace">keytool
--importkeystore -srcstorepass junior_wells -destkeystore </font><font face="monospace, monospace">\</font></p>
-<p style="margin-bottom: 0cm">               <font face="monospace, monospace">keyStore.jks
--srckeystore cert_and_key.p12 -srcstoretype PKCS12 -storepass
-</font><font face="monospace, monospace"><b>junior_wells</b></font><font face="monospace, monospace">&quot;<br/>
+ça produit dans ce répertoire: cert_and_key.p12<br/>
+<br/>
+
+<pre style="font-size: large ">
+sudo /bin/bash -c &quot;cd /etc/letsencrypt/live/www.semantic-forms.cc ; \
+  keytool -importkeystore -srcstorepass $ENSCRIPT_PW -destkeystore \
+    keyStore.jks -srckeystore cert_and_key.p12 -srcstoretype PKCS12 \
+    -storepass $ENSCRIPT_PW &quot;
+</pre>
+
+<br/>
 [sudo]
 password for jmv: <br/>
 Entry for alias 1 successfully
@@ -217,7 +218,7 @@ cd
 bin/semantic_forms_play -Dhttp.port=8444 -Dhttps.port=8443 \</font></p>
 <p style="margin-bottom: 0cm"><font face="monospace, monospace">-Dplay.server.https.keyStore.path=/etc/letsencrypt/live/www.semantic-forms.cc/keyStore.jks
 \</font></p>
-<p style="margin-bottom: 0cm"><font face="monospace, monospace">-Dplay.server.https.keyStore.password=junior_wells
+<p style="margin-bottom: 0cm"><font face="monospace, monospace">-Dplay.server.https.keyStore.password=$ENSCRIPT_PW
 \</font></p>
 <p style="margin-bottom: 0cm"><font face="monospace, monospace">-Djdk.tls.ephemeralDHKeySize=2048
 -Djdk.tls.rejectClientInitiatedRenegotiation=true</font><font face="monospace, monospace"><br/>
