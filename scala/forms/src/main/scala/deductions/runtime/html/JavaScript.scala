@@ -36,8 +36,6 @@ trait JavaScript {
 
   // See https://github.com/sofish/pen
   lazy val localJS =
-    <script type="text/javascript" async="true" src="https://rawgit.com/sofish/pen/master/src/pen.js"></script> ++
-      <script type="text/javascript" async="true" src="https://rawgit.com/sofish/pen/master/src/markdown.js"></script> ++
       javascriptCodeScalaJS
 
 }
