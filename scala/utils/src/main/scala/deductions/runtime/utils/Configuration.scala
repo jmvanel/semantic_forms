@@ -50,7 +50,7 @@ trait Configuration {
   def showExpertButtons: Boolean
 
   /** inline Javascript In Form; overwise app. developer must put it in <head> */
-  def inlineJavascriptInForm: Boolean
+//  def inlineJavascriptInForm: Boolean
 
   /**
    * display Technical Semantic Web Details;

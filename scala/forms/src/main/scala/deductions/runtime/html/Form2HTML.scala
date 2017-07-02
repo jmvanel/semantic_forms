@@ -30,7 +30,8 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
     with Form2HTMLEdit[NODE, URI]
     with FormModule[NODE, URI]
     with Timer
-    with JavaScript {
+//    with JavaScript
+    {
   self: HTML5Types =>
 
   import config._
