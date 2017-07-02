@@ -1,5 +1,5 @@
 package views
- 
+
 import scala.io.Source
 import scala.xml.Elem
 import scala.xml.Node
@@ -15,8 +15,8 @@ trait MainXmlWithHead extends MainXml {
   private def add(e: Elem, c: Node): Elem = e.copy(child = e.child ++ c)
   private val basicHead =
     scala.xml.Unparsed(
-//    XML.loadString(
-    Source.fromURL(getClass.getResource("/deductions/runtime/html/head.html")).getLines().mkString("\n"))
+      // this way, head.html is in forms/ module, removing a dependency in forms_play/ module
+      Source.fromURL(getClass.getResource("/deductions/runtime/html/head.html")).getLines().mkString("\n"))
 
   /** HTML head */
   override def head(title: String = "")(implicit lang: String = "en"): NodeSeq = {
@@ -30,7 +30,6 @@ trait MainXmlWithHead extends MainXml {
             default
         }
       </title>
-//    add(basicHead.asInstanceOf[Elem], titleTag)
     basicHead ++ titleTag
   }
 

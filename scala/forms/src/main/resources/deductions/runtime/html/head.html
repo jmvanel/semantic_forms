@@ -40,6 +40,8 @@
     <link rel="stylesheet" href="assets/semantic-forms-theme/styles.css">
     <script src="assets/semantic-forms-theme/scripts.js"></script>
 
+    <script src="assets/javascripts/forms_js-fastopt.js" type="text/javascript"> </script>
+
     <script type='text/javascript'>
         $(document).ready( function (){
             $(".form-horizontal").tabs();
@@ -59,6 +61,16 @@
                 }
             });
         })
+    </script>
+
+    <script type='text/javascript'>
+        // Bootstraping Popup Editor & GPS //
+        deductions.runtime.js.PopupEditor().main();
+        function launchEditorWindow(input){
+          deductions.runtime.js.PopupEditor().launchEditorWindow(input); };
+
+        GPS2.listenToSubmitEventFillGeoCoordinates();
+        console.log('Called listenToSubmitEventFillGeoCoordinates');
     </script>
 
     <style type="text/css">
