@@ -37,7 +37,6 @@ import deductions.runtime.semlogs.LogAPI
 import deductions.runtime.utils.CSSClasses
 import deductions.runtime.data_cleaning.BlankNodeCleanerIncremental
 import scala.util.control.NonFatal
-import scala.util.control.NonFatal
 import deductions.runtime.sparql_cache.algos.StatisticsGraph
 import deductions.runtime.utils.HTTPrequest
 import deductions.runtime.views.Results
@@ -57,7 +56,7 @@ import deductions.runtime.jena.ImplementationSettings
  *	def formData(uri: String, blankNode: String = "", Edit: String = "", formuri: String = ""): String
  * 
  */
-trait ApplicationFacadeImpl[Rdf, DATASET]
+trait ApplicationFacadeImpl[RDF, DATASET]
     extends ImplementationSettings.RDFModule
     with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with TriplesViewWithTitle[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
@@ -81,9 +80,9 @@ trait ApplicationFacadeImpl[Rdf, DATASET]
     with DashboardHistoryUserActions[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with StatisticsGraph[ImplementationSettings.Rdf]
     with FormJSON[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-      with ToolsPage
-      with CSSClasses
-      with Results
+    with ToolsPage
+    with CSSClasses
+    with Results
     {
  
   val config: Configuration
@@ -95,7 +94,7 @@ trait ApplicationFacadeImpl[Rdf, DATASET]
   implicit val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]
 
   import ops._
-  
+
   // Members declared in org.w3.banana.JsonLDWriterModule
   implicit val jsonldExpandedWriter = new RDFWriter[Rdf, scala.util.Try, JsonLdExpanded] {
     override def write(graph: Rdf#Graph, os: OutputStream, base: String): Try[Unit] = ???
@@ -129,7 +128,7 @@ trait ApplicationFacadeImpl[Rdf, DATASET]
     res
   }
 
-  //    def displayURI2(uriSubject: String) //  : Enumerator[scala.xml.Elem] 
+  //    def displayURI2(uriSubject: String) //  : Enumerator[scala.xml.Elem]
   //    = {
   //      import ops._
   //      val graphFuture = RDFStoreObject.allNamedGraphsFuture
@@ -175,7 +174,7 @@ trait ApplicationFacadeImpl[Rdf, DATASET]
     val fut = showNamedGraphs(lang)
     wrapSearchResults(fut, q)
   }
-    
+
   def downloadAsString(url: String, mime: String="text/turtle"): String = {
     logger.info( s"download url $url mime $mime")
     val res = focusOnURI(url, mime)
