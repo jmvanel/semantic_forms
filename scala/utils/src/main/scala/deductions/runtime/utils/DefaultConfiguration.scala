@@ -61,7 +61,7 @@ trait DefaultConfiguration extends Configuration {
   override val showExpertButtons = true
   override val groupFields: Boolean = false //    true
 
-  override val inlineJavascriptInForm: Boolean = true
+//  override val inlineJavascriptInForm: Boolean = true
   override def displayTechnicalSemWebDetails: Boolean = true
 
   /** use Text indexing with Lucene or SOLR */

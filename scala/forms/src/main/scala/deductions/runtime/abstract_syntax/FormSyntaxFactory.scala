@@ -167,8 +167,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
     val formConfig = step1.formURI
     logger.info(
-//println(
-    s">>>> createFormDetailed2 formConfig <$formConfig> lang $lang")
+    s">>>> createFormDetailed2 fields size ${step1.fields.size}, formConfig <$formConfig> , lang $lang")
     
     // TODO make it functional #170
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
@@ -180,8 +179,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       val formMode: FormMode = if (step1.editable) EditionMode else DisplayMode
 
       logger.debug(
-//      println(
-          s"createForm subject <$subject>, classs <$classs>, props $props")
+          s"makeEntriesFromformSyntax subject <$subject>, classs <$classs>, props $props")
       logger.debug(
           s"""FormSyntaxFactory: language: "$lang""" )
 
@@ -211,7 +209,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val propertiesGroups = for( (n, m) <- entriesFromPropertiesGroups ) yield {
       FormSyntax(n, m, title=makeInstanceLabel(n, allNamedGraph, lang))
     }
-    val formSyntax = FormSyntax(subject, fieldsCompleteList,Seq(), classs, propertiesGroups=propertiesGroups.toSeq,
+    val formSyntax = FormSyntax(subject,
+        fieldsCompleteList ++ step1.fields,
+        Seq(), classs, propertiesGroups=propertiesGroups.toSeq,
         thumbnail = getURIimage(subject),
         title = makeInstanceLabel( subject, allNamedGraph, lang ),
         formURI = step1.formURI,

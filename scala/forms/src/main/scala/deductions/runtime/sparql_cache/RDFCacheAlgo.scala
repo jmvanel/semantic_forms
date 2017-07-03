@@ -356,7 +356,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   /**
    * read unconditionally from URI,
    * no matter what the concrete syntax is;
-   * can also load an URI with the # part
+   * TODO: can also load an URI with the # part
    */
   private def readURI(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET,
                       request: HTTPrequest = HTTPrequest()): (Try[Rdf#Graph], String) = {

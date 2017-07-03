@@ -30,7 +30,8 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
     with Form2HTMLEdit[NODE, URI]
     with FormModule[NODE, URI]
     with Timer
-    with JavaScript {
+//    with JavaScript
+    {
   self: HTML5Types =>
 
   import config._
@@ -164,11 +165,9 @@ private[html] trait Form2HTML[NODE, URI <: NODE]
       hidden ++
         <div class={css.cssClasses.formRootCSSClass  } >
           {
-            //css.localCSS ++
-              //Text("\n") ++
-              (if (inlineJavascriptInForm)
-                localJS
-              else NodeSeq.Empty) ++
+//              (if (inlineJavascriptInForm)
+//                localJS
+//              else NodeSeq.Empty) ++
               Text("\n") ++
               <input type="hidden" name="uri" value={ urlEncode(form.subject) }/> ++
               <div class="form-group">

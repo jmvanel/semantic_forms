@@ -301,6 +301,13 @@ vi myconf.properties
 nohup bin/semantic_forms_play -Dlog4j.configurationFile=myconf.properties -mem 50 &
 ```
 
+And with SBT configuring maximum logging is like this
+```shell
+cd $HOME/src/semantic_forms/scala
+sbt -Dlog4j.configurationFile=forms_play/conf/log4j2.debug.properties
+```
+
+## download Java on a headless server
 To download Java from the server with no browser (see http://stackoverflow.com/questions/10268583/downloading-java-jdk-on-linux-via-wget-is-shown-license-page-instead):
 
     VERSION=51

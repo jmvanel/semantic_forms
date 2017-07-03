@@ -9,6 +9,7 @@ import org.scalajs.dom.html.Input
 import org.scalajs.dom.raw.Node
 import org.scalajs.dom.raw.Position
 
+/** callback for Geo HTML5 function that populates RDF triples geo:long */
 trait GPS {
 
 	// TODO later depend on utils
@@ -23,12 +24,12 @@ trait GPS {
     println(s"longitude=${longitude}")
 
     val matchesLongitudeInput = dom.document.querySelectorAll(
-      s"input[data-uri-property='${geoRDFPrefix}long']")
+      s"input[data-rdf-property='${geoRDFPrefix}long']")
     val matchesLatitudeInput = dom.document.querySelectorAll(
-      s"input[data-uri-property='${geoRDFPrefix}lat']")
+      s"input[data-rdf-property='${geoRDFPrefix}lat']")
 
-    dom.window.console.info(s"matchesLongitudeInput $matchesLongitudeInput" )
-    dom.window.console.info(s"matchesLatitudeInput $matchesLatitudeInput" )
+    dom.window.console.info(s"matchesLongitudeInput $matchesLongitudeInput, length ${matchesLongitudeInput.length}" )
+    // dom.window.console.info(s"matchesLatitudeInput $matchesLatitudeInput" )
 
     for (
       long <- matchesLongitudeInput;
@@ -39,8 +40,12 @@ trait GPS {
     }
   }
 
-  private def fillOneCoordinate(l: Node, coord: String) = l match {
+  private def fillOneCoordinate(l: Node, coord: String) = {
+//    println( s"fillOneCoordinate( $l: Node, $coord)" )
+    l match {
     case input: Input => input.value = coord
+    dom.window.console.info(s"fillGeoCoordinates: value ${input.value}")
     case el           => dom.window.console.info(s"fillGeoCoordinates: $el unexpected")
+  }
   }
 }
