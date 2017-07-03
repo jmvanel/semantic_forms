@@ -34,6 +34,15 @@ trait CentralSemanticController[Rdf <: RDF, DATASET] extends SemanticController
   }
 }
 
+/**
+ * Controller for HTTP requests like /page?feature=dbpedia:CMS
+ *  cf https://github.com/jmvanel/semantic_forms/issues/150
+ */
+trait SemanticController {
+  def result(request: HTTPrequest): NodeSeq
+}
+
+
 /** TODO extract to new SBT module */
 trait GeoController[Rdf <: RDF, DATASET] extends GeoPath[Rdf, DATASET]
     with SemanticController
@@ -48,12 +57,4 @@ trait GeoController[Rdf <: RDF, DATASET] extends GeoPath[Rdf, DATASET]
       false)(allNamedGraph, "en")
     generate(formSyntax)
   }
-}
-
-/**
- * Controller for HTTP requests like /page?feature=dbpedia:CMS
- *  cf https://github.com/jmvanel/semantic_forms/issues/150
- */
-trait SemanticController {
-  def result(request: HTTPrequest): NodeSeq
 }

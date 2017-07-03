@@ -25,6 +25,8 @@ GET     /form               controllers.Application.form(displayuri:String, blan
 GET     /form-data          controllers.Application.formData(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="", database:String ?="TDB")
 GET     /sparql-form        controllers.Application.sparqlForm(query:String, Edit:String?="", formuri:String ?="", database:String ?="TDB")
 
+GET     /page               controllers.SemanticController.page()
+
 GET     /sparql-ui          controllers.Application.sparql( query:String )
 POST    /sparql-ui          controllers.Application.sparql( query:String )
 
