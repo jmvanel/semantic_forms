@@ -42,6 +42,7 @@ import deductions.runtime.sparql_cache.algos.StatisticsGraph
 import deductions.runtime.utils.HTTPrequest
 import deductions.runtime.views.Results
 import deductions.runtime.html.TriplesViewWithTitle
+import deductions.runtime.jena.ImplementationSettings
 
 /**
  * a Web Application Facade,
@@ -56,32 +57,33 @@ import deductions.runtime.html.TriplesViewWithTitle
  *	def formData(uri: String, blankNode: String = "", Edit: String = "", formuri: String = ""): String
  * 
  */
-trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
-    extends RDFCacheAlgo[Rdf, DATASET]
-    with TriplesViewWithTitle[Rdf, DATASET]
-    with CreationFormAlgo[Rdf, DATASET]
-    with StringSearchSPARQL[Rdf, DATASET]
-    with ReverseLinksSearchSPARQL[Rdf, DATASET]
-    with ExtendedSearchSPARQL[Rdf, DATASET]
-    with InstanceLabelsInferenceMemory[Rdf, DATASET]
-    with SPARQLHelpers[Rdf, DATASET]
-    with BrowsableGraph[Rdf, DATASET]
-    with FormSaver[Rdf, DATASET]
-    with LDP[Rdf, DATASET]
-    with Lookup[Rdf, DATASET]
-    with Authentication[Rdf, DATASET] //with ApplicationFacadeInterface
-    with RegisterPage[Rdf, DATASET]
-    with FormHeader[Rdf, DATASET]
-    with TimeSeries[Rdf, DATASET]
-    with NamedGraphsSPARQL[Rdf, DATASET]
-    with TriplesInGraphSPARQL[Rdf, DATASET]
-    with BlankNodeCleanerIncremental[Rdf, DATASET]
-    with DashboardHistoryUserActions[Rdf, DATASET]
-    with StatisticsGraph[Rdf]
-    with FormJSON[Rdf, DATASET]
-    with ToolsPage
-    with CSSClasses
-    with Results
+trait ApplicationFacadeImpl[Rdf, DATASET]
+    extends ImplementationSettings.RDFModule
+    with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with TriplesViewWithTitle[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with CreationFormAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with StringSearchSPARQL[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with ReverseLinksSearchSPARQL[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with ExtendedSearchSPARQL[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with InstanceLabelsInferenceMemory[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with SPARQLHelpers[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with BrowsableGraph[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with FormSaver[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with LDP[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with Lookup[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with Authentication[ImplementationSettings.Rdf, ImplementationSettings.DATASET] //with ApplicationFacadeInterface
+    with RegisterPage[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with FormHeader[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with TimeSeries[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with NamedGraphsSPARQL[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with TriplesInGraphSPARQL[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with BlankNodeCleanerIncremental[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with DashboardHistoryUserActions[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with StatisticsGraph[ImplementationSettings.Rdf]
+    with FormJSON[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+      with ToolsPage
+      with CSSClasses
+      with Results
     {
  
   val config: Configuration
@@ -210,9 +212,9 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     }
   }
 
-  def edit(url: String): NodeSeq = {
-    htmlForm(url, editable = true)._1
-  }
+//  def edit(url: String): NodeSeq = {
+//    htmlForm(url, editable = true)._1
+//  }
 
   /** save Form data in TDB
    *  @return main subject URI like [[FormSaver.saveTriples]],

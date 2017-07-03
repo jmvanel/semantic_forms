@@ -5,12 +5,12 @@ import java.security.MessageDigest
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
-
-import org.w3.banana.RDF
-
+import org.w3.banana.{RDF, RDFStore}
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.RDFPrefixes
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter
+
+import deductions.runtime.dataset.RDFStoreLocalUserManagement
 import deductions.runtime.utils.URIManagement
 
 
@@ -21,9 +21,11 @@ import deductions.runtime.utils.URIManagement
  */
 trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
     with RDFPrefixes[Rdf]
+    with RDFStoreLocalUserManagement[Rdf, DATASET]
     with URIManagement {
 
   def passwordsGraph: Rdf#MGraph
+
 
   import ops._
   import rdfStore.transactorSyntax._

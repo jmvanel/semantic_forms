@@ -50,7 +50,7 @@ trait Secured
     if(loginActivated)
       withAuth { username =>
         implicit request =>
-          findUser(username).map { user =>
+          impl.findUser(username).map { user =>
             fun(user)(request)
           }.getOrElse(onUnauthorized(request))
       }

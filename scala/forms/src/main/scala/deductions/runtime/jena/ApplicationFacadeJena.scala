@@ -3,7 +3,7 @@ package deductions.runtime.jena
 import scala.xml.NodeSeq
 
 import deductions.runtime.dataset.RDFStoreLocalUserManagement
-import deductions.runtime.services.ApplicationFacade
+//import deductions.runtime.services.ApplicationFacade
 import deductions.runtime.services.ApplicationFacadeImpl
 import deductions.runtime.services.ApplicationFacadeInterface
 import deductions.runtime.services.Configuration
@@ -18,8 +18,8 @@ import deductions.runtime.html.HtmlGeneratorInterface
  * but does not expose Jena nor Banana, just ApplicationFacadeInterface
  */
 trait ApplicationFacadeJena
-    extends ApplicationFacadeInterface
-    with ApplicationFacade[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    extends ApplicationFacadeImpl[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    //cwith ApplicationFacadeInterface
     with RDFStoreLocalJenaProvider {
 
   /** These 2 dependencies are transmitted below to the actual running instance `impl` */
@@ -31,7 +31,7 @@ trait ApplicationFacadeJena
   val ops1 = ops
   lazy val htmlGenerator2 = htmlGenerator
 
-  override val impl: ApplicationFacadeImpl[Rdf, DATASET] =
+   val impl: ApplicationFacadeImpl[Rdf, DATASET] =
     try {
       /**
        * NOTES:

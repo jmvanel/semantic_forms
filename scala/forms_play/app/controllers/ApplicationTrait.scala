@@ -7,7 +7,6 @@ import scala.util.Success
 import scala.util.Try
 import scala.xml.Elem
 import scala.xml.NodeSeq
-
 import deductions.runtime.jena.ApplicationFacadeJena
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.CORS
@@ -29,10 +28,14 @@ import play.api.mvc.Result
 import play.api.mvc.Results
 import views.MainXmlWithHead
 import java.net.URLEncoder
+
 import deductions.runtime.services.Configuration
 import java.net.URI
+
 import deductions.runtime.utils.URIManagement
+import jdk.nashorn.internal.ir.TryNode
 import play.api.mvc.EssentialAction
+
 import scala.io.Source
 import scala.xml.Unparsed
 //import java.nio.file.Files
@@ -85,8 +88,8 @@ trait ApplicationTrait extends Controller
       implicit userid =>
         implicit request =>
           val lang = chooseLanguageObject(request).language
-          val userInfo = displayUser(userid, "", "", lang)
-          outputMainPage(makeHistoryUserActions("10", lang, copyRequest(request) ), lang,
+          val userInfo = impl.displayUser(userid, "", "", lang)
+          outputMainPage(impl.makeHistoryUserActions("10", lang, copyRequest(request) ), lang,
               userInfo = userInfo)
     }
 	/** @param Edit edit mode <==> param not "" */
@@ -109,7 +112,7 @@ trait ApplicationTrait extends Controller
             val uri = expandOrUnchanged(uri0)
             logger.info(s"displayURI: expandOrUnchanged $uri")
             val title = labelForURITransaction(uri, lang)
-            val userInfo = displayUser(userid, uri, title, lang)
+            val userInfo = impl.displayUser(userid, uri, title, lang)
             outputMainPage(
               htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
                 graphURI = makeAbsoluteURIForSaving(userid),
@@ -125,7 +128,7 @@ trait ApplicationTrait extends Controller
           val title = labelForURITransaction(uri, lang)
           val requestCopy = getRequestCopy()
           val userid = requestCopy . userId()
-          val userInfo = displayUser(userid, uri, title, lang)
+          val userInfo = impl.displayUser(userid, uri, title, lang)
 
           outputMainPage(
             htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
@@ -140,7 +143,7 @@ trait ApplicationTrait extends Controller
     val userid = requestCopy.userId()
     val title = "Table view from SPARQL"
     val lang = chooseLanguage(request)
-    val userInfo = displayUser(userid, "", title, lang)
+    val userInfo = impl.displayUser(userid, "", title, lang)
     outputMainPage(
       tableFromSPARQL(requestCopy),
       lang, title = title, userInfo = userInfo,
@@ -192,11 +195,11 @@ trait ApplicationTrait extends Controller
     }
 
   /** /form-data service; like /form but raw JSON data */
-  def formData(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
+  def formDataAction(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
     Action {
         implicit request =>
         val lang = chooseLanguage(request)
-       makeJSONResult(formDataImpl(uri, blankNode, Edit, formuri, database, lang))
+       makeJSONResult(impl.formData(uri, blankNode, Edit, formuri, database, lang))
     }
 
   private def makeJSONResult(json: String) = makeResultMimeType(json, AcceptsJSONLD.mimeType)
@@ -218,9 +221,9 @@ trait ApplicationTrait extends Controller
     val requestCopy = getRequestCopy()
     val userid = requestCopy . userId()
     val lang = chooseLanguage(request)
-    val userInfo = displayUser(userid, "", "", lang)
+    val userInfo = impl.displayUser(userid, "", "", lang)
       outputMainPage(
-        createHTMLFormFromSPARQL(
+        impl.createHTMLFormFromSPARQL(
           query,
           editable = Edit != "",
           formuri),
@@ -262,7 +265,7 @@ trait ApplicationTrait extends Controller
   def wordsearchAction(q: String = "", clas: String = "") = Action.async {
     implicit request =>
     val lang = chooseLanguageObject(request).language
-    val fut: Future[Elem] = wordsearch(q, lang, clas)
+    val fut: Future[Elem] = impl.wordsearchFuture(q, lang, clas)
     fut.map( r => outputMainPage( r, lang ) )
   }
 
@@ -270,7 +273,7 @@ trait ApplicationTrait extends Controller
   def showNamedGraphsAction() = Action.async {
     implicit request =>
     val lang = chooseLanguageObject(request).language
-    val fut = showNamedGraphs(lang)
+    val fut = impl.showNamedGraphs(lang)
     val rr = fut.map( r => outputMainPage( r, lang ) )
     rr
   }
@@ -278,7 +281,7 @@ trait ApplicationTrait extends Controller
   def showTriplesInGraphAction( uri: String) = {
         Action.async { implicit request =>
           val lang = chooseLanguageObject(request).language
-          val fut = Future.successful( showTriplesInGraph( uri, lang) )
+          val fut = Future.successful( impl.showTriplesInGraph( uri, lang) )
           val rr = fut.map( r => outputMainPage( r, lang ) )
           rr
   }
@@ -292,7 +295,7 @@ trait ApplicationTrait extends Controller
         implicit request =>
           val lang = chooseLanguageObject(request).language
           val pageURI = uri
-          val pageLabel = labelForURI(uri, lang)
+          val pageLabel = labelForURITransaction(uri, lang)
           val userInfo = displayUser(userid, pageURI, pageLabel, lang)
           logger.info(s"userInfo $userInfo, userid $userid")
           val content = htmlForm(
@@ -366,10 +369,10 @@ trait ApplicationTrait extends Controller
           logger.info(s"""create: "$uri" """)
           logger.info( s"formSpecURI from HTTP request: <$formSpecURI>")
           val lang = chooseLanguage(request)
-          val userInfo = displayUser(userid, uri, s"Create a $uri", lang)
+          val userInfo = impl.displayUser(userid, uri, s"Create a $uri", lang)
           outputMainPage(
             create(uri, chooseLanguage(request),
-              formSpecURI, makeAbsoluteURIForSaving(userid), copyRequest(request) ),
+              formSpecURI, makeAbsoluteURIForSaving(userid), copyRequest(request) ).getOrElse(<div/>),
             lang, userInfo=userInfo)
     }
 
@@ -388,7 +391,7 @@ trait ApplicationTrait extends Controller
       logger.info(s"create: class URI <$classUri>")
       logger.info(s"create: formSpecURI from HTTP request: <$formSpecURI>")
 
-      Ok(createDataAsJSON(classUri, chooseLanguage(request),
+      Ok(impl.createDataAsJSON(classUri, chooseLanguage(request),
         formSpecURI,
         copyRequest(request))).
         as(AcceptsJSONLD.mimeType + "; charset=" + myCustomCharset.charset)
@@ -590,7 +593,7 @@ trait ApplicationTrait extends Controller
     val result = if (isSelect)
       sparqlSelectConneg(query, resultFormat, dataset)
     else
-      sparqlConstructResult(query, resultFormat)
+      impl.sparqlConstructResult(query, resultFormat)
 
     logger.info(s"result $result".split("\n").take(5).mkString("\n"))
     Ok(result)
@@ -623,7 +626,7 @@ trait ApplicationTrait extends Controller
         val formuri = map.getOrElse("formuri", Seq()).headOption.getOrElse("")
 
         makeJSONResult(
-          createJSONFormFromSPARQLFacade(
+          impl.createJSONFormFromSPARQL(
             query,
             editable = (Edit != ""),
             formuri))
@@ -682,7 +685,7 @@ trait ApplicationTrait extends Controller
 
   def backlinksAction(uri: String = "") = Action.async {
     implicit request =>
-      val fut: Future[Elem] = backlinks(uri)
+      val fut: Future[Elem] = impl.backlinksFuture(uri)
 
       // create link for extended Search
       val extendedSearchLink = <p>
@@ -700,7 +703,7 @@ trait ApplicationTrait extends Controller
   def extSearch(q: String = "") = Action.async {
 	  implicit request =>
 	  val lang = chooseLanguage(request)
-    val fut = esearch(q)
+    val fut = impl.esearchFuture(q)
     fut.map(r =>
     outputMainPage(r, lang))
   }
@@ -720,7 +723,7 @@ trait ApplicationTrait extends Controller
             // TODO RDF/XML
             else
               AcceptsJSONLD.mimeType
-          val response = ldpGET(uri, request.path, mimeType, copyRequest(request))
+          val response = impl.getTriples(uri, request.path, mimeType, copyRequest(request))
           logger.info("LDP: GET: result " + response)
           val contentType = mimeType + "; charset=utf-8"
           logger.info(s"contentType $contentType")
@@ -796,7 +799,7 @@ trait ApplicationTrait extends Controller
         implicit request =>
           val lang = chooseLanguageObject(request).language
           val config1 = config
-          val userInfo = displayUser(userid, "", "", lang)
+          val userInfo = impl.displayUser(userid, "", "", lang)
           outputMainPage( new ToolsPage {
             override val config: Configuration = config1
           }.getPage(lang, copyRequest(request)),lang, displaySearch = false, userInfo = userInfo)
@@ -810,9 +813,9 @@ trait ApplicationTrait extends Controller
       implicit userid =>
         implicit request =>
           val lang = chooseLanguage(request)
-          val userInfo = displayUser(userid, "", "", lang)
+          val userInfo = impl.displayUser(userid, "", "", lang)
           logger.info("makeHistoryUserActionsAction: cookies: " + request.cookies.mkString("; "))
-          outputMainPage(makeHistoryUserActions(limit, lang, copyRequest(request) ), lang, userInfo = userInfo)
+          outputMainPage(impl.makeHistoryUserActions(limit, lang, copyRequest(request) ), lang, userInfo = userInfo)
     }
 
 }
