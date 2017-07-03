@@ -31,7 +31,4 @@ object DummyController extends Controller
       Ok("OK from DummyController")
     }
 
-  // TODO move this reutilisable functions to new trait PlayHelpers 
-  def getRequestCopy()(implicit request: Request[_]): HTTPrequest = copyRequest(request)
-
 }

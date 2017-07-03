@@ -6,6 +6,10 @@ import deductions.runtime.utils.Cookie
 
 /** copy PLay! classes into SF classes, to avoid dependencies in other project senantic_forms */
 trait HTTPrequestHelpers {
+  
+	/** a copy of the request with no Play dependency :) */
+  def getRequestCopy()(implicit request: Request[_]): HTTPrequest = copyRequest(request)
+
   def copyRequest(request: Request[_]): HTTPrequest = {
     import request._
     val cookiesMap = cookies.map { cookie => (cookie.name -> copyCookie(cookie)) } . toMap

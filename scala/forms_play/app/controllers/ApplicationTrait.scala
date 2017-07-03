@@ -77,9 +77,6 @@ trait ApplicationTrait extends Controller
 
 	implicit val myCustomCharset = Codec.javaSupported("utf-8")
 
-	/** a copy of the request with no Play dependency :) */
-  def getRequestCopy()(implicit request: Request[_]): HTTPrequest = copyRequest(request)
-
   def index() =
     withUser {
       implicit userid =>

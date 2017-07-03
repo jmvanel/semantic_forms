@@ -10,6 +10,8 @@ import deductions.runtime.services.CentralSemanticController
 import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.utils.HTTPrequest
 import deductions.runtime.user.RegisterPage
+import deductions.runtime.services.GeoController
+import deductions.runtime.services.TypicalSFDependencies
 
 object SemanticController extends Controller
     with ImplementationSettings.RDFCache
@@ -17,7 +19,13 @@ object SemanticController extends Controller
     with LanguageManagement
     with RegisterPage[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
-  val actionMap: Map[String, deductions.runtime.services.SemanticController] = Map()
+  import ops._
+
+  val actionMap: Map[String, deductions.runtime.services.SemanticController] =
+//        "geoloc:stats"
+    Map( fromUri(geoloc("stats")) ->
+    new TypicalSFDependencies with GeoController[Rdf, DATASET]{} )
+
   override implicit val config = new DefaultConfiguration {}
   override lazy val htmlGenerator =
     Form2HTMLObject.makeDefaultForm2HTML(config)(ops)
@@ -29,11 +37,7 @@ object SemanticController extends Controller
       val title = "SemanticController view"
       val lang = chooseLanguage(request)
       val userInfo = displayUser(userid, "", title, lang)
-      // outputMainPage(
-      Ok("OK")
+      // outputMainPage()
+      Ok( result(requestCopy) ) .as("text/html; charset=utf-8")
     }
-
-  // TODO move these reutilisable functions to new trait PlayHelpers 
-  def getRequestCopy()(implicit request: Request[_]): HTTPrequest = copyRequest(request)
-
 }
