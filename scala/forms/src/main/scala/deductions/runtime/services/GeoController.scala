@@ -20,13 +20,14 @@ trait GeoController[Rdf <: RDF, DATASET] extends GeoPath[Rdf, DATASET]
   def result(request: HTTPrequest): NodeSeq = {
     val res = wrapInReadTransaction {
       val statisticsGraph = getPathLengthForAllMobiles(allNamedGraph)
+      println(s"statisticsGraph size ${ops.graphSize(statisticsGraph)}")
       // create table view
       val formSyntax = createFormFromTriples(
         ops.getTriples(statisticsGraph).toSeq,
         false)(allNamedGraph, "en")
       generate(formSyntax)
     }
-    val table = res.getOrElse(<div>Error! </div>)
+    val table = res.getOrElse(<div>Error! {res}</div>)
     table
   }
 }
