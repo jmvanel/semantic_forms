@@ -1,25 +1,11 @@
 package deductions.runtime.sparql_cache
 
-import org.apache.log4j.Logger
-import org.w3.banana.CertPrefix
-import org.w3.banana.DCPrefix
-import org.w3.banana.DCTPrefix
-import org.w3.banana.FOAFPrefix
-import org.w3.banana.OWLPrefix
-import org.w3.banana.Prefix
-import org.w3.banana.RDF
-import org.w3.banana.RDFPrefix
-import org.w3.banana.RDFSPrefix
-import org.w3.banana.WebACLPrefix
-import org.w3.banana.IANALinkPrefix
-import org.w3.banana.LDPPrefix
-
-import deductions.runtime.jena.RDFCache
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.utils.RDFPrefixes
-import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.DependenciesForApps
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.RDFPrefixes
+import org.apache.log4j.Logger
+import org.w3.banana.{CertPrefix, DCPrefix, DCTPrefix, FOAFPrefix, LDPPrefix, OWLPrefix, Prefix, RDF, RDFPrefix, RDFSPrefix, WebACLPrefix}
 
 /**
  * @author jmv
@@ -49,8 +35,6 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
     with SitesURLForDownload {
 
   import ops._
-  import rdfStore.transactorSyntax._
-  import rdfStore.graphStoreSyntax._
 
   /** most used vocab's; they are "self-hosted" */
   val basicVocabs: List[Prefix[Rdf]] = List(
@@ -124,7 +108,6 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
 
   /** TRANSACTIONAL */
   def loadCommonVocabularies() {
-    import ops._
     Logger.getRootLogger().info(vocabularies)
     vocabularies map {
       voc =>

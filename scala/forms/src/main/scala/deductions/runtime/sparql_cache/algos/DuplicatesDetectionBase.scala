@@ -1,19 +1,11 @@
 package deductions.runtime.sparql_cache.algos
 
-import org.w3.banana.OWLPrefix
-import org.w3.banana.PointedGraph
-import org.w3.banana.RDF
-import org.w3.banana.RDFOps
-import org.w3.banana.RDFPrefix
-import org.w3.banana.RDFSPrefix
-import org.w3.banana.PointedGraph
+import java.io.PrintStream
 
 import deductions.runtime.html.HTML5TypesTrait
-import java.io.PrintStream
-import deductions.runtime.utils.RDFPrefixes
-import deductions.runtime.services.Configuration
-import deductions.runtime.services.SPARQLHelpers
-import deductions.runtime.utils.RDFHelpers
+import deductions.runtime.services.{Configuration, SPARQLHelpers}
+import deductions.runtime.utils.{RDFHelpers, RDFPrefixes}
+import org.w3.banana.{OWLPrefix, PointedGraph, RDF, RDFOps}
 
 
 
@@ -25,7 +17,6 @@ with RDFHelpers[Rdf]
 {
 //    this: Configuration =>
   val config: Configuration
-  import config._
   
   val FILE_OUTPUT = true
   val printStream: PrintStream = System.out

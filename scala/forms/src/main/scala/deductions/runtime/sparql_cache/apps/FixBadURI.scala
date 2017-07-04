@@ -1,18 +1,18 @@
 package deductions.runtime.sparql_cache.apps
 
+import scala.collection.JavaConversions._
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
-import scala.collection.JavaConversions._
 //import scala.collection.JavaConverters
 
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.utils.URIHelpers
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.riot.RDFDataMgr
 import org.apache.jena.util.FileManager
 import org.w3.banana.RDF
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.sparql_cache.RDFCacheAlgo
-import deductions.runtime.utils.URIHelpers
-import deductions.runtime.services.DefaultConfiguration
 
 
 /**
@@ -38,8 +38,6 @@ object FixBadURIApp extends  {
     with ImplementationSettings.RDFCache // RDFStoreLocalJena1Provider
     with URIHelpers
     with App {
-
-  import config._
   
   def listGraphNames() = listNames(dataset)
   if( args.size == 0 )

@@ -1,6 +1,7 @@
 package org.w3.banana.io
 
 import org.w3.banana.RDF
+
 import scala.language.higherKinds
 
 /**

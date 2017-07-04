@@ -1,21 +1,16 @@
 package deductions.runtime.html
 
-import scala.util.Failure
-import scala.util.Success
-import scala.util.Try
-import scala.xml.NodeSeq
-
-import org.apache.log4j.Logger
-import org.w3.banana.RDF
-
-import deductions.runtime.abstract_syntax.FormSyntaxFactory
-import deductions.runtime.abstract_syntax.UserTraceability
+import deductions.runtime.abstract_syntax.{FormSyntaxFactory, UserTraceability}
 import deductions.runtime.semlogs.TimeSeries
 import deductions.runtime.services.Configuration
 import deductions.runtime.sparql_cache.RDFCacheAlgo
-import deductions.runtime.utils.HTTPrequest
-import deductions.runtime.utils.Timer
+import deductions.runtime.utils.{HTTPrequest, Timer}
 import deductions.runtime.views.TableFromListListRDFNodes
+import org.apache.log4j.Logger
+import org.w3.banana.RDF
+
+import scala.util.{Failure, Success, Try}
+import scala.xml.NodeSeq
 
 /**
  * Form for a subject URI with existing triples;

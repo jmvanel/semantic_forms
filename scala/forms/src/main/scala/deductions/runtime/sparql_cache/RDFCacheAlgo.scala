@@ -2,40 +2,20 @@ package deductions.runtime.sparql_cache
 
 import java.util.Date
 
-import scala.concurrent.Future
-import scala.util.Failure
-import scala.util.Success
-import scala.util.Try
-
-import org.apache.log4j.Logger
-import org.w3.banana.OWLPrefix
-import org.w3.banana.RDF
-import org.w3.banana.XSDPrefix
-import org.w3.banana.io.RDFLoader
-import org.w3.banana.io.RDFReader
-import org.w3.banana.io.RDFXML
-import org.w3.banana.io.Turtle
-
 import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.jena.MicrodataLoaderModule
-import deductions.runtime.services.BrowsableGraph
-import deductions.runtime.services.Configuration
-import deductions.runtime.services.SPARQLHelpers
-import deductions.runtime.utils.URIManagement
-import deductions.runtime.utils.HTTPHelpers
-import deductions.runtime.utils.HTTPrequest
-import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.services.TypeAddition
-import org.apache.jena.riot.web.HttpOp
-import org.apache.http.impl.client.HttpClients
-import java.net.URL
-import java.net.HttpURLConnection
-import org.apache.http.client.methods.HttpHead
-import org.apache.http.client.ResponseHandler
+import deductions.runtime.jena.{ImplementationSettings, MicrodataLoaderModule}
+import deductions.runtime.services.{BrowsableGraph, Configuration, SPARQLHelpers, TypeAddition}
+import deductions.runtime.utils.{HTTPHelpers, HTTPrequest, RDFHelpers, URIManagement}
 import org.apache.http.HttpResponse
-import org.apache.http.client.ClientProtocolException
-import org.apache.http.util.EntityUtils
+import org.apache.http.client.{ClientProtocolException, ResponseHandler}
+import org.apache.http.client.methods.HttpHead
+import org.apache.http.impl.client.HttpClients
+import org.apache.log4j.Logger
+import org.w3.banana.{OWLPrefix, RDF, XSDPrefix}
+import org.w3.banana.io.{RDFLoader, RDFReader, RDFXML, Turtle}
+
+import scala.concurrent.Future
+import scala.util.{Failure, Success, Try}
 
 /** */
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {

@@ -1,10 +1,7 @@
 package deductions.runtime.sparql_cache
-
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
 //import deductions.runtime.jena.JenaHelpers
-import deductions.runtime.jena.RDFCache
-import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.DependenciesForApps
+import deductions.runtime.services.DefaultConfiguration
 
 object RDFDashboardApp
     extends {
@@ -14,8 +11,8 @@ object RDFDashboardApp
     } with DependenciesForApps {
 
   import ops._
-  import sparqlOps._
   import rdfStore.sparqlEngineSyntax._
+  import sparqlOps._
 
   // TODO show # of triples
   val queryString =

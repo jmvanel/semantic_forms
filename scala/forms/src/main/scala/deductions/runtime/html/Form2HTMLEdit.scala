@@ -1,16 +1,12 @@
 package deductions.runtime.html
 
-import scala.Range
-import scala.xml.Elem
-import scala.xml.NodeSeq
-import scala.xml.NodeSeq.seqToNodeSeq
-import scala.xml.Text
-import Form2HTML.urlEncode
-import deductions.runtime.abstract_syntax.DBPediaLookup
-import deductions.runtime.abstract_syntax.FormModule
+import deductions.runtime.abstract_syntax.{DBPediaLookup, FormModule}
 import deductions.runtime.services.Configuration
 import deductions.runtime.utils.I18NMessages
 import org.joda.time.DateTime
+
+import scala.xml.NodeSeq.seqToNodeSeq
+import scala.xml.{Elem, NodeSeq, Text}
 
 
 /** generate HTML from abstract Form for Edition */

@@ -1,14 +1,13 @@
 package deductions.runtime.sparql_cache
 
-import org.w3.banana.RDF
-import deductions.runtime.utils.RDFHelpers
 import java.net.URL
-import org.w3.banana.io.RDFLoader
-import scala.util.Try
-import org.w3.banana.RDFOps
-import org.w3.banana.MGraphOps
-import org.w3.banana.RDFOpsModule
+
 import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFHelpers
+import org.w3.banana.{RDF, RDFOps}
+import org.w3.banana.io.RDFLoader
+
+import scala.util.Try
 
 /**
  * @author jmv
@@ -21,10 +20,6 @@ trait DataSourceManager[Rdf <: RDF, DATASET]
   implicit val rdfLoader: RDFLoader[Rdf, Try]
 
   import ops._
-  import rdfStore.transactorSyntax._
-  import rdfStore.graphStoreSyntax._
-  import rdfStore.sparqlEngineSyntax._
-  import scala.concurrent.ExecutionContext.Implicits.global
 
   /**
    * replace Same Language Triples in named graph `graphURI`

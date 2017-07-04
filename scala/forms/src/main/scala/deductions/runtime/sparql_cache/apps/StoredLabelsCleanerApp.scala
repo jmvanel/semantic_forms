@@ -12,8 +12,6 @@ object StoredLabelsCleanerApp extends {
 } with ImplementationSettings.RDFCache
     with App
     with InstanceLabelsInferenceMemory[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
-
-  import config._
   //  close()
   for (lang <- List("en", "fr", "")) {
     cleanStoredLabels(lang)

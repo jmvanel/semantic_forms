@@ -1,16 +1,12 @@
 package deductions.runtime.sparql_cache.algos
 
-import java.io.FileInputStream
-import java.io.PrintStream
-
-import scala.collection.immutable.ListMap
-
-import org.w3.banana.RDF
-import org.w3.banana.RDFOps
+import java.io.{FileInputStream, PrintStream}
 
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.Configuration
-import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.services.{Configuration, DefaultConfiguration}
+import org.w3.banana.{RDF, RDFOps}
+
+import scala.collection.immutable.ListMap
 
 /** Duplicates Detection for OWL; output: CSV, Grouped By labels of Datatype properties,
  *  or  owl:ObjectProperty", or "owl:Class"

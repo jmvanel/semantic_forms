@@ -1,9 +1,7 @@
 package deductions.runtime.html
 
-import org.w3.banana.RDF
-import org.w3.banana.RDFOps
-import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.Configuration
+import org.w3.banana.{RDF, RDFOps}
 
 /**
  * @author jmv

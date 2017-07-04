@@ -1,25 +1,13 @@
 package deductions.runtime.html
 
 import java.net.URLEncoder
-import java.security.MessageDigest
 
-import scala.Range
-import scala.xml.Elem
-import scala.xml.NodeSeq
-import scala.xml.NodeSeq.seqToNodeSeq
-import scala.xml.Text
-import scala.xml.Unparsed
-import Form2HTML.urlEncode
-import deductions.runtime.abstract_syntax.DBPediaLookup
 import deductions.runtime.abstract_syntax.FormModule
-import deductions.runtime.utils.I18NMessages
-import deductions.runtime.utils.Timer
-import deductions.runtime.services.Configuration
+import deductions.runtime.utils.{Cookie, HTTPrequest, Timer}
 import org.apache.commons.codec.digest.DigestUtils
-import deductions.runtime.abstract_syntax.FormModule
-import deductions.runtime.utils.HTTPrequest
-import org.w3.banana.binder.FromURI
-import deductions.runtime.utils.Cookie
+
+import scala.xml.NodeSeq.seqToNodeSeq
+import scala.xml.{Elem, NodeSeq, Text}
 
 /** Abstract Form Syntax to HTML;
  * different modes: display or edit;

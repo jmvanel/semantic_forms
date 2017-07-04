@@ -1,11 +1,11 @@
 package deductions.runtime.sparql_cache.algos
 
-import deductions.runtime.utils.RDFHelpers
-import org.w3.banana.RDF
-import scala.xml.NodeSeq
-import deductions.runtime.utils.RDFPrefixes
 import java.net.URLEncoder
-import scala.xml.Elem
+
+import deductions.runtime.utils.{RDFHelpers, RDFPrefixes}
+import org.w3.banana.RDF
+
+import scala.xml.{Elem, NodeSeq}
 
 /** print Statistics for given Graph in HTML */
 trait StatisticsGraph[Rdf <: RDF] extends RDFHelpers[Rdf]

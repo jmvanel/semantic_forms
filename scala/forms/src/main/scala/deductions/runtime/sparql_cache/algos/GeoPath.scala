@@ -1,27 +1,17 @@
 package deductions.runtime.sparql_cache.algos
 
+import java.io.FileOutputStream
 import java.net.URL
-import scala.util.Try
-import scala.util.Success
+import java.text.SimpleDateFormat
+import java.util.{Calendar, Date}
 
-import org.w3.banana.PointedGraph
-import org.w3.banana.RDF
-import org.w3.banana.RDFOps
-import org.w3.banana.PointedGraph
-import org.w3.banana.PointedGraphs
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.{DefaultConfiguration, SPARQLHelpers}
+import deductions.runtime.utils.{RDFHelpers, RDFPrefixes}
+import org.w3.banana.{PointedGraph, PointedGraphs, RDF, RDFOps}
 import org.w3.banana.io._
 
-import deductions.runtime.utils.RDFPrefixes
-import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.utils.RDFPrefixes
-import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.services.SPARQLHelpers
-import java.util.Date
-import java.util.Calendar
-import java.text.SimpleDateFormat
-import java.io.FileOutputStream
+import scala.util.{Success, Try}
 
 /**
  * arguments:

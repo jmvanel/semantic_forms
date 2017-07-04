@@ -1,23 +1,15 @@
 package deductions.runtime.sparql_cache.algos
 
-import java.io.File
-import java.io.PrintStream
-
-import scala.collection.immutable.ListMap
-
-import org.w3.banana.OWLPrefix
-import org.w3.banana.Prefix
-import org.w3.banana.RDF
-import org.w3.banana.RDFOps
-import org.w3.banana.RDFPrefix
+import java.io.{File, PrintStream}
 
 import deductions.runtime.abstract_syntax.FieldsInference
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.services.Configuration
-import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.services.{Configuration, DefaultConfiguration}
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.RDFHelpers
+import org.w3.banana.{OWLPrefix, Prefix, RDF, RDFOps, RDFPrefix}
+
+import scala.collection.immutable.ListMap
 
 /** output given SKOS file as CSV */
 object SKOS2CSVApp extends  {

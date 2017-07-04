@@ -1,13 +1,12 @@
 package deductions.runtime.sparql_cache.apps
 
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.{DefaultConfiguration, TypeAddition}
+import org.w3.banana.RDF
+
 import scala.collection.mutable.ArraySeq
 import scala.language.postfixOps
 import scala.util.Try
-import org.w3.banana.RDF
-
-import deductions.runtime.services.TypeAddition
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.DefaultConfiguration
 
 /**
  * deductions.runtime.jenaTypeAdditionApp
@@ -25,9 +24,6 @@ object TypeAdditionApp extends  {
     with App
     with ImplementationSettings.RDFCache
     with TypeAdditionAppTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
-
-
-	import config._
   val uris: ArraySeq[Rdf#URI] = args map { p => ops.URI(p) }
   run()
 }

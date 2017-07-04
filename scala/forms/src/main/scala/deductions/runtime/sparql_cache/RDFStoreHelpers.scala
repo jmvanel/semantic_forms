@@ -1,15 +1,12 @@
 package deductions.runtime.sparql_cache
 
-import org.apache.log4j.Logger
-import java.net.URL
-import org.w3.banana.diesel._
-import org.w3.banana.RDF
-import org.w3.banana.io.RDFLoader
-import scala.util.Try
-import scala.util.Success
-import scala.util.Failure
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.services.Configuration
+import org.apache.log4j.Logger
+import org.w3.banana.RDF
+import org.w3.banana.io.RDFLoader
+
+import scala.util.{Failure, Success, Try}
 
 /**
  * Helpers for RDF Store
@@ -25,9 +22,6 @@ trait RDFStoreHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DA
   implicit val rdfLoader: RDFLoader[Rdf, Try]
 
   import config._
-  import ops._
-  import rdfStore.transactorSyntax._
-  import rdfStore.graphStoreSyntax._
 
   /**
    * store URI in a named graph,

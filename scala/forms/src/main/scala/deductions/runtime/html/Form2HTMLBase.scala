@@ -1,18 +1,12 @@
 package deductions.runtime.html
 
-import scala.util.Try
-
-import Form2HTML.urlEncode
 import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.Configuration
-import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.utils.I18NMessages
-import deductions.runtime.utils.RDFPrefixes
-import java.net.URLEncoder
-import deductions.runtime.utils.CSSClasses
-import scala.xml.NodeSeq
-import scala.xml.Elem
+import deductions.runtime.utils.{CSSClasses, I18NMessages, RDFPrefixes}
+
+import scala.util.Try
+import scala.xml.{Elem, NodeSeq}
 
 /** generate HTML from abstract Form : common parts for Display & edition */
 private[html] trait Form2HTMLBase[NODE, URI <: NODE]
@@ -29,7 +23,6 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
 
   lazy val prefixes = new RDFPrefixes[ImplementationSettings.Rdf]
 		  with ImplementationSettings.RDFModule	{}
-  import prefixes._
   
   def makeFieldLabel(preceding: formMod#Entry, field: formMod#Entry, editable: Boolean)
   (implicit form: FormModule[NODE, URI]#FormSyntax) = {
