@@ -1,18 +1,13 @@
 package deductions.runtime.html
 
-import scala.util.Try
-import scala.xml.NodeSeq
-
-import org.w3.banana.RDF
-
-import deductions.runtime.abstract_syntax.FormSyntaxJson
-import deductions.runtime.abstract_syntax.UnfilledFormFactory
+import deductions.runtime.abstract_syntax.{FormSyntaxJson, UnfilledFormFactory}
 import deductions.runtime.services.Configuration
 import deductions.runtime.sparql_cache.RDFCacheAlgo
-import deductions.runtime.utils.HTTPrequest
-import deductions.runtime.utils.I18NMessages
-import deductions.runtime.utils.RDFPrefixes
-import scala.util.Success
+import deductions.runtime.utils.{HTTPrequest, I18NMessages, RDFPrefixes}
+import org.w3.banana.RDF
+
+import scala.util.{Success, Try}
+import scala.xml.NodeSeq
 
 trait CreationFormAlgo[Rdf <: RDF, DATASET]
 extends RDFCacheAlgo[Rdf, DATASET]
@@ -24,7 +19,6 @@ with FormSyntaxJson[Rdf] {
   val config: Configuration
   val htmlGenerator: HtmlGeneratorInterface[Rdf#Node, Rdf#URI]
   import htmlGenerator._
-
   import ops._
   /** TODO also defined elsewhere */
   var actionURI = "/save"

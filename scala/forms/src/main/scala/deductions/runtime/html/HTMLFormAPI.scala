@@ -1,7 +1,9 @@
 package deductions.runtime.html
 
 import java.net.URI
+
 import deductions.runtime.abstract_syntax.FormModule
+
 import scala.xml.NodeSeq
 
 /**

@@ -1,19 +1,15 @@
 package deductions.runtime.html
 
-import scala.util.Failure
-import scala.util.Success
-import scala.xml.NodeSeq
-import scala.xml.Text
-
-import org.w3.banana.RDF
-
 import deductions.runtime.data_cleaning.BlankNodeCleanerIncremental
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.sparql_cache.algos.StatisticsGraph
 import deductions.runtime.utils.HTTPrequest
 import deductions.runtime.views.FormHeader
-import scala.util.Try
+import org.w3.banana.RDF
+
 import scala.concurrent.Future
+import scala.util.{Failure, Success, Try}
+import scala.xml.{NodeSeq, Text}
 
 trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]

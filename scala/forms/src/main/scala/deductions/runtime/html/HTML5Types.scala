@@ -1,9 +1,7 @@
 package deductions.runtime.html
 
 //import org.w3.banana.jena.JenaModule
-import org.w3.banana.RDFOpsModule
-import org.w3.banana.XSDPrefix
-import org.w3.banana.RDF
+import org.w3.banana.{RDF, XSDPrefix}
 //import org.w3.banana.jena.Jena
 import org.w3.banana.RDFOps
 

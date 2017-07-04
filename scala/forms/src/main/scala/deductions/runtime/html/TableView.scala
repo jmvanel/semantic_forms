@@ -1,10 +1,10 @@
 package deductions.runtime.html
 
-import scala.xml.NodeSeq
-import scala.collection.mutable
-
 import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.utils.UnicityList
+
+import scala.collection.mutable
+import scala.xml.NodeSeq
 
 /** Table View; base for a future editable Table View */
 trait TableView[NODE, URI <: NODE]

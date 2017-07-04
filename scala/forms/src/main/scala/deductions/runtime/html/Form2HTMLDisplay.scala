@@ -1,23 +1,16 @@
 package deductions.runtime.html
 
-import java.net.URLEncoder
-
-import deductions.runtime.abstract_syntax.FormModule
 import org.joda.time.DateTime
 
-import scala.xml.NodeSeq
-import scala.xml.Text
-import scala.xml.Unparsed
+import scala.xml.{NodeSeq, Unparsed}
 //import deductions.runtime.views.ToolsPage
 import deductions.runtime.utils.HTTPrequest
-import scala.xml.UnprefixedAttribute
 
 /** generate HTML from abstract Form for Display (Read only) */
 trait Form2HTMLDisplay[NODE, URI <: NODE]
   extends Form2HTMLBase[NODE, URI] {
 
   import config._
-  import prefixes._
 
 
   private[html] def createHTMLiteralReadonlyField(l: formMod#LiteralEntry): NodeSeq =

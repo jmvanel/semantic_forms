@@ -1,9 +1,9 @@
 package deductions.runtime.html
 
-import scala.xml.NodeSeq
-
 import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.utils.HTTPrequest
+
+import scala.xml.NodeSeq
 
 /**
  * Pure abstract Interface for HTML Generation from abstract FormSyntax;

@@ -1,8 +1,8 @@
 package deductions.runtime.html
 
-import scala.xml.Elem
 import java.net.URLEncoder
-import scala.xml.NodeSeq
+
+import scala.xml.Elem
 
 /** GUI integration: rdfviewer, ... */
 trait BasicWidgets {
