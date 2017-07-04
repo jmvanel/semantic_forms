@@ -1,9 +1,8 @@
 package deductions.runtime.html
 
 import deductions.runtime.abstract_syntax.{FormSyntaxJson, UnfilledFormFactory}
-import deductions.runtime.services.Configuration
 import deductions.runtime.sparql_cache.RDFCacheAlgo
-import deductions.runtime.utils.{HTTPrequest, I18NMessages, RDFPrefixes}
+import deductions.runtime.utils.{Configuration, HTTPrequest, I18NMessages, RDFPrefixes}
 import org.w3.banana.RDF
 
 import scala.util.{Success, Try}

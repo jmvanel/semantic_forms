@@ -4,9 +4,8 @@ import java.io.{File, PrintStream}
 
 import deductions.runtime.abstract_syntax.FieldsInference
 import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
-import deductions.runtime.services.{Configuration, DefaultConfiguration}
 import deductions.runtime.sparql_cache.RDFCacheAlgo
-import deductions.runtime.utils.RDFHelpers
+import deductions.runtime.utils.{Configuration, DefaultConfiguration, RDFHelpers}
 import org.w3.banana.{OWLPrefix, Prefix, RDF, RDFOps, RDFPrefix}
 
 import scala.collection.immutable.ListMap

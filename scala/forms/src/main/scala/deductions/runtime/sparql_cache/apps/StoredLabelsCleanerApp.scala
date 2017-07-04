@@ -2,7 +2,7 @@ package deductions.runtime.sparql_cache.apps
 
 import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.DefaultConfiguration
 
 /** How to enumerate the languages used by all users? */
 object StoredLabelsCleanerApp extends {

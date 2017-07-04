@@ -1,11 +1,10 @@
 package deductions.runtime.views
 
+import deductions.runtime.utils.Configuration
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.xml.Elem
-import scala.xml.NodeSeq
-
-import deductions.runtime.services.Configuration
+import scala.xml.{Elem, NodeSeq}
 
 trait Results {
   val config: Configuration

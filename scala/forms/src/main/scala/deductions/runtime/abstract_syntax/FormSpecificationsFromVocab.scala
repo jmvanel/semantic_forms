@@ -5,22 +5,16 @@ $Id$
  */
 package deductions.runtime.abstract_syntax
 
-import java.io.File
-import java.io.FileOutputStream
-import java.io.StringReader
+import java.io.{File, FileOutputStream, StringReader}
+import java.net.URL
 
-import scala.io.Source
-import scala.language.existentials
-import scala.language.postfixOps
-
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.utils.{DefaultConfiguration, RDFPrefixes}
 import org.w3.banana.RDF
 
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.utils.RDFPrefixes
+import scala.io.Source
+import scala.language.{existentials, postfixOps}
 import scala.util.Try
-import java.net.URL
 
 /** input file for vocabulary; output in new file with ".formspec.ttl" suffix */
 object FormSpecificationsFromVocabApp extends RDFStoreLocalJena1Provider

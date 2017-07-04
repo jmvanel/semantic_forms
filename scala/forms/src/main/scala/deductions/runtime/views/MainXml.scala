@@ -1,10 +1,8 @@
 package deductions.runtime.views
 
-import deductions.runtime.services.Configuration
-
-import scala.xml.NodeSeq
 import deductions.runtime.utils.I18NMessages
 
+import scala.xml.NodeSeq
 import scala.xml.NodeSeq.seqToNodeSeq
 
 /** HTML page skeleton for the generic SF application */

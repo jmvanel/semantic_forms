@@ -1,9 +1,7 @@
 package deductions.runtime.utils
 
-import org.scalatest.FunSuite
-
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.DefaultConfiguration
+import org.scalatest.FunSuite
 
 class TestRDFHelpers0
     extends FunSuite

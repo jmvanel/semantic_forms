@@ -1,12 +1,10 @@
 package deductions.runtime.abstract_syntax
 
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.utils.DefaultConfiguration
 import org.scalatest.FunSuite
 import org.w3.banana.jena.JenaModule
-
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.sparql_cache.RDFCacheAlgo
 
 class InstanceLabelsInferenceMemoryTest extends FunSuite
     with JenaModule
@@ -17,7 +15,6 @@ class InstanceLabelsInferenceMemoryTest extends FunSuite
     override val useTextQuery = false
   }
   import ops._
-  import rdfStore.transactorSyntax._
 
   test("TDB contains label") {
     val uri = URI("http://jmvanel.free.fr/jmv.rdf#me")

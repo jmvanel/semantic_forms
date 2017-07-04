@@ -1,13 +1,8 @@
 package deductions.runtime.utils
 
-import java.net.InetAddress
-import java.net.URLDecoder
-import java.net.URLEncoder
-import java.net.NetworkInterface
+import java.net._
+
 import scala.collection.JavaConversions._
-import java.net.Inet4Address
-import java.net.URI
-import deductions.runtime.services.Configuration
 
 /**
  * Management of URI policy: how are URI created by the application
@@ -18,10 +13,7 @@ trait URIManagement extends URIHelpers {
 
   val config: Configuration
 //  import config._
-  import config.defaultInstanceURIHostPrefix
-  import config.relativeURIforCreatedResourcesByForm
-  import config.serverPort
-  import config.useLocalHostPrefixForURICreation
+  import config.{defaultInstanceURIHostPrefix, relativeURIforCreatedResourcesByForm, serverPort, useLocalHostPrefixForURICreation}
 
   def makeId(request: HTTPrequest): String = {
     makeId(instanceURIPrefix(request))

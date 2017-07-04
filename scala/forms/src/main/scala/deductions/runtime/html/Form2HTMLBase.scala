@@ -2,8 +2,7 @@ package deductions.runtime.html
 
 import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.Configuration
-import deductions.runtime.utils.{CSSClasses, I18NMessages, RDFPrefixes}
+import deductions.runtime.utils.{CSSClasses, Configuration, I18NMessages, RDFPrefixes}
 
 import scala.util.Try
 import scala.xml.{Elem, NodeSeq}

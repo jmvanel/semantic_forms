@@ -6,10 +6,10 @@ import java.text.SimpleDateFormat
 import java.util.{Calendar, Date}
 
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.{DefaultConfiguration, SPARQLHelpers}
-import deductions.runtime.utils.{RDFHelpers, RDFPrefixes}
-import org.w3.banana.{PointedGraph, PointedGraphs, RDF, RDFOps}
+import deductions.runtime.services.SPARQLHelpers
+import deductions.runtime.utils.{DefaultConfiguration, RDFHelpers, RDFPrefixes}
 import org.w3.banana.io._
+import org.w3.banana.{PointedGraph, PointedGraphs, RDF, RDFOps}
 
 import scala.util.{Success, Try}
 

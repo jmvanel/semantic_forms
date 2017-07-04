@@ -1,17 +1,11 @@
 package controllers
 
-import play.api.mvc.Controller
-import play.api.mvc.Action
-import play.api.mvc.Request
-
 import deductions.runtime.html.Form2HTMLObject
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.CentralSemanticController
-import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.utils.HTTPrequest
+import deductions.runtime.services.{CentralSemanticController, GeoController, TypicalSFDependencies}
 import deductions.runtime.user.RegisterPage
-import deductions.runtime.services.GeoController
-import deductions.runtime.services.TypicalSFDependencies
+import deductions.runtime.utils.DefaultConfiguration
+import play.api.mvc.{Action, Controller}
 
 object SemanticController extends Controller
     with ImplementationSettings.RDFCache

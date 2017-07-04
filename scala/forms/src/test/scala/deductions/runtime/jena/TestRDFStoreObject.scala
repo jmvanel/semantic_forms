@@ -1,32 +1,23 @@
 package deductions.runtime.jena
 
-import scala.util.Try
-
-import org.w3.banana.RDFOpsModule
-import org.w3.banana.SparqlGraphModule
-import org.scalatest.FunSuite
-import org.scalatest.Ignore
-import org.w3.banana.SparqlEngine
-import org.w3.banana.SparqlOps
-
-import org.w3.banana.RDF
-
 import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.DefaultConfiguration
+import org.scalatest.FunSuite
+import org.w3.banana.{RDF, SparqlEngine, SparqlOps}
+
+import scala.util.Try
 
 trait TestRDFStoreObject[Rdf <: RDF, DATASET]
     extends FunSuite
     //    with RDFOpsModule
     //    with SparqlGraphModule
     with RDFStoreLocalProvider[Rdf, DATASET] {
-  import ops._
   implicit val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]
   implicit val sparqlOps: SparqlOps[Rdf]
 
   import ops._
-  import sparqlOps._
-  import sparqlGraph._
   import sparqlGraph.sparqlEngineSyntax._
+  import sparqlOps._
 
   //  def makeRDFStore(): RDFStoreLocalProvider[Rdf, DATASET]
   def makeGraph(): Rdf#Graph

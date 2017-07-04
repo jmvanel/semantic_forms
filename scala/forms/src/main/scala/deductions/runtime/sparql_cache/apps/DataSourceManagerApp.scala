@@ -3,8 +3,8 @@ package deductions.runtime.sparql_cache.apps
 import java.net.URL
 
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.sparql_cache.DataSourceManager
+import deductions.runtime.utils.DefaultConfiguration
 import org.w3.banana.jena.Jena
 
 /** deductions.runtime.jena.DataSourceManagerApp */

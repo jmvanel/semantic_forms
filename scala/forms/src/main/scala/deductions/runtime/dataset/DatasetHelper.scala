@@ -6,8 +6,6 @@ trait DatasetHelper[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET] {
 
 	import ops._
-  import rdfStore.graphStoreSyntax._
-  import rdfStore.transactorSyntax._
   
   /** replace all triples
    *  <subject> <predicate> ?O .

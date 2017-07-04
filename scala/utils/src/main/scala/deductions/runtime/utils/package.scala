@@ -3,8 +3,6 @@ package deductions.runtime
 //import org.apache.logging.log4j.LogManager
 //import org.apache.log4j.Logger
 
- import deductions.runtime.utils.Timer
-
 package object utils extends Timer {
 //  val logger = LogManager.getLogger("services")
 //

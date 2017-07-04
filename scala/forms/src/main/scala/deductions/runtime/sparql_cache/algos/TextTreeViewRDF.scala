@@ -3,7 +3,7 @@ package deductions.runtime.sparql_cache.algos
 import java.io.{FileInputStream, PrintStream}
 
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.DefaultConfiguration
 
 /**
  * Duplicates Detection for OWL; output: CSV, Grouped By labels of Datatype properties,

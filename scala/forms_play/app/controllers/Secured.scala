@@ -1,15 +1,8 @@
 package controllers
 
 import deductions.runtime.jena.ApplicationFacadeJena
-import deductions.runtime.services.Configuration
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.EssentialAction
-import play.api.mvc.Request
-import play.api.mvc.RequestHeader
-import play.api.mvc.Result
-import play.api.mvc.Results
-import play.api.mvc.Security
+import deductions.runtime.utils.Configuration
+import play.api.mvc._
 /**
  * Trait for user/password secured controllers
  *  cf https://github.com/playframework/playframework/blob/master/framework/src/play/src/main/scala/play/api/mvc/Security.scala

@@ -1,11 +1,9 @@
 package deductions.runtime.views
 
-import deductions.runtime.utils.I18NMessages
-import scala.xml.NodeSeq
-import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.DefaultConfiguration
-import org.w3.banana.jena.JenaModule
+import deductions.runtime.utils.{DefaultConfiguration, I18NMessages, RDFPrefixes}
+
+import scala.xml.NodeSeq
 
 /**
  * Buttons for loading/display/edit, search, and create;

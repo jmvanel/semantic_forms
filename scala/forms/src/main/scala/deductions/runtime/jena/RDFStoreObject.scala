@@ -2,22 +2,19 @@ package deductions.runtime.jena
 
 import java.io.File
 import java.nio.file.Paths
-import scala.collection.JavaConversions.asScalaIterator
-import org.apache.jena.riot.RiotException
-import org.apache.log4j.Logger
-import org.w3.banana.jena.Jena
-import org.w3.banana.jena.JenaDatasetStore
-import org.w3.banana.jena.JenaModule
-import org.apache.jena.graph.{ Graph => JenaGraph, Node => JenaNode, Triple => JenaTriple, _ }
-import org.apache.jena.query.{ QuerySolution, ResultSet, Query => JenaQuery }
-import org.apache.jena.query.DatasetFactory
-import org.apache.jena.tdb.TDBFactory
-import org.apache.jena.tdb.transaction.TransactionManager
-import org.apache.jena.update.UpdateRequest
+
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.jena.lucene.LuceneIndex
-import deductions.runtime.services.Configuration
 import deductions.runtime.utils.Timer
+import org.apache.jena.graph.{Graph => JenaGraph, Node => JenaNode, Triple => JenaTriple}
+import org.apache.jena.query.{DatasetFactory, Query => JenaQuery}
+import org.apache.jena.riot.RiotException
+import org.apache.jena.tdb.TDBFactory
+import org.apache.jena.tdb.transaction.TransactionManager
+import org.apache.log4j.Logger
+import org.w3.banana.jena.{Jena, JenaDatasetStore, JenaModule}
+
+import scala.collection.JavaConversions.asScalaIterator
 
 // TODO rename RDFStoreLocalJenaProvider
 
@@ -51,7 +48,6 @@ trait RDFStoreLocalJenaProvider
 
   // CURRENTLY unused, but could be:  val config: Configuration
   import config._
-
   import ops._
   type DATASET = ImplementationSettings.DATASET
   /** very important that defensiveCopy=false, otherwise no update happens, and a big overhead for every operation */
@@ -132,7 +128,6 @@ trait RDFStoreLocalJenaProvider
 
 /** TODO implement independently of Jena */
 trait RDFGraphPrinter extends RDFStoreLocalJena1Provider {
-  import rdfStore.transactorSyntax._
   def printGraphList() {
     rdfStore.r(dataset, {
       val lgn = dataset.asDatasetGraph().listGraphNodes()

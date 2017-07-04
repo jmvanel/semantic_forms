@@ -4,7 +4,7 @@ import java.io.FileInputStream
 
 import deductions.runtime.connectors.CSVImporter
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.DefaultConfiguration
 import org.w3.banana.{OWLPrefix, PointedGraph, RDF, RDFOps, RDFPrefix, RDFSPrefix}
 
 object ReplaceSubclassWithPropertyApp extends  {

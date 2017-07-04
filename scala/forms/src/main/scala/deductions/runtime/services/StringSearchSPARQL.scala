@@ -2,14 +2,11 @@ package deductions.runtime.services
 
 import java.net.URLEncoder
 
+import deductions.runtime.utils.{Configuration, RDFPrefixes}
+import org.w3.banana.RDF
+
 import scala.concurrent.Future
 import scala.xml.NodeSeq
-
-import org.w3.banana.RDF
-import org.w3.banana.RDFSPrefix
-
-import deductions.runtime.utils.RDFPrefixes
-import org.w3.banana.Prefix
 
 /** String Search with simple SPARQL or SPARQL + Lucene 
  *  (see trait LuceneIndex) */

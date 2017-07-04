@@ -1,15 +1,9 @@
 package deductions.runtime.services
 
+import deductions.runtime.jena.{ImplementationSettings, RDFCache, RDFStoreLocalJena1Provider}
+import deductions.runtime.utils.DefaultConfiguration
 import org.scalatest.FunSuite
-import org.w3.banana.RDFOpsModule
-import org.w3.banana.SparqlGraphModule
-import org.w3.banana.SparqlHttpModule
-import org.w3.banana.SparqlOpsModule
-import org.w3.banana.jena.Jena
-
-import deductions.runtime.jena.RDFCache
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.jena.ImplementationSettings
+import org.w3.banana.{RDFOpsModule, SparqlGraphModule, SparqlHttpModule, SparqlOpsModule}
 
 //@Ignore
 class TestBrowsableGraph

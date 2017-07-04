@@ -1,18 +1,12 @@
 package deductions.runtime.html
 
-import java.nio.file.Files
-import java.nio.file.Paths
+import java.nio.file.{Files, Paths}
+
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.utils.DefaultConfiguration
 import org.apache.log4j.Logger
-
 import org.junit.Assert
-import org.scalatest.Finders
-import org.scalatest.FunSuite
-import org.scalatest.BeforeAndAfter
-
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.utils.FileUtils
-import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.jena.ImplementationSettings
+import org.scalatest.{BeforeAndAfter, FunSuite}
 
 class TestTableView extends FunSuite
     with ImplementationSettings.RDFModule

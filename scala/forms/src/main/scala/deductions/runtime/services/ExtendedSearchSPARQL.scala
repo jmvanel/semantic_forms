@@ -1,11 +1,10 @@
 package deductions.runtime.services
 
-import scala.concurrent.Future
-import scala.xml.NodeSeq
-
+import deductions.runtime.utils.RDFPrefixes
 import org.w3.banana.RDF
 
-import deductions.runtime.utils.RDFPrefixes
+import scala.concurrent.Future
+import scala.xml.NodeSeq
 
 /**
  * Broader "interest" search in simple search results page

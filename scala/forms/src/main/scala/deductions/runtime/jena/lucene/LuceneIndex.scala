@@ -1,24 +1,16 @@
 package deductions.runtime.jena.lucene
 
-import java.io.File
-
-import org.apache.jena.query.text.EntityDefinition
-import org.apache.jena.query.text.TextDatasetFactory
+import org.apache.jena.query.text.{EntityDefinition, TextDatasetFactory}
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.store.NIOFSDirectory
-import org.apache.lucene.util.Version
 //import org.apache.solr.client.solrj.SolrServer
 //import org.apache.solr.client.solrj.impl.HttpSolrServer
 
-import org.w3.banana.FOAFPrefix
-import org.w3.banana.RDFOps
-import org.w3.banana.RDFSPrefix
-
-import deductions.runtime.services.Configuration
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.utils.RDFPrefixes
-import org.w3.banana.Prefix
 import java.nio.file.Paths
+
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.utils.{Configuration, RDFPrefixes}
+import org.w3.banana.{FOAFPrefix, Prefix, RDFOps, RDFSPrefix}
 
 /**
  * see https://jena.apache.org/documentation/query/text-query.html
@@ -28,10 +20,8 @@ trait LuceneIndex // [Rdf <: RDF]
     extends RDFPrefixes[ImplementationSettings.Rdf]
 {
   val config: Configuration
-  import config._
 
   implicit val ops: RDFOps[ImplementationSettings.Rdf]
-  import ops._
 
   /** cf trait InstanceLabelsInference */
   val rdfIndexing: EntityDefinition = {

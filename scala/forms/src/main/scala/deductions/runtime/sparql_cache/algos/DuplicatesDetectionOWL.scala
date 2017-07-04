@@ -3,7 +3,7 @@ package deductions.runtime.sparql_cache.algos
 import java.io.{FileInputStream, PrintStream}
 
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.{Configuration, DefaultConfiguration}
+import deductions.runtime.utils.{Configuration, DefaultConfiguration}
 import org.w3.banana.{RDF, RDFOps}
 
 import scala.collection.immutable.ListMap

@@ -2,8 +2,8 @@ package deductions.runtime.sparql_cache.apps
 
 import deductions.runtime.DependenciesForApps
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.sparql_cache.{CommonVocabulariesLoaderTrait, FormSpecificationsLoaderTrait}
+import deductions.runtime.utils.DefaultConfiguration
 import org.w3.banana.RDF
 
 /**

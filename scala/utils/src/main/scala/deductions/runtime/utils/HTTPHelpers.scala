@@ -1,7 +1,5 @@
 package deductions.runtime.utils
 
-import deductions.runtime.services.Configuration
-
 trait HTTPHelpers {
   val config: Configuration
   import config._

@@ -1,26 +1,15 @@
 package deductions.runtime.services
 
-import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits
-import scala.concurrent.duration.DurationInt
+import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.jena.lucene.LuceneIndex
+import deductions.runtime.utils.{DefaultConfiguration, FileUtils}
+import org.scalatest.{BeforeAndAfterAll, FunSuite}
+import org.w3.banana.RDF
+import org.w3.banana.io.{RDFReader, RDFXML}
+
 import scala.language.postfixOps
 import scala.util.Try
-
-import org.scalatest.BeforeAndAfterAll
-import org.scalatest.Finders
-import org.scalatest.FunSuite
-
-import org.w3.banana.RDF
-import org.w3.banana.io.RDFReader
-import org.w3.banana.io.RDFXML
-
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.utils.FileUtils
-import deductions.runtime.jena.lucene.LuceneIndex
-import deductions.runtime.jena.ImplementationSettings
-import scala.util.Success
-import scala.util.Failure
 
 /** experiment with bindings in SPARQL executions */
 trait TestSPARQLTrait[Rdf <: RDF, DATASET] extends FunSuite
@@ -31,7 +20,6 @@ trait TestSPARQLTrait[Rdf <: RDF, DATASET] extends FunSuite
   val rdfXMLReader: RDFReader[Rdf, Try, RDFXML]
   import ops._
   import rdfStore.sparqlEngineSyntax._
-  import rdfStore.sparqlUpdateSyntax._
   import rdfStore.transactorSyntax._
   import sparqlOps._
 

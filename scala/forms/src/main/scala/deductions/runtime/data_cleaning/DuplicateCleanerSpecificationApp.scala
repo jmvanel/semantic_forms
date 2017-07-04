@@ -1,14 +1,12 @@
 package deductions.runtime.data_cleaning
 
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.sparql_cache.RDFCacheAlgo
-import java.io.File
-import deductions.runtime.services.SPARQLHelpers
-import java.io.FileWriter
+import java.io.{File, FileInputStream}
+
 import deductions.runtime.connectors.CSVImporter
-import java.io.FileInputStream
-import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.services.SPARQLHelpers
+import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.utils.DefaultConfiguration
 
 /**
  * merges Duplicates in given file(s),
@@ -39,7 +37,6 @@ object DuplicateCleanerSpecificationApp extends {
     with SPARQLHelpers[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with CSVImporter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
-  import config._
   import ops._
 
   override val databaseLocation = "/tmp/TDB" // TODO multi-platform temporary directory

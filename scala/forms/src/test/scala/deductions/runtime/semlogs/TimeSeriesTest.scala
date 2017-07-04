@@ -1,13 +1,10 @@
 package deductions.runtime.semlogs
 
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.utils.DefaultConfiguration
 import org.junit.Assert
 import org.scalatest.FunSuite
-import org.w3.banana.RDF
-import org.w3.banana.XSDPrefix
-
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.services.DefaultConfiguration
+import org.w3.banana.{RDF, XSDPrefix}
 
 trait TimeSeriesTest[Rdf <: RDF, DATASET] extends FunSuite with TimeSeries[Rdf, DATASET] {
   

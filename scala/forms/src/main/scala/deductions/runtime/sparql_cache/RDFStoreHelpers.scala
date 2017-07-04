@@ -1,7 +1,7 @@
 package deductions.runtime.sparql_cache
 
 import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.services.Configuration
+import deductions.runtime.utils.Configuration
 import org.apache.log4j.Logger
 import org.w3.banana.RDF
 import org.w3.banana.io.RDFLoader

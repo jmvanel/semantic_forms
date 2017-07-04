@@ -1,15 +1,11 @@
 package deductions.runtime.services
 
-import deductions.runtime.utils.HTTPrequest
-import scala.xml.NodeSeq
-import org.w3.banana.RDF
-import deductions.runtime.sparql_cache.algos.GeoPath
-import deductions.runtime.utils.RDFPrefixes
-import deductions.runtime.abstract_syntax.FormSyntaxFromSPARQL
-import deductions.runtime.abstract_syntax.FormSyntaxFactory
-import deductions.runtime.html.TableView
-import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.html.HTML5TypesTrait
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.utils.{DefaultConfiguration, HTTPrequest, RDFPrefixes}
+import org.w3.banana.RDF
+
+import scala.xml.NodeSeq
 
 /**
  * global Controller for HTTP requests like /page?feature=dbpedia:CMS
@@ -47,6 +43,7 @@ object NullSemanticController extends SemanticController {
 
 /** should be in first position in inheritance */
 trait TypicalSFDependencies extends ImplementationSettings.RDFCache
-with HTML5TypesTrait[ImplementationSettings.Rdf] {
+with HTML5TypesTrait[ImplementationSettings.Rdf]
+with DefaultConfiguration{
     override implicit val config = new DefaultConfiguration {}
 }

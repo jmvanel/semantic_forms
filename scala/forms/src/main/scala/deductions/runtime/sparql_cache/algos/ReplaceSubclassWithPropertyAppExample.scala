@@ -3,7 +3,7 @@ package deductions.runtime.sparql_cache.algos
 import java.io.{FileInputStream, FileOutputStream}
 
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.DefaultConfiguration
 import org.w3.banana.OWLPrefix
 
 /**

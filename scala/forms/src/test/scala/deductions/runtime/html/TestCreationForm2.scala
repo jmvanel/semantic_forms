@@ -1,25 +1,16 @@
 package deductions.runtime.html
 
-import java.nio.file.Files
-import java.nio.file.Paths
+import java.nio.file.{Files, Paths}
 
-import scala.util.Try
-
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.utils.{DefaultConfiguration, FileUtils, RDFPrefixes}
 import org.apache.log4j.Logger
-import org.scalatest.BeforeAndAfterAll
-import org.scalatest.Finders
-import org.scalatest.FunSuite
-import org.w3.banana.RDF
-import org.w3.banana.RDFOps
-import org.w3.banana.io.RDFWriter
-import org.w3.banana.io.Turtle
+import org.scalatest.{BeforeAndAfterAll, FunSuite}
+import org.w3.banana.{RDF, RDFOps}
+import org.w3.banana.io.{RDFWriter, Turtle}
 import org.w3.banana.jena.JenaModule
 
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.utils.FileUtils
-import deductions.runtime.utils.RDFPrefixes
+import scala.util.Try
 
 class TestCreationForm2Jena extends {
     override val config = new DefaultConfiguration{}

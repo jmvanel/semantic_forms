@@ -2,12 +2,11 @@ package deductions.runtime.jena
 
 import java.io.File
 
+import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.utils.DefaultConfiguration
 import org.apache.jena.tdb.TDBFactory
 import org.scalatest.FunSuite
 import org.w3.banana.jena.JenaModule
-
-import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.sparql_cache.RDFCacheAlgo
 
 object TestJenaHelpersApp extends App with TestJenaHelpersRaw {
   test()

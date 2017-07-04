@@ -3,8 +3,8 @@ package deductions.runtime.sparql_cache.apps
 import java.net.URL
 
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.sparql_cache.algos.ChildrenDocumentsFetcher
+import deductions.runtime.utils.DefaultConfiguration
 
 /** will be used for machine learning */
 object ChildrenFetcherApp extends {

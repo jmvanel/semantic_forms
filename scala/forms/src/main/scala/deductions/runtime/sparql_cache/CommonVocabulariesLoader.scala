@@ -2,7 +2,7 @@ package deductions.runtime.sparql_cache
 
 import deductions.runtime.DependenciesForApps
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.DefaultConfiguration
 import deductions.runtime.utils.RDFPrefixes
 import org.apache.log4j.Logger
 import org.w3.banana.{CertPrefix, DCPrefix, DCTPrefix, FOAFPrefix, LDPPrefix, OWLPrefix, Prefix, RDF, RDFPrefix, RDFSPrefix, WebACLPrefix}

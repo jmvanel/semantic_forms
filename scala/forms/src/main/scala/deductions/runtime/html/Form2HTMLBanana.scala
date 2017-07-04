@@ -1,6 +1,6 @@
 package deductions.runtime.html
 
-import deductions.runtime.services.Configuration
+import deductions.runtime.utils.Configuration
 import org.w3.banana.{RDF, RDFOps}
 
 /**
