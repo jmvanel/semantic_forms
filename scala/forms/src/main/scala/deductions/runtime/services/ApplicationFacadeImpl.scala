@@ -56,7 +56,7 @@ import deductions.runtime.jena.ImplementationSettings
  *	def formData(uri: String, blankNode: String = "", Edit: String = "", formuri: String = ""): String
  * 
  */
-trait ApplicationFacadeImpl[RDF, DATASET]
+trait ApplicationFacadeImpl[Rdf, DATASET]
     extends ImplementationSettings.RDFModule
     with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with TriplesViewWithTitle[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
