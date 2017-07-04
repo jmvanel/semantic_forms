@@ -1,7 +1,8 @@
 package controllers
 
-import deductions.runtime.jena.ApplicationFacadeJena
-import deductions.runtime.services.CORS
+
+import deductions.runtime.jena.RDFStoreLocalJenaProvider
+import deductions.runtime.services.{ApplicationFacadeImpl, CORS}
 import deductions.runtime.utils.{Configuration, HTTPrequest, RDFPrefixes, URIManagement}
 import play.api.http.MediaRange
 import play.api.mvc._
@@ -9,7 +10,6 @@ import views.MainXmlWithHead
 
 import scala.util.{Failure, Success, Try}
 import scala.xml.NodeSeq
-//import java.nio.file.Files
 import java.io.File
 
 import deductions.runtime.abstract_syntax.{FormSyntaxFactory, FormSyntaxFromSPARQL}
@@ -28,7 +28,7 @@ import play.api.mvc.{AnyContentAsRaw, AnyContentAsText, RawBuffer}
 /** main controller 
  *  TODO split HTML pages & HTTP services */
 trait ApplicationTrait extends Controller
-    with ApplicationFacadeJena
+    with ApplicationFacadeImpl[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with LanguageManagement
     with Secured
     with MainXmlWithHead
@@ -40,6 +40,7 @@ trait ApplicationTrait extends Controller
     with LoadService[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with FormSyntaxFactory[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with FormSyntaxFromSPARQL[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with RDFStoreLocalJenaProvider
 {
 
 	val config: Configuration

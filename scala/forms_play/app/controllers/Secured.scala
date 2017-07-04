@@ -1,6 +1,8 @@
 package controllers
 
-import deductions.runtime.jena.ApplicationFacadeJena
+
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.ApplicationFacadeImpl
 import deductions.runtime.utils.Configuration
 import play.api.mvc._
 /**
@@ -8,7 +10,7 @@ import play.api.mvc._
  *  cf https://github.com/playframework/playframework/blob/master/framework/src/play/src/main/scala/play/api/mvc/Security.scala
  */
 trait Secured
-    extends ApplicationFacadeJena
+    extends ApplicationFacadeImpl[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with Results {
 
   val config: Configuration
@@ -43,7 +45,7 @@ trait Secured
     if(loginActivated)
       withAuth { username =>
         implicit request =>
-          impl.findUser(username).map { user =>
+          findUser(username).map { user =>
             fun(user)(request)
           }.getOrElse(onUnauthorized(request))
       }
