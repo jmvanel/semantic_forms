@@ -108,7 +108,7 @@ trait GeoPath[Rdf <: RDF, DATASET]
         val pathForMobile = getPathForMobile(mobile, graph)
         println( s"pathForMobile size ${pathForMobile.size}")
         for (day <- days) yield {
-          println(s"\tday ${day}");
+          logger.debug(s"\tday ${day}");
           val begin = day._1
           val end = day._2
           val dist = getPathLengthForMobileInterval2(mobile, begin, end, pathForMobile)
@@ -159,7 +159,7 @@ trait GeoPath[Rdf <: RDF, DATASET]
   /** get Path Length in kilometers */
   private def getPathLength(graph: Iterable[PointedGraph[Rdf]]): Float = {
     def pow2(v: Float) = v * v
-    println(s"\tin getPathLength size ${graph.size}")
+    logger.debug(s"\tin getPathLength size ${graph.size}")
     val coords = for (
       triplesAboutPoint <- graph;
 //      _ = println(s"graph size ${graph.size}");
@@ -172,7 +172,7 @@ trait GeoPath[Rdf <: RDF, DATASET]
         case _ => Float.NaN // 0f
       }
     ) yield {
-    	println(s"in getPathLength triplesAboutPoint ${triplesAboutPoint.pointer} (long, lat) ${(long, lat)}")
+    	logger.debug(s"in getPathLength triplesAboutPoint ${triplesAboutPoint.pointer} (long, lat) ${(long, lat)}")
       (long, lat) }
     
     var distanceInDegrees = 0f
@@ -186,7 +186,7 @@ trait GeoPath[Rdf <: RDF, DATASET]
           b
         }
     		)
-    println( s"\tdistanceInDegrees $distanceInDegrees")
+    logger.debug( s"\tdistanceInDegrees $distanceInDegrees")
     distanceInDegrees * 6371 * Math.PI / 180 toFloat
   }
 
