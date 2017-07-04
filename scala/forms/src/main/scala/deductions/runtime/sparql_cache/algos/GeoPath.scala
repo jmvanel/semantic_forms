@@ -96,14 +96,15 @@ trait GeoPath[Rdf <: RDF, DATASET]
       Triple(mobile, geoloc("totalDistanceTraveled"), Literal(dist toString(), xsd.float))
     }
 
-    println(s"after global paths length computation\n");
+    println(s"after global paths length computation\n")
+    
+    val days: Seq[(String, String)] = generateDaysOfRelevantPeriod( Calendar.getInstance )
 
     def getPerDayDistances() = {
       val r = for (
           mobile <- mobiles
-        if (mobile == URI("imei:863977030715952") )
+//        if (mobile == URI("imei:863977030715952") )
       ) yield {
-        val days: Seq[(String, String)] = generateDaysOfMonth( Calendar.getInstance ) // new Date())
         val pathForMobile = getPathForMobile(mobile, graph)
         println( s"pathForMobile size ${pathForMobile.size}")
         for (day <- days) yield {
@@ -261,35 +262,42 @@ trait GeoPath[Rdf <: RDF, DATASET]
     //    val triplesAboutPoint = find(graph, ANY, rdf.typ, geoloc("Mobile"))
   }
 
-  /** generate Days Of current Month */
-  def generateDaysOfMonth(date: Calendar): Seq[(String, String)] = {
-    def makeBeginEndOfDay(begin: Calendar) = {
-//      val begin = Calendar.getInstance
-//      begin.setTime(date)
-      begin.set(Calendar.HOUR_OF_DAY, 0)
-      begin.set(Calendar.MINUTE, 0)
-      begin.set(Calendar.SECOND, 0)
-      begin.set(Calendar.MILLISECOND, 0)
+  /** generate Days Of relevant period: preceding and current Month */
+  def generateDaysOfRelevantPeriod(date: Calendar): Seq[(String, String)] = {
+    val dateOneMonthAgo = cloneCalendar(date)
+    dateOneMonthAgo.set(Calendar.MONTH,
+               date.get(Calendar.MONTH) - 1)
+    generateDaysOfMonth(dateOneMonthAgo) ++
+      generateDaysOfMonth(date)
+  }
 
-      val end = begin.clone().asInstanceOf[Calendar]
-      end.set(Calendar.HOUR_OF_DAY, 24)
-      (begin, end)
-    }    
-    // enumerate days of current mounth
-    val today = makeBeginEndOfDay(date)
-    val begin = today._1
-    val end = today._2
+  /** enumerate days of current mounth */
+  private def generateDaysOfMonth(date: Calendar) = {
+    val (begin, end) = makeBeginEndOfDay(date)
+    
     val daysInMonth = begin.getActualMaximum(Calendar.DAY_OF_MONTH)
-
     for( day <- 1 to daysInMonth) yield {
-      val beginOfDay = begin.clone().asInstanceOf[Calendar]
+      val beginOfDay = cloneCalendar(begin)
       beginOfDay.set(Calendar.DAY_OF_MONTH, day)
-      val endOfDay   = end.clone().asInstanceOf[Calendar]
+      val endOfDay   = cloneCalendar(end)
       endOfDay.set(Calendar.DAY_OF_MONTH, day)
       val df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
       (df.format(beginOfDay.getTime), df.format(endOfDay.getTime))
     } 
   }
+
+  private def makeBeginEndOfDay(begin: Calendar) = {
+    begin.set(Calendar.HOUR_OF_DAY, 0)
+    begin.set(Calendar.MINUTE, 0)
+    begin.set(Calendar.SECOND, 0)
+    begin.set(Calendar.MILLISECOND, 0)
+
+    val end = cloneCalendar(begin)
+    end.set(Calendar.HOUR_OF_DAY, 24)
+    (begin, end)
+  }
+
+  private def cloneCalendar(date: Calendar) = date.clone().asInstanceOf[Calendar]
 
   private def makeURI( s:String* ): String =
     s.mkString("", "/", "")
