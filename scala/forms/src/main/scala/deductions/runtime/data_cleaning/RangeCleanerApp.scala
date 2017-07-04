@@ -3,13 +3,9 @@ package deductions.runtime.data_cleaning
 import java.io.File
 
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.sparql_cache.RDFCacheAlgo
-import deductions.runtime.services.SPARQLHelpers
-import org.w3.banana.OWLPrefix
-import org.w3.banana.RDFSPrefix
+import deductions.runtime.utils.DefaultConfiguration
 import org.w3.banana.RDF
-import deductions.runtime.services.DefaultConfiguration
 
 /**
  * Removes the less specific Datatype.
@@ -34,8 +30,6 @@ object RangeCleanerApp extends {
 //	val config = new DefaultConfiguration {
 //    override val useTextQuery = false
 //  }
-	import config._
-	import ops._
 
   override val databaseLocation = "/tmp/TDB" // TODO multi-platform temporary directory
   override val deleteDatabaseLocation = true
@@ -58,8 +52,6 @@ trait RangeCleaner[Rdf <: RDF, DATASET]
     extends DuplicateCleaner[Rdf, DATASET]
 {
   import ops._
-  import rdfStore.graphStoreSyntax._
-  import rdfStore.transactorSyntax._
 
   /** the most specific Datatype (to be kept) is in first position */
   val rangePriorities = List(

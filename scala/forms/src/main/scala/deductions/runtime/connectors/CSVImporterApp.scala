@@ -1,14 +1,10 @@
 package deductions.runtime.connectors
 
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.InputStream
-import java.net.HttpURLConnection
-import java.net.URL
-import deductions.runtime.services.DefaultConfiguration
+import java.io.{File, FileInputStream, FileOutputStream, InputStream}
+import java.net.{HttpURLConnection, URL}
+
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import deductions.runtime.utils.DefaultConfiguration
 
 /**
  * App to transform CSV into a Turtle file;

@@ -1,28 +1,17 @@
 package controllers
 
-import play.api._
-import play.api.mvc._
-import play.api.data.Form
-import play.api.data.Forms
-import play.api.data.Forms._
 import deductions.runtime.services.Authentication
-
 import org.w3.banana.RDF
+import play.api.data.{Form, Forms}
+import play.api.data.Forms._
+import play.api.mvc._
 
 //import deductions.runtime.services.ApplicationFacade
-import deductions.runtime.services.ApplicationFacadeImpl
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
 import deductions.runtime.dataset.RDFStoreLocalUserManagement
-import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.jena.ImplementationSettings
-
-import play.i18n.Messages
-import play.api.i18n.MessagesApi
-import play.api.i18n.Lang
-import play.api.i18n.I18nSupport
+import deductions.runtime.utils.DefaultConfiguration
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import deductions.runtime.html.Form2HTMLBanana
 
 // class
 object Auth extends AuthTrait {

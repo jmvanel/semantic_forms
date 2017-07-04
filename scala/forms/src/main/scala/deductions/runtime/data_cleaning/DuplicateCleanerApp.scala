@@ -1,8 +1,7 @@
 package deductions.runtime.data_cleaning
 
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.utils.DefaultConfiguration
 
 /**
  * merges Duplicates for given class URI

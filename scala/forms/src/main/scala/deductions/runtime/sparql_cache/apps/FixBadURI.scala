@@ -6,9 +6,8 @@ import scala.io.Source
 //import scala.collection.JavaConverters
 
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.sparql_cache.RDFCacheAlgo
-import deductions.runtime.utils.URIHelpers
+import deductions.runtime.utils.{DefaultConfiguration, URIHelpers}
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.riot.RDFDataMgr
 import org.apache.jena.util.FileManager

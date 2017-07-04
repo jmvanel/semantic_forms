@@ -1,8 +1,7 @@
 package deductions.runtime.sparql_cache.apps
 
 import deductions.runtime.jena.{ImplementationSettings, RDFCache}
-import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.utils.RDFPrefixes
+import deductions.runtime.utils.{DefaultConfiguration, RDFPrefixes}
 
 /** download & Store Uri In self-Named Graph;
  *  remove previous Graph content */

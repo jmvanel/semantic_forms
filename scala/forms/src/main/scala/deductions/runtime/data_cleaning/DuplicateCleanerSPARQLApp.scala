@@ -3,8 +3,7 @@ package deductions.runtime.data_cleaning
 import java.io.FileInputStream
 
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.sparql_cache.algos.CSVFormatter
-import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.DefaultConfiguration
 
 object DuplicateCleanerSPARQLApp extends {
   override val config = new DefaultConfiguration {

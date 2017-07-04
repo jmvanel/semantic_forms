@@ -1,17 +1,10 @@
 package deductions.runtime.jena
 
-import scala.xml.NodeSeq
-
 import deductions.runtime.dataset.RDFStoreLocalUserManagement
 //import deductions.runtime.services.ApplicationFacade
-import deductions.runtime.services.ApplicationFacadeImpl
-import deductions.runtime.services.ApplicationFacadeInterface
-import deductions.runtime.services.Configuration
-import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.utils.HTTPrequest
-import deductions.runtime.html.Form2HTMLBanana
-import org.w3.banana.RDFOps
 import deductions.runtime.html.HtmlGeneratorInterface
+import deductions.runtime.services.ApplicationFacadeImpl
+import deductions.runtime.utils.Configuration
 
 /**
  * Application Facade implemented with Jena,

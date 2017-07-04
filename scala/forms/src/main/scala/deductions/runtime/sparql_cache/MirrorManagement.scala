@@ -18,7 +18,8 @@ import org.w3.banana.RDF
  * <u1> ?P ?O .
  */
 trait MirrorManagement[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
-  with SPARQLHelpers[Rdf, DATASET] {
+  with SPARQLHelpers[Rdf, DATASET]
+{
 
   import ops._
 

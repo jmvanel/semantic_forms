@@ -1,17 +1,13 @@
 package deductions.runtime.user
 
-import scala.xml.Text
-import scala.util.Success
-import scala.util.Failure
-import org.w3.banana.RDF
-import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
-import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
-import deductions.runtime.html.TriplesViewModule
-import deductions.runtime.html.CreationFormAlgo
+import deductions.runtime.abstract_syntax.{InstanceLabelsInferenceMemory, PreferredLanguageLiteral}
+import deductions.runtime.html.{CreationFormAlgo, TriplesViewModule}
 import deductions.runtime.services.StringSearchSPARQL
-import deductions.runtime.utils.I18NMessages
-import scala.xml.NodeSeq
-import deductions.runtime.services.Configuration
+import deductions.runtime.utils.{Configuration, I18NMessages}
+import org.w3.banana.RDF
+
+import scala.util.{Failure, Success}
+import scala.xml.{NodeSeq, Text}
 
 /** Register HTML Page */
 trait RegisterPage[Rdf <: RDF, DATASET]

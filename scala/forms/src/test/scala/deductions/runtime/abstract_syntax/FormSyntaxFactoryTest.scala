@@ -1,17 +1,14 @@
 package deductions.runtime.abstract_syntax
 
-import java.io.FileInputStream
-import java.io.FileOutputStream
+import java.io.{FileInputStream, FileOutputStream}
 
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.utils.DefaultConfiguration
 import org.apache.log4j.Logger
 import org.hamcrest.BaseMatcher
 import org.junit.Assert
 import org.scalatest.FunSuite
 import org.w3.banana.RDF
-
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.services.DefaultConfiguration
 
 class FormSyntaxFactoryTestJena extends FunSuite
     with RDFStoreLocalJena1Provider

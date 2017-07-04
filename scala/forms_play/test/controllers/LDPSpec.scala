@@ -1,28 +1,13 @@
 package controllers
 
-import scala.concurrent.duration.DurationInt
-
-import org.scalatestplus.play.OneAppPerTest
-import org.scalatestplus.play.PlaySpec
-
-import akka.util.Timeout
-import deductions.runtime.services.DefaultConfiguration
-import play.api.libs.iteratee.Enumerator
-import play.api.test.FakeRequest
-import play.api.test.Helpers
-import play.api.test.Helpers.charset
-import play.api.test.Helpers.contentAsString
-import play.api.test.Helpers.contentType
-import play.api.test.Helpers.defaultAwaitTimeout
-import play.api.test.Helpers.status
-import scala.concurrent.Future
-import play.api.mvc.Result
-
-import play.api.mvc._
-import play.api.test._
-import play.api.test.Helpers._
-import org.scalatestplus.play.OneAppPerSuite
 import akka.stream.Materializer
+import akka.util.Timeout
+import deductions.runtime.utils.DefaultConfiguration
+import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
+import play.api.test.{FakeRequest, Helpers}
+import play.api.test.Helpers.{charset, contentAsString, contentType, defaultAwaitTimeout, status, _}
+
+import scala.concurrent.duration.DurationInt
 import scala.language.postfixOps
 
 /** 

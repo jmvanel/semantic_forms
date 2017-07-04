@@ -1,8 +1,8 @@
 package deductions.runtime.sparql_cache.algos
 
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.{DefaultConfigurationProvider, SPARQLHelpers}
-import deductions.runtime.utils.RDFHelpers
+import deductions.runtime.services.SPARQLHelpers
+import deductions.runtime.utils.{DefaultConfigurationProvider, RDFHelpers}
 import org.w3.banana.RDF
 
 object UserNamedGraphsDispatcherApp

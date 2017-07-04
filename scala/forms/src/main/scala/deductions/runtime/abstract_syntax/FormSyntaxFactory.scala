@@ -5,20 +5,11 @@ $Id$
  */
 package deductions.runtime.abstract_syntax
 
+import deductions.runtime.utils.{Configuration, RDFHelpers, RDFPrefixes, Timer}
+import org.w3.banana.{PointedGraph, RDF, RDFPrefix, RDFSPrefix, XSDPrefix}
+
 import scala.collection.mutable
-import scala.language.existentials
-import scala.language.postfixOps
-
-import org.w3.banana.RDF
-import org.w3.banana.RDFPrefix
-import org.w3.banana.RDFSPrefix
-import org.w3.banana.XSDPrefix
-
-import deductions.runtime.services.Configuration
-import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.utils.RDFPrefixes
-import deductions.runtime.utils.Timer
-import org.w3.banana.PointedGraph
+import scala.language.{existentials, postfixOps}
 
 /** one of EditionMode, DisplayMode, CreationMode */
 abstract sealed class FormMode { val editable = true }
@@ -427,7 +418,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val rdfs = RDFSPrefix[Rdf]
 
     val precomputProp = PrecomputationsFromProperty(prop)
-    import precomputProp.{ prop => _, _ }
+    import precomputProp.{prop => _, _}
     
     def rdfListEntry = makeRDFListEntry(label, comment, prop, objet0, subject = subject)
 

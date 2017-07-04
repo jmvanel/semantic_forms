@@ -1,25 +1,17 @@
 package deductions.runtime.services
 
+import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.jena.lucene.LuceneIndex
+import deductions.runtime.utils.{DefaultConfiguration, FileUtils}
+import org.scalatest.{BeforeAndAfterAll, FunSuite}
+import org.w3.banana.RDF
+import org.w3.banana.io.{RDFReader, RDFXML}
+
 import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits
 import scala.concurrent.duration.DurationInt
 import scala.language.postfixOps
 import scala.util.Try
-
-import org.scalatest.BeforeAndAfterAll
-import org.scalatest.Finders
-import org.scalatest.FunSuite
-
-import org.w3.banana.RDF
-import org.w3.banana.io.RDFReader
-import org.w3.banana.io.RDFXML
-
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.utils.FileUtils
-import deductions.runtime.jena.lucene.LuceneIndex
-import deductions.runtime.jena.ImplementationSettings
-
 trait TestStringSearchTrait[Rdf <: RDF, DATASET] extends FunSuite
     with BeforeAndAfterAll
     with RDFStoreLocalProvider[Rdf, DATASET]

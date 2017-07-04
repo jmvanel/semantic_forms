@@ -1,8 +1,8 @@
 package controllers
 
 import deductions.runtime.jena.ApplicationFacadeJena
-import deductions.runtime.services.{CORS, Configuration}
-import deductions.runtime.utils.{HTTPrequest, RDFPrefixes, URIManagement}
+import deductions.runtime.services.CORS
+import deductions.runtime.utils.{Configuration, HTTPrequest, RDFPrefixes, URIManagement}
 import play.api.http.MediaRange
 import play.api.mvc._
 import views.MainXmlWithHead
@@ -15,7 +15,8 @@ import java.io.File
 import deductions.runtime.abstract_syntax.{FormSyntaxFactory, FormSyntaxFromSPARQL}
 import deductions.runtime.html.{Form2HTMLBanana, HTML5TypesTrait, TableView}
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.{DefaultConfiguration, LoadService}
+import deductions.runtime.services.LoadService
+import deductions.runtime.utils.DefaultConfiguration
 import play.api.mvc.{AnyContentAsRaw, AnyContentAsText, RawBuffer}
 
 //object Global extends GlobalSettings with Results {

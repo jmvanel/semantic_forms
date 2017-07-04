@@ -2,8 +2,7 @@ package deductions.runtime.sparql_cache
 
 import deductions.runtime.DependenciesForApps
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.utils.{HTTPHelpers, RDFPrefixes}
+import deductions.runtime.utils.{DefaultConfiguration, HTTPHelpers, RDFPrefixes}
 import org.w3.banana.RDF
 
 /**

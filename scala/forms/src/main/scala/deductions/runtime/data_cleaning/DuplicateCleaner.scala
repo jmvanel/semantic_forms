@@ -1,27 +1,18 @@
 package deductions.runtime.data_cleaning
 
-import java.io.File
-import java.io.FileOutputStream
-import java.io.FileWriter
+import java.io.{File, FileOutputStream, FileWriter}
 import java.util.Date
+
+import deductions.runtime.abstract_syntax.{InstanceLabelsInference2, PreferredLanguageLiteral}
+import deductions.runtime.services.SPARQLHelpers
+import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.utils.{Configuration, Maps, RDFPrefixes, URIManagement}
+import org.apache.commons.lang3.StringUtils
+import org.w3.banana.RDF
 
 import scala.language.postfixOps
 import scala.reflect.io.Path
-import scala.util.Try
-
-import org.w3.banana.RDF
-
-import deductions.runtime.abstract_syntax.InstanceLabelsInference2
-import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
-import deductions.runtime.services.Configuration
-import deductions.runtime.services.SPARQLHelpers
-import deductions.runtime.utils.URIManagement
-import deductions.runtime.sparql_cache.RDFCacheAlgo
-import deductions.runtime.utils.RDFPrefixes
-import deductions.runtime.utils.Maps
-import scala.util.Success
-import scala.util.Failure
-import org.apache.commons.lang3.StringUtils
+import scala.util.{Failure, Success, Try}
 
 /**
  * merge Duplicates among instances of given class URI;
@@ -42,7 +33,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
 
 	val config: Configuration
   import config._
-      import ops._
+  import ops._
    
   var originalGraph = emptyGraph
 

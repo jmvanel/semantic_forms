@@ -1,17 +1,10 @@
 package deductions.runtime.utils
 
-import org.w3.banana.PointedGraph
-import org.w3.banana.RDF
-import org.w3.banana.RDFOps
-import org.w3.banana.RDFPrefix
 import org.w3.banana.binder.PGBinder
-import org.w3.banana.OWLPrefix
-import org.w3.banana.Prefix
+import org.w3.banana.{OWLPrefix, PointedGraph, Prefix, RDF, RDFOps, RDFPrefix}
 
-import scala.util.Success
-import scala.util.Failure
+import scala.util.{Failure, Success}
 
-import deductions.runtime.services.Configuration
 //import deductions.runtime.abstract_syntax.UnfilledFormFactory
 
 import scala.util.control.NonFatal
@@ -22,7 +15,7 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
   implicit val ops: RDFOps[Rdf]
 //  val rdfh: RDFHelpers[Rdf] = this
 //  import rdfh.{ ops => _, _ }
-  import ops.{ rdf => _, _ }
+  import ops.{rdf => _, _}
 
   /** recursively iterate on the Rdf#Node through rdf:first and rdf:rest */
   def rdfListToSeq(listOp: Option[Rdf#Node], result: Seq[Rdf#Node] = Seq())(implicit graph: Rdf#Graph): Seq[Rdf#Node] = {

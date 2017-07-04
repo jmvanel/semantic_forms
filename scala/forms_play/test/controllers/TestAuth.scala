@@ -1,18 +1,14 @@
 package controllers
 
-import scala.concurrent.duration.DurationInt
-
-import org.scalatestplus.play.OneAppPerSuite
-import org.scalatestplus.play.PlaySpec
-
 import akka.util.Timeout
-import deductions.runtime.html.Form2HTMLBanana
+import deductions.runtime.html.{Form2HTMLBanana, Form2HTMLObject}
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.DefaultConfiguration
-import play.api.test.FakeRequest
-import play.api.test.Helpers
+import deductions.runtime.utils.DefaultConfiguration
+import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
+import play.api.test.{FakeRequest, Helpers}
 import play.api.test.Helpers.contentAsString
-import deductions.runtime.html.Form2HTMLObject
+
+import scala.concurrent.duration.DurationInt
 import scala.language.postfixOps
 
 class TestAuth

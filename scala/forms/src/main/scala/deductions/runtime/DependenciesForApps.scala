@@ -1,9 +1,6 @@
 package deductions.runtime
 
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.jena.RDFCache
+import deductions.runtime.jena.{ImplementationSettings, RDFCache, RDFStoreLocalJena1Provider}
 import deductions.runtime.sparql_cache.SitesURLForDownload
 
 /**

@@ -1,16 +1,10 @@
 package deductions.runtime.utils
 
-import org.w3.banana.RDF
-import java.net.URLEncoder
-import org.w3.banana.RDFOps
-import org.w3.banana.RDFPrefix
-import org.w3.banana.RDFSPrefix
-import org.w3.banana._
-  import java.net.{ URI => jURI }
-  import scala.util.Try
-  import scala.util.Success
-  import scala.util.Failure
-  import deductions.runtime.services.Configuration
+import java.net.{URI => jURI}
+
+import org.w3.banana.{RDF, RDFOps, RDFPrefix, RDFSPrefix, _}
+
+import scala.util.{Failure, Success, Try}
 
 /** database of Turtle prefixes;
  *  TODO possibility to add prefix-URI pairs;

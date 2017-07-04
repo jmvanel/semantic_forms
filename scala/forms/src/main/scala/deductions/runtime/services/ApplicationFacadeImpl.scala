@@ -1,47 +1,25 @@
 package deductions.runtime.services
 
+import java.io.{ByteArrayInputStream, OutputStream}
 import java.net.URLDecoder
-import java.net.URLEncoder
-import java.io.ByteArrayInputStream
-import java.io.OutputStream
+
+import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
+import deductions.runtime.data_cleaning.BlankNodeCleanerIncremental
+import deductions.runtime.html.{CreationFormAlgo, TriplesViewWithTitle}
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.semlogs.TimeSeries
+import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.sparql_cache.algos.StatisticsGraph
+import deductions.runtime.user.RegisterPage
+import deductions.runtime.utils.{CSSClasses, Configuration, HTTPrequest}
+import deductions.runtime.views.{FormHeader, Results, ToolsPage}
+import org.w3.banana.io._
+import play.api.libs.iteratee.Enumerator
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.Failure
-import scala.util.Success
-import scala.util.Try
-import scala.xml.NodeSeq
-import scala.xml.Elem
-import scala.xml.Text
-
-import org.w3.banana.RDF
-import org.w3.banana.io.RDFWriter
-import org.w3.banana.io.Turtle
-import org.w3.banana.io.JsonLdCompacted
-import org.w3.banana.io.JsonLdExpanded
-import org.w3.banana.io.JsonLdFlattened
-
-import play.api.libs.iteratee.Enumerator
-
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.html.CreationFormAlgo
-import deductions.runtime.html.TriplesViewModule
-import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
-import deductions.runtime.sparql_cache.RDFCacheAlgo
-import deductions.runtime.utils.I18NMessages
-import deductions.runtime.views.FormHeader
-import deductions.runtime.views.ToolsPage
-import deductions.runtime.user.RegisterPage
-import deductions.runtime.semlogs.TimeSeries
-import deductions.runtime.semlogs.LogAPI
-import deductions.runtime.utils.CSSClasses
-import deductions.runtime.data_cleaning.BlankNodeCleanerIncremental
-import scala.util.control.NonFatal
-import deductions.runtime.sparql_cache.algos.StatisticsGraph
-import deductions.runtime.utils.HTTPrequest
-import deductions.runtime.views.Results
-import deductions.runtime.html.TriplesViewWithTitle
-import deductions.runtime.jena.ImplementationSettings
+import scala.util.{Failure, Success, Try}
+import scala.xml.{Elem, NodeSeq}
 
 /**
  * a Web Application Facade,
@@ -106,8 +84,6 @@ trait ApplicationFacadeImpl[Rdf, DATASET]
   }
 
   logger.info(s"in Global")
-
-  import rdfStore.transactorSyntax._
 
 
 

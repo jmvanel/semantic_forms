@@ -1,20 +1,13 @@
 package deductions.runtime.sparql_cache
 
-import org.scalatest.FunSuite
-import deductions.runtime.utils.FileUtils
-import org.w3.banana.SparqlOpsModule
-import org.scalatest.Ignore
-import org.scalatest.BeforeAndAfterAll
-import org.w3.banana.jena.JenaModule
 import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.jena.RDFCache
-import org.w3.banana.jena.Jena
+import deductions.runtime.utils.DefaultConfiguration
+import org.scalatest.FunSuite
+import org.w3.banana.{RDF, RDFOps, RDFStore}
 import org.w3.banana.binder.PGBinder
-import org.w3.banana.RDF
-import org.w3.banana.RDFOps
-import org.w3.banana.RDFStore
+import org.w3.banana.jena.{Jena, JenaModule}
+
 import scala.util.Try
-import deductions.runtime.services.DefaultConfiguration
 
 class TestRDFList extends FunSuite
     with JenaModule

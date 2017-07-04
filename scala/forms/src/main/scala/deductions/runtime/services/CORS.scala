@@ -1,5 +1,6 @@
 package deductions.runtime.services
 
+import deductions.runtime.utils.Configuration
 /**
  * tested with
  * wget --method=OPTIONS --save-headers http://localhost:9000/bla

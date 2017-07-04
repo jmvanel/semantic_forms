@@ -1,24 +1,14 @@
 package deductions.runtime.data_cleaning
 
-import scala.util.Success
-
-import org.w3.banana.RDF
-
 import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.dataset.RDFStoreLocalUserManagement
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.Authentication
-import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.services.SPARQLHelpers
-import deductions.runtime.utils.URIManagement
-import deductions.runtime.utils.RDFHelpers
+import deductions.runtime.utils.{DefaultConfiguration, RDFHelpers, URIManagement}
+import org.w3.banana.RDF
 
 trait BadNamedGraphCleaner[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
     with RDFHelpers[Rdf]
     with URIManagement {
-
-  import ops._
 
   /** */
   def cleanBadNamedGraphs() = {

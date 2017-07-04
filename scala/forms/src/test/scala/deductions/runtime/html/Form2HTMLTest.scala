@@ -1,17 +1,13 @@
 package deductions.runtime.html
 
-import java.nio.file.Files
-import java.nio.file.Paths
+import java.nio.file.{Files, Paths}
 
+import deductions.runtime.abstract_syntax.FormSyntaxFactoryTest
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.utils.DefaultConfiguration
 import org.apache.log4j.Logger
 import org.junit.Assert
 import org.scalatest.FunSuite
-
-import deductions.runtime.abstract_syntax.FormSyntaxFactoryTest
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.utils.HTTPrequest
 
 class Form2HTMLTest
     extends FunSuite

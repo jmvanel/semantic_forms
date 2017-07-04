@@ -1,31 +1,20 @@
 package deductions.runtime.connectors
 
-import java.io.InputStream
-import java.io.InputStreamReader
+import java.io.{InputStream, InputStreamReader}
 import java.lang.Character.toUpperCase
 import java.util.StringTokenizer
+
+import org.apache.any23.vocab.CSV
+import org.apache.commons.csv.{CSVFormat, CSVParser, CSVRecord}
+
 import scala.collection.mutable.ArrayBuffer
 import scala.language.postfixOps
-import org.apache.any23.vocab.CSV
-import org.apache.commons.csv.CSVFormat
-import org.apache.commons.csv.CSVParser
-import org.apache.commons.csv.CSVRecord
 //import org.apache.commons.csv.Constants
 
-import org.w3.banana.RDF
-import org.w3.banana.RDFOps
-import org.w3.banana.RDFPrefix
-import org.w3.banana.XSDPrefix
-import deductions.runtime.services.Configuration
-import deductions.runtime.utils.RDFPrefixes
-import deductions.runtime.utils.URIHelpers
+import deductions.runtime.utils.{Configuration, RDFPrefixes, URIHelpers}
+import org.w3.banana.{RDF, RDFOps, RDFPrefix, XSDPrefix}
 
-import org.w3.banana.PrefixBuilder
-import org.w3.banana._
-
-import scala.collection.JavaConversions.asScalaBuffer
-import scala.collection.JavaConversions.asScalaIterator
-import scala.collection.JavaConversions.mapAsScalaMap
+import scala.collection.JavaConversions.{asScalaBuffer, asScalaIterator, mapAsScalaMap}
 
 /** made from CSVExtractor from Any23;
  *  TODO: probably should be in another SBT project */
@@ -35,7 +24,6 @@ trait CSVImporter[Rdf <: RDF, DATASET]
     with CSVmappings[Rdf] {
 
   val config: Configuration
-  import config._
 
   implicit val ops: RDFOps[Rdf]
   import ops._

@@ -2,7 +2,7 @@ package controllers
 
 import java.net.URLEncoder
 
-import deductions.runtime.services.Configuration
+import deductions.runtime.utils.Configuration
 import deductions.runtime.views.ToolsPage
 import play.api.mvc._
 

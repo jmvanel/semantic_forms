@@ -1,11 +1,10 @@
 package deductions.runtime.services
 
-import scala.collection.mutable.ArrayBuffer
-
+import deductions.runtime.semlogs.LogAPI
+import deductions.runtime.utils.Configuration
 import org.w3.banana.RDF
 
-import deductions.runtime.semlogs.LogAPI
-
+import scala.collection.mutable.ArrayBuffer
 trait SaveListenersManager[Rdf <: RDF] {
   val config: Configuration
 

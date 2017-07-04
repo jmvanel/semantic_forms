@@ -4,15 +4,15 @@ import java.util.Date
 
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.jena.{ImplementationSettings, MicrodataLoaderModule}
-import deductions.runtime.services.{BrowsableGraph, Configuration, SPARQLHelpers, TypeAddition}
-import deductions.runtime.utils.{HTTPHelpers, HTTPrequest, RDFHelpers, URIManagement}
+import deductions.runtime.services.{BrowsableGraph, TypeAddition}
+import deductions.runtime.utils._
 import org.apache.http.HttpResponse
-import org.apache.http.client.{ClientProtocolException, ResponseHandler}
 import org.apache.http.client.methods.HttpHead
+import org.apache.http.client.{ClientProtocolException, ResponseHandler}
 import org.apache.http.impl.client.HttpClients
 import org.apache.log4j.Logger
-import org.w3.banana.{OWLPrefix, RDF, XSDPrefix}
 import org.w3.banana.io.{RDFLoader, RDFReader, RDFXML, Turtle}
+import org.w3.banana.{OWLPrefix, RDF, XSDPrefix}
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
@@ -29,14 +29,14 @@ trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
 trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
     with RDFCacheDependencies[Rdf, DATASET]
     with MicrodataLoaderModule[Rdf]
-    with SPARQLHelpers[Rdf, DATASET]
     with TimestampManagement[Rdf, DATASET]
     with MirrorManagement[Rdf, DATASET]
     with BrowsableGraph[Rdf, DATASET]
     with RDFHelpers[Rdf]
     with URIManagement
     with HTTPHelpers
-    with TypeAddition[Rdf, DATASET] {
+    with TypeAddition[Rdf, DATASET]
+  {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 

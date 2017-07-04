@@ -1,15 +1,9 @@
 package deductions.runtime.abstract_syntax
 
-import org.w3.banana.RDF
-import org.w3.banana.Prefix
-import org.w3.banana.OWLPrefix
-import org.w3.banana.RDFSPrefix
-import org.w3.banana.RDFPrefix
-
 import deductions.runtime.dataset.RDFOPerationsDB
-import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.services.Configuration
 import deductions.runtime.services.SPARQLHelpers
+import deductions.runtime.utils.{Configuration, RDFHelpers}
+import org.w3.banana.{OWLPrefix, Prefix, RDF}
 
 /** populate Fields in form by inferencing from given class, using ontologies and properties:
  *  - rdfs:subClassOf
@@ -24,7 +18,6 @@ with FormModule[Rdf#Node, Rdf#URI]
 
 	val config: Configuration
   import config._
-  
   import ops._
   private val owl = OWLPrefix[Rdf]
 

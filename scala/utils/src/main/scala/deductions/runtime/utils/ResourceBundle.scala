@@ -1,8 +1,9 @@
 package com.netaporter.i18n
 
-import java.util.{ ResourceBundle => JResourceBundle, Locale }
-import scala.util.Try
+import java.util.{Locale, ResourceBundle => JResourceBundle}
+
 import scala.collection.JavaConverters._
+import scala.util.Try
 
 /**
  * Date: 30/09/2013

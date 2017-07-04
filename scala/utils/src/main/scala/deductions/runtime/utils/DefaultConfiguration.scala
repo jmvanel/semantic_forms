@@ -1,7 +1,5 @@
 // TODO move in utils
-package deductions.runtime.services
-
-import deductions.runtime.utils.CSSClasses
+package deductions.runtime.utils
 
 /** Default Configuration Provider for various pure RDF programs */
 trait DefaultConfigurationProvider {

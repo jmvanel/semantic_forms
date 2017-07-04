@@ -1,7 +1,7 @@
 package deductions.runtime.sparql_cache
 //import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.DependenciesForApps
-import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.DefaultConfiguration
 
 object RDFDashboardApp
     extends {

@@ -1,16 +1,9 @@
 package deductions.runtime.dataset
 
+import deductions.runtime.utils.Configuration
+import org.w3.banana.{RDF, RDFOps, RDFStore, SparqlEngine, SparqlOps, SparqlUpdate}
+
 import scala.util.Try
-import org.w3.banana.RDF
-import org.w3.banana.RDFOpsModule
-import org.w3.banana.RDFStore
-import org.w3.banana.SparqlOpsModule
-import org.w3.banana.RDFOps
-import org.w3.banana.SparqlOps
-import org.w3.banana.SparqlEngine
-import org.w3.banana.SparqlUpdate
-import org.w3.banana.URIOps
-import deductions.runtime.services.Configuration
 
 /** RDF OPerations on a DataBase */
 trait RDFOPerationsDB[Rdf <: RDF, DATASET] {
@@ -29,8 +22,6 @@ trait RDFOPerationsDB[Rdf <: RDF, DATASET] {
  */
 trait RDFStoreLocalProvider[Rdf <: RDF, DATASET]
 extends RDFOPerationsDB[Rdf, DATASET] {
-
-  import ops._
 
 //  CURRENTLY unused, but could be:  val config: Configuration
 

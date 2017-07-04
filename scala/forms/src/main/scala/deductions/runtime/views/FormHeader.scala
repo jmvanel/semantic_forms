@@ -2,22 +2,14 @@ package deductions.runtime.views
 
 import java.net.URLEncoder
 
-import scala.xml.NodeSeq
-import scala.xml.NodeSeq.seqToNodeSeq
-import scala.xml.Text
-
-import org.w3.banana.RDF
-
 import deductions.runtime.abstract_syntax.FormModule
-import deductions.runtime.html.BasicWidgets
-import deductions.runtime.services.ApplicationFacadeImpl
-import deductions.runtime.services.Configuration
-import deductions.runtime.utils.I18NMessages
-import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.utils.RDFPrefixes
-import org.w3.banana.PointedGraph
-import org.w3.banana.OWLPrefix
+import deductions.runtime.html.BasicWidgets
+import deductions.runtime.utils.{Configuration, I18NMessages, RDFHelpers, RDFPrefixes}
+import org.w3.banana.{OWLPrefix, PointedGraph, RDF}
+
+import scala.xml.NodeSeq.seqToNodeSeq
+import scala.xml.{NodeSeq, Text}
 
 trait FormHeader[Rdf <: RDF, DATASET]
     extends FormModule[Rdf#Node, Rdf#URI]
@@ -30,7 +22,7 @@ trait FormHeader[Rdf <: RDF, DATASET]
 
   val config: Configuration
   import config._
-      import ops._
+  import ops._
 
   /** title and links on top of the form: Edit, Display, Download Links */
   def titleEditDisplayDownloadLinksThumbnail(formSyntax: FormSyntax, lang: String, editable: Boolean = false)(implicit graph: Rdf#Graph): NodeSeq = {

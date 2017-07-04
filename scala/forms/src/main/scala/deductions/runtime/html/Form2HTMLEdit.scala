@@ -1,8 +1,7 @@
 package deductions.runtime.html
 
 import deductions.runtime.abstract_syntax.{DBPediaLookup, FormModule}
-import deductions.runtime.services.Configuration
-import deductions.runtime.utils.I18NMessages
+import deductions.runtime.utils.{Configuration, I18NMessages}
 import org.joda.time.DateTime
 
 import scala.xml.NodeSeq.seqToNodeSeq

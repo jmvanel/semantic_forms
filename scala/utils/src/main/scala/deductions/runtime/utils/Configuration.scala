@@ -1,6 +1,4 @@
-package deductions.runtime.services
-
-import deductions.runtime.utils.CSSClasses
+package deductions.runtime.utils
 
 /**
  * All Configuration flags and values for the library;

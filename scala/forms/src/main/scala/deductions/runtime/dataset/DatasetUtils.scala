@@ -1,10 +1,8 @@
 package deductions.runtime.dataset
 
-import org.w3.banana.RDF
-import scala.util.Try
-import org.w3.banana.GraphStore
-import org.w3.banana.RDFOpsModule
-import scala.util.Success
+import org.w3.banana.{GraphStore, RDF, RDFOpsModule}
+
+import scala.util.{Success, Try}
 
 /** */
 trait DatasetUtils[Rdf <: RDF]

@@ -3,9 +3,9 @@ package deductions.runtime.data_cleaning
 import java.io.File
 
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.services.SPARQLHelpers
 import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.utils.DefaultConfiguration
 
 /**
  * merges Duplicates in given file(s),
@@ -27,8 +27,6 @@ object DuplicateCleanerFileApp extends {
     with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with DuplicateCleaner[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with SPARQLHelpers[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
-
-  import ops._
 
   //  //  override val databaseLocation: String = "" // in-memory
   //  override val databaseLocation = "/tmp/TDB" // TODO multi-platform temporary directory

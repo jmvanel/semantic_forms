@@ -2,7 +2,7 @@ package deductions.runtime.sparql_cache.apps
 
 import deductions.runtime.data_cleaning.BlankNodeCleanerBatch
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.DefaultConfiguration
 
 object BlankNodeCleanerApp extends {
   override val config = new DefaultConfiguration {

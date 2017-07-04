@@ -1,32 +1,18 @@
 package deductions.runtime.html
 
 import java.io.PrintStream
-import java.nio.file.Files
-import java.nio.file.Paths
-import scala.xml.Elem
-import scala.xml.NodeSeq
-import scala.collection.JavaConversions._
-import org.apache.log4j.Logger
+import java.nio.file.{Files, Paths}
 
-import org.scalatest.BeforeAndAfter
-import org.scalatest.Finders
-import org.scalatest.FunSuite
-
-import org.w3.banana.FOAFPrefix
-import org.w3.banana.OWLPrefix
-import org.w3.banana.RDFOpsModule
-import org.w3.banana.RDFSPrefix
-import org.w3.banana.TurtleWriterModule
-
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.services.SPARQLHelpers
 import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
-import deductions.runtime.services.Configuration
-import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.utils.RDFPrefixes
-import org.w3.banana.RDF
-import org.w3.banana.RDFOps
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.services.SPARQLHelpers
+import deductions.runtime.utils.{Configuration, DefaultConfiguration}
+import org.apache.log4j.Logger
+import org.scalatest.{BeforeAndAfter, FunSuite}
+import org.w3.banana.{FOAFPrefix, OWLPrefix, RDF, RDFOps, RDFOpsModule, RDFSPrefix, TurtleWriterModule}
+
+import scala.collection.JavaConversions._
+import scala.xml.{Elem, NodeSeq}
 
 /**
  * Test Creation Form from class URI, without form specification

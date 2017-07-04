@@ -1,7 +1,7 @@
 package controllers
 
 import deductions.runtime.html.Form2HTMLObject
-import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.DefaultConfiguration
 import play.api.Play
 
 /** object Application in another file to facilitate redefinition */
