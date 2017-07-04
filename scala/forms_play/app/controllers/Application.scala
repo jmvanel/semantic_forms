@@ -1,11 +1,8 @@
 package controllers
 
-import play.api.Play
-
-import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.html.Form2HTMLBanana
-import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.html.Form2HTMLObject
+import deductions.runtime.services.DefaultConfiguration
+import play.api.Play
 
 /** object Application in another file to facilitate redefinition */
 object Application extends {
@@ -24,7 +21,9 @@ object Application extends {
       }
     }
   }
-} with ApplicationTrait {
+} with Services
+  with WebPages
+  with SparqlServices {
   override lazy val htmlGenerator =
     Form2HTMLObject.makeDefaultForm2HTML(config)(ops)
 }
