@@ -1,14 +1,10 @@
 package deductions.runtime.sparql_cache
 
-import org.w3.banana.RDF
-
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.jena.RDFCache
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
-import deductions.runtime.services.DefaultConfiguration
-import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.DependenciesForApps
-import deductions.runtime.utils.HTTPHelpers
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.utils.{HTTPHelpers, RDFPrefixes}
+import org.w3.banana.RDF
 
 /**
  * @author jmv
@@ -22,8 +18,6 @@ object FormSpecificationsLoader
       }
     } with DependenciesForApps
     with FormSpecificationsLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
-
-  import config._
 
   resetCommonFormSpecifications()
     if (args.size == 0)
@@ -41,7 +35,6 @@ trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
         with HTTPHelpers {
 
   import ops._
-  import rdfStore.transactorSyntax._
 
   val all_form_specs_document = githubcontent +
   "/jmvanel/semantic_forms/master/scala/forms/form_specs/specs.ttl"

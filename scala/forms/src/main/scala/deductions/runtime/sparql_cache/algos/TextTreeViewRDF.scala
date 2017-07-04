@@ -1,7 +1,6 @@
 package deductions.runtime.sparql_cache.algos
 
-import java.io.FileInputStream
-import java.io.PrintStream
+import java.io.{FileInputStream, PrintStream}
 
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.DefaultConfiguration

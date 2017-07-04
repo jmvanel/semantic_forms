@@ -1,17 +1,13 @@
 package deductions.runtime.sparql_cache.algos
 
-import org.w3.banana.RDF
-import org.w3.banana.io.RDFLoader
-import scala.util.Try
 import java.net.URL
-import org.w3.banana.RDFOps
-import org.w3.banana.FOAFPrefix
-import org.w3.banana.Prefix
-import org.w3.banana.RDFSPrefix
-import org.w3.banana.io.RDFWriter
-import org.w3.banana.io.NTriples
 import java.nio.file.StandardOpenOption
+
 import deductions.runtime.utils.RDFPrefixes
+import org.w3.banana.{RDF, RDFOps}
+import org.w3.banana.io.{NTriples, RDFLoader, RDFWriter}
+
+import scala.util.Try
 
 trait ChildrenDocumentsFetcher[Rdf <: RDF]
 extends RDFPrefixes[Rdf] {
@@ -69,8 +65,8 @@ extends RDFPrefixes[Rdf] {
   }
   
   def writeToNTriplesFile( triples: List[Rdf#Triple], file: String = "dump1.nt", base: String = "urn:sample" ) = {
-	  import java.nio.file.{Paths, Files}
 	  import java.nio.charset.StandardCharsets
+	  import java.nio.file.{Files, Paths}
 	  val writer = Files.newBufferedWriter( Paths.get(file), StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW )
     for( tr <- triples ) {
       writer.write( ntriplesWriter.asString( Graph(triples), base ).get )

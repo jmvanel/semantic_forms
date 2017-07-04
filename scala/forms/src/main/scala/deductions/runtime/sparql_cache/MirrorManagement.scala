@@ -1,9 +1,8 @@
 package deductions.runtime.sparql_cache
 
-import org.w3.banana.RDF
-
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.services.SPARQLHelpers
+import org.w3.banana.RDF
 
 /**
  * Within the SPARQL TDB cache,

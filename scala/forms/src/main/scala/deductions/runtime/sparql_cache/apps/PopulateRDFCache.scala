@@ -1,11 +1,10 @@
 package deductions.runtime.sparql_cache.apps
 
-import org.w3.banana.RDF
-import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.DependenciesForApps
-import deductions.runtime.sparql_cache.CommonVocabulariesLoaderTrait
-import deductions.runtime.sparql_cache.FormSpecificationsLoaderTrait
+import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.sparql_cache.{CommonVocabulariesLoaderTrait, FormSpecificationsLoaderTrait}
+import org.w3.banana.RDF
 
 /**
  * Populate RDF Cache with commonly used vocabularies, formS pecifications and I18N Translations;

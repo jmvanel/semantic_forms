@@ -1,14 +1,11 @@
 package deductions.runtime.sparql_cache.apps
 
-import org.w3.banana.RDF
-import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.DependenciesForApps
-import deductions.runtime.sparql_cache.RDFCacheAlgo
-import deductions.runtime.sparql_cache.SitesURLForDownload
+import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.DefaultConfiguration
-import org.w3.banana.RDFPrefix
-import org.w3.banana.Prefix
+import deductions.runtime.sparql_cache.{RDFCacheAlgo, SitesURLForDownload}
 import deductions.runtime.utils.RDFHelpers
+import org.w3.banana.{Prefix, RDF}
 
 /** */
 object RDFI18NLoaderApp
@@ -25,8 +22,6 @@ trait RDFI18NLoaderTrait[Rdf <: RDF, DATASET]
     with SitesURLForDownload {
 
   import ops._
-  import rdfStore.transactorSyntax._
-  import rdfStore.graphStoreSyntax._
 
   val i18NGraph = URI("urn:rdf-i18n")
 

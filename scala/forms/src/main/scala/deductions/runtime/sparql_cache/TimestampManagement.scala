@@ -1,20 +1,15 @@
 package deductions.runtime.sparql_cache
 
-import java.io.File
-import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
-
-import scala.concurrent.ExecutionContext.Implicits
-import scala.util.Success
-import scala.util.Try
-
-import org.apache.http.impl.cookie.DateUtils
-import org.w3.banana.RDF
+import java.io.{File, IOException}
+import java.net.{HttpURLConnection, URL}
+import java.util.Date
 
 import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.services.SPARQLHelpers
-import java.util.Date
+import org.apache.http.impl.cookie.DateUtils
+import org.w3.banana.RDF
+
+import scala.util.{Success, Try}
 
 trait TimestampManagement[Rdf <: RDF, DATASET]
 extends RDFStoreLocalProvider[Rdf, DATASET]
@@ -24,10 +19,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
   val timestampGraphURI = "http://deductions-software.com/timestampGraph"
 
   import ops._
-  import rdfStore.transactorSyntax._
-  import rdfStore.graphStoreSyntax._
   import rdfStore.sparqlEngineSyntax._
-  import scala.concurrent.ExecutionContext.Implicits.global
 
   //// Expires ////
 
@@ -82,7 +74,6 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
    */
   def getTimestampFromDataset(uri: Rdf#URI, dataset: DATASET): Try[Long] = {
     println(s"getTimestampFromDataset: uri: $uri")
-    import org.w3.banana.binder._
     import java.math.BigInteger
     val queryString = s"""
          |SELECT DISTINCT ?ts WHERE {

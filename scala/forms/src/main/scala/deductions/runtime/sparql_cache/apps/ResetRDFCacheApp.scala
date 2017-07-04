@@ -1,10 +1,9 @@
 package deductions.runtime.sparql_cache.apps
 
-import org.w3.banana.RDFOpsModule
-import deductions.runtime.sparql_cache.CommonVocabulariesLoaderTrait
-import deductions.runtime.sparql_cache.FormSpecificationsLoaderTrait
-import deductions.runtime.services.DefaultConfiguration
 import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.DefaultConfiguration
+import deductions.runtime.sparql_cache.{CommonVocabulariesLoaderTrait, FormSpecificationsLoaderTrait}
+import org.w3.banana.RDFOpsModule
 
 /**
  * Populate RDF Cache with commonly used vocabularies;
@@ -28,10 +27,6 @@ object ResetRDFCacheApp extends {
     with RDFOpsModule
     with ImplementationSettings.RDFCache
     with App {
-
-  import ops._
-  import rdfStore.transactorSyntax._
-  import rdfStore.graphStoreSyntax._
 
   resetCommonVocabularies()
   resetCommonFormSpecifications()
