@@ -12,7 +12,7 @@ trait ContactsFrontPage extends MainXml with ContactsDashboard {
    * main Page Header for generic app:
    *  enter URI, search, create instance
    */
-  override def mainPageHeader(implicit lang: String = "en", userInfo: NodeSeq): NodeSeq = {
+  def mainPageHeader(implicit lang: String = "en", userInfo: NodeSeq): NodeSeq = {
     <header class="col col-sm-12">
       <div class="raw">
         <div class="col col-sm-9">
