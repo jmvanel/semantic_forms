@@ -84,59 +84,82 @@ trait GeoPath[Rdf <: RDF, DATASET]
    *  - geoloc:totalDistanceTraveled
    *  */
   def getPathLengthForAllMobiles(graph: Rdf#Graph): Rdf#Graph = {
+
     // global distances
+    
     val mobiles = getMobileList(graph)
+
     val paths = for( mobile <- mobiles) yield {
       println(s"\nmobile ${mobile}");
       val dist = getPathLengthForMobile(mobile, graph)
+      println( s"dist $dist" )
       Triple(mobile, geoloc("totalDistanceTraveled"), Literal(dist toString(), xsd.float))
     }
 
-    println(s"after path");
+    println(s"after global paths length computation\n")
+    
+    val days: Seq[(String, String)] = generateDaysOfRelevantPeriod( Calendar.getInstance )
 
-    // per day distances
-    val paths20 = for (mobile <- mobiles) yield {
-     val days: Seq[(String, String)] = generateDaysOfMonth(new Date())
-     for (day <- days) yield {
-        println(s"\tday ${day}");
-        val begin = day._1
-        val end = day._2
-        val dist = getPathLengthForMobileInterval(mobile, begin, end, graph)
-        if (dist > 0) {
-          val subject = URI(makeURI("TravelStatistic:", nodeToString(mobile), begin, end))
-          (
-            subject
-            -- rdf.typ ->- geoloc("TravelStatistic")
-            -- geoloc("begin") ->- Literal(begin, xsd.dateTime)
-            -- geoloc("end") ->- Literal(end, xsd.dateTime)
-            -- geoloc("distance") ->- Literal(dist.toString(), xsd.float)
-            -- geoloc("mobile") ->- mobile
-          ).graph.triples
-        } else List()
+    def getPerDayDistances() = {
+      val r = for (
+          mobile <- mobiles
+//        if (mobile == URI("imei:863977030715952") )
+      ) yield {
+        val pathForMobile = getPathForMobile(mobile, graph)
+        println( s"pathForMobile size ${pathForMobile.size}")
+        for (day <- days) yield {
+          logger.debug(s"\tday ${day}");
+          val begin = day._1
+          val end = day._2
+          val dist = getPathLengthForMobileInterval2(mobile, begin, end, pathForMobile)
+          if (dist > 0) {
+            val subject = URI(makeURI("TravelStatistic:", nodeToString(mobile), begin, end))
+            println(s"\tdist = $dist > 0 - $begin $end - mobile $mobile")
+            (
+              subject
+              -- rdf.typ ->- geoloc("TravelStatistic")
+              -- geoloc("begin") ->- Literal(begin, xsd.dateTime)
+              -- geoloc("end") ->- Literal(end, xsd.dateTime)
+              -- geoloc("distance") ->- Literal(dist.toString(), xsd.float)
+              -- geoloc("mobile") ->- mobile).graph.triples
+          } else {
+            // println(s"\tdist = 0 - $begin $end - mobile $mobile")
+            List()
+          }
+        }
       }
+      r.flatten.flatten
     }
-    val paths2 = paths20 . flatten . flatten
     
     // per half day distances TODO
 
-    makeGraph( paths ++ paths2 )
+   val perDayDistances = getPerDayDistances()
+   makeGraph( paths ++ perDayDistances )
   }
 
   def getPathLengthForMobile(mobile: Rdf#Node, graph: Rdf#Graph): Float = {
     getPathLength(getPathForMobile(mobile, graph))
   }
 
-  def getPathLengthForMobileInterval(mobile: Rdf#Node, begin: String, end: String, graph: Rdf#Graph): Float = {
+  def getPathLengthForMobileInterval(mobile: Rdf#Node, begin: String, end: String,
+      graph: Rdf#Graph): Float = {
     getPathLength(
       filterPointsByTimeInterval(
         getPathForMobile(mobile, graph),
         begin, end))
   }
+
+  def getPathLengthForMobileInterval2(mobile: Rdf#Node, begin: String, end: String,
+      pathForMobile: Iterable[PointedGraph[Rdf]]): Float = {
+    getPathLength(
+      filterPointsByTimeInterval(
+        pathForMobile, begin, end))
+  }
     
   /** get Path Length in kilometers */
   private def getPathLength(graph: Iterable[PointedGraph[Rdf]]): Float = {
     def pow2(v: Float) = v * v
-    println(s"in getPathLength size ${graph.size}")
+    logger.debug(s"\tin getPathLength size ${graph.size}")
     val coords = for (
       triplesAboutPoint <- graph;
 //      _ = println(s"graph size ${graph.size}");
@@ -149,7 +172,7 @@ trait GeoPath[Rdf <: RDF, DATASET]
         case _ => Float.NaN // 0f
       }
     ) yield {
-//    	println(s"in getPathLength (long, lat) ${(long, lat)}")
+    	logger.debug(s"in getPathLength triplesAboutPoint ${triplesAboutPoint.pointer} (long, lat) ${(long, lat)}")
       (long, lat) }
     
     var distanceInDegrees = 0f
@@ -163,7 +186,7 @@ trait GeoPath[Rdf <: RDF, DATASET]
           b
         }
     		)
-    println( s"distanceInDegrees $distanceInDegrees")
+    logger.debug( s"\tdistanceInDegrees $distanceInDegrees")
     distanceInDegrees * 6371 * Math.PI / 180 toFloat
   }
 
@@ -185,6 +208,9 @@ trait GeoPath[Rdf <: RDF, DATASET]
   /** get Points (URI's) For Mobile, ordered by using dct:date */
   private def getPointsForMobile(mobile: Rdf#Node, graph: Rdf#Graph): Iterable[Rdf#Node] = {
     val unordered = getPointsForMobileUnordered(mobile, graph)
+//    val gr = unordered.graph ; println(s"getPointsForMobile: unordered.graph ${getTriples(gr)}")
+//    val nodes = unordered.nodes ; println(s"getPointsForMobile: unordered.nodes ${nodes.mkString("\n")}")
+    val nodes = unordered.nodes ; println(s"getPointsForMobile: <$mobile>: unordered.nodes ${nodes.size}")
     def compareByDate(point1: Rdf#Node, point2: Rdf#Node): Boolean = {
       val pgraph1 = PointedGraph(point1, graph)
       val pgraph2 = PointedGraph(point2, graph)
@@ -196,7 +222,8 @@ trait GeoPath[Rdf <: RDF, DATASET]
 
   private def getPointsForMobileUnordered(mobile: Rdf#Node, graph: Rdf#Graph): PointedGraphs[Rdf] = {
     val pgraph = PointedGraph(mobile, graph)
-    //  ?POINT geoloc:mobile <mobile> .
+    /* Search for:
+     * ?POINT geoloc:mobile <mobile> . */
     (pgraph /- mobileProp)
   }
 
@@ -235,35 +262,42 @@ trait GeoPath[Rdf <: RDF, DATASET]
     //    val triplesAboutPoint = find(graph, ANY, rdf.typ, geoloc("Mobile"))
   }
 
-//  private
-  def generateDaysOfMonth(date: Date): Seq[(String, String)] = {
-    def makeBeginEndOfDay(date: Date) = {
-      val begin = Calendar.getInstance
-      begin.setTime(date)
-      begin.set(Calendar.HOUR_OF_DAY, 0)
-      begin.set(Calendar.MINUTE, 0)
-      begin.set(Calendar.SECOND, 0)
-      begin.set(Calendar.MILLISECOND, 0)
+  /** generate Days Of relevant period: preceding and current Month */
+  def generateDaysOfRelevantPeriod(date: Calendar): Seq[(String, String)] = {
+    val dateOneMonthAgo = cloneCalendar(date)
+    dateOneMonthAgo.set(Calendar.MONTH,
+               date.get(Calendar.MONTH) - 1)
+    generateDaysOfMonth(dateOneMonthAgo) ++
+      generateDaysOfMonth(date)
+  }
 
-      val end = begin.clone().asInstanceOf[Calendar]
-      end.set(Calendar.HOUR_OF_DAY, 24)
-      (begin, end)
-    }    
-    // enumerate days of current mounth
-    val today = makeBeginEndOfDay(date)
-    val begin = today._1
-    val end = today._2
+  /** enumerate days of current mounth */
+  private def generateDaysOfMonth(date: Calendar) = {
+    val (begin, end) = makeBeginEndOfDay(date)
+    
     val daysInMonth = begin.getActualMaximum(Calendar.DAY_OF_MONTH)
-
     for( day <- 1 to daysInMonth) yield {
-      val beginOfDay = begin.clone().asInstanceOf[Calendar]
+      val beginOfDay = cloneCalendar(begin)
       beginOfDay.set(Calendar.DAY_OF_MONTH, day)
-      val endOfDay   = end.clone().asInstanceOf[Calendar]
+      val endOfDay   = cloneCalendar(end)
       endOfDay.set(Calendar.DAY_OF_MONTH, day)
       val df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
       (df.format(beginOfDay.getTime), df.format(endOfDay.getTime))
     } 
   }
+
+  private def makeBeginEndOfDay(begin: Calendar) = {
+    begin.set(Calendar.HOUR_OF_DAY, 0)
+    begin.set(Calendar.MINUTE, 0)
+    begin.set(Calendar.SECOND, 0)
+    begin.set(Calendar.MILLISECOND, 0)
+
+    val end = cloneCalendar(begin)
+    end.set(Calendar.HOUR_OF_DAY, 24)
+    (begin, end)
+  }
+
+  private def cloneCalendar(date: Calendar) = date.clone().asInstanceOf[Calendar]
 
   private def makeURI( s:String* ): String =
     s.mkString("", "/", "")

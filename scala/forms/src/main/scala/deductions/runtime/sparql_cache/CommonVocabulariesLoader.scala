@@ -81,6 +81,8 @@ trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
       prefixesMap("doas") ::
       prefixesMap("nature") ::
       prefixesMap("geo") ::
+      prefixesMap("geoloc") ::
+      prefixesMap("vehman") ::
       Nil
       // "http://purl.org/ontology/mo/"
    

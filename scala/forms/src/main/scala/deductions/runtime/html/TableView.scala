@@ -8,12 +8,12 @@ import scala.xml.NodeSeq
 
 /** Table View; base for a future editable Table View */
 trait TableView[NODE, URI <: NODE]
-//extends Form2HTMLBase[NODE, URI]
-extends Form2HTML[NODE, URI]
-with HTML5Types
-with FormModule[NODE, URI] {
+    //extends Form2HTMLBase[NODE, URI]
+    extends Form2HTML[NODE, URI]
+    with HTML5Types
+    with FormModule[NODE, URI] {
 
-//  type formMod = FormModule[NODE, URI]
+  //  type formMod = FormModule[NODE, URI]
   type FormSyntax = formMod#FormSyntax
   type Entry = formMod#Entry
 
@@ -36,48 +36,53 @@ with FormModule[NODE, URI] {
       rowsMap(entry.subject) = entry
     }
 
-
     <table class="table table-striped table-bordered">
-      <tr>
-        <th>URI</th>
-        {
-          for (property <- properties.list) yield {
-            <th>{
-              val entry = propertiesMap(property)
-              makeFieldLabel(NullResourceEntry, entry, editable = false)(nullFormSyntax)
-            }</th>
-          }
-        }
-      </tr>
+      <tr> { headerRow } </tr>
       {
         for (row <- rows.list) yield {
           <tr>
-          <td>{
-            val entry = rowsMap(row)
-            //  reuse hyperlinkToObjectURI in Form2HTMLDisplay
-            hyperlinkToURI(config.hrefDisplayPrefix, entry.subject.toString() /*objectURIstringValue*/,
-                entry.subjectLabel,
-                entry.type_,
-                NullResourceEntry)
-            // rowsMap(row).subjectLabel
-            // <br/>{ row }
-            }
-            </td>
-          {
-            for (property <- properties.list) yield {
-              Seq(
-                <td>{
-                  val cellOption = cellsMap.get((row, property))
-                  cellOption match {
-                    case Some(entry) =>
-                      createHTMLField(entry, editable = false, displayInTable = true)(nullFormSyntax)
-                    case _=> ""
-                  }
-                }</td>)
-            }
-          }</tr>
+            <td> { uriColumn(row) } </td>
+            { dataColumns(row) }
+          </tr>
         }
       }
     </table>
   }
+
+  /** */
+  private def headerRow = Seq(
+    <th>URI</th>,
+    {
+      for (property <- properties.list) yield {
+        <th>{
+          val entry = propertiesMap(property)
+          makeFieldLabel(NullResourceEntry, entry, editable = false)(nullFormSyntax)
+        }</th>
+      }
+    })
+
+  /** URI column */
+  private def uriColumn(row: NODE) = {
+    val entry = rowsMap(row)
+    hyperlinkToURI(config.hrefDisplayPrefix, entry.subject.toString(),
+      entry.subjectLabel,
+      entry.type_,
+      NullResourceEntry)
+  }
+
+  /** data (triple objects) columns */
+  private def dataColumns(row: NODE) = {
+    for (property <- properties.list) yield {
+      Seq(
+        <td>{
+          val cellOption = cellsMap.get((row, property))
+          cellOption match {
+            case Some(entry) =>
+              createHTMLField(entry, editable = false, displayInTable = true)(nullFormSyntax)
+            case _ => ""
+          }
+        }</td>)
+    }
+  }
+      
 }

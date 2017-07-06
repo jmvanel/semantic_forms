@@ -16,9 +16,9 @@ object SemanticController extends Controller
   import ops._
 
   val actionMap: Map[String, deductions.runtime.services.SemanticController] =
-//        "geoloc:stats"
-    Map( fromUri(geoloc("stats")) ->
-    new TypicalSFDependencies with GeoController[Rdf, DATASET]{} )
+    Map(
+      fromUri(geoloc("stats")) ->
+        new TypicalSFDependencies with GeoController[Rdf, DATASET] {})
 
   override implicit val config = new DefaultConfiguration {}
   override lazy val htmlGenerator =

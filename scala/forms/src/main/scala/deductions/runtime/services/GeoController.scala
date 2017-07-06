@@ -17,16 +17,37 @@ trait GeoController[Rdf <: RDF, DATASET] extends GeoPath[Rdf, DATASET]
     with FormSyntaxFromSPARQL[Rdf, DATASET]
     with TableView[Rdf#Node, Rdf#URI] {
 
+  import ops._
+
   def result(request: HTTPrequest): NodeSeq = {
     val res = wrapInReadTransaction {
       val statisticsGraph = getPathLengthForAllMobiles(allNamedGraph)
+      println(s"statisticsGraph size ${ops.graphSize(statisticsGraph)}")
+      val detailsQuery = """
+        |${declarePrefix("geoloc")}
+        |${declarePrefix("vehman")}
+        |CONSTRUCT {
+        |  ?MOB vehman:internalNumber ?NUM.
+        |} WHERE {
+        |  GRAPH ?GR {
+        |    ?MOB a geoloc:Mobile.
+        |  }
+        |  GRAPH ?GR2 {
+        |    ?MOB vehman:vehicle ?VEHICULE.
+        |    ?VEHICULE vehman:internalNumber ?NUM.
+        |  }
+        |}""".stripMargin
+      val detailsGraph = sparqlConstructQuery( detailsQuery ) . getOrElse(ops.emptyGraph)
+
       // create table view
       val formSyntax = createFormFromTriples(
-        ops.getTriples(statisticsGraph).toSeq,
+        getTriples(
+            union( Seq(statisticsGraph, detailsGraph))
+        ).toSeq,
         false)(allNamedGraph, "en")
       generate(formSyntax)
     }
-    val table = res.getOrElse(<div>Error! </div>)
+    val table = res.getOrElse(<div>Error! {res}</div>)
     table
   }
 }

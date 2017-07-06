@@ -58,7 +58,6 @@ trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
     formuri: String = "")(implicit graph: Rdf#Graph, lang:String): FormSyntax = {
     logger.debug( s"triples: $triples")
     val formEntries =
-//      wrapInReadTransaction(
       triples.map {
         triple =>
           val (subject, prop, objet) = fromTriple(triple)
