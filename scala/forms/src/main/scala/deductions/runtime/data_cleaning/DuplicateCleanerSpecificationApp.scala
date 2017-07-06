@@ -4,8 +4,7 @@ import java.io.{File, FileInputStream}
 
 import deductions.runtime.connectors.CSVImporter
 import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
-import deductions.runtime.services.SPARQLHelpers
-import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.sparql_cache.{RDFCacheAlgo, SPARQLHelpers}
 import deductions.runtime.utils.DefaultConfiguration
 
 /**

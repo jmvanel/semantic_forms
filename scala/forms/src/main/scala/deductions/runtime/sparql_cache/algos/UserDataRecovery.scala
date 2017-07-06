@@ -1,8 +1,9 @@
 package deductions.runtime.sparql_cache.algos
 
-import deductions.runtime.dataset.{RDFStoreLocalProvider, RDFStoreLocalUserManagement}
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.{Authentication, SPARQLHelpers}
+import deductions.runtime.services.Authentication
+import deductions.runtime.sparql_cache.SPARQLHelpers
+import deductions.runtime.sparql_cache.dataset.{RDFStoreLocalProvider, RDFStoreLocalUserManagement}
 import deductions.runtime.utils.{DefaultConfiguration, RDFHelpers, URIManagement}
 import org.w3.banana.RDF
 

@@ -1,11 +1,11 @@
 package deductions.runtime.services
 
-import org.w3.banana._
 import java.io.StringReader
-import org.w3.banana.io.RDFReader
-import org.w3.banana.io.NTriples
+
+import org.w3.banana._
+import org.w3.banana.io.{NTriples, RDFReader, RDFWriter}
+
 import scala.util.Try
-import org.w3.banana.io.RDFWriter
 
 /**
  * @author jmv

@@ -1,8 +1,8 @@
 package deductions.runtime.abstract_syntax
 
-import org.w3.banana.RDF
-import org.w3.banana.RDFOps
 import java.net.URLEncoder
+
+import org.w3.banana.{RDF, RDFOps}
 
 trait UniqueFieldID[Rdf <: RDF] {
 

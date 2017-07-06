@@ -1,7 +1,6 @@
 package deductions.runtime.abstract_syntax
 
-import org.w3.banana.RDF
-import org.w3.banana.OWLPrefix
+import org.w3.banana.{OWLPrefix, RDF}
 
 /**
  * Automatically show inferred values from

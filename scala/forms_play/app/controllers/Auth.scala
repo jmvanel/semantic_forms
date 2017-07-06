@@ -7,7 +7,7 @@ import play.api.data.Forms._
 import play.api.mvc._
 
 //import deductions.runtime.services.ApplicationFacade
-import deductions.runtime.dataset.RDFStoreLocalUserManagement
+import deductions.runtime.sparql_cache.dataset.RDFStoreLocalUserManagement
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.utils.DefaultConfiguration
 import play.api.Play.current

@@ -1,10 +1,8 @@
 package deductions.runtime.abstract_syntax
 
+import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.{RDFHelpers, RDFPrefixes}
 import org.w3.banana.RDF
-
-import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.utils.RDFPrefixes
-import deductions.runtime.dataset.RDFStoreLocalProvider
 
 trait ThumbnailInference[Rdf <: RDF, DATASET]
 //    SPARQLHelpers[Rdf, DATASET]

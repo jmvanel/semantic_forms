@@ -1,35 +1,16 @@
 package deductions.runtime.sparql_cache
 
-import deductions.runtime.DependenciesForApps
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.utils.DefaultConfiguration
 import deductions.runtime.utils.RDFPrefixes
 import org.apache.log4j.Logger
 import org.w3.banana.{CertPrefix, DCPrefix, DCTPrefix, FOAFPrefix, LDPPrefix, OWLPrefix, Prefix, RDF, RDFPrefix, RDFSPrefix, WebACLPrefix}
 
-/**
- * @author jmv
- */
-
-/** */
-object CommonVocabulariesLoader
-    extends  {
-      override val config = new DefaultConfiguration {
-        override val useTextQuery = false
-      }
-    }
-    with DependenciesForApps
-    with CommonVocabulariesLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    {
-  loadCommonVocabularies()
-}
 
 /** TODO common stuff with trait RDFPrefixes[Rdf] ;
  * not trivial;
  * - probably need to distinguish the self-hosted vocabs and the others
  * - distinguish prefixes for data (dbpedia.org/resource) and prefixes for vocabs
  *  */
-trait CommonVocabulariesLoaderTrait[Rdf <: RDF, DATASET]
+trait CommonVocabulariesLoader[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
     with RDFPrefixes[Rdf]
     with SitesURLForDownload {

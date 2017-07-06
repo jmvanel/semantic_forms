@@ -1,23 +1,12 @@
 package deductions.runtime.abstract_syntax
 
-import scala.collection.Iterable
-import scala.collection.Seq
-import scala.collection.Set
-import scala.collection.mutable
+import deductions.runtime.sparql_cache.dataset.RDFOPerationsDB
+import deductions.runtime.utils.{RDFHelpers, Timer}
+import org.w3.banana.{OWLPrefix, PointedGraph, RDF, SparqlEngine, SparqlOps}
+
+import scala.collection.{Iterable, Seq, Set, mutable}
 import scala.language.postfixOps
-import scala.util.Failure
-import scala.util.Success
-import scala.util.Try
-
-import org.w3.banana.OWLPrefix
-import org.w3.banana.PointedGraph
-import org.w3.banana.RDF
-import org.w3.banana.SparqlEngine
-import org.w3.banana.SparqlOps
-
-import deductions.runtime.dataset.RDFOPerationsDB
-import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.utils.Timer
+import scala.util.{Failure, Success, Try}
 
 /**
  * populate Fields in form by inferring possible values from given rdfs:range's URI,
@@ -35,7 +24,6 @@ trait RangeInference[Rdf <: RDF, DATASET]
   implicit val sparqlOps: SparqlOps[Rdf]
   
   import ops._
-  import sparqlGraph._
   import sparqlGraph.sparqlEngineSyntax._
   import sparqlOps._
 

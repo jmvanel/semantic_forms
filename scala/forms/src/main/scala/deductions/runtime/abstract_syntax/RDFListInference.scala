@@ -1,7 +1,7 @@
 package deductions.runtime.abstract_syntax
 
+import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
 import org.w3.banana.RDF
-import deductions.runtime.dataset.RDFStoreLocalProvider
 
 /**
  * populate Fields in form by inferencing from RDF Lists

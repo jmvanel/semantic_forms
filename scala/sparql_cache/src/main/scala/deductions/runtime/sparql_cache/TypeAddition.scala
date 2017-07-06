@@ -1,15 +1,10 @@
-package deductions.runtime.services
+package deductions.runtime.sparql_cache
+
+import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.{URIHelpers, URIManagement}
+import org.w3.banana.{FOAFPrefix, PointedGraph, RDF, RDFSPrefix}
 
 import scala.language.postfixOps
-
-import org.w3.banana.FOAFPrefix
-import org.w3.banana.PointedGraph
-import org.w3.banana.RDF
-import org.w3.banana.RDFSPrefix
-
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.utils.URIHelpers
-import deductions.runtime.utils.URIManagement
 
 /**
  * ensure that types inferred from ontologies are added to objects of given triples

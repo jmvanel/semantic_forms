@@ -1,6 +1,5 @@
 package deductions.runtime.jena
 
-import org.w3.banana.jena.Jena
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 
 /**

@@ -1,12 +1,9 @@
 package deductions.runtime.abstract_syntax
 
+import deductions.runtime.utils.{RDFHelpers, RDFPrefixes}
+import org.w3.banana.{PointedGraph, RDF}
+
 import scala.collection.Seq
-
-import org.w3.banana.PointedGraph
-import org.w3.banana.RDF
-
-import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.utils.RDFPrefixes
 
 /**
  * populate Fields in form by inferring possible label from:

@@ -1,4 +1,4 @@
-package deductions.runtime.dataset
+package deductions.runtime.sparql_cache.dataset
 
 /**
  * @author jmv

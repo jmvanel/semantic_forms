@@ -1,7 +1,7 @@
 package deductions.runtime.abstract_syntax
 
+import deductions.runtime.sparql_cache.SPARQLHelpers
 import org.w3.banana.RDF
-import deductions.runtime.services.SPARQLHelpers
 
 /** a step in Form generation */
 trait GenericFormProcessing[Rdf <: RDF]
@@ -14,7 +14,7 @@ trait GenericSPARQLformProcessing[Rdf <: RDF, DATASET]
     extends GenericFormProcessing[Rdf]
     with SPARQLHelpers[Rdf, DATASET] {
 
-  private val query = """CONTRUCT{ ?S ?P ?O} WHERE GRAPH { ?GR { ?S ?P ?O} } LIMIT 22""" 
+  private val query = """CONTRUCT{ ?S ?P ?O} WHERE GRAPH { ?GR { ?S ?P ?O} } LIMIT 22"""
 
   import ops._
 

@@ -1,11 +1,10 @@
 package deductions.runtime.jena
 
-import org.w3.banana.RDF
-import org.w3.banana.jena.Jena
-import scala.util.Try
-import org.w3.banana.RDFOps
 import org.apache.jena.rdf.model.ModelFactory
-import org.w3.banana.jena.JenaOps
+import org.w3.banana.{RDF, RDFOps}
+import org.w3.banana.jena.{Jena, JenaOps}
+
+import scala.util.Try
 
 trait MicrodataLoaderModule[Rdf <: RDF] {
   val microdataLoader: MicrodataLoader[Rdf]

@@ -2,22 +2,16 @@ package deductions.runtime.services
 
 import java.net.URLDecoder
 
+import deductions.runtime.semlogs.LogAPI
+import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.sparql_cache.{SPARQLHelpers, TypeAddition}
+import deductions.runtime.utils.{RDFHelpers, Timer, URIManagement}
+import org.w3.banana.{RDF, TryW}
+
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.Failure
-import scala.util.Try
-
-import org.apache.log4j.Logger
-import org.w3.banana.FOAFPrefix
-import org.w3.banana.RDF
-import org.w3.banana.TryW
-
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.semlogs.LogAPI
-import deductions.runtime.utils.Timer
-import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.utils.URIManagement
+import scala.util.{Failure, Try}
 
 trait FormSaver[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]

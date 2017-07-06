@@ -1,21 +1,14 @@
 package deductions.runtime.services
 
-import scala.concurrent.Future
-import scala.xml.Elem
-import scala.xml.NodeSeq
-import scala.xml.Text
-
-import org.w3.banana.RDF
-import org.w3.banana.TryW
-
-import deductions.runtime.abstract_syntax.FormModule
-import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
-import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.html.Form2HTML
+import deductions.runtime.abstract_syntax.{InstanceLabelsInferenceMemory, PreferredLanguageLiteral}
 import deductions.runtime.html.Form2HTMLDisplay
-import java.net.URLEncoder
+import deductions.runtime.sparql_cache.SPARQLHelpers
+import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
 import deductions.runtime.views.ResultsDisplay
+import org.w3.banana.{RDF, TryW}
+
+import scala.concurrent.Future
+import scala.xml.{Elem, NodeSeq, Text}
 
 
 trait SPARQLQueryMaker[Rdf <: RDF] {
@@ -44,8 +37,6 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     with ResultsDisplay[Rdf, DATASET] {
 
   import config._
-  import ops._
-  import rdfStore.transactorSyntax._
 
   /**
    * Generic SPARQL SELECT with single result columns (must be named "thing"),

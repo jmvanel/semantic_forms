@@ -2,21 +2,21 @@ package deductions.runtime.sparql_cache
 
 import java.util.Date
 
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.jena.{ImplementationSettings, MicrodataLoaderModule}
-import deductions.runtime.services.{BrowsableGraph, TypeAddition}
-import deductions.runtime.utils._
+import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.{HTTPHelpers, HTTPrequest, RDFHelpers, URIManagement}
 import org.apache.http.HttpResponse
 import org.apache.http.client.methods.HttpHead
 import org.apache.http.client.{ClientProtocolException, ResponseHandler}
 import org.apache.http.impl.client.HttpClients
 import org.apache.log4j.Logger
-import org.w3.banana.io.{RDFLoader, RDFReader, RDFXML, Turtle}
-import org.w3.banana.{OWLPrefix, RDF, XSDPrefix}
+import org.w3.banana._
+//import deductions.runtime.jena.MicrodataLoaderModule
+//import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.utils.Configuration
+import org.w3.banana.io.{RDFReader, RDFXML, Turtle,RDFLoader}
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
-
 /** */
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
   val config: Configuration
@@ -28,7 +28,7 @@ trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
 /** */
 trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
     with RDFCacheDependencies[Rdf, DATASET]
-    with MicrodataLoaderModule[Rdf]
+    //with MicrodataLoaderModule[Rdf]
     with TimestampManagement[Rdf, DATASET]
     with MirrorManagement[Rdf, DATASET]
     with BrowsableGraph[Rdf, DATASET]
@@ -51,7 +51,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   import ops._
   import rdfStore.transactorSyntax._
 
-  lazy val xsd = XSDPrefix[Rdf]
+    lazy val xsd = XSDPrefix[Rdf]
   lazy val owl = OWLPrefix[Rdf]
 
   /** with transaction */
@@ -146,7 +146,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
                   case Failure(f) => {
                     println(s"Graph at URI <$uri> could not be downloaded, (exception ${f.getLocalizedMessage}, ${f.getClass} cause ${f.getCause}).")
                     f match {
-                      case ex: ImplementationSettings.RDFReadException if (ex.getMessage().contains("text/html")) =>
+                      //case ex: ImplementationSettings.RDFReadException if (ex.getMessage().contains("text/html")) =>
+                      case ex: Exception if (ex.getMessage().contains("text/html")) =>
                         /* Failure(org.apache.jena.riot.RiotException: Failed to determine the content type: (
                                URI=http://ihmia.afihm.org/programme/index.html : stream=text/html)) */
 
@@ -415,29 +416,29 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
       httpclient.close();
     }
   }
-  
-  private def microdataLoading(uri: Rdf#URI): Rdf#Graph = {
-    logger.info(s"Trying RDFa for <$uri>")
-    microdataLoader.load(
-      new java.net.URL(uri.toString())) match {
-        case Success(s) => s
-        case Failure(f) => {
-
-          logger.error("readStoreURINoTransaction: START MESSAGE")
-          logger.error(f.getMessage)
-          logger.error(s""" uri.toString.contains("/ldp/") ${uri.toString.contains("/ldp/")} """)
-          logger.error("END MESSAGE")
-
-          // catch only "pure" HTML web page: TODO? make a function isPureHTMLwebPage(uri: URI, request: Request): Boolean
-          //              if (f.getMessage.contains("Failed to determine the content type:")) {
-          //                logger.info(s"<$uri> is a pure HTML web page (no RDFa or microformats");
-          //                val tryGraph = getLocallyManagedUrlAndData(uri, request)
-          //                tryGraph . get
-          //              } else
-          throw f
-        }
-      }
-  }
+  /** unused function : commented for modularization */
+//  private def microdataLoading(uri: Rdf#URI): Rdf#Graph = {
+//    logger.info(s"Trying RDFa for <$uri>")
+//    microdataLoader.load(
+//      new java.net.URL(uri.toString())) match {
+//        case Success(s) => s
+//        case Failure(f) => {
+//
+//          logger.error("readStoreURINoTransaction: START MESSAGE")
+//          logger.error(f.getMessage)
+//          logger.error(s""" uri.toString.contains("/ldp/") ${uri.toString.contains("/ldp/")} """)
+//          logger.error("END MESSAGE")
+//
+//          // catch only "pure" HTML web page: TODO? make a function isPureHTMLwebPage(uri: URI, request: Request): Boolean
+//          //              if (f.getMessage.contains("Failed to determine the content type:")) {
+//          //                logger.info(s"<$uri> is a pure HTML web page (no RDFa or microformats");
+//          //                val tryGraph = getLocallyManagedUrlAndData(uri, request)
+//          //                tryGraph . get
+//          //              } else
+//          throw f
+//        }
+//      }
+//  }
 
   /** test if it's a locally managed URL, that is created locally and 100% located here */
   private def getLocallyManagedUrlAndData(uri: Rdf#URI, request: HTTPrequest, transactionsInside: Boolean): Option[Rdf#Graph] =
@@ -488,4 +489,3 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     result
   }
 }
-

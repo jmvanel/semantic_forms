@@ -1,9 +1,8 @@
 package deductions.runtime.abstract_syntax
 
-import scala.language.postfixOps
+import org.w3.banana.{RDF, RDFOps}
 
-import org.w3.banana.RDF
-import org.w3.banana.RDFOps
+import scala.language.postfixOps
 
 /**
  * @author jmv

@@ -1,20 +1,14 @@
 package deductions.runtime.data_cleaning
 
+import deductions.runtime.sparql_cache.SPARQLHelpers
 import org.w3.banana.RDF
-import deductions.runtime.services.SPARQLHelpers
-import scala.util.Success
-import scala.util.Failure
+
+import scala.util.{Failure, Success}
 
 trait NamedGraphsCleaner[Rdf <: RDF, DATASET]
     extends SPARQLHelpers[Rdf, DATASET] {
 
   import ops._
-  import sparqlOps._
-  import rdfStore.sparqlEngineSyntax._
-  import rdfStore.transactorSyntax._
-  import rdfStore.sparqlUpdateSyntax._
-  import rdfStore.transactorSyntax._
-  import rdfStore.graphStoreSyntax._
 
   val query = s"""
          |SELECT DISTINCT ?graph WHERE {

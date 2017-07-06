@@ -1,13 +1,10 @@
 package deductions.runtime.abstract_syntax
 
-import scala.util.Success
-
+import deductions.runtime.sparql_cache.dataset.DatasetHelper
+import deductions.runtime.utils.{RDFHelpers, RDFPrefixes}
 import org.w3.banana.RDF
 
-import deductions.runtime.dataset.DatasetHelper
-import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.utils.RDFPrefixes
-
+import scala.util.Success
 /** wraps InstanceLabelsInference to cache Instance Labels in TDB */
 trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     extends InstanceLabelsInference2[Rdf]

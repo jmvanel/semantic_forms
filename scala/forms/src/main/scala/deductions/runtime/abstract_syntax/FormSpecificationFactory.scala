@@ -1,14 +1,10 @@
 package deductions.runtime.abstract_syntax
 
-import scala.util.Try
-
-import org.w3.banana.Prefix
-import org.w3.banana.RDF
-
 import deductions.runtime.sparql_cache.RDFCacheAlgo
-import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.utils.RDFPrefixes
-import deductions.runtime.utils.HTTPrequest
+import deductions.runtime.utils.{HTTPrequest, RDFHelpers, RDFPrefixes}
+import org.w3.banana.{Prefix, RDF}
+
+import scala.util.Try
 
 /**
  * Lookup Form specifications from RDF graph; TODO rename FormSpecificationFactory

@@ -1,7 +1,7 @@
 package deductions.runtime
 
-import org.apache.logging.log4j.LogManager
 import deductions.runtime.utils.Timer
+import org.apache.logging.log4j.LogManager
 
 package object abstract_syntax extends Timer {
   val logger = LogManager.getLogger("abstract_syntax")

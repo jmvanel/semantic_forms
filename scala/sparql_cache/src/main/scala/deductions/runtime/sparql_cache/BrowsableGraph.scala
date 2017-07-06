@@ -1,13 +1,10 @@
-package deductions.runtime.services
+package deductions.runtime.sparql_cache
 
-import scala.concurrent.Future
-import scala.util.Try
-
+import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
 import org.w3.banana.RDF
-import org.w3.banana.io.RDFWriter
-import org.w3.banana.io.Turtle
+import org.w3.banana.io.{RDFWriter, Turtle}
 
-import deductions.runtime.dataset.RDFStoreLocalProvider
+import scala.util.Try
 
 /**
  * Browsable Graph implementation, in the sense of
@@ -19,11 +16,6 @@ trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DAT
     with SPARQLHelpers[Rdf, DATASET] {
 
   val turtleWriter: RDFWriter[Rdf, Try, Turtle]
-
-  import ops._
-  import sparqlOps._
-  import rdfStore.sparqlEngineSyntax._
-  import rdfStore.transactorSyntax._
 
   /**
    * used in Play! app;

@@ -2,20 +2,13 @@ package deductions.runtime.services
 
 import java.io.StringReader
 
-import scala.util.Success
-import scala.util.Try
-
+import deductions.runtime.sparql_cache.SPARQLHelpers
+import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.{HTTPrequest, URIManagement}
 import org.w3.banana.RDF
-import org.w3.banana.io.JsonLd
-import org.w3.banana.io.JsonLdCompacted
-import org.w3.banana.io.RDFReader
-import org.w3.banana.io.RDFWriter
-import org.w3.banana.io.Turtle
+import org.w3.banana.io._
 
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.utils.HTTPrequest
-import org.w3.banana.io.RDFXML
-import deductions.runtime.utils.URIManagement
+import scala.util.{Success, Try}
 
 /**
  * A simple (partial) LDP implementation backed by SPARQL
@@ -47,9 +40,6 @@ trait LDP[Rdf <: RDF, DATASET]
   implicit val jsonldReader: RDFReader[Rdf, Try, JsonLd]
 
   import ops._
-  import sparqlOps._
-  import rdfStore.transactorSyntax._
-  import rdfStore.sparqlEngineSyntax._
 
   val schemeName = "ldp:"
 

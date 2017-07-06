@@ -4,8 +4,7 @@ import java.io.{File, FileOutputStream, FileWriter}
 import java.util.Date
 
 import deductions.runtime.abstract_syntax.{InstanceLabelsInference2, PreferredLanguageLiteral}
-import deductions.runtime.services.SPARQLHelpers
-import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.sparql_cache.{RDFCacheAlgo, SPARQLHelpers}
 import deductions.runtime.utils.{Configuration, Maps, RDFPrefixes, URIManagement}
 import org.apache.commons.lang3.StringUtils
 import org.w3.banana.RDF

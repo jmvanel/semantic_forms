@@ -1,17 +1,16 @@
-package deductions.runtime.services
+package deductions.runtime.sparql_cache
 
 import java.io.ByteArrayOutputStream
 
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
 import deductions.runtime.utils._
 import org.apache.log4j.Logger
-import org.w3.banana.{RDF, TryW}
 import org.w3.banana.io.{JsonLdCompacted, RDFWriter, RDFXML, Turtle}
+import org.w3.banana.{RDF, TryW}
 import play.api.libs.json.{JsArray, JsString, Json}
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.DurationInt
+import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
 /**
@@ -127,7 +126,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    * with given one, in given dataset;
    *  thus enforcing cardinality one;
    *  NEEDS Transaction;
-   *  See also [[deductions.runtime.dataset.DatasetHelper#replaceObjects]]
+   *  See also [[deductions.runtime.sparql_cache.dataset.DatasetHelper#replaceObjects]]
    */
   def replaceRDFTriple(triple: Rdf#Triple, graphURI: Rdf#Node, dataset: DATASET) = {
     val uri = triple.subject
@@ -705,23 +704,4 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
 }
 
-object SPARQLHelper extends ImplementationSettings.RDFModule
-    with ImplementationSettings.RDFCache
-    with SPARQLHelpers[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
-  val config = new DefaultConfiguration {
-    override val useTextQuery = false
-  }
-
-  def selectJSON(queryString: String): String = {
-    sparqlSelectJSON(queryString)
-  }
-
-  def selectXML(queryString: String): String = {
-    sparqlSelectXML(queryString)
-  }
-  //  def select(queryString: String): String = {
-  //    sparqlSelectQuery(queryString).toString()
-  //  }
-
-}

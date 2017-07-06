@@ -3,12 +3,13 @@ package deductions.runtime.sparql_cache.algos
 import java.io.FileOutputStream
 import java.net.URL
 import java.text.SimpleDateFormat
-import java.util.{Calendar, Date}
+import java.util.Calendar
 
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.SPARQLHelpers
+import deductions.runtime.sparql_cache
+import deductions.runtime.sparql_cache.SPARQLHelpers
 import deductions.runtime.utils.{DefaultConfiguration, RDFHelpers, RDFPrefixes}
-import org.w3.banana.io._
+import org.w3.banana.io.RDFLoader
 import org.w3.banana.{PointedGraph, PointedGraphs, RDF, RDFOps}
 
 import scala.util.{Success, Try}

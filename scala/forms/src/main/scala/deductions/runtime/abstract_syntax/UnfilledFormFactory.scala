@@ -4,12 +4,10 @@
 
 package deductions.runtime.abstract_syntax
 
-import scala.language.postfixOps
-
+import deductions.runtime.utils.{HTTPrequest, URIManagement}
 import org.w3.banana.RDF
 
-import deductions.runtime.utils.URIManagement
-import deductions.runtime.utils.HTTPrequest
+import scala.language.postfixOps
 
 /** Factory for an Unfilled Form */
 trait UnfilledFormFactory[Rdf <: RDF, DATASET]

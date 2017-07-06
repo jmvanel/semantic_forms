@@ -1,14 +1,12 @@
 package deductions.runtime.services
 
-import scala.xml.NodeSeq
-
-import org.w3.banana.RDF
-
-import deductions.runtime.abstract_syntax.FormSyntaxFactory
-import deductions.runtime.abstract_syntax.FormSyntaxFromSPARQL
+import deductions.runtime.abstract_syntax.{FormSyntaxFactory, FormSyntaxFromSPARQL}
 import deductions.runtime.html.TableView
 import deductions.runtime.sparql_cache.algos.GeoPath
 import deductions.runtime.utils.HTTPrequest
+import org.w3.banana.RDF
+
+import scala.xml.NodeSeq
 
 /** TODO extract to new SBT module */
 trait GeoController[Rdf <: RDF, DATASET] extends GeoPath[Rdf, DATASET]

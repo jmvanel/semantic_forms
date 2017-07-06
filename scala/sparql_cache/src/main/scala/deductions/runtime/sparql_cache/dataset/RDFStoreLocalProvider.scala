@@ -1,4 +1,4 @@
-package deductions.runtime.dataset
+package deductions.runtime.sparql_cache.dataset
 
 import deductions.runtime.utils.Configuration
 import org.w3.banana.{RDF, RDFOps, RDFStore, SparqlEngine, SparqlOps, SparqlUpdate}

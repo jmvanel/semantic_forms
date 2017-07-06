@@ -3,10 +3,9 @@ package deductions.runtime.semlogs
 import java.math.BigInteger
 import java.util.Date
 
+import deductions.runtime.sparql_cache.SPARQLHelpers
+import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
 import org.w3.banana.RDF
-
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.services.SPARQLHelpers
 
 /** swallow and regurgitate user input, to build a history;
  *  a callback is installed in FormSaver via addSaveListener() in ApplicationFacadeImpl

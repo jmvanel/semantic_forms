@@ -1,33 +1,10 @@
 package deductions.runtime.sparql_cache
 
-import deductions.runtime.DependenciesForApps
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.utils.{DefaultConfiguration, HTTPHelpers, RDFPrefixes}
+import deductions.runtime.utils.{HTTPHelpers, RDFPrefixes}
 import org.w3.banana.RDF
 
-/**
- * @author jmv
- */
 
-/** Form Specifications Loader App */
-object FormSpecificationsLoader
-    extends {
-      override val config = new DefaultConfiguration {
-        override val useTextQuery = false
-      }
-    } with DependenciesForApps
-    with FormSpecificationsLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
-
-  resetCommonFormSpecifications()
-    if (args.size == 0)
-      loadCommonFormSpecifications()
-    else
-      loadFormSpecification(args(0))
-  println(s"DONE load Common Form Specifications in named graph <$formSpecificationsGraphURI>")
-  close(dataset)
-}
-
-trait FormSpecificationsLoaderTrait[Rdf <: RDF, DATASET]
+trait FormSpecificationsLoader[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
     with RDFPrefixes[Rdf]
     with SitesURLForDownload

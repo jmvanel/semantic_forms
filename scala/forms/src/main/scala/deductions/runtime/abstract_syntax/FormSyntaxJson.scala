@@ -1,12 +1,8 @@
 package deductions.runtime.abstract_syntax
 
-import org.w3.banana.RDF
-
 import deductions.runtime.utils.RDFHelpers
-import play.api.libs.json.JsString
-import play.api.libs.json.Json
-import play.api.libs.json.Writes
-import play.api.libs.json.JsValue
+import org.w3.banana.RDF
+import play.api.libs.json.{JsString, JsValue, Json, Writes}
 
 trait FormSyntaxJson[Rdf <: RDF]
     extends FormModule[Rdf#Node, Rdf#URI]

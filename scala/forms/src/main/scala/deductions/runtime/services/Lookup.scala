@@ -1,14 +1,11 @@
 package deductions.runtime.services
 
-import scala.util.Try
-import org.w3.banana.RDF
-import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
+import deductions.runtime.abstract_syntax.{InstanceLabelsInferenceMemory, PreferredLanguageLiteral}
+import deductions.runtime.sparql_cache.SPARQLHelpers
+import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
 import deductions.runtime.utils.RDFPrefixes
+import org.w3.banana.RDF
 import play.api.libs.json.Json
-import play.api.libs.json.JsArray
-import play.api.libs.json.JsObject
 
 /**
  * API for a lookup web service similar to dbPedia lookup
@@ -19,11 +16,6 @@ trait Lookup[Rdf <: RDF, DATASET]
     with PreferredLanguageLiteral[Rdf]
     with SPARQLHelpers[Rdf, DATASET]
     with RDFPrefixes[Rdf] {
-
-  import ops._
-  import sparqlOps._
-  import rdfStore.sparqlEngineSyntax._
-  import rdfStore.transactorSyntax._
 
   type Results = List[(Rdf#Node, String, String, String, String)]
 

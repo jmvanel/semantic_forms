@@ -1,4 +1,4 @@
-package deductions.runtime.dataset
+package deductions.runtime.sparql_cache.dataset
 
 import org.w3.banana.RDF
 

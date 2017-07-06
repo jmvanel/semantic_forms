@@ -1,9 +1,8 @@
 package deductions.runtime.abstract_syntax
 
-import scala.util.Success
-import scala.util.Try
-
 import org.w3.banana.RDF
+
+import scala.util.{Success, Try}
 
 /** Step 1 of form generation: compute properties List from Config, Subject, Class (in that order) */
 trait ComputePropertiesList[Rdf <: RDF, DATASET] {

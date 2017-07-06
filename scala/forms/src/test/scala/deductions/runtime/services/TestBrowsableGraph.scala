@@ -4,7 +4,7 @@ import deductions.runtime.jena.{ImplementationSettings, RDFCache, RDFStoreLocalJ
 import deductions.runtime.utils.DefaultConfiguration
 import org.scalatest.FunSuite
 import org.w3.banana.{RDFOpsModule, SparqlGraphModule, SparqlHttpModule, SparqlOpsModule}
-
+import deductions.runtime.sparql_cache.BrowsableGraph
 //@Ignore
 class TestBrowsableGraph
     extends FunSuite

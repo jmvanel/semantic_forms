@@ -4,8 +4,8 @@ import java.net.URL
 import java.nio.file.StandardOpenOption
 
 import deductions.runtime.utils.RDFPrefixes
-import org.w3.banana.{RDF, RDFOps}
 import org.w3.banana.io.{NTriples, RDFLoader, RDFWriter}
+import org.w3.banana.{RDF, RDFOps}
 
 import scala.util.Try
 

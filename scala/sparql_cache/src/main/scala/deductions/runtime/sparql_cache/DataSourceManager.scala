@@ -2,10 +2,10 @@ package deductions.runtime.sparql_cache
 
 import java.net.URL
 
-import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
 import deductions.runtime.utils.RDFHelpers
-import org.w3.banana.{RDF, RDFOps}
 import org.w3.banana.io.RDFLoader
+import org.w3.banana.{RDF, RDFOps}
 
 import scala.util.Try
 

@@ -2,7 +2,7 @@ package deductions.runtime.sparql_cache.apps
 
 import deductions.runtime.DependenciesForApps
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.sparql_cache.{CommonVocabulariesLoaderTrait, FormSpecificationsLoaderTrait}
+import deductions.runtime.sparql_cache.{CommonVocabulariesLoader, FormSpecificationsLoader}
 import deductions.runtime.utils.DefaultConfiguration
 import org.w3.banana.RDF
 
@@ -25,9 +25,9 @@ object PopulateRDFCache
 
 
 trait PopulateRDFCacheTrait[Rdf <: RDF, DATASET]
-    extends CommonVocabulariesLoaderTrait[Rdf, DATASET]
+    extends CommonVocabulariesLoader[Rdf, DATASET]
     with RDFI18NLoaderTrait[Rdf, DATASET]
-    with FormSpecificationsLoaderTrait[Rdf, DATASET]
+    with FormSpecificationsLoader[Rdf, DATASET]
     with App {
 
   loadCommonVocabularies()

@@ -1,9 +1,7 @@
 package deductions.runtime.sparql_cache
 
+import deductions.runtime.utils.Timer
 import org.apache.logging.log4j.LogManager
-import org.apache.log4j.Logger
-
- import deductions.runtime.utils.Timer
 
 package object algos extends Timer {
   val logger = LogManager.getLogger("services")

@@ -1,8 +1,10 @@
-package deductions.runtime.sparql_cache
+package deductions.runtime.sparql_cache.apps
+
 //import deductions.runtime.jena.JenaHelpers
 import deductions.runtime.DependenciesForApps
 import deductions.runtime.utils.DefaultConfiguration
 
+import scala.language.postfixOps
 object RDFDashboardApp
     extends {
       override val config = new DefaultConfiguration {

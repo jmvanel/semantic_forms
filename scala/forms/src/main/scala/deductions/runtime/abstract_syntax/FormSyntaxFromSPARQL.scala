@@ -1,11 +1,9 @@
 package deductions.runtime.abstract_syntax
 
-import scala.util.Failure
-import scala.util.Success
-
+import deductions.runtime.sparql_cache.SPARQLHelpers
 import org.w3.banana.RDF
 
-import deductions.runtime.services.SPARQLHelpers
+import scala.util.{Failure, Success}
 
 trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
     extends SPARQLHelpers[Rdf, DATASET]

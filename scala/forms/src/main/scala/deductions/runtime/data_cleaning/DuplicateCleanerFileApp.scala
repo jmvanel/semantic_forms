@@ -3,8 +3,7 @@ package deductions.runtime.data_cleaning
 import java.io.File
 
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.SPARQLHelpers
-import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.sparql_cache.{RDFCacheAlgo, SPARQLHelpers}
 import deductions.runtime.utils.DefaultConfiguration
 
 /**

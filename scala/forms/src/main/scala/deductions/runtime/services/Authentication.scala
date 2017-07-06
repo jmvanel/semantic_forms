@@ -1,17 +1,14 @@
 package deductions.runtime.services
 
 import java.security.MessageDigest
-
-import scala.util.Failure
-import scala.util.Success
-import scala.util.Try
-import org.w3.banana.{RDF, RDFStore}
-import deductions.runtime.sparql_cache.RDFCacheAlgo
-import deductions.runtime.utils.RDFPrefixes
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter
 
-import deductions.runtime.dataset.RDFStoreLocalUserManagement
-import deductions.runtime.utils.URIManagement
+import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.sparql_cache.dataset.RDFStoreLocalUserManagement
+import deductions.runtime.utils.{RDFPrefixes, URIManagement}
+import org.w3.banana.RDF
+
+import scala.util.{Failure, Success, Try}
 
 
 

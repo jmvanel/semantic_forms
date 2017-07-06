@@ -1,12 +1,10 @@
 package deductions.runtime.abstract_syntax
 
+import deductions.runtime.sparql_cache.SPARQLHelpers
+import deductions.runtime.utils.{RDFHelpers, RDFPrefixes}
 import org.w3.banana.RDF
 
-import deductions.runtime.services.SPARQLHelpers
-import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.utils.RDFPrefixes
-import scala.util.Success
-import scala.util.Failure
+import scala.util.{Failure, Success}
 
 /**
  * Take into account such annotations:
@@ -18,9 +16,8 @@ trait InstanceLabelsFromLabelProperty[Rdf <: RDF, DATASET]
     with RDFHelpers[Rdf]
     with RDFPrefixes[Rdf] {
 
-  import ops._
-  import sparqlOps._
   import rdfStore.sparqlEngineSyntax._
+  import sparqlOps._
 
   /**
    * inferring possible label from:

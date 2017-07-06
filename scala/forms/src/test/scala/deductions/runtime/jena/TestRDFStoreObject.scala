@@ -1,6 +1,6 @@
 package deductions.runtime.jena
 
-import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
 import deductions.runtime.utils.DefaultConfiguration
 import org.scalatest.FunSuite
 import org.w3.banana.{RDF, SparqlEngine, SparqlOps}

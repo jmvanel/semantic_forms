@@ -1,12 +1,13 @@
 package deductions.runtime.services
 
-import deductions.runtime.dataset.RDFStoreLocalProvider
+import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
 import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
 import deductions.runtime.jena.lucene.LuceneIndex
 import deductions.runtime.utils.{DefaultConfiguration, FileUtils}
 import org.scalatest.{BeforeAndAfterAll, FunSuite}
 import org.w3.banana.RDF
 import org.w3.banana.io.{RDFReader, RDFXML}
+import deductions.runtime.sparql_cache.SPARQLHelpers
 
 import scala.language.postfixOps
 import scala.util.Try
