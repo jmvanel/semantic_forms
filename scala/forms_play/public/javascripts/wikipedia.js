@@ -54,8 +54,6 @@ $(document).ready(function() {
             },
             source: function(request, callback) {
                 console.log("Déclenche l'événement :")
-                console.log($(event.target));
-                console.log(event.target.value);
 
 		// TODO add QueryClass
 		// compare results: QueryClass=person , and ?QueryClass=place
@@ -64,9 +62,18 @@ $(document).ready(function() {
 
 		// QueryClass comes from attribute data-rdf-type in <input> tag , but data-rdf-type is a full URI !
 
+                var typeName
+                var $el = $(event.target);
+                if ($el) {
+                var type = $el.attr('data-rdf-type').split('/');
+                    if (type) {
+                      typeName = type[type.length - 1];
+                    }
+                }
+
                 $.ajax({
                     url: "http://lookup.dbpedia.org/api/search/PrefixSearch",
-                    data: { MaxHits: resultsCount, QueryString: request.term },
+                    data: { MaxHits: resultsCount, QueryClass: typeName, QueryString: request.term },
                     dataType: "json",
                     timeout: 5000
                 }).done(function (response) {
@@ -79,7 +86,7 @@ $(document).ready(function() {
                 }).fail(function (error){
                     $.ajax({
                         url: "/lookup",
-                        data: { MaxHits: resultsCount, QueryString: request.term + "*" },
+                        data: { MaxHits: resultsCount, QueryClass: typeName, QueryString: request.term + "*" },
                         dataType: "json",
                         timeout: 5000
                     }).done(function(response) {
