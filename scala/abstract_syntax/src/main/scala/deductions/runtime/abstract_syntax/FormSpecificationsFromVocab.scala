@@ -8,8 +8,7 @@ package deductions.runtime.abstract_syntax
 import java.io.{File, FileOutputStream, StringReader}
 import java.net.URL
 
-import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
-import deductions.runtime.utils.{DefaultConfiguration, RDFPrefixes}
+import deductions.runtime.utils.RDFPrefixes
 import org.w3.banana.RDF
 
 import scala.io.Source
@@ -17,27 +16,7 @@ import scala.language.{existentials, postfixOps}
 import scala.util.Try
 
 /** input file for vocabulary; output in new file with ".formspec.ttl" suffix */
-object FormSpecificationsFromVocabApp extends RDFStoreLocalJena1Provider
-    with App
-    with FormSpecificationsFromVocab
-    [ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
-  val config = new DefaultConfiguration {
-    override val useTextQuery = false
-  }
-
-  if (args.size == 0) {
-    println("Usage: input file for vocabulary; output in new file with '.formspec.ttl' suffix")
-    System.exit(-1)
-  }
-  val file = new File(args(0))
-  val res: Try[Rdf#Graph] = if( file.exists() ) {
-	  readFile(file)
-  } else
-    readTurtleTerm(args(0))
-    
-  makeFormSpecificationsFromVocabFile( res, file )
-}
 
 /**
  * Create squeleton form specifications from an RDFS/OWL vocabulary;
