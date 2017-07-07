@@ -81,7 +81,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       for( pv <- propertyValueForEachRow ) {
     	  list += Triple(rowSubject, pv._1, pv._2)
       }
-      list += Triple(rowSubject, csvPredicate(CSV.ROW_POSITION), Literal( String.valueOf(index) ) )
+      // list += Triple(rowSubject, csvPredicate(CSV.ROW_POSITION), Literal( String.valueOf(index) ) )
       index = index + 1
     }
     addTableMetadataStatements(documentURI, list, index, headerURIs.length)

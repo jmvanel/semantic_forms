@@ -21,9 +21,9 @@ import deductions.runtime.utils.DefaultConfiguration
  * - abbreviated Turtle terms with well-known prefixes (eg dbpedia:Paris) are understood in cells
  */
 object CSVImporterApp extends {
-  override val config = new DefaultConfiguration{}
-//    override val useTextQuery = true // false
-//  }
+  override val config = new DefaultConfiguration {
+    override val useTextQuery: Boolean = false
+  }
 } with App
     with ImplementationSettings.RDFCache
     with CSVImporter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {

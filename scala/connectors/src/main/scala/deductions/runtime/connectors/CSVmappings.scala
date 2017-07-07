@@ -142,6 +142,18 @@ NB de mentions presses	Ventes ou services	Structure juridique signature conventi
     "Permalien" -> rdfs.seeAlso,
     "Genre" -> dwc("genus"),
     "Epithète espèce" -> dwc("specificEpithet")
+    
+    // mobile geo tracking
+    // Opérateur	Forfait	Date achat	Identifiant	Pass	Telephone	SIM	PUK	PIN	
+    // Déblocage	Installé	Scooter N°	IMEI															
+    ,
+    "IMEI" -> geoloc("mobile"), // TODO add URI instance prefix imei:
+    "Scooter N°" -> vehman("internalNumber"),
+    "Telephone" -> foaf.phone,
+    "Installé" -> geoloc("activated")
+    
+    // inventory garden, arboretum
+    
   )
 
     /** lots of boiler plate for vocabularies !!!!!!!!!!! */
