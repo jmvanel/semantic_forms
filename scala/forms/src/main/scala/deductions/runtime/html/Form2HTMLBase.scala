@@ -28,7 +28,9 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     // display field label only if different from preceding
     if (preceding.label != field.label)
       // PENDING is it correct HTML5 ?
-      <label for={ makeHTMLNameResource(field) }
+      <label for={
+//      makeHTMLName(field)
+      field.htmlName }
         class={ css.cssClasses.formLabelCSSClass }
         >
       <a href={field.property.toString()}
@@ -87,36 +89,40 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     }
   }
 
-  /** leveraging on HTTP parameter being the original triple from TDB,
-   * in N-Triple syntax, we generate here the HTTP parameter from the original triple;
-   * see HttpParamsManager#httpParam2Triple for the reverse operation */
-  def makeHTMLName(ent: formMod#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): String = {
-    val rawResult = {
-      def makeTTLURI(s: NODE) = s"<$s>"
-      def makeTTLBN(s: NODE) = s"_:$s"
-      def makeTTLAnyTerm(value: NODE, ent: formMod#Entry) = {
-        ent match {
-          case lit: formMod#LiteralEntry => value
-          case bn: formMod#BlankNodeEntry => makeTTLBN(value)
-          case _ => makeTTLURI(value)
-        }
-      }
-      makeTTLURI(form.subject) + " " +
-        makeTTLURI(ent.property) + " " +
-        makeTTLAnyTerm(ent.value, ent) + " .\n"
-    }
-    urlEncode(rawResult)
-  }
+//  /** leveraging on HTTP parameter being the original triple from TDB,
+//   * in N-Triple syntax, we generate here the HTTP parameter from the original triple;
+//   * see HttpParamsManager#httpParam2Triple for the reverse operation */
+//  def makeHTMLName(ent: formMod#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): String = {
+//    val rawResult = {
+//      def makeTTLURI(s: NODE) = s"<$s>"
+//      def makeTTLBN(s: NODE) = s"_:$s"
+//      def makeTTLAnyTerm(value: NODE, ent: formMod#Entry) = {
+//        ent match {
+//          case lit: formMod#LiteralEntry => value
+//          case bn: formMod#BlankNodeEntry => makeTTLBN(value)
+//          case _ => makeTTLURI(value)
+//        }
+//      }
+//      makeTTLURI(form.subject) + " " +
+//        makeTTLURI(ent.property) + " " +
+//        makeTTLAnyTerm(ent.value, ent) + " .\n"
+//    }
+//    println( s"""Form2HTMLBase.makeHTMLName Entry $ent ==> "$rawResult" """)
+//    urlEncode(rawResult)
+//  }
 
-  /** make HTML name for a triple */
-  def makeHTMLNameResource(re: formMod#Entry)(implicit form:
-      FormModule[NODE, URI]#FormSyntax) =
-    makeHTMLName(re)
+//  /** make HTML name for a triple */
+//  def makeHTMLNameResource(re: formMod#Entry)(implicit form:
+//      FormModule[NODE, URI]#FormSyntax) =
+//    makeHTMLName(re)
+
+
+//  def makeHTMLNameBN(re: formMod#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = makeHTMLName(re)
+//  def makeHTMLNameLiteral(lit: formMod#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax) =
+//    makeHTMLName(lit)
+
   def makeHTMLIdResourceSelect(re: formMod#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): String =
     toPlainString(re.property)
-  def makeHTMLNameBN(re: formMod#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) = makeHTMLName(re)
-  def makeHTMNameLiteral(lit: formMod#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax) =
-    makeHTMLName(lit)
 
   def makeHTML_Id(entry: formMod#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax) =
     "f" + form.fields.indexOf(entry)

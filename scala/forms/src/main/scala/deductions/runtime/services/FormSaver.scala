@@ -77,7 +77,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
                 computeDatabaseChanges(comingBackTriple, objects,lang)
               }
               try_ match {
-                case f: Failure[_] => logger.error("saveTriples: " + f)
+                case f: Failure[_] => logger.error(s"saveTriples: $param :" + f)
                 case _ =>
               }
             }
