@@ -1,12 +1,10 @@
 package deductions.runtime.abstract_syntax
 
-import scala.collection.mutable
-import scala.language.existentials
-import scala.language.postfixOps
-
+import deductions.runtime.semlogs.TimeSeries
 import org.w3.banana.RDF
 
-import deductions.runtime.semlogs.TimeSeries
+import scala.collection.mutable
+import scala.language.{existentials, postfixOps}
 
 
 trait UserTraceability[Rdf <: RDF, DATASET]

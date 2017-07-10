@@ -3,7 +3,7 @@ package deductions.runtime.sparql_cache.algos
 import java.io.PrintStream
 
 import deductions.runtime.html.HTML5TypesTrait
-import deductions.runtime.services.SPARQLHelpers
+import deductions.runtime.sparql_cache.SPARQLHelpers
 import deductions.runtime.utils.{Configuration, RDFHelpers, RDFPrefixes}
 import org.w3.banana.{OWLPrefix, PointedGraph, RDF, RDFOps}
 

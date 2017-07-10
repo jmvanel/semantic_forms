@@ -1,8 +1,8 @@
 package deductions.runtime.services
 
 import org.w3.banana.RDF
+
 import scala.concurrent.Future
-import scala.xml.Elem
 import scala.xml.NodeSeq
 
 /** Reverse Links Search with simple SPARQL */

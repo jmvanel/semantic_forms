@@ -1,22 +1,12 @@
 package deductions.runtime.views
 
-import scala.concurrent.Future
-import scala.xml.Elem
-import scala.xml.NodeSeq
-import scala.xml.Text
-
-import org.w3.banana.RDF
-import org.w3.banana.TryW
+import java.net.URLEncoder
 
 import deductions.runtime.abstract_syntax.FormModule
-import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
-import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.html.Form2HTML
-import deductions.runtime.html.Form2HTMLDisplay
-import java.net.URLEncoder
-import deductions.runtime.services.ParameterizedSPARQL
-import deductions.runtime.services.SPARQLQueryMaker
+import deductions.runtime.services.{ParameterizedSPARQL, SPARQLQueryMaker}
+import org.w3.banana.RDF
+
+import scala.xml.NodeSeq
 
 trait ResultsDisplay[Rdf <: RDF, DATASET] {
 

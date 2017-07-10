@@ -3,8 +3,8 @@ package deductions.runtime.views
 import java.net.URLEncoder
 
 import deductions.runtime.abstract_syntax.FormModule
-import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.html.BasicWidgets
+import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
 import deductions.runtime.utils.{Configuration, I18NMessages, RDFHelpers, RDFPrefixes}
 import org.w3.banana.{OWLPrefix, PointedGraph, RDF}
 

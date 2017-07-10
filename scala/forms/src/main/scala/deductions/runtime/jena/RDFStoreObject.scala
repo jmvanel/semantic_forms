@@ -3,8 +3,8 @@ package deductions.runtime.jena
 import java.io.File
 import java.nio.file.Paths
 
-import deductions.runtime.dataset.RDFStoreLocalProvider
 import deductions.runtime.jena.lucene.LuceneIndex
+import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
 import deductions.runtime.utils.Timer
 import org.apache.jena.graph.{Graph => JenaGraph, Node => JenaNode, Triple => JenaTriple}
 import org.apache.jena.query.{DatasetFactory, Query => JenaQuery}

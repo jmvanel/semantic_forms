@@ -1,7 +1,7 @@
 package deductions.runtime.sparql_cache.apps
 
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.TypeAddition
+import deductions.runtime.sparql_cache.TypeAddition
 import deductions.runtime.utils.DefaultConfiguration
 import org.w3.banana.RDF
 

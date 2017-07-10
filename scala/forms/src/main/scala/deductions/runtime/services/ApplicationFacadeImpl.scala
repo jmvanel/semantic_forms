@@ -8,8 +8,8 @@ import deductions.runtime.data_cleaning.BlankNodeCleanerIncremental
 import deductions.runtime.html.{CreationFormAlgo, TriplesViewWithTitle}
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.semlogs.TimeSeries
-import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.sparql_cache.algos.StatisticsGraph
+import deductions.runtime.sparql_cache.{BrowsableGraph, RDFCacheAlgo, SPARQLHelpers}
 import deductions.runtime.user.RegisterPage
 import deductions.runtime.utils.{CSSClasses, Configuration, HTTPrequest}
 import deductions.runtime.views.{FormHeader, Results, ToolsPage}

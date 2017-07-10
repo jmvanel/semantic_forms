@@ -3,7 +3,7 @@ package deductions.apps
 import scala.xml.NodeSeq
 import org.w3.banana.RDF
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.SPARQLHelpers
+import deductions.runtime.sparql_cache.SPARQLHelpers
 import scala.xml.NodeSeq._ // seqToNodeSeq
 
 trait ContactsDashboard extends ImplementationSettings.RDFCache

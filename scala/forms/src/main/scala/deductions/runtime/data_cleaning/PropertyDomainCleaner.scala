@@ -1,20 +1,11 @@
 package deductions.runtime.data_cleaning
 
-import org.w3.banana.RDF
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.services.SPARQLHelpers
-import org.w3.banana.jena.JenaModule
-import deductions.runtime.jena.RDFStoreLocalJenaProvider
-import scala.language.postfixOps
-
-import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.dataset.RDFOPerationsDB
-import deductions.runtime.abstract_syntax.InstanceLabelsInference2
-import deductions.runtime.abstract_syntax.PreferredLanguageLiteral
-
+import deductions.runtime.abstract_syntax.{InstanceLabelsInference2, PreferredLanguageLiteral}
 import deductions.runtime.utils.URIManagement
 import org.w3.banana.binder.PGBinder
-import org.w3.banana.OWLPrefix
+import org.w3.banana.{OWLPrefix, RDF}
+
+import scala.language.postfixOps
 
 /**
  * After merging RDF Property duplicates (in trait DuplicateCleaner),
@@ -27,8 +18,6 @@ trait PropertyDomainCleaner[Rdf <: RDF, DATASET]
     with URIManagement {
 
   import ops._
-  import rdfStore.graphStoreSyntax._
-  import rdfStore.transactorSyntax._
 
   private val owl = OWLPrefix[Rdf]
   val newRdfsDomainsGraph = URI("urn:newRdfsDomains/")

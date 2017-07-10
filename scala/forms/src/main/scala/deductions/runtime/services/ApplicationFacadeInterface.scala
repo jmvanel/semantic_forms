@@ -1,12 +1,11 @@
 package deductions.runtime.services
 
-import scala.concurrent.Future
-import scala.xml.Elem
-import scala.util.Try
-import scala.xml.NodeSeq
-
-import play.api.libs.iteratee.Enumerator
 import deductions.runtime.utils.HTTPrequest
+import play.api.libs.iteratee.Enumerator
+
+import scala.concurrent.Future
+import scala.util.Try
+import scala.xml.{Elem, NodeSeq}
 
 /**
  * @author jmv

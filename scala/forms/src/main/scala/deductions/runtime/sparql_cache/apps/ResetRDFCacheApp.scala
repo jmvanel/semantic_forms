@@ -1,7 +1,7 @@
 package deductions.runtime.sparql_cache.apps
 
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.sparql_cache.{CommonVocabulariesLoaderTrait, FormSpecificationsLoaderTrait}
+import deductions.runtime.sparql_cache.{CommonVocabulariesLoader, FormSpecificationsLoader}
 import deductions.runtime.utils.DefaultConfiguration
 import org.w3.banana.RDFOpsModule
 
@@ -21,9 +21,9 @@ object ResetRDFCacheApp extends {
   }
 } with ImplementationSettings.RDFModule
     with DefaultConfiguration
-    with CommonVocabulariesLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with CommonVocabulariesLoader[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RDFI18NLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with FormSpecificationsLoaderTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with FormSpecificationsLoader[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RDFOpsModule
     with ImplementationSettings.RDFCache
     with App {

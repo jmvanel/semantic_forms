@@ -1,27 +1,13 @@
 package deductions.runtime.data_cleaning
 
-import org.w3.banana.RDF
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.services.SPARQLHelpers
-import org.w3.banana.jena.JenaModule
-import deductions.runtime.jena.RDFStoreLocalJenaProvider
-import scala.language.postfixOps
-import org.w3.banana.RDFPrefix
-import org.w3.banana.syntax._
-import org.w3.banana.diesel._
+import org.w3.banana.{OWLPrefix, RDF}
 
-import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.dataset.RDFOPerationsDB
-import org.w3.banana.OWLPrefix
-import org.w3.banana.PointedGraphs
-import org.w3.banana.RDFSPrefix
+import scala.language.postfixOps
 
 
 trait PropertiesCleaner[Rdf <: RDF, DATASET]
 extends BlankNodeCleanerBase[Rdf, DATASET] {
   import ops._
-  import rdfStore.graphStoreSyntax._
-  import rdfStore.transactorSyntax._
 
 //  val namedGraphForTrackingDuplicates = URI("urn:duplicates")
   private val owl = OWLPrefix[Rdf]

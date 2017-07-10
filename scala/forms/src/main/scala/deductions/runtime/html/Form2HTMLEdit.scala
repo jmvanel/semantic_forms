@@ -63,7 +63,10 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
           <input class={ css.cssClasses.formInputCSSClass +
             " " + hasLookup }
             value={ value.toString }
-            name={ makeHTMLNameResource(resourceEntry) }
+            name={
+              // makeHTMLName(resourceEntry)
+              resourceEntry.htmlName
+            }
             id={ makeHTML_Id(resourceEntry) }
             list={ makeHTMLIdForDatalist(resourceEntry) }
             placeholder={ placeholder }
@@ -118,7 +121,9 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
         {addTripleAttributesToXMLElement(
         <input class={ css.cssClasses.formInputCSSClass } value={
           r.value.toString
-        } name={ makeHTMLNameBN(r) } id={
+        } name={
+          // makeHTMLNameBN(r)
+          r.htmlName } id={
           makeHTML_Id(r)
         } size={ inputSize.toString() }
         placeholder={ placeholder }
@@ -138,7 +143,8 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
       isFirstFieldForProperty(r)) {
       <div class={ css.cssClasses.formSelectDivCSSClass }>
         <select class={ css.cssClasses.formSelectCSSClass } value={ r.value.toString } name={
-          makeHTMLNameResource(r)
+//          makeHTMLName(r)
+          r.htmlName
         } id={
           makeHTMLIdResourceSelect(r)
         } list={
@@ -179,16 +185,23 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
       case typ if typ == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
         if (radioForIntervals)
           (for (n <- Range(0, 6)) yield (
-            <input type="radio" name={ makeHTMNameLiteral(lit) } id={
-              makeHTMNameLiteral(lit) } checked={
+            <input type="radio" name={
+              // makeHTMLName(lit)
+              lit.htmlName } id={
+//              makeHTMLName(lit)
+              lit.htmlName } checked={
               if (n.toString.equals(value)) "checked" else null
             } value={ n.toString }>
             </input>
-            <label for={ makeHTMNameLiteral(lit) }>{ n }</label>
+            <label for={
+              // makeHTMLName(lit)
+              lit.htmlName }>{ n }</label>
           )).flatten
         else {
           // TODO maybe call renderPossibleValues
-          <select name={ makeHTMNameLiteral(lit) }>
+          <select name={
+//            makeHTMLName(lit)
+            lit.htmlName }>
             { formatPossibleValues(lit) }
           </select>
         }
@@ -196,17 +209,23 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
       case typ if typ == xsdPrefix + "boolean" =>
         <div class="wrapper">
           <label for="yes_radio" id="yes-lbl">Oui</label>
-          <input type="radio" name={ makeHTMNameLiteral(lit) } id="yes_radio"
+          <input type="radio" name={
+//            makeHTMLName(lit)
+            lit.htmlName } id="yes_radio"
           checked={toPlainString(value) match {case "true" => "true" ; case _ => null } }
           value="true" ></input>
 
           <label for="maybe_radio" id="maybe-lbl">?</label>
-          <input type="radio" name={ makeHTMNameLiteral(lit) } id="maybe_radio"
+          <input type="radio" name={
+            // makeHTMLName(lit)
+            lit.htmlName } id="maybe_radio"
           checked={toPlainString(value) match {case "" => "checked" ; case _ => null } }
           value="" ></input>
 
           <label for="no_radio" id="no-lbl">Non</label>
-          <input type="radio" name={ makeHTMNameLiteral(lit) } id="no_radio"
+          <input type="radio" name={
+            // makeHTMLName(lit)
+            lit.htmlName } id="no_radio"
           checked={toPlainString(value) match {case "false" => "false" ; case _ => null } }
           value="false" ></input>
           <div class="toggle"></div>
@@ -217,7 +236,9 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
         {addTripleAttributesToXMLElement(
           <input class={ css.cssClasses.formInputCSSClass } value={
             toPlainString(value)
-          } name={ makeHTMNameLiteral(lit) } type={
+          } name={
+            // makeHTMLName(lit)
+            lit.htmlName } type={
             xsd2html5TnputType(type_.toString())
           }
           step = {xsd2html5Step(type_.toString())}

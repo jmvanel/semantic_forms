@@ -1,18 +1,10 @@
 package deductions.runtime.data_cleaning
 
-import org.w3.banana.RDF
-import deductions.runtime.dataset.RDFStoreLocalProvider
-import deductions.runtime.services.SPARQLHelpers
-import org.w3.banana.jena.JenaModule
-import deductions.runtime.jena.RDFStoreLocalJenaProvider
+import deductions.runtime.sparql_cache.SPARQLHelpers
+import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import org.w3.banana.{OWLPrefix, RDF}
+
 import scala.language.postfixOps
-import org.w3.banana.RDFPrefix
-import deductions.runtime.utils.RDFHelpers
-import deductions.runtime.dataset.RDFOPerationsDB
-import org.w3.banana.OWLPrefix
-import org.w3.banana.RDFSPrefix
-import org.w3.banana.syntax._
-import org.w3.banana.diesel._
 
 /** */
 trait BlankNodeCleaner[Rdf <: RDF, DATASET]
@@ -47,8 +39,6 @@ trait BlankNodeCleanerBase[Rdf <: RDF, DATASET]
 
 trait BlankNodeCleanerIncremental[Rdf <: RDF, DATASET] extends BlankNodeCleanerBase[Rdf, DATASET] {
   import ops._
-  import rdfStore.graphStoreSyntax._
-  import rdfStore.transactorSyntax._
 
   /**
    * cf post on Jena list:
@@ -123,8 +113,6 @@ trait BlankNodeCleanerIncremental[Rdf <: RDF, DATASET] extends BlankNodeCleanerB
 trait BlankNodeCleanerBatch[Rdf <: RDF, DATASET]
 extends BlankNodeCleanerBase[Rdf, DATASET] {
   import ops._
-  import rdfStore.graphStoreSyntax._
-  import rdfStore.transactorSyntax._
 
 //  private lazy val rdf = RDFPrefix[Rdf]
 

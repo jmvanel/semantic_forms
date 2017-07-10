@@ -2,10 +2,10 @@ package deductions.runtime.services
 
 import java.net.URLEncoder
 
+import org.w3.banana.RDF
+
 import scala.concurrent.Future
 import scala.xml.NodeSeq
-
-import org.w3.banana.RDF
 
 /** Show named graphs */
 trait NamedGraphsSPARQL[Rdf <: RDF, DATASET]

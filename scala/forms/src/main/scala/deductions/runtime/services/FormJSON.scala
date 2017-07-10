@@ -1,9 +1,7 @@
 package deductions.runtime.services
 
+import deductions.runtime.abstract_syntax.{FormSyntaxFactory, FormSyntaxJson}
 import org.w3.banana.RDF
-import deductions.runtime.abstract_syntax.FormSyntaxJson
-import deductions.runtime.abstract_syntax.FormSyntaxFactory
-import play.api.libs.json._
 
 /** service producing the raw form syntax in JSON */
 trait FormJSON[Rdf <: RDF, DATASET]

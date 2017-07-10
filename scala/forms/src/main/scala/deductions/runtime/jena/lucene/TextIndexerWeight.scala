@@ -1,15 +1,12 @@
 package deductions.runtime.jena.lucene
 
-import org.apache.jena.query.text.DatasetGraphText
-import org.apache.jena.query.text.TextIndexLucene
-import org.apache.lucene.index.DirectoryReader
-import org.apache.lucene.index.MultiFields
+import deductions.runtime.jena.ImplementationSettings
+import org.apache.jena.query.text.{DatasetGraphText, TextIndexLucene}
+import org.apache.lucene.index.{DirectoryReader, MultiFields}
 import org.apache.lucene.search.spell.Dictionary
 import org.apache.lucene.search.suggest.InputIterator
 import org.apache.lucene.search.suggest.analyzing.AnalyzingInfixSuggester
 import org.apache.lucene.util.Version
-
-import deductions.runtime.jena.ImplementationSettings
 
 trait TextIndexerWeight extends LuceneIndex {
 

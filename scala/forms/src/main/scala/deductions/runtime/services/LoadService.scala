@@ -2,16 +2,12 @@ package deductions.runtime.services
 
 import java.io.StringReader
 
-import scala.util.Try
-import scala.util.Success
-import scala.util.Failure
-
-import org.w3.banana.RDF
-import org.w3.banana.io.RDFReader
-import org.w3.banana.io.JsonLd
-
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.HTTPrequest
+import org.w3.banana.RDF
+import org.w3.banana.io.{JsonLd, RDFReader}
+
+import scala.util.{Failure, Success, Try}
 
 /** service accepting JSON-LD;
  * HTTP POST with body (JSON-LD data), and

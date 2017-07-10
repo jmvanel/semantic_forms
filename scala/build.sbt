@@ -17,10 +17,10 @@ lazy val forms_play = (project in file("forms_play"))
 lazy val core = project
 lazy val generic_app = project
 lazy val projects_catalog = project
-lazy val contacts_management = project .dependsOn(utils)
+lazy val contacts_management = project .dependsOn(utils)   .dependsOn(sparql_cache)
 lazy val connectors = project .dependsOn(utils)
 lazy val utils = project
-lazy val forms = project   .dependsOn(sparql_cache)
+lazy val forms = project  .dependsOn(abstract_syntax)
 	// .in(file("forms"))
 	.dependsOn(connectors) // .aggregate(connectors)
 
@@ -30,6 +30,7 @@ lazy val forms_js = project
 // lazy val social_web = project
 // lazy val sparql_client = project
 lazy val sparql_cache = project .dependsOn(utils)
+lazy val abstract_syntax = project .dependsOn(utils)   .dependsOn(sparql_cache)
 
 // PENDING: really necessary?
 resolvers in ThisBuild += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
