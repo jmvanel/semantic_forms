@@ -19,7 +19,7 @@ import scala.xml.{Elem, NodeSeq}
 
 /** main controller 
  *  TODO split HTML pages & HTTP services */
-trait WebPages extends ApplicationTrait
+trait WebPages extends Controller with ApplicationTrait
 {
   import config._
 
@@ -60,7 +60,7 @@ trait WebPages extends ApplicationTrait
               lang, title = title, userInfo = userInfo)
       }
     else
-      Action { implicit request =>
+      Action { implicit request: Request[_] =>
         {
           val lang = chooseLanguage(request)
           val uri = expandOrUnchanged(uri0)
@@ -78,7 +78,7 @@ trait WebPages extends ApplicationTrait
         }
       }
 
-  def table = Action { implicit request =>
+  def table = Action { implicit request: Request[_] =>
     val requestCopy = getRequestCopy()
     val userid = requestCopy.userId()
     val title = "Table view from SPARQL"
@@ -93,7 +93,7 @@ trait WebPages extends ApplicationTrait
   def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "",
       database: String = "TDB") =
 		  Action {
-        implicit request =>
+        implicit request: Request[_] =>
           logger.info(s"""form: request $request : "$Edit" formuri <$formuri> """)
           val lang = chooseLanguage(request)
           val requestCopy = getRequestCopy()
@@ -112,7 +112,7 @@ trait WebPages extends ApplicationTrait
    *  like /form and /display has input Edit, formuri & database
    */
   def sparqlForm(query: String, Edit: String = "", formuri: String = "", database: String = "TDB") =
-    Action { implicit request =>
+    Action { implicit request: Request[_] =>
     val requestCopy = getRequestCopy()
     val userid = requestCopy . userId()
     val lang = chooseLanguage(request)
@@ -135,7 +135,7 @@ trait WebPages extends ApplicationTrait
   }
 
   def wordsearchAction(q: String = "", clas: String = "") = Action.async {
-    implicit request =>
+    implicit request: Request[_] =>
     val lang = chooseLanguageObject(request).language
     val fut: Future[Elem] = wordsearchFuture(q, lang, clas)
     fut.map( r => outputMainPage( r, lang ) )
@@ -143,7 +143,7 @@ trait WebPages extends ApplicationTrait
 
   /** pasted from above */
   def showNamedGraphsAction() = Action.async {
-    implicit request =>
+    implicit request: Request[_] =>
     val lang = chooseLanguageObject(request).language
     val fut = showNamedGraphs(lang)
     val rr = fut.map( r => outputMainPage( r, lang ) )
@@ -151,7 +151,7 @@ trait WebPages extends ApplicationTrait
   }
 
   def showTriplesInGraphAction( uri: String) = {
-        Action.async { implicit request =>
+        Action.async { implicit request: Request[_] =>
           val lang = chooseLanguageObject(request).language
           val fut = Future.successful( showTriplesInGraph( uri, lang) )
           val rr = fut.map( r => outputMainPage( r, lang ) )
@@ -200,7 +200,7 @@ trait WebPages extends ApplicationTrait
             save(userid)
       }
     else
-      Action { implicit request => {
+      Action { implicit request: Request[_] => {
         val user = request.headers.toMap.getOrElse("graph", Seq("anonymous") ). headOption.getOrElse("anonymous")
         save(user)
       }}
@@ -241,7 +241,7 @@ trait WebPages extends ApplicationTrait
     }
 
   def backlinksAction(uri: String = "") = Action.async {
-    implicit request =>
+    implicit request: Request[_] =>
       val fut: Future[Elem] = backlinksFuture(uri)
 
       // create link for extended Search
@@ -258,7 +258,7 @@ trait WebPages extends ApplicationTrait
   }
 
   def extSearch(q: String = "") = Action.async {
-	  implicit request =>
+	  implicit request: Request[_] =>
 	  val lang = chooseLanguage(request)
     val fut = esearchFuture(q)
     fut.map(r =>

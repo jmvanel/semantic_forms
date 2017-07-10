@@ -18,7 +18,7 @@ trait SparqlServices extends ApplicationTrait
   def loadAction() //  data: String, graphURI: String = "",
   //                 database: String = "TDB") 
   = Action {
-    implicit request =>
+    implicit request: Request[AnyContent] =>
       val requestCopy = getRequestCopy()
       println(s"body class ${request.getClass} ${request.body}")     
       val content = getContent(request)
@@ -43,7 +43,7 @@ trait SparqlServices extends ApplicationTrait
         .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
     }
     if (needLoginForDisplaying)
-      Action { implicit request => doAction }
+      Action { implicit request: Request[_] => doAction }
     else
       withUser { implicit userid => implicit request => doAction }
   }
