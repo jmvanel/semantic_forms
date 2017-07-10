@@ -80,7 +80,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     with UniqueFieldID[Rdf]
     //with UserTraceability[Rdf, DATASET]
     with OWLsameAsFormProcessing[Rdf, DATASET]
-    with Timer {
+    with Timer
+    with FormGroups[Rdf, DATASET] {
 
   val config: Configuration
   import config._
@@ -160,30 +161,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     // TODO make it functional #170
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
 
-    /* the heart of the algo: create the form entries from properties List */
-    def makeEntriesFromFormSyntax(step1: FormSyntax): Seq[Entry] = {
-      val subject = step1.subject
-      val props = step1.propertiesList
-      val classs = step1.classs
-      val formMode: FormMode = if (step1.editable) EditionMode else DisplayMode
-
-      logger.debug(
-          s"makeEntriesFromformSyntax subject <$subject>, classs <$classs>, props $props")
-      logger.debug(
-          s"""FormSyntaxFactory: language: "$lang""" )
-
-      val entries = for (
-        prop <- props if prop != displayLabelPred
-      ) yield {
-        logger.debug(s"makeEntriesFromformSyntax subject $subject, prop $prop")
-          time(s"makeEntriesForSubject(${prop})",
-          makeEntriesForSubject(subject, prop, formMode))
-      }
-      val fields = entries.flatten
-      val fields2 = addTypeTriple(subject, classs, fields)
-      addInverseTriples(fields2, step1)
-    } /// end of internal function makeEntriesFromformSyntax() ///
-
 
     //// compute Form Syntax ////
 
@@ -192,16 +169,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val subject = step1.subject
     val classs = step1.classs
 
-
-    // PENDING make it functional #170 : create properties Groups: extract to FormGroups
-
-    // create the form entries from groups 
-    val entriesFromPropertiesGroups = for( (node, formSyntax ) <- step1.propertiesGroupMap ) yield
-    	node -> makeEntriesFromFormSyntax(formSyntax)
-    // set a FormSyntax.title for each group in propertiesGroups
-    val propertiesGroups = for( (node, entries) <- entriesFromPropertiesGroups ) yield {
-      FormSyntax(node, entries, title=makeInstanceLabel(node, allNamedGraph, lang))
-    }
 
     val formSyntax0 = FormSyntax(subject,
         fieldsCompleteList ++ step1.fields,
@@ -215,8 +182,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
           case Some(uri) => makeInstanceLabel( uri, allNamedGraph, lang )
         } )
 
-    val formSyntax = formSyntax0.copy(propertiesGroups=propertiesGroups.toSeq)
-   
+    val formSyntax = expandPropertiesGroups(graph, lang)(formSyntax0)
+
     // TODO make it functional #170
     if( step1.editable ) addAllPossibleValues(formSyntax, valuesFromFormGroup)
     logger.debug(s"createFormDetailed2: createForm " + this)
@@ -228,6 +195,30 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     logger.debug(s"createFormDetailed2: createForm 2 " + this)
     res
   }
+
+  /** the heart of the algo: create the form entries from properties List */
+  protected def makeEntriesFromFormSyntax(step1: FormSyntax)
+  (implicit graph: Rdf#Graph,  lang: String="")
+  : Seq[Entry] = {
+      val subject = step1.subject
+      val props = step1.propertiesList
+      val classs = step1.classs
+      val formMode: FormMode = if (step1.editable) EditionMode else DisplayMode
+
+      logger.debug(
+          s"makeEntriesFromformSyntax subject <$subject>, classs <$classs>, props $props")
+
+      val entries = for (
+        prop <- props if prop != displayLabelPred
+      ) yield {
+        logger.debug(s"makeEntriesFromformSyntax subject $subject, prop $prop")
+          time(s"makeEntriesForSubject(${prop})",
+          makeEntriesForSubject(subject, prop, formMode))
+      }
+      val fields = entries.flatten
+      val fields2 = addTypeTriple(subject, classs, fields)
+      addInverseTriples(fields2, step1)
+    }
 
   protected def addInverseTriples(fields2: Seq[Entry],
       step1: FormSyntax): Seq[Entry]
