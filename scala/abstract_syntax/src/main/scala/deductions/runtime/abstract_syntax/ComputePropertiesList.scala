@@ -12,11 +12,11 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
 //  object NullRawDataForForm extends RawDataForForm[Rdf#Node, Rdf#URI](Seq(), nullURI, nullURI )
 
   /**
-   * create Raw Data For Form from an instance (subject) URI,
+   * create Raw Data For Form (incomplete FormSyntax) from an instance (subject) URI,
    * and possibly a Form Specification URI if URI is not <> ;
    * ( see form_specs/foaf.form.ttl for an example of form Specification);
    *
-   * it merges given properties from Config, with properties from Subject
+   * it merges given properties from Specification, with properties from Subject
    * and from Class (in this order).
    * 
    * The class is either:
@@ -24,7 +24,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
    * - inferred from subject
    * - inferred from form specification
    *
-   * @return a RawDataForForm data structure
+   * @return a FormSyntax data structure
    */
   protected def computePropertiesList(subject: Rdf#Node,
                                       editable: Boolean = false,
@@ -77,41 +77,52 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
   
     val reversePropertiesList = reversePropertiesListFromFormConfiguration(formConfiguration)
 
-
     def makeformSyntax(formSyntaxList: List[FormSyntax]): FormSyntax = {
       logger.debug(s"""makeformSyntax: formSyntaxList size ${formSyntaxList.size}
         ${formSyntaxList.mkString("\n")}""")
       val propertiesGroupsList = for (formSyntax <- formSyntaxList) yield {
         formSyntax.propertiesGroupMap
       }
-      val propertiesGroupsMap= propertiesGroupsList.flatten.toMap
+      val propertiesGroupsMap = propertiesGroupsList.flatten.toMap
       logger.debug(s"""makeformSyntax: size ${propertiesGroupsMap.size}
         ${propertiesGroupsMap.keySet}""")
 
-      FormSyntax(subject,Seq(),makeEntries(propertiesList),classesOfSubjectOrFromConfig.head,editable = editable,formURI = formuri match { case "" => Some(formConfiguration); case uri => Some(URI(uri)) },reversePropertiesList = reversePropertiesList,propertiesGroupMap = propertiesGroupsMap)
-
+      FormSyntax(
+        subject,
+        Seq(),
+        makeEntries(propertiesList),
+        classesOfSubjectOrFromConfig.head, editable = editable,
+        formURI = formuri match {
+          case ""  => Some(formConfiguration);
+          case uri => Some(URI(uri))
+        },
+        reversePropertiesList = reversePropertiesList,
+        propertiesGroupMap = propertiesGroupsMap)
     }
 
-    /* local function to mix:
-     *  - stuff from the context: propertiesList, classe sOf Subject Or Formm Specif,
-     *    subject, editable, form URI */
+
+
+    val globalDataForForm = makeformSyntax(propsFromClasses)
+
+    /* formSyntax from Form Specification */
+    val formSyntaxFromSpecif: FormSyntax = if (formConfiguration != nullURI)
+      FormSyntax(subject,
+          Seq(),
+          makeEntries(propsFromConfig),
+          formConfiguration,
+          editable = editable)
+    else NullFormSyntax
+    logger.debug(s"computePropertiesList formSyntaxFromSpecif $formSyntaxFromSpecif")
+
+    /* add Property Group for the default form */
     def prependPropertyGroup(globalDataForForm: FormSyntax, key: Rdf#Node,
                              addedDataForForm: FormSyntax) =
       globalDataForForm.copy(
         propertiesGroupMap =
           globalDataForForm.propertiesGroupMap +
             (key -> addedDataForForm))
-
-    val globalDataForForm = makeformSyntax(propsFromClasses)
-
-    /* formSyntax from Form Specification */
-    val formSyntaxFromSpecif: FormSyntax = if (formConfiguration != nullURI)
-      FormSyntax(subject,Seq(),makeEntries(propsFromConfig),formConfiguration,editable = editable)
-    else NullFormSyntax
-    logger.debug(s"computePropertiesList formSyntaxFromSpecif $formSyntaxFromSpecif")
-
+            
     return prependPropertyGroup(globalDataForForm, Literal("Short form"), formSyntaxFromSpecif)
-//    makeformSyntax( formSyntaxFromSpecif ++ propsFromClasses )
   }
 
   /**

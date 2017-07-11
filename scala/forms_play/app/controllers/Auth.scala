@@ -69,7 +69,7 @@ extends Controller
   println(s"Auth: loginForm $loginForm")
 
   /** page for login or signin */
-  def login = Action { implicit request =>
+  def login = Action { implicit request: Request[_] =>
     println( s"""login: request $request,
       cookies ${request.cookies}
       keySet ${request.session.data.keySet}""" )
@@ -83,7 +83,7 @@ extends Controller
    * this is the action of form `loginForm`;
    * actual recording in database declared in Form() registerForm
    */
-  def authenticate = Action { implicit request =>
+  def authenticate = Action { implicit request: Request[_] =>
     loginForm.bindFromRequest.fold(
 
       formWithErrors =>
@@ -126,7 +126,7 @@ extends Controller
   /** start a session after registering user Id & password
    *  this is the action of form `registerForm`
    */
-  def register = Action { implicit request =>
+  def register = Action { implicit request: Request[_] =>
     val bfr = registerForm.bindFromRequest
     println(s"register = Action: bindFromRequest:\n\t$bfr")
     bfr.fold(

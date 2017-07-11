@@ -80,7 +80,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     with UniqueFieldID[Rdf]
     //with UserTraceability[Rdf, DATASET]
     with OWLsameAsFormProcessing[Rdf, DATASET]
-    with Timer {
+    with Timer
+    with FormGroups[Rdf, DATASET] {
 
   val config: Configuration
   import config._
@@ -98,7 +99,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   override def makeURI(n: Rdf#Node): Rdf#URI = URI(foldNode(n)(
     fromUri(_), fromBNode(_), fromLiteral(_)._1))
 
-//  val rdfs = RDFSPrefix[Rdf]
   override lazy val rdf = RDFPrefix[Rdf]
   
   
@@ -131,14 +131,12 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    *  see if ?D is a datatype or an OWL or RDFS class;
    * 
    * TODO : add lang argument
-   * TODO: propertiesList argument IS NOT USED !!!!
    *
    * used directly for creating an empty Form from a class URI,
    * and indirectly for other cases;
    * NO transaction, should be called within a transaction
    */
   def createFormDetailed(subject: Rdf#Node,
-//    propertiesList: Iterable[Rdf#Node],
     classs: Rdf#URI,
     formMode: FormMode,
     formGroup: Rdf#URI = nullURI,
@@ -163,7 +161,45 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     // TODO make it functional #170
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
 
-    def makeEntriesFromformSyntax(step1: FormSyntax): Seq[Entry] = {
+
+    //// compute Form Syntax ////
+
+    // TODO make it functional #170
+    val fieldsCompleteList = makeEntriesFromFormSyntax(step1)
+    val subject = step1.subject
+    val classs = step1.classs
+
+
+    val formSyntax0 = FormSyntax(subject,
+        fieldsCompleteList ++ step1.fields,
+        Seq(),
+        classs,
+        thumbnail = getURIimage(subject),
+        title = makeInstanceLabel( subject, allNamedGraph, lang ),
+        formURI = step1.formURI,
+        formLabel= step1.formURI match {
+          case None => ""
+          case Some(uri) => makeInstanceLabel( uri, allNamedGraph, lang )
+        } )
+
+    val formSyntax = expandPropertiesGroups(graph, lang)(formSyntax0)
+
+    // TODO make it functional #170
+    if( step1.editable ) addAllPossibleValues(formSyntax, valuesFromFormGroup)
+    logger.debug(s"createFormDetailed2: createForm " + this)
+
+    // TODO make it functional #170
+    val res = time(
+      s"createFormDetailed2: updateFormFromConfig(formConfig=$formConfig)",
+      updateFormFromConfig(formSyntax, formConfig))
+    logger.debug(s"createFormDetailed2: createForm 2 " + this)
+    res
+  }
+
+  /** the heart of the algo: create the form entries from properties List */
+  protected def makeEntriesFromFormSyntax(step1: FormSyntax)
+  (implicit graph: Rdf#Graph,  lang: String="")
+  : Seq[Entry] = {
       val subject = step1.subject
       val props = step1.propertiesList
       val classs = step1.classs
@@ -171,8 +207,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
       logger.debug(
           s"makeEntriesFromformSyntax subject <$subject>, classs <$classs>, props $props")
-      logger.debug(
-          s"""FormSyntaxFactory: language: "$lang""" )
 
       val entries = for (
         prop <- props if prop != displayLabelPred
@@ -185,43 +219,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       val fields2 = addTypeTriple(subject, classs, fields)
       addInverseTriples(fields2, step1)
     }
-    
-    //// compute Form Syntax ////
-
-    // TODO make it functional #170
-    val fieldsCompleteList = makeEntriesFromformSyntax(step1)
-    val subject = step1.subject
-    val classs = step1.classs
-
-    // TODO make it functional #170
-    // set a FormSyntax.title for each group in propertiesGroups
-    val entriesFromPropertiesGroups = for( (node, formSyntax ) <- step1.propertiesGroupMap ) yield
-    	node -> makeEntriesFromformSyntax(formSyntax)
-    val propertiesGroups = for( (n, m) <- entriesFromPropertiesGroups ) yield {
-      FormSyntax(n, m, title=makeInstanceLabel(n, allNamedGraph, lang))
-    }
-    val formSyntax = FormSyntax(subject,
-        fieldsCompleteList ++ step1.fields,
-        Seq(), classs, propertiesGroups=propertiesGroups.toSeq,
-        thumbnail = getURIimage(subject),
-        title = makeInstanceLabel( subject, allNamedGraph, lang ),
-        formURI = step1.formURI,
-        formLabel= step1.formURI match {
-          case None => ""
-          case Some(uri) => makeInstanceLabel( uri, allNamedGraph, lang )
-        } )
-    
-    // TODO make it functional #170
-    if( step1.editable ) addAllPossibleValues(formSyntax, valuesFromFormGroup)
-    logger.debug(s"createFormDetailed2: createForm " + this)
-
-    // TODO make it functional #170
-    val res = time(
-      s"createFormDetailed2: updateFormFromConfig(formConfig=$formConfig)",
-      updateFormFromConfig(formSyntax, formConfig))
-    logger.debug(s"createFormDetailed2: createForm 2 " + this)
-    res
-  }
 
   protected def addInverseTriples(fields2: Seq[Entry],
       step1: FormSyntax): Seq[Entry]
@@ -338,23 +335,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         formSyntax.defaults.defaultCardinality = uriToCardinalities.getOrElse(t.objectt, zeroOrOne)
       }
     }
-    
-//    for (t <- triplesInFormConfig) {
-//      logger.debug("updateFormForClass formConfig " + t)
-//      if (t.predicate == formPrefix("cardinality")) {
-//        val formSpecGraph = PointedGraph( t.subject , Graph(triplesInFormConfig))
-//  
-//        for( card <- ( formSpecGraph / formPrefix("cardinality")) . takeOnePointedGraph;
-//        cardinality = uriToCardinalities(card.pointer);
-//        prop <- ( formSpecGraph / formPrefix("fieldAppliesToProperty") ) . takeOnePointedGraph;
-//        property = prop.pointer;
-//        formPointedGraph <- ( formSpecGraph / formPrefix("fieldAppliesToForm") ) . takeOnePointedGraph;
-//        form = formPointedGraph.pointer
-//        ) {
-//          formSyntax.fields(0).cardinality = cardinality
-//        }
-//      }
-//    }
   }
           
   /**
@@ -387,7 +367,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   private def makeEntriesForSubject(
       subject: Rdf#Node, prop: Rdf#Node,
       formMode: FormMode
-//      valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)]
       )
 	  (implicit graph: Rdf#Graph, lang:String)
   : Seq[Entry] = {
@@ -410,11 +389,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     prop: Rdf#Node,
     objet0: Rdf#Node,
     formMode: FormMode
-//    valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)] // formGroup: Rdf#URI
     )(implicit graph: Rdf#Graph, lang:String): Entry = {
 
     val xsdPrefix = XSDPrefix[Rdf].prefixIri
-    val rdf = RDFPrefix[Rdf]
     val rdfs = RDFSPrefix[Rdf]
 
     val precomputProp = PrecomputationsFromProperty(prop)
@@ -424,9 +401,14 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
     val nullLiteral = Literal("")
     val nullBNode = BNode("")
-    val chooseRDFNodeType =
-        rangeClasses match {
-      case _ if objet0.isLiteral => nullLiteral
+//    if(prop == URI(  "http://deductions.github.io/biological-collections.owl.ttl#species" ) ) { // bioc("species
+//      println( s"bioc:species propClasses $propClasses")
+//  }
+    val chooseRDFNodeType = {
+      val chooseRDFNodeType = rangeClasses match {
+      case _ if objet0.isLiteral &&
+      ! propClasses.contains(owl.ObjectProperty) // TEST <<<<<<<<<<<<<<<<<<<
+      => nullLiteral
       case _ if rangeClasses.exists { c => c.toString startsWith (xsdPrefix) } => nullLiteral
       case _ if rangeClasses.contains(rdfs.Literal) => nullLiteral
       case _ if propClasses.contains(owl.DatatypeProperty) => nullLiteral
@@ -444,6 +426,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
       case _                                    => nullLiteral
     }
+      println( s"::::: chooseRDFNodeType ${chooseRDFNodeType.getClass()}")
+      chooseRDFNodeType
+    }
 
     val objet =
       if (objet0 == nullURI)
@@ -452,7 +437,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         objet0
     
 //    println(s""">>>> makeEntryFromTriple: prop $prop objet "$objet" ${objet.getClass()} """)
-    val htmlName: String = makeHTMLName( makeTriple(subject, uriNodeToURI(prop), objet) )
+    def htmlName: String = makeHTMLName( makeTriple(subject, uriNodeToURI(prop), objet) )
+//    println(s""">>>> makeEntryFromTriple: htmlName $htmlName""")
 
     def firstType = firstNodeOrElseNullURI(precomputProp.ranges)
 
@@ -460,7 +446,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       val value = getLiteralNodeOrElse(objet, literalInitialValue)
       // TODO match graph pattern for interval datatype ; see issue #17
       // case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
-      new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
+      val res = new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
         value,
         subject=subject,
         subjectLabel = makeInstanceLabel(subject, graph, lang),
@@ -468,12 +454,15 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         lang = getLang(objet).toString(),
         valueLabel = nodeToString(value),
         htmlName=htmlName)
+    	println( s"==== literalEntry created $res , htmlName ${res.htmlName}" )
+    	if(prop == URI(  "http://deductions.github.io/biological-collections.owl.ttl#species" ) )
+    		println( s"bioc:species literalEntry")
+      res
     }
 
-//    val NullResourceEntry = new ResourceEntry("", "", nullURI, ResourceValidator(Set()))
     def resourceEntry = {
-      if (showRDFtype || prop != rdf.typ)
-        time(s"""resourceEntry objet "$objet" """,
+      if (showRDFtype || prop != rdf.typ) {
+        val res = time(s"""resourceEntry objet "$objet" """,
           foldNode(objet)(
             objet => {
               new ResourceEntry(label, comment, prop, ResourceValidator(ranges), objet,
@@ -493,7 +482,11 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
             objet => makeBN(label, comment, prop, ResourceValidator(ranges), objet,
               typ = firstType),
             _ => literalEntry))
-      else NullResourceEntry
+        println( s"==== resourceEntry created $res , htmlName ${res.htmlName}" )
+        if(prop == URI(  "http://deductions.github.io/biological-collections.owl.ttl#species" ) )
+        	println( s"bioc:species resourceEntry")
+        res
+      } else NullResourceEntry
     }
 
     def makeBN(label: String, comment: String,

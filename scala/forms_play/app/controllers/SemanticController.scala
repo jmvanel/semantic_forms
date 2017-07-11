@@ -5,7 +5,7 @@ import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.{CentralSemanticController, GeoController, TypicalSFDependencies}
 import deductions.runtime.user.RegisterPage
 import deductions.runtime.utils.DefaultConfiguration
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.{Action, Controller, Request}
 
 object SemanticController extends Controller
     with ImplementationSettings.RDFCache
@@ -25,7 +25,7 @@ object SemanticController extends Controller
     Form2HTMLObject.makeDefaultForm2HTML(config)(ops)
 
   def page() =
-    Action { implicit request =>
+    Action { implicit request: Request[_] =>
       val requestCopy = getRequestCopy()
       val userid = requestCopy.userId()
       val title = "SemanticController view"
