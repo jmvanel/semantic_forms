@@ -165,7 +165,16 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     //// compute Form Syntax ////
 
     // TODO make it functional #170
-    val fieldsCompleteList = makeEntriesFromFormSyntax(step1)
+    val fieldsCompleteList: Seq[Entry] = makeEntriesFromFormSyntax(step1)
+
+//    def check(fieldsCompleteList: Seq[Entry], mess: String="") = { // DEBUG <<<<<<<<<<<<<<<<<<<<<<
+//      for (field <- fieldsCompleteList ) {
+//        if( field.htmlName == "" )
+//        println(s">>>>>>>>>>>>>>>>>>>>>>> $mess field $field")
+//      }
+//    }
+    //check(fieldsCompleteList, "fieldsCompleteList")
+
     val subject = step1.subject
     val classs = step1.classs
 
@@ -184,6 +193,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
     val formSyntax = expandPropertiesGroups(graph, lang)(formSyntax0)
 
+//    check(formSyntax.fields, "formSyntax")
+
     // TODO make it functional #170
     if( step1.editable ) addAllPossibleValues(formSyntax, valuesFromFormGroup)
     logger.debug(s"createFormDetailed2: createForm " + this)
@@ -193,6 +204,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       s"createFormDetailed2: updateFormFromConfig(formConfig=$formConfig)",
       updateFormFromConfig(formSyntax, formConfig))
     logger.debug(s"createFormDetailed2: createForm 2 " + this)
+//        check(formSyntax.fields, "res")
     res
   }
 
@@ -269,7 +281,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   /** non recursive update of given `formSyntax` from given `formSpecif`;
    * see form_specs/foaf.form.ttl for an example of form specification */
   private def updateOneFormFromConfig(formSyntax: FormSyntax, formSpecif: Rdf#Node)(implicit graph: Rdf#Graph)
-  : Unit // TODO FormSyntax
+  : Unit // TODO #170 FormSyntax
   = {
 
 	  // TODO try the Object - semantic mapping of Banana-RDF
@@ -287,30 +299,37 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         fieldSpecs.map {
           fieldSpec =>
 //            println( s">>>> fieldSpec $fieldSpec" )
-            val triples = find(graph, fieldSpec.subject, ANY, ANY).toSeq
-            for (t <- triples)
+            val specTriples = find(graph, fieldSpec.subject, ANY, ANY).toSeq
+            for (t <- specTriples)
               field.addTriple(t.subject, t.predicate, t.objectt)
 
-            // TODO each feature should be in a different file
             def replace[T](s: Seq[T], occurence: T, replacement: T): Seq[T] =
               s.map { i => if (i == occurence) replacement else i }
 
-            for (t <- triples) {
-//            	println( s">>>> updateOneFormFromConfig triple $t" )
-              if (t.predicate == formPrefix("widgetClass")
-                && t.objectt == formPrefix("DBPediaLookup")) {
+            // TODO each feature (Lookup, cardinality) should be in a different file
+
+            for (specTriple <- specTriples) {
+
+              //// DBPedia Lookup ////
+
+              //            	println( s">>>> updateOneFormFromConfig triple $t" )
+              if (specTriple.predicate == formPrefix("widgetClass")
+                && specTriple.objectt == formPrefix("DBPediaLookup")) {
                 val field2 = field.asResource.copy(widgetType = DBPediaLookup)
                 formSyntax.fields = replace(formSyntax.fields, field, field2)
+                println(s"updateOneFormFromConfig: Lookup: $field -> $field2")
               }
 
-              if (t.predicate == formPrefix("cardinality")) {
+              //// cardinality ////
+
+              if (specTriple.predicate == formPrefix("cardinality")) {
             	  /* Decode such RDF:
             	  forms:givenName--personPerson
 	            	  :fieldAppliesToForm forms:personForm ;
 	            	  :fieldAppliesToProperty foaf:givenName ;
                     	  :cardinality :exactlyOne .
             	   */
-                val formSpecGraph = PointedGraph(t.subject, allNamedGraph) // Graph(triplesInFormConfig))
+                val formSpecGraph = PointedGraph(specTriple.subject, allNamedGraph) // Graph(triplesInFormConfig))
                 for (
                   card <- (formSpecGraph / formPrefix("cardinality")).takeOnePointedGraph;
                   cardinality = uriToCardinalities(card.pointer);
@@ -319,10 +338,10 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
                   formPointedGraph <- (formSpecGraph / formPrefix("fieldAppliesToForm")).takeOnePointedGraph;
                   form = formPointedGraph.pointer
                 ) {
+                  // TODO asResource: wrong !!!!!!!!!! => implement copy for an Entry
                   val field2 = field.asResource.copy(cardinality = cardinality)
                   formSyntax.fields = replace(formSyntax.fields, field, field2)
-                  //                  field.cardinality = cardinality
-                  println(s"updateOneFormFromConfig: prop $prop: $cardinality, form $form")
+                  println(s"updateOneFormFromConfig: cardinality: prop $prop: $cardinality, $field -> $field2")
                 }
               }
             }
@@ -401,14 +420,15 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
     val nullLiteral = Literal("")
     val nullBNode = BNode("")
-//    if(prop == URI(  "http://deductions.github.io/biological-collections.owl.ttl#species" ) ) { // bioc("species
-//      println( s"bioc:species propClasses $propClasses")
-//  }
+
     val chooseRDFNodeType = {
       val chooseRDFNodeType = rangeClasses match {
+
+      // give priority to actual value (triple object) over property
       case _ if objet0.isLiteral &&
-      ! propClasses.contains(owl.ObjectProperty) // TEST <<<<<<<<<<<<<<<<<<<
+      ! propClasses.contains(owl.ObjectProperty)
       => nullLiteral
+
       case _ if rangeClasses.exists { c => c.toString startsWith (xsdPrefix) } => nullLiteral
       case _ if rangeClasses.contains(rdfs.Literal) => nullLiteral
       case _ if propClasses.contains(owl.DatatypeProperty) => nullLiteral
@@ -426,7 +446,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
       case _                                    => nullLiteral
     }
-      println( s"::::: chooseRDFNodeType ${chooseRDFNodeType.getClass()}")
       chooseRDFNodeType
     }
 
@@ -436,9 +455,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       else
         objet0
     
-//    println(s""">>>> makeEntryFromTriple: prop $prop objet "$objet" ${objet.getClass()} """)
     def htmlName: String = makeHTMLName( makeTriple(subject, uriNodeToURI(prop), objet) )
-//    println(s""">>>> makeEntryFromTriple: htmlName $htmlName""")
 
     def firstType = firstNodeOrElseNullURI(precomputProp.ranges)
 
@@ -454,9 +471,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         lang = getLang(objet).toString(),
         valueLabel = nodeToString(value),
         htmlName=htmlName)
-    	println( s"==== literalEntry created $res , htmlName ${res.htmlName}" )
-    	if(prop == URI(  "http://deductions.github.io/biological-collections.owl.ttl#species" ) )
-    		println( s"bioc:species literalEntry")
       res
     }
 
@@ -482,9 +496,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
             objet => makeBN(label, comment, prop, ResourceValidator(ranges), objet,
               typ = firstType),
             _ => literalEntry))
-        println( s"==== resourceEntry created $res , htmlName ${res.htmlName}" )
-        if(prop == URI(  "http://deductions.github.io/biological-collections.owl.ttl#species" ) )
-        	println( s"bioc:species resourceEntry")
         res
       } else NullResourceEntry
     }

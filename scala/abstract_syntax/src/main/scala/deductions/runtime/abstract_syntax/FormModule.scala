@@ -262,13 +262,26 @@ trait FormModule[NODE, URI <: NODE] {
     def this(e: Entry, validator: ResourceValidator,
       alreadyInDatabase: Boolean,
       valueLabel: String) = this(
-      e.label: String, e.comment: String,
+      e.label: String,
+      e.comment: String,
       e.property, validator,
       makeURI(e.value),
       alreadyInDatabase,
       e.possibleValues,
-      valueLabel
-      ,makeURI(e.type_)
+      valueLabel,
+      makeURI(e.type_),
+      false,
+      e.subject,
+      e.subjectLabel,
+      e.mandatory,
+      e.openChoice,
+      e.widgetType,
+      e.cardinality,
+      false,
+      None, // thumbnail
+      e.htmlName,
+      e.metadata,
+      e.timeMetadata
       )
   }
 
