@@ -159,6 +159,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     s">>>> createFormDetailed2 fields size ${step1.fields.size}, formConfig <$formConfig> , lang $lang")
     
     // TODO make it functional #170
+    // http://sujitpal.blogspot.fr/2013/06/functional-chain-of-responsibility.html
+    // https://www.scala-lang.org/blog/2016/12/07/implicit-function-types.html
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
 
 
