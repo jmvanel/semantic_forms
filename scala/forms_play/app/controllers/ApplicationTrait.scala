@@ -188,9 +188,12 @@ trait ApplicationTrait extends Controller
     val result = if (isSelect)
       sparqlSelectConneg(query, resultFormat, dataset)
     else
-      sparqlConstructResult(query, resultFormat)
+      sparqlConstructResult(query,
+          // TODO
+          lang="en",
+          resultFormat)
 
-    logger.info(s"result $result".split("\n").take(5).mkString("\n"))
+    logger.info(s"result 5 first lines: $result".split("\n").take(5).mkString("\n"))
     Ok(result)
       .as(s"${simpleString2mimeMap.getOrElse(resultFormat, defaultMIMEaPriori).mimeType }")
     // charset=utf-8" ?
