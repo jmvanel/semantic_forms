@@ -44,16 +44,21 @@ trait GeoController[Rdf <: RDF, DATASET] extends GeoPath[Rdf, DATASET]
     val res = for (
       statisticsGraph <- statisticsGraphTry;
       detailsGraph <- wrapInReadTransaction {
-        sparqlConstructQuery(detailsQuery).getOrElse(ops.emptyGraph)
-      }
+        val detGraph = sparqlConstructQuery(detailsQuery).getOrElse(ops.emptyGraph);
+        println(s"statisticsGraph size ${ops.graphSize(statisticsGraph)}");
+        detGraph
+      };
+      formSyntax <- wrapInReadTransaction {
+        createFormFromTriples(
+          getTriples(
+            union(Seq(statisticsGraph, detailsGraph))).toSeq,
+          false)(allNamedGraph, "en");
+      };
+      _ = println(s"statisticsGraph formSyntax ${formSyntax}")
     ) yield {
-      println(s"statisticsGraph size ${ops.graphSize(statisticsGraph)}")
-      // create table view
-      val formSyntax = createFormFromTriples(
-        getTriples(
-          union(Seq(statisticsGraph, detailsGraph))).toSeq,
-        false)(allNamedGraph, "en")
-      generate(formSyntax)
+      val html = generate(formSyntax)
+      println(s"statisticsGraph html ${html.size}")
+      html
     }
 
     // load statistics in SF

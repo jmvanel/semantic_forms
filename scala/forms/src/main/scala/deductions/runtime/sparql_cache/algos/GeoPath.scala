@@ -156,7 +156,8 @@ trait GeoPath[Rdf <: RDF, DATASET]
       filterPointsByTimeInterval(
         pathForMobile, begin, end))
   }
-    
+
+  import scala.language.postfixOps
   /** get Path Length in kilometers */
   private def getPathLength(graph: Iterable[PointedGraph[Rdf]]): Float = {
     def pow2(v: Float) = v * v
