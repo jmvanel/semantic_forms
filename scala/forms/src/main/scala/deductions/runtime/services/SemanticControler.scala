@@ -1,7 +1,7 @@
 package deductions.runtime.services
 
-import deductions.runtime.html.HTML5TypesTrait
 import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.html.HTML5TypesTrait
 import deductions.runtime.utils.{DefaultConfiguration, HTTPrequest, RDFPrefixes}
 import org.w3.banana.RDF
 

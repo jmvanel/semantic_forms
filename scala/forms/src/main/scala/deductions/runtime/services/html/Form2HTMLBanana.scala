@@ -1,7 +1,9 @@
-package deductions.runtime.html
+package deductions.runtime.services.html
 
-import deductions.runtime.utils.Configuration
+import deductions.runtime.html.HtmlGeneratorInterface
+import deductions.runtime.utils.{Configuration, RDFPrefixesInterface}
 import org.w3.banana.{RDF, RDFOps}
+import deductions.runtime.html._
 
 /**
  * @author jmv

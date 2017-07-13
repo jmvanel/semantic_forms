@@ -3,6 +3,7 @@ package deductions.runtime.html
 import java.nio.file.{Files, Paths}
 
 import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.services.html.{Form2HTMLObject, TriplesViewModule}
 import deductions.runtime.utils.DefaultConfiguration
 import org.apache.log4j.Logger
 import org.junit.Assert

@@ -3,6 +3,7 @@ package deductions.runtime.html
 import java.nio.file.{Files, Paths}
 
 import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.services.html.{CreationFormAlgo, Form2HTMLObject}
 import deductions.runtime.utils.{DefaultConfiguration, FileUtils, RDFPrefixes}
 import org.apache.log4j.Logger
 import org.scalatest.{BeforeAndAfterAll, FunSuite}

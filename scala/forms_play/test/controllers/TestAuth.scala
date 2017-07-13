@@ -1,8 +1,9 @@
 package controllers
 
 import akka.util.Timeout
-import deductions.runtime.html.{Form2HTMLBanana, Form2HTMLObject}
+import deductions.runtime.services.html.Form2HTMLObject
 import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.html.{Form2HTMLBanana, Form2HTMLObject}
 import deductions.runtime.utils.DefaultConfiguration
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.test.{FakeRequest, Helpers}

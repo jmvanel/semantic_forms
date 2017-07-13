@@ -4,6 +4,7 @@ import java.nio.file.{Files, Paths}
 
 import deductions.runtime.abstract_syntax.FormSyntaxFactoryTest
 import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.services.html.Form2HTMLBanana
 import deductions.runtime.utils.DefaultConfiguration
 import org.apache.log4j.Logger
 import org.junit.Assert

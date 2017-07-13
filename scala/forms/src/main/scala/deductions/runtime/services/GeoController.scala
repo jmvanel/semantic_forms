@@ -3,7 +3,7 @@ package deductions.runtime.services
 import deductions.runtime.abstract_syntax.{FormSyntaxFactory, FormSyntaxFromSPARQL}
 import deductions.runtime.html.TableView
 import deductions.runtime.sparql_cache.algos.GeoPath
-import deductions.runtime.utils.HTTPrequest
+import deductions.runtime.utils.{HTTPrequest, RDFPrefixesInterface}
 import org.w3.banana.RDF
 
 import scala.xml.NodeSeq
@@ -13,9 +13,12 @@ trait GeoController[Rdf <: RDF, DATASET] extends GeoPath[Rdf, DATASET]
     with SemanticController
     with FormSyntaxFactory[Rdf, DATASET]
     with FormSyntaxFromSPARQL[Rdf, DATASET]
-    with TableView[Rdf#Node, Rdf#URI] {
+    with TableView[Rdf#Node, Rdf#URI]
+    with RDFPrefixesInterface {
 
   import ops._
+
+
 
   def result(request: HTTPrequest): NodeSeq = {
     val res = wrapInReadTransaction {

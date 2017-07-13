@@ -1,7 +1,7 @@
 package deductions.runtime.html
 
 import deductions.runtime.abstract_syntax.FormModule
-import deductions.runtime.utils.UnicityList
+import deductions.runtime.utils.{RDFPrefixesInterface, UnicityList}
 
 import scala.collection.mutable
 import scala.xml.NodeSeq
@@ -11,7 +11,8 @@ trait TableView[NODE, URI <: NODE]
     //extends Form2HTMLBase[NODE, URI]
     extends Form2HTML[NODE, URI]
     with HTML5Types
-    with FormModule[NODE, URI] {
+    with FormModule[NODE, URI]
+    with RDFPrefixesInterface {
 
   //  type formMod = FormModule[NODE, URI]
   type FormSyntax = formMod#FormSyntax

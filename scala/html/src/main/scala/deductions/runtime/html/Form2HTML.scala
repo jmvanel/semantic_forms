@@ -3,7 +3,7 @@ package deductions.runtime.html
 import java.net.URLEncoder
 
 import deductions.runtime.abstract_syntax.FormModule
-import deductions.runtime.utils.{Cookie, HTTPrequest, Timer}
+import deductions.runtime.utils.{Cookie, HTTPrequest, RDFPrefixesInterface, Timer}
 import org.apache.commons.codec.digest.DigestUtils
 
 import scala.xml.NodeSeq.seqToNodeSeq
@@ -13,11 +13,12 @@ import scala.xml.{Elem, NodeSeq, Text}
  * different modes: display or edit;
  *  takes in account datatype
  */
-private[html] trait Form2HTML[NODE, URI <: NODE]
+ trait Form2HTML[NODE, URI <: NODE]
     extends Form2HTMLDisplay[NODE, URI]
     with Form2HTMLEdit[NODE, URI]
     with FormModule[NODE, URI]
     with Timer
+    with RDFPrefixesInterface
 //    with JavaScript
     {
   self: HTML5Types =>

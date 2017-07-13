@@ -2,10 +2,12 @@ package deductions.runtime.html
 
 import java.net.URLEncoder
 
+import deductions.runtime.utils.RDFPrefixesInterface
+
 import scala.xml.Elem
 
 /** GUI integration: rdfviewer, ... */
-trait BasicWidgets {
+trait BasicWidgets extends RDFPrefixesInterface {
 
   def makeBackLinkButton(uri: String, title: String = ""): Elem = {
     // format: OFF

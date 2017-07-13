@@ -3,6 +3,7 @@ package deductions.runtime.html
 import java.net.URI
 
 import deductions.runtime.abstract_syntax.FormModule
+import deductions.runtime.utils.RDFPrefixesInterface
 
 import scala.xml.NodeSeq
 
@@ -22,7 +23,7 @@ import scala.xml.NodeSeq
  * https://fr.wikipedia.org/wiki/Patron_de_m%C3%A9thode
  *
  */
-trait HTMLFormAPI {
+trait HTMLFormAPI extends RDFPrefixesInterface {
   def getPropertiesFromInstance(instanceURI: URI): Seq[URI]
   def getPropertiesFromClass(classURI: URI): Seq[URI]
   def getFieldStructure(propertyURI: URI, instanceURI: URI): FormModule[String, String]#FormSyntax

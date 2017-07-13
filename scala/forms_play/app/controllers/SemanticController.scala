@@ -1,7 +1,7 @@
 package controllers
 
-import deductions.runtime.html.Form2HTMLObject
 import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.html.Form2HTMLObject
 import deductions.runtime.services.{CentralSemanticController, GeoController, TypicalSFDependencies}
 import deductions.runtime.user.RegisterPage
 import deductions.runtime.utils.DefaultConfiguration

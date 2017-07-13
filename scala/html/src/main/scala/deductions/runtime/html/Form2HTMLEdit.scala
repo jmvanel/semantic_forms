@@ -1,7 +1,8 @@
 package deductions.runtime.html
 
 import deductions.runtime.abstract_syntax.{DBPediaLookup, FormModule}
-import deductions.runtime.utils.{Configuration, I18NMessages}
+import deductions.runtime.html.HTML5Types
+import deductions.runtime.utils.{Configuration, I18NMessages, RDFPrefixesInterface}
 import org.joda.time.DateTime
 
 import scala.xml.NodeSeq.seqToNodeSeq
@@ -10,7 +11,9 @@ import scala.xml.{Elem, NodeSeq, Text}
 
 /** generate HTML from abstract Form for Edition */
 private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
-    extends Form2HTMLBase[NODE, URI] {
+    extends Form2HTMLBase[NODE, URI]
+  with RDFPrefixesInterface{
+
   self: HTML5Types =>
 
   val config: Configuration

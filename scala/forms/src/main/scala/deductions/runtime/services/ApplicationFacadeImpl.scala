@@ -5,9 +5,10 @@ import java.net.URLDecoder
 
 import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 import deductions.runtime.data_cleaning.BlankNodeCleanerIncremental
-import deductions.runtime.html.{CreationFormAlgo, TriplesViewWithTitle}
+import deductions.runtime.services.html.TriplesViewWithTitle
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.semlogs.TimeSeries
+import deductions.runtime.services.html.{CreationFormAlgo, TriplesViewWithTitle}
 import deductions.runtime.sparql_cache.algos.StatisticsGraph
 import deductions.runtime.sparql_cache.{BrowsableGraph, RDFCacheAlgo, SPARQLHelpers}
 import deductions.runtime.user.RegisterPage

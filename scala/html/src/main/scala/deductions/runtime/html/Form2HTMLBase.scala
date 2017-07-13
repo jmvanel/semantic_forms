@@ -1,8 +1,8 @@
 package deductions.runtime.html
 
 import deductions.runtime.abstract_syntax.FormModule
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.utils.{CSSClasses, Configuration, I18NMessages, RDFPrefixes}
+import deductions.runtime.utils._
+import org.w3.banana.RDFModule
 
 import scala.util.Try
 import scala.xml.{Elem, NodeSeq}
@@ -10,10 +10,12 @@ import scala.xml.{Elem, NodeSeq}
 /** generate HTML from abstract Form : common parts for Display & edition */
 private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     extends BasicWidgets
-    with CSSClasses {
+    with CSSClasses
+    with RDFPrefixesInterface{
 
   val config: Configuration
   import config._
+
 
   def toPlainString(n: NODE): String = n.toString()
   
@@ -21,7 +23,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
   type FormEntry = formMod#Entry
 
   lazy val prefixes = new RDFPrefixes[ImplementationSettings.Rdf]
-		  with ImplementationSettings.RDFModule	{}
+		  with ImplementationSettings.RDFModule{}
   
   def makeFieldLabel(preceding: formMod#Entry, field: formMod#Entry, editable: Boolean)
   (implicit form: FormModule[NODE, URI]#FormSyntax) = {

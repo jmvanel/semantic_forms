@@ -1,16 +1,12 @@
-package deductions.runtime.html
+package deductions.runtime.services.html
 
 //import org.w3.banana.jena.JenaModule
+import deductions.runtime.html.HTML5Types
 import org.w3.banana.{RDF, XSDPrefix}
 //import org.w3.banana.jena.Jena
 import org.w3.banana.RDFOps
 
 //object HTML5TypesJena extends JenaModule with HTML5TypesTrait[Jena]
-
-trait HTML5Types {
-    def xsd2html5TnputType(xsdDatatype: String): String
-    def xsd2html5Step(xsdDatatype: String): String
-}
 
 /**
  * HTML5 input type correspondence to XML Schema (XSD) datatypes

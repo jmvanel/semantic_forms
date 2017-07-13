@@ -1,14 +1,14 @@
 package deductions.runtime.html
 
 import deductions.runtime.abstract_syntax.FormModule
-import deductions.runtime.utils.HTTPrequest
+import deductions.runtime.utils.{HTTPrequest, RDFPrefixesInterface}
 
 import scala.xml.NodeSeq
 
 /**
  * Pure abstract Interface for HTML Generation from abstract FormSyntax;
  *  maybe TODO remove numerous arguments, to keep mostly request */
-trait HtmlGeneratorInterface[NODE, URI <: NODE] {
+trait HtmlGeneratorInterface[NODE, URI <: NODE] extends RDFPrefixesInterface {
 
   /** generate HTML form given Form Syntax, adding a form header (title, etc) */
   def generateHTML(form: FormModule[NODE, URI]#FormSyntax,

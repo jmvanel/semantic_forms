@@ -1,8 +1,9 @@
 package deductions.runtime.user
 
 import deductions.runtime.abstract_syntax.{InstanceLabelsInferenceMemory, PreferredLanguageLiteral}
-import deductions.runtime.html.{CreationFormAlgo, TriplesViewModule}
+import deductions.runtime.services.html.TriplesViewModule
 import deductions.runtime.services.StringSearchSPARQL
+import deductions.runtime.services.html.{CreationFormAlgo, TriplesViewModule}
 import deductions.runtime.utils.{Configuration, I18NMessages}
 import org.w3.banana.RDF
 

@@ -1,7 +1,7 @@
 package controllers
 
-import deductions.runtime.html.Form2HTMLObject
 import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.html.Form2HTMLObject
 import deductions.runtime.user.RegisterPage
 import deductions.runtime.utils.DefaultConfiguration
 import play.api.mvc.{Action, Controller, Request}

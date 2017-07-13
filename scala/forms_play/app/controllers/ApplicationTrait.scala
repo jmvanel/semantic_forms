@@ -13,9 +13,11 @@ import scala.xml.NodeSeq
 import java.io.File
 
 import deductions.runtime.abstract_syntax.{FormSyntaxFactory, FormSyntaxFromSPARQL}
-import deductions.runtime.html.{Form2HTMLBanana, HTML5TypesTrait, TableView}
+import deductions.runtime.html.TableView
+import deductions.runtime.services.html.HTML5TypesTrait
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.LoadService
+import deductions.runtime.services.html.{Form2HTMLBanana, HTML5TypesTrait}
 import deductions.runtime.utils.DefaultConfiguration
 import play.api.mvc.{AnyContentAsRaw, AnyContentAsText, RawBuffer}
 

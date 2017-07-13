@@ -5,6 +5,7 @@ import java.nio.file.{Files, Paths}
 
 import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.services.html.{CreationFormAlgo, Form2HTMLObject}
 import deductions.runtime.sparql_cache.SPARQLHelpers
 import deductions.runtime.utils.{Configuration, DefaultConfiguration}
 import org.apache.log4j.Logger

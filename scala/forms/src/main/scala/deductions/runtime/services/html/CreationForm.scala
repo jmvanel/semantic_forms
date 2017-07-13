@@ -1,6 +1,7 @@
-package deductions.runtime.html
+package deductions.runtime.services.html
 
 import deductions.runtime.abstract_syntax.{FormSyntaxJson, UnfilledFormFactory}
+import deductions.runtime.html.HtmlGeneratorInterface
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.{Configuration, HTTPrequest, I18NMessages, RDFPrefixes}
 import org.w3.banana.RDF
