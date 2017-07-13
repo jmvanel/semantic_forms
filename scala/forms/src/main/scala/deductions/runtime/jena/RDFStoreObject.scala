@@ -84,7 +84,9 @@ trait RDFStoreLocalJenaProvider
       println(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
 
       try {
-        configureLuceneIndex(dts, useTextQuery)
+        val res = configureLuceneIndex(dts, useTextQuery)
+        println(s"configureLuceneIndex DONE $res")
+        res
       } catch {
         case t: Throwable =>
           println(t.getLocalizedMessage)

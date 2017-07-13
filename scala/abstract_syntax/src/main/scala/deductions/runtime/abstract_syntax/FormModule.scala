@@ -39,17 +39,24 @@ trait FormModule[NODE, URI <: NODE] {
 
       /** TODO remove entriesList (replaced by fields)
        *  cf commit
-       *  "REFACTORING : moving each field on formSyntax + changing all rawDatForForm by formSyntax" */
+       *  "REFACTORING : moving each field on formSyntax + changing all rawDatForForm by formSyntax"
+       *  (unfinished refactoring of RawDataForForms */
       val entriesList: Seq[FormModule[NODE, URI]#Entry] = Seq(),
 
       classs: NODE = nullURI,
       formGroup: URI = nullURI,
       val defaults: FormDefaults = FormModule.formDefaults,
-      // TODO maybe : propertiesGroups could be a list of FormSyntax
-//      propertiesGroups: collection.Map[NODE, Seq[Entry]] = collection.Map[NODE, Seq[Entry]](),
+
+      /** properties Groups are groups within the form that can be shown by tabs
+       *  (currently properties of super-classes)
+       *  TODO there should be only one of propertiesGroups and propertiesGroupMap,
+       * propertiesGroups is actually used in Form2HTML,
+       * propertiesGroupMap is intermediary data
+       * (unfinished refactoring of RawDataForForms */
       propertiesGroups: collection.Seq[FormSyntax] = collection.Seq[FormSyntax](),
       propertiesGroupMap: collection.Map[NODE, FormSyntax] =
       collection.Map[NODE, FormSyntax](),
+
       val title: String = "",
       val thumbnail: Option[NODE] = None,
       val formURI: Option[NODE] = None,
@@ -57,8 +64,6 @@ trait FormModule[NODE, URI <: NODE] {
       val editable: Boolean = false,
       val reversePropertiesList: Seq[NODE] = Seq()
       ) {
-
-
 
     def setSubject(subject: NODE, editable: Boolean): FormSyntax = {
 
@@ -257,13 +262,26 @@ trait FormModule[NODE, URI <: NODE] {
     def this(e: Entry, validator: ResourceValidator,
       alreadyInDatabase: Boolean,
       valueLabel: String) = this(
-      e.label: String, e.comment: String,
+      e.label: String,
+      e.comment: String,
       e.property, validator,
       makeURI(e.value),
       alreadyInDatabase,
       e.possibleValues,
-      valueLabel
-      ,makeURI(e.type_)
+      valueLabel,
+      makeURI(e.type_),
+      false,
+      e.subject,
+      e.subjectLabel,
+      e.mandatory,
+      e.openChoice,
+      e.widgetType,
+      e.cardinality,
+      false,
+      None, // thumbnail
+      e.htmlName,
+      e.metadata,
+      e.timeMetadata
       )
   }
 

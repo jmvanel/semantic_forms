@@ -13,15 +13,9 @@ import scala.xml.NodeSeq
  */
 trait ExtendedSearchSPARQL[Rdf <: RDF, DATASET]
     extends ParameterizedSPARQL[Rdf, DATASET]
-    with RDFPrefixes[Rdf]
-//    with Configuration
-    {
-  import config._
+    with RDFPrefixes[Rdf] {
 
-  def extendedSearch(uri: String, hrefPrefix: String = hrefDisplayPrefix): Future[NodeSeq] =
-    search(hrefPrefix,
-        "fr", // TODO <<<<<<<<<<<<<<
-        uri)
+  import config._
 
   private implicit val queryMaker = new SPARQLQueryMaker[Rdf] {
     override def makeQueryString(searchStrings: String*): String = {
@@ -63,5 +57,10 @@ trait ExtendedSearchSPARQL[Rdf <: RDF, DATASET]
       q
     }
   }
+
+  def extendedSearch(uri: String, hrefPrefix: String = hrefDisplayPrefix): Future[NodeSeq] =
+    search(hrefPrefix,
+        "fr", // TODO <<<<<<<<<<<<<<
+        uri)
 
 }

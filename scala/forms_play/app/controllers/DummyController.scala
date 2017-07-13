@@ -4,7 +4,7 @@ import deductions.runtime.html.Form2HTMLObject
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.user.RegisterPage
 import deductions.runtime.utils.DefaultConfiguration
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.{Action, Controller, Request}
 
 /** Dummy controller for helping in creating new web pages or services */
 object DummyController extends Controller
@@ -17,7 +17,7 @@ object DummyController extends Controller
     Form2HTMLObject.makeDefaultForm2HTML(config)(ops)
 
   def page() =
-    Action { implicit request =>
+    Action { implicit request: Request[_] =>
       val requestCopy = getRequestCopy()
       val userid = requestCopy.userId()
       val title = "My view"

@@ -50,6 +50,7 @@ trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
 
   }
 
+  /** needs READ transaction */
   def createFormFromTriples(
     triples: Seq[Rdf#Triple],
     editable: Boolean = false,

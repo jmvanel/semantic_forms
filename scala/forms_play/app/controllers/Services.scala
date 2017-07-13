@@ -17,7 +17,7 @@ trait Services extends ApplicationTrait
   /** /form-data service; like /form but raw JSON data */
   def formDataAction(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
     Action {
-        implicit request =>
+        implicit request: Request[_] =>
         val lang = chooseLanguage(request)
        makeJSONResult(formData(uri, blankNode, Edit, formuri, database, lang))
     }
@@ -26,7 +26,7 @@ trait Services extends ApplicationTrait
    *  TODO add database HTTP param.
    */
   def createData() =
-    Action { implicit request =>
+    Action { implicit request: Request[_] =>
       logger.info("create: " + request)
       // URI of RDF class from which to create instance
       val classUri0 = getFirstNonEmptyInMap(request.queryString, "uri")
@@ -50,7 +50,7 @@ trait Services extends ApplicationTrait
    */
   def downloadAction(url: String, database: String = "TDB") =
     Action {
-        implicit request =>
+        implicit request: Request[_] =>
           def output(accepts: Accepting): Result = {
             val mime = computeMIME(accepts, AcceptsJSONLD)
             println(log("downloadAction", request))
@@ -81,7 +81,7 @@ trait Services extends ApplicationTrait
         Action {
 //    withUser {
 //      implicit userid =>
-        implicit request =>
+        implicit request: Request[_] =>
           logger.info(s"""sparqlConstruct: sparql: request $request
             sparql: $query
             accepts ${request.acceptedTypes} """)
@@ -112,7 +112,7 @@ trait Services extends ApplicationTrait
    *  conneg => RDF/XML, Turtle or json-ld
    */
   def sparqlConstructPOST = Action {
-    implicit request =>
+    implicit request: Request[AnyContent] =>
       logger.info(s"""sparqlConstruct: sparql: request $request
             accepts ${request.acceptedTypes} """)
       val lang = chooseLanguage(request)
@@ -154,7 +154,7 @@ trait Services extends ApplicationTrait
    */
   def sparqlDataPOST = Action {
     // TODO pasted from sparqlConstructPOST
-    implicit request =>
+    implicit request: Request[AnyContent] =>
       logger.info(s"""sparqlConstruct: sparql: request $request
             accepts ${request.acceptedTypes} """)
       val lang = chooseLanguage(request)
@@ -188,7 +188,7 @@ trait Services extends ApplicationTrait
     Action // withUser 
     {
 //      implicit userid =>
-        implicit request =>
+        implicit request: Request[_] =>
           logger.info("LDP GET: request " + request)
           val acceptedTypes = request.acceptedTypes
           logger.info(s"acceptedTypes $acceptedTypes")
@@ -233,7 +233,7 @@ trait Services extends ApplicationTrait
   //  implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(
 
   def lookupService(search: String, clas: String = "") = {
-    Action { implicit request =>
+    Action { implicit request: Request[_] =>
       logger.info(s"""Lookup: $request
             accepts ${request.acceptedTypes} """)
       val lang = chooseLanguage(request)

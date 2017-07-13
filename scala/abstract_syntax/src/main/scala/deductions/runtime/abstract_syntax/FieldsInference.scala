@@ -39,7 +39,6 @@ with FormModule[Rdf#Node, Rdf#URI]
   = {
 
     val inferedProperties = scala.collection.mutable.ListBuffer[Rdf#Node]()
-    //val propertiesGroups = scala.collection.mutable.HashMap.empty[Rdf#Node, RawDataForForm[Rdf#Node, Rdf#URI]]
     val propertiesGroups = scala.collection.mutable.HashMap.empty[Rdf#Node,FormSyntax]
     /* retrieve properties from rdfs:domain's From given Class */
     def propertiesFromDomainsFromClass(classs: Rdf#Node): List[Rdf#Node] = {
@@ -97,7 +96,6 @@ with FormModule[Rdf#Node, Rdf#URI]
       if (classs != owl.Thing) {
         val domains = propertiesFromDomainsFromClass(classs)
         inferedProperties ++= domains
-        //propertiesGroups += ( classs -> RawDataForForm(makeEntries(domains), classs, URI("") ) )
         propertiesGroups += ( classs -> FormSyntax(URI(""),Seq(),makeEntries(domains),classs) )
 
         val superClasses = getObjects(graph, classs, rdfs.subClassOf)
@@ -152,11 +150,14 @@ with FormModule[Rdf#Node, Rdf#URI]
 
     processSuperClasses(classs)
     if (showDomainlessProperties) addDomainlessProperties(classs)
-    
-    /*RawDataForForm(
+
+    FormSyntax(
+        nullURI,
+        Seq(),
         makeEntries( inferedProperties.distinct ),
-        classs, subject=nullURI, propertiesGroups=propertiesGroups )*/
-    FormSyntax(nullURI,Seq(),makeEntries( inferedProperties.distinct ),classs,nullURI,propertiesGroupMap = propertiesGroups)
+        classs,
+        nullURI,
+        propertiesGroupMap = propertiesGroups)
 
   } // end of fieldsFromClass()
 }
