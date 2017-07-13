@@ -210,8 +210,8 @@ import scala.xml.{Elem, NodeSeq, Text}
       // OK:
       field.metadata == cookie.value.split("=")(1)
     }
-    else  true
-
+      //TODO: temporaire, trouver pourquoi il y a des valeur par défaut ' "" '
+    else field.value.toString.replaceAll("\"\"","").isEmpty
     // hack instead of true form separator in the form spec in RDF:
     if (field.label.contains("----"))
       return <hr class="sf-separator"/> // Text("----")

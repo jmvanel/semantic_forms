@@ -42,18 +42,18 @@ trait ResultsDisplay[Rdf <: RDF, DATASET] {
           val label = uriLabelCouple._2
           <div class="col col-sm-4 sf-value-block">{
           foldNode(node) (
-          node =>
+          uri =>
             makeHyperlinkForURI(
-              node, lang, graph,
+              uri, lang, graph,
               hrefPrefix = hrefPrefix,
               label = label,
               sortAnd1rowPerElement = sortAnd1rowPerElement ) ++
-              <div style="font-size:10px; opacity:.8;">{ val uriString = fromUri(node)
+              <div style="font-size:10px; opacity:.8;">{ val uriString = fromUri(uri)
               URLEncoder.encode( s"DROP GRAPH <$uriString>", "utf-8") }</div>
             ,
-          node =>
+          bnode =>
             makeHyperlinkForURI(
-              node, lang, graph,
+              bnode, lang, graph,
               hrefPrefix = hrefPrefix,
               label = label,
               sortAnd1rowPerElement = sortAnd1rowPerElement ),
@@ -96,12 +96,19 @@ trait ResultsDisplay[Rdf <: RDF, DATASET] {
       label, "comment", property, new fmod.ResourceValidator(Set()),
       value=uri, true,
       Seq(), label, type_, false)
+    def hyperlink =
+      if( hrefPrefix != "" &&
+          hrefPrefix != config.hrefDisplayPrefix )
+    	<a href={
+    			createHyperlinkString(hrefPrefix, fromUri(uri), false)
+    } class="" title={s"hyperlink to Triples in Graph at URI <$uri>"}>
+    { label } </a>
+    else NodeSeq.Empty
+
+    hyperlink ++
     createHTMLResourceReadonlyField( resourceEntry, hrefPrefix)
   }
 
-  /** make HTML hyperlink For given URI;
-   *  this links to semantic_forms page for displaying this URI;
-   * NOTE: this duplicates code in Form2HTMLDisplay.createHTMLResourceReadonlyField() */
 //  private def makeHyperlinkForURIOLD( node: Rdf#Node, lang: String, graph: Rdf#Graph,
 //      hrefPrefix: String = hrefDisplayPrefix,
 //      label: String = "",

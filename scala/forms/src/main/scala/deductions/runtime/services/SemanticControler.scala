@@ -9,6 +9,8 @@ import scala.xml.NodeSeq
 
 /**
  * global Controller for HTTP requests like /page?feature=dbpedia:CMS
+ * calls the result() function of the class mapped to feature URI by #actionMap;
+ * see trait GeoController as a example implemetation of SemanticController
  *  cf https://github.com/jmvanel/semantic_forms/issues/150
  */
 trait CentralSemanticController[Rdf <: RDF, DATASET] extends SemanticController

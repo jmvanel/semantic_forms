@@ -31,6 +31,7 @@ trait PopulateRDFCacheTrait[Rdf <: RDF, DATASET]
     with App {
 
   loadCommonVocabularies()
+  resetCommonFormSpecifications()
   loadCommonFormSpecifications()
   loadFromGitHubRDFI18NTranslations()
 }

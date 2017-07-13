@@ -18,6 +18,7 @@ trait SPARQLQueryMaker[Rdf <: RDF] {
     /** overridable function for adding columns in response */
   def columnsForURI( node: Rdf#Node, label: String): NodeSeq = Text("")
 
+  /** prepare Search String: trim, and replace ' with \' */
   def prepareSearchString(search: String) = {
     search.trim().replace("'", """\'""")
   }
