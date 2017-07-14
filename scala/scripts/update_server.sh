@@ -7,6 +7,8 @@ APP=semantic_forms_play
 VERSION=2.1-SNAPSHOT
 APPVERS=${APP}-$VERSION
 
+INSTANCE=sandbox
+
 # For single administrator
 DEPLOY=~/deploy
 # For multiple administrator
@@ -51,15 +53,15 @@ mv ${APPVERS} ${APPVERS}_OLD
 unzip $SRC/target/universal/${APPVERS}.zip
 
 cd ${APPVERS}
-mkdir -p ../TDBsandbox
-mkdir -p ../TDBsandbox2
-mkdir -p ../TDBsandbox3
-mkdir -p ../LUCENEsandbox LUCENEsandbox
+mkdir -p ../TDB$INSTANCE
+mkdir -p ../TDB${INSTANCE}2
+mkdir -p ../TDB${INSTANCE}3
+mkdir -p ../LUCENE$INSTANCE
 
-ln -s ../TDBsandbox  TDB
-ln -s ../TDBsandbox2 TDB2
-ln -s ../TDBsandbox3 TDB3
-ln -s ../LUCENEsandbox LUCENE
+ln -s ../TDB$INSTANCE  TDB
+ln -s ../TDB${INSTANCE}2 TDB2
+ln -s ../TDB${INSTANCE}3 TDB3
+ln -s ../LUCENE$INSTANCE LUCENE
 
 PORT=9111
 echo To start the server on port $PORT in directory $DEPLOY/$APPVERS , paste this:
