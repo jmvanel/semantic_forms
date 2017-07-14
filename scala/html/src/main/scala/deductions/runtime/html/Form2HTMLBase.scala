@@ -2,7 +2,7 @@ package deductions.runtime.html
 
 import deductions.runtime.abstract_syntax.FormModule
 import deductions.runtime.utils._
-import org.w3.banana.RDFModule
+//import org.w3.banana.RDFModule
 
 import scala.util.Try
 import scala.xml.{Elem, NodeSeq}
@@ -11,7 +11,8 @@ import scala.xml.{Elem, NodeSeq}
 private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     extends BasicWidgets
     with CSSClasses
-    with RDFPrefixesInterface{
+    with RDFPrefixesInterface
+    {
 
   val config: Configuration
   import config._
@@ -22,8 +23,8 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
   type formMod = FormModule[NODE, URI]
   type FormEntry = formMod#Entry
 
-  lazy val prefixes = new RDFPrefixes[ImplementationSettings.Rdf]
-		  with ImplementationSettings.RDFModule{}
+//  lazy val prefixes = new RDFPrefixes[ImplementationSettings.Rdf]
+//		  with ImplementationSettings.RDFModule{}
   
   def makeFieldLabel(preceding: formMod#Entry, field: formMod#Entry, editable: Boolean)
   (implicit form: FormModule[NODE, URI]#FormSyntax) = {

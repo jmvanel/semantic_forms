@@ -4,6 +4,7 @@ import deductions.runtime.html.HtmlGeneratorInterface
 import deductions.runtime.utils.{Configuration, RDFPrefixesInterface}
 import org.w3.banana.{RDF, RDFOps}
 import deductions.runtime.html._
+import deductions.runtime.utils.RDFPrefixes
 
 /**
  * @author jmv
@@ -31,7 +32,7 @@ object Form2HTMLObject {
   Form2HTMLBanana[Rdf] // Note: implements HtmlGeneratorInterface[Rdf#Node, Rdf#URI]
   = {
     lazy val ops1 = ops
-    new Form2HTMLBanana[Rdf] {
+    new Form2HTMLBanana[Rdf] with RDFPrefixes[Rdf] {
       lazy val nullURI = ops.URI("")
       lazy val ops: org.w3.banana.RDFOps[Rdf] = ops1
       lazy val config: Configuration = configuration

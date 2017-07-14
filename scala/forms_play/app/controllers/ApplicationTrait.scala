@@ -57,7 +57,8 @@ trait ApplicationTrait extends Controller
     val tv = new TableView[ImplementationSettings.Rdf#Node, ImplementationSettings.Rdf#URI]
         with Form2HTMLBanana[ImplementationSettings.Rdf]
         with ImplementationSettings.RDFModule
-        with HTML5TypesTrait[ImplementationSettings.Rdf] {
+        with HTML5TypesTrait[ImplementationSettings.Rdf]
+        with RDFPrefixes[ImplementationSettings.Rdf]{
       val config = new DefaultConfiguration {}
       val nullURI = ops.URI("")
     }

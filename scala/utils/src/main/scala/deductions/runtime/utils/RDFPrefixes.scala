@@ -9,7 +9,7 @@ import scala.util.{Failure, Success, Try}
 /** database of Turtle prefixes;
  *  TODO possibility to add prefix-URI pairs;
  *  TODO use prefix.cc like in EulerGUI */
-  trait RDFPrefixes[Rdf <: RDF] {
+  trait RDFPrefixes[Rdf <: RDF] extends RDFPrefixesInterface {
 
   implicit val ops: RDFOps[Rdf]
   import ops._

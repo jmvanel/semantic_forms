@@ -9,6 +9,9 @@ import play.api.mvc._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.xml.{Elem, NodeSeq}
+import deductions.runtime.utils.RDFPrefixes
+import deductions.runtime.jena.ImplementationSettings
+
 //import java.nio.file.Files
 
 //object Global extends GlobalSettings with Results {
@@ -267,7 +270,6 @@ trait WebPages extends Controller with ApplicationTrait
 
   //  implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(
 
-
   def toolsPage = {
     withUser {
       implicit userid =>
@@ -275,9 +277,10 @@ trait WebPages extends Controller with ApplicationTrait
           val lang = chooseLanguageObject(request).language
           val config1 = config
           val userInfo = displayUser(userid, "", "", lang)
-          outputMainPage( new ToolsPage {
-            override val config: Configuration = config1
-          }.getPage(lang, copyRequest(request)),lang, displaySearch = false, userInfo = userInfo)
+          outputMainPage(
+            new ToolsPage with ImplementationSettings.RDFModule with RDFPrefixes[ImplementationSettings.Rdf] {
+              override val config: Configuration = config1
+            }.getPage(lang, copyRequest(request)), lang, displaySearch = false, userInfo = userInfo)
             .as("text/html; charset=utf-8")
 
     }

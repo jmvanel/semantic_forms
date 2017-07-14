@@ -106,7 +106,8 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
             typ0.endsWith( "#Thing") )
           ""
         else
-          prefixes.abbreviateTurtle(typ0)
+          abbreviateTurtle(typ0)
+//          prefixes.abbreviateTurtle(typ0)
         I18NMessages.format("Enter_resource_URI", lang, typ)
 //        s"Enter or paste a resource URI  of type $typ; typing here creates a new resource; better look first in pulldown menu for an already existing resource."
       }

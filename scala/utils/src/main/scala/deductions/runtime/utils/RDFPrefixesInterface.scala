@@ -10,19 +10,18 @@ import org.w3.banana.jena.{Jena, JenaModule}
   */
 trait RDFPrefixesInterface {
 
+  def expandOrUnchanged(possiblyPrefixedURI: String): String
 
+  def abbreviateTurtle(uri: String): String
 
-
-
-
-  object ImplementationSettings {
-    // pave the way for migration to Jena 3 ( or BlazeGraph )
-    type DATASET = org.apache.jena.query.Dataset
-    type Rdf = Jena
-    type RDFModule = JenaModule
-    /** actually just RDF database location; TODO rename RDFDatabase */
-
-    type RDFReadException = RiotException
-  }
+//  object ImplementationSettings {
+//    // pave the way for migration to Jena 3 ( or BlazeGraph )
+//    type DATASET = org.apache.jena.query.Dataset
+//    type Rdf = Jena
+//    type RDFModule = JenaModule
+//    /** actually just RDF database location; TODO rename RDFDatabase */
+//
+//    type RDFReadException = RiotException
+//  }
 
 }
