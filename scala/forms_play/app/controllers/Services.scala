@@ -1,13 +1,6 @@
 package controllers
 
 import play.api.mvc._
-//import java.nio.file.Files
-
-//object Global extends GlobalSettings with Results {
-//  override def onBadRequest(request: RequestHeader, error: String) = {
-//    Future{ BadRequest("""Bad Request: "$error" """) }
-//  }
-//}
 
 /** main controller 
  *  TODO split HTML pages & HTTP services */

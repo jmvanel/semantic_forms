@@ -11,14 +11,12 @@ import scala.concurrent.Future
 import scala.xml.{Elem, NodeSeq}
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.utils.HTTPrequest
+import deductions.runtime.html.TableView
+import deductions.runtime.services.html.Form2HTMLBanana
+import deductions.runtime.services.html.HTML5TypesTrait
+import deductions.runtime.utils.DefaultConfiguration
 
-//import java.nio.file.Files
-
-//object Global extends GlobalSettings with Results {
-//  override def onBadRequest(request: RequestHeader, error: String) = {
-//    Future{ BadRequest("""Bad Request: "$error" """) }
-//  }
-//}
 
 /** main controller 
  *  TODO split HTML pages & HTTP services */
@@ -87,11 +85,36 @@ trait WebPages extends Controller with ApplicationTrait
     val title = "Table view from SPARQL"
     val lang = chooseLanguage(request)
     val userInfo = displayUser(userid, "", title, lang)
+    val query = queryFromRequest(requestCopy)
     outputMainPage(
-      tableFromSPARQL(requestCopy),
+      <div>
+        <a href={ "/sparql-ui?query=" + URLEncoder.encode(query) }>Back to SPARQL page</a>
+      </div>
+        ++
+        tableFromSPARQL(requestCopy),
       lang, title = title, userInfo = userInfo,
-      classForContent="")
+      classForContent = "")
   }
+
+  private def queryFromRequest(request: HTTPrequest) =
+    request.queryString.getOrElse("query", Seq()).headOption.getOrElse("")
+
+  private def tableFromSPARQL(request: HTTPrequest): NodeSeq = {
+    val query = queryFromRequest(request)
+    val formSyntax = createFormFromSPARQL(query,
+      editable = false,
+      formuri = "")
+    val tv = new TableView[ImplementationSettings.Rdf#Node, ImplementationSettings.Rdf#URI]
+        with Form2HTMLBanana[ImplementationSettings.Rdf]
+        with ImplementationSettings.RDFModule
+        with HTML5TypesTrait[ImplementationSettings.Rdf]
+        with RDFPrefixes[ImplementationSettings.Rdf]{
+      val config = new DefaultConfiguration {}
+      val nullURI = ops.URI("")
+    }
+    tv.generate(formSyntax)
+  }
+
 
   def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "",
       database: String = "TDB") =

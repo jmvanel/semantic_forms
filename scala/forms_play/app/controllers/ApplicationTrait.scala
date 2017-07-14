@@ -1,17 +1,18 @@
 package controllers
 
-
-import deductions.runtime.jena.RDFStoreLocalJenaProvider
-import deductions.runtime.services.{ApplicationFacadeImpl, CORS}
-import deductions.runtime.utils.{Configuration, HTTPrequest, RDFPrefixes, URIManagement}
-import play.api.http.MediaRange
-import play.api.mvc._
-import views.MainXmlWithHead
-
 import scala.util.{Failure, Success, Try}
 import scala.xml.NodeSeq
 import java.io.File
 
+import play.api.http.MediaRange
+import play.api.mvc._
+import play.api.mvc.{AnyContentAsRaw, AnyContentAsText, RawBuffer}
+
+import views.MainXmlWithHead
+
+import deductions.runtime.jena.RDFStoreLocalJenaProvider
+import deductions.runtime.services.{ApplicationFacadeImpl, CORS}
+import deductions.runtime.utils.{Configuration, HTTPrequest, RDFPrefixes, URIManagement}
 import deductions.runtime.abstract_syntax.{FormSyntaxFactory, FormSyntaxFromSPARQL}
 import deductions.runtime.html.TableView
 import deductions.runtime.services.html.HTML5TypesTrait
@@ -19,7 +20,6 @@ import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.LoadService
 import deductions.runtime.services.html.{Form2HTMLBanana, HTML5TypesTrait}
 import deductions.runtime.utils.DefaultConfiguration
-import play.api.mvc.{AnyContentAsRaw, AnyContentAsText, RawBuffer}
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -49,21 +49,6 @@ trait ApplicationTrait extends Controller
 
 	implicit val myCustomCharset = Codec.javaSupported("utf-8")
 
-  protected def tableFromSPARQL(request: HTTPrequest): NodeSeq = {
-    val query = request.queryString.getOrElse("query", Seq()).headOption.getOrElse("")
-    val formSyntax = createFormFromSPARQL(query,
-      editable = false,
-      formuri = "")
-    val tv = new TableView[ImplementationSettings.Rdf#Node, ImplementationSettings.Rdf#URI]
-        with Form2HTMLBanana[ImplementationSettings.Rdf]
-        with ImplementationSettings.RDFModule
-        with HTML5TypesTrait[ImplementationSettings.Rdf]
-        with RDFPrefixes[ImplementationSettings.Rdf]{
-      val config = new DefaultConfiguration {}
-      val nullURI = ops.URI("")
-    }
-    tv.generate(formSyntax)
-  }
   protected def makeJSONResult(json: String) = makeResultMimeType(json, AcceptsJSONLD.mimeType)
 
   protected def makeResultMimeType(content: String, mimeType: String) =
