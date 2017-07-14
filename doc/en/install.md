@@ -113,11 +113,12 @@ Several variables can be customized at script beginning (see next paragraph).
 ## Managing multi administrators site
 
 Currently, all compiled stuff (target/ directories made by SBT) for `semantic_forms` amounts to 500 Mbytes. The unzipped `semantic_forms` distribution amounts to 120 Mbytes.
-So it makes sense to share this among several administrators, each managing a different server on a different port.
+There also 800 Mbytes in $HOME/.ivy2/ , the local Ivy depot used by SBT. 
+So it makes sense to share all this among several administrators, each managing a different server on a different port.
 
 So, for multiple administrators sharing usage: do this just once
 - change DEPLOY variable in update_server.sh
-- create a Linux group sf for sharing, and 2 shared directories:
+- create a Linux group sf for sharing, and 3 shared directories:
 ```shell
 sudo addgroup sf
 groups
@@ -131,15 +132,32 @@ sudo mkdir -p $SFSRC
 sudo chgrp sf $SFSRC
 sudo chmod g+rwx $SFSRC
 
+IVY2=/var/www/ivy2
+sudo mkdir -p $IVY2
+sudo chgrp sf $IVY2
+sudo chmod g+rwx $IVY2
+
 # for each administrator user add it to the group
 sudo usermod -a -G sf adminuser1
 ```
-- populate 2 shared directories the first time, as a user belonging to group sf:
+- populate 3 shared directories the first time, as a user belonging to group sf:
 ```shell
+echo 'DEPLOY=/var/www/sf_deploy' >> ~/.bashrc
+echo 'SFSRC=/var/www/sf_src' >> ~/.bashrc
+echo 'IVY2=/var/www/ivy2' >> ~/.bashrc
+DEPLOY=/var/www/sf_deploy
+SFSRC=/var/www/sf_src
+IVY2=/var/www/ivy2
+
+ln -s $IVY2 $HOME/.ivy2
+
 cd $SFSRC
 git clone https://github.com/jmvanel/semantic_forms.git
+chmod -hR g+wrx semantic_forms
+chgrp -hR sf semantic_forms/
 cd semantic_forms/scala
 # change DEPLOY variable in update_server.sh to /var/www/sf_deploy
+vi scripts/update_server.sh
 ./scripts/update_server.sh
 # clone SF unzipped directory
 cd $DEPLOY
