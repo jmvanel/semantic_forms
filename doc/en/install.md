@@ -103,6 +103,70 @@ scripts/tdbsearch.sh
 Of course, all the Jena command line tools are available, see:
 https://jena.apache.org/documentation/tools/index.html
 
+## Managing server update
+
+If you want to frequently update a server with respect to source code from git, there is the script:
+`$HOME/src/semantic_forms/scala/scripts/update_server.sh`
+
+Several variables can be customized at script beginning (see next paragraph).
+
+## Managing multi administrators site
+
+Currently, all compiled stuff (target/ directories made by SBT) for `semantic_forms` amounts to 500 Mbytes. The unzipped `semantic_forms` distribution amounts to 120 Mbytes.
+So it makes sense to share this among several administrators, each managing a different server on a different port.
+
+So, for multiple administrators sharing usage: do this just once
+- change DEPLOY variable in update_server.sh
+- create a Linux group sf for sharing, and 2 shared directories:
+```shell
+sudo addgroup sf
+groups
+DEPLOY=/var/www/sf_deploy
+sudo mkdir -p $DEPLOY
+sudo chgrp sf $DEPLOY
+sudo chmod g+rwx $DEPLOY
+
+SFSRC=/var/www/sf_src
+sudo mkdir -p $SFSRC
+sudo chgrp sf $SFSRC
+sudo chmod g+rwx $SFSRC
+
+# for each administrator user add it to the group
+sudo usermod -a -G sf adminuser1
+```
+- populate 2 shared directories the first time, as a user belonging to group sf:
+```shell
+cd $SFSRC
+git clone https://github.com/jmvanel/semantic_forms.git
+cd semantic_forms/scala
+# change DEPLOY variable in update_server.sh to /var/www/sf_deploy
+./scripts/update_server.sh
+# clone SF unzipped directory
+cd $DEPLOY
+cd semantic_forms_play-2.1-SNAPSHOT
+./scripts/clone_implementation.sh
+cd ..
+mv semantic_forms_cloned ${USER}_instance
+# of course , you can have several instances, just rename the cloned directory as you want.
+cd ${USER}_instance
+cp scripts/start.sh .
+echo customize start.sh ( PORT ,etc )
+vi start.sh
+echo customize instance specific message
+vi messages.html
+```
+
+The stage is set for your instance!
+Now to start the instance on the chosen port:
+```shell
+cd $DEPLOY/${USER}_instance
+./start.sh
+```
+To stop the instance on the chosen port:
+```shell
+cd $DEPLOY/${USER}_instance
+./scripts/stop.sh
+```
 
 ## Setup a new instance with common vocab's, form specifications, translations, dbPedia mirroring and Lucene indexing
 The scripts must be run in this order:
