@@ -1,25 +1,34 @@
 package controllers
 
-import scala.util.{Failure, Success, Try}
-import scala.xml.NodeSeq
 import java.io.File
 
-import play.api.http.MediaRange
-import play.api.mvc._
-import play.api.mvc.{AnyContentAsRaw, AnyContentAsText, RawBuffer}
+import scala.util.Success
+import scala.util.Try
+import scala.xml.NodeSeq
 
-import views.MainXmlWithHead
-
-import deductions.runtime.jena.RDFStoreLocalJenaProvider
-import deductions.runtime.services.{ApplicationFacadeImpl, CORS}
-import deductions.runtime.utils.{Configuration, HTTPrequest, RDFPrefixes, URIManagement}
-import deductions.runtime.abstract_syntax.{FormSyntaxFactory, FormSyntaxFromSPARQL}
-import deductions.runtime.html.TableView
-import deductions.runtime.services.html.HTML5TypesTrait
+import deductions.runtime.abstract_syntax.FormSyntaxFactory
+import deductions.runtime.abstract_syntax.FormSyntaxFromSPARQL
 import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.jena.RDFStoreLocalJenaProvider
+import deductions.runtime.services.ApplicationFacadeImpl
+import deductions.runtime.services.CORS
 import deductions.runtime.services.LoadService
-import deductions.runtime.services.html.{Form2HTMLBanana, HTML5TypesTrait}
-import deductions.runtime.utils.DefaultConfiguration
+import deductions.runtime.utils.Configuration
+import deductions.runtime.utils.RDFPrefixes
+import deductions.runtime.utils.URIManagement
+import play.api.http.MediaRange
+import play.api.mvc.Accepting
+import play.api.mvc.AnyContent
+import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.mvc.AnyContentAsRaw
+import play.api.mvc.AnyContentAsText
+import play.api.mvc.Codec
+import play.api.mvc.Controller
+import play.api.mvc.RawBuffer
+import play.api.mvc.Request
+import play.api.mvc.RequestHeader
+import play.api.mvc.Result
+import views.MainXmlWithHead
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -37,11 +46,7 @@ trait ApplicationTrait extends Controller
     with CORS
     with HTTPrequestHelpers
     with RDFPrefixes[ImplementationSettings.Rdf]
-    with URIManagement
     with RequestUtils
-    with LoadService[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with FormSyntaxFactory[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with FormSyntaxFromSPARQL[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RDFStoreLocalJenaProvider
 {
 
@@ -152,68 +157,6 @@ trait ApplicationTrait extends Controller
     val uriArgs = map.getOrElse(uri, Seq())
     uriArgs.find { uri => uri != "" }.getOrElse("") . trim()
   }
-
-  /** output SPARQL query as Play! Result;
-   *  priority to accepted MIME type
-   *  @param acceptedTypes from Accept HTTP header
-   *  TODO move to Play! independant trait */
-  protected def outputSPARQL(query: String, acceptedTypes: Seq[MediaRange], isSelect: Boolean): Result = {
-    val preferredMedia = acceptedTypes.map { media => Accepting(media.toString()) }.headOption
-    val defaultMIMEaPriori = if (isSelect) AcceptsSPARQLresults else AcceptsJSONLD
-    val defaultMIME = preferredMedia.getOrElse(defaultMIMEaPriori)
-
-    // TODO implicit class ResultFormat(val format: String)
-    val resultFormat: String = mimeAbbrevs.getOrElse(defaultMIME, 
-        mimeAbbrevs.get( defaultMIMEaPriori) . get )
-    logger.info(s"""sparqlConstruct: output(accepts=$acceptedTypes) => result format: "$resultFormat" """)
-
-    if (preferredMedia.isDefined &&
-      !mimeSet.contains(preferredMedia.get))
-      logger.info(s"CAUTION: preferredMedia $preferredMedia not in this application's list: ${mimeAbbrevs.keys.mkString(", ")}")
-
-    val result = if (isSelect)
-      sparqlSelectConneg(query, resultFormat, dataset)
-    else
-      sparqlConstructResult(query,
-          // TODO
-          lang="en",
-          resultFormat)
-
-    logger.info(s"result 5 first lines: $result".split("\n").take(5).mkString("\n"))
-    Ok(result)
-      .as(s"${simpleString2mimeMap.getOrElse(resultFormat, defaultMIMEaPriori).mimeType }")
-    // charset=utf-8" ?
-  }
-
-  protected def update(update: String) =
-    withUser {
-      implicit userid =>
-        implicit request =>
-          logger.info("sparql update: " + request)
-          logger.info(s"sparql: update '$update'")
-          println(log("update", request))
-          val update2 =
-            if (update == "") {
-              println(s"""contentType ${request.contentType}
-                ${request.mediaType}
-                ${request.body.getClass}
-            """)
-              val bodyAsText = request.body.asText.getOrElse("")
-              if( bodyAsText != "" )
-                bodyAsText
-              else
-                request.body.asFormUrlEncoded.getOrElse(Map()).getOrElse("query", Seq("")).headOption.getOrElse("")
-            } else update
-          logger.info(s"sparql: update2 '$update2'")
-          val lang = chooseLanguage(request) // for logging
-          val res = sparqlUpdateQuery(update2)
-          res match {
-            case Success(s) => Ok(s"$res")
-            case Failure(f) =>
-              logger.error(res.toString())
-              BadRequest(f.toString())
-          }
-    }
 
   protected def getContent(request: Request[AnyContent]): Option[String] = {
     request.body match {

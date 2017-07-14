@@ -2,26 +2,27 @@ package controllers
 
 import java.net.URLEncoder
 
-import deductions.runtime.utils.Configuration
-import deductions.runtime.views.ToolsPage
-import play.api.mvc._
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.xml.{Elem, NodeSeq}
-import deductions.runtime.utils.RDFPrefixes
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.utils.HTTPrequest
+import scala.xml.Elem
+import scala.xml.NodeSeq
+
 import deductions.runtime.html.TableView
+import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.html.Form2HTMLBanana
 import deductions.runtime.services.html.HTML5TypesTrait
+import deductions.runtime.utils.Configuration
 import deductions.runtime.utils.DefaultConfiguration
+import deductions.runtime.utils.HTTPrequest
+import deductions.runtime.utils.RDFPrefixes
+import deductions.runtime.views.ToolsPage
+import play.api.mvc.Action
+import play.api.mvc.Controller
+import play.api.mvc.Request
 
 
-/** main controller 
- *  TODO split HTML pages & HTTP services */
-trait WebPages extends Controller with ApplicationTrait
-{
+/** controller for HTML pages ("generic application") */
+trait WebPages extends Controller with ApplicationTrait {
   import config._
 
   def index() =
@@ -33,7 +34,8 @@ trait WebPages extends Controller with ApplicationTrait
           outputMainPage(makeHistoryUserActions("10", lang, copyRequest(request) ), lang,
               userInfo = userInfo)
     }
-	/** @param Edit edit mode <==> param not "" */
+
+  /** @param Edit edit mode <==> param not "" */
   def displayURI(uri0: String, blanknode: String = "", Edit: String = "",
                  formuri: String = "") =
     if (needLoginForDisplaying || ( needLoginForEditing && Edit !="" ))
@@ -79,6 +81,8 @@ trait WebPages extends Controller with ApplicationTrait
         }
       }
 
+
+  
   def table = Action { implicit request: Request[_] =>
     val requestCopy = getRequestCopy()
     val userid = requestCopy.userId()
@@ -96,9 +100,6 @@ trait WebPages extends Controller with ApplicationTrait
       classForContent = "")
   }
 
-  private def queryFromRequest(request: HTTPrequest) =
-    request.queryString.getOrElse("query", Seq()).headOption.getOrElse("")
-
   private def tableFromSPARQL(request: HTTPrequest): NodeSeq = {
     val query = queryFromRequest(request)
     val formSyntax = createFormFromSPARQL(query,
@@ -115,7 +116,13 @@ trait WebPages extends Controller with ApplicationTrait
     tv.generate(formSyntax)
   }
 
+  private def queryFromRequest(request: HTTPrequest) =
+    request.queryString.getOrElse("query", Seq()).headOption.getOrElse("")
 
+
+
+
+  /** "naked" HTML form */
   def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "",
       database: String = "TDB") =
 		  Action {
@@ -132,10 +139,13 @@ trait WebPages extends Controller with ApplicationTrait
           .as("text/html; charset=utf-8")
     }
 
+
+
+
   /**
    * /sparql-form service: Create HTML form or view from SPARQL (construct);
    *  like /sparql has input a SPARQL query;
-   *  like /form and /display has input Edit, formuri & database
+   *  like /form and /display has parameters Edit, formuri & database
    */
   def sparqlForm(query: String, Edit: String = "", formuri: String = "", database: String = "TDB") =
     Action { implicit request: Request[_] =>
@@ -150,6 +160,39 @@ trait WebPages extends Controller with ApplicationTrait
           formuri),
         lang, userInfo)
   }
+
+  /** SPARQL Construct UI */
+  def sparql(query: String) = {
+    logger.info("sparql: " + query)
+    def doAction(implicit request: Request[_]) = {
+      logger.info("sparql: " + request)
+      val lang = chooseLanguage(request)
+      outputMainPage(sparqlConstructQuery(query, lang), lang)
+
+        // TODO factorize
+        .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+        .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
+        .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
+    }
+    if (needLoginForDisplaying)
+      Action { implicit request: Request[_] => doAction }
+    else
+      withUser { implicit userid => implicit request => doAction }
+  }
+
+  /** SPARQL select UI */
+  def select(query: String) =
+    withUser {
+      implicit userid =>
+        implicit request =>
+          logger.info("sparql: " + request)
+          logger.info("sparql: " + query)
+          val lang = chooseLanguage(request)
+          outputMainPage(
+            selectSPARQL(query, lang), lang)
+    }
+
+
 
   def searchOrDisplayAction(q: String) = {
     def isURI(q: String): Boolean = q.contains(":")
@@ -167,7 +210,7 @@ trait WebPages extends Controller with ApplicationTrait
     fut.map( r => outputMainPage( r, lang ) )
   }
 
-  /** pasted from above */
+  /** show Named Graphs - pasted from above wordsearchAction */
   def showNamedGraphsAction() = Action.async {
     implicit request: Request[_] =>
     val lang = chooseLanguageObject(request).language
@@ -176,6 +219,7 @@ trait WebPages extends Controller with ApplicationTrait
     rr
   }
 
+  /** show Triples In given Graph */
   def showTriplesInGraphAction( uri: String) = {
         Action.async { implicit request: Request[_] =>
           val lang = chooseLanguageObject(request).language
@@ -251,19 +295,6 @@ trait WebPages extends Controller with ApplicationTrait
             create(uri, chooseLanguage(request),
               formSpecURI, makeAbsoluteURIForSaving(userid), copyRequest(request) ).getOrElse(<div/>),
             lang, userInfo=userInfo)
-    }
-
-  //// factor out the conneg stuff ////
-  /** SPARQL select UI */
-  def select(query: String) =
-    withUser {
-      implicit userid =>
-        implicit request =>
-          logger.info("sparql: " + request)
-          logger.info("sparql: " + query)
-          val lang = chooseLanguage(request)
-          outputMainPage(
-            selectSPARQL(query, lang), lang)
     }
 
   def backlinksAction(uri: String = "") = Action.async {

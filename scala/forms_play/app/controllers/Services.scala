@@ -1,9 +1,12 @@
 package controllers
 
-import play.api.mvc._
+import play.api.mvc.Accepting
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.Request
+import play.api.mvc.Result
 
-/** main controller 
- *  TODO split HTML pages & HTTP services */
+/** controller for non-SPARQL Services (or SPARQL related but not in the W3C recommendations) */
 trait Services extends ApplicationTrait
 {
 
@@ -64,80 +67,6 @@ trait Services extends ApplicationTrait
     }
 
 
-  /**
-   * SPARQL GET compliant, construct or select
-   * conneg => RDF/XML, Turtle or json-ld
-   * 
-   * TODO rename sparqlService
-   */
-  def sparqlConstruct(query: String) =
-        Action {
-//    withUser {
-//      implicit userid =>
-        implicit request: Request[_] =>
-          logger.info(s"""sparqlConstruct: sparql: request $request
-            sparql: $query
-            accepts ${request.acceptedTypes} """)
-          val lang = chooseLanguage(request)
-
-          // TODO better try a parse of the query
-          def checkSPARQLqueryType(query: String) =
-            if (query.toLowerCase().contains("select") )
-              "select"
-            else
-              "construct"
-
-          val isSelect = (checkSPARQLqueryType(query) == "select")
-          
-          outputSPARQL(query, request.acceptedTypes, isSelect)
-//          renderResult(output, default = mime)
-          .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
-          .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
-          .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
-          /* access-control-allow-headers :"Accept, Authorization, Slug, Link, Origin, Content-type, 
-           * DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,
-           * If-Modified-Since,Cache-Control,Content-Type,Accept-Encoding"
-           */
-  }
-
-  /**
-   * SPARQL POST compliant, construct or select SPARQL query
-   *  conneg => RDF/XML, Turtle or json-ld
-   */
-  def sparqlConstructPOST = Action {
-    implicit request: Request[AnyContent] =>
-      logger.info(s"""sparqlConstruct: sparql: request $request
-            accepts ${request.acceptedTypes} """)
-      val lang = chooseLanguage(request)
-      val body: AnyContent = request.body
-
-      // Expecting body as FormUrlEncoded
-      val formBody: Option[Map[String, Seq[String]]] = body.asFormUrlEncoded
-      val r = formBody.map { map =>
-
-        val query0 = map.getOrElse("query", Seq())
-        val query = query0 . mkString("\n")
-        logger.info(s"""sparql: $query""" )
-
-        // TODO better try a parse of the query
-        def checkSPARQLqueryType(query: String) =
-          if (query.toLowerCase().contains("select") )
-            "select"
-          else
-            "construct"
-        val isSelect = (checkSPARQLqueryType(query) == "select")
-        val acceptedTypes = request.acceptedTypes
-
-        outputSPARQL(query, acceptedTypes, isSelect)
-          .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
-          .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
-          .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
-      }
-      r match {
-        case Some(r) => r
-        case None => BadRequest("BadRequest")
-      }
-  }
 
 
   /**
@@ -176,6 +105,10 @@ trait Services extends ApplicationTrait
         case None    => BadRequest("sparqlDataPOST: BadRequest: nothing in form Body")
       }
   }
+
+
+
+
   /** LDP GET */
   def ldp(uri: String) =
     Action // withUser 
@@ -222,6 +155,9 @@ trait Services extends ApplicationTrait
           Ok(serviceCalled).as("text/plain; charset=utf-8")
             .withHeaders("Access-Control-Allow-Origin" -> "*")
     }
+
+
+
 
   //  implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(
 
