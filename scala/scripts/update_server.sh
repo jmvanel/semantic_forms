@@ -6,6 +6,12 @@ SRC=$PWD/forms_play
 APP=semantic_forms_play
 VERSION=2.1-SNAPSHOT
 APPVERS=${APP}-$VERSION
+
+# For single administrator
+DEPLOY=~/deploy
+# For multiple administrator
+# DEPLOY=/var/www/sf_deploy
+
 SBT=sbt
 MainXml=$SRC/../forms/src/main/scala/deductions/runtime/views/MainXml.scala
 
@@ -34,8 +40,8 @@ else
 cp /tmp/MainXml.orig.scala $MainXml
 echo "sofware recompiled!"
 
-mkdir ~/deploy
-cd ~/deploy
+mkdir -p $DEPLOY
+cd $DEPLOY
 kill `cat ${APPVERS}/RUNNING_PID`
 
 # pour garder les logs
@@ -48,13 +54,15 @@ cd ${APPVERS}
 mkdir -p ../TDBsandbox
 mkdir -p ../TDBsandbox2
 mkdir -p ../TDBsandbox3
+mkdir -p ../LUCENEsandbox LUCENEsandbox
 
 ln -s ../TDBsandbox  TDB
 ln -s ../TDBsandbox2 TDB2
 ln -s ../TDBsandbox3 TDB3
+ln -s ../LUCENEsandbox LUCENE
 
 PORT=9111
-echo To start the server on port $PORT in directory ~/deploy/$APPVERS , paste this:
-echo cd  ~/deploy/$APPVERS \; nohup bin/${APP} -J-Xmx100M -J-server -Dhttp.port=$PORT &
+echo To start the server on port $PORT in directory $DEPLOY/$APPVERS , paste this:
+echo cd  $DEPLOY/$APPVERS \; nohup bin/${APP} -J-Xmx100M -J-server -Dhttp.port=$PORT &
 fi
 
