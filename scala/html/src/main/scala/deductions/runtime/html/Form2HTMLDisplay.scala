@@ -18,8 +18,12 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
   private[html] def createHTMLiteralReadonlyField(l: formMod#LiteralEntry): NodeSeq =
     <xml:group>
       {
-//    		  Unparsed(toPlainString(l.value))
-    		  Unparsed(l.valueLabel)
+        val valueDisplayed =
+          if (l.type_.toString().endsWith("dateTime"))
+            l.valueLabel.replaceFirst("T00:00:00$", "")
+          else
+            l.valueLabel
+        Unparsed(valueDisplayed)
       }
     	{makeUserInfoOnTriples(l)}
       <div>{ if (l.lang != "" && l.lang != "No_language") " > " + l.lang }</div>
