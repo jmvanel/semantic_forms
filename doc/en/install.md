@@ -121,21 +121,21 @@ So, for multiple administrators sharing usage: do this just once
 - create a Linux group sf for sharing, and 3 shared directories:
 ```shell
 sudo addgroup sf
+function make_shared_dir {
+  if [ $(getent group sf) ]; then
+    DIR=$1
+    sudo mkdir -p $DIR
+    sudo chgrp -hR sf $DIR
+    sudo chmod -R g+rwx $DIR
+  fi
+}
 groups
 DEPLOY=/var/www/sf_deploy
-sudo mkdir -p $DEPLOY
-sudo chgrp sf $DEPLOY
-sudo chmod g+rwx $DEPLOY
-
+make_shared_dir $DEPLOY
 SFSRC=/var/www/sf_src
-sudo mkdir -p $SFSRC
-sudo chgrp sf $SFSRC
-sudo chmod g+rwx $SFSRC
-
+make_shared_dir $SFSRC
 IVY2=/var/www/ivy2
-sudo mkdir -p $IVY2
-sudo chgrp sf $IVY2
-sudo chmod g+rwx $IVY2
+make_shared_dir $IVY2
 
 # for each administrator user add it to the group
 sudo usermod -a -G sf adminuser1
@@ -153,8 +153,7 @@ ln -s $IVY2 $HOME/.ivy2
 
 cd $SFSRC
 git clone https://github.com/jmvanel/semantic_forms.git
-chmod -hR g+wrx semantic_forms
-chgrp -hR sf semantic_forms/
+make_shared_dir semantic_forms
 cd semantic_forms/scala
 # change DEPLOY variable in update_server.sh to /var/www/sf_deploy
 vi scripts/update_server.sh

@@ -1,5 +1,20 @@
 #!/bin/bash
 
+function make_shared_file {
+  if [ $(getent group sf) ]; then
+    DIR=$1
+    sudo chgrp -hR sf $DIR
+    sudo chmod -R g+rwx $DIR
+  fi
+}
+function make_shared_dir {
+  if [ $(getent group sf) ]; then
+    DIR=$1
+    sudo mkdir -p $DIR
+    make_shared_file $DIR
+  fi
+}
+
 echo "update semantic_forms Play! server when code has changed"
 # SRC=$HOME/src/semantic_forms/scala/forms_play/
 SRC=$PWD/forms_play
@@ -25,6 +40,7 @@ DATE=`date`
 sed -e "s/=timestamp=.*/=timestamp= $DATE/" $MainXml > /tmp/MainXml.scala
 cp $MainXml /tmp/MainXml.orig.scala 
 cp /tmp/MainXml.scala $MainXml
+make_shared_file $MainXml
 
 echo  which $SBT ; which $SBT
 cd $SRC/..
@@ -41,22 +57,27 @@ then echo "Trouble in SBT!" ; exit
 else
 cp /tmp/MainXml.orig.scala $MainXml
 echo "sofware recompiled!"
+for f in */target
+do
+  make_shared_dir $f
+done
 
 mkdir -p $DEPLOY
 cd $DEPLOY
 kill `cat ${APPVERS}/RUNNING_PID`
 
-# pour garder les logs
+# for keeping logs
 rm -r ${APPVERS}_OLD
 mv ${APPVERS} ${APPVERS}_OLD
+make_shared_dir ${APPVERS}_OLD
 
 unzip $SRC/target/universal/${APPVERS}.zip
-
+make_shared_dir ${APPVERS}
 cd ${APPVERS}
-mkdir -p ../TDB$INSTANCE
-mkdir -p ../TDB${INSTANCE}2
-mkdir -p ../TDB${INSTANCE}3
-mkdir -p ../LUCENE$INSTANCE
+make_shared_dir ../TDB$INSTANCE
+make_shared_dir ../TDB${INSTANCE}2
+make_shared_dir ../TDB${INSTANCE}3
+make_shared_dir ../LUCENE$INSTANCE
 
 ln -s ../TDB$INSTANCE  TDB
 ln -s ../TDB${INSTANCE}2 TDB2
@@ -67,4 +88,5 @@ PORT=9111
 echo To start the server on port $PORT in directory $DEPLOY/$APPVERS , paste this:
 echo cd  $DEPLOY/$APPVERS \; nohup bin/${APP} -J-Xmx100M -J-server -Dhttp.port=$PORT &
 fi
+# make_shared_file $DEPLOY/$APPVERS/nohup.out
 
