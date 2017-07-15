@@ -44,7 +44,7 @@ cp $MainXml /tmp/MainXml.orig.scala
 cp /tmp/MainXml.scala $MainXml
 make_shared_file $MainXml
 make_shared_file  /tmp/MainXml.orig.scala
-make_shared_file  /tmp/MainXml..scala
+make_shared_file  /tmp/MainXml.scala
 
 echo  which $SBT ; which $SBT
 cd $SRC/..
