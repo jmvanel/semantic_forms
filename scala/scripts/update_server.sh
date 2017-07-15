@@ -27,7 +27,7 @@ INSTANCE=sandbox
 # For single administrator
 DEPLOY=~/deploy
 # For multiple administrator
-# DEPLOY=/var/www/sf_deploy
+DEPLOY=/var/www/sf_deploy
 
 SBT=sbt
 MainXml=$SRC/../forms/src/main/scala/deductions/runtime/views/MainXml.scala
