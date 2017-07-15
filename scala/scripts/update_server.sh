@@ -35,12 +35,16 @@ MainXml=$SRC/../forms/src/main/scala/deductions/runtime/views/MainXml.scala
 cd $SRC
 git checkout -- $MainXml
 git pull --verbose
+make_shared_dir .
+make_shared_dir .git
 
 DATE=`date`
 sed -e "s/=timestamp=.*/=timestamp= $DATE/" $MainXml > /tmp/MainXml.scala
 cp $MainXml /tmp/MainXml.orig.scala 
 cp /tmp/MainXml.scala $MainXml
 make_shared_file $MainXml
+make_shared_file  /tmp/MainXml.orig.scala
+make_shared_file  /tmp/MainXml..scala
 
 echo  which $SBT ; which $SBT
 cd $SRC/..
