@@ -120,7 +120,7 @@ trait GeoPath[Rdf <: RDF, DATASET]
               subject
               -- rdf.typ ->- geoloc("TravelStatistic")
               -- geoloc("begin") ->- Literal(begin, xsd.dateTime)
-              -- geoloc("end") ->- Literal(end, xsd.dateTime)
+//              -- geoloc("end") ->- Literal(end, xsd.dateTime)
               -- geoloc("distance") ->- Literal(dist.toString(), xsd.float)
               -- geoloc("mobile") ->- mobile).graph.triples
           } else {
