@@ -2,7 +2,7 @@
 
 function make_shared_file {
   if [ $(getent group sf) ]; then
-    DIR=$1
+    DIR=`readlink -f $1`
     sudo chgrp -hR sf $DIR
     sudo chmod -R g+rwx $DIR
   fi
