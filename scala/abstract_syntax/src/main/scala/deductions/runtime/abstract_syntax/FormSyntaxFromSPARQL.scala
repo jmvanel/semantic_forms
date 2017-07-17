@@ -4,6 +4,7 @@ import deductions.runtime.sparql_cache.SPARQLHelpers
 import org.w3.banana.RDF
 
 import scala.util.{Failure, Success}
+import deductions.runtime.utils.HTTPrequest
 
 trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
     extends SPARQLHelpers[Rdf, DATASET]
@@ -18,15 +19,17 @@ trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
   def createJSONFormFromSPARQL(
     query: String,
     editable: Boolean = false,
-    formuri: String = ""): String = {
+    formuri: String = "",
+    request: HTTPrequest): String = {
     formSyntax2JSONString(
       createFormFromSPARQL (
-        query, editable, formuri))
+        query, editable, formuri, request))
   }
 
   def createFormFromSPARQL(query: String,
                            editable: Boolean = false,
-                           formuri: String = ""): FormSyntax = {
+                           formuri: String = "",
+                           request: HTTPrequest): FormSyntax = {
     logger.debug( s"""query:
         $query""")
     val tryGraph = sparqlConstructQueryGraph(query)
@@ -36,8 +39,7 @@ trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
         val triples = getTriples(graph).toSeq
         val fs = wrapInReadTransaction {
           createFormFromTriples(triples, editable, formuri)(allNamedGraph,
-              "en" // TODO <<<<<<<<<<<<<<<<
-              )
+              request.getLanguage)
         } . get
         FormSyntax(subject = nullURI, fields = fs.fields, title = s"""From query:
       $query""")

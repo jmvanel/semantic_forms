@@ -28,7 +28,8 @@ case class HTTPrequest(
     /* YET UNUSED */
     headers: Map[String, Seq[String]] = Map(),
 //    cookies: List[Cookie] = List())
-    cookies: Map[String, Cookie] = Map()
+    cookies: Map[String, Cookie] = Map(),
+    acceptLanguages: Seq[String] = Seq()
     ) {
 
   def absoluteURL(rawURI: String = "", secure: Boolean = false): String =
@@ -46,7 +47,13 @@ case class HTTPrequest(
   def substringAfter(s: String, k: String) = { s.indexOf(k) match { case -1 => ""; case i => s.substring(i + k.length) } }
   def localSparqlEndpoint = URLEncoder.encode(absoluteURL("/sparql"), "UTF-8")
 
-  
+  def getLanguage(): String = {
+    val languages = acceptLanguages
+    val resLang = if (languages.length > 0) languages(0) else "en"
+//    logger.info(
+//        log("chooseLanguage", this) + s"\t$resLang" )
+    resLang
+  }
 }
 
 /** Borrowed from Play */

@@ -118,9 +118,9 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
   /** create HTML Form or view From SPARQL CONSTRUCT query */
   def createHTMLFormFromSPARQL(query: String,
                                editable: Boolean = false,
-                               formuri: String = ""): NodeSeq = {
-    val formSyntax = createFormFromSPARQL(query, editable, formuri)
-    generateHTML(formSyntax, request=HTTPrequest(), hrefPrefix = config.hrefDisplayPrefix)
+                               formuri: String = "", request: HTTPrequest): NodeSeq = {
+    val formSyntax = createFormFromSPARQL(query, editable, formuri, request)
+    generateHTML(formSyntax, request=request, hrefPrefix = config.hrefDisplayPrefix)
   }
 
 
