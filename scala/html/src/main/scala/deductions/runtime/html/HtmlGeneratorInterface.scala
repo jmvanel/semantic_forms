@@ -17,7 +17,6 @@ trait HtmlGeneratorInterface[NODE, URI <: NODE] extends RDFPrefixesInterface {
                    actionURI: String = "/save", graphURI: String = "",
                    actionURI2: String = "/save", lang: String = "en",
                    request: HTTPrequest
-                   //= HTTPrequest()
                    ): NodeSeq
 
   /** generate HTML form given Form Syntax, without a form header, just fields */

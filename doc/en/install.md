@@ -154,8 +154,11 @@ ln -s $IVY2 $HOME/.ivy2
 cd $SFSRC
 git clone https://github.com/jmvanel/semantic_forms.git
 make_shared_dir semantic_forms
+make_shared_dir semantic_forms/.git
+
 cd semantic_forms/scala
 # change DEPLOY variable in update_server.sh to /var/www/sf_deploy
+# install or make available SBT, see http://www.scala-sbt.org/
 vi scripts/update_server.sh
 ./scripts/update_server.sh
 # clone SF unzipped directory

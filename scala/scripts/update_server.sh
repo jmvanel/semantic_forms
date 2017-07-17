@@ -33,6 +33,7 @@ SBT=sbt
 MainXml=$SRC/../forms/src/main/scala/deductions/runtime/views/MainXml.scala
 
 cd $SRC
+make_shared_dir .git
 git checkout -- $MainXml
 git pull --verbose
 make_shared_dir .

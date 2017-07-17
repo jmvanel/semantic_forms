@@ -97,7 +97,8 @@ trait Services extends ApplicationTrait
           createJSONFormFromSPARQL(
             query,
             editable = (Edit != ""),
-            formuri))
+            formuri,
+            copyRequest(request)))
       }
 
       result match {

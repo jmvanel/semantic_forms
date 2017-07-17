@@ -51,7 +51,7 @@ trait GeoController[Rdf <: RDF, DATASET] extends GeoPath[Rdf, DATASET]
         createFormFromTriples(
           getTriples(
             union(Seq(statisticsGraph, detailsGraph))).toSeq,
-          false)(allNamedGraph, "en");
+          false)(allNamedGraph, request.getLanguage() );
       };
       _ = println(s"statisticsGraph formSyntax ${formSyntax}")
     ) yield {
