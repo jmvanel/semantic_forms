@@ -4,7 +4,8 @@ import deductions.runtime.abstract_syntax.{FormSyntaxFactory, UserTraceability}
 import deductions.runtime.html.{HtmlGeneratorInterface, logger}
 import deductions.runtime.semlogs.TimeSeries
 import deductions.runtime.sparql_cache.RDFCacheAlgo
-import deductions.runtime.utils.{Configuration, HTTPrequest, RDFPrefixesInterface, Timer}
+import deductions.runtime.utils.{Configuration, RDFPrefixesInterface, Timer}
+import deductions.runtime.core.HTTPrequest
 import deductions.runtime.views.TableFromListListRDFNodes
 import org.apache.log4j.Logger
 import org.w3.banana.RDF

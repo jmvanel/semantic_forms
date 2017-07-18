@@ -4,7 +4,7 @@ import deductions.runtime.utils.RDFPrefixesInterface
 import org.joda.time.DateTime
 
 import scala.xml.{NodeSeq, Unparsed}
-import deductions.runtime.utils.HTTPrequest
+import deductions.runtime.core.HTTPrequest
 
 /** generate HTML from abstract Form for Display (Read only) */
 trait Form2HTMLDisplay[NODE, URI <: NODE]

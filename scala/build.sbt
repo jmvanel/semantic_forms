@@ -18,7 +18,7 @@ lazy val forms_play = (project in file("forms_play"))
 
 lazy val core = project
 lazy val connectors = project .dependsOn(utils)
-lazy val utils = project
+lazy val utils = project .dependsOn(core)
 lazy val forms = project  .dependsOn(html)
 	// .in(file("forms"))
 	.dependsOn(connectors) // .aggregate(connectors)

@@ -1,7 +1,9 @@
 package deductions.runtime.abstract_syntax
 
 import deductions.runtime.sparql_cache.RDFCacheAlgo
-import deductions.runtime.utils.{HTTPrequest, RDFHelpers, RDFPrefixes}
+import deductions.runtime.utils.{RDFHelpers, RDFPrefixes}
+import deductions.runtime.core.HTTPrequest
+
 import org.w3.banana.{Prefix, RDF}
 
 import scala.util.Try

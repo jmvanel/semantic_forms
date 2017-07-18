@@ -12,7 +12,8 @@ import deductions.runtime.services.html.{CreationFormAlgo, TriplesViewWithTitle}
 import deductions.runtime.sparql_cache.algos.StatisticsGraph
 import deductions.runtime.sparql_cache.{BrowsableGraph, RDFCacheAlgo, SPARQLHelpers}
 import deductions.runtime.user.RegisterPage
-import deductions.runtime.utils.{CSSClasses, Configuration, HTTPrequest}
+import deductions.runtime.utils.{CSSClasses, Configuration}
+import deductions.runtime.core.HTTPrequest
 import deductions.runtime.views.{FormHeader, Results, ToolsPage}
 import org.w3.banana.io._
 import play.api.libs.iteratee.Enumerator

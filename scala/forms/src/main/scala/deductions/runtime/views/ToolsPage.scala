@@ -3,7 +3,8 @@ package deductions.runtime.views
 import java.net.URLEncoder
 
 import deductions.runtime.html.BasicWidgets
-import deductions.runtime.utils.{HTTPrequest, I18NMessages, URIManagement}
+import deductions.runtime.utils.{I18NMessages, URIManagement}
+import deductions.runtime.core.HTTPrequest
 
 import scala.xml.{NodeSeq, Unparsed}
 

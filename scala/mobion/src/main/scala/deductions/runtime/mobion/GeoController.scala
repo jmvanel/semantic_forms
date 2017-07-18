@@ -4,7 +4,10 @@ import deductions.runtime.abstract_syntax.{ FormSyntaxFactory, FormSyntaxFromSPA
 import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
 import deductions.runtime.html.TableView
 import deductions.runtime.sparql_cache.algos.GeoPath
-import deductions.runtime.utils.{HTTPrequest, RDFPrefixesInterface}
+import deductions.runtime.utils.RDFPrefixesInterface
+import deductions.runtime.core.HTTPrequest
+import deductions.runtime.core.SemanticController
+
 import org.w3.banana.RDF
 
 import scala.xml.NodeSeq

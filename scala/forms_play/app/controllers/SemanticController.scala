@@ -2,10 +2,11 @@ package controllers
 
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.html.Form2HTMLObject
-import deductions.runtime.services.{CentralSemanticController, GeoController, TypicalSFDependencies}
+import deductions.runtime.services.{CentralSemanticController, TypicalSFDependencies}
 import deductions.runtime.user.RegisterPage
 import deductions.runtime.utils.DefaultConfiguration
 import play.api.mvc.{Action, Controller, Request}
+import deductions.runtime.mobion.GeoController
 
 object SemanticController extends Controller
     with ImplementationSettings.RDFCache
@@ -15,7 +16,7 @@ object SemanticController extends Controller
 
   import ops._
 
-  val actionMap: Map[String, deductions.runtime.services.SemanticController] =
+  val actionMap: Map[String, deductions.runtime.core.SemanticController] =
     Map(
       fromUri(geoloc("stats")) ->
         new TypicalSFDependencies with GeoController[Rdf, DATASET] {})

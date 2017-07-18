@@ -1,7 +1,8 @@
 package deductions.runtime.html
 
 import deductions.runtime.core.FormModule
-import deductions.runtime.utils.{HTTPrequest, RDFPrefixesInterface}
+import deductions.runtime.utils.RDFPrefixesInterface
+import deductions.runtime.core.HTTPrequest
 
 import scala.xml.NodeSeq
 

@@ -3,6 +3,7 @@ package deductions.runtime.utils
 import java.net._
 
 import scala.collection.JavaConversions._
+import deductions.runtime.core.HTTPrequest
 
 /**
  * Management of URI policy: how are URI created by the application

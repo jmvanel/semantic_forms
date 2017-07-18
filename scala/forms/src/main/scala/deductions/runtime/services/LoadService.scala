@@ -3,7 +3,7 @@ package deductions.runtime.services
 import java.io.StringReader
 
 import deductions.runtime.sparql_cache.RDFCacheAlgo
-import deductions.runtime.utils.HTTPrequest
+import deductions.runtime.core.HTTPrequest
 import org.w3.banana.RDF
 import org.w3.banana.io.{JsonLd, RDFReader}
 

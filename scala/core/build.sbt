@@ -9,5 +9,5 @@ name := "core"
 // lazy val connectors = (project in file(".")) .dependsOn(utils)
 
 libraryDependencies ++= Seq(
-
+"org.scala-lang.modules" %% "scala-xml" % "1.0.6"
 )

@@ -4,7 +4,8 @@
 
 package deductions.runtime.abstract_syntax
 
-import deductions.runtime.utils.{HTTPrequest, URIManagement}
+import deductions.runtime.utils.URIManagement
+import deductions.runtime.core.HTTPrequest
 import org.w3.banana.RDF
 
 import scala.language.postfixOps
