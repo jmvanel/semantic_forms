@@ -104,7 +104,7 @@ trait WebPages extends Controller with ApplicationTrait {
     val query = queryFromRequest(request)
     val formSyntax = createFormFromSPARQL(query,
       editable = false,
-      formuri = "")
+      formuri = "", request)
     val tv = new TableView[ImplementationSettings.Rdf#Node, ImplementationSettings.Rdf#URI]
         with Form2HTMLBanana[ImplementationSettings.Rdf]
         with ImplementationSettings.RDFModule
@@ -157,7 +157,7 @@ trait WebPages extends Controller with ApplicationTrait {
         createHTMLFormFromSPARQL(
           query,
           editable = Edit != "",
-          formuri),
+          formuri, requestCopy),
         lang, userInfo)
   }
 

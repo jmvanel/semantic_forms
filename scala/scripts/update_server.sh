@@ -2,7 +2,7 @@
 
 function make_shared_file {
   if [ $(getent group sf) ]; then
-    DIR=$1
+    DIR=`readlink -f $1`
     sudo chgrp -hR sf $DIR
     sudo chmod -R g+rwx $DIR
   fi
@@ -33,6 +33,7 @@ SBT=sbt
 MainXml=$SRC/../forms/src/main/scala/deductions/runtime/views/MainXml.scala
 
 cd $SRC
+make_shared_dir .git
 git checkout -- $MainXml
 git pull --verbose
 make_shared_dir .
@@ -48,14 +49,15 @@ make_shared_file  /tmp/MainXml.scala
 
 echo  which $SBT ; which $SBT
 cd $SRC/..
+make_shared_dir $HOME/.ivy2
 echo Launching $SBT -J-Xmx2G 'project forms_play' 'dist'
-# $SBT -J-Xmx2G 'project forms_play' 'dist'
 $SBT -J-Xmx2G << EOF
   project forms_play
   dist
 EOF
 SBT_RETURN_CODE=$?
 echo $SBT RETURN CODE: $SBT_RETURN_CODE
+make_shared_dir $HOME/.ivy2
 if test $SBT_RETURN_CODE -ne 0
 then echo "Trouble in SBT!" ; exit
 else
