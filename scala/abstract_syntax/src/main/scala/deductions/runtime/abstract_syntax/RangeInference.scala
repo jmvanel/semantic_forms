@@ -1,5 +1,6 @@
 package deductions.runtime.abstract_syntax
 
+import deductions.runtime.core.FormModule
 import deductions.runtime.sparql_cache.dataset.RDFOPerationsDB
 import deductions.runtime.utils.{RDFHelpers, Timer}
 import org.w3.banana.{OWLPrefix, PointedGraph, RDF, SparqlEngine, SparqlOps}

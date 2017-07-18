@@ -1,6 +1,6 @@
 package deductions.runtime.html
 
-import deductions.runtime.abstract_syntax.FormModule
+import deductions.runtime.core.FormModule
 import deductions.runtime.utils.{RDFPrefixesInterface, UnicityList}
 
 import scala.collection.mutable

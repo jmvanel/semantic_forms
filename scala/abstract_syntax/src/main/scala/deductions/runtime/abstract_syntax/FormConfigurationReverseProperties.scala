@@ -1,5 +1,6 @@
 package deductions.runtime.abstract_syntax
 
+import deductions.runtime.core.FormModule
 import org.w3.banana.RDF
 
 trait FormConfigurationReverseProperties[Rdf <: RDF, DATASET]

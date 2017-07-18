@@ -1,10 +1,6 @@
 package deductions.runtime.utils
 
 
-
-import org.apache.jena.riot.RiotException
-import org.w3.banana.jena.{Jena, JenaModule}
-
 /**
   * Created by tristan on 13/07/17.
   */

@@ -2,7 +2,7 @@ package deductions.runtime.html
 
 import java.net.URLEncoder
 
-import deductions.runtime.abstract_syntax.FormModule
+import deductions.runtime.core.FormModule
 import deductions.runtime.utils.{Cookie, HTTPrequest, RDFPrefixesInterface, Timer}
 import org.apache.commons.codec.digest.DigestUtils
 

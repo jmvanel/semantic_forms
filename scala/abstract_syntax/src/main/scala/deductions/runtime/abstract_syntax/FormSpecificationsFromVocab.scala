@@ -8,6 +8,7 @@ package deductions.runtime.abstract_syntax
 import java.io.{File, FileOutputStream, StringReader}
 import java.net.URL
 
+import deductions.runtime.core.FormModule
 import deductions.runtime.utils.RDFPrefixes
 import org.w3.banana.RDF
 

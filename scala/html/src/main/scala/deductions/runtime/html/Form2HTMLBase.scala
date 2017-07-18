@@ -1,8 +1,7 @@
 package deductions.runtime.html
 
-import deductions.runtime.abstract_syntax.FormModule
+import deductions.runtime.core.FormModule
 import deductions.runtime.utils._
-//import org.w3.banana.RDFModule
 
 import scala.util.Try
 import scala.xml.{Elem, NodeSeq}

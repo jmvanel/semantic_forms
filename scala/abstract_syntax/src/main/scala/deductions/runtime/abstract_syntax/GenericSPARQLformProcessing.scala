@@ -1,5 +1,6 @@
 package deductions.runtime.abstract_syntax
 
+import deductions.runtime.core.{FormModule, URIWidget, zeroOrMore}
 import deductions.runtime.sparql_cache.SPARQLHelpers
 import org.w3.banana.RDF
 

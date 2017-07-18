@@ -30,8 +30,8 @@ lazy val forms_js = project
 // lazy val social_web = project
 // lazy val sparql_client = project
 lazy val sparql_cache = project .dependsOn(utils)
-lazy val abstract_syntax = project .dependsOn(utils)   .dependsOn(sparql_cache)
-lazy val html = project   .dependsOn(abstract_syntax) .dependsOn(utils)
+lazy val abstract_syntax = project .dependsOn(core)   .dependsOn(sparql_cache)
+lazy val html = project   .dependsOn(abstract_syntax) .dependsOn(utils)   .dependsOn(core)
 
 // PENDING: really necessary?
 resolvers in ThisBuild += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
