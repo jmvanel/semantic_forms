@@ -1,4 +1,4 @@
-package deductions.runtime.services
+package deductions.runtime.mobion
 
 import deductions.runtime.abstract_syntax.{ FormSyntaxFactory, FormSyntaxFromSPARQL }
 import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
@@ -9,7 +9,7 @@ import org.w3.banana.RDF
 
 import scala.xml.NodeSeq
 
-/** TODO extract to new SBT module */
+/** */
 trait GeoController[Rdf <: RDF, DATASET] extends GeoPath[Rdf, DATASET]
     with SemanticController
     with FormSyntaxFactory[Rdf, DATASET]
