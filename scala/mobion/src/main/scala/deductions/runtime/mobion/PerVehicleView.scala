@@ -12,6 +12,8 @@ import org.w3.banana.RDF
 
 import scala.xml.NodeSeq
 import deductions.runtime.abstract_syntax.uri.URIForDisplayFactory
+import deductions.runtime.views.ResultsDisplay
+import java.util.Calendar
 
 /** Per Vehicle View */
 trait PerVehicleView[Rdf <: RDF, DATASET] extends GeoPath[Rdf, DATASET]
@@ -20,7 +22,10 @@ trait PerVehicleView[Rdf <: RDF, DATASET] extends GeoPath[Rdf, DATASET]
     with FormSyntaxFromSPARQL[Rdf, DATASET]
     with TableView[Rdf#Node, Rdf#URI]
     with RDFPrefixesInterface
-    with URIForDisplayFactory[Rdf, DATASET] {
+    with URIForDisplayFactory[Rdf, DATASET]
+//    with ResultsDisplay[Rdf, DATASET] 
+{
+
 
   import ops._
 
@@ -54,157 +59,12 @@ trait PerVehicleView[Rdf <: RDF, DATASET] extends GeoPath[Rdf, DATASET]
       """.stripMargin
 
     // 3) layouts details for each vehicle
-    val template =
-      <div class="tab_global_bas">
-        <h2>Détail d'activité de la semaine du ../../.. au ../../..</h2>
-        <p>
-          CRUIS RENT vous donne le détail de votre activité de livraison par service
-           lors de la semaine d'évaluation
-        </p>
-        <!-- TABLEAU RESULTATS DÉTAILLÉS-->
-        <table cellpadding="10" width="90%">
-          <tr>
-            <th colspan="2"></th>
-            <th colspan="4">Jour 1 - Date</th>
-            <th colspan="4">Jour 2 - Date</th>
-            <th colspan="4">Jour 3 - Date</th>
-          </tr>
-          <tr>
-            <td colspan="2">Immat.</td>
-            <td colspan="2">Après-midi</td>
-            <td colspan="2">Soirée</td>
-            <td colspan="2">Après-midi</td>
-            <td colspan="2">Soirée</td>
-            <td colspan="2">Après-midi</td>
-            <td colspan="2">Soirée</td>
-          </tr>
-          <tr>
-            <td colspan="2">Horaires</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr style="border-bottom : 2px dotted #22A1DC;">
-            <td style="transform: rotate(270deg);" rowspan="2">Distance</td>
-            <td align="left">Moyenne</td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-          </tr>
-          <tr>
-            <td align="left">Total</td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-          </tr>
-          <tr style="border-bottom : 2px dotted #22A1DC;">
-            <td style="transform: rotate(270deg);" rowspan="2">Temps</td>
-            <td align="left">Moyenne</td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-          </tr>
-          <tr>
-            <td align="left">Total</td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-          </tr>
-        </table>
-        <table cellpadding="10" width="90%">
-          <tr>
-            <th colspan="2"></th>
-            <th colspan="4">Jour 4 - Date</th>
-            <th colspan="4">Jour 5 - Date</th>
-            <th colspan="4">Jour 6 - Date</th>
-          </tr>
-          <tr>
-            <td colspan="2">Immat.</td>
-            <td colspan="2">Après-midi</td>
-            <td colspan="2">Soirée</td>
-            <td colspan="2">Après-midi</td>
-            <td colspan="2">Soirée</td>
-            <td colspan="2">Après-midi</td>
-            <td colspan="2">Soirée</td>
-          </tr>
-          <tr>
-            <td colspan="2">Horaires</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr style="border-bottom : 2px dotted #22A1DC;">
-            <td style="transform: rotate(270deg);" rowspan="2">Distance</td>
-            <td align="left">Moyenne</td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-          </tr>
-          <tr>
-            <td align="left">Total</td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-          </tr>
-          <tr style="border-bottom : 2px dotted #22A1DC;">
-            <td style="transform: rotate(270deg);" rowspan="2">Temps</td>
-            <td align="left">Moyenne</td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-          </tr>
-          <tr>
-            <td align="left">Total</td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-            <td colspan="2"></td>
-          </tr>
-        </table>
-        <!-- TABLEAU RESULTATS DÉTAILLÉS-->
-      </div>
-    ???
+    
+    val startDate = Calendar.getInstance // TODO
+    startDate.clone
+    startDate.add(Calendar.DAY_OF_MONTH, 3)
+    template3Days(1, startDate ) ++        
+    template3Days(4, startDate )
   }
 
   /** 1) enumerate vehicules (actually mobiles) */
@@ -234,9 +94,92 @@ trait PerVehicleView[Rdf <: RDF, DATASET] extends GeoPath[Rdf, DATASET]
   private def showVehicles(vehicles: List[Rdf#Node], request: HTTPrequest): NodeSeq = {
     vehicles . map { vehicle => <p>
       {
-        // TODO hyperlink
-        makeURIForDisplay(vehicle)( allNamedGraph, request.getLanguage() )
+        val dis = makeURIForDisplay(vehicle)( allNamedGraph, request.getLanguage() )
+        // TODO hyperlink  to SF specific wiew
+//        dis.uri
+        dis.label
       } </p> }
   }
 
+  private def template3Days(day: Int = 1, date: Calendar) =
+      <div class="tab_global_bas">
+        <h2>Détail d'activité de la semaine du ../../.. au ../../..</h2>
+        <p>
+          CRUIS RENT vous donne le détail de votre activité de livraison par service
+           lors de la semaine d'évaluation
+        </p>
+
+        <!-- TABLEAU RESULTATS DÉTAILLÉS-->
+        <table cellpadding="10" width="90%">
+          <tr>
+            <th colspan="2"></th>
+            <th colspan="4">Jour {day}     - {date}</th>
+            <th colspan="4">Jour {day + 1} - {date.add(Calendar.DAY_OF_MONTH, 1)}</th>
+            <th colspan="4">Jour {day + 2} - {date.add(Calendar.DAY_OF_MONTH, 2)}</th>
+          </tr>
+          <tr>
+            <td colspan="2">Immat.</td>
+
+            <td colspan="2">Après-midi</td>
+            <td colspan="2">Soirée</td>
+            <td colspan="2">Après-midi</td>
+            <td colspan="2">Soirée</td>
+            <td colspan="2">Après-midi</td>
+            <td colspan="2">Soirée</td>
+          </tr>
+          <tr>
+            <td colspan="2">Horaires</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr style="border-bottom : 2px dotted #22A1DC;">
+            <td style="transform: rotate(270deg);" rowspan="2">Distance</td>
+            <td align="left">Moyenne</td>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+          </tr>
+          <tr>
+            <td align="left">Total</td>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+          </tr>
+          <tr style="border-bottom : 2px dotted #22A1DC;">
+            <td style="transform: rotate(270deg);" rowspan="2">Temps</td>
+            <td align="left">Moyenne</td>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+          </tr>
+          <tr>
+            <td align="left">Total</td>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+          </tr>
+        </table>
+      </div>
 }
