@@ -104,7 +104,6 @@ trait GeoPath[Rdf <: RDF, DATASET]
     def getPerDayDistances() = {
       val r = for (
           mobile <- mobiles
-//        if (mobile == URI("imei:863977030715952") )
       ) yield {
         val pathForMobile = getPathForMobile(mobile, graph)
         println( s"pathForMobile size ${pathForMobile.size}")
