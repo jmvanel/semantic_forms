@@ -150,6 +150,7 @@ trait GeoPath[Rdf <: RDF, DATASET]
         begin, end))
   }
 
+  /** Same computation, but reuses pre-computed pathForMobile */
   def getPathLengthForMobileInterval2(mobile: Rdf#Node, begin: String, end: String,
       pathForMobile: Iterable[PointedGraph[Rdf]]): Float = {
     getPathLength(
@@ -196,7 +197,7 @@ trait GeoPath[Rdf <: RDF, DATASET]
    * get Path For Mobile
    *  @return Iterable of mini RDF graphs with all data attached to each space-time point
    */
-  private def getPathForMobile(mobile: Rdf#Node, graph: Rdf#Graph): Iterable[PointedGraph[Rdf]] = {
+  protected def getPathForMobile(mobile: Rdf#Node, graph: Rdf#Graph): Iterable[PointedGraph[Rdf]] = {
     val points = getPointsForMobile(mobile, graph)
     println(s"called getPointsForMobile <$mobile> : size ${points.size}")
     for (
