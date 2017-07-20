@@ -394,7 +394,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
             val ct = response.getFirstHeader("Content-Type")
             if ( ct == null ) "" else ct.getValue
           } else {
-            System.out.println(s"---- ${response.getStatusLine()}");
+            System.err.println(s"---- ${response.getStatusLine()}");
             throw new ClientProtocolException(
                 s"getContentTypeFromHEADRequest: Unexpected response status: $status");
           }

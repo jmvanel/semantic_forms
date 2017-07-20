@@ -15,6 +15,8 @@ import deductions.runtime.abstract_syntax.uri.URIForDisplayFactory
 import deductions.runtime.views.ResultsDisplay
 import java.util.Calendar
 import org.w3.banana.PointedGraph
+import scala.util.Success
+import scala.util.Failure
 
 /** Per Vehicle View */
 trait PerVehicleView[Rdf <: RDF, DATASET]
@@ -29,11 +31,13 @@ trait PerVehicleView[Rdf <: RDF, DATASET]
 
   import ops._
 
+  val featureURI: String = fromUri(geoloc("stats2"))
+
   def result(request: HTTPrequest): NodeSeq = {
 
+    println(s"result 1")
     val vehicles = enumerateVehicles()
-
-    showVehicles(vehicles, request)
+    println(s"result 2")
 
     // 2) get details for each vehicle
 
@@ -58,24 +62,12 @@ trait PerVehicleView[Rdf <: RDF, DATASET]
       |}
       """.stripMargin
 
+    // showVehicles(vehicles, request)
+
     // 3) layouts details for each vehicle
 
-    val startDate = Calendar.getInstance // TODO get past reports
-    val vehiclesHTML =
-      for (
-        vehicle <- vehicles;
-        pathForMobile = getPathForMobile(vehicle, allNamedGraph);
-        _ = println(s"pathForMobile size ${pathForMobile.size}");
-        mondays = generateMondays(startDate);
-        monday <- mondays
-      ) yield {
-        val followingDate = addDays(monday, 3)
+    showVehiclesDetails(vehicles, request)
 
-        template3Days(vehicle, 1, monday, pathForMobile) ++
-          template3Days(vehicle, 4, followingDate, pathForMobile)
-      }
-
-    vehiclesHTML.flatten
   }
 
   /** 1) enumerate vehicules (actually mobiles) */
@@ -87,7 +79,7 @@ trait PerVehicleView[Rdf <: RDF, DATASET]
       |PREFIX vehman: <http://deductions.github.io/vehicule-management.owl.ttl#>
       |PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
       |SELECT *
-      |} WHERE {
+      |WHERE {
       | GRAPH ?GR {
       |   ?MOB a geoloc:Mobile .
       | }
@@ -103,16 +95,51 @@ trait PerVehicleView[Rdf <: RDF, DATASET]
   }
 
   private def showVehicles(vehicles: List[Rdf#Node], request: HTTPrequest): NodeSeq = {
-    vehicles.map { vehicle =>
-      <p>
-        {
-          val dis = makeURIForDisplay(vehicle)(allNamedGraph, request.getLanguage())
-          // TODO hyperlink  to SF specific wiew
-          //        dis.uri
-          dis.label
-        }
-      </p>
+	println(s"result 2.1 vehicles $vehicles")
+
+    wrapInTransaction {
+	  	println(s"result 2.2 vehicles $vehicles")
+      val r = vehicles.map { vehicle =>
+      println(s"result 3 vehicle $vehicle")
+        <p>
+          {
+            val dis = makeURIForDisplay(vehicle)(allNamedGraph, request.getLanguage())
+            // TODO hyperlink  to SF specific wiew
+            //        dis.uri
+            dis.label
+          }
+        </p>
+      }
+	  	println(s"result 2.3 vehicles $vehicles")
+	  	r
+    } match {
+      case Success(res) =>
+        println(s"result 2.4 res $res " )
+        res
+      case Failure(f)   =>
+        println(s"result 2.4 Error in showVehicles: { $f }")
+        <p>Error in showVehicles: { f } </p>
     }
+  }
+
+  private def showVehiclesDetails(vehicles: List[Rdf#Node], request: HTTPrequest): NodeSeq = {
+          val startDate = Calendar.getInstance // TODO get past reports
+    val vehiclesHTML =
+      for (
+        vehicle <- vehicles;
+        pathForMobileTry = wrapInReadTransaction {getPathForMobile(vehicle, allNamedGraph) } ;
+        pathForMobile = pathForMobileTry.getOrElse(Seq() ) ;
+//        _ = println(s"pathForMobile size ${pathForMobile.size}");
+        mondays = generateMondays(startDate);
+        monday <- mondays
+      ) yield {
+        val followingDate = addDays(monday, 3)
+
+        template3Days(vehicle, 1, monday, pathForMobile) ++
+          template3Days(vehicle, 4, followingDate, pathForMobile)
+      }
+
+    vehiclesHTML.flatten
   }
 
   private def template3Days(
@@ -121,9 +148,9 @@ trait PerVehicleView[Rdf <: RDF, DATASET]
     pathForMobile: Iterable[PointedGraph[Rdf]]) = {
 
     // make VehicleStatistics for each half day
-    def doDistancesForADay(date: Calendar): Seq[VehicleStatistics] //    : Seq[Float]
-    = {
+    def doDistancesForADay(date: Calendar): Seq[VehicleStatistics] = {
       val halfDays = generateHalfDays(date)
+      val transaction = wrapInReadTransaction {
       for (halfDay <- halfDays) yield {
         val begin = halfDay._1
         val end = halfDay._2
@@ -134,6 +161,13 @@ trait PerVehicleView[Rdf <: RDF, DATASET]
           end,
           0, //averageDistance
           totalDistance)
+      }
+    }
+      transaction match {
+        case Success(s) => s
+        case Failure(f) =>
+          System.err.println(s"doDistancesForADay: Failure: $f")
+          Seq()
       }
     }
     val statisticsDay1 = doDistancesForADay(date)

@@ -21,6 +21,7 @@ trait CentralSemanticController[Rdf <: RDF, DATASET] extends SemanticController
     with RDFPrefixes[Rdf] {
 
   val actionMap: Map[String, SemanticController]
+  val featureURI: String = ""
 
   def result(request: HTTPrequest): NodeSeq = {
     val features = request.queryString.getOrElse("feature", Seq())
@@ -38,8 +39,14 @@ trait CentralSemanticController[Rdf <: RDF, DATASET] extends SemanticController
 
 
 /** should be in first position in inheritance */
-trait TypicalSFDependencies extends ImplementationSettings.RDFCache
+trait TypicalSFDependencies extends
+//{
+//    override implicit val config = new DefaultConfiguration {
+//      override val useTextQuery = false
+//    }
+//}
+//with 
+ImplementationSettings.RDFCache
 with HTML5TypesTrait[ImplementationSettings.Rdf]
-with DefaultConfiguration{
-    override implicit val config = new DefaultConfiguration {}
-}
+//with DefaultConfiguration 
+
