@@ -42,7 +42,7 @@ function cloneWidget(widget,button) {
             .attr('name', widgetName)
             .attr('title', button.attr('input-title'))
             .attr('hidden', 'false');
-        parent.prepend(addedWidget, widget);
+        parent.parent().prepend(addedWidget, widget);
         addedWidget.focus();
     }
 
