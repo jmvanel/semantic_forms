@@ -1,12 +1,11 @@
 package deductions.runtime.html
 
-import java.net.URLEncoder
+import java.net.{URLDecoder, URLEncoder}
 
 import deductions.runtime.core.FormModule
 import deductions.runtime.utils.{RDFPrefixesInterface, Timer}
 import deductions.runtime.core.HTTPrequest
 import deductions.runtime.core.Cookie
-
 import org.apache.commons.codec.digest.DigestUtils
 
 import scala.xml.NodeSeq.seqToNodeSeq
@@ -211,10 +210,12 @@ import scala.xml.{Elem, NodeSeq, Text}
       val cookie = request.cookies.getOrElse("PLAY_SESSION", Cookie("",""))
       // KO: field.metadata == request.cookies.get("PLAY_SESSION").get.value.split("=")(1)
       // OK:
-      field.metadata == cookie.value.split("=")(1)
+      field.metadata == URLDecoder.decode(cookie.value.split("=")(1),"UTF-8")
     }
       //TODO: temporaire, trouver pourquoi il y a des valeur par défaut ' "" '
+      //TODO: seems to doen't work work
     else field.value.toString.replaceAll("\"\"","").isEmpty
+    //else true
     // hack instead of true form separator in the form spec in RDF:
     if (field.label.contains("----"))
       return <hr class="sf-separator"/> // Text("----")
