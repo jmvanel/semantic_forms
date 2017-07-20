@@ -73,7 +73,8 @@ trait ResultsDisplay[Rdf <: RDF, DATASET] {
       hrefPrefix: String = config.hrefDisplayPrefix,
       label: String = "",
       sortAnd1rowPerElement:Boolean = false )
-    (implicit queryMaker: SPARQLQueryMaker[Rdf] ): NodeSeq = {
+//    (implicit queryMaker: SPARQLQueryMaker[Rdf] )
+    : NodeSeq = {
     val displayLabel =
       if( label != "" )
           label

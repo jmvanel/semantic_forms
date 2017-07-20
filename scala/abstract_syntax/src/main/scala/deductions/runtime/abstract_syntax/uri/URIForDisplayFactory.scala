@@ -10,6 +10,7 @@ trait URIForDisplayFactory[Rdf <: RDF, DATASET] {
 
   import ops._
 
+  /** make a data structure For Display from an URI */
   def makeURIForDisplay(uri: Rdf#Node)(implicit graph: Rdf#Graph,
                                       lang: String = "en"): URIForDisplay = {
 

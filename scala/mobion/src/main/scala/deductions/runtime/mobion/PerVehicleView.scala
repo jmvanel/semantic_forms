@@ -17,6 +17,7 @@ import java.util.Calendar
 import org.w3.banana.PointedGraph
 import scala.util.Success
 import scala.util.Failure
+import deductions.runtime.services.ParameterizedSPARQL
 
 /** Per Vehicle View */
 trait PerVehicleView[Rdf <: RDF, DATASET]
@@ -26,7 +27,9 @@ trait PerVehicleView[Rdf <: RDF, DATASET]
     with FormSyntaxFromSPARQL[Rdf, DATASET]
     with TableView[Rdf#Node, Rdf#URI]
     with RDFPrefixesInterface
-    with URIForDisplayFactory[Rdf, DATASET] //    with ResultsDisplay[Rdf, DATASET] 
+//  with URIForDisplayFactory[Rdf, DATASET]
+    with ResultsDisplay[Rdf, DATASET]
+   	with ParameterizedSPARQL[Rdf, DATASET]
     {
 
   import ops._
@@ -95,16 +98,16 @@ trait PerVehicleView[Rdf <: RDF, DATASET]
   private def showVehicles(vehicles: List[Rdf#Node], request: HTTPrequest): NodeSeq = {
 	println(s"result 2.1 vehicles $vehicles")
 
-    wrapInTransaction {
+    val vehiclesHTML = wrapInTransaction {
 //	  	println(s"result 2.2 vehicles $vehicles")
       val r = vehicles.map { vehicle =>
 //      println(s"result 3 vehicle $vehicle")
         <p>
           {
-            val dis = makeURIForDisplay(vehicle)(allNamedGraph, request.getLanguage())
-            // TODO hyperlink  to SF specific wiew
-            //        dis.uri
-            dis.label
+            // hyperlink  to SF specific wiew
+            makeHyperlinkForURI( vehicle, "fr"/*lang*/, allNamedGraph )
+//            val dis = makeURIForDisplay(vehicle)(allNamedGraph, request.getLanguage())
+//            dis.label
           }
         </p>
       }
@@ -118,6 +121,11 @@ trait PerVehicleView[Rdf <: RDF, DATASET]
         println(s"result 2.4 Error in showVehicles: { $f }")
         <p>Error in showVehicles: { f } </p>
     }
+    
+    <div class="entete_vehicules">
+    <h3>Véhicules</h3>
+    { vehiclesHTML }
+    </div>
   }
 
   private def showVehiclesDetails(vehicles: List[Rdf#Node], request: HTTPrequest): NodeSeq = {
