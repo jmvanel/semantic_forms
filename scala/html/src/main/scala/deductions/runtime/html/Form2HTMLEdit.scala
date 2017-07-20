@@ -1,7 +1,6 @@
 package deductions.runtime.html
 
-import deductions.runtime.abstract_syntax.{DBPediaLookup, FormModule}
-import deductions.runtime.html.HTML5Types
+import deductions.runtime.core.{DBPediaLookup, FormModule}
 import deductions.runtime.utils.{Configuration, I18NMessages, RDFPrefixesInterface}
 import org.joda.time.DateTime
 

@@ -2,13 +2,12 @@ package deductions.runtime.views
 
 import java.net.URLEncoder
 
-import deductions.runtime.abstract_syntax.FormModule
+import deductions.runtime.core.FormModule
 import deductions.runtime.html.BasicWidgets
 import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
 import deductions.runtime.utils.{Configuration, I18NMessages, RDFHelpers, RDFPrefixes}
 import org.w3.banana.{OWLPrefix, PointedGraph, RDF}
 
-import scala.xml.NodeSeq.seqToNodeSeq
 import scala.xml.{NodeSeq, Text}
 
 trait FormHeader[Rdf <: RDF, DATASET]

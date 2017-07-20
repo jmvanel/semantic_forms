@@ -13,7 +13,7 @@ import deductions.runtime.services.html.Form2HTMLBanana
 import deductions.runtime.services.html.HTML5TypesTrait
 import deductions.runtime.utils.Configuration
 import deductions.runtime.utils.DefaultConfiguration
-import deductions.runtime.utils.HTTPrequest
+import deductions.runtime.core.HTTPrequest
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.views.ToolsPage
 import play.api.mvc.Action

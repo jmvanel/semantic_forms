@@ -2,7 +2,7 @@ package deductions.runtime.views
 
 import java.net.URLEncoder
 
-import deductions.runtime.abstract_syntax.FormModule
+import deductions.runtime.core.FormModule
 import deductions.runtime.services.{ParameterizedSPARQL, SPARQLQueryMaker}
 import org.w3.banana.RDF
 
@@ -73,7 +73,8 @@ trait ResultsDisplay[Rdf <: RDF, DATASET] {
       hrefPrefix: String = config.hrefDisplayPrefix,
       label: String = "",
       sortAnd1rowPerElement:Boolean = false )
-    (implicit queryMaker: SPARQLQueryMaker[Rdf] ): NodeSeq = {
+//    (implicit queryMaker: SPARQLQueryMaker[Rdf] )
+    : NodeSeq = {
     val displayLabel =
       if( label != "" )
           label

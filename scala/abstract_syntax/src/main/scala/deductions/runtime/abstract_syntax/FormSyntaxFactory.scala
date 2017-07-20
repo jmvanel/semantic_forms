@@ -10,6 +10,7 @@ import org.w3.banana.{PointedGraph, RDF, RDFPrefix, RDFSPrefix, XSDPrefix}
 
 import scala.collection.mutable
 import scala.language.{existentials, postfixOps}
+import deductions.runtime.core._
 
 /** one of EditionMode, DisplayMode, CreationMode */
 abstract sealed class FormMode { val editable = true }

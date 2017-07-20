@@ -1,5 +1,6 @@
 package deductions.runtime.abstract_syntax
 
+import deductions.runtime.core.FormModule
 import deductions.runtime.semlogs.TimeSeries
 import org.w3.banana.RDF
 

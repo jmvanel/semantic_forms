@@ -4,7 +4,7 @@ import deductions.runtime.data_cleaning.BlankNodeCleanerIncremental
 import deductions.runtime.html.logger
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.sparql_cache.algos.StatisticsGraph
-import deductions.runtime.utils.HTTPrequest
+import deductions.runtime.core.HTTPrequest
 import deductions.runtime.views.FormHeader
 import org.w3.banana.RDF
 

@@ -2,8 +2,11 @@ package deductions.runtime.html
 
 import java.net.URLEncoder
 
-import deductions.runtime.abstract_syntax.FormModule
-import deductions.runtime.utils.{Cookie, HTTPrequest, RDFPrefixesInterface, Timer}
+import deductions.runtime.core.FormModule
+import deductions.runtime.utils.{RDFPrefixesInterface, Timer}
+import deductions.runtime.core.HTTPrequest
+import deductions.runtime.core.Cookie
+
 import org.apache.commons.codec.digest.DigestUtils
 
 import scala.xml.NodeSeq.seqToNodeSeq

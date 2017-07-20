@@ -4,7 +4,8 @@ import java.io.StringReader
 
 import deductions.runtime.sparql_cache.SPARQLHelpers
 import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
-import deductions.runtime.utils.{HTTPrequest, URIManagement}
+import deductions.runtime.utils.URIManagement
+import deductions.runtime.core.HTTPrequest
 import org.w3.banana.RDF
 import org.w3.banana.io._
 

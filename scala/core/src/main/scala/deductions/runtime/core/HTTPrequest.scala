@@ -1,6 +1,7 @@
-package deductions.runtime.utils
+package deductions.runtime.core
 
 import java.net.URLEncoder
+import scala.collection.Seq
 
 /**
  * Like Request from Play! (in package play.api.mvc), but avoid Play! dependency

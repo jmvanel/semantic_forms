@@ -1,15 +1,18 @@
-package deductions.runtime.services
+package deductions.runtime.mobion
 
 import deductions.runtime.abstract_syntax.{ FormSyntaxFactory, FormSyntaxFromSPARQL }
 import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
 import deductions.runtime.html.TableView
 import deductions.runtime.sparql_cache.algos.GeoPath
-import deductions.runtime.utils.{HTTPrequest, RDFPrefixesInterface}
+import deductions.runtime.utils.RDFPrefixesInterface
+import deductions.runtime.core.HTTPrequest
+import deductions.runtime.core.SemanticController
+
 import org.w3.banana.RDF
 
 import scala.xml.NodeSeq
 
-/** TODO extract to new SBT module */
+/** */
 trait GeoController[Rdf <: RDF, DATASET] extends GeoPath[Rdf, DATASET]
     with SemanticController
     with FormSyntaxFactory[Rdf, DATASET]
@@ -18,6 +21,7 @@ trait GeoController[Rdf <: RDF, DATASET] extends GeoPath[Rdf, DATASET]
     with RDFPrefixesInterface {
 
   import ops._
+  val featureURI: String = fromUri(geoloc("stats"))
 
   val detailsQuery = """
         |${declarePrefix("geoloc")}

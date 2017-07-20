@@ -72,7 +72,8 @@ object GeoPathApp extends {
 trait GeoPath[Rdf <: RDF, DATASET]
     extends RDFPrefixes[Rdf]
     with SPARQLHelpers[Rdf, DATASET]
-    with RDFHelpers[Rdf] {
+    with RDFHelpers[Rdf]
+    with CalendarHelper {
 
   implicit val ops: RDFOps[Rdf]
   import ops._
@@ -104,7 +105,6 @@ trait GeoPath[Rdf <: RDF, DATASET]
     def getPerDayDistances() = {
       val r = for (
           mobile <- mobiles
-//        if (mobile == URI("imei:863977030715952") )
       ) yield {
         val pathForMobile = getPathForMobile(mobile, graph)
         println( s"pathForMobile size ${pathForMobile.size}")
@@ -150,6 +150,7 @@ trait GeoPath[Rdf <: RDF, DATASET]
         begin, end))
   }
 
+  /** Same computation, but reuses pre-computed pathForMobile */
   def getPathLengthForMobileInterval2(mobile: Rdf#Node, begin: String, end: String,
       pathForMobile: Iterable[PointedGraph[Rdf]]): Float = {
     getPathLength(
@@ -196,7 +197,7 @@ trait GeoPath[Rdf <: RDF, DATASET]
    * get Path For Mobile
    *  @return Iterable of mini RDF graphs with all data attached to each space-time point
    */
-  private def getPathForMobile(mobile: Rdf#Node, graph: Rdf#Graph): Iterable[PointedGraph[Rdf]] = {
+  protected def getPathForMobile(mobile: Rdf#Node, graph: Rdf#Graph): Iterable[PointedGraph[Rdf]] = {
     val points = getPointsForMobile(mobile, graph)
     println(s"called getPointsForMobile <$mobile> : size ${points.size}")
     for (
@@ -272,34 +273,6 @@ trait GeoPath[Rdf <: RDF, DATASET]
     generateDaysOfMonth(dateOneMonthAgo) ++
       generateDaysOfMonth(date)
   }
-
-  /** enumerate days of current mounth */
-  private def generateDaysOfMonth(date: Calendar) = {
-    val (begin, end) = makeBeginEndOfDay(date)
-    
-    val daysInMonth = begin.getActualMaximum(Calendar.DAY_OF_MONTH)
-    for( day <- 1 to daysInMonth) yield {
-      val beginOfDay = cloneCalendar(begin)
-      beginOfDay.set(Calendar.DAY_OF_MONTH, day)
-      val endOfDay   = cloneCalendar(end)
-      endOfDay.set(Calendar.DAY_OF_MONTH, day)
-      val df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-      (df.format(beginOfDay.getTime), df.format(endOfDay.getTime))
-    } 
-  }
-
-  private def makeBeginEndOfDay(begin: Calendar) = {
-    begin.set(Calendar.HOUR_OF_DAY, 0)
-    begin.set(Calendar.MINUTE, 0)
-    begin.set(Calendar.SECOND, 0)
-    begin.set(Calendar.MILLISECOND, 0)
-
-    val end = cloneCalendar(begin)
-    end.set(Calendar.HOUR_OF_DAY, 24)
-    (begin, end)
-  }
-
-  private def cloneCalendar(date: Calendar) = date.clone().asInstanceOf[Calendar]
 
   private def makeURI( s:String* ): String =
     s.mkString("", "/", "")

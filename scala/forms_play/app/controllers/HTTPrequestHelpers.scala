@@ -1,8 +1,8 @@
 package controllers
 
 import play.api.mvc.Request
-import deductions.runtime.utils.HTTPrequest
-import deductions.runtime.utils.Cookie
+import deductions.runtime.core.HTTPrequest
+import deductions.runtime.core.Cookie
 
 /** copy PLay! classes into SF classes, to avoid dependencies in other project senantic_forms */
 trait HTTPrequestHelpers {

@@ -64,7 +64,9 @@ trait RDFStoreLocalJenaProvider
    * create (or re-connect to) TDB Database in given directory;
    *  if it is empty, create an in-memory Database
    */
-  override def createDatabase(database_location: String, useTextQuery: Boolean = useTextQuery) = {
+  override def createDatabase(
+      database_location: String,
+      useTextQuery: Boolean = useTextQuery): ImplementationSettings.DATASET = {
     if (database_location != "") {
 
       // if the directory does not exist, create it

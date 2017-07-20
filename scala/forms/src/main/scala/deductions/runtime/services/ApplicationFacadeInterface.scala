@@ -1,6 +1,6 @@
 package deductions.runtime.services
 
-import deductions.runtime.utils.HTTPrequest
+import deductions.runtime.core.HTTPrequest
 import play.api.libs.iteratee.Enumerator
 
 import scala.concurrent.Future

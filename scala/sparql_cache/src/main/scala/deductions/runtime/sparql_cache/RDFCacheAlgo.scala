@@ -3,7 +3,8 @@ package deductions.runtime.sparql_cache
 import java.util.Date
 
 import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
-import deductions.runtime.utils.{HTTPHelpers, HTTPrequest, RDFHelpers, URIManagement}
+import deductions.runtime.utils.{HTTPHelpers, RDFHelpers, URIManagement}
+import deductions.runtime.core.HTTPrequest
 import org.apache.http.HttpResponse
 import org.apache.http.client.methods.HttpHead
 import org.apache.http.client.{ClientProtocolException, ResponseHandler}
@@ -393,7 +394,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
             val ct = response.getFirstHeader("Content-Type")
             if ( ct == null ) "" else ct.getValue
           } else {
-            System.out.println(s"---- ${response.getStatusLine()}");
+            System.err.println(s"---- ${response.getStatusLine()}");
             throw new ClientProtocolException(
                 s"getContentTypeFromHEADRequest: Unexpected response status: $status");
           }

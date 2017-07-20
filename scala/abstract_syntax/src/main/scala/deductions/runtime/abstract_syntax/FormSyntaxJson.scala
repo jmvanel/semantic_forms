@@ -1,5 +1,6 @@
 package deductions.runtime.abstract_syntax
 
+import deductions.runtime.core.{Cardinality, FormModule, WidgetType}
 import deductions.runtime.utils.RDFHelpers
 import org.w3.banana.RDF
 import play.api.libs.json.{JsString, JsValue, Json, Writes}

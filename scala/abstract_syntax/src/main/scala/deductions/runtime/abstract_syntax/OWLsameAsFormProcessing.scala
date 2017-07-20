@@ -1,5 +1,6 @@
 package deductions.runtime.abstract_syntax
 
+import deductions.runtime.core.{FormModule, URIWidget, zeroOrMore}
 import org.w3.banana.{OWLPrefix, RDF}
 
 /**
@@ -7,7 +8,8 @@ import org.w3.banana.{OWLPrefix, RDF}
  *  owl:sameAs axioms
  */
 trait OWLsameAsFormProcessing[Rdf <: RDF, DATASET]
-    extends GenericSPARQLformProcessing[Rdf, DATASET] {
+    extends GenericSPARQLformProcessing[Rdf, DATASET]
+    with FormModule[Rdf#Node, Rdf#URI]{
   import ops._
   private val owl = OWLPrefix[Rdf]
 
