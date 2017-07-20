@@ -62,10 +62,8 @@ trait PerVehicleView[Rdf <: RDF, DATASET]
       |}
       """.stripMargin
 
-    // showVehicles(vehicles, request)
-
+    showVehicles(vehicles, request) ++
     // 3) layouts details for each vehicle
-
     showVehiclesDetails(vehicles, request)
 
   }
@@ -98,9 +96,9 @@ trait PerVehicleView[Rdf <: RDF, DATASET]
 	println(s"result 2.1 vehicles $vehicles")
 
     wrapInTransaction {
-	  	println(s"result 2.2 vehicles $vehicles")
+//	  	println(s"result 2.2 vehicles $vehicles")
       val r = vehicles.map { vehicle =>
-      println(s"result 3 vehicle $vehicle")
+//      println(s"result 3 vehicle $vehicle")
         <p>
           {
             val dis = makeURIForDisplay(vehicle)(allNamedGraph, request.getLanguage())
@@ -123,7 +121,7 @@ trait PerVehicleView[Rdf <: RDF, DATASET]
   }
 
   private def showVehiclesDetails(vehicles: List[Rdf#Node], request: HTTPrequest): NodeSeq = {
-          val startDate = Calendar.getInstance // TODO get past reports
+		val startDate = Calendar.getInstance // TODO get past reports
     val vehiclesHTML =
       for (
         vehicle <- vehicles;
@@ -135,12 +133,25 @@ trait PerVehicleView[Rdf <: RDF, DATASET]
       ) yield {
         val followingDate = addDays(monday, 3)
 
+        weekHeader(
+            formatReadable(makeBeginOfDay(monday)),
+            formatReadable(addDays(makeBeginOfDay(monday), 6))
+        ) ++
         template3Days(vehicle, 1, monday, pathForMobile) ++
           template3Days(vehicle, 4, followingDate, pathForMobile)
       }
 
     vehiclesHTML.flatten
   }
+
+  private def weekHeader(begin: String, end: String) =
+    <div class="entete_semaine">
+      <h2>Détail d'activité de la semaine du {begin} au {end}</h2>
+      <p>
+        CRUIS RENT vous donne le détail de votre activité de livraison par service
+           lors de la semaine d'évaluation
+      </p>
+    </div>
 
   private def template3Days(
     vehicle: Rdf#Node,
@@ -151,18 +162,18 @@ trait PerVehicleView[Rdf <: RDF, DATASET]
     def doDistancesForADay(date: Calendar): Seq[VehicleStatistics] = {
       val halfDays = generateHalfDays(date)
       val transaction = wrapInReadTransaction {
-      for (halfDay <- halfDays) yield {
-        val begin = halfDay._1
-        val end = halfDay._2
-        val totalDistance = getPathLengthForMobileInterval2(vehicle, begin, end,
-          pathForMobile)
-        VehicleStatistics(
-          begin,
-          end,
-          0, //averageDistance
-          totalDistance)
+        for (halfDay <- halfDays) yield {
+          val begin = halfDay._1
+          val end = halfDay._2
+          val totalDistance = getPathLengthForMobileInterval2(vehicle, begin, end,
+            pathForMobile)
+          VehicleStatistics(
+            begin,
+            end,
+            0, // averageDistance
+            totalDistance)
+        }
       }
-    }
       transaction match {
         case Success(s) => s
         case Failure(f) =>
@@ -178,11 +189,6 @@ trait PerVehicleView[Rdf <: RDF, DATASET]
     val EVENING = 1
     
     <div class="tab_global_bas">
-      <h2>Détail d'activité de la semaine du ../../.. au ../../..</h2>
-      <p>
-        CRUIS RENT vous donne le détail de votre activité de livraison par service
-           lors de la semaine d'évaluation
-      </p>
       <!-- TABLEAU RESULTATS DÉTAILLÉS-->
       <table cellpadding="10" width="90%">
         <tr>
