@@ -128,20 +128,30 @@ trait PerVehicleView[Rdf <: RDF, DATASET]
     </div>
   }
 
+  /** display 2 templates of 3 Days */
   private def showVehiclesDetails(vehicles: List[Rdf#Node], request: HTTPrequest): NodeSeq = {
-		val startDate = Calendar.getInstance // TODO get past reports
+		val startDate = Calendar.getInstance
+		// TODO get past reports
+		// for tests:
+//		import Calendar._
+//		startDate.set( MONTH, JUNE)
+//		startDate.set( DAY_OF_MONTH, 8)
+
     val vehiclesHTML =
       for (
         vehicle <- vehicles;
-        pathForMobileTry = wrapInReadTransaction {getPathForMobile(vehicle, allNamedGraph) } ;
+        pathForMobileTry = wrapInReadTransaction {
+          val pathForMobile = getPathForMobile(vehicle, allNamedGraph)
+          println(s"==== pathForMobile $vehicle size ${pathForMobile.size}")
+          pathForMobile
+        } ;
         pathForMobile = pathForMobileTry.getOrElse(Seq() ) ;
-//        _ = println(s"pathForMobile size ${pathForMobile.size}");
         mondays = generateMondays(startDate);
         monday <- mondays
       ) yield {
         val followingDate = addDays(monday, 3)
 
-        weekHeader(
+        weekHeader( vehicle,
             formatReadable(makeBeginOfDay(monday)),
             formatReadable(addDays(makeBeginOfDay(monday), 6))
         ) ++
@@ -152,9 +162,10 @@ trait PerVehicleView[Rdf <: RDF, DATASET]
     vehiclesHTML.flatten
   }
 
-  private def weekHeader(begin: String, end: String) =
+  private def weekHeader(vehicle: Rdf#Node, begin: String, end: String) =
     <div class="entete_semaine">
-      <h2>Détail d'activité de la semaine du {begin} au {end}</h2>
+      <h2>Véhicule {vehicle}</h2>
+      <h3>Détail d'activité de la semaine du {begin} au {end}</h3>
       <p>
         CRUIS RENT vous donne le détail de votre activité de livraison par service
            lors de la semaine d'évaluation
@@ -175,6 +186,7 @@ trait PerVehicleView[Rdf <: RDF, DATASET]
           val end = halfDay._2
           val totalDistance = getPathLengthForMobileInterval2(vehicle, begin, end,
             pathForMobile)
+          println( s"doDistancesForADay: $vehicle: totalDistance=$totalDistance" )
           VehicleStatistics(
             begin,
             end,
