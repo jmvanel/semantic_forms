@@ -82,7 +82,9 @@ trait PerVehicleView[Rdf <: RDF, DATASET]
       |SELECT *
       |WHERE {
       | GRAPH ?GR {
-      |   ?MOB a geoloc:Mobile .
+      |   { ?MOB a geoloc:Mobile . }
+      |   UNION
+      |   { ?MOB a vehman:SIMCard . }
       | }
       |}
       """.stripMargin
