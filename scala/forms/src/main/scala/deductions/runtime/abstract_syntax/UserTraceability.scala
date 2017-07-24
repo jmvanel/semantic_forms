@@ -16,7 +16,7 @@ trait UserTraceability[Rdf <: RDF, DATASET]
                             formSyntax: FormSyntax)(
                             implicit graph: Rdf#Graph,
                             lang: String = "en") : FormSyntax = {
-    println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    println("XXXXXXXXXXXXXXXX addUserInfoOnTriples")
     val metadata = getMetadataAboutSubject(formSyntax.subject)
     val resultsUser = mutable.Map[String,String]()
     val resultsTimestamp = mutable.Map[String,Long]()
@@ -35,7 +35,7 @@ trait UserTraceability[Rdf <: RDF, DATASET]
         println(resultsTimestamp(property) < timeElement)
         if(resultsTimestamp(property) < timeElement){
           resultsTimestamp += (property -> timeElement)
-          resultsUser put (property,row(3).toString)
+          resultsUser put (property, row(3).toString)
         }
       }
       else{
@@ -43,10 +43,8 @@ trait UserTraceability[Rdf <: RDF, DATASET]
         resultsUser put (property,row(3).toString)
       }
     }
-
-    println()
     for (elem <- resultsTimestamp){
-    println(elem)
+    	println("\t" + elem)
     }
 
 //    println(s"YYYYYYYY Before add User Info\n${formSyntax.fields.mkString("\n")}\n")
@@ -56,8 +54,6 @@ trait UserTraceability[Rdf <: RDF, DATASET]
         field.makeEntry(
             fromMetadata = resultsUser(field.property.toString),
             fromTimeMetadata = resultsTimestamp(field.property.toString) )
-//        field.metadata = resultsUser(field.property.toString)
-//        field.timeMetadata = resultsTimestamp(field.property.toString)
       } else field
     }
     formSyntax . fields = entries

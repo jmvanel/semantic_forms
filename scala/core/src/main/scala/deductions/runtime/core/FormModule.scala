@@ -155,14 +155,11 @@ trait FormModule[NODE, URI <: NODE] {
 
     def valueLabel: String = ""
 
-    /** clone this
-      *  PENDING bad practice of pasting all fields */
-
+    /** clone this */
     def makeEntry(
                    fromProperty: NODE = Entry.this.property,
                    fromMetadata: String = Entry.this.metadata,
                    fromTimeMetadata: Long = Entry.this.timeMetadata ): Entry = {
-
       this match {
         case r: ResourceEntry => r.copy(
           property = fromProperty,
@@ -175,27 +172,32 @@ trait FormModule[NODE, URI <: NODE] {
         case e: BlankNodeEntry => e.copy()
         case e: RDFListEntry   => e.copy()
       }
-      //      new Entry {
-      //        override val property = fromProperty
-      //        override val metadata = fromMetadata
-      //
-      //        val cardinality: deductions.runtime.abstract_syntax.Cardinality = Entry.this.cardinality
-      //        val comment: String = Entry.this.comment
-      //        val htmlName: String = Entry.this.htmlName
-      //        val label: String = Entry.this.label
-      //        val mandatory: Boolean = Entry.this.mandatory
-      //        val openChoice: Boolean = Entry.this.openChoice
-      //        val possibleValues: Seq[(NODE, NODE)] = Entry.this.possibleValues
-      //        def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]): Entry = ???
-      //        val subject: NODE = Entry.this.subject
-      //        val subjectLabel: String = Entry.this.subjectLabel
-      //        val type_ : NODE = Entry.this.type_
-      //        val value: NODE = Entry.this.value
-      //        val widgetType: deductions.runtime.abstract_syntax.WidgetType = Entry.this.widgetType
-      //      }
+    }
+    
+        /** clone this */
+    def changeCardinality(
+        cardinality: Cardinality = Entry.this.cardinality,
+        widgetType: WidgetType = Entry.this.widgetType
+    ): Entry = {
+      this match {
+        case r: ResourceEntry => r.copy(
+            cardinality = cardinality,
+            widgetType = widgetType )
+        case e: LiteralEntry => e.copy(
+            cardinality = cardinality,
+            widgetType = widgetType )
+        case e: BlankNodeEntry => e.copy(
+            cardinality = cardinality,
+            widgetType = widgetType )
+        case e: RDFListEntry   => e.copy(
+            cardinality = cardinality,
+            widgetType = widgetType )
+      }
     }
   }
 
+    /** clone this
+      * TODO bad practice of pasting all fields, use copy */
   def makeEntry(fromProperty: NODE = nullURI, fromMetadata: String = ""): Entry = {
     new Entry {
       override val property = fromProperty
@@ -213,7 +215,7 @@ trait FormModule[NODE, URI <: NODE] {
       val subjectLabel: String = ""
       val type_ : NODE = nullURI
       val value: NODE = nullURI
-      val widgetType: deductions.runtime.core.WidgetType = URIWidget
+      val widgetType: WidgetType = URIWidget
     }
   }
 
