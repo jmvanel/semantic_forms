@@ -23,19 +23,21 @@ $(document).ready(function() {
                 }
             },
             source: function(request, callback) {
-                console.log("Déclenche l'événement :")
-                var typeName
+                console.log("Déclenche l'événement :");
+                var typeName;
+                var stringToSearch;
                 var $el = $(event.target);
-                if ($el) {
+               /* if ($el) {
                     var type = $el.attr('data-rdf-type').split('/');
                     if (type) {
                         typeName = type[type.length - 1];
                     }
-                }
-
+                }*/
+                typeName = $el.attr('data-rdf-type');
+                stringToSearch = request.term + "*";
                 $.ajax({
                     url: "/lookup",
-                    data: { QueryClass: typeName, QueryString: request.term + "*" },
+                    data: { QueryClass: typeName, QueryString: stringToSearch },
                     dataType: "json",
                     timeout: 5000
                 }).done(function(response) {
