@@ -205,13 +205,14 @@ import scala.xml.{Elem, NodeSeq, Text}
   def createHTMLField(field: formMod#Entry, editable: Boolean,
                               hrefPrefix: String = config.hrefDisplayPrefix, lang: String = "en",
                               request: HTTPrequest = HTTPrequest(), displayInTable: Boolean = false)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
+    val isCreateRequest = request.path.contains("create")
 
-    val editableByUser = if (!field.metadata.isEmpty){
-      val cookie = request.cookies.getOrElse("PLAY_SESSION", Cookie("",""))
-      // KO: field.metadata == request.cookies.get("PLAY_SESSION").get.value.split("=")(1)
-      // OK:
-      field.metadata == URLDecoder.decode(cookie.value.split("=")(1),"UTF-8")
-    }
+      val editableByUser = if (!field.metadata.isEmpty){
+        val cookie = request.cookies.getOrElse("PLAY_SESSION", Cookie("",""))
+        // KO: field.metadata == request.cookies.get("PLAY_SESSION").get.value.split("=")(1)
+        // OK:
+        field.metadata == URLDecoder.decode(cookie.value.split("=")(1),"UTF-8")
+      }
       //TODO: temporaire, trouver pourquoi il y a des valeur par défaut ' "" '
       //TODO: seems to doen't work work
     else field.value.toString.replaceAll("\"\"","").isEmpty
@@ -219,10 +220,14 @@ import scala.xml.{Elem, NodeSeq, Text}
     // hack instead of true form separator in the form spec in RDF:
     if (field.label.contains("----"))
       return <hr class="sf-separator"/> // Text("----")
-
+    println("XXX")
+    println(isCreateRequest)
+    println(editableByUser)
+    println(editable)
+    println("YYY")
     val xmlField = field match {
       case l: formMod#LiteralEntry =>
-        if (editable && editableByUser)
+        if (editable && editableByUser || isCreateRequest)
           createHTMLiteralEditableField(l)
         else
           createHTMLiteralReadonlyField(l)
@@ -232,13 +237,13 @@ import scala.xml.{Elem, NodeSeq, Text}
            * or (TODO) create a sub-form for a blank node of an ancillary type (like a street address),
            * or just create a new resource with its type, given by range, or derived
            * (like in N3Form in EulerGUI ) */
-        if (editable && editableByUser)
+        if (editable && editableByUser || isCreateRequest)
           createHTMLResourceEditableField(r, lang)
         else
           createHTMLResourceReadonlyField(r, hrefPrefix, request)
 
       case r: formMod#BlankNodeEntry =>
-        if (editable && editableByUser)
+        if (editable && editableByUser || isCreateRequest)
           createHTMLBlankNodeEditableField(r)
         else
           createHTMLBlankNodeReadonlyField(r, hrefPrefix)

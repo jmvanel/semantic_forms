@@ -19,7 +19,8 @@ trait HTTPrequestHelpers {
       cookies = cookiesMap,
       acceptLanguages = request.acceptLanguages . map {
         al => al.language
-      }
+      },
+      path = request.path
     )
 //    println(s"copyRequest: cookiesMap $cookiesMap , userId ${res.userId()}")
     res
