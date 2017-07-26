@@ -29,10 +29,6 @@ trait FormModule[NODE, URI <: NODE] {
     *  - could be used with N3Form(Swing) in EulerGUI,
     *  TODO: put language as a field?
     */
-  def makeEntries(propertiesList: Seq[NODE]): Seq[Entry] =
-    propertiesList.map {
-      prop => makeEntry(prop)
-    }
   case class FormSyntax(
                          val subject: NODE,
                          var fields: Seq[Entry],
@@ -155,50 +151,65 @@ trait FormModule[NODE, URI <: NODE] {
 
     def valueLabel: String = ""
 
+    //    /** clone this */
+    //    def makeEntry(
+    //                   fromProperty: NODE = Entry.this.property,
+    //                   fromMetadata: String = Entry.this.metadata,
+    //                   fromTimeMetadata: Long = Entry.this.timeMetadata ): Entry = {
+    //      this match {
+    //        case r: ResourceEntry => r.copy(
+    //          property = fromProperty,
+    //          metadata = fromMetadata,
+    //          timeMetadata = fromTimeMetadata)
+    //        case e: LiteralEntry => e.copy(
+    //          property = fromProperty,
+    //          metadata = fromMetadata,
+    //          timeMetadata = fromTimeMetadata)
+    //        case e: BlankNodeEntry => e.copy()
+    //        case e: RDFListEntry   => e.copy()
+    //      }
+    //    }
+
     /** clone this */
-    def makeEntry(
-                   fromProperty: NODE = Entry.this.property,
-                   fromMetadata: String = Entry.this.metadata,
-                   fromTimeMetadata: Long = Entry.this.timeMetadata ): Entry = {
+    def copyEntry(
+      cardinality: Cardinality = Entry.this.cardinality,
+      widgetType: WidgetType = Entry.this.widgetType,
+      fromProperty: NODE = Entry.this.property,
+      fromMetadata: String = Entry.this.metadata,
+      fromTimeMetadata: Long = Entry.this.timeMetadata): Entry = {
       this match {
         case r: ResourceEntry => r.copy(
+          cardinality = cardinality,
+          widgetType = widgetType,
           property = fromProperty,
           metadata = fromMetadata,
           timeMetadata = fromTimeMetadata)
         case e: LiteralEntry => e.copy(
+          cardinality = cardinality,
+          widgetType = widgetType,
           property = fromProperty,
           metadata = fromMetadata,
           timeMetadata = fromTimeMetadata)
-        case e: BlankNodeEntry => e.copy()
-        case e: RDFListEntry   => e.copy()
-      }
-    }
-    
-        /** clone this */
-    def changeCardinality(
-        cardinality: Cardinality = Entry.this.cardinality,
-        widgetType: WidgetType = Entry.this.widgetType
-    ): Entry = {
-      this match {
-        case r: ResourceEntry => r.copy(
-            cardinality = cardinality,
-            widgetType = widgetType )
-        case e: LiteralEntry => e.copy(
-            cardinality = cardinality,
-            widgetType = widgetType )
         case e: BlankNodeEntry => e.copy(
-            cardinality = cardinality,
-            widgetType = widgetType )
-        case e: RDFListEntry   => e.copy(
-            cardinality = cardinality,
-            widgetType = widgetType )
+          cardinality = cardinality,
+          widgetType = widgetType,
+          property = fromProperty)
+        case e: RDFListEntry => e.copy(
+          cardinality = cardinality,
+          widgetType = widgetType,
+          property = fromProperty)
       }
     }
   }
 
-    /** clone this
-      * TODO bad practice of pasting all fields, use copy */
-  def makeEntry(fromProperty: NODE = nullURI, fromMetadata: String = ""): Entry = {
+  def makeEntries(propertiesList: Seq[NODE]): Seq[Entry] =
+    propertiesList.map {
+      prop => makeEntry(prop)
+  }
+    
+  /** clone this
+   * TODO bad practice of pasting all fields, use copy */
+  private def makeEntry(fromProperty: NODE = nullURI, fromMetadata: String = ""): Entry = {
     new Entry {
       override val property = fromProperty
       override val metadata = fromMetadata

@@ -51,7 +51,7 @@ trait UserTraceability[Rdf <: RDF, DATASET]
     val entries = for (field: Entry <- formSyntax.fields) yield {
       if (resultsUser.contains(field.property.toString)){
 //    	  println(s"ZZZZ add User Info ${field.label} ${field.value}")
-        field.makeEntry(
+        field.copyEntry(
             fromMetadata = resultsUser(field.property.toString),
             fromTimeMetadata = resultsTimestamp(field.property.toString) )
       } else field

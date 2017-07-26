@@ -319,7 +319,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
               if (specTriple.predicate == formPrefix("widgetClass")
                 && specTriple.objectt == formPrefix("DBPediaLookup")) {
 //                val field2 = field.asResource.copy(widgetType = DBPediaLookup)
-                val field2 = field.changeCardinality(widgetType = DBPediaLookup)
+                val field2 = field.copyEntry(widgetType = DBPediaLookup)
                 formSyntax.fields = replace(formSyntax.fields, field, field2)
                 println(s"updateOneFormFromConfig: Lookup: $field -> $field2")
               }
@@ -344,7 +344,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
                 ) {
                   // TODO asResource: wrong !!!!!!!!!! => implement copy for an Entry
 //                  val field2 = field.asResource.copy(cardinality = cardinality)
-                  val field2 = field.changeCardinality(cardinality = cardinality)                 
+                  val field2 = field.copyEntry(cardinality = cardinality)                 
                   formSyntax.fields = replace(formSyntax.fields, field, field2)
                   println(s"updateOneFormFromConfig: cardinality: prop $prop: $cardinality, $field -> $field2")
                 }
@@ -476,7 +476,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         lang = getLang(objet).toString(),
         valueLabel = nodeToString(value),
         htmlName=htmlName)
-      println(s">>>> literalEntry ${res.valueLabel} - $res")
+//      println(s">>>> literalEntry ${res.valueLabel} - $res")
       res
     }
 
@@ -498,7 +498,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
                 htmlName=htmlName
                 )
-            	println(s">>>>>> ResourceEntry - $res")
+            	// println(s">>>>>> ResourceEntry - $res")
               res
             },
             objet => makeBN(label, comment, prop, ResourceValidator(ranges), objet,
