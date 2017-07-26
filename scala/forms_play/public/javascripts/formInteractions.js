@@ -42,7 +42,7 @@ function cloneWidget(widget,button) {
             .attr('name', widgetName)
             .attr('title', button.attr('input-title'))
             .attr('hidden', 'false');
-        parent.parent().prepend(addedWidget, widget);
+        button.parent().parent().find('.sf-value-block').first().prepend(addedWidget, widget);
         addedWidget.focus();
     }
 
