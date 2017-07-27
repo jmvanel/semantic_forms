@@ -8,12 +8,17 @@ import org.apache.lucene.search.IndexSearcher
 import org.apache.lucene.queryparser.classic.QueryParser
 import org.apache.lucene.document.Document
 import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
+// TODO JavaConverters, how ?
 import org.apache.jena.query.text.DatasetGraphText
 import deductions.runtime.jena.ImplementationSettings
 import scala.collection.Seq
 import deductions.runtime.jena.RDFCache
 import deductions.runtime.utils.DefaultConfiguration
 import org.apache.lucene.search.ScoreDoc
+import org.apache.jena.query.ReadWrite
+import org.apache.jena.query.ResultSetFormatter
+import org.apache.jena.query.QueryExecutionFactory
 
 /** Test Lucene Text Index */
 object TestTextIndex extends {
@@ -29,7 +34,7 @@ object TestTextIndex extends {
   val pred1 = rdfs.label
   val pred2 = foaf.givenName
 
-  rdfStore.rw(dataset, {
+  val transaction = rdfStore.rw(dataset, {
     rdfStore.appendToGraph(dataset, URI("test:/test"),
       makeGraph(
         Seq(Triple(URI("test:/test1"), pred1, Literal("test1")))))
@@ -38,12 +43,20 @@ object TestTextIndex extends {
       makeGraph(
         Seq(Triple(URI("test:/test2"), pred2, Literal("test1")))))
   })
+  println(s"transaction $transaction")
+
   getTextIndex() match {
     case Some(textIndex) =>
       println(s"dump(textIndex=$textIndex)")
       dump(textIndex)
     case _ =>
   }
+
+  sparqlQuery()
+  dataset.close()
+
+  ////
+
 
   /** pasted from jena.textindexdump */
   def dump(textIndex: TextIndexLucene) = {
@@ -63,7 +76,7 @@ object TestTextIndex extends {
           val doc: Document = indexSearcher.doc(sd.doc);
           // Don't forget that many fields aren't stored, just indexed.
           var i = 0
-          for (f <- doc) {
+          for (f <- doc.asScala) {
             i = i + 1
             println(s"  $i $f");
             println("  " + f.name() + " = " + f.stringValue())
@@ -97,6 +110,32 @@ object TestTextIndex extends {
           case _                          => None
         }
       case _ => None
+    }
+  }
+  
+  lazy val query = """
+    PREFIX text: <http://jena.apache.org/text#> 
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT * WHERE {
+  graph ?g {
+    # ?thing text:query (rdfs:label  "test1" ) .
+    ?thing text:query 'test1' .
+    ?thing ?p ?o .
+  }
+} LIMIT 22
+    """
+  
+  def sparqlQuery() = {
+    dataset.begin(ReadWrite.READ)
+    try {
+      val qExec = QueryExecutionFactory.create(query, dataset)
+      val rs = qExec.execSelect()
+      ResultSetFormatter.out(rs)
+      dataset.end()
+    } catch {
+      case ex: Throwable =>
+        ex.printStackTrace()
+        dataset.end()
     }
   }
 }
