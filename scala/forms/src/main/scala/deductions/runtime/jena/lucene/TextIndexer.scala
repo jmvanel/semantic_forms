@@ -15,8 +15,7 @@ object TextIndexerRDF extends App {
 
 private[lucene] class TextIndexerClass extends jena.textindexer(Array[String]())
     with ImplementationSettings.RDFModule
-    with LuceneIndex
-    with DefaultConfiguration {
+    with LuceneIndex {
 
   val config = new DefaultConfiguration {
     override val useTextQuery = true
@@ -34,7 +33,7 @@ private[lucene] class TextIndexerClass extends jena.textindexer(Array[String]())
     println("datasetWithLuceneConfigured.asDatasetGraph() getClass " + graphWithLuceneConfigured.getClass)
   val datasetGraphText: DatasetGraphText = graphWithLuceneConfigured.asInstanceOf[DatasetGraphText]
 
-  // overrride jena.textindexer fields
+  // override jena.textindexer fields
   dataset = datasetGraphText
   textIndex = dataset.getTextIndex()
 

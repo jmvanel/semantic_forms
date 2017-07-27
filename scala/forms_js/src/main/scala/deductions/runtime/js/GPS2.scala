@@ -23,7 +23,8 @@ object GPS2 extends GPS {
    */
   @JSExport
   def listenToSubmitEventFillGeoCoordinates(): Unit = {
-     window.addEventListener("load", (e: dom.Event) => fillGeoCoordinates)
+    if( GeoCoordinatesFields.pageNeedsGeoCoordinates() . needs )
+      window.addEventListener("load", (e: dom.Event) => fillGeoCoordinates)
   }
 
   /**

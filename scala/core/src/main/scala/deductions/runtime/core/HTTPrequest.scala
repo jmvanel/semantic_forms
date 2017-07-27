@@ -30,7 +30,8 @@ case class HTTPrequest(
     headers: Map[String, Seq[String]] = Map(),
 //    cookies: List[Cookie] = List())
     cookies: Map[String, Cookie] = Map(),
-    acceptLanguages: Seq[String] = Seq()
+    acceptLanguages: Seq[String] = Seq(),
+    path: String=""
     ) {
 
   def absoluteURL(rawURI: String = "", secure: Boolean = false): String =

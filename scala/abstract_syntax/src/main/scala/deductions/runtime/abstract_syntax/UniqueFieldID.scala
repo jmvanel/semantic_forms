@@ -22,7 +22,9 @@ trait UniqueFieldID[Rdf <: RDF] {
         foldNode(value)(
           value => makeTTLURI(value),
           bn => makeTTLBN(value),
-          lit => s""""${fromLiteral(lit)._1}""""
+          lit =>
+//            s""""${fromLiteral(lit)._1}""""
+            lit.toString()
       )}
       makeTTLURI(triple.subject) + " " +
         makeTTLURI(triple.predicate) + " " +

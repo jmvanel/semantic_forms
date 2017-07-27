@@ -64,6 +64,7 @@
     </script>
 
     <script type='text/javascript'>
+        $(document).ready( function (){
         // Bootstraping Popup Editor & GPS //
         deductions.runtime.js.PopupEditor().main();
         function launchEditorWindow(input){
@@ -71,6 +72,7 @@
 
         GPS2.listenToSubmitEventFillGeoCoordinates();
         console.log('Called listenToSubmitEventFillGeoCoordinates');
+        })
     </script>
 
     <style type="text/css">
