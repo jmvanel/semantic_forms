@@ -11,6 +11,8 @@ import java.nio.file.Paths
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.utils.{Configuration, RDFPrefixes}
 import org.w3.banana.{FOAFPrefix, Prefix, RDFOps, RDFSPrefix}
+import org.apache.jena.query.text.TextIndex
+import org.apache.jena.query.text.TextIndexConfig
 
 /**
  * see https://jena.apache.org/documentation/query/text-query.html
@@ -24,10 +26,17 @@ trait LuceneIndex // [Rdf <: RDF]
   implicit val ops: RDFOps[ImplementationSettings.Rdf]
 
   /** cf trait InstanceLabelsInference */
-  val rdfIndexing: EntityDefinition = {
+  val rdfIndexingBIG: EntityDefinition = {
     val rdfs = RDFSPrefix[ImplementationSettings.Rdf]
     val foaf = FOAFPrefix[ImplementationSettings.Rdf]
+
+    /* this means: in Lucene the URI will be kept in key "uri",
+     * the text indexed will be kept in key "text" */
     val entMap = new EntityDefinition("uri", "text", rdfs.label)
+    entMap.setLangField("lang")
+    entMap.setUidField("uid")
+    entMap.setGraphField("graph")
+
     entMap.set("text", foaf.givenName)
     entMap.set("text", foaf.familyName)
     entMap.set("text", foaf.firstName)
@@ -56,31 +65,30 @@ trait LuceneIndex // [Rdf <: RDF]
     entMap
   }
 
+  val rdfIndexingSMALL: EntityDefinition = {
+		  val entMap = new EntityDefinition("uri", "text", rdfs.label)
+				  entMap
+    }
+
+  val rdfIndexing = rdfIndexingBIG
+
   /** configure Lucene or SOLR Index for Jena */
-  def configureLuceneIndex(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean): ImplementationSettings.DATASET = {
+  def configureLuceneIndex(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean):
+//  (ImplementationSettings.DATASET, TextIndex)
+  ImplementationSettings.DATASET
+  = {
     println(s"configureLuceneIndex: useTextQuery $useTextQuery")
     //    println(s"configureLuceneIndex: ${Thread.currentThread().getStackTrace().slice(0, 15).mkString("\n")}")
     if (useTextQuery) {
-      /* this means: in Lucene the URI will be kept in key "uri",
-         * the text indexed by SORL will be kept in key "text" */
-//      if (solrIndexing) {
-//        val server: SolrServer = new HttpSolrServer("http://localhost:7983/new_core")
-//        // val pingResult = server.ping; println("pingResult.getStatus " + pingResult.getStatus) // 7983
-//        TextDatasetFactory.createSolrIndex(dataset, server, rdfIndexing)
-//      } else {
-        val directory = new NIOFSDirectory(
-            // new java.nio.file.Path
-//            File
-            Paths.get
-            ("LUCENE"))
-        TextDatasetFactory.createLucene(dataset, directory, rdfIndexing,
-          new StandardAnalyzer())
-//              Version.
-////              LUCENE_4_9))
-//              LUCENE_6_4_1 ))
-//      }
+    	println(
+    			s"configureLuceneIndex: rdfIndexing ${rdfIndexing.getPredicates("text")}")
+        val directory = new NIOFSDirectory(Paths.get("LUCENE"))
+    	  val textIndex: TextIndex = TextDatasetFactory.createLuceneIndex(
+    	      directory, new TextIndexConfig(rdfIndexing) )
+//       ( TextDatasetFactory.create(dataset, textIndex, true), textIndex)
+        TextDatasetFactory.create(dataset, textIndex, true)
+//        TextDatasetFactory.createLucene(dataset, directory, rdfIndexing,  new StandardAnalyzer())
     } else
       dataset
-
   }
 }

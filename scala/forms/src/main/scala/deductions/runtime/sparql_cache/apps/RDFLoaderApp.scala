@@ -10,7 +10,7 @@ object RDFLoaderApp extends {
     override val useTextQuery = false
   }
 } with RDFCache with App
-    with ImplementationSettings.RDFCache // RDFStoreLocalJena1Provider
+    with ImplementationSettings.RDFCache
     with RDFPrefixes[ ImplementationSettings.Rdf] {
 
   import ops._

@@ -8,6 +8,7 @@ import org.apache.lucene.search.suggest.InputIterator
 import org.apache.lucene.search.suggest.analyzing.AnalyzingInfixSuggester
 import org.apache.lucene.util.Version
 
+/** unused yet !!!! */
 trait TextIndexerWeight extends LuceneIndex {
 
   /**
