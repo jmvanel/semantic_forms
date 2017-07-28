@@ -46,7 +46,10 @@ object TestTextIndex2 extends App {
   val pred1 = makeUri( rdfs + "label")      
   val pred2 = makeUri( foaf + "givenName" )
 
-  val directory = "Dataset1" ;
+  val directory = "Dataset1"
+  val LUCENEtest = "LUCENEtest2"
+  
+  println( s"""TDB directory = "$directory" , LUCENE directory = $LUCENEtest""" )
   val dataset0 = TDBFactory.createDataset(directory)
   val dataset = configureLuceneIndex(dataset0)
 
@@ -78,6 +81,7 @@ object TestTextIndex2 extends App {
     case _ =>
   }
 
+  println( s"sparql Query $query")
   sparqlQuery()
   dataset.close()
 
@@ -122,7 +126,7 @@ object TestTextIndex2 extends App {
   def configureLuceneIndex(dataset: Dataset): Dataset = {
     println(
       s"configureLuceneIndex: rdfIndexing getPredicates ${rdfIndexing.getPredicates("text")}")
-    val directory = new NIOFSDirectory(Paths.get("LUCENEtest2"))
+    val directory = new NIOFSDirectory(Paths.get(LUCENEtest))
     val textIndex: TextIndex = TextDatasetFactory.createLuceneIndex(
       directory, new TextIndexConfig(rdfIndexing))
     println( "rdfIndex: " + rdfIndexing.toString() )

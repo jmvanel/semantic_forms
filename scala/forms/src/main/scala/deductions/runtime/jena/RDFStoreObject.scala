@@ -93,6 +93,7 @@ trait RDFStoreLocalJenaProvider
         case t: Throwable =>
           logger.error("!!!!! createDatabase: Exception: " + t.getLocalizedMessage)
           logger.error("	getCause " + t.getCause)
+          logger.error("	>> Lucene will not be available.")
           dts
       }
     } else

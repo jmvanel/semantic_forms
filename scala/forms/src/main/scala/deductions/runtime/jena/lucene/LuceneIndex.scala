@@ -83,8 +83,10 @@ trait LuceneIndex // [Rdf <: RDF]
     	println(
     			s"configureLuceneIndex: rdfIndexing ${rdfIndexing.getPredicates("text")}")
         val directory = new NIOFSDirectory(Paths.get("LUCENE"))
+        val textIndexConfig = new TextIndexConfig(rdfIndexing)
+    	  textIndexConfig . setMultilingualSupport(true)
     	  val textIndex: TextIndex = TextDatasetFactory.createLuceneIndex(
-    	      directory, new TextIndexConfig(rdfIndexing) )
+    			  directory, textIndexConfig )
 //       ( TextDatasetFactory.create(dataset, textIndex, true), textIndex)
         TextDatasetFactory.create(dataset, textIndex, true)
 //        TextDatasetFactory.createLucene(dataset, directory, rdfIndexing,  new StandardAnalyzer())
