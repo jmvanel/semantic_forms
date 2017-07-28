@@ -80,19 +80,19 @@ trait RDFStoreLocalJenaProvider
         dir.mkdirs()
       }
 
-      println(s"RDFStoreLocalJena1Provider: dataset create: database_location $database_location in ${System.getProperty("user.dir")}")
+      println(s"""RDFStoreLocalJena1Provider: dataset create: database_location "$database_location" in ${System.getProperty("user.dir")} """)
       val dts = TDBFactory.createDataset(Paths.get(database_location).toString())
       //      Logger.getRootLogger.info
       println(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
 
       try {
         val res = configureLuceneIndex(dts, useTextQuery)
-        println(s"configureLuceneIndex DONE $res")
+        println(s"configureLuceneIndex DONE useTextQuery: $useTextQuery => $res")
         res
       } catch {
         case t: Throwable =>
-          println(t.getLocalizedMessage)
-          println("getCause " + t.getCause)
+          logger.error("!!!!! createDatabase: Exception: " + t.getLocalizedMessage)
+          logger.error("	getCause " + t.getCause)
           dts
       }
     } else

@@ -140,6 +140,12 @@ trait FormSaver[Rdf <: RDF, DATASET]
     /* do Save the computed Database Changes - transactional */
     def doSave(graphURI: String)
     ( implicit userURI: String = graphURI ) {
+      
+          // DEBUG
+    val dsg = dataset.asInstanceOf[org.apache.jena.sparql.core.DatasetImpl].asDatasetGraph()
+    println(s">>>> doSave: dsg class : ${dsg.getClass}")
+    println(s">>>> doSave: ds: ${dataset}")
+
       val transaction = wrapInTransaction {
         time("removeTriples",
           rdfStore.removeTriples( dataset,

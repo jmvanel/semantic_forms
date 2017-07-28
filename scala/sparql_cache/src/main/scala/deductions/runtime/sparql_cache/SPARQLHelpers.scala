@@ -375,6 +375,11 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    */
   def sparqlSelectQuery(queryString: String,
                         ds: DATASET = dataset): Try[List[Iterable[Rdf#Node]]] = {
+    // DEBUG
+    val dsg = ds.asInstanceOf[org.apache.jena.sparql.core.DatasetImpl].asDatasetGraph()
+    println(s">>>> sparqlSelectQuery: dsg class : ${dsg.getClass}")
+    println(s">>>> sparqlSelectQuery: ds: ${ds}")
+
     val transaction = ds.r({
       val solutionsTry = for {
         query <- parseSelect(queryString)

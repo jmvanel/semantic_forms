@@ -35,6 +35,7 @@ import org.apache.jena.query.ResultSetFormatter
  *  - initialize TDB with Lucene
  *  - populate TDB with 2 triples
  *  - dump Lucene
+ *  - sparql Query
  *  - dump TDB
  *  */
 object TestTextIndex2 extends App {
@@ -72,6 +73,7 @@ object TestTextIndex2 extends App {
   getTextIndex() match {
     case Some(textIndex) =>
       println(s"dump(textIndex=$textIndex)")
+      println("textIndex.getDocDef.fields " + textIndex.getDocDef.fields())
       dump(textIndex)
     case _ =>
   }
@@ -163,19 +165,19 @@ object TestTextIndex2 extends App {
   }
 
   def printScoreDocs(sDocs: Array[ScoreDoc], indexSearcher: IndexSearcher) = {
-        for (sd <- sDocs) {
-          println("Doc: " + sd.doc);
-          val doc: Document = indexSearcher.doc(sd.doc);
-          // Don't forget that many fields aren't stored, just indexed.
-          var i = 0
-          for (f <- doc.asScala) {
-            i = i + 1
-            println(s"  $i $f");
-            println("  " + f.name() + " = " + f.stringValue())
-            //              f.fieldType() )
-          }
-        }
+    for (sd <- sDocs) {
+      println("Doc: " + sd.doc);
+      val doc: Document = indexSearcher.doc(sd.doc);
+      // Don't forget that many fields aren't stored, just indexed.
+      var i = 0
+      for (f <- doc.asScala) {
+        i = i + 1
+        println(s"  $i $f");
+        println("  " + f.name() + " = " + f.stringValue())
+        //              f.fieldType() )
       }
+    }
+  }
         
   lazy val query = """
     PREFIX text: <http://jena.apache.org/text#> 
