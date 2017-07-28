@@ -26,7 +26,7 @@ trait LuceneIndex // [Rdf <: RDF]
   implicit val ops: RDFOps[ImplementationSettings.Rdf]
 
   /** cf trait InstanceLabelsInference */
-  val rdfIndexingBIG: EntityDefinition = {
+  lazy val rdfIndexingBIG: EntityDefinition = {
     val rdfs = RDFSPrefix[ImplementationSettings.Rdf]
     val foaf = FOAFPrefix[ImplementationSettings.Rdf]
 
@@ -65,12 +65,12 @@ trait LuceneIndex // [Rdf <: RDF]
     entMap
   }
 
-  val rdfIndexingSMALL: EntityDefinition = {
+  lazy val rdfIndexingSMALL: EntityDefinition = {
 		  val entMap = new EntityDefinition("uri", "text", rdfs.label)
 				  entMap
     }
 
-  val rdfIndexing = rdfIndexingBIG
+  lazy val rdfIndexing = rdfIndexingBIG
 
   /** configure Lucene or SOLR Index for Jena */
   def configureLuceneIndex(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean):

@@ -50,28 +50,13 @@ object TestTextIndex2 extends App {
   val LUCENEtest = "LUCENEtest2"
   
   println( s"""TDB directory = "$directory" , LUCENE directory = $LUCENEtest""" )
+
+
+
   val dataset0 = TDBFactory.createDataset(directory)
   val dataset = configureLuceneIndex(dataset0)
-
-  try {
-    dataset.begin(ReadWrite.WRITE)
-    val graph = Factory.createDefaultGraph
-    val g = makeUri("test:/test1")
-    val s = makeUri("test:/test1")
-    val o = makeLiteral("test1")
-
-    val tr = makeTriple(s, pred1, o)
-    val tr2 = makeTriple(s, pred2, o)
-    graph.add(tr)
-    graph.add(tr2)
-    dataset.asDatasetGraph().addGraph(g, graph)
-    println(s"graph added: $graph")
-    dataset.commit()
-  } catch {
-    case t: Throwable => t.printStackTrace()
-  } finally dataset.end()
-
-  println(s"After transaction")
+  
+  populateTDB()
 
   getTextIndex() match {
     case Some(textIndex) =>
@@ -87,8 +72,30 @@ object TestTextIndex2 extends App {
 
   tdb.tdbdump.main( "--loc", directory )
 
+
   ////
 
+  def populateTDB() = {
+    try {
+      dataset.begin(ReadWrite.WRITE)
+      val graph = Factory.createDefaultGraph
+      val g = makeUri("test:/test1")
+      val s = makeUri("test:/test1")
+      val o = makeLiteral("test1")
+
+      val tr = makeTriple(s, pred1, o)
+      val tr2 = makeTriple(s, pred2, o)
+      graph.add(tr)
+      graph.add(tr2)
+      dataset.asDatasetGraph().addGraph(g, graph)
+      println(s"graph added: $graph")
+      dataset.commit()
+    } catch {
+      case t: Throwable => t.printStackTrace()
+    } finally dataset.end()
+
+    println(s"After transaction")
+  }
 
   def makeUri(iriStr: String) = { NodeFactory.createURI(iriStr).asInstanceOf[Node_URI] }
   def makeLiteral(lexicalForm: String) =
@@ -187,12 +194,12 @@ object TestTextIndex2 extends App {
     PREFIX text: <http://jena.apache.org/text#> 
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     SELECT * WHERE {
-    graph ?g {
-    # ?thing text:query (rdfs:label  "test1" ) .
-    ?thing text:query 'test1' .
-    ?thing ?p ?o .
-  }
-} LIMIT 22
+      graph ?g {
+        # ?thing text:query (rdfs:label  "test1" ) .
+        ?thing text:query 'test1' .
+        ?thing ?p ?o .
+      }
+    } LIMIT 22
     """
 
   def sparqlQuery() = {
