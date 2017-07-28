@@ -54,6 +54,13 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
              lang: String,
              search: String*
              )(implicit queryMaker: SPARQLQueryMaker[Rdf] ): Future[NodeSeq] = {
+    try {
+      val dsg = dataset.asInstanceOf[org.apache.jena.sparql.core.DatasetImpl].asDatasetGraph()
+      println(s">>>> search: dsg class : ${dsg.getClass}")
+    } catch {
+      case t: Throwable =>
+        System.err.println( "search: Exception: " + t.getLocalizedMessage())
+    }
     val elem0 = rdfStore.rw( dataset, {
       println(s"search 1: starting TRANSACTION for dataset $dataset")
     	val uris = search_onlyNT(search :_* )
@@ -130,6 +137,9 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
   /** with result variables specified; transactional */
   private def search_only2(search: String)
   (implicit queryMaker: SPARQLQueryMaker[Rdf] ): List[Seq[Rdf#Node]] = {
+    val dsg = dataset.asInstanceOf[org.apache.jena.sparql.core.DatasetImpl].asDatasetGraph()
+    println(s">>>> dsg class : ${dsg.getClass}")
+    
     val queryString = queryMaker.makeQueryString(search)
 	  println( s"search_only2( search $search" )
     sparqlSelectQueryVariables(queryString, queryMaker.variables )

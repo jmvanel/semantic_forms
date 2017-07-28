@@ -30,15 +30,17 @@ import org.apache.jena.query.Syntax
 import org.apache.jena.query.QueryExecutionFactory
 import org.apache.jena.query.ResultSetFormatter
 
-/** Test Lucene Text Index, no Banana dependency !!!
+/** Query Lucene Text Index, no Banana dependency !!!
  *  
  *  - initialize TDB with Lucene
- *  - populate TDB with 2 triples
- *  - dump Lucene
- *  - sparql Query
- *  - dump TDB
+ *  - dump Lucene from query
  *  */
-object TestTextIndex2 extends App {
+object QueryTextIndex extends App {
+
+  val search = args(0)
+  val directory = if( args.size > 1 )
+    args(1)
+    else "Dataset1"
 
   val rdfs ="http://www.w3.org/2000/01/rdf-schema#"
   val foaf = "http://xmlns.com/foaf/0.1/"
@@ -46,56 +48,42 @@ object TestTextIndex2 extends App {
   val pred1 = makeUri( rdfs + "label")      
   val pred2 = makeUri( foaf + "givenName" )
 
-  val directory = "Dataset1"
-  val LUCENEtest = "LUCENEtest2"
-  
-  println( s"""TDB directory = "$directory" , LUCENE directory = $LUCENEtest""" )
-
-
-
   val dataset0 = TDBFactory.createDataset(directory)
   val dataset = configureLuceneIndex(dataset0)
-  
-  populateTDB()
+
+  try {
+    dataset.begin(ReadWrite.WRITE)
+    val graph = Factory.createDefaultGraph
+    val g = makeUri("test:/test1")
+    val s = makeUri("test:/test1")
+    val o = makeLiteral("test1")
+
+    val tr = makeTriple(s, pred1, o)
+    val tr2 = makeTriple(s, pred2, o)
+    graph.add(tr)
+    graph.add(tr2)
+    dataset.asDatasetGraph().addGraph(g, graph)
+    println(s"graph added: $graph")
+    dataset.commit()
+  } catch {
+    case t: Throwable => t.printStackTrace()
+  } finally dataset.end()
+
+  println(s"After transaction")
 
   getTextIndex() match {
     case Some(textIndex) =>
       println(s"dump(textIndex=$textIndex)")
       println("textIndex.getDocDef.fields " + textIndex.getDocDef.fields())
-      dump(textIndex)
+      dump(textIndex, search)
     case _ =>
   }
 
-  println( s"sparql Query $query")
   sparqlQuery()
   dataset.close()
 
-  tdb.tdbdump.main( "--loc", directory )
-
-
   ////
 
-  def populateTDB() = {
-    try {
-      dataset.begin(ReadWrite.WRITE)
-      val graph = Factory.createDefaultGraph
-      val g = makeUri("test:/test1")
-      val s = makeUri("test:/test1")
-      val o = makeLiteral("test1")
-
-      val tr = makeTriple(s, pred1, o)
-      val tr2 = makeTriple(s, pred2, o)
-      graph.add(tr)
-      graph.add(tr2)
-      dataset.asDatasetGraph().addGraph(g, graph)
-      println(s"graph added: $graph")
-      dataset.commit()
-    } catch {
-      case t: Throwable => t.printStackTrace()
-    } finally dataset.end()
-
-    println(s"After transaction")
-  }
 
   def makeUri(iriStr: String) = { NodeFactory.createURI(iriStr).asInstanceOf[Node_URI] }
   def makeLiteral(lexicalForm: String) =
@@ -105,7 +93,7 @@ object TestTextIndex2 extends App {
 
   
   /** pasted from jena.textindexdump */
-  def dump(textIndex: TextIndexLucene) = {
+  def dump(textIndex: TextIndexLucene, search: String) = {
     try {
       val directory = textIndex.getDirectory()
       val analyzer = textIndex.getQueryAnalyzer()
@@ -113,15 +101,10 @@ object TestTextIndex2 extends App {
       val indexSearcher = new IndexSearcher(indexReader)
       val queryParser = new QueryParser(
         textIndex.getDocDef().getPrimaryField(), analyzer)
-      val query = queryParser.parse("*:*")
-      val sDocs = indexSearcher.search(query, 1000).scoreDocs
-      printScoreDocs(sDocs, indexSearcher)
-
-      println("""search "test1" """)
-      val query1 = queryParser.parse("test1")
+      println(s"search with Lucene: $search")
+      val query1 = queryParser.parse(search)
       val res = indexSearcher.search(query1, 1000).scoreDocs
       printScoreDocs(res, indexSearcher)
-
     } catch {
       case ex: Throwable =>
         ex.printStackTrace()
@@ -133,7 +116,7 @@ object TestTextIndex2 extends App {
   def configureLuceneIndex(dataset: Dataset): Dataset = {
     println(
       s"configureLuceneIndex: rdfIndexing getPredicates ${rdfIndexing.getPredicates("text")}")
-    val directory = new NIOFSDirectory(Paths.get(LUCENEtest))
+    val directory = new NIOFSDirectory(Paths.get("LUCENE"))
     val textIndex: TextIndex = TextDatasetFactory.createLuceneIndex(
       directory, new TextIndexConfig(rdfIndexing))
     println( "rdfIndex: " + rdfIndexing.toString() )
@@ -143,6 +126,7 @@ object TestTextIndex2 extends App {
   def getTextIndex(): Option[TextIndexLucene] = {
     val dsg = dataset.asDatasetGraph()
     println(s"dsg class : ${dsg.getClass}")
+    println(s"dataset class : ${dataset.getClass}")
     dsg match {
       case dsgText: DatasetGraphText =>
         println(s"case dsgText : ${dsg.getClass}")
@@ -176,33 +160,34 @@ object TestTextIndex2 extends App {
   }
 
   def printScoreDocs(sDocs: Array[ScoreDoc], indexSearcher: IndexSearcher) = {
-    for (sd <- sDocs) {
-      println("Doc: " + sd.doc);
-      val doc: Document = indexSearcher.doc(sd.doc);
-      // Don't forget that many fields aren't stored, just indexed.
-      var i = 0
-      for (f <- doc.asScala) {
-        i = i + 1
-        println(s"  $i $f");
-        println("  " + f.name() + " = " + f.stringValue())
-        //              f.fieldType() )
+        for (sd <- sDocs) {
+          println("Doc: " + sd.doc);
+          val doc: Document = indexSearcher.doc(sd.doc);
+          // Don't forget that many fields aren't stored, just indexed.
+          var i = 0
+          for (f <- doc.asScala) {
+            i = i + 1
+            println(s"  $i $f");
+            println("  " + f.name() + " = " + f.stringValue())
+            //              f.fieldType() )
+          }
+        }
       }
-    }
-  }
         
-  lazy val query = """
+  lazy val query = s"""
     PREFIX text: <http://jena.apache.org/text#> 
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     SELECT * WHERE {
-      graph ?g {
-        # ?thing text:query (rdfs:label  "test1" ) .
-        ?thing text:query 'test1' .
-        ?thing ?p ?o .
-      }
-    } LIMIT 22
+    graph ?g {
+    # ?thing text:query (rdfs:label  "$search" ) .
+    ?thing text:query '$search' .
+    ?thing ?p ?o .
+  }
+} LIMIT 22
     """
 
   def sparqlQuery() = {
+    println( s"query $query" )
     dataset.begin(ReadWrite.READ)
     try {
       val qExec = QueryExecutionFactory.create(query, dataset)
@@ -215,4 +200,5 @@ object TestTextIndex2 extends App {
         dataset.end()
     }
   }
+
 }

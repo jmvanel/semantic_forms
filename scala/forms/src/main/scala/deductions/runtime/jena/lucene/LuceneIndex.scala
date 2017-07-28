@@ -26,7 +26,7 @@ trait LuceneIndex // [Rdf <: RDF]
   implicit val ops: RDFOps[ImplementationSettings.Rdf]
 
   /** cf trait InstanceLabelsInference */
-  val rdfIndexingBIG: EntityDefinition = {
+  lazy val rdfIndexingBIG: EntityDefinition = {
     val rdfs = RDFSPrefix[ImplementationSettings.Rdf]
     val foaf = FOAFPrefix[ImplementationSettings.Rdf]
 
@@ -65,12 +65,12 @@ trait LuceneIndex // [Rdf <: RDF]
     entMap
   }
 
-  val rdfIndexingSMALL: EntityDefinition = {
+  lazy val rdfIndexingSMALL: EntityDefinition = {
 		  val entMap = new EntityDefinition("uri", "text", rdfs.label)
 				  entMap
     }
 
-  val rdfIndexing = rdfIndexingBIG
+  lazy val rdfIndexing = rdfIndexingBIG
 
   /** configure Lucene or SOLR Index for Jena */
   def configureLuceneIndex(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean):
@@ -83,8 +83,10 @@ trait LuceneIndex // [Rdf <: RDF]
     	println(
     			s"configureLuceneIndex: rdfIndexing ${rdfIndexing.getPredicates("text")}")
         val directory = new NIOFSDirectory(Paths.get("LUCENE"))
+        val textIndexConfig = new TextIndexConfig(rdfIndexing)
+    	  textIndexConfig . setMultilingualSupport(true)
     	  val textIndex: TextIndex = TextDatasetFactory.createLuceneIndex(
-    	      directory, new TextIndexConfig(rdfIndexing) )
+    			  directory, textIndexConfig )
 //       ( TextDatasetFactory.create(dataset, textIndex, true), textIndex)
         TextDatasetFactory.create(dataset, textIndex, true)
 //        TextDatasetFactory.createLucene(dataset, directory, rdfIndexing,  new StandardAnalyzer())

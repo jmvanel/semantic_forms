@@ -25,7 +25,7 @@ extends RDFOPerationsDB[Rdf, DATASET] {
 
 //  CURRENTLY unused, but could be:  val config: Configuration
 
-  /** relative or absolute file path for the database 
+  /** relative or absolute file path for the RDF Jena database 
    *  TODO put in Configuration */
   val databaseLocation: String = "TDB"
 
@@ -58,11 +58,11 @@ extends RDFOPerationsDB[Rdf, DATASET] {
   // implementations
 
     /** */
-  def getDatasetOrDefault(database: String = "TDB", useTextQuery: Boolean= config.useTextQuery): DATASET = {
-    if (database == databaseLocation)
+  def getDatasetOrDefault(databaseLoc: String = "TDB", useTextQuery: Boolean= config.useTextQuery): DATASET = {
+    if (databaseLoc == databaseLocation)
       dataset
     else
-      createDatabase(database, useTextQuery)
+      createDatabase(databaseLoc, useTextQuery)
   }
 
 

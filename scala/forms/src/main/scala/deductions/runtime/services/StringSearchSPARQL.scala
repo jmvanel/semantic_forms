@@ -41,6 +41,8 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
         s"?thing text:query ( '${prepareSearchString(search).trim()}' ) ."
       else ""
 
+      // TODO val classQuery = if( clas != "") { // like textQuery before
+
       val queryString0 = s"""
          |${declarePrefix(text)}
          |${declarePrefix(rdfs)}
@@ -48,13 +50,14 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
          |  graph ?g {
          |    $textQuery
          |    ?thing ?p ?o .
-         |    ?thing a ?class .
+         |    # ?thing a ?class .
          |  }
          |}
          |GROUP BY ?thing
          |ORDER BY DESC(?count)
          |$limit""".stripMargin
 
+      // TODO val classQuery
       if (clas != "") {
         queryString0.replaceFirst("""\?class""", "<" + expandOrUnchanged(clas) + ">")
       } else queryString0

@@ -40,7 +40,7 @@ trait Lookup[Rdf <: RDF, DATASET]
     val res = searchStringOrClass(search, clas)
 
     println(s"lookup(search=$search, clas=<$clas> => $res")
-    println(s"lookup: starting TRANSACTION for dataset $dataset")
+    println(s"lookup: after searchStringOrClass, starting TRANSACTION for dataset $dataset")
     val transaction = rdfStore.rw( dataset, {
       val urilabels = res.map {
         uris =>
