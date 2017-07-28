@@ -318,7 +318,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   def sparqlSelectQueryVariables(queryString: String, variables: Seq[String],
                                  ds: DATASET = dataset): List[Seq[Rdf#Node]] = {
     logger.debug("RRRRRRRRRR sparqlSelectQueryVariables before transaction")
-    val transaction = ds.r({
+    val transaction = rdfStore.r( ds, {
+//    val transaction = ds.r({
       sparqlSelectQueryVariablesNT(queryString, variables, ds)
     })
     logger.debug("RRRRRRRRRR sparqlSelectQueryVariables after transaction")
@@ -380,7 +381,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     println(s">>>> sparqlSelectQuery: dsg class : ${dsg.getClass}")
     println(s">>>> sparqlSelectQuery: ds: ${ds}")
 
-    val transaction = ds.r({
+    val transaction = rdfStore.r( ds, {
+//    val transaction = ds.r({
       val solutionsTry = for {
         query <- parseSelect(queryString)
         es <- ds.executeSelect(query, Map())
@@ -398,7 +400,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    */
   def sparqlSelectQueryCompiled(query: Rdf#SelectQuery,
                         ds: DATASET = dataset): Try[List[Iterable[Rdf#Node]]] = {
-    val transaction = ds.r({
+    val transaction = rdfStore.r( ds, {
+//    val transaction = ds.r({
       val solutionsTry = for {
         es <- ds.executeSelect(query, Map())
       } yield es
