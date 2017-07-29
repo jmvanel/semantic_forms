@@ -11,8 +11,9 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-explaintypes",
 
 lazy val forms_play = (project in file("forms_play"))
 	.dependsOn(forms)
-	.dependsOn(forms_js)
+	// .dependsOn(forms_js)
 	.dependsOn(mobion)
+	// .enablePlugins(PlayScala, SbtWeb) .disablePlugins(PlayLogback)
 	.enablePlugins(PlayScala) .disablePlugins(PlayLogback)
 
 
@@ -48,3 +49,5 @@ resolvers in ThisBuild += "scalaz-bintray" at "https://dl.bintray.com/scalaz/rel
 // wartremoverErrors ++= Warts.allBut(Wart.DefaultArguments, Wart.Var)
 // libraryDependencies += "com.lightbend" %% "abide-core" % "0.1-SNAPSHOT" % "abide"
 
+// loads the server project at sbt startup
+onLoad in Global := (Command.process("project forms_play", _: State)) compose (onLoad in Global).value

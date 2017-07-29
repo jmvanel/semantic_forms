@@ -25,3 +25,6 @@ resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + 
 // temporary for cornichon SNAPSHOTs
 resolvers += "cornichon-sonatype" at "https://oss.sonatype.org/content/repositories/snapshots"
 
+publishArtifact in (Compile, packageDoc) := false
+sources in (Compile,doc) := Seq.empty
+

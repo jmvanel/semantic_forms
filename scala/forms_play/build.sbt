@@ -5,7 +5,6 @@ import Common._
 name := "semantic_forms_play"
 
 publishArtifact in (Compile, packageDoc) := false
-publishArtifact in packageDoc := false
 sources in (Compile,doc) := Seq.empty
 
 // CAUTION here: this is for run and runMain; what is given with sbt -J-Xmx12G is *not* in effect for run! 
@@ -17,9 +16,6 @@ connectInput in run := true
 routesGenerator := StaticRoutesGenerator
 
 libraryDependencies += "org.scalatestplus" %% "play" % "1.4.0" % Test
-
-sources in (Compile, doc) := Seq.empty
-publishArtifact in (Compile, packageDoc) := false
 
 // fork a new JVM for 'test:run' and 'run'
 fork in run := true

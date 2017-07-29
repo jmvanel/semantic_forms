@@ -13,3 +13,6 @@ libraryDependencies ++= Seq(
     "org.apache.commons" % "commons-csv" % "1.4" ,
     bananaDependency
 )
+
+publishArtifact in (Compile, packageDoc) := false
+sources in (Compile,doc) := Seq.empty

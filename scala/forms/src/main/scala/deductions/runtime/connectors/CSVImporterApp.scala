@@ -22,7 +22,7 @@ import deductions.runtime.utils.DefaultConfiguration
  */
 object CSVImporterApp extends {
   override val config = new DefaultConfiguration {
-    override val useTextQuery: Boolean = false
+    override val useTextQuery: Boolean = true // false
   }
 } with App
     with ImplementationSettings.RDFCache

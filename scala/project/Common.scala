@@ -8,10 +8,10 @@ object Common {
 
   val jenaVersion =  "3.3.0"
 
-  val bananaDependency = "org.w3" %%  "banana-jena" % "0.8.4-SNAPSHOT"
-  val jenaDependency = "org.apache.jena" % "apache-jena-libs" % jenaVersion  exclude("log4j", "log4j") exclude("org.slf4j", "slf4j-api" ) exclude( "org.apache.logging.log4j" , "log4j-slf4j-impl" )
-  val jenaPermissionsDependency = "org.apache.jena" % "jena-permissions" % jenaVersion
-  val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion
+  val bananaDependency = "org.w3" %%  "banana-jena" % "0.8.4-SNAPSHOT" exclude("org.slf4j", "slf4j-api" )	exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
+  val jenaDependency = "org.apache.jena" % "apache-jena-libs" % jenaVersion  exclude("log4j", "log4j") exclude("org.slf4j", "slf4j-api" ) exclude( "org.apache.logging.log4j" , "log4j-slf4j-impl" )	exclude("org.slf4j", "slf4j-log4j12")		exclude("org.apache.logging.log4j","log4j-slf4j-impl")
+  val jenaPermissionsDependency = "org.apache.jena" % "jena-permissions" % jenaVersion	exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
+  val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion		exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
 
   val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
 
