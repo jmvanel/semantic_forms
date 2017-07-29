@@ -1,16 +1,20 @@
 package deductions.runtime.jena.lucene
 
+import java.io.File
 import java.nio.file.Paths
 
 import scala.collection.JavaConverters.iterableAsScalaIterableConverter
 
+import org.apache.commons.io.FileUtils
 import org.apache.jena.graph.Factory
 import org.apache.jena.graph.Node
 import org.apache.jena.graph.NodeFactory
 import org.apache.jena.graph.Node_Literal
 import org.apache.jena.graph.Node_URI
 import org.apache.jena.query.Dataset
+import org.apache.jena.query.QueryExecutionFactory
 import org.apache.jena.query.ReadWrite
+import org.apache.jena.query.ResultSetFormatter
 import org.apache.jena.query.text.DatasetGraphText
 import org.apache.jena.query.text.EntityDefinition
 import org.apache.jena.query.text.TextDatasetFactory
@@ -25,37 +29,35 @@ import org.apache.lucene.queryparser.classic.QueryParser
 import org.apache.lucene.search.IndexSearcher
 import org.apache.lucene.search.ScoreDoc
 import org.apache.lucene.store.NIOFSDirectory
-import org.apache.jena.query.QueryFactory
-import org.apache.jena.query.Syntax
-import org.apache.jena.query.QueryExecutionFactory
-import org.apache.jena.query.ResultSetFormatter
 
-/** Test Lucene Text Index, no Banana dependency !!!
- *  
+/**
+ * Test Lucene Text Index, no Banana dependency !!!
+ *
  *  - initialize TDB with Lucene
  *  - populate TDB with 2 triples
  *  - dump Lucene
  *  - sparql Query
  *  - dump TDB
- *  */
+ */
 object TestTextIndex2 extends App {
 
-  val rdfs ="http://www.w3.org/2000/01/rdf-schema#"
+  val rdfs = "http://www.w3.org/2000/01/rdf-schema#"
   val foaf = "http://xmlns.com/foaf/0.1/"
-  
-  val pred1 = makeUri( rdfs + "label")      
-  val pred2 = makeUri( foaf + "givenName" )
+
+  val pred1 = makeUri(rdfs + "label")
+  val pred2 = makeUri(foaf + "givenName")
 
   val directory = "Dataset1"
   val LUCENEtest = "LUCENEtest2"
-  
-  println( s"""TDB directory = "$directory" , LUCENE directory = $LUCENEtest""" )
 
+//  FileUtils.deleteDirectory(new File(directory))
+//  FileUtils.deleteDirectory(new File(LUCENEtest))
 
+  println(s"""TDB directory = "$directory" , LUCENE directory = "$LUCENEtest" """)
 
   val dataset0 = TDBFactory.createDataset(directory)
   val dataset = configureLuceneIndex(dataset0)
-  
+
   populateTDB()
 
   getTextIndex() match {
@@ -66,32 +68,42 @@ object TestTextIndex2 extends App {
     case _ =>
   }
 
-  println( s"sparql Query $query")
+  println(s"sparql Query $query")
   sparqlQuery()
   dataset.close()
 
-  tdb.tdbdump.main( "--loc", directory )
-
+  tdb.tdbdump.main("--loc", directory)
 
   ////
 
   def populateTDB() = {
     try {
       dataset.begin(ReadWrite.WRITE)
-      val graph = Factory.createDefaultGraph
-      val g = makeUri("test:/test1")
-      val s = makeUri("test:/test1")
-      val o = makeLiteral("test1")
-
-      val tr = makeTriple(s, pred1, o)
-      val tr2 = makeTriple(s, pred2, o)
-      graph.add(tr)
-      graph.add(tr2)
-      dataset.asDatasetGraph().addGraph(g, graph)
-      println(s"graph added: $graph")
+      val s = makeUri("test:/test1");
+      {
+        val g2 = makeUri("test:/test-extra-data")
+        val graph = Factory.createDefaultGraph
+        val o = makeLiteral("test-extra-data")
+        val tr = makeTriple(s, pred1, o)
+        graph.add(tr)
+        dataset.asDatasetGraph().addGraph(g2, graph)
+        println(s">>>> graph added: $g2 $graph")
+      }
+      {
+        val o = makeLiteral("test1")
+        val tr = makeTriple(s, pred1, o)
+        val tr2 = makeTriple(s, pred2, o)
+        val graph = Factory.createDefaultGraph
+        graph.add(tr)
+        graph.add(tr2)
+        val g = makeUri("test:/test1")
+        dataset.asDatasetGraph().addGraph(g, graph)
+        println(s">>>> graph added: $g $graph")
+      }
       dataset.commit()
     } catch {
-      case t: Throwable => t.printStackTrace()
+      case t: Throwable =>
+        error("!!!! error " + t.getLocalizedMessage)
     } finally dataset.end()
 
     println(s"After transaction")
@@ -99,11 +111,10 @@ object TestTextIndex2 extends App {
 
   def makeUri(iriStr: String) = { NodeFactory.createURI(iriStr).asInstanceOf[Node_URI] }
   def makeLiteral(lexicalForm: String) =
-      NodeFactory.createLiteral(lexicalForm, null, null).asInstanceOf[Node_Literal]
+    NodeFactory.createLiteral(lexicalForm, null, null).asInstanceOf[Node_Literal]
   def makeTriple(s: Node, p: Node_URI, o: Node): org.apache.jena.graph.Triple =
-     org.apache.jena.graph.Triple.create(s, p, o)
+    org.apache.jena.graph.Triple.create(s, p, o)
 
-  
   /** pasted from jena.textindexdump */
   def dump(textIndex: TextIndexLucene) = {
     try {
@@ -136,10 +147,10 @@ object TestTextIndex2 extends App {
     val directory = new NIOFSDirectory(Paths.get(LUCENEtest))
     val textIndex: TextIndex = TextDatasetFactory.createLuceneIndex(
       directory, new TextIndexConfig(rdfIndexing))
-    println( "rdfIndex: " + rdfIndexing.toString() )
+    println("rdfIndex: " + rdfIndexing.toString())
     TextDatasetFactory.create(dataset, textIndex, true)
   }
-  
+
   def getTextIndex(): Option[TextIndexLucene] = {
     val dsg = dataset.asDatasetGraph()
     println(s"dsg class : ${dsg.getClass}")
@@ -153,15 +164,14 @@ object TestTextIndex2 extends App {
           case _                          => None
         }
       case _ =>
-      println(s"!!!!!!!!!!! DatasetGraphText not found!")
-      None
+        println(s"!!!!!!!!!!! DatasetGraphText not found!")
+        None
     }
   }
 
-  
   /** cf trait InstanceLabelsInference */
   lazy val rdfIndexing: EntityDefinition = {
-    val entMap = new EntityDefinition("uri", "text", rdfs +"label")
+    val entMap = new EntityDefinition("uri", "text", rdfs + "label")
     entMap.setLangField("lang")
     entMap.setUidField("uid")
     entMap.setGraphField("graph")
@@ -189,13 +199,11 @@ object TestTextIndex2 extends App {
       }
     }
   }
-        
+
   lazy val query = """
     PREFIX text: <http://jena.apache.org/text#> 
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     SELECT * WHERE {
       graph ?g {
-        # ?thing text:query (rdfs:label  "test1" ) .
         ?thing text:query 'test1' .
         ?thing ?p ?o .
       }
