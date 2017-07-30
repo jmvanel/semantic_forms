@@ -68,10 +68,11 @@ object TestTextIndex2 extends App {
     case _ =>
   }
 
-  println(s"sparql Query $query")
-  sparqlQuery()
+  sparqlQuery(query2)
+  sparqlQuery(query)
   dataset.close()
 
+  println(s"""tdb.tdbdump (after dataset.close() )""")
   tdb.tdbdump.main("--loc", directory)
 
   ////
@@ -207,10 +208,20 @@ object TestTextIndex2 extends App {
         ?thing text:query 'test1' .
         ?thing ?p ?o .
       }
-    } LIMIT 22
+    }
     """
 
-  def sparqlQuery() = {
+  lazy val query2 = """
+    PREFIX text: <http://jena.apache.org/text#> 
+    SELECT * WHERE {
+      graph ?g {
+        ?thing ?p ?o .
+      }
+    }
+    """
+    
+  def sparqlQuery(query: String) = {
+		println(s"sparql Query $query")
     dataset.begin(ReadWrite.READ)
     try {
       val qExec = QueryExecutionFactory.create(query, dataset)
