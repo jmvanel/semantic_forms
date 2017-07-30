@@ -104,7 +104,7 @@ object TestTextIndex2 extends App {
       dataset.commit()
     } catch {
       case t: Throwable =>
-        error("!!!! error " + t.getLocalizedMessage)
+        System.err.println("!!!! error " + t.getLocalizedMessage)
     } finally dataset.end()
 
     println(s"After transaction")
