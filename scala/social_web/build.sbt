@@ -6,4 +6,6 @@ name := "social_web"
 
 libraryDependencies += "com.typesafe.play" %% "play-ws" % "2.3.9"
 
+publishArtifact in (Compile, packageDoc) := false
+sources in (Compile,doc) := Seq.empty
 

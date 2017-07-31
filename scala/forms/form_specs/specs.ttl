@@ -10,6 +10,8 @@
 @prefix doas: <http://deductions.github.io/doas.owl.ttl#> .
 @prefix seeds: <http://deductions.github.io/seeds.owl.ttl#> .
 @prefix nature: <http://deductions.github.io/nature_observation.owl.ttl#> .
+@prefix geoloc: <http://deductions.github.io/geoloc.owl.ttl#>.
+@prefix vehman: <http://deductions.github.io/vehicule-management.owl.ttl#>.
 
 # list of form specifications for various classes in common vocabularies
 # NOTE : it's the relative URI's of the Turtle documents, not the URI's of the forms themselves
@@ -25,3 +27,8 @@ seeds: form:ontologyHasFormSpecification <https://deductions.github.io/seeds.for
 tm:   form:ontologyHasFormSpecification <https://deductions.github.io/task-management.form.ttl> .
 skos: form:ontologyHasFormSpecification <skos.form.ttl> .
 doas: form:ontologyHasFormSpecification <http://deductions.github.io/doas.form.ttl> .
+
+# geoloc: form:ontologyHasFormSpecification <http://deductions.github.io/geoloc.form.ttl>.
+# vehman: form:ontologyHasFormSpecification <http://deductions.github.io/vehicule-management.owl.ttl>.
+
+

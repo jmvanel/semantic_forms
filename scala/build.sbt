@@ -1,5 +1,7 @@
 import Common._
 
+// offline := true
+
 name := "semantic_forms-root"
 
 organization in ThisBuild := "deductions"
@@ -11,9 +13,20 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-explaintypes",
 
 lazy val forms_play = (project in file("forms_play"))
 	.dependsOn(forms)
-	.dependsOn(forms_js)
+	// .dependsOn(forms_js)
 	.dependsOn(mobion)
-	.enablePlugins(PlayScala) .disablePlugins(PlayLogback)
+	// .enablePlugins(PlayScala, SbtWeb) .disablePlugins(PlayLogback)
+.settings(
+  scalaJSProjects := Seq(forms_js),
+  pipelineStages in Assets := Seq(scalaJSPipeline),
+  pipelineStages := Seq(digest, gzip),
+  // triggers scalaJSPipeline when using compile or continuous compilation
+  compile in Compile := ((compile in Compile) dependsOn scalaJSPipeline).value,
+  libraryDependencies ++= Seq(
+    "com.vmunier" %% "scalajs-scripts" % "1.1.1"
+  )
+)
+.enablePlugins(PlayScala, SbtWeb) .disablePlugins(PlayLogback)
 
 
 lazy val core = project
@@ -27,7 +40,9 @@ lazy val abstract_syntax = project .dependsOn(core)   .dependsOn(sparql_cache)
 lazy val html = project   .dependsOn(abstract_syntax) .dependsOn(utils)   .dependsOn(core)
 
 lazy val web_tests = project
-lazy val forms_js = project
+lazy val forms_js = project .settings(
+  scalaJSUseMainModuleInitializer := true
+).enablePlugins(ScalaJSPlugin, ScalaJSWeb)
 
 lazy val generic_app = project
 lazy val projects_catalog = project
@@ -48,3 +63,5 @@ resolvers in ThisBuild += "scalaz-bintray" at "https://dl.bintray.com/scalaz/rel
 // wartremoverErrors ++= Warts.allBut(Wart.DefaultArguments, Wart.Var)
 // libraryDependencies += "com.lightbend" %% "abide-core" % "0.1-SNAPSHOT" % "abide"
 
+// loads the server project at sbt startup
+onLoad in Global := (Command.process("project forms_play", _: State)) compose (onLoad in Global).value
