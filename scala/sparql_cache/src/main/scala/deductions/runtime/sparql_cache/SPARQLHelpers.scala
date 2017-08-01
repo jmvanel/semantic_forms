@@ -348,7 +348,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
               for (variable <- variables) yield {
                 val cell = row(variable)
                 cell match {
-                  case Success(node) => row(variable).get.as[Rdf#Node].get
+                  case Success(node) => node
+//                  case Success(node) => row(variable).get.as[Rdf#Node].get
                   case Failure(f)    => Literal(">>>> Failure: " + f.toString())
                 }
               }
@@ -431,10 +432,10 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
         val results: Iterable[Iterable[Rdf#Node]] = solsIterable . map {
           row =>
-//            val variables = row.varnames().toList
-//            for (variable <- columnsMap2) yield row(variable).getOrElse(Literal("") ).as[Rdf#Node].get
             val rowSeq: mutable.Buffer[Rdf#Node] = mutable.Buffer()
-            for (variable <- columnsMap2) rowSeq += row(variable).getOrElse(Literal("") ).as[Rdf#Node].get
+            for (variable <- columnsMap2) rowSeq +=
+              row(variable).getOrElse(Literal(""))
+//              row(variable).getOrElse(Literal("") ).as[Rdf#Node].get
 //            println(s"rowSeq $rowSeq")
             rowSeq
         }

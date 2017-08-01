@@ -79,7 +79,7 @@ trait TestSPARQLTrait[Rdf <: RDF, DATASET] extends FunSuite
           val results = solsIterable map {
             row =>
               val variables = row.varnames().toList
-              for (variable <- variables) yield row(variable).get.as[Rdf#Node].get
+              for (variable <- variables) yield row(variable) // .get.as[Rdf#Node].get
           }
           println("sparqlSelectQuery: after results")
 

@@ -297,9 +297,9 @@ trait RangeInference[Rdf <: RDF, DATASET]
 
     val res = solutions.iterator() map {
       row =>
-        //        info(s""" populateFromTDB iter ${row}""")
-        (row("VALUE").get.as[Rdf#Node].get,
-          row("LABEL").get.as[Rdf#Node].get)
+        (row("VALUE").get, // .as[Rdf#Node].get,
+         row("LABEL").get // .as[Rdf#Node].get
+         )
     }
     val possibleValues = res.to[List]
     logger.debug(
