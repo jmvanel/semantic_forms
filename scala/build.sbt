@@ -16,17 +16,15 @@ lazy val forms_play = (project in file("forms_play"))
 	// .dependsOn(forms_js)
 	.dependsOn(mobion)
 	// .enablePlugins(PlayScala, SbtWeb) .disablePlugins(PlayLogback)
-.settings(
-  scalaJSProjects := Seq(forms_js),
-  pipelineStages in Assets := Seq(scalaJSPipeline),
-  pipelineStages := Seq(digest, gzip),
+.enablePlugins(PlayScala) .disablePlugins(PlayLogback)
+// .settings(
+//   scalaJSProjects := Seq(forms_js),
+//   pipelineStages in Assets := Seq(scalaJSPipeline),
+//   pipelineStages := Seq(digest, gzip),
   // triggers scalaJSPipeline when using compile or continuous compilation
-  compile in Compile := ((compile in Compile) dependsOn scalaJSPipeline).value,
-  libraryDependencies ++= Seq(
-    "com.vmunier" %% "scalajs-scripts" % "1.1.1"
-  )
-)
-.enablePlugins(PlayScala, SbtWeb) .disablePlugins(PlayLogback)
+//   compile in Compile := ((compile in Compile) dependsOn scalaJSPipeline).value,
+//   libraryDependencies ++= Seq( "com.vmunier" %% "scalajs-scripts" % "1.1.1")
+// )
 
 
 lazy val core = project
