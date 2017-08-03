@@ -158,12 +158,16 @@ trait ApplicationTrait extends Controller
     uriArgs.find { uri => uri != "" }.getOrElse("") . trim()
   }
 
+  /** @return in case Form Url Encoded, the first value in Map */
   protected def getContent(request: Request[AnyContent]): Option[String] = {
     request.body match {
       case AnyContentAsText(t) => Some(t)
       case AnyContentAsFormUrlEncoded(m) =>
         println(s"getContent 1 request.body AnyContentAsFormUrlEncoded size ${m.size}")
-        m.keySet.headOption
+        m.headOption  match {
+          case Some(v) => v . _2 . headOption
+          case None => None
+        }
       case AnyContentAsRaw(raw: RawBuffer) =>
         println(s"getContent 2 request.body.asRaw ${raw}")
         raw.asBytes(raw.size.toInt).map {
