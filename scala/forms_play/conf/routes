@@ -58,6 +58,7 @@ GET     /history            controllers.Application.makeHistoryUserActionsAction
 # authentication
 
 GET     /login                      controllers.Auth.login
+GET     /login2                     controllers.AuthService.login
 POST    /authenticate               controllers.Auth.authenticate
 GET     /authenticate               controllers.Auth.authenticate
 POST    /register                   controllers.Auth.register
