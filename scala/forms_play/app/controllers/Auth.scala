@@ -90,6 +90,10 @@ extends Controller
         BadRequest("<!DOCTYPE html>\n" + views.html.login(formWithErrors, registerForm))
           .as("text/html; charset=utf-8"),
       user => {
+//        println(s"""authenticate: request $request; ${request.getQueryString("xhr")}
+//        request.queryString
+//        ${request.queryString}""")
+        // PENDING: what is "xhr" for ???
         request.getQueryString("xhr") match {
           case Some(value) =>
             println(s"Authentication OK for user $user, no redirect")
