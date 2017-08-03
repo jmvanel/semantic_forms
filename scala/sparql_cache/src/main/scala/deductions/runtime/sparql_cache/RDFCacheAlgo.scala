@@ -80,7 +80,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     retrieveURIBody(uri, dataset, HTTPrequest(), transactionsInside = true)
 
   /**
-   * retrieve URI from a graph named by the URI itself;
+   * retrieve URI from a local graph in TDB named by the URI itself;
    * or download and store URI, only if corresponding graph is empty,
    * or local timestamp is older;
    * timestamp is saved in another Dataset
