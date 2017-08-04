@@ -253,9 +253,12 @@ trait WebPages extends Controller with ApplicationTrait {
    *  intranet mode (needLoginForEditing == false): no cookies session, just receive a `graph` HTTP param.
    *  TODO: this pattern should be followed for each page or service */
   def saveAction() = {
-    def save(userid: String)(implicit request: Request[_]) = {
-      val lang = chooseLanguage(request)
-      val (uri, typeChanges) = saveOnly(request, userid, graphURI = makeAbsoluteURIForSaving(userid))
+    def saveLocal(userid: String)(implicit request: Request[_]) = {
+      val httpRequest = copyRequest(request)
+      logger.debug( s"""ApplicationTrait.saveOnly: class ${request.body.getClass},
+              request $httpRequest""")
+      val (uri, typeChanges) =
+        saveOnly(httpRequest, userid, graphURI = makeAbsoluteURIForSaving(userid))
       logger.info(s"saveAction: uri <$uri>")
       val call = routes.Application.displayURI(uri,
           Edit=if(typeChanges) "edit" else "" )
@@ -267,12 +270,12 @@ trait WebPages extends Controller with ApplicationTrait {
       withUser {
         implicit userid =>
           implicit request =>
-            save(userid)
+            saveLocal(userid)
       }
     else
       Action { implicit request: Request[_] => {
         val user = request.headers.toMap.getOrElse("graph", Seq("anonymous") ). headOption.getOrElse("anonymous")
-        save(user)
+        saveLocal(user)
       }}
   }
 

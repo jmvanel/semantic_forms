@@ -29,6 +29,7 @@ import play.api.mvc.Request
 import play.api.mvc.RequestHeader
 import play.api.mvc.Result
 import views.MainXmlWithHead
+import deductions.runtime.core.HTTPrequest
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -88,33 +89,28 @@ trait ApplicationTrait extends Controller
   }
   /////////////////////////////////
 
-  /** save Only, no display */
-  protected def saveOnly(request: Request[_], userid: String, graphURI: String = ""): (String, Boolean) = {
-    val body = request.body
-    val host  = request.host
-
-    val httpRequest = copyRequest(request)
-    // TODO use saveForm(httpRequest.formMap, lang, userid, graphURI, host)
-
-    body match {
-      case form: AnyContentAsFormUrlEncoded =>
-        val lang = chooseLanguage(request)
-        val map = form.data
-//        logger.debug(
-        println(
-            s"""ApplicationTrait.saveOnly: class ${body.getClass}, map $map,
-              request $request""")
-        // cf http://danielwestheide.com/blog/2012/12/26/the-neophytes-guide-to-scala-part-6-error-handling-with-try.html
-        val subjectUriTryOption = Try {
-          saveForm(map, lang, userid, graphURI, host)
-        }
-        subjectUriTryOption match {
-            case Success((Some(url1), typeChange)) => (url1, typeChange)
-            case _ => ("", false)
-        }
+  /** save Only, no display - TODO move outside of forms_play */
+  protected def saveOnly(
+      httpRequest: HTTPrequest,
+      userid: String, graphURI: String = ""): (String, Boolean) = {
+//    val httpRequest = copyRequest(request)
+    val host = httpRequest.host
+    val lang = httpRequest.getLanguage()
+    val map = httpRequest.formMap
+    logger.debug(
+      s"""ApplicationTrait.saveOnly: request $httpRequest ,
+        map $map""")
+    // cf http://danielwestheide.com/blog/2012/12/26/the-neophytes-guide-to-scala-part-6-error-handling-with-try.html
+    val subjectUriTryOption = Try {
+      saveForm(map, lang, userid, graphURI, host)
+    }
+    subjectUriTryOption match {
+      case Success((Some(url1), typeChange)) => (url1, typeChange)
+      case _                                 => ("", false)
     }
   }
 
+  
   protected val AcceptsTTL = Accepting("text/turtle")
   protected val AcceptsJSONLD = Accepting("application/ld+json")
   protected val AcceptsRDFXML = Accepting("application/rdf+xml")
