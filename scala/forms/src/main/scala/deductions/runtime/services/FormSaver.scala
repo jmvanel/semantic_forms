@@ -13,6 +13,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Failure, Try}
 import deductions.runtime.core.HTTPrequest
+import scala.util.Success
 
 case class DatabaseChanges[Rdf <: RDF](
   triplesToAdd: Seq[Rdf#Triple] = Seq(),
@@ -32,7 +33,6 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
   import ops._
 
-  //  private lazy val foaf = FOAFPrefix[Rdf]
 
   def computeDatabaseChanges(
     httpRequest: HTTPrequest): DatabaseChanges[Rdf] =
@@ -44,25 +44,58 @@ trait FormSaver[Rdf <: RDF, DATASET]
     httpParamsMap: Map[String, Seq[String]],
     lang: String): DatabaseChanges[Rdf] = {
     var databaseChanges = DatabaseChanges[Rdf]()
-    httpParamsMap.map {
-      case (param0, objects) =>
+    val comingBackTriples = getTriplesFromHTTPparams(httpParamsMap)
+    comingBackTriples.foreach { comingBackTriple =>
+      databaseChanges =
+        computeDatabaseChangesFor1Triple(
+          comingBackTriple._1,
+          comingBackTriple._2 /* objects*/ , databaseChanges, lang)
+    }
+    //    httpParamsMap.map {
+    //      case (param0, objects) =>
+    //        val param = URLDecoder.decode(param0, "utf-8")
+    //        logger.debug(s"\nsaveTriples: httpParam decoded: $param")
+    //        if (param != "url" &&
+    //          param != "uri" &&
+    //          param != "graphURI") {
+    //          val try_ = Try {
+    //            val comingBackTriple = httpParam2Triple(param)
+    //            logger.debug(s"saveTriples: triple from httpParam: {$comingBackTriple }")
+    //            databaseChanges = computeDatabaseChangesFor1Triple(comingBackTriple, objects, databaseChanges, lang)
+    //          }
+    //          try_ match {
+    //            case f: Failure[_] => logger.error(s"saveTriples: $param :" + f)
+    //            case _             =>
+    //          }
+    //        }
+    //    }
+    databaseChanges
+  }
+    
+  def getTriplesFromHTTPrequest(httpRequest: HTTPrequest): Iterable[(Rdf#Triple, Seq[String])] = {
+    getTriplesFromHTTPparams(httpRequest.queryString)
+  }
+
+  private def getTriplesFromHTTPparams(queryString: Map[String, Seq[String]]): Iterable[(Rdf#Triple, Seq[String])] = {
+    val res = queryString.map {
+      // cf partial functions:  http://blog.bruchez.name/2011/10/scala-partial-functions-without-phd.html
+      case (param0, objects) if (
+        param0 != "url" &&
+        param0 != "uri" &&
+        param0 != "graphURI") =>
         val param = URLDecoder.decode(param0, "utf-8")
-        logger.debug(s"\nsaveTriples: httpParam decoded: $param")
-        if (param != "url" &&
-          param != "uri" &&
-          param != "graphURI") {
-          val try_ = Try {
-            val comingBackTriple = httpParam2Triple(param)
-            logger.debug(s"saveTriples: triple from httpParam: {$comingBackTriple }")
-            databaseChanges = computeDatabaseChangesFor1Triple(comingBackTriple, objects, databaseChanges, lang)
-          }
-          try_ match {
-            case f: Failure[_] => logger.error(s"saveTriples: $param :" + f)
-            case _             =>
-          }
+        logger.debug(s"\ngetTriplesFromHTTPparams: httpParam decoded: $param");
+        val tryTriple = Try {
+          val comingBackTriple = httpParam2Triple(param)
+          logger.debug(s"getTriplesFromHTTPparams: triple from httpParam: {$comingBackTriple }")
+          comingBackTriple
+        }
+        if (tryTriple.isFailure) logger.error(s"getTriplesFromHTTPparams: $param : $tryTriple")
+        tryTriple match {
+          case Success(triple) => (triple, objects)
         }
     }
-    databaseChanges
+    res
   }
 
   /** save triples in named graph given by HTTP parameter "graphURI";

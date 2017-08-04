@@ -20,6 +20,8 @@ import scala.util.Success
 import scala.util.Failure
 import scala.xml.Text
 import views.MainXmlWithHead
+import deductions.runtime.services.FormSaver
+import scala.xml.NodeSeq
 
 // class
 object AuthService extends AuthServiceTrait {
@@ -50,59 +52,61 @@ extends Controller
  with RDFStoreLocalUserManagement[Rdf, DATASET]
  with TriplesViewModule[Rdf, DATASET]
  with HTTPrequestHelpers
- with MainXmlWithHead 
-{
+ with MainXmlWithHead
+ with FormSaver[Rdf, DATASET] {
 
   import ops._
 
+  val formURI = forms("loginForm")
+
+  val useridProp = form("userid") 
+  val passwordProp = form("password")
+  val confirmPasswordProp = form("confirmPassword")
+
   /** page for login or signin */
   def login = Action { implicit request: Request[_] =>
-    println( s"""login: request $request,
+    println(s"""login: request $request,
       cookies ${request.cookies}
-      keySet ${request.session.data.keySet}""" )
+      keySet ${request.session.data.keySet}""")
 
-    val formURI = forms("loginForm")
     val httpRequest = copyRequest(request)
-//    retrieveURIBody(classURI, dataset, httpRequest, transactionsInside = true)
+    //    retrieveURIBody(classURI, dataset, httpRequest, transactionsInside = true)
 
-   val lfTry = 
-     wrapInReadTransaction {
-     htmlFormElemRaw(
-       "tmp:login",
-//       unionGraph: Rdf#Graph=allNamedGraph,
-//       hrefPrefix: String = config.hrefDisplayPrefix,
-//       blankNode: String = "",
-    editable = true,
-    actionURI = "/authenticate",
-    lang = httpRequest.getLanguage(),
-    graphURI = "",
-    actionURI2 = "/authenticate",
-//    formGroup = fromUri(nullURI),
-    formuri= fromUri(formURI),
-//    database = "TDB",
-    request = httpRequest 
-  ) . _1 // ( NodeSeq, FormSyntax )
-    }
-    val lf = lfTry  match {
+    val lfTry =
+      wrapInReadTransaction {
+        htmlFormElemRaw(
+          "tmp:login",
+          editable = true,
+          actionURI = "/authenticate2",
+          lang = httpRequest.getLanguage(),
+          graphURI = "",
+          actionURI2 = "/authenticate2",
+          //    formGroup = fromUri(nullURI),
+          formuri = fromUri(formURI),
+          //    database = "TDB",
+          request = httpRequest)._1 // ( NodeSeq, FormSyntax )
+      }
+    val lf = lfTry match {
       case Success(lf) => lf
-      case Failure(f) => println (s"login: Error: $f")
-      Text(s"login: Error: $f")
+      case Failure(f) =>
+        println(s"login: Error: $f")
+        Text(s"login: Error: $f")
     }
     val content = <div>
-                   Veuillez vous identifier afin d'accéder au système
-                   <p/>
-                   Déjà membre
-                   <p/>
-                   Se connecter
-                   <p/>
-                   Créer un compte
-                   { lf }
-               </div>
+                    Veuillez vous identifier afin d'accéder au système
+                    <p/>
+                    Déjà membre
+                    <p/>
+                    Se connecter
+                    <p/>
+                    Créer un compte
+                    { lf }
+                  </div>
 
-    val page = mainPage(content, userInfo = <div/>, lang  =  httpRequest.getLanguage(), title = "" )
-      
+    val page = mainPage(content, userInfo = <div/>, lang = httpRequest.getLanguage(), title = "")
+
     Ok("<!DOCTYPE html>\n" + page)
-    .as("text/html; charset=utf-8")
+      .as("text/html; charset=utf-8")
   }
 
   /**
@@ -112,47 +116,62 @@ extends Controller
    */
   def authenticate = Action {
     implicit request: Request[_] =>
-    val httpRequest = copyRequest(request)
-    val userFromSession = httpRequest.userId() // normally not yet set in session !
+      val httpRequest = copyRequest(request)
+      val userFromSession = httpRequest.userId() // normally not yet set in session !
 
-    // TODO get triples from form (see FormSaver)
-    
-//    loginForm.bindFromRequest.fold(
-//      formWithErrors =>
-//        BadRequest("<!DOCTYPE html>\n" +
-//            ??? // TODO
-////            views.html.login(formWithErrors, registerForm))
-//          .as("text/html; charset=utf-8"),
-//      user => {
+      // get triples from form (see FormSaver)
+      val trs = getTriplesFromHTTPrequest(httpRequest): Iterable[(Rdf#Triple, Seq[String])]
+      val predicateToValue = for ((triple, values) <- trs) yield {
+        triple.predicate(ops) -> values.headOption
+      }
+      val predicateToValueMap = predicateToValue.toMap
 
-        // Redirect to URL before login
-        println(s"""authenticate: cookies ${request.cookies}
+      val useridOption = predicateToValueMap.get(useridProp).flatten
+      val passwordOption = predicateToValueMap.get(passwordProp).flatten
+      val checkLoginOption = for (
+        userid <- useridOption;
+        password <- passwordOption
+      ) yield checkLogin(userid, password)
+      val loginChecked = checkLoginOption match {
+        case Some(true) => true
+        case _          => false
+      }
+
+      if( loginChecked ) {
+      // Redirect to URL before login
+      println(s"""authenticate: cookies ${request.cookies}
           get("to-redirect") ${request.session.get("to-redirect")}
           keySet ${request.session.data.keySet}""")
-            val previousURL = redirect(request)
-            println(s"authenticate: previous url <$previousURL>")
-            val call = previousURL match {
-              case (url) if (
-                url != "" &&
-                !url.endsWith("/login") &&
-                !url.endsWith("/authenticate")) => Call("GET", url)
-              case _ => routes.Application.index
-            }
-            Redirect(call).withSession(Security.username ->
-            ???
-            // user._1
-                )
-              .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
-              .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
-              .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
-
+      val previousURL = redirect(request)
+      println(s"authenticate: previous url <$previousURL>")
+      val call = previousURL match {
+        case (url) if (
+          url != "" &&
+          !url.endsWith("/login2") &&
+          !url.endsWith("/authenticate2")) => Call("GET", url)
+        case _ => routes.Application.index
+      }
+      Redirect(call).withSession(Security.username ->
+        ??? // user._1
+        )
+        .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+        .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
+        .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
+      } else
+        BadRequest(
+        		"<!DOCTYPE html>\n" + 
+            mainPage(
+                <div>login NOT Checked</div>,
+                userInfo = NodeSeq.Empty 
+            ))
+          .as("text/html; charset=utf-8")
   }
 
   /** get the URL to redirect after authentification */
   def redirect(request: Request[_]) = request.session.get("to-redirect") . getOrElse("")
 
   def logout = Action {
-    Redirect(routes.Auth.login).withNewSession.flashing(
+    Redirect(routes.AuthService.login).withNewSession.flashing(
       "success" -> "You are now logged out."
     )
   }

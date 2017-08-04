@@ -34,6 +34,8 @@ case class HTTPrequest(
     path: String=""
     ) {
 
+  def getHTTPparameterValue(param: String) = queryString.get(param) .map(seq => seq.headOption ) . flatten
+
   def absoluteURL(rawURI: String = "", secure: Boolean = false): String =
     "http" + (if (secure) "s" else "") + "://" +
       this.host + rawURI // + this.appendFragment
