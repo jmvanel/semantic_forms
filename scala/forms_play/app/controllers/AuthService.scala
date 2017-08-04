@@ -118,6 +118,9 @@ extends Controller
     implicit request: Request[_] =>
       val httpRequest = copyRequest(request)
       val userFromSession = httpRequest.userId() // normally not yet set in session !
+println( s"""authenticate: httpRequest $httpRequest - queryString ${httpRequest.queryString}
+    	userFromSession $userFromSession
+    	formMap ${httpRequest.formMap}""" )
 
       // get triples from form (see FormSaver)
       val trs = getTriplesFromHTTPrequest(httpRequest): Iterable[(Rdf#Triple, Seq[String])]
@@ -125,6 +128,7 @@ extends Controller
         triple.predicate(ops) -> values.headOption
       }
       val predicateToValueMap = predicateToValue.toMap
+println( s"predicateToValueMap $predicateToValueMap")
 
       val useridOption = predicateToValueMap.get(useridProp).flatten
       val passwordOption = predicateToValueMap.get(passwordProp).flatten
@@ -136,6 +140,8 @@ extends Controller
         case Some(true) => true
         case _          => false
       }
+println( s"useridOption $useridOption") 
+println( s"passwordOption $passwordOption" )
 
       if( loginChecked ) {
       // Redirect to URL before login
@@ -151,9 +157,7 @@ extends Controller
           !url.endsWith("/authenticate2")) => Call("GET", url)
         case _ => routes.Application.index
       }
-      Redirect(call).withSession(Security.username ->
-        ??? // user._1
-        )
+      Redirect(call).withSession(Security.username -> useridOption.get )
         .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
         .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
         .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")

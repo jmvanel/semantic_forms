@@ -31,7 +31,8 @@ case class HTTPrequest(
 //    cookies: List[Cookie] = List())
     cookies: Map[String, Cookie] = Map(),
     acceptLanguages: Seq[String] = Seq(),
-    path: String=""
+    path: String="",
+    formMap: Map[String, Seq[String]] = Map()
     ) {
 
   def getHTTPparameterValue(param: String) = queryString.get(param) .map(seq => seq.headOption ) . flatten

@@ -37,7 +37,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
   def computeDatabaseChanges(
     httpRequest: HTTPrequest): DatabaseChanges[Rdf] =
     computeDatabaseChangesFromMap(
-        httpRequest.queryString,
+        httpRequest.formMap,
         httpRequest.getLanguage() )
 
   private def computeDatabaseChangesFromMap(
@@ -73,10 +73,11 @@ trait FormSaver[Rdf <: RDF, DATASET]
   }
     
   def getTriplesFromHTTPrequest(httpRequest: HTTPrequest): Iterable[(Rdf#Triple, Seq[String])] = {
-    getTriplesFromHTTPparams(httpRequest.queryString)
+    getTriplesFromHTTPparams(httpRequest.formMap)
   }
 
-  private def getTriplesFromHTTPparams(queryString: Map[String, Seq[String]]): Iterable[(Rdf#Triple, Seq[String])] = {
+  private def getTriplesFromHTTPparams(queryString: Map[String, Seq[String]])
+  : Iterable[(Rdf#Triple, Seq[String])] = {
     val res = queryString.map {
       // cf partial functions:  http://blog.bruchez.name/2011/10/scala-partial-functions-without-phd.html
       case (param0, objects) if (
@@ -94,6 +95,9 @@ trait FormSaver[Rdf <: RDF, DATASET]
         tryTriple match {
           case Success(triple) => (triple, objects)
         }
+      case x =>
+        println(s"getTriplesFromHTTPparams: _ : $x")
+        (Triple(nullURI, nullURI, nullURI) , Seq() )
     }
     res
   }
