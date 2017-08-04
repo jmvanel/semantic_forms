@@ -22,6 +22,8 @@ import scala.xml.Text
 import views.MainXmlWithHead
 import deductions.runtime.services.FormSaver
 import scala.xml.NodeSeq
+import deductions.runtime.core.HTTPrequest
+import scala.util.Try
 
 // class
 object AuthService extends AuthServiceTrait {
@@ -57,7 +59,8 @@ extends Controller
 
   import ops._
 
-  val formURI = forms("loginForm")
+  val loginFormURI = forms("loginForm")
+  val registerFormURI = forms("registerForm")
 
   val useridProp = form("userid") 
   val passwordProp = form("password")
@@ -70,38 +73,60 @@ extends Controller
       keySet ${request.session.data.keySet}""")
 
     val httpRequest = copyRequest(request)
-    //    retrieveURIBody(classURI, dataset, httpRequest, transactionsInside = true)
 
-    val lfTry =
-      wrapInReadTransaction {
-        htmlFormElemRaw(
-          "tmp:login",
-          editable = true,
-          actionURI = "/authenticate2",
-          lang = httpRequest.getLanguage(),
-          graphURI = "",
-          actionURI2 = "/authenticate2",
-          //    formGroup = fromUri(nullURI),
-          formuri = fromUri(formURI),
-          //    database = "TDB",
-          request = httpRequest)._1 // ( NodeSeq, FormSyntax )
+    val loginForm = {
+      val lfTry =
+        wrapInReadTransaction {
+          htmlFormElemRaw(
+            "tmp:login",
+            editable = true,
+            actionURI = "/authenticate2",
+            lang = httpRequest.getLanguage(),
+            graphURI = "",
+            actionURI2 = "/authenticate2",
+            formuri = fromUri(loginFormURI),
+            request = httpRequest)._1
+        }
+      lfTry match {
+        case Success(lf) => lf
+        case Failure(f) =>
+          val mess = s"login: Error: $f"
+          println(mess)
+          Text(mess)
       }
-    val lf = lfTry match {
-      case Success(lf) => lf
-      case Failure(f) =>
-        println(s"login: Error: $f")
-        Text(s"login: Error: $f")
     }
+
+    val registerForm = {
+      val lfTry =
+        wrapInReadTransaction {
+          htmlFormElemRaw(
+            "tmp:login",
+            editable = true,
+            actionURI = "/register2",
+            lang = httpRequest.getLanguage(),
+            graphURI = "",
+            actionURI2 = "/register2",
+            formuri = fromUri(registerFormURI),
+            request = httpRequest)._1
+        }
+      lfTry match {
+        case Success(lf) => lf
+        case Failure(f) =>
+          val mess = s"register: Error: $f"
+          println(mess)
+          Text(mess)
+      }
+    }
+
     val content = <div>
-                    Veuillez vous identifier afin d'accéder au système
-                    <p/>
-                    Déjà membre
-                    <p/>
+                    Veuillez vous identifier afin d'accéder au système<p/>
+                    Déjà membre<p/>
                     Se connecter
+    	{ loginForm }
                     <p/>
                     Créer un compte
-                    { lf }
-                  </div>
+      { registerForm }
+    </div>
 
     val page = mainPage(content, userInfo = <div/>, lang = httpRequest.getLanguage(), title = "")
 
@@ -110,28 +135,19 @@ extends Controller
   }
 
   /**
-   * start a session after login if user Id & password are OK
-   * this is the action of form `loginForm`;
-   * actual recording in database declared in Form() registerForm
-   */
+   * start a session after login if user Id & password are OK */
   def authenticate = Action {
     implicit request: Request[_] =>
       val httpRequest = copyRequest(request)
+
       val userFromSession = httpRequest.userId() // normally not yet set in session !
 println( s"""authenticate: httpRequest $httpRequest - queryString ${httpRequest.queryString}
     	userFromSession $userFromSession
     	formMap ${httpRequest.formMap}""" )
 
-      // get triples from form (see FormSaver)
-      val trs = getTriplesFromHTTPrequest(httpRequest): Iterable[(Rdf#Triple, Seq[String])]
-      val predicateToValue = for ((triple, values) <- trs) yield {
-        triple.predicate(ops) -> values.headOption
-      }
-      val predicateToValueMap = predicateToValue.toMap
-println( s"predicateToValueMap $predicateToValueMap")
+      val (useridOption, passwordOption, confirmPasswordOption)
+      = decodeResponse(httpRequest)
 
-      val useridOption = predicateToValueMap.get(useridProp).flatten
-      val passwordOption = predicateToValueMap.get(passwordProp).flatten
       val checkLoginOption = for (
         userid <- useridOption;
         password <- passwordOption
@@ -161,14 +177,66 @@ println( s"passwordOption $passwordOption" )
         .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
         .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
         .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
-      } else
-        BadRequest(
-        		"<!DOCTYPE html>\n" + 
-            mainPage(
-                <div>login NOT Checked</div>,
-                userInfo = NodeSeq.Empty 
-            ))
-          .as("text/html; charset=utf-8")
+      } else {
+         makeBadRequest( <div>login NOT Checked</div> )
+      }
+  }
+
+  private def makeBadRequest(message: NodeSeq) = BadRequest(
+    "<!DOCTYPE html>\n" +
+      mainPage(message, userInfo = NodeSeq.Empty))
+    .as("text/html; charset=utf-8")
+          
+  def decodeResponse(httpRequest: HTTPrequest) = {
+    // get triples from form (see FormSaver)
+    val trs = getTriplesFromHTTPrequest(httpRequest): Iterable[(Rdf#Triple, Seq[String])]
+    val predicateToValue = for ((triple, values) <- trs) yield {
+      triple.predicate(ops) -> values.headOption
+    }
+    val predicateToValueMap = predicateToValue.toMap
+    println(s"predicateToValueMap $predicateToValueMap")
+
+    val useridOption = predicateToValueMap.get(useridProp).flatten
+    val passwordOption = predicateToValueMap.get(passwordProp).flatten
+    val confirmPasswordOption = predicateToValueMap.get(confirmPasswordProp).flatten
+    (useridOption, passwordOption, confirmPasswordOption)
+  }
+
+  /**
+   * start a session after registering user Id & password
+   *  this is the action of form `registerForm`
+   */
+  def register = Action {
+    implicit request: Request[_] =>
+      val httpRequest = copyRequest(request)
+      println(s"register = Action: Request:\n\t$httpRequest")
+
+      val (useridOption, passwordOption, confirmPasswordOption) = decodeResponse(httpRequest)
+
+      val checkRegisterOption = for (
+        userid <- useridOption;
+        password <- passwordOption;
+        confirmPassword <- confirmPasswordOption if (password == confirmPassword)
+      ) yield signin(userid, password)
+
+      val registerChecked = checkRegisterOption match {
+        case Some(Success(id)) => true
+        case _                 => false
+      }
+
+      if (registerChecked) {
+        // TODO also Redirect to the URL before login
+        println(s"register: user: $useridOption")
+        Redirect(routes.Application.index).withSession(
+          Security.username -> makeURIPartFromString(useridOption.get))
+          .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+          .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
+          .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
+      } else {
+        println(s"""register = Action: BadRequest:\n\t$useridOption,
+          $passwordOption, $confirmPasswordOption""")
+        makeBadRequest(<div>Register NOT succeeded for user {useridOption}</div>)
+      }
   }
 
   /** get the URL to redirect after authentification */

@@ -1,0 +1,26 @@
+# Date: Fri, 04 Aug 2017 15:21:42 GMT
+
+# graph size 23
+<http:///10.3.142.197:9112/ldp/semantic_forms>
+        a                   <http://deductions.github.io/doas.owl.ttl#Software> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "semantic forms" ;
+        <http://deductions.github.io/doas.owl.ttl#dependencyManager>
+                <http://dbpedia.org/resource/SBT_(software)> ;
+        <http://deductions.github.io/doas.owl.ttl#features>
+                <http://dbpedia.org/resource/Collaborative_software> , <http://dbpedia.org/resource/Database_management_system> , <http://dbpedia.org/resource/Software_framework> , <http://dbpedia.org/resource/Graph_database> , <http://dbpedia.org/resource/Semantic_Web_Services> , <http://dbpedia.org/resource/Semantic_Web_Stack> , <http://dbpedia.org/resource/Database> ;
+        <http://deductions.github.io/doas.owl.ttl#hasDependency>
+                <https://jena.apache.org/about_jena/jena.rdf> , <http://jena.apache.org/> ;
+        <http://deductions.github.io/doas.owl.ttl#inputFileTypes>
+                <http://dbpedia.org/resource/Resource_Description_Framework> , <http://dbpedia.org/resource/JSON-LD> ;
+        <http://deductions.github.io/doas.owl.ttl#language>
+                <http://dbpedia.org/resource/Scala_(programming_language)> , <http://dbpedia.org/resource/JavaScript> ;
+        <http://deductions.github.io/doas.owl.ttl#modelingTechnology>
+                <http://dbpedia.org/resource/Web_Ontology_Language> ;
+        <http://deductions.github.io/doas.owl.ttl#outputFileTypes>
+                <http://dbpedia.org/resource/JSON-LD> , <http://dbpedia.org/resource/Resource_Description_Framework> ;
+        <http://deductions.github.io/doas.owl.ttl#softwareType>
+                <http://dbpedia.org/resource/Web_server> , <http://dbpedia.org/resource/Library_(computing)> ;
+        <http://deductions.github.io/doas.owl.ttl#uiTechnology>
+                <http://dbpedia.org/resource/HTML> ;
+        <urn:displayLabel>  "semantic forms" .
