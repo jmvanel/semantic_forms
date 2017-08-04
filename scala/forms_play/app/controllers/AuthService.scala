@@ -61,7 +61,10 @@ extends Controller
       cookies ${request.cookies}
       keySet ${request.session.data.keySet}""" )
 
+    val formURI = forms("loginForm")
     val httpRequest = copyRequest(request)
+//    retrieveURIBody(classURI, dataset, httpRequest, transactionsInside = true)
+
    val lfTry = 
      wrapInReadTransaction {
      htmlFormElemRaw(
@@ -75,7 +78,7 @@ extends Controller
     graphURI = "",
     actionURI2 = "/authenticate",
 //    formGroup = fromUri(nullURI),
-    formuri= fromUri(form("AuthenticationAttempt")),
+    formuri= fromUri(formURI),
 //    database = "TDB",
     request = httpRequest 
   ) . _1 // ( NodeSeq, FormSyntax )

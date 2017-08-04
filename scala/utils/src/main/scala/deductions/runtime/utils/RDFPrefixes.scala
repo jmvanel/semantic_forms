@@ -39,8 +39,9 @@ import scala.util.{Failure, Success, Try}
   lazy val dbo = Prefix[Rdf]("dbo", "http://dbpedia.org/ontology/")
   lazy val vs = Prefix[Rdf]("vs", "http://www.w3.org/2003/06/sw-vocab-status/ns#")
   lazy val content = Prefix[Rdf]("content", "http://purl.org/rss/1.0/modules/content/")
-
+  /** vocabulary for forms in general (eg form:showProperties */
   lazy val form = Prefix[Rdf]("form", "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#") // http://deductions-software.com/ontologies/forms.owl.ttl#" )
+  /** prefix for specific forms (eg forms:personForm) */
   lazy val forms = Prefix[Rdf]("forms", "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#" )
   lazy val dct = DCTPrefix[Rdf]
 	lazy val dc = DCPrefix[Rdf]
