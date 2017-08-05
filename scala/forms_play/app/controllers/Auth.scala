@@ -13,7 +13,7 @@ import deductions.runtime.utils.DefaultConfiguration
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 
-// class
+/** OBSOLETE version with Play! Twirl forms */
 object Auth extends AuthTrait {
   val config = new DefaultConfiguration {
     override val needLoginForEditing = true

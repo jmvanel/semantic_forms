@@ -2,6 +2,10 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
+# Another DSL for routes (but maybe not fully chekable by the Scala compiler)
+# https://www.playframework.com/documentation/2.5.x/ScalaEmbeddingPlay
+# https://www.playframework.com/documentation/2.5.x/ScalaSirdRouter
+
 # Home page
 GET     /                   controllers.Application.index
 
@@ -57,15 +61,17 @@ GET     /history            controllers.Application.makeHistoryUserActionsAction
 
 # authentication
 
-GET     /login                      controllers.Auth.login
-GET     /login2                     controllers.AuthService.login
-POST    /authenticate2              controllers.AuthService.authenticate
-POST    /authenticate               controllers.Auth.authenticate
-GET     /authenticate               controllers.Auth.authenticate
-POST    /register                   controllers.Auth.register
-POST    /register2                  controllers.AuthService.register
-GET     /register                   controllers.Auth.register
-GET     /logout                     controllers.Auth.logout
+GET     /login                      controllers.AuthService.login
+POST    /authenticate               controllers.AuthService.authenticate
+GET     /authenticate               controllers.AuthService.authenticate
+POST    /register                   controllers.AuthService.register
+GET     /register                   controllers.AuthService.register
+GET     /logout                     controllers.AuthService.logout
+
+GET     /login0                     controllers.Auth.login
+POST    /authenticate0              controllers.Auth.authenticate
+POST    /register0                  controllers.Auth.register
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

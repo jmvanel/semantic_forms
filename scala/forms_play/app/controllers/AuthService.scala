@@ -1,31 +1,29 @@
 package controllers
 
-import deductions.runtime.services.Authentication
-import org.w3.banana.RDF
-import play.api.data.{Form, Forms}
-import play.api.data.Forms._
-import play.api.mvc._
-
-//import deductions.runtime.services.ApplicationFacade
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalUserManagement
-import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.utils.DefaultConfiguration
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import deductions.runtime.services.html.TriplesViewModule
-import deductions.runtime.services.html.Form2HTMLObject
-import deductions.runtime.html.HtmlGeneratorInterface
-import deductions.runtime.utils.Configuration
-import scala.util.Success
 import scala.util.Failure
-import scala.xml.Text
-import views.MainXmlWithHead
-import deductions.runtime.services.FormSaver
+import scala.util.Success
 import scala.xml.NodeSeq
-import deductions.runtime.core.HTTPrequest
-import scala.util.Try
+import scala.xml.Text
 
-// class
+import org.w3.banana.RDF
+
+import deductions.runtime.core.HTTPrequest
+import deductions.runtime.html.HtmlGeneratorInterface
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.Authentication
+import deductions.runtime.services.FormSaver
+import deductions.runtime.services.html.Form2HTMLObject
+import deductions.runtime.services.html.TriplesViewModule
+import deductions.runtime.sparql_cache.dataset.RDFStoreLocalUserManagement
+import deductions.runtime.utils.Configuration
+import deductions.runtime.utils.DefaultConfiguration
+import play.api.mvc.Action
+import play.api.mvc.Call
+import play.api.mvc.Controller
+import play.api.mvc.Request
+import play.api.mvc.Security
+import views.MainXmlWithHead
+
 object AuthService extends AuthServiceTrait {
   override implicit val config: Configuration = new DefaultConfiguration {
     override val needLoginForEditing = true
@@ -119,12 +117,12 @@ extends Controller
     }
 
     val content = <div>
-                    Veuillez vous identifier afin d'accéder au système<p/>
-                    Déjà membre<p/>
+                    <h2>Veuillez vous identifier afin d'accéder au système</h2>
+                    <h3>Déjà membre</h3>
                     Se connecter
     	{ loginForm }
                     <p/>
-                    Créer un compte
+                    <h3>Créer un compte</h3>
       { registerForm }
     </div>
 
@@ -203,8 +201,8 @@ println( s"passwordOption $passwordOption" )
   }
 
   /**
-   * start a session after registering user Id & password
-   *  this is the action of form `registerForm`
+   * start a session after registering user with Id & password
+   *  this is the action of form `form:registerForm`
    */
   def register = Action {
     implicit request: Request[_] =>

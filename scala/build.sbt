@@ -1,5 +1,8 @@
 import Common._
 
+// Discussion on get rid of twirl in playframework
+// https://github.com/playframework/playframework/issues/5823
+
 // offline := true
 
 name := "semantic_forms-root"
