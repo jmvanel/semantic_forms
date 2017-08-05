@@ -2,9 +2,15 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Another DSL for routes (but maybe not fully chekable by the Scala compiler)
+# Other DSL's for routes (but maybe not fully chekable by the Scala compiler)
+# compare HTTP routing DSL in Scala akka scalatra lift
+
+# https://blog.knoldus.com/2017/06/12/akka-http-vs-other-rest-api-tools/
+# https://fr.slideshare.net/takezoe/scala-frameworks-for-web-application-2016
 # https://www.playframework.com/documentation/2.5.x/ScalaEmbeddingPlay
 # https://www.playframework.com/documentation/2.5.x/ScalaSirdRouter
+# http://doc.akka.io/docs/akka-http/current/scala/http/routing-dsl/overview.html
+# http://spray.io/documentation/1.2.4/spray-routing/ ==> spray is no longer maintained and has been superseded by Akka HTTP.
 
 # Home page
 GET     /                   controllers.Application.index
