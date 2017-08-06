@@ -78,7 +78,7 @@ extends Controller
           htmlFormElemRaw(
             "tmp:login",
             editable = true,
-            actionURI = "/authenticate2",
+            actionURI = "",
             lang = httpRequest.getLanguage(),
             graphURI = "",
             actionURI2 = "/authenticate2",
@@ -100,7 +100,7 @@ extends Controller
           htmlFormElemRaw(
             "tmp:login",
             editable = true,
-            actionURI = "/register2",
+            actionURI = "",
             lang = httpRequest.getLanguage(),
             graphURI = "",
             actionURI2 = "/register2",
