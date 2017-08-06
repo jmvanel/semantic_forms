@@ -26,7 +26,7 @@ trait Secured
       Unauthorized("""{"currentRequest": "ERROR UNAUTHORIZED"}""").
         addingToSession("to-redirect" -> request.uri)(request)
     else
-      Results.Redirect(routes.Auth.login).
+      Results.Redirect(routes.AuthService.login).
         addingToSession("to-redirect" -> request.uri)(request)
   }
 
