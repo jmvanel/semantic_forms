@@ -12,7 +12,14 @@ import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Failure, Try}
+import deductions.runtime.core.HTTPrequest
+import scala.util.Success
 
+case class DatabaseChanges[Rdf <: RDF](
+  triplesToAdd: Seq[Rdf#Triple] = Seq(),
+  triplesToRemove: Seq[Rdf#Triple] = Seq(),
+  typeChange: Boolean = false)
+    
 trait FormSaver[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
     with TypeAddition[Rdf, DATASET]
@@ -26,7 +33,74 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
   import ops._
 
-//  private lazy val foaf = FOAFPrefix[Rdf]
+
+  def computeDatabaseChanges(
+    httpRequest: HTTPrequest): DatabaseChanges[Rdf] =
+    computeDatabaseChangesFromMap(
+        httpRequest.formMap,
+        httpRequest.getLanguage() )
+
+  private def computeDatabaseChangesFromMap(
+    httpParamsMap: Map[String, Seq[String]],
+    lang: String): DatabaseChanges[Rdf] = {
+    var databaseChanges = DatabaseChanges[Rdf]()
+    val comingBackTriples = getTriplesFromHTTPparams(httpParamsMap)
+    comingBackTriples.foreach { comingBackTriple =>
+      databaseChanges =
+        computeDatabaseChangesFor1Triple(
+          comingBackTriple._1,
+          comingBackTriple._2 /* objects*/ , databaseChanges, lang)
+    }
+    //    httpParamsMap.map {
+    //      case (param0, objects) =>
+    //        val param = URLDecoder.decode(param0, "utf-8")
+    //        logger.debug(s"\nsaveTriples: httpParam decoded: $param")
+    //        if (param != "url" &&
+    //          param != "uri" &&
+    //          param != "graphURI") {
+    //          val try_ = Try {
+    //            val comingBackTriple = httpParam2Triple(param)
+    //            logger.debug(s"saveTriples: triple from httpParam: {$comingBackTriple }")
+    //            databaseChanges = computeDatabaseChangesFor1Triple(comingBackTriple, objects, databaseChanges, lang)
+    //          }
+    //          try_ match {
+    //            case f: Failure[_] => logger.error(s"saveTriples: $param :" + f)
+    //            case _             =>
+    //          }
+    //        }
+    //    }
+    databaseChanges
+  }
+    
+  def getTriplesFromHTTPrequest(httpRequest: HTTPrequest): Iterable[(Rdf#Triple, Seq[String])] = {
+    getTriplesFromHTTPparams(httpRequest.formMap)
+  }
+
+  private def getTriplesFromHTTPparams(queryString: Map[String, Seq[String]])
+  : Iterable[(Rdf#Triple, Seq[String])] = {
+    val res = queryString.map {
+      // cf partial functions:  http://blog.bruchez.name/2011/10/scala-partial-functions-without-phd.html
+      case (param0, objects) if (
+        param0 != "url" &&
+        param0 != "uri" &&
+        param0 != "graphURI") =>
+        val param = URLDecoder.decode(param0, "utf-8")
+        logger.debug(s"\ngetTriplesFromHTTPparams: httpParam decoded: $param");
+        val tryTriple = Try {
+          val comingBackTriple = httpParam2Triple(param)
+          logger.debug(s"getTriplesFromHTTPparams: triple from httpParam: {$comingBackTriple }")
+          comingBackTriple
+        }
+        if (tryTriple.isFailure) logger.error(s"getTriplesFromHTTPparams: $param : $tryTriple")
+        tryTriple match {
+          case Success(triple) => (triple, objects)
+        }
+      case x =>
+        println(s"getTriplesFromHTTPparams: _ : $x")
+        (Triple(nullURI, nullURI, nullURI) , Seq() )
+    }
+    res
+  }
 
   /** save triples in named graph given by HTTP parameter "graphURI";
    *  other HTTP parameters are original triples in Turtle;
@@ -49,10 +123,6 @@ trait FormSaver[Rdf <: RDF, DATASET]
     val graphURIOption = httpParamsMap.getOrElse("graphURI", Seq()).headOption
     logger.debug(s"FormSaver.saveTriples uri encoded $encodedSubjectUriOption, graphURI $graphURIOption")
 
-    val triplesToAdd = ArrayBuffer[Rdf#Triple]()
-    val triplesToRemove = ArrayBuffer[Rdf#Triple]()
-    var typeChange = false
-
     // PENDING: require subject URI in parameter "uri" is probably not necessary (case of sub-forms and inverse triples)
     lazy val subjectUriOption = encodedSubjectUriOption match {
       case Some(subjectUri0) =>
@@ -64,33 +134,25 @@ trait FormSaver[Rdf <: RDF, DATASET]
           if (graphURIOption == Some("")) subjectUri
           else URLDecoder.decode(graphURIOption.getOrElse(subjectUri0), "utf-8")
  
-        httpParamsMap.map {
-          case (param0, objects) =>
-            val param = URLDecoder.decode(param0, "utf-8")
-            logger.debug(s"\nsaveTriples: httpParam decoded: $param")
-            if (param != "url" &&
-              param != "uri" &&
-              param != "graphURI") {
-              val try_ = Try {
-                val comingBackTriple = httpParam2Triple(param)
-                logger.debug(s"saveTriples: triple from httpParam: {$comingBackTriple }")
-                computeDatabaseChanges(comingBackTriple, objects,lang)
-              }
-              try_ match {
-                case f: Failure[_] => logger.error(s"saveTriples: $param :" + f)
-                case _ =>
-              }
-            }
-        }
-        doSave(graphURI)
-        ( Some(subjectUri), typeChange)
-      case _ => (None, typeChange)
+        val databaseChanges = computeDatabaseChangesFromMap( httpParamsMap, lang)
+
+        doSave(graphURI, databaseChanges)
+        ( Some(subjectUri), databaseChanges.typeChange)
+      case _ => (None, false)
     }
 
-    //// end of saveTriples() body ////
+    return subjectUriOption
+  }
 
-    /* process a single triple from the form */
-    def computeDatabaseChanges(originalTriple: Rdf#Triple, objectsFromUser: Seq[String],lang: String = "") {
+  /** process a single triple from the form */
+  private def computeDatabaseChangesFor1Triple(originalTriple: Rdf#Triple, objectsFromUser: Seq[String],
+                             databaseChanges: DatabaseChanges[Rdf],
+                             lang: String = ""): DatabaseChanges[Rdf] = {
+
+    val triplesToAdd = ArrayBuffer[Rdf#Triple]()
+    val triplesToRemove = ArrayBuffer[Rdf#Triple]()
+    var typeChange = false
+    
       //      if (originalTriple.objectt == foaf.Document ) // predicate == foaf.firstName) logger.debug( "DDDDDDDDDDD "+ foaf.Document)
       logger.debug(s"computeDatabaseChanges: originalTriple: $originalTriple, objectsFromUser $objectsFromUser")
       objectsFromUser.map { objectStringFromUser =>
@@ -135,13 +197,19 @@ trait FormSaver[Rdf <: RDF, DATASET]
           typeChange = true
         }
       }
+          
+      databaseChanges.copy(
+          triplesToAdd = databaseChanges.triplesToAdd ++ triplesToAdd,
+          triplesToRemove = databaseChanges.triplesToRemove ++ triplesToRemove,
+          typeChange = databaseChanges.typeChange || typeChange)
     }
 
-    /* do Save the computed Database Changes - transactional */
-    def doSave(graphURI: String)
+  /** do Save the computed Database Changes - transactional */
+  private def doSave(graphURI: String, databaseChanges: DatabaseChanges[Rdf])
     ( implicit userURI: String = graphURI ) {
-      
-          // DEBUG
+    import databaseChanges._
+
+    // DEBUG
     val dsg = dataset.asInstanceOf[org.apache.jena.sparql.core.DatasetImpl].asDatasetGraph()
     println(s">>>> doSave: dsg class : ${dsg.getClass}")
     println(s">>>> doSave: ds: ${dataset}")
@@ -161,7 +229,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
       }
 
       Future { wrapInTransaction {
-    	  addTypes(triplesToAdd.toSeq,
+    	  addTypes(triplesToAdd,
     			  Some(URI(graphURI)))
       } }
 
@@ -181,9 +249,5 @@ trait FormSaver[Rdf <: RDF, DATASET]
       }
       f.onFailure { case t => logger.error(s"doSave: Failure $t") }
     }
-
-    return subjectUriOption
-  }
-
 }
 

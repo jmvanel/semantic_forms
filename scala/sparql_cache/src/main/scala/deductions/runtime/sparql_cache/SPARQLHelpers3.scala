@@ -3,6 +3,8 @@ package deductions.runtime.sparql_cache
 import java.io.ByteArrayOutputStream
 
 import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.sparql_cache.dataset.RDFOPerationsDB
+
 import deductions.runtime.utils._
 import org.apache.log4j.Logger
 import org.w3.banana.io.{JsonLdCompacted, RDFWriter, RDFXML, Turtle}
@@ -13,23 +15,31 @@ import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
-/**
+import org.w3.banana.RDFOps
+
+/** SPARQL Helpers without inheritance to RDFStoreLocalProvider,
+ *  contrary to original SPARQLHelpers3;
+ *  this is replaced by implicit arguments;
+ *  so this trait is usable in classes without instantiation of RDFStoreLocalProvider
+ *
  * TODO separate stuff depending on dataset, and stuff taking a graph in argument
  * @author jmv
  */
-trait SPARQLHelpers[Rdf <: RDF, DATASET]
-    extends RDFStoreLocalProvider[Rdf, DATASET]
+trait SPARQLHelpers3[Rdf <: RDF, DATASET]
+    extends RDFOPerationsDB[Rdf, DATASET]
     with RDFHelpers0[Rdf]
     with RDFPrefixes[Rdf]
     with Timer {
 
   val config: Configuration
-
+  
   val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]
   val rdfXMLWriter: RDFWriter[Rdf, Try, RDFXML]
 
+  implicit val ops: RDFOps[Rdf]
   import ops._
+
   import rdfStore.sparqlEngineSyntax._
   import rdfStore.sparqlUpdateSyntax._
   import rdfStore.transactorSyntax._
@@ -40,7 +50,12 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    * used in SPARQL results Web page
    * NEEDS transaction
    */
-  def sparqlConstructQuery(queryString: String): Try[Rdf#Graph] = {
+  def sparqlConstructQuery(queryString: String)
+  (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+  : Try[Rdf#Graph] = {
+    import rdfLocalProvider.rdfStore.sparqlEngineSyntax._
+    import sparqlOps._
+
     val result = for {
       query <- {
         logger.debug("sparqlConstructQuery: before parseConstruct")
@@ -49,7 +64,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 //      _ = println( s"sparqlConstructQuery: query $query" )
       es <- {
         logger.debug("sparqlConstructQuery: before executeConstruct")
-        dataset.executeConstruct(query, Map())
+        rdfLocalProvider.dataset.executeConstruct(query, Map())
       }
     } yield es
     result
@@ -59,14 +74,19 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    * sparql Construct Query;
    * With transaction
    */
-  def sparqlConstructQueryGraph(queryString: String): Try[Rdf#Graph] =
+  def sparqlConstructQueryGraph(queryString: String)
+  (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+  : Try[Rdf#Graph] =
     wrapInReadTransaction(sparqlConstructQuery(queryString)).flatten
 
   /**
    * sparql Update Query;
    * NON transactional
    */
-  def sparqlUpdateQuery(queryString: String, ds: DATASET = dataset): Try[Unit] = {
+  def sparqlUpdateQuery(queryString: String, dts: Option[DATASET])
+   (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+   : Try[Unit] = {
+    val ds = getDataset(dts)
     val result = for {
       query <- {
         //        logger.debug(s"sparqlUpdateQuery: before parseUpdate $queryString")
@@ -82,8 +102,19 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     result
   }
 
+  private def getDataset(dts: Option[DATASET])
+  (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+  =
+  dts match {
+      case Some(dataset) => dataset
+      case None => rdfLocalProvider.dataset
+    }
+  
   /** wrap In RW Transaction */
-  def wrapInTransaction[T](sourceCode: => T, ds:DATASET=dataset) = {
+  def wrapInTransaction[T](sourceCode: => T, dts: Option[DATASET])
+  (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+  = {
+    val ds = getDataset(dts)
     val transaction = rdfStore.rw(ds, {
       sourceCode
     })
@@ -91,30 +122,40 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   }
 
   /** wrap In Read Transaction */
-  def wrapInReadTransaction[T](sourceCode: => T) = {
-    val transaction = rdfStore.r(dataset, {
+  def wrapInReadTransaction[T](sourceCode: => T)
+   (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+   = {
+    import rdfLocalProvider._
+    val transaction = rdfLocalProvider.rdfStore.r(dataset, {
       sourceCode
     })
     transaction
   }
 
   /** transactional */
-  def sparqlUpdateQueryTR(queryString: String, ds: DATASET = dataset) =
-    wrapInTransaction(sparqlUpdateQuery(queryString, ds)).flatten
+  def sparqlUpdateQueryTR(queryString: String, dts: Option[DATASET])
+   (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+  = {
+    wrapInTransaction(sparqlUpdateQuery(queryString, dts), dts).flatten
+  }
 
   /**
    * transactional, output Turtle String
    *  @param format = "turtle" or "rdfxml" or "jsonld"
    */
-  def sparqlConstructQueryTR(queryString: String, format: String = "turtle"):  Try[String] = {
-    val transaction = rdfStore.r(dataset, {
+  def sparqlConstructQueryTR(queryString: String, format: String = "turtle")
+    (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+    :  Try[String] = {
+    val transaction = rdfStore.r(rdfLocalProvider.dataset, {
       graph2String(sparqlConstructQuery(queryString), "", format)
     })
     transaction // .get
   }
 
   /** transactional */
-  def sparqlConstructQueryFuture(queryString: String): Future[Rdf#Graph] = {
+  def sparqlConstructQueryFuture(queryString: String)
+    (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+  : Future[Rdf#Graph] = {
     val r = sparqlConstructQuery(queryString)
     r.asFuture
   }
@@ -128,7 +169,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    *  NEEDS Transaction;
    *  See also [[deductions.runtime.sparql_cache.dataset.DatasetHelper#replaceObjects]]
    */
-  def replaceRDFTriple(triple: Rdf#Triple, graphURI: Rdf#Node, dataset: DATASET) = {
+  def replaceRDFTriple(triple: Rdf#Triple, graphURI: Rdf#Node, dataset: DATASET)
+  (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+   = {
     val uri = triple.subject
     val property = triple.predicate
 
@@ -143,14 +186,16 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
          |   }
          | }""".stripMargin
     logger.debug(s"""replaceRDFTriple: $triple in <$graphURI> """)
-    val result = sparqlUpdateQuery(queryString, dataset)
+    val result = sparqlUpdateQuery(queryString, Some(dataset))(rdfLocalProvider)
 
     rdfStore.appendToGraph(dataset, nodeToURI(graphURI), makeGraph(Seq(triple)))
   }
 
   /** remove all triples having same subject and property in any named graph,
    *  and re-create given triple in named graph having a such triple */
-  def replaceRDFTripleAnyGraph(triple: Rdf#Triple, dataset: DATASET) = {
+  def replaceRDFTripleAnyGraph(triple: Rdf#Triple, dataset: DATASET)
+    (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+  = {
     val uri = triple.subject
     val property = triple.predicate
     val objet = triple.objectt
@@ -170,10 +215,12 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
          |   }
          | }""".stripMargin
     logger.debug(s"""replaceRDFTripleAnyGraph: $triple""")
-    val result = sparqlUpdateQuery(queryString, dataset)
+    val result = sparqlUpdateQuery(queryString, Some(dataset))
   }
 
-  def getRDFList(subject: String): List[Rdf#Node] = {
+  def getRDFList(subject: String, dts: Option[DATASET])
+    (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+  : List[Rdf#Node] = {
     val queryRdfList = s"""
     ${declarePrefix(rdf)}
     SELECT ?ELEM
@@ -183,7 +230,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   """
     val q = queryRdfList.replace("<SUBJECT>", s"$subject")
     //    logger.debug(s"getRDFList: q $q")
-    val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariablesNT(q, List("ELEM"))
+    val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariablesNT(q, List("ELEM"), dts)
     //    logger.debug(s"getRDFList: res $res")
     res.flatten
   }
@@ -192,7 +239,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    * remove quads whose subject is given URI
    *  No Transaction
    */
-  def removeQuadsWithSubject(uri: Rdf#Node, ds: DATASET = dataset) = {
+  def removeQuadsWithSubject(uri: Rdf#Node, dts: Option[DATASET])
+    (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+  = {
     val queryString = s"""
          | DELETE {
          |   graph ?graphURI {
@@ -215,7 +264,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     //    logger.debug( s"removeQuadsWithSubject $uri " + sparqlSelectQuery( queryString1 ) )
 
     //    logger.debug( s"removeQuadsWithSubject size() $size()" )
-    val res = sparqlUpdateQuery(queryString, ds)
+    val res = sparqlUpdateQuery(queryString, dts)
     logger.debug(s"removeQuadsWithSubject res ${res}")
   }
 
@@ -223,7 +272,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    * remove quads whose object is given URI
    *  No Transaction
    */
-  def removeQuadsWithObject(objet: Rdf#Node, ds: DATASET = dataset) = {
+  def removeQuadsWithObject(objet: Rdf#Node, dts: Option[DATASET])
+    (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+  = {
     val queryString = s"""
          | DELETE {
          |   GRAPH ?graphURI {
@@ -234,7 +285,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
          |     ?subj ?property <$objet> .
          |   }
          | }""".stripMargin
-    val res = sparqlUpdateQuery(queryString, ds)
+    val res = sparqlUpdateQuery(queryString, dts)
   }
 
   /**
@@ -242,12 +293,14 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    *  @return removed Quads
    *  DOES NOT include transaction
    */
-  def removeFromQuadQuery(s: Rdf#NodeMatch, p: Rdf#NodeMatch, o: Rdf#NodeMatch): List[Quad] = {
+  def removeFromQuadQuery(s: Rdf#NodeMatch, p: Rdf#NodeMatch, o: Rdf#NodeMatch)
+    (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+    : List[Quad] = {
     val quads = quadQuery(s, p, o).toList // : Iterable[Quad]
     //    logger.debug(s"removeFromQuadQuery: from $s $p $o: triples To remove $quads")
     quads.map {
       tripleToRemove =>
-        rdfStore.removeTriples(dataset, tripleToRemove._2,
+        rdfStore.removeTriples(rdfLocalProvider.dataset, tripleToRemove._2,
           List(tripleToRemove._1))
     }
     quads
@@ -257,7 +310,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   type Quad = (Rdf#Triple, Rdf#URI)
 
   /* An SPO Query returning quads */
-  def quadQuery(s: Rdf#NodeMatch, p: Rdf#NodeMatch, o: Rdf#NodeMatch): Iterable[Quad] = {
+  def quadQuery(s: Rdf#NodeMatch, p: Rdf#NodeMatch, o: Rdf#NodeMatch)
+  (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+  : Iterable[Quad] = {
 
     def makeSPARQLTermFromNodeMatch(nm: Rdf#NodeMatch, varName: String) = {
       foldNodeMatch(nm)(
@@ -307,7 +362,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     //    logger.debug( s"sparqlTerms $sparqlTerms" )
     //    logger.debug( s"variables $variables" )
     //    logger.debug( "quadQuery " + queryString ) 
-    val selectRes = sparqlSelectQueryVariablesNT(queryString, variables, dataset)
+    val selectRes = sparqlSelectQueryVariablesNT(queryString, variables, Some(rdfLocalProvider.dataset))
     //    logger.debug( s"selectRes $selectRes" )
     selectRes map { makeQuad(_) }
   }
@@ -316,11 +371,14 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   /** run SPARQL on given dataset, knowing result variables; transactional */
   def sparqlSelectQueryVariables(queryString: String, variables: Seq[String],
-                                 ds: DATASET = dataset): List[Seq[Rdf#Node]] = {
+                                 dts: Option[DATASET])
+  (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+  : List[Seq[Rdf#Node]] = {
+    val ds = getDataset(dts)
     logger.debug("RRRRRRRRRR sparqlSelectQueryVariables before transaction")
     val transaction = rdfStore.r( ds, {
 //    val transaction = ds.r({
-      sparqlSelectQueryVariablesNT(queryString, variables, ds)
+      sparqlSelectQueryVariablesNT(queryString, variables, Some(ds))
     })
     logger.debug("RRRRRRRRRR sparqlSelectQueryVariables after transaction")
     transaction.get
@@ -328,7 +386,10 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   /** run SPARQL on given dataset, knowing result variables; NOT transactional */
   def sparqlSelectQueryVariablesNT(queryString: String, variables: Seq[String],
-                                   ds: DATASET = dataset): List[Seq[Rdf#Node]] = {
+                                   dts: Option[DATASET])
+  (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+  : List[Seq[Rdf#Node]] = {
+    val ds = getDataset(dts)
     time("sparqlSelectQueryVariablesNT", {
 
       val solutionsTry = for {
@@ -349,7 +410,6 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
                 val cell = row(variable)
                 cell match {
                   case Success(node) => node
-//                  case Success(node) => row(variable).get.as[Rdf#Node].get
                   case Failure(f)    => Literal(">>>> Failure: " + f.toString())
                 }
               }
@@ -376,13 +436,16 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    *  used in SPARQL results Web page
    */
   def sparqlSelectQuery(queryString: String,
-                        ds: DATASET = dataset): Try[List[Iterable[Rdf#Node]]] = {
+                        dts: Option[DATASET])
+  (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+  : Try[List[Iterable[Rdf#Node]]] = {
+    val ds = getDataset(dts)
     // DEBUG
     val dsg = ds.asInstanceOf[org.apache.jena.sparql.core.DatasetImpl].asDatasetGraph()
     println(s">>>> sparqlSelectQuery: dsg class : ${dsg.getClass}")
     println(s">>>> sparqlSelectQuery: ds: ${ds}")
 
-    val transaction = rdfStore.r( ds, {
+    val transaction = rdfLocalProvider.rdfStore.r( ds, {
 //    val transaction = ds.r({
       val solutionsTry = for {
         query <- parseSelect(queryString)
@@ -400,7 +463,10 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    *  used in trait InstanceLabelsFromLabelProperty
    */
   def sparqlSelectQueryCompiled(query: Rdf#SelectQuery,
-                        ds: DATASET = dataset): Try[List[Iterable[Rdf#Node]]] = {
+                        dts: Option[DATASET])
+  (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+  : Try[List[Iterable[Rdf#Node]]] = {
+		val ds = getDataset(dts)
     val transaction = rdfStore.r( ds, {
 //    val transaction = ds.r({
       val solutionsTry = for {
@@ -433,9 +499,10 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         val results: Iterable[Iterable[Rdf#Node]] = solsIterable . map {
           row =>
             val rowSeq: mutable.Buffer[Rdf#Node] = mutable.Buffer()
-            for (variable <- columnsMap2) rowSeq +=
-              row(variable).getOrElse(Literal(""))
-//              row(variable).getOrElse(Literal("") ).as[Rdf#Node].get
+            for (variable <- columnsMap2) {
+              val n = row(variable).getOrElse(Literal("") )
+              rowSeq += n
+            }
 //            println(s"rowSeq $rowSeq")
             rowSeq
         }
@@ -469,15 +536,18 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    */
   def sparqlSelectConneg(queryString: String,
                          format: String = "xml",
-                         ds: DATASET = dataset): String = {
+                         dts: Option[DATASET])
+  (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+  : String = {
+    val ds = getDataset(dts)
     logger.debug(s"format $format")
     format match {
-      case "jsonld" => sparqlSelectJSON(queryString, ds)
-      case "turtle" => sparqlSelectJSON(queryString, ds) // ??? should not happen
-      case "rdfxml" => sparqlSelectXML(queryString, ds) // ??? should not happen
-      case "xml"    => sparqlSelectXML(queryString, ds)
-      case "json"   => sparqlSelectJSON(queryString, ds)
-      case _        => sparqlSelectJSON(queryString, ds)
+      case "jsonld" => sparqlSelectJSON(queryString, dts)
+      case "turtle" => sparqlSelectJSON(queryString, dts) // ??? should not happen
+      case "rdfxml" => sparqlSelectXML(queryString, dts) // ??? should not happen
+      case "xml"    => sparqlSelectXML(queryString, dts)
+      case "json"   => sparqlSelectJSON(queryString, dts)
+      case _        => sparqlSelectJSON(queryString, dts)
     }
   }
 
@@ -485,8 +555,11 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    * sparql Select, JSON output, see https://www.w3.org/TR/rdf-sparql-XMLres/#examples
    */
   def sparqlSelectXML(queryString: String,
-                      ds: DATASET = dataset): String = {
-    val result = sparqlSelectQuery(queryString, ds)
+                      dts: Option[DATASET])
+  (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+  : String = {
+//		val ds = getDataset(dts)
+    val result = sparqlSelectQuery(queryString, dts)
     val output = result match {
       case Success(res) =>
         if (!res.isEmpty) {
@@ -547,8 +620,10 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   /** sparql Select, JSON output, see https://www.w3.org/TR/sparql11-results-json/#example */
   def sparqlSelectJSON(queryString: String,
-                       ds: DATASET = dataset): String = {
-    val result = sparqlSelectQuery(queryString, ds)
+                       dts: Option[DATASET])
+  (implicit rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET])
+  : String = {
+    val result = sparqlSelectQuery(queryString, dts)
     val output = result match {
       case Success(res) =>
         if (!res.isEmpty) {
@@ -672,7 +747,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     logger.info(s"graph2String: base URI <$baseURI>, format $format, ${triples}")
     triples match {
       case Success(graph) =>
-        val graphSize = graph.size
+        val graphSize = graph.size(ops)
         val (writer, stats) =
           if (format == "jsonld")
             (jsonldCompactedWriter, "")

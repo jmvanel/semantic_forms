@@ -29,6 +29,7 @@ import play.api.mvc.Request
 import play.api.mvc.RequestHeader
 import play.api.mvc.Result
 import views.MainXmlWithHead
+import deductions.runtime.core.HTTPrequest
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -88,26 +89,28 @@ trait ApplicationTrait extends Controller
   }
   /////////////////////////////////
 
-  /** save Only, no display */
-  protected def saveOnly(request: Request[_], userid: String, graphURI: String = ""): (String, Boolean) = {
-    val body = request.body
-    val host  = request.host
-    body match {
-      case form: AnyContentAsFormUrlEncoded =>
-        val lang = chooseLanguage(request)
-        val map = form.data
-        logger.debug(s"ApplicationTrait.saveOnly: ${body.getClass}, map $map")
-        // cf http://danielwestheide.com/blog/2012/12/26/the-neophytes-guide-to-scala-part-6-error-handling-with-try.html
-        val subjectUriTryOption = Try {
-          saveForm(map, lang, userid, graphURI, host)
-        }
-        subjectUriTryOption match {
-            case Success((Some(url1), typeChange)) => (url1, typeChange)
-            case _ => ("", false)
-        }
+  /** save Only, no display - TODO move outside of forms_play */
+  protected def saveOnly(
+      httpRequest: HTTPrequest,
+      userid: String, graphURI: String = ""): (String, Boolean) = {
+//    val httpRequest = copyRequest(request)
+    val host = httpRequest.host
+    val lang = httpRequest.getLanguage()
+    val map = httpRequest.formMap
+    logger.debug(
+      s"""ApplicationTrait.saveOnly: request $httpRequest ,
+        map $map""")
+    // cf http://danielwestheide.com/blog/2012/12/26/the-neophytes-guide-to-scala-part-6-error-handling-with-try.html
+    val subjectUriTryOption = Try {
+      saveForm(map, lang, userid, graphURI, host)
+    }
+    subjectUriTryOption match {
+      case Success((Some(url1), typeChange)) => (url1, typeChange)
+      case _                                 => ("", false)
     }
   }
 
+  
   protected val AcceptsTTL = Accepting("text/turtle")
   protected val AcceptsJSONLD = Accepting("application/ld+json")
   protected val AcceptsRDFXML = Accepting("application/rdf+xml")
@@ -158,12 +161,16 @@ trait ApplicationTrait extends Controller
     uriArgs.find { uri => uri != "" }.getOrElse("") . trim()
   }
 
+  /** @return in case Form Url Encoded, the first value in Map */
   protected def getContent(request: Request[AnyContent]): Option[String] = {
     request.body match {
       case AnyContentAsText(t) => Some(t)
       case AnyContentAsFormUrlEncoded(m) =>
         println(s"getContent 1 request.body AnyContentAsFormUrlEncoded size ${m.size}")
-        m.keySet.headOption
+        m.headOption  match {
+          case Some(v) => v . _2 . headOption
+          case None => None
+        }
       case AnyContentAsRaw(raw: RawBuffer) =>
         println(s"getContent 2 request.body.asRaw ${raw}")
         raw.asBytes(raw.size.toInt).map {

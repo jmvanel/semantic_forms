@@ -10,10 +10,7 @@ import scala.util.Try
 /**
  * @author jmv
  */
-trait HttpParamsManager[Rdf <: RDF] //extends RDFOpsModule
-//    with NTriplesReaderModule
-//    with NTriplesWriterModule 
-{
+trait HttpParamsManager[Rdf <: RDF] {
 
   implicit val ops: RDFOps[Rdf]
   implicit val ntriplesReader: RDFReader[Rdf, Try, NTriples]

@@ -63,9 +63,10 @@ trait TestRDFStoreObject[Rdf <: RDF, DATASET]
     val res = solutions.iterator() map {
       row =>
         //        info(s""" populateFromTDB iter ${row}""")
-        (row("S").get.as[Rdf#Node].get,
-          row("P").get.as[Rdf#Node].get,
-          row("O").get.as[Rdf#Node].get)
+        (row("S").get , // .as[Rdf#Node].get,
+          row("P").get, // .as[Rdf#Node].get,
+          row("O").get  // .as[Rdf#Node].get
+        )
     }
     val values = res.to[List]
     println(s"""values

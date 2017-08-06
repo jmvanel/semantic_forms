@@ -136,10 +136,11 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
    *  to catch 1) triples downloaded from URI, 2) triples preloaded,
    *  3) triples coming from user edits
    *  @param blankNode if "true" given uri is a blanknode
-   *  
+   *  @param inputGraph retrieved or downloaded graph about subject URI - unused
    */
   private def htmlFormRawTry(uri: String, unionGraph: Rdf#Graph = allNamedGraph,
-                          hrefPrefix: String = config.hrefDisplayPrefix, blankNode: String = "",
+                          hrefPrefix: String = config.hrefDisplayPrefix,
+                          blankNode: String = "",
                           editable: Boolean = false,
                           actionURI: String = "/save",
                           lang: String = "en",

@@ -1,5 +1,8 @@
 import Common._
 
+// Discussion on get rid of twirl in playframework
+// https://github.com/playframework/playframework/issues/5823
+
 // offline := true
 
 name := "semantic_forms-root"
@@ -15,7 +18,6 @@ lazy val forms_play = (project in file("forms_play"))
 	.dependsOn(forms)
 	// .dependsOn(forms_js)
 	.dependsOn(mobion)
-	// .enablePlugins(PlayScala, SbtWeb) .disablePlugins(PlayLogback)
 .enablePlugins(PlayScala) .disablePlugins(PlayLogback)
 // .settings(
 //   scalaJSProjects := Seq(forms_js),
@@ -28,14 +30,17 @@ lazy val forms_play = (project in file("forms_play"))
 
 
 lazy val core = project
-lazy val connectors = project .dependsOn(utils)
 lazy val utils = project .dependsOn(core)
-lazy val forms = project  .dependsOn(html)
-	// .in(file("forms"))
-	.dependsOn(connectors) // .aggregate(connectors)
+lazy val connectors = project .dependsOn(utils)
 lazy val sparql_cache = project .dependsOn(utils)
 lazy val abstract_syntax = project .dependsOn(core)   .dependsOn(sparql_cache)
-lazy val html = project   .dependsOn(abstract_syntax) .dependsOn(utils)   .dependsOn(core)
+lazy val html = project
+	//   .dependsOn(abstract_syntax)
+	.dependsOn(utils)
+lazy val forms = project
+	.dependsOn(html)
+	.dependsOn(abstract_syntax)
+	.dependsOn(connectors)
 
 lazy val web_tests = project
 lazy val forms_js = project .settings(
@@ -55,11 +60,12 @@ lazy val mobion = project .dependsOn(forms)
 resolvers in ThisBuild += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
 resolvers in ThisBuild += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
+// loads the server project at sbt startup
+onLoad in Global := (Command.process("project forms_play", _: State)) compose (onLoad in Global).value
+
 // Scala code checkers
 
 // wartremoverErrors ++= Warts.unsafe
 // wartremoverErrors ++= Warts.allBut(Wart.DefaultArguments, Wart.Var)
 // libraryDependencies += "com.lightbend" %% "abide-core" % "0.1-SNAPSHOT" % "abide"
 
-// loads the server project at sbt startup
-onLoad in Global := (Command.process("project forms_play", _: State)) compose (onLoad in Global).value

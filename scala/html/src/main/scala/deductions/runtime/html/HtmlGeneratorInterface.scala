@@ -8,10 +8,16 @@ import scala.xml.NodeSeq
 
 /**
  * Pure abstract Interface for HTML Generation from abstract FormSyntax;
- *  maybe TODO remove numerous arguments, to keep mostly request */
+ *  maybe TODO remove numerous arguments, to keep mostly request
+ *  TODO move to core/ */
 trait HtmlGeneratorInterface[NODE, URI <: NODE] extends RDFPrefixesInterface {
 
-  /** generate HTML form given Form Syntax, adding a form header (title, etc) */
+  /** generate HTML form given Form Syntax, adding a form header (title, etc)
+   *  @param actionURI action URI for top SAVE button
+   *         (button not generated if URI = "")
+   *  @param actionURI2 action URI for bottom SAVE button
+   *         (button not generated if URI = "")
+   *  */
   def generateHTML(form: FormModule[NODE, URI]#FormSyntax,
                    hrefPrefix: String,
                    editable: Boolean = false,
@@ -26,6 +32,5 @@ trait HtmlGeneratorInterface[NODE, URI <: NODE] extends RDFPrefixesInterface {
                              editable: Boolean = false,
                              graphURI: String = "", lang: String = "en",
                              request: HTTPrequest
-                             //= HTTPrequest()
                              ): NodeSeq
 }

@@ -13,7 +13,7 @@ import deductions.runtime.utils.DefaultConfiguration
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 
-// class
+/** OBSOLETE version with Play! Twirl forms */
 object Auth extends AuthTrait {
   val config = new DefaultConfiguration {
     override val needLoginForEditing = true
@@ -90,6 +90,10 @@ extends Controller
         BadRequest("<!DOCTYPE html>\n" + views.html.login(formWithErrors, registerForm))
           .as("text/html; charset=utf-8"),
       user => {
+//        println(s"""authenticate: request $request; ${request.getQueryString("xhr")}
+//        request.queryString
+//        ${request.queryString}""")
+        // PENDING: what is "xhr" for ???
         request.getQueryString("xhr") match {
           case Some(value) =>
             println(s"Authentication OK for user $user, no redirect")

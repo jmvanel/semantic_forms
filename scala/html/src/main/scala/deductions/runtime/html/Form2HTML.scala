@@ -48,16 +48,25 @@ import scala.xml.{Elem, NodeSeq, Text}
     def wrapFieldsWithFormTag(htmlFormFields: NodeSeq): NodeSeq =
 
       <form class="sf-standard-form" action={ actionURI } method="POST">
+      { if( actionURI != "" )
         <div class="row">
-          <div class="col col-sm-4 col-sm-offset-4"><input value={ mess("SAVE") } type="submit" class="form-control btn btn-primary "/></div> <!--class="pull-right"-->
+          <div class="col col-sm-4 col-sm-offset-4">
+            <input value={ mess("SAVE") }
+          type="submit" class="form-control btn btn-primary "/></div> <!--class="pull-right"-->
         </div>
+      }
         <br></br>
+
         { htmlFormFields }
 
+      { if( actionURI2 != "" )
         <div class="row">
-          <div class="col col-sm-4 col-sm-offset-4"><input value={ mess("SAVE") } formaction={ actionURI2 }  type="submit" class="form-control btn btn-primary "/></div> <!--class="pull-right"-->
+          <div class="col col-sm-4 col-sm-offset-4">
+            <input value={ mess("SAVE") }
+              formaction={ actionURI2 } type="submit" class="form-control btn btn-primary "/></div>
+              <!--class="pull-right"-->
         </div>
-
+      }
       </form>
 
     def mess(m: String): String = message(m, lang)

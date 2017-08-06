@@ -18,17 +18,21 @@ object Common {
   val junitDependency = "junit" % "junit" % "4.12" % Test
   val scalatestDependency = "org.scalatest" %% "scalatest" % "3.0.3" % "test"
 
-  val commonDependencies = Seq( bananaDependency,
+  val loggingDependencies = Seq(
+    "org.apache.logging.log4j" % "log4j-api" % "2.8",
+    "org.apache.logging.log4j" % "log4j-core" % "2.8",
+    "org.apache.logging.log4j" % "log4j-slf4j-impl" % "2.8" 
+  )
+
+  val commonDependencies =
+    loggingDependencies ++
+    Seq( bananaDependency,
 	jenaDependency, jenaPermissionsDependency, jenaTextDependency,
 	xmlDependency,
 
 	junitDependency, scalatestDependency,
 
     "com.typesafe.play" %% "play-json" % "2.5.15",
-
-    "org.apache.logging.log4j" % "log4j-slf4j-impl" % "2.8",
-    "org.apache.logging.log4j" % "log4j-api" % "2.8",
-    "org.apache.logging.log4j" % "log4j-core" % "2.8" ,
 
     "org.apache.lucene" % "lucene-suggest" % "4.9.1" ,
     "org.apache.lucene" % "lucene-demo" % "4.9.1" ,

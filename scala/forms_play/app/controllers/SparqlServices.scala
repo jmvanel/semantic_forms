@@ -25,9 +25,13 @@ trait SparqlServices extends ApplicationTrait
   = Action {
     implicit request: Request[AnyContent] =>
       val requestCopy = getRequestCopy()
-      println(s"body class ${request.getClass} ${request.body}")     
-      val content = getContent(request)
-      println(s"content ${content.toString.substring(0, 50) + " ..."}")
+      println(s"body class ${request.getClass} ${request.body} - data ${request.getQueryString("data")} ")     
+//      val content = getContent(request)
+      val content = request.getQueryString("data") match {
+        case Some(s) => Some(s)
+        case None => getContent(request) // . getOrElse("")
+      }
+      println(s"content ${content.toString.substring(0, Math.min(content.toString.length,50)) + " ..."}")
       load(requestCopy.copy(content = content))
       Ok("OK")
   }
@@ -164,7 +168,7 @@ trait SparqlServices extends ApplicationTrait
             } else update
           logger.info(s"sparql: update2 '$update2'")
           val lang = chooseLanguage(request) // for logging
-          val res = sparqlUpdateQuery(update2)
+          val res = wrapInTransaction( sparqlUpdateQuery(update2) ) .flatten
           res match {
             case Success(s) => Ok(s"$res")
             case Failure(f) =>

@@ -18,6 +18,9 @@ import org.w3.banana.io.{RDFReader, RDFXML, Turtle,RDFLoader}
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
+import org.apache.http.client.config.RequestConfig
+import org.apache.http.impl.client.HttpClientBuilder
+
 /** */
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
   val config: Configuration
@@ -80,7 +83,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     retrieveURIBody(uri, dataset, HTTPrequest(), transactionsInside = true)
 
   /**
-   * retrieve URI from a graph named by the URI itself;
+   * retrieve URI from a local graph in TDB named by the URI itself;
    * or download and store URI, only if corresponding graph is empty,
    * or local timestamp is older;
    * timestamp is saved in another Dataset
@@ -373,12 +376,16 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     }
   }
 
-  /** pasted from Apache HTTP client doc */
+  /** pasted from Apache HTTP client doc
+   *  https://hc.apache.org/httpcomponents-client-ga/ */
   def getContentTypeFromHEADRequest(url: String): String = {
-    val httpclient = HttpClients.createDefault();
+    val requestConfig = RequestConfig.custom().setConnectTimeout(3 * 1000).build();
+    val httpclient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
+//    val httpclient = HttpClients.createDefault();
     try {
       val httpHead = new HttpHead(url)
-      httpHead.setHeader( "Accept",
+      httpHead.setHeader(
+          "Accept",
           "application/rdf+xml, text/turtle; charset=utf-8, application/ld+json; charset=utf-8")
 
       System.out.println("Executing request " + httpHead.getRequestLine());
