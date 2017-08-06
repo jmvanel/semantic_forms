@@ -122,8 +122,10 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
         // 3. display errors
 
           (<p class="sf-error-message">
-            <pre>
+            <pre>Error in TriplesViewWithTitle.htmlForm()
+        		  <br/>
               {
+                "Exception class " + e.getClass + " -\n"
                 e.getLocalizedMessage() + "\n" + printTrace(e).replaceAll("\\)", ")\n")
               }<br/>
               Cause:{ if (e.getCause() != null) e.getCause().getLocalizedMessage() }
