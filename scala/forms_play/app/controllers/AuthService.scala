@@ -81,7 +81,7 @@ extends Controller
             actionURI = "",
             lang = httpRequest.getLanguage(),
             graphURI = "",
-            actionURI2 = "/authenticate2",
+            actionURI2 = "/authenticate",
             formuri = fromUri(loginFormURI),
             request = httpRequest)._1
         }
@@ -103,7 +103,7 @@ extends Controller
             actionURI = "",
             lang = httpRequest.getLanguage(),
             graphURI = "",
-            actionURI2 = "/register2",
+            actionURI2 = "/register",
             formuri = fromUri(registerFormURI),
             request = httpRequest)._1
         }
@@ -167,8 +167,8 @@ println( s"passwordOption $passwordOption" )
       val call = previousURL match {
         case (url) if (
           url != "" &&
-          !url.endsWith("/login2") &&
-          !url.endsWith("/authenticate2")) => Call("GET", url)
+          !url.endsWith("/login") &&
+          !url.endsWith("/authenticate")) => Call("GET", url)
         case _ => routes.Application.index
       }
       Redirect(call).withSession(Security.username -> useridOption.get )
