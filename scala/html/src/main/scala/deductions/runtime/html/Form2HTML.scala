@@ -219,9 +219,13 @@ import deductions.runtime.utils.I18NMessages
     val isCreateRequest = request.path.contains("create")
     val editableByUser = if (!field.metadata.isEmpty){
       val cookie = request.cookies.getOrElse("PLAY_SESSION", Cookie("",""))
-      // KO: field.metadata == request.cookies.get("PLAY_SESSION").get.value.split("=")(1)
-      // OK:
-      field.metadata == URLDecoder.decode(cookie.value.split("=")(1),"UTF-8")
+      println(s"""createHTMLField SESSION cookie $cookie = "${cookie.value}" """)
+      field.metadata == {
+        val split = cookie.value.split("=")
+        if (split.size > 1)
+          URLDecoder.decode(split(1), "UTF-8")
+        else ""
+      }
     }
     //TODO: temporaire, trouver pourquoi il y a des valeur par défaut ' "" '
     //TODO: seems to doen't work work
