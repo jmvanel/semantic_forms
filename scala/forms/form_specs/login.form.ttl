@@ -27,8 +27,8 @@ form:password
 forms:registerForm
   a form:specification ;
   form:classDomain form:RegisterAccount ;
-  rdfs:label ""@fr ;
-  rdfs:label ""@en ;
+  rdfs:label "Créer un compte"@fr ;
+  rdfs:label "Register Account"@en ;
   form:showProperties (
 form:userid 
 form:password
