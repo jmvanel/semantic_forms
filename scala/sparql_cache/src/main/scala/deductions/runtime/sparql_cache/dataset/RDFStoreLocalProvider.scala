@@ -52,6 +52,8 @@ extends RDFOPerationsDB[Rdf, DATASET] {
 
   def close(ds: DATASET = dataset)
 
+  def readWithContentType( uri: Rdf#URI, contentType: String, dataset: DATASET): Try[Rdf#Graph]
+  
   def datasetSize() = rdfStore.rw( dataset, { datasetSizeNoTR() })
   def datasetSizeNoTR() = ops.graphSize(allNamedGraph)
 
