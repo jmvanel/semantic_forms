@@ -6,10 +6,13 @@ import deductions.runtime.core.FormModule
 import deductions.runtime.utils.{RDFPrefixesInterface, Timer}
 import deductions.runtime.core.HTTPrequest
 import deductions.runtime.core.Cookie
+import deductions.runtime.utils.I18NMessages
+
 import org.apache.commons.codec.digest.DigestUtils
 
 import scala.xml.NodeSeq.seqToNodeSeq
 import scala.xml.{Elem, NodeSeq, Text}
+import deductions.runtime.utils.I18NMessages
 
 /** Abstract Form Syntax to HTML;
  * different modes: display or edit;
@@ -20,9 +23,7 @@ import scala.xml.{Elem, NodeSeq, Text}
     with Form2HTMLEdit[NODE, URI]
     with FormModule[NODE, URI]
     with Timer
-    with RDFPrefixesInterface
-//    with JavaScript
-    {
+    with RDFPrefixesInterface  {
   self: HTML5Types =>
 
   import config._
@@ -171,7 +172,7 @@ import scala.xml.{Elem, NodeSeq, Text}
               Text("\n") ++
               <input type="hidden" name="uri" value={ urlEncode(form.subject) }/> ++
               <div class="form-group">
-                <div class="col-xs-12"> {dataFormHeader(form) }
+                <div class="col-xs-12"> {dataFormHeader(form, lang) }
               </div></div> ++
               {
 //                if (request.rawQueryString.contains("tabs=true")) {
@@ -191,7 +192,7 @@ import scala.xml.{Elem, NodeSeq, Text}
    *  - form title
    *  - form subject URI
    *  - class or Form specification */
-  private def dataFormHeader(form: formMod#FormSyntax) = {
+  private def dataFormHeader(form: formMod#FormSyntax, lang: String) = {
     import form._
     Text(form.title) ++
       (if (form.subject != nullURI)
@@ -199,7 +200,8 @@ import scala.xml.{Elem, NodeSeq, Text}
         <a href={ toPlainString(form.subject) } style="color: rgb(44,133,254);">&lt;{ form.subject }&gt;</a>
       else NodeSeq.Empty) ++
       <div>{ form.formURI match {
-        case Some(formURI) if formURI != nullURI => "Form specification: " ++
+        case Some(formURI) if formURI != nullURI =>
+          I18NMessages.get("Form_specification", lang) +": " ++
         createHyperlinkElement( toPlainString(formURI), formLabel)
         case _ => "Class " ++
         createHyperlinkElement( toPlainString(classs), toPlainString(classs)) ++
@@ -217,9 +219,13 @@ import scala.xml.{Elem, NodeSeq, Text}
     val isCreateRequest = request.path.contains("create")
     val editableByUser = if (!field.metadata.isEmpty){
       val cookie = request.cookies.getOrElse("PLAY_SESSION", Cookie("",""))
-      // KO: field.metadata == request.cookies.get("PLAY_SESSION").get.value.split("=")(1)
-      // OK:
-      field.metadata == URLDecoder.decode(cookie.value.split("=")(1),"UTF-8")
+      println(s"""createHTMLField SESSION cookie $cookie = "${cookie.value}" """)
+      field.metadata == {
+        val split = cookie.value.split("=")
+        if (split.size > 1)
+          URLDecoder.decode(split(1), "UTF-8")
+        else ""
+      }
     }
     //TODO: temporaire, trouver pourquoi il y a des valeur par défaut ' "" '
     //TODO: seems to doen't work work

@@ -94,6 +94,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
         if (tryTriple.isFailure) logger.error(s"getTriplesFromHTTPparams: $param : $tryTriple")
         tryTriple match {
           case Success(triple) => (triple, objects)
+          case _ => (Triple(nullURI, nullURI, nullURI), Seq())
         }
       case x =>
         println(s"getTriplesFromHTTPparams: _ : $x")

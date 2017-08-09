@@ -19,14 +19,14 @@ lazy val forms_play = (project in file("forms_play"))
 	// .dependsOn(forms_js)
 	.dependsOn(mobion)
 .enablePlugins(PlayScala) .disablePlugins(PlayLogback)
-// .settings(
-//   scalaJSProjects := Seq(forms_js),
-//   pipelineStages in Assets := Seq(scalaJSPipeline),
-//   pipelineStages := Seq(digest, gzip),
-  // triggers scalaJSPipeline when using compile or continuous compilation
-//   compile in Compile := ((compile in Compile) dependsOn scalaJSPipeline).value,
-//   libraryDependencies ++= Seq( "com.vmunier" %% "scalajs-scripts" % "1.1.1")
-// )
+.settings(
+   scalaJSProjects := Seq(forms_js),
+   pipelineStages in Assets := Seq(scalaJSPipeline),
+   pipelineStages := Seq(digest, gzip),
+// triggers scalaJSPipeline when using compile or continuous compilation
+   compile in Compile := ((compile in Compile) dependsOn scalaJSPipeline).value,
+   libraryDependencies ++= Seq( "com.vmunier" %% "scalajs-scripts" % "1.1.1")
+ )
 
 
 lazy val core = project
@@ -45,6 +45,7 @@ lazy val forms = project
 lazy val web_tests = project
 lazy val forms_js = project .settings(
   scalaJSUseMainModuleInitializer := true
+  // emitSourceMaps in fastOptJS := false
 ).enablePlugins(ScalaJSPlugin, ScalaJSWeb)
 
 lazy val generic_app = project

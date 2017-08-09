@@ -15,6 +15,13 @@ import org.apache.log4j.Logger
 import org.w3.banana.jena.{Jena, JenaDatasetStore, JenaModule}
 
 import scala.collection.JavaConversions.asScalaIterator
+import scala.util.Try
+import org.w3.banana.jena.io.TripleSink
+import org.apache.jena.riot.RDFParser
+import org.apache.jena.riot.RDFLanguages
+import org.apache.http.impl.client.cache.CachingHttpClientBuilder
+import org.apache.http.impl.client.LaxRedirectStrategy
+import org.apache.http.client.config.RequestConfig
 
 // TODO rename RDFStoreLocalJenaProvider
 
@@ -129,6 +136,33 @@ trait RDFStoreLocalJenaProvider
   }
 
   def close(ds: DATASET) = ds.close()
+
+  def readWithContentType(
+    uri: Rdf#URI,
+    contentType: String,
+    dataset: DATASET): Try[Rdf#Graph] = {
+    Try {
+      val sink = new TripleSink
+      import org.apache.jena.riot.LangBuilder
+      val contentTypeNoEncoding = contentType.replaceFirst(";.*", "")
+      val lang = RDFLanguages.contentTypeToLang(contentTypeNoEncoding)
+      println(s"readWithContentType: $lang")
+      val requestConfig =
+        RequestConfig.custom()
+          .setConnectTimeout(10 * 1000)
+          .setConnectionRequestTimeout(10 * 1000)
+          .build();
+      RDFParser.create()
+        .httpClient(
+          CachingHttpClientBuilder.create()
+            .setRedirectStrategy(new LaxRedirectStrategy())
+            .setDefaultRequestConfig(requestConfig)
+            .build())
+        .source(fromUri(uri)).forceLang(lang).httpAccept(contentType)
+        .parse(sink)
+      sink.graph
+    }
+  }
 }
 
 /** TODO implement independently of Jena */

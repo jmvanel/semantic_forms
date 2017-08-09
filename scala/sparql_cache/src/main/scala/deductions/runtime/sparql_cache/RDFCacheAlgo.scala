@@ -20,6 +20,8 @@ import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 import org.apache.http.client.config.RequestConfig
 import org.apache.http.impl.client.HttpClientBuilder
+import org.w3.banana.jena.io.TripleSink
+import org.apache.jena.riot.RDFParser
 
 /** */
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
@@ -122,7 +124,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
               println(s"""retrieveURINoTransaction: stored Graph Is Empty for URI <$uri>""")
               val mirrorURI = getMirrorURI(uri)
               val vv = if (mirrorURI == "") {
-                val graphTry_MIME= readURI(uri, uri, dataset, request)
+                val graphTry_MIME= readURI(uri, dataset, request)
                 val graphDownloaded = {
                   val graphTry = graphTry_MIME . _1
                   if (transactionsInside)
@@ -309,13 +311,13 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    */
   private def readStoreURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET,
                                         request: HTTPrequest = HTTPrequest()): Try[Rdf#Graph] = {
-    val graphTry = readURI(uri, graphUri, dataset, request) . _1
+    val graphTry = readURI(uri, dataset, request) . _1
     storeURINoTransaction(graphTry, graphUri, dataset)
   }
   /** read unconditionally from URI and store in TDB, Transaction inside */
   private def readStoreURITry(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET,
                               request: HTTPrequest = HTTPrequest()): Try[Rdf#Graph] = {
-    val graphTry = readURI(uri, graphUri, dataset, request) . _1
+    val graphTry = readURI(uri, dataset, request) . _1
     storeURI(graphTry, graphUri, dataset)
   }
 
@@ -343,9 +345,12 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
    * no matter what the concrete syntax is;
    * TODO: can also load an URI with the # part
    */
-  private def readURI(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET,
-                      request: HTTPrequest = HTTPrequest()): (Try[Rdf#Graph], String) = {
-    Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
+  private def readURI(
+      uri: Rdf#URI,
+      dataset: DATASET,
+      request: HTTPrequest ): (Try[Rdf#Graph], String) = {
+//    Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
+    Logger.getRootLogger().info(s"Before load uri $uri")
 
     if (isDownloadableURI(uri)) {
       // To avoid troubles with Jena cf https://issues.apache.org/jira/browse/JENA-1335
@@ -358,7 +363,9 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
 //        logger.info
         println(s"readURI: after rdfLoader.load($uri): $graphTry")
 
-        // TODO
+        graphTry match {
+          case Success(gr) =>
+        // TODO after release of rdfa4j 
         //      val graph = graphTry.getOrElse {
         //        if(activateMicrodataLoading)
         //          microdataLoading(uri)
@@ -366,6 +373,17 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
         //          emptyGraph
         //      }
         (graphTry, contentType)
+
+          case Failure(f) =>
+//            if( contentType != "ERROR" ) {
+            /* NOTE: hoping that Jena 3.4.0 will solve all issues on RDFDataMgr,
+             * but before that , we try this */
+            println(s""">>>> readURI: Failed with Jena RDF loader for <$uri>
+               trying read With explicit content Type "$contentType" """)
+            ( readWithContentType( uri, contentType, dataset): Try[Rdf#Graph],
+                contentType)
+        }
+
       } else {
         (Success(emptyGraph), contentType)
       }
@@ -379,7 +397,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
   /** pasted from Apache HTTP client doc
    *  https://hc.apache.org/httpcomponents-client-ga/ */
   def getContentTypeFromHEADRequest(url: String): String = {
-    val requestConfig = RequestConfig.custom().setConnectTimeout(3 * 1000).build();
+    val requestConfig = RequestConfig.custom().setConnectTimeout(5 * 1000).build();
     val httpclient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
 //    val httpclient = HttpClients.createDefault();
     try {

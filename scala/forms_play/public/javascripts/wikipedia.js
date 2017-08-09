@@ -14,20 +14,6 @@ https://www.google.fr/search?q=ajax+example+scala.js
 var resultsCount = 15;
 var urlReqPrefix = "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=" +
       resultsCount + "&QueryString=" ;
-// var urlReqPrefix = "/lookup?q=";
-
-// function XHRCompletion (url) {
-//     return new Promise (function(resolve, reject) {
-//         $.when($.ajax({
-//             url: "http://lookup.dbpedia.org/api/search/PrefixSearch",
-//             data: { MaxHits: resultsCount, QueryString: request.term },
-//             dataType: "json",
-//             timeout: 5000
-//         }))
-//          .then(function(response) { resolve(response) })
-//          .catch(function(error) { reject(error) })
-//     })
-// }
 
 $(document).ready(function() {
     var topics = [];
@@ -53,15 +39,14 @@ $(document).ready(function() {
                 }
             },
             source: function(request, callback) {
-                console.log("Déclenche l'événement :")
+                console.log("Déclenche l'événement pour " + request.term )
 
-		// TODO add QueryClass
+		// DONE added QueryClass
 		// compare results: QueryClass=person , and ?QueryClass=place
 		// view-source:http://lookup.dbpedia.org/api/search/PrefixSearch?QueryClass=Person&QueryString=berlin
 		// view-source:http://lookup.dbpedia.org/api/search/PrefixSearch?QueryClass=Place&QueryString=berlin
 
 		// QueryClass comes from attribute data-rdf-type in <input> tag , but data-rdf-type is a full URI !
-
                 var typeName
                 var $el = $(event.target);
                 if ($el) {
@@ -83,7 +68,19 @@ $(document).ready(function() {
                         return { "label": m.label + " - " +
                         cutStringAfterCharacter(m.description, '.'), "value": m.uri }
                     }));
+
                 }).fail(function (error){
+
+                    // in lookup.js, the same completion is launched on CSS class .sfLookup
+                    if( ! $el.hasClass('.sfLookup') ) {
+
+                    console.log("lookup.dbpedia.org FAILED => launch local /lookup " + request.term )
+                    /* TODO:
+                     * - in secure context (window.isSecureContext == true) /lookup is launched with http,
+                     *   which entails message:
+                         jquery.min.js:4 Mixed Content: The page at 'https://semantic-forms.cc:5555/create?uri=bioc%3APlanting&uri=http%3A%2F%2F….com%2Fjmvanel%2Fsemantic_forms%2Fmaster%2Fvocabulary%2Fforms%23personForm' was loaded over HTTPS, but requested an insecure XMLHttpRequest endpoint 'http://lookup.dbpedia.org/api/search/PrefixSearch?MaxHits=15&QueryClass=Species&QueryString=Allium'. This request has been blocked; the content must be served over HTTPS.
+                       - there is duplicated code, here and in lookup.js
+                     */
                     $.ajax({
                         url: "/lookup",
                         data: { MaxHits: resultsCount, QueryClass: typeName, QueryString: request.term + "*" },
@@ -98,6 +95,7 @@ $(document).ready(function() {
                             cutStringAfterCharacter(m.description, '.') */, "value": m.uri }
                         }))
                     });
+                    };
                 })
             }
         })

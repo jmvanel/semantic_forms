@@ -7,6 +7,7 @@ object Common {
     val bananaResolver = "betehess" at "http://dl.bintray.com/betehess/banana-rdf"
 
   val jenaVersion =  "3.3.0"
+//  val jenaVersion =  "3.4.0"
 
   val bananaDependency = "org.w3" %%  "banana-jena" % "0.8.4-SNAPSHOT" exclude("org.slf4j", "slf4j-api" )	exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
   val jenaDependency = "org.apache.jena" % "apache-jena-libs" % jenaVersion  exclude("log4j", "log4j") exclude("org.slf4j", "slf4j-api" ) exclude( "org.apache.logging.log4j" , "log4j-slf4j-impl" )	exclude("org.slf4j", "slf4j-log4j12")		exclude("org.apache.logging.log4j","log4j-slf4j-impl")
