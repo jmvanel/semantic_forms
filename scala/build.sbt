@@ -25,9 +25,18 @@ lazy val forms_play = (project in file("forms_play"))
    pipelineStages := Seq(digest, gzip),
 // triggers scalaJSPipeline when using compile or continuous compilation
    compile in Compile := ((compile in Compile) dependsOn scalaJSPipeline).value,
-   libraryDependencies ++= Seq( "com.vmunier" %% "scalajs-scripts" % "1.1.1")
- )
-
+   libraryDependencies ++= Seq(
+     ( "com.vmunier" %% "scalajs-scripts" % "1.1.1" ) . exclude("com.typesafe.play", "twirl-api_2.11")
+   )
+   )
+/*
+[warn] Found version conflict(s) in library dependencies; some are suspected to be binary incompatible:
+[warn] 
+[warn] 	* com.typesafe.play:twirl-api_2.11:1.3.3 is selected over 1.1.1
+[warn] 	    +- com.vmunier:scalajs-scripts_2.11:1.1.1             (depends on 1.3.3)
+[warn] 	    +- deductions:semantic_forms_play_2.11:2.1-SNAPSHOT   (depends on 1.1.1)
+[warn] 	    +- com.typesafe.play:play_2.11:2.5.15                 (depends on 1.1.1)
+*/
 
 lazy val core = project
 lazy val utils = project .dependsOn(core)
@@ -44,8 +53,8 @@ lazy val forms = project
 
 lazy val web_tests = project
 lazy val forms_js = project .settings(
-  scalaJSUseMainModuleInitializer := true
-  // emitSourceMaps in fastOptJS := false
+  scalaJSUseMainModuleInitializer := true,
+  emitSourceMaps in fastOptJS := true
 ).enablePlugins(ScalaJSPlugin, ScalaJSWeb)
 
 lazy val generic_app = project
