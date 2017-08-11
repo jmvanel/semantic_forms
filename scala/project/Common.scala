@@ -35,8 +35,13 @@ object Common {
 
     "com.typesafe.play" %% "play-json" % "2.5.15",
 
+    "org.apache.lucene" % "lucene-suggest" % "6.4.1" , // 4.9.1" ,
+    "org.apache.lucene" % "lucene-demo" % "6.4.1" , // 4.9.1" ,
+/*
     "org.apache.lucene" % "lucene-suggest" % "4.9.1" ,
     "org.apache.lucene" % "lucene-demo" % "4.9.1" ,
+*/
+
 
     // "net.rootdev" % "java-rdfa" % "0.4.3-SNAPSHOT"
     "net.rootdev" % "java-rdfa" % "0.4.2" ,
