@@ -35,8 +35,7 @@ trait TextIndexerWeight extends LuceneIndex {
 
               // add weight to existing Lucene Documents
               val suggester = new AnalyzingInfixSuggester(
-                  // Version.LUCENE_4_9,
-                  Version.LUCENE_6_4_1,
+//                  Version.LUCENE_6_4_1,
                 directory, analyzer);
               val indexReader = DirectoryReader.open(directory);
 
