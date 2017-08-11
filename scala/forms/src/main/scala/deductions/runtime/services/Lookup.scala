@@ -9,6 +9,8 @@ import play.api.libs.json.Json
 
 /**
  * API for a lookup web service similar to dbPedia lookup
+ * 
+ * TODO common code with StringSearchSPARQL
  */
 trait Lookup[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]

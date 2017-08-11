@@ -7,6 +7,9 @@ import play.api.Play
 /** object Application in another file to facilitate redefinition */
 object Application extends {
   override implicit val config = new DefaultConfiguration {
+
+    override val useTextQuery = false
+
     override val serverPort = {
       val port = Play.current.configuration.
         getString("http.port")
