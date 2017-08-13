@@ -131,16 +131,16 @@ with FormModule[Rdf#Node, Rdf#URI]
      */
     def addDomainlessProperties(uri: Rdf#URI) {
       val graphURI = getGraphURI(uri)
-      val props1 = find(graph, ANY, toConcreteNodeMatch(rdf.typ), toConcreteNodeMatch(rdf.Property))
-      val props2 = find(graph, ANY, toConcreteNodeMatch(rdf.typ), toConcreteNodeMatch(owl.ObjectProperty))
-      val props3 = find(graph, ANY, toConcreteNodeMatch(rdf.typ), toConcreteNodeMatch(owl.DatatypeProperty))
+      val props1 = find(graph, ANY, rdf.typ, rdf.Property)
+      val props2 = find(graph, ANY, rdf.typ, owl.ObjectProperty)
+      val props3 = find(graph, ANY, rdf.typ, owl.DatatypeProperty)
       val allProperties = props1 ++ props2 ++ props3
       for (t <- allProperties) {
         val (prop, _, _) = fromTriple(t)
         //        if( prop.toString.contains("doap") && prop.toString.contains("name"))
         //          println("doap") // debug <<<<<
         if (prop.toString().startsWith(graphURI)) {
-          val doms = find(graph, toConcreteNodeMatch(prop), toConcreteNodeMatch(rdfs.domain), ANY)
+          val doms = find(graph, prop, rdfs.domain, ANY)
           if (doms.size == 0) {
             inferedProperties += prop.asInstanceOf[Rdf#URI]
             logger.info(s"addDomainlessProperties: <$uri> add <$prop>")

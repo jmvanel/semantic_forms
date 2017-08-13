@@ -5,7 +5,7 @@ import java.net.URLDecoder
 import deductions.runtime.semlogs.LogAPI
 import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
 import deductions.runtime.sparql_cache.{SPARQLHelpers, TypeAddition}
-import deductions.runtime.utils.{RDFHelpers, Timer, URIManagement}
+import deductions.runtime.utils.{RDFHelpers, Timer, URIManagement, DatabaseChanges}
 import org.w3.banana.{RDF, TryW}
 
 import scala.collection.mutable.ArrayBuffer
@@ -14,11 +14,6 @@ import scala.concurrent.Future
 import scala.util.{Failure, Try}
 import deductions.runtime.core.HTTPrequest
 import scala.util.Success
-
-case class DatabaseChanges[Rdf <: RDF](
-  triplesToAdd: Seq[Rdf#Triple] = Seq(),
-  triplesToRemove: Seq[Rdf#Triple] = Seq(),
-  typeChange: Boolean = false)
     
 trait FormSaver[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
