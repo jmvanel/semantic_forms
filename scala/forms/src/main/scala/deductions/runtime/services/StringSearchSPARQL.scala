@@ -8,8 +8,11 @@ import org.w3.banana.RDF
 import scala.concurrent.Future
 import scala.xml.NodeSeq
 
-/** String Search with simple SPARQL or SPARQL + Lucene 
- *  (see trait LuceneIndex) */
+/** String Search with simple SPARQL or SPARQL + Lucene,
+ *  depending on config. item useTextQuery
+ *  (see trait LuceneIndex)
+ * TODO common code with Lookup
+ */
 trait StringSearchSPARQL[Rdf <: RDF, DATASET]
     extends ParameterizedSPARQL[Rdf, DATASET]
     with RDFPrefixes[Rdf]
@@ -18,7 +21,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
   val config: Configuration
   import config._
 
-  val plainSPARQLquery = new SPARQLQueryMaker[Rdf]
+  private val plainSPARQLquery = new SPARQLQueryMaker[Rdf]
         with ColsInResponse {
     override def makeQueryString(search: String*): String = s"""
          |SELECT DISTINCT ?thing WHERE {
@@ -31,7 +34,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
 
   /** see https://jena.apache.org/documentation/query/text-query.html
    *  TODO code duplicated in Lookup.scala */
-  val indexBasedQuery = new SPARQLQueryMaker[Rdf] with ColsInResponse {
+  private val indexBasedQuery = new SPARQLQueryMaker[Rdf] with ColsInResponse {
     override def makeQueryString(searchStrings: String*): String = {
       val search =  searchStrings(0)
       val clas = searchStrings(1)
