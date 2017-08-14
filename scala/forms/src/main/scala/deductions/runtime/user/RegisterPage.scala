@@ -44,14 +44,16 @@ trait RegisterPage[Rdf <: RDF, DATASET]
             Anonyme
         	-{
               if (pageURI != "") {
+                /* TODO not implemented : service /claimid and button in /display page
+                 * for a foaf:Person saying "claim id" */
                 <a href="/claimid?uri={URLEncode.encode(pageURI)}" title="il ne reste plus qu'à saisir un mot de passe">
                   Revendiquer l'identité de cette page:{ pageLabel }
                 </a>
                 Text("- ou -")
               }
             }
-            <a href="/register" title="Nouveau compte à partir de zéro">
-              Nouveau compte
+            <a href="/login#register" title={I18NMessages.get("New_account", lang)} >
+            {I18NMessages.get("New_account", lang)}
             </a>
             - ou 
         	-<a href="#" onclick="document.getElementById('q').focus();" title="Peut-être votre identité est déjà enregistrée ici?">
