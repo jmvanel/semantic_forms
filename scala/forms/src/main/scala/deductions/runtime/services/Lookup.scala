@@ -113,9 +113,15 @@ trait Lookup[Rdf <: RDF, DATASET]
       } else "?CLASS"
 
       // TODO pasted from StringSearchSPARQL :((((
-      val textQuery = if( search.length() > 0 )
-        s"?thing text:query ( '${prepareSearchString(search).trim()}' ) ."
-      else ""
+      val textQuery =
+        if (search.length() > 0) {
+          val searchStringPrepared = prepareSearchString(search).trim()
+          if (config.useTextQuery)
+            s"?thing text:query ( '$searchStringPrepared' ) ."
+          else
+            s"""    ?thing ?P1 ?O1 .
+              FILTER ( regex( str(?O1), '$searchStringPrepared' ) )"""
+        } else ""
 
       val queryWithlinksCount = s"""
          |${declarePrefix(text)}
