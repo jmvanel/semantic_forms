@@ -32,7 +32,7 @@ trait CommonVocabulariesLoader[Rdf <: RDF, DATASET]
 
     import scala.language.postfixOps
       
-  /** larger and less known vocab's */
+  /** larger and less known vocab's, they are NOT necessarily "self-hosted" */
   val largerVocabs: List[Rdf#URI] =
     URI(githubcontent + "/edumbill/doap/master/schema/doap.rdf") ::
       URI("http://rdfs.org/sioc/ns#") ::
@@ -48,7 +48,7 @@ trait CommonVocabulariesLoader[Rdf <: RDF, DATASET]
 //    	URI("http://schema.rdfs.org/all.nt") ::
       /* see also scripts/download-dbpedia.sh in Semantic_forms */
       URI("http://downloads.dbpedia.org/2015-10/dbpedia_2015-10.nt") ::
-      /* geo: , con: */
+      /* con: */
       URI("http://www.w3.org/2003/01/geo/wgs84_pos#") ::
       URI("http://www.w3.org/2000/10/swap/pim/contact#") ::
       // URI(githubcontent + "/assemblee-virtuelle/pair/master/PAIR_1.0.owl.ttl" ) ::
@@ -56,6 +56,8 @@ trait CommonVocabulariesLoader[Rdf <: RDF, DATASET]
       prefixesMap("skos") ::
       prefixesMap("vcard") ::
       URI(githubcontent + "/jmvanel/semantic_forms/master/scala/forms/form_specs/additions_to_vocabs.ttl" ) ::
+      // URI(githubcontent + "/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl" ) ::
+      form("") ::
       prefixesMap("tm") ::
       prefixesMap("bioc") ::
       prefixesMap("seeds") ::

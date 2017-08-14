@@ -22,7 +22,8 @@ trait Lookup[Rdf <: RDF, DATASET]
   type Results = List[(Rdf#Node, String, String, String, String)]
 
   /**
-   * This is dbPedia's output format, that could be used:
+   * This is dbPedia's output format, that is used when `mime` = "application/xml"
+   * (otherwise a JSON similar in structure is returned)
    *
    * <ArrayOfResult xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    * xmlns:xsd="http://www.w3.org/2001/XMLSchema"
@@ -113,9 +114,15 @@ trait Lookup[Rdf <: RDF, DATASET]
       } else "?CLASS"
 
       // TODO pasted from StringSearchSPARQL :((((
-      val textQuery = if( search.length() > 0 )
-        s"?thing text:query ( '${prepareSearchString(search).trim()}' ) ."
-      else ""
+      val textQuery =
+        if (search.length() > 0) {
+          val searchStringPrepared = prepareSearchString(search).trim()
+          if (config.useTextQuery)
+            s"?thing text:query ( '$searchStringPrepared' ) ."
+          else
+            s"""    ?thing ?P1 ?O1 .
+              FILTER ( regex( str(?O1), '$searchStringPrepared' ) )"""
+        } else ""
 
       val queryWithlinksCount = s"""
          |${declarePrefix(text)}
