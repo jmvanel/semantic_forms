@@ -22,7 +22,8 @@ trait Lookup[Rdf <: RDF, DATASET]
   type Results = List[(Rdf#Node, String, String, String, String)]
 
   /**
-   * This is dbPedia's output format, that could be used:
+   * This is dbPedia's output format, that is used when `mime` = "application/xml"
+   * (otherwise a JSON similar in structure is returned)
    *
    * <ArrayOfResult xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    * xmlns:xsd="http://www.w3.org/2001/XMLSchema"
