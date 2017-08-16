@@ -228,6 +228,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
     			  Some(URI(graphURI)))
       } }
 
+      implicit val rdfLocalProvider: RDFStoreLocalProvider[Rdf, _] = this
       /* TODO maybe: in the hook here: return the future to print later what has been done */
       callSaveListeners(triplesToAdd, triplesToRemove)
 

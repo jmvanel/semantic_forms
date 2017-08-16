@@ -5,6 +5,7 @@ import deductions.runtime.utils.DefaultConfiguration
 import org.junit.Assert
 import org.scalatest.FunSuite
 import org.w3.banana.{RDF, XSDPrefix}
+import deductions.runtime.utils.RDFStoreLocalProvider
 
 trait TimeSeriesTest[Rdf <: RDF, DATASET] extends FunSuite with TimeSeries[Rdf, DATASET] {
   
@@ -20,6 +21,7 @@ trait TimeSeriesTest[Rdf <: RDF, DATASET] extends FunSuite with TimeSeries[Rdf, 
       
   test("notifyDataEvent + getTimeSeries") {
     implicit val userURI = "urn:jmv1"
+    implicit val rdfLocalProvider: RDFStoreLocalProvider[Rdf, _] = this
     notifyDataEvent(addedTriples1, /*removedTriples*/ Seq(),
         request = deductions.runtime.core.HTTPrequest() )
     Thread.sleep( 200 )

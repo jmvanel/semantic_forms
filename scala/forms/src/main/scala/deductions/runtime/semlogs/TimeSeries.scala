@@ -50,7 +50,8 @@ with SPARQLHelpers[Rdf, DATASET] {
       request: HTTPrequest,
       ipAdress: String,
       isCreation: Boolean)(implicit userURI: String
-//      TODO    rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET]
+      // TODO ? , rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET]
+    	,    rdfLocalProvider: RDFStoreLocalProvider[Rdf, _]
       ) = {
     // TODO future
     if (!addedTriples.isEmpty)
