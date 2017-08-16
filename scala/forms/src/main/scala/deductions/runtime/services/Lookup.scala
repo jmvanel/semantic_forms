@@ -2,7 +2,7 @@ package deductions.runtime.services
 
 import deductions.runtime.abstract_syntax.{InstanceLabelsInferenceMemory, PreferredLanguageLiteral}
 import deductions.runtime.sparql_cache.SPARQLHelpers
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.utils.RDFPrefixes
 import org.w3.banana.RDF
 import play.api.libs.json.Json

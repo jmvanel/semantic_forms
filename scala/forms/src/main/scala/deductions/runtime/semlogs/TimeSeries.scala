@@ -4,7 +4,7 @@ import java.math.BigInteger
 import java.util.Date
 
 import deductions.runtime.sparql_cache.SPARQLHelpers
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFStoreLocalProvider
 import org.w3.banana.RDF
 import deductions.runtime.utils.SaveListener
 import deductions.runtime.core.HTTPrequest

@@ -2,7 +2,7 @@ package deductions.runtime.services
 
 import java.net.URLDecoder
 
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.sparql_cache.{SPARQLHelpers, TypeAddition}
 import deductions.runtime.utils.{RDFHelpers, Timer, URIManagement, DatabaseChanges}
 import org.w3.banana.{RDF, TryW}

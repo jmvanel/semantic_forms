@@ -14,7 +14,7 @@ import deductions.runtime.services.Authentication
 import deductions.runtime.services.FormSaver
 import deductions.runtime.services.html.Form2HTMLObject
 import deductions.runtime.services.html.TriplesViewModule
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalUserManagement
+import deductions.runtime.utils.RDFStoreLocalUserManagement
 import deductions.runtime.utils.Configuration
 import deductions.runtime.utils.DefaultConfiguration
 import play.api.mvc.Action

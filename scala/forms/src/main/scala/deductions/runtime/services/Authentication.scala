@@ -4,7 +4,7 @@ import java.security.MessageDigest
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter
 
 import deductions.runtime.sparql_cache.RDFCacheAlgo
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalUserManagement
+import deductions.runtime.utils.RDFStoreLocalUserManagement
 import deductions.runtime.utils.{RDFPrefixes, URIManagement}
 import org.w3.banana.RDF
 

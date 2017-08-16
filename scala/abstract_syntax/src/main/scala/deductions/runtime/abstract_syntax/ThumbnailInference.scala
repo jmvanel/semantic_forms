@@ -1,7 +1,7 @@
 package deductions.runtime.abstract_syntax
 
 import deductions.runtime.core.FormModule
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.utils.{RDFHelpers, RDFPrefixes}
 import org.w3.banana.RDF
 

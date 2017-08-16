@@ -1,7 +1,7 @@
 package deductions.runtime.mobion
 
 import deductions.runtime.abstract_syntax.{ FormSyntaxFactory, FormSyntaxFromSPARQL }
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.html.TableView
 import deductions.runtime.sparql_cache.algos.GeoPath
 import deductions.runtime.utils.RDFPrefixesInterface

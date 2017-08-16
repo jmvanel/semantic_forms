@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat
 import java.util.{Date, Locale}
 
 import deductions.runtime.semlogs.TimeSeries
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.utils.I18NMessages
 import deductions.runtime.core.HTTPrequest
 import org.w3.banana.RDF

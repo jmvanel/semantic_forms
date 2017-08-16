@@ -2,7 +2,7 @@ package deductions.runtime.sparql_cache
 
 import java.util.Date
 
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.utils.{HTTPHelpers, RDFHelpers, URIManagement}
 import deductions.runtime.core.HTTPrequest
 import org.apache.http.HttpResponse

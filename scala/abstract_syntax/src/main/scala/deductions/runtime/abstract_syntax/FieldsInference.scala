@@ -2,7 +2,7 @@ package deductions.runtime.abstract_syntax
 
 import deductions.runtime.core.FormModule
 import deductions.runtime.sparql_cache.SPARQLHelpers
-import deductions.runtime.sparql_cache.dataset.RDFOPerationsDB
+import deductions.runtime.utils.RDFOPerationsDB
 import deductions.runtime.utils.{Configuration, RDFHelpers}
 import org.w3.banana.{OWLPrefix, Prefix, RDF}
 
