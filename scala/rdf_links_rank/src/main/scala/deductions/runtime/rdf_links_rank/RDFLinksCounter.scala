@@ -57,37 +57,50 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
       ) {
         countsSubjectsSet.add(subject)
         countsMap.put(subject, countsMap.getOrElse(subject, 0) + 1)
+        println(s"countChanges: countsSubjectsSet ${countsSubjectsSet}, countsMap $countsMap")
       }
 
-    countChanges(databaseChanges.triplesToAdd, countsSubjectsToAddSet, countsMap)
-    countChanges(databaseChanges.triplesToRemove, countsSubjectsToRemoveSet, countsToRemoveMap)
+    rdfStore.r(linksCountDataset, {
+      countChanges(databaseChanges.triplesToAdd, countsSubjectsToAddSet, countsMap)
+      countChanges(databaseChanges.triplesToRemove, countsSubjectsToRemoveSet, countsToRemoveMap)
+    })
 
-    for (
-      subject <- (countsSubjectsToAddSet ++ countsSubjectsToRemoveSet);
-      linksCountGraph <- rdfStore.getGraph(linksCountDataset, linksCountGraphURI);
-      oldCount <- getCountFromTDBTry(linksCountGraph, subject)
-    ) {
-      val count = oldCount
-      +countsMap.getOrElse(subject, 0)
-      -countsToRemoveMap.getOrElse(subject, 0)
-      if (count != oldCount) {
-        rdfStore.removeTriples(linksCountDataset, linksCountGraphURI,
-          Seq(Triple(subject,
-            linksCountPred,
-            IntToLiteral(ops).toLiteral(oldCount))))
-        rdfStore.appendToGraph(linksCountDataset, linksCountGraphURI,
-          makeGraph(Seq(Triple(
-            subject,
-            linksCountPred,
-            IntToLiteral(ops).toLiteral(count)))))
+    rdfStore.rw(linksCountDataset, {
+      for (
+        subject <- (countsSubjectsToAddSet ++ countsSubjectsToRemoveSet);
+        linksCountGraph <- rdfStore.getGraph(linksCountDataset, linksCountGraphURI);
+        oldCount <- getCountFromTDBTry(linksCountGraph, subject) ;
+        _ = println(s"updateLinksCount: oldCount $oldCount")
+      ) {
+    	  println(s"countChanges 2: countsSubjectsToAddSet ${countsSubjectsToAddSet}, countsMap $countsMap")
+        val count = oldCount + countsMap.getOrElse(subject, 0) -
+                       countsToRemoveMap.getOrElse(subject, 0)
+        println(s"updateLinksCount: count $count")
+        if (count != oldCount) {
+          rdfStore.removeTriples(linksCountDataset, linksCountGraphURI,
+            Seq(Triple(subject,
+              linksCountPred,
+              IntToLiteral(ops).toLiteral(oldCount))))
+          rdfStore.appendToGraph(linksCountDataset, linksCountGraphURI,
+            makeGraph(Seq(Triple(
+              subject,
+              linksCountPred,
+              IntToLiteral(ops).toLiteral(count)))))
+        }
       }
-    }
+    })
   }
 
   private def getCountFromTDBTry(linksCountGraph: Rdf#Graph,
                                  subject: Rdf#Node): Try[Int] = {
     val pg = PointedGraph(subject, linksCountGraph)
-    (pg / linksCountPred).as[Int]
+    println(s"getCountFromTDBTry: pg $pg")
+    val pg1 = (pg / linksCountPred)
+    println(s"getCountFromTDBTry: (pg / linksCountPred) ${pg1}")
+    if (pg1.nodes.isEmpty)
+      Try(0)
+    else
+      pg1.as[Int]
   }
 
   /** compute RDF Links Count from scratch, typically called in batch */

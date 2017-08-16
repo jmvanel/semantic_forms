@@ -321,7 +321,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 //                val field2 = field.asResource.copy(widgetType = DBPediaLookup)
                 val field2 = field.copyEntry(widgetType = DBPediaLookup)
                 formSyntax.fields = replace(formSyntax.fields, field, field2)
-                println(s"updateOneFormFromConfig: Lookup: $field -> $field2")
+//                println(
+                logger.debug(s"updateOneFormFromConfig: Lookup: $field -> $field2")
               }
 
               //// cardinality ////
@@ -346,7 +347,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 //                  val field2 = field.asResource.copy(cardinality = cardinality)
                   val field2 = field.copyEntry(cardinality = cardinality)                 
                   formSyntax.fields = replace(formSyntax.fields, field, field2)
-                  println(s"updateOneFormFromConfig: cardinality: prop $prop: $cardinality, $field -> $field2")
+//                  println(
+                  logger.debug(s"updateOneFormFromConfig: cardinality: prop $prop: $cardinality, $field -> $field2")
                 }
               }
             }
