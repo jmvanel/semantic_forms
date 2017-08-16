@@ -14,7 +14,6 @@ import deductions.runtime.core.HTTPrequest
  *  
  * See also trait DashboardHistoryUserActions for a view */
 trait TimeSeries[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET] 
-//with LogAPI[Rdf]
 with SaveListener[Rdf]
 with SPARQLHelpers[Rdf, DATASET] {
 
@@ -50,7 +49,9 @@ with SPARQLHelpers[Rdf, DATASET] {
       removedTriples: Seq[Rdf#Triple],
       request: HTTPrequest,
       ipAdress: String,
-      isCreation: Boolean)(implicit userURI: String) = {
+      isCreation: Boolean)(implicit userURI: String
+//      TODO    rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET]
+      ) = {
     // TODO future
     if (!addedTriples.isEmpty)
       rdfStore.rw( dataset2, {

@@ -11,5 +11,7 @@ trait SaveListener[Rdf <: RDF] {
       request: HTTPrequest,
       ipAdress: String="",
       isCreation: Boolean=false)
-  (implicit userURI: String): Unit
+  (implicit userURI: String
+//         TODO rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET]
+  ): Unit
 }
