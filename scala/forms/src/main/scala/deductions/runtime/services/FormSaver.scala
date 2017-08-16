@@ -2,7 +2,6 @@ package deductions.runtime.services
 
 import java.net.URLDecoder
 
-import deductions.runtime.semlogs.LogAPI
 import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
 import deductions.runtime.sparql_cache.{SPARQLHelpers, TypeAddition}
 import deductions.runtime.utils.{RDFHelpers, Timer, URIManagement, DatabaseChanges}
@@ -19,7 +18,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
     with TypeAddition[Rdf, DATASET]
     with HttpParamsManager[Rdf]
-    with LogAPI[Rdf]
+//    with LogAPI[Rdf]
     with SaveListenersManager[Rdf]
     with RDFHelpers[Rdf]
     with SPARQLHelpers[Rdf, DATASET]

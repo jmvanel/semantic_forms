@@ -10,5 +10,6 @@ trait SaveListener[Rdf <: RDF] {
       removedTriples: Seq[Rdf#Triple],
       request: HTTPrequest,
       ipAdress: String="",
-      isCreation: Boolean=false): Unit
+      isCreation: Boolean=false)
+  (implicit userURI: String): Unit
 }

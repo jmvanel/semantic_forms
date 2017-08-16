@@ -20,9 +20,11 @@ trait TimeSeriesTest[Rdf <: RDF, DATASET] extends FunSuite with TimeSeries[Rdf, 
       
   test("notifyDataEvent + getTimeSeries") {
     implicit val userURI = "urn:jmv1"
-    notifyDataEvent(addedTriples1, /*removedTriples*/ Seq() )
+    notifyDataEvent(addedTriples1, /*removedTriples*/ Seq(),
+        request = deductions.runtime.core.HTTPrequest() )
     Thread.sleep( 200 )
-    notifyDataEvent(addedTriples2, /*removedTriples*/ Seq() )
+    notifyDataEvent(addedTriples2, /*removedTriples*/ Seq(),
+        request = deductions.runtime.core.HTTPrequest() )
     val results = getTimeSeries( fromUri(predURI) )
     println( "results " + results )
     val resPair = results.getOrElse(label, Seq() ).head
