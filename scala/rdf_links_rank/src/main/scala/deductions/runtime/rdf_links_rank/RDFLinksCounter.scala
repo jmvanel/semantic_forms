@@ -22,8 +22,9 @@ import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.utils.DatabaseChanges
 
 trait RDFLinksCounter[Rdf <: RDF, DATASET]
-    extends RDFPrefixes[Rdf] {
-  self: RDFSyntax[Rdf] =>
+    extends RDFPrefixes[Rdf]
+    with RDFSyntax[Rdf] {
+//  self: RDFSyntax[Rdf] =>
 
   val linksCountPred = form("linksCount")
   implicit val ops: RDFOps[Rdf]
