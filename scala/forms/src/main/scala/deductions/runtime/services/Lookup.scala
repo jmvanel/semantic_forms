@@ -121,10 +121,13 @@ trait Lookup[Rdf <: RDF, DATASET]
             s"?thing text:query ( '$searchStringPrepared' ) ."
           else
             s"""    ?thing ?P1 ?O1 .
-              FILTER ( regex( str(?O1), '$searchStringPrepared' ) )"""
+              FILTER ( isLiteral( ?O1) )
+              FILTER ( regex( str(?O1), '.*$searchStringPrepared.*' ) )
+            """
         } else ""
 
-      val queryWithlinksCount = s"""
+      // UNUSED
+      val queryWithlinksCountNoPrefetch = s"""
          |${declarePrefix(text)}
          |${declarePrefix(rdfs)}
          |SELECT DISTINCT ?thing (COUNT(*) as ?count) WHERE {
@@ -139,6 +142,26 @@ trait Lookup[Rdf <: RDF, DATASET]
          |LIMIT 10
          |""".stripMargin
 
+      val queryWithlinksCount = s"""
+         |${declarePrefix(text)}
+         |${declarePrefix(rdfs)}
+         |${declarePrefix(form)}
+         |SELECT DISTINCT ?thing ?COUNT WHERE {
+         |  graph ?g {
+         |    $textQuery
+         |    ?thing ?p ?o .
+         |    ?thing a $clas .
+         |  }
+         |  OPTIONAL {
+         |   graph ?g1 {
+         |    ?thing form:linksCount ?COUNT.
+         |  } }
+         |}
+         |ORDER BY DESC(?COUNT)
+         |LIMIT 10
+         |""".stripMargin
+
+      // UNUSED
       val queryWithoutlinksCount = s"""
          |${declarePrefix(text)}
          |${declarePrefix(rdfs)}
@@ -152,7 +175,7 @@ trait Lookup[Rdf <: RDF, DATASET]
          |LIMIT 15
          |""".stripMargin
 
-     return queryWithoutlinksCount
+     return queryWithlinksCount
     }
   }
 
