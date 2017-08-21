@@ -24,9 +24,14 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
             """
     } else ""
 
-  def classCriterium(classe: String) =
-    if (classe == "") "?CLASS"
-    else "<" + expandOrUnchanged(classe) + ">"
+  def classCriterium(classe: String) = {
+		println(
+		  s"""classCriterium classe "${classe}" """)
+    if (classe == "")
+      "?CLASS"
+    else
+      "<" + expandOrUnchanged(classe) + ">"
+    }
 
   // UNUSED
   def queryWithlinksCountNoPrefetch(search: String,

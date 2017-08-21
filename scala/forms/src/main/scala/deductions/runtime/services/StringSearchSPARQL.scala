@@ -16,8 +16,8 @@ import scala.xml.NodeSeq
 trait StringSearchSPARQL[Rdf <: RDF, DATASET]
     extends ParameterizedSPARQL[Rdf, DATASET]
     with RDFPrefixes[Rdf]
-//        with Configuration
-        {
+    with StringSearchSPARQLBase[Rdf] {
+
   val config: Configuration
   import config._
 
