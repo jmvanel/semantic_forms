@@ -12,7 +12,7 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
 
   val config: Configuration
 
-  def textQuery(search: String) =
+  private def textQuery(search: String) =
     if (search.length() > 0) {
       val searchStringPrepared = prepareSearchString(search).trim()
       if (config.useTextQuery)
@@ -24,7 +24,7 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
             """
     } else ""
 
-  def classCriterium(classe: String) = {
+  private def classCriterium(classe: String) = {
 		println(
 		  s"""classCriterium classe "${classe}" """)
     if (classe == "")
@@ -86,7 +86,7 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |""".stripMargin
 
   /** prepare Search String: trim, and replace ' with \' */
-  def prepareSearchString(search: String) = {
+  private def prepareSearchString(search: String) = {
     search.trim().replace("'", """\'""")
   }
 }
