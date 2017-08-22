@@ -4,15 +4,17 @@ import java.math.BigInteger
 import java.util.Date
 
 import deductions.runtime.sparql_cache.SPARQLHelpers
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFStoreLocalProvider
 import org.w3.banana.RDF
+import deductions.runtime.utils.SaveListener
+import deductions.runtime.core.HTTPrequest
 
 /** swallow and regurgitate user input, to build a history;
  *  a callback is installed in FormSaver via addSaveListener() in ApplicationFacadeImpl
  *  
  * See also trait DashboardHistoryUserActions for a view */
 trait TimeSeries[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET] 
-with LogAPI[Rdf] 
+with SaveListener[Rdf]
 with SPARQLHelpers[Rdf, DATASET] {
 
   import ops._
@@ -42,8 +44,15 @@ with SPARQLHelpers[Rdf, DATASET] {
    * in the named graph whose name is computed by makeGraphURIAndMetadata();
    * transactional
    */
-  override def notifyDataEvent(addedTriples: Seq[Rdf#Triple],
-      removedTriples: Seq[Rdf#Triple], ipAdress: String, isCreation: Boolean)(implicit userURI: String) = {
+  override def notifyDataEvent(
+      addedTriples: Seq[Rdf#Triple],
+      removedTriples: Seq[Rdf#Triple],
+      request: HTTPrequest,
+      ipAdress: String,
+      isCreation: Boolean)(implicit userURI: String
+      // TODO ? , rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET]
+    	,    rdfLocalProvider: RDFStoreLocalProvider[Rdf, _]
+      ) = {
     // TODO future
     if (!addedTriples.isEmpty)
       rdfStore.rw( dataset2, {

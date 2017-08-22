@@ -19,7 +19,6 @@ import org.apache.lucene.search.suggest.analyzing.FreeTextSuggester;
 import org.apache.lucene.search.suggest.analyzing.FuzzySuggester;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.Version;
 
 import java.util.List;
 
@@ -71,7 +70,7 @@ public class AutoSuggestTest {
 
         Dictionary dictionary = new LuceneDictionary(indexReader, "content");
 
-        AnalyzingSuggester analyzingSuggester = new AnalyzingSuggester(new StandardAnalyzer());
+        AnalyzingSuggester analyzingSuggester = new AnalyzingSuggester(directory, "analyzingSuggester", new StandardAnalyzer());
         analyzingSuggester.build(dictionary);
 
         List<Lookup.LookupResult> lookupResultList = analyzingSuggester.lookup("humpty dum", false, 10);
@@ -99,7 +98,7 @@ public class AutoSuggestTest {
 
         Dictionary dictionary = new LuceneDictionary(indexReader, "content");
 
-        AnalyzingInfixSuggester analyzingInfixSuggester = new AnalyzingInfixSuggester( Version.LUCENE_CURRENT, directory, analyzer);
+        AnalyzingInfixSuggester analyzingInfixSuggester = new AnalyzingInfixSuggester( directory, analyzer);
         analyzingInfixSuggester.build(dictionary);
 
         List<Lookup.LookupResult> lookupResultList = analyzingInfixSuggester.lookup("put h", false, 10);
@@ -156,7 +155,7 @@ public class AutoSuggestTest {
 
         Dictionary dictionary = new LuceneDictionary(indexReader, "content");
 
-        FuzzySuggester fuzzySuggester = new FuzzySuggester(new StandardAnalyzer());
+        FuzzySuggester fuzzySuggester = new FuzzySuggester(directory, "fuzzySuggester", new StandardAnalyzer());
         fuzzySuggester.build(dictionary);
 
         List<Lookup.LookupResult> lookupResultList = fuzzySuggester.lookup("hampty", false, 10);

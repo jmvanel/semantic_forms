@@ -2,8 +2,7 @@ package deductions.runtime.services
 
 import java.net.URLDecoder
 
-import deductions.runtime.semlogs.LogAPI
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.sparql_cache.{SPARQLHelpers, TypeAddition}
 import deductions.runtime.utils.{RDFHelpers, Timer, URIManagement, DatabaseChanges}
 import org.w3.banana.{RDF, TryW}
@@ -19,7 +18,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
     with TypeAddition[Rdf, DATASET]
     with HttpParamsManager[Rdf]
-    with LogAPI[Rdf]
+//    with LogAPI[Rdf]
     with SaveListenersManager[Rdf]
     with RDFHelpers[Rdf]
     with SPARQLHelpers[Rdf, DATASET]
@@ -229,6 +228,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
     			  Some(URI(graphURI)))
       } }
 
+      implicit val rdfLocalProvider: RDFStoreLocalProvider[Rdf, _] = this
       /* TODO maybe: in the hook here: return the future to print later what has been done */
       callSaveListeners(triplesToAdd, triplesToRemove)
 

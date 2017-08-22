@@ -2,8 +2,8 @@ package deductions.runtime.sparql_cache
 
 import java.io.ByteArrayOutputStream
 
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
-import deductions.runtime.sparql_cache.dataset.RDFOPerationsDB
+import deductions.runtime.utils.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFOPerationsDB
 
 import deductions.runtime.utils._
 import org.apache.log4j.Logger

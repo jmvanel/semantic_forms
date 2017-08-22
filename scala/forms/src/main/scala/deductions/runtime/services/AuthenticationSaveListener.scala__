@@ -17,7 +17,7 @@ with Authentication[Rdf, DATASET]
       removedTriples: Seq[Rdf#Triple],
       request: HTTPrequest,
       ipAdress: String="",
-      isCreation: Boolean=false): Unit = {
+      isCreation: Boolean=false)(implicit userURI: String): Unit = {
     // form: type: Authentication, fields: userid, password, confirmPassword
 //    for(tr <- addedTriples) {
 //      tr.predicate match {

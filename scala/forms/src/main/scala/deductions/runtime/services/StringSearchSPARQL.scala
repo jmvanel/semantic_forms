@@ -16,20 +16,25 @@ import scala.xml.NodeSeq
 trait StringSearchSPARQL[Rdf <: RDF, DATASET]
     extends ParameterizedSPARQL[Rdf, DATASET]
     with RDFPrefixes[Rdf]
-//        with Configuration
-        {
+    with StringSearchSPARQLBase[Rdf] {
+
   val config: Configuration
   import config._
 
   private val plainSPARQLquery = new SPARQLQueryMaker[Rdf]
         with ColsInResponse {
-    override def makeQueryString(search: String*): String = s"""
-         |SELECT DISTINCT ?thing WHERE {
-         |  graph ?g {
-         |    ?thing ?p ?o .
-         |    FILTER regex( ?o, '${prepareSearchString(search(0))}', 'i')
-         |  }
-         |}""".stripMargin
+    override def makeQueryString(search: String*): String = {
+      val classe = search(1)
+      queryWithoutlinksCount( search(0), classe )
+
+//      s"""
+//         |SELECT DISTINCT ?thing WHERE {
+//         |  graph ?g {
+//         |    ?thing ?p ?o .
+//         |    FILTER regex( ?o, '${prepareSearchString(search(0))}', 'i')
+//         |  }
+//         |}""".stripMargin
+  }
   }
 
   /** see https://jena.apache.org/documentation/query/text-query.html
@@ -38,33 +43,35 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
     override def makeQueryString(searchStrings: String*): String = {
       val search =  searchStrings(0)
       val clas = searchStrings(1)
+
+      // TODO add argument "limit" to queryWithlinksCount()
       val limit = if( clas != "" ) "" else "LIMIT 15"
 
-      val textQuery = if( search.length() > 0 )
-        s"?thing text:query ( '${prepareSearchString(search).trim()}' ) ."
-      else ""
+      queryWithlinksCount( search, clas )
 
-      // TODO val classQuery = if( clas != "") { // like textQuery before
-
-      val queryString0 = s"""
-         |${declarePrefix(text)}
-         |${declarePrefix(rdfs)}
-         |SELECT DISTINCT ?thing (COUNT(*) as ?count) WHERE {
-         |  graph ?g {
-         |    $textQuery
-         |    ?thing ?p ?o .
-         |    # ?thing a ?class .
-         |  }
-         |}
-         |GROUP BY ?thing
-         |ORDER BY DESC(?count)
-         |$limit""".stripMargin
-
-      // TODO val classQuery
-      if (clas != "") {
-        queryString0.replaceFirst("""\?class""", "<" + expandOrUnchanged(clas) + ">")
-      } else queryString0
+//      val textQuery = if( search.length() > 0 )
+//        s"?thing text:query ( '${prepareSearchString(search).trim()}' ) ."
+//      else ""
+//
+//      val queryString0 = s"""
+//         |${declarePrefix(text)}
+//         |${declarePrefix(rdfs)}
+//         |SELECT DISTINCT ?thing (COUNT(*) as ?count) WHERE {
+//         |  graph ?g {
+//         |    $textQuery
+//         |    ?thing ?p ?o .
+//         |    # ?thing a ?class .
+//         |  }
+//         |}
+//         |GROUP BY ?thing
+//         |ORDER BY DESC(?count)
+//         |$limit""".stripMargin
+//
+//      if (clas != "") {
+//        queryString0.replaceFirst("""\?class""", "<" + expandOrUnchanged(clas) + ">")
+//      } else queryString0
     }
+
   }
   
   trait ColsInResponse extends SPARQLQueryMaker[Rdf] {

@@ -1,7 +1,7 @@
 package deductions.runtime.data_cleaning
 
 import deductions.runtime.sparql_cache.SPARQLHelpers
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFStoreLocalProvider
 import org.w3.banana.{OWLPrefix, RDF}
 
 import scala.language.postfixOps

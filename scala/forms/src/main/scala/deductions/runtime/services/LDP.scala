@@ -3,7 +3,7 @@ package deductions.runtime.services
 import java.io.StringReader
 
 import deductions.runtime.sparql_cache.SPARQLHelpers
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.utils.URIManagement
 import deductions.runtime.core.HTTPrequest
 import org.w3.banana.RDF

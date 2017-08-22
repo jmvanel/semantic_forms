@@ -7,7 +7,6 @@ trait LogAPI[Rdf <: RDF] {
 
   implicit val ops: RDFOps[Rdf]
 
-//  trait SaveListener {
     def notifyDataEvent(addedTriples: Seq[Rdf#Triple], removedTriples: Seq[Rdf#Triple],
         ipAdress: String="", isCreation: Boolean=false )
     (implicit userURI: String) = Unit

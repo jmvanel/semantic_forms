@@ -4,7 +4,7 @@ import java.io.{File, IOException}
 import java.net.{HttpURLConnection, URL}
 import java.util.Date
 
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFStoreLocalProvider
 import org.apache.http.impl.cookie.DateUtils
 import org.w3.banana.RDF
 

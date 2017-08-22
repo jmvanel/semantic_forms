@@ -1,6 +1,6 @@
 package deductions.runtime.sparql_cache
 
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFStoreLocalProvider
 import org.w3.banana.RDF
 
 /**

@@ -13,7 +13,6 @@ import org.apache.jena.graph.Node_Literal;
 import org.apache.jena.graph.Node_URI;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.query.Dataset;
-import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.ReadWrite;
@@ -39,8 +38,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.NIOFSDirectory;
 
 /**
-'d,'fs/$/;/
-
  * Test Lucene Text Index, no Banana dependency !!!
  *
  *  - initialize TDB with Lucene
@@ -51,20 +48,20 @@ import org.apache.lucene.store.NIOFSDirectory;
  */
 class TestTextIndex2 {
 
-	  String rdfs = "http://www.w3.org/2000/01/rdf-schema#";
-	  String foaf = "http://xmlns.com/foaf/0.1/";
+	String rdfs = "http://www.w3.org/2000/01/rdf-schema#";
+	String foaf = "http://xmlns.com/foaf/0.1/";
 
-	  Node_URI pred1 = makeUri(rdfs + "label");
-	  Node_URI pred2 = makeUri(foaf + "givenName");
+	Node_URI pred1 = makeUri(rdfs + "label");
+	Node_URI pred2 = makeUri(foaf + "givenName");
 
-	  String directory = "Dataset1";
-	  String LUCENEtest = "LUCENEtest2";
+	String directory = "Dataset1";
+	String LUCENEtest = "LUCENEtest2";
 
-	  Dataset dataset;
-	  
-	  public static void main(String args[]) throws IOException {
-		  new TestTextIndex2().run();
-	  }
+	Dataset dataset;
+
+	public static void main(String args[]) throws IOException {
+		new TestTextIndex2().run();
+	}
 		  
 	public void run() throws IOException {
 
@@ -88,8 +85,9 @@ class TestTextIndex2 {
 			// case _ =>
 		}
 
-		sparqlQuery(query2);
-		sparqlQuery(query);
+		sparqlQuery(plainQuery);
+		println("\ntextQuery: CURRENTLY FAILS with Jena 3.3.0 !!!!");
+		sparqlQuery(textQuery);
 		dataset.close();
 
 		println("tdb.tdbdump (after dataset.close() )");
@@ -98,48 +96,44 @@ class TestTextIndex2 {
 
   ////
 
-  private void println(String string) {
-	  System.out.println( string);
-}
+	void populateTDB() {
+		try {
+			dataset.begin(ReadWrite.WRITE);
+			populateExtraGraph();
+			populateRelevantGraph();
+			dataset.commit();
+		} catch (Exception t) {
+			System.err.println("!!!! error " + t.getLocalizedMessage());
+		} finally {
+			dataset.end();
+		}
+		println("After transaction");
+	}
 
-void populateTDB() {
-    try {
-      dataset.begin(ReadWrite.WRITE);
-      Node_URI s = makeUri("test:/test1");
-      Graph graph;
-	Node_Literal o;
-	Triple tr;
-	{
-        Node_URI g2 = makeUri("test:/test-extra-data");
-        graph = Factory.createDefaultGraph();
-        o = makeLiteral("test-extra-data");
-        tr = makeTriple(s, pred1, o);
-        graph.add(tr);
-        dataset.asDatasetGraph().addGraph(g2, graph);
-        println(">>>> graph added: $g2 $graph");
-      }
-      {
-        o = makeLiteral("test1");
-        tr = makeTriple(s, pred1, o);
-        Triple tr2 = makeTriple(s, pred2, o);
-        graph = Factory.createDefaultGraph();
-        graph.add(tr);
-        graph.add(tr2);
-        Node_URI g = makeUri("test:/test1");
-        dataset.asDatasetGraph().addGraph(g, graph);
-        println(">>>> graph added: $g $graph");
-      }
-      dataset.commit();
-    } catch (Exception t) {
-        System.err.println("!!!! error " + t.getLocalizedMessage());
-    }
-    finally {
-    	dataset.end();
-    }
-    println("After transaction");
+  void populateRelevantGraph() {
+	  Node_URI s = makeUri("test:/test1");
+	  Node_Literal o = makeLiteral("test1");
+	  Triple tr = makeTriple(s, pred1, o);
+      Triple tr2 = makeTriple(s, pred2, o);
+      Graph graph = Factory.createDefaultGraph();
+      graph.add(tr);
+      graph.add(tr2);
+      Node_URI g = makeUri("test:/test1");
+      dataset.asDatasetGraph().addGraph(g, graph);
+      println(">>>> graph added: $g $graph");
+  }
+  void populateExtraGraph() {
+    Node_URI s = makeUri("test:/test1");
+    Node_URI g2 = makeUri("test:/test-extra-data");
+    Graph graph = Factory.createDefaultGraph();
+    Node_Literal o = makeLiteral("test-extra-data");
+    Triple tr = makeTriple(s, pred1, o);
+    graph.add(tr);
+    dataset.asDatasetGraph().addGraph(g2, graph);
+    println(">>>> graph added: $g2 $graph");
   }
 
-	Node_URI makeUri(String iriStr) {
+  Node_URI makeUri(String iriStr) {
 		return (Node_URI) NodeFactory.createURI(iriStr);
 	}
 
@@ -218,18 +212,23 @@ void populateTDB() {
 
   /** cf trait InstanceLabelsInference */
    EntityDefinition rdfIndexing() {
-    EntityDefinition entMap = new EntityDefinition("uri", "text", rdfs + "label");
-    entMap.setLangField("lang");
-    entMap.setUidField("uid");
-    entMap.setGraphField("graph");
+	   
+	 Node pred = makeUri(rdfs + "label");
+	 EntityDefinition entMap = new EntityDefinition("uri", "text", "graph", pred);
+	   
+//    EntityDefinition entMap = new EntityDefinition("uri", "text", rdfs + "label");
+//    entMap.setLangField("lang");
+//    entMap.setUidField("uid");
+//    entMap.setGraphField("graph");
 
-    entMap.set("text", makeUri(foaf + "givenName"));
-    entMap.set("text", makeUri(foaf + "familyName"));
-    entMap.set("text", makeUri(foaf + "firstName"));
-    entMap.set("text", makeUri(foaf + "lastName"));
-    entMap.set("text", makeUri(foaf + "name"));
-    entMap.set("text", makeUri(rdfs + "comment"));
-    return entMap;
+	 // commenting this out does not change the issue that SPARQL with text:query returns empty result
+     entMap.set("text", makeUri(foaf + "givenName"));
+     entMap.set("text", makeUri(foaf + "familyName"));
+     entMap.set("text", makeUri(foaf + "firstName"));
+     entMap.set("text", makeUri(foaf + "lastName"));
+     entMap.set("text", makeUri(foaf + "name"));
+     entMap.set("text", makeUri(rdfs + "comment"));
+     return entMap;
   }
 
   void printScoreDocs(ScoreDoc[] sDocs, IndexSearcher indexSearcher) throws IOException {
@@ -247,19 +246,19 @@ void populateTDB() {
     }
   }
 
-  String query =
-		  "    PREFIX text: <http://jena.apache.org/text#> "
+  String textQuery =
+		  "    PREFIX text: <http://jena.apache.org/text#>\n"
 		  + "    SELECT * WHERE {"
-		  + "      graph ?g {"
-		  + "        ?thing text:query 'test1' ."
+		  + "      graph ?g {\n"
+		  + "        ?thing text:query 'test1' .\n"
 		  + "        ?thing ?p ?o ."
 		  + "      }"
 		  + "    }";
 
-  String query2 =
-		  "    PREFIX text: <http://jena.apache.org/text#>"
+  String plainQuery =
+		  "    PREFIX text: <http://jena.apache.org/text#>\n"
   		+ "    SELECT * WHERE {"
-  		+ "      graph ?g {"
+  		+ "      graph ?g {\n"
   		+ "        ?thing ?p ?o ."
   		+ "      }"
   		+ "    }";
@@ -276,5 +275,9 @@ void populateTDB() {
         ex.printStackTrace();
         dataset.end();
     }
+  }
+
+  private void println(String string) {
+	  System.out.println( string);
   }
 }

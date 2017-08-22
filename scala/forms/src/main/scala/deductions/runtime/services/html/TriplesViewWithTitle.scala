@@ -80,13 +80,13 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
 //              println(s">>>> htmlForm typeChange $typeChange") ; printGraph( gr )
               }
 
-              import scala.concurrent.ExecutionContext.Implicits.global
-              Future { // TODO should be done in FormSaver
-                println(s"Search in <$uri> duplicate graph rooted at blank node: size " +
-                  ops.getTriples(gr).size)
-                manageBlankNodesReload(gr,
-                  URI(uri), datasetOrDefault)
-              }
+//              import scala.concurrent.ExecutionContext.Implicits.global
+//              Future { // TODO should be done in FormSaver
+//                println(s"Search in <$uri> duplicate graph rooted at blank node: size " +
+//                  ops.getTriples(gr).size)
+//                manageBlankNodesReload(gr,
+//                  URI(uri), datasetOrDefault)
+//              }
             case Failure(f) => logger.error(s"manageBlankNodesReload: $f")
           }
 

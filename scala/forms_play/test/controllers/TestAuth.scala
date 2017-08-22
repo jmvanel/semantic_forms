@@ -34,7 +34,7 @@ class TestAuth
   val pw = "bla"
   val timeout: Timeout = Timeout(DurationInt(240) seconds)
   val config1 = config
-  val auth = new AuthTrait {
+  val auth = new AuthServiceTrait {
     val config = config1
     		val htmlGenerator: Form2HTMLBanana[ImplementationSettings.Rdf] =
     		      Form2HTMLObject.makeDefaultForm2HTML(config)(ops)

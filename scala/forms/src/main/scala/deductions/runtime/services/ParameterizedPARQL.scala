@@ -3,7 +3,7 @@ package deductions.runtime.services
 import deductions.runtime.abstract_syntax.{InstanceLabelsInferenceMemory, PreferredLanguageLiteral}
 import deductions.runtime.html.Form2HTMLDisplay
 import deductions.runtime.sparql_cache.SPARQLHelpers
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.views.ResultsDisplay
 import org.w3.banana.{RDF, TryW}
 

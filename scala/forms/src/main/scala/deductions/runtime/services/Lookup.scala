@@ -2,7 +2,7 @@ package deductions.runtime.services
 
 import deductions.runtime.abstract_syntax.{InstanceLabelsInferenceMemory, PreferredLanguageLiteral}
 import deductions.runtime.sparql_cache.SPARQLHelpers
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.utils.RDFPrefixes
 import org.w3.banana.RDF
 import play.api.libs.json.Json
@@ -17,7 +17,8 @@ trait Lookup[Rdf <: RDF, DATASET]
     with InstanceLabelsInferenceMemory[Rdf, DATASET]
     with PreferredLanguageLiteral[Rdf]
     with SPARQLHelpers[Rdf, DATASET]
-    with RDFPrefixes[Rdf] {
+    with RDFPrefixes[Rdf]
+    with StringSearchSPARQLBase[Rdf] {
 
   type Results = List[(Rdf#Node, String, String, String, String)]
 
@@ -65,6 +66,16 @@ trait Lookup[Rdf <: RDF, DATASET]
       formatJSON(list)
   }
 
+  /** search String Or Class
+   * transactional
+   */
+  private def searchStringOrClass(search: String, clas: String = ""): List[Seq[Rdf#Node]] = {
+    val queryString = indexBasedQuery.makeQueryString(search, clas)
+    println(s"""searchStringOrClass(search="$search", clas <$clas>, queryString "$queryString" """)
+    val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariables(queryString, Seq("thing"))
+    res
+  }
+
   private def formatXML(list: Results): String = {
     val elems = list.map {
       case (uri, label, desc, img, typ) =>
@@ -106,67 +117,26 @@ trait Lookup[Rdf <: RDF, DATASET]
    */
   private val indexBasedQuery = new SPARQLQueryMaker[Rdf] {
     override def makeQueryString(searchStrings: String*): String = {
+
       val search = searchStrings(0)
       val clas = if( searchStrings.size > 1 ) {
-        val classe = searchStrings(1)
-        if( classe == "" ) "?CLASS"
-        else "<" + expandOrUnchanged(classe) + ">"
-      } else "?CLASS"
+        println(
+          s"makeQueryString searchStrings $searchStrings , searchStrings(1) = ${searchStrings(1)}")
+        searchStrings(1)
+      } else ""
 
-      // TODO pasted from StringSearchSPARQL :((((
-      val textQuery =
-        if (search.length() > 0) {
-          val searchStringPrepared = prepareSearchString(search).trim()
-          if (config.useTextQuery)
-            s"?thing text:query ( '$searchStringPrepared' ) ."
-          else
-            s"""    ?thing ?P1 ?O1 .
-              FILTER ( regex( str(?O1), '$searchStringPrepared' ) )"""
-        } else ""
+//      // UNUSED
+//      val queryWithlinksCount_NoPrefetch =
+//        queryWithlinksCountNoPrefetch(search, clas)
+//
+//      // UNUSED
+//      val queryWithoutlinks_Count = 
+//        queryWithoutlinksCount(search, clas)
 
-      val queryWithlinksCount = s"""
-         |${declarePrefix(text)}
-         |${declarePrefix(rdfs)}
-         |SELECT DISTINCT ?thing (COUNT(*) as ?count) WHERE {
-         |  graph ?g {
-         |    $textQuery
-         |    ?thing ?p ?o .
-         |    ?thing a $clas .
-         |  }
-         |}
-         |GROUP BY ?thing
-         |ORDER BY DESC(?count)
-         |LIMIT 10
-         |""".stripMargin
-
-      val queryWithoutlinksCount = s"""
-         |${declarePrefix(text)}
-         |${declarePrefix(rdfs)}
-         |SELECT DISTINCT ?thing WHERE {
-         |  graph ?g {
-         |    $textQuery
-         |    ?thing ?p ?o .
-         |    ?thing a $clas .
-         |  }
-         |}
-         |LIMIT 15
-         |""".stripMargin
-
-     return queryWithoutlinksCount
+      val queryWithlinks_Count =
+        queryWithlinksCount(search, clas)
+     return queryWithlinks_Count
     }
-  }
-
-
-  import scala.language.reflectiveCalls
-
-  /** search String Or Class
-   * transactional
-   */
-  def searchStringOrClass(search: String, clas: String = ""): List[Seq[Rdf#Node]] = {
-    val queryString = indexBasedQuery.makeQueryString(search, clas)
-    println(s"""searchStringOrClass(search="$search", clas <$clas>, queryString "$queryString" """)
-    val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariables(queryString, Seq("thing"))
-    res
   }
 
 }

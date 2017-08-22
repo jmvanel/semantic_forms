@@ -1,24 +1,27 @@
 package deductions.runtime.services
 
-import deductions.runtime.semlogs.LogAPI
 import deductions.runtime.utils.Configuration
 import org.w3.banana.RDF
 
 import scala.collection.mutable.ArrayBuffer
+import deductions.runtime.utils.SaveListener
+import deductions.runtime.utils.RDFStoreLocalProvider
+
 trait SaveListenersManager[Rdf <: RDF] {
   val config: Configuration
 
-  type SaveListener = LogAPI[Rdf]
-  val saveListeners = ArrayBuffer[SaveListener]()
+//    type SaveListener = LogAPI[Rdf]
+  val saveListeners = ArrayBuffer[SaveListener[Rdf]]()
 
-  def addSaveListener(l: SaveListener) = {
+  def addSaveListener(l: SaveListener[Rdf]) = {
     saveListeners += l
   }
 
-  def callSaveListeners(addedTriples: Seq[Rdf#Triple], removedTriples: Seq[Rdf#Triple])(implicit userURI: String) = {
+  def callSaveListeners(addedTriples: Seq[Rdf#Triple], removedTriples: Seq[Rdf#Triple])
+  (implicit userURI: String, rdfLocalProvider: RDFStoreLocalProvider[Rdf, _]) = {
     if (config.recordUserActions)
       saveListeners.map {
-        _.notifyDataEvent(addedTriples, removedTriples)
+        _.notifyDataEvent(addedTriples, removedTriples, request = deductions.runtime.core.HTTPrequest() )
       }
   }
 }

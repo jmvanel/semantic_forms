@@ -1,6 +1,7 @@
 package deductions.runtime.sparql_cache.dataset
 
 import org.w3.banana.RDF
+import deductions.runtime.utils.RDFStoreLocalProvider
 
 trait DatasetHelper[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET] {

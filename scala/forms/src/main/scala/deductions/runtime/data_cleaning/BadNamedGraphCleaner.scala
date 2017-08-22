@@ -1,7 +1,7 @@
 package deductions.runtime.data_cleaning
 
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.utils.{DefaultConfiguration, RDFHelpers, URIManagement}
 import org.w3.banana.RDF
 

@@ -1,6 +1,6 @@
 package deductions.runtime.services
 
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
 import deductions.runtime.jena.lucene.LuceneIndex
 import deductions.runtime.utils.{DefaultConfiguration, FileUtils}

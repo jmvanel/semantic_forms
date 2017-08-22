@@ -4,7 +4,7 @@ import java.net.URLEncoder
 
 import deductions.runtime.core.FormModule
 import deductions.runtime.html.BasicWidgets
-import deductions.runtime.sparql_cache.dataset.RDFStoreLocalProvider
+import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.utils.{Configuration, I18NMessages, RDFHelpers, RDFPrefixes}
 import org.w3.banana.{OWLPrefix, PointedGraph, RDF}
 
