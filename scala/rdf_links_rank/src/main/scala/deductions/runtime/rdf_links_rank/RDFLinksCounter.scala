@@ -20,6 +20,7 @@ import java.rmi.UnexpectedException
 
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.utils.DatabaseChanges
+import scala.concurrent.Future
 
 trait RDFLinksCounter[Rdf <: RDF, DATASET]
     extends RDFPrefixes[Rdf]
@@ -35,8 +36,19 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
   import ToLiteral._
   import FromLiteral._
 
+  import scala.concurrent.ExecutionContext.Implicits.global
+
+  /** update RDF Links Count, typically after user edits,
+   *  in a Future */
+  def updateLinksCount(databaseChanges: DatabaseChanges[Rdf],
+                       linksCountDataset: DATASET,
+                       linksCountGraphURI: Rdf#URI) =
+    Future {
+      updateLinksCountNoFuture(databaseChanges, linksCountDataset, linksCountGraphURI)
+    }
+
   /** update RDF Links Count, typically after user edits */
-  def updateLinksCount(
+  private def updateLinksCountNoFuture (
     databaseChanges: DatabaseChanges[Rdf],
     linksCountDataset: DATASET,
     linksCountGraphURI: Rdf#URI) = {
