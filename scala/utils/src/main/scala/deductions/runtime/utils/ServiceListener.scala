@@ -8,3 +8,22 @@ trait ServiceListener[Rdf <: RDF] {
   def notifyServiceCall(request: HTTPrequest)(implicit userURI: String,
                                               rdfLocalProvider: RDFStoreLocalProvider[Rdf, _]): Unit
 }
+
+import scala.collection.mutable.ArrayBuffer
+
+trait ServiceListenersManager[Rdf <: RDF] {
+
+  private val saveListeners = ArrayBuffer[ServiceListener[Rdf]]()
+
+  def addServiceListener(l: ServiceListener[Rdf]) = {
+    saveListeners += l
+  }
+
+  def callServiceListeners(
+    request: HTTPrequest)(implicit userURI: String,
+                          rdfLocalProvider: RDFStoreLocalProvider[Rdf, _]) = {
+    saveListeners.map {
+      _.notifyServiceCall(request)
+    }
+  }
+}

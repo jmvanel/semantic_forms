@@ -10,8 +10,7 @@ import deductions.runtime.utils.RDFStoreLocalProvider
 trait SaveListenersManager[Rdf <: RDF] {
   val config: Configuration
 
-//    type SaveListener = LogAPI[Rdf]
-  val saveListeners = ArrayBuffer[SaveListener[Rdf]]()
+  private val saveListeners = ArrayBuffer[SaveListener[Rdf]]()
 
   def addSaveListener(l: SaveListener[Rdf]) = {
     saveListeners += l
@@ -19,7 +18,10 @@ trait SaveListenersManager[Rdf <: RDF] {
 
   def callSaveListeners(addedTriples: Seq[Rdf#Triple], removedTriples: Seq[Rdf#Triple])
   (implicit userURI: String, rdfLocalProvider: RDFStoreLocalProvider[Rdf, _]) = {
+    
+    // TODO move the test to relavant implementation
     if (config.recordUserActions)
+
       saveListeners.map {
         _.notifyDataEvent(addedTriples, removedTriples, request = deductions.runtime.core.HTTPrequest() )
       }
