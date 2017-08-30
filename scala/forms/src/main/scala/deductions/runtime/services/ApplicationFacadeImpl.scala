@@ -64,7 +64,7 @@ trait ApplicationFacadeImpl[Rdf, DATASET]
     with ToolsPage
     with CSSClasses
     with Results
-    with ServiceListenersManager[ImplementationSettings.Rdf]
+    with ServiceListenersManager[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     {
  
   val config: Configuration
@@ -72,7 +72,7 @@ trait ApplicationFacadeImpl[Rdf, DATASET]
 
   addSaveListener(this) // for TimeSeries
   addSaveListener( new RDFLinksCounterListenerClass(config) )
-  //addServiceListener(l)
+  addServiceListener(new RDFLinksCounterLoadListenerClass(config) )
 
   implicit val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   implicit val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]

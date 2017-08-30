@@ -30,6 +30,7 @@ import play.api.mvc.RequestHeader
 import play.api.mvc.Result
 import views.MainXmlWithHead
 import deductions.runtime.core.HTTPrequest
+import deductions.runtime.utils.RDFStoreLocalProvider
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -87,6 +88,15 @@ trait ApplicationTrait extends Controller
     } else
       <p>...</p>
   }
+
+  /** call All Service Listeners */
+  def callAllServiceListeners(request: Request[_]) = {
+    val req = copyRequest(request)
+    println( s">>>> callAllServiceListeners $request => $req")
+    implicit val rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET] = this
+    callServiceListeners(req)(req.userId(), rdfLocalProvider)
+  }
+              
   /////////////////////////////////
 
   /** save Only, no display - TODO move outside of forms_play */

@@ -39,7 +39,7 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
   import scala.concurrent.ExecutionContext.Implicits.global
 
   /** update RDF Links Count, typically after user edits,
-   *  in a Future */
+   *  in a Future; transactional */
   def updateLinksCount(databaseChanges: DatabaseChanges[Rdf],
                        linksCountDataset: DATASET,
                        linksCountGraphURI: Rdf#URI) =
@@ -47,7 +47,8 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
       updateLinksCountNoFuture(databaseChanges, linksCountDataset, linksCountGraphURI)
     }
 
-  /** update RDF Links Count, typically after user edits */
+  /** update RDF Links Count, typically after user edits,
+   *  transactional  */
   private def updateLinksCountNoFuture (
     databaseChanges: DatabaseChanges[Rdf],
     linksCountDataset: DATASET,

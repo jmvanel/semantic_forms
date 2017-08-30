@@ -1,6 +1,5 @@
 package deductions.runtime.utils
 
-import deductions.runtime.utils.Configuration
 import org.w3.banana.{RDF, RDFOps, RDFStore, SparqlEngine, SparqlOps, SparqlUpdate}
 
 import scala.util.Try
