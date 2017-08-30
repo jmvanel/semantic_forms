@@ -45,6 +45,11 @@ form:showProperties a owl:ObjectProperty ;
 	rdfs:comment "List of all properties which should be shown."@en ;
 	owl:samePropertyAs fresnel:showProperties .
 
+form:linksCount a owl:DatatypeProperty ;
+        rdfs:label "links Count"@en ;
+        rdfs:label "Nombre de liens"@fr ;
+        rdfs:range xsd:integer .
+
 #### editing ####
 
 form:TripleEdit a owl:Class ;
