@@ -195,12 +195,12 @@ trait RDFStoreLocalJenaProvider
     request.addHeader("Accept", contentType)
     val response = httpClient.execute(request)
     val inputStream = response.getEntity.getContent
-    val reader = contentTypes2Readers.getOrElse(contentType, null) // TODO NUllReader
-    if (reader != null)
-      reader.read(inputStream, "")
-    else
-      Failure(new IOException(
-        s"readWithContentTypeNoJena: no Reader found for contentType $contentType"))
+    val reader = contentTypes2Readers.getOrElse(contentType, turtleReader)
+//    if (reader != null)
+      reader.read(inputStream, fromUri(uri))
+//    else
+//      Failure(new IOException(
+//        s"readWithContentTypeNoJena: no Reader found for contentType $contentType"))
   }
 
 }
