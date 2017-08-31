@@ -376,12 +376,13 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
 
           case Failure(f) =>
 //            if( contentType != "ERROR" ) {
-            /* NOTE: hoping that Jena 3.4.0 will solve all issues on RDFDataMgr,
+            /* NOTE: hoping that Jena > 3.4.0 will solve all issues on RDFDataMgr,
              * but before that , we try this */
             println(s""">>>> readURI: Failed with Jena RDF loader for <$uri>
-               trying read With explicit content Type "$contentType" """)
-            ( readWithContentType( uri, contentType, dataset): Try[Rdf#Graph],
-                contentType)
+               trying read With explicit content Type; ContentType From HEAD Request "$contentType" """)
+            val gr = readWithContentType( uri, contentType, dataset): Try[Rdf#Graph]
+//            println(s"""readURI After readWithContentType: ${gr}""")
+            ( gr, contentType)
         }
 
       } else {

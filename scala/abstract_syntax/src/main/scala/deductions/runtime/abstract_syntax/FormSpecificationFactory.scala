@@ -9,9 +9,7 @@ import org.w3.banana.{Prefix, RDF}
 import scala.util.Try
 
 /**
- * Lookup Form specifications from RDF graph; TODO rename FormSpecificationFactory
- * 
- * TODO rename ForSpecificationFactory
+ * Lookup Form specifications from RDF graph
  */
 trait FormSpecificationFactory[Rdf <: RDF, DATASET]
     extends

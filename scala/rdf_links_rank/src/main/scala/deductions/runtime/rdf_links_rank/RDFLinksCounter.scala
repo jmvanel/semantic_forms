@@ -20,6 +20,7 @@ import java.rmi.UnexpectedException
 
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.utils.DatabaseChanges
+import scala.concurrent.Future
 
 trait RDFLinksCounter[Rdf <: RDF, DATASET]
     extends RDFPrefixes[Rdf]
@@ -27,6 +28,8 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
 //  self: RDFSyntax[Rdf] =>
 
   val linksCountPred = form("linksCount")
+  val defaultLinksCountGraphURI = ops.URI("linksCountGraph:")
+
   implicit val ops: RDFOps[Rdf]
   implicit val rdfStore: RDFStore[Rdf, Try, DATASET]
   import ops._
@@ -35,8 +38,20 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
   import ToLiteral._
   import FromLiteral._
 
-  /** update RDF Links Count, typically after user edits */
-  def updateLinksCount(
+  import scala.concurrent.ExecutionContext.Implicits.global
+
+  /** update RDF Links Count, typically after user edits,
+   *  in a Future; transactional */
+  def updateLinksCount(databaseChanges: DatabaseChanges[Rdf],
+                       linksCountDataset: DATASET,
+                       linksCountGraphURI: Rdf#URI = defaultLinksCountGraphURI) =
+    Future {
+      updateLinksCountNoFuture(databaseChanges, linksCountDataset, linksCountGraphURI)
+    }
+
+  /** update RDF Links Count, typically after user edits,
+   *  transactional  */
+  private def updateLinksCountNoFuture (
     databaseChanges: DatabaseChanges[Rdf],
     linksCountDataset: DATASET,
     linksCountGraphURI: Rdf#URI) = {
@@ -107,7 +122,7 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
   def computeLinksCount(
     dataset: DATASET,
     linksCountDataset: DATASET,
-    linksCountGraphURI: Rdf#URI) = {
+    linksCountGraphURI: Rdf#URI = defaultLinksCountGraphURI) = {
 
     val query = """
       |SELECT DISTINCT ?S ( COUNT(?O) AS ?COUNT)
@@ -142,7 +157,7 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
         ) yield { nodeIntPariTry.toOption.get }
         counts
       case Failure(f) =>
-        System.err.println(f)
+        System.err.println("computeLinksCount: " + f)
         Seq((URI(""), 0)).toIterator
     }
 

@@ -22,6 +22,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 import scala.xml.{Elem, NodeSeq}
+import deductions.runtime.utils.ServiceListenersManager
 
 /**
  * a Web Application Facade,
@@ -63,6 +64,7 @@ trait ApplicationFacadeImpl[Rdf, DATASET]
     with ToolsPage
     with CSSClasses
     with Results
+    with ServiceListenersManager[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     {
  
   val config: Configuration
@@ -70,6 +72,7 @@ trait ApplicationFacadeImpl[Rdf, DATASET]
 
   addSaveListener(this) // for TimeSeries
   addSaveListener( new RDFLinksCounterListenerClass(config) )
+  addServiceListener(new RDFLinksCounterLoadListenerClass(config) )
 
   implicit val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   implicit val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]

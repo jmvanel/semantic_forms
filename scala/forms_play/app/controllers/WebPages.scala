@@ -19,6 +19,7 @@ import deductions.runtime.views.ToolsPage
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import play.api.mvc.Request
+import deductions.runtime.utils.RDFStoreLocalProvider
 
 
 /** controller for HTML pages ("generic application") */
@@ -54,6 +55,7 @@ trait WebPages extends Controller with ApplicationTrait {
             val lang = chooseLanguage(request)
             val uri = expandOrUnchanged(uri0)
             logger.info(s"displayURI: expandOrUnchanged $uri")
+            callAllServiceListeners(request)
             val title = labelForURITransaction(uri, lang)
             val userInfo = displayUser(userid, uri, title, lang)
             outputMainPage(
@@ -70,9 +72,9 @@ trait WebPages extends Controller with ApplicationTrait {
           logger.info(s"displayURI: expandOrUnchanged $uri")
           val title = labelForURITransaction(uri, lang)
           val requestCopy = getRequestCopy()
+          callAllServiceListeners(request)
           val userid = requestCopy . userId()
           val userInfo = displayUser(userid, uri, title, lang)
-
           outputMainPage(
             htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
               graphURI = makeAbsoluteURIForSaving(userid),

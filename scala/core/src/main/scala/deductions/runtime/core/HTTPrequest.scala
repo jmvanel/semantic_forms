@@ -35,7 +35,7 @@ case class HTTPrequest(
     formMap: Map[String, Seq[String]] = Map()
     ) {
 
-  def getHTTPparameterValue(param: String) = queryString.get(param) .map(seq => seq.headOption ) . flatten
+  def getHTTPparameterValue(param: String): Option[String] = queryString.get(param) .map(seq => seq.headOption ) . flatten
 
   def absoluteURL(rawURI: String = "", secure: Boolean = false): String =
     "http" + (if (secure) "s" else "") + "://" +
