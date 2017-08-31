@@ -22,6 +22,9 @@ import org.apache.jena.riot.RDFLanguages
 import org.apache.http.impl.client.cache.CachingHttpClientBuilder
 import org.apache.http.impl.client.LaxRedirectStrategy
 import org.apache.http.client.config.RequestConfig
+import org.apache.http.client.methods.HttpGet
+import scala.util.Failure
+import java.io.IOException
 
 // TODO rename RDFStoreLocalJenaProvider
 
@@ -137,7 +140,19 @@ trait RDFStoreLocalJenaProvider
 
   def close(ds: DATASET) = ds.close()
 
+  private val requestConfig =
+        RequestConfig.custom()
+          .setConnectTimeout(10 * 1000)
+          .setConnectionRequestTimeout(10 * 1000)
+          .build()
+
   def readWithContentType(
+    uri: Rdf#URI,
+    contentType: String,
+    dataset: DATASET): Try[Rdf#Graph] =
+    readWithContentTypeNoJena(uri, contentType, dataset)
+
+  private def readWithContentTypeJena(
     uri: Rdf#URI,
     contentType: String,
     dataset: DATASET): Try[Rdf#Graph] = {
@@ -146,23 +161,48 @@ trait RDFStoreLocalJenaProvider
       import org.apache.jena.riot.LangBuilder
       val contentTypeNoEncoding = contentType.replaceFirst(";.*", "")
       val lang = RDFLanguages.contentTypeToLang(contentTypeNoEncoding)
-      println(s"readWithContentType: $lang")
-      val requestConfig =
-        RequestConfig.custom()
-          .setConnectTimeout(10 * 1000)
-          .setConnectionRequestTimeout(10 * 1000)
-          .build();
+      println(s"readWithContentType: $lang , contentType $contentType, contentTypeNoEncoding $contentTypeNoEncoding")
       RDFParser.create()
         .httpClient(
           CachingHttpClientBuilder.create()
             .setRedirectStrategy(new LaxRedirectStrategy())
             .setDefaultRequestConfig(requestConfig)
             .build())
-        .source(fromUri(uri)).forceLang(lang).httpAccept(contentType)
+        .source(fromUri(uri))
+//        .httpAccept(contentType)
+        .forceLang(lang)
+//        .lang(lang)
         .parse(sink)
       sink.graph
     }
   }
+
+  private val contentTypes2Readers = Map(
+      "application/ld+json" -> jsonldReader,
+      "text/turtle" -> turtleReader,
+      "application/rdf+xml" -> rdfXMLReader
+      )
+
+  private def readWithContentTypeNoJena(
+    uri: Rdf#URI,
+    contentType: String,
+    dataset: DATASET): Try[Rdf#Graph] = {
+    val httpClient = CachingHttpClientBuilder.create()
+      .setRedirectStrategy(new LaxRedirectStrategy())
+      .setDefaultRequestConfig(requestConfig)
+      .build()
+    val request = new HttpGet(fromUri(uri))
+    request.addHeader("Accept", contentType)
+    val response = httpClient.execute(request)
+    val inputStream = response.getEntity.getContent
+    val reader = contentTypes2Readers.getOrElse(contentType, null) // TODO NUllReader
+    if (reader != null)
+      reader.read(inputStream, "")
+    else
+      Failure(new IOException(
+        s"readWithContentTypeNoJena: no Reader found for contentType $contentType"))
+  }
+
 }
 
 /** TODO implement independently of Jena */
