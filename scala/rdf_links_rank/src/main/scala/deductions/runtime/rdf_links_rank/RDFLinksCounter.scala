@@ -28,6 +28,8 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
 //  self: RDFSyntax[Rdf] =>
 
   val linksCountPred = form("linksCount")
+  val defaultLinksCountGraphURI = ops.URI("linksCountGraph:")
+
   implicit val ops: RDFOps[Rdf]
   implicit val rdfStore: RDFStore[Rdf, Try, DATASET]
   import ops._
@@ -42,7 +44,7 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
    *  in a Future; transactional */
   def updateLinksCount(databaseChanges: DatabaseChanges[Rdf],
                        linksCountDataset: DATASET,
-                       linksCountGraphURI: Rdf#URI) =
+                       linksCountGraphURI: Rdf#URI = defaultLinksCountGraphURI) =
     Future {
       updateLinksCountNoFuture(databaseChanges, linksCountDataset, linksCountGraphURI)
     }
@@ -120,7 +122,7 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
   def computeLinksCount(
     dataset: DATASET,
     linksCountDataset: DATASET,
-    linksCountGraphURI: Rdf#URI) = {
+    linksCountGraphURI: Rdf#URI = defaultLinksCountGraphURI) = {
 
     val query = """
       |SELECT DISTINCT ?S ( COUNT(?O) AS ?COUNT)
@@ -155,7 +157,7 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
         ) yield { nodeIntPariTry.toOption.get }
         counts
       case Failure(f) =>
-        System.err.println(f)
+        System.err.println("computeLinksCount: " + f)
         Seq((URI(""), 0)).toIterator
     }
 
