@@ -10,7 +10,22 @@ object RDFLinksCounterApp
     extends { override val config = new DefaultConfiguration {} } with DependenciesForApps
     with RDFLinksCounter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
+  resetRDFLinksCounts(
+    dataset,
+    linksCountDataset = dataset,
+    linksCountGraphURI = defaultLinksCountGraphURI)
+
   computeLinksCount(
+    dataset,
+    linksCountDataset = dataset,
+    linksCountGraphURI = defaultLinksCountGraphURI)
+}
+
+object RDFLinksCounterResetApp
+    extends { override val config = new DefaultConfiguration {} } with DependenciesForApps
+    with RDFLinksCounter[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+
+  resetRDFLinksCounts(
     dataset,
     linksCountDataset = dataset,
     linksCountGraphURI = defaultLinksCountGraphURI)

@@ -21,6 +21,7 @@ import java.rmi.UnexpectedException
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.utils.DatabaseChanges
 import scala.concurrent.Future
+import org.w3.banana.SparqlUpdate
 
 trait RDFLinksCounter[Rdf <: RDF, DATASET]
     extends RDFPrefixes[Rdf]
@@ -31,7 +32,8 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
   val defaultLinksCountGraphURI = ops.URI("linksCountGraph:")
 
   implicit val ops: RDFOps[Rdf]
-  implicit val rdfStore: RDFStore[Rdf, Try, DATASET]
+  implicit val rdfStore: RDFStore[Rdf, Try, DATASET] with SparqlUpdate[Rdf, Try, DATASET]
+
   import ops._
   implicit val sparqlOps: SparqlOps[Rdf]
   import sparqlOps._
@@ -148,7 +150,7 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
         val counts = for (
           solution <- solutions.toIterable;
           //          v = solution.varnames ;
-          nodeIntPariTry = for (
+          nodeIntPairTry = for (
             // cf SparqlSolutionSyntaxW
             s <- solution("?S");
             countNode <- solution("?COUNT");
@@ -156,8 +158,8 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
               _ => Failure(new UnexpectedException("computeLinksCount")),
               _ => Failure(new UnexpectedException("computeLinksCount")),
               literal => IntFromLiteral.fromLiteral(literal))
-          ) yield { (s, count) } if (nodeIntPariTry.isSuccess)
-        ) yield { nodeIntPariTry.toOption.get }
+          ) yield { (s, count) } if (nodeIntPairTry.isSuccess)
+        ) yield { nodeIntPairTry.toOption.get }
         counts
       case Failure(f) =>
         System.err.println("computeLinksCount: " + f)
@@ -179,4 +181,32 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
       makeGraph(tripleIterator.toIterable))
   }
 
+  def resetRDFLinksCounts(
+    dataset: DATASET,
+    linksCountDataset: DATASET,
+    linksCountGraphURI: Rdf#URI = defaultLinksCountGraphURI) = {
+    val query = s"""
+         | DELETE {
+         |   graph ?GR {
+         |     ?S <${fromUri(linksCountPred)}> ?O .
+         |   }}
+         | WHERE {
+         |   graph ?GR {
+         |     ?S <${fromUri(linksCountPred)}> ?O .
+         |   }
+         |""".stripMargin
+    println( s"resetRDFLinksCounts: $query" )
+
+    rdfStore.rw(linksCountDataset, {
+      sparqlUpdateQuery(query, linksCountDataset)
+    })
+  }
+
+  /** pasted from module sparql_cache, thus avoiding dependency */
+  private def sparqlUpdateQuery(queryString: String, dataset: DATASET): Try[Unit] = {
+    for {
+      query <- parseUpdate(queryString);
+      es <- rdfStore.executeUpdate(dataset, query, immutable.Map())
+    } yield es
+  }
 }
