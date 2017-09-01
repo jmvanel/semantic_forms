@@ -193,13 +193,14 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
          | WHERE {
          |   graph ?GR {
          |     ?S <${fromUri(linksCountPred)}> ?O .
-         |   }
+         |   }}
          |""".stripMargin
-    println( s"resetRDFLinksCounts: $query" )
-
-    rdfStore.rw(linksCountDataset, {
-      sparqlUpdateQuery(query, linksCountDataset)
-    })
+    println(s"resetRDFLinksCounts: $query")
+    println(s"resetRDFLinksCounts: result: ${
+      rdfStore.rw(linksCountDataset, {
+        sparqlUpdateQuery(query, linksCountDataset)
+      })
+    }")
   }
 
   /** pasted from module sparql_cache, thus avoiding dependency */
