@@ -125,12 +125,15 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
     linksCountGraphURI: Rdf#URI = defaultLinksCountGraphURI) = {
 
     val query = """
-      |SELECT DISTINCT ?S ( COUNT(?O) AS ?COUNT)
+      |SELECT DISTINCT ?S ( COUNT(?O) + COUNT(?S1) AS ?COUNT)
       |WHERE {
-      |  GRAPH ?GR {
+      |  { GRAPH ?GR {
       |    ?S ?P ?O .
       |        FILTER ( isURI(?O) )
-      |  }
+      | } } UNION
+      |  { GRAPH ?GR1 {
+      |      ?S1 ?P1 ?S .
+      |  } }
       |}
       |GROUP BY ?S
       |ORDER BY DESC(?COUNT)""".stripMargin
