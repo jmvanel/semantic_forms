@@ -46,9 +46,10 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
    *  in a Future; transactional */
   def updateLinksCount(databaseChanges: DatabaseChanges[Rdf],
                        linksCountDataset: DATASET,
-                       linksCountGraphURI: Rdf#URI = defaultLinksCountGraphURI) =
+                       linksCountGraphURI: Rdf#URI = defaultLinksCountGraphURI,
+                       replaceCount: Boolean = false) =
     Future {
-      updateLinksCountNoFuture(databaseChanges, linksCountDataset, linksCountGraphURI)
+      updateLinksCountNoFuture(databaseChanges, linksCountDataset, linksCountGraphURI, replaceCount)
     }
 
   /** update RDF Links Count, typically after user edits,
@@ -56,56 +57,85 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
   private def updateLinksCountNoFuture (
     databaseChanges: DatabaseChanges[Rdf],
     linksCountDataset: DATASET,
-    linksCountGraphURI: Rdf#URI) = {
+    linksCountGraphURI: Rdf#URI,
+    replaceCount: Boolean) = {
 
-    val countsSubjectsToAddSet = mutable.Set[Rdf#Node]()
-    val countsSubjectsToRemoveSet = mutable.Set[Rdf#Node]()
+    val countURIsToAddSet = mutable.Set[Rdf#Node]()
+    val countURIsToRemoveSet = mutable.Set[Rdf#Node]()
     val countsMap = mutable.Map[Rdf#Node, Int]()
     val countsToRemoveMap = mutable.Map[Rdf#Node, Int]()
 
-    /* count Changes */
-    def countChanges(triplesChanged: Seq[Rdf#Triple],
-                     countsSubjectsSet: mutable.Set[Rdf#Node],
-                     countsMap: mutable.Map[Rdf#Node, Int]) =
+    val countReverseURIsToAddSet = mutable.Set[Rdf#Node]()
+
+    val indexSubject: Rdf#Triple => Option[Rdf#Node] =
+      tr => if (tr.objectt.isURI) Some(tr.subject) else None
+    val indexObject: Rdf#Triple => Option[Rdf#Node] =
+      tr => if (tr.objectt.isURI) Some(tr.objectt) else None
+
+    /* count Changes in given triples, and put results in given Set and Map */
+    def countChanges(
+      triplesChanged: Seq[Rdf#Triple],
+      countsURISet: mutable.Set[Rdf#Node],
+      countsMap: mutable.Map[Rdf#Node, Int],
+      uriToIndex: Rdf#Triple => Option[Rdf#Node] = indexSubject) =
       for (
         linksCountGraph <- rdfStore.getGraph(linksCountDataset, linksCountGraphURI);
         tripleToAdd <- triplesChanged;
-        subject = tripleToAdd.subject if (tripleToAdd.objectt.isURI)
+        uri <- uriToIndex(tripleToAdd)
       ) {
-        countsSubjectsSet.add(subject)
-        countsMap.put(subject, countsMap.getOrElse(subject, 0) + 1)
-        println(s"countChanges: countsSubjectsSet ${countsSubjectsSet}, countsMap $countsMap")
+        countsURISet.add(uri)
+        val newCount = countsMap.getOrElse(uri, 0) + 1
+        countsMap.put(uri, newCount)
+//        println(s"countChanges: URI ${uri} -> count $newCount")
       }
 
     rdfStore.r(linksCountDataset, {
-      countChanges(databaseChanges.triplesToAdd, countsSubjectsToAddSet, countsMap)
-      countChanges(databaseChanges.triplesToRemove, countsSubjectsToRemoveSet, countsToRemoveMap)
+      countChanges(databaseChanges.triplesToAdd, countURIsToAddSet, countsMap)
+      countChanges(databaseChanges.triplesToRemove, countURIsToRemoveSet, countsToRemoveMap)
+
+      countChanges(databaseChanges.triplesToAdd, countReverseURIsToAddSet, countsMap,
+          indexObject)
+      countChanges(databaseChanges.triplesToRemove, countURIsToRemoveSet, countsToRemoveMap,
+          indexObject)
     })
 
+//    println(s"""updateLinksCount: countURIsToAddSet ${countURIsToAddSet},
+//      countsMap $countsMap""")
+
+    def replaceCountsInTDB(uris: Set[Rdf#Node], replaceCount: Boolean=replaceCount) =
     rdfStore.rw(linksCountDataset, {
       for (
-        subject <- (countsSubjectsToAddSet ++ countsSubjectsToRemoveSet);
+        uri <- uris;
         linksCountGraph <- rdfStore.getGraph(linksCountDataset, linksCountGraphURI);
-        oldCount <- getCountFromTDBTry(linksCountGraph, subject) ;
-        _ = println(s"updateLinksCount: oldCount $oldCount")
+        oldCount <- getCountFromTDBTry(linksCountGraph, uri)
+//        ; _ = println(s"updateLinksCount: oldCount $oldCount")
       ) {
-    	  println(s"countChanges 2: countsSubjectsToAddSet ${countsSubjectsToAddSet}, countsMap $countsMap")
-        val count = oldCount + countsMap.getOrElse(subject, 0) -
-                       countsToRemoveMap.getOrElse(subject, 0)
-        println(s"updateLinksCount: count $count")
+
+        val increment = countsMap.getOrElse(uri, 0) -
+                        countsToRemoveMap.getOrElse(uri, 0)
+        val count =
+          if(replaceCount)
+        	  increment
+        	else
+        	 oldCount + increment
+        println(s"updateLinksCount: URI $uri , oldCount $oldCount, count $count")
+
         if (count != oldCount) {
           rdfStore.removeTriples(linksCountDataset, linksCountGraphURI,
-            Seq(Triple(subject,
+            Seq(Triple(uri,
               linksCountPred,
               IntToLiteral(ops).toLiteral(oldCount))))
           rdfStore.appendToGraph(linksCountDataset, linksCountGraphURI,
-            makeGraph(Seq(Triple(
-              subject,
+            makeGraph(
+            		Seq(Triple(uri,
               linksCountPred,
               IntToLiteral(ops).toLiteral(count)))))
         }
       }
     })
+
+    replaceCountsInTDB(countURIsToAddSet ++ countURIsToRemoveSet)
+    replaceCountsInTDB(countReverseURIsToAddSet, replaceCount=false)
   }
 
   private def getCountFromTDBTry(linksCountGraph: Rdf#Graph,
