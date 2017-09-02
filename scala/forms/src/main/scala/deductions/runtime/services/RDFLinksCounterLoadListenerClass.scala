@@ -37,7 +37,8 @@ class RDFLinksCounterLoadListenerClass(val config: Configuration)
       updateLinksCount(
         databaseChanges = DatabaseChanges[Rdf](addedTriples, Seq()),
         linksCountDataset = dataset,
-        linksCountGraphURI = defaultLinksCountGraphURI)
+        linksCountGraphURI = defaultLinksCountGraphURI,
+        replaceCount = true)
     }
   }
 
