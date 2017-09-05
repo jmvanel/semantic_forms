@@ -32,8 +32,11 @@ trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
 }
 
 /** */
-trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
-    with RDFCacheDependencies[Rdf, DATASET]
+trait RDFCacheAlgo[Rdf <: RDF, DATASET]
+extends 
+//RDFStoreLocalProvider[Rdf, DATASET]
+//    with 
+    RDFCacheDependencies[Rdf, DATASET]
     //with MicrodataLoaderModule[Rdf]
     with TimestampManagement[Rdf, DATASET]
     with MirrorManagement[Rdf, DATASET]
@@ -99,86 +102,86 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
 
     tryGraphLocallyManagedData match {
       case Some(tgr) => Success(tgr)
-
       case None =>
-        val tryGraphFromRdfStore = rdfStore.getGraph(dataset, uri)
-        tryGraphFromRdfStore match {
-          case Failure(f) => Failure(f)
-          case Success(graphStoredLocally) => {
-            val graphSize = if (transactionsInside)
-              wrapInReadTransaction {
-                graphStoredLocally.size
-              }
-            else
-              graphStoredLocally.size
-            val nothingStoredLocally = graphSize match {
-              case Success(i) => i == 0
-              case Failure(f) =>
-                System.err.println(s"retrieveURINoTransaction: $f")
-                true
-              case i: Int => i == 0
-            }
-            println(s"""retrieveURINoTransaction: TDB graph at URI <$uri> size $graphSize""")
 
-            val vvv = if (nothingStoredLocally) { // then read unconditionally from URI and store in TDB
-              println(s"""retrieveURINoTransaction: stored Graph Is Empty for URI <$uri>""")
-              val mirrorURI = getMirrorURI(uri)
-              val vv = if (mirrorURI == "") {
-                val graphTry_MIME= readURI(uri, dataset, request)
-                val graphDownloaded = {
-                  val graphTry = graphTry_MIME . _1
-                  if (transactionsInside)
-                    storeURI(graphTry, uri, dataset)
-                  else
-                    storeURINoTransaction(graphTry, uri, dataset)
+        def checkIfNothingStoredLocally(): (Boolean, Rdf#Graph) = {
+          val r = wrapInReadTransaction {
+            // if no triples <uri> ?P ?O , check graph named uri
+            val tryGraphFromRdfStore = rdfStore.getGraph(dataset, uri)
+            val graphSize =
+              tryGraphFromRdfStore match {
+                case Failure(f) =>
+                  println(s"""retrieveURIBody: URI <$uri> : $f""")
+                  (0, emptyGraph)
+                case Success(graphStoredLocally) => {
+                  (graphStoredLocally.size, graphStoredLocally)
                 }
-                val vv = if (graphDownloaded.isSuccess) {
-                  println(s"""Graph at URI <$uri>, size ${graphDownloaded.get.size}
+              }
+            println(s"""retrieveURIBody: TDB graph at URI <$uri> size $graphSize""")
+            graphSize._1 == 0
+          }
+          (r.getOrElse(false), emptyGraph)
+        }
+        val (nothingStoredLocally, graphStoredLocally) = checkIfNothingStoredLocally()
+
+        val result =
+          if (nothingStoredLocally) { // then read unconditionally from URI and store in TDB
+          println(s"""retrieveURINoTransaction: stored Graph Is Empty for URI <$uri>""")
+          val mirrorURI = getMirrorURI(uri)
+          val vv = if (mirrorURI == "") {
+            val graphTry_MIME = readURI(uri, dataset, request)
+            val graphDownloaded = {
+              val graphTry = graphTry_MIME._1
+              if (transactionsInside)
+                storeURI(graphTry, uri, dataset)
+              else
+                storeURINoTransaction(graphTry, uri, dataset)
+            }
+            val vv = if (graphDownloaded.isSuccess) {
+              println(s"""Graph at URI <$uri>, size ${graphDownloaded.get.size}
                     Either new addition was downloaded, or locally managed data""")
-                  addTimestampToDataset(uri, dataset2)
-                } else
-                  println(s"Download Graph at URI <$uri> was tried, but it's faulty: $graphDownloaded")
+              addTimestampToDataset(uri, dataset2)
+            } else
+              println(s"Download Graph at URI <$uri> was tried, but it's faulty: $graphDownloaded")
 
-                val contentType = graphTry_MIME._2
-                println(s"""retrieveURINoTransaction: downloaded graph from URI <$uri> $graphDownloaded
+            val contentType = graphTry_MIME._2
+            println(s"""retrieveURINoTransaction: downloaded graph from URI <$uri> $graphDownloaded
                     size ${if (graphDownloaded.isSuccess) graphDownloaded.get.size} content Type: $contentType""")
-                val ispureHTML = contentType.startsWith("text/html") // TODO case RDFa
-                graphDownloaded match {
-                  case Success(gr) if( !ispureHTML ) => Success(gr)
-                  case Success(gr) if(  ispureHTML ) =>
-                  // TODO pass transactionsInside
-                  Success(pureHTMLwebPageAnnotateAsDocument(uri, request))
+            val ispureHTML = contentType.startsWith("text/html") // TODO case RDFa
+            graphDownloaded match {
+              case Success(gr) if (!ispureHTML) => Success(gr)
+              case Success(gr) if (ispureHTML) =>
+                // TODO pass transactionsInside
+                Success(pureHTMLwebPageAnnotateAsDocument(uri, request))
 
-                  case Failure(f) => {
-                    println(s"Graph at URI <$uri> could not be downloaded, (exception ${f.getLocalizedMessage}, ${f.getClass} cause ${f.getCause}).")
-                    f match {
-                      //case ex: ImplementationSettings.RDFReadException if (ex.getMessage().contains("text/html")) =>
-                      case ex: Exception if (ex.getMessage().contains("text/html")) =>
-                        /* Failure(org.apache.jena.riot.RiotException: Failed to determine the content type: (
+              case Failure(f) => {
+                println(s"Graph at URI <$uri> could not be downloaded, (exception ${f.getLocalizedMessage}, ${f.getClass} cause ${f.getCause}).")
+                f match {
+                  //case ex: ImplementationSettings.RDFReadException if (ex.getMessage().contains("text/html")) =>
+                  case ex: Exception if (ex.getMessage().contains("text/html")) =>
+                    /* Failure(org.apache.jena.riot.RiotException: Failed to determine the content type: (
                                URI=http://ihmia.afihm.org/programme/index.html : stream=text/html)) */
 
-                        // TODO pass transactionsInside
-                        Success(pureHTMLwebPageAnnotateAsDocument(uri, request))
-                      case _ => graphDownloaded
-                    }
-                  }
+                    // TODO pass transactionsInside
+                    Success(pureHTMLwebPageAnnotateAsDocument(uri, request))
+                  case _ => graphDownloaded
                 }
-              } else {
-                println(s"mirrorURI found: $mirrorURI")
-                // TODO find in Mirror URI the relevant triples ( but currently AFAIK the graph returned by this function is not used )
-                Success(emptyGraph)
               }
-              vv
-            } else { // something Stored Locally: get a chance for more recent RDF data, that will be shown next time
-              Future {
-                val res = // wrapInTransaction {
-                  updateLocalVersion(uri, dataset).getOrElse(graphStoredLocally)
-              }
-              Success(graphStoredLocally)
             }
-            vvv
+          } else {
+            println(s"mirrorURI found: $mirrorURI")
+            // TODO find in Mirror URI the relevant triples ( but currently AFAIK the graph returned by this function is not used )
+            Success(emptyGraph)
           }
+          vv
+        } else { // something Stored Locally: get a chance for more recent RDF data, that will be shown next time
+          Future {
+            val res =
+              updateLocalVersion(uri, dataset).getOrElse(graphStoredLocally)
+          }
+          Success(graphStoredLocally)
         }
+        result
     }
   }
 
@@ -355,7 +358,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
     if (isDownloadableURI(uri)) {
       // To avoid troubles with Jena cf https://issues.apache.org/jira/browse/JENA-1335
       val contentType = getContentTypeFromHEADRequest(fromUri(uri))
-    	println(s""">>>> readURI: contentType for <$uri> "$contentType" """)
+    	println(s""">>>> readURI: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
       if (!contentType.startsWith("text/html")) {
         setTimeoutsFromConfig()
         // NOTE: Jena RDF loader can throw an exception "Failed to determine the content type"
@@ -431,7 +434,7 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
           httpclient.execute(httpHead, responseHandler)
         else
           ""
-      System.out.println(responseHandled);
+      System.out.println(s"getContentTypeFromHEADRequest: $responseHandled");
       responseHandled
     }
     catch {
@@ -467,7 +470,8 @@ trait RDFCacheAlgo[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATAS
 //      }
 //  }
 
-  /** test if it's a locally managed URL, that is created locally and 100% located here */
+  /* test if given URI is a locally managed URL, that is created locally and 100% located here */
+  /** get Locally Managed graph from given URI : <URI> ?P ?O */
   private def getLocallyManagedUrlAndData(uri: Rdf#URI, request: HTTPrequest, transactionsInside: Boolean): Option[Rdf#Graph] =
     if (!fromUri(uri).startsWith(request.absoluteURL(""))) { // TODO ? "ldp"
       // then it can be a "pure" HTML web page, or an RDF document
