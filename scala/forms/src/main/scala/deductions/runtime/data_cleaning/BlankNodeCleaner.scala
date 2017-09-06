@@ -40,7 +40,8 @@ trait BlankNodeCleanerBase[Rdf <: RDF, DATASET]
 trait BlankNodeCleanerIncremental[Rdf <: RDF, DATASET] extends BlankNodeCleanerBase[Rdf, DATASET] {
   import ops._
 
-  /**
+  /** Search duplicate graph rooted at blank node
+   *
    * cf post on Jena list:
    * http://mail-archives.apache.org/mod_mbox/jena-users/201507.mbox/%3C55943D78.30307@apache.org%3E
    *
