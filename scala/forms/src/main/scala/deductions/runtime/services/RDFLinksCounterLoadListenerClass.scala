@@ -14,10 +14,14 @@ import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 
 /** RDF Links Counter Listener, for RDF document loading */
-class RDFLinksCounterLoadListenerClass(val config: Configuration)
+class RDFLinksCounterLoadListenerClass(val config: Configuration,
+    rdfLocalProvider: RDFStoreLocalProvider[ImplementationSettings.Rdf, ImplementationSettings.DATASET] )
     extends ServiceListener[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with ImplementationSettings.RDFModule
+
+    // TODO remove
     with ImplementationSettings.RDFCache
+
     with RDFLinksCounter[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
@@ -25,21 +29,28 @@ class RDFLinksCounterLoadListenerClass(val config: Configuration)
     request: HTTPrequest)(
       implicit userURI: String,
       rdfLocalProvider: RDFStoreLocalProvider[ImplementationSettings.Rdf, ImplementationSettings.DATASET]): Unit = {
+    println(s"\nnotifyServiceCall: ${request.rawQueryString} - dataset ${this.rdfLocalProvider.dataset}")
+    val datasetUsed =
+      // this.rdfLocalProvider.dataset
+      rdfLocalProvider.dataset
     for (
       uri <- request.getHTTPparameterValue("displayuri") if (request.path == "/display");
       uri1 = expandOrUnchanged(uri);
-      graph <- retrieveURIBody(ops.URI(uri1), rdfLocalProvider.dataset,
+      graph <- retrieveURIBody(ops.URI(uri1),
+        datasetUsed,
         request,
-        transactionsInside = true)
+        transactionsInside = true);
+      _ = println(s"  notifyServiceCall: URI $uri1 graph $graph")
     ) {
       val addedTriples = ops.getTriples(graph).toSeq
-//      println( s">>>> notifyServiceCall: addedTriples $addedTriples")
+      println( s"  >>>> notifyServiceCall: addedTriples ${addedTriples.size}")
       updateLinksCount(
         databaseChanges = DatabaseChanges[Rdf](addedTriples, Seq()),
-        linksCountDataset = dataset,
+        linksCountDataset = datasetUsed,
         linksCountGraphURI = defaultLinksCountGraphURI,
         replaceCount = true)
     }
+    println(s"notifyServiceCall ENDED: ${request.rawQueryString}\n")
   }
 
 }

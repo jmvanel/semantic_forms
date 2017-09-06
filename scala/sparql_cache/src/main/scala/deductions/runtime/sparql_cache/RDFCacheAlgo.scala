@@ -99,6 +99,7 @@ extends
                       transactionsInside: Boolean): Try[Rdf#Graph] = {
 
     val tryGraphLocallyManagedData = getLocallyManagedUrlAndData(uri, request, transactionsInside: Boolean)
+//    println( s"retrieveURIBody: tryGraphLocallyManagedData $tryGraphLocallyManagedData")
 
     tryGraphLocallyManagedData match {
       case Some(tgr) => Success(tgr)
@@ -114,7 +115,12 @@ extends
                   println(s"""retrieveURIBody: URI <$uri> : $f""")
                   (0, emptyGraph)
                 case Success(graphStoredLocally) => {
-                  (graphStoredLocally.size, graphStoredLocally)
+                  if (transactionsInside)
+                    wrapInReadTransaction {
+                      (graphStoredLocally.size, graphStoredLocally)
+                    } getOrElse (0, emptyGraph)
+                  else
+                    (graphStoredLocally.size, graphStoredLocally)
                 }
               }
             println(s"""retrieveURIBody: TDB graph at URI <$uri> size $graphSize""")
@@ -126,7 +132,7 @@ extends
 
         val result =
           if (nothingStoredLocally) { // then read unconditionally from URI and store in TDB
-          println(s"""retrieveURINoTransaction: stored Graph Is Empty for URI <$uri>""")
+          println(s"""retrieveURIBody: stored Graph Is Empty for URI <$uri>""")
           val mirrorURI = getMirrorURI(uri)
           val vv = if (mirrorURI == "") {
             val graphTry_MIME = readURI(uri, dataset, request)

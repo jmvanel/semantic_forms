@@ -25,6 +25,7 @@ class RDFLinksCounterListenerClass(val config: Configuration)
 
     updateLinksCount(
       databaseChanges = DatabaseChanges[Rdf](addedTriples, removedTriples),
+//      linksCountDataset = rdfLocalProvider.dataset, TODO ????
       linksCountDataset = dataset,
       linksCountGraphURI = defaultLinksCountGraphURI )
   }
