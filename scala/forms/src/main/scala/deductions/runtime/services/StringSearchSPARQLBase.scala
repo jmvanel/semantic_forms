@@ -12,7 +12,9 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
 
   val config: Configuration
 
-  private def textQuery(search: String) =
+   /** fragment of SPARQL for text Query, with or without text:query
+    *  see https://jena.apache.org/documentation/query/text-query.html */
+   private def textQuery(search: String) =
     if (search.length() > 0) {
       val searchStringPrepared = prepareSearchString(search).trim()
       if (config.useTextQuery)
@@ -50,6 +52,7 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |LIMIT 10
          |""".stripMargin
 
+  /** query With links Count, with or without text query */
   def queryWithlinksCount(search: String,
                           classe: String = "") = s"""
          |${declarePrefix(text)}
