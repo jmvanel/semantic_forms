@@ -170,45 +170,58 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
       |GROUP BY ?S
       |ORDER BY DESC(?COUNT)""".stripMargin
 
-    val solutionsTry = for {
-      query <- parseSelect(query)
-      solutions <- rdfStore.executeSelect(dataset, query, immutable.Map())
-    } yield solutions
+    val subjectCountIterator =
+      rdfStore.r(dataset, {
 
-    val subjectCountIterator = solutionsTry match {
-      case Success(solutions) =>
-        val counts = for (
-          solution <- solutions.toIterable;
-          //          v = solution.varnames ;
-          nodeIntPairTry = for (
-            // cf SparqlSolutionSyntaxW
-            s <- solution("?S");
-            countNode <- solution("?COUNT");
-            count <- foldNode(countNode)(
-              _ => Failure(new UnexpectedException("computeLinksCount")),
-              _ => Failure(new UnexpectedException("computeLinksCount")),
-              literal => IntFromLiteral.fromLiteral(literal))
-          ) yield { (s, count) } if (nodeIntPairTry.isSuccess)
-        ) yield { nodeIntPairTry.toOption.get }
-        counts
-      case Failure(f) =>
-        System.err.println("computeLinksCount: " + f)
-        Seq((URI(""), 0)).toIterator
-    }
+        val solutionsTry = for {
+          query <- parseSelect(query)
+          solutions <- rdfStore.executeSelect(dataset, query, immutable.Map())
+        } yield solutions
+
+        solutionsTry match {
+          case Success(solutions) =>
+            val counts = for (
+              solution <- solutions.toIterable;
+              //          v = solution.varnames ;
+              nodeIntPairTry = for (
+                // cf SparqlSolutionSyntaxW
+                s <- solution("?S");
+                countNode <- solution("?COUNT");
+                count <- foldNode(countNode)(
+                  _ => Failure(new UnexpectedException("computeLinksCount")),
+                  _ => Failure(new UnexpectedException("computeLinksCount")),
+                  literal => IntFromLiteral.fromLiteral(literal))
+              ) yield { (s, count) } if (nodeIntPairTry.isSuccess)
+            ) yield { nodeIntPairTry.toOption.get }
+            counts
+          case Failure(f) =>
+            System.err.println("computeLinksCount: " + f)
+            Seq((URI(""), 0)).toIterator
+        }
+      })
+
+    println(s"After executeSelect")
+
+    if (subjectCountIterator.isFailure)
+      System.err.println(s"subjectCountIterator $subjectCountIterator")
 
     /* TODO would like to avoid both:
      * - creating the graph in memory :(
      * - calling appendToGraph for each triple
     */
-    val tripleIterator = subjectCountIterator.map {
+    val tripleIterator = subjectCountIterator.get.map {
       case (s, count) =>
         Triple(
           s,
           linksCountPred,
           IntToLiteral(ops).toLiteral(count))
     }
-    rdfStore.appendToGraph(linksCountDataset, linksCountGraphURI,
-      makeGraph(tripleIterator.toIterable))
+    val tripleIterable = tripleIterator.toIterable
+    rdfStore.rw(dataset, {
+      rdfStore.appendToGraph(linksCountDataset, linksCountGraphURI,
+        makeGraph(tripleIterable))
+    })
+    println(s"computeLinksCount: ${tripleIterable.size} counts added in graph $linksCountGraphURI .")
   }
 
   def resetRDFLinksCounts(
