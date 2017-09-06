@@ -265,8 +265,7 @@ trait ApplicationFacadeImpl[Rdf, DATASET]
     </p>
   }
 
-  /**
-   * SPARQL result
+  /** SPARQL result
    *  @param format = "turtle" or "rdfxml" or "jsonld"
    *  
    *  TODO move to non-Play! project
