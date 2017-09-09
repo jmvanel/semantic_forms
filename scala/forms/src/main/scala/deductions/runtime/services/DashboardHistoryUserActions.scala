@@ -41,6 +41,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       <thead>
         <tr>
           <th title="Resource URI visited by user">{mess("Resource")}</th>
+          <th title="Type">Type</th>
           <th title="Action (Create, Display, Update)">{mess("Action")}</th>
           <th title="Time visited by user">{mess("Time")}</th>
           <th title="Number of fields (triples) edited by user">{mess("Count")}</th>
@@ -65,6 +66,8 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
                           "EEEE dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
                         <tr>{
                           <td>{ makeHyperlinkForURI(row(0), lang, allNamedGraph, config.hrefDisplayPrefix) }</td>
+                          <td>{ makeHyperlinkForURI(getClassOrNullURI(row(0))(allNamedGraph),
+                              lang, allNamedGraph, config.hrefDisplayPrefix) }</td>
                           <td>{ "Edit" /* TODO */ }</td>
                           <td>{ dateFormat.format(date) }</td>
                           <td>{ makeStringFromLiteral(row(2)) }</td>
