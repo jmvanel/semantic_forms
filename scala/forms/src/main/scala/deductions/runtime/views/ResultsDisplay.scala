@@ -80,8 +80,9 @@ trait ResultsDisplay[Rdf <: RDF, DATASET] {
           label
         else
           makeInstanceLabel(node, graph, lang)
+     val `type` = getClassOrNullURI(node)(graph)
      displayNode(uriNodeToURI(node), hrefPrefix, displayLabel,
-         property = nullURI, type_ = nullURI )
+         property = nullURI, type_ = `type` )
   }
 
   /** call createHTMLResourceReadonlyField() in trait Form2HTMLDisplay */
