@@ -84,7 +84,16 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
       ,
       if (lookupActivatedFor(resourceEntry))
         formatPossibleValues(resourceEntry, inDatalist = true)
-      else renderPossibleValues(resourceEntry)
+
+      /* TODO
+       *  rather test in form generation, to avoid useless processing
+       *  instead of relying on config:
+       *  - detect mobile
+       *  - detect slow Internet connection
+       */
+      else if( config.downloadPossibleValues)
+        renderPossibleValues(resourceEntry)
+      else NodeSeq.Empty
       , Text("\n")
     ). flatten
   }

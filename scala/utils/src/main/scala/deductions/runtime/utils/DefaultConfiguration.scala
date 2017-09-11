@@ -58,9 +58,8 @@ trait DefaultConfiguration extends Configuration {
   /** show all 3 buttons beside the current items in display or edit mode */
   override val showExpertButtons = true
   override val groupFields: Boolean = false //    true
-
-//  override val inlineJavascriptInForm: Boolean = true
   override def displayTechnicalSemWebDetails: Boolean = true
+  override def downloadPossibleValues: Boolean = false
 
   /** use Text indexing with Lucene or SOLR */
   override def useTextQuery: Boolean = true
