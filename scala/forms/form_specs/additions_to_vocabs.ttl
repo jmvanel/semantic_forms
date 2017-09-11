@@ -49,6 +49,9 @@ geo:lat
     a owl:DatatypeProperty ;
     rdfs:range xsd:float .
 
+
+# Icons for OWL classes
+
 foaf:Person foaf:img <https://mirrors.creativecommons.org/presskit/icons/by.svg> .
 foaf:Project foaf:img <noun_247207_cc.svg> .
 foaf:Document foaf:img <noun_1037431_cc.svg> .
@@ -57,4 +60,9 @@ owl:Class foaf:img <https://upload.wikimedia.org/wikipedia/commons/b/b1/MBED_Top
 owl:ObjectProperty foaf:img <https://upload.wikimedia.org/wikipedia/commons/b/b1/MBED_Top_Level_Ontology.jpg> .
 owl:DatatypeProperty foaf:img <https://upload.wikimedia.org/wikipedia/commons/b/b1/MBED_Top_Level_Ontology.jpg> .
 
-
+@prefix vehma: <http://deductions.github.io/vehicule-management.owl.ttl#> .
+vehma:Vehicle foaf:img <noun_1245_cc.svg> .
+vehma:SIMCard foaf:img <SIMCard.svg> .
+@prefix geoloc: <http://deductions.github.io/geoloc.owl.ttl#> .
+geoloc:MobilePoint foaf:img <point.png> .
+geoloc:Mobile foaf:img <mobile.png> .
