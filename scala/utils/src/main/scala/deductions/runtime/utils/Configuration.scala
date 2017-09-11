@@ -46,16 +46,13 @@ trait Configuration {
   def showEditButtons: Boolean
   /** show all 3 buttons beside the current items in display or edit mode */
   def showExpertButtons: Boolean
-
-  /** inline Javascript In Form; overwise app. developer must put it in <head> */
-//  def inlineJavascriptInForm: Boolean
-
   /**
    * display Technical Semantic Web Details;
    *  currently whether to display in tooltip URI's of property
    */
   def displayTechnicalSemWebDetails: Boolean
-
+  /** download Possible Values in edit forms (otherwise, just rely on /lookup service) */
+  def downloadPossibleValues: Boolean
   def useTextQuery: Boolean
   /** considered if useTextQuery */
   def solrIndexing: Boolean

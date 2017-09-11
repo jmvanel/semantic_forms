@@ -166,9 +166,6 @@ import deductions.runtime.utils.I18NMessages
       hidden ++
         <div class={css.cssClasses.formRootCSSClass  } >
           {
-//              (if (inlineJavascriptInForm)
-//                localJS
-//              else NodeSeq.Empty) ++
               Text("\n") ++
               <input type="hidden" name="uri" value={ urlEncode(form.subject) }/> ++
               <div class="form-group">
