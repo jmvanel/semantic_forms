@@ -12,6 +12,7 @@ import org.w3.banana.RDF
 
 import scala.util.{Failure, Success, Try}
 import scala.xml.NodeSeq
+import deductions.runtime.data_cleaning.BlankNodeCleaner
 
 /**
  * Form for a subject URI with existing triples;
@@ -29,6 +30,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     with TimeSeries[Rdf, DATASET]
     with TableFromListListRDFNodes[Rdf]
     with UserTraceability[Rdf, DATASET]
+//    with BlankNodeCleaner[Rdf, DATASET]
     with Timer {
 
   val config: Configuration
@@ -203,8 +205,9 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
       val res = retrieveURI(makeUri(uri), dataset)
       Logger.getRootLogger().info(s"After retrieveURI(makeUri($uri), dataset) isSuccess ${res.isSuccess}")
 
+      // NOTE: called in TriplesViewWithTitle
 //      println("Search duplicate graph rooted at blank node: size " + getTriples(res.get).size )
-//      manageBlankNodesReload(res.getOrElse(emptyGraph), URI(uri), dataset: DATASET)
+//      manageBlankNodesReload(res.getOrElse(emptyGraph), URI(uri), dataset)
       res
     } else Success(emptyGraph)
     val graphURIActual = if (graphURI == "") uri else graphURI

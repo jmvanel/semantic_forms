@@ -54,7 +54,8 @@ trait BlankNodeCleanerIncremental[Rdf <: RDF, DATASET] extends BlankNodeCleanerB
   def manageBlankNodesReload(incomingGraph: Rdf#Graph, graphUri: Rdf#URI,
       dataset: DATASET) = {
 
-    def groupByPredicateThenObjectGraphs(graph: Rdf#Graph, uri: Rdf#URI) = {
+    def groupByPredicateThenObjectGraphs(graph: Rdf#Graph, uri: Rdf#URI):
+    Map[Rdf#URI, Iterable[Rdf#Graph]]= {
       val triples = find(graph, uri, ANY, ANY)
       // these are the triples  <uri1> ?P1 _:bn11_old .
       val blankTriples = triples.filter { t => t.objectt.isBNode }.toIterable
@@ -69,45 +70,58 @@ trait BlankNodeCleanerIncremental[Rdf <: RDF, DATASET] extends BlankNodeCleanerB
       }
     }
 
-    println("Search duplicate graph rooted at blank node: input size " + getTriples(incomingGraph).size)
+    println(s"""\nFor graph URI <graphUri>:
+      Search duplicate graph rooted at blank node: input size """ + getTriples(incomingGraph).size)
     val blanksIncomingGraphGroupedByPredicate = groupByPredicateThenObjectGraphs(incomingGraph, graphUri)
     val blanksLocalGraphGroupedByPredicate = {
-//      val localGraph = rdfStore.getGraph(dataset, graphUri).get // TODO : OrElse(emptyGraph)
       val localGraph = rdfStore.getGraph( dataset, graphUri).get // TODO : OrElse(emptyGraph)
       groupByPredicateThenObjectGraphs(localGraph, graphUri)
     }
-    println("Search duplicate graph rooted at blank node: number of predicates Incoming " + blanksIncomingGraphGroupedByPredicate.size)
-    println("Search duplicate graph rooted at blank node: number of predicates Local " + blanksLocalGraphGroupedByPredicate.size)
+    println("Search duplicate graph rooted at blank node: number of predicates, Incoming " + blanksIncomingGraphGroupedByPredicate.size)
+    println("Search duplicate graph rooted at blank node: number of predicates, Local " + blanksLocalGraphGroupedByPredicate.size)
 
+    var localGraphsSizeRemoved = 0
+    var localTriplesRemoved = 0
     val keys = blanksLocalGraphGroupedByPredicate.keySet union blanksIncomingGraphGroupedByPredicate.keySet
     for (
       pred <- keys;
       incomingGraphs <- blanksIncomingGraphGroupedByPredicate.get(pred);
       localGraphs <- blanksLocalGraphGroupedByPredicate.get(pred)
     ) {
-      println(s"Search duplicate graph rooted at blank node: for predicate $pred Local, number of graphs " + localGraphs.size)
+      println(
+          s"Search duplicate graph rooted at blank node: for predicate <$pred>, number of local graphs Grouped By Predicate " +
+          localGraphs.size)
       // and now, complexity O(N^2) !!!
       val removed = scala.collection.mutable.Set[Rdf#Graph]()
       val duplicates = scala.collection.mutable.Set[Rdf#Graph]()
       for (incomingSubGraph <- incomingGraphs) {
-        println("Search duplicate graph rooted at blank node: subgraph size " + getTriples(incomingSubGraph).size)
+        println("Search duplicate graph rooted at blank node: incoming subgraph size " + getTriples(incomingSubGraph).size)
         for (localGraph <- localGraphs) {
-          if (!removed.contains(localGraph) &&
-            !duplicates.contains(incomingSubGraph) &&
+          if (
+//              !removed.contains(localGraph) &&
+//              !duplicates.contains(incomingSubGraph) &&
+            // TODO : also remove if incomingSubGraph contains localGraph
             incomingSubGraph.isIsomorphicWith(localGraph)) {
             // delete local graph
-            rdfStore.removeTriples( dataset, graphUri, getTriples(localGraph))
             if (localGraph.size > 0) {
-              rdfStore.removeTriples( dataset, graphUri, Seq(Triple(graphUri, pred,
-                getTriples(localGraph).iterator.next().subject)))
+              rdfStore.removeTriples( dataset, graphUri, getTriples(localGraph))
+              rdfStore.removeTriples( dataset, graphUri,
+                  Seq(
+                      Triple(
+                      graphUri, pred,
+                      getTriples(localGraph).iterator.next().subject)	)
+              )
+              localGraphsSizeRemoved += 1
+              localTriplesRemoved += localGraph.size
             }
             removed += localGraph
             duplicates += incomingSubGraph
-            println("Duplicate graph rooted at blank node: deleted:\n" + getTriples(incomingSubGraph))
+            println(s"Duplicate graph for <$pred> rooted at blank node: deleted:\n\t" + getTriples(localGraph))
           }
         }
       }
     }
+    println(s"Duplicate graph rooted at blank node: number of local graphs removed: $localGraphsSizeRemoved, # of triples removed $localTriplesRemoved\n")
   }
 }
 

@@ -10,6 +10,7 @@ import deductions.runtime.core.HTTPrequest
 import org.w3.banana.RDF
 
 import scala.xml.NodeSeq
+import scala.xml.Elem
 
 /**
  * Show History of User Actions:
@@ -31,49 +32,67 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
 
   private def mess(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
 
-  /** leverage on ParameterizedSPARQL.makeHyperlinkForURI()
-   * TODO reuse makeHtmlTable
+  /**
+   * leverage on ParameterizedSPARQL.makeHyperlinkForURI()
    */
-  def makeTableHistoryUserActions(lang: String="en", request: HTTPrequest)(limit: String): NodeSeq = {
+  def makeTableHistoryUserActions(lang: String = "en", request: HTTPrequest)(limit: String): NodeSeq = {
     val metadata = getMetadata()(limit)
     implicit val _ = lang
-    <table class="table">
-      <thead>
-        <tr>
-          <th title="Resource URI visited by user">{mess("Resource")}</th>
-          <th title="Action (Create, Display, Update)">{mess("Action")}</th>
-          <th title="Time visited by user">{mess("Time")}</th>
-          <th title="Number of fields (triples) edited by user">{mess("Count")}</th>
-          <th>{mess("User")}</th>
-          <!--th>IP</th-->
-				</tr>
- 			</thead><tbody>
-      {
-      def dateAsLong(row: Seq[Rdf#Node]): Long = makeStringFromLiteral(row(1)).toLong
-
-      val sorted = metadata . sortWith {
-        (row1, row2) =>
-          dateAsLong(row1) >
-          dateAsLong(row2)
-      }
-      wrapInTransaction { // for calling instanceLabel()
-                    for (row <- sorted) yield {
-                      logger.debug("row " + row(1).toString())
-                      if (row(1).toString().length() > 3) {
-                        val date = new Date(dateAsLong(row))
-                        val dateFormat = new SimpleDateFormat(
-                          "EEEE dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
-                        <tr>{
-                          <td>{ makeHyperlinkForURI(row(0), lang, allNamedGraph, config.hrefDisplayPrefix) }</td>
-                          <td>{ "Edit" /* TODO */ }</td>
-                          <td>{ dateFormat.format(date) }</td>
-                          <td>{ makeStringFromLiteral(row(2)) }</td>
-                          <td>{ row(3) }</td>
-                        }</tr>
-                      } else <tr/>
-                    }
-                  }.get
+    val historyLink: Elem = {
+      if (limit != "")
+        <a href="/history">Complete history</a>
+      else
+        <div></div>
     }
-    </tbody></table>
+
+    {
+      Seq(
+        historyLink,
+        <table class="table">
+          <thead>
+            <tr>
+              <th title="Resource URI visited by user">{ mess("Resource") }</th>
+              <th title="Type">Type</th>
+              <th title="Action (Create, Display, Update)">{ mess("Action") }</th>
+              <th title="Time visited by user">{ mess("Time") }</th>
+              <th title="Number of fields (triples) edited by user">{ mess("Count") }</th>
+              <th>{ mess("User") }</th>
+              <!--th>IP</th-->
+            </tr>
+          </thead>
+          <tbody>
+            {
+              def dateAsLong(row: Seq[Rdf#Node]): Long = makeStringFromLiteral(row(1)).toLong
+
+              val sorted = metadata.sortWith {
+                (row1, row2) =>
+                  dateAsLong(row1) >
+                    dateAsLong(row2)
+              }
+              wrapInTransaction { // for calling instanceLabel()
+                for (row <- sorted) yield {
+                  logger.debug("row " + row(1).toString())
+                  if (row(1).toString().length() > 3) {
+                    val date = new Date(dateAsLong(row))
+                    val dateFormat = new SimpleDateFormat(
+                      "EEEE dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
+                    <tr>{
+                      <td>{ makeHyperlinkForURI(row(0), lang, allNamedGraph, config.hrefDisplayPrefix) }</td>
+                      <td>{
+                        makeHyperlinkForURI(getClassOrNullURI(row(0))(allNamedGraph),
+                          lang, allNamedGraph, config.hrefDisplayPrefix)
+                      }</td>
+                      <td>{ "Edit" /* TODO */ }</td>
+                      <td>{ dateFormat.format(date) }</td>
+                      <td>{ makeStringFromLiteral(row(2)) }</td>
+                      <td>{ row(3) }</td>
+                    }</tr>
+                  } else <tr/>
+                }
+              }.get
+            }
+          </tbody>
+        </table>)
+    }
   }
 }
