@@ -48,28 +48,24 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    *  
    * TODO
    * - displayResults should be a function argument
-   * - result2 is very similar!
+   * - search2 is very similar!
    */
   def search(hrefPrefix: String, 
              lang: String,
              search: String*
              )(implicit queryMaker: SPARQLQueryMaker[Rdf] ): Future[NodeSeq] = {
-//    try {
-//      val dsg = dataset.asInstanceOf[org.apache.jena.sparql.core.DatasetImpl].asDatasetGraph()
-//      println(s">>>> search: dsg class : ${dsg.getClass}")
-//    } catch {
-//      case t: Throwable =>
-//        System.err.println( "search: Exception: " + t.getLocalizedMessage())
-//    }
     val elem0 = rdfStore.rw( dataset, {
-      println(s"search 1: starting TRANSACTION for dataset $dataset")
+      println(s"search($search) 1: starting TRANSACTION for dataset $dataset")
     	val uris = search_onlyNT(search :_* )
+    	println(s"\tsearch(): URI's $uris")
     	val graph: Rdf#Graph = allNamedGraph
       val elems =
         <div class={css.tableCSSClasses.formRootCSSClass}> {
     	    css.localCSS ++
-        uris.map(
-        u => displayResults(u.toIterable, hrefPrefix, lang, graph, true)) // . get
+        uris.map{
+        u =>
+//          println(s"\tsearch(): URI row $u")
+          displayResults(u, hrefPrefix, lang, graph, false) }
     	}</div>
       elems
     })
@@ -126,12 +122,18 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
   }
   
   private def search_onlyNT(search: String*)
-  (implicit queryMaker: SPARQLQueryMaker[Rdf] )
-  // : Try[Iterator[Rdf#Node]] 
-  = {
+  (implicit queryMaker: SPARQLQueryMaker[Rdf] ) = {
     val queryString = queryMaker.makeQueryString(search :_* )
     logger.debug( s"search_onlyNT(search='$search') \n$queryString \n\tdataset Class ${dataset.getClass().getName}" )
-    sparqlSelectQueryVariablesNT(queryString, Seq("thing") )
+    // NOTE: if class is specified in request, then ?CLASS is not in results, and vice-versa
+    val variables =
+      if( search.size > 1 && search(1) != "")
+        Seq("thing")
+      else
+        Seq("thing", "?CLASS")
+    // println( s"search_onlyNT: ($search) : variables $variables" )
+
+    sparqlSelectQueryVariablesNT(queryString, variables )
   }
 
   /** with result variables specified; transactional */
