@@ -2,7 +2,9 @@ import sbt.Keys._
 import sbt._
 // import Common._ // TODO
 
-scalaVersion in ThisBuild := "2.11.11" // "2.11.8" // "2.12.2"
+scalaVersion in ThisBuild := 
+// "2.11.11" // 
+"2.11.8" // "2.12.2"
 
 enablePlugins(ScalaJSPlugin)
 // scalaJSOptimizerOptions ~= { _.withDisableOptimizer(true) }

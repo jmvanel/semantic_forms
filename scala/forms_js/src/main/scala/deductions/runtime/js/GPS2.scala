@@ -40,6 +40,10 @@ object GPS2 extends GPS {
     geo.watchPosition( fillCoords _, onError _)
   }
 
-  def onError(p: PositionError) = println(s"geoLocation: Error $p")
+  import scala.scalajs.js.Dynamic.global
+
+  def onError(p: PositionError) =
+    global.console.log("geoLocation: Error: " + p)
+    // println(s"geoLocation: Error $p")
 
 }
