@@ -20,13 +20,6 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
   val config: Configuration
   import config._
 
-//  private val plainSPARQLquery = new SPARQLQueryMaker[Rdf] with ColsInResponse {
-//    override def makeQueryString(search: String*): String = {
-//      val classe = search(1)
-//      queryWithoutlinksCount(search(0), classe)
-//    }
-//  }
-
   /** index Based or not, depending on config. item useTextQuery */
   private val indexBasedQuery = new SPARQLQueryMaker[Rdf] with ColsInResponse {
     override def makeQueryString(searchStrings: String*): String = {
@@ -42,7 +35,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
   }
   
   trait ColsInResponse extends SPARQLQueryMaker[Rdf] {
-    /** add columns in response */
+    /** add columns in response - NOTE: NEVER CALLED !!! */
     override def columnsForURI(node: Rdf#Node, label: String): NodeSeq = {
       <a href={
         "/display?displayuri=" +
@@ -55,14 +48,13 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
 
   private implicit def searchStringQueryMaker: SPARQLQueryMaker[Rdf] = {
 		println( s"searchStringQueryMaker: useTextQuery $useTextQuery")
-    val result =
-      indexBasedQuery
-		println( s"searchStringQueryMaker: SPARQL ${result.makeQueryString("search???", "")}")
-		result
+    indexBasedQuery
   }
 
   def searchString(searchString: String, hrefPrefix: String = config.hrefDisplayPrefix,
-                   lang: String = "", classURI: String = ""): Future[NodeSeq] =
+                   lang: String = "", classURI: String = ""): Future[NodeSeq] = {
+		println( s"searchString: SPARQL ${indexBasedQuery.makeQueryString(searchString, classURI)}")
     search(hrefPrefix, lang, searchString, classURI)
+}
 
 }

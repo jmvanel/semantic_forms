@@ -31,13 +31,18 @@ extends ThumbnailInference[Rdf, DATASET] {
   : NodeSeq = {
     val wrappingClass = "row sf-triple-block"
     <div class={wrappingClass} >{
-      val res = res0.toList
+      val res = res0 .toSeq // List
       val uriLabelCouples = res.map(uri => (uri, makeInstanceLabel(uri, graph, lang)))
-      val uriLabelCouples2 = if( sortAnd1rowPerElement )
+//      println(s"displayResults: sortAnd1rowPerElement $sortAnd1rowPerElement")
+
+      val uriLabelCouples2 =
+        if( sortAnd1rowPerElement )
         uriLabelCouples. sortBy(c => c._2)
         else uriLabelCouples
+//        println(s"displayResults: $uriLabelCouples2")
       val columnsFormResults = uriLabelCouples2 .
-        map(uriLabelCouple => {
+        map{
+            uriLabelCouple => {
           val node = uriLabelCouple._1
           val label = uriLabelCouple._2
           <div class="col col-sm-4 sf-value-block">{
@@ -60,7 +65,8 @@ extends ThumbnailInference[Rdf, DATASET] {
           lit => <div>{ lit.toString() }</div>
           )
           }</div>
-        })
+        }
+        }
         columnsFormResults
     }</div><!-- end of wrapping div displayResults -->
   }

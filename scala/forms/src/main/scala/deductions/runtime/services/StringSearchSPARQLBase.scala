@@ -26,14 +26,21 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
             """
     } else ""
 
-  private def classCriterium(classe: String) = {
+  private def classCriterium(classe: String): String = {
 		println(
-		  s"""classCriterium classe "${classe}" """)
+		  s"""classCriterium: classe: "${classe}" """)
     if (classe == "")
       "?CLASS"
     else
       "<" + expandOrUnchanged(classe) + ">"
     }
+
+  private def classVariableInSelect(classe: String): String = {
+    if (classe == "")
+      "?CLASS"
+    else
+      ""
+  }
 
   // UNUSED
   def queryWithlinksCountNoPrefetch(search: String,
@@ -58,10 +65,10 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |${declarePrefix(text)}
          |${declarePrefix(rdfs)}
          |${declarePrefix(form)}
-         |SELECT DISTINCT ?thing ?COUNT WHERE {
+         |SELECT DISTINCT ?thing ?COUNT ${classVariableInSelect(classe)} WHERE {
          |  graph ?g {
          |    ${textQuery(search)}
-         |    ?thing ?p ?o .
+         |    # ?thing ?p ?o .
          |    ?thing a ${classCriterium(classe)} .
          |  }
          |  OPTIONAL {
