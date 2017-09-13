@@ -24,7 +24,6 @@ import scala.util.{Failure, Success, Try}
   private val prefixAV = "http://www.virtual-assembly.org/ontologies/1.0/pair#"
 
   lazy val rdfs = RDFSPrefix[Rdf]
-  lazy val wikidata =  Prefix[Rdf]("wikidata", "http://www.wikidata.org/entity/")
 
   // TODO remove private
   private lazy val rdf = RDFPrefix[Rdf]
@@ -39,6 +38,10 @@ import scala.util.{Failure, Success, Try}
   lazy val dbo = Prefix[Rdf]("dbo", "http://dbpedia.org/ontology/")
   lazy val vs = Prefix[Rdf]("vs", "http://www.w3.org/2003/06/sw-vocab-status/ns#")
   lazy val content = Prefix[Rdf]("content", "http://purl.org/rss/1.0/modules/content/")
+
+  // prefix for RDF data
+  lazy val dbpedia = Prefix[Rdf]("dbpedia", "http://dbpedia.org/resource/")
+  lazy val wikidata =  Prefix[Rdf]("wikidata", "http://www.wikidata.org/entity/")
 
   /** vocabulary for forms in general (eg form:showProperties */
   lazy val form = Prefix[Rdf]("form", "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#")
@@ -91,8 +94,8 @@ import scala.util.{Failure, Success, Try}
     geo,
     // prefixes for resources
 
-    Prefix[Rdf]("dbpedia", "http://dbpedia.org/resource/"),
-    wikidata,
+//    Prefix[Rdf]("dbpedia", "http://dbpedia.org/resource/"),
+    dbpedia, wikidata,
     Prefix[Rdf]("wd",       "http://www.wikidata.org/entity/"),
 
     text // Jena text search

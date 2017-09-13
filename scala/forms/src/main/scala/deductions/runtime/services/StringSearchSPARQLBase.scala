@@ -68,7 +68,6 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |SELECT DISTINCT ?thing ?COUNT ${classVariableInSelect(classe)} WHERE {
          |  graph ?g {
          |    ${textQuery(search)}
-         |    # ?thing ?p ?o .
          |    ?thing a ${classCriterium(classe)} .
          |  }
          |  OPTIONAL {
