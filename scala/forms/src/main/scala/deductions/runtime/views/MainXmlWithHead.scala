@@ -1,4 +1,4 @@
-package views
+package deductions.runtime.views
 
 import scala.io.Source
 import scala.xml.Elem

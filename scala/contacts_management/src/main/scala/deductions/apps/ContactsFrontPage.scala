@@ -1,14 +1,16 @@
 package deductions.apps
 
-import scala.xml.NodeSeq
-import deductions.runtime.views.MainXml
-
-import deductions.runtime.utils.I18NMessages
 import org.w3.banana.RDF
+import scala.xml.NodeSeq
+
+import deductions.runtime.views.MainXmlWithHead
+import deductions.runtime.utils.I18NMessages
 import deductions.runtime.core.HTTPrequest
 
 /** HTML Front page skeleton for the Contacts SF application */
-trait ContactsFrontPage[Rdf <: RDF, DATASET] extends MainXml with ContactsDashboard[Rdf, DATASET] {
+trait ContactsFrontPage[Rdf <: RDF, DATASET]
+extends MainXmlWithHead
+with ContactsDashboard[Rdf, DATASET] {
 
 	import ops._
 

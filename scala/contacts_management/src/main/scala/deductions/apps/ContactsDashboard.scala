@@ -1,10 +1,12 @@
 package deductions.apps
 
 import scala.xml.NodeSeq
+import scala.xml.NodeSeq._ // seqToNodeSeq
+
 import org.w3.banana.RDF
+
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.sparql_cache.SPARQLHelpers
-import scala.xml.NodeSeq._ // seqToNodeSeq
 import deductions.runtime.core.SemanticController
 import deductions.runtime.core.HTTPrequest
 import deductions.runtime.utils.RDFPrefixes
