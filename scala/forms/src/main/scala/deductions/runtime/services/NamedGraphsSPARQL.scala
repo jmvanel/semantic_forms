@@ -15,9 +15,14 @@ trait NamedGraphsSPARQL[Rdf <: RDF, DATASET]
     override def makeQueryString(search: String*): String =
       // TODO show # of triples
       s"""
-         |SELECT DISTINCT ?thing WHERE {
+         |SELECT DISTINCT ?thing 
+         |    # ?CLASS
+         |    WHERE {
          |  graph ?thing {
          |    [] ?p ?O .
+         |
+         |    # TODO: lasts very long with this
+         |    # OPTIONAL { ?thing a ?CLASS . }
          |  }
          |}""".stripMargin
 

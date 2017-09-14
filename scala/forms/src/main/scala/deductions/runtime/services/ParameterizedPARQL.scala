@@ -129,6 +129,8 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     val variables =
       if( search.size > 1 && search(1) != "")
         Seq("thing")
+      else if( search.size == 0 )
+        Seq("thing")  // for NamedGraphsSPARQL
       else
         Seq("thing", "?CLASS")
     // println( s"search_onlyNT: ($search) : variables $variables" )
