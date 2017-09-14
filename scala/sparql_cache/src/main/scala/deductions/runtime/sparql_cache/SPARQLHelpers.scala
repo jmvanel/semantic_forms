@@ -341,10 +341,10 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       solutionsTry2 match {
         case Success(solutions) =>
           //    logger.debug( "solutionsTry.isSuccess " + solutionsTry.isSuccess )
-//          val answers: Rdf#Solutions = solutions
           // TODO nullPointer on empty database
           val results = solutions.iterator.toIterable.map {
             row =>
+              // TODO rather loop on row.varnames() , to make sparqlSelectQueryVariablesNT more robust
               for (variable <- variables) yield {
                 val cell = row(variable)
                 cell match {
