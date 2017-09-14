@@ -16,7 +16,7 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-explaintypes",
 
 lazy val forms_play = (project in file("forms_play"))
 	.dependsOn(forms)
-	// .dependsOn(forms_js)
+	.dependsOn(contacts_management)
 	.dependsOn(mobion)
 .enablePlugins(PlayScala) .disablePlugins(PlayLogback)
 .settings(
@@ -67,8 +67,8 @@ lazy val mobion = project .dependsOn(forms)
 // lazy val sparql_client = project
 
 // PENDING: really necessary?
-resolvers in ThisBuild += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
-resolvers in ThisBuild += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
+// resolvers in ThisBuild += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
+// resolvers in ThisBuild += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
 // loads the server project at sbt startup
 onLoad in Global := (Command.process("project forms_play", _: State)) compose (onLoad in Global).value

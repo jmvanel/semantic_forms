@@ -1,11 +1,11 @@
-package views
+package deductions.runtime.views
 
 import scala.io.Source
 import scala.xml.Elem
 import scala.xml.Node
 import scala.xml.XML
 
-import controllers.routes
+//import controllers.routes
 import deductions.runtime.views.MainXml
 import scala.xml.NodeSeq
 

@@ -28,7 +28,7 @@ import play.api.mvc.RawBuffer
 import play.api.mvc.Request
 import play.api.mvc.RequestHeader
 import play.api.mvc.Result
-import views.MainXmlWithHead
+import deductions.runtime.views.MainXmlWithHead
 import deductions.runtime.core.HTTPrequest
 import deductions.runtime.utils.RDFStoreLocalProvider
 

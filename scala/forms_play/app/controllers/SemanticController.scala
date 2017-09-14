@@ -8,7 +8,15 @@ import deductions.runtime.utils.DefaultConfiguration
 import play.api.mvc.{Action, Controller, Request}
 import deductions.runtime.mobion.GeoController
 import deductions.runtime.mobion.PerVehicleView
+import deductions.apps.ContactsFrontPage
 
+/** RDF based HTTP Controller/router;
+ *  this allows to create new pages or services
+ *  without relying on routes file of Play! framework,
+ *  or rather using just one entry for /page.
+ *
+ * To create a new service, just implement interface in trait SemanticController,
+ * and add this to val actions below. */
 object SemanticController extends Controller
     with ImplementationSettings.RDFCache
     with CentralSemanticController[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
@@ -17,21 +25,20 @@ object SemanticController extends Controller
 
   import ops._
 
+  private class DependenciesNoTextQuery extends TypicalSFDependencies {
+    override implicit val config = new DefaultConfiguration {
+      override val useTextQuery = false
+    }
+  }
+
   val actionMap: Map[String, deductions.runtime.core.SemanticController] = {
     val actions = Seq(
-        new {
-    override implicit val config = new DefaultConfiguration {
-      override val useTextQuery = false
-    }
-} with TypicalSFDependencies with GeoController[Rdf, DATASET] {},
-        new {
-    override implicit val config = new DefaultConfiguration {
-      override val useTextQuery = false
-    }
-} with TypicalSFDependencies with PerVehicleView[Rdf, DATASET] {}
-    )
+      new DependenciesNoTextQuery with GeoController[Rdf, DATASET] {},
+      new DependenciesNoTextQuery with PerVehicleView[Rdf, DATASET] {},
+      new DependenciesNoTextQuery with ContactsFrontPage[Rdf, DATASET] {}
+      )
 
-    actions.map{ action => (action.featureURI, action) } . toMap
+    actions.map { action => (action.featureURI, action) }.toMap
   }
 
   override implicit val config = new DefaultConfiguration {}

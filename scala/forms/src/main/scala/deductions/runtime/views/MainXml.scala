@@ -10,6 +10,7 @@ trait MainXml extends ToolsPage with EnterButtons {
 
   /**
    * main Page with a single content (typically a form)
+   * Design pattern "Template method"
    */
   def mainPage(content: NodeSeq, userInfo: NodeSeq, lang: String = "en", title: String = "",
       displaySearch: Boolean = true,
@@ -34,6 +35,7 @@ classForContent: String = "container sf-complete-form"
     </html>
       }
 
+  /** HTML head, to be redefined */
   def head(title: String = "")(implicit lang: String = "en"): NodeSeq = <head></head>
 
   /** page bottom (overridable!) **/

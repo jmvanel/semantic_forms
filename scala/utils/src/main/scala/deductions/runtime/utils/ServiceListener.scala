@@ -3,6 +3,7 @@ package deductions.runtime.utils
 import org.w3.banana.RDF
 import deductions.runtime.core.HTTPrequest
 
+/** **interface** */
 trait ServiceListener[Rdf <: RDF, DATASET] {
   /** general callback for HTTP requests */
   def notifyServiceCall(request: HTTPrequest)(implicit userURI: String,

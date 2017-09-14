@@ -17,12 +17,13 @@ import deductions.runtime.services.html.TriplesViewModule
 import deductions.runtime.utils.RDFStoreLocalUserManagement
 import deductions.runtime.utils.Configuration
 import deductions.runtime.utils.DefaultConfiguration
+import deductions.runtime.views.MainXmlWithHead
+
 import play.api.mvc.Action
 import play.api.mvc.Call
 import play.api.mvc.Controller
 import play.api.mvc.Request
 import play.api.mvc.Security
-import views.MainXmlWithHead
 
 object AuthService extends AuthServiceTrait {
   override implicit val config: Configuration = new DefaultConfiguration {
