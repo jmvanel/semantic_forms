@@ -10,6 +10,7 @@ function cloneWidget(widget,button) {
     console.log("nombre de widgets : "+cardinal);
 
     var widgetName = decodeURIComponent(widget.attr("name")).split("+")
+    console.log("widget name: " + widgetName);
     if(widgetName[0] !== 'undefined'){
         if (widgetName[2][0] == '<' )
             widgetName = widgetName[0] +'+'+widgetName[1]+'+<>+.'
@@ -46,6 +47,7 @@ function cloneWidget(widget,button) {
         addedWidget.focus();
     }
 
+    console.log("addedWidget: " + addedWidget );
     return addedWidget;
 }
 

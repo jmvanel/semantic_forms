@@ -10,10 +10,12 @@ import deductions.runtime.sparql_cache.SPARQLHelpers
 import deductions.runtime.core.SemanticController
 import deductions.runtime.core.HTTPrequest
 import deductions.runtime.utils.RDFPrefixes
+import deductions.runtime.user.UserQueries
 
 trait ContactsDashboard[Rdf <: RDF, DATASET] extends 
     SPARQLHelpers[Rdf, DATASET]
 with RDFPrefixes[Rdf]
+with UserQueries[Rdf, DATASET]
 with SemanticController {
 
   import ops._
@@ -39,18 +41,18 @@ with SemanticController {
     </div>
   }
 
-  private def getPersonFromAccount(userId: String): Rdf#Node = {
-    val queryString = s"""
-      ${declarePrefix(foaf)}
-      SELECT ?PERSON
-      WHERE { GRAPH ?GR {
-        ?PERSON <${foaf.OnlineAccount}> <${userId}> .
-      }}"""
-
-    println(queryString)
-    val list = sparqlSelectQueryVariablesNT(queryString, Seq("?PERSON"))
-    list.headOption.getOrElse(Seq()).headOption.getOrElse(nullURI)
-  }
+//  private def getPersonFromAccount(userId: String): Rdf#Node = {
+//    val queryString = s"""
+//      ${declarePrefix(foaf)}
+//      SELECT ?PERSON
+//      WHERE { GRAPH ?GR {
+//        ?PERSON <${foaf.OnlineAccount}> <${userId}> .
+//      }}"""
+//
+//    println(queryString)
+//    val list = sparqlSelectQueryVariablesNT(queryString, Seq("?PERSON"))
+//    list.headOption.getOrElse(Seq()).headOption.getOrElse(nullURI)
+//  }
 
   /** the first circle :) of given person */
   private def contactsDirectlyConnected(person: Rdf#Node): NodeSeq = {
