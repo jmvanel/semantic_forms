@@ -47,13 +47,15 @@ $(document).ready(function() {
 		// view-source:http://lookup.dbpedia.org/api/search/PrefixSearch?QueryClass=Place&QueryString=berlin
 
 		// QueryClass comes from attribute data-rdf-type in <input> tag , but data-rdf-type is a full URI !
-                var typeName
+                var typeName = "";
                 var $el = $(event.target);
                 if ($el) {
-                var type = $el.attr('data-rdf-type').split('/');
+                if( $el.attr('data-rdf-type') ) {
+                   type = $el.attr('data-rdf-type').split('/');
                     if (type) {
                       typeName = type[type.length - 1];
                     }
+                }
                 }
 
                 $.ajax({
