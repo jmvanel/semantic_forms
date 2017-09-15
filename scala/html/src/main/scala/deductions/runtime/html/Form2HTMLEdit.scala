@@ -31,15 +31,19 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
   def createAddRemoveWidgets(field: formMod#Entry, editable: Boolean)
   (implicit form: FormModule[NODE, URI]#FormSyntax): Elem = {
     if (shouldAddAddRemoveWidgets(field, editable)) {
+
       // button with an action to duplicate the original HTML widget with an empty content
-      val widgetName = field match {
-        case r: formMod#ResourceEntry if lookupActivatedFor(r) => makeHTML_Id(r)
-        case r: formMod#ResourceEntry => makeHTMLIdResourceSelect(r)
-        case _ => makeHTML_Id(field)
-      }
+
+//      val widgetName = field match {
+//        case r: formMod#ResourceEntry if lookupActivatedFor(r) => makeHTML_Id(r)
+//        case r: formMod#ResourceEntry => makeHTMLIdResourceSelect(r)
+//        case _ => makeHTML_Id(field)
+//      }
+
+      val lookupCSSClass = if(field.widgetType == DBPediaLookup) "hasLookup" else ""
       <div class={ css.cssClasses.formAddDivCSSClass } > <!-- TODO : hidden="true" -->
       <button type="button" class="btn btn-primary add-widget" readonly="yes" size="1" title={
-        "Add another value for " + field.label } input-class={css.cssClasses.formInputCSSClass} input-name={field.htmlName} input-title={ resourceOrBN_Placeholder(field) }  >
+        "Add another value for " + field.label } input-class={s"${css.cssClasses.formInputCSSClass} $lookupCSSClass"} input-name={field.htmlName} input-title={ resourceOrBN_Placeholder(field) }  >
         <i class="glyphicon glyphicon-plus"></i>
       </button>
 			</div>

@@ -227,8 +227,8 @@ import deductions.runtime.utils.I18NMessages
 //        else ""
 //      }
 //    }
-//    //TODO: temporaire, trouver pourquoi il y a des valeur par défaut ' "" '
-//    //TODO: seems to doen't work work
+//    //TO DO: temporaire, trouver pourquoi il y a des valeur par défaut ' "" '
+//    //TO DO: seems to doen't work work
 //    else field.value.toString.replaceAll("\"\"","").isEmpty
     //else true
 
