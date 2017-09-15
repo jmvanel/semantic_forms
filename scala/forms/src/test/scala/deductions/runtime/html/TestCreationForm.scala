@@ -108,8 +108,10 @@ class TestCreationForm extends {
     assert(rawForm.toString().contains("topic_interest"))
     assert(rawForm.toString().contains("firstName"))
     assert(rawForm.toString().contains("knows"))
-    // included in pull-down menu for knows
-    assert(rawForm.toString().contains("Jean-Marc"))
+    if (config.downloadPossibleValues) {
+      // included in pull-down menu for knows
+      assert(rawForm.toString().contains("Jean-Marc"))
+    }
     // NOTE: homepage is not present, because it has rdfs:domain owl:Thing
   }
 
