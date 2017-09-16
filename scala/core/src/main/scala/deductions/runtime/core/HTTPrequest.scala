@@ -35,6 +35,9 @@ case class HTTPrequest(
     formMap: Map[String, Seq[String]] = Map()
     ) {
 
+  /** get RDF subject (HTTP parameter "displayuri") */
+  def getRDFsubject() = getHTTPparameterValue("displayuri").getOrElse("")
+
   def getHTTPparameterValue(param: String): Option[String] = queryString.get(param) .map(seq => seq.headOption ) . flatten
 
   def absoluteURL(rawURI: String = "", secure: Boolean = false): String =
