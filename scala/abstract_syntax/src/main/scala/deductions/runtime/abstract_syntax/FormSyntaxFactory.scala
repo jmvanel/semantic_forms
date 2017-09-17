@@ -108,7 +108,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   /** create Form abstract syntax from an instance (subject) URI;
    *  the Form Specification is inferred from the class of instance;
    *  NO transaction, should be called within a transaction */
-  def createForm(subject: Rdf#Node,
+  private def createForm(subject: Rdf#Node,
     editable: Boolean = false,
     formGroup: Rdf#URI = nullURI, formuri: String="")
     (implicit graph: Rdf#Graph, lang: String="en" )

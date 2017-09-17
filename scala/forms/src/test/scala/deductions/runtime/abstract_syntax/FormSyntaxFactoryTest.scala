@@ -86,7 +86,9 @@ trait FormSyntaxFactoryTest[Rdf <: RDF, DATASET] extends FormSyntaxFactory[Rdf, 
 		  union(Seq(graph1, graph2))
   }
   
-  def createFormWithGivenProps() = {
+  def createFormWithGivenProps()
+  //: FormSyntax
+  = {
     implicit val graph = makeGraphwithFOAFvocabandData()
     implicit val lang = "en"
     val factory = this
@@ -105,11 +107,11 @@ trait FormSyntaxFactoryTest[Rdf <: RDF, DATASET] extends FormSyntaxFactory[Rdf, 
 
   def createFormWithInferredProps() = {    
     val factory = this
-    val res = dataset.r({
+//    val res = dataset.r({
     	implicit val graph = makeGraphwithFOAFvocabandData()
-      factory.createForm(URI("betehess"), editable = true)
-    })
-    res.get
+      factory.createFormTR(URI("betehess"), editable = true)
+//    })
+//    res.get
   }
 
   def createFormFromClass() = {

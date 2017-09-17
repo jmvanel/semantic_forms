@@ -27,7 +27,9 @@ class Form2HTMLTest
   test("Test HTML") {
     val ops1 = ops
     val fh = this
-    val xhtml = fh.generateHTML(createFormWithGivenProps())
+    val form = createFormWithGivenProps()
+    println("Form2HTMLTest: form")
+    val xhtml = fh.generateHTML(form)
     Files.write(Paths.get("tmp.form.html"), xhtml.toString().getBytes);
     Assert.assertTrue(xhtml.toString().contains("Alexandre"))
   }

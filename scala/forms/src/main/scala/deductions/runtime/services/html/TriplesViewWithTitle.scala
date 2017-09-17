@@ -75,9 +75,9 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
             case Success(gr) =>
 
               wrapInReadTransaction {
-              // FEATURE: annotate plain Web site
-              typeChange = gr.size == 1 && gr.triples.head . objectt == foaf.Document
-//              println(s">>>> htmlForm typeChange $typeChange") ; printGraph( gr )
+                // FEATURE: annotate plain Web site
+                typeChange = gr.size == 1 && gr.triples.head.objectt == foaf.Document
+                //     println(s">>>> htmlForm typeChange $typeChange") ; printGraph( gr )
               }
 
               import scala.concurrent.ExecutionContext.Implicits.global
@@ -98,7 +98,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
           // FEATURE: annotate plain Web site
           val editable2 = editable || typeChange
 
-          wrapInTransaction({  // or wrapInReadTransaction ?
+//          wrapInTransaction({  // or wrapInReadTransaction ?
             implicit val graph = allNamedGraph
             val (formItself, formSyntax) = htmlFormElemRaw(
               uri, graph, hrefDisplayPrefix, blankNode, editable = editable2,
@@ -107,8 +107,9 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
               graphURI = graphURI,
               database = database,
               request = request, inputGraph = tryGraph)
-            println(s">>>> after htmlFormElemRaw")
+            println(s">>>> after htmlFormElemRaw, formSyntax $formSyntax")
 
+            wrapInTransaction({  // or wrapInReadTransaction ?
             Text("\n") ++
               titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable2) ++
               <div class="row"><div class="col-xs-12">{ failureOrStatistics }</div></div> ++
