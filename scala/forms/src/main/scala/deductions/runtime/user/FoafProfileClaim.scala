@@ -51,6 +51,7 @@ http.send(content);
 
     val label = instanceLabelFromTDB(uri, request.getLanguage())
     val personFromAccount = getPersonFromAccount(request.userId())
+
     if (currentPageIsAfoafPerson) {
       if (personFromAccount == nullURI) {
         // propose to claim current page's identity (foaf:Person)
@@ -66,15 +67,18 @@ http.send(content);
           </script>
           <button type="button" onclick={ s"sendPOST(`data=$rdfString`);" }>
             Claim current page's identity:{ label }
+            for current user: {request.userId()}
           </button>
         </div>
-      } else
+      } else {
+            val accountFromPerson  = getAccountFromPerson(request.getRDFsubject())
         // TODO link to current page's identity, if Current page is user identity
         <div>
-          Current page's identity:{ label }
-          ,
-          Person From Account: { personFromAccount }
+          Current page's identity:{ label },
+          Account for this Person: &lt;{ accountFromPerson }&gt;,
+          Person From Account: &lt;{ personFromAccount }&gt;
         </div>
+      }
     } else NodeSeq.Empty
   }
 }

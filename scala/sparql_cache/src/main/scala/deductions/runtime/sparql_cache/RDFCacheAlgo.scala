@@ -22,12 +22,15 @@ import org.apache.http.client.config.RequestConfig
 import org.apache.http.impl.client.HttpClientBuilder
 import org.w3.banana.jena.io.TripleSink
 import org.apache.jena.riot.RDFParser
+import org.w3.banana.io.JsonLd
 
-/** */
+/** implicit RDFReader's - TODO remove DATASET */
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
   val config: Configuration
   implicit val turtleReader: RDFReader[Rdf, Try, Turtle]
   implicit val rdfXMLReader: RDFReader[Rdf, Try, RDFXML]
+  implicit val jsonldReader: RDFReader[Rdf, Try, JsonLd]
+
   implicit val rdfLoader: RDFLoader[Rdf, Try]
 }
 
