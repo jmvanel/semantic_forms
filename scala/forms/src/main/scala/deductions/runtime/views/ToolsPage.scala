@@ -22,7 +22,7 @@ trait ToolsPage extends EnterButtons
        |PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
        |SELECT * WHERE { GRAPH ?G {?S ?P ?O . } } LIMIT 100
        |#SELECT DISTINCT ?CLASS WHERE { GRAPH ?G { [] a  ?CLASS . } } LIMIT 100
-       |SELECT DISTINCT ?PROP WHERE { GRAPH ?G { [] ?PROP [] . } } LIMIT 100
+       |#SELECT DISTINCT ?PROP WHERE { GRAPH ?G { [] ?PROP [] . } } LIMIT 100
     """.stripMargin
     val querySampleConstruct =
       """|PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>

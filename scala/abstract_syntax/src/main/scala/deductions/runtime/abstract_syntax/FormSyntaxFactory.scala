@@ -11,6 +11,8 @@ import org.w3.banana.{PointedGraph, RDF, RDFPrefix, RDFSPrefix, XSDPrefix}
 import scala.collection.mutable
 import scala.language.{existentials, postfixOps}
 import deductions.runtime.core._
+import scala.util.Success
+import scala.util.Failure
 
 /** one of EditionMode, DisplayMode, CreationMode */
 abstract sealed class FormMode { val editable = true }
@@ -106,7 +108,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   /** create Form abstract syntax from an instance (subject) URI;
    *  the Form Specification is inferred from the class of instance;
    *  NO transaction, should be called within a transaction */
-  def createForm(subject: Rdf#Node,
+  private def createForm(subject: Rdf#Node,
     editable: Boolean = false,
     formGroup: Rdf#URI = nullURI, formuri: String="")
     (implicit graph: Rdf#Graph, lang: String="en" )
@@ -116,6 +118,36 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val step2 = addOWLsameAs(step1)
     // TODO val step3 = addOWLinverseOf(step2)   
     createFormDetailed2( step2, formGroup )
+  }
+
+  /**
+   * create Form abstract syntax from an instance (subject) URI;
+   *  the Form Specification is inferred from the class of instance;
+   *  with transaction, should NOT be called within a transaction
+   */
+  def createFormTR(subject: Rdf#Node,
+                   editable: Boolean = false,
+                   formGroup: Rdf#URI = nullURI, formuri: String = "")(implicit graph: Rdf#Graph, lang: String = "en"): FormSyntax = {
+
+    val tryFormSyntax = for (
+      step1 <- rdfStore.rw(dataset,
+        { computePropertiesList(subject, editable, formuri) });
+      step2 <- rdfStore.r(dataset,
+        { addOWLsameAs(step1) })
+    // TODO val step3 = addOWLinverseOf(step2)
+    ) yield {
+      println(s"createFormTR: yield")
+      rdfStore.rw(dataset,
+        { createFormDetailed2(step2, formGroup) })
+    }
+    tryFormSyntax.flatten match {
+      case Success(fs) =>
+        println(s"createFormTR: Success $fs")
+        fs
+      case Failure(f) =>
+        println(s"createFormTR: $f")
+        FormSyntax(nullURI, Seq())
+    }
   }
 
   private [abstract_syntax] def addRDFSLabelComment(propertiesList: Seq[Rdf#Node]): Seq[Rdf#Node] = {

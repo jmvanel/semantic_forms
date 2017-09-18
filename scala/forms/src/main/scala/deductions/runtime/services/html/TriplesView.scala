@@ -40,7 +40,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
 
   /**
    * wrapper for htmlForm that shows Failure's ;
-   *  non TRANSACTIONAL
+   * TRANSACTIONAL
    */
   def htmlFormElemRaw(uri: String, unionGraph: Rdf#Graph=allNamedGraph, hrefPrefix: String = config.hrefDisplayPrefix, blankNode: String = "",
     editable: Boolean = false,
@@ -97,15 +97,20 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
 
     // TODO for comprehension like in htmlForm()
 
+//println( s">>>> htmlFormElemJustFields 0" )
     val (graphURIActual, _) = doRetrieveURI(uri, blankNode, graphURI)
-    val htmlFormTry = rdfStore.rw( dataset, {
+//    val htmlFormTry = rdfStore.rw( dataset, {
+//println( s">>>> htmlFormElemJustFields 1" )
       implicit val graph: Rdf#Graph = allNamedGraph
+//println( s">>>> htmlFormElemJustFields 2 " )
       val ops1 = ops
       val config1 = config
       val form = createAbstractForm(
           uri, editable, blankNode,
           URI(formGroup), formuri )
+//println( s">>>> htmlFormElemJustFields $form" )
 
+    val htmlFormTry = rdfStore.rw( dataset, {
         generateHTMLJustFields(form,
           hrefPrefix, editable, graphURIActual, request=HTTPrequest() )
     })
@@ -130,7 +135,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
   /**
    * create a form for given URI with background knowledge in RDFStoreObject.store;
    *  by default user inputs will be saved in named graph uri, except if given graphURI argument;
-   *  NON TRANSACTIONAL;
+   * TRANSACTIONAL;
    *  
    *  Note: first try to retrieve from Internet at given URI,
    *  then eventually save in TDB,
@@ -180,7 +185,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     formGroup: Rdf#URI = nullURI)
     : Try[( NodeSeq, FormSyntax )] = {
 
-    println( s"htmlForm dataset $dataset" )
+//    println( s"htmlForm dataset $dataset" )
 
     for {
       (graphURIActual, tryGraph) <- Try { time("doRetrieveURI", doRetrieveURI(uri, blankNode, graphURI)) }
@@ -188,10 +193,10 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
       // TODO find another way of reporting download failures: 
       //      graphDownloaded <- tryGraph
       
-      form <- rdfStore.rw( dataset, {
-        graf2form(allNamedGraph, uri, hrefPrefix, blankNode, editable,
+//      form <- rdfStore.rw( dataset, {
+        form = graf2form(allNamedGraph, uri, hrefPrefix, blankNode, editable,
           actionURI, lang, graphURIActual, actionURI2, formGroup)
-      })
+//      })
     } yield form
   }
 
@@ -218,6 +223,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
    * create a form for given URI resource (instance) with background knowledge
    *  in given graph
    *  TODO non blocking
+   * TRANSACTIONAL;
    */
   private def graf2form(graphe: Rdf#Graph, uri: String,
     hrefPrefix: String = config.hrefDisplayPrefix, blankNode: String = "",
@@ -234,7 +240,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     implicit val lang = lang0
 
     try {
-      // DANGEROUS with large database !
+      // NOTE graphSize DANGEROUS with large database !
       //    	println(s"TableViewModule.graf2form(graph: graph first triple: ${getTriples(graph).headOption}, graphURI <$graphURI>")
       //    	println(s"TableViewModule.graf2form(graph: graph first triple: ${ops.graphSize(graph)}, graphURI <$graphURI>")
       logger.debug(s"TableViewModule.graf2form(graph: graph : ${graph}, graphURI <$graphURI>")
@@ -247,15 +253,13 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     // TODO call addUserInfoOnTriples() in package deductions.runtime.abstract_syntax
     val formWithInfo = addUserInfoOnTriples(form)
 
-//    val htmlForm =
-//      generateHTML(form, hrefPrefix, editable, actionURI, graphURI,
-//        actionURI2, lang, request)
     val htmlForm =
       generateHTML(formWithInfo, hrefPrefix, editable, actionURI, graphURI,
         actionURI2, lang, request)
     ( htmlForm, formWithInfo )
   }
 
+  /** callscreateFormTR; TRANSACTIONAL */
   private def createAbstractForm(
       uri: String, editable: Boolean,
       blankNode: String, formGroup: Rdf#URI, formuri: String="")
@@ -268,7 +272,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
       BNode(uri)
     else URI(uri)
 
-    createForm(subjectNode, editable, formGroup, formuri)
+    createFormTR(subjectNode, editable, formGroup, formuri)
   }
 
 //  private def graf2formString(graph1: Rdf#Graph, uri: String, graphURI: String): String = {

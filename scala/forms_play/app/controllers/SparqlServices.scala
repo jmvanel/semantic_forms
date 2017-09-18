@@ -19,17 +19,14 @@ trait SparqlServices extends ApplicationTrait
 {
   import config._
 
-  /** load RDF String in database - TODO conneg !!! */
-  def loadAction() //  data: String, graphURI: String = "",
-  //                 database: String = "TDB") 
-  = Action {
+  /** load RDF String in database */
+  def loadAction() = Action {
     implicit request: Request[AnyContent] =>
       val requestCopy = getRequestCopy()
       println(s"body class ${request.getClass} ${request.body} - data ${request.getQueryString("data")} ")     
-//      val content = getContent(request)
       val content = request.getQueryString("data") match {
         case Some(s) => Some(s)
-        case None => getContent(request) // . getOrElse("")
+        case None => getContent(request)
       }
       println(s"content ${content.toString.substring(0, Math.min(content.toString.length,50)) + " ..."}")
       load(requestCopy.copy(content = content))

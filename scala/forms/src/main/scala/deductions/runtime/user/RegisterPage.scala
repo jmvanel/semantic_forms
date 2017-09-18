@@ -5,10 +5,15 @@ import deductions.runtime.services.html.TriplesViewModule
 import deductions.runtime.services.StringSearchSPARQL
 import deductions.runtime.services.html.{CreationFormAlgo, TriplesViewModule}
 import deductions.runtime.utils.{Configuration, I18NMessages}
+import deductions.runtime.views.ResultsDisplay
+
 import org.w3.banana.RDF
 
 import scala.util.{Failure, Success}
 import scala.xml.{NodeSeq, Text}
+import scala.xml.Elem
+import scala.xml.Text
+import scala.xml.Node
 
 /** Register HTML Page */
 trait RegisterPage[Rdf <: RDF, DATASET]
@@ -17,6 +22,7 @@ trait RegisterPage[Rdf <: RDF, DATASET]
     with PreferredLanguageLiteral[Rdf]
     with TriplesViewModule[Rdf, DATASET]
     with CreationFormAlgo[Rdf, DATASET]
+    with ResultsDisplay[Rdf, DATASET]
 //    with Configuration
     {
 
@@ -31,15 +37,20 @@ trait RegisterPage[Rdf <: RDF, DATASET]
       if (needLogin) {
         if (userid != "" && ! userid.startsWith("anonymous") ) {
           val userLabel = wrapInTransaction {
-            makeInstanceLabel(URI(userid), allNamedGraph, lang)
-            // TODO link to User profile
+            // link to User profile
+        	  makeHyperlinkForURI( URI("user:"+userid), lang, allNamedGraph )
           }
-          val displayUserLabel = userLabel match {
-            case Success(lab) => s"${I18NMessages.get("User", lang)}: $lab"
-            case Failure(e) => s"No label for user (!?): $e"
+          val displayUserLabel: NodeSeq = userLabel match {
+            case Success(lab) => Text(s"${I18NMessages.get("User", lang)}: ") ++ lab
+            case Failure(e) => Text(s"No label for user (!?): $e")
           }
           <div>{displayUserLabel} - <a href="/logout">logout</a></div>
+
         } else {
+
+          /* TODO obsolete code to reivew nd probably remove
+           * (needLogin from config is currently true) */
+
           <div>
             Anonyme
         	-{
@@ -65,11 +76,11 @@ trait RegisterPage[Rdf <: RDF, DATASET]
     } </div>
   }
 
-  /**
+  /** UNUSED !
    * action="claimid"
    *  claim identity is made up of foaf:Person edition + entering password
    */
-  def claimIdentityAction(uri: String) = {
+  private def claimIdentityAction(uri: String) = {
     val rawForm = htmlFormElem(uri,
       actionURI = "/saveuser",
       actionURI2 = "/saveuser")
@@ -80,12 +91,12 @@ trait RegisterPage[Rdf <: RDF, DATASET]
     </p>
   }
 
-  /**
+  /** UNUSED !
    * action="register"
    *  register from scratch;
    *  new account is made up of foaf:Person creation + entering password
    */
-  def registerAction(uri: String)
+  private def registerAction(uri: String)
 //  (implicit graph: Rdf#Graph)
   = {
 	  implicit val graph: Rdf#Graph = allNamedGraph
@@ -109,7 +120,7 @@ trait RegisterPage[Rdf <: RDF, DATASET]
    * action="searchid"
    *  search entered Name in TDB
    */
-  def searchEnteredNameAction(enteredName: String) = {
+  private def searchEnteredNameAction(enteredName: String) = {
     // then click on one link to claim the identity
     searchString(enteredName)
   }
