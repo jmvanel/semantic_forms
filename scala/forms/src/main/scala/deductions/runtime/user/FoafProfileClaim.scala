@@ -19,24 +19,62 @@ with InstanceLabelsInferenceMemory[Rdf, DATASET] {
 
   override val featureURI: String = "???"
 
+  private val javascript: xml.Atom[String] = xml.Unparsed("""
+    function sendPOST(content) {
+      var http = new XMLHttpRequest();
+      var url = "/load";
+      http.open("POST", url, true);
+
+//Send the proper header information along with the request
+http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+http.setRequestHeader("Accept","text/turtle");
+
+http.onreadystatechange = function() {//Call a function when the state changes.
+    if(http.readyState == 4
+    // && http.status == 200
+    ) {
+        alert(http.responseText);
+    }
+}
+http.send(content);
+}
+""")
+
   override def result(request: HTTPrequest): NodeSeq = {
-    val uri = URI( request.getRDFsubject() )
+    profileClaimUI(request)
+  }
+
+  def profileClaimUI(request: HTTPrequest): NodeSeq = {
+    val uri = URI(request.getRDFsubject())
     val currentPageIsAfoafPerson: Boolean =
-      getObjects(allNamedGraph, (uri), rdf.typ) . toSeq . contains(foaf.Person)
-    
+      getObjects(allNamedGraph, (uri), rdf.typ).toSeq.contains(foaf.Person)
+
+    val label = instanceLabelFromTDB(uri, request.getLanguage())
+    val personFromAccount = getPersonFromAccount(request.userId())
     if (currentPageIsAfoafPerson) {
-    	val personFromAccount = getPersonFromAccount(request.userId())
       if (personFromAccount == nullURI) {
         // propose to claim current page's identity (foaf:Person)
-        val label = instanceLabelFromTDB(uri, request.getLanguage())
+        val rdfString = s"""
+          ${declarePrefix(foaf)}
+          <$uri> foaf:account <user:${request.userId()}> .
+          <user:${request.userId()}> foaf:isAccountOf <$uri>  .
+          """
+        // `` : ECMAScript 6 (ES6)
         <div>
-        		<a href="/load">claim current page's identity: </a>
+          <script type="text/javascript">
+            { javascript }
+          </script>
+          <button type="button" onclick={ s"sendPOST(`data=$rdfString`);" }>
+            Claim current page's identity:{ label }
+          </button>
         </div>
       } else
-        // TODO link to current page's identity
+        // TODO link to current page's identity, if Current page is user identity
         <div>
+          Current page's identity:{ label }
+          ,
+          Person From Account: { personFromAccount }
         </div>
-    }
-    else NodeSeq.Empty
+    } else NodeSeq.Empty
   }
 }

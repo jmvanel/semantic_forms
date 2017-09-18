@@ -11,13 +11,15 @@ import org.w3.banana.RDF
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 import scala.xml.{NodeSeq, Text}
+import deductions.runtime.user.FoafProfileClaim
 
 trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
     with TriplesViewModule[Rdf, DATASET]
     with FormHeader[Rdf, DATASET]
     with StatisticsGraph[Rdf]
-    with BlankNodeCleanerIncremental[Rdf, DATASET] {
+    with BlankNodeCleanerIncremental[Rdf, DATASET]
+    with FoafProfileClaim[Rdf, DATASET] {
   
     import config._
     import ops._
@@ -113,6 +115,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
             Text("\n") ++
               titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable2) ++
               <div class="row"><div class="col-xs-12">{ failureOrStatistics }</div></div> ++
+              profileClaimUI(request) ++
               formItself
           }, datasetOrDefault)
         }

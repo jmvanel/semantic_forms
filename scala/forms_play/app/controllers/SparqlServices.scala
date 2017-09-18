@@ -19,7 +19,7 @@ trait SparqlServices extends ApplicationTrait
 {
   import config._
 
-  /** load RDF String in database - TODO conneg !!! */
+  /** load RDF String in database */
   def loadAction() = Action {
     implicit request: Request[AnyContent] =>
       val requestCopy = getRequestCopy()

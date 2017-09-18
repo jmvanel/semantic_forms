@@ -22,6 +22,7 @@ trait LoadService[Rdf <: RDF, DATASET]
   import ops._
   implicit val jsonldReader: RDFReader[Rdf, Try, JsonLd]
 
+  /** load RDF String in database - TODO conneg !!! */
   def load(request: HTTPrequest ) = {
     val httpParamsMap: Map[String, Seq[String]] = request.queryString
     println( s"httpParamsMap $httpParamsMap" )
