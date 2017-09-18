@@ -57,7 +57,10 @@ http.send(content);
     val personFromAccount = getPersonFromAccount(request.userId())
     println( s">>>>==== personFromAccount $personFromAccount")
     if (currentPageIsAfoafPerson) {
-      if (personFromAccount == nullURI) {
+      if (personFromAccount == nullURI &&
+          request.userId() != "" &&
+          request.userId() != "anonymous"
+          ) {
         // propose to claim current page's identity (foaf:Person)
         val rdfString = s"""
           ${declarePrefix(foaf)}
