@@ -73,7 +73,7 @@ extends ThumbnailInference[Rdf, DATASET] {
 
     /** make HTML hyperlink For given URI;
    *  this links to semantic_forms page for displaying this URI;
-   * NOTE: this duplicates code in Form2HTMLDisplay.createHTMLResourceReadonlyField() */
+   * NOTE: this reuses code in Form2HTMLDisplay.createHTMLResourceReadonlyField() */
 //  protected
   def makeHyperlinkForURI( node: Rdf#Node, lang: String, graph: Rdf#Graph,
       hrefPrefix: String = config.hrefDisplayPrefix,
