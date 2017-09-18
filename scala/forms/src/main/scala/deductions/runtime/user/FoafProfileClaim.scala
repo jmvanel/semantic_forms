@@ -6,6 +6,8 @@ import scala.xml.NodeSeq
 import org.w3.banana.RDF
 import org.w3.banana.RDF
 import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
+import deductions.runtime.views.ResultsDisplay
+import deductions.runtime.services.ParameterizedSPARQL
 
 /**
  * HTML UI to claim a chosen FOAF Person profile by associating it with the current foaf:OnlineAccount:
@@ -14,7 +16,9 @@ import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
  */
 trait FoafProfileClaim[Rdf <: RDF, DATASET] extends SemanticController
     with UserQueries[Rdf, DATASET]
-with InstanceLabelsInferenceMemory[Rdf, DATASET] {
+    with InstanceLabelsInferenceMemory[Rdf, DATASET]
+    with ParameterizedSPARQL[Rdf, DATASET]
+    with ResultsDisplay[Rdf, DATASET] {
   import ops._
 
   override val featureURI: String = "???"
@@ -51,7 +55,7 @@ http.send(content);
 
     val label = instanceLabelFromTDB(uri, request.getLanguage())
     val personFromAccount = getPersonFromAccount(request.userId())
-
+    println( s">>>>==== personFromAccount $personFromAccount")
     if (currentPageIsAfoafPerson) {
       if (personFromAccount == nullURI) {
         // propose to claim current page's identity (foaf:Person)
@@ -71,12 +75,12 @@ http.send(content);
           </button>
         </div>
       } else {
-            val accountFromPerson  = getAccountFromPerson(request.getRDFsubject())
-        // TODO link to current page's identity, if Current page is user identity
+        val accountFromPerson = getAccountFromPerson(request.getRDFsubject())
+        // link to current page's associated user account
         <div>
-          Current page's identity:{ label },
-          Account for this Person: &lt;{ accountFromPerson }&gt;,
-          Person From Account: &lt;{ personFromAccount }&gt;
+          Account for this Person:{
+            makeHyperlinkForURI(accountFromPerson, request.getLanguage(), allNamedGraph)
+          }
         </div>
       }
     } else NodeSeq.Empty

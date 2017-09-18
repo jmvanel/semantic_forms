@@ -23,6 +23,7 @@ trait RegisterPage[Rdf <: RDF, DATASET]
     with TriplesViewModule[Rdf, DATASET]
     with CreationFormAlgo[Rdf, DATASET]
     with ResultsDisplay[Rdf, DATASET]
+    with UserQueries[Rdf, DATASET]
 //    with Configuration
     {
 
@@ -35,16 +36,19 @@ trait RegisterPage[Rdf <: RDF, DATASET]
       lang: String = "en"): NodeSeq = {
     <div class="userInfo"> {
       if (needLogin) {
-        if (userid != "" && ! userid.startsWith("anonymous") ) {
+        if (userid != "" && !userid.startsWith("anonymous")) {
           val userLabel = wrapInTransaction {
+            val personFromAccount = getPersonFromAccount(userid)
             // link to User profile
-        	  makeHyperlinkForURI( URI("user:"+userid), lang, allNamedGraph )
+            makeHyperlinkForURI(URI("user:" + userid), lang, allNamedGraph) ++
+              // Person :
+              makeHyperlinkForURI((personFromAccount), lang, allNamedGraph)
           }
           val displayUserLabel: NodeSeq = userLabel match {
             case Success(lab) => Text(s"${I18NMessages.get("User", lang)}: ") ++ lab
-            case Failure(e) => Text(s"No label for user (!?): $e")
+            case Failure(e)   => Text(s"No label for user (!?): $e")
           }
-          <div>{displayUserLabel} - <a href="/logout">logout</a></div>
+          <div>{ displayUserLabel } - <a href="/logout">logout</a></div>
 
         } else {
 
