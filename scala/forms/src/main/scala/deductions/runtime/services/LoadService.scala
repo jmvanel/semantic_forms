@@ -18,7 +18,7 @@ import scala.util.{ Failure, Success, Try }
  */
 trait LoadService[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
-    with RDFContentNegociationReader[Rdf, DATASET] {
+    with RDFContentNegociationIO[Rdf, DATASET] {
 
   import ops._
 

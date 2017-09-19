@@ -18,7 +18,7 @@ package deductions.runtime.services
 trait RDFContentNegociation {
 
   /** order of arguments is historical order of RDF syntaxes */
-  def foldRdfSyntax[I, O](mimeType: String, input: I)(
+  def foldRdfSyntax[I, O](mimeType: String, input: I = Unit)(
     funRdfXML: I => O,
     funTurtle: I => O,
     funJsonld: I => O

@@ -23,6 +23,8 @@ import org.apache.http.impl.client.HttpClientBuilder
 import org.w3.banana.jena.io.TripleSink
 import org.apache.jena.riot.RDFParser
 import org.w3.banana.io.JsonLd
+import org.w3.banana.io.RDFWriter
+import org.w3.banana.io.JsonLdCompacted
 
 /** implicit RDFReader's - TODO remove DATASET */
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
@@ -32,6 +34,10 @@ trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
   implicit val jsonldReader: RDFReader[Rdf, Try, JsonLd]
 
   implicit val rdfLoader: RDFLoader[Rdf, Try]
+
+  implicit val turtleWriter: RDFWriter[Rdf, Try, Turtle]
+  implicit val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]
+  implicit val rdfXMLWriter: RDFWriter[Rdf, Try, RDFXML]
 }
 
 /** */
