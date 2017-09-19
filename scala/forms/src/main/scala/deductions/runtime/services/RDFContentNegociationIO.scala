@@ -14,14 +14,18 @@ trait RDFContentNegociationIO[Rdf <: RDF, DATASET]
     with RDFCacheDependencies[Rdf, DATASET] {
 
   /** get RDF Reader From MIME */
-  def getRDFReader(request: HTTPrequest): RDFReader[Rdf, Try, Object] = {
+  def getRDFReader(request: HTTPrequest): RDFReader[Rdf, Try, _] = {
     val mimeType = request.getHTTPheaderValue("Accept").getOrElse("")
+    getReaderFromMIME(mimeType)
+  }
+
+  def getReaderFromMIME(mimeType: String): RDFReader[Rdf, Try, _] = {
     println( s">>>> getRDFReader: mimeType $mimeType")
     val rdfReader: RDFReader[Rdf, Try, Object] =
       foldRdfSyntax(mimeType)(
         _ => rdfXMLReader,
         _ => turtleReader,
-        _ => jsonldReader)
+        _ => jsonldReader) . _1
       rdfReader
   }
 
@@ -36,5 +40,5 @@ trait RDFContentNegociationIO[Rdf <: RDF, DATASET]
     foldRdfSyntax(accept)(
         _ => rdfXMLWriter,
         _ => turtleWriter,
-        _ => jsonldCompactedWriter)
+        _ => jsonldCompactedWriter) . _1
 }

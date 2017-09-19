@@ -120,7 +120,7 @@ trait ApplicationTrait extends Controller
     }
   }
 
-  
+  // TODO reuse trait RDFContentNegociation
   protected val AcceptsTTL = Accepting("text/turtle")
   protected val AcceptsJSONLD = Accepting("application/ld+json")
   protected val AcceptsRDFXML = Accepting("application/rdf+xml")

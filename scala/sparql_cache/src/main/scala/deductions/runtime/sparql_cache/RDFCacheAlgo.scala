@@ -414,13 +414,15 @@ extends
   }
 
   /** pasted from Apache HTTP client doc
-   *  https://hc.apache.org/httpcomponents-client-ga/ */
+   *  https://hc.apache.org/httpcomponents-client-ga/
+   * */
   def getContentTypeFromHEADRequest(url: String): String = {
     val requestConfig = RequestConfig.custom().setConnectTimeout(5 * 1000).build();
     val httpclient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
 //    val httpclient = HttpClients.createDefault();
     try {
       val httpHead = new HttpHead(url)
+      // TODO somehow reuse trait RDFContentNegociation
       httpHead.setHeader(
           "Accept",
           "application/rdf+xml, text/turtle; charset=utf-8, application/ld+json; charset=utf-8")

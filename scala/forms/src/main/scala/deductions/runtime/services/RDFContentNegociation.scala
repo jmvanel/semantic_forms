@@ -22,14 +22,22 @@ trait RDFContentNegociation {
     funRdfXML: I => O,
     funTurtle: I => O,
     funJsonld: I => O
-    ): O = {
+    ): (O, Boolean) = {
 
     val fun = Map(
       "application/rdf+xml" -> funRdfXML,
       "text/turtle" -> funTurtle,
       "application/ld+json" -> funJsonld
       )
-    fun(mimeType)(input)
+      val knownMIME = fun.get(mimeType).isDefined
+    (fun.getOrElse(mimeType, funTurtle)(input), knownMIME)
   }
 
+  def isKnownRdfSyntax(mimeType: String) = {
+    val result = foldRdfSyntax(mimeType)(
+        identity,
+        identity,
+        identity)
+    result._2
+  }
 }

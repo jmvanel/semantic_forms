@@ -29,6 +29,7 @@ import java.io.InputStreamReader
 import java.io.StringWriter
 import org.apache.commons.io.IOUtils
 import java.io.StringReader
+import deductions.runtime.services.RDFContentNegociationIO
 
 /**
  * singleton for implementation settings
@@ -56,7 +57,8 @@ trait RDFStoreLocalJenaProvider
     with ImplementationSettings.RDFModule
     with RDFStoreLocalProvider[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with Timer
-    with LuceneIndex {
+    with LuceneIndex
+    with RDFContentNegociationIO[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
   // CURRENTLY unused, but could be:  val config: Configuration
   import config._
@@ -179,12 +181,6 @@ trait RDFStoreLocalJenaProvider
     }
   }
 
-  private val contentTypes2Readers = Map(
-      "application/ld+json" -> jsonldReader,
-      "text/turtle" -> turtleReader,
-      "application/rdf+xml" -> rdfXMLReader
-      )
-
   private def readWithContentTypeNoJena(
     uri: Rdf#URI,
     contentType: String,
@@ -202,8 +198,10 @@ trait RDFStoreLocalJenaProvider
     request.addHeader("Accept", contentTypeNormalized   )
     val response = httpClient.execute(request)
     val inputStream = response.getEntity.getContent
-    val reader = contentTypes2Readers.getOrElse(contentTypeNormalized, turtleReader)
-    if( contentTypes2Readers.get(contentTypeNormalized).isEmpty )
+    val reader = getReaderFromMIME(contentTypeNormalized)
+    //  contentTypes2Readers.getOrElse(contentTypeNormalized, turtleReader)
+    if( ! isKnownRdfSyntax(contentTypeNormalized) )
+//        contentTypes2Readers.get(contentTypeNormalized).isEmpty )
       System.err.println(
             s"readWithContentTypeNoJena: no Reader found for contentType $contentType ; trying Turtle")
 
