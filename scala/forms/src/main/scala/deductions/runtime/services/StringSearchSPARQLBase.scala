@@ -22,8 +22,9 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
       else
         s"""    ?thing ?P1 ?O1 .
               FILTER ( isLiteral( ?O1) )
-              FILTER ( regex( str(?O1), '.*$searchStringPrepared.*', "i" ) )
+              FILTER ( regex( str(?O1), '$searchStringPrepared.*', "i" ) )
             """
+//            FILTER ( regex( str(?O1), '.*$searchStringPrepared.*', "i" ) )
     } else ""
 
   private def classCriterium(classe: String): String = {

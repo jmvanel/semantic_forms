@@ -39,7 +39,7 @@ $(document).ready(function() {
                 }
             },
             source: function(request, callback) {
-                console.log("Déclenche l'événement pour " + request.term )
+                console.log("Déclenche l'événement lookup.dbpedia.org pour " + request.term )
 
 		// DONE added QueryClass
 		// compare results: QueryClass=person , and ?QueryClass=place

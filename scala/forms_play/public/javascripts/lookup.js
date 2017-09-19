@@ -23,7 +23,7 @@ $(document).ready(function() {
                 }
             },
             source: function(request, callback) {
-                console.log("Déclenche l'événement :");
+                console.log("Déclenche l'événement /lookup pour " + request.term);
                 var typeName;
                 var stringToSearch;
                 var $el = $(event.target);
@@ -34,22 +34,30 @@ $(document).ready(function() {
                     }
                 }*/
                 typeName = $el.attr('data-rdf-type');
-                stringToSearch = request.term + "*";
+                // typeName = "";
+                console.log('typeName "' + typeName + '"');
+                stringToSearch = request.term; // + "*";
                 $.ajax({
                     url: "/lookup",
                     data: { QueryClass: typeName, QueryString: stringToSearch },
                     dataType: "json",
-                    timeout: 5000
+                    timeout: 10000
                 }).done(function(response) {
-                    console.log('Done');
+                    console.log('/lookup Done');
                     var topics = [];
                     callback(response.results.map(function (m) {
+                        console.log("response.result");
                         console.log(m);
                         // topics[m.label] = m.uri;
-                        return { "label": m.label /* + " - " +
-                         cutStringAfterCharacter(m.description, '.') */, "value": m.uri }
+                        return { "label": m.label
+			/* + " - " + cutStringAfterCharacter(m.description, '.') */
+			, "value": m.uri }
                     }))
-                });
+                }).fail(function (error){
+			console.log("/lookup FAILED for " + request.term + ", error: " );
+			console.log(error.statusText);
+			console.log(error);
+		});
             }
         })
     });

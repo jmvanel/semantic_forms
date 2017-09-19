@@ -6,6 +6,7 @@ import org.joda.time.DateTime
 
 import scala.xml.NodeSeq.seqToNodeSeq
 import scala.xml.{Elem, NodeSeq, Text}
+import deductions.runtime.core.URIWidget
 
 
 /** generate HTML from abstract Form for Edition */
@@ -34,13 +35,12 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
 
       // button with an action to duplicate the original HTML widget with an empty content
 
-//      val widgetName = field match {
-//        case r: formMod#ResourceEntry if lookupActivatedFor(r) => makeHTML_Id(r)
-//        case r: formMod#ResourceEntry => makeHTMLIdResourceSelect(r)
-//        case _ => makeHTML_Id(field)
-//      }
-
-      val lookupCSSClass = if(field.widgetType == DBPediaLookup) "hasLookup" else ""
+      val lookupCSSClass =
+        if (field.widgetType == DBPediaLookup)
+          "hasLookup"
+        else if (field.widgetType == URIWidget)
+          "sfLookup"
+        else ""
       <div class={ css.cssClasses.formAddDivCSSClass } > <!-- TODO : hidden="true" -->
       <button type="button" class="btn btn-primary add-widget" readonly="yes" size="1" title={
         "Add another value for " + field.label } input-class={s"${css.cssClasses.formInputCSSClass} $lookupCSSClass"} input-name={field.htmlName} input-title={ resourceOrBN_Placeholder(field) }  >

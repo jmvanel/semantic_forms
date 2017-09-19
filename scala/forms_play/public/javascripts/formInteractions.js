@@ -8,6 +8,7 @@ function cloneWidget(widget,button) {
         parent = widget.parent(),
         cardinal = widget.parent().children().length;
     console.log("nombre de widgets : "+cardinal);
+    console.log("addedWidget 1: " + JSON.stringify( addedWidget , null, 4));
 
     var widgetName = decodeURIComponent(widget.attr("name")).split("+")
     console.log("widget name: " + widgetName);
@@ -26,7 +27,6 @@ function cloneWidget(widget,button) {
             .attr('title', widget.attr('title'))
             .attr('hidden', 'false');
         parent.prepend(addedWidget, widget);
-        addedWidget.focus();
     }
     else {
         widgetName = decodeURIComponent(button.attr('input-name')).split("+")
@@ -44,9 +44,10 @@ function cloneWidget(widget,button) {
             .attr('title', button.attr('input-title'))
             .attr('hidden', 'false');
         button.parent().parent().find('.sf-value-block').first().prepend(addedWidget, widget);
-        addedWidget.focus();
     }
+    addedWidget.focus();
 
+    // console.log("addedWidget: " + JSON.stringify( addedWidget , null, 4));
     console.log("addedWidget: " + addedWidget );
     return addedWidget;
 }
