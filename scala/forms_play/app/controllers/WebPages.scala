@@ -36,8 +36,7 @@ trait WebPages extends Controller with ApplicationTrait {
   }
 
   private case class MainPagePrecomputePlay(
-      request: Request[_],
-      val title: String = "") {
+      request: Request[_] ) {
     callAllServiceListenersPlay(request)
     val requestCopy: HTTPrequest = copyRequest(request)
     // TODO copied below in MainPagePrecompute
@@ -45,24 +44,27 @@ trait WebPages extends Controller with ApplicationTrait {
     val userid = requestCopy.userId()
     val userInfo = displayUser(userid, requestCopy.getRDFsubject(), title, lang)
     val uri = expandOrUnchanged( requestCopy.getRDFsubject() )
+    val title = labelForURITransaction(uri, lang)
   }
 
   private case class MainPagePrecompute(
-      requestCopy: HTTPrequest,
-      val title: String = "") {
+      requestCopy: HTTPrequest) {
     val lang = requestCopy.getLanguage()
     callAllServiceListeners(requestCopy)
     val userid = requestCopy.userId()
     val userInfo = displayUser(userid, requestCopy.getRDFsubject(), title, lang)
     val uri = expandOrUnchanged( requestCopy.getRDFsubject() )
+    val title = labelForURITransaction(uri, lang)
   }
 
   /** output Main Page With given Content */
   private def outputMainPageWithContent(contentMaker: SemanticController) = {
     Action { request0: Request[_] =>
         val precomputed = MainPagePrecomputePlay(request0)
+        println(s"========= precomputed $precomputed - title ${precomputed.title}")
         import precomputed._
-        outputMainPage(contentMaker.result(requestCopy), lang, userInfo = userInfo)(request)
+        outputMainPage(contentMaker.result(requestCopy), lang, userInfo = userInfo,
+            title=precomputed.title)(request)
     }
   }
 
@@ -72,9 +74,11 @@ trait WebPages extends Controller with ApplicationTrait {
       implicit userid =>
         implicit request =>
           val precomputed = MainPagePrecomputePlay(request)
+        println(s"========= precomputed $precomputed - title ${precomputed.title}")
           outputMainPage(contentMaker.result(precomputed.requestCopy),
               precomputed.lang,
-              userInfo =precomputed.userInfo)(request)
+              userInfo =precomputed.userInfo,
+              title=precomputed.title)(request)
     }
   }
 
@@ -91,14 +95,14 @@ trait WebPages extends Controller with ApplicationTrait {
 //            userid <$userid>
 //            formuri <$formuri>
 //            displayURI: Edit "$Edit" """)
-    
+
     val contentMaker = new SemanticController {
       def result(request: HTTPrequest): NodeSeq = {
-        val precomputed = MainPagePrecompute(request)
+        val precomputed: MainPagePrecompute = MainPagePrecompute(request)
         import precomputed._
         logger.info(s"displayURI: expandOrUnchanged $uri")
         callAllServiceListeners(request)
-        val title = labelForURITransaction(uri, lang)
+//        val title = labelForURITransaction(uri, lang)
         val userInfo = displayUser(userid, uri, title, lang)
         htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
           graphURI = makeAbsoluteURIForSaving(userid),
@@ -108,40 +112,10 @@ trait WebPages extends Controller with ApplicationTrait {
 
     if (needLoginForDisplaying || ( needLoginForEditing && Edit !="" ))
        outputMainPageWithContentLogged(contentMaker)
-//      withUser {
-//        implicit userid =>
-//          implicit request =>
-//
-//            val lang = chooseLanguage(request)
-//            val uri = expandOrUnchanged(uri0)
-//            logger.info(s"displayURI: expandOrUnchanged $uri")
-//            callAllServiceListeners(request)
-//            val title = labelForURITransaction(uri, lang)
-//            val userInfo = displayUser(userid, uri, title, lang)
-//            outputMainPage(
-//              htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
-//                graphURI = makeAbsoluteURIForSaving(userid),
-//                request = getRequestCopy()) . _1 ,
-//              lang, title = title, userInfo = userInfo)
-//    }
+
     else
     	outputMainPageWithContent(contentMaker)
 
-//      Action { implicit request: Request[_] =>
-//          val requestCopy = getRequestCopy()
-//          val lang = requestCopy.getLanguage()
-//          val uri = expandOrUnchanged(uri0)
-//          logger.info(s"displayURI: expandOrUnchanged $uri")
-//          val title = labelForURITransaction(uri, lang)
-//          callAllServiceListeners(request)
-//          val userid = requestCopy . userId()
-//          val userInfo = displayUser(userid, uri, title, lang)
-//          outputMainPage(
-//            htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
-//              graphURI = makeAbsoluteURIForSaving(userid),
-//              request = requestCopy) . _1,
-//            lang, title = title, userInfo = userInfo)
-//      }
   }
 
   
