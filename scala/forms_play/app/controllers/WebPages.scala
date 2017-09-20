@@ -35,72 +35,114 @@ trait WebPages extends Controller with ApplicationTrait {
     outputMainPageWithContent(contentMaker)
   }
 
-  private case class MainPagePrecompute(
+  private case class MainPagePrecomputePlay(
       request: Request[_],
       val title: String = "") {
+    callAllServiceListenersPlay(request)
     val requestCopy: HTTPrequest = copyRequest(request)
+    // TODO copied below in MainPagePrecompute
     val lang = requestCopy.getLanguage()
-    callAllServiceListeners(request)
     val userid = requestCopy.userId()
     val userInfo = displayUser(userid, requestCopy.getRDFsubject(), title, lang)
+    val uri = expandOrUnchanged( requestCopy.getRDFsubject() )
   }
 
+  private case class MainPagePrecompute(
+      requestCopy: HTTPrequest,
+      val title: String = "") {
+    val lang = requestCopy.getLanguage()
+    callAllServiceListeners(requestCopy)
+    val userid = requestCopy.userId()
+    val userInfo = displayUser(userid, requestCopy.getRDFsubject(), title, lang)
+    val uri = expandOrUnchanged( requestCopy.getRDFsubject() )
+  }
+
+  /** output Main Page With given Content */
   private def outputMainPageWithContent(contentMaker: SemanticController) = {
     Action { request0: Request[_] =>
-        val precomputed = MainPagePrecompute(request0)
+        val precomputed = MainPagePrecomputePlay(request0)
         import precomputed._
         outputMainPage(contentMaker.result(requestCopy), lang, userInfo = userInfo)(request)
     }
   }
 
-
+  /** same as before, but Logging is enforced */
+  private def outputMainPageWithContentLogged(contentMaker: SemanticController) = {
+    withUser {
+      implicit userid =>
+        implicit request =>
+          val precomputed = MainPagePrecomputePlay(request)
+          outputMainPage(contentMaker.result(precomputed.requestCopy),
+              precomputed.lang,
+              userInfo =precomputed.userInfo)(request)
+    }
+  }
 
   /** @param Edit edit mode <==> param not "" */
   def displayURI(uri0: String, blanknode: String = "", Edit: String = "",
-                 formuri: String = "") =
-    if (needLoginForDisplaying || ( needLoginForEditing && Edit !="" ))
-      withUser {
-        implicit userid =>
-          implicit request =>
-            //          logger.info(
-            println(
-              s"""displayURI: $request IP ${request.remoteAddress}, host ${request.host}
-            displayURI headers ${request.headers}
-            displayURI tags ${request.tags}
-            displayURI cookies ${request.cookies.toList}
-            userid <$userid>
-            formuri <$formuri>
-            displayURI: Edit "$Edit" """)
-            val lang = chooseLanguage(request)
-            val uri = expandOrUnchanged(uri0)
-            logger.info(s"displayURI: expandOrUnchanged $uri")
-            callAllServiceListeners(request)
-            val title = labelForURITransaction(uri, lang)
-            val userInfo = displayUser(userid, uri, title, lang)
-            outputMainPage(
-              htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
-                graphURI = makeAbsoluteURIForSaving(userid),
-                request = getRequestCopy()) . _1 ,
-              lang, title = title, userInfo = userInfo)
-      }
-    else
-      Action { implicit request: Request[_] => {
-          val requestCopy = getRequestCopy()
-          val lang = requestCopy.getLanguage()
-          val uri = expandOrUnchanged(uri0)
-          logger.info(s"displayURI: expandOrUnchanged $uri")
-          val title = labelForURITransaction(uri, lang)
-          callAllServiceListeners(request)
-          val userid = requestCopy . userId()
-          val userInfo = displayUser(userid, uri, title, lang)
-          outputMainPage(
-            htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
-              graphURI = makeAbsoluteURIForSaving(userid),
-              request = requestCopy) . _1,
-            lang, title = title, userInfo = userInfo)
-        }
-      }
+                 formuri: String = "") = {
 
+//                //          logger.info(
+//            println(
+//              s"""displayURI: $request IP ${request.remoteAddress}, host ${request.host}
+//            displayURI headers ${request.headers}
+//            displayURI tags ${request.tags}
+//            displayURI cookies ${request.cookies.toList}
+//            userid <$userid>
+//            formuri <$formuri>
+//            displayURI: Edit "$Edit" """)
+    
+    val contentMaker = new SemanticController {
+      def result(request: HTTPrequest): NodeSeq = {
+        val precomputed = MainPagePrecompute(request)
+        import precomputed._
+        logger.info(s"displayURI: expandOrUnchanged $uri")
+        callAllServiceListeners(request)
+        val title = labelForURITransaction(uri, lang)
+        val userInfo = displayUser(userid, uri, title, lang)
+        htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
+          graphURI = makeAbsoluteURIForSaving(userid),
+          request = request)._1
+      }
+    }
+
+    if (needLoginForDisplaying || ( needLoginForEditing && Edit !="" ))
+       outputMainPageWithContentLogged(contentMaker)
+//      withUser {
+//        implicit userid =>
+//          implicit request =>
+//
+//            val lang = chooseLanguage(request)
+//            val uri = expandOrUnchanged(uri0)
+//            logger.info(s"displayURI: expandOrUnchanged $uri")
+//            callAllServiceListeners(request)
+//            val title = labelForURITransaction(uri, lang)
+//            val userInfo = displayUser(userid, uri, title, lang)
+//            outputMainPage(
+//              htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
+//                graphURI = makeAbsoluteURIForSaving(userid),
+//                request = getRequestCopy()) . _1 ,
+//              lang, title = title, userInfo = userInfo)
+//    }
+    else
+    	outputMainPageWithContent(contentMaker)
+
+//      Action { implicit request: Request[_] =>
+//          val requestCopy = getRequestCopy()
+//          val lang = requestCopy.getLanguage()
+//          val uri = expandOrUnchanged(uri0)
+//          logger.info(s"displayURI: expandOrUnchanged $uri")
+//          val title = labelForURITransaction(uri, lang)
+//          callAllServiceListeners(request)
+//          val userid = requestCopy . userId()
+//          val userInfo = displayUser(userid, uri, title, lang)
+//          outputMainPage(
+//            htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
+//              graphURI = makeAbsoluteURIForSaving(userid),
+//              request = requestCopy) . _1,
+//            lang, title = title, userInfo = userInfo)
+//      }
+  }
 
   
   def table = Action { implicit request: Request[_] =>
