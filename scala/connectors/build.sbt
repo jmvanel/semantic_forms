@@ -9,8 +9,8 @@ name := "connectors"
 // lazy val connectors = (project in file(".")) .dependsOn(utils)
 
 libraryDependencies ++= Seq(
-    "org.apache.any23" % "apache-any23-csvutils" %  "1.1" ,
-    "org.apache.commons" % "commons-csv" % "1.4" ,
+    "org.apache.any23" % "apache-any23-csvutils" %  "2.0", // "1.1" ,
+    "org.apache.commons" % "commons-csv" % "1.5" ,
     bananaDependency
 )
 

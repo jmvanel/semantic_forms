@@ -14,11 +14,9 @@ lazy val web_tests = (project in file("."))
 // javaOptions += "-Xmx50M"
 
 // Gatling is an open-source load testing framework based on Scala, Akka and Netty
-libraryDependencies += "io.gatling.highcharts" % "gatling-charts-highcharts" % "2.1.7" % Test
-libraryDependencies += "io.gatling" % "gatling-test-framework" % "2.1.7" % Test
-// libraryDependencies += "com.github.agourlay" %% "cornichon" % "0.12.1" % Test
-// libraryDependencies += "com.github.agourlay" %% "cornichon" % "0.12.2-SNAPSHOT" % Test
-libraryDependencies += "com.github.agourlay" %% "cornichon" % "0.12.5" % Test
+libraryDependencies += "io.gatling.highcharts" % "gatling-charts-highcharts" % "2.3.0" % Test
+libraryDependencies += "io.gatling" % "gatling-test-framework" % "2.3.0" % Test
+libraryDependencies += "com.github.agourlay" %% "cornichon" % "0.12.7" % Test
 
 // resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
