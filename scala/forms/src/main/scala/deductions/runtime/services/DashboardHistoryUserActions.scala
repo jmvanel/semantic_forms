@@ -35,9 +35,9 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   /**
    * leverage on ParameterizedSPARQL.makeHyperlinkForURI()
    */
-  def makeTableHistoryUserActions(lang: String = "en", request: HTTPrequest)(limit: String): NodeSeq = {
+  def makeTableHistoryUserActions(request: HTTPrequest)(limit: String): NodeSeq = {
     val metadata = getMetadata()(limit)
-    implicit val _ = lang
+    implicit val lang = request.getLanguage()
     val historyLink: Elem = {
       if (limit != "")
         <a href="/history">Complete history</a>

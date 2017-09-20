@@ -27,23 +27,10 @@ import deductions.runtime.core.SemanticController
 trait WebPages extends Controller with ApplicationTrait {
   import config._
 
-  //  def index() =
-  //      Action { implicit request: Request[_] => {
-  //          val requestCopy = getRequestCopy()
-  //          val lang = requestCopy.getLanguage()
-  //          callAllServiceListeners(request)
-  //          val userid = requestCopy . userId()
-  //          val userInfo = displayUser(userid, "", "", lang)
-  //          outputMainPage( makeHistoryUserActions("15", lang, requestCopy ), lang,
-  //              userInfo = userInfo)
-  //    }
-  //  }
-
   def index() = {
     val contentMaker = new SemanticController {
-      def result(request: HTTPrequest): NodeSeq = {
-        makeHistoryUserActions("15", request.getLanguage(), request)
-      }
+      def result(request: HTTPrequest): NodeSeq =
+        makeHistoryUserActions("15", request)
     }
     outputMainPageWithContent(contentMaker)
   }
@@ -383,7 +370,7 @@ trait WebPages extends Controller with ApplicationTrait {
           val lang = chooseLanguage(request)
           val userInfo = displayUser(userid, "", "", lang)
           logger.info("makeHistoryUserActionsAction: cookies: " + request.cookies.mkString("; "))
-          outputMainPage(makeHistoryUserActions(limit, lang, copyRequest(request) ), lang, userInfo = userInfo)
+          outputMainPage(makeHistoryUserActions(limit, copyRequest(request) ), lang, userInfo = userInfo)
     }
 
 }
