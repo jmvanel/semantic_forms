@@ -27,14 +27,16 @@ trait WebPages extends Controller with ApplicationTrait {
   import config._
 
   def index() =
-    withUser {
-      implicit userid =>
-        implicit request =>
-          val lang = chooseLanguageObject(request).language
+      Action { implicit request: Request[_] => {
+          val requestCopy = getRequestCopy()
+          val lang = requestCopy.getLanguage()
+          callAllServiceListeners(request)
+          val userid = requestCopy . userId()
           val userInfo = displayUser(userid, "", "", lang)
-          outputMainPage(makeHistoryUserActions("10", lang, copyRequest(request) ), lang,
+          outputMainPage( makeHistoryUserActions("15", lang, requestCopy ), lang,
               userInfo = userInfo)
     }
+  }
 
   /** @param Edit edit mode <==> param not "" */
   def displayURI(uri0: String, blanknode: String = "", Edit: String = "",
@@ -65,13 +67,12 @@ trait WebPages extends Controller with ApplicationTrait {
               lang, title = title, userInfo = userInfo)
       }
     else
-      Action { implicit request: Request[_] =>
-        {
-          val lang = chooseLanguage(request)
+      Action { implicit request: Request[_] => {
+          val requestCopy = getRequestCopy()
+          val lang = requestCopy.getLanguage()
           val uri = expandOrUnchanged(uri0)
           logger.info(s"displayURI: expandOrUnchanged $uri")
           val title = labelForURITransaction(uri, lang)
-          val requestCopy = getRequestCopy()
           callAllServiceListeners(request)
           val userid = requestCopy . userId()
           val userInfo = displayUser(userid, uri, title, lang)
@@ -94,7 +95,7 @@ trait WebPages extends Controller with ApplicationTrait {
     val query = queryFromRequest(requestCopy)
     outputMainPage(
       <div>
-        <a href={ "/sparql-ui?query=" + URLEncoder.encode(query) }>Back to SPARQL page</a>
+        <a href={ "/sparql-ui?query=" + URLEncoder.encode(query, "UTF-8") }>Back to SPARQL page</a>
       </div>
         ++
         tableFromSPARQL(requestCopy),
