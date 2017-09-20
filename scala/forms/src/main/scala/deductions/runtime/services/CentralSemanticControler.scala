@@ -21,7 +21,6 @@ trait CentralSemanticController[Rdf <: RDF, DATASET] extends SemanticController
     with RDFPrefixes[Rdf] {
 
   val actionMap: Map[String, SemanticController]
-  val featureURI: String = ""
 
   def result(request: HTTPrequest): NodeSeq = {
     val features = request.queryString.getOrElse("feature", Seq())

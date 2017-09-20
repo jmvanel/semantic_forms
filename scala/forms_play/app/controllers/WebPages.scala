@@ -20,23 +20,53 @@ import play.api.mvc.Action
 import play.api.mvc.Controller
 import play.api.mvc.Request
 import deductions.runtime.utils.RDFStoreLocalProvider
+import deductions.runtime.core.SemanticController
 
 
 /** controller for HTML pages ("generic application") */
 trait WebPages extends Controller with ApplicationTrait {
   import config._
 
-  def index() =
-      Action { implicit request: Request[_] => {
-          val requestCopy = getRequestCopy()
-          val lang = requestCopy.getLanguage()
-          callAllServiceListeners(request)
-          val userid = requestCopy . userId()
-          val userInfo = displayUser(userid, "", "", lang)
-          outputMainPage( makeHistoryUserActions("15", lang, requestCopy ), lang,
-              userInfo = userInfo)
+  //  def index() =
+  //      Action { implicit request: Request[_] => {
+  //          val requestCopy = getRequestCopy()
+  //          val lang = requestCopy.getLanguage()
+  //          callAllServiceListeners(request)
+  //          val userid = requestCopy . userId()
+  //          val userInfo = displayUser(userid, "", "", lang)
+  //          outputMainPage( makeHistoryUserActions("15", lang, requestCopy ), lang,
+  //              userInfo = userInfo)
+  //    }
+  //  }
+
+  def index() = {
+    val contentMaker = new SemanticController {
+      def result(request: HTTPrequest): NodeSeq = {
+        makeHistoryUserActions("15", request.getLanguage(), request)
+      }
+    }
+    outputMainPageWithContent(contentMaker)
+  }
+
+  private case class MainPagePrecompute(
+      request: Request[_],
+      val title: String = "") {
+    val requestCopy: HTTPrequest = copyRequest(request)
+    val lang = requestCopy.getLanguage()
+    callAllServiceListeners(request)
+    val userid = requestCopy.userId()
+    val userInfo = displayUser(userid, requestCopy.getRDFsubject(), title, lang)
+  }
+
+  private def outputMainPageWithContent(contentMaker: SemanticController) = {
+    Action { request0: Request[_] =>
+        val precomputed = MainPagePrecompute(request0)
+        import precomputed._
+        outputMainPage(contentMaker.result(requestCopy), lang, userInfo = userInfo)(request)
     }
   }
+
+
 
   /** @param Edit edit mode <==> param not "" */
   def displayURI(uri0: String, blanknode: String = "", Edit: String = "",
