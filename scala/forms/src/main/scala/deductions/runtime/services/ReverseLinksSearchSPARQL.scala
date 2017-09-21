@@ -10,13 +10,16 @@ trait ReverseLinksSearchSPARQL[Rdf <: RDF, DATASET]
     extends ParameterizedSPARQL[Rdf, DATASET] {
 
   private implicit val queryMaker = new SPARQLQueryMaker[Rdf] {
-    override def makeQueryString(search: String*): String =
-      s"""
+    override def makeQueryString(search: String*): String = {
+      val q = s"""
          |SELECT DISTINCT ?thing WHERE {
          |  graph ?g {
          |    ?thing ?p <${search(0)}> .
          |  }
          |}""".stripMargin
+//         println( s"query $q")
+         q
+    }
   }
 
   def backlinks(uri: String, hrefPrefix: String = config.hrefDisplayPrefix): Future[NodeSeq] =
