@@ -8,7 +8,6 @@ libraryDependencies ++= Seq(
   bananaDependency
 )
 libraryDependencies ++=commonDependencies
-libraryDependencies += "org.apache.logging.log4j" % "log4j-core" % "2.8.2"
 
 publishArtifact in (Compile, packageDoc) := false
 sources in (Compile,doc) := Seq.empty

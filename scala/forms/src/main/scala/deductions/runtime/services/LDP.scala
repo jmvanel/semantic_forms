@@ -31,6 +31,7 @@ import scala.util.{Success, Try}
 trait LDP[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
     with SPARQLHelpers[Rdf, DATASET]
+    with RDFContentNegociationIO[Rdf, DATASET]
     with URIManagement {
 
   val turtleWriter: RDFWriter[Rdf, Try, Turtle]
@@ -63,18 +64,6 @@ trait LDP[Rdf <: RDF, DATASET]
     })
     r.get.get
   }
-
-  /** TODO reuse */
-  private def getWriterFromMIME(accept: String): RDFWriter[Rdf, Try, _] =
-    if (accept == "text/turtle")
-      turtleWriter
-    else if (accept == "application/rdf+xml")
-      rdfXMLWriter
-    else // application/ld+json
-      jsonldCompactedWriter
-            
-//  private def absoluteURL( request: HTTPrequest, rawURI: String, secure: Boolean = false): String =
-//      "http" + (if (secure) "s" else "") + "://" + request.host + rawURI // + this.appendFragment
 
   private def makeQueryString(uri: String, rawURI: String, request: HTTPrequest): String = {
 		  println(s"makeQueryString rawURI $rawURI")

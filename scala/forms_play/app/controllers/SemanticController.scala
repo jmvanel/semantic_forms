@@ -9,9 +9,10 @@ import play.api.mvc.{Action, Controller, Request}
 import deductions.runtime.mobion.GeoController
 import deductions.runtime.mobion.PerVehicleView
 import deductions.apps.ContactsFrontPage
+import deductions.apps.ContactsDashboard
 
 /** RDF based HTTP Controller/router;
- *  this allows to create new pages or services
+ *  this allows to create new pages or services ("plugins")
  *  without relying on routes file of Play! framework,
  *  or rather using just one entry for /page.
  *
@@ -31,15 +32,16 @@ object SemanticController extends Controller
     }
   }
 
-  val actionMap: Map[String, deductions.runtime.core.SemanticController] = {
-    val actions = Seq(
+  //////////////////////////////////////////////////////////////
+  /** add/remove plugin pages */
+  val actions: Seq[deductions.runtime.core.SemanticController] =
+    Seq(
       new DependenciesNoTextQuery with GeoController[Rdf, DATASET] {},
       new DependenciesNoTextQuery with PerVehicleView[Rdf, DATASET] {},
-      new DependenciesNoTextQuery with ContactsFrontPage[Rdf, DATASET] {}
+      new DependenciesNoTextQuery with ContactsFrontPage[Rdf, DATASET] {},
+      new DependenciesNoTextQuery with ContactsDashboard[Rdf, DATASET] {}
       )
-
-    actions.map { action => (action.featureURI, action) }.toMap
-  }
+  //////////////////////////////////////////////////////////////
 
   override implicit val config = new DefaultConfiguration {}
   override lazy val htmlGenerator =

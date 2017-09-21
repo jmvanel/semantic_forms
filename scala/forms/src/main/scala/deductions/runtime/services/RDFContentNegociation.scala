@@ -18,18 +18,26 @@ package deductions.runtime.services
 trait RDFContentNegociation {
 
   /** order of arguments is historical order of RDF syntaxes */
-  def foldRdfSyntax[I, O](mimeType: String, input: I)(
+  def foldRdfSyntax[I, O](mimeType: String, input: I = Unit)(
     funRdfXML: I => O,
     funTurtle: I => O,
     funJsonld: I => O
-    ): O = {
+    ): (O, Boolean) = {
 
     val fun = Map(
       "application/rdf+xml" -> funRdfXML,
       "text/turtle" -> funTurtle,
       "application/ld+json" -> funJsonld
       )
-    fun(mimeType)(input)
+      val knownMIME = fun.get(mimeType).isDefined
+    (fun.getOrElse(mimeType, funTurtle)(input), knownMIME)
   }
 
+  def isKnownRdfSyntax(mimeType: String) = {
+    val result = foldRdfSyntax(mimeType)(
+        identity,
+        identity,
+        identity)
+    result._2
+  }
 }

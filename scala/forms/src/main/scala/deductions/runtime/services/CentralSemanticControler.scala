@@ -2,7 +2,7 @@ package deductions.runtime.services
 
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.html.HTML5TypesTrait
-import deductions.runtime.utils.{DefaultConfiguration, RDFPrefixes}
+import deductions.runtime.utils.{ DefaultConfiguration, RDFPrefixes }
 import deductions.runtime.core.SemanticController
 import deductions.runtime.core.NullSemanticController
 import deductions.runtime.core.HTTPrequest
@@ -17,36 +17,38 @@ import scala.xml.NodeSeq
  * see trait GeoController as a example implemetation of SemanticController
  *  cf https://github.com/jmvanel/semantic_forms/issues/150
  */
-trait CentralSemanticController[Rdf <: RDF, DATASET] extends SemanticController
-    with RDFPrefixes[Rdf] {
+trait CentralSemanticController[Rdf <: RDF, DATASET]
+  extends SemanticController
+  with RDFPrefixes[Rdf] {
 
-  val actionMap: Map[String, SemanticController]
-  val featureURI: String = ""
+  val actions: Seq[SemanticController]
 
+  lazy val actionMap: Map[String, SemanticController] =
+    actions.map { action => (action.featureURI, action) }.toMap
+
+  /** concatenate the results of all plugins implied by the HTTP request */
   def result(request: HTTPrequest): NodeSeq = {
     val features = request.queryString.getOrElse("feature", Seq())
     val res = for (
       featureAbbreviated <- features;
-      // expand abbreviated URI's
+      // expand abbreviated URI's:
       feature = expandOrUnchanged(featureAbbreviated)
     ) yield {
-      val semanticController = actionMap.getOrElse(feature, NullSemanticController )
+      val semanticController = actionMap.getOrElse(feature, NullSemanticController)
       semanticController.result(request)
     }
     res.flatten
   }
 }
 
-
 /** should be in first position in inheritance */
-trait TypicalSFDependencies extends
-//{
+trait TypicalSFDependencies extends //{
 //    override implicit val config = new DefaultConfiguration {
 //      override val useTextQuery = false
 //    }
 //}
 //with 
 ImplementationSettings.RDFCache
-with HTML5TypesTrait[ImplementationSettings.Rdf]
+  with HTML5TypesTrait[ImplementationSettings.Rdf]
 //with DefaultConfiguration 
 

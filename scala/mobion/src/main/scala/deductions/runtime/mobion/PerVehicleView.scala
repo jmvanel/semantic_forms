@@ -34,7 +34,7 @@ trait PerVehicleView[Rdf <: RDF, DATASET]
 
   import ops._
 
-  val featureURI: String = fromUri(geoloc("stats2"))
+  override val featureURI: String = fromUri(geoloc("stats2"))
 
   def result(request: HTTPrequest): NodeSeq = {
 

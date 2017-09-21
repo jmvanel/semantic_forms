@@ -74,8 +74,6 @@ extends Controller
     val httpRequest = copyRequest(request)
 
     val loginForm = {
-//      val lfTry =
-//        wrapInReadTransaction {
           htmlFormElemRaw(
             "tmp:login",
             editable = true,
@@ -85,19 +83,9 @@ extends Controller
             actionURI2 = "/authenticate",
             formuri = fromUri(loginFormURI),
             request = httpRequest)._1
-//        }
-//      lfTry match {
-//        case Success(lf) => lf
-//        case Failure(f) =>
-//          val mess = s"login: Error: $f"
-//          println(mess)
-//          Text(mess)
-//      }
     }
 
     val registerForm = {
-//      val lfTry =
-//        wrapInReadTransaction {
           htmlFormElemRaw(
             "tmp:login",
             editable = true,
@@ -107,14 +95,6 @@ extends Controller
             actionURI2 = "/register",
             formuri = fromUri(registerFormURI),
             request = httpRequest)._1
-//        }
-//      lfTry match {
-//        case Success(lf) => lf
-//        case Failure(f) =>
-//          val mess = s"register: Error: $f"
-//          println(mess)
-//          Text(mess)
-//      }
     }
 
     val content = <div>

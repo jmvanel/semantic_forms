@@ -6,21 +6,25 @@ import scala.xml.NodeSeq
 import deductions.runtime.views.MainXmlWithHead
 import deductions.runtime.utils.I18NMessages
 import deductions.runtime.core.HTTPrequest
+import deductions.runtime.user.RegisterPage
 
 /** HTML Front page skeleton for the Contacts SF application */
 trait ContactsFrontPage[Rdf <: RDF, DATASET]
 extends MainXmlWithHead
-with ContactsDashboard[Rdf, DATASET] {
+with ContactsDashboard[Rdf, DATASET]
+with RegisterPage[Rdf, DATASET] {
 
 	import ops._
 
   override val featureURI: String = fromUri(dbpedia("Contact_manager")) //  + "/index"
+  override val htmlGenerator = null
 
   override def result(request: HTTPrequest): NodeSeq = {
-    val userURI = request.userId()
+    val userid = request.userId()
+    val userInfo = displayUser(userid, request.getRDFsubject(), s"XXX ", request.getLanguage())
     val content = contactsDashboardHTML(request)
 
-    mainPage(content, userInfo = <div/> // TODO
+    mainPage(content, userInfo = userInfo
       , lang = "en", title = "Contacts Mgnt",
       displaySearch = true,
       messages = <p/> )

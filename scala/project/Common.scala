@@ -17,12 +17,12 @@ object Common {
   val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
 
   val junitDependency = "junit" % "junit" % "4.12" % Test
-  val scalatestDependency = "org.scalatest" %% "scalatest" % "3.0.3" % "test"
+  val scalatestDependency = "org.scalatest" %% "scalatest" % "3.0.4" % "test"
 
   val loggingDependencies = Seq(
-    "org.apache.logging.log4j" % "log4j-api" % "2.8",
-    "org.apache.logging.log4j" % "log4j-core" % "2.8",
-    "org.apache.logging.log4j" % "log4j-slf4j-impl" % "2.8" 
+    "org.apache.logging.log4j" % "log4j-api" % "2.9.0",
+    "org.apache.logging.log4j" % "log4j-core" % "2.9.0",
+    "org.apache.logging.log4j" % "log4j-slf4j-impl" % "2.9.0" 
   )
 
   val commonDependencies =
@@ -33,10 +33,10 @@ object Common {
 
 	junitDependency, scalatestDependency,
 
-    "com.typesafe.play" %% "play-json" % "2.5.15",
+    "com.typesafe.play" %% "play-json" % "2.5.16",
 
-    "org.apache.lucene" % "lucene-suggest" % "6.4.1" , // 4.9.1" ,
-    "org.apache.lucene" % "lucene-demo" % "6.4.1" , // 4.9.1" ,
+    "org.apache.lucene" % "lucene-suggest" % "6.6.1", // "6.4.1" , // 4.9.1" ,
+    "org.apache.lucene" % "lucene-demo" % "6.6.1", // "6.4.1" , // 4.9.1" ,
 /*
     "org.apache.lucene" % "lucene-suggest" % "4.9.1" ,
     "org.apache.lucene" % "lucene-demo" % "4.9.1" ,
@@ -50,10 +50,10 @@ object Common {
     // "com.typesafe.akka" %% "akka-http-core-experimental" % "2.0.5"
     // See more at: http://search.maven.org/#search%7Cga%7C1%7Cakka-http-core ; https://typesafe.com/blog/akka-http-preview#sthash.IZR1O9fx.dpuf
 
-    "org.scala-lang.modules" %% "scala-async" % "0.9.6" ,
+    "org.scala-lang.modules" %% "scala-async" % "0.9.7" ,
 
-    "org.apache.commons" % "commons-csv" % "1.4" ,
-    "org.apache.any23" % "apache-any23-csvutils" %  "1.1" // "1.0" // 
+    "org.apache.commons" % "commons-csv" % "1.5" ,
+    "org.apache.any23" % "apache-any23-csvutils" %  "2.0" // "1.1"
   )
 
 }

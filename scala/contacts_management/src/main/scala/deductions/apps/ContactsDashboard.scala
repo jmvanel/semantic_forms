@@ -11,11 +11,17 @@ import deductions.runtime.core.SemanticController
 import deductions.runtime.core.HTTPrequest
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.user.UserQueries
+import deductions.runtime.views.ResultsDisplay
+import scala.util.Success
+import scala.util.Failure
+import scala.xml.Text
 
 trait ContactsDashboard[Rdf <: RDF, DATASET] extends 
     SPARQLHelpers[Rdf, DATASET]
 with RDFPrefixes[Rdf]
 with UserQueries[Rdf, DATASET]
+with deductions.runtime.services.ParameterizedSPARQL[Rdf,DATASET]
+with ResultsDisplay[Rdf, DATASET]
 with SemanticController {
 
   import ops._
@@ -36,23 +42,11 @@ with SemanticController {
   def contactsDashboardHTML(request: HTTPrequest): NodeSeq = {
     <div class="raw">
       {
-        val person = getPersonFromAccount(request.userId())
+        val person = getPersonFromAccountTR(request.userId())
+        println(s">>>>>>>>>>> person $person")
         contactsDirectlyConnected(person) }
     </div>
   }
-
-//  private def getPersonFromAccount(userId: String): Rdf#Node = {
-//    val queryString = s"""
-//      ${declarePrefix(foaf)}
-//      SELECT ?PERSON
-//      WHERE { GRAPH ?GR {
-//        ?PERSON <${foaf.OnlineAccount}> <${userId}> .
-//      }}"""
-//
-//    println(queryString)
-//    val list = sparqlSelectQueryVariablesNT(queryString, Seq("?PERSON"))
-//    list.headOption.getOrElse(Seq()).headOption.getOrElse(nullURI)
-//  }
 
   /** the first circle :) of given person */
   private def contactsDirectlyConnected(person: Rdf#Node): NodeSeq = {
@@ -62,29 +56,49 @@ with SemanticController {
       CONSTRUCT {
         <${personURI}> ?P ?V .
       }
-      WHERE { GRAPH ?GR {
+      WHERE {
+       GRAPH ?GR {
         <${personURI}> ?P ?V .
+       }
+       GRAPH ?GR1 {
         ?V a <${foaf.Person}> .
-      }}"""
+       }
+      }"""
 
-    println(queryString)
+    println(s"contactsDirectlyConnected: $queryString")
 
     val tryGraph = sparqlConstructQueryGraph(queryString)
+    println(s"contactsDirectlyConnected: $tryGraph")
 
-    // TODO call displayResults
     <div class="raw">
+<pre>
+   * contacts Dashboard:
+   *  - statistics
+   *  - history (the most recent contacts)
+   *  - the contacts I created
+   *  - the contacts directly connected to me
+   *  - contact recommendations
+</pre>
+      <h3>Contacts Directly Connected to me</h3>
       {
         val v = for (
           graph <- tryGraph
         ) yield {
-          val vv = for (
+          val uris = for (
             tr <- (getTriples(graph).toList);
             uri = tr.objectt
           ) yield uri
-          vv
+
+          wrapInTransaction(
+            displayResults(uris, lang = "en", graph = allNamedGraph))
         }
-        v
+        val tryXHTML = v . flatten
+        tryXHTML match {
+          case Success(html) => html
+          case Failure(f) => Text(s"contactsDirectlyConnected: $f")
+        }
       }
+      <h3>Contacts Directly Connected from me</h3>
     </div>
   }
 }

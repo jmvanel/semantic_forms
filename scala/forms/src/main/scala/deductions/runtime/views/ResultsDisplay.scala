@@ -27,7 +27,7 @@ extends ThumbnailInference[Rdf, DATASET] {
       lang: String = "",
       graph: Rdf#Graph,
       sortAnd1rowPerElement:Boolean = false )
-  (implicit queryMaker: SPARQLQueryMaker[Rdf] )
+//  (implicit queryMaker: SPARQLQueryMaker[Rdf] )
   : NodeSeq = {
     val wrappingClass = "row sf-triple-block"
     <div class={wrappingClass} >{

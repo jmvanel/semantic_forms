@@ -21,7 +21,7 @@ trait GeoController[Rdf <: RDF, DATASET] extends GeoPath[Rdf, DATASET]
     with RDFPrefixesInterface {
 
   import ops._
-  val featureURI: String = fromUri(geoloc("stats"))
+  override val featureURI: String = fromUri(geoloc("stats"))
 
   val detailsQuery = """
         |${declarePrefix("geoloc")}

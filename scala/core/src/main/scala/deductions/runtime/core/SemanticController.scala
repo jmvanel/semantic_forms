@@ -11,11 +11,10 @@ import scala.xml.NodeSeq
  */
 trait SemanticController {
   
-  val featureURI: String
+  val featureURI: String = ""
   def result(request: HTTPrequest): NodeSeq
 }
 
 object NullSemanticController extends SemanticController {
-  val featureURI = ""
   def result(request: HTTPrequest): NodeSeq = <div>NullSemanticController</div>
 }
