@@ -128,12 +128,14 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     // NOTE: if class is specified in request, then ?CLASS is not in results, and vice-versa
     val variables =
       if( search.size > 1 && search(1) != "")
-        Seq("thing")
+        Seq("?thing")  // for ???
       else if( search.size == 0 )
-        Seq("thing")  // for NamedGraphsSPARQL
+        Seq("?thing")  // for NamedGraphsSPARQL
+      else if(isAbsoluteURI(search(0)))
+        Seq("?thing")           // for ReverseLinksSearchSPARQL
       else
-        Seq("thing", "?CLASS")
-    // println( s"search_onlyNT: ($search) : variables $variables" )
+        Seq("?thing", "?CLASS") // for StringSearchSPARQL
+     println( s"search_onlyNT: ($search) : SPARQL variables $variables" )
 
     sparqlSelectQueryVariablesNT(queryString, variables )
   }
