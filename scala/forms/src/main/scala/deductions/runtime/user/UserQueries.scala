@@ -7,6 +7,14 @@ import deductions.runtime.utils.RDFPrefixes
 trait UserQueries[Rdf <: RDF, DATASET] extends SPARQLHelpers[Rdf, DATASET]
     with RDFPrefixes[Rdf] {
 
+  /** get foaf:Person From Account, transactional */
+  def getPersonFromAccountTR(userId: String): Rdf#Node = {
+    wrapInTransaction {
+      getPersonFromAccount(userId)
+    } getOrElse (nullURI)
+  }
+
+  /** get foaf:Person From Account, NON transactional */
   def getPersonFromAccount(userId: String): Rdf#Node = {
     val queryString = s"""
       ${declarePrefix(foaf)}
