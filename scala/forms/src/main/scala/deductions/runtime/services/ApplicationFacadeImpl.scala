@@ -23,6 +23,7 @@ import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 import scala.xml.{Elem, NodeSeq}
 import deductions.runtime.utils.ServiceListenersManager
+import org.w3.banana.RDF
 
 /**
  * a Web Application Facade,
@@ -37,7 +38,7 @@ import deductions.runtime.utils.ServiceListenersManager
  *	def formData(uri: String, blankNode: String = "", Edit: String = "", formuri: String = ""): String
  * 
  */
-trait ApplicationFacadeImpl[Rdf, DATASET]
+trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     extends ImplementationSettings.RDFModule
     with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with TriplesViewWithTitle[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
@@ -65,14 +66,14 @@ trait ApplicationFacadeImpl[Rdf, DATASET]
     with CSSClasses
     with Results
     with ServiceListenersManager[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    {
+    with SFPlugins[Rdf, DATASET] {
  
   val config: Configuration
   import config._
 
-  addSaveListener(this) // for TimeSeries
-  addSaveListener( new RDFLinksCounterListenerClass(config) )
-  addServiceListener(new RDFLinksCounterLoadListenerClass(config, this) )
+//  addSaveListener(this) // for TimeSeries
+//  addSaveListener( new RDFLinksCounterListenerClass(config) )
+//  addServiceListener(new RDFLinksCounterLoadListenerClass(config, this) )
 
   implicit val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   implicit val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]
