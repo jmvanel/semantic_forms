@@ -27,6 +27,8 @@ trait URIManagement extends URIHelpers {
   def makeURIFromString(stringFromUser: String): String = {
     if (isAbsoluteURI(stringFromUser))
       stringFromUser
+    else if(stringFromUser.contains("@"))
+      "mailto:" + stringFromUser
     else {
       instanceURIPrefix +
         makeURIPartFromString(stringFromUser)
