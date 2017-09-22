@@ -338,18 +338,25 @@ trait WebPages extends Controller with ApplicationTrait {
 
   def backlinksAction(uri: String = "") = Action.async {
     implicit request: Request[_] =>
-      val fut: Future[Elem] = backlinksFuture(uri, copyRequest(request) )
+      val requestCopy = copyRequest(request)
+      val fut: Future[Elem] = backlinksFuture(uri, requestCopy)
 
-      // create link for extended Search
-      val extendedSearchLink = <p>
-                                 <a href={ "/esearch?q=" + URLEncoder.encode(uri, "utf-8") }>
-                                   Extended Search for &lt;{ uri }&gt;
-                                 </a>
-                               </p>
+      val extendedSearchLink =
+        <p>
+          <a href={ "/esearch?q=" + URLEncoder.encode(uri, "utf-8") }>
+            Extended Search for &lt;{ uri }
+            &gt;
+          </a>
+        </p>
+
+      val prec = MainPagePrecompute(requestCopy)
+      val userInfo = prec.userInfo
+      val lang = prec.lang
+
       fut.map { res =>
-        val lang = chooseLanguage(request)
         outputMainPage(
-          NodeSeq fromSeq Seq(extendedSearchLink, res), lang)
+          NodeSeq fromSeq Seq(extendedSearchLink, res),
+          lang, userInfo)
       }
   }
 
