@@ -24,9 +24,12 @@ trait URIManagement extends URIHelpers {
    * make URI From String, if not already an absolute URI,
    *  by prepending instance URI Prefix and URL Encoding
    */
-  def makeURIFromString(stringFromUser: String): String = {
+  def makeURIFromString(stringFromUser: String, predicate: String=""): String = {
     if (isAbsoluteURI(stringFromUser))
       stringFromUser
+    else if(predicate == "http://xmlns.com/foaf/0.1/phone" )
+      "tel:" + stringFromUser
+      // NOTE schema:telephone is an xsd:string
     else if(stringFromUser.contains("@"))
       "mailto:" + stringFromUser
     else {
