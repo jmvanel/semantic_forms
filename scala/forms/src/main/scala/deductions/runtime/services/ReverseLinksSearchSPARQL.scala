@@ -4,6 +4,7 @@ import org.w3.banana.RDF
 
 import scala.concurrent.Future
 import scala.xml.NodeSeq
+import deductions.runtime.core.HTTPrequest
 
 /** Reverse Links Search with simple SPARQL */
 trait ReverseLinksSearchSPARQL[Rdf <: RDF, DATASET]
@@ -22,9 +23,10 @@ trait ReverseLinksSearchSPARQL[Rdf <: RDF, DATASET]
     }
   }
 
-  def backlinks(uri: String, hrefPrefix: String = config.hrefDisplayPrefix): Future[NodeSeq] =
+  def backlinks(uri: String, hrefPrefix: String = config.hrefDisplayPrefix,
+      request:HTTPrequest): Future[NodeSeq] =
     search(hrefPrefix,
-      "fr", // TODO <<<<<<<<<<<<<<
+      request.getLanguage(),
       uri)
 
 }

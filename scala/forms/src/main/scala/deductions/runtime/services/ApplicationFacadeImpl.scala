@@ -319,9 +319,9 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     </p>
   }
 
-  def backlinksFuture(query: String = ""): Future[Elem] = {
-    val fut = backlinks(query, hrefDisplayPrefix)
-    val label = labelForURITransaction( query, language="en"/* TODO pass arg. language */)
+  def backlinksFuture(query: String = "", request: HTTPrequest): Future[Elem] = {
+    val fut = backlinks(query, hrefDisplayPrefix, request)
+    val label = labelForURITransaction( query, language=request.getLanguage())
     wrapSearchResults(fut, "", mess=
       <div>Searched for {label}
       <a href={ createHyperlinkString( uri=query ) }> {label} </a>

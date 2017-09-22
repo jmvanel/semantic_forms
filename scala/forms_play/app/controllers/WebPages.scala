@@ -338,7 +338,7 @@ trait WebPages extends Controller with ApplicationTrait {
 
   def backlinksAction(uri: String = "") = Action.async {
     implicit request: Request[_] =>
-      val fut: Future[Elem] = backlinksFuture(uri)
+      val fut: Future[Elem] = backlinksFuture(uri, copyRequest(request) )
 
       // create link for extended Search
       val extendedSearchLink = <p>
