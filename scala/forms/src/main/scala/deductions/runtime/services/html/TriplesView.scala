@@ -250,7 +250,6 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     val form = time("createAbstractForm",
       createAbstractForm(uri, editable, blankNode, formGroup, formuri))
 
-    // TODO call addUserInfoOnTriples() in package deductions.runtime.abstract_syntax
     val formWithInfo = addUserInfoOnTriples(form)
 
     val htmlForm =

@@ -75,7 +75,7 @@ extends Controller
 
     val loginForm = {
           htmlFormElemRaw(
-            "tmp:login",
+            "",
             editable = true,
             actionURI = "",
             lang = httpRequest.getLanguage(),
@@ -87,7 +87,7 @@ extends Controller
 
     val registerForm = {
           htmlFormElemRaw(
-            "tmp:login",
+            "",
             editable = true,
             actionURI = "",
             lang = httpRequest.getLanguage(),
@@ -103,7 +103,7 @@ extends Controller
                     Se connecter
     	{ loginForm }
                     <p/>
-                    <h3 id="register">Créer un compte</h3>
+                    <h3 id="register" name="register">Créer un compte</h3>
       { registerForm }
     </div>
 
@@ -135,8 +135,7 @@ println( s"""authenticate: httpRequest $httpRequest - queryString ${httpRequest.
         case Some(true) => true
         case _          => false
       }
-println( s"useridOption $useridOption") 
-println( s"passwordOption $passwordOption" )
+println( s"useridOption $useridOption, passwordOption $passwordOption" )
 
       if( loginChecked ) {
       // Redirect to URL before login
@@ -157,7 +156,8 @@ println( s"passwordOption $passwordOption" )
         .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
         .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
       } else {
-         makeBadRequest( <div>login NOT Checked</div> )
+        Redirect(Call("GET", "/login"))
+//         makeBadRequest( <div>login NOT Checked</div> )
       }
   }
 

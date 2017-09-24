@@ -185,25 +185,31 @@ import deductions.runtime.utils.I18NMessages
     return htmlResult
   }
 
-  /** Form Header inside the form box with data fields: displays:
+  /**
+   * Form Header inside the form box with data fields: displays:
    *  - form title
    *  - form subject URI
-   *  - class or Form specification */
+   *  - class or Form specification
+   */
   private def dataFormHeader(form: formMod#FormSyntax, lang: String) = {
     import form._
-    Text(form.title) ++
-      (if (form.subject != nullURI)
-        Text(", at URI ") ++
-        <a href={ toPlainString(form.subject) } style="color: rgb(44,133,254);">&lt;{ form.subject }&gt;</a>
-      else NodeSeq.Empty) ++
-      <div>{ form.formURI match {
-        case Some(formURI) if formURI != nullURI =>
-          I18NMessages.get("Form_specification", lang) +": " ++
-        createHyperlinkElement( toPlainString(formURI), formLabel)
-        case _ => "Class " ++
-        createHyperlinkElement( toPlainString(classs), toPlainString(classs)) ++
-        " (automatic form)"
-      }}</div>
+    if (subject != "") {
+      Text(form.title) ++
+        (if (form.subject != nullURI)
+          Text(", at URI ") ++
+          <a href={ toPlainString(form.subject) } style="color: rgb(44,133,254);">&lt;{ form.subject }&gt;</a>
+        else NodeSeq.Empty) ++
+        <div>{
+          form.formURI match {
+            case Some(formURI) if formURI != nullURI =>
+              I18NMessages.get("Form_specification", lang) + ": " ++
+                createHyperlinkElement(toPlainString(formURI), formLabel)
+            case _ => "Class " ++
+              createHyperlinkElement(toPlainString(classs), toPlainString(classs)) ++
+              " (automatic form)"
+          }
+        }</div>
+    } else Text("")
   }
 
   /** create HTML data Field, the value part;

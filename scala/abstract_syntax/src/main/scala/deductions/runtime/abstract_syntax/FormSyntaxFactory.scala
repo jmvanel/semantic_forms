@@ -405,7 +405,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   : Seq[Entry] = {
     val alreadyInDatabase = ! find(graph, subject, rdf.typ, ANY).isEmpty
     if ( // defaults.displayRdfType ||
-    !alreadyInDatabase) {
+    !alreadyInDatabase
+    && ! (subject == nullURI) ) {
       val classFormEntry = new ResourceEntry(
         // TODO not I18N:
         "type", "class",
