@@ -43,7 +43,8 @@ with FormSyntaxJson[Rdf] {
     Success(
       Seq(
         makeEditingHeader(fromUri(uriNodeToURI(form.classs)), lang, formSpecURI, graphURI),
-        rawForm).flatten)
+        rawForm
+      ).flatten)
   }
 
   /** raw Data for instance creation; transactions Inside */
@@ -70,10 +71,10 @@ with FormSyntaxJson[Rdf] {
     formSyntax2JSONString(formSyntax)
   }
 
-  /** make form Header about Editing */
+  /** make form Header about Editing: "CREATING <name of object>" */
   def makeEditingHeader(classUri: String, lang: String,
                         formSpecURI: String, graphURI: String): NodeSeq = {
-    <div class="message sf-form-heaer">
+    <div class="message sf-form-header">
       { I18NMessages.get("CREATING", lang) }
       { abbreviateTurtle(classUri) }
     </div>

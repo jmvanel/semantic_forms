@@ -38,8 +38,8 @@ import deductions.runtime.utils.RDFStoreLocalProvider
 //  }
 //}
 
-/** main controller 
- *  TODO split HTML pages & HTTP services */
+/** controller base;
+ *  HTML pages & HTTP services are in WebPages and Services */
 trait ApplicationTrait extends Controller
     with ApplicationFacadeImpl[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with LanguageManagement
@@ -69,8 +69,7 @@ trait ApplicationTrait extends Controller
   /** generate a Main Page wrapping given XHTML content */
   protected def outputMainPage( content: NodeSeq,
       lang: String, userInfo: NodeSeq = <div/>, title: String = "", displaySearch:Boolean = true,
-      classForContent: String = "container sf-complete-form"
-	)
+      classForContent: String = "container sf-complete-form")
   (implicit request: Request[_]) = {
       Ok( "<!DOCTYPE html>\n" +
         mainPage( content, userInfo, lang, title, displaySearch,
