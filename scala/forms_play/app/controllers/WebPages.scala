@@ -386,14 +386,17 @@ trait WebPages extends Controller with ApplicationTrait {
     }
   }
 
-  def makeHistoryUserActionsAction(limit: String) =
-    withUser {
-      implicit userid =>
-        implicit request =>
-          val lang = chooseLanguage(request)
-          val userInfo = displayUser(userid, "", "", lang)
-          logger.info("makeHistoryUserActionsAction: cookies: " + request.cookies.mkString("; "))
-          outputMainPage(makeHistoryUserActions(limit, copyRequest(request) ), lang, userInfo = userInfo)
+  def makeHistoryUserActionsAction(limit: String) = {
+    val contentMaker: SemanticController = new SemanticController {
+      def result(request: HTTPrequest): NodeSeq = {
+        val precomputed: MainPagePrecompute = MainPagePrecompute(request)
+        import precomputed._
+        logger.info(s"makeHistoryUserActionsAction:  $limit")
+        logger.info("makeHistoryUserActionsAction: cookies: " + request.cookies.mkString("; "))
+        makeHistoryUserActions(limit, request)
+      }
     }
+  outputMainPageWithContent(contentMaker)
+  }
 
 }
