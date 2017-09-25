@@ -30,7 +30,8 @@ trait FormHeader[Rdf <: RDF, DATASET]
 
     // show the button to change the current editable state
     val linkToShow = (if (editable) {
-      val hrefDisplay = hrefDisplayPrefix + URLEncoder.encode(uri, "utf-8")
+      val hrefDisplay = hrefDisplayPrefix() + URLEncoder.encode(uri, "utf-8") + "#form"
+      println(s">>>>>>>>>>> linkToShow: $hrefDisplay")
       <a class="btn btn-warning btn-xs" href={ hrefDisplay } title={ mess("display_URI") }>
         <i class="glyphicon"></i>
       </a>

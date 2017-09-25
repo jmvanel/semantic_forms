@@ -67,7 +67,9 @@ trait Configuration {
 
   // relative URI's
   // maybe TODO use inverse Play's URI API
-  def hrefDisplayPrefix = "/display?displayuri="
+  def hrefDisplayPrefix(): String =
+//    s"/display$anchor?displayuri="
+    s"/display?displayuri="
   def hrefDownloadPrefix = "/download?url="
   def hrefEditPrefix = "/edit?url="
 
