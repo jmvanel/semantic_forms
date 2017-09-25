@@ -48,7 +48,7 @@ import deductions.runtime.utils.I18NMessages
 		/* wrap Fields With HTML <form> Tag */
     def wrapFieldsWithFormTag(htmlFormFields: NodeSeq): NodeSeq =
 
-      <form class="sf-standard-form" action={ actionURI } method="POST">
+      <form class="sf-standard-form" action={ actionURI } method="POST" id="form">
       { if( actionURI != "" )
         <div class="row">
           <div class="col col-sm-4 col-sm-offset-4">
