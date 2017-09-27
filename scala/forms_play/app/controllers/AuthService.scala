@@ -98,9 +98,7 @@ extends Controller
     }
 
     val content = <div>
-                    <h2>Veuillez vous identifier afin d'accéder au système</h2>
-                    <h3 id="login">Déjà membre</h3>
-                    Se connecter
+                    <h3 id="login">Déjà membre - Se connecter</h3>
     	{ loginForm }
                     <p/>
                     <h3 id="register" name="register">Créer un compte</h3>
