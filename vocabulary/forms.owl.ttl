@@ -9,7 +9,7 @@
 @prefix frm: <http://deductions-software.com/ontologies/forms.owl.ttl#> .
 
 # actually used in source code and in forms/form_specs/*.form.ttl:
-@prefix form: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#>
+@prefix form: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
 
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 
@@ -116,7 +116,8 @@ form:AuthenticationAttempt  a owl:Class ;
 	rdfs:label "Tentative d'Authentification"@fr.
 
 form:userid a owl:ObjectProperty ;
-        rdfs:label "user id"@en ;
+        rdfs:label "login"@en ;
+        rdfs:label "identifiant"@fr ;
         rdfs:domain form:AuthenticationAttempt ;
         rdfs:range foaf:OnlineAccount .
 
