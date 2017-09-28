@@ -36,10 +36,11 @@ class RDFLinksCounterLoadListenerClass(val config: Configuration,
     for (
       uri <- request.getHTTPparameterValue("displayuri") if (request.path == "/display");
       uri1 = expandOrUnchanged(uri);
-      graph <- retrieveURIBody(ops.URI(uri1),
-        datasetUsed,
-        request,
-        transactionsInside = true);
+      graph  = checkIfNothingStoredLocally(ops.URI(uri1)) ._2 ;
+//      retrieveURIBody(ops.URI(uri1),
+//        datasetUsed,
+//        request,
+//        transactionsInside = true);
       _ = println(s"  notifyServiceCall: URI $uri1 graph $graph")
     ) {
       val addedTriples = ops.getTriples(graph).toSeq
