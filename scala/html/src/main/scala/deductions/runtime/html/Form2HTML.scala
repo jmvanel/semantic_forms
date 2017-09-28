@@ -223,27 +223,14 @@ import deductions.runtime.utils.I18NMessages
     val editableByUser =
               field.metadata == request.userId()
 
-//    if (!field.metadata.isEmpty){
-//      val cookie = request.cookies.getOrElse("PLAY_SESSION", Cookie("",""))
-//      println(s"""createHTMLField SESSION cookie $cookie = "${cookie.value}" """)
-//      field.metadata == {
-//        val split = cookie.value.split("=")
-//        if (split.size > 1)
-//          URLDecoder.decode(split(1), "UTF-8")
-//        else ""
-//      }
-//    }
-//    //TO DO: temporaire, trouver pourquoi il y a des valeur par défaut ' "" '
-//    //TO DO: seems to doen't work work
-//    else field.value.toString.replaceAll("\"\"","").isEmpty
-    //else true
-
     // hack instead of true form separator in the form spec in RDF:
     if (field.label.contains("----"))
       return <hr class="sf-separator"/> // Text("----")
     val xmlField = field match {
       case l: formMod#LiteralEntry =>
-        if (editable && editableByUser || isCreateRequest)
+//        println(s">>>>>>>>>>>>>>>>>>> createHTMLField ${field.value.toString()}")
+        if (editable && (editableByUser || isCreateRequest ||
+          toPlainString(field.value) == ""))
           createHTMLiteralEditableField(l)
         else
           createHTMLiteralReadonlyField(l)
@@ -253,13 +240,15 @@ import deductions.runtime.utils.I18NMessages
            * or (TODO) create a sub-form for a blank node of an ancillary type (like a street address),
            * or just create a new resource with its type, given by range, or derived
            * (like in N3Form in EulerGUI ) */
-        if (editable && editableByUser || isCreateRequest)
+        if (editable && (editableByUser || isCreateRequest ||
+          toPlainString(field.value) == ""))
           createHTMLResourceEditableField(r, lang)
         else
           createHTMLResourceReadonlyField(r, hrefPrefix, request)
 
       case r: formMod#BlankNodeEntry =>
-        if (editable && editableByUser || isCreateRequest)
+        if (editable && (editableByUser || isCreateRequest ||
+          toPlainString(field.value) == ""))
           createHTMLBlankNodeEditableField(r)
         else
           createHTMLBlankNodeReadonlyField(r, hrefPrefix)
