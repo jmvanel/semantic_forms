@@ -30,6 +30,7 @@ import java.io.StringWriter
 import org.apache.commons.io.IOUtils
 import java.io.StringReader
 import deductions.runtime.services.RDFContentNegociationIO
+import scala.util.Success
 
 /**
  * singleton for implementation settings
@@ -182,9 +183,10 @@ trait RDFStoreLocalJenaProvider
   }
 
   private def readWithContentTypeNoJena(
-    uri: Rdf#URI,
+    uri:         Rdf#URI,
     contentType: String,
-    dataset: DATASET): Try[Rdf#Graph] = {
+    dataset:     DATASET): Try[Rdf#Graph] = {
+
     val httpClient = CachingHttpClientBuilder.create()
       .setRedirectStrategy(new LaxRedirectStrategy())
       .setDefaultRequestConfig(requestConfig)
@@ -195,47 +197,53 @@ trait RDFStoreLocalJenaProvider
     val contentTypeNormalized = contentType.replaceAll("; .*", "")
     println(s"readWithContentTypeNoJena: contentTypeNormalized: $contentTypeNormalized ")
 
-    request.addHeader("Accept", contentTypeNormalized   )
-    val response = httpClient.execute(request)
-    val inputStream = response.getEntity.getContent
-    val reader = getReaderFromMIME(contentTypeNormalized)
-    //  contentTypes2Readers.getOrElse(contentTypeNormalized, turtleReader)
-    if( ! isKnownRdfSyntax(contentTypeNormalized) )
-//        contentTypes2Readers.get(contentTypeNormalized).isEmpty )
-      System.err.println(
+    val tryResponse = Try {
+      request.addHeader("Accept", contentTypeNormalized)
+      httpClient.execute(request)
+    }
+
+    tryResponse match {
+      case Failure(f) => Failure(f)
+      case Success(response) =>
+        val reader = getReaderFromMIME(contentTypeNormalized)
+
+        println(s"""readWithContentTypeNoJena:
+                reader $reader
+                request $request , getAllHeaders ${
+        	for (h <- request.getAllHeaders) println(h)
+        }
+        response $response""")
+
+        if (!isKnownRdfSyntax(contentTypeNormalized))
+          System.err.println(
             s"readWithContentTypeNoJena: no Reader found for contentType $contentType ; trying Turtle")
 
-    println(s"""readWithContentTypeNoJena:
-      reader $reader
-      request $request , getAllHeaders ${
-      for ( h <- request.getAllHeaders ) println(h)
-      }
-      response $response""")
-
-    if( response.getStatusLine().getStatusCode != 200 )
-      {
-        val rdr = new InputStreamReader( inputStream )
-        val writer = new StringWriter()
-        IOUtils.copy(inputStream, writer, "utf-8")
-        println(s"readWithContentTypeNoJena: response $writer")
-      }
-
-    println(s"readWithContentTypeNoJena: reader $reader =========")
-    val res = reader.read(inputStream, fromUri(uri))
-
-      if( res.isFailure ) {
-        println(s"readWithContentTypeNoJena: reader.read() result: $res")
-        val response = httpClient.execute(request)
         val inputStream = response.getEntity.getContent
-        val rdr = new InputStreamReader( inputStream )
-        val writer = new StringWriter()
-        IOUtils.copy(inputStream, writer, "utf-8")
-//        println(s"readWithContentTypeNoJena: response $writer")
-        val rdfString = writer.toString()
-        println(s"readWithContentTypeNoJena: rdfString ${rdfString.substring(0, 2000)}")
-        reader.read(new StringReader(rdfString), fromUri(uri))
-      } else
-      res
+
+        if (response.getStatusLine().getStatusCode != 200) {
+          val rdr = new InputStreamReader(inputStream)
+          val writer = new StringWriter()
+          IOUtils.copy(inputStream, writer, "utf-8")
+          println(s"readWithContentTypeNoJena: response $writer")
+        }
+
+        println(s"readWithContentTypeNoJena: reader $reader =========")
+        val res = reader.read(inputStream, fromUri(uri))
+
+        if (res.isFailure) {
+          println(s"readWithContentTypeNoJena: reader.read() result: $res")
+          val response = httpClient.execute(request)
+          val inputStream = response.getEntity.getContent
+          val rdr = new InputStreamReader(inputStream)
+          val writer = new StringWriter()
+          IOUtils.copy(inputStream, writer, "utf-8")
+          //        println(s"readWithContentTypeNoJena: response $writer")
+          val rdfString = writer.toString()
+          println(s"readWithContentTypeNoJena: rdfString ${rdfString.substring(0, 2000)}")
+          reader.read(new StringReader(rdfString), fromUri(uri))
+        } else
+          res
+    }
   }
 
 }
