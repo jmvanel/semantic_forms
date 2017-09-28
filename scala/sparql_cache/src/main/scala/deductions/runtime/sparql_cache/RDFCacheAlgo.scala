@@ -114,30 +114,7 @@ extends
       case Some(tgr) => Success(tgr)
       case None =>
 
-        def checkIfNothingStoredLocally(): (Boolean, Rdf#Graph) = {
-          val r = wrapInReadTransaction {
-            // if no triples <uri> ?P ?O , check graph named uri
-            val tryGraphFromRdfStore = rdfStore.getGraph(dataset, uri)
-            val graphSize =
-              tryGraphFromRdfStore match {
-                case Failure(f) =>
-                  println(s"""retrieveURIBody: URI <$uri> : $f""")
-                  (0, emptyGraph)
-                case Success(graphStoredLocally) => {
-                  if (transactionsInside)
-                    wrapInReadTransaction {
-                      (graphStoredLocally.size, graphStoredLocally)
-                    } getOrElse (0, emptyGraph)
-                  else
-                    (graphStoredLocally.size, graphStoredLocally)
-                }
-              }
-            println(s"""retrieveURIBody: TDB graph at URI <$uri> size $graphSize""")
-            graphSize._1 == 0
-          }
-          (r.getOrElse(false), emptyGraph)
-        }
-        val (nothingStoredLocally, graphStoredLocally) = checkIfNothingStoredLocally()
+        val (nothingStoredLocally, graphStoredLocally) = checkIfNothingStoredLocally(uri, transactionsInside)
 
         val result =
           if (nothingStoredLocally) { // then read unconditionally from URI and store in TDB
@@ -198,6 +175,36 @@ extends
         }
         result
     }
+  }
+
+  /** check If Nothing Stored Locally
+   *  @return stored Graph if any, and true iff nothing is Stored Locally */
+  def checkIfNothingStoredLocally(
+    uri:                Rdf#URI,
+    transactionsInside: Boolean = true): (Boolean, Rdf#Graph) = {
+    val nothingStoredAndGraph = wrapInReadTransaction {
+      // if no triples <uri> ?P ?O , check graph named uri
+      val tryGraphFromRdfStore = rdfStore.getGraph(dataset, uri)
+      val sizeAndGraph =
+        tryGraphFromRdfStore match {
+          case Failure(f) =>
+            println(s"""retrieveURIBody: URI <$uri> : $f""")
+            (0, emptyGraph)
+          case Success(graphStoredLocally) => {
+            if (transactionsInside)
+              wrapInReadTransaction {
+                (graphStoredLocally.size, graphStoredLocally)
+              } getOrElse (0, emptyGraph)
+            else
+              (graphStoredLocally.size, graphStoredLocally)
+          }
+        }
+      println(s"""retrieveURIBody: TDB graph at URI <$uri> size $sizeAndGraph""")
+      (sizeAndGraph._1 == 0, sizeAndGraph._2)
+    }
+    if( nothingStoredAndGraph.isFailure )
+      System.err.println(s"checkIfNothingStoredLocally: ${nothingStoredAndGraph}")
+    nothingStoredAndGraph.getOrElse((false, emptyGraph))
   }
 
   /**
