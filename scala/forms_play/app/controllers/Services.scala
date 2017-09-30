@@ -6,8 +6,12 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Request
 import play.api.mvc.Result
 
+import deductions.runtime.services.RDFContentNegociation
+import java.net.URLEncoder
+
 /** controller for non-SPARQL Services (or SPARQL related but not in the W3C recommendations) */
 trait Services extends ApplicationTrait
+with RDFContentNegociation
 {
 
   /** /form-data service; like /form but raw JSON data */
@@ -107,34 +111,43 @@ trait Services extends ApplicationTrait
       }
   }
 
-
-
-
   /** LDP GET */
-  def ldp(uri: String) =
-    Action // withUser 
-    {
-//      implicit userid =>
-        implicit request: Request[_] =>
-          logger.info("LDP GET: request " + request)
-          val acceptedTypes = request.acceptedTypes
-          logger.info(s"acceptedTypes $acceptedTypes")
-          val mimeType =
-            if (acceptedTypes.contains(AcceptsTTL))
-              turtle
-            // TODO RDF/XML
-            else
-              AcceptsJSONLD.mimeType
-          val response = getTriples(uri, request.path, mimeType, copyRequest(request))
-          logger.info("LDP: GET: result " + response)
-          val contentType = mimeType + "; charset=utf-8"
-          logger.info(s"contentType $contentType")
-          Ok(response)
-            //          .as(contentType)
-            //          .as(MimeTypes.JSON)
-            .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
-            .withHeaders(CONTENT_TYPE -> mimeType)
-    }
+  def ldp(uri: String) = Action {
+    implicit request: Request[_] =>
+      logger.info("LDP GET: request " + request)
+      val acceptedTypes = request.acceptedTypes
+      logger.info(
+          s"acceptedTypes $acceptedTypes")
+
+      val httpRequest = copyRequest(request)
+      val accept = httpRequest.getHTTPheaderValue("Accept")
+      val firstMimeTypeAccepted = accept.getOrElse("").replaceFirst(",.*", "")
+      val mimeType =
+        if( isKnownRdfSyntax(firstMimeTypeAccepted) ||
+            firstMimeTypeAccepted == htmlMime )
+          firstMimeTypeAccepted
+        else
+          jsonldMime
+
+      println(s">>>> ldp: mimeType $mimeType")
+      if (mimeType != htmlMime) {
+        val response = getTriples(uri, request.path, mimeType, copyRequest(request))
+        logger.info("LDP: GET: result " + response)
+        val contentType = mimeType + "; charset=utf-8"
+        logger.info(s"contentType $contentType")
+        Ok(response)
+          .as(contentType)
+          .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+          .withHeaders(CONTENT_TYPE -> mimeType)
+      } else {
+//    	  println(s">>>> ldp: Redirect /display?displayuri=http://${request.host}/ldp/$uri")
+        val ldpURL = "http://" + request.host + "/ldp/" + URLEncoder.encode(uri, "UTF-8")
+//    	  println(s">>>> ldp: Redirect $ldpURL")
+        val call = Redirect("/display", Map("displayuri" -> Seq(ldpURL)))
+//        println(s">>>> ldp: call $call")
+        call
+      }
+  }
 
   /** TODO:
    * - maybe the stored named graph should be user specific

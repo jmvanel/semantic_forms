@@ -106,7 +106,6 @@ trait ApplicationTrait extends Controller
   protected def saveOnly(
       httpRequest: HTTPrequest,
       userid: String, graphURI: String = ""): (String, Boolean) = {
-//    val httpRequest = copyRequest(request)
     val host = httpRequest.host
     val lang = httpRequest.getLanguage()
     val map = httpRequest.formMap
@@ -128,7 +127,7 @@ trait ApplicationTrait extends Controller
   protected val AcceptsJSONLD = Accepting("application/ld+json")
   protected val AcceptsRDFXML = Accepting("application/rdf+xml")
   protected val AcceptsSPARQLresults = Accepting("application/sparql-results+json")
-
+  
   protected val turtle = AcceptsTTL.mimeType
 
 	// format = "turtle" or "rdfxml" or "jsonld"
