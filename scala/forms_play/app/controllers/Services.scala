@@ -50,24 +50,38 @@ with RDFContentNegociation
    */
   def downloadAction(url: String, database: String = "TDB") =
     Action {
-        implicit request: Request[_] =>
-          def output(accepts: Accepting): Result = {
-            val mime = computeMIME(accepts, AcceptsJSONLD)
-            println(log("downloadAction", request))
-            Ok.chunked(
-                // TODO >>>>>>> add database arg.
-              download(url, mime.mimeType)).
-              as(s"${mime.mimeType}; charset=utf-8")
-              .withHeaders("Access-Control-Allow-Origin" -> "*")
-          }
-          // Ok.stream(download(url) >>> Enumerator.eof).as("text/turtle; charset=utf-8")
+      implicit request: Request[_] =>
+        val httpRequest = copyRequest(request)
+        def output(mime: String): Result = {
+//          println(log("downloadAction", request))
+          Ok.chunked(
+            // TODO >>>>>>> add database arg.
+            download(url, mime)).
+            as(s"${mime}; charset=utf-8")
+            .withHeaders("Access-Control-Allow-Origin" -> "*")
+        }
+        // Ok.stream(download(url) >>> Enumerator.eof).as("text/turtle; charset=utf-8")
 
-          val defaultMIME = AcceptsJSONLD
-          val accepts = request.acceptedTypes
-          val mime = computeMIME(accepts, defaultMIME)
+        val accepts = httpRequest.getHTTPheaderValue("Accept")
+        val mime = computeMIMEOption(accepts) // , defaultMIME)
 
-          // TODO generalize outputSPARQL() : give priority to requested MIME type
-          renderResult(output, mime)
+        val syntaxOption = httpRequest.getHTTPparameterValue("syntax")
+//        println((s">>>>>>>> downloadAction syntaxOption $syntaxOption"))
+        syntaxOption match {
+          case Some(syntax) =>
+            val mimeOption = stringMatchesRDFsyntax(syntax)
+//            println((s">>>>>>>> downloadAction , mimeOption $mimeOption"))
+            mimeOption match {
+              case Some(mimeString) =>
+                val mime = (mimeString)
+//                println((s">>>>>>>>=== downloadAction mimeString $mimeString, mime $mime"))
+                output(mime)
+              case None =>
+               output(mime)
+            }
+          case None =>
+            output(mime)
+        }
     }
 
 
