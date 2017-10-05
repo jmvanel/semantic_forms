@@ -62,6 +62,11 @@ forms:familyName--personPerson
 	:fieldAppliesToProperty foaf:familyName ;
         :cardinality :exactlyOne .
 
+forms:based_near--personPerson
+	:fieldAppliesToForm forms:personForm ;
+	:fieldAppliesToForm forms:organizationForm ;
+	:fieldAppliesToProperty foaf:based_near ;
+	:widgetClass form:DBPediaLookup .
 
 #### Project ####
 
