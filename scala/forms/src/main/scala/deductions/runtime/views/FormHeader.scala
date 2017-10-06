@@ -10,6 +10,7 @@ import org.w3.banana.{OWLPrefix, PointedGraph, RDF}
 
 import scala.xml.{NodeSeq, Text}
 
+/** generic application: links on top of the form: Edit, Display, Download Links */
 trait FormHeader[Rdf <: RDF, DATASET]
     extends FormModule[Rdf#Node, Rdf#URI]
     with RDFStoreLocalProvider[Rdf, DATASET]
@@ -53,10 +54,23 @@ trait FormHeader[Rdf <: RDF, DATASET]
       makeDrawGraphLinkVOWL(uri)
     } else new Text(""))
 
-      <div class="row">
+    def downloadLink(syntax: String = "Turtle"): NodeSeq = {
+      // col-xs-12
+      <div class="sf-local-rdf-link">
+        <a href={
+          hrefDownloadPrefix +
+            URLEncoder.encode(uri, "utf-8") +
+            s"&syntax=$syntax"
+        } title={ mess("Triples_tooltip") }>
+          { mess("Triples") + " " + syntax}
+        </a>
+      </div>
+    }
+    <div class="row">
         <div class="col-xs-12">
           <h3 id="subject">
-            { formSyntax.title
+            {
+              formSyntax.title
             }
             <strong>
               { linkToShow }
@@ -64,34 +78,34 @@ trait FormHeader[Rdf <: RDF, DATASET]
               { expertLinksOWL }
             </strong>
             {
-            if (formSyntax.thumbnail.isDefined){
-              <a class="image-popup-vertical-fit" href={  formSyntax.thumbnail.get.toString() } title={s"Image of ${formSyntax.title}: ${formSyntax.subject.toString()}"}>
-                <img src={ formSyntax.thumbnail.get.toString() } css="sf-thumbnail" height="40" alt={
-              s"Image of ${formSyntax.title}: ${formSyntax.subject.toString()}"
-              }/></a>
-            }
-            else NodeSeq.Empty
+              if (formSyntax.thumbnail.isDefined) {
+                <a class="image-popup-vertical-fit" href={ formSyntax.thumbnail.get.toString() } title={ s"Image of ${formSyntax.title}: ${formSyntax.subject.toString()}" }>
+                  <img src={ formSyntax.thumbnail.get.toString() } css="sf-thumbnail" height="40" alt={
+                    s"Image of ${formSyntax.title}: ${formSyntax.subject.toString()}"
+                  }/>
+                </a>
+              } else NodeSeq.Empty
             }
           </h3>
         </div>
       </div>
-    <div class="row sf-links-row">
-      <!--div class="col-md-6"-->
-      <div class="col-xs-12 sf-local-rdf-link">
-        {
-          val message = if (uri.contains("/ldp/"))
-            "Download local URI"
-          else
-            mess("Download_original_URI")
-          <a href={ uri }>{ message }</a>
-        }
+      <div class="row sf-links-row">
+        <!--div class="col-md-6"-->
+        <div class="col-xs-12 sf-local-rdf-link">
+          {
+            //          val message = if (uri.contains("/ldp/"))
+            //            "Download local URI"
+            //          else
+            //            mess("Download_original_URI")
+            //          <a href={ uri }>{ message }</a>
+          }
+        </div>
+        { downloadLink() ++
+//          Text(" - ") ++
+          downloadLink("JSON-LD") ++
+//          Text(" - ") ++
+          downloadLink("RDF/XML")}
       </div>
-      <div class="col-xs-12 sf-local-rdf-link">
-        <a href={ hrefDownloadPrefix + URLEncoder.encode(uri, "utf-8") } title={ mess("Triples_tooltip") }>
-          { mess("Triples") }
-        </a>
-      </div>
-    </div>
   }
 
   private lazy val owl = OWLPrefix[Rdf]

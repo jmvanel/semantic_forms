@@ -239,7 +239,9 @@ trait RDFStoreLocalJenaProvider
           IOUtils.copy(inputStream, writer, "utf-8")
           //        println(s"readWithContentTypeNoJena: response $writer")
           val rdfString = writer.toString()
-          println(s"readWithContentTypeNoJena: rdfString ${rdfString.substring(0, 2000)}")
+          println(s"readWithContentTypeNoJena: rdfString ${rdfString.substring(0,
+              Math.min(2000, rdfString.length() )
+              )}")
           reader.read(new StringReader(rdfString), fromUri(uri))
         } else
           res

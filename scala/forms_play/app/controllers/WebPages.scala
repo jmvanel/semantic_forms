@@ -42,9 +42,9 @@ trait WebPages extends Controller with ApplicationTrait {
     // TODO copied below in MainPagePrecompute
     val lang = requestCopy.getLanguage()
     val userid = requestCopy.userId()
-    val userInfo = displayUser(userid, requestCopy.getRDFsubject(), title, lang)
     val uri = expandOrUnchanged( requestCopy.getRDFsubject() )
     val title = labelForURITransaction(uri, lang)
+    val userInfo = displayUser(userid, requestCopy.getRDFsubject(), title, lang)
   }
 
   private case class MainPagePrecompute(
@@ -52,9 +52,9 @@ trait WebPages extends Controller with ApplicationTrait {
     val lang = requestCopy.getLanguage()
     callAllServiceListeners(requestCopy)
     val userid = requestCopy.userId()
-    val userInfo = displayUser(userid, requestCopy.getRDFsubject(), title, lang)
     val uri = expandOrUnchanged( requestCopy.getRDFsubject() )
     val title = labelForURITransaction(uri, lang)
+    val userInfo = displayUser(userid, requestCopy.getRDFsubject(), title, lang)
   }
 
   /** output Main Page With given Content */
