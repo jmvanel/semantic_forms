@@ -176,7 +176,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   }
 
   /** TODO not working !!!!!!!!!!!!!  */
-  def downloadKO(url: String): Enumerator[Array[Byte]] = {
+  private def downloadKO(url: String): Enumerator[Array[Byte]] = {
     // cf https://www.playframework.com/documentation/2.3.x/ScalaStream
     // and http://greweb.me/2012/11/play-framework-enumerator-outputstream/
     Enumerator.outputStream { os =>
