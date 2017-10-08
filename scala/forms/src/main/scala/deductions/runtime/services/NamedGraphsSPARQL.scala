@@ -39,6 +39,6 @@ trait NamedGraphsSPARQL[Rdf <: RDF, DATASET]
   }
   
   def showNamedGraphs( lang: String = ""): Future[NodeSeq] =
-		  search("/showTriplesInGraph?uri=", lang)
+		  search("/showTriplesInGraph?uri=", lang, Seq())
     
 }

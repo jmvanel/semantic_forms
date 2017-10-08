@@ -43,7 +43,7 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
       ""
   }
 
-  // UNUSED
+  // UNUSED - No Pre computing of links 
   def queryWithlinksCountNoPrefetch(search: String,
                                     classe: String = "") = s"""
          |${declarePrefix(text)}
@@ -62,6 +62,25 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
 
   /** query With links Count, with or without text query */
   def queryWithlinksCount(search: String,
+                          classe: String = "") = s"""
+         |${declarePrefix(text)}
+         |${declarePrefix(rdfs)}
+         |${declarePrefix(form)}
+         |SELECT DISTINCT ?thing ?COUNT WHERE {
+         |  graph ?g {
+         |    ${textQuery(search)}
+         |  }
+         |  OPTIONAL {
+         |   graph ?g1 {
+         |    ?thing form:linksCount ?COUNT.
+         |  } }
+         |}
+         |ORDER BY DESC(?COUNT)
+         |LIMIT 10
+         |""".stripMargin
+
+  /** query With links Count, with or without text query */
+  def queryWithlinksCountAndClass(search: String,
                           classe: String = "") = s"""
          |${declarePrefix(text)}
          |${declarePrefix(rdfs)}

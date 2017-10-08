@@ -45,33 +45,34 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    * search and display results as an XHTML element
    * transactional
    * @param hrefPrefix URL prefix for creating hyperlinks ((URI of each query result is concatenated)
-   *  
+   *
    * TODO
    * - displayResults should be a function argument
    * - search2 is very similar!
    */
-  def search(hrefPrefix: String, 
-             lang: String,
-             search: String*
-             )(implicit queryMaker: SPARQLQueryMaker[Rdf] ): Future[NodeSeq] = {
-    val elem0 = rdfStore.rw( dataset, {
+  def search(
+    hrefPrefix: String,
+    lang:       String,
+    search:     Seq[String], variables: Seq[String] = Seq("?thing"))(implicit queryMaker: SPARQLQueryMaker[Rdf]): Future[NodeSeq] = {
+    val elem0 = rdfStore.rw(dataset, {
       println(s"search($search) 1: starting TRANSACTION for dataset $dataset")
-    	val uris = search_onlyNT(search :_* )
-    	println(s"\tsearch(): URI's $uris")
-    	val graph: Rdf#Graph = allNamedGraph
+      val uris = search_onlyNT(search, variables)
+      println(s"\tsearch(): URI's $uris")
+      val graph: Rdf#Graph = allNamedGraph
       val elems =
-        <div class={css.tableCSSClasses.formRootCSSClass}> {
-    	    css.localCSS ++
-        uris.map{
-        u =>
-//          println(s"\tsearch(): URI row $u")
-          displayResults(u, hrefPrefix, lang, graph, false) }
-    	}</div>
+        <div class={ css.tableCSSClasses.formRootCSSClass }> {
+          css.localCSS ++
+            uris.map {
+              u =>
+                //          println(s"\tsearch(): URI row $u")
+                displayResults(u, hrefPrefix, lang, graph, false)
+            }
+        }</div>
       elems
     })
     println(s"search: leaving TRANSACTION for dataset $dataset")
     val elem = elem0.get
-    Future.successful( elem )
+    Future.successful(elem)
   }
 
   /**
@@ -82,23 +83,24 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    * @param hrefPrefix URL prefix for creating hyperlinks ((URI of each query result is concatenated)
    */
   def search2(search: String, hrefPrefix: String = config.hrefDisplayPrefix,
-              lang: String = "")(implicit queryMaker: SPARQLQueryMaker[Rdf] ): Elem
-  = {
+              lang: String = "")(implicit queryMaker: SPARQLQueryMaker[Rdf]): Elem = {
     val uris = search_only2(search)
     val elem0 =
-      rdfStore.rw( dataset, {
-    	  val graph: Rdf#Graph = allNamedGraph
-        <div class={css.tableCSSClasses.formRootCSSClass}> {
-    	    css.localCSS ++
-    	    uris.map(
-            // create table like HTML
-          u => displayResults(u.toIterable, hrefPrefix, lang, graph))
-    	  }</div>
+      rdfStore.rw(dataset, {
+        val graph: Rdf#Graph = allNamedGraph
+        <div class={ css.tableCSSClasses.formRootCSSClass }> {
+          css.localCSS ++
+            uris.map {
+              // create table like HTML
+              u =>
+                //            println(s"**** search2 u $u")
+                displayResults(u.toIterable, hrefPrefix, lang, graph)
+            }
+        }</div>
       })
     val elem = elem0.get
     elem
   }
-
 
   /**
    * TRANSACTIONAL
@@ -107,35 +109,35 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    * one should never use an Iterator after calling a method on it;
    * cf http://stackoverflow.com/questions/18420995/scala-iterator-one-should-never-use-an-iterator-after-calling-a-method-on-it
    */
-  private def search_only(search: String*)
-  (implicit queryMaker: SPARQLQueryMaker[Rdf] )
-  // : Future[Iterator[Rdf#Node]]
+  private def search_only(search: String*)(implicit queryMaker: SPARQLQueryMaker[Rdf]) // : Future[Iterator[Rdf#Node]]
   = {
     println(s"search 2: starting TRANSACTION for dataset $dataset")
     val transaction =
-      rdfStore.r( dataset, {
-    	  search_onlyNT(search :_* )
+      rdfStore.r(dataset, {
+        search_onlyNT(search)
       })
     val tryIteratorRdfNode = transaction // .flatMap { identity }
-    println( s"after search_only(search tryIteratorRdfNode $tryIteratorRdfNode" )
+    println(s"after search_only(search tryIteratorRdfNode $tryIteratorRdfNode")
     tryIteratorRdfNode.asFuture
   }
   
-  private def search_onlyNT(search: String*)
+  private def search_onlyNT(search: Seq[String], variables: Seq[String] = Seq("?thing"))
   (implicit queryMaker: SPARQLQueryMaker[Rdf] ) = {
     val queryString = queryMaker.makeQueryString(search :_* )
     logger.debug( s"search_onlyNT(search='$search') \n$queryString \n\tdataset Class ${dataset.getClass().getName}" )
     // NOTE: if class is specified in request, then ?CLASS is not in results, and vice-versa
-    val variables =
-      if( search.size > 1 && search(1) != "")
-        Seq("?thing")  // for ???
-      else if( search.size == 0 )
-        Seq("?thing")  // for NamedGraphsSPARQL
-      else if(isAbsoluteURI(search(0)))
-        Seq("?thing")           // for ReverseLinksSearchSPARQL
-      else
-        Seq("?thing", "?CLASS") // for StringSearchSPARQL
-     println( s"search_onlyNT: ($search) : SPARQL variables $variables" )
+
+//    val variables =
+//      if( search.size > 1 && search(1) != "")
+//        Seq("?thing")  // for ???
+//      else if( search.size == 0 )
+//        Seq("?thing")  // for NamedGraphsSPARQL
+//      else if(isAbsoluteURI(search(0)))
+//        Seq("?thing")           // for ReverseLinksSearchSPARQL
+//      else
+//        Seq("?thing", "?CLASS") // for StringSearchSPARQL
+
+    println( s"search_onlyNT: ($search) : SPARQL variables $variables" )
 
     sparqlSelectQueryVariablesNT(queryString, variables )
   }
