@@ -27,6 +27,6 @@ trait ReverseLinksSearchSPARQL[Rdf <: RDF, DATASET]
       request:HTTPrequest): Future[NodeSeq] =
     search(hrefPrefix,
       request.getLanguage(),
-      uri)
+      Seq(uri))
 
 }

@@ -61,6 +61,6 @@ trait ExtendedSearchSPARQL[Rdf <: RDF, DATASET]
   def extendedSearch(uri: String, hrefPrefix: String = hrefDisplayPrefix): Future[NodeSeq] =
     search(hrefPrefix,
         "fr", // TODO <<<<<<<<<<<<<<
-        uri)
+        Seq(uri))
 
 }

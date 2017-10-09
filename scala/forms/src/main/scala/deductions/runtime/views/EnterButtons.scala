@@ -112,7 +112,8 @@ trait EnterButtons {
       </div>
     </div>
 
-  /** NOTE currently the label is NOT displayed by Firefox :( , only by Chrome */
+  /** suggested Classes For Creation;
+   *  NOTE currently the label is NOT displayed by Firefox :( , only by Chrome */
   def suggestedClassesForCreation: NodeSeq = {
     <option label="foaf:Person" selected="selected"> { forms("personForm") } </option>
     <option label="doap:Project">                    { prefixesMap2("doap")("Project") } </option>
@@ -132,7 +133,9 @@ trait EnterButtons {
     <option label="owl:Class">                       { prefixesMap2("owl")("Class") } </option>
     <option label="owl:DatatypeProperty">            { prefixesMap2("owl")("DatatypeProperty") } </option>
     <option label="owl:ObjectProperty">              { prefixesMap2("owl")("ObjectProperty") } </option>
+
     <option label="bioc:Planting">                   { prefixesMap2("bioc")("Planting") } </option>
+    <option label="nature:Obvervation">              { prefixesMap2("nature")("Obvervation") } </option>
   }
 /*
   val avOptgroup =
