@@ -13,8 +13,8 @@ trait ServiceListener[Rdf <: RDF, DATASET] {
 
 trait ServiceListenersManager[Rdf <: RDF, DATASET] {
 
-  import scala.collection.mutable.ArrayBuffer
-  private val listeners = ArrayBuffer[ServiceListener[Rdf, DATASET]]()
+  import scala.collection.mutable.Set // ArrayBuffer
+  private val listeners = Set[ServiceListener[Rdf, DATASET]]()
 
   def addServiceListener(l: ServiceListener[Rdf, DATASET]) = {
     listeners += l
