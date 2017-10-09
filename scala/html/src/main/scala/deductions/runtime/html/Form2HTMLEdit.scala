@@ -253,9 +253,11 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
           <input class={ css.cssClasses.formInputCSSClass } value={
             toPlainString(value)
           } name={
-            // makeHTMLName(lit)
             lit.htmlName } type={
-            xsd2html5TnputType(type_.toString())
+            if( lit.property.toString() .endsWith("password"))
+              "password"
+            else
+              xsd2html5TnputType(type_.toString())
           }
           step = {xsd2html5Step(type_.toString())}
           placeholder={ placeholder } title={ placeholder } size={

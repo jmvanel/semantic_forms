@@ -31,10 +31,8 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     if (preceding.label != field.label)
       // PENDING is it correct HTML5 ?
       <label for={
-//      makeHTMLName(field)
-      field.htmlName }
-        class={ css.cssClasses.formLabelCSSClass }
-        >
+        field.htmlName
+      } class={ css.cssClasses.formLabelCSSClass } tabindex="-1">
       <a href={field.property.toString()}
     title={
         labelTooltip(field)
@@ -47,7 +45,8 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     font-weight: bold;
 """}
       draggable="true"
-      data-uri-property={field.property.toString()}>{
+      data-uri-property={field.property.toString()}
+      tabindex="-1">{
         val label = field.label
         // hack before implementing real separators
         if (label.contains("----"))
@@ -64,7 +63,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     else {
       <label class={ css.cssClasses.formLabelCSSClass } title={
       field.comment + " - " + field.property
-      }> -- </label>
+      } tabindex="-1"> -- </label>
     }
 
 
