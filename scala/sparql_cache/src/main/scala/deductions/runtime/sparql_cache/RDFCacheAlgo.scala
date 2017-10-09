@@ -177,34 +177,40 @@ extends
     }
   }
 
-  /** check If Nothing Stored Locally
-   *  @return stored Graph if any, and true iff nothing is Stored Locally */
+  /**
+   * check If Nothing Stored Locally
+   *  @return stored Graph if any, and true iff nothing is Stored Locally
+   */
   def checkIfNothingStoredLocally(
     uri:                Rdf#URI,
     transactionsInside: Boolean = true): (Boolean, Rdf#Graph) = {
-    val nothingStoredAndGraph = wrapInReadTransaction {
+
+    def doCheckIfNothingStoredLocally: (Boolean, Rdf#Graph) = {
       // if no triples <uri> ?P ?O , check graph named uri
       val tryGraphFromRdfStore = rdfStore.getGraph(dataset, uri)
       val sizeAndGraph =
         tryGraphFromRdfStore match {
           case Failure(f) =>
-            println(s"""retrieveURIBody: URI <$uri> : $f""")
+            println(s"""checkIfNothingStoredLocally: URI <$uri> : $f""")
             (0, emptyGraph)
           case Success(graphStoredLocally) => {
-            if (transactionsInside)
-              wrapInReadTransaction {
-                (graphStoredLocally.size, graphStoredLocally)
-              } getOrElse (0, emptyGraph)
-            else
-              (graphStoredLocally.size, graphStoredLocally)
+            (graphStoredLocally.size, graphStoredLocally)
           }
         }
-      println(s"""retrieveURIBody: TDB graph at URI <$uri> size $sizeAndGraph""")
+      println(s"""checkIfNothingStoredLocally: TDB graph at URI <$uri> size $sizeAndGraph""")
       (sizeAndGraph._1 == 0, sizeAndGraph._2)
+      //      nothingStoredAndGraph.getOrElse((false, emptyGraph))
     }
-    if( nothingStoredAndGraph.isFailure )
-      System.err.println(s"checkIfNothingStoredLocally: ${nothingStoredAndGraph}")
-    nothingStoredAndGraph.getOrElse((false, emptyGraph))
+
+    if (transactionsInside) {
+      val nothingStoredAndGraph = wrapInReadTransaction {
+        doCheckIfNothingStoredLocally
+      }
+      if (nothingStoredAndGraph.isFailure)
+        System.err.println(s"checkIfNothingStoredLocally: ${nothingStoredAndGraph}")
+      nothingStoredAndGraph.getOrElse((false, emptyGraph))
+    } else
+      doCheckIfNothingStoredLocally
   }
 
   /**
