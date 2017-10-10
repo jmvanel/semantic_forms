@@ -4,9 +4,9 @@ Description Of A Software == DOAS
 <a href="http://deductions.github.io/doas.owl.ttl">doas.owl.ttl</a>
 
 Here is `semantic_forms`' description with this vocabulary:
-http://semantic-forms.cc:9112/display?displayuri=http%3A%2F%2Fsemantic-forms.cc%3A9112%2Fldp%2F1486672241556-2353188345672422
+http://semantic-forms.cc:9112/display?displayuri=http%3A%2F%2Fsemantic-forms.cc%3A9112%2Fldp%2F1507625359429-23306306218722977
 
-All tools below should be described this way.
+All tools below could/should be described this way.
 
 # Open source
 
@@ -22,6 +22,7 @@ All tools below should be described this way.
 - Web Protégé forms: http://protegewiki.stanford.edu/wiki/PropertyFormPortlet#Examples ; alas one has to edit XML for portlet technology to create forms; apparently based on MongoDB, not SPARQL : https://github.com/protegeproject/webprotege/blob/master/pom.xml
 
 - https://github.com/dhlab-basel/Knora
+- [Corese](http://wimmics.inria.fr/corese) a serious infrastructure project, with SPARQL extensions, from french INRIA research institute. It's not clear what facilities it has for building applications.
 
 # Semi-Open source
 - Virtuoso, powers dbpedia.org; semi-SQL and RDF

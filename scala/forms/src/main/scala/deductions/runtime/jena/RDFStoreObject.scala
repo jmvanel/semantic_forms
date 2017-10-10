@@ -31,6 +31,7 @@ import org.apache.commons.io.IOUtils
 import java.io.StringReader
 import deductions.runtime.services.RDFContentNegociationIO
 import scala.util.Success
+import deductions.runtime.utils.HTTPHelpers
 
 /**
  * singleton for implementation settings
@@ -59,7 +60,8 @@ trait RDFStoreLocalJenaProvider
     with RDFStoreLocalProvider[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with Timer
     with LuceneIndex
-    with RDFContentNegociationIO[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+    with RDFContentNegociationIO[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with HTTPHelpers {
 
   // CURRENTLY unused, but could be:  val config: Configuration
   import config._
@@ -186,6 +188,8 @@ trait RDFStoreLocalJenaProvider
     uri:         Rdf#URI,
     contentType: String,
     dataset:     DATASET): Try[Rdf#Graph] = {
+
+    setTimeoutsFromConfig()
 
     val httpClient = CachingHttpClientBuilder.create()
       .setRedirectStrategy(new LaxRedirectStrategy())
