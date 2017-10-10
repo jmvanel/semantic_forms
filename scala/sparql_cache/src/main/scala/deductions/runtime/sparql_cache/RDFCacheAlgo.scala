@@ -387,7 +387,8 @@ extends
       // To avoid troubles with Jena cf https://issues.apache.org/jira/browse/JENA-1335
       val contentType = getContentTypeFromHEADRequest(fromUri(uri))
     	println(s""">>>> readURI: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
-      if (!contentType.startsWith("text/html")) {
+      if (!contentType.startsWith("text/html") &&
+          !contentType.startsWith("ERROR") ) {
         setTimeoutsFromConfig()
         // NOTE: Jena RDF loader can throw an exception "Failed to determine the content type"
         val graphTry = rdfLoader.load(new java.net.URL(uri.toString()))

@@ -150,8 +150,11 @@ trait FormSaver[Rdf <: RDF, DATASET]
             else {
               if (objectStringFromUser != "")
                 log(s"""computeDatabaseChanges: objectStringFromUser "$objectStringFromUser" changed: spaces removed""")
-              URI( makeURIFromString(objectStringFromUser,
-                  fromUri(originalTriple.predicate)) )
+            URI(
+              expandOrUnchanged(
+                makeURIFromString(
+                  objectStringFromUser,
+                  fromUri(originalTriple.predicate))))
             }
           },
           _ => BNode(objectStringFromUser.replaceAll(" ", "_")), // ?? really do this ?
