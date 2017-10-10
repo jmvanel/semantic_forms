@@ -33,8 +33,10 @@ trait URIManagement extends URIHelpers {
     else if(stringFromUser.contains("@"))
       "mailto:" + stringFromUser
     else {
-      instanceURIPrefix +
-        makeURIPartFromString(stringFromUser)
+      if (stringFromUser != "")
+        instanceURIPrefix +
+          makeURIPartFromString(stringFromUser)
+      else ""
     }
   }
 
