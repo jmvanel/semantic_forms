@@ -53,8 +53,11 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
     values
   }
 
-  def getClasses(subject: Rdf#Node)(implicit graph: Rdf#Graph): List[Rdf#Node]=
-    getObjects(graph, subject: Rdf#Node, rdf("type")).toList
+  def getClasses(subject: Rdf#Node)(implicit graph: Rdf#Graph): List[Rdf#Node] =
+    if (subject == nullURI)
+      List()
+    else
+      getObjects(graph, subject: Rdf#Node, rdf("type")).toList
 
   def getClassOrNullURI(subject: Rdf#Node)(implicit graph: Rdf#Graph): Rdf#Node =
     getClasses(subject).headOption.getOrElse(nullURI)

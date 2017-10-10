@@ -24,7 +24,10 @@ with FormModule[Rdf#Node, Rdf#URI]
 
   /** find fields from given Instance subject */
   def fieldsFromSubject(subject: Rdf#Node, graph: Rdf#Graph): Seq[Rdf#URI] =
-    getPredicates(graph, subject).toSeq.distinct
+    if (subject == nullURI)
+      List()
+    else
+      getPredicates(graph, subject).toSeq.distinct
 
   /** find fields from given RDF class */
   def fieldsFromClasses(classes:  List[Rdf#Node], subject: Rdf#Node, editable: Boolean, graph: Rdf#Graph)
