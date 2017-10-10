@@ -101,7 +101,7 @@ extends
    * or download and store URI, only if corresponding graph is empty,
    * or local timestamp is older;
    * timestamp is saved in another Dataset
-   *  @return the more recent RDF data if any, or the old data
+   *  @return the more recent RDF data from Internet if any, or the old data
    */
   def retrieveURIBody(uri: Rdf#URI, dataset: DATASET,
                       request: HTTPrequest,
@@ -371,12 +371,8 @@ extends
     graphTry
   }
 
-  /**
-   * read unconditionally from URI,
-   * no matter what the concrete syntax is;
-   * TODO: can also load an URI with the # part
-   */
-  private def readURI(
+  /** unused !!! */
+  private def readURIWithJenaRdfLoader(
       uri: Rdf#URI,
       dataset: DATASET,
       request: HTTPrequest ): (Try[Rdf#Graph], String) = {
@@ -397,14 +393,10 @@ extends
 
         graphTry match {
           case Success(gr) =>
-        // TODO after release of rdfa4j 
-        //      val graph = graphTry.getOrElse {
-        //        if(activateMicrodataLoading)
-        //          microdataLoading(uri)
-        //        else
-        //          emptyGraph
-        //      }
-        (graphTry, contentType)
+            // TODO after release of rdfa4j
+//            val graph = graphTry.getOrElse {
+//              if (activateMicrodataLoading) microdataLoading(uri) else emptyGraph }
+            (graphTry, contentType)
 
           case Failure(f) =>
 //            if( contentType != "ERROR" ) {
@@ -416,6 +408,43 @@ extends
 //            println(s"""readURI After readWithContentType: ${gr}""")
             ( gr, contentType)
         }
+
+      } else {
+        (Success(emptyGraph), contentType)
+      }
+    } else {
+      val message = s"Load uri <$uri> is not possible, not a downloadable URI."
+      logger.warn(message)
+      ( Success(emptyGraph), "" ) // TODO return Failure( new Exception("") )
+    }
+  }
+
+
+  /**
+   * read unconditionally from URI,
+   * no matter what the concrete syntax is;
+   * TODO:
+   * - also load an URI with the # part
+   * - load a file: URI
+   */
+  private def readURI(
+      uri: Rdf#URI,
+      dataset: DATASET,
+      request: HTTPrequest ): (Try[Rdf#Graph], String) = {
+//    Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
+    Logger.getRootLogger().info(s"Before load uri $uri")
+
+    if (isDownloadableURI(uri)) {
+      // To avoid troubles with Jena cf https://issues.apache.org/jira/browse/JENA-1335
+      val contentType = getContentTypeFromHEADRequest(fromUri(uri))
+    	println(s""">>>> readURI: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
+      if (!contentType.startsWith("text/html") &&
+          !contentType.startsWith("ERROR") ) {
+            println(s""">>>> readURI: Failed with Jena RDF loader for <$uri>
+               trying read With explicit content Type; ContentType From HEAD Request "$contentType" """)
+            val gr = readWithContentType( uri, contentType, dataset): Try[Rdf#Graph]
+//            println(s"""readURI After readWithContentType: ${gr}""")
+            ( gr, contentType)
 
       } else {
         (Success(emptyGraph), contentType)
