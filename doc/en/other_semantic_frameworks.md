@@ -22,6 +22,7 @@ All tools below should be described this way.
 - Web Protégé forms: http://protegewiki.stanford.edu/wiki/PropertyFormPortlet#Examples ; alas one has to edit XML for portlet technology to create forms; apparently based on MongoDB, not SPARQL : https://github.com/protegeproject/webprotege/blob/master/pom.xml
 
 - https://github.com/dhlab-basel/Knora
+- [Corese](http://wimmics.inria.fr/corese) a serious infrastructure project, with SPARQL extensions, from french INRIA research institute. It's not clear what facilities it has for building applications.
 
 # Semi-Open source
 - Virtuoso, powers dbpedia.org; semi-SQL and RDF
