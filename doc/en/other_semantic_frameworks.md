@@ -4,9 +4,9 @@ Description Of A Software == DOAS
 <a href="http://deductions.github.io/doas.owl.ttl">doas.owl.ttl</a>
 
 Here is `semantic_forms`' description with this vocabulary:
-http://semantic-forms.cc:9112/display?displayuri=http%3A%2F%2Fsemantic-forms.cc%3A9112%2Fldp%2F1486672241556-2353188345672422
+http://semantic-forms.cc:9112/display?displayuri=http%3A%2F%2Fsemantic-forms.cc%3A9112%2Fldp%2F1507625359429-23306306218722977
 
-All tools below should be described this way.
+All tools below could/should be described this way.
 
 # Open source
 
