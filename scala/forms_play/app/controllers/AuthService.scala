@@ -97,13 +97,14 @@ extends Controller
             request = httpRequest)._1
     }
 
-    val content = <div>
-                    <h3 id="login">Déjà membre - Se connecter</h3>
-    	{ loginForm }
-                    <p/>
-                    <h3 id="register" name="register">Créer un compte</h3>
-      { registerForm }
-    </div>
+    val content =
+      <div>
+        <h3 id="login">Déjà membre - Se connecter</h3>
+        { loginForm }
+        <p/>
+        <h3 id="register" name="register">Créer un compte</h3>
+        { registerForm }
+      </div>
 
     val page = mainPage(content, userInfo = <div/>, lang = httpRequest.getLanguage(), title = "")
 

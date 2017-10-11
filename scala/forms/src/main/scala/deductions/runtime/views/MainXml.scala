@@ -106,7 +106,7 @@ classForContent: String = "container sf-complete-form"
    * for http://github.com/assemblee-virtuelle/semforms.git,
    * not yet used :(
    */
-  def mainPageMultipleContents(contentLeft: NodeSeq,
+  private def mainPageMultipleContents(contentLeft: NodeSeq,
     contentRight: NodeSeq,
     userInfo: NodeSeq, lang: String = "en") = {
     <html>

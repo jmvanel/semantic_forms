@@ -129,7 +129,10 @@ trait EnterButtons {
 
     <option label="sioc:Thread">                     { sioc("Thread") } </option>
     <option label="sioc:Post">                       { sioc("Post") } </option>
+    <option label="schema:Event">                    { prefixesMap2("schema")("Event") } </option>
+    <option label="event:Event">                     { prefixesMap2("event")("Event") } </option>
     <option label="ical:Vevent">                     { prefixesMap2("ical")("Vevent") } </option>
+    
     <option label="owl:Class">                       { prefixesMap2("owl")("Class") } </option>
     <option label="owl:DatatypeProperty">            { prefixesMap2("owl")("DatatypeProperty") } </option>
     <option label="owl:ObjectProperty">              { prefixesMap2("owl")("ObjectProperty") } </option>
