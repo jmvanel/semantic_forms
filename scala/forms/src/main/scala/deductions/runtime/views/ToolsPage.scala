@@ -48,14 +48,24 @@ trait ToolsPage extends EnterButtons
               "/sparql-ui",
             Seq( querySampleConstruct ))
          } 
-         </p>
+      </p>
       <p>
-      <a href={
-      //  ,query=${URLEncoder.encode(querySample, "UTF-8")
-        s"""http://yasgui.org?endpoint=$localSparqlEndpoint"""
-      } target="_blank">
-        YasGUI</a>
-        Yet Another SPARL GUI) 
+        <a href={
+          s"""http://yasgui.org?endpoint=$localSparqlEndpoint"""
+        } target="_blank">
+          YasGUI
+        </a>
+        (Yet Another SPARQL GUI)
+      </p>
+      <p>
+        <a href={
+          val sparklisServer =
+            s"http://www.irisa.fr/LIS/ferre/sparklis/osparklis.html"
+          s"""$sparklisServer?title=Semantic+forms&endpoint=$localSparqlEndpoint"""
+        } target="_blank">
+          Sparklis
+        </a>
+        (un requêteur SPARQL original et puissant)
       </p>
 
       <p> <a href="/showNamedGraphs">{ I18NMessages.get("showNamedGraphs", lang) }</a> </p>
