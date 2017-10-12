@@ -56,16 +56,16 @@ trait CommonVocabulariesLoader[Rdf <: RDF, DATASET]
       prefixesMap("skos") ::
       prefixesMap("vcard") ::
       URI(githubcontent + "/jmvanel/semantic_forms/master/scala/forms/form_specs/additions_to_vocabs.ttl" ) ::
-      // URI(githubcontent + "/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl" ) ::
       form("") ::
       prefixesMap("tm") ::
       prefixesMap("bioc") ::
       prefixesMap("seeds") ::
       prefixesMap("doas") ::
       prefixesMap("nature") ::
-      prefixesMap("geo") ::
-      prefixesMap("geoloc") ::
-      prefixesMap("vehman") ::
+      URI(geo.prefixIri) ::
+      URI(geoloc.prefixIri) ::
+      URI(vehman.prefixIri) ::
+      URI(event.prefixIri) ::
       Nil
       // "http://purl.org/ontology/mo/"
    

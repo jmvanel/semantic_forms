@@ -56,6 +56,7 @@ import scala.util.{Failure, Success, Try}
 	lazy val dc = DCPrefix[Rdf]
   lazy val orgVocab = Prefix[Rdf]("org", "http://www.w3.org/ns/org#" )
   lazy val geo = Prefix[Rdf]("geo", "http://www.w3.org/2003/01/geo/wgs84_pos#" )
+  lazy val event = Prefix[Rdf]("event", "http://purl.org/NET/c4dm/event.owl#" )
 
   lazy val dwc = Prefix[Rdf]("dwc", "http://rs.tdwg.org/dwc/terms/")
   lazy val geoloc = Prefix[Rdf]("geoloc", "http://deductions.github.io/geoloc.owl.ttl#")
@@ -91,12 +92,12 @@ import scala.util.{Failure, Success, Try}
     geoloc, vehman,
 
     Prefix[Rdf]("cco", "http://purl.org/ontology/cco/core#" ),
-    geo,
+    geo, event,
+
     // prefixes for resources
 
-//    Prefix[Rdf]("dbpedia", "http://dbpedia.org/resource/"),
     dbpedia, wikidata,
-    Prefix[Rdf]("wd",       "http://www.wikidata.org/entity/"),
+    Prefix[Rdf]("wd", "http://www.wikidata.org/entity/"),
 
     text // Jena text search
     )
