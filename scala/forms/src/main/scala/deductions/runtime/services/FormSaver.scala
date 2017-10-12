@@ -158,8 +158,12 @@ trait FormSaver[Rdf <: RDF, DATASET]
             }
           },
           _ => BNode(objectStringFromUser.replaceAll(" ", "_")), // ?? really do this ?
-          _ => Literal.tagged(objectStringFromUser,Lang(lang)))
-
+          _ =>
+            // avoids that numbers get a language tag
+            if ("[a-zA-Z]".r .findFirstMatchIn(objectStringFromUser) .isDefined )
+        	  Literal.tagged(objectStringFromUser,Lang(lang))
+          else Literal(objectStringFromUser)
+        )
         val originalData = nodeToString(originalTriple.objectt)
         val emptyUserInput: Boolean = objectStringFromUser == ""
         val differingUserInput: Boolean = objectStringFromUser != originalData
