@@ -8,16 +8,21 @@ import deductions.runtime.core.HTTPrequest
 
 /** Reverse Links Search with simple SPARQL */
 trait ReverseLinksSearchSPARQL[Rdf <: RDF, DATASET]
-    extends ParameterizedSPARQL[Rdf, DATASET] {
+  extends ParameterizedSPARQL[Rdf, DATASET]
+  with StringSearchSPARQLBase[Rdf] {
 
   private implicit val queryMaker = new SPARQLQueryMaker[Rdf] {
     override def makeQueryString(search: String*): String = {
       val q = s"""
+         |${declarePrefix(form)}
          |SELECT DISTINCT ?thing WHERE {
          |  graph ?g {
          |    ?thing ?p <${search(0)}> .
          |  }
-         |}""".stripMargin
+         |  $countPattern
+         |}
+         | ORDER BY DESC(?COUNT)
+         |""".stripMargin
 //         println( s"query $q")
          q
     }

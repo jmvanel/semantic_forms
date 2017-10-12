@@ -70,10 +70,7 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |  graph ?g {
          |    ${textQuery(search)}
          |  }
-         |  OPTIONAL {
-         |   graph ?g1 {
-         |    ?thing form:linksCount ?COUNT.
-         |  } }
+         |  $countPattern
          |}
          |ORDER BY DESC(?COUNT)
          |LIMIT 10
@@ -90,10 +87,7 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |    ${textQuery(search)}
          |    ?thing a ${classCriterium(classe)} .
          |  }
-         |  OPTIONAL {
-         |   graph ?g1 {
-         |    ?thing form:linksCount ?COUNT.
-         |  } }
+         |  $countPattern
          |}
          |ORDER BY DESC(?COUNT)
          |LIMIT 10
@@ -113,6 +107,12 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |}
          |LIMIT 15
          |""".stripMargin
+
+  val countPattern =
+    """|  OPTIONAL {
+         |   graph ?grCount {
+         |    ?thing form:linksCount ?COUNT.
+         |  } }""".stripMargin
 
   /** prepare Search String: trim, and replace ' with \' */
   private def prepareSearchString(search: String) = {
