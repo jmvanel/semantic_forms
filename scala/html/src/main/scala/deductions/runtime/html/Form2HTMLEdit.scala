@@ -80,6 +80,13 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
             size={inputSize.toString()}
 			dropzone="copy"
             autocomplete={if (lookupActivatedFor(resourceEntry)) "off" else null}
+            type={
+              if( resourceEntry.property.toString() . toLowerCase().endsWith("mbox"))
+            	  "email"
+            	else if( resourceEntry.property.toString() . toLowerCase().endsWith("phone"))
+            		"tel"
+              else
+                ""}
             >
           </input> , resourceEntry) }
             {makeUserInfoOnTriples(resourceEntry.metadata,resourceEntry.timeMetadata)}
@@ -254,7 +261,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
             toPlainString(value)
           } name={
             lit.htmlName } type={
-            if( lit.property.toString() .endsWith("password"))
+            if( lit.property.toString() . toLowerCase().endsWith("password"))
               "password"
             else
               xsd2html5TnputType(type_.toString())
