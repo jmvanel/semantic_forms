@@ -1,7 +1,9 @@
+// require("jquery-ui")
 
 $(document).ready(function() {
     var topics = [];
     $(".sf-standard-form").on('focus', '.sfLookup', function(event) {
+	var inputElement = $(this);
         $(this).autocomplete({
             autoFocus: true,
             minlength: 3,
@@ -23,7 +25,12 @@ $(document).ready(function() {
                 }
             },
             source: function(request, callback) {
-                console.log("Déclenche l'événement /lookup pour " + request.term);
+		var inputElementContainsURL = request .term. startsWith("http://");
+		if( inputElementContainsURL )
+			// remove progression indicator because user has already selected
+			inputElement.removeClass('sf-suggestion-search');
+		else {
+		console.log("Déclenche l'événement /lookup pour " + request.term);
                 var typeName;
                 var stringToSearch;
                 var $el = $(event.target);
@@ -58,6 +65,7 @@ $(document).ready(function() {
 			console.log(error.statusText);
 			console.log(error);
 		});
+            }
             }
         })
     });

@@ -83,7 +83,8 @@ classForContent: String = "container sf-complete-form"
         <div class="col-xs-12 col-sm-12 col-md-12 col-md-offset-1">
           <div class="col-xs-6 col-sm-4  col-md-1" >{
             if (displaySearch){
-              <button type="button" class="form-control btn btn-primary" data-toggle="collapse" data-target="#collapseDisplay">{ messageI18N("Reduce") }</button>
+              <button type="button" class="form-control btn btn-primary" data-toggle="collapse" data-target="#collapseDisplay">{
+                messageI18N("Reduce") }</button>
             }
             }
           </div>

@@ -18,6 +18,7 @@ var urlReqPrefix = "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?Query
 $(document).ready(function() {
     var topics = [];
     $(".sf-standard-form").on('focus', '.hasLookup', function(event) {
+	var inputElement = $(this);
         $(this).autocomplete({
             autoFocus: true,
             minlength: 3,
@@ -39,6 +40,13 @@ $(document).ready(function() {
                 }
             },
             source: function(request, callback) {
+		console.log(" source: function: request .term " + request .term);
+		var inputElementContainsURL = request .term. startsWith("http://");
+		if( inputElementContainsURL )
+			// $(this).removeClass('sf-suggestion-search');
+			inputElement.removeClass('sf-suggestion-search');
+		// if( ! request .term. startsWith("http://") )
+		else {
                 console.log("Déclenche l'événement lookup.dbpedia.org pour " + request.term )
 
 		// DONE added QueryClass
@@ -99,6 +107,7 @@ $(document).ready(function() {
                     });
                     };
                 })
+            }
             }
         })
     });
