@@ -26,8 +26,20 @@
 .sf-space-form{
     /*margin-bottom: 10px;*/
 }
-.sf-suggestion-search {
+
+.sf-suggestion-search-dbpedia {
     background-image: url(../images/ripple.gif);
+    background-repeat: no-repeat;
+    background-position: right 0;
+    background-size: contain;
+}
+.sf-suggestion-search-sf {
+    background-image: url(../images/ripple-sf.gif);
+    background-repeat: no-repeat;
+    background-position: right 0;
+    background-size: contain;
+}
+.sf-suggestion-search-common {
     background-repeat: no-repeat;
     background-position: right 0;
     background-size: contain;

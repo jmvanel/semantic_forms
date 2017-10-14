@@ -1,5 +1,7 @@
+// require("jquery-ui")
+
 // https://github.com/dbpedia/lookup
-// wget "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=10&QueryString=berl" --header='Accept: application/json'
+// wget "http://    lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=10&QueryString=berl" --header='Accept: application/json'
 
 /* pulldown menu in <input> does show on Chrome; Opera, Android ????
 see
@@ -11,21 +13,24 @@ https://github.com/scala-js/scala-js-jquery
 https://www.google.fr/search?q=ajax+example+scala.js
  */
 
-var resultsCount = 15;
-var urlReqPrefix = "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=" +
-      resultsCount + "&QueryString=" ;
-
 $(document).ready(function() {
+
+    var resultsCount = 15;
+    var urlReqPrefix = "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=" +
+      resultsCount + "&QueryString=" ;
+    var suggestionSearchCSSclass = 'sf-suggestion-search-dbpedia';
     var topics = [];
+
     $(".sf-standard-form").on('focus', '.hasLookup', function(event) {
+	var inputElement = $(this);
         $(this).autocomplete({
             autoFocus: true,
             minlength: 3,
             search: function() {
-                $(this).addClass('sf-suggestion-search')
+                $(this).addClass(suggestionSearchCSSclass)
             },
             open: function() {
-                $(this).removeClass('sf-suggestion-search')
+                $(this).removeClass(suggestionSearchCSSclass)
             },
             select: function( event, ui ) {
                 console.log( "Topic chosen label event ");
@@ -39,6 +44,13 @@ $(document).ready(function() {
                 }
             },
             source: function(request, callback) {
+		console.log(" source: function: request .term " + request .term);
+		var inputElementContainsURL = request .term. startsWith("http://");
+		if( inputElementContainsURL )
+			// $(this).removeClass(suggestionSearchCSSclass);
+			inputElement.removeClass(suggestionSearchCSSclass);
+		// if( ! request .term. startsWith("http://") )
+		else {
                 console.log("Déclenche l'événement lookup.dbpedia.org pour " + request.term )
 
 		// DONE added QueryClass
@@ -80,7 +92,7 @@ $(document).ready(function() {
                     /* TODO:
                      * - in secure context (window.isSecureContext == true) /lookup is launched with http,
                      *   which entails message:
-                         jquery.min.js:4 Mixed Content: The page at 'https://semantic-forms.cc:5555/create?uri=bioc%3APlanting&uri=http%3A%2F%2F….com%2Fjmvanel%2Fsemantic_forms%2Fmaster%2Fvocabulary%2Fforms%23personForm' was loaded over HTTPS, but requested an insecure XMLHttpRequest endpoint 'http://lookup.dbpedia.org/api/search/PrefixSearch?MaxHits=15&QueryClass=Species&QueryString=Allium'. This request has been blocked; the content must be served over HTTPS.
+                         jquery.min.js:4 Mixed Content: The page at 'https://semantic-forms.cc:5555/create?uri=bioc%3APlanting&uri=http%3A%2F%2F….com%2Fjmvanel%2Fsemantic_forms%2Fmaster%2Fvocabulary%2Fforms%23personForm' was loaded over HTTPS, but requested an insecure XMLHttpRequest endpoint 'http://lookup.dbpedia.org/api/search/PrefixSearch?MaxHits=    15&QueryClass=Species&QueryString=Allium'. This request has been blocked; the content must be served over HTTPS.
                        - there is duplicated code, here and in lookup.js
                      */
                     $.ajax({
@@ -99,6 +111,7 @@ $(document).ready(function() {
                     });
                     };
                 })
+            }
             }
         })
     });
