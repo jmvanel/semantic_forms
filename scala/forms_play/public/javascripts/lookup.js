@@ -1,17 +1,20 @@
 // require("jquery-ui")
 
 $(document).ready(function() {
+
+    var suggestionSearchCSSclass = 'sf-suggestion-search-sf';
     var topics = [];
+
     $(".sf-standard-form").on('focus', '.sfLookup', function(event) {
 	var inputElement = $(this);
         $(this).autocomplete({
             autoFocus: true,
             minlength: 3,
             search: function() {
-                $(this).addClass('sf-suggestion-search')
+                $(this).addClass(suggestionSearchCSSclass)
             },
             open: function() {
-                $(this).removeClass('sf-suggestion-search')
+                $(this).removeClass(suggestionSearchCSSclass)
             },
             select: function( event, ui ) {
                 console.log( "Topic chosen label event ");
@@ -28,7 +31,7 @@ $(document).ready(function() {
 		var inputElementContainsURL = request .term. startsWith("http://");
 		if( inputElementContainsURL )
 			// remove progression indicator because user has already selected
-			inputElement.removeClass('sf-suggestion-search');
+			inputElement.removeClass(suggestionSearchCSSclass);
 		else {
 		console.log("Déclenche l'événement /lookup pour " + request.term);
                 var typeName;
