@@ -45,7 +45,9 @@ $(document).ready(function() {
             },
             source: function(request, callback) {
 		console.log(" source: function: request .term " + request .term);
-		var inputElementContainsURL = request .term. startsWith("http://");
+		var inputElementContainsURL =
+			request .term. startsWith("http://") ||
+			request .term. startsWith("urn:") ;
 		if( inputElementContainsURL )
 			// $(this).removeClass(suggestionSearchCSSclass);
 			inputElement.removeClass(suggestionSearchCSSclass);
