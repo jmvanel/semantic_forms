@@ -7,6 +7,8 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#>.
 @prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix sioc: <http://rdfs.org/sioc/ns#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
 
 # Additions to FOAF vocab' ;
 # the forms system infers possible values based on rdfs:range,
@@ -68,3 +70,11 @@ vehma:SIMCard foaf:img <SIMCard.svg> .
 @prefix geoloc: <http://deductions.github.io/geoloc.owl.ttl#> .
 geoloc:MobilePoint foaf:img <point.png> .
 geoloc:Mobile foaf:img <mobile.png> .
+
+sioc:Post foaf:img <post-07-512.png> .
+sioc:Thread foaf:img <chat_019-message_thread-conversation-bubble-talk-512.png> .
+sioc:Item foaf:img <if_speech-bubble-alt-3_2628494.svg> .
+
+dcat:Dataset foaf:img <dataset-78-256.png> .
+dcat:Catalog foaf:img <catalog_seo2-34-256.png> .
+
