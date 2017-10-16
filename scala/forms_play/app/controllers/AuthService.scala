@@ -172,7 +172,7 @@ println( s"useridOption $useridOption, passwordOption $passwordOption" )
       triple.predicate(ops) -> values.headOption
     }
     val predicateToValueMap = predicateToValue.toMap
-    println(s"predicateToValueMap $predicateToValueMap")
+    println(s"decodeResponse: predicateToValueMap $predicateToValueMap")
 
     val useridOption = predicateToValueMap.get(useridProp).flatten
     val passwordOption = predicateToValueMap.get(passwordProp).flatten
@@ -187,10 +187,11 @@ println( s"useridOption $useridOption, passwordOption $passwordOption" )
   def register = Action {
     implicit request: Request[_] =>
       val httpRequest = copyRequest(request)
-      println(s"register = Action: Request:\n\t$httpRequest")
+//      println(s"register = Action: Request:\n\t$httpRequest")
 
       val (useridOption, passwordOption, confirmPasswordOption) = decodeResponse(httpRequest)
 
+      println(s"register = Action: :\n\tuseridOption $useridOption, passwordOption $passwordOption, confirmPasswordOption $confirmPasswordOption")
       val checkRegisterOption = for (
         userid <- useridOption;
         password <- passwordOption;

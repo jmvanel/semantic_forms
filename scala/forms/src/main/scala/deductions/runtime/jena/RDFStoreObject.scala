@@ -198,7 +198,7 @@ trait RDFStoreLocalJenaProvider
     val request = new HttpGet(fromUri(uri))
 
     // For Virtuoso :(
-    val contentTypeNormalized = contentType.replaceAll("; .*", "")
+    val contentTypeNormalized = contentType.replaceAll(";.*", "")
     println(s"readWithContentTypeNoJena: contentTypeNormalized: $contentTypeNormalized ")
 
     val tryResponse = Try {
@@ -234,6 +234,11 @@ trait RDFStoreLocalJenaProvider
         println(s"readWithContentTypeNoJena: reader $reader =========")
         val res = reader.read(inputStream, fromUri(uri))
 
+//        if (fromUri(uri).contains("additions_to_vocabs.ttl")) {
+//          println(s"readWithContentTypeNoJena: ${fromUri(uri)}")
+//          println(s"readWithContentTypeNoJena: ${res.get.triples}")
+//        }
+              
         if (res.isFailure) {
           println(s"readWithContentTypeNoJena: reader.read() result: $res")
           val response = httpClient.execute(request)
@@ -241,7 +246,6 @@ trait RDFStoreLocalJenaProvider
           val rdr = new InputStreamReader(inputStream)
           val writer = new StringWriter()
           IOUtils.copy(inputStream, writer, "utf-8")
-          //        println(s"readWithContentTypeNoJena: response $writer")
           val rdfString = writer.toString()
           println(s"readWithContentTypeNoJena: rdfString ${rdfString.substring(0,
               Math.min(2000, rdfString.length() )

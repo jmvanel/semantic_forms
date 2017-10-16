@@ -28,7 +28,9 @@ $(document).ready(function() {
                 }
             },
             source: function(request, callback) {
-		var inputElementContainsURL = request .term. startsWith("http://");
+		var inputElementContainsURL =
+			request .term. startsWith("http://") ||
+			request .term. startsWith("urn:") ;
 		if( inputElementContainsURL )
 			// remove progression indicator because user has already selected
 			inputElement.removeClass(suggestionSearchCSSclass);

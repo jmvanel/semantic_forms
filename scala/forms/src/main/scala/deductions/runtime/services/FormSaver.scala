@@ -59,7 +59,8 @@ trait FormSaver[Rdf <: RDF, DATASET]
   private def getTriplesFromHTTPparams(queryString: Map[String, Seq[String]])
   : Iterable[(Rdf#Triple, Seq[String])] = {
 
-    log(s"\n>>>>==== getTriplesFromHTTPparams: query map keys: ${queryString.keys}");
+    log(
+      s"\n>>>>==== getTriplesFromHTTPparams: query map keys: ${queryString.keys}");
 
     val res = queryString. toSeq. map {
       // cf partial functions:  http://blog.bruchez.name/2011/10/scala-partial-functions-without-phd.html
@@ -245,7 +246,9 @@ trait FormSaver[Rdf <: RDF, DATASET]
       f.onFailure { case t => logger.error(s"doSave: Failure $t") }
     }
 
-  private def log(s: String) = logger.debug(s)
+  private def log(s: String) =
+    // println("FormSaver: "+s)
+		logger.debug(s)
 
 }
 

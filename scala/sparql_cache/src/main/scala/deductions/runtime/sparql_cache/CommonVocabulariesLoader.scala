@@ -132,4 +132,8 @@ trait CommonVocabulariesLoader[Rdf <: RDF, DATASET]
     }
   }
 
+    def loadCommonVocabulariesTest() {
+    	readStoreUriInNamedGraph( URI(githubcontent + "/jmvanel/semantic_forms/master/scala/forms/form_specs/additions_to_vocabs.ttl") )
+    }
+
 }
