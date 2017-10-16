@@ -17,5 +17,6 @@ object CommonVocabulariesLoaderApp
   }
   with DependenciesForApps
   with CommonVocabulariesLoader[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
-    loadCommonVocabularies()
+     loadCommonVocabularies()
+//    loadCommonVocabulariesTest()
   }
