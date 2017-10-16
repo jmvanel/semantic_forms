@@ -62,6 +62,7 @@ import scala.util.{Failure, Success, Try}
   lazy val geoloc = Prefix[Rdf]("geoloc", "http://deductions.github.io/geoloc.owl.ttl#")
   lazy val vehman = Prefix[Rdf]("vehman", "http://deductions.github.io/vehicule-management.owl.ttl#")
   lazy val vehma = Prefix[Rdf]("vehma", "http://deductions.github.io/vehicule-management.owl.ttl#")
+  lazy val dcat = Prefix[Rdf]("dcat", "http://www.w3.org/ns/dcat#")
 
   lazy val prefixesList = List(
 		  // prefixes for ontologies
@@ -93,6 +94,7 @@ import scala.util.{Failure, Success, Try}
 
     Prefix[Rdf]("cco", "http://purl.org/ontology/cco/core#" ),
     geo, event,
+    dcat,
 
     // prefixes for resources
 
