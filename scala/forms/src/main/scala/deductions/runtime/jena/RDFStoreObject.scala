@@ -199,7 +199,7 @@ trait RDFStoreLocalJenaProvider
 
     // For Virtuoso :(
     val contentTypeNormalized = contentType.replaceAll(";.*", "")
-    println(s"readWithContentTypeNoJena: contentTypeNormalized: $contentTypeNormalized ")
+    println(s"readWithContentTypeNoJena: contentTypeNormalized: $contentTypeNormalized")
 
     val tryResponse = Try {
       request.addHeader("Accept", contentTypeNormalized)

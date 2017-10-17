@@ -25,6 +25,7 @@ import org.apache.jena.riot.RDFParser
 import org.w3.banana.io.JsonLd
 import org.w3.banana.io.RDFWriter
 import org.w3.banana.io.JsonLdCompacted
+import java.net.URL
 
 /** implicit RDFReader's - TODO remove DATASET */
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
@@ -291,7 +292,7 @@ extends
    */
   private def readStoreURIinOwnGraph(uri: Rdf#URI): Rdf#Graph = {
     val graphFromURI = readStoreURI(uri, uri, dataset)
-    println("RDFCacheAlgo.storeURI " + uri + " size: " + graphFromURI.size)
+    println("After RDFCacheAlgo.storeURI " + uri + " size: " + graphFromURI.size)
     wrapInTransaction {
       val it = find(graphFromURI, ANY, owl.imports, ANY)
       for (importedOntology <- it) {
@@ -382,7 +383,7 @@ extends
     if (isDownloadableURI(uri)) {
       // To avoid troubles with Jena cf https://issues.apache.org/jira/browse/JENA-1335
       val contentType = getContentTypeFromHEADRequest(fromUri(uri))
-    	println(s""">>>> readURI: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
+    	println(s""">>>> readURIWithJenaRdfLoader: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
       if (!contentType.startsWith("text/html") &&
           !contentType.startsWith("ERROR") ) {
         setTimeoutsFromConfig()
@@ -402,7 +403,7 @@ extends
 //            if( contentType != "ERROR" ) {
             /* NOTE: hoping that Jena > 3.4.0 will solve all issues on RDFDataMgr,
              * but before that , we try this */
-            println(s""">>>> readURI: Failed with Jena RDF loader for <$uri>
+            println(s""">>>> readURIWithJenaRdfLoader: Failed with Jena RDF loader for <$uri>
                trying read With explicit content Type; ContentType From HEAD Request "$contentType" """)
             val gr = readWithContentType( uri, contentType, dataset): Try[Rdf#Graph]
 //            println(s"""readURI After readWithContentType: ${gr}""")
@@ -440,7 +441,7 @@ extends
     	println(s""">>>> readURI: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
       if (!contentType.startsWith("text/html") &&
           !contentType.startsWith("ERROR") ) {
-            println(s""">>>> readURI: Failed with Jena RDF loader for <$uri>
+            println(s""">>>> readURI: for <$uri>
                trying read With explicit content Type; ContentType From HEAD Request "$contentType" """)
             val gr = readWithContentType( uri, contentType, dataset): Try[Rdf#Graph]
 //            println(s"""readURI After readWithContentType: ${gr}""")
@@ -459,10 +460,10 @@ extends
   /** pasted from Apache HTTP client doc
    *  https://hc.apache.org/httpcomponents-client-ga/
    * */
-  def getContentTypeFromHEADRequest(url: String): String = {
+  def getContentTypeFromHEADRequest(url0: String): String = {
+    val url = url0 // TODO: test more: fromUri(withoutFragment(URI(url0)))
     val requestConfig = RequestConfig.custom().setConnectTimeout(5 * 1000).build();
     val httpclient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
-//    val httpclient = HttpClients.createDefault();
     try {
       val httpHead = new HttpHead(url)
       // TODO somehow reuse trait RDFContentNegociation
