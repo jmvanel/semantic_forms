@@ -31,8 +31,9 @@ Some people speak of "triple store", or "graph database", or "triple database", 
   - Java 8 ,
   - [SBT](http://www.scala-sbt.org/) (a build tool like Maven or npm) or [Typesafe Activator](http://typesafe.com/platform/getstarted) .
 ```shell
-wget https://dl.bintray.com/sbt/native-packages/sbt/0.13.13/sbt-0.13.13.tgz
-tar xvzf sbt-0.13.13.tgz
+SBT_VERSION=0.13.16
+wget https://dl.bintray.com/sbt/native-packages/sbt/$SBT_VERSION/sbt-$SBT_VERSION.tgz
+tar xvzf sbt-$SBT_VERSION.tgz
 # or use Linux package manager if you prefer:
 sudo apt-get install sbt
 ```
@@ -43,7 +44,7 @@ Then SBT will download the libraries and dependencies.
 - start sbt from the shell
 - type in the SBT console :
 ```
-       ++2.11.8
+       ++2.11.11
        publishLocal
 ```
 - download the source from [semantic\_forms on github](https://github.com/jmvanel/semantic_forms/)
