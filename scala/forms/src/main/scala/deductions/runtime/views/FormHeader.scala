@@ -46,7 +46,8 @@ trait FormHeader[Rdf <: RDF, DATASET]
     val expertLinks = (if (showExpertButtons) {
       Seq(makeBackLinkButton(uri),
         new Text("  "),
-        makeDrawGraphLink(uri))
+        makeDrawGraphLink(uri),
+        makeNeighborhoodLink(uri))
     } else new Text(""))
     
     val expertLinksOWL = (if (showExpertButtons && isOWLURI(uri) ) {

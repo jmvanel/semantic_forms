@@ -165,7 +165,9 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       filterMetadataSPARQL(
         metadata,
         request,
-        neighborhoodSearchSPARQL(params("uri").headOption.getOrElse("")))
+        neighborhoodSearchSPARQL(
+            expandOrUnchanged(
+                params("uri").headOption.getOrElse(""))))
     } else metadata
   }
 
@@ -177,8 +179,10 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   private def filterMetadataSPARQL(
     metadata: List[Seq[Rdf#Node]],
     request:  HTTPrequest, querySPARQL: String = ""): List[Seq[Rdf#Node]] = {
+    println (s"""===== filterMetadataSPARQL: querySPARQL $querySPARQL""")
 
     val results = sparqlSelectQuery(querySPARQL)
+//    println (s"""===== filterMetadataSPARQL: results $results """)
 
     /* merge URI's from query with metadata:
      * filter metadata with URI's in result */
@@ -186,9 +190,12 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       l => l.headOption.getOrElse(nullURI)
     }.toSet
 
+    println (s"""===== filterMetadataSPARQL: uris $uris""")
+
     metadata.filter {
       row =>
         val uri = row(0)
+        println (s"""== uri $uri""")
         uris . contains(uri)
     }
   }
