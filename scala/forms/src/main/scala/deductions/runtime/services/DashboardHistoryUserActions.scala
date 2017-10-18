@@ -23,7 +23,8 @@ import scala.xml.Elem
 trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   extends RDFStoreLocalProvider[Rdf, DATASET]
   with TimeSeries[Rdf, DATASET]
-  with ParameterizedSPARQL[Rdf, DATASET] {
+  with ParameterizedSPARQL[Rdf, DATASET]
+  with NavigationSPARQLBase[Rdf] {
 
   import ops._
 
@@ -39,7 +40,8 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
    */
   def makeTableHistoryUserActions(request: HTTPrequest)(limit: String): NodeSeq = {
     val metadata0 = getMetadata()(limit)
-    val metadata = filterMetadata(metadata0, request)
+    val metadata1 = filterMetadata(metadata0, request)
+    val metadata = filterMetadataFocus(metadata1, request)
     implicit val lang = request.getLanguage()
     val historyLink: Elem = {
       if (limit != "")
@@ -103,25 +105,31 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   /**
    * filter Metadata according to HTTP request, eg
    *  rdf:type=foaf:Person
+   *
+   *  @param metadata List of Seq'q with subject, timestamp, triple count, user; ordered by recent first;
    */
   private def filterMetadata(
     metadata: List[Seq[Rdf#Node]],
-    request:   HTTPrequest): List[Seq[Rdf#Node]] = {
+    request:  HTTPrequest): List[Seq[Rdf#Node]] = {
     val params = request.queryString
     if (params.size > 1 ||
-      (params.size == 1 && params.head._1 != "limit")) {
+      (params.size == 1 &&
+        params.head._1 != "limit" &&
+        params.head._1 != "uri" &&
+        params.head._1 != "query")) {
 
       wrapInReadTransaction {
-      var filteredURIs = metadata
-      for ((param0, values) <- params) {
-        filteredURIs = filterOneCriterium(param0, values, filteredURIs)
-      }
-      filteredURIs
-      } . getOrElse(metadata)
+        var filteredURIs = metadata
+        for ((param0, values) <- params) {
+          filteredURIs = filterOneCriterium(param0, values, filteredURIs)
+        }
+        filteredURIs
+      }.getOrElse(metadata)
     } else
       metadata
   }
 
+  /**  @param metadata List of Seq'q with subject, timestamp, triple count, user; ordered by recent first; */
   private def filterOneCriterium(
     param0: String, values: Seq[String],
     metadata: List[Seq[Rdf#Node]]): List[Seq[Rdf#Node]] = {
@@ -132,14 +140,56 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
         val value = expandOrUnchanged(value0)
         println(s"filterMetadata: actually filter for param <$param> = <$value>")
         filteredURIs = filteredURIs.filter {
-          uri =>
-            val uri1 = uri(0)
+          row =>
+            val uri = row(0)
             !find(
               allNamedGraph,
-              uri1, URI(param), URI(value)).isEmpty
+              uri, URI(param), URI(value)).isEmpty
         }
       }
     }
     filteredURIs
+  }
+
+  /**
+   * filter Metadata with focus on an URI, according to HTTP request, eg
+   *  uri=http://site.com
+   */
+  private def filterMetadataFocus(
+    metadata: List[Seq[Rdf#Node]],
+    request:  HTTPrequest, querySPARQL: String = ""): List[Seq[Rdf#Node]] = {
+
+    val params = request.queryString
+    if (params.contains("uri")) {
+      println ("""===== filterMetadataFocus: params.contains("uri")""")
+      filterMetadataSPARQL(
+        metadata,
+        request,
+        neighborhoodSearchSPARQL(params("uri").headOption.getOrElse("")))
+    } else metadata
+  }
+
+  /**
+   * filter Metadata according to HTTP request, eg
+   *  query=CONSTRUCT ...
+   *  @param metadata List of Seq'q with subject, timestamp, triple count, user; ordered by recent first
+   */
+  private def filterMetadataSPARQL(
+    metadata: List[Seq[Rdf#Node]],
+    request:  HTTPrequest, querySPARQL: String = ""): List[Seq[Rdf#Node]] = {
+
+    val results = sparqlSelectQuery(querySPARQL)
+
+    /* merge URI's from query with metadata:
+     * filter metadata with URI's in result */
+    val uris = results.get.map {
+      l => l.headOption.getOrElse(nullURI)
+    }.toSet
+
+    metadata.filter {
+      row =>
+        val uri = row(0)
+        uris . contains(uri)
+    }
   }
 }

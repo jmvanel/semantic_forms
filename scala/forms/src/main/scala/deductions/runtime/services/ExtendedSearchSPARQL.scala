@@ -12,55 +12,25 @@ import scala.xml.NodeSeq
  *  http://localhost:9000/esearch?q=http%3A%2F%2Fjmvanel.free.fr%2Fjmv.rdf%23me
  */
 trait ExtendedSearchSPARQL[Rdf <: RDF, DATASET]
-    extends ParameterizedSPARQL[Rdf, DATASET]
-    with RDFPrefixes[Rdf] {
+  extends ParameterizedSPARQL[Rdf, DATASET]
+  with RDFPrefixes[Rdf]
+  with NavigationSPARQLBase[Rdf] {
 
   import config._
 
   private implicit val queryMaker = new SPARQLQueryMaker[Rdf] {
     override def makeQueryString(searchStrings: String*): String = {
-    	val search = searchStrings(0)
-      val q = s"""
-       |# ${declarePrefix(foaf)}
-       |SELECT DISTINCT ?thing (COUNT(*) as ?count) WHERE {
-       | graph ?g {
-       |    # "backward" links distance 2
-       |    ?TOPIC ?PRED <$search> .
-       |    ?thing ?PRED2  ?TOPIC .
-       | }
-       | OPTIONAL {
-       |  graph ?g {
-       |    # "forward-backward" links distance 2
-       |    <$search> ?PRED3 ?TOPIC2 .
-       |    ?thing ?PRED4 ?TOPIC2 .
-       |  }
-       | }
-       | OPTIONAL {
-       |  graph ?g {
-       |    # "forward" links distance 2
-       |    <$search> ?PRED41 ?TOPIC3 .
-       |    ?TOPIC3 ?PRED5 ?thing .
-       |  }
-       | }
-       | OPTIONAL {
-       |  graph ?g {
-       |    # "backward-forward" links distance 2
-       |    ?TOPIC4 ?PRED6 <$search> .
-       |    ?TOPIC4 ?PRED7 ?thing . 
-       |  }
-       | }
-       |}
-       |GROUP BY ?thing
-       |ORDER BY DESC(?count)
-       """.stripMargin
-      logger.debug("extendedSearch: query: " + q)
-      q
+      val search = searchStrings(0)
+      val sparqLQuery = extendedSearchSPARQL(search)
+      logger.debug(s"extendedSearch: query: $sparqLQuery")
+      sparqLQuery
     }
   }
 
   def extendedSearch(uri: String, hrefPrefix: String = hrefDisplayPrefix): Future[NodeSeq] =
-    search(hrefPrefix,
-        "fr", // TODO <<<<<<<<<<<<<<
-        Seq(uri))
+    search(
+      hrefPrefix,
+      "fr", // TODO <<<<<<<<<<<<<<
+      Seq(uri))
 
 }
