@@ -53,9 +53,10 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
   def search(
     hrefPrefix: String,
     lang:       String,
-    search:     Seq[String], variables: Seq[String] = Seq("?thing"))(implicit queryMaker: SPARQLQueryMaker[Rdf]): Future[NodeSeq] = {
+    search:     Seq[String],
+    variables: Seq[String] = Seq("?thing"))(implicit queryMaker: SPARQLQueryMaker[Rdf]): Future[NodeSeq] = {
+    println(s"search($search) 1: starting TRANSACTION for dataset $dataset")
     val elem0 = rdfStore.rw(dataset, {
-      println(s"search($search) 1: starting TRANSACTION for dataset $dataset")
       val uris = search_onlyNT(search, variables)
       println(s"\tsearch(): URI's $uris")
       val graph: Rdf#Graph = allNamedGraph
