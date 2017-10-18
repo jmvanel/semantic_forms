@@ -44,6 +44,18 @@ trait BasicWidgets extends RDFPrefixesInterface {
     else <div></div>
   }
   
+  def makeNeighborhoodLink( uri: String ): Elem = {
+		val link = "/history?uri=" + URLEncoder.encode( uri, "utf-8")
+    if( uri != "" )
+      <a class="btn btn-default btn-xs" href={ link }
+         title={s"Neighborhood for $uri"}
+         target="_blank">
+			  <img width="20" border="0" src="/assets/images/radial_layout.png"
+             alt=""/>
+      </a>
+		else <div></div>
+  }
+
   /** make link to  WebVOWL
    *  TODO: paste of preceding function !!!!!!!!!!!!! */
   def makeDrawGraphLinkVOWL( uri: String,

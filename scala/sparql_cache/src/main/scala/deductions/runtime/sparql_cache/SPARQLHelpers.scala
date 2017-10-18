@@ -13,6 +13,8 @@ import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
+import org.w3.banana.SparqlEngine
+
 /**
  * TODO separate stuff depending on dataset, and stuff taking a graph in argument
  * @author jmv
@@ -55,6 +57,26 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     result
   }
 
+
+  val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]
+
+  /** */
+  def sparqlConstructQueryFromGraph(queryString: String, graph: Rdf#Graph,
+      bindings: Map[String, Rdf#Node] = Map() ): Try[Rdf#Graph] = {
+    val result = for {
+      query <- {
+        logger.debug("sparqlConstructQuery: before parseConstruct")
+        parseConstruct(queryString)
+      }
+//      _ = println( s"sparqlConstructQueryFromGraph: query $query" )
+      es <- {
+        logger.debug("sparqlConstructQueryFromGraph: before executeConstruct")
+        sparqlGraph.executeConstruct(graph, query, bindings)
+      }
+    } yield es
+    result
+  }
+    
   /**
    * sparql Construct Query;
    * With transaction
@@ -394,7 +416,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   }
 
   /**
-   * run SPARQL SELECT on given dataset; transactional;
+   * run SPARQL SELECT on given dataset;
+   * transactional;
+   * @param query : a compiled query
    * the first row is the variables' list
    *  used in trait InstanceLabelsFromLabelProperty
    */
