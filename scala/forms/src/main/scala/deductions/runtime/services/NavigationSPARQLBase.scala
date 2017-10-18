@@ -45,43 +45,47 @@ trait NavigationSPARQLBase[Rdf <: RDF]
   /** neighborhood Search SPARQL: like extendedSearchSPARQL + reverse + direct */
   def neighborhoodSearchSPARQL(search: String) = s"""
        |# ${declarePrefix(foaf)}
-       |SELECT DISTINCT ?thing (COUNT(*) as ?count) WHERE {
-       | graph ?g {
+       |SELECT DISTINCT ?thing 
+       |# (COUNT(*) as ?count)
+       |WHERE {
+       | {
+       |  graph ?gbb {
        |    # "backward" links distance 2
        |    ?TOPIC ?PRED <$search> .
        |    ?thing ?PRED2  ?TOPIC .
-       | }
-       | OPTIONAL {
-       |  graph ?g {
+       | } }
+       | UNION {
+       |  graph ?gfb {
        |    # "forward-backward" links distance 2
        |    <$search> ?PRED3 ?TOPIC2 .
        |    ?thing ?PRED4 ?TOPIC2 .
        |  }
        | }
-       | OPTIONAL {
-       |  graph ?g {
+       | UNION {
+       |  graph ?gff {
        |    # "forward" links distance 2
        |    <$search> ?PRED41 ?TOPIC3 .
        |    ?TOPIC3 ?PRED5 ?thing .
        |  }
        | }
-       | OPTIONAL {
-       |  graph ?g {
+       | UNION {
+       |  graph ?gbf {
        |    # "backward-forward" links distance 2
        |    ?TOPIC4 ?PRED6 <$search> .
        |    ?TOPIC4 ?PRED7 ?thing . 
        |  }
        | }
        | # reverse links
-       | OPTIONAL {
-       |  graph ?g {
+       | UNION {
+       |  graph ?gb {
        |    ?thing ?PREDREV <${search}> .
        |  }
        | }
        | # direct links
-       | OPTIONAL {
-       |  graph ?g {
+       | UNION {
+       |  graph ?gf {
        |    <${search}> ?PREDDIRECT ?thing .
+       |    filter( isURI(?thing) )
        |  }
        | }
        |}
