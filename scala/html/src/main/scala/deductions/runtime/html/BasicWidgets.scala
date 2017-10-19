@@ -48,7 +48,7 @@ trait BasicWidgets extends RDFPrefixesInterface {
 		val link = "/history?uri=" + URLEncoder.encode( uri, "utf-8")
     if( uri != "" )
       <a class="btn btn-default btn-xs" href={ link }
-         title={s"Neighborhood for $uri"}
+         title={s"Neighborhood for <$uri> paths of length <= 2 sorted in chronological order"}
          target="_blank">
 			  <img width="20" border="0" src="/assets/images/radial_layout.png"
              alt=""/>

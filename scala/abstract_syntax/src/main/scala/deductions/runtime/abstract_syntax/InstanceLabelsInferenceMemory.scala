@@ -31,18 +31,22 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   }
 
   def instanceDescription(subjectNode: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
-    stringFromLiteralPred(subjectNode, rdfs.comment)
-      .getOrElse(stringFromLiteralPred(subjectNode, dct("description")).getOrElse(""))
+    stringFromLiteralPred(subjectNode, rdfs.comment, lang)
+      .getOrElse(stringFromLiteralPred(subjectNode, dct("description"), lang).getOrElse(""))
   }
 
   def instanceImage(subjectNode: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
-	  stringFromLiteralPred(subjectNode, foaf.img ).getOrElse("")
+	  stringFromLiteralPred(subjectNode, foaf.img, lang ).getOrElse("")
   }
 
   def instanceTypeLabel(subjectNode: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
 	  stringFromObjectPred(subjectNode, rdf.typ ).getOrElse("")
   }
 
+    def instanceRefCount(subjectNode: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
+	  stringFromLiteralPred(subjectNode, form("linksCount") ).getOrElse("")
+  }
+    // http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#linksCount
   private def stringFromObjectPred(subjectNode: Rdf#Node, predNode: Rdf#Node): Option[String] = {
     for (
       triple <- find(allNamedGraph, subjectNode, predNode, ANY).toSeq.headOption;
@@ -54,14 +58,21 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   }
 
   /** by Literal Predicate we mean a Predicate whose range is Literal */
-  private def stringFromLiteralPred(subjectNode: Rdf#Node, predNode: Rdf#Node): Option[String] =
-    for (
-      triple <- find(allNamedGraph, subjectNode, predNode, ANY).toSeq.headOption;
-      result = foldNode(triple.objectt)(
-        _ => "",
-        _ => "",
-        literal => fromLiteral(literal)._1)
-    ) yield result
+  private def stringFromLiteralPred(
+    subjectNode: Rdf#Node, predNode: Rdf#Node,
+    lang: String = "en"): Option[String] = {
+    val triples = find(allNamedGraph, subjectNode, predNode, ANY).toIterable
+    val values = triples.map(triple => triple.objectt)
+    Some(
+      getPreferedLanguageLiteral(values)(allNamedGraph, lang))
+  }
+//    for (
+//      triple <- find(allNamedGraph, subjectNode, predNode, ANY).toSeq.headOption;
+//      result = foldNode(triple.objectt)(
+//        _ => "",
+//        _ => "",
+//        literal => fromLiteral(literal)._1)
+//    ) yield result
 
   /** NON transactional, needs rw transaction */
   def instanceLabelFromTDB(node: Rdf#Node, lang: String): String = {

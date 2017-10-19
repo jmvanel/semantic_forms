@@ -62,7 +62,9 @@ $(document).ready(function() {
                         console.log(m);
                         // topics[m.label] = m.uri;
                         return { "label": m.label
-			/* + " - " + cutStringAfterCharacter(m.description, '.') */
+			+ " - " + cutStringAfterCharacter(m.description, '.')
+			+  " - " + m.type
+			+  " - refCount " + m.refCount
 			, "value": m.uri }
                     }))
                 }).fail(function (error){
