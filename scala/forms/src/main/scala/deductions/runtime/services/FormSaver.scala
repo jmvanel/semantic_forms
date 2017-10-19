@@ -175,7 +175,8 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
         if( !emptyUserInput && differingUserInput ||
             // NOTE: the case of pre-filled rdfs:type
-            originalTriple.predicate == rdf.typ)
+            (originalTriple.predicate == rdf.typ &&
+                !emptyUserInput))
           triplesToAdd +=
             makeTriple(originalTriple.subject, originalTriple.predicate, objectFromUser)
 
