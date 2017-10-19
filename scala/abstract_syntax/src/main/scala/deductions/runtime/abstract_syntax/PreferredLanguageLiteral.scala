@@ -30,7 +30,7 @@ trait PreferredLanguageLiteral[Rdf <: RDF] {
   }
 
   /** get preferred Language value From RDF Values that are language marked or not */
-  private def getPreferedLanguageLiteral(values: Iterable[Rdf#Node])(implicit graph: Rdf#Graph,
+  def getPreferedLanguageLiteral(values: Iterable[Rdf#Node])(implicit graph: Rdf#Graph,
     lang: String = "en"): String = {
 //      println(s""">>>> getPreferedLanguageLiteral "$lang" values $values""")
 

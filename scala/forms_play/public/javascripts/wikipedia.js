@@ -82,7 +82,10 @@ $(document).ready(function() {
                     callback(response.results.map(function (m) {
                         // topics[m.label] = m.uri;
                         return { "label": m.label + " - " +
-                        cutStringAfterCharacter(m.description, '.'), "value": m.uri }
+                        cutStringAfterCharacter(m.description, '.')
+			+  " - " + m.classes
+			+  " - refCount " + m.refCount
+			, "value": m.uri }
                     }));
 
                 }).fail(function (error){

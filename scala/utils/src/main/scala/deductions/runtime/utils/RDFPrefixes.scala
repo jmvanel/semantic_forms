@@ -44,13 +44,15 @@ import scala.util.{Failure, Success, Try}
   lazy val wikidata =  Prefix[Rdf]("wikidata", "http://www.wikidata.org/entity/")
 
   /** vocabulary for forms in general (eg form:showProperties */
-  lazy val form = Prefix[Rdf]("form", "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#")
+  lazy val form = Prefix[Rdf]("form",
+      "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#")
 
   /** Prefix form: actually used in vocabulary/forms.owl.ttl , but in source code form() is actually used !!! :( */
   lazy val form2 = Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#")
 
   /** prefix for specific forms (eg forms:personForm) */
-  lazy val forms = Prefix[Rdf]("forms", "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#" )
+  lazy val forms = Prefix[Rdf]("forms",
+      "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#" )
 
   lazy val dct = DCTPrefix[Rdf]
 	lazy val dc = DCPrefix[Rdf]
