@@ -42,7 +42,10 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    * used in SPARQL results Web page
    * NEEDS transaction
    */
-  def sparqlConstructQuery(queryString: String): Try[Rdf#Graph] = {
+  def sparqlConstructQuery(
+		  queryString: String,
+      bindings: Map[String, Rdf#Node] = Map()
+      ): Try[Rdf#Graph] = {
     val result = for {
       query <- {
         logger.debug("sparqlConstructQuery: before parseConstruct")
@@ -51,7 +54,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 //      _ = println( s"sparqlConstructQuery: query $query" )
       es <- {
         logger.debug("sparqlConstructQuery: before executeConstruct")
-        dataset.executeConstruct(query, Map())
+        dataset.executeConstruct(query, bindings)
       }
     } yield es
     result
