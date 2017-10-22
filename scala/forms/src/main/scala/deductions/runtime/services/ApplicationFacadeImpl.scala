@@ -242,8 +242,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     mainSubjectURI
   }
 
-  /** XHTML wrapper around SPARQL Construct result */
-  def sparqlConstructQuery(query: String, lang: String = "en"): Elem = {
+  /** XHTML wrapper around SPARQL Construct result TODO  move to a trait in html package */
+  def sparqlConstructQueryHTML(query: String, lang: String = "en"): Elem = {
     logger.info("Global.sparql query  " + query)
     <p>
 		{ sparqlQueryForm(lang,true,query, "/sparql-ui",

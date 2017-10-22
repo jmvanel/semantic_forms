@@ -81,9 +81,14 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
 			dropzone="copy"
             autocomplete={if (lookupActivatedFor(resourceEntry)) "off" else null}
             type={
-              if( resourceEntry.property.toString() . toLowerCase().endsWith("mbox"))
-            	  "email"
-            	else if( resourceEntry.property.toString() . toLowerCase().endsWith("phone"))
+
+              /* alas the browsers do NOT consider that mailto:a@b is an email !!!! :(
+               * so need to comment this out,
+               * otherwise on re-editing the browser blocks the user. */
+              //              if( resourceEntry.property.toString() . toLowerCase().endsWith("mbox"))
+              //            	  "email"
+              //            	else
+              if( resourceEntry.property.toString() . toLowerCase().endsWith("phone"))
             		"tel"
               else
                 ""}

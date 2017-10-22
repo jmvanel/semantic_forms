@@ -138,7 +138,7 @@ trait EnterButtons {
     <option label="owl:ObjectProperty">              { prefixesMap2("owl")("ObjectProperty") } </option>
 
     <option label="bioc:Planting">                   { prefixesMap2("bioc")("Planting") } </option>
-    <option label="nature:Obvervation">              { prefixesMap2("nature")("Obvervation") } </option>
+    <option label="nature:Observation">              { prefixesMap2("nature")("Obvervation") } </option>
   }
 /*
   val avOptgroup =

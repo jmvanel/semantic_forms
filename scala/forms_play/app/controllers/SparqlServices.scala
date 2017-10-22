@@ -39,10 +39,18 @@ trait SparqlServices extends ApplicationTrait
    * 
    * TODO rename sparqlService
    */
+
+  def sparqlConstructUnionGraph(query: String ) =
+    sparqlConstructParams(query,
+        context=Map("unionDefaultGraph" -> "true"))
+
   def sparqlConstruct(query: String) =
+    sparqlConstructParams(query)
+
+  private def sparqlConstructParams(query: String,
+      bindings: Map[String,String] = Map(),
+      context: Map[String,String] = Map()) =
         Action {
-//    withUser {
-//      implicit userid =>
         implicit request: Request[_] =>
           logger.info(s"""sparqlConstruct: sparql: request $request
             sparql: $query
@@ -58,7 +66,7 @@ trait SparqlServices extends ApplicationTrait
 
           val isSelect = (checkSPARQLqueryType(query) == "select")
           
-          outputSPARQL(query, request.acceptedTypes, isSelect)
+          outputSPARQL(query, request.acceptedTypes, isSelect, bindings)
 //          renderResult(output, default = mime)
           .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
@@ -116,7 +124,8 @@ trait SparqlServices extends ApplicationTrait
    *  priority to accepted MIME type
    *  @param acceptedTypes from Accept HTTP header
    *  TODO move to Play! independant trait */
-  protected def outputSPARQL(query: String, acceptedTypes: Seq[MediaRange], isSelect: Boolean): Result = {
+  protected def outputSPARQL(query: String, acceptedTypes: Seq[MediaRange], isSelect: Boolean,
+      params: Map[String,String] = Map()): Result = {
     val preferredMedia = acceptedTypes.map { media => Accepting(media.toString()) }.headOption
     val defaultMIMEaPriori = if (isSelect) AcceptsSPARQLresults else AcceptsJSONLD
     val defaultMIME = preferredMedia.getOrElse(defaultMIMEaPriori)
