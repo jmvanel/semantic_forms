@@ -84,7 +84,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     import resourceEntry._
     val objectURIstringValue = resourceEntry.value.toString()
     (if (objectURIstringValue.size > 0 && showExpertButtons) {
-      val title = s""" Reverse links for "$label" "$value" """
+      val title = s""" Reverse links reaching "$valueLabel" <$value> """
       makeBackLinkButton(objectURIstringValue, title = title)
     } else NodeSeq.Empty)
   }
