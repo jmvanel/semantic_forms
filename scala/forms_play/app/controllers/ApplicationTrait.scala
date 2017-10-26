@@ -127,12 +127,20 @@ trait ApplicationTrait extends Controller
   protected val AcceptsJSONLD = Accepting("application/ld+json")
   protected val AcceptsRDFXML = Accepting("application/rdf+xml")
   protected val AcceptsSPARQLresults = Accepting("application/sparql-results+json")
+  protected val AcceptsSPARQLresultsXML = Accepting("application/sparql-results+xml")
   
   protected val turtle = AcceptsTTL.mimeType
 
 	// format = "turtle" or "rdfxml" or "jsonld"
-	val mimeAbbrevs = Map( AcceptsTTL -> "turtle", AcceptsJSONLD -> "jsonld", AcceptsRDFXML -> "rdfxml",
-	    Accepts.Json -> "json", Accepts.Xml -> "xml", AcceptsSPARQLresults -> "json" )
+	val mimeAbbrevs = Map(
+	    AcceptsTTL -> "turtle",
+	    AcceptsJSONLD -> "jsonld",
+	    AcceptsRDFXML -> "rdfxml",
+	    Accepts.Json -> "json",
+	    Accepts.Xml -> "xml",
+	    AcceptsSPARQLresults -> "json",
+	    AcceptsSPARQLresultsXML -> "xml"
+	 )
 
 	 val simpleString2mimeMap = mimeAbbrevs.map(_.swap)
 

@@ -152,7 +152,9 @@ trait SparqlServices extends ApplicationTrait
     // TODO implicit class ResultFormat(val format: String)
     val resultFormat: String = mimeAbbrevs.getOrElse(defaultMIME, 
         mimeAbbrevs.get( defaultMIMEaPriori) . get )
-    logInfo(s"""outputSPARQL: output(accepts=$acceptedTypes) => result format: "$resultFormat" """)
+    logInfo(s"""outputSPARQL: output(accepts=$acceptedTypes) => result format: "$resultFormat"
+      defaultMIMEaPriori $defaultMIMEaPriori
+      preferredMedia $preferredMedia""")
 
     if (preferredMedia.isDefined &&
       !mimeSet.contains(preferredMedia.get))
