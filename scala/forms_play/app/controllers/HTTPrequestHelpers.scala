@@ -25,7 +25,7 @@ trait HTTPrequestHelpers {
       path = request.path,
       formMap = formMap
     )
-    println(s"copyRequest: headers: " + headers.toMap)
+    // println(s"copyRequest: headers: " + headers.toMap)
 //    println(s"copyRequest: cookiesMap $cookiesMap , userId ${res.userId()}")
     res
   }
