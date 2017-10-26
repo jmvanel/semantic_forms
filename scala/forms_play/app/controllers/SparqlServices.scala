@@ -50,7 +50,7 @@ trait SparqlServices extends ApplicationTrait
       context: Map[String,String] = Map()) =
         Action {
         implicit request: Request[_] =>
-          logger.info(s"""sparqlConstruct: sparql: request $request
+          logInfo(s"""sparqlConstruct: sparql: request $request
             sparql: $query
             accepts ${request.acceptedTypes} """)
           val lang = chooseLanguage(request)
@@ -88,36 +88,49 @@ trait SparqlServices extends ApplicationTrait
   private def sparqlConstructPOSTimpl(
       context: Map[String,String] = Map()) = Action {
     implicit request: Request[AnyContent] =>
-      logger.info(s"""sparqlConstruct: sparql: request $request
+      logInfo(s"""sparqlConstruct: sparql: request $request
             accepts ${request.acceptedTypes} """)
       val lang = chooseLanguage(request)
       val body: AnyContent = request.body
 
-      // Expecting body as FormUrlEncoded
-      val formBody: Option[Map[String, Seq[String]]] = body.asFormUrlEncoded
-      val r = formBody.map { map =>
+      def makeSPARQLoutput(query: String): Result = {
+        val isSelect = (checkSPARQLqueryType(query) == "select")
+        val acceptedTypes = request.acceptedTypes
+        outputSPARQL(query, acceptedTypes, isSelect, context=context)
+            .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+            .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
+            .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
+        }
 
-        val query0 = map.getOrElse("query", Seq())
-        val query = query0 . mkString("\n")
-        logger.info(s"""sparql: $query""" )
-
-        // TODO better try a parse of the query
-        def checkSPARQLqueryType(query: String) =
+      // TODO better try a parse of the query
+      def checkSPARQLqueryType(query: String) =
           if (query.toLowerCase().contains("select") )
             "select"
           else
             "construct"
-        val isSelect = (checkSPARQLqueryType(query) == "select")
-        val acceptedTypes = request.acceptedTypes
 
-        outputSPARQL(query, acceptedTypes, isSelect, context=context)
-          .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
-          .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
-          .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
+      // Expecting body as FormUrlEncoded
+      val formBody: Option[Map[String, Seq[String]]] = body.asFormUrlEncoded
+      val r = formBody.map { map =>
+        val query0 = map.getOrElse("query", Seq())
+        val query = query0 . mkString("\n")
+        logInfo(s"""sparql as FormUrlEncoded: $query""" )
+        makeSPARQLoutput(query)
       }
       r match {
         case Some(r) => r
-        case None => BadRequest("BadRequest")
+        case None =>
+          getContent(request)  match {
+            case Some(query) =>
+              logInfo(s"""sparql (several content types tested) query:
+                $query""" )
+              makeSPARQLoutput(query)
+            case None => BadRequest(s"""BadRequest: body not recognized:
+              body.asText
+              ${body.asText}
+              body class ${body.getClass}
+        """)
+          }
       }
   }
   
@@ -139,21 +152,22 @@ trait SparqlServices extends ApplicationTrait
     // TODO implicit class ResultFormat(val format: String)
     val resultFormat: String = mimeAbbrevs.getOrElse(defaultMIME, 
         mimeAbbrevs.get( defaultMIMEaPriori) . get )
-    logger.info(s"""sparqlConstruct: output(accepts=$acceptedTypes) => result format: "$resultFormat" """)
+    logInfo(s"""outputSPARQL: output(accepts=$acceptedTypes) => result format: "$resultFormat" """)
 
     if (preferredMedia.isDefined &&
       !mimeSet.contains(preferredMedia.get))
-      logger.info(s"CAUTION: preferredMedia $preferredMedia not in this application's list: ${mimeAbbrevs.keys.mkString(", ")}")
+      logInfo(s"""CAUTION: preferredMedia '$preferredMedia' not in this application's list:
+        ${mimeAbbrevs.keys.mkString(", ")}""")
 
     val result = if (isSelect)
-      sparqlSelectConneg(query, resultFormat, dataset)
+      sparqlSelectConneg(query, resultFormat, dataset, context)
     else {
       sparqlConstructResult(query,
           // TODO
           lang="en",
           resultFormat, context)
     }
-    logger.info(s"result 5 first lines: $result".split("\n").take(5).mkString("\n"))
+    logInfo(s"result 5 first lines: $result".split("\n").take(5).mkString("\n"))
     Ok(result)
       .as(s"${simpleString2mimeMap.getOrElse(resultFormat, defaultMIMEaPriori).mimeType }")
     // charset=utf-8" ?
@@ -163,8 +177,8 @@ trait SparqlServices extends ApplicationTrait
     withUser {
       implicit userid =>
         implicit request =>
-          logger.info("sparql update: " + request)
-          logger.info(s"sparql: update '$update'")
+          logInfo("sparql update: " + request)
+          logInfo(s"sparql: update '$update'")
           println(log("update", request))
           val update2 =
             if (update == "") {
@@ -178,7 +192,7 @@ trait SparqlServices extends ApplicationTrait
               else
                 request.body.asFormUrlEncoded.getOrElse(Map()).getOrElse("query", Seq("")).headOption.getOrElse("")
             } else update
-          logger.info(s"sparql: update2 '$update2'")
+          logInfo(s"sparql: update2 '$update2'")
           val lang = chooseLanguage(request) // for logging
           val res = wrapInTransaction( sparqlUpdateQuery(update2) ) .flatten
           res match {
@@ -189,4 +203,5 @@ trait SparqlServices extends ApplicationTrait
           }
     }
 
+  def logInfo(s: String) = println(s) // logger.info(s)
 }

@@ -58,7 +58,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       //      _ = println( s"sparqlConstructQuery: query $query" )
       es <- {
         logger.debug("sparqlConstructQuery: before executeConstruct")
-        if (context.get("unionDefaultGraph").getOrElse("") == "true")
+        if (checkUnionDefaultGraph(context))
           jenaComplements.executeConstructUnionGraph(dataset, query: Rdf#ConstructQuery)
         else
           dataset.executeConstruct(query, bindings)
@@ -67,6 +67,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     result
   }
 
+  private def checkUnionDefaultGraph(context: Map[String,String]) =
+    context.get("unionDefaultGraph").getOrElse("") == "true"
 
   val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]
 
@@ -410,7 +412,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    *  used in SPARQL results Web page
    */
   def sparqlSelectQuery(queryString: String,
-                        ds: DATASET = dataset): Try[List[Iterable[Rdf#Node]]] = {
+                        ds: DATASET = dataset,
+                        context: Map[String,String] = Map()
+		  ): Try[List[Iterable[Rdf#Node]]] = {
     // DEBUG
     val dsg = ds.asInstanceOf[org.apache.jena.sparql.core.DatasetImpl].asDatasetGraph()
     println(s">>>> sparqlSelectQuery: dsg class : ${dsg.getClass}")
@@ -420,7 +424,12 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 //    val transaction = ds.r({
       val solutionsTry = for {
         query <- parseSelect(queryString)
-        es <- ds.executeSelect(query, Map())
+        es <- {
+          if (checkUnionDefaultGraph(context))
+            jenaComplements.executeSelectUnionGraph(dataset, query, Map())
+          else
+            ds.executeSelect(query, Map())
+        }
       } yield es
       makeListofListsFromSolutions(solutionsTry)
     })
@@ -505,14 +514,15 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    */
   def sparqlSelectConneg(queryString: String,
                          format: String = "xml",
-                         ds: DATASET = dataset): String = {
+                         ds: DATASET = dataset,
+                         context: Map[String,String] = Map()): String = {
     logger.debug(s"format $format")
     format match {
-      case "jsonld" => sparqlSelectJSON(queryString, ds)
+      case "jsonld" => sparqlSelectJSON(queryString, ds, context)
       case "turtle" => sparqlSelectJSON(queryString, ds) // ??? should not happen
       case "rdfxml" => sparqlSelectXML(queryString, ds) // ??? should not happen
-      case "xml"    => sparqlSelectXML(queryString, ds)
-      case "json"   => sparqlSelectJSON(queryString, ds)
+      case "xml"    => sparqlSelectXML(queryString, ds, context)
+      case "json"   => sparqlSelectJSON(queryString, ds, context)
       case _        => sparqlSelectJSON(queryString, ds)
     }
   }
@@ -521,8 +531,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    * sparql Select, JSON output, see https://www.w3.org/TR/rdf-sparql-XMLres/#examples
    */
   def sparqlSelectXML(queryString: String,
-                      ds: DATASET = dataset): String = {
-    val result = sparqlSelectQuery(queryString, ds)
+                      ds: DATASET = dataset,
+                      context: Map[String,String] = Map()): String = {
+    val result = sparqlSelectQuery(queryString, ds, context)
     val output = result match {
       case Success(res) =>
         if (!res.isEmpty) {
@@ -583,8 +594,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   /** sparql Select, JSON output, see https://www.w3.org/TR/sparql11-results-json/#example */
   def sparqlSelectJSON(queryString: String,
-                       ds: DATASET = dataset): String = {
-    val result = sparqlSelectQuery(queryString, ds)
+                       ds: DATASET = dataset,
+                       context: Map[String,String] = Map()): String = {
+    val result = sparqlSelectQuery(queryString, ds, context)
     val output = result match {
       case Success(res) =>
         if (!res.isEmpty) {

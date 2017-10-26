@@ -11,12 +11,13 @@ import org.w3.banana.jena.Jena
 import org.apache.jena.query.Dataset
 import org.apache.jena.tdb.TDB
 import deductions.runtime.utils.SparqlComplements
+import org.apache.jena.query.ResultSet
 
 class JenaComplements(implicit ops: RDFOps[Jena]) extends SparqlComplements[Jena, Dataset] {
 
   lazy val querySolution = new QuerySolution(ops)
 
-  /** Executes a Construct query. */
+  /** Executes a Construct query with Union Graph. */
   def executeConstructUnionGraph(dataset: Dataset, query: Jena#ConstructQuery,
                                  bindings: Map[String, Jena#Node]): Try[Jena#Graph] = Try {
     val qexec: QueryExecution =
@@ -30,4 +31,16 @@ class JenaComplements(implicit ops: RDFOps[Jena]) extends SparqlComplements[Jena
     result.getGraph()
   }
 
+  /** Executes a SELECT query with Union Graph. */
+  def executeSelectUnionGraph(dataset: Dataset, query: Jena#ConstructQuery,
+		                          bindings: Map[String, Jena#Node]) : Try[ResultSet]= Try {
+    val qexec: QueryExecution =
+      if (bindings.isEmpty)
+        QueryExecutionFactory.create(query, dataset)
+      else
+        QueryExecutionFactory.create(query, dataset, querySolution.getMap(bindings))
+
+    qexec.getContext().set(TDB.symUnionDefaultGraph, true)
+    qexec.execSelect()
+  }
 }
