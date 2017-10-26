@@ -41,7 +41,7 @@ trait SparqlServices extends ApplicationTrait
     sparqlConstructParams(query,
         context=Map("unionDefaultGraph" -> "true"))
 
-  /** TODO rename sparqlService */
+  /** sparql GET Service */
   def sparqlConstruct(query: String) =
     sparqlConstructParams(query)
 
@@ -79,7 +79,14 @@ trait SparqlServices extends ApplicationTrait
    * SPARQL POST compliant, construct or select SPARQL query
    *  conneg => RDF/XML, Turtle or json-ld
    */
-  def sparqlConstructPOST = Action {
+  def sparqlConstructPOST =
+    sparqlConstructPOSTimpl()
+
+  def sparqlConstructPOSTUnionGraph =
+    sparqlConstructPOSTimpl(context=Map("unionDefaultGraph" -> "true"))
+
+  private def sparqlConstructPOSTimpl(
+      context: Map[String,String] = Map()) = Action {
     implicit request: Request[AnyContent] =>
       logger.info(s"""sparqlConstruct: sparql: request $request
             accepts ${request.acceptedTypes} """)
@@ -103,7 +110,7 @@ trait SparqlServices extends ApplicationTrait
         val isSelect = (checkSPARQLqueryType(query) == "select")
         val acceptedTypes = request.acceptedTypes
 
-        outputSPARQL(query, acceptedTypes, isSelect)
+        outputSPARQL(query, acceptedTypes, isSelect, context=context)
           .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
