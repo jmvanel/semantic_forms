@@ -15,7 +15,7 @@ trait ToolsPage extends EnterButtons
   /** HTML page with 2 SPARQL Queries: select & construct, show Named Graphs, history, YASGUI, etc */
   def getPage(lang: String = "en", request: HTTPrequest ): NodeSeq = {
 		def absoluteURI = request.absoluteURL("")
-		def localSparqlEndpoint = URLEncoder.encode(absoluteURI + "/sparql", "UTF-8")
+		def localSparqlEndpoint = URLEncoder.encode(absoluteURI + "/sparql2", "UTF-8")
 
     val querySampleSelect =
     """|PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
