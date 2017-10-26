@@ -271,10 +271,12 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
    *  
    *  TODO move to non-Play! project
    */
-  def sparqlConstructResult(query: String, lang: String = "en", format: String = "turtle"): String = {
+  def sparqlConstructResult(query: String, lang: String = "en",
+      format: String = "turtle",
+      context: Map[String,String] = Map()): String = {
     logger.info("Global.sparql query  " + query)
     if (query != "")
-      sparqlConstructQueryTR(query, format)
+      sparqlConstructQueryTR(query, format, context)
       // TODO this code is in several places !!!!!! make function printTry( tr: Try[_] , mime:String)
       match {
         case Success(s) => s
