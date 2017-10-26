@@ -69,6 +69,7 @@ trait RDFStoreLocalJenaProvider
   type DATASET = ImplementationSettings.DATASET
   /** very important that defensiveCopy=false, otherwise no update happens, and a big overhead for every operation */
   override val rdfStore = new JenaDatasetStore(false)
+  val jenaComplements = new JenaComplements()(ops)
 
   /**
    * default is 10; each chunk commitedAwaitingFlush can be several Mb,

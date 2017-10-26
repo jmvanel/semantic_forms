@@ -33,17 +33,15 @@ trait SparqlServices extends ApplicationTrait
       Ok("OK")
   }
 
-    /**
+  /**
    * SPARQL GET compliant, construct or select
    * conneg => RDF/XML, Turtle or json-ld
-   * 
-   * TODO rename sparqlService
    */
-
   def sparqlConstructUnionGraph(query: String ) =
     sparqlConstructParams(query,
         context=Map("unionDefaultGraph" -> "true"))
 
+  /** TODO rename sparqlService */
   def sparqlConstruct(query: String) =
     sparqlConstructParams(query)
 
@@ -66,7 +64,7 @@ trait SparqlServices extends ApplicationTrait
 
           val isSelect = (checkSPARQLqueryType(query) == "select")
           
-          outputSPARQL(query, request.acceptedTypes, isSelect, bindings)
+          outputSPARQL(query, request.acceptedTypes, isSelect, bindings, context)
 //          renderResult(output, default = mime)
           .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
@@ -125,7 +123,8 @@ trait SparqlServices extends ApplicationTrait
    *  @param acceptedTypes from Accept HTTP header
    *  TODO move to Play! independant trait */
   protected def outputSPARQL(query: String, acceptedTypes: Seq[MediaRange], isSelect: Boolean,
-      params: Map[String,String] = Map()): Result = {
+      params: Map[String,String] = Map(),
+      context: Map[String,String] = Map()): Result = {
     val preferredMedia = acceptedTypes.map { media => Accepting(media.toString()) }.headOption
     val defaultMIMEaPriori = if (isSelect) AcceptsSPARQLresults else AcceptsJSONLD
     val defaultMIME = preferredMedia.getOrElse(defaultMIMEaPriori)
@@ -141,12 +140,12 @@ trait SparqlServices extends ApplicationTrait
 
     val result = if (isSelect)
       sparqlSelectConneg(query, resultFormat, dataset)
-    else
+    else {
       sparqlConstructResult(query,
           // TODO
           lang="en",
-          resultFormat)
-
+          resultFormat, context)
+    }
     logger.info(s"result 5 first lines: $result".split("\n").take(5).mkString("\n"))
     Ok(result)
       .as(s"${simpleString2mimeMap.getOrElse(resultFormat, defaultMIMEaPriori).mimeType }")

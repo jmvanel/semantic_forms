@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream
 
 import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.utils._
+
 import org.apache.log4j.Logger
 import org.w3.banana.io.{JsonLdCompacted, RDFWriter, RDFXML, Turtle}
 import org.w3.banana.{RDF, TryW}
@@ -37,6 +38,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   import rdfStore.transactorSyntax._
   import sparqlOps._
 
+  val jenaComplements: SparqlComplements[Rdf, DATASET]
+  
   /**
    * sparql Construct Query;
    * used in SPARQL results Web page
@@ -44,17 +47,21 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    */
   def sparqlConstructQuery(
 		  queryString: String,
-      bindings: Map[String, Rdf#Node] = Map()
+      bindings: Map[String, Rdf#Node] = Map(),
+      context: Map[String,String] = Map()
       ): Try[Rdf#Graph] = {
     val result = for {
       query <- {
         logger.debug("sparqlConstructQuery: before parseConstruct")
         parseConstruct(queryString)
       }
-//      _ = println( s"sparqlConstructQuery: query $query" )
+      //      _ = println( s"sparqlConstructQuery: query $query" )
       es <- {
         logger.debug("sparqlConstructQuery: before executeConstruct")
-        dataset.executeConstruct(query, bindings)
+        if (context.get("unionDefaultGraph").getOrElse("") == "true")
+          jenaComplements.executeConstructUnionGraph(dataset, query: Rdf#ConstructQuery)
+        else
+          dataset.executeConstruct(query, bindings)
       }
     } yield es
     result
@@ -131,9 +138,12 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    * transactional, output Turtle String
    *  @param format = "turtle" or "rdfxml" or "jsonld"
    */
-  def sparqlConstructQueryTR(queryString: String, format: String = "turtle"):  Try[String] = {
+  def sparqlConstructQueryTR(queryString: String, format: String = "turtle",
+                             context: Map[String, String] = Map()): Try[String] = {
     val transaction = rdfStore.r(dataset, {
-      graph2String(sparqlConstructQuery(queryString), "", format)
+      graph2String(
+        sparqlConstructQuery(queryString, context=context),
+        "", format)
     })
     transaction // .get
   }
