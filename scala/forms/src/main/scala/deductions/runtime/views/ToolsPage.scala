@@ -21,6 +21,7 @@ trait ToolsPage extends EnterButtons
     """|PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
        |PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
        |SELECT * WHERE { GRAPH ?G {?S ?P ?O . } } LIMIT 100
+       |
        |#SELECT DISTINCT ?CLASS WHERE { GRAPH ?G { [] a  ?CLASS . } } LIMIT 100
        |#SELECT DISTINCT ?PROP WHERE { GRAPH ?G { [] ?PROP [] . } } LIMIT 100
     """.stripMargin
@@ -28,6 +29,7 @@ trait ToolsPage extends EnterButtons
       """|PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
          |Prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
          |CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10
+         |
          |#CONSTRUCT { ?sub geo:long ?LON .?sub geo:lat ?LAT . ?sub rdfs:label ?LAB.}
          |#WHERE {GRAPH ?GRAPH { ?sub geo:long ?LON .?sub geo:lat ?LAT . ?sub rdfs:label ?LAB.  } }"""
     .stripMargin
@@ -57,6 +59,7 @@ trait ToolsPage extends EnterButtons
         </a>
         (Yet Another SPARQL GUI)
       </p>
+
       <p>
         <a href={
           val sparklisServer =
@@ -66,6 +69,17 @@ trait ToolsPage extends EnterButtons
           Sparklis
         </a>
         (un requêteur SPARQL original et puissant)
+      </p>
+
+      <p>
+        <a href={
+          val server =
+            s"http://tools.sirius-labs.no/rdfsurveyor"
+          s"""$server?title=Semantic+forms&repo=$localSparqlEndpoint"""
+        } target="_blank">
+          SPARQL surveyor
+        </a>
+        (un autre requêteur SPARQL)
       </p>
 
       <p> <a href="/showNamedGraphs">{ I18NMessages.get("showNamedGraphs", lang) }</a> </p>
@@ -91,7 +105,10 @@ trait ToolsPage extends EnterButtons
           "http://rawgit.com/Cruis-R/geo-map-component/master/docs/index.html"),
       <input class="btn btn-primary" type="submit" value={ I18NMessages.get("Table", lang) }
              formaction="/table"/>,
-      <input class="btn btn-primary" type="submit" value={ I18NMessages.get("Tree", lang) }/>,
+      <input class="btn btn-primary" type="submit"
+             title="NOT YET IMPLEMENTED"
+             disabled="disabled"
+             value={ I18NMessages.get("Tree", lang) }/>,
       makeLink(textareaId, "/assets/rdfviewer/rdfviewer.html?url="))
 
     <form role="form">
@@ -172,6 +189,8 @@ trait ToolsPage extends EnterButtons
     println(s">>>> servicesURL $dataServicesURL")
  
     <input id={buttonId} type="submit"
+           title="NOT YET IMPLEMENTED"
+           disabled="disabled"
            class="btn btn-primary" target="_blank" value={ I18NMessages.get("Map", lang)}>
     </input>
     <input class="btn btn-primary" type="checkbox" checked="true" title="points (else path)"

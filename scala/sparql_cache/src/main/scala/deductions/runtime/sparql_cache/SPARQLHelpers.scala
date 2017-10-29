@@ -15,6 +15,7 @@ import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
 import org.w3.banana.SparqlEngine
+import scala.xml.Comment
 
 /**
  * TODO separate stuff depending on dataset, and stuff taking a graph in argument
@@ -583,9 +584,14 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
             </sparql>
           xml
         }
-      case Failure(f) => <sparql>
-                           { f.getLocalizedMessage }
-                         </sparql>
+      case Failure(f) =>
+        <sparql>
+          {
+            Comment(
+              "ERROR in sparql Select:\n" +
+                f.getLocalizedMessage)
+          }
+        </sparql>
     }
     //    output.toString()
     val printer = new scala.xml.PrettyPrinter(80, 2)

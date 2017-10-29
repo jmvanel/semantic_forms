@@ -141,9 +141,9 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
   private def getCountFromTDBTry(linksCountGraph: Rdf#Graph,
                                  subject: Rdf#Node): Try[Int] = {
     val pg = PointedGraph(subject, linksCountGraph)
-    println(s"getCountFromTDBTry: pg $pg")
+//    println(s"getCountFromTDBTry: pg $pg")
     val pg1 = (pg / linksCountPred)
-    println(s"getCountFromTDBTry: (pg / linksCountPred) ${pg1}")
+//    println(s"getCountFromTDBTry: (pg / linksCountPred) ${pg1}")
     if (pg1.nodes.isEmpty)
       Try(0)
     else
