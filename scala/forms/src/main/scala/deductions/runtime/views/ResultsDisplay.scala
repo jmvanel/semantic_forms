@@ -71,10 +71,11 @@ extends ThumbnailInference[Rdf, DATASET] {
     }</div><!-- end of wrapping div displayResults -->
   }
 
-    /** make HTML hyperlink For given URI;
+  /** make HTML hyperlink For given URI;
    *  this links to semantic_forms page for displaying this URI;
-   * NOTE: this reuses code in Form2HTMLDisplay.createHTMLResourceReadonlyField() */
-//  protected
+   * NOTE: this reuses code in Form2HTMLDisplay.createHTMLResourceReadonlyField()
+   * 
+   * NON transactional, needs rw transaction */
   def makeHyperlinkForURI( node: Rdf#Node, lang: String, graph: Rdf#Graph,
       hrefPrefix: String = config.hrefDisplayPrefix,
       label: String = "",
@@ -88,6 +89,24 @@ extends ThumbnailInference[Rdf, DATASET] {
      val `type` = getClassOrNullURI(node)(graph)
      displayNode(uriNodeToURI(node), hrefPrefix, displayLabel,
          property = nullURI, type_ = `type` )
+  }
+
+  /** make HTML hyperlink For given URI;
+   *  this links to semantic_forms page for displaying this URI;
+   * NOTE: this reuses code in Form2HTMLDisplay.createHTMLResourceReadonlyField()
+   * 
+   * transactional, needs no transaction */
+  def makeHyperlinkForURItr( node: Rdf#Node, lang: String, graph: Rdf#Graph,
+      hrefPrefix: String = config.hrefDisplayPrefix,
+      label: String = "",
+      sortAnd1rowPerElement:Boolean = false )
+    : NodeSeq = {
+    		wrapInTransaction{
+    			makeHyperlinkForURI( node, lang, graph,
+    					hrefPrefix,
+    					label,
+    					sortAnd1rowPerElement)
+    		} . getOrElse(<div/>)
   }
 
   /** call createHTMLResourceReadonlyField() in trait Form2HTMLDisplay */

@@ -11,6 +11,7 @@ import org.w3.banana.RDF
 
 import scala.xml.NodeSeq
 import scala.xml.Elem
+import deductions.runtime.views.ResultsDisplay
 
 /**
  * Show History of User Actions:
@@ -24,7 +25,8 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   extends RDFStoreLocalProvider[Rdf, DATASET]
   with TimeSeries[Rdf, DATASET]
   with ParameterizedSPARQL[Rdf, DATASET]
-  with NavigationSPARQLBase[Rdf] {
+  with NavigationSPARQLBase[Rdf]
+  with ResultsDisplay[Rdf, DATASET] {
 
   import ops._
 
@@ -51,8 +53,18 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     }
 
     {
-      Seq(
-        historyLink,
+      val title: NodeSeq = {
+        metadata._2 match {
+          case Some(uri) =>
+            println(s"==== makeTableHistoryUserActions: title: uri <$uri>")
+            val focusPrettyPrinted = makeHyperlinkForURItr(URI(uri), lang, allNamedGraph)
+            <div>View centered on </div> ++ focusPrettyPrinted
+          case None => <div/>
+        }
+      }
+      val html: NodeSeq =
+        title ++
+        historyLink ++
         <table class="table">
           <thead>
             <tr>
@@ -69,7 +81,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
             {
               def dateAsLong(row: Seq[Rdf#Node]): Long = makeStringFromLiteral(row(1)).toLong
 
-              val sorted = metadata.sortWith {
+              val sorted = metadata._1.sortWith {
                 (row1, row2) =>
                   dateAsLong(row1) >
                     dateAsLong(row2)
@@ -98,7 +110,8 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
               }.get
             }
           </tbody>
-        </table>)
+        </table>
+        html    
     }
   }
 
@@ -156,19 +169,18 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
    *  uri=http://site.com
    */
   private def filterMetadataFocus(
-    metadata: List[Seq[Rdf#Node]],
-    request:  HTTPrequest, querySPARQL: String = ""): List[Seq[Rdf#Node]] = {
+    metadata:    List[Seq[Rdf#Node]],
+    request:     HTTPrequest,
+    querySPARQL: String              = ""): (List[Seq[Rdf#Node]], Option[String]) = {
 
     val params = request.queryString
     if (params.contains("uri")) {
-      println ("""===== filterMetadataFocus: params.contains("uri")""")
-      filterMetadataSPARQL(
-        metadata,
-        request,
-        neighborhoodSearchSPARQL(
-            expandOrUnchanged(
-                params("uri").headOption.getOrElse(""))))
-    } else metadata
+      val focusURI = expandOrUnchanged( params("uri").headOption.getOrElse("") )
+      println(s"""===== filterMetadataFocus: params.contains("uri") ${focusURI}""")
+      val sparql = neighborhoodSearchSPARQL( focusURI )
+      (filterMetadataSPARQL(
+        metadata, request, sparql), Some(focusURI))
+    } else (metadata, None)
   }
 
   /**
