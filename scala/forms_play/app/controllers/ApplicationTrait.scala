@@ -31,6 +31,7 @@ import play.api.mvc.Result
 import deductions.runtime.views.MainXmlWithHead
 import deductions.runtime.core.HTTPrequest
 import deductions.runtime.utils.RDFStoreLocalProvider
+import scala.io.Source
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -82,7 +83,10 @@ trait ApplicationTrait extends Controller
   protected def getDefaultAppMessage(): NodeSeq = {
     val messagesFile = "messages.html"
     if (new File(messagesFile).exists()) {
-      try { scala.xml.XML.loadFile(messagesFile) }
+      try {
+     	  scala.xml.Unparsed(
+          Source.fromFile(messagesFile, "UTF-8").getLines().mkString("\n"))
+      }
       catch { case e: Exception => <p>Exception in reading message file: { e }</p> }
     } else
       <p>...</p>
