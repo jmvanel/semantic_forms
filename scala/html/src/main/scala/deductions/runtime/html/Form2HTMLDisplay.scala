@@ -14,7 +14,9 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
   import config._
 
 
-  private[html] def createHTMLiteralReadonlyField(l: formMod#LiteralEntry): NodeSeq =
+  private[html] def createHTMLiteralReadonlyField(
+      l: formMod#LiteralEntry,
+      request: HTTPrequest = HTTPrequest()): NodeSeq =
     <xml:group>
       {
         val valueDisplayed =
@@ -24,7 +26,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
             l.valueLabel
         Unparsed(valueDisplayed)
       }
-    	{makeUserInfoOnTriples(l)}
+    	{makeUserInfoOnTriples(l, request.getLanguage())}
       <div>{ if (l.lang != "" && l.lang != "No_language") " > " + l.lang }</div>
     </xml:group>
 
@@ -50,7 +52,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       normalNavigationButton(resourceEntry) ++
       makeDrawGraphLink(objectURIstringValue) ++
       displayThumbnail(resourceEntry) ++
-      {makeUserInfoOnTriples(resourceEntry)}
+      {makeUserInfoOnTriples(resourceEntry, request.getLanguage())}
   }
 
   /** hyperlink To RDF property */
@@ -109,19 +111,6 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
         <img src={ imageURL.get.toString() } css="sf-thumbnail" height="40" alt={ s"Image of $valueLabel: ${value.toString()}" }/>
       </a>
     } else NodeSeq.Empty
-  }
-
-
-  private def makeUserInfoOnTriples(resourceEntry: formMod#Entry) ={
-    val userMetadata = resourceEntry.metadata
-    val timeMetadata = resourceEntry.timeMetadata
-    val time :String = new DateTime(timeMetadata).toDateTime.toString("dd/MM/yyyy HH:mm")
-    if (timeMetadata != -1){
-      <p>
-        modifié par: {userMetadata} le {time}
-      </p>
-    }
-    else <p></p>
   }
 
   private[html] def createHTMLBlankNodeReadonlyField(

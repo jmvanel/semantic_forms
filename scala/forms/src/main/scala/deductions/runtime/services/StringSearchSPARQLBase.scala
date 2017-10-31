@@ -43,8 +43,8 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
       ""
   }
 
-  // UNUSED - No Pre computing of links 
-  def queryWithlinksCountNoPrefetch(search: String,
+  /** UNUSED - No Pre computing of links */
+  private def queryWithlinksCountNoPrefetch(search: String,
                                     classe: String = "") = s"""
          |${declarePrefix(text)}
          |${declarePrefix(rdfs)}
@@ -69,6 +69,9 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |SELECT DISTINCT ?thing ?COUNT WHERE {
          |  graph ?g {
          |    ${textQuery(search)}
+         |  }
+         |  graph ?g1 {
+         |    ?thing a ${classCriterium(classe)} .
          |  }
          |  $countPattern
          |}

@@ -5,6 +5,7 @@ import deductions.runtime.utils._
 
 import scala.util.Try
 import scala.xml.{Elem, NodeSeq}
+import org.joda.time.DateTime
 
 /** generate HTML from abstract Form : common parts for Display & edition */
 private[html] trait Form2HTMLBase[NODE, URI <: NODE]
@@ -131,4 +132,17 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
 		  elem.copy(attributes = config.foldRight(elem.attributes) {
 		  case ((k, v), next) => new scala.xml.UnprefixedAttribute(k, v, next)
 		  })
+
+  def makeUserInfoOnTriples(entry: formMod#Entry, lang: String="en") ={
+    val userMetadata = entry.metadata
+    val timeMetadata = entry.timeMetadata
+    val time: String = new DateTime(timeMetadata).toDateTime.toString("dd/MM/yyyy HH:mm")
+    if (timeMetadata != -1){
+      <p>
+        {message("modified_by", lang)}
+        {userMetadata} {message("on_date", lang)} {time}
+      </p>
+    }
+    else <p></p>
+  }
 }

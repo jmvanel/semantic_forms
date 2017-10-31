@@ -231,9 +231,9 @@ import deductions.runtime.utils.I18NMessages
 //        println(s">>>>>>>>>>>>>>>>>>> createHTMLField ${field.value.toString()}")
         if (editable && (editableByUser || isCreateRequest ||
           toPlainString(field.value) == ""))
-          createHTMLiteralEditableField(l)
+          createHTMLiteralEditableField(l, request)
         else
-          createHTMLiteralReadonlyField(l)
+          createHTMLiteralReadonlyField(l, request)
 
       case r: formMod#ResourceEntry =>
         /* link to a known resource of the right type,
