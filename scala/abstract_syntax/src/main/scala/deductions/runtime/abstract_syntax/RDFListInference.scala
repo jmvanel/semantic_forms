@@ -43,14 +43,15 @@ trait RDFListInference[Rdf <: RDF, DATASET]
     val list = FormSyntax(nullURI, entriesListForRDFList)
 
     nodesListForRDFList match {
-      case l if !l.isEmpty => Some(RDFListEntry(
-        label: String, comment: String,
+      case l if !l.isEmpty => Some(
+          RDFListEntry(
+        label, comment,
         property: ObjectProperty,
         value: Rdf#Node,
         alreadyInDatabase: Boolean,
         possibleValues: Seq[(Rdf#Node, Rdf#Node)],
         valueLabel: String,
-        type_ : Rdf#Node,
+        Seq(type_),
         inverseTriple: Boolean,
         subject: Rdf#Node,
         subjectLabel: String,

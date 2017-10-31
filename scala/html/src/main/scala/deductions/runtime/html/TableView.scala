@@ -67,7 +67,7 @@ trait TableView[NODE, URI <: NODE]
     val entry = rowsMap(row)
     hyperlinkToURI(config.hrefDisplayPrefix, entry.subject.toString(),
       entry.subjectLabel,
-      entry.type_,
+      firstNODEOrElseEmptyString(entry.type_),
       NullResourceEntry)
   }
 

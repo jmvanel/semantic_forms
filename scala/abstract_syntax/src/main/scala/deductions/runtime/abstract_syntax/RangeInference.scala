@@ -258,7 +258,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
     ): Seq[(Rdf#Node, Rdf#Node)] = {
       val fieldType = entryField.type_
       if (classesAndLabels isEmpty)
-        addPossibleValues(fieldType, resourcesWithLabel)
+        addPossibleValues(firstNodeOrElseNullURI(fieldType), resourcesWithLabel)
       else {
         for( (classe, rlabels ) <- classesAndLabels ) {
         	addPossibleValues(classe, rlabels)

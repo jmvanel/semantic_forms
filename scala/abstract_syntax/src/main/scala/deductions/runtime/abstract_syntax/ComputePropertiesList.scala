@@ -91,7 +91,8 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
         subject,
         Seq(),
         makeEntries(propertiesList),
-        classesOfSubjectOrFromConfig.head, editable = editable,
+        classesOfSubjectOrFromConfig.head,
+        editable = editable,
         formURI = formuri match {
           case ""  => Some(formConfiguration);
           case uri => Some(URI(uri))

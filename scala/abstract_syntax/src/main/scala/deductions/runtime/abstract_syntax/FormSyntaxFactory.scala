@@ -498,6 +498,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     def htmlName: String = makeHTMLName( makeTriple(subject, uriNodeToURI(prop), objet) )
 
     def firstType = firstNodeOrElseNullURI(precomputProp.ranges)
+    def typesFromRanges = precomputProp.ranges.toSeq
 
     def literalEntry = {
       val value = getLiteralNodeOrElse(objet, literalInitialValue)
@@ -507,7 +508,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         value,
         subject=subject,
         subjectLabel = makeInstanceLabel(subject, graph, lang),
-        type_ = firstType,
+        type_ = typesFromRanges, //  firstType,
         lang = getLang(objet).toString(),
         valueLabel = nodeToString(value),
         htmlName=htmlName)
@@ -525,7 +526,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
                 alreadyInDatabase = true,
                 valueLabel = makeInstanceLabel(objet, graph, lang),
                 subjectLabel = makeInstanceLabel(subject, graph, lang),
-                type_ = firstType,
+                type_ = typesFromRanges, // firstType,
 
                 // TODO make it functional #170:  modularize in ThumbnailInference, leveraging on addAttributesToXMLElement
                 isImage = isImageTriple(subject, prop, objet, firstType),
@@ -550,7 +551,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       new BlankNodeEntry(label, comment, property, validator, value,
     		subject=subject,
     		subjectLabel = makeInstanceLabel(subject, graph, lang),
-        type_ = typ, valueLabel = makeInstanceLabel(value, graph, lang),
+        type_ = Seq(typ), valueLabel = makeInstanceLabel(value, graph, lang),
         htmlName=htmlName) {
         override def getId: String = nodeToString(value)
       }
@@ -573,5 +574,4 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val rangeClasses: Set[Rdf#Node] = objectsQueries(ranges, rdf_type)
   }
       
-  private def firstNodeOrElseNullURI(set: Set[Rdf#Node]): Rdf#Node = set.headOption.getOrElse(nullURI)
 }
