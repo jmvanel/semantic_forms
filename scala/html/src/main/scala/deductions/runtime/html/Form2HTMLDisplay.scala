@@ -111,19 +111,6 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     } else NodeSeq.Empty
   }
 
-
-  private def makeUserInfoOnTriples(resourceEntry: formMod#Entry) ={
-    val userMetadata = resourceEntry.metadata
-    val timeMetadata = resourceEntry.timeMetadata
-    val time :String = new DateTime(timeMetadata).toDateTime.toString("dd/MM/yyyy HH:mm")
-    if (timeMetadata != -1){
-      <p>
-        modifié par: {userMetadata} le {time}
-      </p>
-    }
-    else <p></p>
-  }
-
   private[html] def createHTMLBlankNodeReadonlyField(
                                                       r: formMod#BlankNodeEntry,
                                                       hrefPrefix: String = config.hrefDisplayPrefix) =

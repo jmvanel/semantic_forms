@@ -94,7 +94,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
                 ""}
             >
           </input> , resourceEntry) }
-            {makeUserInfoOnTriples(resourceEntry.metadata,resourceEntry.timeMetadata)}
+          { makeUserInfoOnTriples(resourceEntry) }
 		  </div>
 		else new Text("") // format: ON
       ,
@@ -158,7 +158,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
         title={ placeholder }
         >
         </input> , r) }
-        {makeUserInfoOnTriples(r.metadata,r.timeMetadata)}
+        {makeUserInfoOnTriples(r)}
 				</div>
       }else new Text("\n")
       ,
@@ -278,7 +278,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
           >
           </input> ,
           lit ) }
-          { makeUserInfoOnTriples(lit.metadata, lit.timeMetadata) }
+          { makeUserInfoOnTriples(lit) }
         </div>
         <div class={ css.cssClasses.formDivEditInputCSSClass }>
           {
@@ -352,16 +352,6 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
 		  { makeHTMLOptionsSequence(field) }
 		  </datalist>
 	  } else <div></div>
-  }
-
-  private def makeUserInfoOnTriples(userMetadata: String,timeMetadata: Long): Elem ={
-    val time :String = new DateTime(timeMetadata).toDateTime.toString("dd/MM/yyyy HH:mm")
-    if (timeMetadata != -1){
-      <p>
-        modifié par:{userMetadata} le {time}
-      </p>
-    }
-    else <p></p>
   }
 
 }
