@@ -7,6 +7,7 @@ import org.joda.time.DateTime
 import scala.xml.NodeSeq.seqToNodeSeq
 import scala.xml.{Elem, NodeSeq, Text}
 import deductions.runtime.core.URIWidget
+import deductions.runtime.core.HTTPrequest
 
 
 /** generate HTML from abstract Form for Edition */
@@ -94,7 +95,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
                 ""}
             >
           </input> , resourceEntry) }
-          { makeUserInfoOnTriples(resourceEntry) }
+          { makeUserInfoOnTriples(resourceEntry, lang) }
 		  </div>
 		else new Text("") // format: ON
       ,
@@ -191,7 +192,9 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
   //// stuff for Literal (string) data ////
 
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
-  def createHTMLiteralEditableField(lit: formMod#LiteralEntry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
+  def createHTMLiteralEditableField(
+      lit: formMod#LiteralEntry,
+      request: HTTPrequest = HTTPrequest())(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     import lit._
     val placeholder = {
         val typ0 = type_.toString()
@@ -278,7 +281,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
           >
           </input> ,
           lit ) }
-          { makeUserInfoOnTriples(lit) }
+          { makeUserInfoOnTriples(lit, request.getLanguage()) }
         </div>
         <div class={ css.cssClasses.formDivEditInputCSSClass }>
           {

@@ -14,7 +14,9 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
   import config._
 
 
-  private[html] def createHTMLiteralReadonlyField(l: formMod#LiteralEntry): NodeSeq =
+  private[html] def createHTMLiteralReadonlyField(
+      l: formMod#LiteralEntry,
+      request: HTTPrequest = HTTPrequest()): NodeSeq =
     <xml:group>
       {
         val valueDisplayed =
@@ -24,7 +26,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
             l.valueLabel
         Unparsed(valueDisplayed)
       }
-    	{makeUserInfoOnTriples(l)}
+    	{makeUserInfoOnTriples(l, request.getLanguage())}
       <div>{ if (l.lang != "" && l.lang != "No_language") " > " + l.lang }</div>
     </xml:group>
 
@@ -50,7 +52,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       normalNavigationButton(resourceEntry) ++
       makeDrawGraphLink(objectURIstringValue) ++
       displayThumbnail(resourceEntry) ++
-      {makeUserInfoOnTriples(resourceEntry)}
+      {makeUserInfoOnTriples(resourceEntry, request.getLanguage())}
   }
 
   /** hyperlink To RDF property */

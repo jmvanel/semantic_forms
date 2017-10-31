@@ -133,13 +133,14 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
 		  case ((k, v), next) => new scala.xml.UnprefixedAttribute(k, v, next)
 		  })
 
-  def makeUserInfoOnTriples(entry: formMod#Entry) ={
+  def makeUserInfoOnTriples(entry: formMod#Entry, lang: String="en") ={
     val userMetadata = entry.metadata
     val timeMetadata = entry.timeMetadata
     val time: String = new DateTime(timeMetadata).toDateTime.toString("dd/MM/yyyy HH:mm")
     if (timeMetadata != -1){
       <p>
-        modifié par: {userMetadata} le {time}
+        {message("modified_by", lang)}
+        {userMetadata} {message("on_date", lang)} {time}
       </p>
     }
     else <p></p>
