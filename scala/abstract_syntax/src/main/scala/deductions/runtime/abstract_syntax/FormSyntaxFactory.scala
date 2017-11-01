@@ -249,11 +249,11 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   : Seq[Entry] = {
       val subject = step1.subject
       val props = step1.propertiesList
-      val classs = step1.classs
+      val classses = step1.classs
       val formMode: FormMode = if (step1.editable) EditionMode else DisplayMode
 
       logger.debug(
-          s"makeEntriesFromformSyntax subject <$subject>, classs <$classs>, props $props")
+          s"makeEntriesFromformSyntax subject <$subject>, classs <$classses>, props $props")
 
       val entries = for (
         prop <- props if prop != displayLabelPred
@@ -263,7 +263,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
           makeEntriesForSubject(subject, prop, formMode))
       }
       val fields = entries.flatten
-      val fields2 = addTypeTriple(subject, classs, fields)
+      val fields2 = addTypeTriples(subject, classses, fields)
       addInverseTriples(fields2, step1)
     }
 
@@ -394,27 +394,26 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       }
     }
   }
-          
+
   /**
    * add Triple: <subject> rdf:type <classs>
    *  @return augmented fields argument
    */
-  private def addTypeTriple(subject: Rdf#Node, classs: Rdf#Node, // URI,
-    fields: Iterable[Entry])
-    (implicit graph: Rdf#Graph)
-  : Seq[Entry] = {
-    val alreadyInDatabase = ! find(graph, subject, rdf.typ, ANY).isEmpty
+  private def addTypeTriples(subject: Rdf#Node, classses: Seq[Rdf#Node],
+                             fields: Iterable[Entry])(implicit graph: Rdf#Graph): Seq[Entry] = {
+    val alreadyInDatabase = !find(graph, subject, rdf.typ, ANY).isEmpty
     if ( // defaults.displayRdfType ||
     !alreadyInDatabase
-    && ! (subject == nullURI) ) {
-      val classFormEntry = new ResourceEntry(
-        // TODO not I18N:
-        "type", "class",
-        rdf.typ, ResourceValidator(Set(owl.Class)), classs,
-        alreadyInDatabase = alreadyInDatabase,
-        htmlName=makeHTMLName( makeTriple(subject, rdf.typ, nullURI) )
-    	)
-      (fields ++ Seq(classFormEntry)).toSeq
+      && !(subject == nullURI)) {
+      val classFormEntry =
+        for (classs <- classses) yield {
+          new ResourceEntry(
+            "type", "class", // TODO not I18N
+            rdf.typ, ResourceValidator(Set(owl.Class)), classs,
+            alreadyInDatabase = alreadyInDatabase,
+            htmlName = makeHTMLName(makeTriple(subject, rdf.typ, nullURI)))
+        }
+      (fields ++ classFormEntry).toSeq
     } else fields.toSeq
   }
 
@@ -498,6 +497,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     def htmlName: String = makeHTMLName( makeTriple(subject, uriNodeToURI(prop), objet) )
 
     def firstType = firstNodeOrElseNullURI(precomputProp.ranges)
+    def typesFromRanges = precomputProp.ranges.toSeq
 
     def literalEntry = {
       val value = getLiteralNodeOrElse(objet, literalInitialValue)
@@ -507,7 +507,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         value,
         subject=subject,
         subjectLabel = makeInstanceLabel(subject, graph, lang),
-        type_ = firstType,
+        type_ = typesFromRanges, //  firstType,
         lang = getLang(objet).toString(),
         valueLabel = nodeToString(value),
         htmlName=htmlName)
@@ -525,7 +525,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
                 alreadyInDatabase = true,
                 valueLabel = makeInstanceLabel(objet, graph, lang),
                 subjectLabel = makeInstanceLabel(subject, graph, lang),
-                type_ = firstType,
+                type_ = typesFromRanges, // firstType,
 
                 // TODO make it functional #170:  modularize in ThumbnailInference, leveraging on addAttributesToXMLElement
                 isImage = isImageTriple(subject, prop, objet, firstType),
@@ -550,7 +550,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       new BlankNodeEntry(label, comment, property, validator, value,
     		subject=subject,
     		subjectLabel = makeInstanceLabel(subject, graph, lang),
-        type_ = typ, valueLabel = makeInstanceLabel(value, graph, lang),
+        type_ = Seq(typ), valueLabel = makeInstanceLabel(value, graph, lang),
         htmlName=htmlName) {
         override def getId: String = nodeToString(value)
       }
@@ -573,5 +573,4 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val rangeClasses: Set[Rdf#Node] = objectsQueries(ranges, rdf_type)
   }
       
-  private def firstNodeOrElseNullURI(set: Set[Rdf#Node]): Rdf#Node = set.headOption.getOrElse(nullURI)
 }

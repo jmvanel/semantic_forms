@@ -91,7 +91,8 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
         subject,
         Seq(),
         makeEntries(propertiesList),
-        classesOfSubjectOrFromConfig.head, editable = editable,
+        classesOfSubjectOrFromConfig,
+        editable = editable,
         formURI = formuri match {
           case ""  => Some(formConfiguration);
           case uri => Some(URI(uri))
@@ -105,13 +106,15 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
     val globalDataForForm = makeformSyntax(propsFromClasses)
 
     /* formSyntax from Form Specification */
-    val formSyntaxFromSpecif: FormSyntax = if (formConfiguration != nullURI)
-      FormSyntax(subject,
+    val formSyntaxFromSpecif: FormSyntax =
+      if (formConfiguration != nullURI)
+        FormSyntax(
+          subject,
           Seq(),
           makeEntries(propsFromConfig),
-          formConfiguration,
+          Seq(formConfiguration), // TODO : this argument is for class URI's not form URI !!??
           editable = editable)
-    else NullFormSyntax
+      else NullFormSyntax
     logger.debug(s"computePropertiesList formSyntaxFromSpecif $formSyntaxFromSpecif")
 
     /* add Property Group for the default form */

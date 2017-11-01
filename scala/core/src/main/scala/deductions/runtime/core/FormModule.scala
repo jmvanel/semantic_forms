@@ -38,8 +38,8 @@ trait FormModule[NODE, URI <: NODE] {
                            *  "REFACTORING : moving each field on formSyntax + changing all rawDatForForm by formSyntax"
                            *  (unfinished refactoring of RawDataForForms */
                          val entriesList: Seq[FormModule[NODE, URI]#Entry] = Seq(),
-
-                         classs: NODE = nullURI,
+                         /** TODO : several types */
+                         classs: Seq[NODE] = Seq(), // nullURI,
                          formGroup: URI = nullURI,
                          val defaults: FormDefaults = FormModule.formDefaults,
 
@@ -109,9 +109,9 @@ trait FormModule[NODE, URI <: NODE] {
     val property: NODE
     /** unused yet :( */
     val mandatory: Boolean// = false
-    /** TODO : several types */
-    val type_ : NODE// = nullURI
-    //	  val type_ : Seq[NODE] // TODO <<<<<<<<<<<<<<<<
+    /** several types */
+//    val type_ : NODE
+    val type_ : Seq[NODE]
     val value: NODE // = nullURI
     val subjectLabel: String
     val widgetType: WidgetType // = URIWidget
@@ -224,7 +224,9 @@ trait FormModule[NODE, URI <: NODE] {
       def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]): Entry = ???
       val subject: NODE = nullURI
       val subjectLabel: String = ""
-      val type_ : NODE = nullURI
+//      val type_ : NODE = nullURI
+      val type_ : Seq[NODE] = Seq()
+
       val value: NODE = nullURI
       val widgetType: WidgetType = URIWidget
     }
@@ -239,7 +241,8 @@ trait FormModule[NODE, URI <: NODE] {
                             override val value: NODE = nullURI, val alreadyInDatabase: Boolean = true,
                             possibleValues: Seq[(NODE, NODE)] = Seq(),
                             override val valueLabel: String = "",
-                            override val type_ : NODE = nullURI,
+                            override // val type_ : NODE = nullURI,
+                              val type_ : Seq[NODE]= Seq(),
                             val inverseTriple: Boolean= false,
                             override val subject: NODE = nullURI,
                             override val subjectLabel: String = "",
@@ -282,7 +285,8 @@ trait FormModule[NODE, URI <: NODE] {
       alreadyInDatabase,
       e.possibleValues,
       valueLabel,
-      makeURI(e.type_),
+//      makeURI
+      (e.type_),
       false,
       e.subject,
       e.subjectLabel,
@@ -303,7 +307,10 @@ trait FormModule[NODE, URI <: NODE] {
                              label: String="", comment: String="",
                              property: ObjectProperty = nullURI,
                              validator: ResourceValidator = ResourceValidator(Set()),
-                             value: NODE, type_ : NODE = nullURI,
+                             value: NODE,
+//                             type_ : NODE = nullURI,
+                             type_ : Seq[NODE] = Seq(),
+
                              possibleValues: Seq[(NODE, NODE)] = Seq(),
                              override val valueLabel: String = "",
                              subject: NODE = nullURI,
@@ -339,7 +346,9 @@ trait FormModule[NODE, URI <: NODE] {
                            validator: DatatypeValidator = DatatypeValidator(Set()),
                            value: NODE = nullURI, // String = "",
                            val lang: String = "",
-                           type_ : NODE = nullURI,
+//                           type_ : NODE = nullURI,
+                           type_ : Seq[NODE] = Seq(),
+
                            possibleValues: Seq[(NODE, NODE)] = Seq(),
                            subject: NODE = nullURI,
                            override val subjectLabel: String = "",
@@ -385,7 +394,8 @@ trait FormModule[NODE, URI <: NODE] {
                            alreadyInDatabase: Boolean = true,
                            possibleValues: Seq[(NODE, NODE)] = Seq(),
                            override val valueLabel: String = "",
-                           type_ : NODE = nullURI,
+//                           type_ : NODE = nullURI,
+                           type_ : Seq[NODE] = Seq(),
                            inverseTriple: Boolean = false,
                            subject: NODE = nullURI,
                            override val subjectLabel: String = "",

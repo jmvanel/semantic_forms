@@ -145,4 +145,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     }
     else <p></p>
   }
+
+  def firstNODEOrElseEmptyString(set: Iterable[NODE]): String = set.headOption.getOrElse("").toString()
+
 }

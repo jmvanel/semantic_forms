@@ -227,6 +227,8 @@ extends URIManagement {
     foldNode(n)(_ => d, _ => d, l => l)
   }
 
+  def firstNodeOrElseNullURI(set: Iterable[Rdf#Node]): Rdf#Node = set.headOption.getOrElse(nullURI)
+
   /**
    * compute terminal Part of URI, eg
    *  Person from http://xmlns.com/foaf/0.1/Person

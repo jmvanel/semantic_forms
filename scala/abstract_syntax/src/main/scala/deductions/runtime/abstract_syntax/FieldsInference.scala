@@ -100,7 +100,7 @@ with FormModule[Rdf#Node, Rdf#URI]
       if (classs != owl.Thing) {
         val domains = propertiesFromDomainsFromClass(classs)
         inferedProperties ++= domains
-        propertiesGroups += ( classs -> FormSyntax(URI(""),Seq(),makeEntries(domains),classs) )
+        propertiesGroups += ( classs -> FormSyntax(URI(""),Seq(),makeEntries(domains), Seq(classs)) )
 
         val superClasses = getObjects(graph, classs, rdfs.subClassOf)
         logger.info(s"process Super Classes of <$classs> size ${superClasses.size} ; ${superClasses.mkString(", ")}")
@@ -159,7 +159,7 @@ with FormModule[Rdf#Node, Rdf#URI]
         nullURI,
         Seq(),
         makeEntries( inferedProperties.distinct ),
-        classs,
+        Seq(classs),
         nullURI,
         propertiesGroupMap = propertiesGroups)
 

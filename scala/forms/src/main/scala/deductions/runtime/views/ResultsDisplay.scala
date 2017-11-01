@@ -117,11 +117,11 @@ extends ThumbnailInference[Rdf, DATASET] {
       ): NodeSeq = {
     val fmod = new FormModule[Rdf#Node,  Rdf#URI ]{
       val nullURI= ops.URI("")
-      }
+    }
     val resourceEntry = new fmod.ResourceEntry(
       label, "comment", property, new fmod.ResourceValidator(Set()),
       value=uri, true,
-      Seq(), label, type_, false,
+      Seq(), label, Seq(type_), false,
       thumbnail = getURIimage(uri) )
     def hyperlink =
       if( hrefPrefix != "" &&

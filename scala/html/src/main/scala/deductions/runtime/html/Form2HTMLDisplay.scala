@@ -47,7 +47,9 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
 
       hyperlinkToField(resourceEntry) ++
-      hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue, valueLabel, type_, resourceEntry) ++
+      hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue, valueLabel,
+          firstNODEOrElseEmptyString(type_),
+          resourceEntry) ++
       backLinkButton (resourceEntry) ++
       normalNavigationButton(resourceEntry) ++
       makeDrawGraphLink(objectURIstringValue) ++
@@ -72,11 +74,12 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     } else NodeSeq.Empty
   }
 
-  def hyperlinkToURI(hrefPrefix: String, objectURIstringValue: String, valueLabel: String, type_ : NODE, resourceEntry: formMod#ResourceEntry) = {
+  def hyperlinkToURI(hrefPrefix: String, objectURIstringValue: String, valueLabel: String,
+      type_ : String, resourceEntry: formMod#ResourceEntry) = {
     addTripleAttributesToXMLElement(
       <a href={createHyperlinkString(hrefPrefix, objectURIstringValue)} class={cssForURI(objectURIstringValue)} title=
       {s"""Value ${if (objectURIstringValue != valueLabel) objectURIstringValue else ""}
-              of type ${type_.toString()}"""} draggable="true">
+              of type ${type_}"""} draggable="true">
         {valueLabel}
       </a>,
       resourceEntry)

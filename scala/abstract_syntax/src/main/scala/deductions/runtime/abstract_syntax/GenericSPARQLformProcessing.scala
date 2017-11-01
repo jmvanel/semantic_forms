@@ -30,7 +30,7 @@ trait GenericSPARQLformProcessing[Rdf <: RDF, DATASET]
         property = tr.predicate,
         value = tr.objectt,
         valueLabel = "",
-        type_ = nullURI,
+        type_ = Seq(), // nullURI,
         inverseTriple = false,
         subject = tr.subject,
         subjectLabel = "",

@@ -109,13 +109,16 @@ trait FormSpecificationsFromVocab[Rdf <: RDF, DATASET]
     val form_URI = formURI(formSyntax)
     println("formURI " + form_URI + ", classs " + classs)
     val formGraph = (form_URI
-      -- classDomain ->- classs
+      -- classDomain ->- classs.head // TODO
       -- showProperties ->- properties).graph
     formGraph
   }
 
   def formvoc(id: String) = prefixesMap2("form")(id)
-  def formURI(formSyntax: FormModule[Rdf#Node, Rdf#URI]#FormSyntax) = URI(fromUri(uriNodeToURI(formSyntax.classs)) + "-formFromClass")
+  def formURI(formSyntax: FormModule[Rdf#Node, Rdf#URI]#FormSyntax) =
+    URI(fromUri(
+        // TODO multi-type:
+        uriNodeToURI(formSyntax.classs.head)) + "-formFromClass")
 
   /**
    * create form:DBPediaLookup field Specifications,
