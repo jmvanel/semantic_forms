@@ -40,11 +40,15 @@ with FormSyntaxJson[Rdf] {
       actionURI = actionURI,
       lang = lang, graphURI = graphURI, request = request)
 
+    val editingHeaders = (
+      for (classe <- form.classs)
+        yield makeEditingHeader(fromUri(uriNodeToURI(classe)), lang, formSpecURI, graphURI)
+    ) . flatten
+
     Success(
-      Seq(
-        makeEditingHeader(fromUri(uriNodeToURI(form.classs)), lang, formSpecURI, graphURI),
-        rawForm
-      ).flatten)
+      editingHeaders
+        ++
+        rawForm)
   }
 
   /** raw Data for instance creation; transactions Inside */

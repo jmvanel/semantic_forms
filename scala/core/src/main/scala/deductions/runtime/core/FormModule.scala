@@ -39,7 +39,7 @@ trait FormModule[NODE, URI <: NODE] {
                            *  (unfinished refactoring of RawDataForForms */
                          val entriesList: Seq[FormModule[NODE, URI]#Entry] = Seq(),
                          /** TODO : several types */
-                         classs: NODE = nullURI,
+                         classs: Seq[NODE] = Seq(), // nullURI,
                          formGroup: URI = nullURI,
                          val defaults: FormDefaults = FormModule.formDefaults,
 

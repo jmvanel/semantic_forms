@@ -205,8 +205,10 @@ import deductions.runtime.utils.I18NMessages
               I18NMessages.get("Form_specification", lang) + ": " ++
                 createHyperlinkElement(toPlainString(formURI), formLabel)
             case _ => "Class " ++
-              createHyperlinkElement(toPlainString(classs), toPlainString(classs)) ++
+            ( for(classe <- classs) yield
+              createHyperlinkElement(toPlainString(classe), toPlainString(classe)) ++
               " (automatic form)"
+            )
           }
         }</div>
     } else Text("")
