@@ -34,6 +34,7 @@ with FormModule[Rdf#Node, Rdf#URI]
   : List[FormSyntax] =
 	  for( classs <- classes) yield {
 	    val ff = fieldsFromClass( uriNodeToURI(classs), graph)
+	    println1(s"fieldsFromClasses: classs: <$classs> : fieldsFromClass $ff")
 	    ff.setSubject(subject, editable)
 	  }
 

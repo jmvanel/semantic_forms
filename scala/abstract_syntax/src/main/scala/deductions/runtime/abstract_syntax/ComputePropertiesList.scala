@@ -3,6 +3,7 @@ package deductions.runtime.abstract_syntax
 import org.w3.banana.RDF
 
 import scala.util.{Success, Try}
+import scala.collection.mutable.ArrayBuffer
 
 /** Step 1 of form generation: compute properties List from Config, Subject, Class (in that order) */
 trait ComputePropertiesList[Rdf <: RDF, DATASET] {
@@ -57,11 +58,11 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
     	fieldsFromClasses(classesOfSubjectOrFromConfig, subject, editable, graph)
     }
 
+    // TODO only add properties that were not in form specs
     val  propsFromClasses2 =
       if( propsFromConfig . isEmpty )
       propsFromClasses. map { pp => pp.propertiesList } . flatten
-      else
-        Seq()
+      else Seq()
         
     val propertiesListAllItems = (
         propsFromConfig ++
@@ -75,7 +76,9 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
       else
         propertiesListAllItems
   
-    val reversePropertiesList = reversePropertiesListFromFormConfiguration(formConfiguration)
+    val reversePropertiesList =
+      reversePropertiesListFromFormConfiguration(
+          formConfiguration.head) // TODO <<<<<<<<<<<
 
     def makeformSyntax(formSyntaxList: List[FormSyntax]): FormSyntax = {
       logger.debug(s"""makeformSyntax: formSyntaxList size ${formSyntaxList.size}
@@ -94,7 +97,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
         classesOfSubjectOrFromConfig,
         editable = editable,
         formURI = formuri match {
-          case ""  => Some(formConfiguration);
+          case ""  => Some(formConfiguration.head); // TODO
           case uri => Some(URI(uri))
         },
         reversePropertiesList = reversePropertiesList,
@@ -112,7 +115,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
           subject,
           Seq(),
           makeEntries(propsFromConfig),
-          Seq(formConfiguration), // TODO : this argument is for class URI's not form URI !!??
+          formConfiguration, // TODO : this argument is for class URI's not form URI !!??
           editable = editable)
       else NullFormSyntax
     logger.debug(s"computePropertiesList formSyntaxFromSpecif $formSyntaxFromSpecif")
@@ -131,23 +134,54 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
   /**
    * look for Properties list from form spec in given URI or else in TDB from given class URI
    *  @return (propertiesList, formConfiguration, tryClass)
+   *  (several FormSyntax)
    */
   private def computePropsFromConfig(classes: List[Rdf#Node],
-                                     formuri: String)(implicit graph: Rdf#Graph): (Seq[Rdf#URI], Rdf#Node, Try[Rdf#Node]) = {
-		// TODO loop on classes
-    val classs = classes.head
+                                     formuri: String)
+  (implicit graph: Rdf#Graph):
+	  (Seq[Rdf#URI], Seq[Rdf#Node], Try[Rdf#Node]) = {
 
-    if (formuri == "") {
-      val (propertiesList, formConfiguration) = lookPropertiesListInConfiguration(classs)
-      logger.debug( s"computePropsFromConfig: $propertiesList")
-      (propertiesList, formConfiguration, Success(classs))
-    } else {
-      val (propertiesList, formConfiguration, tryGraph) = lookPropertiesListFromDatabaseOrDownload(formuri)
-      val tryClass = tryGraph.map { gr =>
-        lookClassInFormSpec(URI(formuri), gr)
+    // loop on classes
+    val listPerFormSpecification =
+      for (classe <- classes) yield {
+        if (formuri == "") {
+          val (propertiesList, formConfiguration) = lookPropertiesListInConfiguration(classe)
+//          logger.debug(
+              println(
+              s"computePropsFromConfig: class <$classe> : $propertiesList")
+          (propertiesList, formConfiguration, Success(classe))
+        } else {
+          val (propertiesList, formSpecification, tryGraph) = lookPropertiesListFromDatabaseOrDownload(formuri)
+          val tryClass = tryGraph.map { gr =>
+            lookClassInFormSpec(URI(formuri), gr)
+          }
+          (propertiesList, formSpecification, tryClass)
+        }
       }
-      (propertiesList, formConfiguration, tryClass)
+    // concatenate all properties List
+    val propertiesListAll = ArrayBuffer[Rdf#URI]()
+    val formSpecificationAll = ArrayBuffer[Rdf#Node]()
+    var tryClassLast: Try[Rdf#Node] = null
+    for( formSpecificationTuple <- listPerFormSpecification) yield {
+      val (propertiesList, formSpecification, tryClass) = formSpecificationTuple
+      // TODO interpose special null property for separation
+      propertiesListAll.appendAll(propertiesList)
+      formSpecificationAll.append(formSpecification)
+      tryClassLast = tryClass
     }
+    (propertiesListAll, formSpecificationAll, tryClassLast)
+//    val classs = classes.head
+//    if (formuri == "") {
+//      val (propertiesList, formConfiguration) = lookPropertiesListInConfiguration(classs)
+//      logger.debug( s"computePropsFromConfig: $propertiesList")
+//      (propertiesList, Seq(formConfiguration), Success(classs))
+//    } else {
+//      val (propertiesList, formConfiguration, tryGraph) = lookPropertiesListFromDatabaseOrDownload(formuri)
+//      val tryClass = tryGraph.map { gr =>
+//        lookClassInFormSpec(URI(formuri), gr)
+//      }
+//      (propertiesList, Seq(formConfiguration), tryClass)
+//    }
   }
   private def classFromSubject(subject: Rdf#Node)(implicit graph: Rdf#Graph) = {
     getHeadOrElse(subject, rdf.typ)
