@@ -66,8 +66,10 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
         
     val propertiesListAllItems = (
         propsFromFormsSpecs ++
-        propsFromSubject ++
-        propsFromClasses2
+        ( form("separator_props_From_Subject") ::
+            propsFromSubject.toList ) ++
+        ( form("separator_props_From_Classes") ::
+            propsFromClasses2.toList )
     ).distinct
 
     val propertiesList =

@@ -105,7 +105,10 @@ import deductions.runtime.utils.I18NMessages
           (preceding, field) <- (lastEntry +: fields) zip fields // do not display NullResourceEntry
           if (field.property.toString != "")
         ) yield {
-          if (editable || toPlainString(field.value) != "")
+          if (editable ||
+              toPlainString(field.value) != ""||
+//              toPlainString(field.property).startsWith(form("separator_props")))
+              toPlainString(field.property).contains("separator_props"))
             <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
               makeFieldSubject(field) ++
                 makeFieldLabel(preceding, field, editable) ++
