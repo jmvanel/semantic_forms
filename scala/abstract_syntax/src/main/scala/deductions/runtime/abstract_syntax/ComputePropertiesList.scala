@@ -38,7 +38,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
       if( classes . isEmpty) List(classs) else classes
     }
 
-    val (propsFromConfig, formConfiguration, tryClassFromConfig) =
+    val (propsFromFormsSpecs, formSpecs, tryClassFromConfig) =
       computePropsFromConfig(classesOfSubject, formuri)
 
     val classesOfSubjectOrFromConfig =
@@ -50,35 +50,35 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
 
       logger.debug(
         s""">>> computePropsFromConfig( classOfSubjectOrFromConfig=$classesOfSubjectOrFromConfig) =>
-               formConfiguration=<$formConfiguration>, props From Config $propsFromConfig""")
+               formConfiguration=<$formSpecs>, props From Config $propsFromFormsSpecs""")
 
     val propsFromSubject = fieldsFromSubject(subject, graph)
  
-    val propsFromClasses: List[FormSyntax] = {
+    val formSyntaxesFromClasses: List[FormSyntax] = {
     	fieldsFromClasses(classesOfSubjectOrFromConfig, subject, editable, graph)
     }
 
-    // TODO only add properties that were not in form specs
-    val  propsFromClasses2 =
-      if( propsFromConfig . isEmpty )
-      propsFromClasses. map { pp => pp.propertiesList } . flatten
-      else Seq()
+    // only add properties that were not in form specs
+    val  propsFromClasses2 = {
+      val propsFromClasses = formSyntaxesFromClasses. map { pp => pp.propertiesList } . flatten
+      propsFromClasses . diff( propsFromFormsSpecs )
+    }
         
     val propertiesListAllItems = (
-        propsFromConfig ++
+        propsFromFormsSpecs ++
         propsFromSubject ++
         propsFromClasses2
     ).distinct
 
     val propertiesList =
-      if (propsFromConfig.isEmpty)
+      if (propsFromFormsSpecs.isEmpty)
         addRDFSLabelComment(propertiesListAllItems)
       else
         propertiesListAllItems
   
     val reversePropertiesList =
       reversePropertiesListFromFormConfiguration(
-          formConfiguration.head) // TODO <<<<<<<<<<<
+          formSpecs.head) // TODO <<<<<<<<<<<
 
     def makeformSyntax(formSyntaxList: List[FormSyntax]): FormSyntax = {
       logger.debug(s"""makeformSyntax: formSyntaxList size ${formSyntaxList.size}
@@ -97,7 +97,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
         classesOfSubjectOrFromConfig,
         editable = editable,
         formURI = formuri match {
-          case ""  => Some(formConfiguration.head); // TODO
+          case ""  => Some(formSpecs.head); // TODO
           case uri => Some(URI(uri))
         },
         reversePropertiesList = reversePropertiesList,
@@ -106,16 +106,16 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
 
 
 
-    val globalDataForForm = makeformSyntax(propsFromClasses)
+    val globalDataForForm = makeformSyntax(formSyntaxesFromClasses)
 
     /* formSyntax from Form Specification */
     val formSyntaxFromSpecif: FormSyntax =
-      if (formConfiguration != nullURI)
+      if (formSpecs != nullURI)
         FormSyntax(
           subject,
           Seq(),
-          makeEntries(propsFromConfig),
-          formConfiguration, // TODO : this argument is for class URI's not form URI !!??
+          makeEntries(propsFromFormsSpecs),
+          formSpecs, // TODO : this argument is for class URI's not form URI !!??
           editable = editable)
       else NullFormSyntax
     logger.debug(s"computePropertiesList formSyntaxFromSpecif $formSyntaxFromSpecif")
