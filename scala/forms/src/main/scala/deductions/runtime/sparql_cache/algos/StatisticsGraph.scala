@@ -35,9 +35,9 @@ trait StatisticsGraph[Rdf <: RDF] extends RDFHelpers[Rdf]
       { objectsCount }
       objects,
       { objectsCount2 }
-      objects from page URI,
+      objects from page URI, type(s)
       { for ( a <- 0 until linkClasse.length) yield {
-       <a href={ linkClasse(a).toString }>{ classe(a) }</a>
+       <a href={ linkClasse(a).toString }>{ classe(a) }</a><span>,&nbsp;</span>
      } }
     </p>
   }
