@@ -18,16 +18,10 @@ trait FormJSON[Rdf <: RDF, DATASET]
   private def formAsJSON(subject: Rdf#Node, editable: Boolean, formuri: String = "",
       database: String, lang0: String="en"): String = {
     val datasetOrDefault = getDatasetOrDefault(database)
-//    val formSyntax = rdfStore.rw(
-//      datasetOrDefault, {
 
     		implicit val graph = allNamedGraph
     		implicit val lang: String=lang0
-//        createForm(subject, editable, formuri = formuri)
-//      })
-//      .get
-    
-    		// TODO datasetOrDefault
+    // TODO datasetOrDefault
     val formSyntax = createFormTR(subject, editable, formuri = formuri)
     formSyntax2JSONString(formSyntax)
   }

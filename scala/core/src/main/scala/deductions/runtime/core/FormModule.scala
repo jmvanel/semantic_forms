@@ -38,8 +38,8 @@ trait FormModule[NODE, URI <: NODE] {
                            *  "REFACTORING : moving each field on formSyntax + changing all rawDatForForm by formSyntax"
                            *  (unfinished refactoring of RawDataForForms */
                          val entriesList: Seq[FormModule[NODE, URI]#Entry] = Seq(),
-                         /** TODO : several types */
-                         classs: Seq[NODE] = Seq(), // nullURI,
+                         /** several types */
+                         val classs: Seq[NODE] = Seq(),
                          formGroup: URI = nullURI,
                          val defaults: FormDefaults = FormModule.formDefaults,
 
@@ -51,7 +51,7 @@ trait FormModule[NODE, URI <: NODE] {
                            * (unfinished refactoring of RawDataForForms */
                          propertiesGroups: collection.Seq[FormSyntax] = collection.Seq[FormSyntax](),
                          propertiesGroupMap: collection.Map[NODE, FormSyntax] =
-                         collection.Map[NODE, FormSyntax](),
+                           collection.Map[NODE, FormSyntax](),
 
                          val title: String = "",
                          val thumbnail: Option[NODE] = None,
