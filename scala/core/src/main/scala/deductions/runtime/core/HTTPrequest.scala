@@ -2,6 +2,7 @@ package deductions.runtime.core
 
 import java.net.URLEncoder
 import scala.collection.Seq
+import java.net.URLDecoder
 
 /**
  * Like Request from Play! (in package play.api.mvc), but avoid Play! dependency
@@ -50,7 +51,8 @@ case class HTTPrequest(
       cookie <- cookies.get("PLAY_SESSION");
       value = cookie.value
     ) yield { substringAfter(value, "username=") }
-    usernameFromSession.getOrElse("anonymous")
+    URLDecoder.decode(
+      usernameFromSession.getOrElse("anonymous"), "UTF-8")
   }
 
   def substringAfter(s: String, k: String) = { s.indexOf(k) match { case -1 => ""; case i => s.substring(i + k.length) } }

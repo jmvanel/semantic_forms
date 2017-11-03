@@ -119,7 +119,7 @@ extends Controller
       val httpRequest = copyRequest(request)
 
       val userFromSession = httpRequest.userId() // normally not yet set in session !
-println( s"""authenticate: httpRequest $httpRequest - queryString ${httpRequest.queryString}
+      println( s"""authenticate: httpRequest $httpRequest - queryString ${httpRequest.queryString}
     	userFromSession $userFromSession
     	formMap ${httpRequest.formMap}""" )
 
