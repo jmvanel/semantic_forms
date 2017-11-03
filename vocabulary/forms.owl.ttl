@@ -119,18 +119,20 @@ form:userid a owl:ObjectProperty ;
         rdfs:label "login"@en ;
         rdfs:label "identifiant"@fr ;
         rdfs:domain form:AuthenticationAttempt ;
-        rdfs:range foaf:OnlineAccount .
+        rdfs:range xsd:string . # foaf:OnlineAccount .
 
 form:password a owl:DatatypeProperty ;
         rdfs:label "password"@en ;
         rdfs:label "mot de passe"@fr ;
         rdfs:domain form:AuthenticationAttempt ;
-        rdfs:range xsd:string .
+        rdfs:range xsd:string ;
+        form:shortString true .
 form:confirmPassword a owl:DatatypeProperty ;
         rdfs:label "confirm Password"@en ;
         rdfs:label "confirmer le mot de passe"@fr ;
         rdfs:domain form:AuthenticationAttempt ;
-        rdfs:range xsd:string: .
+        rdfs:range xsd:string ;
+        form:shortString true .
 
 form:RegisterAccount  a owl:Class ;
 	rdfs:label "Register Account"@en  ;

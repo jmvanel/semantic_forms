@@ -25,16 +25,21 @@ trait FormSpecificationFactory[Rdf <: RDF, DATASET]
    *  usable for unfilled and filled Forms
    *  @return Seq of pairs (properties RDF List, form Configuration node)
    */
-  def lookPropertiesListInConfiguration(classs: Rdf#Node)
+  def lookPropertiesListInConfiguration(
+      // TODO classs: Seq[Rdf#Node])
+      classs: Rdf#Node)
   (implicit graph: Rdf#Graph)
   : (Seq[Rdf#URI], Rdf#Node) = {
-    val formSpecOption = lookFormSpecInConfiguration(classs)
-    formSpecOption match {
-      case None => (Seq(), URI(""))
-      case Some(formConfiguration) =>
-        val propertiesList = propertiesListFromFormConfiguration(formConfiguration)
-        (propertiesList, formConfiguration)
+    val formSpecs = lookFormSpecsInConfiguration(
+        Seq(classs)) // TODO
+      
+    val v = for( formSpec <- formSpecs ) yield {
+        val propertiesList = propertiesListFromFormConfiguration(formSpec)
+        (propertiesList, formSpec)
     }
+
+    // TODO
+    v.headOption.getOrElse((Seq(), URI("")))
   }
 
  /** look for Properties List & form Configuration From URI in Database,
@@ -70,18 +75,20 @@ trait FormSpecificationFactory[Rdf <: RDF, DATASET]
   }
 
   /** lookup Form Spec from OWL class in Configuration */
-  def lookFormSpecInConfiguration(classs: Rdf#Node)
-  (implicit graph: Rdf#Graph)
-  : Option[Rdf#Node] = {
-    val forms = getSubjects(graph, formPrefix("classDomain"), classs) . toList
-    logger.debug("lookFormSpecInConfiguration: forms " + forms.mkString( "; "))
-    val formSpecOption = forms.flatMap {
-      form => ops.foldNode(form)(uri => Some(uri), bn => Some(bn), lit => None)
-    }.headOption
-    if( forms.size > 1 )
-      logger.warn(s"WARNING: several form specs for $classs; chosen $formSpecOption")
-    logger.info( s"lookFormSpecInConfiguration: found for <$classs> : $formSpecOption" )
-    formSpecOption
+  private def lookFormSpecsInConfiguration(classes: Seq[Rdf#Node])
+  (implicit graph: Rdf#Graph): Seq[Rdf#Node] = {
+    val v = for (classe <- classes) yield {
+      val forms = getSubjects(graph, formPrefix("classDomain"), classe).toList
+      logger.debug("lookFormSpecInConfiguration: forms " + forms.mkString("; "))
+      val formSpecOption = forms.flatMap {
+        form => ops.foldNode(form)(uri => Some(uri), bn => Some(bn), lit => None)
+      }.headOption
+      if (forms.size > 1)
+        logger.warn(s"WARNING: several form specs for $classe; chosen $formSpecOption")
+      logger.info(s"lookFormSpecInConfiguration: found for <$classe> : $formSpecOption")
+      formSpecOption
+    }
+    v.flatten
   }
 
   /**
@@ -100,7 +107,8 @@ trait FormSpecificationFactory[Rdf <: RDF, DATASET]
     prop: Rdf#Node)(implicit graph: Rdf#Graph): Seq[Rdf#Triple] =
     find(graph, ANY, formPrefix("fieldAppliesToProperty"), prop).toSeq
 
-  def lookClassInFormSpec( formURI: Rdf#URI, formSpec: Rdf#Graph) = {
+  /** look for associated Class In given Form Spec (via predicate form:classDomain) */
+  def lookClassInFormSpec( formURI: Rdf#URI, formSpec: Rdf#Graph): Rdf#Node = {
     val trOpt = find(formSpec, formURI, formPrefix("classDomain"), ANY).toSeq.headOption
     trOpt . map {
       tr => tr.objectt

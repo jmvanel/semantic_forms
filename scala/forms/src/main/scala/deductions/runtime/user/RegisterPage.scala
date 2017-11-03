@@ -14,6 +14,7 @@ import scala.xml.{NodeSeq, Text}
 import scala.xml.Elem
 import scala.xml.Text
 import scala.xml.Node
+import deductions.runtime.utils.URIManagement
 
 /** Register HTML Page */
 trait RegisterPage[Rdf <: RDF, DATASET]
@@ -24,8 +25,7 @@ trait RegisterPage[Rdf <: RDF, DATASET]
     with CreationFormAlgo[Rdf, DATASET]
     with ResultsDisplay[Rdf, DATASET]
     with UserQueries[Rdf, DATASET]
-//    with Configuration
-    {
+    with URIManagement {
 
  	val config: Configuration
   import config._
@@ -34,15 +34,20 @@ trait RegisterPage[Rdf <: RDF, DATASET]
   /** display User information in pages */
   def displayUser(userid: String, pageURI: String, pageLabel: String,
       lang: String = "en"): NodeSeq = {
+
+    val absoluteURIForUserid = makeAbsoluteURIForSaving(userid)
+// 	  println( s">>>> displayUser userid $userid, absoluteURIForUserid $absoluteURIForUserid" )
     <div class="userInfo"> {
       if (needLogin) {
         if (userid != "" && !userid.startsWith("anonymous")) {
           val userLabel = wrapInTransaction {
-            val personFromAccount = getPersonFromAccount(userid)
+            val personFromAccount = getPersonFromAccount(absoluteURIForUserid) // userid)
             // link to User profile
-            makeHyperlinkForURI(URI("user:" + userid), lang, allNamedGraph) ++
-              // Person :
-              makeHyperlinkForURI((personFromAccount), lang, allNamedGraph)
+            makeHyperlinkForURI(
+                URI( absoluteURIForUserid ),
+                lang, allNamedGraph) ++
+              // link to User's foaf:Person :
+              makeHyperlinkForURI(personFromAccount, lang, allNamedGraph)
           }
           val displayUserLabel: NodeSeq = userLabel match {
             case Success(lab) => Text(s"${I18NMessages.get("User", lang)}: ") ++ lab
@@ -52,7 +57,7 @@ trait RegisterPage[Rdf <: RDF, DATASET]
 
         } else {
 
-          /* TODO obsolete code to reivew nd probably remove
+          /* TODO obsolete code to review and probably remove
            * (needLogin from config is currently true) */
 
           <div>

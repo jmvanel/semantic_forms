@@ -87,8 +87,9 @@ trait FormSyntaxJson[Rdf <: RDF]
       "subject" -> fs.subject,
       "title" -> fs.title,
       "thumbnail" -> fs.thumbnail,
-       "formURI" -> fs.formURI,
-       "formLabel" -> fs.formLabel,
+      "formURI" -> fs.formURI,
+      "formLabel" -> fs.formLabel,
+      "formTypes" -> fs.classs,
 
       "fields" -> fs.fields)
   }

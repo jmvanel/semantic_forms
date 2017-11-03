@@ -52,6 +52,8 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
         // hack before implementing real separators
         if (label.contains("----"))
           label.substring(1).replaceAll("-(-)+", "")
+        else if (label.contains("separator_props_"))
+          label . replace("separator_props_", "Properties ") . replace("_", " ")
         else label
       }</a>
       </label>
@@ -66,8 +68,6 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
       field.comment + " - " + field.property
       } tabindex="-1"> -- </label>
     }
-
-
   }
 
   private def labelTooltip(field: formMod#Entry) = {

@@ -19,7 +19,8 @@ with RDFContentNegociation
     Action {
         implicit request: Request[_] =>
         val lang = chooseLanguage(request)
-       makeJSONResult(formData(uri, blankNode, Edit, formuri, database, lang))
+       makeJSONResult(
+           formData(uri, blankNode, Edit, formuri, database, lang))
     }
   /**
    * creation form as raw JSON data
