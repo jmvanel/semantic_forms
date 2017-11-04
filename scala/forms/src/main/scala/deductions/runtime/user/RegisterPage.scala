@@ -15,6 +15,7 @@ import scala.xml.Elem
 import scala.xml.Text
 import scala.xml.Node
 import deductions.runtime.utils.URIManagement
+import scala.xml.Unparsed
 
 /** Register HTML Page */
 trait RegisterPage[Rdf <: RDF, DATASET]
@@ -61,6 +62,28 @@ trait RegisterPage[Rdf <: RDF, DATASET]
            * (needLogin from config is currently true) */
 
           <div>
+            <script type="text/javascript">
+              {
+                Unparsed("""
+                  $(document).ready(function() {
+                    var toggleButton = document.getElementById('linkToSearch');
+                    toggleButton.addEventListener( 'click', function() {
+                      var input = document.getElementById('q');
+                      console.log("call focus: input: " + input);
+                      // 
+                      sleep(200);
+                      input.focus();
+//                      input.value(input.value);
+                    });
+                  });
+                  function sleep(ms) {
+                		return new Promise(resolve => setTimeout(resolve, ms));
+                		}
+                """)
+              }
+            </script>
+            
+
             Anonyme
         	-{
               if (pageURI != "") {
@@ -76,7 +99,12 @@ trait RegisterPage[Rdf <: RDF, DATASET]
             {I18NMessages.get("New_account", lang)}
             </a>
             - ou 
-        	-<a href="#" onclick="document.getElementById('q').focus();" title="Peut-être votre identité est déjà enregistrée ici?">
+        	-<a href="#"
+            onclick="document.getElementById('q').focus();"
+            title="Peut-être votre identité est déjà enregistrée ici?"
+            data-toggle="collapse" data-target="#collapseDisplay"
+            id="linkToSearch"
+            >
             Chercher mon identité sur ce site
           </a>
           </div>
