@@ -31,6 +31,8 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
    * - page URI (graph) statistics,
    * - behavior (manageBlankNodesReload, Exception management)
    *
+   * (called for /display service)
+   *
    * @return couple with XHTML form and Boolean whether  subject type did Change
    *
    * TRANSACTIONAL

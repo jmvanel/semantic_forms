@@ -560,21 +560,29 @@ extends
    * transaction inside (Write)
    * TODO: graphURI should be obtained from the HTTP request, or else from user Id
    */
-  def pureHTMLwebPageAnnotateAsDocument(uri: Rdf#URI, request: HTTPrequest): Rdf#Graph = {
+  private def pureHTMLwebPageAnnotateAsDocument(uri: Rdf#URI, request: HTTPrequest): Rdf#Graph = {
     val graphURI = URI(makeAbsoluteURIForSaving(request.userId()))
-    val newGraphWithUrl = makeGraph(List(makeTriple(uri, rdf.typ, foaf.Document)))
-    wrapInTransaction {
-      rdfStore.appendToGraph(
-        dataset,
-        graphURI,
-        newGraphWithUrl)
+    val addedGraphTry = wrapInTransaction {
+      val existingType = find(allNamedGraph, uri, rdf.typ, ANY)
+      val addedGraph =
+        if (existingType.isEmpty) {
+          val newGraphWithUrl = makeGraph(List(makeTriple(uri, rdf.typ, foaf.Document)))
+          rdfStore.appendToGraph(
+            dataset,
+            graphURI,
+            newGraphWithUrl)
+          println(s"""pureHTMLwebPageAnnotateAsDocument: saved $newGraphWithUrl
+            in graph <${makeAbsoluteURIForSaving(request.userId())}>""")
+          newGraphWithUrl
+        } else emptyGraph
       addRDFSLabelValue(uri, Some(graphURI))
+      addedGraph
     }
-    println(s"pureHTMLwebPageAnnotateAsDocument: saved $newGraphWithUrl in graph <${makeAbsoluteURIForSaving(request.userId())}>")
     val currentPageTriplesIterator = wrapInReadTransaction {
       find(allNamedGraph, uri, ANY, ANY)
     }.getOrElse(Iterator.empty).toIterable
-    val result = newGraphWithUrl.
+    println(s"""pureHTMLwebPageAnnotateAsDocument: addedGraphTry $addedGraphTry""")
+    val result = addedGraphTry.getOrElse(emptyGraph). // newGraphWithUrl.
       // NOTE: after user added triples, this way typeChange will not be triggered
       union(makeGraph(currentPageTriplesIterator))
     println(s"pureHTMLwebPageAnnotateAsDocument: ret $result")

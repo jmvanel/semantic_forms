@@ -64,11 +64,13 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
     val res = queryString. toSeq. map {
       // cf partial functions:  http://blog.bruchez.name/2011/10/scala-partial-functions-without-phd.html
-      case (param0, objects) if (
+      case (param0, objects0) if (
         param0 != "url" &&
         param0 != "uri" &&
         param0 != "graphURI") =>
         val param = URLDecoder.decode(param0, "utf-8")
+        val objects = objects0 . map { node =>
+          URLDecoder.decode(node, "utf-8") }
         log(s"getTriplesFromHTTPparams: httpParam decoded: $param - objects $objects");
         val tryTriple = Try {
           val comingBackTriple = httpParam2Triple(param)
@@ -81,7 +83,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
           case _ => (Triple(nullURI, nullURI, nullURI), Seq())
         }
       case x =>
-        println(s"getTriplesFromHTTPparams: default case : $x")
+        println(s"getTriplesFromHTTPparams: non foreseen case : $x")
         (Triple(nullURI, nullURI, nullURI) , Seq() )
     }
     res
@@ -122,6 +124,13 @@ trait FormSaver[Rdf <: RDF, DATASET]
         val databaseChanges = computeDatabaseChangesFromMap( httpParamsMap, lang)
 
         doSave(graphURI, databaseChanges)
+
+//        { // TEST
+//          wrapInReadTransaction {
+//            val typesTriples = find(allNamedGraph, URI(subjectUri), rdf.typ, ANY).toList
+//            println(s"==== saveTriples: typesTriples $typesTriples")
+//          }
+//        }
         ( Some(subjectUri), databaseChanges.typeChange)
       case _ => (None, false)
     }
@@ -171,7 +180,10 @@ trait FormSaver[Rdf <: RDF, DATASET]
         val originalDataNonEmpty: Boolean = originalData != ""
         val newUserInput: Boolean = !emptyUserInput && differingUserInput
 
-        log(s""">> originalData $originalData, emptyUserInput $emptyUserInput, differingUserInput $differingUserInput, originalDataNonEmpty $originalDataNonEmpty, newUserInput $newUserInput, objectStringFromUser $objectStringFromUser""")
+        log(s""">> originalData $originalData,
+          emptyUserInput $emptyUserInput, differingUserInput $differingUserInput, originalDataNonEmpty $originalDataNonEmpty, newUserInput $newUserInput,
+          objectStringFromUser "$objectStringFromUser"""
+          )
 
         if( !emptyUserInput && differingUserInput ||
             // NOTE: the case of pre-filled rdfs:type
@@ -185,11 +197,11 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
         log("computeDatabaseChanges: predicate " + originalTriple.predicate + ", originalTriple.objectt: \"" +
           originalTriple.objectt.toString() + "\"" +
-          ", objectStringFromUser \"" + objectStringFromUser + "\"")
+          s""", objectStringFromUser "$objectStringFromUser", triplesToRemove $triplesToRemove""")
 
         // FEATURE: change type triggers edit mode
         if (originalTriple.predicate == rdf.typ && differingUserInput) {
-          println(s">>>> computeDatabaseChanges: typeChange! ($objectFromUser)")
+          println(s">>>> computeDatabaseChanges: typeChange! objectFromUser($objectFromUser)")
           typeChange = true
         }
       }
@@ -215,11 +227,18 @@ trait FormSaver[Rdf <: RDF, DATASET]
           rdfStore.removeTriples( dataset,
             URI(graphURI),
             triplesToRemove.toIterable), logger.isDebugEnabled() )
+
+          // special case of triples  ?S rdf:type foaf:Document.
+          rdfStore.removeTriples( dataset,
+            URI("user:anonymous"),
+            triplesToRemove.toIterable)
+
         val res =
           time("appendToGraph",
             rdfStore.appendToGraph( dataset,
               URI(graphURI),
               makeGraph(triplesToAdd)), logger.isDebugEnabled())
+        log( s"doSave: triplesToRemove ${triplesToRemove.mkString(", ")}")
         log( s"doSave: triplesToAdd ${triplesToAdd.mkString(", ")}")
         res
       }
@@ -248,8 +267,8 @@ trait FormSaver[Rdf <: RDF, DATASET]
     }
 
   private def log(s: String) =
-    // println("FormSaver: "+s)
-		logger.debug(s)
+//    println("FormSaver: "+s)
+    logger.debug(s)
 
 }
 
