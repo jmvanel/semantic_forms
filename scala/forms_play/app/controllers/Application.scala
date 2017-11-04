@@ -8,7 +8,9 @@ import play.api.Play
 object Application extends {
   override implicit val config = new DefaultConfiguration {
 
-    override val useTextQuery = false
+    /** CAUTION: after activating this, be sure to to run
+     * deductions.runtime.jena.lucene.TextIndexerRDF */
+    override val useTextQuery = true
 
     override val serverPort = {
       val port = Play.current.configuration.
