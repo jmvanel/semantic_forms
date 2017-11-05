@@ -52,7 +52,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
         // hack before implementing real separators
         if (label.contains("----"))
           label.substring(1).replaceAll("-(-)+", "")
-        else if (label.contains("separator_props_"))
+        else if (isSeparator(field) )
           label . replace("separator_props_", "Properties ") . replace("_", " ")
         else label
       }</a>
@@ -79,6 +79,8 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
       s"""${field.comment} - $details"""
   }
   
+  def isSeparator(field: formMod#Entry) = toPlainString(field.property).contains("separator_props_")
+
   def message(m: String,lang: String): String = I18NMessages.get(m, lang)
 
   def isFirstFieldForProperty( field: formMod#Entry )

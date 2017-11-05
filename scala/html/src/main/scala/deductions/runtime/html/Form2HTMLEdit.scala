@@ -77,7 +77,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
             id={ makeHTML_Id(resourceEntry) }
             list={ makeHTMLIdForDatalist(resourceEntry) }
             placeholder={ placeholder }
-            title={ type_.toString() }
+            title={ placeholder }
             size={inputSize.toString()}
 			dropzone="copy"
             autocomplete={if (lookupActivatedFor(resourceEntry)) "off" else null}
@@ -123,18 +123,15 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
   private def resourceOrBN_Placeholder(r: formMod#Entry, lang: String = "en") = {
     if (lookupActivatedFor(r))
       I18NMessages.get("Completion", lang)
-//      s"Enter a word; completion with Wikipedia lookup"
       else {
-        val typ0 = r.type_.toString()
+        val typ0 = firstNODEOrElseEmptyString(r.type_)
         val typ = if (
             typ0 == "" ||
             typ0.endsWith( "#Thing") )
           ""
         else
           abbreviateTurtle(typ0)
-//          prefixes.abbreviateTurtle(typ0)
         I18NMessages.format("Enter_resource_URI", lang, typ)
-//        s"Enter or paste a resource URI  of type $typ; typing here creates a new resource; better look first in pulldown menu for an already existing resource."
       }
 }
 
@@ -196,42 +193,38 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
       lit: formMod#LiteralEntry,
       request: HTTPrequest = HTTPrequest())(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     import lit._
+    val type0 = firstNODEOrElseEmptyString(type_)
     val placeholder = {
-        val typ0 = type_.toString()
         val typ = if (
-            typ0 == ""
-            || typ0.endsWith( "#string")
-            || typ0.endsWith( "#Literal")
+            type0 == ""
+            || type0.endsWith( "#string")
+            || type0.endsWith( "#Literal")
         )
           ""
         else
-          s" of type <$typ0>"
+          s" of type <$type0>"
         s"Enter or paste a string $typ"
     }
 
-    val htmlId = makeHTML_Id(lit) // "f" + form.fields.indexOf(lit)
-    val elem = type_.toString() match {
+    val htmlId = makeHTML_Id(lit)
+
+    val elem = type0 match {
 
       // TODO in FormSyntaxFactory match graph pattern for interval datatype ; see issue #17
       case typ if typ == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
         if (radioForIntervals)
           (for (n <- Range(0, 6)) yield (
             <input type="radio" name={
-              // makeHTMLName(lit)
               lit.htmlName } id={
-//              makeHTMLName(lit)
               lit.htmlName } checked={
               if (n.toString.equals(value)) "checked" else null
             } value={ n.toString }>
             </input>
             <label for={
-              // makeHTMLName(lit)
               lit.htmlName }>{ n }</label>
           )).flatten
         else {
-          // TODO maybe call renderPossibleValues
           <select name={
-//            makeHTMLName(lit)
             lit.htmlName }>
             { formatPossibleValues(lit) }
           </select>
@@ -241,21 +234,18 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
         <div class="wrapper">
           <label for="yes_radio" id="yes-lbl">Oui</label>
           <input type="radio" name={
-//            makeHTMLName(lit)
             lit.htmlName } id="yes_radio"
           checked={toPlainString(value) match {case "true" => "true" ; case _ => null } }
           value="true" ></input>
 
           <label for="maybe_radio" id="maybe-lbl">?</label>
           <input type="radio" name={
-            // makeHTMLName(lit)
             lit.htmlName } id="maybe_radio"
           checked={toPlainString(value) match {case "" => "checked" ; case _ => null } }
           value="" ></input>
 
           <label for="no_radio" id="no-lbl">Non</label>
           <input type="radio" name={
-            // makeHTMLName(lit)
             lit.htmlName } id="no_radio"
           checked={toPlainString(value) match {case "false" => "false" ; case _ => null } }
           value="false" ></input>
@@ -272,9 +262,9 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
             if( lit.property.toString() . toLowerCase().endsWith("password"))
               "password"
             else
-              xsd2html5TnputType(type_.toString())
+              xsd2html5TnputType(type0)
           }
-          step = {xsd2html5Step(type_.toString())}
+          step = {xsd2html5Step(type0)}
           placeholder={ placeholder } title={ placeholder } size={
             inputSize.toString()
           } dropzone="copy" id={ htmlId }

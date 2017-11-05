@@ -1,6 +1,5 @@
 package controllers
 
-import play.api.mvc.Accepting
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.Request
