@@ -77,7 +77,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
             id={ makeHTML_Id(resourceEntry) }
             list={ makeHTMLIdForDatalist(resourceEntry) }
             placeholder={ placeholder }
-            title={ type_.toString() }
+            title={ placeholder }
             size={inputSize.toString()}
 			dropzone="copy"
             autocomplete={if (lookupActivatedFor(resourceEntry)) "off" else null}
@@ -123,18 +123,15 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
   private def resourceOrBN_Placeholder(r: formMod#Entry, lang: String = "en") = {
     if (lookupActivatedFor(r))
       I18NMessages.get("Completion", lang)
-//      s"Enter a word; completion with Wikipedia lookup"
       else {
-        val typ0 = r.type_.toString()
+        val typ0 = firstNODEOrElseEmptyString(r.type_)
         val typ = if (
             typ0 == "" ||
             typ0.endsWith( "#Thing") )
           ""
         else
           abbreviateTurtle(typ0)
-//          prefixes.abbreviateTurtle(typ0)
         I18NMessages.format("Enter_resource_URI", lang, typ)
-//        s"Enter or paste a resource URI  of type $typ; typing here creates a new resource; better look first in pulldown menu for an already existing resource."
       }
 }
 
@@ -197,7 +194,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
       request: HTTPrequest = HTTPrequest())(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     import lit._
     val placeholder = {
-        val typ0 = type_.toString()
+        val typ0 = firstNODEOrElseEmptyString(type_)
         val typ = if (
             typ0 == ""
             || typ0.endsWith( "#string")
