@@ -106,9 +106,8 @@ import deductions.runtime.utils.I18NMessages
           if (field.property.toString != "")
         ) yield {
           if (editable ||
-              toPlainString(field.value) != ""||
-//              toPlainString(field.property).startsWith(form("separator_props")))
-              toPlainString(field.property).contains("separator_props"))
+              toPlainString(field.value) != "" ||
+              isSeparator(field))
             <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
               makeFieldSubject(field) ++
                 makeFieldLabel(preceding, field, editable) ++
@@ -224,6 +223,10 @@ import deductions.runtime.utils.I18NMessages
   def createHTMLField(field: formMod#Entry, editable: Boolean,
                               hrefPrefix: String = config.hrefDisplayPrefix, lang: String = "en",
                               request: HTTPrequest = HTTPrequest(), displayInTable: Boolean = false)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
+
+    if( isSeparator(field) )
+      return NodeSeq.Empty
+
     val isCreateRequest = request.path.contains("create")
     val editableByUser =
               field.metadata == request.userId()
