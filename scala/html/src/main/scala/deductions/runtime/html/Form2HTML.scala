@@ -110,7 +110,7 @@ import deductions.runtime.utils.I18NMessages
               isSeparator(field))
             <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
               makeFieldSubject(field) ++
-                makeFieldLabel(preceding, field, editable) ++
+                makeFieldLabel(preceding, field, editable, lang) ++
                 makeFieldDataOrInput(field, hrefPrefix, editable, lang, request)
             }</div>
           else

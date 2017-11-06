@@ -26,7 +26,8 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
 //  lazy val prefixes = new RDFPrefixes[ImplementationSettings.Rdf]
 //		  with ImplementationSettings.RDFModule{}
   
-  def makeFieldLabel(preceding: formMod#Entry, field: formMod#Entry, editable: Boolean)
+  def makeFieldLabel(preceding: formMod#Entry, field: formMod#Entry, editable: Boolean,
+      lang:String="en")
   (implicit form: FormModule[NODE, URI]#FormSyntax) = {
     // display field label only if different from preceding
     if (preceding.label != field.label)
@@ -53,7 +54,10 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
         if (label.contains("----"))
           label.substring(1).replaceAll("-(-)+", "")
         else if (isSeparator(field) )
-          label . replace("separator_props_", "Properties ") . replace("_", " ")
+          label .
+          replace("separator_props_From_Subject", I18NMessages.get("separator_props_From_Subject", lang)) .
+          replace("separator_props_From_Classes", I18NMessages.get("separator_props_From_Classes", lang)) .
+          replace("_", " ")
         else label
       }</a>
       </label>
