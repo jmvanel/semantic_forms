@@ -58,9 +58,6 @@ trait RegisterPage[Rdf <: RDF, DATASET]
 
         } else {
 
-          /* TODO obsolete code to review and probably remove
-           * (needLogin from config is currently true) */
-
           <div>
             <script type="text/javascript">
               {
@@ -82,24 +79,21 @@ trait RegisterPage[Rdf <: RDF, DATASET]
                 """)
               }
             </script>
-            
 
-            Anonyme
-        	-{
-              if (pageURI != "") {
-                /* TODO not implemented : service /claimid and button in /display page
-                 * for a foaf:Person saying "claim id" */
-                <a href="/claimid?uri={URLEncode.encode(pageURI)}" title="il ne reste plus qu'à saisir un mot de passe">
-                  Revendiquer l'identité de cette page:{ pageLabel }
-                </a>
-                Text("- ou -")
-              }
-            }
+            Anonyme -
             <a href="/login#register" title={I18NMessages.get("New_account", lang)} >
             {I18NMessages.get("New_account", lang)}
             </a>
-            - ou 
-        	-<a href="#"
+          </div>
+        }
+      } else Text(I18NMessages.get("All_rights", lang))
+    } </div>
+  }
+
+
+  /* TODO obsolete code to review and probably remove */
+
+  val searchID = <a href="#"
             onclick="document.getElementById('q').focus();"
             title="Peut-être votre identité est déjà enregistrée ici?"
             data-toggle="collapse" data-target="#collapseDisplay"
@@ -107,11 +101,6 @@ trait RegisterPage[Rdf <: RDF, DATASET]
             >
             Chercher mon identité sur ce site
           </a>
-          </div>
-        }
-      } else Text(I18NMessages.get("All_rights", lang))
-    } </div>
-  }
 
   /** UNUSED !
    * action="claimid"
