@@ -6,10 +6,14 @@ import deductions.runtime.utils.{RDFHelpers, RDFPrefixes}
 import org.w3.banana.RDF
 
 import scala.xml.{Elem, NodeSeq}
+import deductions.runtime.views.ResultsDisplay
 
 /** print Statistics for given Graph in HTML */
-trait StatisticsGraph[Rdf <: RDF] extends RDFHelpers[Rdf]
+trait StatisticsGraph[Rdf <: RDF, DATASET] extends RDFHelpers[Rdf]
     with RDFPrefixes[Rdf] {
+
+  self: ResultsDisplay[Rdf, DATASET] =>
+
   import ops._
 
   def formatHTMLStatistics(focus: Rdf#URI, graph: Rdf#Graph,
@@ -22,9 +26,8 @@ trait StatisticsGraph[Rdf <: RDF] extends RDFHelpers[Rdf]
     val objectsCount2 = find(graph, focus, ANY, ANY).map { trip => trip.objectt }.toList.distinct.size
     val triplesCount = graph.size
 
-    val linkClasse = getObjects(graph, focus, rdf.typ).toList
-    val classe = linkClasse.map { abbreviateTurtle(_) }
-    // TODO hyperlinks to subjects, etc
+    val linkToClasses = getObjects(graph, focus, rdf.typ).toList
+    val classesAsTurtleTerms = linkToClasses.map { abbreviateTurtle(_) }
     val subjectsLink = makeHyperlinks(focus, s" $subjectsCount subjects ")
     <p class="sf-statistics">
     RDF document:
@@ -36,14 +39,16 @@ trait StatisticsGraph[Rdf <: RDF] extends RDFHelpers[Rdf]
       objects,
       { objectsCount2 }
       objects from page URI, type(s)
-      { for ( a <- 0 until linkClasse.length) yield {
-       <a href={ linkClasse(a).toString }>{ classe(a) }</a><span>,&nbsp;</span>
-     } }
+      {
+        for (link <- linkToClasses) yield {
+          makeHyperlinkForURI(link, lang, graph)
+          // <a href={ link.toString }>{ classesAsTurtleTerms(a) }</a><span>,&nbsp;</span>
+        }
+      }
     </p>
   }
 
-  /** hyperlink to service /sparql-form?query= */
-  //  private def makeHyperlinks(nodes: List[Rdf#Node]) = {
+  /** hyperlink to given graph content with service /sparql-form?query= */
   private def makeHyperlinks( graph: Rdf#Node, mess: String): Elem = {
     val sparql = s"""
       ${declarePrefix(prefixesMap2("owl"))}
