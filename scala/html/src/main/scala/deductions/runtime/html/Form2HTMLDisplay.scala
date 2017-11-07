@@ -5,6 +5,7 @@ import org.joda.time.DateTime
 
 import scala.xml.{NodeSeq, Unparsed}
 import deductions.runtime.core.HTTPrequest
+import java.net.URLEncoder
 
 /** generate HTML from abstract Form for Display (Read only) */
 trait Form2HTMLDisplay[NODE, URI <: NODE]
@@ -44,17 +45,19 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     val objectURIstringValue = value.toString()
     val css = cssForURI(objectURIstringValue)
 
-
+    val typ = firstNODEOrElseEmptyString(type_)
+    println(s"==== createHTMLResourceReadonlyField: typ: $typ")
 
       hyperlinkToField(resourceEntry) ++
       hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue, valueLabel,
-          firstNODEOrElseEmptyString(type_),
+          typ,
           resourceEntry) ++
       backLinkButton (resourceEntry) ++
       normalNavigationButton(resourceEntry) ++
       makeDrawGraphLink(objectURIstringValue) ++
       displayThumbnail(resourceEntry) ++
-      {makeUserInfoOnTriples(resourceEntry, request.getLanguage())}
+      {makeUserInfoOnTriples(resourceEntry, request.getLanguage())} ++
+      creationButton(objectURIstringValue, typ)
   }
 
   /** hyperlink To RDF property */
@@ -124,4 +127,17 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       }</a> ++
       {makeUserInfoOnTriples(r)}
 
+  def creationButton(objectURIstringValue: String, typ: String): NodeSeq = {
+    val imageURL = "/assets/images/create-instance.svg"
+    val mess = s"Create instance of <$typ>"
+    if (typ.endsWith("#Class")) {
+      println(s"==== createHTMLResourceReadonlyField: 2 typ: $typ")
+      // TODO : does NOT display inline
+      <span style="display: inline">
+        <a style="display: inline" href={ "/create?uri=" + URLEncoder.encode(objectURIstringValue, "UTF-8") } title={ mess }>
+          <img src={ imageURL } css="sf-thumbnail" height="40" alt={ mess }/>
+        </a>
+      </span>
+    } else NodeSeq.Empty
+  }
 }
