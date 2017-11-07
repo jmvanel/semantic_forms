@@ -12,7 +12,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     extends BasicWidgets
     with CSSClasses
     with RDFPrefixesInterface
-    {
+    with URIManagement {
 
   val config: Configuration
   import config._
@@ -148,12 +148,16 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     val timeMetadata = entry.timeMetadata
     val time: String = new DateTime(timeMetadata).toDateTime.toString("dd/MM/yyyy HH:mm")
     if (timeMetadata != -1){
-      <p>
-        {message("modified_by", lang)}
-        {userMetadata} {message("on_date", lang)} {time}
-      </p>
+      <span>
+        -{ message("modified_by", lang) }
+        {
+          <a style="text-decoration: underline" href={
+            "/display?displayuri=" +
+              makeAbsoluteURIForSaving(userMetadata) }>{ userMetadata }</a>
+        }{ message("on_date", lang) }{ time }
+      </span>
     }
-    else <p></p>
+    else <span></span>
   }
 
   def firstNODEOrElseEmptyString(set: Iterable[NODE]): String = set.headOption.getOrElse("").toString()

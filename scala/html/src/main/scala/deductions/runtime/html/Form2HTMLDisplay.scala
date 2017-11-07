@@ -47,7 +47,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
     val typ = firstNODEOrElseEmptyString(type_)
     println(s"==== createHTMLResourceReadonlyField: typ: $typ")
-
+val widgets = 
       hyperlinkToField(resourceEntry) ++
       hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue, valueLabel,
           typ,
@@ -58,6 +58,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       displayThumbnail(resourceEntry) ++
       {makeUserInfoOnTriples(resourceEntry, request.getLanguage())} ++
       creationButton(objectURIstringValue, typ)
+      <span class="sf-statistics">{widgets}</span>
   }
 
   /** hyperlink To RDF property */
@@ -129,15 +130,14 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
   def creationButton(objectURIstringValue: String, typ: String): NodeSeq = {
     val imageURL = "/assets/images/create-instance.svg"
-    val mess = s"Create instance of <$typ>"
+    val mess = s"Create instance of <$objectURIstringValue>"
     if (typ.endsWith("#Class")) {
       println(s"==== createHTMLResourceReadonlyField: 2 typ: $typ")
-      // TODO : does NOT display inline
-      <span style="display: inline">
-        <a style="display: inline" href={ "/create?uri=" + URLEncoder.encode(objectURIstringValue, "UTF-8") } title={ mess }>
+        <a href={
+          "/create?uri=" + URLEncoder.encode(objectURIstringValue, "UTF-8")
+        } title={ mess }>
           <img src={ imageURL } css="sf-thumbnail" height="40" alt={ mess }/>
         </a>
-      </span>
     } else NodeSeq.Empty
   }
 }
