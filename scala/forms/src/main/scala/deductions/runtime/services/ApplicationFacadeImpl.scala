@@ -60,7 +60,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with TriplesInGraphSPARQL[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with BlankNodeCleanerIncremental[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with DashboardHistoryUserActions[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with StatisticsGraph[ImplementationSettings.Rdf]
+    with StatisticsGraph[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with FormJSON[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with ToolsPage
     with CSSClasses

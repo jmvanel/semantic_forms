@@ -76,7 +76,7 @@ extends ThumbnailInference[Rdf, DATASET] {
    * NOTE: this reuses code in Form2HTMLDisplay.createHTMLResourceReadonlyField()
    * 
    * NON transactional, needs rw transaction */
-  def makeHyperlinkForURI( node: Rdf#Node, lang: String, graph: Rdf#Graph,
+  def makeHyperlinkForURI( node: Rdf#Node, lang: String, graph: Rdf#Graph = allNamedGraph,
       hrefPrefix: String = config.hrefDisplayPrefix,
       label: String = "",
       sortAnd1rowPerElement:Boolean = false )
@@ -96,7 +96,7 @@ extends ThumbnailInference[Rdf, DATASET] {
    * NOTE: this reuses code in Form2HTMLDisplay.createHTMLResourceReadonlyField()
    * 
    * transactional, needs no transaction */
-  def makeHyperlinkForURItr( node: Rdf#Node, lang: String, graph: Rdf#Graph,
+  def makeHyperlinkForURItr( node: Rdf#Node, lang: String, graph: Rdf#Graph = allNamedGraph,
       hrefPrefix: String = config.hrefDisplayPrefix,
       label: String = "",
       sortAnd1rowPerElement:Boolean = false )
@@ -118,11 +118,16 @@ extends ThumbnailInference[Rdf, DATASET] {
     val fmod = new FormModule[Rdf#Node,  Rdf#URI ]{
       val nullURI= ops.URI("")
     }
-    val resourceEntry = new fmod.ResourceEntry(
-      label, "comment", property, new fmod.ResourceValidator(Set()),
-      value=uri, true,
-      Seq(), label, Seq(type_), false,
-      thumbnail = getURIimage(uri) )
+    val types = getClasses(uri)(allNamedGraph)
+//    println(s"==== displayNode: types: $types")
+    val resourceEntry =
+      new fmod.ResourceEntry(
+        valueLabel=label,
+        property=property,
+        value=uri,
+        thumbnail = getURIimage(uri),
+        type_ = types)
+
     def hyperlink =
       if( hrefPrefix != "" &&
           hrefPrefix != config.hrefDisplayPrefix )

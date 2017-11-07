@@ -17,7 +17,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
     with TriplesViewModule[Rdf, DATASET]
     with FormHeader[Rdf, DATASET]
-    with StatisticsGraph[Rdf]
+    with StatisticsGraph[Rdf, DATASET]
     with BlankNodeCleanerIncremental[Rdf, DATASET]
     with FoafProfileClaim[Rdf, DATASET] {
   

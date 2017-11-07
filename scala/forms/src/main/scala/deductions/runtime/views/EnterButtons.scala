@@ -6,8 +6,9 @@ import deductions.runtime.utils.{DefaultConfiguration, I18NMessages, RDFPrefixes
 import scala.xml.NodeSeq
 
 /**
- * Buttons for loading / display / edit, search, and create;
+ * Buttons for loading/display/edit, search, and create;
  * this the default HTML UI before the form
+ * ("generic" application)
  */
 trait EnterButtons {
 
