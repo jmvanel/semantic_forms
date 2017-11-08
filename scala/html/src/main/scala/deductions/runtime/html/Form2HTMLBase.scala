@@ -149,12 +149,12 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     val time: String = new DateTime(timeMetadata).toDateTime.toString("dd/MM/yyyy HH:mm")
     if (timeMetadata != -1){
       <span>
-        -{ message("modified_by", lang) }
+        &nbsp;-&nbsp;{ message("modified_by", lang) }
         {
           <a style="text-decoration: underline" href={
             "/display?displayuri=" +
               makeAbsoluteURIForSaving(userMetadata) }>{ userMetadata }</a>
-        }{ message("on_date", lang) }{ time }
+        }&nbsp;{ message("on_date", lang) }&nbsp;{ time }
       </span>
     }
     else <span></span>
