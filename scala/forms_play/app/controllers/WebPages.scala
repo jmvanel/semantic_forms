@@ -61,7 +61,6 @@ trait WebPages extends Controller with ApplicationTrait {
   private def outputMainPageWithContent(contentMaker: SemanticController) = {
     Action { request0: Request[_] =>
         val precomputed = MainPagePrecomputePlay(request0)
-        println(s"========= precomputed $precomputed - title ${precomputed.title}")
         import precomputed._
         outputMainPage(contentMaker.result(requestCopy), lang, userInfo = userInfo,
             title=precomputed.title)(request)
@@ -86,23 +85,12 @@ trait WebPages extends Controller with ApplicationTrait {
   def displayURI(uri0: String, blanknode: String = "", Edit: String = "",
                  formuri: String = "") = {
 
-//                //          logger.info(
-//            println(
-//              s"""displayURI: $request IP ${request.remoteAddress}, host ${request.host}
-//            displayURI headers ${request.headers}
-//            displayURI tags ${request.tags}
-//            displayURI cookies ${request.cookies.toList}
-//            userid <$userid>
-//            formuri <$formuri>
-//            displayURI: Edit "$Edit" """)
-
     val contentMaker = new SemanticController {
       def result(request: HTTPrequest): NodeSeq = {
         val precomputed: MainPagePrecompute = MainPagePrecompute(request)
         import precomputed._
         logger.info(s"displayURI: expandOrUnchanged $uri")
         callAllServiceListeners(request)
-//        val title = labelForURITransaction(uri, lang)
         val userInfo = displayUser(userid, uri, title, lang)
         htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
           graphURI = makeAbsoluteURIForSaving(userid),
@@ -250,7 +238,7 @@ trait WebPages extends Controller with ApplicationTrait {
   def showNamedGraphsAction() = Action.async {
     implicit request: Request[_] =>
     val lang = chooseLanguageObject(request).language
-    val fut = showNamedGraphs(lang)
+    val fut = recoverFromOutOfMemoryError( showNamedGraphs(lang) )
     val rr = fut.map( r => outputMainPage( r, lang ) )
     rr
   }
@@ -259,7 +247,7 @@ trait WebPages extends Controller with ApplicationTrait {
   def showTriplesInGraphAction( uri: String) = {
         Action.async { implicit request: Request[_] =>
           val lang = chooseLanguageObject(request).language
-          val fut = Future.successful( showTriplesInGraph( uri, lang) )
+          val fut = recoverFromOutOfMemoryError( Future.successful( showTriplesInGraph( uri, lang) ) )
           val rr = fut.map( r => outputMainPage( r, lang ) )
           rr
   }
@@ -339,7 +327,9 @@ trait WebPages extends Controller with ApplicationTrait {
   def backlinksAction(uri: String = "") = Action.async {
     implicit request: Request[_] =>
       val requestCopy = copyRequest(request)
-      val fut: Future[Elem] = backlinksFuture(uri, requestCopy)
+      val fut: Future[NodeSeq] =
+        recoverFromOutOfMemoryError(
+          backlinksFuture(uri, requestCopy) )
 
       val extendedSearchLink =
         <p>
@@ -355,7 +345,7 @@ trait WebPages extends Controller with ApplicationTrait {
 
       fut.map { res =>
         outputMainPage(
-          NodeSeq fromSeq Seq(extendedSearchLink, res),
+          extendedSearchLink ++ res,
           lang, userInfo)
       }
   }
@@ -363,7 +353,7 @@ trait WebPages extends Controller with ApplicationTrait {
   def extSearch(q: String = "") = Action.async {
 	  implicit request: Request[_] =>
 	  val lang = chooseLanguage(request)
-    val fut = esearchFuture(q)
+    val fut = recoverFromOutOfMemoryError(esearchFuture(q))
     fut.map(r =>
     outputMainPage(r, lang))
   }

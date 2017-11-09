@@ -144,7 +144,7 @@ trait ToolsPage extends EnterButtons
     println(s">>>> servicesURL $servicesURL")
 
     <button id={buttonId}
-    class="btn btn-default" title={ s"Draw RDF graph with $toolname" } target="_blank">
+    class="btn btn-default" title={ s"Draw RDF graph diagram with $toolname" } target="_blank">
       <img width={ imgWidth.toString() } border="0" src="https://www.w3.org/RDF/icons/rdf_flyer.svg"
       alt="RDF Resource Description Framework Flyer Icon"/>
     </button>

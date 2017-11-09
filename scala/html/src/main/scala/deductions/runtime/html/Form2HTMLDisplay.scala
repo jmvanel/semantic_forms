@@ -46,8 +46,8 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     val css = cssForURI(objectURIstringValue)
 
     val typ = firstNODEOrElseEmptyString(type_)
-    println(s"==== createHTMLResourceReadonlyField: typ: $typ")
-val widgets = 
+//  println(s"==== createHTMLResourceReadonlyField: typ: $typ")
+    val widgets =
       hyperlinkToField(resourceEntry) ++
       hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue, valueLabel,
           typ,

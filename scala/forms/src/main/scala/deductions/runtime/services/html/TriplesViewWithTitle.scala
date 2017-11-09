@@ -78,6 +78,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
           tryGraph match {
             case Success(gr) =>
 
+              println(s"htmlForm: Success !!!!!!!!!!")
               wrapInReadTransaction {
                 // FEATURE: annotate plain Web site
                 typeChange = gr.size == 1 && gr.triples.head.objectt == foaf.Document
@@ -94,7 +95,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
                     URI(uri), datasetOrDefault)
                 }
               }
-            case Failure(f) => logger.error(s"typeChange, manageBlankNodesReload: $f")
+            case Failure(f) => logger.error(s"htmlForm: ERROR: typeChange, manageBlankNodesReload: $f")
           }
 
           // 2. generate form and its header
