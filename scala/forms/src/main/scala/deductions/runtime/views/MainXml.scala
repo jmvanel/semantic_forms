@@ -13,15 +13,14 @@ trait MainXml extends ToolsPage with EnterButtons {
    * Design pattern "Template method"
    */
   def mainPage(content: NodeSeq, userInfo: NodeSeq, lang: String = "en", title: String = "",
-      displaySearch: Boolean = true,
-      messages: NodeSeq =
-        <p>New feature considered:
-<a href="https://github.com/jmvanel/semantic_forms/issues/152">
-Checker for good practices in RDF and OWL #152
-</a>
-</p> ,
-classForContent: String = "container sf-complete-form"
-      ) = {
+               displaySearch: Boolean = true,
+               messages: NodeSeq = <p>
+                                     New feature considered:
+                                     <a href="https://github.com/jmvanel/semantic_forms/issues/152">
+                                       Checker for good practices in RDF and OWL #152
+                                     </a>
+                                   </p>,
+               classForContent: String = "container sf-complete-form") = {
     <html>
       <head>{ head(title)(lang) }</head>
       <body>
@@ -54,8 +53,6 @@ classForContent: String = "container sf-complete-form"
             Version =timestamp=
           </footer>
 
-
-
   /**
    * main Page Header for generic app:
    *  enter URI, search, create instance
@@ -67,36 +64,38 @@ classForContent: String = "container sf-complete-form"
         <div class="col col-sm-8 col-sm-offset-1">
           <a href="/" title="Open a new Semantic_forms in a new tab." target="_blank">
             <h1>
-           {
-              messageI18N("Welcome")
+              {
+                messageI18N("Welcome")
               }
             </h1>
           </a>
         </div>
         <div class="col col-sm-3">
-          {userInfo}
+          { userInfo }
         </div>
       </div>
     </header>
-
-      <div>
-            { if (displaySearch){
-              <button type="button" class="btn-primary"
-                      data-toggle="collapse" data-target="#collapseDisplay"
-                      title={
-            	  messageI18N("Reduce") }>{
-                messageI18N("Reduce") }
-              </button>
-            }}
-      </div>
-      <div class="collapse" id="collapseDisplay">{
-        if (displaySearch){
-            enterURItoDownloadAndDisplay() ++
-            enterSearchTerm() ++
-            enterClassForCreatingInstance()
+    <div>
+      {
+        if (displaySearch) {
+          <button type="button" class="btn-primary" data-toggle="collapse" data-target="#collapseDisplay" title={
+            messageI18N("Reduce")
+          }>
+            {
+              messageI18N("Reduce")
+            }
+          </button>
         }
-        }</div>
-      <hr></hr>
+      }
+    </div>
+    <div class="collapse" id="collapseDisplay">{
+      if (displaySearch) {
+        enterURItoDownloadAndDisplay() ++
+          enterClassForCreatingInstance()
+      }
+    }</div>
+    <div>{ enterSearchTerm() }</div>
+    <hr></hr>
   }
 
   /**
