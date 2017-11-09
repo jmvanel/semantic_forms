@@ -34,9 +34,15 @@ trait BasicWidgets extends RDFPrefixesInterface {
 //    	         value="Draw graph"></input> 
 //    	</form >
 
-    if( uri != "" )
+    if( uri != "" &&
+        // TODO when we will import RDFa , be more specific here
+        // TODO check HTTP Content-type
+        // TODO database content <uri> ?P ?O : must be more that 1 triple
+        ! uri.endsWith(".html") &&
+        ! uri.endsWith(".htm")
+        )
     <a class="btn btn-default btn-xs" href={ s"$toolURLprefix$link" }
-    title={s"Draw RDF graph with $toolname for $uri"}
+    title={s"Draw RDF graph diagram with $toolname for $uri"}
     target="_blank">
 			<img width={imgWidth.toString()} border="0" src="https://www.w3.org/RDF/icons/rdf_flyer.svg"
            alt="RDF Resource Description Framework Flyer Icon"/>

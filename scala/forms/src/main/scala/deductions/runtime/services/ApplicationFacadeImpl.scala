@@ -147,10 +147,48 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   //    }
 
   def wordsearchFuture(q: String = "", lang: String = "", clas: String = ""): Future[Elem] = {
-    val fut = searchString(q, hrefDisplayPrefix, lang, clas)
+    val fut = recoverFromOutOfMemoryError(
+      {
+        // fillMemory() ;
+        searchString(q, hrefDisplayPrefix, lang, clas)
+      })
     wrapSearchResults(fut, q,
-        mess=
-          <div>In class &lt;{clas}&gt;, searched for</div> )
+      mess =
+        <div>In class &lt;{ clas }&gt;, searched for</div>)
+  }
+
+  /** for test, creates an OutOfMemoryError exception */
+  private def fillMemory() = {
+    var voidSpace = 20;
+    for (outerIterator <- 1 to 50) {
+      System.out.println("Iteration " + outerIterator + " Free Mem: "
+        + Runtime.getRuntime().freeMemory())
+      var memoryFillIntVar = new Array[Int](voidSpace)
+      for (innerIterator <- 10 to 0) {
+        memoryFillIntVar(innerIterator) = 0
+      }
+      voidSpace = voidSpace * 10
+    }
+  }
+
+  def recoverFromOutOfMemoryError(
+    sourceCode: => Future[NodeSeq],
+    message:    String= "ERROR! try again some time later.") = {
+    try {
+      sourceCode
+    } catch {
+      case t: Throwable =>
+        t.printStackTrace()
+        Future {
+          <p>
+            {message}
+            <br/>
+            {
+              t.getLocalizedMessage
+            }
+          </p>
+        }
+    }
   }
 
   def rdfDashboardFuture(q: String = "", lang: String = ""): Future[NodeSeq] = {
@@ -321,7 +359,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     </p>
   }
 
-  def backlinksFuture(query: String = "", request: HTTPrequest): Future[Elem] = {
+  def backlinksFuture(query: String = "", request: HTTPrequest): Future[NodeSeq] = {
     val fut = backlinks(query, hrefDisplayPrefix, request)
     val label = labelForURITransaction( query, language=request.getLanguage())
     wrapSearchResults(fut, "", mess=
@@ -329,17 +367,6 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       <a href={ createHyperlinkString( uri=query ) }> {label} </a>
       &lt;{query}&gt; </div> )
   }
-
-//  private def wrapSearchResults(fut: Future[NodeSeq], q: String, mess:String= "Searched for"): Future[Elem] =
-//    fut.map { v =>
-//      <section class="label-search-results">
-//        <p class="label-search-header">{mess} "{ q }" :</p>
-//        <div>
-//        { css.localCSS }
-//        { v }
-//        </div>
-//      </section>
-//    }
 
   def esearchFuture(q: String = ""): Future[Elem] = {
     val fut = extendedSearch(q)
