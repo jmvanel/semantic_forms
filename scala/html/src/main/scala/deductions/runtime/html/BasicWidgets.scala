@@ -12,9 +12,10 @@ trait BasicWidgets extends RDFPrefixesInterface {
   def makeBackLinkButton(uri: String, title: String = ""): Elem = {
     // format: OFF
     val tit = if (title == "") s" Reverse links for &lt;$uri&gt;" else title
+    // <i class="glyphicon glyphicon-search"></i>
     <button type="button" 
     		class="btn btn-info btn-xs" readonly="yes" title={ tit } data-value={s"$uri"} onclick={ s"backlinks( '$uri' )" } id={ s"BACK-$uri" }>
-      <i class="glyphicon glyphicon-search"></i>
+    		<img src="assets/images/Back-Link-Icon.svg" width="15" border="0" />
     </button>
   }
   
