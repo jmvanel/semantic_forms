@@ -37,7 +37,9 @@ case class HTTPrequest(
     ) {
 
   /** get RDF subject (HTTP parameter "displayuri") */
-  def getRDFsubject() = getHTTPparameterValue("displayuri").getOrElse("")
+  def getRDFsubject(): String =
+    getHTTPparameterValue("displayuri").getOrElse(
+      getHTTPparameterValue("q").getOrElse(""))
 
   def getHTTPparameterValue(param: String): Option[String] = queryString.get(param) .map(seq => seq.headOption ) . flatten
   def getHTTPheaderValue(header: String): Option[String] = headers.get(header) .map(seq => seq.headOption ) . flatten
