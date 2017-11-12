@@ -2,8 +2,8 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Other DSL's for routes (but maybe not fully chekable by the Scala compiler)
-# compare HTTP routing DSL in Scala akka scalatra lift
+# Other DSL's for routes (but maybe not fully checkable by the Scala compiler)
+# compare HTTP routing DSL in Scala: akka, scalatra, lift
 
 # https://blog.knoldus.com/2017/06/12/akka-http-vs-other-rest-api-tools/
 # https://fr.slideshare.net/takezoe/scala-frameworks-for-web-application-2016
@@ -75,9 +75,6 @@ GET     /authenticate               controllers.AuthService.authenticate
 POST    /register                   controllers.AuthService.register
 GET     /register                   controllers.AuthService.register
 GET     /logout                     controllers.AuthService.logout
-# GET     /login0                     controllers.Auth.login
-# POST    /authenticate0              controllers.Auth.authenticate
-# POST    /register0                  controllers.Auth.register
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

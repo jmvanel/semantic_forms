@@ -29,7 +29,9 @@ trait EnterButtons {
             </div>
 
             <div class="col-xs-10 col-sm-10 col-md-6">
-              <input class="form-control" type="text" name="displayuri" list="start_uris" dropzone="copy string:text/plain"/>
+              <input class="form-control" type="text" name="displayuri" list="start_uris"
+              dropzone="copy string:text/plain"
+              placeholder={messageI18N("Display_placeholder")}/>
               <datalist id="start_uris">
                 <option label="J.M. Vanel FOAF profile"> http://jmvanel.free.fr/jmv.rdf#me </option>
                 <option label="Paris dbpedia.org"> http://dbpedia.org/resource/Paris </option>
@@ -56,22 +58,25 @@ trait EnterButtons {
   }
 
   def enterSearchTerm()(implicit lang: String = "en") = {
-
+    val mess = messageI18N("String_to_search")
+    val inputMessage = messageI18N("Search_placeholder")
+    val classMessage = messageI18N("Class_placeholder")
     <div class="row sf-margin-top-10">
       <div class="col-xs-12 col-sm-12 col-md-12 col-md-offset-1">
-        <form  role="form" action="/wordsearch">
+        <form  role="form" action="/search">
 
             <div class="col-xs-2 col-sm-2 col-md-1">
-              <label class="control-label" for="q" title="Search URI whose value (object triple) matches (Lucene search) or (known RDF class)">
-                { messageI18N("String_to_search") }
+              <label class="control-label" for="q"
+                     title={ mess }>
+                { mess }
               </label>
             </div>
 
             <div class="col-xs-10 col-sm-10 col-md-6">
               <input class="form-control" type="text" id="q" name="q" placeholder={
-                messageI18N("Search_placeholder")
+                inputMessage
               } dropzone="copy"/>
-              <input class="form-control" type="text" name="clas" placeholder={ messageI18N("Class_placeholder") }/>
+              <input class="form-control" type="text" name="clas" placeholder={ classMessage }/>
             </div>
 
             <div class="col-sm-4 col-sm-offset-4 col-md-2 col-md-offset-0">

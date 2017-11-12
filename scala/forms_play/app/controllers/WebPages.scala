@@ -224,7 +224,7 @@ trait WebPages extends Controller with ApplicationTrait {
     }
 
 
-
+  /** search Or load+Display Action */
   def searchOrDisplayAction(q: String) = {
     def isURI(q: String): Boolean =
       // isAbsoluteURI(q)
@@ -239,7 +239,12 @@ trait WebPages extends Controller with ApplicationTrait {
   def wordsearchAction(q: String = "", clas: String = "") = Action.async {
     implicit request: Request[_] =>
     val lang = chooseLanguageObject(request).language
-    val fut: Future[Elem] = wordsearchFuture(q, lang, clas)
+    val classe =
+      clas match {
+        case classe if( classe != "") => classe
+        case _ => copyRequest(request).getHTTPparameterValue("clas") . getOrElse("")
+      }
+    val fut: Future[Elem] = wordsearchFuture(q, lang, classe)
     fut.map( r => outputMainPage( r, lang ) )
   }
 
