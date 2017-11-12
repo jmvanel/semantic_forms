@@ -33,7 +33,9 @@ case class HTTPrequest(
     cookies: Map[String, Cookie] = Map(),
     acceptLanguages: Seq[String] = Seq(),
     path: String="",
-    formMap: Map[String, Seq[String]] = Map()
+    formMap: Map[String, Seq[String]] = Map(),
+    uri: String = "",
+    to_string: String = ""
     ) {
 
   /** get RDF subject (HTTP parameter "displayuri") */

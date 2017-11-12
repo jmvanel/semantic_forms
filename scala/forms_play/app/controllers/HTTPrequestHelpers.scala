@@ -23,7 +23,9 @@ trait HTTPrequestHelpers {
         al => al.language
       },
       path = request.path,
-      formMap = formMap
+      formMap = formMap,
+      uri = uri,
+      to_string = request.toString()
     )
     // println(s"copyRequest: headers: " + headers.toMap)
 //    println(s"copyRequest: cookiesMap $cookiesMap , userId ${res.userId()}")

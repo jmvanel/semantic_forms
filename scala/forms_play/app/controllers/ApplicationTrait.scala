@@ -66,20 +66,6 @@ trait ApplicationTrait extends Controller
          .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
          .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
 
-    
-  /** generate a Main Page wrapping given XHTML content */
-  protected def outputMainPage( content: NodeSeq,
-      lang: String, userInfo: NodeSeq = <div/>, title: String = "", displaySearch:Boolean = true,
-      classForContent: String = "container sf-complete-form")
-  (implicit request: Request[_]) = {
-      Ok( "<!DOCTYPE html>\n" +
-        mainPage( content, userInfo, lang, title, displaySearch,
-            messages = getDefaultAppMessage(),
-            classForContent )
-      ).withHeaders("Access-Control-Allow-Origin" -> "*") // for dbpedia lookup
-      .as("text/html; charset=utf-8")
-  }
-
   protected def getDefaultAppMessage(): NodeSeq = {
     val messagesFile = "messages.html"
     if (new File(messagesFile).exists()) {
@@ -99,7 +85,7 @@ trait ApplicationTrait extends Controller
   }
 
   protected def callAllServiceListeners(request: HTTPrequest) = {
-    println( s">>>> callAllServiceListeners $request => $request")
+    println( s">>>> callAllServiceListeners $request => ${request.uri}")
     implicit val rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET] = this
     callServiceListeners(request)(request.userId(), rdfLocalProvider)
   }
