@@ -81,7 +81,13 @@ trait WebPages extends Controller with ApplicationTrait {
     }
   }
 
-  /** @param Edit edit mode <==> param not "" */
+  /** (re)load & display URI
+   *
+   *  NOTE: parameters are just used by Play! to check presence of parameters,
+   *  the HTTP request is analysed by case class MainPagePrecomputePlay
+   *
+   *  @param Edit edit mode <==> param not ""
+   */
   def displayURI(uri0: String, blanknode: String = "", Edit: String = "",
                  formuri: String = "") = {
 
@@ -89,8 +95,9 @@ trait WebPages extends Controller with ApplicationTrait {
       def result(request: HTTPrequest): NodeSeq = {
         val precomputed: MainPagePrecompute = MainPagePrecompute(request)
         import precomputed._
+//        println( s"==== displayURI: precomputed $precomputed")
         logger.info(s"displayURI: expandOrUnchanged $uri")
-        callAllServiceListeners(request)
+//        callAllServiceListeners(request)
         val userInfo = displayUser(userid, uri, title, lang)
         htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
           graphURI = makeAbsoluteURIForSaving(userid),
@@ -219,7 +226,9 @@ trait WebPages extends Controller with ApplicationTrait {
 
 
   def searchOrDisplayAction(q: String) = {
-    def isURI(q: String): Boolean = q.contains(":")
+    def isURI(q: String): Boolean =
+      // isAbsoluteURI(q)
+      q.contains(":")
     
     if (isURI(q))
       displayURI( q, Edit="" )
