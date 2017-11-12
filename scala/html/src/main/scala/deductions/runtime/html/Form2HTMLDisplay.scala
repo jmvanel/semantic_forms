@@ -132,7 +132,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     val imageURL = "/assets/images/create-instance.svg"
     val mess = s"Create instance of <$objectURIstringValue>"
     if (typ.endsWith("#Class")) {
-      println(s"==== createHTMLResourceReadonlyField: 2 typ: $typ")
+//      println(s"==== creationButton: typ: $typ")
         <a href={
           "/create?uri=" + URLEncoder.encode(objectURIstringValue, "UTF-8")
         } title={ mess }>

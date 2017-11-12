@@ -33,11 +33,15 @@ case class HTTPrequest(
     cookies: Map[String, Cookie] = Map(),
     acceptLanguages: Seq[String] = Seq(),
     path: String="",
-    formMap: Map[String, Seq[String]] = Map()
+    formMap: Map[String, Seq[String]] = Map(),
+    uri: String = "",
+    to_string: String = ""
     ) {
 
   /** get RDF subject (HTTP parameter "displayuri") */
-  def getRDFsubject() = getHTTPparameterValue("displayuri").getOrElse("")
+  def getRDFsubject(): String =
+    getHTTPparameterValue("displayuri").getOrElse(
+      getHTTPparameterValue("q").getOrElse(""))
 
   def getHTTPparameterValue(param: String): Option[String] = queryString.get(param) .map(seq => seq.headOption ) . flatten
   def getHTTPheaderValue(header: String): Option[String] = headers.get(header) .map(seq => seq.headOption ) . flatten

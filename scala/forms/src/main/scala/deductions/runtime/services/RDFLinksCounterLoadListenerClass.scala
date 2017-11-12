@@ -61,8 +61,9 @@ class RDFLinksCounterLoadListenerClass(val config: Configuration,
           linksCountGraphURI = defaultLinksCountGraphURI,
           replaceCount = true)
       }
-      println(s"RDFLinksCounterLoadListenerClass notifyServiceCall ENDED: ${request.rawQueryString}\n")
+      println(s"RDFLinksCounterLoadListenerClass notifyServiceCall Future ENDED: ${request.rawQueryString}\n")
     }
+    println(s"RDFLinksCounterLoadListenerClass notifyServiceCall Future CALLED: ${request.rawQueryString}\n")
   }
 
 }

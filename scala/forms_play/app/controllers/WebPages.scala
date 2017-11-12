@@ -35,9 +35,9 @@ trait WebPages extends Controller with ApplicationTrait {
     outputMainPageWithContent(contentMaker)
   }
 
+  /** no call of All Service Listeners */
   private case class MainPagePrecomputePlay(
       request: Request[_] ) {
-    callAllServiceListenersPlay(request)
     val requestCopy: HTTPrequest = copyRequest(request)
     // TODO copied below in MainPagePrecompute
     val lang = requestCopy.getLanguage()
@@ -47,10 +47,11 @@ trait WebPages extends Controller with ApplicationTrait {
     val userInfo = displayUser(userid, requestCopy.getRDFsubject(), title, lang)
   }
 
+  /** side effet: call of All Service Listeners */
   private case class MainPagePrecompute(
       requestCopy: HTTPrequest) {
-    val lang = requestCopy.getLanguage()
     callAllServiceListeners(requestCopy)
+    val lang = requestCopy.getLanguage()
     val userid = requestCopy.userId()
     val uri = expandOrUnchanged( requestCopy.getRDFsubject() )
     val title = labelForURITransaction(uri, lang)
@@ -81,7 +82,46 @@ trait WebPages extends Controller with ApplicationTrait {
     }
   }
 
-  /** @param Edit edit mode <==> param not "" */
+  /** generate a Main Page wrapping given XHTML content */
+  private def outputMainPage( content: NodeSeq,
+      lang: String, userInfo: NodeSeq = <div/>, title: String = "",
+      displaySearch:Boolean = true,
+      classForContent: String = "container sf-complete-form")
+  (implicit request: Request[_]) = {
+      Ok( "<!DOCTYPE html>\n" +
+        mainPage( content, userInfo, lang, title, displaySearch,
+            messages = getDefaultAppMessage(),
+            classForContent )
+      ).withHeaders("Access-Control-Allow-Origin" -> "*") // for dbpedia lookup
+      .as("text/html; charset=utf-8")
+  }
+
+  /** UNUSED yet!
+   *  generate a Main Page wrapping given XHTML content */
+  private def outputMainPage2(
+    content:         NodeSeq,
+    precomputed:     MainPagePrecompute,
+    displaySearch:   Boolean            = true,
+    classForContent: String             = "container sf-complete-form")(implicit request: Request[_]) = {
+    import precomputed._
+    Ok("<!DOCTYPE html>\n" +
+      mainPage(
+        content, userInfo,
+        lang, title,
+        displaySearch,
+        messages = getDefaultAppMessage(),
+        classForContent)).withHeaders("Access-Control-Allow-Origin" -> "*") // for dbpedia lookup
+      .as("text/html; charset=utf-8")
+  }
+
+
+  /** (re)load & display URI
+   *
+   *  NOTE: parameters are just used by Play! to check presence of parameters,
+   *  the HTTP request is analysed by case class MainPagePrecompute
+   *
+   *  @param Edit edit mode <==> param not ""
+   */
   def displayURI(uri0: String, blanknode: String = "", Edit: String = "",
                  formuri: String = "") = {
 
@@ -89,8 +129,9 @@ trait WebPages extends Controller with ApplicationTrait {
       def result(request: HTTPrequest): NodeSeq = {
         val precomputed: MainPagePrecompute = MainPagePrecompute(request)
         import precomputed._
+//        println( s"==== displayURI: precomputed $precomputed")
         logger.info(s"displayURI: expandOrUnchanged $uri")
-        callAllServiceListeners(request)
+//        callAllServiceListeners(request)
         val userInfo = displayUser(userid, uri, title, lang)
         htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
           graphURI = makeAbsoluteURIForSaving(userid),
@@ -217,9 +258,11 @@ trait WebPages extends Controller with ApplicationTrait {
     }
 
 
-
+  /** search Or load+Display Action */
   def searchOrDisplayAction(q: String) = {
-    def isURI(q: String): Boolean = q.contains(":")
+    def isURI(q: String): Boolean =
+      // isAbsoluteURI(q)
+      q.contains(":")
     
     if (isURI(q))
       displayURI( q, Edit="" )
@@ -230,7 +273,12 @@ trait WebPages extends Controller with ApplicationTrait {
   def wordsearchAction(q: String = "", clas: String = "") = Action.async {
     implicit request: Request[_] =>
     val lang = chooseLanguageObject(request).language
-    val fut: Future[Elem] = wordsearchFuture(q, lang, clas)
+    val classe =
+      clas match {
+        case classe if( classe != "") => classe
+        case _ => copyRequest(request).getHTTPparameterValue("clas") . getOrElse("")
+      }
+    val fut: Future[Elem] = wordsearchFuture(q, lang, classe)
     fut.map( r => outputMainPage( r, lang ) )
   }
 

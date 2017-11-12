@@ -112,7 +112,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
               graphURI = graphURI,
               database = database,
               request = request, inputGraph = tryGraph)
-            println(s">>>> after htmlFormElemRaw, formSyntax $formSyntax")
+//            println(s">>>> after htmlFormElemRaw, formSyntax $formSyntax")
 
             wrapInTransaction({  // or wrapInReadTransaction ?
             Text("\n") ++
