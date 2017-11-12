@@ -16,23 +16,23 @@ trait UserTraceability[Rdf <: RDF, DATASET]
                             formSyntax: FormSyntax)(
                             implicit graph: Rdf#Graph,
                             lang: String = "en") : FormSyntax = {
-    println("XXXXXXXXXXXXXXXX addUserInfoOnTriples")
+    logger.info("XXXXXXXXXXXXXXXX addUserInfoOnTriples")
     val metadata = getMetadataAboutSubject(formSyntax.subject)
     val resultsUser = mutable.Map[String,String]()
     val resultsTimestamp = mutable.Map[String,Long]()
 
     for (row: Seq[Rdf#Node] <- metadata){
-      println(row)
+      logger.info(row)
       val timeElementStr = row(2).toString
       val timeElement  = timeElementStr.splitAt(timeElementStr.indexOf("^"))._1.replaceAll("\"","").toLong
       val property = row(0).toString
 
       if(resultsTimestamp.contains(property)){
-        print(resultsTimestamp(property))
-        print(" < ")
-        print(timeElement)
-        print(" = ")
-        println(resultsTimestamp(property) < timeElement)
+        logger.info(resultsTimestamp(property)
+        + (" < ")
+        + (timeElement)
+        + (" = ")
+        + (resultsTimestamp(property) < timeElement))
         if(resultsTimestamp(property) < timeElement){
           resultsTimestamp += (property -> timeElement)
           resultsUser put (property, row(3).toString)
@@ -44,7 +44,7 @@ trait UserTraceability[Rdf <: RDF, DATASET]
       }
     }
     for (elem <- resultsTimestamp){
-    	println("\t" + elem)
+    	logger.info("\t" + elem)
     }
 
 //    println(s"YYYYYYYY Before add User Info\n${formSyntax.fields.mkString("\n")}\n")

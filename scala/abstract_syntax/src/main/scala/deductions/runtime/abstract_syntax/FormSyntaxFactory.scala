@@ -136,16 +136,15 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         { addOWLsameAs(step1) })
     // TODO val step3 = addOWLinverseOf(step2)
     ) yield {
-      println(s"createFormTR: yield")
       rdfStore.rw(dataset,
         { createFormDetailed2(step2, formGroup) })
     }
     tryFormSyntax.flatten match {
       case Success(fs) =>
-        println(s"createFormTR: Success $fs")
+        logger.debug(s"createFormTR: Success FormSyntax: $fs")
         fs
       case Failure(f) =>
-        println(s"createFormTR: $f")
+        println(s"createFormTR: ERROR: $f")
         FormSyntax(nullURI, Seq())
     }
   }
