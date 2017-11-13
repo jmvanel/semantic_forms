@@ -37,6 +37,7 @@ trait CSSClasses {
     formFieldCSSClass = "",
     formLabelAndInputCSSClass = "form-group",
     formLabelCSSClass = "col-xs-3 col-sm-2 col-md-2 control-label",
+//    formLabelCSSClass = "control-label",
     formDivInputCSSClass = "col-xs-8",
     formInputCSSClass = "form-control",
     formDivEditInputCSSClass = "col-xs-4",
