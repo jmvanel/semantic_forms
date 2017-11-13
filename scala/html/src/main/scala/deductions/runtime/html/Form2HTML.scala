@@ -278,7 +278,8 @@ import deductions.runtime.utils.I18NMessages
 
       Seq(createAddRemoveWidgets(field, editable)) ++
         // Jeremy M recommended img-rounded from Bootstrap, but not effect
-        <div class="sf-value-block col-xs-12 col-sm-9 col-md-9">
+//        <div class="sf-value-block col-xs-12 col-sm-9 col-md-9">
+        <div class="sf-value-block">
           {xmlField}
         </div>
 
