@@ -6,8 +6,8 @@ import java.nio.file.Paths
 import deductions.runtime.jena.lucene.LuceneIndex
 import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.utils.Timer
-import org.apache.jena.graph.{Graph => JenaGraph, Node => JenaNode, Triple => JenaTriple}
-import org.apache.jena.query.{DatasetFactory, Query => JenaQuery}
+//import org.apache.jena.graph.{Graph => JenaGraph, Node => JenaNode, Triple => JenaTriple}
+//import org.apache.jena.query.{DatasetFactory, Query => JenaQuery}
 import org.apache.jena.riot.RiotException
 import org.apache.jena.tdb.TDBFactory
 import org.apache.jena.tdb.transaction.TransactionManager
@@ -24,8 +24,6 @@ import org.apache.http.impl.client.LaxRedirectStrategy
 import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.methods.HttpGet
 import scala.util.Failure
-import java.io.IOException
-import java.io.InputStreamReader
 import java.io.StringWriter
 import org.apache.commons.io.IOUtils
 import java.io.StringReader
@@ -100,6 +98,8 @@ trait RDFStoreLocalJenaProvider
 
       println(s"""RDFStoreLocalJena1Provider: dataset create: database_location "$database_location" in ${System.getProperty("user.dir")} """)
       val dts = TDBFactory.createDataset(Paths.get(database_location).toString())
+      // org.apache.jena.tdb.TDB2Factory.connectDataset(database_location)
+
       //      Logger.getRootLogger.info
       println(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
 
