@@ -27,21 +27,24 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
 //		  with ImplementationSettings.RDFModule{}
   
   def makeFieldLabel(preceding: formMod#Entry, field: formMod#Entry, editable: Boolean,
-      lang:String="en")
+      lang:String="en",
+      cssForProperty: String = css.cssClasses.formLabelCSSClass )
   (implicit form: FormModule[NODE, URI]#FormSyntax) = {
     // display field label only if different from preceding
     if (preceding.label != field.label)
       // PENDING is it correct HTML5 ?
       <label for={
         field.htmlName
-      } class={ css.cssClasses.formLabelCSSClass } tabindex="-1">
+      } class={
+        cssForProperty
+      } tabindex="-1">
       <a href={field.property.toString()}
     title={
         labelTooltip(field)
       }
     target="_blank"
     style= {"""
-/* Do not show labels like links */
+    /* Do not show labels like links */
     text-decoration: none;
     color: #000;
     font-weight: bold;
@@ -62,13 +65,16 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
       }</a>
       </label>
     else if(editable){
-      <label class={ css.cssClasses.formLabelCSSClass } title={
+      <label class={
+        cssForProperty
+      } title={
       field.comment + " - " + field.property
       }> -- </label>
         <div class={css.cssClasses.formAddDivCSSClass}></div>
     }
     else {
-      <label class={ css.cssClasses.formLabelCSSClass } title={
+      <label class={
+        cssForProperty } title={
       field.comment + " - " + field.property
       } tabindex="-1"> -- </label>
     }

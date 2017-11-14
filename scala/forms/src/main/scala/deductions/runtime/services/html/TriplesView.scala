@@ -13,6 +13,7 @@ import org.w3.banana.RDF
 import scala.util.{Failure, Success, Try}
 import scala.xml.NodeSeq
 import deductions.runtime.data_cleaning.BlankNodeCleaner
+import deductions.runtime.utils.CSSClasses
 
 /**
  * Form for a subject URI with existing triples;
@@ -31,6 +32,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     with TableFromListListRDFNodes[Rdf]
     with UserTraceability[Rdf, DATASET]
 //    with BlankNodeCleaner[Rdf, DATASET]
+    with CSSClasses
     with Timer {
 
   val config: Configuration
@@ -128,7 +130,9 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
                                editable: Boolean = false,
                                formuri: String = "", request: HTTPrequest): NodeSeq = {
     val formSyntax = createFormFromSPARQL(query, editable, formuri, request)
-    generateHTML(formSyntax, request=request, hrefPrefix = config.hrefDisplayPrefix)
+    generateHTML(formSyntax, request=request, hrefPrefix = config.hrefDisplayPrefix,
+                   cssForURI = "",
+                   cssForProperty = "")
   }
 
 
@@ -254,7 +258,11 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
 
     val htmlForm =
       generateHTML(formWithInfo, hrefPrefix, editable, actionURI, graphURI,
-        actionURI2, lang, request)
+        actionURI2, lang, request,
+        cssForURI = "sf-value-block col-xs-12 col-sm-9 col-md-9",
+        cssForProperty = cssClasses.formLabelCSSClass
+        // "col-xs-3 col-sm-2 col-md-2 control-label"
+        )
     ( htmlForm, formWithInfo )
   }
 

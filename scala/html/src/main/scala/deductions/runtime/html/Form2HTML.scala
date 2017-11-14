@@ -40,10 +40,13 @@ import deductions.runtime.utils.I18NMessages
                    editable: Boolean = false,
                    actionURI: String = "/save", graphURI: String = "",
                    actionURI2: String = "/save", lang: String = "en",
-                   request: HTTPrequest = HTTPrequest()): NodeSeq = {
+                   request: HTTPrequest = HTTPrequest(),
+                   cssForURI: String = "",
+                   cssForProperty: String = "" ): NodeSeq = {
 
    val htmlFormFields = time("generateHTMLJustFields",
-      generateHTMLJustFields(form, hrefPrefix, editable, graphURI, lang, request))
+      generateHTMLJustFields(form, hrefPrefix, editable, graphURI, lang, request,
+    		  cssForURI, cssForProperty ))
 
 		/* wrap Fields With HTML <form> Tag */
     def wrapFieldsWithFormTag(htmlFormFields: NodeSeq): NodeSeq =
@@ -88,7 +91,9 @@ import deductions.runtime.utils.I18NMessages
                              hrefPrefix: String = config.hrefDisplayPrefix,
                              editable: Boolean = false,
                              graphURI: String = "", lang: String = "en",
-                             request: HTTPrequest = HTTPrequest()): NodeSeq = {
+                             request: HTTPrequest = HTTPrequest(),
+                             cssForURI: String = "",
+                             cssForProperty: String = "" ): NodeSeq = {
 
     implicit val formImpl: formMod#FormSyntax = form
 
@@ -98,7 +103,9 @@ import deductions.runtime.utils.I18NMessages
     } else Seq()
 
     /* make Fields Label And Data */
-    def makeFieldsLabelAndData(fields: Seq[FormEntry]): NodeSeq = {
+    def makeFieldsLabelAndData(fields: Seq[FormEntry],
+                             cssForURI: String = "",
+                             cssForProperty: String = ""): NodeSeq = {
       if (!fields.isEmpty) {
         val lastEntry = fields.last
         val fieldsHTML = for (
@@ -110,8 +117,11 @@ import deductions.runtime.utils.I18NMessages
               isSeparator(field))
             <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
               makeFieldSubject(field) ++
-                makeFieldLabel(preceding, field, editable, lang) ++
-                makeFieldDataOrInput(field, hrefPrefix, editable, lang, request)
+                makeFieldLabel(preceding, field, editable, lang
+                    , cssForProperty = cssForProperty
+                    ) ++
+                makeFieldDataOrInput(field, hrefPrefix, editable, lang, request,
+                    css=cssForURI)
             }</div>
           else
             Text("\n")
@@ -158,7 +168,7 @@ import deductions.runtime.utils.I18NMessages
         val subjectField =
           // NOTE: over-use of class ResourceEntry to display the subject instead of normally the object triple:
           ResourceEntry(value = field.subject, valueLabel = field.subjectLabel)
-        createHTMLField(subjectField, editable, hrefPrefix, lang)
+        createHTMLField(subjectField, editable, hrefPrefix, lang, css="")
       } else NodeSeq.Empty
     }
 
@@ -180,7 +190,8 @@ import deductions.runtime.utils.I18NMessages
 //                	println(s">>>> makeFieldsGroups")
                   makeFieldsGroups()
                 } else
-                  makeFieldsLabelAndData(form.fields)
+                  makeFieldsLabelAndData(form.fields,
+                             cssForURI, cssForProperty)
               }
           }
         </div>
@@ -222,7 +233,9 @@ import deductions.runtime.utils.I18NMessages
    * should not need to be overriden */
   def createHTMLField(field: formMod#Entry, editable: Boolean,
                               hrefPrefix: String = config.hrefDisplayPrefix, lang: String = "en",
-                              request: HTTPrequest = HTTPrequest(), displayInTable: Boolean = false)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
+                              request: HTTPrequest = HTTPrequest(),
+                              displayInTable: Boolean = false,
+                              css: String="sf-value-block col-xs-12 col-sm-9 col-md-9")(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
 
     if( isSeparator(field) )
       return NodeSeq.Empty
@@ -278,10 +291,11 @@ import deductions.runtime.utils.I18NMessages
 
       Seq(createAddRemoveWidgets(field, editable)) ++
         // Jeremy M recommended img-rounded from Bootstrap, but not effect
-//        <div class="sf-value-block col-xs-12 col-sm-9 col-md-9">
-        <div class="sf-value-block">
+//        <div class="sf-value-block col-xs-12 col-sm-9 col-md-9">      
+//        <div class="sf-value-block">
+        <span class={css}>
           {xmlField}
-        </div>
+        </span>
 
     }
   }
@@ -290,9 +304,10 @@ import deductions.runtime.utils.I18NMessages
    *  TODO: does not do much! */
   private def makeFieldDataOrInput(field: formMod#Entry, hrefPrefix: String = config.hrefDisplayPrefix,
                                    editable: Boolean, lang: String = "en",
-                                   request: HTTPrequest = HTTPrequest())(implicit form: FormModule[NODE, URI]#FormSyntax) = {
+                                   request: HTTPrequest = HTTPrequest(),
+                                   css: String="")(implicit form: FormModule[NODE, URI]#FormSyntax) = {
 
-    def doIt = createHTMLField(field, editable, hrefPrefix, lang, request)
+    def doIt = createHTMLField(field, editable, hrefPrefix, lang, request, css=css)
 
     if (shouldAddAddRemoveWidgets(field, editable))
       doIt
