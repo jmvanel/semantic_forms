@@ -105,7 +105,8 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
 
 //          wrapInTransaction({  // or wrapInReadTransaction ?
             implicit val graph = allNamedGraph
-            val (formItself, formSyntax) = htmlFormElemRaw(
+          val (formItself, formSyntax) =
+            htmlFormElemRaw(
               uri, graph, hrefDisplayPrefix, blankNode, editable = editable2,
               lang = lang,
               formuri = formuri,
