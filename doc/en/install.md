@@ -163,7 +163,7 @@ vi scripts/update_server.sh
 ./scripts/update_server.sh
 # clone SF unzipped directory
 cd $DEPLOY
-cd semantic_forms_play-2.1-SNAPSHOT
+cd semantic_forms_play-2.2-SNAPSHOT
 ./scripts/clone_implementation.sh
 cd ..
 mv semantic_forms_cloned ${USER}_instance
