@@ -57,7 +57,7 @@ trait FormHeader[Rdf <: RDF, DATASET]
 
     def downloadLink(syntax: String = "Turtle"): NodeSeq = {
       // col-xs-12
-      <div class="sf-local-rdf-link">
+      <span class="sf-local-rdf-link">
         <a href={
           hrefDownloadPrefix +
             URLEncoder.encode(uri, "utf-8") +
@@ -65,7 +65,8 @@ trait FormHeader[Rdf <: RDF, DATASET]
         } title={ mess("Triples_tooltip") }>
           { mess("Triples") + " " + syntax}
         </a>
-      </div>
+        -
+      </span>
     }
     <div class="row">
         <div class="col-xs-12">

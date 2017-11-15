@@ -57,7 +57,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       makeDrawGraphLink(objectURIstringValue) ++
       displayThumbnail(resourceEntry) ++
       {makeUserInfoOnTriples(resourceEntry, request.getLanguage())} ++
-      creationButton(objectURIstringValue, typ)
+      creationButton(objectURIstringValue, typ) // TODO pass type_ 
       <span class="sf-statistics">{widgets}</span>
   }
 
