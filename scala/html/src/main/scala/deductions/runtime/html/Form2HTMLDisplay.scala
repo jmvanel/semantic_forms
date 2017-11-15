@@ -50,14 +50,16 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     val widgets =
       hyperlinkToField(resourceEntry) ++
       hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue, valueLabel,
-          typ,
+          typ, // TODO pass type_
           resourceEntry) ++
       backLinkButton (resourceEntry) ++
       normalNavigationButton(resourceEntry) ++
       makeDrawGraphLink(objectURIstringValue) ++
       displayThumbnail(resourceEntry) ++
       {makeUserInfoOnTriples(resourceEntry, request.getLanguage())} ++
-      creationButton(objectURIstringValue, typ) // TODO pass type_ 
+        creationButton(
+          objectURIstringValue,
+          type_.map { t => t.toString() })
       <span class="sf-statistics">{widgets}</span>
   }
 
@@ -128,10 +130,10 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       }</a> ++
       {makeUserInfoOnTriples(r)}
 
-  def creationButton(objectURIstringValue: String, typ: String): NodeSeq = {
+  def creationButton(objectURIstringValue: String, types: Seq[String]): NodeSeq = {
     val imageURL = "/assets/images/create-instance.svg"
     val mess = s"Create instance of <$objectURIstringValue>"
-    if (typ.endsWith("#Class")) {
+    if ( types.exists { t => t.endsWith("#Class") } ) {
 //      println(s"==== creationButton: typ: $typ")
         <a href={
           "/create?uri=" + URLEncoder.encode(objectURIstringValue, "UTF-8")
