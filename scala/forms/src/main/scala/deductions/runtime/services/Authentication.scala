@@ -61,9 +61,10 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
         $passwordsGraph
         ), $userURI, passwordPred, ANY)""" )
       find( makeIGraph(passwordsGraph), userURI, passwordPred, ANY)
+      .toList
     }).get
     
-    val pwdsl = pwds.toList
+    val pwdsl = pwds // .toList
     println1( s"findPassword: pwdsl $pwdsl" )
     if (pwdsl.size > 0) {
       val databasePasswordNode = pwdsl(0).objectt
