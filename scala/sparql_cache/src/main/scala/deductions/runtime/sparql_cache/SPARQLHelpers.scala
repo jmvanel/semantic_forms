@@ -374,9 +374,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         es <- ds.executeSelect(query, Map())
       } yield es
       //      logger.debug( s"sparqlSelectQueryVariablesNT: $solutionsTry" )
-      val solutionsTry2 = solutionsTry
 
-      solutionsTry2 match {
+      solutionsTry match {
         case Success(solutions) =>
           //    logger.debug( "solutionsTry.isSuccess " + solutionsTry.isSuccess )
           // TODO nullPointer on empty database
