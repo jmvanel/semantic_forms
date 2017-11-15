@@ -9,13 +9,15 @@ import org.w3.banana.RDF
 
 import scala.util.{Success, Try}
 import scala.xml.NodeSeq
+import deductions.runtime.utils.CSSClasses
 
 trait CreationFormAlgo[Rdf <: RDF, DATASET]
 extends RDFCacheAlgo[Rdf, DATASET]
 with UnfilledFormFactory[Rdf, DATASET]
 with HTML5TypesTrait[Rdf]
 with RDFPrefixes[Rdf]
-with FormSyntaxJson[Rdf] {
+with FormSyntaxJson[Rdf]
+with CSSClasses {
 
   val config: Configuration
   val htmlGenerator: HtmlGeneratorInterface[Rdf#Node, Rdf#URI]
@@ -38,7 +40,9 @@ with FormSyntaxJson[Rdf] {
       form, hrefPrefix = "",
       editable = true,
       actionURI = actionURI,
-      lang = lang, graphURI = graphURI, request = request)
+      lang = lang, graphURI = graphURI, request = request,
+      cssForURI = "sf-value-block col-xs-12 col-sm-9 col-md-9",
+      cssForProperty = cssClasses.formLabelCSSClass)
 
     val editingHeaders = (
       for (classe <- form.classs)

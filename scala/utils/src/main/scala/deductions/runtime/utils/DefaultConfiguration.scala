@@ -63,10 +63,11 @@ trait DefaultConfiguration extends Configuration {
 
   /** use Text indexing with Lucene or SOLR */
   override def useTextQuery: Boolean = true
-  // false // 
+  
+  override def useTDB2: Boolean = false // true
 
   /** when #useTextQuery is true, use Text indexing with SOLR */
-  override def solrIndexing: Boolean = false
+  override def elasticSearchIndexing: Boolean = false
 
   override val css: CSSClasses = new CSSClasses {}
   override val radioForIntervals = false

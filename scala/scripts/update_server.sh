@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 
 function make_shared_file {
   if [ $(getent group sf) ]; then
@@ -19,7 +19,7 @@ echo "update semantic_forms Play! server when code has changed"
 # SRC=$HOME/src/semantic_forms/scala/forms_play/
 SRC=$PWD/forms_play
 APP=semantic_forms_play
-VERSION=2.1-SNAPSHOT
+VERSION=2.2-SNAPSHOT
 APPVERS=${APP}-$VERSION
 
 INSTANCE=sandbox

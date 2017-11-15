@@ -53,9 +53,11 @@ trait Configuration {
   def displayTechnicalSemWebDetails: Boolean
   /** download Possible Values in edit forms (otherwise, just rely on /lookup service) */
   def downloadPossibleValues: Boolean
+
+  def useTDB2: Boolean
   def useTextQuery: Boolean
   /** considered if useTextQuery */
-  def solrIndexing: Boolean
+  def elasticSearchIndexing: Boolean
 
   def css: CSSClasses
 
