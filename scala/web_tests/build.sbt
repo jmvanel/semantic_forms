@@ -7,6 +7,9 @@ name := "web_tests"
 lazy val web_tests = (project in file("."))
 	.enablePlugins(GatlingPlugin)
 
+// scalaVersion in ThisBuild := "2.11.12"
+// crossScalaVersions := Seq("2.11.12", "2.12.4")
+
 // fork a new JVM for 'test:run', but not 'run'
 // fork in Test := true
 // fork := true
@@ -16,7 +19,8 @@ lazy val web_tests = (project in file("."))
 // Gatling is an open-source load testing framework based on Scala, Akka and Netty
 libraryDependencies += "io.gatling.highcharts" % "gatling-charts-highcharts" % "2.3.0" % Test
 libraryDependencies += "io.gatling" % "gatling-test-framework" % "2.3.0" % Test
-libraryDependencies += "com.github.agourlay" %% "cornichon" % "0.12.7" % Test
+libraryDependencies += "com.github.agourlay" %% "cornichon" % // "0.12.7" % Test
+								"0.13.2" % Test
 
 // resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
