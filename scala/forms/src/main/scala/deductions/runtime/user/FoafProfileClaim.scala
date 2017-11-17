@@ -49,24 +49,26 @@ http.send(content);
   }
 
   def profileClaimUI(request: HTTPrequest): NodeSeq = {
+    // this URI is actually a foaf:Person
     val uri = URI(request.getRDFsubject())
     val currentPageIsAfoafPerson: Boolean =
       getObjects(allNamedGraph, (uri), rdf.typ).toSeq.contains(foaf.Person)
 
     val label = instanceLabelFromTDB(uri, request.getLanguage())
     val personFromAccount = getPersonFromAccount(request.userId())
-    println( s">>>>==== personFromAccount $personFromAccount")
+    println( s">>>>==== profileClaimUI: personFromAccount ${request.userId()} --> <$personFromAccount>")
     if (currentPageIsAfoafPerson) {
-      if (personFromAccount == nullURI &&
-          request.userId() != "" &&
+      if (request.userId() != "" &&
           request.userId() != "anonymous"
           ) {
+        val absoluteURIForUserid = makeAbsoluteURIForSaving(request.userId())
         // propose to claim current page's identity (foaf:Person)
         val rdfString = s"""
           ${declarePrefix(foaf)}
-          <$uri> foaf:account <user:${request.userId()}> .
-          <user:${request.userId()}> foaf:isAccountOf <$uri>  .
+          <$uri> foaf:account <${absoluteURIForUserid}> .
+          <$absoluteURIForUserid> foaf:isAccountOf <$uri>  .
           """
+//        println( s"profileClaimUI: rdfString $rdfString")
         // `` : ECMAScript 6 (ES6)
         <div>
           <script type="text/javascript">

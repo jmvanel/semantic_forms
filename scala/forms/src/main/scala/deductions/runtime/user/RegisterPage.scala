@@ -32,7 +32,7 @@ trait RegisterPage[Rdf <: RDF, DATASET]
   import config._
   import ops._
 
-  /** display User information in pages */
+  /** display User information in pages - transactional */
   def displayUser(userid: String, pageURI: String, pageLabel: String,
       lang: String = "en"): NodeSeq = {
 
@@ -40,9 +40,10 @@ trait RegisterPage[Rdf <: RDF, DATASET]
 // 	  println( s">>>> displayUser userid $userid, absoluteURIForUserid $absoluteURIForUserid" )
     <div class="userInfo"> {
       if (needLogin) {
-        if (userid != "" && !userid.startsWith("anonymous")) {
+        if ( isNamedUser(userid) ) {
           val userLabel = wrapInTransaction {
-            val personFromAccount = getPersonFromAccount(absoluteURIForUserid) // userid)
+            val personFromAccount = getPersonFromAccount(userid)
+            println( s"==== displayUser: personFromAccount <$personFromAccount> <-- userid '$userid'" )
             // link to User profile
             makeHyperlinkForURI(
                 URI( absoluteURIForUserid ),

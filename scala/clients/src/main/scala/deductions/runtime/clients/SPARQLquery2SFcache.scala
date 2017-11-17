@@ -16,7 +16,8 @@ trait SPARQLquery2SFcache {
   implicit val ops: RDFOps[Jena]
   implicit val sparqlOps: SparqlOps[Jena]
 
-  /** import into  Semantic_Forms From SPARQL Query to any SPARQL endpoint */
+  /** import into  Semantic_Forms From SPARQL Query to any SPARQL endpoint
+   *  @param sfInstancePrefix Semantic_Forms Instance URL Prefix ( /display?displayuri= will appended)  */
   def importFromQuery(query: String, endpoint: String, sfInstancePrefix: String): String = {
     val uris = sendQuery(query, endpoint)
     val results = for (uri <- uris) yield {
