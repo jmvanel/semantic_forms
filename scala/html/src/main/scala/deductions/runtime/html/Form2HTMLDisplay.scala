@@ -101,9 +101,10 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
   }
 
   def normalNavigationButton(resourceEntry: formMod#ResourceEntry) = {
-    val value = resourceEntry.value
     val objectURIstringValue = resourceEntry.value.toString()
-    (if (objectURIstringValue.size > 0 && showExpertButtons) {
+    (if (objectURIstringValue.size > 0 &&
+        isDownloadableURL(objectURIstringValue) && showExpertButtons) {
+    	val value = resourceEntry.value
       <a class="btn btn-primary btn-xs" href={objectURIstringValue} title={s"Normal HTTP link to $value"}
          draggable="true">
         <i class="glyphicon glyphicon-share-alt"></i>

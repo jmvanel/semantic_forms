@@ -203,13 +203,9 @@ extends URIManagement {
     
   def isDownloadableURI(uri: Rdf#URI) = {
     val u = fromUri(uri)
-    (
-      u.startsWith("http") ||
-      u.startsWith("ftp:") ||
-      u.startsWith("file:")) &&
+    isDownloadableURL(u) &&
       // not Downloadable in this case, because it's hosted here ! 
-      !u.startsWith( // UnfilledFormFactory.
-          instanceURIPrefix) //  defaultInstanceURIHostPrefix)
+      !u.startsWith(instanceURIPrefix)
 
     // TODO ?
     // u.startsWith("_:")
