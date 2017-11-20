@@ -5,9 +5,12 @@ import java.net.URLEncoder
 import deductions.runtime.utils.RDFPrefixesInterface
 
 import scala.xml.Elem
+import deductions.runtime.utils.URIHelpers
 
 /** GUI integration: rdfviewer, ... */
-trait BasicWidgets extends RDFPrefixesInterface {
+trait BasicWidgets
+  extends RDFPrefixesInterface
+  with URIHelpers {
 
   def makeBackLinkButton(uri: String, title: String = ""): Elem = {
     // format: OFF
@@ -28,14 +31,7 @@ trait BasicWidgets extends RDFPrefixesInterface {
     // http://localhost:9000/download?url=http%3A%2F%2Fjmvanel.free.fr%2Fjmv.rdf%23me
     val link = /*hrefDownloadPrefix + */ URLEncoder.encode( uri, "utf-8")
 
-//      <button type="button" class="btn-primary" readonly="yes" title="Draw RDF graph"
-//    	        onclick={ s"popupgraph( '$link' );" }>
-//    	<form action={ s"/assets/rdfviewer/rdfviewer.html?url=$link" }>
-//  		<input type="submit" class="btn-primary" readonly="yes" title="Draw RDF graph"
-//    	         value="Draw graph"></input> 
-//    	</form >
-
-    if( uri != "" &&
+    if( isDownloadableURL(uri) &&
         // TODO when we will import RDFa , be more specific here
         // TODO check HTTP Content-type
         // TODO database content <uri> ?P ?O : must be more that 1 triple

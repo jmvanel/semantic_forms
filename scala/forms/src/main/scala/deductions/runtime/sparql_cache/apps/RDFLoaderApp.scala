@@ -1,24 +1,26 @@
 package deductions.runtime.sparql_cache.apps
 
-import deductions.runtime.jena.{ImplementationSettings, RDFCache}
-import deductions.runtime.utils.{DefaultConfiguration, RDFPrefixes}
+import deductions.runtime.jena.{ ImplementationSettings, RDFCache }
+import deductions.runtime.utils.{ DefaultConfiguration, RDFPrefixes }
 
-/** download & Store Uri In self-Named Graph;
- *  remove previous Graph content */
-object RDFLoaderApp extends {
+/**
+ * download & Store URL In given Graph;
+ * remove previous Graph content
+ *  
+ * like tdb2.tdbloader
+ */
+object RDFLoaderGraphApp extends {
   override val config = new DefaultConfiguration {
     override val useTextQuery = false
   }
 } with RDFCache with App
-    with ImplementationSettings.RDFCache
-    with RDFPrefixes[ ImplementationSettings.Rdf] {
+  with ImplementationSettings.RDFCache
+  with RDFPrefixes[ImplementationSettings.Rdf] {
 
   import ops._
-  val uris = args map { p => URI(expandOrUnchanged(p)) }
-  uris map {
-    uri =>
-      rdfStore.removeGraph(dataset, uri)
-      readStoreUriInNamedGraph(uri)
-      println(s"loaded <${uri}>")
-  }
+  val uri = URI(expandOrUnchanged(args(0)))
+  val graph = URI(args(1))
+  rdfStore.removeGraph(dataset, graph)
+  readStoreURI(uri, graph, dataset)
+  println(s"loaded <${uri}> in graph <${graph}>")
 }

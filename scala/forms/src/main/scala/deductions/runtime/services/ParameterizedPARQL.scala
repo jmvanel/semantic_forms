@@ -9,6 +9,7 @@ import org.w3.banana.{RDF, TryW}
 
 import scala.concurrent.Future
 import scala.xml.{Elem, NodeSeq, Text}
+import scala.xml.Unparsed
 
 
 trait SPARQLQueryMaker[Rdf <: RDF] {
@@ -60,8 +61,37 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
       val uris = search_onlyNT(search, variables)
       println(s"\tsearch(): URI's $uris")
       val graph: Rdf#Graph = allNamedGraph
-      val elems =
-        <div class={ css.tableCSSClasses.formRootCSSClass }> {
+      val elems = Seq(
+          <button value="Sort" id="sort">Sort
+          </button> ,
+          <script> {
+        	Unparsed("""
+        		//// console.log("divs " + JSON.stringify($divs) );
+        	  $('#sort').on('click', function () {
+          	  var $divs = $("div.sf-triple-block");
+              var alphabeticallyOrderedDivs = $divs.sort(function (a, b) {
+                var atext = $(a).text().replace(/(\r\n|\n|\r)/gm,"").replace(/ +/gm," ").toLowerCase().trim();
+                var btext = $(b).text().replace(/(\r\n|\n|\r)/gm,"").replace(/ +/gm," ").toLowerCase().trim();
+                /*
+                console.log( "$(a).text() " + atext);
+                console.log( "$(b).text() " + btext);
+                console.log( "    return " + (atext > btext) );
+                */
+                return atext > btext;
+              });
+              // console.log("alphabeticallyOrderedDivs " + JSON.stringify(alphabeticallyOrderedDivs));
+              console.log(
+                "alphabeticallyOrderedDivs " );
+              console.log(
+                alphabeticallyOrderedDivs );
+                /* . map (
+                d => $(d).text().replace(/(\r\n|\n|\r)/gm,"").replace(/ +/gm," ").toLowerCase().trim() ));
+              $("#container").html(alphabeticallyOrderedDivs);
+              */
+            });
+          """)
+        } </script> ,
+        <div id="container" class={ css.tableCSSClasses.formRootCSSClass }> {
           css.localCSS ++
             uris.map {
               u =>
@@ -69,6 +99,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
                 displayResults(u, hrefPrefix, lang, graph, false)
             }
         }</div>
+        )
       elems
     })
     println(s"search: leaving TRANSACTION for dataset $dataset")

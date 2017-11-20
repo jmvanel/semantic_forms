@@ -189,6 +189,7 @@ trait RDFStoreLocalJenaProvider
     }
   }
 
+  /** move it to specific trait */
   private def readWithContentTypeNoJena(
     uri:         Rdf#URI,
     contentType: String,
@@ -207,6 +208,7 @@ trait RDFStoreLocalJenaProvider
     println(s"readWithContentTypeNoJena: contentTypeNormalized: $contentTypeNormalized")
 
     val tryResponse = Try {
+      // TODO case of file:// URL
       request.addHeader("Accept", contentTypeNormalized)
       httpClient.execute(request)
     }

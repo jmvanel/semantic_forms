@@ -52,9 +52,10 @@ extends ThumbnailInference[Rdf, DATASET] {
               uri, lang, graph,
               hrefPrefix = hrefPrefix,
               label = label,
-              sortAnd1rowPerElement = sortAnd1rowPerElement ) ++
-              <div style="font-size:10px; opacity:.8;">{ val uriString = fromUri(uri)
-              URLEncoder.encode( s"DROP GRAPH <$uriString>", "utf-8") }</div>
+              sortAnd1rowPerElement = sortAnd1rowPerElement )
+//              ++
+//              <div style="font-size:10px; opacity:.8;">{ val uriString = fromUri(uri)
+//              URLEncoder.encode( s"DROP GRAPH <$uriString>", "utf-8") }</div>
             ,
           bnode =>
             makeHyperlinkForURI(
