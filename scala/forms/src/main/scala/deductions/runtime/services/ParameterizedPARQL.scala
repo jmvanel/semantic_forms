@@ -95,7 +95,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
           css.localCSS ++
             uris.map {
               u =>
-                //          println(s"\tsearch(): URI row $u")
+                // println(s"\tsearch(): URI row $u")
                 displayResults(u, hrefPrefix, lang, graph, false)
             }
         }</div>

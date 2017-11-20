@@ -6,11 +6,36 @@ import deductions.runtime.utils.RDFPrefixesInterface
 
 import scala.xml.Elem
 import deductions.runtime.utils.URIHelpers
+import scala.xml.NodeSeq
+import deductions.runtime.utils.Configuration
+import deductions.runtime.utils.I18NMessages
 
 /** GUI integration: rdfviewer, ... */
 trait BasicWidgets
   extends RDFPrefixesInterface
   with URIHelpers {
+
+    val config: Configuration
+    import config._
+
+  def hyperlinkForEditingURI(uri: String, lang: String): NodeSeq = {
+    implicit val _ = lang
+    val hrefEdit = hrefEditPrefix + URLEncoder.encode(uri, "utf-8")
+    <a class="btn btn-primary btn-xs" href={ hrefEdit } title={ mess("edit_URI") }>
+      <i class="glyphicon glyphicon-edit"></i>
+    </a>
+  }
+
+  def hyperlinkForDisplayingURI(uri: String, lang: String): NodeSeq = {
+    implicit val _ = lang
+    val hrefDisplay = hrefDisplayPrefix() + URLEncoder.encode(uri, "utf-8") + "#form"
+    println(s">>>>>>>>>>> linkToShow: $hrefDisplay")
+    <a class="btn btn-warning btn-xs" href={ hrefDisplay } title={ mess("display_URI") }>
+      <i class="glyphicon"></i>
+    </a>
+  }
+
+private def mess(m: String)(implicit lang: String) = I18NMessages.get(m, lang)
 
   def makeBackLinkButton(uri: String, title: String = ""): Elem = {
     // format: OFF

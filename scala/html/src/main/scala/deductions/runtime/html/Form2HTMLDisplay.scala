@@ -57,9 +57,12 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       makeDrawGraphLink(objectURIstringValue) ++
       displayThumbnail(resourceEntry) ++
       {makeUserInfoOnTriples(resourceEntry, request.getLanguage())} ++
-        creationButton(
-          objectURIstringValue,
-          type_.map { t => t.toString() })
+      creationButton(
+        objectURIstringValue,
+        type_.map { t => t.toString() }) ++
+      (if( ! objectURIstringValue.startsWith("http://dbpedia.org/resource/"))
+        hyperlinkForEditingURI(objectURIstringValue, request.getLanguage())
+        else NodeSeq.Empty)
       <span class="sf-statistics">{widgets}</span>
   }
 
