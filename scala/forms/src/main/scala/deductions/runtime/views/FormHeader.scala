@@ -25,23 +25,16 @@ trait FormHeader[Rdf <: RDF, DATASET]
   import ops._
 
   /** title and links on top of the form: Edit, Display, Download Links */
-  def titleEditDisplayDownloadLinksThumbnail(formSyntax: FormSyntax, lang: String, editable: Boolean = false)(implicit graph: Rdf#Graph): NodeSeq = {
-    def mess(m: String) = I18NMessages.get(m, lang)
+  def titleEditDisplayDownloadLinksThumbnail(formSyntax: FormSyntax, lang: String,
+      editable: Boolean = false)(implicit graph: Rdf#Graph): NodeSeq = {
     val uri = nodeToString(formSyntax.subject)
-
+    implicit val _ = lang
     // show the button to change the current editable state
-    val linkToShow = (if (editable) {
-      val hrefDisplay = hrefDisplayPrefix() + URLEncoder.encode(uri, "utf-8") + "#form"
-      println(s">>>>>>>>>>> linkToShow: $hrefDisplay")
-      <a class="btn btn-warning btn-xs" href={ hrefDisplay } title={ mess("display_URI") }>
-        <i class="glyphicon"></i>
-      </a>
-    } else {
-      val hrefEdit = hrefEditPrefix + URLEncoder.encode(uri, "utf-8")
-      <a class="btn btn-primary btn-xs" href={ hrefEdit } title={ mess("edit_URI") }>
-        <i class="glyphicon glyphicon-edit"></i>
-      </a>
-    })
+    val linkToShow =
+      if (editable)
+        hyperlinkForDisplayingURI(uri, lang)
+      else
+        hyperlinkForEditingURI(uri, lang)
 
     val expertLinks = (if (showExpertButtons) {
       Seq(makeBackLinkButton(uri),
@@ -109,6 +102,8 @@ trait FormHeader[Rdf <: RDF, DATASET]
           downloadLink("RDF/XML")}
       </div>
   }
+
+  def mess(m: String)(implicit lang: String) = I18NMessages.get(m, lang)
 
   private lazy val owl = OWLPrefix[Rdf]
 
