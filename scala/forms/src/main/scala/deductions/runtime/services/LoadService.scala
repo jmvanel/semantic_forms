@@ -22,12 +22,12 @@ trait LoadService[Rdf <: RDF, DATASET]
 
   import ops._
 
-  /** load RDF String in database - TODO conneg !!! */
+  /** load RDF String in database - conneg ! */
   def load(request: HTTPrequest) = {
     val httpParamsMap: Map[String, Seq[String]] = request.queryString
-    println(s"httpParamsMap $httpParamsMap")
+    println(s"load: httpParamsMap $httpParamsMap")
     val anyRDFdataOption = request.content
-    val graphURI = httpParamsMap.getOrElse("graph", "data:/geo/").toString()
+    val graphURI = request.getHTTPparameterValue("graph").getOrElse("data:/geo/")
 
     // database: String = "TDB"    TODO
 
