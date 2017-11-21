@@ -25,18 +25,22 @@ with SPARQLHelpers[Rdf, DATASET] {
 
 
   /** reference implementation of `notifyDataEvent`:
-   * save all `addedTriples` to a specific new named graph,
+   * save all `addedTriples` to a specific new named graph
+   * (named after the main subject URI),
    * and add timestamp metadata to metadata graph `metadataGraph`;
    * by metadata we mean just 2 triples, one telling the user,
    * one for the timestamp, whose subject is the new named graph.
    * These triples are queried in #getMetadata() .
-   * Here is a typical set of quads that is produced by a save action (in CRUD Selenium test):
+   *
+   * Here is a typical set of quads that is produced in TDB2 dataset by a save action (in CRUD Selenium test):
    * <pre>
-<http://localhost:9000/ldp/1486136803523-89228787433384#1486136808956> <urn:user> <aa> <urn:semantic_forms/metadataGraph> .
+<http://localhost:9000/ldp/1486136803523-89228787433384#1486136808956> <urn:user> <user:aa> <urn:semantic_forms/metadataGraph> .
 <http://localhost:9000/ldp/1486136803523-89228787433384#1486136808956> <urn:timestamp> "1486136808956"^^<http://www.w3.org/2001/XMLSchema#integer> <urn:semantic_forms/metadataGraph> .
-<http://localhost:9000/ldp/1486136803523-89228787433384> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> <http://localhost:9000/ldp/1486136803523-89228787433384#1486136808956> .
-<http://localhost:9000/ldp/1486136803523-89228787433384> <http://xmlns.com/foaf/0.1/givenName> "Victime 1" <http://localhost:9000/ldp/1486136803523-89228787433384#1486136808956> .
-<http://localhost:9000/ldp/1486136803523-89228787433384> <http://xmlns.com/foaf/0.1/knows> <http://jmvanel.free.fr/jmv.rdf#me> <http://localhost:9000/ldp/1486136803523-89228787433384#1486136808956> .
+<http://localhost:9000/ldp/1486136803523-89228787433384> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person>
+                                                                                            <http://localhost:9000/ldp/1486136803523-89228787433384#1486136808956> .
+<http://localhost:9000/ldp/1486136803523-89228787433384> <http://xmlns.com/foaf/0.1/givenName> "Victime 1"
+                                                                                            <http://localhost:9000/ldp/1486136803523-89228787433384#1486136808956> .
+<http://localhost:9000/ldp/1486136803523-89228787433384> <http://xmlns.com/foaf/0.1/knows> <http://jmvanel.free.fr/jmv.rdf#me>                                                                                          <http://localhost:9000/ldp/1486136803523-89228787433384#1486136808956> .
    * </pre>
    *
    * This is just an example of what can be saved:
@@ -128,6 +132,11 @@ with SPARQLHelpers[Rdf, DATASET] {
   def getMetadataAboutSubject(subject: Rdf#Node, limit: Int =100, offset: Int = 0)
   : List[Seq[Rdf#Node]] = {
 
+    /* TODO:
+     * - timestamp should be facultative
+     * - user is both in GRAPH <$metadataGraph> ,
+     *   and typically (always?) user graph is ?GR
+     * use case: user has uploaded a whole RDF document in her graph */
     val query = s"""
       ${declarePrefix(xsd)}
       SELECT ?PROP ?OBJECT (max(?TS) as ?TIME ) ?USER
@@ -150,7 +159,39 @@ with SPARQLHelpers[Rdf, DATASET] {
     logger.debug("getMetadata: res " + res)
     res
   }
-  
+
+  /** get Metadata About given triple, searching in history (TDB2) for all user updates,
+   *  and keeping the most recent;
+   * transactional
+   * @return rows of
+   * timestamp, user;
+   * ordered by recent first
+   */
+  def getMetadataAboutTriple(subject: Rdf#Node, predicate: Rdf#Node, objet: Rdf#Node, limit: Int =100, offset: Int = 0)
+  : List[Seq[Rdf#Node]] = {
+		  val query = s"""
+      ${declarePrefix(xsd)}
+      SELECT (max(?TS) as ?TIME ) ?USER
+      WHERE {
+        GRAPH <$metadataGraph> {
+          ?GR <$timestampURI> ?TS ;
+              <$userPredURI> ?USER .
+        }
+        GRAPH ?GR {
+         <$subject> <$predicate> <$objet>. }
+      }
+      GROUP BY ?USER
+      ORDER BY DESC(xsd:integer(?TS))
+      LIMIT $limit
+      OFFSET $offset
+    """
+    logger.debug(s"getMetadataAboutSubject: query $query")
+    val res = sparqlSelectQueryVariables( query,
+        Seq("PROP", "OBJECT", "TIME", "USER"), dataset2 )
+    logger.debug("getMetadata: res " + res)
+    res
+  }
+
   /** get Time Series from accumulated values with timestamp;
    *  used only in https://github.com/jmvanel/corporate_risk and in test
    *  @return a Map from label to a seq of time & value pairs;
