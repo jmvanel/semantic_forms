@@ -28,7 +28,7 @@ trait StatisticsGraph[Rdf <: RDF, DATASET] extends RDFHelpers[Rdf]
 
     val linkToClasses = getObjects(graph, focus, rdf.typ).toList
     val classesAsTurtleTerms = linkToClasses.map { abbreviateTurtle(_) }
-    val subjectsLink = makeHyperlinks(focus, s" $subjectsCount subjects ")
+    val subjectsLink = makeHyperlinkTtoGraphContent(focus, s" $subjectsCount subjects ", subjectsCount)
     <p class="sf-statistics">
     RDF document:
       { triplesCount } triples,
@@ -49,7 +49,7 @@ trait StatisticsGraph[Rdf <: RDF, DATASET] extends RDFHelpers[Rdf]
   }
 
   /** hyperlink to given graph content with service /sparql-form?query= */
-  private def makeHyperlinks( graph: Rdf#Node, mess: String): Elem = {
+  private def makeHyperlinkTtoGraphContent( graph: Rdf#Node, mess: String, count:Int): Elem = {
     val sparql = s"""
       ${declarePrefix(prefixesMap2("owl"))}
       CONSTRUCT {?S <urn:is_in_graph> <$graph> . }
@@ -60,7 +60,10 @@ trait StatisticsGraph[Rdf <: RDF, DATASET] extends RDFHelpers[Rdf]
       """.stripMargin
     val q = URLEncoder.encode(sparql, "utf-8")
     val href = "/sparql-form?query=" + q
-    <a href={ href }>{ mess }</a>
+    val hyperlink: Elem = <a href={ href }>{ mess }</a>
+    if (count > 1)
+      <b>{ hyperlink }</b>
+    else hyperlink
   }
 
   private def sparqlInstance(classe: String) = s"""

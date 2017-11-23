@@ -212,6 +212,13 @@ import deductions.runtime.utils.I18NMessages
           Text(", at URI ") ++
           <a href={ toPlainString(form.subject) } style="color: rgb(44,133,254);">&lt;{ form.subject }&gt;</a>
         else NodeSeq.Empty) ++
+        {
+          val warningNoTriples =
+            if (form.nonEmptyFields().isEmpty)
+              <b> No triple for this URI! Click on subjects link above.</b>
+            else Text("")
+          warningNoTriples
+        } ++
         <div>{
           form.formURI match {
             case Some(formURI) if formURI != nullURI =>
@@ -239,6 +246,8 @@ import deductions.runtime.utils.I18NMessages
 
     if( isSeparator(field) )
       return NodeSeq.Empty
+//    if( field.property.toString().contains("species"))
+//    	println(s"DEBUG !!!!!!!!!! $field")
 
     val isCreateRequest = request.path.contains("create")
     val editableByUser =
