@@ -88,6 +88,14 @@ trait FormModule[NODE, URI <: NODE] {
         ${fields.mkString("\n")}
       """
     }
+
+    def nonEmptyFields(): Seq[Entry] = {
+      fields . filter { f =>
+        f.value.toString() != "" &&
+        f.value.toString() != "\"\""
+      }
+//      println(s"==== nonEmptyFields: $ret")
+    }
   }
 
   val nullFormSyntax = FormSyntax(nullURI, Seq() )

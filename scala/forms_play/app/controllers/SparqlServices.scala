@@ -19,11 +19,13 @@ trait SparqlServices extends ApplicationTrait
 {
   import config._
 
-  /** load RDF String in database */
+  /** load RDF String in database, cf
+   *  https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-post */
   def loadAction() = Action {
     implicit request: Request[AnyContent] =>
       val requestCopy = getRequestCopy()
-      println(s"body class ${request.getClass} ${request.body} - data ${request.getQueryString("data")} ")     
+      println(s"""body class ${request.getClass} request.body ${request.body}
+      - data ${request.getQueryString("data")} """)
       val content = request.getQueryString("data") match {
         case Some(s) => Some(s)
         case None => getContent(request)

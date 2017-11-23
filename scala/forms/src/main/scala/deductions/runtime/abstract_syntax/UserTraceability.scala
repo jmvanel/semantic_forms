@@ -23,6 +23,7 @@ trait UserTraceability[Rdf <: RDF, DATASET]
 
     for (row: Seq[Rdf#Node] <- metadata){
       logger.info(row)
+      // each row: property, object, timestamp, user
       val timeElementStr = row(2).toString
       val timeElement  = timeElementStr.splitAt(timeElementStr.indexOf("^"))._1.replaceAll("\"","").toLong
       val property = row(0).toString

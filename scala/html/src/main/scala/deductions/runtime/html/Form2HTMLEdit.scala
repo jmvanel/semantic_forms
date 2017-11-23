@@ -79,10 +79,9 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
             placeholder={ placeholder }
             title={ placeholder }
             size={inputSize.toString()}
-			dropzone="copy"
+            dropzone="copy"
             autocomplete={if (lookupActivatedFor(resourceEntry)) "off" else null}
             type={
-
               /* alas the browsers do NOT consider that mailto:a@b is an email !!!! :(
                * so need to comment this out,
                * otherwise on re-editing the browser blocks the user. */

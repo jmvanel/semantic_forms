@@ -39,7 +39,7 @@ trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
     tryGraph match {
       case Success(graph) =>
         val triples = getTriples(graph).toSeq
-        val fs = wrapInReadTransaction {
+        val fs = wrapInTransaction {
           createFormFromTriples(triples, editable, formuri)(allNamedGraph,
               request.getLanguage)
         } . get
