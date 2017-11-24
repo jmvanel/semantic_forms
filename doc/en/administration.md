@@ -342,7 +342,7 @@ https://github.com/jmvanel/semantic_forms/wiki/Semantization
 Link on [other tools for semantization](http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/html/documentation.html#L3234).
 
 # SPARQL queries
-There is a web page for SPARQL queries, and also a real SPARL endpoint at URL /sparql for CONSTRUCT queries (see in README under Test about how to query with authentication).
+There is a web page for SPARQL queries, and also a real (compliant) SPARQL endpoint at URL `/sparql` for CONSTRUCT and SELECT queries (see in README in parag. Test about how to query with authentication).
 
 There is an HTML page for entering queries, in the /tools page.
 There are some example showing some queries that you can paste into your browser:
@@ -354,6 +354,13 @@ is for CONSTRUCT queries.
 and the service
 <code>/select-ui?query=</code>
 is for SELECT queries.
+
+In the /tools page, there is also a link to the YasGUI client tool, a famous SPARQL requester.
+
+In addition to the SPARQL endpoint at URL `/sparql`, therer is another endpoint at URL `/sparql2`, where all named graphs content is put in the unnamed graph. This is convenient:
+
+- many tools do not consider named graphs (or just one), like Sparklis,
+- one does not have to wrap all triple patterns in `GRAPH ?GRnnn { }` blocks
 
 # Populating with dbPedia (mirroring dbPedia)
 
@@ -396,7 +403,7 @@ The settings for text search with Lucene or SOLR in TDB here:
 https://github.com/jmvanel/semantic\_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/LuceneIndex.scala
 https://github.com/jmvanel/semantic\_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/services/DefaultConfiguration.scala
 
-If you deactivate `useTextQuery` in DefaultConfiguration.scala, the text search is done by a plain SPARLQL search, that considers input as a regular expression.
+If you deactivate `useTextQuery` in DefaultConfiguration.scala, the text search is done by a plain SPARQL search, that considers input as a regular expression.
 
 If the text indexing with Lucene or SOLR is activated *after* adding RDF data, you can run this program to index with Lucene or SOLR the newly added text:
 [TextIndexerRDF.scala](https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/lucene/TextIndexerRDF.scala)
