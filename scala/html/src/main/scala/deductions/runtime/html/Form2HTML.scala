@@ -214,7 +214,8 @@ import deductions.runtime.utils.I18NMessages
         else NodeSeq.Empty) ++
         {
           val warningNoTriples =
-            if (form.nonEmptyFields().isEmpty)
+            if (form.nonEmptyFields().isEmpty &&
+                form.subject != nullURI) // case of login form
               <b> No triple for this URI! Click on subjects link above.</b>
             else Text("")
           warningNoTriples
