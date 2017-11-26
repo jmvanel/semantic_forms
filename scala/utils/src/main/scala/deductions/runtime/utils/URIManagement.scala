@@ -52,15 +52,20 @@ trait URIManagement extends URIHelpers {
    *  add URI scheme mailto or user, if not already absolute
    */
   def makeAbsoluteURIForSaving(userid: String): String = {
-    val uri = new URI(userid)
-    if (uri.isAbsolute())
-      userid
-    else {
-      (if (userid.contains("@"))
-         "mailto:"
-       else
-         "user:"
-      ) + userid
+    try {
+      val uri = new URI(userid)
+      if (uri.isAbsolute())
+        userid
+      else {
+        (if (userid.contains("@"))
+          "mailto:"
+        else
+          "user:") + userid
+      }
+    } catch {
+      case t: Throwable =>
+        System.err.println(s"makeAbsoluteURIForSaving: $userid: ${t.getLocalizedMessage}")
+        "error:error"
     }
   }
 
