@@ -133,7 +133,7 @@ with SPARQLHelpers[Rdf, DATASET] {
   def getMetadataAboutSubject(subject: Rdf#Node, limit: Int =100, offset: Int = 0)
   : List[Seq[Rdf#Node]] = {
 
-    /* TODO:
+    /* NOTE:
      * - timestamp should be facultative
      * - user is both in GRAPH <$metadataGraph> ,
      *   and typically (always?) user graph is in main TDB
@@ -160,30 +160,12 @@ with SPARQLHelpers[Rdf, DATASET] {
     val resHistoryDatabase = sparqlSelectQueryVariables( queryHistoryDatabase,
         Seq("PROP", "OBJECT", "TIME", "USER"),
         dataset2 )
-    logger.debug("getMetadata: res " + resHistoryDatabase)
-    
-//    val queryMainDatabase = s"""
-//      ${declarePrefix(xsd)}
-//      SELECT ?PROP ?OBJECT ?TIME ?USER
-//      WHERE {
-//        BIND ( 0 as ?TIME)
-//        GRAPH ?USER {
-//         <$subject> ?PROP ?OBJECT . }
-//      }
-//      # GROUP BY ?OBJECT ?PROP ?USER
-//      LIMIT $limit
-//      OFFSET $offset
-//    """
-//    val resMainDatabase = sparqlSelectQueryVariables( queryMainDatabase,
-//        Seq("PROP", "OBJECT", "TIME", "USER"),
-//        dataset )
-    // TOD merge resHistoryDatabase & resMainDatabase
-//    println(s"==== getMetadataAboutSubject: resHistoryDatabase $resHistoryDatabase")
-//    println(s"resMainDatabase $resMainDatabase")
-    resHistoryDatabase // ++ resMainDatabase
+    logger.debug(s"getMetadataAboutSubject: resHistoryDatabase $resHistoryDatabase")
+    resHistoryDatabase
   }
 
-  /** get Metadata About given triple, searching in history (TDB2) for all user updates,
+  /** UNUSED!
+   *  get Metadata About given triple, searching in history (TDB2) for all user updates,
    *  and keeping the most recent;
    * transactional
    * @return rows of

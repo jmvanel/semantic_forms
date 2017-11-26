@@ -7,7 +7,7 @@ import org.w3.banana.RDF
 import scala.collection.mutable
 import scala.language.{existentials, postfixOps}
 
-
+/** TODO move to package user */
 trait UserTraceability[Rdf <: RDF, DATASET]
   extends FormModule[Rdf#Node, Rdf#URI]
     with TimeSeries[Rdf, DATASET] {
@@ -55,15 +55,45 @@ trait UserTraceability[Rdf <: RDF, DATASET]
     }
 
 //    println(s"YYYYYYYY Before add User Info\n${formSyntax.fields.mkString("\n")}\n")
-    val entries = for (field: Entry <- formSyntax.fields) yield {
+    val entries =
+      for (field: Entry <- formSyntax.fields) yield {
       if (resultsUser.contains( (field.property.toString, field.value.toString) ) ){
 //    	  println(s"ZZZZ add User Info ${field.label} ${field.value}")
         field.copyEntry(
             fromMetadata = resultsUser( (field.property.toString, field.value.toString)),
-            fromTimeMetadata = resultsTimestamp( (field.property.toString, field.value.toString)) )
-      } else field
+            fromTimeMetadata = resultsTimestamp.getOrElse( (field.property.toString, field.value.toString), 0 ) )
+      } else {
+        addUserFromGraph(field)
+      }
     }
     formSyntax . fields = entries
     formSyntax
+  }
+
+  private def addUserFromGraph(field: Entry): Entry = {
+    val resMainDatabase = {
+      if (nodeToString(field.value) != "") {
+        val queryMainDatabase = s"""
+      SELECT ?USER
+      WHERE {
+        GRAPH ?USER {
+         <${field.subject}> <${field.property}> ${makeTurtleTerm(field.value)} . }
+      } """
+//        println(s"addUserFromGraph: queryMainDatabase $queryMainDatabase")
+        sparqlSelectQueryVariables(
+          queryMainDatabase,
+          Seq("USER"),
+          dataset)
+      } else List(Seq())
+    }
+//    println(s"addUserFromGraph: resMainDatabase $resMainDatabase")
+    val fieldWithUsers = for (
+      row <- resMainDatabase;
+      node <- row
+    ) yield {
+      println(s"addUserFromGraph: ?USER node ${node.getClass()} $node")
+      field.copyEntry(fromMetadata = node.toString)
+    }
+    fieldWithUsers.headOption.getOrElse(field)
   }
 }
