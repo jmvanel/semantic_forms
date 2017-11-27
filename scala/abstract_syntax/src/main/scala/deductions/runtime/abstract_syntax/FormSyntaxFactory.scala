@@ -201,14 +201,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     // TODO make it functional #170
     val fieldsCompleteList: Seq[Entry] = makeEntriesFromFormSyntax(step1)
 
-//    def check(fieldsCompleteList: Seq[Entry], mess: String="") = { // DEBUG <<<<<<<<<<<<<<<<<<<<<<
-//      for (field <- fieldsCompleteList ) {
-//        if( field.htmlName == "" )
-//        println(s">>>>>>>>>>>>>>>>>>>>>>> $mess field $field")
-//      }
-//    }
-    //check(fieldsCompleteList, "fieldsCompleteList")
-
     val subject = step1.subject
     val classs = step1.classs
 
