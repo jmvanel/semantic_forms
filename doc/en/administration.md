@@ -1,5 +1,30 @@
+<!--
+gh-md-toc administration.md
+pandoc --standalone administration.md > administration.html -->
+
 Application and database administration
 =======================================
+
+   * [Application and database administration](#application-and-database-administration)
+   * [Introduction](#introduction)
+   * [Running auxiliary programs](#running-auxiliary-programs)
+      * [Running with SBT](#running-with-sbt)
+      * [Running with the Unix shell](#running-with-the-unix-shell)
+   * [Database Administration](#database-administration)
+      * [TDB databases](#tdb-databases)
+      * [Loading RDF content](#loading-rdf-content)
+      * [Preloading RDF content](#preloading-rdf-content)
+      * [Updating RDF content](#updating-rdf-content)
+         * [Jena commands](#jena-commands)
+         * [Remote shell commands](#remote-shell-commands)
+         * [Misc.](#misc)
+      * [Dump and reload](#dump-and-reload)
+         * [Example of a shell session to reload a dump](#example-of-a-shell-session-to-reload-a-dump)
+   * [Semantize raw stuff](#semantize-raw-stuff)
+   * [SPARQL queries](#sparql-queries)
+   * [Populating with dbPedia (mirroring dbPedia)](#populating-with-dbpedia-mirroring-dbpedia)
+   * [Text indexing with Lucene or SOLR](#text-indexing-with-lucene-or-solr)
+      * [Lucene commands](#lucene-commands)
 
 # Introduction
 
@@ -60,13 +85,17 @@ Then you use the Java Virtual Machine the normal way, for example:
 java -cp $JARS tdb.tdbdump --loc=TDB > dump.nq
 ```
 
-## Database Administration
+# Database Administration
 
 **CAUTION:**
 The server must not be started, because Jena TDB does not allow access to the database on disk from 2 different processes.
 
 Be sure to read previous paragrah (Running auxiliary programs)[Running auxiliary programs] before running the commands below.
  
+## TDB databases
+- TDB/ : data: user edits and cached URL's from internet
+- TDB2/ : timestamp for named graphs
+- TDB3/ : user And Password association
 
 ## Loading RDF content
 
@@ -107,23 +136,6 @@ The typical pattern for data is to load in a graph named after the URI source, s
 
 CAUTION: do not load data or configuration into the un-named (default) graph. It would not be taken in account by the framework.
 
-- dumping all database:
-
-```
-for f in lib/*.jar
-do
-  JARS=$JARS:$f
-done
-echo java -cp $JARS
-java -cp $JARS tdb.tdbdump --loc=TDB > dump.nq
-```
-Or with sbt:
-
-    sbt "runMain tdb.tdbdump --loc=TDB" > dump.nq
-
-To re-load the database from N-Triples format (possibly delete the TDB directory before) :
-
-    sbt "runMain tdb.tdbloader --loc=TDB dump.nq"
 
 ## Updating RDF content
 
@@ -203,8 +215,103 @@ In the case when one wants to override some triples that are already loaded in g
 
 For each triple `?S ?P "val"@lang.` in newTriples.tll , this will remove the existing triple:  `?S ?P "old val"@lang.` , and add the new triple: `?S ?P "val"@lang.` 
 
+## Dump and reload
 
-## Semantize raw stuff
+For safety of data, it is good to make global database dumps sometimes. However, in 3 years of working with Jena TDB, we never lost data.
+In case of pirate attacks, the dump can a way to recover correct data.
+
+Dumping all database:
+
+```
+for f in lib/*.jar
+do
+  JARS=$JARS:$f
+done
+echo java -cp $JARS
+java -cp $JARS tdb.tdbdump --loc=TDB | sed 's/^.\{,23\}// ; s/....$//' > dump.nq
+```
+Or with sbt:
+
+    sbt "runMain tdb.tdbdump --loc=TDB" > dump.nq
+
+To re-load the database from N-Triples format (possibly delete the TDB directory before) :
+
+    sbt "runMain tdb.tdbloader --loc=TDB dump.nq"
+
+See more details below.
+
+### Example of a shell session to reload a dump
+
+Here is a typical shell session to reload a Jena TDB quads dump (made with class `tdb.tdbdump` ).
+
+See the doc for the TDB tools:
+https://jena.apache.org/documentation/tdb/commands.html#tdbloader2
+
+```
+DUMP=/home/jmv/deploy/semantic_forms_play-2.1-SNAPSHOT/dump.nq
+rapper -i nquads $DUMP
+rapper: Parsing returned 35920 triples
+
+source scripts/setClasspath.sh 
+echo $JARS
+:lib/aopalliance.aopalliance-1.0.jar:lib/com.fasterxml.aalto-xml-1.0.0.jar:lib/com.fasterxml.jackson.core.jackson-annotations-2.7.8.jar:lib/com.fasterxml.jackson.core.jackson-core-2.7.8.jar:lib/com.fasterxml.jackson.core.jackson-databind-2.7.8.jar:lib/com.fasterxml.jackson.datatype.jackson-datatype-jdk8-2.7.8.jar:lib/com.fasterxml.jackson.datatype.jackson-datatype-jsr310-2.7.8.jar:lib/com.github.andrewoma.dexx.collection-0.6.jar:lib/com.github.jsonld-java.jsonld-java-0.9.0.jar:lib/com.google.guava.guava-16.0.1.jar:lib/com.google.inject.extensions.guice-assistedinject-4.0.jar:lib/com.google.inject.guice-4.0.jar:lib/commons-cli.commons-cli-1.3.jar:lib/commons-codec.commons-codec-1.10.jar:lib/commons-io.commons-io-2.5.jar:lib/commons-logging.commons-logging-1.2.jar:lib/com.typesafe.akka.akka-actor_2.11-2.4.14.jar:lib/com.typesafe.akka.akka-slf4j_2.11-2.4.14.jar:lib/com.typesafe.akka.akka-stream_2.11-2.4.14.jar:lib/com.typesafe.config-1.3.0.jar:lib/com.typesafe.netty.netty-reactive-streams-1.0.8.jar:lib/com.typesafe.netty.netty-reactive-streams-http-1.0.8.jar:lib/com.typesafe.play.build-link-2.5.12.jar:lib/com.typesafe.play.play_2.11-2.5.12.jar:lib/com.typesafe.play.play-datacommons_2.11-2.5.12.jar:lib/com.typesafe.play.play-exceptions-2.5.12.jar:lib/com.typesafe.play.play-functional_2.11-2.5.12.jar:lib/com.typesafe.play.play-iteratees_2.11-2.5.12.jar:lib/com.typesafe.play.play-json_2.11-2.5.12.jar:lib/com.typesafe.play.play-netty-server_2.11-2.5.12.jar:lib/com.typesafe.play.play-netty-utils-2.5.12.jar:lib/com.typesafe.play.play-server_2.11-2.5.12.jar:lib/com.typesafe.play.play-streams_2.11-2.5.12.jar:lib/com.typesafe.play.twirl-api_2.11-1.1.1.jar:lib/com.typesafe.ssl-config-core_2.11-0.2.1.jar:lib/deductions.semantic_forms-1.0-SNAPSHOT.jar:lib/deductions.semantic_forms_play-1.0-SNAPSHOT-assets.jar:lib/deductions.semantic_forms_play-1.0-SNAPSHOT-sans-externalized.jar:lib/io.netty.netty-buffer-4.0.41.Final.jar:lib/io.netty.netty-codec-4.0.41.Final.jar:lib/io.netty.netty-codec-http-4.0.41.Final.jar:lib/io.netty.netty-common-4.0.41.Final.jar:lib/io.netty.netty-handler-4.0.41.Final.jar:lib/io.netty.netty-transport-4.0.41.Final.jar:lib/io.netty.netty-transport-native-epoll-4.0.41.Final-linux-x86_64.jar:lib/javax.inject.javax.inject-1.jar:lib/javax.servlet.servlet-api-2.4.jar:lib/javax.transaction.jta-1.1.jar:lib/joda-time.joda-time-2.9.6.jar:lib/log4j.log4j-1.2.17.jar:lib/net.rootdev.java-rdfa-0.4.2.jar:lib/org.antlr.antlr-runtime-3.5.jar:lib/org.apache.any23.apache-any23-api-1.1.jar:lib/org.apache.any23.apache-any23-csvutils-1.1.jar:lib/org.apache.commons.commons-collections4-4.1.jar:lib/org.apache.commons.commons-csv-1.4.jar:lib/org.apache.commons.commons-lang3-3.4.jar:lib/org.apache.httpcomponents.httpclient-4.5.2.jar:lib/org.apache.httpcomponents.httpclient-cache-4.5.2.jar:lib/org.apache.httpcomponents.httpcore-4.4.4.jar:lib/org.apache.httpcomponents.httpmime-4.3.1.jar:lib/org.apache.jena.jena-arq-3.2.0.jar:lib/org.apache.jena.jena-base-3.2.0.jar:lib/org.apache.jena.jena-cmds-3.2.0.jar:lib/org.apache.jena.jena-core-3.2.0.jar:lib/org.apache.jena.jena-iri-3.2.0.jar:lib/org.apache.jena.jena-permissions-3.2.0.jar:lib/org.apache.jena.jena-rdfconnection-3.2.0.jar:lib/org.apache.jena.jena-shaded-guava-3.2.0.jar:lib/org.apache.jena.jena-tdb-3.2.0.jar:lib/org.apache.jena.jena-text-3.2.0.jar:lib/org.apache.logging.log4j.log4j-api-2.8.jar:lib/org.apache.logging.log4j.log4j-core-2.8.jar:lib/org.apache.logging.log4j.log4j-slf4j-impl-2.8.jar:lib/org.apache.lucene.lucene-analyzers-common-4.9.1.jar:lib/org.apache.lucene.lucene-core-4.9.1.jar:lib/org.apache.lucene.lucene-demo-4.9.1.jar:lib/org.apache.lucene.lucene-expressions-4.9.1.jar:lib/org.apache.lucene.lucene-facet-4.9.1.jar:lib/org.apache.lucene.lucene-misc-4.9.1.jar:lib/org.apache.lucene.lucene-queries-4.9.1.jar:lib/org.apache.lucene.lucene-queryparser-4.9.1.jar:lib/org.apache.lucene.lucene-sandbox-4.9.1.jar:lib/org.apache.lucene.lucene-suggest-4.9.1.jar:lib/org.apache.solr.solr-solrj-4.9.1.jar:lib/org.apache.thrift.libthrift-0.9.3.jar:lib/org.apache.zookeeper.zookeeper-3.4.6.jar:lib/org.codehaus.woodstox.stax2-api-4.0.0.jar:lib/org.codehaus.woodstox.wstx-asl-3.2.7.jar:lib/org.joda.joda-convert-1.8.1.jar:lib/org.noggit.noggit-0.5.jar:lib/org.openrdf.sesame.sesame-model-2.7.10.jar:lib/org.openrdf.sesame.sesame-rio-api-2.7.10.jar:lib/org.openrdf.sesame.sesame-util-2.7.10.jar:lib/org.ow2.asm.asm-4.1.jar:lib/org.ow2.asm.asm-commons-4.1.jar:lib/org.reactivestreams.reactive-streams-1.0.0.jar:lib/org.scala-lang.modules.scala-async_2.11-0.9.6.jar:lib/org.scala-lang.modules.scala-java8-compat_2.11-0.7.0.jar:lib/org.scala-lang.modules.scala-parser-combinators_2.11-1.0.4.jar:lib/org.scala-lang.modules.scala-xml_2.11-1.0.6.jar:lib/org.scala-lang.scala-library-2.11.8.jar:lib/org.scala-lang.scala-reflect-2.11.8.jar:lib/org.scala-stm.scala-stm_2.11-0.7.jar:lib/org.scalaz.scalaz-core_2.11-7.2.8.jar:lib/org.slf4j.jcl-over-slf4j-1.7.21.jar:lib/org.slf4j.jul-to-slf4j-1.7.21.jar:lib/org.slf4j.slf4j-api-1.7.21.jar:lib/org.slf4j.slf4j-log4j12-1.7.21.jar:lib/org.w3.banana-jena_2.11-0.8.4-SNAPSHOT.jar:lib/org.w3.banana-rdf_2.11-0.8.4-SNAPSHOT.jar:lib/org.w3.ntriples_2.11-0.8.4-SNAPSHOT.jar:lib/xerces.xercesImpl-2.11.0.jar:lib/xml-apis.xml-apis-1.4.01.jar
+
+java -cp $JARS -Xmx8G tdb.tdbloader --help
+
+java -cp $JARS -Xmx8G tdb.tdbloader --loc=TDB --verbose $DUMP
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/home/jmv/apps/eulergui-2.1-SNAPSHOT-jar-with-dependencies.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/home/jmv/deploy/semantic_forms_play-1.0-SNAPSHOT/lib/org.apache.logging.log4j.log4j-slf4j-impl-2.8.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/home/jmv/deploy/semantic_forms_play-1.0-SNAPSHOT/lib/org.slf4j.slf4j-log4j12-1.7.21.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
+Java maximum memory: 7635730432
+symbol:http://jena.hpl.hp.com/ARQ#constantBNodeLabels = true
+symbol:http://jena.hpl.hp.com/ARQ#regexImpl = symbol:http://jena.hpl.hp.com/ARQ#javaRegex
+symbol:http://jena.hpl.hp.com/ARQ#stageGenerator = com.hp.hpl.jena.tdb.solver.StageGeneratorDirectTDB@40005471
+symbol:http://jena.hpl.hp.com/ARQ#strictSPARQL = false
+symbol:http://jena.hpl.hp.com/ARQ#enablePropertyFunctions = true
+INFO  -- Start triples data phase
+INFO  ** Load empty triples table
+INFO  -- Start quads data phase
+INFO  ** Load into quads table with existing data
+INFO  Load: /home/jmv/deploy/semantic_forms_play-1.0-SNAPSHOT_OLD2/dump.nq -- 2017/11/24 12:08:01 CET
+ERROR [line: 6471, col: 1 ] Broken IRI (newline): http://www.w3.org/1999/02/22-rdf-syntax-ns15:59:16.986 [main] DEBUG c.h.h.j.t.b.file.BlockAccessMapped - Segment: 2
+org.apache.jena.riot.RiotException: [line: 6471, col: 1 ] Broken IRI (newline): http://www.w3.org/1999/02/22-rdf-syntax-ns15:59:16.986 [main] DEBUG c.h.h.j.t.b.file.BlockAccessMapped - Segment: 2
+```
+
+After editing the dump to fix the syntax error:
+
+```
+java -cp $JARS -Xmx8G tdb.tdbloader --loc=TDB --verbose /home/jmv/deploy/semantic_forms_play-1.0-SNAPSHOT_OLD2/dump.nq
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/home/jmv/apps/eulergui-2.1-SNAPSHOT-jar-with-dependencies.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/home/jmv/deploy/semantic_forms_play-1.0-SNAPSHOT/lib/org.apache.logging.log4j.log4j-slf4j-impl-2.8.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/home/jmv/deploy/semantic_forms_play-1.0-SNAPSHOT/lib/org.slf4j.slf4j-log4j12-1.7.21.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
+Java maximum memory: 7635730432
+symbol:http://jena.hpl.hp.com/ARQ#constantBNodeLabels = true
+symbol:http://jena.hpl.hp.com/ARQ#regexImpl = symbol:http://jena.hpl.hp.com/ARQ#javaRegex
+symbol:http://jena.hpl.hp.com/ARQ#stageGenerator = com.hp.hpl.jena.tdb.solver.StageGeneratorDirectTDB@40005471
+symbol:http://jena.hpl.hp.com/ARQ#strictSPARQL = false
+symbol:http://jena.hpl.hp.com/ARQ#enablePropertyFunctions = true
+INFO  -- Start triples data phase
+INFO  ** Load empty triples table
+INFO  -- Start quads data phase
+INFO  ** Load into quads table with existing data
+INFO  Load: /home/jmv/deploy/semantic_forms_play-1.0-SNAPSHOT_OLD2/dump.nq -- 2017/11/24 12:11:09 CET
+INFO  -- Finish triples data phase
+INFO  -- Finish quads data phase
+INFO  ** Data: 35,922 quads loaded in 1.80 seconds [Rate: 19,934.52 per second]
+INFO  -- Start quads index phase
+INFO  -- Finish quads index phase
+INFO  -- Finish triples load
+INFO  -- Finish quads load
+INFO  ** Completed: 35,922 quads loaded in 1.82 seconds [Rate: 19,759.08 per second]
+```
+
+# Semantize raw stuff
 
 By "semantize" we mean transform into triples raw stuff like CSV, XML, JSON, SQL.
 Actually there are several steps:
@@ -228,11 +335,14 @@ The features are like Any23, plus:
  * abbreviated Turtle terms with well-known prefixes (eg dbpedia:Paris) are understood in cells 
 
 For example, adding `rdf:type` in first row and `foaf:Person` in another row will assign the class  `foaf:Person` to (the URI of) this row.
+
+See more detail here in the SF wiki:
+https://github.com/jmvanel/semantic_forms/wiki/Semantization
  
 Link on [other tools for semantization](http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/html/documentation.html#L3234).
 
-## SPARQL queries
-There is a web page for SPARQL queries, and also a real SPARL endpoint at URL /sparql for CONSTRUCT queries (see in README under Test about how to query with authentication).
+# SPARQL queries
+There is a web page for SPARQL queries, and also a real (compliant) SPARQL endpoint at URL `/sparql` for CONSTRUCT and SELECT queries (see in README in parag. Test about how to query with authentication).
 
 There is an HTML page for entering queries, in the /tools page.
 There are some example showing some queries that you can paste into your browser:
@@ -245,7 +355,14 @@ and the service
 <code>/select-ui?query=</code>
 is for SELECT queries.
 
-## Populating with dbPedia (mirroring dbPedia)
+In the /tools page, there is also a link to the YasGUI client tool, a famous SPARQL requester.
+
+In addition to the SPARQL endpoint at URL `/sparql`, therer is another endpoint at URL `/sparql2`, where all named graphs content is put in the unnamed graph. This is convenient:
+
+- many tools do not consider named graphs (or just one), like Sparklis,
+- one does not have to wrap all triple patterns in `GRAPH ?GRnnn { }` blocks
+
+# Populating with dbPedia (mirroring dbPedia)
 
 There are 2 scripts, one for downloading, the other for populating the triple database.
 
@@ -274,12 +391,6 @@ On disk this uses :
 - 2,7Gb for Jena TDB (SPARQL database)
 - 233Mb for Lucene (text index)
 
-
-## TDB databases
-- TDB/ : data: user edits and cached URL's from internet
-- TDB2/ : timestamp for named graphs
-- TDB3/ : user And Password association
-
 # Text indexing with Lucene or SOLR
 
 For details please look the Jena TDB documentation about text search with Lucene or SOLR in TDB :
@@ -292,7 +403,7 @@ The settings for text search with Lucene or SOLR in TDB here:
 https://github.com/jmvanel/semantic\_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/LuceneIndex.scala
 https://github.com/jmvanel/semantic\_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/services/DefaultConfiguration.scala
 
-If you deactivate `useTextQuery` in DefaultConfiguration.scala, the text search is done by a plain SPARLQL search, that considers input as a regular expression.
+If you deactivate `useTextQuery` in DefaultConfiguration.scala, the text search is done by a plain SPARQL search, that considers input as a regular expression.
 
 If the text indexing with Lucene or SOLR is activated *after* adding RDF data, you can run this program to index with Lucene or SOLR the newly added text:
 [TextIndexerRDF.scala](https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/src/main/scala/deductions/runtime/jena/lucene/TextIndexerRDF.scala)

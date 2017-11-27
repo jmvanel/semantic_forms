@@ -128,16 +128,19 @@ with SPARQLHelpers[Rdf, DATASET] {
    * @return
    * property, object, timestamp, user;
    * ordered by recent first
+   * TODO return a List of Map's from (property, object) to (timestamp, user)
    */
   def getMetadataAboutSubject(subject: Rdf#Node, limit: Int =100, offset: Int = 0)
   : List[Seq[Rdf#Node]] = {
 
-    /* TODO:
+    /* NOTE:
      * - timestamp should be facultative
      * - user is both in GRAPH <$metadataGraph> ,
-     *   and typically (always?) user graph is ?GR
+     *   and typically (always?) user graph is in main TDB
+     *   GRAPH ?GR {
+         <$subject> ?PROP ?OBJECT . }
      * use case: user has uploaded a whole RDF document in her graph */
-    val query = s"""
+    val queryHistoryDatabase = s"""
       ${declarePrefix(xsd)}
       SELECT ?PROP ?OBJECT (max(?TS) as ?TIME ) ?USER
       WHERE {
@@ -153,19 +156,22 @@ with SPARQLHelpers[Rdf, DATASET] {
       LIMIT $limit
       OFFSET $offset
     """
-    logger.debug(s"getMetadataAboutSubject: query $query")
-    val res = sparqlSelectQueryVariables( query,
-        Seq("PROP", "OBJECT", "TIME", "USER"), dataset2 )
-    logger.debug("getMetadata: res " + res)
-    res
+    logger.debug(s"getMetadataAboutSubject: query $queryHistoryDatabase")
+    val resHistoryDatabase = sparqlSelectQueryVariables( queryHistoryDatabase,
+        Seq("PROP", "OBJECT", "TIME", "USER"),
+        dataset2 )
+    logger.debug(s"getMetadataAboutSubject: resHistoryDatabase $resHistoryDatabase")
+    resHistoryDatabase
   }
 
-  /** get Metadata About given triple, searching in history (TDB2) for all user updates,
+  /** UNUSED!
+   *  get Metadata About given triple, searching in history (TDB2) for all user updates,
    *  and keeping the most recent;
    * transactional
    * @return rows of
    * timestamp, user;
    * ordered by recent first
+   * TODO return a List of (timestamp, user)
    */
   def getMetadataAboutTriple(subject: Rdf#Node, predicate: Rdf#Node, objet: Rdf#Node, limit: Int =100, offset: Int = 0)
   : List[Seq[Rdf#Node]] = {
@@ -185,9 +191,11 @@ with SPARQLHelpers[Rdf, DATASET] {
       LIMIT $limit
       OFFSET $offset
     """
-    logger.debug(s"getMetadataAboutSubject: query $query")
+//    logger.debug(
+      println(
+        s"getMetadataAboutTriple: query $query")
     val res = sparqlSelectQueryVariables( query,
-        Seq("PROP", "OBJECT", "TIME", "USER"), dataset2 )
+        Seq("TIME", "USER"), dataset2 )
     logger.debug("getMetadata: res " + res)
     res
   }

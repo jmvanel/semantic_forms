@@ -214,7 +214,8 @@ import deductions.runtime.utils.I18NMessages
         else NodeSeq.Empty) ++
         {
           val warningNoTriples =
-            if (form.nonEmptyFields().isEmpty)
+            if (form.nonEmptyFields().isEmpty &&
+                form.subject != nullURI) // case of login form
               <b> No triple for this URI! Click on subjects link above.</b>
             else Text("")
           warningNoTriples
@@ -251,7 +252,9 @@ import deductions.runtime.utils.I18NMessages
 
     val isCreateRequest = request.path.contains("create")
     val editableByUser =
-              field.metadata == request.userId()
+              field.metadata == request.userId() ||
+              field.metadata == userURI(request)
+//    println(s"DEBUG !!!!!!!!!! editableByUser=$editableByUser <- field.metadata=${field.metadata} =? request.userId()=${request.userId()}")
 
     // hack instead of true form separator in the form spec in RDF:
     if (field.label.contains("----"))
@@ -307,6 +310,10 @@ import deductions.runtime.utils.I18NMessages
         </span>
 
     }
+  }
+
+  private def userURI(request: HTTPrequest): String = {
+    makeAbsoluteURIForSaving(request.userId())
   }
 
   /** make Field Data (display) Or Input (edit)

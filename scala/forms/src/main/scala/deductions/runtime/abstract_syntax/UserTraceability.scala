@@ -7,7 +7,7 @@ import org.w3.banana.RDF
 import scala.collection.mutable
 import scala.language.{existentials, postfixOps}
 
-
+/** TODO move to package user */
 trait UserTraceability[Rdf <: RDF, DATASET]
   extends FormModule[Rdf#Node, Rdf#URI]
     with TimeSeries[Rdf, DATASET] {
@@ -18,30 +18,36 @@ trait UserTraceability[Rdf <: RDF, DATASET]
                             lang: String = "en") : FormSyntax = {
     logger.info("XXXXXXXXXXXXXXXX addUserInfoOnTriples")
     val metadata = getMetadataAboutSubject(formSyntax.subject)
-    val resultsUser = mutable.Map[String,String]()
-    val resultsTimestamp = mutable.Map[String,Long]()
+    val resultsUser = mutable.Map[(String,String), String]()
+    val resultsTimestamp = mutable.Map[(String,String), Long]()
 
     for (row: Seq[Rdf#Node] <- metadata){
       logger.info(row)
-      // each row: property, object, timestamp, user
-      val timeElementStr = row(2).toString
-      val timeElement  = timeElementStr.splitAt(timeElementStr.indexOf("^"))._1.replaceAll("\"","").toLong
-      val property = row(0).toString
 
-      if(resultsTimestamp.contains(property)){
-        logger.info(resultsTimestamp(property)
+      // each row: property, object, timestamp, user
+      val propertyId =0; val objectId=1; val timestampId=2; val userId=3;
+
+      val timeElementStr = row(timestampId).toString
+      // TODO there is something smarter in Banana:
+      val timeElement  = timeElementStr.splitAt(timeElementStr.indexOf("^"))._1.replaceAll("\"","").toLong
+      val property = row(propertyId).toString
+      val objet = row(objectId).toString
+
+      if(resultsTimestamp.contains( (property,objet)) ){
+        logger.info(resultsTimestamp( (property,objet) )
         + (" < ")
         + (timeElement)
         + (" = ")
-        + (resultsTimestamp(property) < timeElement))
-        if(resultsTimestamp(property) < timeElement){
-          resultsTimestamp += (property -> timeElement)
-          resultsUser put (property, row(3).toString)
+        + (resultsTimestamp((property,objet)) < timeElement))
+        if(resultsTimestamp((property,objet)) < timeElement){
+          resultsTimestamp += ( (property,objet) -> timeElement)
+          resultsUser put ((property, objet), row(userId).toString)
         }
       }
       else{
-        resultsTimestamp put (property,timeElement)
-        resultsUser put (property,row(3).toString)
+        resultsTimestamp put ( (property,objet), timeElement)
+        // PENDING : already done above:
+        resultsUser put ((property, objet), row(userId).toString)
       }
     }
     for (elem <- resultsTimestamp){
@@ -49,15 +55,45 @@ trait UserTraceability[Rdf <: RDF, DATASET]
     }
 
 //    println(s"YYYYYYYY Before add User Info\n${formSyntax.fields.mkString("\n")}\n")
-    val entries = for (field: Entry <- formSyntax.fields) yield {
-      if (resultsUser.contains(field.property.toString)){
+    val entries =
+      for (field: Entry <- formSyntax.fields) yield {
+      if (resultsUser.contains( (field.property.toString, field.value.toString) ) ){
 //    	  println(s"ZZZZ add User Info ${field.label} ${field.value}")
         field.copyEntry(
-            fromMetadata = resultsUser(field.property.toString),
-            fromTimeMetadata = resultsTimestamp(field.property.toString) )
-      } else field
+            fromMetadata = resultsUser( (field.property.toString, field.value.toString)),
+            fromTimeMetadata = resultsTimestamp.getOrElse( (field.property.toString, field.value.toString), 0 ) )
+      } else {
+        addUserFromGraph(field)
+      }
     }
     formSyntax . fields = entries
     formSyntax
+  }
+
+  private def addUserFromGraph(field: Entry): Entry = {
+    val resMainDatabase = {
+      if (nodeToString(field.value) != "") {
+        val queryMainDatabase = s"""
+      SELECT ?USER
+      WHERE {
+        GRAPH ?USER {
+         <${field.subject}> <${field.property}> ${makeTurtleTerm(field.value)} . }
+      } """
+//        println(s"addUserFromGraph: queryMainDatabase $queryMainDatabase")
+        sparqlSelectQueryVariables(
+          queryMainDatabase,
+          Seq("USER"),
+          dataset)
+      } else List(Seq())
+    }
+//    println(s"addUserFromGraph: resMainDatabase $resMainDatabase")
+    val fieldWithUsers = for (
+      row <- resMainDatabase;
+      node <- row
+    ) yield {
+      println(s"addUserFromGraph: ?USER node ${node.getClass()} $node")
+      field.copyEntry(fromMetadata = node.toString)
+    }
+    fieldWithUsers.headOption.getOrElse(field)
   }
 }
