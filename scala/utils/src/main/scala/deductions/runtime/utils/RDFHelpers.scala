@@ -306,16 +306,26 @@ extends URIManagement {
       }
     } else Seq()
   }
-  
-  /** from an Rdf#Node, print the turtle term;
+
+  /**
+   * from an Rdf#Node, print the turtle term;
    * betehess 15:22
    * @ jmvanel nothing giving you that out-of-the-box right now
    * I'd write a new typeclass to handle that
-   * it's super easy to do */
-  def makeTurtleTerm( node: Rdf#Node ) =
+   * it's super easy to do
+   */
+  def makeTurtleTerm(node: Rdf#Node) =
     foldNode(node)(
       uri => s"<${fromUri(uri)}>",
       bn => s"<_:${fromBNode(bn)}>",
       // TODO: datatype
-      lit => s""""${fromLiteral(lit)._1}"""")
+      lit => {
+        val rawString = fromLiteral(lit)._1
+        val wrapping = if (rawString.contains("\"") ||
+          rawString.contains("\n"))
+          "\"" * 3
+        else
+          "\""
+        wrapping + rawString + wrapping
+      })
 }
