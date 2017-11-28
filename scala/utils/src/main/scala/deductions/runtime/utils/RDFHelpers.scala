@@ -317,5 +317,5 @@ extends URIManagement {
       uri => s"<${fromUri(uri)}>",
       bn => s"<_:${fromBNode(bn)}>",
       // TODO: datatype
-      lit => s"$lit")
+      lit => s""""${fromLiteral(lit)._1}"""")
 }
