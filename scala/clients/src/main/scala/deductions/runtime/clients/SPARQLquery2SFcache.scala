@@ -27,7 +27,7 @@ trait SPARQLquery2SFcache {
   }
 
   import scala.collection.JavaConversions._
-  val varName = "URI"
+  val varName = "sub" // "URI"
   def sendQuery(queryString: String, endpoint: String): Iterator[String] = {
     import sparqlOps._
     // Banana
@@ -53,7 +53,7 @@ trait SPARQLquery2SFcache {
     uri: String, sfInstancePrefix: String): String = {
     val httpclient = HttpClients.createDefault()
 
-    val httpGet = new HttpGet("/display?displayuri=" + URLEncoder.encode(uri, "UTF-8"))
+    val httpGet = new HttpGet(sfInstancePrefix + "/display?displayuri=" + URLEncoder.encode(uri, "UTF-8"))
     val response1 = httpclient.execute(httpGet);
     // The underlying HTTP connection is still held by the response object
     // to allow the response content to be streamed directly from the network socket.
@@ -63,7 +63,8 @@ trait SPARQLquery2SFcache {
     // connection cannot be safely re-used and will be shut down and discarded
     // by the connection manager.
     try {
-      println(uri + " --> " + response1.getStatusLine());
+      println(uri + " --> " + response1.getStatusLine() +
+          "\t" + httpGet);
       val entity1 = response1.getEntity()
 
       // do something useful with the response body
@@ -71,9 +72,9 @@ trait SPARQLquery2SFcache {
       val statusCode = response1.getStatusLine().getStatusCode()
       val result =
         if (statusCode != 200)
-          ""
+          "KO: " + response1.getStatusLine().toString() + "\n"
         else
-          response1.getStatusLine().toString() + "\n"
+          "OK: " + response1.getStatusLine().toString() + "\n"
       // and ensure it is fully consumed
       EntityUtils.consume(entity1)
       result
