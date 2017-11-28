@@ -75,6 +75,8 @@ import deductions.runtime.utils.I18NMessages
 
     def mess(m: String): String = message(m, lang)
 
+//    println(s"======== generateHTML: $form" ) // DEBUG
+
     if (editable)
       wrapFieldsWithFormTag(htmlFormFields)
     else
