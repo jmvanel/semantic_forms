@@ -1,7 +1,7 @@
 package deductions.runtime.abstract_syntax
 
-import deductions.runtime.utils.{RDFHelpers, RDFPrefixes}
-import org.w3.banana.{PointedGraph, RDF}
+import deductions.runtime.utils.{ RDFHelpers, RDFPrefixes }
+import org.w3.banana.{ PointedGraph, RDF }
 
 import scala.collection.Seq
 
@@ -12,14 +12,14 @@ import scala.collection.Seq
  * rdfs.label
  * rdfs.label from class ( by rdf:type )
  * form:labelProperty in the rdf:type (in InstanceLabelsFromLabelProperty )
- * 
+ *
  * systematically trying to get the matching language form,
  * and as last fallback, the last segment of the URI.
  */
-//private[abstract_syntax] 
+//private[abstract_syntax]
 trait InstanceLabelsInference2[Rdf <: RDF]
-		extends RDFHelpers[Rdf]
-    with RDFPrefixes[Rdf] {
+  extends RDFHelpers[Rdf]
+  with RDFPrefixes[Rdf] {
   self: PreferredLanguageLiteral[Rdf] =>
 
   import ops._
@@ -38,28 +38,42 @@ trait InstanceLabelsInference2[Rdf <: RDF]
    */
   def makeInstanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String = ""): String = {
     if (node == nullURI) return ""
-//    println("**** makeInstanceLabel " + find( graph, node, foaf.givenName, ANY) . toList )
+    //    println("**** makeInstanceLabel " + find( graph, node, foaf.givenName, ANY) . toList )
 
     val pgraph = PointedGraph(node, graph)
     def valueForProp(prop: Rdf#URI): String = {
-       val pg = (pgraph / prop)
-       val y = pg . as[Rdf#Literal].getOrElse(Literal(""))
-       fromLiteral(y)._1
-      // (pgraph / prop).as[String].getOrElse("")
+      val pg = (pgraph / prop)
+      val y = pg.as[Rdf#Literal].getOrElse(Literal(""))
+      fromLiteral(y)._1
     }
 
-    val givenName = valueForProp(foaf.givenName)
-    val familyName = valueForProp(foaf.familyName)
-    val n = givenName + " " + familyName
+    def tryFoafPerson() = try2Properties(foaf.givenName, foaf.familyName)
+    def tryFoafPerson2() = try2Properties(foaf.firstName, foaf.lastName)
+    def tryNonStandardPerson() = try2Properties(
+      prefixesMap2("pair")("firstName"),
+      prefixesMap2("pair")("lastName"))
 
-    if (n.size > 1) n
+    def try2Properties(prop1: Rdf#URI, prop2: Rdf#URI) = {
+      val givenName = valueForProp(prop1)
+      val familyName = valueForProp(prop2)
+      val fullName = givenName + " " + familyName
+      if (fullName.size > 1)
+        fullName
+      else ""
+    }
+    val pairPreferedLabelProp = prefixesMap2("pair")("preferedLabel")
+
+    val n = tryFoafPerson()
+    if (!n.isEmpty()) n
     else {
-      val firstName = valueForProp(foaf.firstName)
-      val lastName = valueForProp(foaf.lastName)
-
-      val n = givenName + " " + familyName
-      if (n.size > 1) n
+      val fullName = tryFoafPerson2()
+      if (!fullName.isEmpty())
+        fullName
       else {
+        val fullName = tryNonStandardPerson
+        if (!fullName.isEmpty())
+          fullName
+        else {
         implicit val gr = graph
         implicit val prlng = lang
 
@@ -71,12 +85,15 @@ trait InstanceLabelsInference2[Rdf <: RDF]
         if (s != "") return s
         val dctitle = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, dc("title"), "")
         if (dctitle != "") return dctitle
+        val pairPreferedLabel = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, pairPreferedLabelProp, "")
+        if (pairPreferedLabel != "") return pairPreferedLabel
 
         //        val cl = instanceClassLabel( node, graph, lang)
         ////        println( s"""instanceClassLabel $node "$cl" """ )
         //        if (cl != "") return cl
         last_segment(node)
       }
+    }
     }
   }
 
@@ -88,7 +105,8 @@ trait InstanceLabelsInference2[Rdf <: RDF]
     noption match {
       case Some(classs) =>
         implicit val gr: Rdf#Graph = graph
-        val label = getLiteralInPreferedLanguageFromSubjectAndPredicate(classs,
+        val label = getLiteralInPreferedLanguageFromSubjectAndPredicate(
+          classs,
           rdfs.label, lsegment)
         if (label == "Thing")
           ""

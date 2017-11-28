@@ -21,7 +21,7 @@ import scala.util.{Failure, Success, Try}
 
   def uriFromPrefix(pf: String): String = fromUri(prefixesMap(pf))
 
-  private val prefixAV = "http://www.virtual-assembly.org/ontologies/1.0/pair#"
+  private val prefixAV = "http://virtual-assembly.org/pair#" // "http://www.virtual-assembly.org/ontologies/1.0/pair#"
 
   lazy val rdfs = RDFSPrefix[Rdf]
 
