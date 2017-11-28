@@ -12,7 +12,8 @@ The zipped application is available as a [github release](https://github.com/jmv
 ## Runnning the zipped application
 Download this zip on the server, unzip and type (on Linux or Mac):
 ```shell
-cd semantic_forms_play-1.0-SNAPSHOT
+VERSION=2.3
+cd semantic_forms_play-$VERSION-SNAPSHOT
 nohup bin/semantic_forms_play -J-Xmx50M &
 ```
 
