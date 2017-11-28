@@ -144,7 +144,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         logger.debug(s"createFormTR: Success FormSyntax: $fs")
         fs
       case Failure(f) =>
-        println(s"createFormTR: ERROR: $f")
+        System.err.println(s"createFormTR: ERROR: $f, getCause ${f.getCause} ${f.getStackTrace().mkString("\n")}")
         FormSyntax(nullURI, Seq())
     }
   }
