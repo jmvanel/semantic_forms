@@ -91,7 +91,7 @@ trait UserTraceability[Rdf <: RDF, DATASET]
       row <- resMainDatabase;
       node <- row
     ) yield {
-      println(s"addUserFromGraph: ?USER node ${node.getClass()} $node")
+      logger.info(s"addUserFromGraph: ?USER node ${node.getClass()} $node from subject <${field.subject}>")
       field.copyEntry(fromMetadata = node.toString)
     }
     fieldWithUsers.headOption.getOrElse(field)

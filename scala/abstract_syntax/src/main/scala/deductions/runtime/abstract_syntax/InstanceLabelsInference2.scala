@@ -69,6 +69,8 @@ trait InstanceLabelsInference2[Rdf <: RDF]
         if (n != "") return n
         val s = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, skos("prefLabel"), "")
         if (s != "") return s
+        val dctitle = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, dc("title"), "")
+        if (dctitle != "") return dctitle
 
         //        val cl = instanceClassLabel( node, graph, lang)
         ////        println( s"""instanceClassLabel $node "$cl" """ )
