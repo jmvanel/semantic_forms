@@ -406,7 +406,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
           logger.error(s"sparqlSelectQueryVariablesNT: QueryParseException: $failure, queryString: $queryString")
           List(Seq(Literal(failure.getLocalizedMessage)))
       }
-    }, logger.isDebugEnabled() )
+    }, true // logger.isDebugEnabled()
+    )
   }
 
   /**
