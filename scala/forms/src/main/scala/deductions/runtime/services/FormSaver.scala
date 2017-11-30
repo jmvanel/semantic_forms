@@ -62,32 +62,37 @@ trait FormSaver[Rdf <: RDF, DATASET]
     log(
       s"\n>>>>==== getTriplesFromHTTPparams: query map keys: ${queryString.keys}");
 
-    val res = queryString. toSeq. map {
+    val res = queryString.toSeq.map {
       // cf partial functions:  http://blog.bruchez.name/2011/10/scala-partial-functions-without-phd.html
-      case (param0, objects0) if (
-        param0 != "url" &&
-        param0 != "uri" &&
-        param0 != "graphURI") =>
-        val param = URLDecoder.decode(param0, "utf-8")
-        val objects = objects0 . map { node =>
-          URLDecoder.decode(node, "utf-8") }
-        log(s"getTriplesFromHTTPparams: httpParam decoded: $param - objects $objects");
-        val tryTriple = Try {
-          val comingBackTriple = httpParam2Triple(param)
-          log(s"getTriplesFromHTTPparams: triple from httpParam: {$comingBackTriple} - objects $objects")
-          comingBackTriple
+      case (param0, objects0) =>
+        if (isSpecialHTTPparameterForTriple(param0)) {
+          val param = URLDecoder.decode(param0, "utf-8")
+          val objects = objects0.map { node =>
+            URLDecoder.decode(node, "utf-8") }
+          log(s"getTriplesFromHTTPparams: httpParam decoded: $param - objects $objects");
+          val tryTriple = Try {
+            val comingBackTriple = httpParam2Triple(param)
+            log(s"getTriplesFromHTTPparams: triple from httpParam: {$comingBackTriple} - objects $objects")
+            comingBackTriple
+          }
+          if (tryTriple.isFailure) logger.error(s"getTriplesFromHTTPparams: ERROR: param $param : result $tryTriple")
+          tryTriple match {
+            case Success(triple) => (triple, objects)
+            case Failure(f)      =>
+              System.err.println(s"getTriplesFromHTTPparams: non foreseen case : $param0 -> $objects0 - $f")
+              (Triple(nullURI, nullURI, nullURI), Seq())
+          }
+        } else {
+          (Triple(nullURI, nullURI, nullURI), Seq())
         }
-        if (tryTriple.isFailure) logger.error(s"getTriplesFromHTTPparams: ERROR: param $param : result $tryTriple")
-        tryTriple match {
-          case Success(triple) => (triple, objects)
-          case _ => (Triple(nullURI, nullURI, nullURI), Seq())
-        }
-      case x =>
-        println(s"getTriplesFromHTTPparams: non foreseen case : $x")
-        (Triple(nullURI, nullURI, nullURI) , Seq() )
     }
     res
   }
+
+  private def isSpecialHTTPparameterForTriple(param0: String) = (
+        param0 != "url" &&
+        param0 != "uri" &&
+        param0 != "graphURI")
 
   /** save triples in named graph given by HTTP parameter "graphURI";
    *  other HTTP parameters are original triples in Turtle;

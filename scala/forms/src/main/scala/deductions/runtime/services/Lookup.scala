@@ -41,9 +41,15 @@ trait Lookup[Rdf <: RDF, DATASET]
    */
   def lookup(search: String, lang: String = "en", clas: String = "", mime: String): String = {
     
-    val res = searchStringOrClass(search, clas)
+    val rawResult = searchStringOrClass(search, clas)
+    println(s"lookup(search=$search, clas=<$clas> => $rawResult")
 
-    println(s"lookup(search=$search, clas=<$clas> => $res")
+    makeJSONorXML(rawResult, lang, mime)
+//    rawResult.mkString("\n")
+  }
+
+  /** make JSON or XML */
+  def makeJSONorXML(res: List[Iterable[Rdf#Node]], lang: String, mime: String): String = {
     println(s"lookup: after searchStringOrClass, starting TRANSACTION for dataset $dataset")
     val transaction = rdfStore.rw( dataset, {
       val urilabels = res.map {
@@ -70,11 +76,12 @@ trait Lookup[Rdf <: RDF, DATASET]
   /** search String Or Class
    * transactional
    */
-  private def searchStringOrClass(search: String, clas: String = ""): List[Seq[Rdf#Node]] = {
+  private def searchStringOrClass(search: String, clas: String = ""): List[Iterable[Rdf#Node]] = {
     val queryString = indexBasedQuery.makeQueryString(search, clas)
     println(s"""searchStringOrClass(search="$search", clas <$clas>, queryString "$queryString" """)
-    val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariables(queryString, Seq("thing"))
-    res
+//    val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariables(queryString, Seq("thing"))
+    val res = sparqlSelectQuery(queryString)
+    res . get
   }
 
   private def formatXML(list: Results): String = {
@@ -141,5 +148,4 @@ trait Lookup[Rdf <: RDF, DATASET]
      return queryWithlinks_Count
     }
   }
-
 }
