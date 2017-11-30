@@ -368,14 +368,16 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       CAUTION: slow with /lookup and /search , why ??? */
   def sparqlSelectQueryVariablesNT(queryString: String, variables: Seq[String],
                                    ds: DATASET = dataset): List[Seq[Rdf#Node]] = {
-    time("sparqlSelectQueryVariablesNT", {
-
-      val solutionsTry = for {
+    val solutionsTry =
+      time("sparqlSelectQueryVariablesNT", {
+      for {
         query <- parseSelect(queryString)
         es <- ds.executeSelect(query, Map())
       } yield es
       //      logger.debug( s"sparqlSelectQueryVariablesNT: $solutionsTry" )
+    }, true )
 
+    time("sparqlSelectQueryVariablesNT 2", {
       solutionsTry match {
         case Success(solutions) =>
           //    logger.debug( "solutionsTry.isSuccess " + solutionsTry.isSuccess )

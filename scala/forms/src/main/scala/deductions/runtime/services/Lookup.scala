@@ -79,9 +79,9 @@ trait Lookup[Rdf <: RDF, DATASET]
   private def searchStringOrClass(search: String, clas: String = ""): List[Iterable[Rdf#Node]] = {
     val queryString = indexBasedQuery.makeQueryString(search, clas)
     println(s"""searchStringOrClass(search="$search", clas <$clas>, queryString "$queryString" """)
-//    val res: List[Seq[Rdf#Node]] = sparqlSelectQueryVariables(queryString, Seq("thing"))
-    val res = sparqlSelectQuery(queryString)
-    res . get
+    val rawResult: List[Seq[Rdf#Node]] = sparqlSelectQueryVariables(queryString, Seq("thing"))
+//    val res = sparqlSelectQuery(queryString) ; res . get
+    rawResult
   }
 
   private def formatXML(list: Results): String = {
