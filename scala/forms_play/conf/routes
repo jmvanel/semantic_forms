@@ -58,6 +58,7 @@ POST    /update             controllers.Application.updatePOST()
 
 GET     /wordsearch         controllers.Application.wordsearchAction(q:String ?= "", clas: String ?= "")
 GET     /search             controllers.Application.searchOrDisplayAction(q:String ?= "")
+GET     /lookup             controllers.Application.lookupService(QueryString:String, QueryClass: String ?= "")
 
 GET     /backlinks          controllers.Application.backlinksAction(q:String ?= "")
 GET     /esearch            controllers.Application.extSearch(q:String ?= "")
@@ -86,7 +87,4 @@ GET     /ldp/*uri              controllers.Application.ldp(uri: String)
 POST    /ldp/*uri              controllers.Application.ldpPOSTAction(uri: String)
 PUT     /ldp/*uri              controllers.Application.ldpPOSTAction(uri: String)
 
-OPTIONS /*path                         controllers.Application.httpOptions(path)
-
-GET     /lookup                controllers.Application.lookupService(QueryString:String, QueryClass: String ?= "")
-
+OPTIONS /*path                 controllers.Application.httpOptions(path)
