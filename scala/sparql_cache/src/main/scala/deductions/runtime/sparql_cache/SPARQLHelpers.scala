@@ -364,7 +364,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     transaction.get
   }
 
-  /** run SPARQL on given dataset, knowing result variables; NOT transactional */
+  /** run SPARQL on given dataset, knowing result variables; NOT transactional
+      CAUTION: slow with /lookup and /search , why ??? */
   def sparqlSelectQueryVariablesNT(queryString: String, variables: Seq[String],
                                    ds: DATASET = dataset): List[Seq[Rdf#Node]] = {
     time("sparqlSelectQueryVariablesNT", {
