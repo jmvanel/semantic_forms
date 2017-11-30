@@ -247,9 +247,8 @@ trait WebPages extends Controller with ApplicationTrait {
 
   /** SPARQL select UI */
   def select(query: String) =
-    withUser {
-      implicit userid =>
-        implicit request =>
+    Action {
+        implicit request: Request[_] =>
           logger.info("sparql: " + request)
           logger.info("sparql: " + query)
           val lang = chooseLanguage(request)
