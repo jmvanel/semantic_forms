@@ -321,11 +321,17 @@ extends URIManagement {
       // TODO: datatype
       lit => {
         val rawString = fromLiteral(lit)._1
+        val datatype = fromLiteral(lit)._2
+        val langOption = fromLiteral(lit)._3
+        val suffix = langOption match {
+          case Some(lang) => "@" + fromLang(lang)
+          case None => if( datatype != xsd.string ) "^^<" + fromUri(datatype) + ">" else ""
+        }
         val wrapping = if (rawString.contains("\"") ||
           rawString.contains("\n"))
           "\"" * 3
         else
           "\""
-        wrapping + rawString + wrapping
+        wrapping + rawString + wrapping + suffix
       })
 }

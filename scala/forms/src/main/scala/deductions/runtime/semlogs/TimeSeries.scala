@@ -85,7 +85,7 @@ with SPARQLHelpers[Rdf, DATASET] {
          ( graphUri, metadata ) 
   }
 
-  /**get Metadata for all user updates:
+  /** get Metadata for all users' updates:
    * subject, timestamp, triple count, user;
    * ordered by recent first;
    * transactional */
