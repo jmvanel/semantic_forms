@@ -120,7 +120,9 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     val elem0 =
       rdfStore.rw(dataset, {
         val graph: Rdf#Graph = allNamedGraph
-        <div class={ css.tableCSSClasses.formRootCSSClass }> {
+        <div class={ css.tableCSSClasses.formRootCSSClass }>
+        <div>Size: { uris.size }</div>
+        {
           css.localCSS ++
             uris.map {
               // create table like HTML

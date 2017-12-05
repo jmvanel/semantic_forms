@@ -195,7 +195,8 @@ println( s"useridOption $useridOption, passwordOption $passwordOption" )
       val checkRegisterOption = for (
         userid <- useridOption;
         password <- passwordOption;
-        confirmPassword <- confirmPasswordOption if (password == confirmPassword)
+        confirmPassword <- confirmPasswordOption
+        if (password == confirmPassword && userid.size >= 2 )
       ) yield signin(userid, password)
 
       val registerChecked = checkRegisterOption match {
