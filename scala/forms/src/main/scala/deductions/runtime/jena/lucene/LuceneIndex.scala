@@ -35,7 +35,8 @@ trait LuceneIndex // [Rdf <: RDF]
     val entMap = new EntityDefinition("uri", "text", rdfs.label)
     entMap.setLangField("lang")
     entMap.setUidField("uid")
-    entMap.setGraphField("graph")
+    // slows the query even on moderately large TDB (see thread on Jena list)
+//    entMap.setGraphField("graph")
 
     entMap.set("text", foaf.givenName)
     entMap.set("text", foaf.familyName)

@@ -20,11 +20,12 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
       if (config.useTextQuery)
         s"?thing text:query ( '$searchStringPrepared' ) ."
       else
-        s"""    ?thing ?P1 ?O1 .
+        s"""graph ?g {
+              ?thing ?P1 ?O1 .
               FILTER ( isLiteral( ?O1) )
               FILTER ( regex( str(?O1), '$searchStringPrepared.*', "i" ) )
+            }
             """
-//            FILTER ( regex( str(?O1), '.*$searchStringPrepared.*', "i" ) )
     } else ""
 
   private def classCriterium(classe: String): String = {
@@ -67,9 +68,7 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |${declarePrefix(rdfs)}
          |${declarePrefix(form)}
          |SELECT DISTINCT ?thing ?COUNT WHERE {
-         |  graph ?g {
-         |    ${textQuery(search)}
-         |  }
+         |  ${textQuery(search)}
          |  graph ?g1 {
          |    ?thing a ${classCriterium(classe)} .
          |  }
