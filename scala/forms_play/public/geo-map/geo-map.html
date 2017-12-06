@@ -23,10 +23,15 @@
    "data_3" : {"lat": 48.86626129999999, "long": 2.3235866999999644, "label": "concorde"}
  };
  let url = "http://dbpedia.org/resource/Lyon"
+
+ // setTimeout(function(){
  let data = rdfURL2SimpleArray(url)
 
- let map = new Map('mapid', data, "lat","long","label");
+ // let map = new Map('mapid', data, "lat","long","label");
+ let map = Map.constructorWithArray('mapid', data, "@id", "lat","long","label");
 
  console.log("Display all points");
  map.pinShowAll();
+ // }, 3000);
+
 </script>

@@ -35,10 +35,16 @@ class Map{
      * @param keyText -- clé pour accéder à la valeur :text affiché
      */
     static constructorWithArray(mapId,initialData,keyId,keyLat,keylong,keyText) {
-        let objectFromArray = {};
-        initialData.forEach(function (element) {
+        console.log('in constructor');
+        console.log(initialData);
+    	let objectFromArray = {};
+        Array.prototype.forEach.call( initialData,
+//        initialData.forEach(
+        		function (element) {
             objectFromArray[element[keyId]] = element;
         })
+        console.log( 'objectFromArray' )
+        console.log( objectFromArray )
         return new Map(mapId,objectFromArray,keyLat,keylong,keyText);
     }
 
