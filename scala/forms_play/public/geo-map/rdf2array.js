@@ -7,10 +7,15 @@ const rdfFetch = require('rdf-fetch')
   let foaf = "http://xmlns.com/foaf/0.1/"
   let rdfs = "http://www.w3.org/2000/01/rdf-schema#"
   let rdfsLabel = rdfs + 'label'
-  let geo = ""
+  let geo = "http://www.w3.org/2003/01/geo/wgs84_pos#"
+  let geoLong = geo + 'long'
+  let geoLat = geo + 'lat'
 
 /** From a JSON-LD URL , produce a structure like :
+ * TODO:
  { "data_1" : {"lat": 48.8372728, "long": 2.3353872999999794, "label": "montparnasse"} }
+DONE:
+ simpleArray [{"label":"Grenoble","long":"5.7222","lat":"45.2002"},{"label":"Paris","long":"2.3508","lat":"48.8567"}]
 */
 function rdfURL2SimpleArray(url) {
   return rdfFetch( url ).then(
@@ -19,20 +24,39 @@ function rdfURL2SimpleArray(url) {
     return res.dataset()
   }).then((dataset) => {
 
+	/** For filtering with RDF lang */
 	function rdfsLabelCriterium(quad, subject) {
-	 console.log( 'QUAD value ' + quad.predicate.value + ', subject arg ' + subject +
-			 ', subject quad ' + quad.subject );
-		return quad.predicate.value === rdfsLabel && quad.object.language === 'en'
-			&&  quad.subject.toString() == subject.toString() 
+//	 console.log( 'QUAD value ' + quad.predicate.value + ', subject arg ' + subject +
+//			 ', subject quad ' + quad.subject );
+	 return quad.predicate.value === rdfsLabel && quad.object.language === 'en'
+		 &&  quad.subject.toString() == subject.toString()
 	}
-    function getRdfsLabel(subj) { return filterQuad(subj, rdfsLabelCriterium) }
-    function filterQuad(subj, criterium) {
+
+	/** For filtering with non-lang RDF property */
+	function plainPropertyCriterium(quad, subject, /*String: */property) {
+//		 console.log( 'QUAD value ' + quad.predicate.value + ', subject arg ' + subject +
+//				 ', subject quad ' + quad.subject );
+		 return quad.predicate.value === property
+			 &&  quad.subject.toString() == subject.toString()
+	}
+
+	function longCriterium(quad, subject) {
+		return plainPropertyCriterium(quad, subject, geoLong) }
+	function latCriterium(quad, subject) {
+		return plainPropertyCriterium(quad, subject, geoLat) }
+
+	function getRdfsLabel(subj) { return filterQuad(subj, rdfsLabelCriterium) }
+	function getGeoLong(subj) { return filterQuad(subj, longCriterium) }
+	function getGeoLat(subj) { return filterQuad(subj, latCriterium) }
+
+	/** filter Quad with given criterium
+	 * @return value, e.g. of rdfs:label */
+	function filterQuad(subj, criterium) {
       console.log('\nsubj ' + subj);
 //      console.log('subj match ' + dataset . match(subj, rdf.namedNode(rdfsLabel)) );
       let rdfsLabelQuad = dataset.filter((quad) => {
 //    	    console.log( 'QUAD ' + quad );
-        return criterium(quad, subj //.toString() 
-        		)
+        return criterium(quad, subj)
         // quad.predicate.value === rdfsLabel && quad.object.language === 'en'
       }).toArray().shift()
       return rdfsLabelQuad && rdfsLabelQuad.object.value;
@@ -49,12 +73,30 @@ function rdfURL2SimpleArray(url) {
       console.log('latQuad ' + latQuad);
       return latQuad.subject;
     });
-    console.log( 'LAT subjs ' + subjs );
-    let rdfsLabelValue = subjs . map((subj) => {
+    console.log( 'LAT subjs ' + subjs )
+
+    let rdfsLabelValues = subjs . map((subj) => {
       return getRdfsLabel(subj)
-    });
-    console.log( 'rdfsLabelValue ' + rdfsLabelValue)
-    return lats // TODO <<<<
+    })
+    console.log( 'rdfsLabelValues ' + rdfsLabelValues)
+    let geoLongValues = subjs . map((subj) => {
+      return getGeoLong(subj)
+    })
+    let geoLatValues = subjs . map((subj) => {
+      return getGeoLat(subj)
+    })
+    console.log( 'geoLongValues ' + geoLongValues)
+    console.log( 'geoLatValues ' + geoLatValues)
+
+    let simpleArray = subjs . map((subj) => {
+      return {
+    	  "label":	getRdfsLabel(subj),
+    	  "long":	getGeoLong(subj),
+    	  "lat":	getGeoLat(subj)
+    	  }
+    })
+    console.log( 'simpleArray ' + JSON.stringify(simpleArray) )
+    return simpleArray
   })
 };
 

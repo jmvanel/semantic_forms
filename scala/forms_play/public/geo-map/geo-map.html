@@ -22,6 +22,8 @@
    "data_2" : {"lat": 48.84430380000001, "long": 2.374377299999992, "label": "Gare de lyon"},
    "data_3" : {"lat": 48.86626129999999, "long": 2.3235866999999644, "label": "concorde"}
  };
+ let url = "http://dbpedia.org/resource/Lyon"
+ let data = rdfURL2SimpleArray(url)
 
  let map = new Map('mapid', data, "lat","long","label");
 
