@@ -16,12 +16,11 @@
   let geoLat = geo + 'lat'
 
 /** From a JSON-LD URL , produce a structure like :
- * TODO:
- { "data_1" : {"lat": 48.8372728, "long": 2.3353872999999794, "label": "montparnasse"} }
-DONE:
- simpleArray [{"label":"Grenoble","long":"5.7222","lat":"45.2002"},{"label":"Paris","long":"2.3508","lat":"48.8567"}]
+ * [{"@id":"http://dbpedia.org/resource/Lyon","label":"Lyon",
+ *   "long":"4.840000152587891E0","lat":"4.57599983215332E1"}]
+ *   as a Promise.
 */
-function rdfURL2SimpleArray(url) {
+function rdfURL2SimpleArray(/*String: */url)/*: Promise*/ {
   return rdfFetch( url ).then(
    (res) => {
 //    console.log( 'FETCH ' + res );
