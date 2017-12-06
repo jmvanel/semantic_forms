@@ -24,7 +24,23 @@ class Map{
             }
         }
     }
-
+    /**
+     *
+     * @param mapId -- id de la div
+     * transforme l'array en un objet avant de créer une Map
+     * @param initialData -- données que tu veux afficher (type array)
+     * @param keyId -- clé pour accéder à la valeur :id
+     * @param keyLat -- clé pour accéder à la valeur :latitude
+     * @param keylong -- clé pour accéder à la valeur :longitude
+     * @param keyText -- clé pour accéder à la valeur :text affiché
+     */
+    static constructorWithArray(mapId,initialData,keyId,keyLat,keylong,keyText) {
+        let objectFromArray = {};
+        initialData.forEach(function (element) {
+            objectFromArray[element[keyId]] = element;
+        })
+        return new Map(mapId,objectFromArray,keyLat,keylong,keyText);
+    }
 
     /**
      * affiche tous les points enregistré
