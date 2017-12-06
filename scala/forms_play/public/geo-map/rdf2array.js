@@ -1,6 +1,8 @@
-const rdf = require('rdf-ext')
-const SparqlStore = require('rdf-store-sparql')
-const rdfFetch = require('rdf-fetch')
+// uncomment for use with Node.js
+
+//const rdf = require('rdf-ext')
+//const SparqlStore = require('rdf-store-sparql')
+//const rdfFetch = require('rdf-fetch')
 
 /* cf
  * http://rawgit.com/rdf-ext/rdf-examples/develop/parse-jsonld-to-dataset.html
@@ -68,31 +70,42 @@ function rdfURL2SimpleArray(url) {
 
     let simpleArray = subjs . map((subj) => {
       return {
+          "@id": (subj.toString()),
     	  "label":	getRdfsLabel(subj),
     	  "long":	getGeoLong(subj),
     	  "lat":	getGeoLat(subj)
-    	  }
+	  }
     })
     console.log( 'simpleArray ' + JSON.stringify(simpleArray) )
+//    console.log( 'jsonLDLike2Object(simpleArray) ' + JSON.stringify(jsonLDLike2Object(simpleArray)) )
     return simpleArray
   })
 };
+
+/** UNUSED */
+function jsonLDLike2Object(/*Array:*/arr) {
+	  var rv = {};
+	  for (var i = 0; i < arr.length; ++i)
+	    if (arr[i] !== undefined)
+          rv["@id"] = arr[i];
+	  return rv;
+}
 
 function test_rdfURL2SimpleArray() {
   var endpoint = 'http://semantic-forms.cc:9111/sparql';
   // var endpoint = 'http://localhost:9000/sparql';
   var query =
-'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> ' +
-'Prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> ' +
-'CONSTRUCT { ?sub geo:long ?LON .?sub geo:lat ?LAT . ?sub rdfs:label ?LAB.} ' +
-'WHERE {GRAPH ?GRAPH { ?sub geo:long ?LON .?sub geo:lat ?LAT . ?sub rdfs:label ?LAB.  } } ' ;
-
-  let url = endpoint + '?query=' + encodeURIComponent(query);
-  console.log( 'endpoint ' + endpoint);
-  console.log( 'url ' + url);
-  let ret =  rdfURL2SimpleArray(url);
-  console.log( ret );
+    'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> ' +
+    'Prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> ' +
+    'CONSTRUCT { ?sub geo:long ?LON .?sub geo:lat ?LAT . ?sub rdfs:label ?LAB.} ' +
+    'WHERE {GRAPH ?GRAPH { ?sub geo:long ?LON .?sub geo:lat ?LAT . ?sub rdfs:label ?LAB.  } } ' ;
+  let url = endpoint + '?query=' + encodeURIComponent(query)
+  console.log( 'endpoint ' + endpoint)
+  console.log( 'url ' + url)
+  let ret =  rdfURL2SimpleArray(url)
+  console.log( ret )
 }
 
-test_rdfURL2SimpleArray()
+// uncomment for testing in command line with Node.js
+// test_rdfURL2SimpleArray()
 
