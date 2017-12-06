@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang='fr'>
+
+<head>
+    <title>burger</title>
+    <meta charset="utf-8" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="geo-map.js"></script>
+    <script src="http://rdf-ext.bergnet.org/dist/rdf-ext-all-1.0.0.src.js"></script>
+    <script src="rdf2array.js"></script>
+</head>
+
+<body>
+    <div id="mapid" style="width: 300px; height: 300px;"></div>
+</body>
+
+<script>
+ let data = {
+   "data_1" : {"lat": 48.8372728, "long": 2.3353872999999794, "label": "montparnasse"},
+   "data_2" : {"lat": 48.84430380000001, "long": 2.374377299999992, "label": "Gare de lyon"},
+   "data_3" : {"lat": 48.86626129999999, "long": 2.3235866999999644, "label": "concorde"}
+ };
+
+ let map = new Map('mapid', data, "lat","long","label");
+
+ console.log("Display all points");
+ map.pinShowAll();
+</script>
