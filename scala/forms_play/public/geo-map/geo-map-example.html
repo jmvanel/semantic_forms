@@ -1,95 +1,34 @@
-class Map{
+<!doctype html>
+<html lang='fr'>
 
-    /**
-     *
-     * @param mapId -- id de la div
-     * ces quatre paramètres permettre, a l'affichage d'une page, d'initialiser un certain contenu
-     * @param initialData -- données que tu veux afficher
-     * @param keyLat -- clé pour accéder à la valeur :latitude
-     * @param keylong -- clé pour accéder à la valeur :longitude
-     * @param keyText -- clé pour accéder à la valeur :text affiché
-     */
-    constructor(mapId,initialData,keyLat,keylong,keyText) {
-        this.OSM = L.map(mapId).setView([48.862725, 2.287592000000018], 10);
-        this.pins = [];
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(this.OSM );
-        this.keyLat = keyLat;
-        this.keyLong = keylong;
-        this.keyLat = keyLat;
-        for(let key in initialData){
-            if (initialData.hasOwnProperty(key)) {
-                this.addPin(initialData[key][keyLat],initialData[key][keylong],key,initialData[key][keyText]);
-            }
-        }
-    }
+<head>
+    <title>burger</title>
+    <meta charset="utf-8" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="geo-map.js"></script>
+</head>
 
+<body>
+    <div id="mapid" style="width: 300px; height: 300px;"></div>
+</body>
 
-    /**
-     * affiche tous les points enregistré
-     * @param latitude -- la latitude du point
-     * @param longitude -- la latitude du point
-     * @param key -- la clé pour la sauvegarde du point
-     * @param text -- le texte
-     */
-    pinShowAll() {
-        "use strict";
-        for (let key in this.pins) {
-            if (this.pins.hasOwnProperty(key)) {
-                this.pinShow(key);
-
-            }
-        }
-    }
-
-    pinShow(key){
-        "use strict";
-        this.pins[key].addTo(this.OSM);
-    }
-
-
-    addPin(latitude,longitude, key, text) {
-        "use strict";
-        this.pins[key] = L.marker([latitude,longitude])
-            .bindPopup(text);
-        this.pinShow(key);
-    }
-    /**
-     * affiche un point et efface les autres
-     * @param latitude -- la latitude du point
-     * @param longitude -- la latitude du point
-     * @param key -- la clé pour la sauvegarde du point
-     * @param text -- le texte
-     */
-    pinShowOne(key) {
-        "use strict";
-        this.pinHideAll();
-        this.pinShow(key);
-    }
-
-    /**
-     * efface un point
-     * @param uri -- la clé du point a ne plus afficher
-     */
-    pinHide(key) {
-        "use strict";
-        if(this.pins[uri] !== undefined){
-            let marker = this.pins[key];
-            this.OSM.removeLayer(marker);
-        }
-    }
-
-    /**
-     * efface tous les points
-     */
-    pinHideAll() {
-        "use strict";
-        for (let key in this.pins){
-            if (this.pins.hasOwnProperty(key)) {
-                this.pinHide(key);
-            }
-        }
-    }
-
-}
+<script>
+ let data = {
+   "data_1" : {"lat": 48.8372728, "long": 2.3353872999999794, "text": "montparnasse"},
+   "data_2" : {"lat": 48.84430380000001, "long": 2.374377299999992, "text": "Gare de lyon"},
+   "data_3" : {"lat": 48.86626129999999, "long": 2.3235866999999644, "text": "concorde"}
+ };
+ let map = new Map('mapid',data,"lat","long","text");
+ console.log("ajout d'un point");
+ map.addPin(48.8582546,2.2925509000000375,'tf','tour eiffel');
+ console.log("retire un point");
+ map.pinHide("data_1");
+ console.log("affiche un point");
+ map.pinShow("data_1");
+ console.log("retire tous les points");
+ map.pinHideAll();
+ console.log("affiche tous les points");
+ map.pinShowAll();
+</script>
