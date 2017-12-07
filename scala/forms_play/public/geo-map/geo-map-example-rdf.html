@@ -2,7 +2,7 @@
 <html lang='fr'>
 
 <head>
-    <title>burger</title>
+    <title>Vincennes, from dbPedia.org</title>
     <meta charset="utf-8" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"/>
@@ -17,14 +17,10 @@
 </body>
 
 <script>
- let url = "http://dbpedia.org/resource/Lyon"
-
- // let data =
+ let url = "http://dbpedia.org/resource/Vincennes"
  rdfURL2SimpleArray(url).then( (data) => {
-   // let map = new Map('mapid', data, "lat","long","label");
    let map = Map.constructorWithArray('mapid', data, "@id", "lat","long","label");
-
-   console.log("Display all points");
+   console.log("Display all points for URL " + url);
    map.pinShowAll();
  })
 </script>

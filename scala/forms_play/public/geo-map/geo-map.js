@@ -38,8 +38,8 @@ class Map{
         console.log('in constructor');
         console.log(initialData);
     	let objectFromArray = {};
-        Array.prototype.forEach.call( initialData,
-//        initialData.forEach(
+//        Array.prototype.forEach.call( initialData,
+        initialData.forEach(
         		function (element) {
             objectFromArray[element[keyId]] = element;
         })

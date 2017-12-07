@@ -17,14 +17,31 @@
 </body>
 
 <script>
- let url = "http://dbpedia.org/resource/Vincennes"
+//  $(window).ready(function () {
+	 function getUrlVars()
+	 {
+	     var vars = [], hash;
+	     var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+	     for(var i = 0; i < hashes.length; i++)
+	     {
+	         hash = hashes[i].split('=');
+	         vars.push(hash[0]);
+	         vars[hash[0]] = hash[1];
+	     }
+	     return vars;
+	 }
 
- // let data =
- rdfURL2SimpleArray(url).then( (data) => {
-   // let map = new Map('mapid', data, "lat","long","label");
-   let map = Map.constructorWithArray('mapid', data, "@id", "lat","long","label");
-
-   console.log("Display all points");
-   map.pinShowAll();
- })
+ var loadVal = getUrlVars()["url"]
+ console.log("loadVal URL " + loadVal);
+ if (loadVal != null) {
+   var url = decodeURIComponent(loadVal);
+   console.log("value after decodeURIComponent " + url);
+   rdfURL2SimpleArray(url).then( (data) => {
+     let map = Map.constructorWithArray(mapid, data, "@id", "lat","long","label");
+     console.log("Display all points for URL " + url);
+     map.pinShowAll();
+   })
+ } else
+     console.log("No url= in URL ");
+ // })
 </script>
