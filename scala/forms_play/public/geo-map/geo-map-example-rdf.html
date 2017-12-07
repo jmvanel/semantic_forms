@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang='fr'>
+
+<head>
+    <title>Vincennes, from dbPedia.org</title>
+    <meta charset="utf-8" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="geo-map.js"></script>
+    <script src="http://rdf-ext.bergnet.org/dist/rdf-ext-all-1.0.0.src.js"></script>
+    <script src="rdf2array.js"></script>
+</head>
+
+<body>
+    <div id="mapid" style="width: 300px; height: 300px;"></div>
+</body>
+
+<script>
+ let url = "http://dbpedia.org/resource/Vincennes"
+ rdfURL2SimpleArray(url).then( (data) => {
+   let map = Map.constructorWithArray('mapid', data, "@id", "lat","long","label");
+   console.log("Display all points for URL " + url);
+   map.pinShowAll();
+ })
+</script>

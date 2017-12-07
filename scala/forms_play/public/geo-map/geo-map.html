@@ -2,7 +2,7 @@
 <html lang='fr'>
 
 <head>
-    <title>burger</title>
+    <title>Vincennes, from dbPedia.org</title>
     <meta charset="utf-8" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"/>
@@ -17,14 +17,31 @@
 </body>
 
 <script>
- let data = {
-   "data_1" : {"lat": 48.8372728, "long": 2.3353872999999794, "label": "montparnasse"},
-   "data_2" : {"lat": 48.84430380000001, "long": 2.374377299999992, "label": "Gare de lyon"},
-   "data_3" : {"lat": 48.86626129999999, "long": 2.3235866999999644, "label": "concorde"}
- };
+//  $(window).ready(function () {
+	 function getUrlVars()
+	 {
+	     var vars = [], hash;
+	     var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+	     for(var i = 0; i < hashes.length; i++)
+	     {
+	         hash = hashes[i].split('=');
+	         vars.push(hash[0]);
+	         vars[hash[0]] = hash[1];
+	     }
+	     return vars;
+	 }
 
- let map = new Map('mapid', data, "lat","long","label");
-
- console.log("Display all points");
- map.pinShowAll();
+ var loadVal = getUrlVars()["url"]
+ console.log("loadVal URL " + loadVal);
+ if (loadVal != null) {
+   var url = decodeURIComponent(loadVal);
+   console.log("value after decodeURIComponent " + url);
+   rdfURL2SimpleArray(url).then( (data) => {
+     let map = Map.constructorWithArray(mapid, data, "@id", "lat","long","label");
+     console.log("Display all points for URL " + url);
+     map.pinShowAll();
+   })
+ } else
+     console.log("No url= in URL ");
+ // })
 </script>
