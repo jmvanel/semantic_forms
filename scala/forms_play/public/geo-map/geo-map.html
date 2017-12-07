@@ -17,8 +17,7 @@
 </body>
 
 <script>
-//  $(window).ready(function () {
-	 function getUrlVars()
+/* 	 function getUrlVars()
 	 {
 	     var vars = [], hash;
 	     var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
@@ -29,13 +28,23 @@
 	         vars[hash[0]] = hash[1];
 	     }
 	     return vars;
-	 }
+	 } */
 
- var loadVal = getUrlVars()["url"]
+	 function getParameterByName(name, url) {
+		    if (!url) url = window.location.href;
+		    name = name.replace(/[\[\]]/g, "\\$&");
+		    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+		        results = regex.exec(url);
+		    if (!results) return null;
+		    if (!results[2]) return '';
+		    return decodeURIComponent(results[2].replace(/\+/g, " "));
+		}
+
+ var loadVal = getParameterByName("url") // getUrlVars()["url"]
  console.log("loadVal URL " + loadVal);
  if (loadVal != null) {
-   var url = decodeURIComponent(loadVal);
-   console.log("value after decodeURIComponent " + url);
+   var url = loadVal // decodeURIComponent(loadVal);
+/*    console.log("value after decodeURIComponent " + url); */
    rdfURL2SimpleArray(url).then( (data) => {
      let map = Map.constructorWithArray(mapid, data, "@id", "lat","long","label");
      console.log("Display all points for URL " + url);
@@ -43,5 +52,4 @@
    })
  } else
      console.log("No url= in URL ");
- // })
 </script>

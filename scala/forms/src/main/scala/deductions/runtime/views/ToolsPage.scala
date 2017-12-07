@@ -102,7 +102,8 @@ trait ToolsPage extends EnterButtons
       <input class="btn btn-primary" type="submit" value={ I18NMessages.get("View", lang) }
              formaction="/sparql-form"/>,
       makeLinkCarto(lang, textareaId,
-          "http://rawgit.com/Cruis-R/geo-map-component/master/docs/index.html"),
+          "/assets/geo-map/geo-map.html"),
+//          "http://rawgit.com/Cruis-R/geo-map-component/master/docs/index.html"),
       <input class="btn btn-primary" type="submit" value={ I18NMessages.get("Table", lang) }
              formaction="/table"/>,
       <input class="btn btn-primary" type="submit"
@@ -175,6 +176,7 @@ trait ToolsPage extends EnterButtons
     </script>
   }
 
+  /** make Link for (geographic) Cartography */
   private def makeLinkCarto(lang:String = "en", textareaId: String, toolURLprefix: String): NodeSeq = {
 
     val sparqlServicePrefix =
@@ -189,8 +191,7 @@ trait ToolsPage extends EnterButtons
     println(s">>>> servicesURL $dataServicesURL")
  
     <input id={buttonId} type="submit"
-           title="NOT YET IMPLEMENTED"
-           disabled="disabled"
+           title="make LeafLet map (OSM)"
            class="btn btn-primary" target="_blank" value={ I18NMessages.get("Map", lang)}>
     </input>
     <input class="btn btn-primary" type="checkbox" checked="true" title="points (else path)"
@@ -218,7 +219,7 @@ trait ToolsPage extends EnterButtons
     console.log( 'data services URL= $dataServicesURL' );
     var url = '$toolURLprefix' +
       '?view=' + pointsOrPathValue +
-      '&geo=' +
+      '&url=' +
       '$dataServicesURL' + window.encodeURIComponent(query);
     console.log( 'URL= ' + url );
     window.open( url , '_blank' );
