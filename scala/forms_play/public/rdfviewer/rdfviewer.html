@@ -22,9 +22,20 @@
       <svg id="chart"></svg>
     </div>
     <script type="text/javascript">
+      // PASTED from geo-map
+      function getParameterByName(name, url) {
+		  if (!url) url = window.location.href;
+		    name = name.replace(/[\[\]]/g, "\\$&");
+		  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+		        results = regex.exec(url);
+		  if (!results) return null;
+		  if (!results[2]) return '';
+		  return /* decodeURIComponent*/(results[2].replace(/\+/g, " "));
+		}
+
       $(window).ready(function () {
 	// function restart(){
-	    var loadVal = jQuery.getUrlVar("url");
+	    var loadVal = getParameterByName("url"); // jQuery.getUrlVar("url");
 	    console.log("loadVal " + loadVal);
 	    if (loadVal != null) {
 	      var value = decodeURIComponent(loadVal);

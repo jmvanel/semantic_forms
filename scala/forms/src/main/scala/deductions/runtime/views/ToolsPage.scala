@@ -167,8 +167,11 @@ trait ToolsPage extends EnterButtons
     console.log( 'URL ' + url );
     if($isDNS)
       window.open( url , '_blank' );
-    else
-      console.log( 'RDFViewer works only on a hosted Internet serverURL !!!' );
+    else {
+      var message = "RDFViewer works only on a hosted Internet serverURL !!! URL is " + url;
+      console.log( message );
+      alert(message);
+    }
   });
     console.log('After button.addEventListener');
 }());
