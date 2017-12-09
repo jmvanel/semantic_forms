@@ -16,8 +16,8 @@ addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.5.18")
 addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "5.1.0")
 // addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "5.1.0", scalaVersion="2.11", sbtVersion="0.13")
 
-// addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.18")
-addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.20")
+// addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.20")
+addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.21")
 addSbtPlugin("io.gatling" % "gatling-sbt" % "2.1.7")
 
 

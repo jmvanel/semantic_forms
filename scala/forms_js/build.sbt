@@ -15,7 +15,7 @@ publishArtifact in (Compile, packageDoc) := false
 sources in (Compile,doc) := Seq.empty
 
 libraryDependencies ++= Seq(
-  "org.scala-js" %%% "scalajs-dom" % "0.9.3" ,
+  "org.scala-js" %%% "scalajs-dom" % "0.9.4" ,
   "org.w3" %%  "banana-plantain" % "0.8.4-SNAPSHOT"
 )
 
