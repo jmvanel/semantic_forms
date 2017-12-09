@@ -23,19 +23,20 @@ object GPS2 extends GPS {
    */
   @JSExport
   def listenToSubmitEventFillGeoCoordinates(): Unit = {
-    if( GeoCoordinatesFields.pageNeedsGeoCoordinates() . needs )
+    if( GeoCoordinatesFields.pageNeedsGeoCoordinates() . needsUpdate )
       window.addEventListener("load", (e: dom.Event) => fillGeoCoordinates)
   }
 
   /**
-   * fill longitude & latitude from HTML5 API into relevant geo:long & geo:lat triples
+   * fill longitude & latitude from HTML5 GPS API into relevant geo:long & geo:lat triples
    */
   private def fillGeoCoordinates {
 	  val window = dom.document.defaultView
     val nav = window.navigator
     val geo: Geolocation = nav.geolocation
 
-   /* obtain longitude & latitude from HTML5 API
+   /* obtain longitude & latitude from HTML5 GPS API,
+    * and then call fillCoords();
     * cf http://stackoverflow.com/questions/40483880/geolocation-in-scala-js */
     geo.watchPosition( fillCoords _, onError _)
   }

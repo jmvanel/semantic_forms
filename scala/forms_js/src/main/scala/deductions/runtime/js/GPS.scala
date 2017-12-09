@@ -18,36 +18,33 @@ trait GPS {
 
     val longitude = p.coords.longitude
     val latitude = p.coords.latitude
-    println(s"latitude=${latitude}")
-    println(s"longitude=${longitude}")
-
-//    val matchesLongitudeInput = dom.document.querySelectorAll(
-//      s"input[data-rdf-property='${geoRDFPrefix}long']")
-//    val matchesLatitudeInput = dom.document.querySelectorAll(
-//      s"input[data-rdf-property='${geoRDFPrefix}lat']")
+    println(s"Got from GPS: latitude=${latitude} , longitude=${longitude}")
 
     val geoCoordinatesFields = GeoCoordinatesFields.pageNeedsGeoCoordinates()
     
     for (
-      long <- geoCoordinatesFields.matchesLongitudeInput;
-      lat <- geoCoordinatesFields.matchesLatitudeInput
+      longitudeInput <- geoCoordinatesFields.matchesLongitudeInput;
+      latitudeInput <- geoCoordinatesFields.matchesLatitudeInput
     ) {
-      fillOneCoordinate(long, longitude.toString())
-      fillOneCoordinate(lat, latitude.toString())
+      fillOneCoordinate(longitudeInput, longitude.toString())
+      fillOneCoordinate(latitudeInput, latitude.toString())
     }
+    
   }
 
-  private def fillOneCoordinate(l: Node, coord: String) = {
-//    println( s"fillOneCoordinate( $l: Node, $coord)" )
-    l match {
-    case input: Input => input.value = coord
-    dom.window.console.info(s"fillGeoCoordinates: value ${input.value}")
-    case el           => dom.window.console.info(s"fillGeoCoordinates: $el unexpected")
-  }
+  private def fillOneCoordinate(node: Node, coord: String): Any = {
+    // println( s"fillOneCoordinate( $l: Node, $coord)" )
+    node match {
+      case input: Input =>
+        input.value = coord
+        dom.window.console.info(s"fillGeoCoordinates: value ${input.value}")
+      case el => dom.window.console.info(s"fillGeoCoordinates: $el unexpected")
+    }
   }
 }
 
-case class GeoCoordinatesFields(needs: Boolean, matchesLongitudeInput: NodeList,
+case class GeoCoordinatesFields(needsUpdate: Boolean,
+    matchesLongitudeInput: NodeList,
     matchesLatitudeInput: NodeList)
 
 object GeoCoordinatesFields {
@@ -63,8 +60,16 @@ object GeoCoordinatesFields {
     dom.window.console.info(s"matchesLongitudeInput $matchesLongitudeInput, length ${matchesLongitudeInput.length}")
     // dom.window.console.info(s"matchesLatitudeInput $matchesLatitudeInput" )
     val needs =
-      matchesLatitudeInput.length > 0 ||
-        matchesLongitudeInput.length > 0
+      ( matchesLatitudeInput.length > 0 ||
+        matchesLongitudeInput.length > 0 ) &&
+        inputIsEmpty(matchesLongitudeInput)
     GeoCoordinatesFields(needs, matchesLongitudeInput, matchesLatitudeInput)
+  }
+
+  private def inputIsEmpty(nodeList: NodeList): Boolean = {
+    nodeList . map {
+      case input: Input => input.value == ""
+      case _ => true
+    } . headOption . getOrElse(false)
   }
 }
