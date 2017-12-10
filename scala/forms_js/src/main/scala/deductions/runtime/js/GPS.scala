@@ -21,7 +21,7 @@ trait GPS {
     println(s"Got from GPS: latitude=${latitude} , longitude=${longitude}")
 
     val geoCoordinatesFields = GeoCoordinatesFields.pageNeedsGeoCoordinates()
-    
+    if( geoCoordinatesFields . needsUpdate )
     for (
       longitudeInput <- geoCoordinatesFields.matchesLongitudeInput;
       latitudeInput <- geoCoordinatesFields.matchesLatitudeInput
@@ -59,10 +59,13 @@ object GeoCoordinatesFields {
 
     dom.window.console.info(s"matchesLongitudeInput $matchesLongitudeInput, length ${matchesLongitudeInput.length}")
     // dom.window.console.info(s"matchesLatitudeInput $matchesLatitudeInput" )
+    val inputIsEmptyLongitude = inputIsEmpty(matchesLongitudeInput)
     val needs =
       ( matchesLatitudeInput.length > 0 ||
         matchesLongitudeInput.length > 0 ) &&
-        inputIsEmpty(matchesLongitudeInput)
+        inputIsEmptyLongitude
+    if( ! inputIsEmptyLongitude )
+      println("Longitude is already filled => not update from GPS.")
     GeoCoordinatesFields(needs, matchesLongitudeInput, matchesLatitudeInput)
   }
 
