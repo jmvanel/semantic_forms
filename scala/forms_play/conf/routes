@@ -48,6 +48,7 @@ GET     /sparql2            controllers.Application.sparqlConstructUnionGraph( q
 POST    /sparql             controllers.Application.sparqlConstructPOST()
 POST    /sparql2            controllers.Application.sparqlConstructPOSTUnionGraph()
 POST    /sparql-data        controllers.Application.sparqlDataPOST()
+GET     /sparql-data        controllers.Application.sparqlDataGET(query: String)
 
 GET     /select-ui          controllers.Application.select( query:String )
 POST    /select-ui          controllers.Application.select( query:String )

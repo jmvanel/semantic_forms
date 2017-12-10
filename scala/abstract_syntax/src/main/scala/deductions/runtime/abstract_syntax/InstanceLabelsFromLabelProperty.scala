@@ -24,7 +24,7 @@ trait InstanceLabelsFromLabelProperty[Rdf <: RDF, DATASET]
    *
    * form:labelProperty in the rdf:type class
    */
-  val query = s"""
+  private val query = s"""
 		|${declarePrefix(form)}
     |SELECT ?LABEL_URI
     |WHERE {

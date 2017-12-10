@@ -106,7 +106,7 @@ with RDFContentNegociation
 
         val query0 = map.getOrElse("query", Seq())
         val query = query0.mkString("\n")
-        logger.info(s"""sparql: $query""")
+        logger.info(s"""sparql-data: query $query""")
 
         val Edit = map.getOrElse("Edit", Seq()).headOption.getOrElse("")
         val formuri = map.getOrElse("formuri", Seq()).headOption.getOrElse("")
@@ -121,8 +121,24 @@ with RDFContentNegociation
 
       result match {
         case Some(r) => r
-        case None    => BadRequest("sparqlDataPOST: BadRequest: nothing in form Body")
+        case None    => BadRequest(
+          "sparqlDataPOST: BadRequest: nothing in form Body, and nothing in HTTP parameter query")
       }
+  }
+
+  def sparqlDataGET(sparqlQuery: String) = Action {
+    implicit request: Request[AnyContent] =>
+      val httpRequest = copyRequest(request)
+      logger.info(
+          s"""sparql-data GET: query $sparqlQuery""")
+      val Edit = httpRequest.getHTTPparameterValue("Edit").getOrElse("")
+      val formuri = httpRequest.getHTTPparameterValue("formuri").getOrElse("")
+      makeJSONResult(
+        createJSONFormFromSPARQL(
+          sparqlQuery,
+          editable = (Edit != ""),
+          formuri,
+          httpRequest))
   }
 
   /** LDP GET */
