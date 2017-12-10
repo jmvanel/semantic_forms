@@ -43,8 +43,9 @@ object GPS2 extends GPS {
 
   import scala.scalajs.js.Dynamic.global
 
-  def onError(p: PositionError) =
-    global.console.log("geoLocation: Error: " + p)
-    // println(s"geoLocation: Error $p")
-
+  def onError(p: PositionError) = {
+    val message = "geoLocation: Error: " + p.message + " - " + p
+    global.console.log(message)
+    // dom.window. alert (message)
+  }
 }
