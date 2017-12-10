@@ -39,12 +39,12 @@ trait SparqlServices extends ApplicationTrait
    * SPARQL GET compliant, construct or select
    * conneg => RDF/XML, Turtle or json-ld
    */
-  def sparqlConstructUnionGraph(query: String ) =
+  def sparqlGetUnionGraph(query: String ) =
     sparqlConstructParams(query,
         context=Map("unionDefaultGraph" -> "true"))
 
-  /** sparql GET Service */
-  def sparqlConstruct(query: String) =
+  /** sparql GET Service, Construct or SELECT */
+  def sparqlGET(query: String) =
     sparqlConstructParams(query)
 
   private def sparqlConstructParams(query: String,
@@ -55,36 +55,19 @@ trait SparqlServices extends ApplicationTrait
           logInfo(s"""sparqlConstruct: sparql: request $request
             sparql: $query
             accepts ${request.acceptedTypes} """)
-          val lang = chooseLanguage(request)
-
-          // TODO better try a parse of the query
-          def checkSPARQLqueryType(query: String) =
-            if (query.toLowerCase().contains("select") )
-              "select"
-            else
-              "construct"
-
           val isSelect = (checkSPARQLqueryType(query) == "select")
-          
           outputSPARQL(query, request.acceptedTypes, isSelect, bindings, context)
-//          renderResult(output, default = mime)
-          .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
-          .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
-          .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
-          /* access-control-allow-headers :"Accept, Authorization, Slug, Link, Origin, Content-type, 
-           * DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,
-           * If-Modified-Since,Cache-Control,Content-Type,Accept-Encoding"
-           */
   }
 
   /**
    * SPARQL POST compliant, construct or select SPARQL query
    *  conneg => RDF/XML, Turtle or json-ld
    */
-  def sparqlConstructPOST =
+  def sparqlPOST =
     sparqlConstructPOSTimpl()
 
-  def sparqlConstructPOSTUnionGraph =
+  /** sparql POST Service, Construct or SELECT */
+  def sparqlPOSTUnionGraph =
     sparqlConstructPOSTimpl(context=Map("unionDefaultGraph" -> "true"))
 
   private def sparqlConstructPOSTimpl(
@@ -92,59 +75,62 @@ trait SparqlServices extends ApplicationTrait
     implicit request: Request[AnyContent] =>
       logInfo(s"""sparqlConstruct: sparql: request $request
             accepts ${request.acceptedTypes} """)
-      val lang = chooseLanguage(request)
+
       val body: AnyContent = request.body
-
-      def makeSPARQLoutput(query: String): Result = {
-        val isSelect = (checkSPARQLqueryType(query) == "select")
-        val acceptedTypes = request.acceptedTypes
-        outputSPARQL(query, acceptedTypes, isSelect, context=context)
-            .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
-            .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
-            .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
-        }
-
-      // TODO better try a parse of the query
-      def checkSPARQLqueryType(query: String) =
-          if (query.toLowerCase().contains("select") )
-            "select"
-          else
-            "construct"
-
       // Expecting body as FormUrlEncoded
       val formBody: Option[Map[String, Seq[String]]] = body.asFormUrlEncoded
+
       val r = formBody.map { map =>
         val query0 = map.getOrElse("query", Seq())
         val query = query0 . mkString("\n")
         logInfo(s"""sparql as FormUrlEncoded: $query""" )
-        makeSPARQLoutput(query)
+        makeSPARQLoutput(query, request)
       }
       r match {
         case Some(r) => r
         case None =>
-          getContent(request)  match {
+          reportErrorInSparql( request )
+      }
+  }
+
+  private def makeSPARQLoutput(query: String, request: Request[AnyContent],
+      context: Map[String,String] = Map() ): Result = {
+        val isSelect = (checkSPARQLqueryType(query) == "select")
+        val acceptedTypes = request.acceptedTypes
+        outputSPARQL(query, acceptedTypes, isSelect, context=context)
+  }
+
+  /** TODO better try a parse of the query */
+  private def checkSPARQLqueryType(query: String) =
+            if (query.toLowerCase().contains("select") )
+              "select"
+            else
+              "construct"
+
+  private def reportErrorInSparql(request: Request[AnyContent] ) =
+            getContent(request) match {
             case Some(query) =>
               logInfo(s"""sparql (several content types tested) query:
                 $query""" )
-              makeSPARQLoutput(query)
-            case None => BadRequest(s"""BadRequest: body not recognized:
+              makeSPARQLoutput(query, request)
+            case None =>
+              val body: AnyContent = request.body           
+              BadRequest(s"""BadRequest: body not recognized:
               body.asText
               ${body.asText}
               body class ${body.getClass}
-        """)
-          }
-      }
+              """)
   }
-  
+
   def updateGET(updateQuery: String): EssentialAction = update(updateQuery)
 
   def updatePOST(): EssentialAction = update("")
-  
+
   /** output SPARQL query as Play! Result;
    *  priority to accepted MIME type
    *  @param acceptedTypes from Accept HTTP header
    *  TODO move to Play! independant trait */
-  protected def outputSPARQL(query: String, acceptedTypes: Seq[MediaRange], isSelect: Boolean,
+  private def outputSPARQL(query: String, acceptedTypes: Seq[MediaRange], isSelect: Boolean,
       params: Map[String,String] = Map(),
       context: Map[String,String] = Map()): Result = {
     val preferredMedia = acceptedTypes.map { media => Accepting(media.toString()) }.headOption
@@ -174,10 +160,16 @@ trait SparqlServices extends ApplicationTrait
     logInfo(s"result 5 first lines: $result".split("\n").take(5).mkString("\n"))
     Ok(result)
       .as(s"${simpleString2mimeMap.getOrElse(resultFormat, defaultMIMEaPriori).mimeType }")
-    // charset=utf-8" ?
+      .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+      .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
+      .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
+      /* access-control-allow-headers :"Accept, Authorization, Slug, Link, Origin, Content-type, 
+       * DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,
+       * If-Modified-Since,Cache-Control,Content-Type,Accept-Encoding" */
+      // charset=utf-8" ?
   }
 
-  protected def update(update: String) =
+  private def update(update: String) =
     withUser {
       implicit userid =>
         implicit request =>
