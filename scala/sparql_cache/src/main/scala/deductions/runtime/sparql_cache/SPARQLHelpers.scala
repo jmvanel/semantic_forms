@@ -64,8 +64,35 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         else
           dataset.executeConstruct(query, bindings)
       }
-    } yield es
+    } yield {
+      enrichGraphFromTDB(es, context)
+    }
     result
+  }
+
+  private def enrichGraphFromTDB(graph: Rdf#Graph, context: Map[String, String]) = {
+    if (context.get("enrich").isDefined) {
+      /* loop on each unique subject ?S in graph:
+		   * - compute instance label ?LABEL
+		   * - add triple ?S rdfs:label ?LABEL */
+      val subjects = for (
+        tr <- graph.triples;
+        sub = tr.subject
+      ) yield sub
+      val unionGraph = allNamedGraph
+      val addedTriples: List[Rdf#Triple] = for (subject <- subjects.toList.distinct) yield {
+        val lang = context.get("lang").getOrElse("en")
+        val labelTriple = find( unionGraph, subject, URI("urn:displayLabel"), ANY) .
+        toSeq.headOption . getOrElse(Triple(nullURI, nullURI, Literal("")))
+        // urn:/semforms/labelsGraphUri/fr urn:displayLabel "Test texte"
+        val instanceLabelFromTDB = nodeToString( labelTriple.objectt )
+        Triple(subject, rdfs.label,
+          Literal(instanceLabelFromTDB))
+//          Literal.tagged(instanceLabelFromTDB, Lang(lang)))
+      }
+      println( s">>>> enrichGraphFromTDB: addedTriples: $addedTriples" )
+      graph union (Graph(addedTriples))
+    } else graph
   }
 
   private def checkUnionDefaultGraph(context: Map[String,String]) =

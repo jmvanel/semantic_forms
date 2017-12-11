@@ -10,12 +10,17 @@ import play.api.mvc.AnyContent
 import play.api.mvc.EssentialAction
 import play.api.mvc.Request
 import play.api.mvc.Result
-import deductions.runtime.services.LoadService
+
+import deductions.runtime.core.HTTPrequest
 import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.LoadService
+//import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
+//import deductions.runtime.sparql_cache.algos.GraphEnrichment
 
 /** SPARQL compliant services: SPARQL query, SPARQL update, SPARQL load */
 trait SparqlServices extends ApplicationTrait
     with LoadService[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+//    with GraphEnrichment[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 {
   import config._
 
@@ -36,7 +41,8 @@ trait SparqlServices extends ApplicationTrait
   }
 
   /**
-   * SPARQL GET compliant, construct or select
+   * SPARQL GET compliant, construct or select,
+   * with Union Graph;
    * conneg => RDF/XML, Turtle or json-ld
    */
   def sparqlGetUnionGraph(query: String ) =
@@ -47,6 +53,7 @@ trait SparqlServices extends ApplicationTrait
   def sparqlGET(query: String) =
     sparqlConstructParams(query)
 
+  /** For Sparql GET Service, Construct or SELECT, with or without Union Graph */
   private def sparqlConstructParams(query: String,
       bindings: Map[String,String] = Map(),
       context: Map[String,String] = Map()) =
@@ -56,7 +63,8 @@ trait SparqlServices extends ApplicationTrait
             sparql: $query
             accepts ${request.acceptedTypes} """)
           val isSelect = (checkSPARQLqueryType(query) == "select")
-          outputSPARQL(query, request.acceptedTypes, isSelect, bindings, context)
+          outputSPARQL(query, request.acceptedTypes, isSelect, bindings, context,
+                       getRequestCopy() )
   }
 
   /**
@@ -97,7 +105,8 @@ trait SparqlServices extends ApplicationTrait
       context: Map[String,String] = Map() ): Result = {
         val isSelect = (checkSPARQLqueryType(query) == "select")
         val acceptedTypes = request.acceptedTypes
-        outputSPARQL(query, acceptedTypes, isSelect, context=context)
+        outputSPARQL(query, acceptedTypes, isSelect, context=context,
+            httpRequest = getRequestCopy()(request) )
   }
 
   /** TODO better try a parse of the query */
@@ -132,7 +141,8 @@ trait SparqlServices extends ApplicationTrait
    *  TODO move to Play! independant trait */
   private def outputSPARQL(query: String, acceptedTypes: Seq[MediaRange], isSelect: Boolean,
       params: Map[String,String] = Map(),
-      context: Map[String,String] = Map()): Result = {
+      context: Map[String,String] = Map(),
+      httpRequest: HTTPrequest): Result = {
     val preferredMedia = acceptedTypes.map { media => Accepting(media.toString()) }.headOption
     val defaultMIMEaPriori = if (isSelect) AcceptsSPARQLresults else AcceptsJSONLD
     val defaultMIME = preferredMedia.getOrElse(defaultMIMEaPriori)
@@ -153,9 +163,12 @@ trait SparqlServices extends ApplicationTrait
       sparqlSelectConneg(query, resultFormat, dataset, context)
     else {
       sparqlConstructResult(query,
-          // TODO
-          lang="en",
-          resultFormat, context)
+          lang=httpRequest.getLanguage(),
+          resultFormat,
+          if( httpRequest.getHTTPparameterValue("enrich").isDefined )
+            context + ("enrich" -> "true")
+            else context
+      )
     }
     logInfo(s"result 5 first lines: $result".split("\n").take(5).mkString("\n"))
     Ok(result)
@@ -199,5 +212,5 @@ trait SparqlServices extends ApplicationTrait
           }
     }
 
-  def logInfo(s: String) = println(s) // logger.info(s)
+  private def logInfo(s: String) = println(s) // logger.info(s)
 }

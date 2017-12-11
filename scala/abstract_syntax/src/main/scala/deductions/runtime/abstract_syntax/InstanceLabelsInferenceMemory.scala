@@ -26,7 +26,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   override def makeInstanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
     val labelFromTDB = instanceLabelFromTDB(node, lang)
     if (labelFromTDB == "" || labelFromTDB == "Thing" || isLabelLikeURI(node, labelFromTDB ) )
-      computeInstanceLabeAndStoreInTDB(node, graph, lang)
+      computeInstanceLabelAndStoreInTDB(node, graph, lang)
     else labelFromTDB
   }
 
@@ -149,7 +149,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   /** compute Instance Label and store it in TDB,
    *  then replace label in special named Graph */
   def replaceInstanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
-    val label = computeInstanceLabeAndStoreInTDB(node, graph, lang)
+    val label = computeInstanceLabelAndStoreInTDB(node, graph, lang)
 
     val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
     replaceObjects( labelsGraphUri, node, displayLabelPred, Literal(label), datasetForLabels )
@@ -157,7 +157,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   }
 
   /** compute Instance Label and store it in TDB */
-  private def computeInstanceLabeAndStoreInTDB(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
+  private def computeInstanceLabelAndStoreInTDB(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
     logger.debug( s"compute displayLabel for <$node>" )
     if( node.toString() == "" ) return ""
 

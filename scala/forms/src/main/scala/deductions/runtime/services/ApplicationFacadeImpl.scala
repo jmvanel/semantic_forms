@@ -306,15 +306,14 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
   /** SPARQL result
    *  @param format = "turtle" or "rdfxml" or "jsonld"
-   *  
-   *  TODO move to non-Play! project
    */
-  def sparqlConstructResult(query: String, lang: String = "en",
+  def sparqlConstructResult(query: String, lang: String,
       format: String = "turtle",
       context: Map[String,String] = Map()): String = {
     logger.info("Global.sparql query  " + query)
     if (query != "")
-      sparqlConstructQueryTR(query, format, context)
+      sparqlConstructQueryTR(query, format,
+          context + ("lang" -> lang))
       // TODO this code is in several places !!!!!! make function printTry( tr: Try[_] , mime:String)
       match {
         case Success(s) => s
