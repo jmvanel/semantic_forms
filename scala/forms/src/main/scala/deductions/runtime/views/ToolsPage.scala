@@ -222,6 +222,7 @@ trait ToolsPage extends EnterButtons
     console.log( 'data services URL= $dataServicesURL' );
     var url = '$toolURLprefix' +
       '?view=' + pointsOrPathValue +
+      '&enrich=yes' +
       '&url=' +
       '$dataServicesURL' + window.encodeURIComponent(query);
     console.log( 'URL= ' + url );

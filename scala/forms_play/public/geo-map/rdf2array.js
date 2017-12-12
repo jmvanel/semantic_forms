@@ -14,6 +14,7 @@
   let geo = "http://www.w3.org/2003/01/geo/wgs84_pos#"
   let geoLong = geo + 'long'
   let geoLat = geo + 'lat'
+  let displayLabel = 'urn:displayLabel'
 
 /** From a JSON-LD URL , produce a structure like :
  * [{"@id":"http://dbpedia.org/resource/Lyon","label":"Lyon",
@@ -29,7 +30,11 @@ function rdfURL2SimpleArray(/*String: */url)/*: Promise*/ {
 
 	/** For filtering with RDF lang */
 	function rdfsLabelCriterium(quad, subject) {
-	 return quad.predicate.value === rdfsLabel && quad.object.language === 'en'
+	 return (
+			 quad.predicate.value === rdfsLabel ||
+			 quad.predicate.value === displayLabel
+	     )
+		 // TODO:	&& quad.object.language === 'en'
 		 &&  quad.subject.toString() == subject.toString()
 	}
 
@@ -44,7 +49,15 @@ function rdfURL2SimpleArray(/*String: */url)/*: Promise*/ {
 	function latCriterium(quad, subject) {
 		return plainPropertyCriterium(quad, subject, geoLat) }
 
-	function getRdfsLabel(subj) { return filterQuad(subj, rdfsLabelCriterium) }
+	function getRdfsLabel(subj) {
+		var rdfsLabelValue = filterQuad(subj, rdfsLabelCriterium)
+		if( rdfsLabelValue == "" || rdfsLabelValue == undefined )
+			rdfsLabelOrElse = subj.toString()
+		else
+			rdfsLabelOrElse = rdfsLabelValue
+		return rdfsLabelOrElse
+		
+	}
 	function getGeoLong(subj) { return filterQuad(subj, longCriterium) }
 	function getGeoLat(subj) { return filterQuad(subj, latCriterium) }
 
