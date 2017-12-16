@@ -64,7 +64,7 @@ function rdfURL2SimpleArray(/*String: */url)/*: Promise*/ {
 	/** filter Quad with given criterium
 	 * @return value, e.g. of rdfs:label */
 	function filterQuad(subj, criterium) {
-      console.log('\nsubj ' + subj);
+      // console.log('\nsubj ' + subj);
       let rdfsLabelQuad = dataset.filter((quad) => {
         return criterium(quad, subj)
       }).toArray().shift()
@@ -88,8 +88,7 @@ function rdfURL2SimpleArray(/*String: */url)/*: Promise*/ {
     	  "lat":	getGeoLat(subj)
 	  }
     })
-    console.log( 'simpleArray ' + JSON.stringify(simpleArray) )
-//    console.log( 'jsonLDLike2Object(simpleArray) ' + JSON.stringify(jsonLDLike2Object(simpleArray)) )
+    // console.log( 'rdfURL2SimpleArray: simpleArray: ' + JSON.stringify(simpleArray) )
     return simpleArray
   })
 };
