@@ -29,6 +29,8 @@ object GPS2 extends GPS {
 
   /**
    * fill longitude & latitude from HTML5 GPS API into relevant geo:long & geo:lat triples
+   *
+   * See https://developer.mozilla.org/fr/docs/Using_geolocation
    */
   private def fillGeoCoordinates {
 	  val window = dom.document.defaultView
@@ -38,7 +40,14 @@ object GPS2 extends GPS {
    /* obtain longitude & latitude from HTML5 GPS API,
     * and then call fillCoords();
     * cf http://stackoverflow.com/questions/40483880/geolocation-in-scala-js */
-    geo.watchPosition( fillCoords _, onError _)
+
+   val gpsParameters =
+     new org.scalajs.dom.raw.PositionOptions {
+		   enableHighAccuracy=true
+		   maximumAge=20000
+		   timeout=15000
+   }
+   geo.watchPosition( fillCoords _, onError _ , gpsParameters )
   }
 
   import scala.scalajs.js.Dynamic.global

@@ -1,4 +1,7 @@
-
+/* TODO pass to Scala.js ,
+ * see Scala.js bindings for Leaflet.js : https://github.com/fancellu/scalajs-leaflet
+ * API http://leafletjs.com/reference-1.2.0.html
+*/
         /*private*/
         function computeMinInPoints(initialData, key/*: String*/) {
   	        console.log( 'computeMinInPoints: initialData: ' + initialData )
@@ -30,19 +33,13 @@
 
         /** @return Bounds object from LeafLet */
         function findGeographicZone(initialData,keyLat,keyLong) {
-//        	var corner1 = L.latLng(40.712, -74.227),
-//        	corner2 = L.latLng(40.774, -74.125),
-//        	bounds = L.latLngBounds(corner1, corner2);
-        	/* All Leaflet methods that accept LatLngBounds objects also accept them in a simple Array form
-        	 * (unless noted otherwise),
-        	 * so the bounds example above can be passed like this: */
         	
-  	        console.log( 'findGeographicZone: initialData: ' +
-  	        		JSON.stringify(initialData) )
-  	        console.log( 'findGeographicZone: computeMinInPoints keyLat: ' +		
-  	        		computeMinInPoints(initialData, keyLat) )
-  	        console.log( 'findGeographicZone: computeMaxInPoints keyLat: ' +		
-  	        		computeMaxInPoints(initialData, keyLat) )
+//  	        console.log( 'findGeographicZone: initialData: ' +
+//  	        		JSON.stringify(initialData) )
+//  	        console.log( 'findGeographicZone: computeMinInPoints keyLat: ' +
+//  	        		computeMinInPoints(initialData, keyLat) )
+//  	        console.log( 'findGeographicZone: computeMaxInPoints keyLat: ' +
+//  	        		computeMaxInPoints(initialData, keyLat) )
   	        		
   	        var result = L.latLngBounds(
   	            		  L.latLng(
@@ -52,11 +49,11 @@
   	                  	    computeMaxInPoints(initialData, keyLat),
   	                  	    computeMinInPoints(initialData, keyLong)	) )
   	                  	    
-  	        console.log( 'findGeographicZone: ' +
-  	        		computeMaxInPoints(initialData, keyLong) + " , " +
-  	        		computeMinInPoints(initialData, keyLong) + " , " +
-  	        		JSON.stringify( result )
-  	        )
+//  	        console.log( 'findGeographicZone: ' +
+//  	        		computeMaxInPoints(initialData, keyLong) + " , " +
+//  	        		computeMinInPoints(initialData, keyLong) + " , " +
+//  	        		JSON.stringify( result )
+//  	        )
 
   	        return result
         }
@@ -78,8 +75,6 @@ class Map{
     	console.log("bounds")
     	console.log(bounds)
     	this.OSM = L.map(mapId) .fitBounds( bounds )
-
-        // . fitWorld() . zoomIn()
         // .setView([48.862725, 2.287592000000018], 10);
 
         this.pins = [];
