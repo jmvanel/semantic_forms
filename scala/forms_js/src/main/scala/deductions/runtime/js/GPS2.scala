@@ -56,5 +56,9 @@ object GPS2 extends GPS {
     val message = "geoLocation: Error: " + p.message + " - " + p
     global.console.log(message)
     // dom.window. alert (message)
+    val appMessagesZone = dom. document.getElementById("appMessages")
+    appMessagesZone.innerHTML = message
+    import scala.scalajs.js.timers._
+    setTimeout( 40000 ) { appMessagesZone.innerHTML = "" }
   }
 }

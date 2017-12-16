@@ -26,6 +26,7 @@ trait MainXml extends ToolsPage with EnterButtons {
       <body>
         {mainPageHeader(lang, userInfo, displaySearch)}
         { messages }
+        <div id="appMessages"></div>
         <div class={classForContent}>
         {content}
         </div>
