@@ -52,7 +52,8 @@ http.send(content);
     // this URI is actually a foaf:Person
     val uri = URI(request.getRDFsubject())
     val currentPageIsAfoafPerson: Boolean =
-      getObjects(allNamedGraph, (uri), rdf.typ).toSeq.contains(foaf.Person)
+      uri != nullURI &&
+      getObjects(allNamedGraph, uri, rdf.typ).toSeq.contains(foaf.Person)
 
     val label = instanceLabelFromTDB(uri, request.getLanguage())
     val personFromAccount = getPersonFromAccount(request.userId())
