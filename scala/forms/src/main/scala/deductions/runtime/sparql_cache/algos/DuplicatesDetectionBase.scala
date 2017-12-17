@@ -7,7 +7,8 @@ import deductions.runtime.sparql_cache.SPARQLHelpers
 import deductions.runtime.utils.{Configuration, RDFHelpers, RDFPrefixes}
 import org.w3.banana.{OWLPrefix, PointedGraph, RDF, RDFOps}
 
-
+import scalaz._
+import Scalaz._
 
 trait DuplicatesDetectionBase[Rdf <: RDF, DATASET]
 extends HTML5TypesTrait[Rdf]
@@ -99,7 +100,7 @@ with RDFHelpers[Rdf]
   }
 
   def stringsAreSimilar(s1: String, s2: String): Boolean = {
-    if( s1 == "" || s2 == "" ) return false
+    if( s1 === "" || s2 === "" ) return false
 
     val words1 = s1.split("""\s+""").toSet
     val words2 = s2.split("""\s+""").toSet

@@ -6,6 +6,9 @@ import deductions.runtime.utils.RDFOPerationsDB
 import deductions.runtime.utils.{Configuration, RDFHelpers}
 import org.w3.banana.{OWLPrefix, Prefix, RDF}
 
+import scalaz._
+import Scalaz._
+
 /** populate Fields in form by inferencing from given class, using ontologies and properties:
  *  - rdfs:subClassOf
  *  - rdfs:domain
@@ -145,7 +148,7 @@ with FormModule[Rdf#Node, Rdf#URI]
         //          println("doap") // debug <<<<<
         if (prop.toString().startsWith(graphURI)) {
           val doms = find(graph, prop, rdfs.domain, ANY)
-          if (doms.size == 0) {
+          if (doms.size === 0) {
             inferedProperties += prop.asInstanceOf[Rdf#URI]
             logger.info(s"addDomainlessProperties: <$uri> add <$prop>")
           }

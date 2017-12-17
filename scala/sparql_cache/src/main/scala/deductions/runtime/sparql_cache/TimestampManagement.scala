@@ -10,6 +10,9 @@ import org.w3.banana.RDF
 
 import scala.util.{Success, Try}
 
+import scalaz._
+import Scalaz._
+
 trait TimestampManagement[Rdf <: RDF, DATASET]
 extends RDFStoreLocalProvider[Rdf, DATASET]
     with SPARQLHelpers[Rdf, DATASET]
@@ -28,7 +31,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
       conn =>
         val expires = getHeaderField("Expires", conn)
         println( s"""isDocumentExpired: Expires: "$expires"""" )
-        if( expires == "" )
+        if( expires === "" )
           false
         else {
           val resulTest = Try {

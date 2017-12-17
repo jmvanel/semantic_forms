@@ -4,6 +4,8 @@ import deductions.runtime.utils.{ RDFHelpers, RDFPrefixes }
 import org.w3.banana.{ PointedGraph, RDF }
 
 import scala.collection.Seq
+import scalaz._
+import Scalaz._
 
 /**
  * populate Fields in form by inferring possible label from:
@@ -108,7 +110,7 @@ trait InstanceLabelsInference2[Rdf <: RDF]
         val label = getLiteralInPreferedLanguageFromSubjectAndPredicate(
           classs,
           rdfs.label, lsegment)
-        if (label == "Thing")
+        if (label === "Thing")
           ""
         else
           label

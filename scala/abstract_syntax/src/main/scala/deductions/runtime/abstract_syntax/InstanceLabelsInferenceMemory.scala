@@ -5,6 +5,9 @@ import deductions.runtime.utils.{RDFHelpers, RDFPrefixes}
 import org.w3.banana.RDF
 
 import scala.util.Success
+import scalaz._
+import Scalaz._
+
 /** wraps InstanceLabelsInference to cache Instance Labels in TDB */
 trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     extends InstanceLabelsInference2[Rdf]
@@ -25,7 +28,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   /** NON transactional, needs rw transaction */
   override def makeInstanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
     val labelFromTDB = instanceLabelFromTDB(node, lang)
-    if (labelFromTDB == "" || labelFromTDB == "Thing" || isLabelLikeURI(node, labelFromTDB ) )
+    if (labelFromTDB === "" || labelFromTDB === "Thing" || isLabelLikeURI(node, labelFromTDB ) )
       computeInstanceLabelAndStoreInTDB(node, graph, lang)
     else labelFromTDB
   }
@@ -76,7 +79,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
 
   /** NON transactional, needs rw transaction */
   def instanceLabelFromTDB(node: Rdf#Node, lang: String): String = {
-    if( nodeToString(node) == "" ) return ""
+    if( nodeToString(node) === "" ) return ""
 //	  println(s"""instanceLabelFromTDB node "$node" """ )
     val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
     val labelsGraph0 = rdfStore.getGraph( datasetForLabels, labelsGraphUri)
@@ -120,7 +123,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     val labelsComputedOrFromTDB =
       labelsFromTDB . map { (node_label)  =>
         node_label._1 -> {
-          val recompute = node_label._2 == ""
+          val recompute = node_label._2 === ""
           (
             (if (recompute) {
               recomputeCount = recomputeCount + 1
@@ -159,12 +162,12 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   /** compute Instance Label and store it in TDB */
   private def computeInstanceLabelAndStoreInTDB(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
     logger.debug( s"compute displayLabel for <$node>" )
-    if( node.toString() == "" ) return ""
+    if( node.toString() === "" ) return ""
 
     val label = super.makeInstanceLabel(node, graph, lang)
 //    println(s"computeInstanceLabeAndStoreInTDB: $node .toString() , computed label $label")
 //    println(s"$node .toString().endsWith( label.substring(label.length()-1) = ${label.substring(0, label.length()-1)}")
-    val label2 = if( label == "" || isLabelLikeURI(node: Rdf#Node, label) ) {
+    val label2 = if( label === "" || isLabelLikeURI(node: Rdf#Node, label) ) {
       val v = instanceLabelFromLabelProperty(node)
       v match {
         case Some(node) =>

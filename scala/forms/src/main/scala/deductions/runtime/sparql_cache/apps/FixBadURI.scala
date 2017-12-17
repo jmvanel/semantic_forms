@@ -13,6 +13,8 @@ import org.apache.jena.riot.RDFDataMgr
 import org.apache.jena.util.FileManager
 import org.w3.banana.RDF
 
+import scalaz._
+import Scalaz._
 
 /**
  * @author jmv
@@ -39,7 +41,7 @@ object FixBadURIApp extends  {
     with App {
   
   def listGraphNames() = listNames(dataset)
-  if( args.size == 0 )
+  if( args.size === 0 )
     fix
   else
     fixGraph( ops.URI(args(0)) )

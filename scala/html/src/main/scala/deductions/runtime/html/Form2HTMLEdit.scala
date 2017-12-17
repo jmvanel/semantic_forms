@@ -8,7 +8,10 @@ import scala.xml.NodeSeq.seqToNodeSeq
 import scala.xml.{Elem, NodeSeq, Text}
 import deductions.runtime.core.URIWidget
 import deductions.runtime.core.HTTPrequest
+import scala.xml.Unparsed
 
+import scalaz._
+import Scalaz._
 
 /** generate HTML from abstract Form for Edition */
 private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
@@ -125,7 +128,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
       else {
         val typ0 = firstNODEOrElseEmptyString(r.type_)
         val typ = if (
-            typ0 == "" ||
+            typ0 === "" ||
             typ0.endsWith( "#Thing") )
           ""
         else
@@ -195,7 +198,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
     val type0 = firstNODEOrElseEmptyString(type_)
     val placeholder = {
         val typ = if (
-            type0 == ""
+            type0 === ""
             || type0.endsWith( "#string")
             || type0.endsWith( "#Literal")
         )
@@ -210,7 +213,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
     val elem = type0 match {
 
       // TODO in FormSyntaxFactory match graph pattern for interval datatype ; see issue #17
-      case typ if typ == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
+      case typ if typ === ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
         if (radioForIntervals)
           (for (n <- Range(0, 6)) yield (
             <input type="radio" name={
@@ -229,7 +232,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
           </select>
         }
 
-      case typ if typ == xsdPrefix + "boolean" =>
+      case typ if typ === xsdPrefix + "boolean" =>
         <div class="wrapper">
           <label for="yes_radio" id="yes-lbl">Oui</label>
           <input type="radio" name={
@@ -254,10 +257,10 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
       case _ =>
         <div class={ css.cssClasses.formDivInputCSSClass }>
         {addTripleAttributesToXMLElement(
-          <input class={ css.cssClasses.formInputCSSClass } value={
+          <input class={ css.cssClasses.formInputCSSClass }
+          value={
             toPlainString(value)
-          } name={
-            lit.htmlName } type={
+          } name={ lit.htmlName } type={
             if( lit.property.toString() . toLowerCase().endsWith("password"))
               "password"
             else
@@ -269,7 +272,19 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
           } dropzone="copy" id={ htmlId }
           >
           </input> ,
-          lit ) }
+          lit )
+          }
+          <!--
+          <script>{Unparsed(s"""
+        		var inputElement = document.getElementById( '$htmlId' );
+        		inputElement.addEventListener("dblclick",function(e){
+              /*your handler here */
+              console.log( 'inputElement '+ inputElement);
+              // ????? inputElement.select();
+        		},false);
+          """)}
+          </script>
+          -->
           { makeUserInfoOnTriples(lit, request.getLanguage()) }
         </div>
         <div class={ css.cssClasses.formDivEditInputCSSClass }>

@@ -13,6 +13,8 @@ import org.w3.banana.io.RDFLoader
 import org.w3.banana.{PointedGraph, PointedGraphs, RDF, RDFOps}
 
 import scala.util.{Success, Try}
+import scalaz._
+import Scalaz._
 
 /**
  * arguments:
@@ -38,17 +40,17 @@ object GeoPathApp extends {
   graph.map {
     graph =>
       val (pathLength, timeColumns) =
-        if (args.size == 4) {
+        if (args.size === 4) {
           val mobile = URI(args(1))
           val begin = args(2)
           val end = args(3)
           (getPathLengthForMobileInterval(mobile, begin, end, graph), s"$begin\t$end")
-        } else if (args.size == 2) {
+        } else if (args.size === 2) {
           val mobile = URI(args(1))
           (getPathLengthForMobile(mobile, graph), s"\t")
         } else ("", "")
 
-      if (args.size == 1) {
+      if (args.size === 1) {
         println("getPathLengthForAllMobiles")
         // println( getTriples(getPathLengthForAllMobiles(graph)).mkString("\n"))   
         // println( turtleWriter.asString(getPathLengthForAllMobiles(graph), "") )

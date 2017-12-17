@@ -13,7 +13,10 @@ import scala.concurrent.Future
 import scala.util.{Failure, Try}
 import deductions.runtime.core.HTTPrequest
 import scala.util.Success
-    
+
+import scalaz._
+import Scalaz._
+
 trait FormSaver[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
     with TypeAddition[Rdf, DATASET]
@@ -123,7 +126,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
         // named graph in which to save:
         val graphURI =
-          if (graphURIOption == Some("")) subjectUri
+          if (graphURIOption === Some("")) subjectUri
           else URLDecoder.decode(graphURIOption.getOrElse(subjectUri0), "utf-8")
  
         val databaseChanges = computeDatabaseChangesFromMap( httpParamsMap, lang)
@@ -154,7 +157,6 @@ trait FormSaver[Rdf <: RDF, DATASET]
     val triplesToRemove = ArrayBuffer[Rdf#Triple]()
     var typeChange = false
     
-      //      if (originalTriple.objectt == foaf.Document ) // predicate == foaf.firstName) log( "DDDDDDDDDDD "+ foaf.Document)
       log(s"computeDatabaseChanges: originalTriple: $originalTriple, objectsFromUser $objectsFromUser")
       objectsFromUser.map { objectStringFromUser =>
         // NOTE: a single element in objects
@@ -180,7 +182,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
           else Literal(objectStringFromUser)
         )
         val originalData = nodeToString(originalTriple.objectt)
-        val emptyUserInput: Boolean = objectStringFromUser == ""
+        val emptyUserInput: Boolean = objectStringFromUser === ""
         val differingUserInput: Boolean = objectStringFromUser != originalData
         val originalDataNonEmpty: Boolean = originalData != ""
         val newUserInput: Boolean = !emptyUserInput && differingUserInput

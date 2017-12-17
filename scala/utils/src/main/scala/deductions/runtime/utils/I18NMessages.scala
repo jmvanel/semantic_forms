@@ -9,19 +9,22 @@ import java.util.Locale
 
 import com.netaporter.i18n.ResourceBundle
 
+import scalaz._
+import Scalaz._
+
 /** use https://github.com/NET-A-PORTER/scala-i18n */
 object I18NMessages {
   val messages = ResourceBundle("messages.messages")
 
   def get(messageId: String, lang: String) = {
-    val language = if (lang == "") "en" else lang
+    val language = if (lang === "") "en" else lang
     val s = messages.getOrElse(messageId,
       Locale.forLanguageTag(language), messageId)
     new String(s.getBytes("ISO-8859-1"), "UTF-8")
   }
 
   def format(messageId: String, lang: String, messageArguments: String*): String = {
-    val language = if (lang == "") "en" else lang
+    val language = if (lang === "") "en" else lang
     val loc = Locale.forLanguageTag(language)
     val template0 = messages.getOrElse(messageId,
       Locale.forLanguageTag(language), messageId)

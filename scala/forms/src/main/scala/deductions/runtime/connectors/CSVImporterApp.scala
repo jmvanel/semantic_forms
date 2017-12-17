@@ -75,7 +75,6 @@ object CSVImporterApp extends {
   } else
     run(in, documentURI)
 
-  //  if (args.size > 3 && args(3) == "print" ) 
   {
     val outputFile = urlOrFile + ".ttl"
     println(s"""Write $outputFile,

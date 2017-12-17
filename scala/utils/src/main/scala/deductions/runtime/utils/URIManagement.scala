@@ -5,6 +5,9 @@ import java.net._
 import scala.collection.JavaConversions._
 import deductions.runtime.core.HTTPrequest
 
+import scalaz._
+import Scalaz._
+
 /**
  * Management of URI policy: how are URI created by the application
  *
@@ -27,7 +30,7 @@ trait URIManagement extends URIHelpers {
   def makeURIFromString(stringFromUser: String, predicate: String=""): String = {
     if (isAbsoluteURI(stringFromUser))
       stringFromUser
-    else if(predicate == "http://xmlns.com/foaf/0.1/phone" )
+    else if(predicate === "http://xmlns.com/foaf/0.1/phone" )
       "tel:" + stringFromUser
       // NOTE schema:telephone is an xsd:string
     else if(stringFromUser.contains("@"))

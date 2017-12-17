@@ -200,10 +200,8 @@ import scala.util.{Failure, Success, Try}
     val inputURI = uri.toString()
     val found = urisMap.find {
       case (uriMapped, pref) =>
-//        if(pref == "xsd") println(s"abbreviateTurtle2: pref $pref , uriMapped $uriMapped")
         inputURI.startsWith(uriMapped)
     }
-//    if(found.isDefined && found.get._2 == "xsd") println(s"abbreviateTurtle2: found $found")
     found match {
       case Some((iri, pref)) =>
         val id = inputURI.substring(iri.length)

@@ -8,6 +8,9 @@ import play.api.mvc.Result
 import deductions.runtime.services.RDFContentNegociation
 import java.net.URLEncoder
 
+import scalaz._
+import Scalaz._
+
 /** controller for non-SPARQL Services (or SPARQL related but not in the W3C recommendations) */
 trait Services extends ApplicationTrait
 with RDFContentNegociation
@@ -154,7 +157,7 @@ with RDFContentNegociation
       val firstMimeTypeAccepted = accept.getOrElse("").replaceFirst(",.*", "")
       val mimeType =
         if( isKnownRdfSyntax(firstMimeTypeAccepted) ||
-            firstMimeTypeAccepted == htmlMime )
+            firstMimeTypeAccepted === htmlMime )
           firstMimeTypeAccepted
         else
           jsonldMime

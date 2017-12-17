@@ -4,6 +4,9 @@ import org.w3.banana.{RDF, RDFOps, RDFStore, SparqlEngine, SparqlOps, SparqlUpda
 
 import scala.util.Try
 
+import scalaz._
+import Scalaz._
+
 /** RDF OPerations on a DataBase */
 trait RDFOPerationsDB[Rdf <: RDF, DATASET] {
   val config: Configuration
@@ -60,7 +63,7 @@ extends RDFOPerationsDB[Rdf, DATASET] {
 
     /** */
   def getDatasetOrDefault(databaseLoc: String = "TDB", useTextQuery: Boolean= config.useTextQuery): DATASET = {
-    if (databaseLoc == databaseLocation)
+    if (databaseLoc === databaseLocation)
       dataset
     else
       createDatabase(databaseLoc, useTextQuery)

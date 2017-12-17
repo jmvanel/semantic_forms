@@ -10,6 +10,8 @@ import org.w3.banana.RDF
 
 import scala.util.{Failure, Success, Try}
 
+import scalaz._
+import Scalaz._
 
 
 /** facade for user Authentication management;
@@ -34,7 +36,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
   def checkLogin(loginName: String, password: String): Boolean = {
     val databasePasswordOption = findPassword(loginName)
     databasePasswordOption match {
-      case Some(databasePassword) => databasePassword == hashPassword(password)
+      case Some(databasePassword) => databasePassword === hashPassword(password)
       case None => false
     }
   }

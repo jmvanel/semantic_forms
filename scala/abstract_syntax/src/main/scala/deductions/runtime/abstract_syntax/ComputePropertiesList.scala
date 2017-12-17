@@ -5,6 +5,9 @@ import org.w3.banana.RDF
 import scala.util.{Success, Try}
 import scala.collection.mutable.ArrayBuffer
 
+import scalaz._
+import Scalaz._
+
 /** Step 1 of form generation: compute properties List from Config, Subject, Class (in that order) */
 trait ComputePropertiesList[Rdf <: RDF, DATASET] {
   self: FormSyntaxFactory[Rdf, DATASET] =>
@@ -150,7 +153,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
     // loop on classes
     val listPerFormSpecification =
       for (classe <- classes) yield {
-        if (formuri == "") {
+        if (formuri === "") {
           val (propertiesList, formConfiguration) = lookPropertiesListInConfiguration(classe)
 //          logger.debug(
               println(
@@ -176,19 +179,8 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
       tryClassLast = tryClass
     }
     (propertiesListAll, formSpecificationAll, tryClassLast)
-//    val classs = classes.head
-//    if (formuri == "") {
-//      val (propertiesList, formConfiguration) = lookPropertiesListInConfiguration(classs)
-//      logger.debug( s"computePropsFromConfig: $propertiesList")
-//      (propertiesList, Seq(formConfiguration), Success(classs))
-//    } else {
-//      val (propertiesList, formConfiguration, tryGraph) = lookPropertiesListFromDatabaseOrDownload(formuri)
-//      val tryClass = tryGraph.map { gr =>
-//        lookClassInFormSpec(URI(formuri), gr)
-//      }
-//      (propertiesList, Seq(formConfiguration), tryClass)
-//    }
   }
+
   private def classFromSubject(subject: Rdf#Node)(implicit graph: Rdf#Graph) = {
     getHeadOrElse(subject, rdf.typ)
   }

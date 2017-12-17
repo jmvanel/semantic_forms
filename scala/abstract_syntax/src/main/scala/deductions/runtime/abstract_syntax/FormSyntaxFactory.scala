@@ -14,6 +14,9 @@ import deductions.runtime.core._
 import scala.util.Success
 import scala.util.Failure
 
+import scalaz._
+import Scalaz._
+
 /** one of EditionMode, DisplayMode, CreationMode */
 abstract sealed class FormMode { val editable = true }
 object FormMode{ def apply( editable:Boolean = true) = if(editable) EditionMode else DisplayMode }
@@ -288,7 +291,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         s"""WARNING: ranges $ranges for property $prop are multiple;
             taking first if not owl:Thing
             """
-      } else if (rangesSize == 0) {
+      } else if (rangesSize === 0) {
         s"""WARNING: There is no range for property $prop
             """
       } else "")

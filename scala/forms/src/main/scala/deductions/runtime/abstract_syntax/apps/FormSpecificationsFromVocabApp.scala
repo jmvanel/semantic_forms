@@ -7,6 +7,8 @@ import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provid
 import deductions.runtime.utils.DefaultConfiguration
 
 import scala.util.Try
+import scalaz._
+import Scalaz._
 
 /**
   * Created by LaFaucheuse on 07/07/2017.
@@ -20,7 +22,7 @@ object FormSpecificationsFromVocabApp extends RDFStoreLocalJena1Provider
     override val useTextQuery = false
   }
 
-  if (args.size == 0) {
+  if (args.size === 0) {
     println("Usage: input file for vocabulary; output in new file with '.formspec.ttl' suffix")
     System.exit(-1)
   }

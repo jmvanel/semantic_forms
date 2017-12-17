@@ -51,7 +51,7 @@ extends RDFPrefixes[Rdf] {
         literal => {
           val optionLang = fromLiteral(literal)._3
           optionLang match {
-            case Some(lang) => lang == langWanted
+            case Some(lang) => lang == makeLang(langWanted)
             case _          => false
           }
         })

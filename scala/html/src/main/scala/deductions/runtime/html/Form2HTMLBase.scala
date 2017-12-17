@@ -7,6 +7,9 @@ import scala.util.Try
 import scala.xml.{Elem, NodeSeq}
 import org.joda.time.DateTime
 
+import scalaz._
+import Scalaz._
+
 /** generate HTML from abstract Form : common parts for Display & edition */
 private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     extends BasicWidgets
@@ -113,7 +116,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
   def urlEncode(node: Any) = Form2HTML.urlEncode(node) // URLEncoder.encode(node.toString, "utf-8")
 
   def createHyperlinkString(hrefPrefix: String = config.hrefDisplayPrefix, uri: String, blanknode: Boolean = false): String = {
-    if (hrefPrefix == "")
+    if (hrefPrefix === "")
       uri
     else {
       val suffix = if (blanknode) "&blanknode=true" else ""

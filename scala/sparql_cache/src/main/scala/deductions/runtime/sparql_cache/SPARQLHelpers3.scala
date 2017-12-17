@@ -17,6 +17,9 @@ import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
 import org.w3.banana.RDFOps
 
+import scalaz._
+import Scalaz._
+
 /** SPARQL Helpers without inheritance to RDFStoreLocalProvider,
  *  contrary to original SPARQLHelpers3;
  *  this is replaced by implicit arguments;
@@ -512,7 +515,8 @@ trait SPARQLHelpers3[Rdf <: RDF, DATASET]
 //          val columnsCount = columnsMap.keys.max
 //          val actualColumnsList = columnsMap(columnsCount)
 
-          implicit val literalIsOrdered: Ordering[Rdf#Literal] = Ordering.by(lit => fromLiteral(lit)._1 )
+          implicit val literalIsOrdered: scala.Ordering[Rdf#Literal] =
+            scala.Ordering.by(lit => fromLiteral(lit)._1 )
           val r = columnsMap2 .map {
         	  name =>
         	  println(s"name $name")
@@ -749,9 +753,9 @@ trait SPARQLHelpers3[Rdf <: RDF, DATASET]
       case Success(graph) =>
         val graphSize = graph.size(ops)
         val (writer, stats) =
-          if (format == "jsonld")
+          if (format === "jsonld")
             (jsonldCompactedWriter, "")
-          else if (format == "rdfxml")
+          else if (format === "rdfxml")
             (rdfXMLWriter, s"<!-- graph size ${graphSize} -->\n")
           else
             (turtleWriter, s"# graph size ${graphSize}\n")

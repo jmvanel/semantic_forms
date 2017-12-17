@@ -14,6 +14,9 @@ import scala.xml.NodeSeq.seqToNodeSeq
 import scala.xml.{Elem, NodeSeq, Text}
 import deductions.runtime.utils.I18NMessages
 
+import scalaz._
+import Scalaz._
+
 /** Abstract Form Syntax to HTML;
  * different modes: display or edit;
  *  takes in account datatype
@@ -254,8 +257,8 @@ import deductions.runtime.utils.I18NMessages
 
     val isCreateRequest = request.path.contains("create")
     val editableByUser =
-              field.metadata == request.userId() ||
-              field.metadata == userURI(request)
+              field.metadata === request.userId() ||
+              field.metadata === userURI(request)
 //    println(s"DEBUG !!!!!!!!!! editableByUser=$editableByUser <- field.metadata=${field.metadata} =? request.userId()=${request.userId()}")
 
     // hack instead of true form separator in the form spec in RDF:
@@ -265,7 +268,7 @@ import deductions.runtime.utils.I18NMessages
       case l: formMod#LiteralEntry =>
 //        println(s">>>>>>>>>>>>>>>>>>> createHTMLField ${field.value.toString()}")
         if (editable && (editableByUser || isCreateRequest ||
-          toPlainString(field.value) == ""))
+          toPlainString(field.value) === ""))
           createHTMLiteralEditableField(l, request)
         else
           createHTMLiteralReadonlyField(l, request)
@@ -276,7 +279,7 @@ import deductions.runtime.utils.I18NMessages
            * or just create a new resource with its type, given by range, or derived
            * (like in N3Form in EulerGUI ) */
         if (editable && (editableByUser || isCreateRequest ||
-          toPlainString(field.value) == ""))
+          toPlainString(field.value) === ""))
           createHTMLResourceEditableField(r, lang)
         else
           createHTMLResourceReadonlyField(r, hrefPrefix, request)
@@ -297,7 +300,7 @@ import deductions.runtime.utils.I18NMessages
 
       case _ => <p>Should not happen! createHTMLField({ field })</p>
     }
-    if (displayInTable == true) {
+    if (displayInTable === true) {
       Seq(createAddRemoveWidgets(field, editable)) ++
       {xmlField}
     }
@@ -344,7 +347,7 @@ object Form2HTML {
   def urlEncode(node: Any) = URLEncoder.encode(node.toString, "utf-8")
 
   def createHyperlinkString(hrefPrefix: String, uri: String, blanknode: Boolean = false): String = {
-    if (hrefPrefix == "")
+    if (hrefPrefix === "")
       uri
     else {
       val suffix = if (blanknode) "&blanknode=true" else ""

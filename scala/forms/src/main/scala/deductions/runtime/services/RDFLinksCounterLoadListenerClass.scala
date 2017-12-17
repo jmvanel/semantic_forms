@@ -15,6 +15,9 @@ import deductions.runtime.sparql_cache.RDFCacheAlgo
 import scala.concurrent.Future
 import java.util.concurrent.TimeUnit
 
+import scalaz._
+import Scalaz._
+
 /** RDF Links Counter Listener, for RDF document loading */
 class RDFLinksCounterLoadListenerClass(val config: Configuration,
     rdfLocalProvider: RDFStoreLocalProvider[ImplementationSettings.Rdf, ImplementationSettings.DATASET] )
@@ -41,7 +44,7 @@ class RDFLinksCounterLoadListenerClass(val config: Configuration,
       println(s"\nRDFLinksCounterLoadListenerClass notifyServiceCall: ${request.rawQueryString} - dataset ${datasetUsed}")
       TimeUnit.MILLISECONDS.sleep(500)
       for (
-        uri <- request.getHTTPparameterValue("displayuri") if (request.path == "/display");
+        uri <- request.getHTTPparameterValue("displayuri") if (request.path === "/display");
         uri1 = expandOrUnchanged(uri);
         graph = {
           val graph = checkIfNothingStoredLocally(ops.URI(uri1), transactionsInside = true)._2;

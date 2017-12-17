@@ -160,19 +160,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     val queryString = queryMaker.makeQueryString(search :_* )
     logger.debug( s"search_onlyNT(search='$search') \n$queryString \n\tdataset Class ${dataset.getClass().getName}" )
     // NOTE: if class is specified in request, then ?CLASS is not in results, and vice-versa
-
-//    val variables =
-//      if( search.size > 1 && search(1) != "")
-//        Seq("?thing")  // for ???
-//      else if( search.size == 0 )
-//        Seq("?thing")  // for NamedGraphsSPARQL
-//      else if(isAbsoluteURI(search(0)))
-//        Seq("?thing")           // for ReverseLinksSearchSPARQL
-//      else
-//        Seq("?thing", "?CLASS") // for StringSearchSPARQL
-
     println( s"search_onlyNT: ($search) : SPARQL variables $variables" )
-
     sparqlSelectQueryVariablesNT(queryString, variables )
   }
 

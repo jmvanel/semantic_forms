@@ -15,6 +15,9 @@ import scala.xml.NodeSeq
 import deductions.runtime.data_cleaning.BlankNodeCleaner
 import deductions.runtime.utils.CSSClasses
 
+import scalaz._
+import Scalaz._
+
 /**
  * Form for a subject URI with existing triples;
  *  a facade that blends:
@@ -169,7 +172,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     logger.debug(
       s"htmlFormRawTry dataset $dataset, graphURI <$graphURI>")
 
-    val graphURIActual = if (graphURI == "") uri else graphURI
+    val graphURIActual = if (graphURI === "") uri else graphURI
     Success(graf2form(unionGraph, uri, hrefPrefix, blankNode, editable,
       actionURI, lang, graphURIActual, actionURI2, formGroup, formuri, request))
   }
@@ -219,7 +222,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
 //      manageBlankNodesReload(res.getOrElse(emptyGraph), URI(uri), dataset)
       res
     } else Success(emptyGraph)
-    val graphURIActual = if (graphURI == "") uri else graphURI
+    val graphURIActual = if (graphURI === "") uri else graphURI
     (graphURIActual, tryGraph)
   }
 
@@ -272,7 +275,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
       blankNode: String, formGroup: Rdf#URI, formuri: String="")
     (implicit graph: Rdf#Graph, lang: String )
     :  FormSyntax = {
-    val subjectNode = if (blankNode == "true")
+    val subjectNode = if (blankNode === "true")
       /* Jena TDB specific:
            * Jena supports "concrete bnodes" in SPARQL syntax as pseudo URIs in the "_" URI scheme
            * (it's an illegal name for a URI scheme) */

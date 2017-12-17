@@ -13,6 +13,9 @@ import scala.util.{Failure, Success, Try}
 import scala.xml.{NodeSeq, Text}
 import deductions.runtime.user.FoafProfileClaim
 
+import scalaz._
+import Scalaz._
+
 trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
     extends RDFCacheAlgo[Rdf, DATASET]
     with TriplesViewModule[Rdf, DATASET]
@@ -81,7 +84,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
               println(s"htmlForm: Success !!!!!!!!!!")
               wrapInReadTransaction {
                 // FEATURE: annotate plain Web site
-                typeChange = gr.size == 1 && gr.triples.head.objectt == foaf.Document
+                typeChange = gr.size === 1 && gr.triples.head.objectt == foaf.Document
                 //     println(s">>>> htmlForm typeChange $typeChange") ; printGraph( gr )
               }
 

@@ -3,6 +3,8 @@ package deductions.runtime.abstract_syntax
 import org.w3.banana.{RDF, RDFOps}
 
 import scala.language.postfixOps
+import scalaz._
+import Scalaz._
 
 /**
  * @author jmv
@@ -46,8 +48,8 @@ trait PreferredLanguageLiteral[Rdf <: RDF] {
             // println("getPreferedLanguageFromValues: " + (raw, uri, langOption) )
             langOption match {
               case Some(language) =>
-                if (language == lang) preferedLanguageValue = raw
-                else if (language == "en")
+                if (language == makeLang(lang) ) preferedLanguageValue = raw
+                else if (language == makeLang("en") )
                   enValue = raw
               case None => noLanguageValue = raw
               case _ =>
@@ -58,7 +60,7 @@ trait PreferredLanguageLiteral[Rdf <: RDF] {
       (preferedLanguageValue, enValue, noLanguageValue)
     }
 
-    if (values.size == 1)
+    if (values.size === 1)
       return foldNode(values.head)(
         _ => "", _ => "",
         lit => fromLiteral(lit)._1)

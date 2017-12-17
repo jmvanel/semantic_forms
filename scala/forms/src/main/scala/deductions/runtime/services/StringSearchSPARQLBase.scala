@@ -5,6 +5,9 @@ import org.w3.banana.RDF
 import deductions.runtime.utils.RDFHelpers
 import deductions.runtime.utils.RDFPrefixes
 
+import scalaz._
+import Scalaz._
+
 /** common code to StringSearchSPARQL and Lookup */
 trait StringSearchSPARQLBase[Rdf <: RDF]
     extends RDFPrefixes[Rdf]
@@ -31,14 +34,14 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
   private def classCriterium(classe: String): String = {
 		println(
 		  s"""classCriterium: classe: "${classe}" """)
-    if (classe == "")
+    if (classe === "")
       "?CLASS"
     else
       "<" + expandOrUnchanged(classe) + ">"
     }
 
   private def classVariableInSelect(classe: String): String = {
-    if (classe == "")
+    if (classe === "")
       "?CLASS"
     else
       ""

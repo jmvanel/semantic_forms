@@ -17,6 +17,9 @@ import scala.util.{Failure, Success, Try}
 import org.w3.banana.SparqlEngine
 import scala.xml.Comment
 
+import scalaz._
+import Scalaz._
+
 /**
  * TODO separate stuff depending on dataset, and stuff taking a graph in argument
  * @author jmv
@@ -96,7 +99,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   }
 
   private def checkUnionDefaultGraph(context: Map[String,String]) =
-    context.get("unionDefaultGraph").getOrElse("") == "true"
+    context.get("unionDefaultGraph").getOrElse("") === "true"
 
   val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]
 
@@ -521,7 +524,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 //          val columnsCount = columnsMap.keys.max
 //          val actualColumnsList = columnsMap(columnsCount)
 
-          implicit val literalIsOrdered: Ordering[Rdf#Literal] = Ordering.by(lit => fromLiteral(lit)._1 )
+          implicit val literalIsOrdered: scala.Ordering[Rdf#Literal] =
+            scala.Ordering.by(lit => fromLiteral(lit)._1 )
           val r = columnsMap2 .map {
         	  name =>
         	  println(s"name $name")
@@ -758,9 +762,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       case Success(graph) =>
         val graphSize = graph.size
         val (writer, stats) =
-          if (format == "jsonld")
+          if (format === "jsonld")
             (jsonldCompactedWriter, "")
-          else if (format == "rdfxml")
+          else if (format === "rdfxml")
             (rdfXMLWriter, s"<!-- graph size ${graphSize} -->\n")
           else
             (turtleWriter, s"# graph size ${graphSize}\n")

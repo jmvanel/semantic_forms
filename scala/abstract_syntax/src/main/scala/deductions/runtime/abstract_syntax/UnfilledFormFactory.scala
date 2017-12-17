@@ -9,6 +9,8 @@ import deductions.runtime.core.HTTPrequest
 import org.w3.banana.RDF
 
 import scala.language.postfixOps
+import scalaz._
+import Scalaz._
 
 /** Factory for an Unfilled Form */
 trait UnfilledFormFactory[Rdf <: RDF, DATASET]
@@ -64,7 +66,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
     println(s">>> UnfilledFormFactory.createFormFromClass: classFromSpecsOrGiven <$classFromSpecsOrGiven>")
 
     val instanceURI = getFirstNonEmptyInMap(request.queryString, "subjecturi")
-    val newId = if (instanceURI == "")
+    val newId = if (instanceURI === "")
       makeId(request)
     else
       instanceURI

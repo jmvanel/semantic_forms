@@ -9,6 +9,9 @@ import scala.util.{Failure, Success}
 
 import scala.util.control.NonFatal
 
+import scalaz._
+import Scalaz._
+
 /** */
 trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
 

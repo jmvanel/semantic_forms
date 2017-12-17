@@ -14,6 +14,10 @@ import play.api.mvc.Result
 import deductions.runtime.core.HTTPrequest
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.LoadService
+
+import scalaz._
+import Scalaz._
+
 //import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 //import deductions.runtime.sparql_cache.algos.GraphEnrichment
 
@@ -62,7 +66,7 @@ trait SparqlServices extends ApplicationTrait
           logInfo(s"""sparqlConstruct: sparql: request $request
             sparql: $query
             accepts ${request.acceptedTypes} """)
-          val isSelect = (checkSPARQLqueryType(query) == "select")
+          val isSelect = (checkSPARQLqueryType(query) === "select")
           outputSPARQL(query, request.acceptedTypes, isSelect, bindings, context,
                        getRequestCopy() )
   }
@@ -103,7 +107,7 @@ trait SparqlServices extends ApplicationTrait
 
   private def makeSPARQLoutput(query: String, request: Request[AnyContent],
       context: Map[String,String] = Map() ): Result = {
-        val isSelect = (checkSPARQLqueryType(query) == "select")
+        val isSelect = (checkSPARQLqueryType(query) === "select")
         val acceptedTypes = request.acceptedTypes
         outputSPARQL(query, acceptedTypes, isSelect, context=context,
             httpRequest = getRequestCopy()(request) )
@@ -190,7 +194,7 @@ trait SparqlServices extends ApplicationTrait
           logInfo(s"sparql: update '$update'")
           println(log("update", request))
           val update2 =
-            if (update == "") {
+            if (update === "") {
               println(s"""contentType ${request.contentType}
                 ${request.mediaType}
                 ${request.body.getClass}

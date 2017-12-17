@@ -7,6 +7,9 @@ import org.scalatest.FunSuite
 import org.w3.banana.{RDF, XSDPrefix}
 import deductions.runtime.utils.RDFStoreLocalProvider
 
+import scalaz._
+import Scalaz._
+
 trait TimeSeriesTest[Rdf <: RDF, DATASET] extends FunSuite with TimeSeries[Rdf, DATASET] {
   
   import ops._
@@ -31,8 +34,8 @@ trait TimeSeriesTest[Rdf <: RDF, DATASET] extends FunSuite with TimeSeries[Rdf, 
     println( "results " + results )
     val resPair = results.getOrElse(label, Seq() ).head
     Assert.assertTrue( 
-    		( resPair._2 == 1.0 )   || 
-        ( resPair._2 == 2.0 ) )
+    		( resPair._2 == 1.0d )   || 
+        ( resPair._2 == 2.0d ) )
   }
 }
 

@@ -25,6 +25,9 @@ import play.api.mvc.Controller
 import play.api.mvc.Request
 import play.api.mvc.Security
 
+import scalaz._
+import Scalaz._
+
 object AuthService extends AuthServiceTrait {
   override implicit val config: Configuration = new DefaultConfiguration {
     override val needLoginForEditing = true
@@ -196,7 +199,7 @@ println( s"useridOption $useridOption, passwordOption $passwordOption" )
         userid <- useridOption;
         password <- passwordOption;
         confirmPassword <- confirmPasswordOption
-        if (password == confirmPassword && userid.size >= 2 )
+        if (password === confirmPassword && userid.size >= 2 )
       ) yield signin(userid, password)
 
       val registerChecked = checkRegisterOption match {

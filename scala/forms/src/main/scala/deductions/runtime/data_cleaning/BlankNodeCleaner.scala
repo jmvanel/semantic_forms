@@ -157,8 +157,6 @@ extends BlankNodeCleanerBase[Rdf, DATASET] {
         val graph = rdfStore.getGraph( dataset, graphURI).get
         println(s"graph <$graphURI> size ${graph.size}")
 
-//        if (name == "http://bblfish.net/people/henry/card#me") println("http://bblfish.net/people/henry/card#me")
-
         val triples = find(graph, ANY, ANY, ANY).toList
         var count = 0
         val blankSubjects = triples.

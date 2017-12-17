@@ -4,6 +4,9 @@ import deductions.runtime.html.HTML5Types
 import org.w3.banana.{RDF, XSDPrefix}
 import org.w3.banana.RDFOps
 
+import scalaz._
+import Scalaz._
+
 //object HTML5TypesJena extends JenaModule with HTML5TypesTrait[Jena]
 
 /**
@@ -23,7 +26,7 @@ trait HTML5TypesTrait[Rdf <: RDF] extends HTML5Types {
 
     /** TODO set the right delta for each XSD number type */
     def xsd2html5Step(xsdDatatype: String): String =
-      if(xsd2html5TnputType(xsdDatatype) == "number")
+      if(xsd2html5TnputType(xsdDatatype) === "number")
         "any"
       else
         null

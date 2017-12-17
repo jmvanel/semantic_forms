@@ -10,6 +10,9 @@ import scala.xml.NodeSeq
 import deductions.runtime.utils.Configuration
 import deductions.runtime.utils.I18NMessages
 
+import scalaz._
+import Scalaz._
+
 /** GUI integration: rdfviewer, ... */
 trait BasicWidgets
   extends RDFPrefixesInterface
@@ -39,7 +42,7 @@ private def mess(m: String)(implicit lang: String) = I18NMessages.get(m, lang)
 
   def makeBackLinkButton(uri: String, title: String = ""): Elem = {
     // format: OFF
-    val tit = if (title == "") s" Reverse links for &lt;$uri&gt;" else title
+    val tit = if (title === "") s" Reverse links for &lt;$uri&gt;" else title
     // <i class="glyphicon glyphicon-search"></i>
     <button type="button" 
     		class="btn btn-info btn-xs" readonly="yes" title={ tit } data-value={s"$uri"} onclick={ s"backlinks( '$uri' )" } id={ s"BACK-$uri" }>

@@ -25,6 +25,9 @@ import scala.xml.{Elem, NodeSeq}
 import deductions.runtime.utils.ServiceListenersManager
 import org.w3.banana.RDF
 
+import scalaz._
+import Scalaz._
+
 /**
  * a Web Application Facade,
  *  that still exposes to client all dependences on semantic_forms implementations
@@ -318,7 +321,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       match {
         case Success(s) => s
         case Failure(f) =>
-          if( format == "turtle")
+          if( format === "turtle")
           s"# $f" else "{error: \"" + f + "\" }"
       }
     else "# Empty query result !!!"

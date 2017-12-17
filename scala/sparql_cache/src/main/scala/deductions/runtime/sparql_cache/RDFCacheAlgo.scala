@@ -27,6 +27,9 @@ import org.w3.banana.io.RDFWriter
 import org.w3.banana.io.JsonLdCompacted
 import java.net.URL
 
+import scalaz._
+import Scalaz._
+
 /** implicit RDFReader's - TODO remove DATASET */
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
   val config: Configuration
@@ -82,7 +85,7 @@ extends
   def isGraphInUse(uri: Rdf#URI) = {
     rdfStore.r(dataset, {
       for (graph <- rdfStore.getGraph(dataset, uri)) yield {
-        val uriGraphIsEmpty = graph.size == 0
+        val uriGraphIsEmpty = graph.size === 0
         println("uriGraphIsEmpty " + uriGraphIsEmpty)
         !uriGraphIsEmpty
       }
@@ -121,7 +124,7 @@ extends
           if (nothingStoredLocally) { // then read unconditionally from URI and store in TDB
           println(s"""retrieveURIBody: stored Graph Is Empty for URI <$uri>""")
           val mirrorURI = getMirrorURI(uri)
-          val vv = if (mirrorURI == "") {
+          val vv = if (mirrorURI === "") {
             val graphTry_MIME = readURI(uri, dataset, request)
             val graphDownloaded = {
               val graphTry = graphTry_MIME._1
@@ -199,7 +202,7 @@ extends
           }
         }
       println(s"""checkIfNothingStoredLocally: TDB graph at URI <$uri> size $sizeAndGraph""")
-      (sizeAndGraph._1 == 0, sizeAndGraph._2)
+      (sizeAndGraph._1 === 0, sizeAndGraph._2)
       //      nothingStoredAndGraph.getOrElse((false, emptyGraph))
     }
 
@@ -235,7 +238,7 @@ extends
         }
 
         if (noError && (timestamp > longLocalTimestamp
-          || longLocalTimestamp == Long.MaxValue)) {
+          || longLocalTimestamp === Long.MaxValue)) {
           val graph = readStoreURITry(uri, uri, dataset)
           println(s"updateLocalVersion: <$uri> was outdated by timestamp; downloaded.")
           addTimestampToDataset(uri, dataset2) // PENDING: maybe do this in a Future
@@ -243,7 +246,7 @@ extends
           //          } else Success(emptyGraph) // ????
 
         } else if (!noError ||
-          timestamp == Long.MaxValue) {
+          timestamp === Long.MaxValue) {
           connectionOption match {
             case Some(connection) =>
               val etag = getHeaderField("ETag", connection)
@@ -479,7 +482,7 @@ extends
           val status = response.getStatusLine().getStatusCode();
           if (
               (status >= 200 && status < 300) ||
-              status == 406 ||status == 404 // Not Acceptable
+              status === 406 ||status === 404 // Not Acceptable
               ) {
             val ct = response.getFirstHeader("Content-Type")
             if ( ct == null ) "" else ct.getValue

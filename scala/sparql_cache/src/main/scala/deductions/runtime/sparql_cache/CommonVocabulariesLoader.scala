@@ -4,6 +4,8 @@ import deductions.runtime.utils.RDFPrefixes
 import org.apache.log4j.Logger
 import org.w3.banana.{CertPrefix, DCPrefix, DCTPrefix, FOAFPrefix, LDPPrefix, OWLPrefix, Prefix, RDF, RDFPrefix, RDFSPrefix, WebACLPrefix}
 
+import scalaz._
+import Scalaz._
 
 /** TODO common stuff with trait RDFPrefixes[Rdf] ;
  * not trivial;
@@ -121,7 +123,7 @@ trait CommonVocabulariesLoader[Rdf <: RDF, DATASET]
             val maxMemory = Runtime.getRuntime().maxMemory();
             /* Maximum amount of memory the JVM will attempt to use */
             System.err.println("JVM Maximum memory (bytes): " +
-              (if (maxMemory == Long.MaxValue) "no limit" else maxMemory));
+              (if (maxMemory === Long.MaxValue) "no limit" else maxMemory));
 
             /* Total memory currently in use by the JVM */
             System.err.println("JVM Total memory (bytes): " +

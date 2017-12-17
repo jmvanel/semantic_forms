@@ -13,6 +13,9 @@ import scala.language.postfixOps
 import scala.reflect.io.Path
 import scala.util.{Failure, Success, Try}
 
+import scalaz._
+import Scalaz._
+
 /**
  * merge Duplicates among instances of given class URI;
  * use cases: merge FOAF duplicates, etc;
@@ -407,7 +410,7 @@ type MergeGroups = Seq[MergeGroup]
     def filterURIsByScheme(scheme: String) = {
       uris.filter { uri =>
         val jURI = new java.net.URI(uri.toString())
-        jURI.getScheme == scheme
+        jURI.getScheme === scheme
       }
     }
     /* @return the first URI matching one of the prefixes. */
@@ -427,7 +430,7 @@ type MergeGroups = Seq[MergeGroup]
       //      if (httpURIs.size > 1)
       //        throw new RuntimeException(s"several HTTP URI's: ${uris.mkString(", ")}")
       //      else
-      if (httpURIs.size == 0) {
+      if (httpURIs.size === 0) {
         val uriOption = filterURIsByStartsWith(httpURIs, preferredURIPrefixes)
         uriOption match {
           case None =>
@@ -629,21 +632,6 @@ type MergeGroups = Seq[MergeGroup]
       pairsGroupedByRdfsRange .flatten . toSeq
     } else instanceLabels2URIsMap.toSeq
   }
-
-//  private def checkRdfsRangesEqual_OLD(instanceLabels2URIsMap:InstanceLabels2URIsMap,
-//		  metaClassURI: Rdf#URI)  = {
-//    if (metaClassURI == owl.ObjectProperty) {
-//      instanceLabels2URIsMap.filter {
-//        case (label, uris) =>
-//          val groupedByRdfsRange = uris.groupBy { uri =>
-//            val rangeHeadOption = find(allNamedGraph, uri, rdfs.range, ANY).
-//              map { _.objectt }.toSeq.headOption
-//            rangeHeadOption
-//          }
-//          groupedByRdfsRange.size == 1 // uris.size
-//      }
-//    } else instanceLabels2URIsMap
-//  }
 
   protected def possiblyDeleteDatabaseLocation() = {
     Try {

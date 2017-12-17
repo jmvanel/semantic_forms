@@ -13,6 +13,9 @@ import scala.xml.NodeSeq
 import scala.xml.Elem
 import deductions.runtime.views.ResultsDisplay
 
+import scalaz._
+import Scalaz._
+
 /**
  * Show History of User Actions:
  *  - URI
@@ -126,10 +129,10 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     request:  HTTPrequest): List[Seq[Rdf#Node]] = {
     val params = request.queryString
     if (params.size > 1 ||
-      (params.size == 1 &&
-        params.head._1 != "limit" &&
-        params.head._1 != "uri" &&
-        params.head._1 != "query")) {
+      (params.size === 1 &&
+        params.head._1 =/= "limit" &&
+        params.head._1 =/= "uri" &&
+        params.head._1 =/= "query")) {
 
       wrapInReadTransaction {
         var filteredURIs = metadata
