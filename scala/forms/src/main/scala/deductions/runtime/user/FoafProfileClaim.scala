@@ -8,6 +8,7 @@ import org.w3.banana.RDF
 import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 import deductions.runtime.views.ResultsDisplay
 import deductions.runtime.services.ParameterizedSPARQL
+import deductions.runtime.utils.I18NMessages
 
 /**
  * HTML UI to claim a chosen FOAF Person profile by associating it with the current foaf:OnlineAccount:
@@ -76,8 +77,10 @@ http.send(content);
             { javascript }
           </script>
           <button type="button" onclick={ s"sendPOST(`data=$rdfString`);" }>
-            Claim current page's identity:{ label }
+            <!-- Claim current page's identity:{ label }
             for current user: {request.userId()}
+            -->
+            { I18NMessages.format("Claim", request.getLanguage(), label, request.userId()) }
           </button>
         </div>
       } else {
