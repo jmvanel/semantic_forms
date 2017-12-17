@@ -53,7 +53,7 @@ private def mess(m: String)(implicit lang: String) = I18NMessages.get(m, lang)
   def makeDrawGraphLink( uri: String,
       toolURLprefix: String="/assets/rdfviewer/rdfviewer.html?url=",
       toolname: String="RDF Viewer",
-      imgWidth:Int=15): Elem = {
+      imgWidth:Int=15): NodeSeq = {
 
     // TODO different link when we are on localhost (transmit RDF String then) or in production (or use N3.js
     // http://localhost:9000/download?url=http%3A%2F%2Fjmvanel.free.fr%2Fjmv.rdf%23me
@@ -72,7 +72,7 @@ private def mess(m: String)(implicit lang: String) = I18NMessages.get(m, lang)
 			<img width={imgWidth.toString()} border="0" src="https://www.w3.org/RDF/icons/rdf_flyer.svg"
            alt="RDF Resource Description Framework Flyer Icon"/>
     </a>
-    else <div></div>
+    else NodeSeq.Empty
   }
   
   def makeNeighborhoodLink( uri: String ): Elem = {
