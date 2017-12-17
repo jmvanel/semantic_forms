@@ -26,6 +26,8 @@ object Common {
     "org.apache.logging.log4j" % "log4j-slf4j-impl" % "2.9.0" 
   )
 
+  val scalazDependency = "org.scalaz" %% "scalaz-core" % "7.2.8"
+
   // allready in Banana
   // val httpComponents = "org.apache.httpcomponents" % "httpclient" % "4.5.2"
 
@@ -57,7 +59,7 @@ object Common {
     "org.scala-lang.modules" %% "scala-async" % "0.9.7" ,
 
     "org.apache.commons" % "commons-csv" % "1.5" ,
-    "org.apache.any23" % "apache-any23-csvutils" %  "2.0" // "1.1"
+    "org.apache.any23" % "apache-any23-csvutils" %  "2.1" // 2.0" // "1.1"
   )
 
 }
