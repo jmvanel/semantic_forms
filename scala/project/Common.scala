@@ -6,8 +6,8 @@ object Common {
     val localResolver = Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
     val bananaResolver = "betehess" at "http://dl.bintray.com/betehess/banana-rdf"
 
-//val jenaVersion =  "3.4.0"
-  val jenaVersion =  "3.5.0"
+//val jenaVersion =  "3.5.0"
+  val jenaVersion =  "3.6.0"
 
   val bananaDependency0 = "org.w3" %%  "banana-jena" % "0.8.4-SNAPSHOT" 
   val bananaDependency = bananaDependency0 exclude("org.slf4j", "slf4j-api" )	exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
