@@ -159,11 +159,11 @@ class Map{
 
     /**
      * efface un point
-     * @param uri -- la clé du point a ne plus afficher
+     * @param key (uri) -- la clé du point a ne plus afficher
      */
     pinHide(key) {
         "use strict"
-        if(this.pins[uri] !== undefined){
+        if(this.pins[key] !== undefined){
             let marker = this.pins[key]
             this.OSM.removeLayer(marker)
         }
