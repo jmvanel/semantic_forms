@@ -8,13 +8,15 @@
  * http://rawgit.com/rdf-ext/rdf-examples/develop/parse-jsonld-to-dataset.html
  * https://github.com/rdfjs/representation-task-force/blob/master/interface-spec.md */
 
-  let foaf = "http://xmlns.com/foaf/0.1/"
-  let rdfs = "http://www.w3.org/2000/01/rdf-schema#"
-  let rdfsLabel = rdfs + 'label'
-  let geo = "http://www.w3.org/2003/01/geo/wgs84_pos#"
-  let geoLong = geo + 'long'
-  let geoLat = geo + 'lat'
-  let displayLabel = 'urn:displayLabel'
+/*global rdfFetch rdf */
+
+// let foaf = "http://xmlns.com/foaf/0.1/"
+let rdfs = "http://www.w3.org/2000/01/rdf-schema#"
+let rdfsLabel = rdfs + "label"
+let geo = "http://www.w3.org/2003/01/geo/wgs84_pos#"
+let geoLong = geo + "long"
+let geoLat = geo + "lat"
+let displayLabel = "urn:displayLabel"
 
 /** From a JSON-LD URL , produce a structure like :
  * [{"@id":"http://dbpedia.org/resource/Lyon","label":"Lyon",
@@ -23,25 +25,25 @@
 */
 function rdfURL2SimpleArray(/*String: */url)/*: Promise*/ {
   return rdfFetch( url ).then(
-   (res) => {
+      (res) => {
 //    console.log( 'FETCH ' + res );
-    return res.dataset()
+        return res.dataset()
   }).then((dataset) => {
 
-	/** For filtering with RDF lang */
-	function rdfsLabelCriterium(quad, subject) {
-	 return (
-			 quad.predicate.value === rdfsLabel ||
-			 quad.predicate.value === displayLabel
-	     )
-		 // TODO:	&& quad.object.language === 'en'
-		 &&  quad.subject.toString() == subject.toString()
-	}
+    /** For filtering with RDF lang */
+    function rdfsLabelCriterium(quad, subject) {
+    return (
+       quad.predicate.value === rdfsLabel ||
+       quad.predicate.value === displayLabel
+       )
+     // TODO:	&& quad.object.language === 'en'
+     &&  quad.subject.toString() == subject.toString()
+}
 
 	/** For filtering with non-lang RDF property */
 	function plainPropertyCriterium(/*Quad: */quad, /*Term: */subject, /*String: */property)/*:Boolean*/ {
-		 return quad.predicate.value === property
-			 &&  quad.subject.toString() == subject.toString()
+     return quad.predicate.value === property
+       &&  quad.subject.toString() == subject.toString()
 	}
 
 	function longCriterium(quad, subject) {
@@ -51,12 +53,11 @@ function rdfURL2SimpleArray(/*String: */url)/*: Promise*/ {
 
 	function getRdfsLabel(subj) {
 		var rdfsLabelValue = filterQuad(subj, rdfsLabelCriterium)
+		var rdfsLabelOrElse = rdfsLabelValue
 		if( rdfsLabelValue == "" || rdfsLabelValue == undefined )
 			rdfsLabelOrElse = subj.toString()
-		else
-			rdfsLabelOrElse = rdfsLabelValue
 		return rdfsLabelOrElse
-		
+
 	}
 	function getGeoLong(subj) { return filterQuad(subj, longCriterium) }
 	function getGeoLat(subj) { return filterQuad(subj, latCriterium) }
@@ -69,11 +70,11 @@ function rdfURL2SimpleArray(/*String: */url)/*: Promise*/ {
         return criterium(quad, subj)
       }).toArray().shift()
       return rdfsLabelQuad && rdfsLabelQuad.object.value;
-    };
+    }
 
 //    console.log( 'FETCH 2 ' + dataset );
     let lats = dataset
-    .match(null, rdf.namedNode('http://www.w3.org/2003/01/geo/wgs84_pos#lat'))
+    .match(null, rdf.namedNode("http://www.w3.org/2003/01/geo/wgs84_pos#lat"))
     .toArray()
 //    console.log( 'LATs ' + lats );
 
@@ -82,26 +83,18 @@ function rdfURL2SimpleArray(/*String: */url)/*: Promise*/ {
 
     let simpleArray = subjs . map((subj) => {
       return {
-          "@id": (subj.toString()),
-    	  "label":	getRdfsLabel(subj),
-    	  "long":	getGeoLong(subj),
-    	  "lat":	getGeoLat(subj)
-	  }
+        "@id": (subj.toString()),
+        "label":	getRdfsLabel(subj),
+        "long":	getGeoLong(subj),
+        "lat":	getGeoLat(subj)
+    }
     })
     // console.log( 'rdfURL2SimpleArray: simpleArray: ' + JSON.stringify(simpleArray) )
     return simpleArray
   })
-};
-
-/** UNUSED */
-function jsonLDLike2Object(/*Array:*/arr) {
-	  var rv = {};
-	  for (var i = 0; i < arr.length; ++i)
-	    if (arr[i] !== undefined)
-          rv["@id"] = arr[i];
-	  return rv;
 }
 
+/*global test_rdfURL2SimpleArray() */
 function test_rdfURL2SimpleArray() {
   var endpoint = 'http://semantic-forms.cc:9111/sparql';
   // var endpoint = 'http://localhost:9000/sparql';
@@ -119,4 +112,3 @@ function test_rdfURL2SimpleArray() {
 
 // uncomment for testing in command line with Node.js
 // test_rdfURL2SimpleArray()
-

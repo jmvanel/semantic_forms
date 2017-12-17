@@ -2,64 +2,68 @@
  * see Scala.js bindings for Leaflet.js : https://github.com/fancellu/scalajs-leaflet
  * API http://leafletjs.com/reference-1.2.0.html
 */
-        /*private*/
-        function computeMinInPoints(initialData, key/*: String*/) {
-  	        console.log( 'computeMinInPoints: initialData: ' + initialData )
 
-        	var min = Infinity;
-        	for(let dataKey in initialData){
-        		let element = initialData[dataKey]
+/*global L */
+
+/*private*/
+function computeMinInPoints(initialData, key/*: String*/) {
+  window.console.log( "computeMinInPoints: initialData: " + initialData )
+
+          var min = Infinity
+          for(let dataKey in initialData){
+            let element = initialData[dataKey]
 //      	        console.log( 'computeMinInPoints 1 key: ' + key + " - element " + JSON.stringify(element) )
 //      	        console.log( 'computeMinInPoints 1.1 element[key] ' + (element[key]) )
-            	    if (Number(element[key]) < min) {
-            	        min = Number(element[key])
+                  if (Number(element[key]) < min) {
+                      min = Number(element[key])
 //            	        console.log( 'computeMinInPoints 2' + element )
-            	    }            
+                  }
             }
             return min
         }
         /*private*/
         function computeMaxInPoints(initialData, key/*: String*/) {
-        	var max = - Infinity;
-        	for(let dataKey in initialData){
-        		let element = initialData[dataKey]
+          var max = - Infinity
+          for(let dataKey in initialData){
+            let element = initialData[dataKey]
 //      	        console.log( 'computeMaxInPoints 3.1 element[key] ' + (element[key]) )
-            	if (Number(element[key]) > max) {
-            	  max = Number(element[key])
-                }            
+              if (Number(element[key]) > max) {
+                max = Number(element[key])
+              }
             }
             return max
         }
 
         /** @return Bounds object from LeafLet */
         function findGeographicZone(initialData,keyLat,keyLong) {
-        	
+
 //  	        console.log( 'findGeographicZone: initialData: ' +
 //  	        		JSON.stringify(initialData) )
 //  	        console.log( 'findGeographicZone: computeMinInPoints keyLat: ' +
 //  	        		computeMinInPoints(initialData, keyLat) )
 //  	        console.log( 'findGeographicZone: computeMaxInPoints keyLat: ' +
 //  	        		computeMaxInPoints(initialData, keyLat) )
-  	        		
-  	        var result = L.latLngBounds(
-  	            		  L.latLng(
-  	            		    computeMinInPoints(initialData, keyLat),
-  	            	        computeMaxInPoints(initialData, keyLong)	),
-  	              		  L.latLng(
-  	                  	    computeMaxInPoints(initialData, keyLat),
-  	                  	    computeMinInPoints(initialData, keyLong)	) )
-  	                  	    
+
+            var result = L.latLngBounds(
+                      L.latLng(
+                        computeMinInPoints(initialData, keyLat),
+                          computeMaxInPoints(initialData, keyLong)	),
+                      L.latLng(
+                            computeMaxInPoints(initialData, keyLat),
+                            computeMinInPoints(initialData, keyLong)	) )
+
 //  	        console.log( 'findGeographicZone: ' +
 //  	        		computeMaxInPoints(initialData, keyLong) + " , " +
 //  	        		computeMinInPoints(initialData, keyLong) + " , " +
 //  	        		JSON.stringify( result )
 //  	        )
 
-  	        return result
+            return result
         }
 
+/*global Map*/
 class Map{
-    
+
     /**
      *
      * @param mapId -- id de la div
@@ -71,22 +75,22 @@ class Map{
      */
     constructor(mapId,initialData,keyLat,keyLong,keyText) {
 
-    	var bounds = findGeographicZone(initialData,keyLat,keyLong)
-    	console.log("bounds")
-    	console.log(bounds)
-    	this.OSM = L.map(mapId) .fitBounds( bounds )
+      var bounds = findGeographicZone(initialData,keyLat,keyLong)
+      console.log("bounds")
+      console.log(bounds)
+      this.OSM = L.map(mapId) .fitBounds( bounds )
         // .setView([48.862725, 2.287592000000018], 10);
 
-        this.pins = [];
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        this.pins = []
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(this.OSM );
-        this.keyLat = keyLat;
-        this.keyLong = keyLong;
-        this.keyLat = keyLat;
+        }).addTo(this.OSM )
+        this.keyLat = keyLat
+        this.keyLong = keyLong
+        this.keyLat = keyLat
         for(let key in initialData){
             if (initialData.hasOwnProperty(key)) {
-                this.addPin(initialData[key][keyLat],initialData[key][keyLong],key,initialData[key][keyText]);
+                this.addPin(initialData[key][keyLat],initialData[key][keyLong],key,initialData[key][keyText])
             }
         }
     }
@@ -102,13 +106,13 @@ class Map{
      */
     static constructorWithArray(mapId, initialData,keyId,keyLat,keyLong,keyText) {
 //        console.log('in constructor: initialData'); console.log(initialData);
-    	let objectFromArray = {};
+      let objectFromArray = {}
         initialData.forEach(
-        		function (element) {
-            objectFromArray[element[keyId]] = element;
+            function (element) {
+            objectFromArray[element[keyId]] = element
         })
-        console.log( 'constructorWithArray: objectFromArray: ' ) ; console.log( objectFromArray )
-        return new Map(mapId, objectFromArray, keyLat,keyLong,keyText);
+        console.log( "constructorWithArray: objectFromArray: " ) ; console.log( objectFromArray )
+        return new Map(mapId, objectFromArray, keyLat,keyLong,keyText)
     }
 
     /**
@@ -119,26 +123,26 @@ class Map{
      * @param text -- le texte
      */
     pinShowAll() {
-        "use strict";
+        "use strict"
         for (let key in this.pins) {
             if (this.pins.hasOwnProperty(key)) {
-                this.pinShow(key);
+                this.pinShow(key)
 
             }
         }
     }
 
     pinShow(key){
-        "use strict";
-        this.pins[key].addTo(this.OSM);
+        "use strict"
+        this.pins[key].addTo(this.OSM)
     }
 
 
     addPin(latitude,longitude, key, text) {
-        "use strict";
+        "use strict"
         this.pins[key] = L.marker([latitude,longitude])
-            .bindPopup(text);
-        this.pinShow(key);
+            .bindPopup(text)
+        this.pinShow(key)
     }
     /**
      * affiche un point et efface les autres
@@ -148,9 +152,9 @@ class Map{
      * @param text -- le texte
      */
     pinShowOne(key) {
-        "use strict";
-        this.pinHideAll();
-        this.pinShow(key);
+        "use strict"
+        this.pinHideAll()
+        this.pinShow(key)
     }
 
     /**
@@ -158,10 +162,10 @@ class Map{
      * @param uri -- la clé du point a ne plus afficher
      */
     pinHide(key) {
-        "use strict";
+        "use strict"
         if(this.pins[uri] !== undefined){
-            let marker = this.pins[key];
-            this.OSM.removeLayer(marker);
+            let marker = this.pins[key]
+            this.OSM.removeLayer(marker)
         }
     }
 
@@ -169,10 +173,10 @@ class Map{
      * efface tous les points
      */
     pinHideAll() {
-        "use strict";
+        "use strict"
         for (let key in this.pins){
             if (this.pins.hasOwnProperty(key)) {
-                this.pinHide(key);
+                this.pinHide(key)
             }
         }
     }

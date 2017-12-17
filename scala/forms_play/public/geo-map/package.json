@@ -1,0 +1,10 @@
+{
+  "name": "geo-map-rdf",
+  "version": "1.0",
+  "description": "JavaScript library for maps from RDF",
+  "dependencies": {
+    "leaflet": "1.2.0",
+    "rdf-ext": "^1.0.0",
+    "rdf-fetch": "^1.0.0"
+  }
+}
