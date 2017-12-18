@@ -1,6 +1,6 @@
 package deductions.runtime.abstract_syntax
 
-import deductions.runtime.core.{FormModule, Text, WidgetType}
+import deductions.runtime.core.{FormModule, Textarea, WidgetType}
 import deductions.runtime.utils.RDFStoreLocalProvider
 import org.w3.banana.RDF
 
@@ -26,7 +26,7 @@ trait RDFListInference[Rdf <: RDF, DATASET]
     subjectLabel: String = "",
     mandatory: Boolean = false,
     openChoice: Boolean = true,
-    widgetType: WidgetType = Text): Option[RDFListEntry] = {
+    widgetType: WidgetType = Textarea): Option[RDFListEntry] = {
 
     val graph = allNamedGraph
 //    val nodesList = getRDFList(makeTurtleTerm(value)): List[Rdf#Node]

@@ -12,6 +12,7 @@ import scala.xml.Unparsed
 
 import scalaz._
 import Scalaz._
+import deductions.runtime.core.ShortString
 
 /** generate HTML from abstract Form for Edition */
 private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
@@ -289,7 +290,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
         </div>
         <div class={ css.cssClasses.formDivEditInputCSSClass }>
           {
-            if (showEditButtons)
+            if (showEditButtons && ! (lit.widgetType == ShortString) )
               <input class="btn btn-primary" type="button" value="EDIT" onClick={
                 s"""launchEditorWindow( document.getElementById( "$htmlId" ));"""
               } title="Click to edit multiline text in popup window as Markdown text">

@@ -364,7 +364,7 @@ trait FormModule[NODE, URI <: NODE] {
                            override val subjectLabel: String = "",
                            val mandatory: Boolean = false,
                            openChoice: Boolean = true,
-                           widgetType: WidgetType = Text,
+                           widgetType: WidgetType = Textarea,
                            cardinality: Cardinality = zeroOrMore,
                            override val valueLabel: String = "",
                            val htmlName: String = "",
@@ -426,8 +426,9 @@ trait FormModule[NODE, URI <: NODE] {
 }
 
 sealed class WidgetType
-object Text extends WidgetType { override def toString() = "Text WidgetType" }
-object Textarea extends WidgetType
+abstract class Text extends WidgetType { override def toString() = "Text WidgetType" }
+object Textarea extends Text
+object ShortString extends Text { override def toString() = "Short Text WidgetType" }
 object Checkbox extends WidgetType
 
 abstract class Choice extends WidgetType

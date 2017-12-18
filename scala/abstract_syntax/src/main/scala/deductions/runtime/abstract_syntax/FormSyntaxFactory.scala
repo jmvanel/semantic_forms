@@ -454,33 +454,29 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val nullLiteral = Literal("")
     val nullBNode = BNode("")
 
-    val chooseRDFNodeType = {
-      val chooseRDFNodeType = rangeClasses match {
+    val chooseRDFNodeType: Rdf#Node =
+      rangeClasses match {
+        // give priority to actual value (triple object) over property
+        case _ if objet0.isLiteral &&
+          !propClasses.contains(owl.ObjectProperty) => nullLiteral
 
-      // give priority to actual value (triple object) over property
-      case _ if objet0.isLiteral &&
-      ! propClasses.contains(owl.ObjectProperty)
-      => nullLiteral
+        case _ if rangeClasses.exists { c => c.toString startsWith (xsdPrefix) } => nullLiteral
+        case _ if rangeClasses.contains(rdfs.Literal) => nullLiteral
+        case _ if propClasses.contains(owl.DatatypeProperty) => nullLiteral
+        case _ if ranges.contains(rdfs.Literal) => nullLiteral
 
-      case _ if rangeClasses.exists { c => c.toString startsWith (xsdPrefix) } => nullLiteral
-      case _ if rangeClasses.contains(rdfs.Literal) => nullLiteral
-      case _ if propClasses.contains(owl.DatatypeProperty) => nullLiteral
-      case _ if ranges.contains(rdfs.Literal) => nullLiteral
+        case _ if propClasses.contains(owl.ObjectProperty) => nullURI
+        case _ if rangeClasses.contains(owl.Class) => nullURI
+        case _ if rangeClasses.contains(rdf.Property) => nullURI
+        case _ if ranges.contains(owl.Thing) => nullURI
+        case _ if isURI(objet0) => nullURI
 
-      case _ if propClasses.contains(owl.ObjectProperty) => nullURI
-      case _ if rangeClasses.contains(owl.Class) => nullURI
-      case _ if rangeClasses.contains(rdf.Property) => nullURI
-      case _ if ranges.contains(owl.Thing) => nullURI
-      case _ if isURI(objet0) => nullURI
+        case _ if rdfListEntry.isDefined => rdf.List
+        case _ if isBN(objet0) => nullBNode
+        case _ if objet0.toString.startsWith("_:") => nullBNode
 
-      case _ if rdfListEntry.isDefined => rdf.List
-      case _ if isBN(objet0) => nullBNode
-      case _ if objet0.toString.startsWith("_:") => nullBNode
-
-      case _                                    => nullLiteral
-    }
-      chooseRDFNodeType
-    }
+        case _ => nullLiteral
+      }
 
     val objet =
       if (objet0 == nullURI)
@@ -495,17 +491,20 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
     def literalEntry = {
       val value = getLiteralNodeOrElse(objet, literalInitialValue)
+      val widgetType = makeWidgetTypeFromTriple(
+        subject, prop, objet0, formMode)
       // TODO match graph pattern for interval datatype ; see issue #17
       // case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
       val res = new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
         value,
-        subject=subject,
+        subject = subject,
         subjectLabel = makeInstanceLabel(subject, graph, lang),
         type_ = typesFromRanges, //  firstType,
         lang = getLang(objet).toString(),
         valueLabel = nodeToString(value),
-        htmlName=htmlName)
-//      println(s">>>> literalEntry ${res.valueLabel} - $res")
+        htmlName = htmlName,
+        widgetType = widgetType)
+      //      println(s">>>> literalEntry ${res.valueLabel} - $res")
       res
     }
 
@@ -557,6 +556,22 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       case rdf.List => rdfListEntry.get
       case _       => literalEntry
     }
+  }
+
+  /** make Widget Type From Triple, for literal triple */
+  private def makeWidgetTypeFromTriple(
+    subject: Rdf#Node,
+    prop: Rdf#Node,
+    objet0: Rdf#Node,
+    formMode: FormMode
+    )(implicit graph: Rdf#Graph, lang:String): WidgetType = {
+    val isShortString = ! find( graph, prop, form("shortString"),
+        Literal("true", xsd.boolean)) . isEmpty
+    val res = if( isShortString )
+      ShortString
+    else Textarea
+//    println(s"==== makeWidgetTypeFromTriple: $prop -> $res")
+    res
   }
 
   private case class PrecomputationsFromProperty(prop: Rdf#Node)(implicit graph: Rdf#Graph, lang:String) {
