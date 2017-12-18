@@ -52,7 +52,7 @@ lazy val forms = project
 	.dependsOn(connectors)
 	.dependsOn(rdf_links_rank)
 
-lazy val web_tests = project
+// lazy val web_tests = project
 lazy val forms_js = project .settings(
   scalaJSUseMainModuleInitializer := true,
   emitSourceMaps in fastOptJS := true

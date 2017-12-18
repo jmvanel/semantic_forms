@@ -3,8 +3,7 @@ import sbt._
 // import Common._ // TODO
 
 scalaVersion in ThisBuild := 
-// "2.11.11" // 
-"2.11.8" // "2.12.2"
+	"2.11.12"
 
 enablePlugins(ScalaJSPlugin)
 // scalaJSOptimizerOptions ~= { _.withDisableOptimizer(true) }

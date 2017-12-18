@@ -17,6 +17,8 @@ object PopupEditor extends JSApp {
 
   @JSExport
   def launchEditorWindow(input: html.Input): Unit = {
+
+    // setup new window
     val popupWindow = dom.window.open("",
       "Edit_Markdown_text_for_semantic_forms",
       "height=500,width=500,resizable=yes,modal=yes")
@@ -28,7 +30,20 @@ object PopupEditor extends JSApp {
     body.appendChild(closeButton)
     body.appendChild(exitButton)
     body.appendChild(editorDiv)
-    
+
+    // launch Pen editor
+    val child = popupWindow.document.createElement("script")
+    val typ = popupWindow.document.createAttribute("type")
+      typ.value = "text/javascript"
+      child.attributes.setNamedItem(typ)
+    val src = popupWindow.document.createAttribute("src")
+      src.value = "https://rawgit.com/sofish/pen/master/src/markdown.js"
+      child.attributes.setNamedItem(src)
+    popupWindow.document.head.appendChild( child )
+
+    /* <script type="text/javascript" async="true"
+     * src="https://rawgit.com/sofish/pen/master/src/markdown.js"></script> */
+
     val options = literal(
       "editor" -> editorDiv,
       "class" -> "pen",

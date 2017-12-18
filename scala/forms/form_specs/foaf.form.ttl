@@ -4,6 +4,8 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 @prefix cco: <http://purl.org/ontology/cco/core#> .
 @prefix org:        <http://www.w3.org/ns/org#> .
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix task: <http://deductions.github.io/task-management.owl.ttl#> .
 
 @prefix  form: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
 @prefix      : <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
@@ -67,6 +69,39 @@ forms:based_near--personPerson
 	:fieldAppliesToForm forms:organizationForm ;
 	:fieldAppliesToProperty foaf:based_near ;
 	:widgetClass form:DBPediaLookup .
+
+foaf:givenName form:shortString true .
+foaf:familyName form:shortString true .
+foaf:firstName form:shortString true .
+foaf:lastName form:shortString true .
+foaf:birthday form:shortString true .
+foaf:skypeID form:shortString true .
+foaf:yahooChatID form:shortString true .
+foaf:msnChatID form:shortString true .
+foaf:jabberID form:shortString true .
+foaf:aimChatID form:shortString true .
+foaf:icqChatID form:shortString true .
+foaf:gender form:shortString true .
+foaf:mbox_sha1sum form:shortString true .
+foaf:age form:shortString true .
+geo:alt form:shortString true .
+geo:lat form:shortString true .
+geo:long form:shortString true .
+org:location form:shortString true .
+
+rdfs:label form:shortString true .
+rdfs:comment form:shortString true .
+
+<http://usefulinc.com/ns/doap#platform> form:shortString true .
+<http://usefulinc.com/ns/doap#programming-language> form:shortString true .
+<http://usefulinc.com/ns/doap#os> form:shortString true .
+
+task:workDurationEstimated form:shortString true .
+task:workDuration form:shortString true .
+task:dailyPrice form:shortString true .
+task:price form:shortString true .
+task:group form:shortString true .
+task:hardness form:shortString true .
 
 #### Project ####
 
