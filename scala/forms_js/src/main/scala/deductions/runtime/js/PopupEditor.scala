@@ -8,32 +8,43 @@ import scala.scalajs.js
 import js.Dynamic.literal
 import org.scalajs.dom.raw.BeforeUnloadEvent
 import org.scalajs.dom.raw.HTMLDocument
+import org.scalajs.dom.raw.Element
+import org.scalajs.dom.html.Input
+import scala.scalajs.js.annotation.JSExportTopLevel
+import scala.scalajs.js.JSON
 
-// @JSExport
-/** outdated, currently we use the JavaScript in forms_play/public/ */
+@JSExportTopLevel("PopupEditor")
+/** UNUSED,
+ *  currently we use inline JS code in createHTMLiteralEditableField,
+ *  not this nor the JavaScript in forms_play/public/
+ */
 object PopupEditor extends JSApp {
 
   @JSExport
   def main() = ()
 
   @JSExport
-  def launchEditorWindow(input: html.Input): Unit = {
+  def launchEditorWindow(input: html.Input): Unit =
+//    launchEditorWindowPen(input)
+    launchEditorWindowMDE(input)
 
-    // setup new window
+  def launchEditorWindowPen(input: html.Input): Unit = {
     val popupWindow = dom.window.open("/assets/editor-pen.html",
       "Edit_Markdown_text_for_semantic_forms",
       "height=500,width=500,resizable=yes,modal=yes")    
     val popupDocument = popupWindow.document
 
     val (editorDiv, body, closeButton, exitButton) = addButtonsToWindow(popupDocument)
+    log("Before launchPenEditor editorDiv: " + editorDiv)
     val editor = launchPenEditor(editorDiv, input)
+    log("After launchPenEditor editor: " + editor) // JSON.stringify(editor) )
 
     // to avoid message "data you have entered may not be saved."
     dom.window.onbeforeunload = (_: BeforeUnloadEvent) => {
       log("popupWindow.onbeforeunload")
     }
 
-    def onClose() = {
+    def onClosePen() = {
       log("popupWindow.onunload")
       val stringToSave = editor.toMd().toString() // return a markdown string
       log("popupWindow.onunload stringToSave " + stringToSave )
@@ -48,15 +59,51 @@ object PopupEditor extends JSApp {
     }
 
     closeButton.onclick = (_: dom.MouseEvent) => {
-      onClose();
+      onClosePen();
+      popupWindow.close()
+    }
+    exitButton.onclick = (_: dom.MouseEvent) => popupWindow.close()
+  }
+
+  private def launchEditorWindowMDE(input: html.Input): Unit = {
+    val popupWindow = dom.window.open("/assets/editor-SimpleMDE.html",
+      "Edit_Markdown_text_for_semantic_forms",
+      "height=500,width=500,resizable=yes,modal=yes")    
+    val popupDocument = popupWindow.document
+
+    val (editorDiv, body, closeButton, exitButton) = addButtonsToWindow(popupDocument)
+    val editor = launchMDEeditor(editorDiv, input)
+    log("After launchEditor editor: " + editor) // JSON.stringify(editor) )
+
+    // to avoid message "data you have entered may not be saved."
+    dom.window.onbeforeunload = (_: BeforeUnloadEvent) => {
+      log("popupWindow.onbeforeunload")
+    }
+
+    def onClosePen() = {
+      log("popupWindow.onunload")
+      val stringToSave = editor.value().toString()  // return a markdown string
+
+      log("popupWindow.onunload stringToSave " + stringToSave )
+      if (stringToSave != input.value) {
+          log("popupWindow.onunload: saving because " + stringToSave +
+            " != " + input.value)
+          input.value = stringToSave
+      } else {
+        log("popupWindow.onunload: nothing to save")
+      }
+      body.innerHTML = ""
+    }
+
+    closeButton.onclick = (_: dom.MouseEvent) => {
+      onClosePen();
       popupWindow.close()
     }
     exitButton.onclick = (_: dom.MouseEvent) => popupWindow.close()
   }
 
   /** launch Pen editor */
-  private def launchPenEditor(editorDiv: org.scalajs.dom.raw.Element, input: org.scalajs.dom.html.Input) = {// launch Pen editor
-
+  private def launchPenEditor(editorDiv: Element, input: Input) = {
     val options = literal(
       "editor" -> editorDiv,
       "class" -> "pen",
@@ -67,11 +114,25 @@ object PopupEditor extends JSApp {
           "indent", "outdent", "bold", "italic", "underline", "createlink")
     )
     val pen = js.Dynamic.global.Pen
+    log( "launchPenEditor pen " + pen )
     val editor = js.Dynamic.newInstance(pen)(options)
+    log( "launchPenEditor editor " + editor )
 
     editorDiv.innerHTML = input.value
     if (input.value == "")
       editorDiv.innerHTML = "?"
+    editor
+  }
+
+  private def launchMDEeditor(editorDiv: Element, input: Input) = {
+    val mde = js.Dynamic.global.SimpleMDE
+    log("launchMDEeditor: mde " + mde)
+    val options = literal( "element" -> editorDiv )
+    val editor = js.Dynamic.newInstance(mde)(options)
+    log("launchMDEeditor: editor " + editor)
+    editor. value( input.value )
+    if (input.value == "")
+      editor. value( "?" )
     editor
   }
 

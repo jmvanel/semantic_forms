@@ -14,25 +14,22 @@
     <link rel="stylesheet" href="assets/stylesheets/bootstrap-theme.min.css"></link>
     <script src="assets/javascripts/bootstrap.min.js" type="text/javascript"> </script>
 
+    <!-- ==== local ==== -->
     <script src="assets/javascripts/wikipedia.js" type="text/javascript"> </script>
     <script src="assets/javascripts/lookup.js" type="text/javascript"> </script>
     <script src="assets/javascripts/formInteractions.js" type="text/javascript"> </script>
     <script src="assets/javascripts/drawgraph.js" type="text/javascript"> </script>
     <script src="assets/rdfviewer/rdf.js" type="text/javascript"> </script>
-
-    <script type="text/javascript" async="true" src="https://rawgit.com/sofish/pen/master/src/pen.js"></script>
-    <script type="text/javascript" async="true" src="https://rawgit.com/sofish/pen/master/src/markdown.js"></script>
-    <link rel="stylesheet"                     href="https://rawgit.com/sofish/pen/master/src/pen.css"></link>
-
-    <!-- Feuilles de styles locales  -->
-    <link rel="stylesheet" href="assets/stylesheets/main.css"></link>
-
     <!-- RDFViewer -->
     <script src="assets/rdfviewer/rdf.js" type="text/javascript"> </script>
     <script src="assets/rdfviewer/md5.min.js" type="text/javascript"> </script>
 
-    <!-- Ajout pour issue #133 -->
+    <!-- Feuilles de styles locales  -->
+    <link rel="stylesheet" href="assets/stylesheets/main.css"></link>
+
+    <!-- Ajout pour issue #133 
     <script src="assets/javascripts/launchEditorWindow.js" type="text/javascript"> </script>
+-->
     <link rel="stylesheet" href="assets/magnific-popup/magnific-popup.css"></link>
     <script src="assets/magnific-popup/jquery.magnific-popup.min.js" type="text/javascript"> </script>
 
@@ -40,6 +37,27 @@
     <script src="assets/semantic-forms-theme/scripts.js"></script>
 
     <script src="assets/javascripts/forms_js-fastopt.js" type="text/javascript"> </script>
+
+
+<!-- ==== summernote ==== -->
+<!-- include libraries(jQuery, bootstrap) -->
+<!--
+<link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script> 
+<script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script> 
+-->
+<!-- include summernote css/js-->
+<link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.8/summernote.css" rel="stylesheet">
+<script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.8/summernote.js"></script>
+
+<!--
+    <script type="text/javascript" async="true" src="https://rawgit.com/sofish/pen/master/src/pen.js"></script>
+    <script type="text/javascript" async="true" src="https://rawgit.com/sofish/pen/master/src/markdown.js"></script>
+    <link rel="stylesheet"                     href="https://rawgit.com/sofish/pen/master/src/pen.css"></link>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+  <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+-->
 
     <script type='text/javascript'>
         $(document).ready( function (){
@@ -64,7 +82,7 @@
 
     <script type='text/javascript'>
         $(document).ready( function (){
-        // Bootstraping Popup Editor & GPS //
+        //// Bootstraping Popup Editor & GPS (Scala.js) ////
         deductions.runtime.js.PopupEditor().main();
         function launchEditorWindow(input){
           deductions.runtime.js.PopupEditor().launchEditorWindow(input); };

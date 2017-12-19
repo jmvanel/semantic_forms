@@ -13,6 +13,7 @@ import scala.xml.Unparsed
 import scalaz._
 import Scalaz._
 import deductions.runtime.core.ShortString
+import scala.xml.NodeBuffer
 
 /** generate HTML from abstract Form for Edition */
 private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
@@ -256,8 +257,9 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
         </div>
 
       case _ =>
-        <div class={ css.cssClasses.formDivInputCSSClass }>
-        {addTripleAttributesToXMLElement(
+        // TODO most attributes are pasted for <input> and <textarea>
+        val input: Elem =
+          if( lit.widgetType == ShortString)
           <input class={ css.cssClasses.formInputCSSClass }
           value={
             toPlainString(value)
@@ -271,8 +273,27 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
           placeholder={ placeholder } title={ placeholder } size={
             inputSize.toString()
           } dropzone="copy" id={ htmlId }
-          >
-          </input> ,
+          ></input>
+          else
+          <textarea class={ css.cssClasses.formInputCSSClass }
+          name={ lit.htmlName } type={
+            if( lit.property.toString() . toLowerCase().endsWith("password"))
+              "password"
+            else
+              xsd2html5TnputType(type0)
+          }
+          step = {xsd2html5Step(type0)}
+          placeholder={ placeholder } title={ placeholder } size={
+            inputSize.toString()
+          } dropzone="copy" id={ htmlId }
+          >{
+            toPlainString(value)
+          }</textarea>
+          ;
+
+        <div class={ css.cssClasses.formDivInputCSSClass }>
+        {addTripleAttributesToXMLElement(
+        input,
           lit )
           }
           <!--
@@ -292,8 +313,13 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
           {
             if (showEditButtons && ! (lit.widgetType == ShortString) )
               <input class="btn btn-primary" type="button" value="EDIT" onClick={
-                s"""launchEditorWindow( document.getElementById( "$htmlId" ));"""
-              } title="Click to edit multiline text in popup window as Markdown text">
+//                s"""PopupEditor.launchEditorWindow( document.getElementById( "$htmlId" ));"""
+                s"""
+                  var input = document.getElementById( "$htmlId" );
+                  var content = input .value;
+                  $$('#$htmlId') .summernote( 'code', content );
+                  """
+              } title="Click to edit multiline text">
               </input>
           }
         </div>
