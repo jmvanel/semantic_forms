@@ -176,7 +176,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
   def recoverFromOutOfMemoryError(
     sourceCode: => Future[NodeSeq],
-    message:    String= "ERROR! try again some time later.") = {
+    message:    String             = "ERROR! try again some time later."): Future[NodeSeq] = {
     try {
       sourceCode
     } catch {
@@ -184,11 +184,9 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
         t.printStackTrace()
         Future {
           <p>
-            {message}
+            { message }
             <br/>
-            {
-              t.getLocalizedMessage
-            }
+            { t.getLocalizedMessage }
           </p>
         }
     }

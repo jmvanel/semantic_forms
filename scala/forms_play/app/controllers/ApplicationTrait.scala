@@ -191,4 +191,22 @@ trait ApplicationTrait extends Controller
       case _ => None
     }
   }
+
+  def recoverFromOutOfMemoryErrorResult(
+    sourceCode: => Result,
+    message:    String             = "ERROR! try again some time later."): Result = {
+    try {
+      sourceCode
+    } catch {
+      case t: Throwable =>
+        t.printStackTrace()
+        InternalServerError {
+          <p>
+            { message }
+            <br/>
+            { t.getLocalizedMessage }
+          </p>
+        }
+    }
+  }
 }

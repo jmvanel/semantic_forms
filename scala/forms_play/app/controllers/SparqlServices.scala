@@ -44,23 +44,24 @@ trait SparqlServices extends ApplicationTrait
       Ok("OK")
   }
 
+
+  /** sparql compliant GET Service, Construct or SELECT */
+  def sparqlGET(query: String): Action[AnyContent] =
+    sparqlConstructParams(query)
+
   /**
    * SPARQL GET compliant, construct or select,
    * with Union Graph;
    * conneg => RDF/XML, Turtle or json-ld
    */
-  def sparqlGetUnionGraph(query: String ) =
+  def sparqlGetUnionGraph(query: String ): Action[AnyContent] =
     sparqlConstructParams(query,
         context=Map("unionDefaultGraph" -> "true"))
-
-  /** sparql GET Service, Construct or SELECT */
-  def sparqlGET(query: String) =
-    sparqlConstructParams(query)
 
   /** For Sparql GET Service, Construct or SELECT, with or without Union Graph */
   private def sparqlConstructParams(query: String,
       bindings: Map[String,String] = Map(),
-      context: Map[String,String] = Map()) =
+      context: Map[String,String] = Map()): Action[AnyContent] =
         Action {
         implicit request: Request[_] =>
           logInfo(s"""sparqlConstruct: sparql: request $request
@@ -146,17 +147,18 @@ trait SparqlServices extends ApplicationTrait
   private def outputSPARQL(query: String, acceptedTypes: Seq[MediaRange], isSelect: Boolean,
       params: Map[String,String] = Map(),
       context: Map[String,String] = Map(),
-      httpRequest: HTTPrequest): Result = {
-    val preferredMedia = acceptedTypes.map { media => Accepting(media.toString()) }.headOption
-    val defaultMIMEaPriori = if (isSelect) AcceptsSPARQLresults else AcceptsJSONLD
-    val defaultMIME = preferredMedia.getOrElse(defaultMIMEaPriori)
+      httpRequest: HTTPrequest): Result =
+    recoverFromOutOfMemoryErrorResult {
+      val preferredMedia = acceptedTypes.map { media => Accepting(media.toString()) }.headOption
+      val defaultMIMEaPriori = if (isSelect) AcceptsSPARQLresults else AcceptsJSONLD
+      val defaultMIME = preferredMedia.getOrElse(defaultMIMEaPriori)
 
-    // TODO implicit class ResultFormat(val format: String)
-    val resultFormat: String = mimeAbbrevs.getOrElse(defaultMIME, 
+      // TODO implicit class ResultFormat(val format: String)
+      val resultFormat: String = mimeAbbrevs.getOrElse(defaultMIME, 
         mimeAbbrevs.get( defaultMIMEaPriori) . get )
-    logInfo(s"""outputSPARQL: output(accepts=$acceptedTypes) => result format: "$resultFormat"
-      defaultMIMEaPriori $defaultMIMEaPriori
-      preferredMedia $preferredMedia""")
+      logInfo(s"""outputSPARQL: output(accepts=$acceptedTypes) => result format: "$resultFormat"
+        defaultMIMEaPriori $defaultMIMEaPriori
+        preferredMedia $preferredMedia""")
 
     if (preferredMedia.isDefined &&
       !mimeSet.contains(preferredMedia.get))
