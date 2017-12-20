@@ -25,50 +25,36 @@ trait FormSyntaxJson[Rdf <: RDF]
   }
 
   implicit val entryWrites = new Writes[Entry] {
+    /** this code is common to all subtypes of Entry */
+    private def entryToJson(e: Entry) =
+      Json.obj(
+        "subject" -> e.subject,
+        "subjectLabel" -> e.subjectLabel,
+
+        "property" -> e.property,
+        "label" -> e.label,
+        "comment" -> e.comment,
+        "mandatory" -> e.mandatory,
+
+        "value" -> nodeToString(e.value),
+        "type" -> e.type_,
+
+        "widgetType" -> e.widgetType,
+        "openChoice" -> e.openChoice,
+        "cardinality" -> e.cardinality,
+        "htmlName" -> e.htmlName // , "possibleValues" -> e.possibleValues
+      )
     def writes(e: Entry) = {
-//      println(s"entryWrites: e getClass ${e.getClass()} $e")
+//  		println(s"entryWrites: e getClass ${e.getClass()} $e")
       e match {
         case r: ResourceEntry =>
+          entryToJson(r) ++
           Json.obj(
-            "subject" -> e.subject,
-            "subjectLabel" -> e.subjectLabel,
-
-            "property" -> e.property,
-            "label" -> e.label,
-            "comment" -> e.comment,
-            "mandatory" -> e.mandatory,
-
-            "value" -> nodeToString(e.value),
-            "type" -> e.type_,
-
-            "widgetType" -> e.widgetType,
-            "openChoice" -> e.openChoice,
-            "cardinality" -> e.cardinality,
-            "htmlName" -> e.htmlName,
-            // , "possibleValues" -> e.possibleValues
             "valueLabel" -> r.valueLabel,
-            //      if (r.thumbnail != null)
             "thumbnail" -> r.thumbnail,
             "isImage" -> r.isImage)
         case r: Entry =>
-          /* TODO this code is pasted from other case above */
-          Json.obj(
-            "subject" -> e.subject,
-            "subjectLabel" -> e.subjectLabel,
-
-            "property" -> e.property,
-            "label" -> e.label,
-            "comment" -> e.comment,
-            "mandatory" -> e.mandatory,
-
-            "value" -> nodeToString(e.value),
-            "type" -> e.type_,
-
-            "widgetType" -> e.widgetType,
-            "openChoice" -> e.openChoice,
-            "cardinality" -> e.cardinality,
-            "htmlName" -> e.htmlName // , "possibleValues" -> e.possibleValues
-            )
+          entryToJson ( r )
       }
     }
   }
