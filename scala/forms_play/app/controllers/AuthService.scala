@@ -100,12 +100,14 @@ extends Controller
             request = httpRequest)._1
     }
 
+    import deductions.runtime.utils.I18NMessages
+
     val content =
       <div>
-        <h3 id="login">Déjà membre - Se connecter</h3>
+        <h3 id="login">{I18NMessages.get( "Login", httpRequest.getLanguage())}</h3>
         { loginForm }
         <p/>
-        <h3 id="register" name="register">Créer un compte</h3>
+        <h3 id="register" name="register">{I18NMessages.get( "Create_account", httpRequest.getLanguage())}</h3>
         { registerForm }
       </div>
 
