@@ -104,7 +104,10 @@ extends Controller
 
     val content =
       <div>
-        <h3 id="login">{I18NMessages.get( "Login", httpRequest.getLanguage())}</h3>
+        <h3 id="login">{I18NMessages.get( "Login", httpRequest.getLanguage())}
+          -
+          <a href="#register" style="font-size: medium">{I18NMessages.get( "Create_account", httpRequest.getLanguage())}</a>
+        </h3>
         { loginForm }
         <p/>
         <h3 id="register" name="register">{I18NMessages.get( "Create_account", httpRequest.getLanguage())}</h3>
