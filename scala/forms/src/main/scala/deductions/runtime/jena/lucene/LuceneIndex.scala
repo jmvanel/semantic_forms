@@ -81,8 +81,8 @@ trait LuceneIndex // [Rdf <: RDF]
     println(s"configureLuceneIndex: useTextQuery $useTextQuery")
     //    println(s"configureLuceneIndex: ${Thread.currentThread().getStackTrace().slice(0, 15).mkString("\n")}")
     if (useTextQuery) {
-    	println(
-    			s"configureLuceneIndex: rdfIndexing ${rdfIndexing.getPredicates("text")}")
+      println(
+          s"""configureLuceneIndex: rdfIndexing getPredicates("text").size ${rdfIndexing.getPredicates("text").size}""")
         val directory = new NIOFSDirectory(Paths.get("LUCENE"))
         val textIndexConfig = new TextIndexConfig(rdfIndexing)
     	  textIndexConfig . setMultilingualSupport(true)

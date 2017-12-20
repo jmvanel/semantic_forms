@@ -201,7 +201,7 @@ extends
             (graphStoredLocally.size, graphStoredLocally)
           }
         }
-      println(s"""checkIfNothingStoredLocally: TDB graph at URI <$uri> size $sizeAndGraph""")
+      println(s"""checkIfNothingStoredLocally: TDB graph at URI <$uri> size ${sizeAndGraph._1}""")
       (sizeAndGraph._1 === 0, sizeAndGraph._2)
       //      nothingStoredAndGraph.getOrElse((false, emptyGraph))
     }
