@@ -73,7 +73,7 @@ trait NavigationSPARQLBase[Rdf <: RDF]
        |  }
        | }""".stripMargin
        
-  def reverseLinks(search: String) = s"""
+  def reverseLinks(search: String): String = s"""
          |${declarePrefix(form)}
          |SELECT DISTINCT ?thing WHERE {
          |  graph ?g {
