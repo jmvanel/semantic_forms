@@ -133,21 +133,23 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
      * which is generally a NON absolute URI;
      * but the passwords graph and database is probably only accessed by API (never by SPARQL),
      * so this is not a problem */
-    val res = rdfStore.rw( dataset3, {
+    val resultStorePassword = rdfStore.rw( dataset3, {
       val mGraph = passwordsGraph
       mGraph += makeTriple(URI(userUri), passwordPred,
         makeLiteral(hashPassword(password), xsd.string))
       userUri
     })
+    println1(s"""Authentication.signin: resultStorePassword "$resultStorePassword"""")
 
     // annotate the user graph URI as a foaf:OnlineAccount
-    val res2 = rdfStore.rw(dataset, {
+    val res2OnlineAccount = rdfStore.rw(dataset, {
       val newTripleForUser = List(makeTriple(absoluteURIForSaving, rdf.typ, foaf.OnlineAccount))
       val newGraphForUser: Rdf#Graph = makeGraph(newTripleForUser)
       rdfStore.appendToGraph( dataset, absoluteURIForSaving, newGraphForUser)
       userUri
     })
-    res
+    println1(s"""Authentication.signin: resultStorePassword "$res2OnlineAccount"""")
+    resultStorePassword
   }
 
   private def signinOLD(agentURI: String, password: String): Try[String] = {
@@ -166,7 +168,9 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
         digest(password.getBytes))
   }
 
-  override def println1(mess: String) = if(false) println(mess)
+  override def println1(mess: String) =
+//    if(false) 
+      println(mess)
   
 //  private def signinOLD(agentURI: String, password: String): Try[String] = {
 //

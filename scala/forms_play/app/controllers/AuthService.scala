@@ -199,12 +199,16 @@ println( s"useridOption $useridOption, passwordOption $passwordOption" )
 
       val (useridOption, passwordOption, confirmPasswordOption) = decodeResponse(httpRequest)
 
+      // TODO do not log password in clear !!!!!!!!!!!!
       println(s"register = Action: :\n\tuseridOption $useridOption, passwordOption $passwordOption, confirmPasswordOption $confirmPasswordOption")
       val checkRegisterOption = for (
         userid <- useridOption;
         password <- passwordOption;
-        confirmPassword <- confirmPasswordOption
-        if (password === confirmPassword && userid.size >= 2 )
+        confirmPassword <- confirmPasswordOption;
+        passwordConfirmed = (password === confirmPassword);
+        useridLongEnough = (userid.length() >= 2);
+        _ = println( s"\tpasswordConfirmed $passwordConfirmed, useridLongEnough $useridLongEnough");
+        if (passwordConfirmed && useridLongEnough )
       ) yield signin(userid, password)
 
       val registerChecked = checkRegisterOption match {
@@ -221,6 +225,7 @@ println( s"useridOption $useridOption, passwordOption $passwordOption" )
           .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
       } else {
+    	  // TODO do not log password in clear !!!!!!!!!!!!
         println(s"""register = Action: BadRequest:\n\t$useridOption,
           $passwordOption, $confirmPasswordOption""")
         makeBadRequest(<div>Register NOT succeeded for user {useridOption}</div>)
