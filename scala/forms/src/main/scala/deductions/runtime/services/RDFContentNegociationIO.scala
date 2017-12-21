@@ -29,6 +29,9 @@ trait RDFContentNegociationIO[Rdf <: RDF, DATASET]
       rdfReader
   }
 
+  def getReaderFromURI(uri: String): Option[RDFReader[Rdf, Try, _]] =
+    for( mime <- getMimeFromURI(uri) ) yield getReaderFromMIME(mime)
+
   /** get RDF Writer From MIME */
   def getRDFWriter(request: HTTPrequest): RDFWriter[Rdf, Try, _] = {
 		val mimeType = request.getHTTPheaderValue("Accept").getOrElse("")
