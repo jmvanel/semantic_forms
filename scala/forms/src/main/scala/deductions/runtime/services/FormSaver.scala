@@ -71,7 +71,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
         if (isSpecialHTTPparameterForTriple(param0)) {
           val param = URLDecoder.decode(param0, "utf-8")
           val objects = objects0.map { node =>
-            URLDecoder.decode(node, "utf-8") }
+            URLDecoder.decode(node.trim(), "utf-8") }
           log(s"getTriplesFromHTTPparams: httpParam decoded: $param - objects $objects");
           val tryTriple = Try {
             val comingBackTriple = httpParam2Triple(param)
@@ -159,27 +159,28 @@ trait FormSaver[Rdf <: RDF, DATASET]
     
       log(s"computeDatabaseChanges: originalTriple: $originalTriple, objectsFromUser $objectsFromUser")
       objectsFromUser.map { objectStringFromUser =>
-        // NOTE: a single element in objects
-        val objectFromUser = foldNode(originalTriple.objectt)(
+        val objectFromUser: Rdf#Node = foldNode(originalTriple.objectt)(
           _ => {
-            if (objectStringFromUser.startsWith("_:"))
-              BNode(objectStringFromUser.substring(2))
+            val objectStringFromUserNoSpaces = objectStringFromUser.replaceAll(" ", "")
+            if (objectStringFromUserNoSpaces.startsWith("_:"))
+              BNode(objectStringFromUserNoSpaces.substring(2))
             else {
-              if (objectStringFromUser != "")
-                log(s"""computeDatabaseChanges: objectStringFromUser "$objectStringFromUser" changed: spaces removed""")
-            URI(
-              expandOrUnchanged(
-                makeURIFromString(
-                  objectStringFromUser,
-                  fromUri(originalTriple.predicate))))
+              if (objectStringFromUserNoSpaces != objectStringFromUser)
+                logger.error(s"""computeDatabaseChanges: objectStringFromUser "$objectStringFromUser" changed: spaces removed""")
+              URI(
+                  expandOrUnchanged(
+                      makeURIFromString(
+                          objectStringFromUserNoSpaces, fromUri(originalTriple.predicate))))
             }
           },
+
           _ => BNode(objectStringFromUser.replaceAll(" ", "_")), // ?? really do this ?
+
           _ =>
             // avoids that numbers get a language tag
             if ("[a-zA-Z]".r .findFirstMatchIn(objectStringFromUser) .isDefined )
-        	  Literal.tagged(objectStringFromUser,Lang(lang))
-          else Literal(objectStringFromUser)
+              Literal.tagged(objectStringFromUser,Lang(lang))
+            else Literal(objectStringFromUser)
         )
         val originalData = nodeToString(originalTriple.objectt)
         val emptyUserInput: Boolean = objectStringFromUser === ""
