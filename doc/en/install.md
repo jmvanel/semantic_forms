@@ -1,7 +1,32 @@
-[Installation de l'application générique `semantic_forms`](../en/install.md)
-[Administration](administration.md)
+<!--
+gh-md-toc install.md
+pandoc --standalone administration.md > install.html -->
 
 # Installation of the `semantic_forms` generic application
+
+Links
+
+[Administration](administration.md)
+
+Table of Contents
+=================
+
+   * [Installation of the semantic_forms generic application](#installation-of-the-semantic_forms-generic-application)
+      * [Prerequisites](#prerequisites)
+      * [Obtaining the zipped application](#obtaining-the-zipped-application)
+      * [Runnning the zipped application](#runnning-the-zipped-application)
+         * [On windows](#on-windows)
+         * [URL of the main application page](#url-of-the-main-application-page)
+            * [Stopping the zipped distribution](#stopping-the-zipped-distribution)
+      * [Database manipulations](#database-manipulations)
+      * [Settings when runnning the zipped distribution](#settings-when-runnning-the-zipped-distribution)
+   * [Work with the semantic_forms distribution](#work-with-the-semantic_forms-distribution)
+      * [Scripts for Unix](#scripts-for-unix)
+      * [Managing server update](#managing-server-update)
+      * [Managing multi administrators site](#managing-multi-administrators-site)
+      * [Setup a new instance with common vocab's, form specifications, translations, dbPedia mirroring and Lucene indexing](#setup-a-new-instance-with-common-vocabs-form-specifications-translations-dbpedia-mirroring-and-lucene-indexing)
+      * [Backup and recovery from backups](#backup-and-recovery-from-backups)
+
 
 ## Prerequisites 
 - Java JRE 8 (check with `java -version`)
@@ -66,7 +91,6 @@ To get all RDF data created by user "u:uu", run this:
 scripts/graphdump.sh u:uu
 ```
 
-
 ## Settings when runnning the zipped distribution
 You can change the default port (9000) to e.g. 9999 like this:
 
@@ -79,6 +103,8 @@ You can set detailed loggin running like this:
 PORT=9000
 bin/semantic_forms_play -J-Xmx2000M -J-server -Dhttp.port=$PORT -Dlog4j.configurationFile=conf/log4j2.debug.properties
 ```
+For more details on Run configuration:
+[Play! framework documentation "Production Configuration"](https://www.playframework.com/documentation/2.5.x/ProductionConfiguration)
 
 # Work with the `semantic_forms` distribution
 
