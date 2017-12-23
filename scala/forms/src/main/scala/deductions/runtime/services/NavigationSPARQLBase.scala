@@ -90,20 +90,20 @@ trait NavigationSPARQLBase[Rdf <: RDF]
          |${declarePrefix(rdfs)}
          |${declarePrefix(geo)}
          |CONSTRUCT {
-         |    ?thing geo:long ?LONG .
-         |    ?thing geo:lat ?LAT .
-         |    ?thing rdfs:label ?LAB .
+         |  ?thing geo:long ?LONG .
+         |  ?thing geo:lat ?LAT .
+         |  ?thing rdfs:label ?LAB .
          |} WHERE {
          |  graph ?g {
          |    ?thing ?p <${search}> .
          |    ?thing geo:long ?LONG .
          |    ?thing geo:lat ?LAT .
-         |    ?thing rdfs:label ?LAB .
          |  }
-         |  OPTIONAL { ?thing rdfs:label ?LAB }
+         |  OPTIONAL {
+         |    ?thing rdfs:label ?LAB }
          |  $countPattern
          |}
-         | ORDER BY DESC(?COUNT)
+         |ORDER BY DESC(?COUNT)
          |""".stripMargin
 
   /** TODO pasted :( */
