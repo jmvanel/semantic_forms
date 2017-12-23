@@ -216,18 +216,21 @@ trait RDFStoreLocalJenaProvider
     tryResponse match {
       case Failure(f) => Failure(f)
       case Success(response) =>
-        val reader = getReaderFromMIME(contentTypeNormalized)
+        val reader0 = getReaderFromMIME(contentTypeNormalized)
 
         println(s"""readWithContentTypeNoJena:
-                reader $reader
+                reader from HTTP header $reader0
                 request $request , getAllHeaders ${
-        	for (h <- request.getAllHeaders) println(h)
-        }
+        	for (h <- request.getAllHeaders) println(h) }
         response $response""")
 
-        if (!isKnownRdfSyntax(contentTypeNormalized))
+        val reader/*From Extention*/ = if (!isKnownRdfSyntax(contentTypeNormalized)) {
           System.err.println(
-            s"readWithContentTypeNoJena: no Reader found for contentType $contentType ; trying Turtle")
+            s"readWithContentTypeNoJena: no Reader found for contentType $contentType ; trying from URI extension")
+          val readerFromURI = getReaderFromURI(fromUri(uri))
+          println( s"Reader from URI extension: $readerFromURI")
+          readerFromURI.getOrElse(reader0)
+        } else reader0
 
         val inputStream = response.getEntity.getContent
 

@@ -1,5 +1,7 @@
 package deductions.runtime.services
 
+import org.apache.jena.sparql.function.library.substring
+
 //import org.w3.banana.io.{
 //  N3,
 //  Turtle,
@@ -23,7 +25,13 @@ trait RDFContentNegociation {
 
   val htmlMime = "text/html"
 
-
+  val extensionToMime = Map(
+      "owl" -> rdfXMLmime,
+      "rdf" -> rdfXMLmime,
+      "ttl" -> turtleMime,
+      "ttl" -> turtleMime,
+      "n3" -> jsonldMime
+      )
   /** order of arguments is historical order of RDF syntaxes */
   def foldRdfSyntax[I, O](mimeType: String, input: I = Unit)(
     funRdfXML: I => O,
@@ -72,4 +80,19 @@ trait RDFContentNegociation {
     }
   }
 
+  def getMimeFromURI(uri: String): Option[String] = {
+    val r = for (
+      extension <- substringAfterLastIndexOf(uri, ".")
+//      ; _ = println( s"getMimeFromURI($uri) -> $extension")
+    ) yield extensionToMime.get(extension)
+    r.flatten
+  }
+  
+  private def substringAfterLastIndexOf(s: String, patt:String): Option[String] = {
+    val li = s.lastIndexOf(patt)
+    if( li == -1 )
+      None
+      else
+    Some(s.substring( li +1, s.length() ))
+  }
 }

@@ -1,5 +1,43 @@
+<!--
+gh-md-toc README.md
+pandoc --standalone README.md > README.html -->
+
 Play! framework implementations
 ---
+
+Table of Contents
+=================
+
+   * [Table of Contents](#table-of-contents)
+   * [Introduction](#introduction)
+      * [Terminology](#terminology)
+   * [How to run](#how-to-run)
+      * [Run locally from sources](#run-locally-from-sources)
+      * [Run without development environment](#run-without-development-environment)
+         * [Obtaining the zipped application](#obtaining-the-zipped-application)
+         * [Runnning the zipped application](#runnning-the-zipped-application)
+            * [Settings when runnning the zipped distribution](#settings-when-runnning-the-zipped-distribution)
+   * [Setting a IDE project ( eclipse ...)](#setting-a-ide-project--eclipse-)
+      * [Ensime](#ensime)
+      * [Troubleshooting &amp; tips](#troubleshooting--tips)
+      * [Debug](#debug)
+      * [Test](#test)
+         * [Unit tests](#unit-tests)
+         * [Testing web services](#testing-web-services)
+      * [Profiling with JMC](#profiling-with-jmc)
+         * [Testing web application with Selenium](#testing-web-application-with-selenium)
+   * [Administration of a server instance from the sources](#administration-of-a-server-instance-from-the-sources)
+      * [Change the log settings](#change-the-log-settings)
+      * [Download Java on a headless server](#download-java-on-a-headless-server)
+   * [Database Administration](#database-administration)
+   * [Vocabulary for forms](#vocabulary-for-forms)
+   * [Customize the plain vanilla application](#customize-the-plain-vanilla-application)
+   * [Community](#community)
+      * [Contributing](#contributing)
+   * [The features](#the-features)
+      * [Features list](#features-list)
+      * [Unimplemented features](#unimplemented-features)
+
 
 # Introduction
 Here is a web application with Play! framework around the [form generator](../forms/README.md) that does:
@@ -277,13 +315,17 @@ Then stop SF, and load `semantic_forms_recording.jfr` into jmc GUI .
 Link: https://docs.oracle.com/javacomponents/jmc-5-5/jfr-runtime-guide/run.htm#JFRRT172
 
 ### Testing web application with Selenium
+
+Alas Selenium IDE, the plugin for Firefox, is discontinued.
+We will rework the tests on one of the Scala web test frameworks.
+
 Selenium tests are in `scala/web_tests` .
 One must run `scripts/populateRDFCache.sh` before these tests.
 
 # Administration of a server instance from the sources
-There is a script that updates the server from the sources, and more: it stops the server, updates the application from sources, and restarts the server :
 
-    ./scripts/update_server.sh
+There is a script that updates the server from the sources, and more: it stops the server, updates the application from sources, and restarts the server :
+`./scripts/update_server.sh`
 
 It is advised to deactivate the automatic formatting on a server machine. Just comment out the line `scalariformSettings` in 
 scala/forms/build.sbt . 
@@ -291,10 +333,9 @@ scala/forms/build.sbt .
 If you want to change the HTTP ports, etc, look in the Play! documentation:
 https://www.playframework.com/documentation/2.4.x/ProductionConfiguration
 
+## Change the log settings
 
-## Change the log settings
-
-`semantic_forms` uses Log4J 2 for logging. By default it prints very little.
+The aplication `semantic_forms` uses Log4J 2 for logging. By default it prints very little.
 If you want to apply your log settings, copy one the configuration files in conf/ (or use one as is):
 ```shell
 cp conf/log4j2.debug.properties myconf.properties
@@ -308,7 +349,7 @@ cd $HOME/src/semantic_forms/scala
 sbt -Dlog4j.configurationFile=forms_play/conf/log4j2.debug.properties
 ```
 
-## download Java on a headless server
+## Download Java on a headless server
 To download Java from the server with no browser (see http://stackoverflow.com/questions/10268583/downloading-java-jdk-on-linux-via-wget-is-shown-license-page-instead):
 
     VERSION=51
@@ -324,7 +365,7 @@ or for Linux x86:
     http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-linux-i586.tar.gz
 
 
-#Database Administration
+# Database Administration
 
 See [administration page](../../doc/en/administration.md)
 
