@@ -84,6 +84,28 @@ trait NavigationSPARQLBase[Rdf <: RDF]
          | ORDER BY DESC(?COUNT)
          |""".stripMargin
 
+    /** same as #reverseLinks , but add triples for geo. maps */
+    def reverseLinksMaps(search: String): String = s"""
+         |${declarePrefix(form)}
+         |${declarePrefix(rdfs)}
+         |${declarePrefix(geo)}
+         |CONSTRUCT {
+         |    ?thing geo:long ?LONG .
+         |    ?thing geo:lat ?LAT .
+         |    ?thing rdfs:label ?LAB .
+         |} WHERE {
+         |  graph ?g {
+         |    ?thing ?p <${search}> .
+         |    ?thing geo:long ?LONG .
+         |    ?thing geo:lat ?LAT .
+         |    ?thing rdfs:label ?LAB .
+         |  }
+         |  OPTIONAL { ?thing rdfs:label ?LAB }
+         |  $countPattern
+         |}
+         | ORDER BY DESC(?COUNT)
+         |""".stripMargin
+
   /** TODO pasted :( */
   private val countPattern =
     """|  OPTIONAL {

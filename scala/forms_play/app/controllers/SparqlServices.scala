@@ -176,7 +176,7 @@ trait SparqlServices extends ApplicationTrait
             else context
       )
     }
-    logInfo(s"result 5 first lines: $result".split("\n").take(5).mkString("\n"))
+    logInfo(s"result 10 first lines: $result".split("\n").take(10).mkString("\n"))
     Ok(result)
       .as(s"${simpleString2mimeMap.getOrElse(resultFormat, defaultMIMEaPriori).mimeType }")
       .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")

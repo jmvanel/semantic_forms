@@ -182,17 +182,9 @@ trait ToolsPage extends EnterButtons
   /** make Link for (geographic) Cartography */
   private def makeLinkCarto(lang:String = "en", textareaId: String, toolURLprefix: String): NodeSeq = {
 
-    val sparqlServicePrefix =
-//        URLEncoder.encode(
-            "sparql?query="
-//        , "UTF-8")
+    val dataServicesURL = sparqlServicesURL
     val buttonId = textareaId+"-button"
-    val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
-    println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
-//    val servicesURL = s"$toolURLprefix$servicesURIPrefix$sparqlServicePrefix"
-    val dataServicesURL = s"$servicesURIPrefix$sparqlServicePrefix"
-    println(s">>>> servicesURL $dataServicesURL")
- 
+
     <input id={buttonId} type="submit"
            title="make LeafLet map (OSM)"
            class="btn btn-primary" target="_blank" value={ I18NMessages.get("Map", lang)}>
@@ -233,5 +225,12 @@ trait ToolsPage extends EnterButtons
     </script>
   }
    
-                        
+  private lazy val sparqlServicesURL = {
+		val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
+    println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
+    val sparqlServicePrefix = "sparql?query="
+    val dataServicesURL = s"$servicesURIPrefix$sparqlServicePrefix"
+    println(s">>>> dataServicesURL $dataServicesURL")
+    dataServicesURL
+  }
 }

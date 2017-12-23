@@ -59,7 +59,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     println(s"search($search) 1: starting TRANSACTION for dataset $dataset")
     val elem0 = rdfStore.rw(dataset, {
       val uris = search_onlyNT(search, variables)
-      println(s"\tsearch(): URI's $uris")
+      println(s"\tsearch(): URI's size ${uris.size}")
       val graph: Rdf#Graph = allNamedGraph
       val elems = Seq(
           <button value="Sort" id="sort">Sort
@@ -143,8 +143,10 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    * one should never use an Iterator after calling a method on it;
    * cf http://stackoverflow.com/questions/18420995/scala-iterator-one-should-never-use-an-iterator-after-calling-a-method-on-it
    */
-  private def search_only(search: String*)(implicit queryMaker: SPARQLQueryMaker[Rdf]) // : Future[Iterator[Rdf#Node]]
-  = {
+  private def search_only(search: String*)(implicit queryMaker: SPARQLQueryMaker[Rdf]): 
+	  Future[List[Seq[Rdf#Node]]]
+			  // : Future[Iterator[Rdf#Node]]
+		= {
     println(s"search 2: starting TRANSACTION for dataset $dataset")
     val transaction =
       rdfStore.r(dataset, {

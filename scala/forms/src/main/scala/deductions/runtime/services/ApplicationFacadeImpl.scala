@@ -27,6 +27,7 @@ import org.w3.banana.RDF
 
 import scalaz._
 import Scalaz._
+import java.net.URLEncoder
 
 /**
  * a Web Application Facade,
@@ -361,13 +362,30 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
   def backlinksFuture(query: String = "", request: HTTPrequest): Future[NodeSeq] = {
     val fut = backlinks(query, hrefDisplayPrefix, request)
-    val label = labelForURITransaction( query, language=request.getLanguage())
-    wrapSearchResults(fut, "", mess=
-      <div>Searched for {label}
-      <a href={ createHyperlinkString( uri=query ) }> {label} </a>
-      &lt;{query}&gt; </div> )
+    val label = labelForURITransaction(query, language = request.getLanguage())
+    wrapSearchResults(fut, "", mess =
+      <div>
+        Searched for{ label }
+        <a href={ createHyperlinkString(uri = query) }> { label } </a>
+        &lt;{ query }
+        &gt;
+        <div><a href={
+          val sparqlQuery = URLEncoder.encode(reverseLinksMaps(query), "utf-8")
+          "/assets/geo-map/geo-map.html?url=" + sparqlServicesURL + sparqlQuery
+        }> Map </a></div>
+      </div>)
   }
 
+  /** TODO pasted from ToolsPage */
+  private lazy val sparqlServicesURL = {
+		val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
+    println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
+    val sparqlServicePrefix = "sparql?query="
+    val dataServicesURL = s"$servicesURIPrefix$sparqlServicePrefix"
+    println(s">>>> dataServicesURL $dataServicesURL")
+    dataServicesURL
+  }
+ 
   def esearchFuture(q: String = ""): Future[Elem] = {
     val fut = extendedSearch(q)
     wrapSearchResults(fut, q, mess= <div>"Extended search for</div>)

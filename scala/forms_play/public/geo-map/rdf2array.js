@@ -72,11 +72,11 @@ function rdfURL2SimpleArray(/*String: */url)/*: Promise*/ {
       return rdfsLabelQuad && rdfsLabelQuad.object.value;
     }
 
-//    console.log( 'FETCH 2 ' + dataset );
+//    console.log( 'RDF FETCH dataset:' ); console.log( dataset );
     let lats = dataset
     .match(null, rdf.namedNode("http://www.w3.org/2003/01/geo/wgs84_pos#lat"))
     .toArray()
-//    console.log( 'LATs ' + lats );
+//    console.log( 'LATs: ' ); console.log( lats );
 
     var subjs = lats.map((latQuad) => { return latQuad.subject; });
     console.log( 'LAT subjs ' + subjs )
