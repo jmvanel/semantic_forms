@@ -68,7 +68,7 @@ function rdfURL2SimpleArray(/*String: */url)/*: Promise*/ {
 	 * @return value, e.g. of rdfs:label */
 	function filterQuad(subj, criterium) {
       // 
-      console.log('subj ' + subj);
+      // console.log('subj ' + subj);
       let rdfsLabelQuad = dataset.filter((quad) => {
         return criterium(quad, subj)
       }).toArray().shift()

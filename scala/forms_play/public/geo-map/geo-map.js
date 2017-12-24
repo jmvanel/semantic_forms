@@ -134,16 +134,25 @@ class Map{
 
     pinShow(key){
         "use strict"
-        this.pins[key].addTo(this.OSM)
+        var pin = this.pins[key]
+        if( pin != undefined)
+          pin.addTo(this.OSM)
+        else
+          console.log("Error: pinShow: pin undefined for key " + key)
     }
 
 
     addPin(latitude,longitude, key, text) {
-        "use strict"
-        this.pins[key] = L.marker([latitude,longitude])
-            .bindPopup(text)
-        this.pinShow(key)
+      "use strict"
+      var pinText = text
+      console.log('addPin key '); console.log( key )
+      if( key.length > 0 )
+        pinText = '<a href="/display?displayuri=' + key + '" target="_blank">' + text + '</a>'
+      this.pins[key] = L.marker([latitude,longitude])
+          .bindPopup(pinText)
+      this.pinShow(key)
     }
+
     /**
      * affiche un point et efface les autres
      * @param latitude -- la latitude du point
