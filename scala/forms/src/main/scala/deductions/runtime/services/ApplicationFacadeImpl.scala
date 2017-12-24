@@ -371,8 +371,14 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
         &gt;
         <div><a href={
           val sparqlQuery = URLEncoder.encode(reverseLinksMaps(query), "utf-8")
-          "/assets/geo-map/geo-map.html?url=" + sparqlServicesURL + sparqlQuery
-        }> Map </a></div>
+          "/assets/geo-map/geo-map.html?url=" + sparqlServicesURL + 
+          "?" +
+//        URLEncoder.encode("enrich=yes&") +
+          "query=" + sparqlQuery
+//          URLEncoder.encode("&enrich=yes", "utf-8")
+        }
+        target="_blank"
+        > Map </a></div>
       </div>)
   }
 
@@ -380,7 +386,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   private lazy val sparqlServicesURL = {
 		val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
     println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
-    val sparqlServicePrefix = "sparql?query="
+    val sparqlServicePrefix = "sparql" // ?query="
     val dataServicesURL = s"$servicesURIPrefix$sparqlServicePrefix"
     println(s">>>> dataServicesURL $dataServicesURL")
     dataServicesURL

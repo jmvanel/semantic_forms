@@ -100,7 +100,11 @@ trait NavigationSPARQLBase[Rdf <: RDF]
          |    ?thing geo:lat ?LAT .
          |  }
          |  OPTIONAL {
-         |    ?thing rdfs:label ?LAB }
+         |  graph ?g1 {
+         |    ?thing rdfs:label ?LAB } }
+         |  OPTIONAL {
+         |  graph ?g2 {
+         |    ?thing <urn:displayLabel> ?LAB } }
          |  $countPattern
          |}
          |ORDER BY DESC(?COUNT)

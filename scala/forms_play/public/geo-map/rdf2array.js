@@ -32,13 +32,15 @@ function rdfURL2SimpleArray(/*String: */url)/*: Promise*/ {
 
     /** For filtering with RDF lang */
     function rdfsLabelCriterium(quad, subject) {
-    return (
+    var ret = (
        quad.predicate.value === rdfsLabel ||
        quad.predicate.value === displayLabel
        )
      // TODO:	&& quad.object.language === 'en'
      &&  quad.subject.toString() == subject.toString()
-}
+//     console.log( 'rdfsLabelCriterium quad: ' + quad)
+     return ret
+    }
 
 	/** For filtering with non-lang RDF property */
 	function plainPropertyCriterium(/*Quad: */quad, /*Term: */subject, /*String: */property)/*:Boolean*/ {
@@ -65,14 +67,16 @@ function rdfURL2SimpleArray(/*String: */url)/*: Promise*/ {
 	/** filter Quad with given criterium
 	 * @return value, e.g. of rdfs:label */
 	function filterQuad(subj, criterium) {
-      // console.log('\nsubj ' + subj);
+      // 
+      console.log('subj ' + subj);
       let rdfsLabelQuad = dataset.filter((quad) => {
         return criterium(quad, subj)
       }).toArray().shift()
+//      console.log('\n rdfsLabelQuad ' + rdfsLabelQuad );
       return rdfsLabelQuad && rdfsLabelQuad.object.value;
     }
 
-//    console.log( 'RDF FETCH dataset:' ); console.log( dataset );
+    console.log( 'RDF FETCH dataset:' ); console.log( dataset );
     let lats = dataset
     .match(null, rdf.namedNode("http://www.w3.org/2003/01/geo/wgs84_pos#lat"))
     .toArray()
