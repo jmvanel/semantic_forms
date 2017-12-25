@@ -12,14 +12,18 @@ import org.scalajs.dom.raw.Position
 import org.scalajs.dom.raw.PositionError
 import org.scalajs.dom.raw.Node
 import org.scalajs.dom.html.Input
+import org.scalajs.dom.raw.PositionOptions
 // for for loop with NodeList:
 import org.scalajs.dom.ext._
 
 @JSExportTopLevel("GPS2")
 object GPS2 extends GPS {
 
-  /**
-   * Fill Geo Coordinates in form
+  /** start watching Position from GPS,
+   * to fill Geo Coordinates from GPS in form
+   * 
+   * Called in <head> in
+   * forms/src/main/resources/deductions/runtime/html/head.html
    */
   @JSExport
   def listenToSubmitEventFillGeoCoordinates(): Unit = {
@@ -28,8 +32,7 @@ object GPS2 extends GPS {
   }
 
   /**
-   * fill longitude & latitude from HTML5 GPS API into relevant geo:long & geo:lat triples
-   *
+   * fill longitude & latitude from HTML5 GPS API into relevant geo:long & geo:lat triples ,
    * See https://developer.mozilla.org/fr/docs/Using_geolocation
    */
   private def fillGeoCoordinates {
@@ -40,14 +43,13 @@ object GPS2 extends GPS {
    /* obtain longitude & latitude from HTML5 GPS API,
     * and then call fillCoords();
     * cf http://stackoverflow.com/questions/40483880/geolocation-in-scala-js */
-
-   val gpsParameters =
-     new org.scalajs.dom.raw.PositionOptions {
-		   enableHighAccuracy=true
-		   maximumAge=20000
-		   timeout=15000
-   }
-   geo.watchPosition( fillCoords _, onError _ , gpsParameters )
+    import scala.scalajs.js.Dynamic.{literal => json}
+   val gpsParameters = json(
+//     new org.scalajs.dom.raw.PositionOptions {
+		   enableHighAccuracy=true,
+		   maximumAge=20000,
+		   timeout=15000 )
+   geo.watchPosition( fillCoords _, onError _ , gpsParameters.asInstanceOf[PositionOptions] )
   }
 
   import scala.scalajs.js.Dynamic.global
@@ -55,7 +57,6 @@ object GPS2 extends GPS {
   def onError(p: PositionError) = {
     val message = "geoLocation: Error: " + p.message + " - " + p
     global.console.log(message)
-    // dom.window. alert (message)
     val appMessagesZone = dom. document.getElementById("appMessages")
     appMessagesZone.innerHTML = message
     import scala.scalajs.js.timers._

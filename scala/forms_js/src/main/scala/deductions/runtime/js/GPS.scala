@@ -10,18 +10,24 @@ import org.scalajs.dom.raw.Node
 import org.scalajs.dom.raw.Position
 import org.scalajs.dom.raw.NodeList
 
-/** callback for Geo HTML5 function that populates RDF triples geo:long */
+/** callback for Geo HTML5 function watchPosition()
+ *  */
 trait GPS {
 
-  /** callback for Geo HTML5 function */
+  /** callback for Geo HTML5 function watchPosition() that populates RDF triples:
+ *  ?S geo:long ?LONG .
+ *  ?S geo:lat  ?LAT .
+ */
   def fillCoords(p: Position) = {
 
     val longitude = p.coords.longitude
     val latitude = p.coords.latitude
     println(s"Got from GPS: latitude=${latitude} , longitude=${longitude}")
 
+    // TODO Handling abnormal location results, see http://www.andygup.net/how-accurate-is-html5-geolocation-really-part-2-mobile-web/
+
     val geoCoordinatesFields = GeoCoordinatesFields.pageNeedsGeoCoordinates()
-    if( geoCoordinatesFields . needsUpdate )
+//    if( geoCoordinatesFields . needsUpdate )
     for (
       longitudeInput <- geoCoordinatesFields.matchesLongitudeInput;
       latitudeInput <- geoCoordinatesFields.matchesLatitudeInput
@@ -29,7 +35,6 @@ trait GPS {
       fillOneCoordinate(longitudeInput, longitude.toString())
       fillOneCoordinate(latitudeInput, latitude.toString())
     }
-    
   }
 
   private def fillOneCoordinate(node: Node, coord: String): Any = {
@@ -65,7 +70,7 @@ object GeoCoordinatesFields {
         matchesLongitudeInput.length > 0 ) &&
         inputIsEmptyLongitude
     if( ! inputIsEmptyLongitude )
-      println("Longitude is already filled => not update from GPS.")
+      println("Longitude is already filled")
     GeoCoordinatesFields(needs, matchesLongitudeInput, matchesLatitudeInput)
   }
 
