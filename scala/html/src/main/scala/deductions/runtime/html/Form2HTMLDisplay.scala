@@ -6,6 +6,7 @@ import org.joda.time.DateTime
 import scala.xml.{NodeSeq, Unparsed}
 import deductions.runtime.core.HTTPrequest
 import java.net.URLEncoder
+import deductions.runtime.utils.I18NMessages
 
 /** generate HTML from abstract Form for Display (Read only) */
 trait Form2HTMLDisplay[NODE, URI <: NODE]
@@ -59,7 +60,9 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       {makeUserInfoOnTriples(resourceEntry, request.getLanguage())} ++
       creationButton(
         objectURIstringValue,
-        type_.map { t => t.toString() }) ++
+        type_.map { t => t.toString() },
+        request.getLanguage()) ++
+      makeClassTableButton(resourceEntry) ++
       (if( ! objectURIstringValue.startsWith("http://dbpedia.org/resource/"))
         hyperlinkForEditingURI(objectURIstringValue, request.getLanguage())
         else NodeSeq.Empty)
@@ -67,7 +70,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
   }
 
   /** hyperlink To RDF property */
-  def hyperlinkToField(resourceEntry: formMod#ResourceEntry
+  private def hyperlinkToField(resourceEntry: formMod#ResourceEntry
 //      , objectURIstringValue: String
       ) = {
     val id = urlEncode(resourceEntry.property).replace("%", "-")
@@ -83,7 +86,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     } else NodeSeq.Empty
   }
 
-  def hyperlinkToURI(hrefPrefix: String, objectURIstringValue: String, valueLabel: String,
+  private[html] def hyperlinkToURI(hrefPrefix: String, objectURIstringValue: String, valueLabel: String,
       type_ : String, resourceEntry: formMod#ResourceEntry) = {
     addTripleAttributesToXMLElement(
       <a href={createHyperlinkString(hrefPrefix, objectURIstringValue)} class={cssForURI(objectURIstringValue)} title=
@@ -103,7 +106,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     } else NodeSeq.Empty)
   }
 
-  def normalNavigationButton(resourceEntry: formMod#ResourceEntry) = {
+  private def normalNavigationButton(resourceEntry: formMod#ResourceEntry) = {
     val objectURIstringValue = resourceEntry.value.toString()
     (if (objectURIstringValue.size > 0 &&
         isDownloadableURL(objectURIstringValue) && showExpertButtons) {
@@ -134,9 +137,10 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       }</a> ++
       {makeUserInfoOnTriples(r)}
 
-  def creationButton(objectURIstringValue: String, types: Seq[String]): NodeSeq = {
+  private def creationButton(objectURIstringValue: String, types: Seq[String], lang: String): NodeSeq = {
     val imageURL = "/assets/images/create-instance.svg"
-    val mess = s"Create instance of <$objectURIstringValue>"
+    def messageI18N(key: String) = I18NMessages.get(key, lang)
+    val mess = messageI18N("Create_instance_of") + s" <$objectURIstringValue>"
     if ( types.exists { t => t.endsWith("#Class") } ) {
 //      println(s"==== creationButton: typ: $typ")
         <a href={
@@ -146,4 +150,24 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
         </a>
     } else NodeSeq.Empty
   }
+
+  private def makeClassTableButton(resourceEntry: FormEntry // ResourceEntry
+      ): NodeSeq = {
+    val classURI = toPlainString(resourceEntry.value)
+    val isClass:Boolean=true // TODO = resourceEntry.isClass
+    if( isClass ) {
+    val sparlqlQuery = s"""
+      CONSTRUCT {
+        ?S ?P ?O .
+      } WHERE {
+        GRAPH ?G {
+        ?S ?P ?O .
+        ?S a <$classURI> .
+      } }
+      """
+    <a href={"/table?query=" + URLEncoder.encode(sparlqlQuery, "UTF-8")}
+       target="_blank">TABLE</a>
+  } else NodeSeq.Empty
+    }
+
 }

@@ -13,7 +13,8 @@ import deductions.runtime.utils.I18NMessages
 import scalaz._
 import Scalaz._
 
-/** GUI integration: rdfviewer, ... */
+/** Basic Widgets with no access to the FormSyntax:
+ *  GUI integration: rdfviewer, ... */
 trait BasicWidgets
   extends RDFPrefixesInterface
   with URIHelpers {
@@ -105,4 +106,5 @@ private def mess(m: String)(implicit lang: String) = I18NMessages.get(m, lang)
     </a>
     else <div></div>
   }
+
 }
