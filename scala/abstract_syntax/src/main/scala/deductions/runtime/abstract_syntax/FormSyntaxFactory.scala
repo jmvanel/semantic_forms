@@ -513,7 +513,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         val res = time(s"""resourceEntry objet "$objet" """,
           foldNode(objet)(
             objet => {
-              val res = new ResourceEntry(label, comment, prop, ResourceValidator(ranges), objet,
+              val res = new ResourceEntry(
+                label, comment, prop, ResourceValidator(ranges), objet,
                 subject=subject,
                 alreadyInDatabase = true,
                 valueLabel = makeInstanceLabel(objet, graph, lang),
@@ -524,6 +525,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
                 isImage = isImageTriple(subject, prop, objet, firstType),
                 thumbnail = getURIimage(objet),
 
+                isClass=prop == rdf.typ,
                 htmlName=htmlName
                 )
             	// println(s">>>>>> ResourceEntry - $res")

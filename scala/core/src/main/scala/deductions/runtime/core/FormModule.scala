@@ -161,24 +161,7 @@ trait FormModule[NODE, URI <: NODE] {
 
     def valueLabel: String = ""
 
-    //    /** clone this */
-    //    def makeEntry(
-    //                   fromProperty: NODE = Entry.this.property,
-    //                   fromMetadata: String = Entry.this.metadata,
-    //                   fromTimeMetadata: Long = Entry.this.timeMetadata ): Entry = {
-    //      this match {
-    //        case r: ResourceEntry => r.copy(
-    //          property = fromProperty,
-    //          metadata = fromMetadata,
-    //          timeMetadata = fromTimeMetadata)
-    //        case e: LiteralEntry => e.copy(
-    //          property = fromProperty,
-    //          metadata = fromMetadata,
-    //          timeMetadata = fromTimeMetadata)
-    //        case e: BlankNodeEntry => e.copy()
-    //        case e: RDFListEntry   => e.copy()
-    //      }
-    //    }
+    def isClass: Boolean = false
 
     /** clone this */
     def copyEntry(
@@ -267,7 +250,8 @@ trait FormModule[NODE, URI <: NODE] {
                             override val htmlName: String = "",
 
                             override val metadata: String = "",
-                            override val timeMetadata: Long = -1
+                            override val timeMetadata: Long = -1,
+                            override val isClass: Boolean = false
                           )
     extends Entry {
     override def toString(): String = {

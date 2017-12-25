@@ -152,11 +152,10 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
   }
 
   private def makeClassTableButton(resourceEntry: FormEntry // ResourceEntry
-      ): NodeSeq = {
-    val classURI = toPlainString(resourceEntry.value)
-    val isClass:Boolean=true // TODO = resourceEntry.isClass
-    if( isClass ) {
-    val sparlqlQuery = s"""
+  ): NodeSeq = {
+    if (resourceEntry.isClass) {
+      val classURI = toPlainString(resourceEntry.value)
+      val sparlqlQuery = s"""
       CONSTRUCT {
         ?S ?P ?O .
       } WHERE {
@@ -165,9 +164,8 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
         ?S a <$classURI> .
       } }
       """
-    <a href={"/table?query=" + URLEncoder.encode(sparlqlQuery, "UTF-8")}
-       target="_blank">TABLE</a>
-  } else NodeSeq.Empty
-    }
+      <a href={ "/table?query=" + URLEncoder.encode(sparlqlQuery, "UTF-8") } target="_blank">TABLE</a>
+    } else NodeSeq.Empty
+  }
 
 }
