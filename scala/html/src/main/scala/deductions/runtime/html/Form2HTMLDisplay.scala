@@ -48,6 +48,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
     val typ = firstNODEOrElseEmptyString(type_)
 //  println(s"==== createHTMLResourceReadonlyField: typ: $typ")
+
     val widgets =
       hyperlinkToField(resourceEntry) ++
       hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue, valueLabel,
@@ -57,15 +58,14 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       normalNavigationButton(resourceEntry) ++
       makeDrawGraphLink(objectURIstringValue) ++
       displayThumbnail(resourceEntry) ++
-      {makeUserInfoOnTriples(resourceEntry, request.getLanguage())} ++
+      makeUserInfoOnTriples(resourceEntry, request.getLanguage()) ++
       creationButton(
         objectURIstringValue,
         type_.map { t => t.toString() },
         request.getLanguage()) ++
       makeClassTableButton(resourceEntry) ++
-      (if( ! objectURIstringValue.startsWith("http://dbpedia.org/resource/"))
-        hyperlinkForEditingURI(objectURIstringValue, request.getLanguage())
-        else NodeSeq.Empty)
+      hyperlinkForEditingURIinsideForm(objectURIstringValue, request.getLanguage())
+
       <span class="sf-statistics">{widgets}</span>
   }
 

@@ -30,6 +30,12 @@ trait BasicWidgets
     </a>
   }
 
+  def hyperlinkForEditingURIinsideForm(uri: String, lang: String): NodeSeq = {
+    if( ! uri.startsWith("http://dbpedia.org/resource/"))
+      hyperlinkForEditingURI(uri, lang)
+    else NodeSeq.Empty
+  }
+
   def hyperlinkForDisplayingURI(uri: String, lang: String): NodeSeq = {
     implicit val _ = lang
     val hrefDisplay = hrefDisplayPrefix() + URLEncoder.encode(uri, "utf-8") + "#form"
