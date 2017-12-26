@@ -170,7 +170,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
               URI(
                   expandOrUnchanged(
                       makeURIFromString(
-                          objectStringFromUserNoSpaces, fromUri(originalTriple.predicate))))
+                          objectStringFromUser, fromUri(originalTriple.predicate))))
             }
           },
 

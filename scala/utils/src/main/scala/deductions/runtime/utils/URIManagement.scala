@@ -31,10 +31,10 @@ trait URIManagement extends URIHelpers {
     if (isAbsoluteURI(stringFromUser))
       stringFromUser
     else if(predicate === "http://xmlns.com/foaf/0.1/phone" )
-      "tel:" + stringFromUser
+      "tel:" + stringFromUser .replaceAll(" ", "_")
       // NOTE schema:telephone is an xsd:string
     else if(stringFromUser.contains("@"))
-      "mailto:" + stringFromUser
+      "mailto:" + stringFromUser .replaceAll(" ", "")
     else {
       if (stringFromUser != "")
         instanceURIPrefix +
