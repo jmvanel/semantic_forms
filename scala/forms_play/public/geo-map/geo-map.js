@@ -148,7 +148,8 @@ class Map{
       console.log('addPin key '); console.log( key )
       if( key.length > 0 )
         pinText = '<a href="/display?displayuri=' + key + '" target="_blank">' + text + '</a>'
-      this.pins[key] = L.marker([latitude,longitude])
+      this.pins[key] = L.marker([latitude,longitude],
+          {draggable:'true'} )
           .bindPopup(pinText)
       this.pinShow(key)
     }

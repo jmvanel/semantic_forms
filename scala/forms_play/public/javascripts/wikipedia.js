@@ -68,6 +68,7 @@ $(document).ready(function() {
                    type = $el.attr('data-rdf-type').split('/');
                     if (type) {
                       typeName = type[type.length - 1];
+                      console.log('typeName ' + typeName)
                     }
                 }
                 }
@@ -75,8 +76,9 @@ $(document).ready(function() {
                 $.ajax({
                     url: "http://lookup.dbpedia.org/api/search/PrefixSearch",
                     data: { MaxHits: resultsCount, QueryClass: typeName, QueryString: request.term },
-                    dataType: "json",
-                    timeout: 5000
+//                  data: { MaxHits: resultsCount, QueryString: request.term },
+                    dataType: "json"
+                    , timeout: 30000
                 }).done(function (response) {
                     console.log(response)
                     callback(response.results.map(function (m) {
@@ -93,7 +95,9 @@ $(document).ready(function() {
                     // in lookup.js, the same completion is launched on CSS class .sfLookup
                     if( ! $el.hasClass('.sfLookup') ) {
 
-                    console.log("lookup.dbpedia.org FAILED => launch local /lookup " + request.term )
+                      console.log("lookup.dbpedia.org FAILED: error:" + error.statusText )
+                      console.log(error )
+                      console.log("lookup.dbpedia.org FAILED => launch local /lookup " + request.term )
                     /* TODO:
                      * - in secure context (window.isSecureContext == true) /lookup is launched with http,
                      *   which entails message:
