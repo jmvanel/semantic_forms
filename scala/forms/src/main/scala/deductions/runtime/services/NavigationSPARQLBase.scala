@@ -82,6 +82,7 @@ trait NavigationSPARQLBase[Rdf <: RDF]
          |  $countPattern
          |}
          | ORDER BY DESC(?COUNT)
+         | LIMIT 150
          |""".stripMargin
 
     /** same as #reverseLinks , but add triples for geo. maps */
@@ -108,6 +109,7 @@ trait NavigationSPARQLBase[Rdf <: RDF]
          |  $countPattern
          |}
          |ORDER BY DESC(?COUNT)
+         | LIMIT 150
          |""".stripMargin
 
   /** TODO pasted :( */
