@@ -361,9 +361,10 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   }
 
   def backlinksFuture(query: String = "", request: HTTPrequest): Future[NodeSeq] = {
-    val fut = backlinks(query, hrefDisplayPrefix, request)
+    val futureResults = backlinks(query, hrefDisplayPrefix, request)
     val label = labelForURITransaction(query, language = request.getLanguage())
-    wrapSearchResults(fut, "", mess =
+    wrapSearchResults(futureResults, "",
+      mess =
       <div>
         Searched for{ label }
         <a href={ createHyperlinkString(uri = query) }> { label } </a>
@@ -373,7 +374,6 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
           val sparqlQuery = URLEncoder.encode(reverseLinksMaps(query), "utf-8")
           "/assets/geo-map/geo-map.html?url=" + sparqlServicesURL + 
           "?" +
-//        URLEncoder.encode("enrich=yes&") +
           "query=" + sparqlQuery
 //          URLEncoder.encode("&enrich=yes", "utf-8")
         }

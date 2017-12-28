@@ -63,12 +63,13 @@ trait TableView[NODE, URI <: NODE]
     })
 
   /** URI column */
-  private def uriColumn(row: NODE) = {
+  private def uriColumn(row: NODE): NodeSeq = {
     val entry = rowsMap(row)
     hyperlinkToURI(config.hrefDisplayPrefix, entry.subject.toString(),
       entry.subjectLabel,
       firstNODEOrElseEmptyString(entry.type_),
-      NullResourceEntry)
+      NullResourceEntry) ++
+    hyperlinkForEditingURI(toPlainString(row), "en")
   }
 
   /** data (triple objects) columns */

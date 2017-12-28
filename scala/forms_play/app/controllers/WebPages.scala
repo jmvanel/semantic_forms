@@ -390,9 +390,9 @@ trait WebPages extends Controller with ApplicationTrait {
       val userInfo = prec.userInfo
       val lang = prec.lang
 
-      fut.map { res =>
+      fut.map { formattedResults =>
         outputMainPage(
-          extendedSearchLink ++ res,
+          extendedSearchLink ++ formattedResults,
           lang, userInfo)
       }
   }
