@@ -203,7 +203,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
     // TODO make it functional #170
     val fieldsCompleteList: Seq[Entry] = makeEntriesFromFormSyntax(step1)
-
+//    println( s"==== createFormDetailed2: fieldsCompleteList $fieldsCompleteList")
     val subject = step1.subject
     val classs = step1.classs
 
@@ -246,6 +246,10 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       val classses = step1.classs
       val formMode: FormMode = if (step1.editable) EditionMode else DisplayMode
 
+//      println( s"""==== makeEntriesFromFormSyntax: step1 $step1
+//          entriesList ${step1.entriesList.mkString("\n")}
+//      """)
+
       logger.debug(
           s"makeEntriesFromformSyntax subject <$subject>, classs <$classses>, props $props")
 
@@ -257,6 +261,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
           makeEntriesForSubject(subject, prop, formMode))
       }
       val fields = entries.flatten
+//    	println( s"""==== makeEntriesFromFormSyntax: fields $fields""" )
+
       val fields2 = addTypeTriples(subject, classses, fields)
       addInverseTriples(fields2, step1)
     }
@@ -509,6 +515,22 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     }
 
     def resourceEntry = {
+      new ResourceEntry(
+        label, comment, prop, ResourceValidator(ranges), objet,
+        subject = subject,
+        alreadyInDatabase = true,
+        valueLabel = makeInstanceLabel(objet, graph, lang),
+        subjectLabel = makeInstanceLabel(subject, graph, lang),
+        type_ = typesFromRanges, // firstType,
+
+        // TODO make it functional #170:  modularize in ThumbnailInference, leveraging on addAttributesToXMLElement
+        isImage = isImageTriple(subject, prop, objet, firstType),
+        thumbnail = getURIimage(objet),
+
+        isClass = prop == rdf.typ,
+        htmlName = htmlName)
+    }
+    def entryFromObject = {
       if (showRDFtype || prop != rdf.typ) {
         val res = time(s"""resourceEntry objet "$objet" """,
           foldNode(objet)(
@@ -551,8 +573,12 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       }
     }
 
+//    println(s">>>> makeEntryFromTriple <$prop>, chooseRDFNodeType '$chooseRDFNodeType' ${chooseRDFNodeType == nullURI}")
     chooseRDFNodeType match {
-      case `nullURI` => resourceEntry
+      case `nullURI` =>
+        val re = resourceEntry
+//        println(s">>>> makeEntryFromTriple resourceEntry $re")
+        re
       case `nullLiteral` => literalEntry
       case `nullBNode` => resourceEntry // ??????????????? rather makeBN() ???
       case rdf.List => rdfListEntry.get

@@ -254,27 +254,27 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
 //    } catch {
 //      case t: Throwable => "graf2form : getting graph.size" + t.getLocalizedMessage()
 //    }
-    val form = time("createAbstractForm",
+    val formSyntax = time("createAbstractForm",
       createAbstractForm(uri, editable, blankNode, formGroup, formuri))
 
-    val formWithInfo = addUserInfoOnTriples(form)
+    val formSyntaxWithInfo = addUserInfoOnTriples(formSyntax)
 
     val htmlForm =
-      generateHTML(formWithInfo, hrefPrefix, editable, actionURI, graphURI,
+      generateHTML(formSyntaxWithInfo, hrefPrefix, editable, actionURI, graphURI,
         actionURI2, lang, request,
         cssForURI = "sf-value-block col-xs-12 col-sm-9 col-md-9",
         cssForProperty = cssClasses.formLabelCSSClass
         // "col-xs-3 col-sm-2 col-md-2 control-label"
         )
-    ( htmlForm, formWithInfo )
+    ( htmlForm, formSyntaxWithInfo )
   }
 
-  /** callscreateFormTR; TRANSACTIONAL */
+  /** calls createFormTR; TRANSACTIONAL */
   private def createAbstractForm(
       uri: String, editable: Boolean,
       blankNode: String, formGroup: Rdf#URI, formuri: String="")
     (implicit graph: Rdf#Graph, lang: String )
-    :  FormSyntax = {
+    : FormSyntax = {
     val subjectNode = if (blankNode === "true")
       /* Jena TDB specific:
            * Jena supports "concrete bnodes" in SPARQL syntax as pseudo URIs in the "_" URI scheme

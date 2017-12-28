@@ -72,10 +72,10 @@ trait FormSaver[Rdf <: RDF, DATASET]
           val param = URLDecoder.decode(param0, "utf-8")
           val objects = objects0.map { node =>
             URLDecoder.decode(node.trim(), "utf-8") }
-          log(s"getTriplesFromHTTPparams: httpParam decoded: $param - objects $objects");
+          log(s"getTriplesFromHTTPparams: httpParam URL decoded: $param - objects $objects");
           val tryTriple = Try {
             val comingBackTriple = httpParam2Triple(param)
-            log(s"getTriplesFromHTTPparams: triple from httpParam: {$comingBackTriple} - objects $objects")
+            log(s"getTriplesFromHTTPparams: triple from httpParam: {$comingBackTriple}")
             comingBackTriple
           }
           if (tryTriple.isFailure) logger.error(s"getTriplesFromHTTPparams: ERROR: param $param : result $tryTriple")
@@ -177,20 +177,26 @@ trait FormSaver[Rdf <: RDF, DATASET]
           _ => BNode(objectStringFromUser.replaceAll(" ", "_")), // ?? really do this ?
 
           _ =>
+            if(isAbsoluteURI(objectStringFromUser))
+              /* use case: an non-URI string was in database, but an URI is entered by user;
+               * TODO : check that it's OK for this property
+              */
+              URI( expandOrUnchanged(objectStringFromUser) )
             // avoids that numbers get a language tag
-            if ("[a-zA-Z]".r .findFirstMatchIn(objectStringFromUser) .isDefined )
+            else if ("[a-zA-Z]".r .findFirstMatchIn(objectStringFromUser) .isDefined )
               Literal.tagged(objectStringFromUser,Lang(lang))
-            else Literal(objectStringFromUser)
+            else
+              Literal(objectStringFromUser)
         )
         val originalData = nodeToString(originalTriple.objectt)
         val emptyUserInput: Boolean = objectStringFromUser === ""
-        val differingUserInput: Boolean = objectStringFromUser != originalData
+        val differingUserInput: Boolean = objectStringFromUser =/= originalData
         val originalDataNonEmpty: Boolean = originalData != ""
         val newUserInput: Boolean = !emptyUserInput && differingUserInput
 
-        log(s""">> originalData $originalData,
+        log(s""">> originalData '$originalData',
           emptyUserInput $emptyUserInput, differingUserInput $differingUserInput, originalDataNonEmpty $originalDataNonEmpty, newUserInput $newUserInput,
-          objectStringFromUser "$objectStringFromUser"""
+          objectStringFromUser "$objectStringFromUser""""
           )
 
         if( !emptyUserInput && differingUserInput ||
