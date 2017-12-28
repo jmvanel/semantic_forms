@@ -75,8 +75,8 @@ $(document).ready(function() {
 
                 $.ajax({
                     url: "http://lookup.dbpedia.org/api/search/PrefixSearch",
-                    data: { MaxHits: resultsCount, QueryClass: typeName, QueryString: request.term },
-//                  data: { MaxHits: resultsCount, QueryString: request.term },
+//                    data: { MaxHits: resultsCount, QueryClass: typeName, QueryString: request.term },
+                    data: { MaxHits: resultsCount, QueryString: request.term },
                     dataType: "json"
                     , timeout: 30000
                 }).done(function (response) {
