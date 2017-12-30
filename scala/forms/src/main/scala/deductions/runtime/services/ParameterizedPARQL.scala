@@ -68,27 +68,22 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
         	Unparsed("""
         		//// console.log("divs " + JSON.stringify($divs) );
         	  $('#sort').on('click', function () {
-          	  var $divs = $("div.sf-triple-block");
-              var alphabeticallyOrderedDivs = $divs.sort(function (a, b) {
-                var atext = $(a).text().replace(/(\r\n|\n|\r)/gm,"").replace(/ +/gm," ").toLowerCase().trim();
-                var btext = $(b).text().replace(/(\r\n|\n|\r)/gm,"").replace(/ +/gm," ").toLowerCase().trim();
-                /*
-                console.log( "$(a).text() " + atext);
-                console.log( "$(b).text() " + btext);
-                console.log( "    return " + (atext > btext) );
-                */
-                return atext > btext;
-              });
-              // console.log("alphabeticallyOrderedDivs " + JSON.stringify(alphabeticallyOrderedDivs));
-              console.log(
-                "alphabeticallyOrderedDivs " );
-              console.log(
-                alphabeticallyOrderedDivs );
-                /* . map (
-                d => $(d).text().replace(/(\r\n|\n|\r)/gm,"").replace(/ +/gm," ").toLowerCase().trim() ));
-              $("#container").html(alphabeticallyOrderedDivs);
-              */
-            });
+              var $divs = $("div.sf-triple-block")
+              $divs.sort(function (a, b) {
+                  var atext = $(a).find(".sf-internal-link").text().trim().toLowerCase().replace("_", " ")
+                  // .replace(/(\r\n|\n|\r)/gm,"").replace(/ +/gm," ").toLowerCase().trim();
+                  var btext = $(b).find(".sf-internal-link").text().trim().toLowerCase().replace("_", " ")
+                  return atext > btext;
+              })
+//            for (e of $divs) {
+//                console.log( '"' + $(e).find(".sf-internal-link").text().trim().toLowerCase().replace("_", " ") + '"' )
+//              }
+              let wrapper = $('#container')
+              wrapper.empty()
+              for (e of $divs) {
+                $(e).appendTo(wrapper)
+              }
+            })
           """)
         } </script> ,
         <div id="container" class={ css.tableCSSClasses.formRootCSSClass }> {
