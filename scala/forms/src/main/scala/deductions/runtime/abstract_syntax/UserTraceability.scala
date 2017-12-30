@@ -16,6 +16,7 @@ trait UserTraceability[Rdf <: RDF, DATASET]
                             formSyntax: FormSyntax)(
                             implicit graph: Rdf#Graph,
                             lang: String = "en") : FormSyntax = {
+    try {
     logger.info("XXXXXXXXXXXXXXXX addUserInfoOnTriples")
     val metadata = getMetadataAboutSubject(formSyntax.subject)
     val resultsUser = mutable.Map[(String,String), String]()
@@ -68,6 +69,13 @@ trait UserTraceability[Rdf <: RDF, DATASET]
     }
     formSyntax . fields = entries
     formSyntax
+    }
+    catch {
+      case t: Throwable =>
+        logger.error( "addUserInfoOnTriples" + t.getLocalizedMessage )
+        t.printStackTrace(System.err)
+        return formSyntax
+    }
   }
 
   private def addUserFromGraph(field: Entry): Entry = {
