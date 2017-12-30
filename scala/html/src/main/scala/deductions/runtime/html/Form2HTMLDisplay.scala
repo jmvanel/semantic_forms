@@ -78,7 +78,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
      *  digits ([0-9]), hyphens ("-"), underscores ("_"), colons (":"), and periods ("."). */
 
     val objectURIstringValue = resourceEntry.value.toString()
-    if( objectURIstringValue != "" ) {
+    if( objectURIstringValue != "" && id != "") {
       <a href={ "#" + id } draggable="true">
         <i class="glyphicon glyphicon-link"></i>
       </a>
