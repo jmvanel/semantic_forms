@@ -58,29 +58,7 @@ trait RegisterPage[Rdf <: RDF, DATASET]
           <div>{ displayUserLabel } - <a href="/logout">logout</a></div>
 
         } else {
-
           <div>
-            <script type="text/javascript">
-              {
-                Unparsed("""
-                  $(document).ready(function() {
-                    var toggleButton = document.getElementById('linkToSearch');
-                    toggleButton.addEventListener( 'click', function() {
-                      var input = document.getElementById('q');
-                      console.log("call focus: input: " + input);
-                      // 
-                      sleep(200);
-                      input.focus();
-//                      input.value(input.value);
-                    });
-                  });
-                  function sleep(ms) {
-                		return new Promise(resolve => setTimeout(resolve, ms));
-                		}
-                """)
-              }
-            </script>
-
             Anonyme -
             <a href="/login#register" title={I18NMessages.get("New_account", lang)} >
             {I18NMessages.get("New_account", lang)}
