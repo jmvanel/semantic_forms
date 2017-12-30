@@ -501,7 +501,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         subject, prop, objet0, formMode)
       // TODO match graph pattern for interval datatype ; see issue #17
       // case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
-      val res = new LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
+      val res = LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
         value,
         subject = subject,
         subjectLabel = makeInstanceLabel(subject, graph, lang),
@@ -515,13 +515,13 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     }
 
     def resourceEntry = {
-      new ResourceEntry(
+      ResourceEntry(
         label, comment, prop, ResourceValidator(ranges), objet,
         subject = subject,
         alreadyInDatabase = true,
         valueLabel = makeInstanceLabel(objet, graph, lang),
         subjectLabel = makeInstanceLabel(subject, graph, lang),
-        type_ = typesFromRanges, // firstType,
+        type_ = typesFromRanges,
 
         // TODO make it functional #170:  modularize in ThumbnailInference, leveraging on addAttributesToXMLElement
         isImage = isImageTriple(subject, prop, objet, firstType),
@@ -530,29 +530,12 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         isClass = prop == rdf.typ,
         htmlName = htmlName)
     }
+    /* UNUSED */
     def entryFromObject = {
       if (showRDFtype || prop != rdf.typ) {
         val res = time(s"""resourceEntry objet "$objet" """,
           foldNode(objet)(
-            objet => {
-              val res = new ResourceEntry(
-                label, comment, prop, ResourceValidator(ranges), objet,
-                subject=subject,
-                alreadyInDatabase = true,
-                valueLabel = makeInstanceLabel(objet, graph, lang),
-                subjectLabel = makeInstanceLabel(subject, graph, lang),
-                type_ = typesFromRanges, // firstType,
-
-                // TODO make it functional #170:  modularize in ThumbnailInference, leveraging on addAttributesToXMLElement
-                isImage = isImageTriple(subject, prop, objet, firstType),
-                thumbnail = getURIimage(objet),
-
-                isClass=prop == rdf.typ,
-                htmlName=htmlName
-                )
-            	// println(s">>>>>> ResourceEntry - $res")
-              res
-            },
+            objet => resourceEntry,
             objet => makeBN(label, comment, prop, ResourceValidator(ranges), objet,
               typ = firstType),
             _ => literalEntry))
