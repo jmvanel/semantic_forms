@@ -74,7 +74,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
       addTripleAttributesToXMLElement(
           <input class={ css.cssClasses.formInputCSSClass +
             " " + hasLookup }
-            value={ value.toString }
+            value={ toPlainString(value) }
             name={
               // makeHTMLName(resourceEntry)
               resourceEntry.htmlName
