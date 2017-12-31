@@ -71,9 +71,8 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
               var $divs = $("div.sf-triple-block")
               $divs.sort(function (a, b) {
                   var atext = $(a).find(".sf-internal-link").text().trim().toLowerCase().replace("_", " ")
-                  // .replace(/(\r\n|\n|\r)/gm,"").replace(/ +/gm," ").toLowerCase().trim();
                   var btext = $(b).find(".sf-internal-link").text().trim().toLowerCase().replace("_", " ")
-                  return atext > btext;
+                  return atext.localeCompare(btext)
               })
 //            for (e of $divs) {
 //                console.log( '"' + $(e).find(".sf-internal-link").text().trim().toLowerCase().replace("_", " ") + '"' )
