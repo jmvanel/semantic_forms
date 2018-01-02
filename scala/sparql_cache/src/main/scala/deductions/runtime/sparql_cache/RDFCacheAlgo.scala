@@ -29,6 +29,7 @@ import java.net.URL
 
 import scalaz._
 import Scalaz._
+import deductions.runtime.utils.StringHelpers
 
 /** implicit RDFReader's - TODO remove DATASET */
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
@@ -58,6 +59,7 @@ extends
     with URIManagement
     with HTTPHelpers
     with TypeAddition[Rdf, DATASET]
+    with StringHelpers
   {
 
   import scala.concurrent.ExecutionContext.Implicits.global
@@ -569,7 +571,14 @@ extends
       val existingType = find(allNamedGraph, uri, rdf.typ, ANY)
       val addedGraph =
         if (existingType.isEmpty) {
-          val newGraphWithUrl = makeGraph(List(makeTriple(uri, rdf.typ, foaf.Document)))
+          val label = substringAfterLastIndexOf(fromUri(uri), "/" ) .
+            getOrElse(fromUri(uri)) .
+            replace("-", " ") .
+            replace(".html", " ")
+          val newGraphWithUrl = makeGraph(List(
+              makeTriple(uri, rdf.typ, foaf.Document),
+              makeTriple(uri, rdfs.label, Literal(label))
+          ))
           rdfStore.appendToGraph(
             dataset,
             graphURI,

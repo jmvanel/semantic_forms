@@ -1,6 +1,7 @@
 package deductions.runtime.services
 
 import org.apache.jena.sparql.function.library.substring
+import deductions.runtime.utils.StringHelpers
 
 //import org.w3.banana.io.{
 //  N3,
@@ -17,7 +18,7 @@ import org.apache.jena.sparql.function.library.substring
 //}
 
 /** RDF Content Negociation, alias conneg */
-trait RDFContentNegociation {
+trait RDFContentNegociation extends StringHelpers {
 
   val rdfXMLmime = "application/rdf+xml"
   val turtleMime = "text/turtle"
@@ -87,12 +88,5 @@ trait RDFContentNegociation {
     ) yield extensionToMime.get(extension)
     r.flatten
   }
-  
-  private def substringAfterLastIndexOf(s: String, patt:String): Option[String] = {
-    val li = s.lastIndexOf(patt)
-    if( li == -1 )
-      None
-      else
-    Some(s.substring( li +1, s.length() ))
-  }
+
 }

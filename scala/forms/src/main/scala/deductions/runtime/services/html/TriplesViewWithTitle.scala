@@ -84,6 +84,8 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
               println(s"htmlForm: Success !!!!!!!!!!")
               wrapInReadTransaction {
                 // FEATURE: annotate plain Web site
+                
+                // TODO use exists( triple => ... )
                 typeChange = gr.size === 1 && gr.triples.head.objectt == foaf.Document
                 //     println(s">>>> htmlForm typeChange $typeChange") ; printGraph( gr )
               }
