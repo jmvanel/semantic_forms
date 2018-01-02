@@ -70,12 +70,12 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
         	  $('#sort').on('click', function () {
               var $divs = $("div.sf-triple-block")
               $divs.sort(function (a, b) {
-                  var atext = $(a).find(".sf-internal-link").text().trim().toLowerCase().replace("_", " ")
-                  var btext = $(b).find(".sf-internal-link").text().trim().toLowerCase().replace("_", " ")
+                  var atext = $(a).find(".sf-rdf-link").text().trim().toLowerCase().replace("_", " ")
+                  var btext = $(b).find(".sf-rdf-link").text().trim().toLowerCase().replace("_", " ")
                   return atext.localeCompare(btext)
               })
 //            for (e of $divs) {
-//                console.log( '"' + $(e).find(".sf-internal-link").text().trim().toLowerCase().replace("_", " ") + '"' )
+//                console.log( '"' + $(e).find(".sf-rdf-link").text().trim().toLowerCase().replace("_", " ") + '"' )
 //              }
               let wrapper = $('#container')
               wrapper.empty()
