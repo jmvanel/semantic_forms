@@ -145,6 +145,7 @@ trait EnterButtons {
 
     <option label="bioc:Planting">                   { prefixesMap2("bioc")("Planting") } </option>
     <option label="nature:Observation">              { prefixesMap2("nature")("Obvervation") } </option>
+    <option label="seeds:SeedsBatch">                { prefixesMap2("seeds")("SeedsBatch") } </option>
   }
 /*
   val avOptgroup =
