@@ -43,7 +43,7 @@ trait AuthServiceTrait
 extends ImplementationSettings.RDFModule
 with ImplementationSettings.RDFCache // RDFStoreLocalJena1Provider
 with AuthServiceTrait2[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
-  println(s"object Auth")
+  logger.info(s"object Auth")
   /** NOTE otherwise we get "Lock obtain timed out", because
    *  LUCENE transactions would overlap with main database TDB/ */
 }
@@ -60,6 +60,8 @@ extends Controller
  with FormSaver[Rdf, DATASET] {
 
   import ops._
+  /** do not log password in clear !!!!!!!!!!!! */
+  val logPasswordInClear = false
 
   val loginFormURI = forms("loginForm")
   val registerFormURI = forms("registerForm")
@@ -70,7 +72,7 @@ extends Controller
 
   /** page for login or signin */
   def login = Action { implicit request: Request[_] =>
-    println(s"""login: request $request,
+    logger.info(s"""login: request $request,
       cookies ${request.cookies}
       keySet ${request.session.data.keySet}""")
 
@@ -127,10 +129,13 @@ extends Controller
       val httpRequest = copyRequest(request)
 
       val userFromSession = httpRequest.userId() // normally not yet set in session !
-      println( s"""authenticate: httpRequest $httpRequest - queryString ${httpRequest.queryString}
+      if(logPasswordInClear)
+      logger.info( s"""authenticate: httpRequest $httpRequest - queryString ${httpRequest.queryString}
     	userFromSession $userFromSession
     	formMap ${httpRequest.formMap}""" )
-
+      else
+        logger.info( s"""authenticate: httpRequest host ${httpRequest.host}
+          userFromSession $userFromSession""")
       val (useridOption, passwordOption, confirmPasswordOption)
       = decodeResponse(httpRequest)
 
@@ -142,15 +147,16 @@ extends Controller
         case Some(true) => true
         case _          => false
       }
-println( s"useridOption $useridOption, passwordOption $passwordOption" )
+      if(logPasswordInClear)
+        logger.info( s"useridOption $useridOption, passwordOption $passwordOption" )
 
       if( loginChecked ) {
       // Redirect to URL before login
-      println(s"""authenticate: cookies ${request.cookies}
+      logger.info(s"""authenticate: cookies ${request.cookies}
           get("to-redirect") ${request.session.get("to-redirect")}
           keySet ${request.session.data.keySet}""")
       val previousURL = redirect(request)
-      println(s"authenticate: previous url <$previousURL>")
+      logger.info(s"authenticate: previous url <$previousURL>")
       val call = previousURL match {
         case (url) if (
           url != "" &&
@@ -180,7 +186,8 @@ println( s"useridOption $useridOption, passwordOption $passwordOption" )
       triple.predicate(ops) -> values.headOption
     }
     val predicateToValueMap = predicateToValue.toMap
-    println(s"decodeResponse: predicateToValueMap $predicateToValueMap")
+    if( logPasswordInClear)
+      logger.info(s"decodeResponse: predicateToValueMap $predicateToValueMap")
 
     val useridOption = predicateToValueMap.get(useridProp).flatten
     val passwordOption = predicateToValueMap.get(passwordProp).flatten
@@ -195,19 +202,20 @@ println( s"useridOption $useridOption, passwordOption $passwordOption" )
   def register = Action {
     implicit request: Request[_] =>
       val httpRequest = copyRequest(request)
-//      println(s"register = Action: Request:\n\t$httpRequest")
+//      logger.info(s"register = Action: Request:\n\t$httpRequest")
 
       val (useridOption, passwordOption, confirmPasswordOption) = decodeResponse(httpRequest)
 
-      // TODO do not log password in clear !!!!!!!!!!!!
-      println(s"register = Action: :\n\tuseridOption $useridOption, passwordOption $passwordOption, confirmPasswordOption $confirmPasswordOption")
+      logger.info(s"register = Action: :\n\tuseridOption $useridOption")
+      if(logPasswordInClear)
+        print(s"\tpasswordOption $passwordOption, confirmPasswordOption $confirmPasswordOption")
       val checkRegisterOption = for (
         userid <- useridOption;
         password <- passwordOption;
         confirmPassword <- confirmPasswordOption;
         passwordConfirmed = (password === confirmPassword);
         useridLongEnough = (userid.length() >= 2);
-        _ = println( s"\tpasswordConfirmed $passwordConfirmed, useridLongEnough $useridLongEnough");
+        _ = logger.info( s"\tpasswordConfirmed $passwordConfirmed, useridLongEnough $useridLongEnough");
         if (passwordConfirmed && useridLongEnough )
       ) yield signin(userid, password)
 
@@ -218,16 +226,17 @@ println( s"useridOption $useridOption, passwordOption $passwordOption" )
 
       if (registerChecked) {
         // TODO also Redirect to the URL before login
-        println(s"register: user: $useridOption")
+        logger.info(s"register: user: $useridOption")
         Redirect(routes.Application.index).withSession(
           Security.username -> makeURIPartFromString(useridOption.get))
           .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
       } else {
-    	  // TODO do not log password in clear !!!!!!!!!!!!
-        println(s"""register = Action: BadRequest:\n\t$useridOption,
-          $passwordOption, $confirmPasswordOption""")
+        logger.info(s"""register = Action: BadRequest:\n\t$useridOption
+          passwordOption ${passwordOption.isDefined}, confirmPasswordOption ${confirmPasswordOption.isDefined}""" )
+        if( logPasswordInClear)
+          logger.info(s"\tpasswordOption $passwordOption, confirmPasswordOption $confirmPasswordOption")
         makeBadRequest(<div>Register NOT succeeded for user {useridOption}</div>)
       }
   }
