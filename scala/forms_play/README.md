@@ -66,7 +66,7 @@ Some people speak of "triple store", or "graph database", or "triple database", 
 ## Run locally from sources
 
 - install dependencies:
-  - Java 8 ,
+  - Java 8 (**Java 9 is not yet ready** for Scala),
   - [SBT](http://www.scala-sbt.org/) (a build tool like Maven or npm) or [Typesafe Activator](http://typesafe.com/platform/getstarted) .
 ```shell
 SBT_VERSION=0.13.16
