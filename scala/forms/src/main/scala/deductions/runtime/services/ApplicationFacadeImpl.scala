@@ -361,6 +361,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   }
 
   def backlinksFuture(query: String = "", request: HTTPrequest): Future[NodeSeq] = {
+//    println( s"====ZZZZZZZZZZZZ backlinksFuture request $request")
     val futureResults = backlinks(query, hrefDisplayPrefix, request)
     val label = labelForURITransaction(query, language = request.getLanguage())
     wrapSearchResults(futureResults, "",
@@ -372,7 +373,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
         &gt;
         <div><a href={
           val sparqlQuery = URLEncoder.encode(reverseLinksMaps(query), "utf-8")
-          "/assets/geo-map/geo-map.html?url=" + sparqlServicesURL + 
+          "/assets/geo-map/geo-map.html?url=" + sparqlServicesURL(request) + 
           "?" +
           "query=" + sparqlQuery
 //          URLEncoder.encode("&enrich=yes", "utf-8")
@@ -382,13 +383,13 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       </div>)
   }
 
-  /** TODO pasted from ToolsPage */
-  private lazy val sparqlServicesURL = {
-		val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
-    println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
-    val sparqlServicePrefix = "sparql" // ?query="
+  /** TODO another similar function in ToolsPage */
+  private def sparqlServicesURL(request: HTTPrequest) = {
+		val servicesURIPrefix = request.host
+//    println(s"servicesURIPrefix <$servicesURIPrefix>")
+    val sparqlServicePrefix = "/sparql"
     val dataServicesURL = s"$servicesURIPrefix$sparqlServicePrefix"
-    println(s">>>> dataServicesURL $dataServicesURL")
+    println(s">>>> dataServicesURL <$dataServicesURL>")
     dataServicesURL
   }
  

@@ -64,7 +64,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
       )(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     import resourceEntry._
     val placeholder = resourcePlaceholder(resourceEntry, lang)
-    val hasLookup = if (lookupActivatedFor(resourceEntry) ) "hasLookup" else "sfLookup"
+    val hasLookupCSSclass = if (lookupActivatedFor(resourceEntry) ) "hasLookup" else "sfLookup"
     Seq(
       Text("\n"),
     		// format: OFF
@@ -73,12 +73,9 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
             {
       addTripleAttributesToXMLElement(
           <input class={ css.cssClasses.formInputCSSClass +
-            " " + hasLookup }
+            " " + hasLookupCSSclass }
             value={ toPlainString(value) }
-            name={
-              // makeHTMLName(resourceEntry)
-              resourceEntry.htmlName
-            }
+            name={ resourceEntry.htmlName }
             id={ makeHTML_Id(resourceEntry) }
             list={ makeHTMLIdForDatalist(resourceEntry) }
             placeholder={ placeholder }
