@@ -25,10 +25,14 @@ trait HTTPrequestHelpers {
       path = request.path,
       formMap = formMap,
       uri = uri,
-      to_string = request.toString()
+      to_string = request.toString(),
+      secure = secure,
+      domain = domain
     )
     // println(s"copyRequest: headers: " + headers.toMap)
 //    println(s"copyRequest: cookiesMap $cookiesMap , userId ${res.userId()}")
+//    println(s"""===========>>>>>>>>> copyRequest request $request
+//        tags ${request.tags}""")
     res
   }
 
@@ -38,6 +42,8 @@ trait HTTPrequestHelpers {
       domain: Option[String], secure: Boolean, httpOnly)
   }
 
+  /** get Form Map from HTTP body in case of HTTP POST with Url Encoded Form, that is
+   *  application/x-www-form-urlencoded */
   def getFormMap(request: Request[_]):  Map[String, Seq[String]] = {
     val body = request.body
     body match {

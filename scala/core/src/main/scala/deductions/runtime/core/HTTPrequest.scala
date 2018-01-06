@@ -33,9 +33,14 @@ case class HTTPrequest(
     cookies: Map[String, Cookie] = Map(),
     acceptLanguages: Seq[String] = Seq(),
     path: String="",
+    /** Form Map from HTTP body in case of HTTP POST with Url Encoded Form, that is
+     *  application/x-www-form-urlencoded;
+     *  see https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST */
     formMap: Map[String, Seq[String]] = Map(),
     uri: String = "",
-    to_string: String = ""
+    to_string: String = "",
+    secure: Boolean= false,
+    domain: String = ""
     ) {
 
   /** get RDF subject (HTTP parameter "displayuri") */

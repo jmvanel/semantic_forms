@@ -385,7 +385,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
   /** TODO another similar function in ToolsPage */
   private def sparqlServicesURL(request: HTTPrequest) = {
-		val servicesURIPrefix = request.host
+    val httpOrhttps = Map( true -> "https://", false -> "http://")
+    val servicesURIPrefix = httpOrhttps(request.secure) + request.host
 //    println(s"servicesURIPrefix <$servicesURIPrefix>")
     val sparqlServicePrefix = "/sparql"
     val dataServicesURL = s"$servicesURIPrefix$sparqlServicePrefix"

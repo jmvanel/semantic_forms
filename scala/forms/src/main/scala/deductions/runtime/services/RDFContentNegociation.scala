@@ -17,7 +17,10 @@ import deductions.runtime.utils.StringHelpers
 //  JsonLdFlattened
 //}
 
-/** RDF Content Negociation, alias conneg */
+/** RDF Content Negociation, alias conneg;
+ *  NOTE: there is in Play! Request
+ *  `def accepts(mimeType: String): Boolean`
+ *  but we want to limit dependency on Play */
 trait RDFContentNegociation extends StringHelpers {
 
   val rdfXMLmime = "application/rdf+xml"
