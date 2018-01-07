@@ -307,7 +307,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   }
 
   /** SPARQL result
-   *  @param format = "turtle" or "rdfxml" or "jsonld"
+   *
+   * @param format : "turtle" or "rdfxml" or "jsonld"
    */
   def sparqlConstructResult(query: String, lang: String,
       format: String = "turtle",

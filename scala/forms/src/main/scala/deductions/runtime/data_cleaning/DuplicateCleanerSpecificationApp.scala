@@ -14,7 +14,7 @@ import deductions.runtime.utils.DefaultConfiguration
  * - no need to specify the class URI of merged instances,
  * since the instance URI's themselves are given,
  * - the columns names specifying the replaced URI & the replacing URI
- *   are controlled by the mappings in columnsMappings in trait [[deductions.runtime.utils.CSVImporter]]
+ *   are controlled by the mappings in columnsMappings in trait deductions.runtime.connectors.CSVImporter
  *
  * Arguments
  * - CSV Specification of pairs of URI: Duplicate and kept URI
@@ -23,7 +23,7 @@ import deductions.runtime.utils.DefaultConfiguration
  * Output:
  * modified data file in /tmp (same name as input)
  *
- * Properties used in CSV Specification: see "ONISEP" in [[CSVImporter.columnsMappings]]
+ * Properties used in CSV Specification: see "ONISEP" in CSVImporter.columnsMappings
  */
 object DuplicateCleanerSpecificationApp extends {
   override val config = new DefaultConfiguration {

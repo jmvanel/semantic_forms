@@ -7,10 +7,10 @@ import deductions.runtime.utils.DefaultConfiguration
 import org.w3.banana.RDF
 
 /**
- * Populate RDF Cache with commonly used vocabularies, formS pecifications and I18N Translations;
+ * Populate RDF Cache with commonly used vocabularies, form Specifications and I18N Translations;
  *  should be done just once (anyway because of SPARQL cache it goes quickly the second time);
  *
- *  To remove all such content, run [[deductions.runtime.jena.ResetRDFCacheApp]] ;
+ *  To remove all such content, run [[deductions.runtime.sparql_cache.apps.ResetRDFCacheApp]] ;
  *
  *  similar to loading
  *  http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/examples/defaultVocabularies.n3p.n3

@@ -21,8 +21,8 @@ import Scalaz._
 /**
  * Form for a subject URI with existing triples;
  *  a facade that blends:
- *  - the RDF cache [[deductions.runtime.sparql_cache.RDFCacheAlgo]],
- *  - the generic Form Factory [[deductions.runtime.abstract_syntax.FormSyntaxFactory]],
+ *  - the RDF cache deductions.runtime.sparql_cache.RDFCacheAlgo,
+ *  - the generic Form Factory deductions.runtime.abstract_syntax.FormSyntaxFactory,
  *  - the HTML renderer deductions.runtime.html.Form2HTML;
  *  transactional
  *

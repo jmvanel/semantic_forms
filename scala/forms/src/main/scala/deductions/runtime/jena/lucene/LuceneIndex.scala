@@ -16,7 +16,7 @@ import org.apache.jena.query.text.TextIndexConfig
 
 /**
  * see https://jena.apache.org/documentation/query/text-query.html
- * see [[StringSearchSPARQL]] for search query
+ * see [[deductions.runtime.services.StringSearchSPARQL]] for search query
  */
 trait LuceneIndex // [Rdf <: RDF]
     extends RDFPrefixes[ImplementationSettings.Rdf]

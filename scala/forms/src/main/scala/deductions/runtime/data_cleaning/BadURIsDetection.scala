@@ -5,7 +5,7 @@ import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.utils.{DefaultConfiguration, RDFHelpers, URIManagement}
 import org.w3.banana.RDF
 
-/** See also [[FixBadURIApp]] */
+/** See also [[deductions.runtime.sparql_cache.apps.FixBadURIApp]] */
 trait BadURIsDetection[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
     with RDFHelpers[Rdf]

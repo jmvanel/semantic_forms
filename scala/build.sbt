@@ -14,6 +14,9 @@ scalaVersion in ThisBuild := "2.11.12" // "2.12.4"
 javacOptions in ThisBuild := Seq("-source","1.8", "-target","1.8")
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-explaintypes", "-language:_", "-Xlint:_")
 
+publishArtifact in (Compile, packageDoc) := false
+sources in (Compile,doc) := Seq.empty
+
 lazy val forms_play = (project in file("forms_play"))
 	.dependsOn(forms)
 	.dependsOn(contacts_management)

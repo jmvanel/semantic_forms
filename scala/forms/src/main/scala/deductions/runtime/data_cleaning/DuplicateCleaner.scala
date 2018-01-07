@@ -113,7 +113,7 @@ type MergeGroups = Seq[MergeGroup]
 
   /**
    * remove Duplicates for 1 URI To keep, from possibly multiple merge Specifications:
-   * - calling [[removeDuplicatesFromSeq]] on given merge Specifications,
+   * - calling #removeDuplicatesFromSeq on given merge Specifications,
    * - replace multiple rdfs:labels with the given new label from mergeSpecifications;
    * - add a merge Marker to rdfs:label's
    */
