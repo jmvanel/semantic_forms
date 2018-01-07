@@ -7,6 +7,7 @@ import org.w3.banana.io.{NTriples, RDFReader, RDFWriter}
 
 import scala.util.Try
 import deductions.runtime.utils.RDFPrefixes
+import org.w3.banana.io.Turtle
 
 /**
  * @author jmv
@@ -15,7 +16,8 @@ trait HttpParamsManager[Rdf <: RDF]
 extends RDFPrefixes[Rdf] {
 
   implicit val ops: RDFOps[Rdf]
-  implicit val ntriplesReader: RDFReader[Rdf, Try, NTriples]
+//  implicit val ntriplesReader: RDFReader[Rdf, Try, NTriples]
+  implicit val turtleReader: RDFReader[Rdf, Try, Turtle]
   implicit val ntriplesWriter: RDFWriter[Rdf, Try, NTriples]
 
   val tripleForHTTPParam = // false // 
@@ -36,7 +38,7 @@ extends RDFPrefixes[Rdf] {
    */
   def httpParam2Triple(param: String): Rdf#Triple = {
     val triple = for (
-      gr <- ntriplesReader.read(new StringReader(param), "")
+      gr <- turtleReader.read(new StringReader(param), "")
     ) yield {
       gr.triples.head
     }
@@ -45,7 +47,7 @@ extends RDFPrefixes[Rdf] {
     triple.getOrElse(Triple(nullURI, form(param), Literal("")))
   }
 
-  def triple2HttpParam(tr: Rdf#Triple) = {
+  private def triple2HttpParam(tr: Rdf#Triple) = {
     val gr = ops.makeGraph(Seq(tr))
     ntriplesWriter.asString(gr, "")
   }

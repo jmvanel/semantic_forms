@@ -233,8 +233,8 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
     // DEBUG
     val dsg = dataset.asInstanceOf[org.apache.jena.sparql.core.DatasetImpl].asDatasetGraph()
-    println(s">>>> doSave: dsg class : ${dsg.getClass}")
-    println(s">>>> doSave: ds: ${dataset}")
+    logger.debug(s">>>> doSave: dsg class : ${dsg.getClass}")
+    logger.debug(s">>>> doSave: ds: ${dataset}")
 
       val transaction = wrapInTransaction {
         time("removeTriples",
