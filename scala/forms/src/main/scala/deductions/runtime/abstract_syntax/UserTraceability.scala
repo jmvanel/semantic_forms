@@ -55,11 +55,11 @@ trait UserTraceability[Rdf <: RDF, DATASET]
     	logger.info("\t" + elem)
     }
 
-//    println(s"YYYYYYYY Before add User Info\n${formSyntax.fields.mkString("\n")}\n")
+    logger.debug(s"YYYYYYYY Before add User Info\n${formSyntax.fields.mkString("\n")}\n")
     val entries =
       for (field: Entry <- formSyntax.fields) yield {
       if (resultsUser.contains( (field.property.toString, field.value.toString) ) ){
-//    	  println(s"ZZZZ add User Info ${field.label} ${field.value}")
+    	  logger.debug(s"ZZZZ add User Info ${field.label} ${field.value}")
         field.copyEntry(
             fromMetadata = resultsUser( (field.property.toString, field.value.toString)),
             fromTimeMetadata = resultsTimestamp.getOrElse( (field.property.toString, field.value.toString), 0 ) )
@@ -79,6 +79,7 @@ trait UserTraceability[Rdf <: RDF, DATASET]
   }
 
   private def addUserFromGraph(field: Entry): Entry = {
+    try {
     val resMainDatabase = {
       if (nodeToString(field.value) != "") {
         val queryMainDatabase = s"""
@@ -87,14 +88,14 @@ trait UserTraceability[Rdf <: RDF, DATASET]
         GRAPH ?USER {
          <${field.subject}> <${field.property}> ${makeTurtleTerm(field.value)} . }
       } """
-//        println(s"addUserFromGraph: queryMainDatabase $queryMainDatabase")
+        logger.debug(s"addUserFromGraph: queryMainDatabase $queryMainDatabase")
         sparqlSelectQueryVariables(
           queryMainDatabase,
           Seq("USER"),
           dataset)
       } else List(Seq())
     }
-//    println(s"addUserFromGraph: resMainDatabase $resMainDatabase")
+    logger.debug(s"addUserFromGraph: resMainDatabase $resMainDatabase")
     val fieldWithUsers = for (
       row <- resMainDatabase;
       node <- row
@@ -103,5 +104,11 @@ trait UserTraceability[Rdf <: RDF, DATASET]
       field.copyEntry(fromMetadata = node.toString)
     }
     fieldWithUsers.headOption.getOrElse(field)
+    } catch {
+      case t: Throwable =>
+        System.err.println( s"ERROR in addUserFromGraph($field)" )
+        t.printStackTrace()
+        field
+    }
   }
 }

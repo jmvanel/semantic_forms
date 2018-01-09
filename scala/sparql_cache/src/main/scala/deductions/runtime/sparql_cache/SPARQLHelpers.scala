@@ -406,6 +406,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       } yield es
     }, logger.isDebugEnabled() )
 
+    try {
     time("sparqlSelectQueryVariablesNT 2", {
       solutionsTry match {
         case Success(solutions) =>
@@ -437,6 +438,13 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       }
     }, logger.isDebugEnabled()
     )
+    }
+    catch {
+      case t: Throwable =>
+        System.err.println( s"ERROR in sparqlSelectQueryVariablesNT: ${t.getLocalizedMessage}" )
+        t.printStackTrace()
+        List(Seq())
+    }
   }
 
   /**
