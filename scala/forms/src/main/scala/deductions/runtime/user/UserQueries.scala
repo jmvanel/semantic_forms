@@ -25,7 +25,7 @@ trait UserQueries[Rdf <: RDF, DATASET] extends SPARQLHelpers[Rdf, DATASET]
       WHERE { GRAPH ?GR {
         ?PERSON <${foaf.account}> <${absoluteURIForUserid}> .
       }}"""
-//    println(s"getPersonFromAccount: $queryString")
+    logger.debug(s"getPersonFromAccount: $queryString")
     val list = sparqlSelectQueryVariablesNT(queryString, Seq("?PERSON"))
     list.headOption.getOrElse(Seq()).headOption.getOrElse(nullURI)
   }
