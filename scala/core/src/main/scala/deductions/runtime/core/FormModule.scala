@@ -192,6 +192,10 @@ trait FormModule[NODE, URI <: NODE] {
           cardinality = cardinality,
           widgetType = widgetType,
           property = fromProperty)
+        case e: Entry =>
+          System.err.println(s"copyEntry: copying plain entry !!!! $e")
+          e
+
       }
     }
   }
@@ -360,7 +364,7 @@ trait FormModule[NODE, URI <: NODE] {
     extends Entry {
 
     override def toString(): String = {
-      super.toString + s""" := '$value' """
+      "LiteralEntry " + super.toString + s""" value := '$value' """
     }
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = {
       //      val ret = new LiteralEntry(label, comment,
