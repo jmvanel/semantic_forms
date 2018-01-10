@@ -208,9 +208,10 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val classs = step1.classs
 
 
-    val formSyntax0 = FormSyntax(subject,
+    val formSyntax0 = FormSyntax(
+        subject,
         fieldsCompleteList ++ step1.fields,
-        Seq(),
+//        Seq(),
         classs,
         thumbnail = getURIimage(subject),
         title = makeInstanceLabel( subject, allNamedGraph, lang ),

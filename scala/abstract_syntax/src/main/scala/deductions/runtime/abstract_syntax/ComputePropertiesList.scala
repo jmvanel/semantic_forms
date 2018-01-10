@@ -101,7 +101,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
 
       FormSyntax(
         subject,
-        Seq(),
+//        Seq(),
         makeEntries(propertiesList),
         classesOfSubjectOrFromConfig,
         editable = editable,
@@ -122,7 +122,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
       if (formSpecs != nullURI)
         FormSyntax(
           subject,
-          Seq(),
+//          Seq(),
           makeEntries(propsFromFormsSpecs),
           formSpecs, // TODO : this argument is for class URI's not form URI !!??
           editable = editable)

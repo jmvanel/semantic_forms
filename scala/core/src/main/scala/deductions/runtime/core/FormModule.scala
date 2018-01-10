@@ -35,11 +35,12 @@ trait FormModule[NODE, URI <: NODE] {
                          val subject: NODE,
                          var fields: Seq[Entry],
 
-                         /** TODO remove entriesList (replaced by fields)
+                         /** DONE remove entriesList (replaced by fields)
                            *  cf commit
                            *  "REFACTORING : moving each field on formSyntax + changing all rawDatForForm by formSyntax"
                            *  (unfinished refactoring of RawDataForForms */
-                         val entriesList: Seq[FormModule[NODE, URI]#Entry] = Seq(),
+//                         val entriesList: Seq[FormModule[NODE, URI]#Entry] = Seq(),
+
                          /** several types */
                          val classs: Seq[NODE] = Seq(),
                          formGroup: URI = nullURI,
@@ -70,13 +71,13 @@ trait FormModule[NODE, URI <: NODE] {
           formSyntax.setSubject(subject, editable))
       }
 
-      FormSyntax(subject,fields,entriesList,classs,formGroup,defaults, propertiesGroupMap = propertiesGroupsWithSubject)
+      FormSyntax(subject,fields,classs,formGroup,defaults, propertiesGroupMap = propertiesGroupsWithSubject)
     }
 
-    /** TODO <<<<<<<<<< comes from a refactor */
+    /** comes from a refactor, maybe remove */
     def propertiesList: Seq[NODE] = {
-      entriesList . map ( _.property )
-      //      fields . map ( _.property ) // TODO <<<<<<<<<
+//      entriesList . map ( _.property )
+            fields . map ( _.property )
     }
 
     /** Map from property to possible Values  */
