@@ -1,0 +1,31 @@
+# Example of renaming an URI in TDB
+# Note: currently /sparql service does allow for binding variables
+
+DELETE {
+  GRAPH ?G {
+    ?URI ?P ?O .
+  }
+  GRAPH ?G1 {
+    ?S ?P1 ?URI .
+  }
+}
+INSERT {
+  GRAPH ?G {
+    ?URI_NEW ?P ?O .
+  }
+  GRAPH ?G1 {
+    ?S ?P1 ?URI_NEW .
+  }
+}
+
+WHERE {
+  BIND ( <http:///10.3.142.197:9112/ldp/semantic_forms> AS ?URI )
+  BIND ( <http://semantic-forms.cc:9112/ldp/semantic_forms> AS ?URI_NEW )
+
+  GRAPH ?G {
+    ?URI ?P ?O .
+  }
+  GRAPH ?G1 {
+    ?S ?P1 ?URI .
+  }
+}
