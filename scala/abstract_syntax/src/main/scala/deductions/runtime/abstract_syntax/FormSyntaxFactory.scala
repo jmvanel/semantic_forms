@@ -147,7 +147,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         logger.debug(s"createFormTR: Success FormSyntax: $fs")
         fs
       case Failure(f) =>
-        System.err.println(s"createFormTR: ERROR: $f, getCause ${f.getCause} ${f.getStackTrace().mkString("\n")}")
+        logger.error(s"createFormTR: ERROR: $f, getCause ${f.getCause} ${f.getStackTrace().mkString("\n")}")
         FormSyntax(nullURI, Seq())
     }
   }
@@ -203,14 +203,14 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
     // TODO make it functional #170
     val fieldsCompleteList: Seq[Entry] = makeEntriesFromFormSyntax(step1)
-//    println( s"==== createFormDetailed2: fieldsCompleteList $fieldsCompleteList")
+    logger.info( s"==== createFormDetailed2: fieldsCompleteList $fieldsCompleteList")
     val subject = step1.subject
     val classs = step1.classs
 
 
     val formSyntax0 = FormSyntax(
         subject,
-        fieldsCompleteList ++ step1.fields,
+        fieldsCompleteList, // ++ step1.fields,
 //        Seq(),
         classs,
         thumbnail = getURIimage(subject),
@@ -247,7 +247,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       val classses = step1.classs
       val formMode: FormMode = if (step1.editable) EditionMode else DisplayMode
 
-//      println( s"""==== makeEntriesFromFormSyntax: step1 $step1
+//      logger.info( s"""==== makeEntriesFromFormSyntax: step1 $step1
 //          entriesList ${step1.entriesList.mkString("\n")}
 //      """)
 
@@ -262,7 +262,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
           makeEntriesForSubject(subject, prop, formMode))
       }
       val fields = entries.flatten
-//    	println( s"""==== makeEntriesFromFormSyntax: fields $fields""" )
+//    	logger.info( s"""==== makeEntriesFromFormSyntax: fields $fields""" )
 
       val fields2 = addTypeTriples(subject, classses, fields)
       addInverseTriples(fields2, step1)
@@ -334,7 +334,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       if (!fieldSpecs.isEmpty)
         fieldSpecs.map {
           fieldSpec =>
-//            println( s">>>> fieldSpec $fieldSpec" )
+//            logger.info( s">>>> fieldSpec $fieldSpec" )
             val specTriples = find(graph, fieldSpec.subject, ANY, ANY).toSeq
             for (t <- specTriples)
               field.addTriple(t.subject, t.predicate, t.objectt)
@@ -348,13 +348,11 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
               //// DBPedia Lookup ////
 
-              //            	println( s">>>> updateOneFormFromConfig triple $t" )
+              logger.info( s">>>> updateOneFormFromConfig specTriple $specTriple" )
               if (specTriple.predicate == formPrefix("widgetClass")
                 && specTriple.objectt == formPrefix("DBPediaLookup")) {
-//                val field2 = field.asResource.copy(widgetType = DBPediaLookup)
                 val field2 = field.copyEntry(widgetType = DBPediaLookup)
                 formSyntax.fields = replace(formSyntax.fields, field, field2)
-//                println(
                 logger.debug(s"updateOneFormFromConfig: Lookup: $field -> $field2")
               }
 
@@ -380,7 +378,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 //                  val field2 = field.asResource.copy(cardinality = cardinality)
                   val field2 = field.copyEntry(cardinality = cardinality)                 
                   formSyntax.fields = replace(formSyntax.fields, field, field2)
-//                  println(
                   logger.debug(s"updateOneFormFromConfig: cardinality: prop $prop: $cardinality, $field -> $field2")
                 }
               }
@@ -511,7 +508,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         valueLabel = nodeToString(value),
         htmlName = htmlName,
         widgetType = widgetType)
-      //      println(s">>>> literalEntry ${res.valueLabel} - $res")
+      //      logger.info(s">>>> literalEntry ${res.valueLabel} - $res")
       res
     }
 
@@ -557,11 +554,11 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       }
     }
 
-//    println(s">>>> makeEntryFromTriple <$prop>, chooseRDFNodeType '$chooseRDFNodeType' ${chooseRDFNodeType == nullURI}")
+    logger.info(s">>>> makeEntryFromTriple <$prop>, chooseRDFNodeType '$chooseRDFNodeType' is nullURI: ${chooseRDFNodeType == nullURI}")
     chooseRDFNodeType match {
       case `nullURI` =>
         val re = resourceEntry
-//        println(s">>>> makeEntryFromTriple resourceEntry $re")
+//        logger.info(s">>>> makeEntryFromTriple resourceEntry $re")
         re
       case `nullLiteral` => literalEntry
       case `nullBNode` => resourceEntry // ??????????????? rather makeBN() ???
@@ -582,7 +579,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val res = if( isShortString )
       ShortString
     else Textarea
-//    println(s"==== makeWidgetTypeFromTriple: $prop -> $res")
+//    logger.info(s"==== makeWidgetTypeFromTriple: $prop -> $res")
     res
   }
 
