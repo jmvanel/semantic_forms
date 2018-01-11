@@ -89,6 +89,8 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
       reversePropertiesListFromFormConfiguration(
           formSpecs.head) // TODO <<<<<<<<<<<
 
+    /** make form Syntax from underlying propertiesList;
+     *  propertiesGroupsMap is taken from argument */
     def makeformSyntax(formSyntaxList: List[FormSyntax]): FormSyntax = {
       logger.debug(s"""makeformSyntax: formSyntaxList size ${formSyntaxList.size}
         ${formSyntaxList.mkString("\n")}""")

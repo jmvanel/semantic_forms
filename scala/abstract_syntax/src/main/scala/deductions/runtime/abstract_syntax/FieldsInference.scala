@@ -32,7 +32,9 @@ with FormModule[Rdf#Node, Rdf#URI]
     else
       getPredicates(graph, subject).toSeq.distinct
 
-  /** find fields from given RDF class */
+  /** find fields from given RDF class;
+   *  @return Form Syntaxes that are not yet correctly typed: they are just Entries,
+   *  not ResourceEntry or LiteralEntry */
   def fieldsFromClasses(classes:  List[Rdf#Node], subject: Rdf#Node, editable: Boolean, graph: Rdf#Graph)
   : List[FormSyntax] =
 	  for( classs <- classes) yield {
@@ -102,12 +104,12 @@ with FormModule[Rdf#Node, Rdf#URI]
     /* recursively process super-classes and owl:equivalentClass until reaching owl:Thing */
     def processSuperClasses(classs: Rdf#Node) {
       if (classs != owl.Thing) {
-        val domains = propertiesFromDomainsFromClass(classs)
-        inferedProperties ++= domains
+        val propertiesFromDomains = propertiesFromDomainsFromClass(classs)
+        inferedProperties ++= propertiesFromDomains
         propertiesGroups += ( classs ->
         FormSyntax(URI(""),
 //            Seq(),
-            makeEntries(domains),
+            makeEntries(propertiesFromDomains),
             Seq(classs)) )
 
         val superClasses = getObjects(graph, classs, rdfs.subClassOf)

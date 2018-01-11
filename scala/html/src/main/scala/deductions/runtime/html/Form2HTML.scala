@@ -298,7 +298,11 @@ import Scalaz._
           mkString(", ")
       }</p>
 
-      case _ => <p>Should not happen! createHTMLField({ field })</p>
+      case _ =>
+        logger.error(
+          s"createHTMLField: Should not happen! $field")
+        // <p>Should not happen! createHTMLField({ field })</p>
+        <span/>
     }
     if (displayInTable === true) {
       Seq(createAddRemoveWidgets(field, editable)) ++
