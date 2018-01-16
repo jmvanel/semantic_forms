@@ -58,7 +58,9 @@ trait FormSaver[Rdf <: RDF, DATASET]
   }
 
 
-  /** get Triples From HTTP parameters: decode HTTP parameters */
+  /** get Triples From HTTP parameters: recover Triples from HTTP parameters;
+   *  HTTP parameters are already URL decoded by Play!
+   *  @return list of pairs triple, values from user from form */
   private def getTriplesFromHTTPparams(queryString: Map[String, Seq[String]])
   : Iterable[(Rdf#Triple, Seq[String])] = {
 
@@ -69,16 +71,18 @@ trait FormSaver[Rdf <: RDF, DATASET]
       // cf partial functions:  http://blog.bruchez.name/2011/10/scala-partial-functions-without-phd.html
       case (param0, objects0) =>
         if (isSpecialHTTPparameterForTriple(param0)) {
-          val param = URLDecoder.decode(param0, "utf-8")
+          val tripleAsTurtle = URLDecoder.decode(param0, "utf-8")
           val objects = objects0.map { node =>
-            URLDecoder.decode(node.trim(), "utf-8") }
-          log(s"getTriplesFromHTTPparams: httpParam URL decoded: $param - objects $objects");
+//            URLDecoder.decode(node.trim(), "utf-8")
+            node.trim()
+          }
+          log(s"getTriplesFromHTTPparams: httpParam URL decoded: $tripleAsTurtle - objects $objects");
           val tryTriple = Try {
-            val comingBackTriple = httpParam2Triple(param)
+            val comingBackTriple = httpParam2Triple(tripleAsTurtle)
             log(s"getTriplesFromHTTPparams: triple from httpParam: {$comingBackTriple}")
             comingBackTriple
           }
-          if (tryTriple.isFailure) logger.error(s"getTriplesFromHTTPparams: ERROR: param $param : result $tryTriple")
+          if (tryTriple.isFailure) logger.error(s"getTriplesFromHTTPparams: ERROR: param $tripleAsTurtle : result $tryTriple")
           tryTriple match {
             case Success(triple) => (triple, objects)
             case Failure(f)      =>

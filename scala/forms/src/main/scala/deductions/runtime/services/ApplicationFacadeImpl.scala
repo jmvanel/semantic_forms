@@ -250,7 +250,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       saveTriples(request,lang)
     } catch {
       case t: Throwable =>
-        logger.error("Exception in saveTriples: " + t)
+        logger.error(s"""Exception in saveTriples: $t
+            ${t.getStackTrace.slice(0,5).mkString("\n")}""")
         throw t
     }
     val uriOption = (request).getOrElse("uri", Seq()).headOption
