@@ -11,7 +11,8 @@ name := "connectors"
 libraryDependencies ++= Seq(
     "org.apache.any23" % "apache-any23-csvutils" %  "2.0", // "1.1" ,
     "org.apache.commons" % "commons-csv" % "1.5" ,
-    bananaDependency
+    bananaDependency,
+    jenaDependency
 )
 
 publishArtifact in (Compile, packageDoc) := false

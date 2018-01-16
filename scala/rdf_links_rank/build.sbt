@@ -1,7 +1,8 @@
 import Common._
 
 libraryDependencies ++= Seq(
-    bananaDependency
+    bananaDependency,
+    jenaDependency
 )
 
 publishArtifact in (Compile, packageDoc) := false

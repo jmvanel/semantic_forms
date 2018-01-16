@@ -5,7 +5,8 @@ import Common._
 name := "utils"
 
 libraryDependencies ++= Seq(
-  bananaDependency
+  bananaDependency,
+  jenaDependency
 )
 libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
 

@@ -5,7 +5,8 @@ import Common._
 name := "clients"
 
 libraryDependencies ++= Seq(
-  bananaDependency0
+  bananaDependency0,
+  jenaDependency
 )
 // libraryDependencies += httpComponents // allready in Banana
 

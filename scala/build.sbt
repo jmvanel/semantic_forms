@@ -70,6 +70,10 @@ lazy val mobion = project .dependsOn(forms)
 // lazy val social_web = project
 // lazy val sparql_client = project
 
+// Added for locally compiled Java-RDFa:
+// resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
+resolvers in ThisBuild += Resolver.mavenLocal
+
 // PENDING: really necessary?
 // resolvers in ThisBuild += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
 // resolvers in ThisBuild += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
