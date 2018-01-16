@@ -386,9 +386,9 @@ extends
     uri:     Rdf#URI,
     dataset: DATASET,
     request: HTTPrequest) = {
-    readURIsf( uri, dataset, request)
-    // TODO reactivate; created problem at /login
-//    readURIWithJenaRdfLoader( uri, dataset, request)
+//    readURIsf( uri, dataset, request)
+    // reactivated; fixeed problem at /login
+    readURIWithJenaRdfLoader( uri, dataset, request)
   }
 
   /** for downloading RDF uses Jena RDFDataMgr,
@@ -414,15 +414,8 @@ extends
         println(s"readURI: after rdfLoader.load($uri): $graphTryLoadedFromURL")
 
         graphTryLoadedFromURL match {
-          case Success(gr) =>
-//            val graphFromMicrodata = graphTryLoadedFromURL.getOrElse {
-//              if (activateMicrodataLoading) microdataLoading(uri) else emptyGraph }
-//            val graphTryLoadedFromURLOrMicrodata =
-//              if (graphFromMicrodata.size == 0)
-//                graphTryLoadedFromURL
-//              else
-//                Success(graphFromMicrodata)
-//            (graphTryLoadedFromURLOrMicrodata, contentType)
+
+        case Success(gr) =>
             (graphTryLoadedFromURL, contentType)
 
           case Failure(f) =>
@@ -548,19 +541,18 @@ extends
       new java.net.URL(uri.toString())) match {
         case Success(s) => s
         case Failure(f) => {
-
-          logger.error("readStoreURINoTransaction: START MESSAGE")
+          logger.error("microdataLoading: START MESSAGE")
           logger.error(f.getMessage)
           logger.error(s""" uri.toString.contains("/ldp/") ${uri.toString.contains("/ldp/")} """)
           logger.error("END MESSAGE")
-
           // catch only "pure" HTML web page: TODO? make a function isPureHTMLwebPage(uri: URI, request: Request): Boolean
           //              if (f.getMessage.contains("Failed to determine the content type:")) {
           //                logger.info(s"<$uri> is a pure HTML web page (no RDFa or microformats");
           //                val tryGraph = getLocallyManagedUrlAndData(uri, request)
           //                tryGraph . get
           //              } else
-          throw f
+          // throw f
+          emptyGraph
         }
       }
   }
