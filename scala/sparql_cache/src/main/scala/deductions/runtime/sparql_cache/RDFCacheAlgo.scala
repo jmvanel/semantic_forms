@@ -387,7 +387,7 @@ extends
     dataset: DATASET,
     request: HTTPrequest) = {
 //    readURIsf( uri, dataset, request)
-    // reactivated; fixeed problem at /login
+    // reactivated; fixed problem at /login
     readURIWithJenaRdfLoader( uri, dataset, request)
   }
 
@@ -409,7 +409,7 @@ extends
           !contentType.startsWith("ERROR") ) {
         setTimeoutsFromConfig()
         // NOTE: Jena RDF loader can throw an exception "Failed to determine the content type"
-        val graphTryLoadedFromURL = rdfLoader.load(new java.net.URL(uri.toString()))
+        val graphTryLoadedFromURL = rdfLoader.load(new java.net.URL(withoutFragment(uri).toString()))
 //        logger.info
         println(s"readURI: after rdfLoader.load($uri): $graphTryLoadedFromURL")
 
@@ -538,7 +538,7 @@ extends
   private def microdataLoading(uri: Rdf#URI): Rdf#Graph = {
     logger.info(s"Trying RDFa for <$uri>")
     microdataLoader.load(
-      new java.net.URL(uri.toString())) match {
+      new java.net.URL(withoutFragment(uri).toString())) match {
         case Success(s) => s
         case Failure(f) => {
           logger.error("microdataLoading: START MESSAGE")
