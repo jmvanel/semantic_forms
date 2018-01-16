@@ -63,8 +63,8 @@ extends Controller
   /** do not log password in clear !!!!!!!!!!!! */
   val logPasswordInClear = false
 
-  val loginFormURI = forms("loginForm")
-  val registerFormURI = forms("registerForm")
+  val loginFormURI = loginForms("loginForm")
+  val registerFormURI = loginForms("registerForm")
 
   val useridProp = form("userid") 
   val passwordProp = form("password")

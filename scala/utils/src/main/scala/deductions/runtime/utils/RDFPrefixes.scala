@@ -51,8 +51,11 @@ import scala.util.{Failure, Success, Try}
   lazy val form2 = Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#")
 
   /** prefix for specific forms (eg forms:personForm) */
-  lazy val forms = Prefix[Rdf]("forms",
-      "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#" )
+  lazy val foafForms = Prefix[Rdf]("foaf-forms",
+"http://raw.githubusercontent.com/jmvanel/semantic_forms/master/scala/forms/form_specs/foaf.form.ttl#" )
+      // "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#"
+lazy val loginForms = Prefix[Rdf]("login-forms",
+"http://raw.githubusercontent.com/jmvanel/semantic_forms/master/scala/forms/form_specs/login.form.ttl#" )
 
   lazy val dct = DCTPrefix[Rdf]
 	lazy val dc = DCPrefix[Rdf]
@@ -80,7 +83,7 @@ import scala.util.{Failure, Success, Try}
     dbo,
     Prefix[Rdf]("vcard", "http://www.w3.org/2006/vcard/ns#"),
     Prefix[Rdf]("ical", "http://www.w3.org/2002/12/cal/ical#"),
-    forms,  // for specific form specs (FOAF, etc)
+    foafForms,  // for specific form specs (FOAF, etc)
     //                    "http://deductions-software.com/ontologies/forms#"),
     form,   // form vocabulary
 

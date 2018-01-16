@@ -121,7 +121,7 @@ trait EnterButtons {
   /** suggested Classes For Creation;
    *  NOTE currently the label is NOT displayed by Firefox :( , only by Chrome */
   def suggestedClassesForCreation: NodeSeq = {
-    <option label="foaf:Person" selected="selected"> { forms("personForm") } </option>
+    <option label="foaf:Person" selected="selected"> { foafForms("personForm") } </option>
     <option label="doap:Project">                    { prefixesMap2("doap")("Project") } </option>
     <option label="Desc. Of A Software (DOAS)">      { prefixesMap2("doas")("Software") } </option>
     <option label="foaf:Project">                    { foaf.Project } </option>

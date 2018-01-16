@@ -10,14 +10,16 @@
 @prefix  form: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
 @prefix      : <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
 
-# TODO: self hosted URI's :
-@prefix forms: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#> .
+# self hosted URI's :
+# @prefix foaf-forms: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#> .
+# @prefix foaf-forms: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/scala/forms/form_specs/foaf.form.ttl#> .
+@prefix foaf-forms: <#> .
 
 # form specifications for FOAF
 
 #### Person ####
 
-forms:personForm
+foaf-forms:personForm
   a form:specification ;
   form:classDomain foaf:Person ;
   rdfs:label "Personne FOAF - court"@fr ;
@@ -40,33 +42,33 @@ forms:personForm
 	foaf:based_near
   ) .
 
-forms:topic_interest--personPerson
+foaf-forms:topic_interest--personPerson
   rdfs:label "topic_interest dans formulaire Person"@fr ;
   rdfs:label "topic_interest in form Person"@en ;
-	:fieldAppliesToForm forms:personForm ;
-	:fieldAppliesToForm forms:organizationForm ;
+	:fieldAppliesToForm foaf-forms:personForm ;
+	:fieldAppliesToForm foaf-forms:organizationForm ;
 	:fieldAppliesToProperty foaf:topic_interest ;
 	:widgetClass form:DBPediaLookup .
 
-forms:cco-expertise--personPerson
-	:fieldAppliesToForm forms:personForm ;
-	:fieldAppliesToForm forms:organizationForm ;
+foaf-forms:cco-expertise--personPerson
+	:fieldAppliesToForm foaf-forms:personForm ;
+	:fieldAppliesToForm foaf-forms:organizationForm ;
 	:fieldAppliesToProperty cco:expertise ;
 	:widgetClass form:DBPediaLookup .
 
 
-forms:givenName--personPerson
-	:fieldAppliesToForm forms:personForm ;
+foaf-forms:givenName--personPerson
+	:fieldAppliesToForm foaf-forms:personForm ;
 	:fieldAppliesToProperty foaf:givenName ;
         :cardinality :exactlyOne .
-forms:familyName--personPerson
-	:fieldAppliesToForm forms:personForm ;
+foaf-forms:familyName--personPerson
+	:fieldAppliesToForm foaf-forms:personForm ;
 	:fieldAppliesToProperty foaf:familyName ;
         :cardinality :exactlyOne .
 
-forms:based_near--personPerson
-	:fieldAppliesToForm forms:personForm ;
-	:fieldAppliesToForm forms:organizationForm ;
+foaf-forms:based_near--personPerson
+	:fieldAppliesToForm foaf-forms:personForm ;
+	:fieldAppliesToForm foaf-forms:organizationForm ;
 	:fieldAppliesToProperty foaf:based_near ;
 	:widgetClass form:DBPediaLookup .
 
@@ -105,7 +107,7 @@ task:hardness form:shortString true .
 
 #### Project ####
 
-forms:projectForm
+foaf-forms:projectForm
   a form:specification ;
   form:classDomain foaf:Project ;
   rdfs:label "Projet - formulaire"@fr ;
@@ -126,7 +128,7 @@ forms:projectForm
 
 #### Organization ####
 
-forms:organizationForm
+foaf-forms:organizationForm
   rdfs:label "Organisation - formulaire"@fr ;
   rdfs:label "Organization - form"@en ;
   a form:specification ;
@@ -147,7 +149,7 @@ forms:organizationForm
   ) .
 
 
-forms:dc_subject
+foaf-forms:dc_subject
   rdfs:label "dct:subject dans formulaire Person, etc"@fr ;
   rdfs:label "dct:subject in form Person, etc"@en ;
 	:fieldAppliesToForm :projectForm ;
@@ -158,7 +160,7 @@ forms:dc_subject
 
 #### Document ####
 
-forms:form-Document
+foaf-forms:form-Document
   rdfs:label "Document - formulaire"@fr ;
   rdfs:label "Document - form"@en ;
   a form:specification ;
@@ -171,7 +173,7 @@ foaf:primaryTopic
 	dct:subject
 	rdfs:seeAlso
   ) .
-forms:primaryTopic
+foaf-forms:primaryTopic
   rdfs:label "primaryTopic dans formulaire Document"@fr ;
   rdfs:label "primaryTopic in form Document"@en ;
 	:fieldAppliesToForm :form-Document ;
