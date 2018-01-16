@@ -11,7 +11,7 @@ import org.apache.http.client.{ClientProtocolException, ResponseHandler}
 import org.apache.http.impl.client.HttpClients
 import org.apache.log4j.Logger
 import org.w3.banana._
-//import deductions.runtime.jena.MicrodataLoaderModule
+//import deductions.runtime.sparql_cache.MicrodataLoaderModule
 //import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.utils.Configuration
 import org.w3.banana.io.{RDFReader, RDFXML, Turtle,RDFLoader}
@@ -30,6 +30,7 @@ import java.net.URL
 import scalaz._
 import Scalaz._
 import deductions.runtime.utils.StringHelpers
+import scala.util.Success
 
 /** implicit RDFReader's - TODO remove DATASET */
 trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
@@ -51,7 +52,7 @@ extends
 //RDFStoreLocalProvider[Rdf, DATASET]
 //    with 
     RDFCacheDependencies[Rdf, DATASET]
-    //with MicrodataLoaderModule[Rdf]
+    with MicrodataLoaderModule[Rdf]
     with TimestampManagement[Rdf, DATASET]
     with MirrorManagement[Rdf, DATASET]
     with BrowsableGraph[Rdf, DATASET]
@@ -64,7 +65,7 @@ extends
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  val activateMicrodataLoading = false;
+  val activateMicrodataLoading = true
 //  {
 //    HttpOp.setDefaultHttpClient(HttpClients.createMinimal())
 //    //	  logger.warn(
@@ -377,7 +378,21 @@ extends
     graphTry
   }
 
-  /** unused !!! */
+  /**
+   * read unconditionally from URI,
+   * no matter what the concrete syntax is
+   */
+  private def readURI(
+    uri:     Rdf#URI,
+    dataset: DATASET,
+    request: HTTPrequest) = {
+    readURIsf( uri, dataset, request)
+    // TODO reactivate; created problem at /login
+//    readURIWithJenaRdfLoader( uri, dataset, request)
+  }
+
+  /** for downloading RDF uses Jena RDFDataMgr,
+   *  and activate Microdata Loading */
   private def readURIWithJenaRdfLoader(
       uri: Rdf#URI,
       dataset: DATASET,
@@ -389,29 +404,43 @@ extends
       // To avoid troubles with Jena cf https://issues.apache.org/jira/browse/JENA-1335
       val contentType = getContentTypeFromHEADRequest(fromUri(uri))
     	println(s""">>>> readURIWithJenaRdfLoader: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
-      if (!contentType.startsWith("text/html") &&
+      if (
+//          !contentType.startsWith("text/html") &&
           !contentType.startsWith("ERROR") ) {
         setTimeoutsFromConfig()
         // NOTE: Jena RDF loader can throw an exception "Failed to determine the content type"
-        val graphTry = rdfLoader.load(new java.net.URL(uri.toString()))
+        val graphTryLoadedFromURL = rdfLoader.load(new java.net.URL(uri.toString()))
 //        logger.info
-        println(s"readURI: after rdfLoader.load($uri): $graphTry")
+        println(s"readURI: after rdfLoader.load($uri): $graphTryLoadedFromURL")
 
-        graphTry match {
+        graphTryLoadedFromURL match {
           case Success(gr) =>
-            // TODO after release of rdfa4j
-//            val graph = graphTry.getOrElse {
+//            val graphFromMicrodata = graphTryLoadedFromURL.getOrElse {
 //              if (activateMicrodataLoading) microdataLoading(uri) else emptyGraph }
-            (graphTry, contentType)
+//            val graphTryLoadedFromURLOrMicrodata =
+//              if (graphFromMicrodata.size == 0)
+//                graphTryLoadedFromURL
+//              else
+//                Success(graphFromMicrodata)
+//            (graphTryLoadedFromURLOrMicrodata, contentType)
+            (graphTryLoadedFromURL, contentType)
 
           case Failure(f) =>
+            println(s""">>>> readURIWithJenaRdfLoader: Failed with Jena RDF loader for <$uri>
+               trying read With explicit content Type; ContentType From HEAD Request "$contentType" """)
+            // after Java-RDFa is updated to latest Jena
+            val graphFromMicrodata = graphTryLoadedFromURL.getOrElse {
+              if (activateMicrodataLoading) microdataLoading(uri) else emptyGraph }
+
 //            if( contentType != "ERROR" ) {
             /* NOTE: hoping that Jena > 3.4.0 will solve all issues on RDFDataMgr,
              * but before that , we try this */
-            println(s""">>>> readURIWithJenaRdfLoader: Failed with Jena RDF loader for <$uri>
-               trying read With explicit content Type; ContentType From HEAD Request "$contentType" """)
-            val gr = readWithContentType( uri, contentType, dataset): Try[Rdf#Graph]
-//            println(s"""readURI After readWithContentType: ${gr}""")
+            val gr =
+              if(graphFromMicrodata.size == 0)
+                readWithContentType( uri, contentType, dataset): Try[Rdf#Graph]
+              else
+                Success(graphFromMicrodata)
+            println(s"""readURI After readWithContentType: ${gr}""")
             ( gr, contentType)
         }
 
@@ -425,15 +454,15 @@ extends
     }
   }
 
-
   /**
    * read unconditionally from URI,
    * no matter what the concrete syntax is;
+   * use SF specific implementation for downloading RDF, not Jena RDFDataMgr
    * TODO:
    * - also load an URI with the # part
    * - load a file: URI
    */
-  private def readURI(
+  private def readURIsf(
       uri: Rdf#URI,
       dataset: DATASET,
       request: HTTPrequest ): (Try[Rdf#Graph], String) = {
@@ -513,28 +542,28 @@ extends
     }
   }
   /** unused function : commented for modularization */
-//  private def microdataLoading(uri: Rdf#URI): Rdf#Graph = {
-//    logger.info(s"Trying RDFa for <$uri>")
-//    microdataLoader.load(
-//      new java.net.URL(uri.toString())) match {
-//        case Success(s) => s
-//        case Failure(f) => {
-//
-//          logger.error("readStoreURINoTransaction: START MESSAGE")
-//          logger.error(f.getMessage)
-//          logger.error(s""" uri.toString.contains("/ldp/") ${uri.toString.contains("/ldp/")} """)
-//          logger.error("END MESSAGE")
-//
-//          // catch only "pure" HTML web page: TODO? make a function isPureHTMLwebPage(uri: URI, request: Request): Boolean
-//          //              if (f.getMessage.contains("Failed to determine the content type:")) {
-//          //                logger.info(s"<$uri> is a pure HTML web page (no RDFa or microformats");
-//          //                val tryGraph = getLocallyManagedUrlAndData(uri, request)
-//          //                tryGraph . get
-//          //              } else
-//          throw f
-//        }
-//      }
-//  }
+  private def microdataLoading(uri: Rdf#URI): Rdf#Graph = {
+    logger.info(s"Trying RDFa for <$uri>")
+    microdataLoader.load(
+      new java.net.URL(uri.toString())) match {
+        case Success(s) => s
+        case Failure(f) => {
+
+          logger.error("readStoreURINoTransaction: START MESSAGE")
+          logger.error(f.getMessage)
+          logger.error(s""" uri.toString.contains("/ldp/") ${uri.toString.contains("/ldp/")} """)
+          logger.error("END MESSAGE")
+
+          // catch only "pure" HTML web page: TODO? make a function isPureHTMLwebPage(uri: URI, request: Request): Boolean
+          //              if (f.getMessage.contains("Failed to determine the content type:")) {
+          //                logger.info(s"<$uri> is a pure HTML web page (no RDFa or microformats");
+          //                val tryGraph = getLocallyManagedUrlAndData(uri, request)
+          //                tryGraph . get
+          //              } else
+          throw f
+        }
+      }
+  }
 
   /* test if given URI is a locally managed URL, that is created locally and 100% located here */
   /** get Locally Managed graph from given URI : <URI> ?P ?O */

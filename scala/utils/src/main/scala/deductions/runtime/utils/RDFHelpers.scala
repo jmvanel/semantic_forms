@@ -203,7 +203,9 @@ extends URIManagement {
     tr1.subject == tr2.subject &&
     tr1.objectt == tr2.objectt &&
     tr1.predicate == tr2.predicate
-    
+
+  /** url not hosted here, and
+   *  must start with http: ftp: file: https: */
   def isDownloadableURI(uri: Rdf#URI) = {
     val u = fromUri(uri)
     isDownloadableURL(u) &&

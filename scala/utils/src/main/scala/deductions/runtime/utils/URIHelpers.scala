@@ -36,8 +36,9 @@ trait URIHelpers {
     }
   }
 
+  /** url must start with http: ftp: file: https: */
   def isDownloadableURL(url: String) = {
-      url.startsWith("http") ||
+      url.startsWith("http:") ||
       url.startsWith("ftp:") ||
       url.startsWith("file:") ||
       url.startsWith("https:")
