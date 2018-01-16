@@ -8,7 +8,8 @@ import Common._
 name := "semantic_forms-root"
 
 organization in ThisBuild := "deductions"
-version in ThisBuild := "2.4-SNAPSHOT"
+// version in ThisBuild := "2.5"
+version in ThisBuild := "2.X-SNAPSHOT"
 
 scalaVersion in ThisBuild := "2.11.12" // "2.12.4"
 javacOptions in ThisBuild := Seq("-source","1.8", "-target","1.8")
