@@ -33,15 +33,18 @@ trait SparqlServices extends ApplicationTrait
   def loadAction() = Action {
     implicit request: Request[AnyContent] =>
       val requestCopy = getRequestCopy()
-      println(s"""body class ${request.getClass} request.body ${request.body}
-      - data ${request.getQueryString("data")} """)
+      println(s"""body class ${request.getClass} request.body ${request.body.getClass}
+      - data= "${request.getQueryString("data")}" """)
       val content = request.getQueryString("data") match {
         case Some(s) => Some(s)
         case None => getContent(request)
       }
       println(s"content ${content.toString.substring(0, Math.min(content.toString.length,50)) + " ..."}")
-      load(requestCopy.copy(content = content))
-      Ok("OK")
+      val resultGraph = load(requestCopy.copy(content = content))
+      resultGraph match {
+        case Success(g) => Ok("OK")
+        case Failure(f) => InternalServerError(f.getLocalizedMessage)
+      }
   }
 
 

@@ -8,7 +8,7 @@ read WAIT
 
 rm -r TDB TDB2 TDB3
 
-JENA=apache-jena-3.1.0
+JENA=apache-jena-3.6.0
 
 $HOME/apps/$JENA/bin/tdbloader2 --loc TDB $DIR/dump.nq
 	echo 'DONE dump.nq --> TDB' ; echo

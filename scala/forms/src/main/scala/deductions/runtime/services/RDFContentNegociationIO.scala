@@ -15,7 +15,7 @@ trait RDFContentNegociationIO[Rdf <: RDF, DATASET]
 
   /** get RDF Reader From MIME */
   def getRDFReader(request: HTTPrequest): RDFReader[Rdf, Try, _] = {
-    val mimeType = request.getHTTPheaderValue("Accept").getOrElse("")
+    val mimeType = request.getHTTPheaderValue("Content-Type").getOrElse("")
     getReaderFromMIME(mimeType)
   }
 

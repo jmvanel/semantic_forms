@@ -137,9 +137,10 @@ The typical pattern for data is to load in a graph named after the URI source, s
 CAUTION: do not load data or configuration into the un-named (default) graph. It would not be taken in account by the framework.
 
 
-## Updating RDF content
+## Updating and loading RDF content
 
-Of course the simplest way to upload and update RDF content is to paste the URL in the top field "Disply", see the [User manual](https://github.com/jmvanel/semantic_forms/wiki/User_manual#navigating).
+Of course the simplest way to upload and update RDF content is to paste the URL in the top field "Disply", see the [User manual](https://github.com/jmvanel/semantic_forms/wiki/User_manual#navigating). But this works for RDF data that are available via HTTP.
+If you have RDF content as a local file, you can load it via the `/load` service; see below "Remote shell commands".
 
 Run (with `java -cp $JARS` or `runMain` under SBT) deductions.runtime.utils.CommandLineApp for a commented list of Scala/Java Applications available in Semantic\_forms classpath.
 
@@ -200,6 +201,18 @@ These commands connect to the database, with admin account, by SPARQL Update pro
 scripts/rgraphremove.sh
 # any SPARQL Update command
 scripts/rupdate.sh
+```
+
+If you have RDF content as a local file, you can load it via the `/load` service (compliant with SPARQL 1.1 Graph Store HTTP Protocol ). There is convenient script for that:
+
+```shell
+scripts/load_wget.sh my.data.ttl semantic_forms.cc:9111/load my:data
+```
+The arguments are :
+```
+RDF_FILE
+LOAD_SERVICE
+GRAPH
 ```
 
 ### Administrative SPARQL
