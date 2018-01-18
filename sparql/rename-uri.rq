@@ -1,5 +1,5 @@
 # Example of renaming an URI in TDB
-# Note: currently /sparql service does allow for binding variables
+# Note: currently /sparql service does NOT allow for binding variables
 
 DELETE {
   GRAPH ?G {

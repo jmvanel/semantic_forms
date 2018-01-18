@@ -1,0 +1,22 @@
+# Example of moving triples with given subject to a new graph
+# Note: currently /sparql service does NOT allow for binding variables
+
+DELETE {
+  GRAPH ?G {
+    ?S ?P ?O .
+  }
+}
+INSERT {
+  GRAPH ?TARGET_GRAPH {
+    ?S ?P ?O .
+  }
+}
+
+WHERE {
+  BIND ( <http://semantic-forms.cc:9112/ldp/111-222> AS ?S )
+  BIND ( <user:UUU> AS ?TARGET_GRAPH )
+
+  GRAPH ?G {
+    ?S ?P ?O .
+  }
+}

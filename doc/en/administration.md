@@ -202,6 +202,22 @@ scripts/rgraphremove.sh
 scripts/rupdate.sh
 ```
 
+### Administrative SPARQL
+
+Some typical SPARQL update commands are in:
+[../../sparql/](../../sparql/)
+
+
+```
+fix-bad-uris.upd.ql
+move-triples-to-new-graph.rq
+rename-uri.rq
+rename-graph.rq
+```
+
+They can be run by `scripts/rupdate.sh` .
+
+
 ### Misc.
 In the case when one wants to override some triples that are already loaded in graph G, and taking in account the language of the literals:
 
@@ -213,7 +229,7 @@ In the case when one wants to override some triples that are already loaded in g
     sbt "runMain deductions.runtime.jena.DataSourceManagerApp \
 		https://raw.githubusercontent.com/assemblee-virtuelle/pair/master/form_labels.ttl rdf-i18n"
 
-For each triple `?S ?P "val"@lang.` in newTriples.tll , this will remove the existing triple:  `?S ?P "old val"@lang.` , and add the new triple: `?S ?P "val"@lang.` 
+For each triple and each language ?lang, `?S ?P "val"@lang.` in newTriples.tll , this will remove the existing triple:  `?S ?P "old val"@lang.` , and add the new triple: `?S ?P "val"@lang.` 
 
 ## Dump and reload
 

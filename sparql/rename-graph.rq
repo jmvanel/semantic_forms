@@ -1,0 +1,22 @@
+# Example of moving a triple to a new graph
+# Note: currently /sparql service does NOT allow for binding variables
+
+DELETE {
+  GRAPH ?SOURCE_GRAPH {
+    ?URI ?P ?O .
+  }
+}
+INSERT {
+  GRAPH ?TARGET_GRAPH {
+    ?URI ?P ?O .
+  }
+}
+
+WHERE {
+  BIND ( <oldGraph> AS ?SOURCE_GRAPH )
+  BIND ( <user:UUU> AS ?TARGET_GRAPH )
+
+  GRAPH ?SOURCE_GRAPH {
+    ?URI ?P ?O .
+  }
+}
