@@ -213,7 +213,9 @@ The arguments are :
 RDF_FILE
 LOAD_SERVICE
 GRAPH
+MIME
 ```
+MIME is Turtle by default.
 
 ### Administrative SPARQL
 

@@ -33,6 +33,7 @@ import deductions.runtime.core.HTTPrequest
 import deductions.runtime.utils.RDFStoreLocalProvider
 import scala.io.Source
 import play.api.mvc.AnyContentAsXml
+import play.api.mvc.AnyContentAsJson
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -191,6 +192,7 @@ trait ApplicationTrait extends Controller
         }
 
       case AnyContentAsXml(xml) => Some(xml.toString())
+      case AnyContentAsJson(c) => Some(c.toString())
 
       case _ => None
     }
