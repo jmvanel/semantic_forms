@@ -34,6 +34,7 @@ import deductions.runtime.utils.RDFStoreLocalProvider
 import scala.io.Source
 import play.api.mvc.AnyContentAsXml
 import play.api.mvc.AnyContentAsJson
+import play.api.mvc.Action
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -200,7 +201,7 @@ trait ApplicationTrait extends Controller
 
   def recoverFromOutOfMemoryErrorResult(
     sourceCode: => Result,
-    message:    String             = "ERROR! try again some time later."): Result = {
+    message:    String    = "ERROR! try again some time later."): Result = {
     try {
       sourceCode
     } catch {
@@ -215,4 +216,21 @@ trait ApplicationTrait extends Controller
         }
     }
   }
+
+  def errorResultFromThrowable(
+    t:               Throwable,
+    specificMessage: String    = "ERROR"): Result = {
+    InternalServerError(
+      s"""Error $specificMessage, retry later !!!!!!!!
+          ${t.getLocalizedMessage}
+          ${printMemory}""")
+  }
+
+    def errorActionFromThrowable(
+    t:               Throwable,
+    specificMessage: String    = "ERROR") = Action {
+          implicit request: Request[AnyContent] =>
+        errorResultFromThrowable(t, specificMessage)
+    }
+
 }

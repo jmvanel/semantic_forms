@@ -21,18 +21,25 @@ import play.api.mvc.Controller
 import play.api.mvc.Request
 import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.core.SemanticController
+import play.api.mvc.Result
+import play.api.mvc.EssentialAction
 
 
 /** controller for HTML pages ("generic application") */
 trait WebPages extends Controller with ApplicationTrait {
   import config._
 
-  def index() = {
-    val contentMaker = new SemanticController {
-      def result(request: HTTPrequest): NodeSeq =
-        makeHistoryUserActions("15", request)
-    }
-    outputMainPageWithContent(contentMaker)
+  def index(): EssentialAction = {
+    recoverFromOutOfMemoryErrorGeneric(
+      {
+        val contentMaker = new SemanticController {
+          def result(request: HTTPrequest): NodeSeq =
+            makeHistoryUserActions("15", request)
+        }
+        outputMainPageWithContent(contentMaker)
+      },
+      (t: Throwable) =>
+        errorActionFromThrowable(t, "in landing page /index"))
   }
 
   /** no call of All Service Listeners */
@@ -114,8 +121,8 @@ trait WebPages extends Controller with ApplicationTrait {
       .as("text/html; charset=utf-8")
   }
 
-
-  /** (re)load & display URI
+  /**
+   * (re)load & display URI
    *
    *  NOTE: parameters are just used by Play! to check presence of parameters,
    *  the HTTP request is analysed by case class MainPagePrecompute
@@ -123,46 +130,53 @@ trait WebPages extends Controller with ApplicationTrait {
    *  @param Edit edit mode <==> param not ""
    */
   def displayURI(uri0: String, blanknode: String = "", Edit: String = "",
-                 formuri: String = "") = {
+                 formuri: String = "") : EssentialAction
+  = {
+    recoverFromOutOfMemoryErrorGeneric(
+      {
+        val contentMaker = new SemanticController {
+          def result(request: HTTPrequest): NodeSeq = {
+            val precomputed: MainPagePrecompute = MainPagePrecompute(request)
+            import precomputed._
+            //        println( s"==== displayURI: precomputed $precomputed")
+            logger.info(s"displayURI: expandOrUnchanged $uri")
+            //        callAllServiceListeners(request)
+            val userInfo = displayUser(userid, uri, title, lang)
+            htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
+              graphURI = makeAbsoluteURIForSaving(userid),
+              request = request)._1
+          }
+        }
 
-    val contentMaker = new SemanticController {
-      def result(request: HTTPrequest): NodeSeq = {
-        val precomputed: MainPagePrecompute = MainPagePrecompute(request)
-        import precomputed._
-//        println( s"==== displayURI: precomputed $precomputed")
-        logger.info(s"displayURI: expandOrUnchanged $uri")
-//        callAllServiceListeners(request)
-        val userInfo = displayUser(userid, uri, title, lang)
-        htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
-          graphURI = makeAbsoluteURIForSaving(userid),
-          request = request)._1
-      }
-    }
-
-    if (needLoginForDisplaying || ( needLoginForEditing && Edit !="" ))
-       outputMainPageWithContentLogged(contentMaker)
-
-    else
-    	outputMainPageWithContent(contentMaker)
-
+        if (needLoginForDisplaying || (needLoginForEditing && Edit != ""))
+          outputMainPageWithContentLogged(contentMaker)
+        else
+          outputMainPageWithContent(contentMaker)
+      },
+      (t: Throwable) =>
+        errorActionFromThrowable(t, "in /display URI"))
   }
 
-  
   def table = Action { implicit request: Request[_] =>
-    val requestCopy = getRequestCopy()
-    val userid = requestCopy.userId()
-    val title = "Table view from SPARQL"
-    val lang = chooseLanguage(request)
-    val userInfo = displayUser(userid, "", title, lang)
-    val query = queryFromRequest(requestCopy)
-    outputMainPage(
-      <div>
-        <a href={ "/sparql-ui?query=" + URLEncoder.encode(query, "UTF-8") }>Back to SPARQL page</a>
-      </div>
-        ++
-        tableFromSPARQL(requestCopy),
-      lang, title = title, userInfo = userInfo,
-      classForContent = "")
+    recoverFromOutOfMemoryErrorGeneric(
+      {
+        val requestCopy = getRequestCopy()
+        val userid = requestCopy.userId()
+        val title = "Table view from SPARQL"
+        val lang = chooseLanguage(request)
+        val userInfo = displayUser(userid, "", title, lang)
+        val query = queryFromRequest(requestCopy)
+        outputMainPage(
+          <div>
+            <a href={ "/sparql-ui?query=" + URLEncoder.encode(query, "UTF-8") }>Back to SPARQL page</a>
+          </div>
+            ++
+            tableFromSPARQL(requestCopy),
+          lang, title = title, userInfo = userInfo,
+          classForContent = "")
+      },
+      (t: Throwable) =>
+        errorResultFromThrowable(t, "in make History of User Actions /history"))
   }
 
   private def tableFromSPARQL(request: HTTPrequest): NodeSeq = {
@@ -184,28 +198,27 @@ trait WebPages extends Controller with ApplicationTrait {
   private def queryFromRequest(request: HTTPrequest) =
     request.queryString.getOrElse("query", Seq()).headOption.getOrElse("")
 
-
-
-
   /** "naked" HTML form */
   def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "",
-      database: String = "TDB") =
-		  Action {
-        implicit request: Request[_] =>
-          logger.info(s"""form: request $request : "$Edit" formuri <$formuri> """)
-          val lang = chooseLanguage(request)
-          val requestCopy = getRequestCopy()
-          val userid = requestCopy . userId()
-          Ok(htmlForm(uri, blankNode, editable = Edit != "", lang, formuri,
-              graphURI = makeAbsoluteURIForSaving(userid), database=database) . _1 )
-          .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
-          .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
-          .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
-          .as("text/html; charset=utf-8")
+           database: String = "TDB") =
+    Action {
+      implicit request: Request[_] =>
+        recoverFromOutOfMemoryErrorGeneric(
+          {
+            logger.info(s"""form: request $request : "$Edit" formuri <$formuri> """)
+            val lang = chooseLanguage(request)
+            val requestCopy = getRequestCopy()
+            val userid = requestCopy.userId()
+            Ok(htmlForm(uri, blankNode, editable = Edit != "", lang, formuri,
+              graphURI = makeAbsoluteURIForSaving(userid), database = database)._1)
+              .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+              .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
+              .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
+              .as("text/html; charset=utf-8")
+          },
+          (t: Throwable) =>
+            errorResultFromThrowable(t, "in make History of User Actions /history"))
     }
-
-
-
 
   /**
    * /sparql-form service: Create HTML form or view from SPARQL (construct);
@@ -228,42 +241,50 @@ trait WebPages extends Controller with ApplicationTrait {
               formuri, requestCopy),
             lang, userInfo)
         },
-        (t: Throwable) => {
-          InternalServerError(
-            s"""Error in /sparql-form, retry later !!!!!!!!
-          ${t.getLocalizedMessage}
-          ${printMemory}""")
-        })
+        (t: Throwable) =>
+          errorResultFromThrowable(t, "in /sparql-form"))
     }
 
   /** SPARQL Construct UI */
-  def sparql(query: String) = {
+  def sparql(query: String) : EssentialAction = {
     logger.info("sparql: " + query)
+
     def doAction(implicit request: Request[_]) = {
       logger.info("sparql: " + request)
       val lang = chooseLanguage(request)
       outputMainPage(sparqlConstructQueryHTML(query, lang), lang)
-
         // TODO factorize
         .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
         .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
         .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
     }
-    if (needLoginForDisplaying)
-      Action { implicit request: Request[_] => doAction }
-    else
-      withUser { implicit userid => implicit request => doAction }
+
+    recoverFromOutOfMemoryErrorGeneric(
+      {
+        if (needLoginForDisplaying)
+          Action { implicit request: Request[_] => doAction }
+        else
+          withUser { implicit userid => implicit request => doAction }
+      },
+      (t: Throwable) =>
+        errorActionFromThrowable(t, "in SPARQL Construct UI /sparql-ui"))
   }
 
   /** SPARQL select UI */
   def select(query: String) =
     Action {
-        implicit request: Request[_] =>
-          logger.info("sparql: " + request)
-          logger.info("sparql: " + query)
-          val lang = chooseLanguage(request)
-          outputMainPage(
-            selectSPARQL(query, lang), lang)
+    implicit request: Request[_] =>
+//    recoverFromOutOfMemoryErrorResult(
+      recoverFromOutOfMemoryErrorGeneric(
+        {
+            logger.info("sparql: " + request)
+            logger.info("sparql: " + query)
+            val lang = chooseLanguage(request)
+            outputMainPage(
+              selectSPARQL(query, lang), lang)
+        },
+        (t: Throwable) =>
+          errorResultFromThrowable(t, "in SPARQL UI /select-ui"))
     }
 
 
@@ -281,14 +302,20 @@ trait WebPages extends Controller with ApplicationTrait {
 
   def wordsearchAction(q: String = "", clas: String = "") = Action.async {
     implicit request: Request[_] =>
-    val lang = chooseLanguageObject(request).language
-    val classe =
-      clas match {
-        case classe if( classe != "") => classe
-        case _ => copyRequest(request).getHTTPparameterValue("clas") . getOrElse("")
-      }
-    val fut: Future[Elem] = wordsearchFuture(q, lang, classe)
-    fut.map( r => outputMainPage( r, lang ) )
+      recoverFromOutOfMemoryErrorGeneric(
+        {
+          val lang = chooseLanguageObject(request).language
+          val classe =
+            clas match {
+              case classe if (classe != "") => classe
+              case _                        => copyRequest(request).getHTTPparameterValue("clas").getOrElse("")
+            }
+          val fut: Future[Elem] = wordsearchFuture(q, lang, classe)
+          fut.map(r => outputMainPage(r, lang))
+        },
+        (t: Throwable) =>
+          Future{ errorResultFromThrowable(t, "in word search /wordsearch") }
+          )
   }
 
   /** show Named Graphs - pasted from above wordsearchAction */
@@ -303,6 +330,12 @@ trait WebPages extends Controller with ApplicationTrait {
   /** show Triples In given Graph */
   def showTriplesInGraphAction( uri: String) = {
         Action.async { implicit request: Request[_] =>
+    recoverFromOutOfMemoryErrorGeneric(
+      {
+      },
+      (t: Throwable) =>
+        errorResultFromThrowable(t, "in make History of User Actions /history"))
+
           val lang = chooseLanguageObject(request).language
           val fut = recoverFromOutOfMemoryError( Future.successful( showTriplesInGraph( uri, lang) ) )
           val rr = fut.map( r => outputMainPage( r, lang ) )
@@ -316,6 +349,12 @@ trait WebPages extends Controller with ApplicationTrait {
     withUser {
       implicit userid =>
         implicit request =>
+    recoverFromOutOfMemoryErrorGeneric(
+      {
+      },
+      (t: Throwable) =>
+        errorResultFromThrowable(t, "in make History of User Actions /history"))
+
           val lang = chooseLanguageObject(request).language
           val pageURI = uri
           val pageLabel = labelForURITransaction(uri, lang)
@@ -335,6 +374,12 @@ trait WebPages extends Controller with ApplicationTrait {
    *  TODO: this pattern should be followed for each page or service */
   def saveAction() = {
     def saveLocal(userid: String)(implicit request: Request[_]) = {
+    recoverFromOutOfMemoryErrorGeneric(
+      {
+      },
+      (t: Throwable) =>
+        errorResultFromThrowable(t, "in make History of User Actions /history"))
+
       val httpRequest = copyRequest(request)
       logger.debug( s"""ApplicationTrait.saveOnly: class ${request.body.getClass},
               request $httpRequest""")
@@ -365,6 +410,12 @@ trait WebPages extends Controller with ApplicationTrait {
     withUser {
       implicit userid =>
         implicit request =>
+    recoverFromOutOfMemoryErrorGeneric(
+      {
+      },
+      (t: Throwable) =>
+        errorResultFromThrowable(t, "in make History of User Actions /history"))
+
           logger.info(s"create: request $request")
           // URI of RDF class from which to create instance
           val uri0 = getFirstNonEmptyInMap(request.queryString, "uri")
@@ -433,17 +484,22 @@ trait WebPages extends Controller with ApplicationTrait {
     }
   }
 
-  def makeHistoryUserActionsAction(limit: String) = {
-    val contentMaker: SemanticController = new SemanticController {
-      def result(request: HTTPrequest): NodeSeq = {
-        val precomputed: MainPagePrecompute = MainPagePrecompute(request)
-        import precomputed._
-        logger.info(s"makeHistoryUserActionsAction:  $limit")
-        logger.info("makeHistoryUserActionsAction: cookies: " + request.cookies.mkString("; "))
-        makeHistoryUserActions(limit, request)
+  def makeHistoryUserActionsAction(limit: String): EssentialAction = {
+    recoverFromOutOfMemoryErrorGeneric(
+      {
+      val contentMaker: SemanticController = new SemanticController {
+        def result(request: HTTPrequest): NodeSeq = {
+          val precomputed: MainPagePrecompute = MainPagePrecompute(request)
+          import precomputed._
+          logger.info(s"makeHistoryUserActionsAction:  $limit")
+          logger.info("makeHistoryUserActionsAction: cookies: " + request.cookies.mkString("; "))
+          makeHistoryUserActions(limit, request)
+        }
       }
-    }
-  outputMainPageWithContent(contentMaker)
+      outputMainPageWithContent(contentMaker)
+    },
+      (t: Throwable) =>
+        errorActionFromThrowable(t, "in make History of User Actions /history"))
   }
 
 }
