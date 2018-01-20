@@ -25,3 +25,4 @@ wget --output-file=FILE \
      --header="Content-Type: $MIME"
 echo body-file=$RDF_FILE sent to server $LOAD_SERVICE in graph "<$GRAPH>"
 echo result saved in FILE "FILE"
+cat FILE

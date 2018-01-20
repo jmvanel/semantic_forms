@@ -1,11 +1,21 @@
 #!/bin/bash
 
-PASSADMIN=gott-ueber-alles
+if [ -z "$1" ]; then
+  echo 'Arguments: GRAPH SERVER	( /update added to SERVER)'
+  echo '           SERVER default: http://localhost:9000'
+  exit
+fi
 
+if [ -z "$2" ]; then
+    SERVER=http://localhost:9000
+    echo "default value for SERVER : $SERVER/update"
+else
+    SERVER=$2
+    echo "value for SERVER : $SERVER/update"
+fi
+
+PASSADMIN=gott-ueber-alles
 GRAPH=$1
-SERVER=http://localhost:9000
-SERVER=$2
-# TODO default value for arg. 2
 
 echo "Remove graph <$GRAPH> on SPARQL server $SERVER"
 QUERY="DROP GRAPH <$GRAPH>"

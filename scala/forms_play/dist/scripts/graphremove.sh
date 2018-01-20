@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ -z "$1" ]; then
+  echo 'Argument: GRAPH'
+  exit
+fi
+
 for f in lib/*.jar
 do
   JARS=$JARS:$f
