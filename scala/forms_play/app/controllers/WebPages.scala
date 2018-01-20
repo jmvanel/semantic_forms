@@ -212,19 +212,29 @@ trait WebPages extends Controller with ApplicationTrait {
    *  like /sparql has input a SPARQL query;
    *  like /form and /display has parameters Edit, formuri & database
    */
-  def sparqlForm(query: String, Edit: String = "", formuri: String = "", database: String = "TDB") =
+  def sparqlForm(query: String, Edit: String = "", formuri: String = "",
+                 database: String = "TDB") =
     Action { implicit request: Request[_] =>
-    val requestCopy = getRequestCopy()
-    val userid = requestCopy . userId()
-    val lang = chooseLanguage(request)
-    val userInfo = displayUser(userid, "", "", lang)
-      outputMainPage(
-        createHTMLFormFromSPARQL(
-          query,
-          editable = Edit != "",
-          formuri, requestCopy),
-        lang, userInfo)
-  }
+      recoverFromOutOfMemoryErrorGeneric(
+        {
+          val requestCopy = getRequestCopy()
+          val userid = requestCopy.userId()
+          val lang = chooseLanguage(request)
+          val userInfo = displayUser(userid, "", "", lang)
+          outputMainPage(
+            createHTMLFormFromSPARQL(
+              query,
+              editable = Edit != "",
+              formuri, requestCopy),
+            lang, userInfo)
+        },
+        (t: Throwable) => {
+          InternalServerError(
+            s"""Error in /sparql-form, retry later !!!!!!!!
+          ${t.getLocalizedMessage}
+          ${printMemory}""")
+        })
+    }
 
   /** SPARQL Construct UI */
   def sparql(query: String) = {

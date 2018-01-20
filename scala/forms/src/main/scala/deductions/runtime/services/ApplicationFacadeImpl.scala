@@ -193,6 +193,19 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     }
   }
 
+  def recoverFromOutOfMemoryErrorGeneric[T](
+    sourceCode: => T,
+    error: Throwable => T ): T = {
+    try {
+      sourceCode
+    } catch {
+      case t: Throwable =>
+        t.printStackTrace()
+        printMemory()
+        error(t)
+    }
+  }
+
   def rdfDashboardFuture(q: String = "", lang: String = ""): Future[NodeSeq] = {
     val fut = showNamedGraphs(lang)
     wrapSearchResults(fut, q)
@@ -410,4 +423,19 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   def makeHistoryUserActions(limit: String, request: HTTPrequest): NodeSeq =
     makeTableHistoryUserActions(request)(limit)
 
+  def formatMemory(): String = {
+    val mb = 1024 * 1024
+
+    //Getting the runtime reference from system
+    val runtime = Runtime.getRuntime
+
+    "\n##### Heap utilization statistics [MB] #####\n" +
+    "Used Memory:" + (runtime.totalMemory() - runtime.freeMemory()) / mb +
+    "\nFree Memory:" + runtime.freeMemory() / mb +
+    //Print total available memory
+    "\nTotal Memory:" + runtime.totalMemory() / mb +
+    "\nMax Memory:" + runtime.maxMemory() / mb + "\n"
+  }
+
+  def printMemory() = println( formatMemory() )
 }
