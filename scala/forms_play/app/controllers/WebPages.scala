@@ -345,16 +345,10 @@ trait WebPages extends Controller with ApplicationTrait {
 
   /////////////////////////////////
 
-  def edit(uri: String) =
-    withUser {
-      implicit userid =>
-        implicit request =>
-    recoverFromOutOfMemoryErrorGeneric(
-      {
-      },
-      (t: Throwable) =>
-        errorResultFromThrowable(t, "in make History of User Actions /history"))
-
+  def edit(uri: String): EssentialAction =
+    withUser { implicit userid => implicit request =>
+      recoverFromOutOfMemoryErrorGeneric(
+        {
           val lang = chooseLanguageObject(request).language
           val pageURI = uri
           val pageLabel = labelForURITransaction(uri, lang)
@@ -363,59 +357,60 @@ trait WebPages extends Controller with ApplicationTrait {
           val content = htmlForm(
             uri, editable = true,
             lang = chooseLanguage(request), graphURI = makeAbsoluteURIForSaving(userid),
-            request=copyRequest(request) ). _1
+            request = copyRequest(request))._1
           Ok("<!DOCTYPE html>\n" + mainPage(content, userInfo, lang))
             .as("text/html; charset=utf-8").
             withHeaders("Access-Control-Allow-Origin" -> "*") // TODO dbpedia only
+        },
+        (t: Throwable) =>
+          errorResultFromThrowable(t, "in /edit"))
     }
 
-  /** save the HTML form;
+  /**
+   * save the HTML form;
    *  intranet mode (needLoginForEditing == false): no cookies session, just receive a `graph` HTTP param.
-   *  TODO: this pattern should be followed for each page or service */
-  def saveAction() = {
-    def saveLocal(userid: String)(implicit request: Request[_]) = {
-    recoverFromOutOfMemoryErrorGeneric(
-      {
-      },
-      (t: Throwable) =>
-        errorResultFromThrowable(t, "in make History of User Actions /history"))
+   *  TODO: this pattern should be followed for each page or service
+   */
+  def saveAction(): EssentialAction = {
 
+    def saveLocal(userid: String)(implicit request: Request[_]) = {
       val httpRequest = copyRequest(request)
-      logger.debug( s"""ApplicationTrait.saveOnly: class ${request.body.getClass},
+      logger.debug(s"""ApplicationTrait.saveOnly: class ${request.body.getClass},
               request $httpRequest""")
       val (uri, typeChanges) =
         saveOnly(httpRequest, userid, graphURI = makeAbsoluteURIForSaving(userid))
       logger.info(s"saveAction: uri <$uri>")
-      val call = routes.Application.displayURI(uri,
-          Edit=if(typeChanges) "edit" else "" )
+      val call = routes.Application.displayURI(
+        uri,
+        Edit = if (typeChanges) "edit" else "")
       Redirect(call)
       /* TODO */
       // recordForHistory( userid, request.remoteAddress, request.host )
-    }
-    if (needLoginForEditing)
-      withUser {
-        implicit userid =>
-          implicit request =>
+    } // end saveLocal(
+
+    recoverFromOutOfMemoryErrorGeneric(
+      {
+        if (needLoginForEditing)
+          withUser { implicit userid => implicit request =>
             saveLocal(userid)
-      }
-    else
-      Action { implicit request: Request[_] => {
-        val user = request.headers.toMap.getOrElse("graph", Seq("anonymous") ). headOption.getOrElse("anonymous")
-        saveLocal(user)
-      }}
+          }
+        else
+          Action { implicit request: Request[_] =>
+            {
+              val user = request.headers.toMap.getOrElse("graph", Seq("anonymous")).headOption.getOrElse("anonymous")
+              saveLocal(user)
+            }
+          }
+      },
+      (t: Throwable) =>
+        errorActionFromThrowable(t, "in save Actions /save"))
   }
 
   /** creation form - generic SF application */
   def createAction() =
-    withUser {
-      implicit userid =>
-        implicit request =>
-    recoverFromOutOfMemoryErrorGeneric(
-      {
-      },
-      (t: Throwable) =>
-        errorResultFromThrowable(t, "in make History of User Actions /history"))
-
+    withUser { implicit userid => implicit request =>
+      recoverFromOutOfMemoryErrorGeneric(
+        {
           logger.info(s"create: request $request")
           // URI of RDF class from which to create instance
           val uri0 = getFirstNonEmptyInMap(request.queryString, "uri")
@@ -423,13 +418,16 @@ trait WebPages extends Controller with ApplicationTrait {
           // URI of form Specification
           val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formuri")
           logger.info(s"""create: "$uri" """)
-          logger.info( s"formSpecURI from HTTP request: <$formSpecURI>")
+          logger.info(s"formSpecURI from HTTP request: <$formSpecURI>")
           val lang = chooseLanguage(request)
           val userInfo = displayUser(userid, uri, s"Create a $uri", lang)
           outputMainPage(
             create(uri, chooseLanguage(request),
-              formSpecURI, makeAbsoluteURIForSaving(userid), copyRequest(request) ).getOrElse(<div/>),
-            lang, userInfo=userInfo)
+              formSpecURI, makeAbsoluteURIForSaving(userid), copyRequest(request)).getOrElse(<div/>),
+            lang, userInfo = userInfo)
+        },
+        (t: Throwable) =>
+          errorResultFromThrowable(t, "in create Actions /create"))
     }
 
   def backlinksAction(uri: String = "") = Action.async {
