@@ -16,12 +16,14 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
   val config: Configuration
 
    /** fragment of SPARQL for text Query, with or without text:query
-    *  see https://jena.apache.org/documentation/query/text-query.html */
+    *  see https://jena.apache.org/documentation/query/text-query.html
+    * used both in /lookup and /searchword */
    private def textQuery(search: String) =
     if (search.length() > 0) {
       val searchStringPrepared = prepareSearchString(search).trim()
       if (config.useTextQuery)
-        s"?thing text:query ( '$searchStringPrepared' ) ."
+        // include * for Lucene search
+        s"?thing text:query ( '$searchStringPrepared*' ) ."
       else
         s"""graph ?g {
               ?thing ?P1 ?O1 .
