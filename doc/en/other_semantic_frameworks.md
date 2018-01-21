@@ -9,6 +9,7 @@ http://semantic-forms.cc:9112/display?displayuri=http%3A%2F%2Fsemantic-forms.cc%
 All tools below could/should be described this way.
 
 # Open source
+## Web frameworks
 
 - [cubicweb](http://www.cubicweb.org) is a semantic web framework written in Python. It can be used to develop applications that serve content both to humans and computers, providing each with the format it asks for.
 - [Vivo / Vitro](http://vitro.mannlib.cornell.edu/) is a Java framework, geared towards academic research teams
@@ -23,6 +24,10 @@ All tools below could/should be described this way.
 
 - https://github.com/dhlab-basel/Knora
 - [Corese](http://wimmics.inria.fr/corese) a serious infrastructure project, with SPARQL extensions, from french INRIA research institute. It's not clear what facilities it has for building applications.
+
+## LOD navigation and / or edition
+- https://ods-qa.openlinksw.com/rdf-editor/ : interesting tool ; compared to semantic_fors , the cursor is all the towards RDF experts , wheares SF has much the same flexibility, but the cursor is far in the direction of ordinary users
+- tabulator , web browser plugin initiated by Tim BL https://github.com/linkeddata/tabulator
 
 # Semi-Open source
 - Virtuoso, powers dbpedia.org; semi-SQL and RDF
