@@ -65,7 +65,7 @@ extends
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  val activateMicrodataLoading = true
+  val activateMicrodataLoading = false // true
 //  {
 //    HttpOp.setDefaultHttpClient(HttpClients.createMinimal())
 //    //	  logger.warn(
@@ -386,9 +386,9 @@ extends
     uri:     Rdf#URI,
     dataset: DATASET,
     request: HTTPrequest) = {
-//    readURIsf( uri, dataset, request)
+    readURIsf( uri, dataset, request)
     // reactivated; fixed problem at /login
-    readURIWithJenaRdfLoader( uri, dataset, request)
+//    readURIWithJenaRdfLoader( uri, dataset, request)
   }
 
   /** for downloading RDF uses Jena RDFDataMgr,
