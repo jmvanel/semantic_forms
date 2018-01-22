@@ -126,7 +126,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   /**
    * create Form abstract syntax from an instance (subject) URI;
    *  the Form Specification is inferred from the class of instance;
-   *  with transaction, should NOT be called within a transaction
+   *  with transaction, should NOT be called within a transaction;
+   *  @param formGroup used only in corporateRisk
    */
   def createFormTR(subject: Rdf#Node,
                    editable: Boolean = false,
@@ -226,7 +227,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 //    check(formSyntax.fields, "formSyntax")
 
     // TODO make it functional #170
-    if( step1.editable ) addAllPossibleValues(formSyntax, valuesFromFormGroup)
+    if( step1.editable && downloadPossibleValues )
+      addAllPossibleValues(formSyntax, valuesFromFormGroup)
     logger.debug(s"createFormDetailed2: createForm " + this)
 
     // TODO make it functional #170
