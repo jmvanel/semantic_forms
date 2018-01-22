@@ -45,7 +45,7 @@ extends ThumbnailInference[Rdf, DATASET] {
             uriLabelCouple => {
           val node = uriLabelCouple._1
           val label = uriLabelCouple._2
-          <div class="col col-sm-4 sf-value-block">{
+          <div class="sf-value-block">{
           foldNode(node) (
           uri =>
             makeHyperlinkForURI(
