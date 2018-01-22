@@ -17,6 +17,7 @@ import deductions.runtime.services.LoadService
 
 import scalaz._
 import Scalaz._
+import play.api.mvc.RequestHeader
 
 //import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 //import deductions.runtime.sparql_cache.algos.GraphEnrichment
@@ -28,11 +29,12 @@ trait SparqlServices extends ApplicationTrait
 {
   import config._
 
+
   /** load RDF String in database, cf
    *  https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-post */
-  def loadAction() = Action {
+  def loadAction() = Action( parse.anyContent(maxLength = Some((1024 * 1024 * 8 ).longValue) )) {
     implicit request: Request[AnyContent] =>
-      val requestCopy = getRequestCopy()
+      val requestCopy = getRequestCopyAnyContent()
       println(s"""body class ${request.getClass} request.body ${request.body.getClass}
       - data= "${request.getQueryString("data")}" """)
       val content = request.getQueryString("data") match {
@@ -66,7 +68,7 @@ trait SparqlServices extends ApplicationTrait
       bindings: Map[String,String] = Map(),
       context: Map[String,String] = Map()): Action[AnyContent] =
         Action {
-        implicit request: Request[_] =>
+        implicit request: Request[AnyContent] =>
           logInfo(s"""sparqlConstruct: sparql: request $request
             sparql: $query
             accepts ${request.acceptedTypes} """)

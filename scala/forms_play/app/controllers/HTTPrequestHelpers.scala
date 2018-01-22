@@ -4,6 +4,8 @@ import play.api.mvc.Request
 import deductions.runtime.core.HTTPrequest
 import deductions.runtime.core.Cookie
 import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.mvc.RequestHeader
+import play.api.mvc.AnyContent
 
 /** copy PLay! classes into SF classes, to avoid dependencies in other project senantic_forms */
 trait HTTPrequestHelpers {
@@ -11,10 +13,15 @@ trait HTTPrequestHelpers {
 	/** a copy of the request with no Play dependency :) */
   def getRequestCopy()(implicit request: Request[_]): HTTPrequest = copyRequest(request)
 
-  def copyRequest(request: Request[_]): HTTPrequest = {
+  def getRequestCopyAnyContent()(implicit request: Request[AnyContent]): HTTPrequest = copyRequest(request)
+
+  def copyRequest(request: Request[_]): HTTPrequest =
+    copyRequestHeader(request) . copy( formMap = getFormMap(request) )
+
+  private def copyRequestHeader(request: RequestHeader): HTTPrequest = {
     import request._
     val cookiesMap = cookies.map { cookie => (cookie.name -> copyCookie(cookie)) } . toMap
-    val formMap = getFormMap(request)
+//    val formMap = getFormMap(request)
     val res = HTTPrequest(host, remoteAddress,
       rawQueryString, queryString,
       headers = headers.toMap,
@@ -23,7 +30,7 @@ trait HTTPrequestHelpers {
         al => al.language
       },
       path = request.path,
-      formMap = formMap,
+//      formMap = formMap,
       uri = uri,
       to_string = request.toString(),
       secure = secure,
