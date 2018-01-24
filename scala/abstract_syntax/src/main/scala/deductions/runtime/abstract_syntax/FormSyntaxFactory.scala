@@ -127,13 +127,13 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    * create Form abstract syntax from an instance (subject) URI;
    *  the Form Specification is inferred from the class of instance;
    *  with transaction, should NOT be called within a transaction;
-   *  @param formGroup used only in corporateRisk
+   *  @param formGroup used only in corporateRisk @return FormSyntax TODO return Try[FormSyntax]
    */
   def createFormTR(subject: Rdf#Node,
                    editable: Boolean = false,
                    formGroup: Rdf#URI = nullURI, formuri: String = "")(implicit graph: Rdf#Graph, lang: String = "en"): FormSyntax = {
 
-    val tryFormSyntax = for (
+    val tryFormSyntax = for ( // TODO rw is just for possibly recomputing labels; should be separated and possibly done in a Future
       step1 <- rdfStore.rw(dataset,
         { computePropertiesList(subject, editable, formuri) });
       step2 <- rdfStore.r(dataset,
@@ -428,6 +428,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       )
 	  (implicit graph: Rdf#Graph, lang:String)
   : Seq[Entry] = {
+    try {
     logger.debug( s"makeEntriesForSubject subject <$subject>, prop <$prop> lang $lang")
 
     val objects = objectsQuery(subject, uriNodeToURI(prop) ); logger.debug(s"makeEntriesForSubject subject <$subject>, objects: $objects")
@@ -439,6 +440,14 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
     logger.debug("result: Entry's " + result)
     result
+    }
+    catch {
+      case t: Throwable =>
+        val message = s"ERROR in makeEntriesForSubject: subject $subject , ${t.getLocalizedMessage}"
+        logger.error( s"$message - ${Thread.currentThread().getStackTrace().slice(0, 5).mkString("\n")}" )
+        t.printStackTrace()
+        Seq( LiteralEntry(value=ops.Literal(message)) )
+    }
   }
 
   /** make Entry (a single line in form) From Triple */

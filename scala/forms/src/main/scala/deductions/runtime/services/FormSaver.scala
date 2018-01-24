@@ -31,7 +31,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
   import ops._
 
 
-  def computeDatabaseChanges(
+  private def computeDatabaseChanges(
     httpRequest: HTTPrequest): DatabaseChanges[Rdf] =
     computeDatabaseChangesFromMap(
         httpRequest.formMap,
