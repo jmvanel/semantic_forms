@@ -442,11 +442,13 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     result
     }
     catch {
-      case t: Throwable =>
-        val message = s"ERROR in makeEntriesForSubject: subject $subject , ${t.getLocalizedMessage}"
+      case t: Exception =>
+        val message = s"ERROR in makeEntriesForSubject: subject <$subject>, prop <$prop> , ${t.getLocalizedMessage}"
         logger.error( s"$message - ${Thread.currentThread().getStackTrace().slice(0, 5).mkString("\n")}" )
         t.printStackTrace()
-        Seq( LiteralEntry(value=ops.Literal(message)) )
+        Seq( LiteralEntry(
+            property=prop,
+            value=ops.Literal(message)) )
     }
   }
 
