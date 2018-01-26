@@ -147,7 +147,10 @@ class Map{
       var pinText = text
       console.log('addPin key '); console.log( key )
       if( key.length > 0 )
-        pinText = '<a href="/display?displayuri=' + key + '" target="_blank">' + text + '</a>'
+
+         // TODO should be usable not embedded inside semantic_forms
+        pinText = '<a href="/display?displayuri=' + encodeURIComponent(key) + '" target="_blank">' + text + '</a>'
+
       this.pins[key] = L.marker([latitude,longitude],
           {draggable:'true'} )
           .bindPopup(pinText)
