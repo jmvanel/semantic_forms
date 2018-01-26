@@ -5,7 +5,8 @@ import java.net.{HttpURLConnection, URL}
 import java.util.Date
 
 import deductions.runtime.utils.RDFStoreLocalProvider
-import org.apache.http.impl.cookie.DateUtils
+import org.apache.http.client.utils.DateUtils
+
 import org.w3.banana.RDF
 
 import scala.util.{Success, Try}
@@ -13,6 +14,13 @@ import scala.util.{Success, Try}
 import scalaz._
 import Scalaz._
 
+/** SF compares the document timestamp from HTTP header e.g. :
+  Last-Modified: Fri, 26 Jan 2018 11:12:18 GMT
+  to preceeding time in database, also from HTTP header.
+  The Last-Modified header can be any time zone,
+  but Apache client generates a Date object, necessarily in UTC timezone,
+  so SF is putting times to a unique common timezone (UTC) for comparing timestamps.
+ */
 trait TimestampManagement[Rdf <: RDF, DATASET]
 extends RDFStoreLocalProvider[Rdf, DATASET]
     with SPARQLHelpers[Rdf, DATASET]
@@ -128,10 +136,11 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
           def tryHeaderField(headerName: String): (Boolean, Boolean, Long) = {
             val dateString = getHeaderField( headerName, connection)
             if (dateString != "") {
-              val date: java.util.Date = DateUtils.parseDate(dateString) // from apache http-components
+              // from Apache http client - Date objects are in coordinated universal time (UTC)
+              val dateFromHTTPHeader: java.util.Date = DateUtils.parseDate(dateString)
               println("TimestampManagement.lastModified(): responseCode: " + responseCode +
-                ", date: " + date + ", dateString " + dateString)
-              (true, 200 <= responseCode && responseCode <= 399, date.getTime())
+                ", date: " + dateFromHTTPHeader + ", dateString " + dateString)
+              (true, 200 <= responseCode && responseCode <= 399, dateFromHTTPHeader.getTime())
             } else (false, false, Long.MaxValue)
           }
           

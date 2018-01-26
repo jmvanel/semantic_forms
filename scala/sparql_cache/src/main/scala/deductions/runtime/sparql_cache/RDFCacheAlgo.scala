@@ -175,8 +175,7 @@ extends
           vv
         } else { // something Stored Locally: get a chance for more recent RDF data, that will be shown next time
           Future {
-            val res =
-              updateLocalVersion(uri, dataset).getOrElse(graphStoredLocally)
+            updateLocalVersion(uri, dataset).getOrElse(graphStoredLocally)
           }
           Success(graphStoredLocally)
         }
@@ -232,31 +231,34 @@ extends
     localTimestamp match {
       case Success(longLocalTimestamp) => {
         println(s"updateLocalVersion: $uri local TDB Timestamp: ${new Date(longLocalTimestamp)} - $longLocalTimestamp .")
-        val (noError, timestamp, connectionOption) = lastModified(uri.toString(), httpHeadTimeout)
-        println(s"updateLocalVersion: <$uri> last Modified: ${new Date(timestamp)} - no Error: $noError .")
+        val (noError, timestampFromHTTPHeader, connectionOption) = lastModified(uri.toString(), httpHeadTimeout)
+        println(s"updateLocalVersion: <$uri> last Modified: ${new Date(timestampFromHTTPHeader)} - no Error: $noError .")
 
         if (isDocumentExpired(connectionOption)) {
-          println(s"updateLocalVersion: <$uri> was outdated by Expires HTPP header field")
+          println(s"updateLocalVersion: <$uri> was OUTDATED by Expires HTPP header field")
           return readStoreURITry(uri, uri, dataset)
         }
 
-        if (noError && (timestamp > longLocalTimestamp
+        if (noError && (timestampFromHTTPHeader > longLocalTimestamp
           || longLocalTimestamp === Long.MaxValue)) {
           val graph = readStoreURITry(uri, uri, dataset)
-          println(s"updateLocalVersion: <$uri> was outdated by timestamp; downloaded.")
+          println(s"updateLocalVersion: <$uri> was OUTDATED by timestamp; downloaded.")
+
+          // TODO pass arg. timestampFromHTTPHeader to addTimestampToDataset
           addTimestampToDataset(uri, dataset2) // PENDING: maybe do this in a Future
+
           graph
           //          } else Success(emptyGraph) // ????
 
         } else if (!noError ||
-          timestamp === Long.MaxValue) {
+          timestampFromHTTPHeader === Long.MaxValue) {
           connectionOption match {
             case Some(connection) =>
               val etag = getHeaderField("ETag", connection)
               val etagFromDataset = dataset2.r { getETagFromDataset(uri, dataset2) }.get
               if (etag != etagFromDataset) {
                 val graph = readStoreURITry(uri, uri, dataset)
-                println(s"""updateLocalVersion: <$uri> was outdated by ETag; downloaded.
+                println(s"""updateLocalVersion: <$uri> was OUTDATED by ETag; downloaded.
                   etag "$etag" != etagFromDataset "$etagFromDataset" """)
                 rdfStore.rw(dataset2, { addETagToDatasetNoTransaction(uri, etag, dataset2) })
                 graph
