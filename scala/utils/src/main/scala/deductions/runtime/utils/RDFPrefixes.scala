@@ -68,7 +68,8 @@ lazy val loginForms = Prefix[Rdf]("login-forms",
   lazy val vehman = Prefix[Rdf]("vehman", "http://deductions.github.io/vehicule-management.owl.ttl#")
   lazy val vehma = Prefix[Rdf]("vehma", "http://deductions.github.io/vehicule-management.owl.ttl#")
   lazy val dcat = Prefix[Rdf]("dcat", "http://www.w3.org/ns/dcat#")
-
+  lazy val void = Prefix[Rdf]("void", "http://rdfs.org/ns/void#" ) // non self-hosted :( !
+  
   lazy val prefixesList = List(
 		  // prefixes for ontologies
     rdf, rdfs,
