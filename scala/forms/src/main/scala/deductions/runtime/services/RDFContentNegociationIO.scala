@@ -25,7 +25,9 @@ trait RDFContentNegociationIO[Rdf <: RDF, DATASET]
       foldRdfSyntax(mimeType)(
         _ => rdfXMLReader,
         _ => turtleReader,
-        _ => jsonldReader) . _1
+        _ => jsonldReader,
+        _ => turtleReader // N3 actually (N3 exists in Jena but not Banana)
+        ) . _1
       rdfReader
   }
 
@@ -43,5 +45,7 @@ trait RDFContentNegociationIO[Rdf <: RDF, DATASET]
     foldRdfSyntax(accept)(
         _ => rdfXMLWriter,
         _ => turtleWriter,
-        _ => jsonldCompactedWriter) . _1
+        _ => jsonldCompactedWriter,
+        _ => turtleWriter
+    ) . _1
 }

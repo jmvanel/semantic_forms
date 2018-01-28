@@ -470,10 +470,10 @@ extends
     	println(s""">>>> readURI: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
       if (!contentType.startsWith("text/html") &&
           !contentType.startsWith("ERROR") ) {
-            println(s""">>>> readURI: for <$uri>
+            println(s""">>>> readURIsf: for <$uri>
                trying read With explicit content Type; ContentType From HEAD Request "$contentType" """)
             val gr = readWithContentType( uri, contentType, dataset): Try[Rdf#Graph]
-//            println(s"""readURI After readWithContentType: ${gr}""")
+            println(s"""readURI After readWithContentType: ${gr}""")
             ( gr, contentType)
 
       } else {

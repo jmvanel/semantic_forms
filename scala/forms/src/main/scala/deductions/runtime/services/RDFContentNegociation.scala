@@ -25,6 +25,7 @@ trait RDFContentNegociation extends StringHelpers {
 
   val rdfXMLmime = "application/rdf+xml"
   val turtleMime = "text/turtle"
+  val n3Mime = "text/n3"
   val jsonldMime = "application/ld+json"
 
   val htmlMime = "text/html"
@@ -33,19 +34,22 @@ trait RDFContentNegociation extends StringHelpers {
       "owl" -> rdfXMLmime,
       "rdf" -> rdfXMLmime,
       "ttl" -> turtleMime,
-      "ttl" -> turtleMime,
-      "n3" -> jsonldMime
+      "jsonld" -> jsonldMime,
+      "n3" ->  n3Mime
       )
   /** order of arguments is historical order of RDF syntaxes */
   def foldRdfSyntax[I, O](mimeType: String, input: I = Unit)(
     funRdfXML: I => O,
     funTurtle: I => O,
-    funJsonld: I => O): (O, Boolean) = {
+    funJsonld: I => O,
+    funN3: I => O
+    ): (O, Boolean) = {
 
     val fun = Map(
         rdfXMLmime -> funRdfXML,
         turtleMime -> funTurtle,
-        jsonldMime -> funJsonld)
+        jsonldMime -> funJsonld,
+        n3Mime -> funN3)
 
     val knownMIME = fun.get(mimeType).isDefined
     (fun.getOrElse(mimeType, funTurtle)(input), knownMIME)
@@ -53,6 +57,7 @@ trait RDFContentNegociation extends StringHelpers {
 
   def isKnownRdfSyntax(mimeType: String): Boolean = {
     val result = foldRdfSyntax(mimeType)(
+      identity,
       identity,
       identity,
       identity)
