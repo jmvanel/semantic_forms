@@ -349,6 +349,7 @@ In the end it is like if a user had pasted all those URI's and clicked on "Displ
 It amounts to make linked copies of all these semantic URI's into SF's semantic cache.
 
 **Examples of running**
+
 __Copy all recursive subclasses of given class__
 
 The RDF dataset taxref.mnhn.fr of the french Museum National d'Histoire Naturelle (MNHN) models taxa (=taxon, species, genus, families, etc) as RDF classes.
@@ -362,30 +363,47 @@ the arguments are :
 - ULR prefix of semantic_forms target instance
 
  <pre>
-   java -$JARS deductions.runtime.clients.SPARQLquery2SFcacheApp
+   java -cp $JARS deductions.runtime.clients.SPARQLquery2SFcacheApp \
     "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
     SELECT * 
     WHERE {
      ?sub rdfs:subClassOf* <http://taxref.mnhn.fr/lod/taxon/185292/10.0> .
       ?sub rdfs:label ?LAB .  ?sub <http://taxref.mnhn.fr/lod/property/hasRank> ?RANK .
-    } LIMIT 5"
-       http://taxref.mnhn.fr/sparql
+    } LIMIT 5" \
+       http://taxref.mnhn.fr/sparql \
        http://localhost:9000
 </pre>
+
+Of course, remove the limit for a real run.
 
 __Copy all resources of a given rdf:type class__
 
 The Lotico.com organization is dedicated to Semantic Web community since many years, and its Jena backed dataset holds almost 60_000 `foaf:Person`'s.
 
  <pre>
-   java -$JARS deductions.runtime.clients.SPARQLquery2SFcacheApp
+   java -cp $JARS deductions.runtime.clients.SPARQLquery2SFcacheApp \
     "PREFIX foaf: <http://xmlns.com/foaf/0.1/> 
     SELECT * 
     WHERE {
      ?sub a foaf:Person .
-    } LIMIT 5"
-       http://www.lotico.com:3030/lotico/query
+    } LIMIT 5" \
+       http://www.lotico.com:3030/lotico/query \
        http://localhost:9000
+</pre>
+
+Or, from the SBT console:
+ <pre>
+   val sparql = """
+    PREFIX foaf: <http://xmlns.com/foaf/0.1/> 
+    SELECT * 
+    WHERE {
+     ?sub a foaf:Person .
+    } LIMIT 5"""
+   deductions.runtime.clients.SPARQLquery2SFcacheApp . main(
+     Array(
+       sparql,
+       "http://www.lotico.com:3030/lotico/query",
+       "http://localhost:9000" ))
 </pre>
 
 
