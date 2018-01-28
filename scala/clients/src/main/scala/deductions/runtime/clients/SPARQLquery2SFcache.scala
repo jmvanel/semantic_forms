@@ -14,6 +14,7 @@ import org.w3.banana.jena.Jena
 trait SPARQLquery2SFcache {
   val serverPrefixWithParam = "/load-uri?uri="
   // "/display?displayuri="
+  var num = 0
 
   implicit val ops: RDFOps[Jena]
   implicit val sparqlOps: SparqlOps[Jena]
@@ -67,8 +68,9 @@ trait SPARQLquery2SFcache {
     // connection cannot be safely re-used and will be shut down and discarded
     // by the connection manager.
     try {
-      println(uri + " --> " + response1.getStatusLine() +
-          "\t" + httpGet);
+      num = num + 1
+      println(num + " " + uri + " --> " + response1.getStatusLine() +
+          "\t" + httpGet)
       val entity1 = response1.getEntity()
 
       // do something useful with the response body
