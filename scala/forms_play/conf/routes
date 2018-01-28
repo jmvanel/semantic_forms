@@ -21,6 +21,7 @@ GET /robots.txt             controllers.Assets.at(path="/public", file="robots.t
 # GET /bla controllers.HomeController.bla()
 
 GET     /display            controllers.Application.displayURI(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="")
+GET     /load-uri           controllers.Application.loadURI(uri:String)
 # GET     /display2            controllers.Application.displayURI2(displayuri:String)
 POST    /load               controllers.Application.loadAction()
 GET     /table              controllers.Application.table()

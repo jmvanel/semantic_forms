@@ -10,6 +10,8 @@ import java.net.URLEncoder
 
 import scalaz._
 import Scalaz._
+import play.mvc.EssentialAction
+import scala.util.Success
 
 /** controller for non-SPARQL Services (or SPARQL related but not in the W3C recommendations) */
 trait Services extends ApplicationTrait
@@ -227,5 +229,22 @@ with RDFContentNegociation
         .as("text/html; charset=utf-8")
         .withHeaders(corsHeaders.toList:_*)
     }
+  }
+
+  def loadURI(uri: String): Action[AnyContent] = {
+    recoverFromOutOfMemoryErrorGeneric[Action[AnyContent]](
+      {
+        Action { implicit request: Request[_] =>
+          val tryGraph = retrieveURIBody(
+            ops.URI(uri), dataset, copyRequest(request), transactionsInside = true)
+          val result = tryGraph match {
+            case Success(gr)           => s"Success loading <$uri>, size: ${gr.size()}"
+            case scala.util.Failure(f) => f.getLocalizedMessage
+          }
+          Ok(result)
+        }
+      },
+      (t: Throwable) =>
+        errorActionFromThrowable(t, "in /import URI"))
   }
 }

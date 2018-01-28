@@ -1,0 +1,4 @@
+select distinct ?C
+where {
+  ?S a ?C .
+}

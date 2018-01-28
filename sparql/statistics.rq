@@ -1,0 +1,7 @@
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+select ( count(?S) AS ?count )
+where {
+   ?S a foaf:Person .
+#  ?S a foaf:Organization .
+#  ?S a foaf:Project .
+}
