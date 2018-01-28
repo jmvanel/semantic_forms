@@ -12,12 +12,15 @@ import org.w3.banana.jena.Jena
 
 /** SPARQL query to Semantic_Forms cache */
 trait SPARQLquery2SFcache {
-  
+  val serverPrefixWithParam = "/load-uri?uri="
+  // "/display?displayuri="
+
   implicit val ops: RDFOps[Jena]
   implicit val sparqlOps: SparqlOps[Jena]
 
   /** import into  Semantic_Forms From SPARQL Query to any SPARQL endpoint
-   *  @param sfInstancePrefix Semantic_Forms Instance URL Prefix ( /display?displayuri= will appended)  */
+   *  @param sfInstancePrefix Semantic_Forms Instance URL Prefix
+   *  ( #serverPrefixWithParam will be appended)  */
   def importFromQuery(query: String, endpoint: String, sfInstancePrefix: String): String = {
     val uris = sendQuery(query, endpoint)
     val results = for (uri <- uris) yield {
@@ -49,11 +52,12 @@ trait SPARQLquery2SFcache {
     rr
   }
 
+  /** send HTTP Get To Semantic_Forms */
   def sendGetToSemantic_Forms(
     uri: String, sfInstancePrefix: String): String = {
     val httpclient = HttpClients.createDefault()
 
-    val httpGet = new HttpGet(sfInstancePrefix + "/display?displayuri=" + URLEncoder.encode(uri, "UTF-8"))
+    val httpGet = new HttpGet(sfInstancePrefix + serverPrefixWithParam + URLEncoder.encode(uri, "UTF-8"))
     val response1 = httpclient.execute(httpGet);
     // The underlying HTTP connection is still held by the response object
     // to allow the response content to be streamed directly from the network socket.

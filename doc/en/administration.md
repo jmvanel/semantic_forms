@@ -342,6 +342,53 @@ INFO  -- Finish quads load
 INFO  ** Completed: 35,922 quads loaded in 1.82 seconds [Rate: 19,759.08 per second]
 ```
 
+## Mirror SPARQL site into SF semantic cache
+
+From a SPARQL query to another endpoint, load URI's returned by the query into SF.
+In the end it is like if a user had pasted all those URI's and clicked on "Display".
+It amounts to make linked copies of all these semantic URI's into SF's semantic cache.
+
+**Examples of running**
+__Copy all recursive subclasses of given class__
+
+The RDF dataset taxref.mnhn.fr of the french Museum National d'Histoire Naturelle (MNHN) models taxa (=taxon, species, genus, families, etc) as RDF classes.
+
+The URI to be imported **must** be under a variable `?sub` .
+
+the arguments are :
+
+- SPARQL query 
+- SPARQL endpoint
+- ULR prefix of semantic_forms target instance
+
+ <pre>
+   java -$JARS deductions.runtime.clients.SPARQLquery2SFcacheApp
+    "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+    SELECT * 
+    WHERE {
+     ?sub rdfs:subClassOf* <http://taxref.mnhn.fr/lod/taxon/185292/10.0> .
+      ?sub rdfs:label ?LAB .  ?sub <http://taxref.mnhn.fr/lod/property/hasRank> ?RANK .
+    } LIMIT 5"
+       http://taxref.mnhn.fr/sparql
+       http://localhost:9000
+</pre>
+
+__Copy all resources of a given rdf:type class__
+
+The Lotico.com organization is dedicated to Semantic Web community since many years, and its Jena backed dataset holds almost 60_000 `foaf:Person`'s.
+
+ <pre>
+   java -$JARS deductions.runtime.clients.SPARQLquery2SFcacheApp
+    "PREFIX foaf: <http://xmlns.com/foaf/0.1/> 
+    SELECT * 
+    WHERE {
+     ?sub a foaf:Person .
+    } LIMIT 5"
+       http://www.lotico.com:3030/lotico/query
+       http://localhost:9000
+</pre>
+
+
 # Semantize raw stuff
 
 By "semantize" we mean transform into triples raw stuff like CSV, XML, JSON, SQL.
