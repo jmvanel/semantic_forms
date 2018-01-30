@@ -38,7 +38,7 @@ trait BasicWidgets
 
   def hyperlinkForDisplayingURI(uri: String, lang: String): NodeSeq = {
     implicit val _ = lang
-    val hrefDisplay = hrefDisplayPrefix() + URLEncoder.encode(uri, "utf-8") + "#form"
+    val hrefDisplay = hrefDisplayPrefix() + URLEncoder.encode(uri, "utf-8") + "#subject"
     println(s">>>>>>>>>>> linkToShow: $hrefDisplay")
     <a class="btn btn-warning btn-xs" href={ hrefDisplay } title={ mess("display_URI") }>
       <i class="glyphicon"></i>

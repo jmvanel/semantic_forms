@@ -22,7 +22,7 @@ trait EnterButtons {
     <div class="row sf-margin-top-10">
       <div class="col-xs-12 col-sm-12 col-md-12 col-md-offset-1">
 
-        <form role="form" action="/display#form">
+        <form role="form" action="/display#subject">
 
             <div class="col-xs-2 col-sm-2 col-md-1">
               <label class="control-label" for="Display">{ messageI18N("Display") }</label>
@@ -92,7 +92,7 @@ trait EnterButtons {
 
     <div class="row sf-margin-top-10">
       <div class="col-xs-12 col-sm-12 col-md-12 col-md-offset-1">
-        <form role="form" action="/create#form">
+        <form role="form" action="/create#subject">
 
             <div class="col-xs-2 col-sm-2 col-md-1">
               <label class=" control-label" for="uri">{ messageI18N("Create_instance_of") }</label>

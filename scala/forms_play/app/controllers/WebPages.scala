@@ -304,13 +304,14 @@ trait WebPages extends Controller with ApplicationTrait {
     implicit request: Request[_] =>
       recoverFromOutOfMemoryErrorGeneric(
         {
-          val lang = chooseLanguageObject(request).language
+          val httpRequest = copyRequest(request)
+          val lang = httpRequest.getLanguage()
           val classe =
             clas match {
               case classe if (classe != "") => classe
               case _                        => copyRequest(request).getHTTPparameterValue("clas").getOrElse("")
             }
-          val fut: Future[Elem] = wordsearchFuture(q, lang, classe)
+          val fut: Future[Elem] = wordsearchFuture(q, classe, httpRequest)
           fut.map(r => outputMainPage(r, lang))
         },
         (t: Throwable) =>
