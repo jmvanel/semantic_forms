@@ -154,6 +154,44 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
 
     // loop on classes
     val listPerFormSpecification =
+      if (formuri === "") {
+        for (classe <- classes) yield {
+          val (propertiesList, formConfiguration) = lookPropertiesListInConfiguration(classe)
+          //          logger.debug(
+          println(
+            s"computePropsFromConfig: class <$classe> : $propertiesList")
+          (propertiesList, formConfiguration, Success(classe))
+        }
+      } else {
+        val (propertiesList, formSpecification, tryGraph) = lookPropertiesListFromDatabaseOrDownload(formuri)
+        val tryClass = tryGraph.map { gr =>
+          lookClassInFormSpec(URI(formuri), gr)
+        }
+          println(
+            s"computePropsFromConfig: formuri != <> propertiesList $propertiesList tryClass $tryClass")
+        List((propertiesList, formSpecification, tryClass))
+      }
+    // concatenate all properties List
+    val propertiesListAll = ArrayBuffer[Rdf#URI]()
+    val formSpecificationAll = ArrayBuffer[Rdf#Node]()
+    var tryClassLast: Try[Rdf#Node] = null
+    for( formSpecificationTuple <- listPerFormSpecification) yield {
+      val (propertiesList, formSpecification, tryClass) = formSpecificationTuple
+      // TODO interpose special null property for separation
+      propertiesListAll.appendAll(propertiesList)
+      formSpecificationAll.append(formSpecification)
+      tryClassLast = tryClass
+    }
+    (propertiesListAll, formSpecificationAll, tryClassLast)
+  }
+
+  private def computePropsFromConfigOLD(classes: List[Rdf#Node],
+                                     formuri: String)
+  (implicit graph: Rdf#Graph):
+	  (Seq[Rdf#URI], Seq[Rdf#Node], Try[Rdf#Node]) = {
+
+    // loop on classes
+    val listPerFormSpecification =
       for (classe <- classes) yield {
         if (formuri === "") {
           val (propertiesList, formConfiguration) = lookPropertiesListInConfiguration(classe)
@@ -182,7 +220,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
     }
     (propertiesListAll, formSpecificationAll, tryClassLast)
   }
-
+    
   private def classFromSubject(subject: Rdf#Node)(implicit graph: Rdf#Graph) = {
     getHeadOrElse(subject, rdf.typ)
   }
