@@ -227,7 +227,7 @@ trait RDFStoreLocalJenaProvider
         val reader/*From Extention*/ = if (!isKnownRdfSyntax(contentTypeNormalized)) {
           System.err.println(
             s"readWithContentTypeNoJena: no Reader found for contentType $contentType ; trying from URI extension")
-          val readerFromURI = getReaderFromURI(fromUri(uri))
+          val readerFromURI = getReaderFromURI(fromUri(withoutFragment(uri)))
           println( s"Reader from URI extension: $readerFromURI")
           readerFromURI.getOrElse(reader0)
         } else reader0
@@ -242,7 +242,8 @@ trait RDFStoreLocalJenaProvider
         }
 
         println(s"readWithContentTypeNoJena: reader $reader =========")
-        val res = reader.read(inputStream, fromUri(uri))
+        val res = reader.read(inputStream, fromUri(withoutFragment(uri)))
+        println(s"readWithContentTypeNoJena: result $res =========")
 
 //        if (fromUri(uri).contains("additions_to_vocabs.ttl")) {
 //          println(s"readWithContentTypeNoJena: ${fromUri(uri)}")
@@ -260,7 +261,7 @@ trait RDFStoreLocalJenaProvider
           println(s"readWithContentTypeNoJena: rdfString ${rdfString.substring(0,
               Math.min(2000, rdfString.length() )
               )}")
-          reader.read(new StringReader(rdfString), fromUri(uri))
+          reader.read(new StringReader(rdfString), fromUri(withoutFragment(uri)))
         } else
           res
     }

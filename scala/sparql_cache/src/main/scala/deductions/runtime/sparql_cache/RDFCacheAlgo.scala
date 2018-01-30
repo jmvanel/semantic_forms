@@ -435,7 +435,7 @@ extends
                 readWithContentType( uri, contentType, dataset): Try[Rdf#Graph]
               else
                 Success(graphFromMicrodata)
-            println(s"""readURI After readWithContentType: ${gr}""")
+            println(s"""readURIWithJenaRdfLoader After readWithContentType: ${gr}""")
             ( gr, contentType)
         }
 
@@ -466,14 +466,14 @@ extends
 
     if (isDownloadableURI(uri)) {
       // To avoid troubles with Jena cf https://issues.apache.org/jira/browse/JENA-1335
-      val contentType = getContentTypeFromHEADRequest(fromUri(uri))
+      val contentType = getContentTypeFromHEADRequest(fromUri(withoutFragment(uri)))
     	println(s""">>>> readURI: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
       if (!contentType.startsWith("text/html") &&
           !contentType.startsWith("ERROR") ) {
             println(s""">>>> readURIsf: for <$uri>
                trying read With explicit content Type; ContentType From HEAD Request "$contentType" """)
             val gr = readWithContentType( uri, contentType, dataset): Try[Rdf#Graph]
-            println(s"""readURI After readWithContentType: ${gr}""")
+            println(s"""readURIsf After readWithContentType: ${gr}""")
             ( gr, contentType)
 
       } else {
