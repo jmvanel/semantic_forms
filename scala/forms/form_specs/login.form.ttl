@@ -9,7 +9,7 @@
 @prefix      : <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
 
 # self hosted URI's :
-@prefix forms: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/forms/form_specs/login.form.ttl#> .
+@prefix forms: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/scala/forms/form_specs/login.form.ttl#> .
 
 # should work but trouble cf commit e01e9a6023bf9bd51c4617a5ecd6566527d52436
 # @prefix forms: <#> .
