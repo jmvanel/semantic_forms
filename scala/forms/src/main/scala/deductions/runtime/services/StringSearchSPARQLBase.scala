@@ -113,7 +113,6 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |  $countPattern
          |}
          |ORDER BY DESC(?COUNT)
-         |LIMIT 10
          |""".stripMargin
 
   /** query With links Count, with or without text query, returning class */
