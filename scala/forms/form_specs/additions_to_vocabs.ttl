@@ -78,3 +78,483 @@ sioc:Item foaf:img <if_speech-bubble-alt-3_2628494.svg> .
 dcat:Dataset foaf:img <dataset-78-256.png> .
 dcat:Catalog foaf:img <catalog_seo2-34-256.png> .
 
+
+# temporarily added before release 2.5 (discrepancy betwin old PopulateRDFCache and new slef-hosted forms URI's)
+
+@prefix cob: <http://cobusiness.fr/ontologies/barter.owl.n3#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+
+@prefix  form: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
+@prefix      : <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
+@prefix forms: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#> .
+
+
+forms:cob-User-Form
+  a form:specification ;
+  rdfs:label "Utilisateur de Cobusiness"@fr ;
+  rdfs:label "Cobusiness user"@en ;
+  form:classDomain cob:User ;
+  form:showProperties (
+	foaf:firstName foaf:lastName
+	cob:network
+	cob:socialNetworks
+	foaf:mbox
+	foaf:phone
+
+	foaf:img
+	foaf:topic_interest
+	dc:subject
+	foaf:knows
+) .
+
+forms:topic_interest-cob1
+	form:fieldAppliesToForm :cob-User-Form ;
+	form:fieldAppliesToProperty dc:subject ;
+	form:widgetClass form:DBPediaLookup .
+
+forms:topic_interest-cob2
+	form:fieldAppliesToForm :cob-User-Form ;
+	form:fieldAppliesToProperty dct:subject ;
+	form:widgetClass form:DBPediaLookup .
+
+forms:topic_interest-cob3
+	form:fieldAppliesToForm :cob-User-Form ;
+	form:fieldAppliesToProperty cob:transversalSkills ;
+	form:widgetClass form:DBPediaLookup .
+
+forms:topic_interest-cob4
+	form:fieldAppliesToForm :cob-User-Form ;
+	form:fieldAppliesToProperty cob:humanSkills ;
+	form:widgetClass form:DBPediaLookup .
+
+forms:topic_interest-cob5
+	form:fieldAppliesToForm :cob-User-Form ;
+	form:fieldAppliesToProperty cob:expertiseSkills ;
+	form:widgetClass form:DBPediaLookup .
+
+@prefix dc: <http://purl.org/dc/elements/1.1/>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+
+@prefix  form: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
+@prefix      : <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
+@prefix forms: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#> .
+
+# Generic form specification with the main (non relational) properties for common classes 
+
+forms:main_properties_Form
+  a form:specification ;
+  rdfs:label "Utilisateur"@fr ;
+  rdfs:label "User"@en ;
+  form:showProperties (
+	rdfs:label rdfs:comment
+	foaf:givenName foaf:familyName
+	foaf:name
+	foaf:homepage
+	foaf:mbox
+	foaf:phone
+  ) .
+
+
+
+
+@prefix dc: <http://purl.org/dc/elements/1.1/>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix cco: <http://purl.org/ontology/cco/core#> .
+@prefix org:        <http://www.w3.org/ns/org#> .
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix task: <http://deductions.github.io/task-management.owl.ttl#> .
+
+@prefix  form: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
+@prefix      : <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
+
+# TODO: self hosted URI's :
+@prefix forms: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#> .
+
+# form specifications for FOAF
+
+#### Person ####
+
+forms:personForm
+  a form:specification ;
+  form:classDomain foaf:Person ;
+  rdfs:label "Personne FOAF - court"@fr ;
+  rdfs:label "FOAF Person - short form"@en ;
+  form:showProperties (
+	# normally single-valued:
+	foaf:givenName foaf:familyName
+	foaf:homepage
+	# literal or resource:
+	foaf:mbox
+	foaf:phone
+	# resource, multi-valued:
+	foaf:img
+	foaf:topic_interest
+	foaf:knows
+	foaf:currentProject
+	org:memberOf
+	cco:expertise
+	rdfs:seeAlso
+	foaf:based_near
+  ) .
+
+forms:topic_interest--personPerson
+  rdfs:label "topic_interest dans formulaire Person"@fr ;
+  rdfs:label "topic_interest in form Person"@en ;
+	:fieldAppliesToForm forms:personForm ;
+	:fieldAppliesToForm forms:organizationForm ;
+	:fieldAppliesToProperty foaf:topic_interest ;
+	:widgetClass form:DBPediaLookup .
+
+forms:cco-expertise--personPerson
+	:fieldAppliesToForm forms:personForm ;
+	:fieldAppliesToForm forms:organizationForm ;
+	:fieldAppliesToProperty cco:expertise ;
+	:widgetClass form:DBPediaLookup .
+
+
+forms:givenName--personPerson
+	:fieldAppliesToForm forms:personForm ;
+	:fieldAppliesToProperty foaf:givenName ;
+        :cardinality :exactlyOne .
+forms:familyName--personPerson
+	:fieldAppliesToForm forms:personForm ;
+	:fieldAppliesToProperty foaf:familyName ;
+        :cardinality :exactlyOne .
+
+forms:based_near--personPerson
+	:fieldAppliesToForm forms:personForm ;
+	:fieldAppliesToForm forms:organizationForm ;
+	:fieldAppliesToProperty foaf:based_near ;
+	:widgetClass form:DBPediaLookup .
+
+foaf:givenName form:shortString true .
+foaf:familyName form:shortString true .
+foaf:firstName form:shortString true .
+foaf:lastName form:shortString true .
+foaf:birthday form:shortString true .
+foaf:skypeID form:shortString true .
+foaf:yahooChatID form:shortString true .
+foaf:msnChatID form:shortString true .
+foaf:jabberID form:shortString true .
+foaf:aimChatID form:shortString true .
+foaf:icqChatID form:shortString true .
+foaf:gender form:shortString true .
+foaf:mbox_sha1sum form:shortString true .
+foaf:age form:shortString true .
+geo:alt form:shortString true .
+geo:lat form:shortString true .
+geo:long form:shortString true .
+org:location form:shortString true .
+
+rdfs:label form:shortString true .
+rdfs:comment form:shortString true .
+
+<http://usefulinc.com/ns/doap#platform> form:shortString true .
+<http://usefulinc.com/ns/doap#programming-language> form:shortString true .
+<http://usefulinc.com/ns/doap#os> form:shortString true .
+
+task:workDurationEstimated form:shortString true .
+task:workDuration form:shortString true .
+task:dailyPrice form:shortString true .
+task:price form:shortString true .
+task:group form:shortString true .
+task:hardness form:shortString true .
+
+#### Project ####
+
+forms:projectForm
+  a form:specification ;
+  form:classDomain foaf:Project ;
+  rdfs:label "Projet - formulaire"@fr ;
+  rdfs:label "Project - form"@en ;
+  form:showProperties (
+	rdfs:label rdfs:comment
+	foaf:homepage
+	foaf:maker
+	foaf:mbox
+	foaf:fundedBy
+	foaf:isPrimaryTopicOf
+	foaf:depiction
+	foaf:holdsAccount
+	foaf:age
+	dct:subject
+	rdfs:seeAlso
+  ) .
+
+#### Organization ####
+
+forms:organizationForm
+  rdfs:label "Organisation - formulaire"@fr ;
+  rdfs:label "Organization - form"@en ;
+  a form:specification ;
+  form:classDomain foaf:Organization ;
+  form:showProperties (
+	rdfs:label rdfs:comment
+	foaf:homepage
+	foaf:maker
+	foaf:mbox
+	foaf:fundedBy
+	foaf:isPrimaryTopicOf
+	foaf:depiction
+	foaf:holdsAccount
+	foaf:age
+	dct:subject
+	foaf:topic_interest
+	rdfs:seeAlso
+  ) .
+
+
+forms:dc_subject
+  rdfs:label "dct:subject dans formulaire Person, etc"@fr ;
+  rdfs:label "dct:subject in form Person, etc"@en ;
+	:fieldAppliesToForm :projectForm ;
+	:fieldAppliesToForm :organizationForm ;
+	:fieldAppliesToForm :form-Document ;
+	:fieldAppliesToProperty dct:subject ;
+	:widgetClass form:DBPediaLookup .
+
+#### Document ####
+
+forms:form-Document
+  rdfs:label "Document - formulaire"@fr ;
+  rdfs:label "Document - form"@en ;
+  a form:specification ;
+  form:classDomain foaf:Document ;
+  form:showProperties (
+	rdfs:label rdfs:comment
+foaf:primaryTopic
+
+	foaf:maker
+	dct:subject
+	rdfs:seeAlso
+  ) .
+forms:primaryTopic
+  rdfs:label "primaryTopic dans formulaire Document"@fr ;
+  rdfs:label "primaryTopic in form Document"@en ;
+	:fieldAppliesToForm :form-Document ;
+	:fieldAppliesToProperty foaf:primaryTopic ;
+	:widgetClass form:DBPediaLookup .
+
+@prefix dc: <http://purl.org/dc/elements/1.1/>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix cco: <http://purl.org/ontology/cco/core#> .
+@prefix org:        <http://www.w3.org/ns/org#> .
+
+@prefix  form: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
+@prefix      : <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
+
+# TODO: self hosted URI's :
+@prefix forms: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#> .
+
+# form specifications for login
+
+
+forms:loginForm
+  a form:specification ;
+  form:classDomain form:AuthenticationAttempt ;
+  rdfs:label "Authentification"@fr ;
+  rdfs:label "Authentication"@en ;
+  form:showProperties (
+form:userid 
+form:password
+) .
+
+forms:registerForm
+  a form:specification ;
+  form:classDomain form:RegisterAccount ;
+  rdfs:label "Créer un compte"@fr ;
+  rdfs:label "Register Account"@en ;
+  form:showProperties (
+form:userid 
+form:password
+form:confirmPassword
+) .
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix dc: <http://purl.org/dc/elements/1.1/>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix dcterms: <http://purl.org/dc/terms/>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+
+@prefix  form: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
+@prefix      : <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
+@prefix forms: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#> .
+
+# form specifications for OWL
+
+forms:owl-ClassForm
+  a form:specification ;
+  rdfs:label "Classe OWL"@fr ;
+  rdfs:label "owl:Class"@en ;
+  form:classDomain owl:Class ;
+  form:showProperties (
+	rdfs:label rdfs:comment
+	dct:subject
+	rdfs:seeAlso
+  ) ;
+  # to implement in semforms: "reverse" properties :
+  form:showReverseProperties (
+	rdfs:domain rdfs:range
+	form:classDomain
+  )
+.
+forms:owl-dct-subject1
+	:fieldAppliesToForm forms:owl-ClassForm ;
+	:fieldAppliesToProperty dct:subject ;
+	:widgetClass form:DBPediaLookup .
+
+forms:owl-DatatypePropertyForm
+  a form:specification ;
+  form:classDomain owl:DatatypeProperty ;
+  form:showProperties (
+	rdfs:label rdfs:comment
+	rdfs:domain rdfs:range
+	dct:subject
+	rdfs:seeAlso
+  )
+.
+forms:owl-dct-subject2
+	:fieldAppliesToForm forms:owl-DatatypePropertyForm ;
+	:fieldAppliesToProperty dct:subject ;
+	:widgetClass form:DBPediaLookup .
+
+forms:owl-ObjectPropertyForm
+  a form:specification ;
+  form:classDomain owl:ObjectProperty ;
+  form:showProperties (
+	rdfs:label rdfs:comment
+	# TODO implement in semforms: constraint that rdfs:range is a reference type
+	rdfs:domain rdfs:range
+	dct:subject
+	rdfs:seeAlso
+  )
+.
+forms:owl-dct-subject3
+	:fieldAppliesToForm forms:owl-ObjectPropertyForm ;
+	:fieldAppliesToProperty dct:subject ;
+	:widgetClass form:DBPediaLookup .
+@prefix sioc: <http://rdfs.org/sioc/ns#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix dc: <http://purl.org/dc/elements/1.1/>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix dcterms: <http://purl.org/dc/terms/>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+
+@prefix  form: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
+@prefix      : <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
+@prefix forms: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#> .
+
+# form specifications for SIOC
+
+forms:sioc-Post_Form
+  a form:specification ;
+  rdfs:label "post SIOC" ;
+  form:classDomain sioc:Post ;
+  form:showProperties (
+	rdfs:label rdfs:comment
+	sioc:content
+	dct:subject
+        sioc:has_reply
+        sioc:has_container
+	rdfs:seeAlso
+  ) ;
+  # to implement in semforms: "reverse" properties :
+  form:showReverseProperties ()
+.
+forms:owl-dct-subject1
+	:fieldAppliesToForm forms:sioc-Post_Form ;
+	:fieldAppliesToProperty dct:subject ;
+	:widgetClass form:DBPediaLookup .
+
+# NOTE: forms are not inherited :(
+sioc:Container-formFromClass
+        form:classDomain     sioc:Container ;
+        form:showProperties  (
+          rdfs:label rdfs:comment
+          sioc:container_of
+	  dct:subject
+          sioc:has_parent
+          sioc:parent_of
+	rdfs:seeAlso
+) .
+
+forms:owl-dct-subject2
+	:fieldAppliesToForm sioc:Container-formFromClass ;
+	:fieldAppliesToProperty dct:subject ;
+	:widgetClass form:DBPediaLookup .
+
+# NOTE: forms are not inherited :(
+sioc:Thread-formFromClass
+        form:classDomain     sioc:Thread ;
+        form:showProperties  (
+          rdfs:label rdfs:comment
+          sioc:container_of
+	  dct:subject
+          sioc:has_parent
+          sioc:parent_of
+	rdfs:seeAlso
+) .
+
+forms:owl-dct-subject3
+	:fieldAppliesToForm sioc:Thread-formFromClass ;
+	:fieldAppliesToProperty dct:subject ;
+	:widgetClass form:DBPediaLookup .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix dc: <http://purl.org/dc/elements/1.1/>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix dcterms: <http://purl.org/dc/terms/>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+
+@prefix  form: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
+@prefix      : <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
+@prefix forms: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#> .
+
+# form specifications for SKOS
+
+forms:skos-Concept_Form
+  a form:specification ;
+  rdfs:label "Concept SKOS"@fr ;
+  rdfs:label "SKOS Concept"@en ;
+  form:classDomain skos:Concept ;
+  form:showProperties (
+	skos:prefLabel skos:altLabel rdfs:comment
+	skos:broader
+	skos:narrower
+	skos:related
+	skos:topConceptOf
+	rdfs:seeAlso
+  ) ;
+  form:showReverseProperties (
+	skos:broader
+	skos:narrower
+  )
+.
+
+forms:skos-narrower
+	:fieldAppliesToForm forms:skos-Concept_Form ;
+	:fieldAppliesToProperty skos:narrower ;
+	:widgetClass form:DBPediaLookup .
+
+forms:skos-broader
+	:fieldAppliesToForm forms:skos-Concept_Form ;
+	:fieldAppliesToProperty skos:broader ;
+	:widgetClass form:DBPediaLookup .
+
+forms:skos-related
+	:fieldAppliesToForm forms:skos-Concept_Form ;
+	:fieldAppliesToProperty skos:related ;
+	:widgetClass form:DBPediaLookup .
+
+
