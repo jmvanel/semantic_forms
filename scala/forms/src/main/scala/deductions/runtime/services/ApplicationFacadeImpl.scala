@@ -150,15 +150,25 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   //      elems
   //    }
 
-  def wordsearchFuture(q: String = "", lang: String = "", clas: String = ""): Future[Elem] = {
+  def wordsearchFuture(q: String = "", clas: String = "", request: HTTPrequest): Future[Elem] = {
     val fut = recoverFromOutOfMemoryError(
-      {
-        // fillMemory() ;
-        searchString(q, hrefDisplayPrefix, lang, clas)
+      { // fillMemory() ;
+        searchString(q, hrefDisplayPrefix, request.getLanguage(), clas)
       })
+    val mapButton: Elem = <a href={
+          val sparqlQuery = URLEncoder.encode(queryWithlinksCountMap(q), "utf-8")
+          "/assets/geo-map/geo-map.html?url=" + sparqlServicesURL(request) + 
+          "?" +
+          "query=" + sparqlQuery
+        }
+        target="_blank"
+     > Map </a>
+//    println( "**** wordsearchFuture queryWithlinksCount " + queryWithlinksCountMap(q) )
     wrapSearchResults(fut, q,
       mess =
-        <div>In class &lt;{ clas }&gt;, searched for</div>)
+        Seq( mapButton,
+             <span>In class &lt;{ clas }&gt;, searched for</span>
+        ) )
   }
 
   /** for test, creates an OutOfMemoryError exception */

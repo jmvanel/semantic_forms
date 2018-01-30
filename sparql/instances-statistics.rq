@@ -1,0 +1,8 @@
+select distinct ?C (count(?O) as ?INSTANCES)
+where { GRAPH ?G {
+  ?S a ?C .
+  ?S ?P ?O .
+  # ?C rdfs:label ?LAB.
+}
+} group by ?C # ?LAB
+ORDER BY DESC (?INSTANCES)

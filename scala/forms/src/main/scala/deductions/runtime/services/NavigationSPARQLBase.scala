@@ -6,7 +6,8 @@ import deductions.runtime.utils.RDFHelpers0
 
 trait NavigationSPARQLBase[Rdf <: RDF]
   extends RDFPrefixes[Rdf]
-  with RDFHelpers0[Rdf] {
+  with RDFHelpers0[Rdf]
+  with SPARQLBase {
 
   def extendedSearchSPARQL(search: String) = s"""
        |SELECT DISTINCT ?thing (COUNT(*) as ?count)
@@ -111,11 +112,4 @@ trait NavigationSPARQLBase[Rdf <: RDF]
          |ORDER BY DESC(?COUNT)
          | LIMIT 150
          |""".stripMargin
-
-  /** TODO pasted :( */
-  private val countPattern =
-    """|  OPTIONAL {
-         |   graph ?grCount {
-         |    ?thing form:linksCount ?COUNT.
-         |  } }""".stripMargin
 }

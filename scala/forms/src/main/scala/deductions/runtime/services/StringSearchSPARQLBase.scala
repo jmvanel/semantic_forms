@@ -11,7 +11,8 @@ import Scalaz._
 /** common code to StringSearchSPARQL and Lookup */
 trait StringSearchSPARQLBase[Rdf <: RDF]
     extends RDFPrefixes[Rdf]
-    with RDFHelpers[Rdf] {
+    with RDFHelpers[Rdf]
+    with SPARQLBase {
 
   val config: Configuration
 
@@ -84,6 +85,38 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |""".stripMargin
 
   /** query With links Count, with or without text query */
+  def queryWithlinksCountMap(search: String,
+                          classe: String = "") = s"""
+         |${declarePrefix(text)}
+         |${declarePrefix(rdfs)}
+         |${declarePrefix(form)}
+         |${declarePrefix(geo)}
+         |CONSTRUCT {
+         |  ?thing geo:long ?LONG .
+         |  ?thing geo:lat ?LAT .
+         |  ?thing rdfs:label ?LAB .
+         |} WHERE {
+         |  ${textQuery(search)}
+         |  graph ?g0 {
+         |    ?thing a ${classCriterium(classe)} .
+         |  }
+         |  graph ?grll {
+         |    ?thing geo:long ?LONG .
+         |    ?thing geo:lat ?LAT .
+         |  }
+         |  OPTIONAL {
+         |  graph ?g1 {
+         |    ?thing rdfs:label ?LAB } }
+         |  OPTIONAL {
+         |  graph ?g2 {
+         |    ?thing <urn:displayLabel> ?LAB } }
+         |  $countPattern
+         |}
+         |ORDER BY DESC(?COUNT)
+         |LIMIT 10
+         |""".stripMargin
+
+  /** query With links Count, with or without text query, returning class */
   def queryWithlinksCountAndClass(search: String,
                           classe: String = "") = s"""
          |${declarePrefix(text)}
@@ -114,12 +147,6 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |}
          |LIMIT 15
          |""".stripMargin
-
-  val countPattern =
-    """|  OPTIONAL {
-         |   graph ?grCount {
-         |    ?thing form:linksCount ?COUNT.
-         |  } }""".stripMargin
 
   /** prepare Search String: trim, and replace ' with \' */
   private def prepareSearchString(search: String) = {
