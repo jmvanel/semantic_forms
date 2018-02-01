@@ -33,7 +33,9 @@ trait CSSClasses {
 
   /** actually applied CSS classes are here */
   lazy val tableCSSClasses = CSSClasses(
+    // See https://getbootstrap.com/docs/3.3/css/#forms-horizontal
     formRootCSSClass = "form-horizontal",
+
     formFieldCSSClass = "",
     formLabelAndInputCSSClass = "form-group",
     formLabelCSSClass = "col-xs-3 col-sm-2 col-md-2 control-label",

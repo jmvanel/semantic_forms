@@ -60,7 +60,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
 
           // 1. retrieve or check URI from Internet
 
-            val (tryGraph: Try[Rdf#Graph], failureOrStatistics /* String or NodeSeq */ ) =
+            val (tryGraph: Try[Rdf#Graph], failureOrStatistics: NodeSeq ) =
               if (blankNode != "true") {
                 // TODO pass datasetOrDefault)
               val tryGraph = retrieveURIBody(
@@ -123,7 +123,11 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
             wrapInTransaction({  // or wrapInReadTransaction ?
             Text("\n") ++
               titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable2) ++
-              <div class="row"><div class="col-xs-12">{ failureOrStatistics }</div></div> ++
+              // PENDING : really need this wrapping?
+              <div class="row">
+                <!-- + "Above div wraps failure Or Statistics form header (form generation traceability) ++-->
+                <div class="col-xs-12">{ failureOrStatistics }</div>
+              </div> ++
               profileClaimUI(request) ++
               formItself
           }, datasetOrDefault)
