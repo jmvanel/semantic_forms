@@ -22,7 +22,10 @@ trait MainXml extends ToolsPage with EnterButtons {
                                    </p>,
                classForContent: String = "container sf-complete-form") = {
     <html>
-      <head>{ head(title)(lang) }</head>
+      <head>
+        <title>{ head(title)(lang) }</title>
+        <meta name="Description" content={title}/>
+      </head>
       <body>
         {mainPageHeader(lang, userInfo, displaySearch)}
         { messages }
