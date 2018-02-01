@@ -1,0 +1,23 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX dbr: <http://dbpedia.org/resource/>
+
+SELECT * WHERE {
+  GRAPH ?GR {
+  ?sub foaf:based_near ?CITY_string .
+  filter( isLiteral( ?CITY_string ))   
+  SERVICE <http://dbpedia.org/sparql> {
+    SELECT * WHERE {
+      ?CITY a dbo:PopulatedPlace .
+      ?CITY rdfs:label ?lab .
+      ?lab <bif:contains> ?CITY_string .
+      ?CITY dbo:country dbr:France .
+      filter( ucase(str(?lab)) = ?CITY_string )
+    }
+  }
+}
+}
+LIMIT 100
+
