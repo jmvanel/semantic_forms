@@ -27,7 +27,7 @@ trait StatisticsGraph[Rdf <: RDF, DATASET] extends RDFHelpers[Rdf]
     val triplesCount = graph.size
 
     val linkToClasses = getObjects(graph, focus, rdf.typ).toList
-    val classesAsTurtleTerms = linkToClasses.map { abbreviateTurtle(_) }
+//    val classesAsTurtleTerms = linkToClasses.map { abbreviateTurtle(_) }
     val subjectsLink = makeHyperlinkTtoGraphContent(focus, s" $subjectsCount subjects ", subjectsCount)
     <p class="sf-statistics">
     RDF document:
@@ -66,12 +66,12 @@ trait StatisticsGraph[Rdf <: RDF, DATASET] extends RDFHelpers[Rdf]
     else hyperlink
   }
 
-  private def sparqlInstance(classe: String) = s"""
-      ${declarePrefix(prefixesMap2("owl"))}
-      CONSTRUCT {?S a <$classe> . }
-      |WHERE {
-      |  GRAPH ?G {
-      |    ?S a <$classe> .
-      |} }
-      """.stripMargin
+//  private def sparqlInstance(classe: String) = s"""
+//      ${declarePrefix(prefixesMap2("owl"))}
+//      CONSTRUCT {?S a <$classe> . }
+//      |WHERE {
+//      |  GRAPH ?G {
+//      |    ?S a <$classe> .
+//      |} }
+//      """.stripMargin
 }

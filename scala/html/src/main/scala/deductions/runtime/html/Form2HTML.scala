@@ -16,6 +16,7 @@ import deductions.runtime.utils.I18NMessages
 
 import scalaz._
 import Scalaz._
+import scala.xml.Comment
 
 /** Abstract Form Syntax to HTML;
  * different modes: display or edit;
@@ -183,7 +184,7 @@ import Scalaz._
       hidden ++
         <div class={css.cssClasses.formRootCSSClass  } >
           {
-              Text("\n") ++
+              Comment(s"Above div wraps second form header and form (form generation traceability) class=${css.cssClasses.formRootCSSClass  }") ++
               <input type="hidden" name="uri" value={ urlEncode(form.subject) }/> ++
               <div class="form-group">
                 <div class="col-xs-12"> {dataFormHeader(form, lang) }

@@ -18,7 +18,7 @@ trait MainXmlWithHead extends MainXml {
       // this way, head.html is in forms/ module, removing a dependency in forms_play/ module
       Source.fromURL(getClass.getResource("/deductions/runtime/html/head.html")).getLines().mkString("\n"))
 
-  /** HTML head */
+  /** HTML head content */
   override def head(title: String = "")(implicit lang: String = "en"): NodeSeq = {
     val titleTag =
       <title>
@@ -30,7 +30,9 @@ trait MainXmlWithHead extends MainXml {
             default
         }
       </title>
-    basicHead ++ titleTag
+    basicHead ++
+    titleTag ++
+    <meta name="Description" content={title}/>
   }
 
 }
