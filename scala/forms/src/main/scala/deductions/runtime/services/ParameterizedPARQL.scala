@@ -10,6 +10,7 @@ import org.w3.banana.{RDF, TryW}
 import scala.concurrent.Future
 import scala.xml.{Elem, NodeSeq, Text}
 import scala.xml.Unparsed
+import deductions.runtime.core.HTTPrequest
 
 
 trait SPARQLQueryMaker[Rdf <: RDF] {
@@ -52,22 +53,43 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    * - search2 is very similar!
    */
   def search(
-    hrefPrefix: String,
-    lang:       String,
-    search:     Seq[String],
-    variables: Seq[String] = Seq("?thing"))(implicit queryMaker: SPARQLQueryMaker[Rdf]): Future[NodeSeq] = {
+    hrefPrefix:  String,
+    lang:        String,
+    search:      Seq[String],
+    variables:   Seq[String] = Seq("?thing"),
+    httpRequest: HTTPrequest = HTTPrequest())(
+    implicit
+    queryMaker: SPARQLQueryMaker[Rdf]): Future[NodeSeq] = {
     println(s"search($search) 1: starting TRANSACTION for dataset $dataset")
     val elem0 = rdfStore.rw(dataset, {
-      val uris = search_onlyNT(search, variables)
+      val uris = search_onlyNT(search, variables, httpRequest)
       println(s"\tsearch(): URI's size ${uris.size}")
       val graph: Rdf#Graph = allNamedGraph
       val elems = Seq(
-          <button value="Sort" id="sort">Sort
-          </button> ,
-          <script> {
-        	Unparsed("""
-        		//// console.log("divs " + JSON.stringify($divs) );
-        	  $('#sort').on('click', function () {
+        <button value="Sort" id="sort">
+          Sort
+        </button>,
+        sortJSscript,
+        <div id="container" class={ css.tableCSSClasses.formRootCSSClass }> {
+          css.localCSS ++
+            uris.map {
+              u =>
+                // println(s"\tsearch(): URI row $u")
+                displayResults(u, hrefPrefix, lang, graph, false)
+            }
+        }</div>)
+      elems
+    })
+    println(s"search: leaving TRANSACTION for dataset $dataset")
+    val elem = elem0.get
+    Future.successful(elem)
+  }
+
+  private val sortJSscript =
+    <script> {
+      Unparsed("""
+        //// console.log("divs " + JSON.stringify($divs) );
+        $('#sort').on('click', function () {
               var $divs = $("div.sf-triple-block")
               $divs.sort(function (a, b) {
                   var atext = $(a).find(".sf-rdf-link").text().trim().toLowerCase().replace("_", " ")
@@ -83,23 +105,8 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
                 $(e).appendTo(wrapper)
               }
             })
-          """)
-        } </script> ,
-        <div id="container" class={ css.tableCSSClasses.formRootCSSClass }> {
-          css.localCSS ++
-            uris.map {
-              u =>
-                // println(s"\tsearch(): URI row $u")
-                displayResults(u, hrefPrefix, lang, graph, false)
-            }
-        }</div>
-        )
-      elems
-    })
-    println(s"search: leaving TRANSACTION for dataset $dataset")
-    val elem = elem0.get
-    Future.successful(elem)
-  }
+      """)
+    } </script>
 
   /**
    * Generic SPARQL SELECT Search with multiple result columns;
@@ -151,12 +158,17 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     tryIteratorRdfNode.asFuture
   }
   
-  private def search_onlyNT(search: Seq[String], variables: Seq[String] = Seq("?thing"))
+  private def search_onlyNT(search: Seq[String], variables: Seq[String] = Seq("?thing"),
+      httpRequest: HTTPrequest = HTTPrequest())
   (implicit queryMaker: SPARQLQueryMaker[Rdf] ) = {
-    val queryString = queryMaker.makeQueryString(search :_* )
-    logger.debug( s"search_onlyNT(search='$search') \n$queryString \n\tdataset Class ${dataset.getClass().getName}" )
+    val queryString: String = {
+      val rawQueryString = queryMaker.makeQueryString(search :_* )
+      addLimit(rawQueryString, httpRequest)
+    }
+//    logger.debug(
+        println( s"search_onlyNT(search='$search') \n$queryString \n\tdataset Class ${dataset.getClass().getName}" )
     // NOTE: if class is specified in request, then ?CLASS is not in results, and vice-versa
-    println( s"search_onlyNT: ($search) : SPARQL variables $variables" )
+    println( s"search_onlyNT: search: ($search) : SPARQL variables $variables" )
     sparqlSelectQueryVariablesNT(queryString, variables )
   }
 
@@ -169,6 +181,17 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     val queryString = queryMaker.makeQueryString(search)
 	  println( s"search_only2( search $search" )
     sparqlSelectQueryVariables(queryString, queryMaker.variables )
+  }
+
+  private def addLimit(rawQueryString: String, httpRequest: HTTPrequest) = {
+    val queryWithLimit = httpRequest.getHTTPparameterValue("limit") match {
+      case Some(limit) => s"$rawQueryString LIMIT $limit"
+      case None => rawQueryString
+    }
+    httpRequest.getHTTPparameterValue("offset") match {
+      case Some(offset) => s"$queryWithLimit OFFSET $offset"
+      case None => queryWithLimit
+    }
   }
 
 }

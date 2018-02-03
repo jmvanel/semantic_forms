@@ -6,6 +6,7 @@ import org.w3.banana.RDF
 
 import scala.concurrent.Future
 import scala.xml.NodeSeq
+import deductions.runtime.core.HTTPrequest
 
 /** Show named graphs */
 trait NamedGraphsSPARQL[Rdf <: RDF, DATASET]
@@ -38,7 +39,10 @@ trait NamedGraphsSPARQL[Rdf <: RDF, DATASET]
     }
   }
   
-  def showNamedGraphs( lang: String = ""): Future[NodeSeq] =
-		  search("/showTriplesInGraph?uri=", lang, Seq())
-    
+  def showNamedGraphs(httpRequest: HTTPrequest): Future[NodeSeq] = {
+    val lang = httpRequest.getLanguage()
+    search("/showTriplesInGraph?uri=", lang, Seq(),
+        httpRequest=httpRequest)
+  }
+
 }

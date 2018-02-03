@@ -322,8 +322,9 @@ trait WebPages extends Controller with ApplicationTrait {
   /** show Named Graphs - pasted from above wordsearchAction */
   def showNamedGraphsAction() = Action.async {
     implicit request: Request[_] =>
-    val lang = chooseLanguageObject(request).language
-    val fut = recoverFromOutOfMemoryError( showNamedGraphs(lang) )
+    val httpRequest = copyRequest(request)
+    val fut = recoverFromOutOfMemoryError( showNamedGraphs(httpRequest) )
+    val lang = httpRequest.getLanguage()
     val rr = fut.map( r => outputMainPage( r, lang ) )
     rr
   }

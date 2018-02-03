@@ -216,11 +216,6 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     }
   }
 
-  def rdfDashboardFuture(q: String = "", lang: String = ""): Future[NodeSeq] = {
-    val fut = showNamedGraphs(lang)
-    wrapSearchResults(fut, q)
-  }
-
   def downloadAsString(url: String, mime: String="text/turtle"): String = {
     logger.info( s"download url $url mime $mime")
     val res = focusOnURI(url, mime)
