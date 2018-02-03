@@ -210,6 +210,9 @@ trait RDFStoreLocalJenaProvider
     val tryResponse = Try {
       // TODO case of file:// URL
       request.addHeader("Accept", contentTypeNormalized)
+
+      // For GogoCarto
+      request.addHeader("X-Requested-With", "XMLHttpRequest")
       httpClient.execute(request)
     }
 
