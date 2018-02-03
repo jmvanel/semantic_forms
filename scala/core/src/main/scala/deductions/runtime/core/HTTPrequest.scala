@@ -49,6 +49,14 @@ case class HTTPrequest(
       getHTTPparameterValue("q").getOrElse(""))
 
   def getHTTPparameterValue(param: String): Option[String] = queryString.get(param) .map(seq => seq.headOption ) . flatten
+  def setDefaultHTTPparameterValue(param: String, value: String): HTTPrequest = {
+    getHTTPparameterValue(param) match {
+      case Some(v) => this
+      case None => this.copy(
+        queryString = queryString + (param -> Seq(value)))
+    }
+  }
+
   def getHTTPheaderValue(header: String): Option[String] = headers.get(header) .map(seq => seq.headOption ) . flatten
 
   def absoluteURL(rawURI: String = "", secure: Boolean = false): String =
