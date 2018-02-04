@@ -158,14 +158,14 @@ trait WebPages extends Controller with ApplicationTrait {
   }
 
   def table = Action { implicit request: Request[_] =>
+    val requestCopy = getRequestCopy()
+    val query = queryFromRequest(requestCopy)
     recoverFromOutOfMemoryErrorGeneric(
       {
-        val requestCopy = getRequestCopy()
         val userid = requestCopy.userId()
         val title = "Table view from SPARQL"
         val lang = chooseLanguage(request)
         val userInfo = displayUser(userid, "", title, lang)
-        val query = queryFromRequest(requestCopy)
         outputMainPage(
           <div>
             <a href={ "/sparql-ui?query=" + URLEncoder.encode(query, "UTF-8") }>Back to SPARQL page</a>
@@ -176,7 +176,7 @@ trait WebPages extends Controller with ApplicationTrait {
           classForContent = "")
       },
       (t: Throwable) =>
-        errorResultFromThrowable(t, "in make History of User Actions /history"))
+        errorResultFromThrowable(t, s"in make table /table?query=$query"))
   }
 
   private def tableFromSPARQL(request: HTTPrequest): NodeSeq = {
@@ -217,7 +217,7 @@ trait WebPages extends Controller with ApplicationTrait {
               .as("text/html; charset=utf-8")
           },
           (t: Throwable) =>
-            errorResultFromThrowable(t, "in make History of User Actions /history"))
+            errorResultFromThrowable(t, s"in /form?uri=$uri"))
     }
 
   /**
@@ -333,14 +333,15 @@ trait WebPages extends Controller with ApplicationTrait {
   /** show Triples In given Graph */
   def showTriplesInGraphAction( uri: String) = {
         Action.async { implicit request: Request[_] =>
-    recoverFromOutOfMemoryErrorGeneric(
-      {
-      },
-      (t: Throwable) =>
-        errorResultFromThrowable(t, "in make History of User Actions /history"))
+//    recoverFromOutOfMemoryErrorGeneric(
+//      {
+//      },
+//      (t: Throwable) =>
+//        errorResultFromThrowable(t, "in make History of User Actions /history"))
 
           val lang = chooseLanguageObject(request).language
-          val fut = recoverFromOutOfMemoryError( Future.successful( showTriplesInGraph( uri, lang) ) )
+          val fut = recoverFromOutOfMemoryError( Future.successful( showTriplesInGraph( uri, lang) ),
+              s"in show Triples In Graph /showTriplesInGraph?uri=$uri")
           val rr = fut.map( r => outputMainPage( r, lang ) )
           rr
   }
@@ -500,7 +501,7 @@ trait WebPages extends Controller with ApplicationTrait {
       outputMainPageWithContent(contentMaker)
     },
       (t: Throwable) =>
-        errorActionFromThrowable(t, "in make History of User Actions /history"))
+        errorActionFromThrowable(t, s"in make History of User Actions /history?limit=$limit"))
   }
 
 }
