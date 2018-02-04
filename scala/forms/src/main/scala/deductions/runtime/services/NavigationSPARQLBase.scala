@@ -73,7 +73,7 @@ trait NavigationSPARQLBase[Rdf <: RDF]
        |    ?TOPIC4 ?PRED7 ?thing . 
        |  }
        | }""".stripMargin
-       
+
   def reverseLinks(search: String): String = s"""
          |${declarePrefix(form)}
          |SELECT DISTINCT ?thing WHERE {
@@ -110,6 +110,5 @@ trait NavigationSPARQLBase[Rdf <: RDF]
          |  $countPattern
          |}
          |ORDER BY DESC(?COUNT)
-         | LIMIT 150
          |""".stripMargin
 }
