@@ -387,10 +387,9 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     wrapSearchResults(futureResults, "",
       mess =
       <div>
-        Searched for{ label }
-        <a href={ createHyperlinkString(uri = query) }> { label } </a>
-        &lt;{ query }
-        &gt;
+        Searched for
+        "<a href={ createHyperlinkString(uri = query) }>{ label }</a>"
+        &lt;{ query }&gt;
         <div><a href={
           val sparqlQuery = URLEncoder.encode(reverseLinksMaps(query), "utf-8")
           "/assets/geo-map/geo-map.html?url=" + sparqlServicesURL(request) + 
