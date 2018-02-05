@@ -55,20 +55,43 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
           typ, // TODO pass type_
           resourceEntry) ++
       backLinkButton (resourceEntry) ++
-      normalNavigationButton(resourceEntry) ++
-      makeDrawGraphLink(objectURIstringValue) ++
-      displayThumbnail(resourceEntry) ++
-      makeUserInfoOnTriples(resourceEntry, request.getLanguage()) ++
-      creationButton(
-        objectURIstringValue,
-        type_.map { t => t.toString() },
-        request.getLanguage()) ++
-      makeClassTableButton(resourceEntry) ++
-      hyperlinkForEditingURIinsideForm(objectURIstringValue, request.getLanguage())
+        showHideHTMLOnclick(
+          normalNavigationButton(resourceEntry) ++
+            makeDrawGraphLink(objectURIstringValue) ++
+            displayThumbnail(resourceEntry) ++
+            makeUserInfoOnTriples(resourceEntry, request.getLanguage()) ++
+            creationButton(
+              objectURIstringValue,
+              type_.map { t => t.toString() },
+              request.getLanguage()) ++
+              makeClassTableButton(resourceEntry) ++
+              hyperlinkForEditingURIinsideForm(objectURIstringValue, request.getLanguage()),
+              resourceEntry)
 
       <span class="sf-statistics">{widgets}</span>
   }
 
+  private def showHideHTMLOnclick(html: NodeSeq, resourceEntry: formMod#ResourceEntry): NodeSeq = {
+    val resourceId = resourceEntry.value.toString()
+    val wrapperId = resourceId+"-wrap"
+    val buttonId = resourceEntry.value.toString()+"-button"
+    <button id={buttonId}>...</button> ++
+    <span id={wrapperId} style="display: none">{
+      // TODO this script should not be repeated at every field in the form !
+      <script>{
+        Unparsed(s"""
+          var button = document.getElementById("$buttonId")
+          button . addEventListener("click", function(event){
+            var button = event.target
+            var wrapper = button . nextSibling
+            wrapper .style.removeProperty("display")
+            window.console.log("OK removed Property display on " + "$wrapperId" )
+          })
+          """)
+      }</script> ++
+    html
+    }</span>
+  }
   /** hyperlink To RDF property */
   private def hyperlinkToField(resourceEntry: formMod#ResourceEntry
 //      , objectURIstringValue: String
@@ -88,10 +111,12 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
   private[html] def hyperlinkToURI(hrefPrefix: String, objectURIstringValue: String, valueLabel: String,
       type_ : String, resourceEntry: formMod#ResourceEntry) = {
+    val types0 = resourceEntry.type_.mkString(", ")
+    val types = if(types0 == "") type_ else types0
     addTripleAttributesToXMLElement(
       <a href={createHyperlinkString(hrefPrefix, objectURIstringValue)} class={cssForURI(objectURIstringValue)} title=
       {s"""Value ${if (objectURIstringValue != valueLabel) objectURIstringValue else ""}
-              of type ${type_}"""} draggable="true">
+              of type(s) ${types}"""} draggable="true">
         {valueLabel}
       </a>,
       resourceEntry)

@@ -331,20 +331,15 @@ trait WebPages extends Controller with ApplicationTrait {
   }
 
   /** show Triples In given Graph */
-  def showTriplesInGraphAction( uri: String) = {
-        Action.async { implicit request: Request[_] =>
-//    recoverFromOutOfMemoryErrorGeneric(
-//      {
-//      },
-//      (t: Throwable) =>
-//        errorResultFromThrowable(t, "in make History of User Actions /history"))
-
-          val lang = chooseLanguageObject(request).language
-          val fut = recoverFromOutOfMemoryError( Future.successful( showTriplesInGraph( uri, lang) ),
-              s"in show Triples In Graph /showTriplesInGraph?uri=$uri")
-          val rr = fut.map( r => outputMainPage( r, lang ) )
-          rr
-  }
+  def showTriplesInGraphAction(uri: String) = {
+    Action.async { implicit request: Request[_] =>
+      val lang = chooseLanguageObject(request).language
+      val fut = recoverFromOutOfMemoryError(
+        Future.successful(showTriplesInGraph(uri, lang)),
+        s"in show Triples In Graph /showTriplesInGraph?uri=$uri")
+      val rr = fut.map(r => outputMainPage(r, lang))
+      rr
+    }
   }
 
   /////////////////////////////////
