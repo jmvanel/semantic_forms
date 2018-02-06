@@ -78,6 +78,13 @@
                 verticalFit: true
                 }
             });
+
+            $('.showHideButton').on('click', function(event) {
+              var button = event.target
+              var wrapper = button . nextSibling
+              wrapper .style.removeProperty("display")
+              window.console.log("OK removed Property display on " + "$wrapperId" )
+            });
         })
     </script>
 

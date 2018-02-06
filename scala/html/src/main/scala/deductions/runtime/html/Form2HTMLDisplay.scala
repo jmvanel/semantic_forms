@@ -75,21 +75,10 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     val resourceId = resourceEntry.value.toString()
     val wrapperId = resourceId+"-wrap"
     val buttonId = resourceEntry.value.toString()+"-button"
-    <button id={buttonId}>...</button> ++
+    <button id={buttonId} class="showHideButton">...</button> ++
     <span id={wrapperId} style="display: none">{
-      // TODO this script should not be repeated at every field in the form !
-      <script>{
-        Unparsed(s"""
-          var button = document.getElementById("$buttonId")
-          button . addEventListener("click", function(event){
-            var button = event.target
-            var wrapper = button . nextSibling
-            wrapper .style.removeProperty("display")
-            window.console.log("OK removed Property display on " + "$wrapperId" )
-          })
-          """)
-      }</script> ++
-    html
+      // NOTE script to show/Hide HTML On click is hooked in head.html
+      html
     }</span>
   }
   /** hyperlink To RDF property */
