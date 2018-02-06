@@ -86,7 +86,7 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
         countsURISet.add(uri)
         val newCount = countsMap.getOrElse(uri, 0) + 1
         countsMap.put(uri, newCount)
-//        println(s"countChanges: URI ${uri} -> count $newCount")
+        logger.debug(s"countChanges: URI ${uri} -> count $newCount")
       }
 
     rdfStore.r(linksCountDataset, {
@@ -99,8 +99,8 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
           indexObject)
     })
 
-//    println(s"""updateLinksCount: countURIsToAddSet ${countURIsToAddSet},
-//      countsMap $countsMap""")
+    logger.debug(s"""updateLinksCount: countURIsToAddSet ${countURIsToAddSet},
+      countsMap $countsMap""")
 
     def replaceCountsInTDB(uris: Set[Rdf#Node], replaceCount: Boolean=replaceCount) =
     rdfStore.rw(linksCountDataset, {
@@ -108,7 +108,7 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
         uri <- uris;
         linksCountGraph <- rdfStore.getGraph(linksCountDataset, linksCountGraphURI);
         oldCount <- getCountFromTDBTry(linksCountGraph, uri)
-//        ; _ = println(s"updateLinksCount: oldCount $oldCount")
+        ; _ = logger.debug(s"updateLinksCount: oldCount $oldCount")
       ) {
 
         val increment = countsMap.getOrElse(uri, 0) -
@@ -118,7 +118,7 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
         	  increment
         	else
         	 oldCount + increment
-        println(s"updateLinksCount: URI $uri , oldCount $oldCount, count $count")
+        logger.debug(s"updateLinksCount: URI $uri , oldCount $oldCount, count $count")
 
         if (count != oldCount) {
           rdfStore.removeTriples(linksCountDataset, linksCountGraphURI,
@@ -141,9 +141,9 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
   private def getCountFromTDBTry(linksCountGraph: Rdf#Graph,
                                  subject: Rdf#Node): Try[Int] = {
     val pg = PointedGraph(subject, linksCountGraph)
-//    println(s"getCountFromTDBTry: pg $pg")
+    logger.debug(s"replaceCountsInTDB: getCountFromTDBTry: pg $pg")
     val pg1 = (pg / linksCountPred)
-//    println(s"getCountFromTDBTry: (pg / linksCountPred) ${pg1}")
+    logger.debug(s"replaceCountsInTDB: getCountFromTDBTry: (pg / linksCountPred) ${pg1}")
     if (pg1.nodes.isEmpty)
       Try(0)
     else
@@ -195,15 +195,15 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
             ) yield { nodeIntPairTry.toOption.get }
             counts
           case Failure(f) =>
-            System.err.println("computeLinksCount: " + f)
+            logger.error("computeLinksCount: " + f)
             Seq((URI(""), 0)).toIterator
         }
       })
 
-    println(s"After executeSelect")
+    logger.debug(s"computeLinksCount: After executeSelect")
 
     if (subjectCountIterator.isFailure)
-      System.err.println(s"subjectCountIterator $subjectCountIterator")
+      logger.error(s"computeLinksCount: subjectCountIterator: $subjectCountIterator")
 
     /* TODO would like to avoid both:
      * - creating the graph in memory :(
@@ -221,7 +221,7 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
       rdfStore.appendToGraph(linksCountDataset, linksCountGraphURI,
         makeGraph(tripleIterable))
     })
-    println(s"computeLinksCount: ${tripleIterable.size} counts added in graph $linksCountGraphURI .")
+    logger.debug(s"computeLinksCount: ${tripleIterable.size} counts added in graph $linksCountGraphURI .")
   }
 
   def resetRDFLinksCounts(
@@ -238,8 +238,8 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
          |     ?S <${fromUri(linksCountPred)}> ?O .
          |   }}
          |""".stripMargin
-    println(s"resetRDFLinksCounts: $query")
-    println(s"resetRDFLinksCounts: result: ${
+    logger.debug(s"resetRDFLinksCounts: $query")
+    logger.debug(s"resetRDFLinksCounts: result: ${
       rdfStore.rw(linksCountDataset, {
         sparqlUpdateQuery(query, linksCountDataset)
       })
