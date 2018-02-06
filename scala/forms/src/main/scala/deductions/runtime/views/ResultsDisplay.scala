@@ -110,12 +110,14 @@ extends ThumbnailInference[Rdf, DATASET] {
     		} . getOrElse(<div/>)
   }
 
-  /** call createHTMLResourceReadonlyField() in trait Form2HTMLDisplay */
+  /** display given URI with bells and whistles,
+   *  implementation:  call createHTMLResourceReadonlyField() in trait Form2HTMLDisplay */
   private def displayNode(uri: Rdf#URI, hrefPrefix: String = config.hrefDisplayPrefix,
 		  label: String,
       property: Rdf#URI,
       type_ : Rdf#Node
       ): NodeSeq = {
+    if( uri != nullURI ) {
     val fmod = new FormModule[Rdf#Node,  Rdf#URI ]{
       val nullURI= ops.URI("")
     }
@@ -140,6 +142,8 @@ extends ThumbnailInference[Rdf, DATASET] {
 
     hyperlink ++
     createHTMLResourceReadonlyField( resourceEntry, hrefPrefix)
+    } else
+      <span>null URI</span>
   }
   
 }

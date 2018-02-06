@@ -85,12 +85,15 @@ http.send(content);
         </div>
       } else {
         val accountFromPerson = getAccountFromPerson(request.getRDFsubject())
-        // link to current page's associated user account
-        <div>
-          Account for this Person:{
-            makeHyperlinkForURI(accountFromPerson, request.getLanguage(), allNamedGraph)
-          }
-        </div>
+        if (accountFromPerson != nullURI)
+          // link to current page's associated user account
+          <div>
+            Account for this Person:{
+              makeHyperlinkForURI(accountFromPerson, request.getLanguage(), allNamedGraph)
+            }
+          </div>
+        else
+          <span/>
       }
     } else NodeSeq.Empty
   }
