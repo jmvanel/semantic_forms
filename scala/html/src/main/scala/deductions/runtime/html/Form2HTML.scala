@@ -231,11 +231,13 @@ import scala.xml.Comment
             case Some(formURI) if formURI != nullURI =>
               I18NMessages.get("Form_specification", lang) + ": " ++
                 createHyperlinkElement(toPlainString(formURI), formLabel)
-            case _ => "Class " ++
-            ( for(classe <- classs) yield
-              createHyperlinkElement(toPlainString(classe), toPlainString(classe)) ++
-              " (automatic form)"
-            )
+            case _ =>
+              // "Class " ++
+//            ( for(classe <- classs) yield
+//              createHyperlinkElement(toPlainString(classe), toPlainString(classe)) ++
+//              " (automatic form)"
+//            )
+            Text(s"(automatic form for ${classs.size} classes and data)")
           }
         }</div>
     } else Text("")
