@@ -17,22 +17,30 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
   import config._
 
-
   private[html] def createHTMLiteralReadonlyField(
-      l: formMod#LiteralEntry,
-      request: HTTPrequest = HTTPrequest()): NodeSeq =
-    <xml:group>
-      {
-        val valueDisplayed =
-          if (l.type_.toString().endsWith("dateTime"))
-            l.valueLabel.replaceFirst("T00:00:00$", "")
-          else
-            l.valueLabel
-        Unparsed(valueDisplayed)
-      }
-    	{makeUserInfoOnTriples(l, request.getLanguage())}
-      <div>{ if (l.lang != "" && l.lang != "No_language") " > " + l.lang }</div>
-    </xml:group>
+    l:       formMod#LiteralEntry,
+    request: HTTPrequest          = HTTPrequest()): NodeSeq = {
+    val userLanguage = request.getLanguage()
+    val dataLanguage = l.lang
+    // TODO this behavior sould be configurable
+    if (userLanguage == dataLanguage
+      || dataLanguage == "en"
+      || dataLanguage == "")
+      <xml:group>
+        {
+          val valueDisplayed =
+            if (l.type_.toString().endsWith("dateTime"))
+              l.valueLabel.replaceFirst("T00:00:00$", "")
+            else
+              l.valueLabel
+          Unparsed(valueDisplayed)
+        }
+        { makeUserInfoOnTriples(l, userLanguage) }
+        <div>{ if (l.lang != "" && l.lang != "No_language") " > " + l.lang }</div>
+      </xml:group>
+    else
+      <span/>
+  }
 
   /** create HTML Resource Readonly Field
     * PENDING if inner val should need to be overridden, they should be directly in trait

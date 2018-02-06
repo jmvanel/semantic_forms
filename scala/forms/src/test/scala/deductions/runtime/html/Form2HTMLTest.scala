@@ -9,6 +9,7 @@ import deductions.runtime.utils.DefaultConfiguration
 import org.apache.log4j.Logger
 import org.junit.Assert
 import org.scalatest.FunSuite
+import deductions.runtime.core.HTTPrequest
 
 class Form2HTMLTest
     extends FunSuite
@@ -29,7 +30,10 @@ class Form2HTMLTest
     val fh = this
     val form = createFormWithGivenProps()
     println("Form2HTMLTest: form")
-    val xhtml = fh.generateHTML(form)
+    val xhtml = fh.generateHTML(form,
+        request = new HTTPrequest {
+      override def getLanguage(): String = "fr"
+    })
     Files.write(Paths.get("tmp.form.html"), xhtml.toString().getBytes);
     Assert.assertTrue(xhtml.toString().contains("Alexandre"))
   }

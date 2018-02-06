@@ -120,16 +120,20 @@ import scala.xml.Comment
         ) yield {
           if (editable ||
               toPlainString(field.value) != "" ||
-              isSeparator(field))
-            <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
+              isSeparator(field)) {
+            val fieldDataOrInput = makeFieldDataOrInput(
+                field, hrefPrefix, editable, lang, request, css=cssForURI)
+            if( fieldDataOrInput != <span/> )
+             <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
               makeFieldSubject(field) ++
                 makeFieldLabel(preceding, field, editable, lang
                     , cssForProperty = cssForProperty
                     ) ++
-                makeFieldDataOrInput(field, hrefPrefix, editable, lang, request,
-                    css=cssForURI)
-            }</div>
-          else
+               fieldDataOrInput
+             }</div>
+            else
+              Text("\n")
+          } else
             Text("\n")
         }
         fieldsHTML
@@ -307,12 +311,14 @@ import scala.xml.Comment
         // <p>Should not happen! createHTMLField({ field })</p>
         <span/>
     }
+
+    if( xmlField != <span/> )
+    // TODO if() below seems useless !!!!
     if (displayInTable === true) {
       Seq(createAddRemoveWidgets(field, editable)) ++
       {xmlField}
     }
     else {
-
       Seq(createAddRemoveWidgets(field, editable)) ++
         // Jeremy M recommended img-rounded from Bootstrap, but not effect
 //        <div class="sf-value-block col-xs-12 col-sm-9 col-md-9">      
@@ -320,8 +326,8 @@ import scala.xml.Comment
         <span class={css}>
           {xmlField}
         </span>
-
     }
+    else <span/>
   }
 
   private def userURI(request: HTTPrequest): String = {
