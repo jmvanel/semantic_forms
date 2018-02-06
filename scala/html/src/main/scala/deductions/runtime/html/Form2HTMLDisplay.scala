@@ -54,12 +54,12 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue, valueLabel,
           typ, // TODO pass type_
           resourceEntry) ++
+      displayThumbnail(resourceEntry) ++
       backLinkButton (resourceEntry) ++
-        showHideHTMLOnclick(
+      makeUserInfoOnTriples(resourceEntry, request.getLanguage()) ++
+      showHideHTMLOnclick(
           normalNavigationButton(resourceEntry) ++
             makeDrawGraphLink(objectURIstringValue) ++
-            displayThumbnail(resourceEntry) ++
-            makeUserInfoOnTriples(resourceEntry, request.getLanguage()) ++
             creationButton(
               objectURIstringValue,
               type_.map { t => t.toString() },
