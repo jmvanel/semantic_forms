@@ -7,10 +7,12 @@ import org.w3.banana.RDF
 
 import scala.xml.{Elem, NodeSeq}
 import deductions.runtime.views.ResultsDisplay
+import deductions.runtime.core.HTMLutils
 
 /** print Statistics for given Graph in HTML */
 trait StatisticsGraph[Rdf <: RDF, DATASET] extends RDFHelpers[Rdf]
-    with RDFPrefixes[Rdf] {
+  with RDFPrefixes[Rdf]
+  with HTMLutils {
 
   self: ResultsDisplay[Rdf, DATASET] =>
 
@@ -40,10 +42,15 @@ trait StatisticsGraph[Rdf <: RDF, DATASET] extends RDFHelpers[Rdf]
       { objectsCount2 }
       objects from page URI, type(s)
       {
-        for (link <- linkToClasses) yield {
+        val links0 = for (link <- linkToClasses) yield {
           makeHyperlinkForURI(link, lang, graph)
-          // <a href={ link.toString }>{ classesAsTurtleTerms(a) }</a><span>,&nbsp;</span>
         }
+        val links = links0.flatten
+        if( links.size <=1 )
+          links
+        else
+          links(0) ++
+          showHideHTMLOnClick( links.tail, fromUri(focus) )
       }
     </p>
   }
