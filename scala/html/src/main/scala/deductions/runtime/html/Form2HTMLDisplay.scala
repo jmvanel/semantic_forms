@@ -57,7 +57,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
           typ, // TODO pass type_
           resourceEntry) ++
       displayThumbnail(resourceEntry) ++
-      backLinkButton (resourceEntry) ++
+      backLinkButton(resourceEntry) ++
       makeUserInfoOnTriples(resourceEntry, request.getLanguage()) ++
       showHideHTMLOnClick(
           normalNavigationButton(resourceEntry) ++
@@ -68,7 +68,10 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
               request.getLanguage()) ++
               makeClassTableButton(resourceEntry) ++
               hyperlinkForEditingURIinsideForm(objectURIstringValue, request.getLanguage()),
-              resourceEntry.value.toString())
+              resourceEntry.value.toString(),
+              <button title={s"""Show "expert" buttons: navigate, edit, graph, for value <${resourceEntry.value}>"""}
+              style="height: 20px"
+              >...</button>)
 
       <span class="sf-statistics">{widgets}</span>
   }

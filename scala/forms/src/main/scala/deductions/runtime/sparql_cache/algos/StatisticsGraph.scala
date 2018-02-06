@@ -50,7 +50,9 @@ trait StatisticsGraph[Rdf <: RDF, DATASET] extends RDFHelpers[Rdf]
           links
         else
           links(0) ++
-          showHideHTMLOnClick( links.tail, fromUri(focus) )
+          showHideHTMLOnClick( links.tail, fromUri(focus),
+              <button title="Show all classes"
+              >....</button> )
       }
     </p>
   }
