@@ -7,11 +7,13 @@ import scala.xml.{NodeSeq, Unparsed}
 import deductions.runtime.core.HTTPrequest
 import java.net.URLEncoder
 import deductions.runtime.utils.I18NMessages
+import deductions.runtime.core.HTMLutils
 
 /** generate HTML from abstract Form for Display (Read only) */
 trait Form2HTMLDisplay[NODE, URI <: NODE]
   extends Form2HTMLBase[NODE, URI]
-  with RDFPrefixesInterface {
+  with RDFPrefixesInterface
+  with HTMLutils {
 
   import config._
 
@@ -57,7 +59,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       displayThumbnail(resourceEntry) ++
       backLinkButton (resourceEntry) ++
       makeUserInfoOnTriples(resourceEntry, request.getLanguage()) ++
-      showHideHTMLOnclick(
+      showHideHTMLOnClick(
           normalNavigationButton(resourceEntry) ++
             makeDrawGraphLink(objectURIstringValue) ++
             creationButton(
@@ -66,21 +68,11 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
               request.getLanguage()) ++
               makeClassTableButton(resourceEntry) ++
               hyperlinkForEditingURIinsideForm(objectURIstringValue, request.getLanguage()),
-              resourceEntry)
+              resourceEntry.value.toString())
 
       <span class="sf-statistics">{widgets}</span>
   }
 
-  private def showHideHTMLOnclick(html: NodeSeq, resourceEntry: formMod#ResourceEntry): NodeSeq = {
-    val resourceId = resourceEntry.value.toString()
-    val wrapperId = resourceId+"-wrap"
-    val buttonId = resourceEntry.value.toString()+"-button"
-    <button id={buttonId} class="showHideButton">...</button> ++
-    <span id={wrapperId} style="display: none">{
-      // NOTE script to show/Hide HTML On click is hooked in head.html
-      html
-    }</span>
-  }
   /** hyperlink To RDF property */
   private def hyperlinkToField(resourceEntry: formMod#ResourceEntry
 //      , objectURIstringValue: String
