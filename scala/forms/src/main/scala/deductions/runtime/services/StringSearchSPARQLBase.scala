@@ -40,7 +40,7 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
     if (classe === "")
       "graph ?g1 { ?thing a ?CLASS . }"
     else
-      """|
+     s"""|
          | graph ?g1 {
          |   ?thing a ?sub .
          | }
