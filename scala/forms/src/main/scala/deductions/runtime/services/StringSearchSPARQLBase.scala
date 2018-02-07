@@ -26,7 +26,7 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
         // include * for Lucene search
         s"?thing text:query ( '$searchStringPrepared*' ) ."
       else
-        s"""graph ?g {
+        s"""graph ?gtext {
               ?thing ?P1 ?O1 .
               FILTER ( isLiteral( ?O1) )
               FILTER ( regex( str(?O1), '$searchStringPrepared.*', "i" ) )
@@ -38,9 +38,15 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
 		println(
 		  s"""classCriterium: classe: "${classe}" """)
     if (classe === "")
-      "?CLASS"
+      "graph ?g1 { ?thing a ?CLASS . }"
     else
-      "<" + expandOrUnchanged(classe) + ">"
+      """|
+         | graph ?g1 {
+         |   ?thing a ?sub .
+         | }
+         | graph ?g2 {
+         |   ?sub rdfs:subClassOf* <${expandOrUnchanged(classe)}> .
+         | }""".stripMargin
     }
 
   private def classVariableInSelect(classe: String): String = {
@@ -56,11 +62,11 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |${declarePrefix(text)}
          |${declarePrefix(rdfs)}
          |SELECT DISTINCT ?thing (COUNT(*) as ?count) WHERE {
+         |  ${textQuery(search)}
          |  graph ?g {
-         |    ${textQuery(search)}
          |    ?thing ?p ?o .
-         |    ?thing a ${classCriterium(classe)} .
          |  }
+         |  ${classCriterium(classe)} .
          |}
          |GROUP BY ?thing
          |ORDER BY DESC(?count)
@@ -75,9 +81,7 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |${declarePrefix(form)}
          |SELECT DISTINCT ?thing ?COUNT WHERE {
          |  ${textQuery(search)}
-         |  graph ?g1 {
-         |    ?thing a ${classCriterium(classe)} .
-         |  }
+         |  ${classCriterium(classe)} .
          |  $countPattern
          |}
          |ORDER BY DESC(?COUNT)
@@ -97,18 +101,16 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |  ?thing rdfs:label ?LAB .
          |} WHERE {
          |  ${textQuery(search)}
-         |  graph ?g0 {
-         |    ?thing a ${classCriterium(classe)} .
-         |  }
+         |  ${classCriterium(classe)} .
          |  graph ?grll {
          |    ?thing geo:long ?LONG .
          |    ?thing geo:lat ?LAT .
          |  }
          |  OPTIONAL {
-         |  graph ?g1 {
+         |  graph ?grlab {
          |    ?thing rdfs:label ?LAB } }
          |  OPTIONAL {
-         |  graph ?g2 {
+         |  graph ?grlab2 {
          |    ?thing <urn:displayLabel> ?LAB } }
          |  $countPattern
          |}
@@ -116,16 +118,14 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |""".stripMargin
 
   /** query With links Count, with or without text query, returning class */
-  def queryWithlinksCountAndClass(search: String,
+  private def queryWithlinksCountAndClass(search: String,
                           classe: String = "") = s"""
          |${declarePrefix(text)}
          |${declarePrefix(rdfs)}
          |${declarePrefix(form)}
          |SELECT DISTINCT ?thing ?COUNT ${classVariableInSelect(classe)} WHERE {
-         |  graph ?g {
-         |    ${textQuery(search)}
-         |    ?thing a ${classCriterium(classe)} .
-         |  }
+         |  ${textQuery(search)}
+         |  ${classCriterium(classe)} .
          |  $countPattern
          |}
          |ORDER BY DESC(?COUNT)
@@ -133,16 +133,16 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |""".stripMargin
 
   // UNUSED
-  def queryWithoutlinksCount(search: String,
+  private def queryWithoutlinksCount(search: String,
                              classe: String = "") = s"""
          |${declarePrefix(text)}
          |${declarePrefix(rdfs)}
          |SELECT DISTINCT ?thing WHERE {
+         |  ${textQuery(search)}
          |  graph ?g {
-         |    ${textQuery(search)}
          |    ?thing ?p ?o .
-         |    ?thing a ${classCriterium(classe)} .
          |  }
+         |  ${classCriterium(classe)} .
          |}
          |LIMIT 15
          |""".stripMargin
