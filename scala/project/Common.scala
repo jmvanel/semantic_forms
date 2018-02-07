@@ -18,7 +18,7 @@ object Common {
   val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
 
   val junitDependency = "junit" % "junit" % "4.12" % Test
-  val scalatestDependency = "org.scalatest" %% "scalatest" % "3.0.4" % "test"
+  val scalatestDependency = "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 
   val loggingDependencies = Seq(
     "org.apache.logging.log4j" % "log4j-api" % "2.9.0",
@@ -47,7 +47,6 @@ object Common {
     "org.apache.lucene" % "lucene-suggest" % "4.9.1" ,
     "org.apache.lucene" % "lucene-demo" % "4.9.1" ,
 */
-
 
     // "net.rootdev" % "java-rdfa" % "0.4.3-SNAPSHOT"
     "net.rootdev" % "java-rdfa" % "0.4.2" ,
