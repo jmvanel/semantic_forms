@@ -30,10 +30,14 @@ class Form2HTMLTest
     val fh = this
     val form = createFormWithGivenProps()
     println("Form2HTMLTest: form")
-    val xhtml = fh.generateHTML(form,
-        request = new HTTPrequest {
-      override def getLanguage(): String = "fr"
-    })
+    val xhtml = fh.generateHTML(
+      form,
+      /* Set a pseudo HTTrequest so that the language of the form generation
+       * corresponds to the language of the data (fr)
+       */
+      request = new HTTPrequest {
+        override def getLanguage(): String = "fr"
+      })
     Files.write(Paths.get("tmp.form.html"), xhtml.toString().getBytes);
     Assert.assertTrue(xhtml.toString().contains("Alexandre"))
   }

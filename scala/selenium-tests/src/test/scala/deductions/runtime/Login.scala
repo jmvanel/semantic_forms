@@ -1,26 +1,30 @@
+package deductions.runtime
+
 import org.scalatest._
 import org.scalatest.matchers._
 import org.scalatest.selenium._
 
 import org.openqa.selenium._
-import org.openqa.selenium.firefox.FirefoxDriver
 
 /** NOTE:
  *  It's not easy to set HTTP headers, so this is for browser set to french language
  *
  *  See ../web_tests/crud.selenium.xhtml ,
- *   doc. http://www.scalatest.org/user_guide/using_selenium */
-class Login extends Base {
+ *  doc. http://www.scalatest.org/user_guide/using_selenium */
+trait Login extends TestBoilerPlate {
+
+  val userAsEntered = "aa"
   val formsURIprefix = "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#"
-  "The login page" should "bring to home page with user name present" in {
+  
+  def loginTest = {
     go to (host + "/login")
     val inputUserID = xpath(s" //input [ @data-rdf-property = '${formsURIprefix}userid' ]")
     click on inputUserID
-    textField( inputUserID).value = "aa"
+    textField( inputUserID).value = userAsEntered
     val inputPW = xpath(s" //input [ @data-rdf-property = '${formsURIprefix}password' ]")
     click on inputPW
     pwdField( inputPW).value = "aa"
-//    Thread.sleep(10)
+    Thread.sleep(10)
     val inputAuth = xpath(" //input [ @formaction = '/authenticate' ]")
     click on inputAuth
 
