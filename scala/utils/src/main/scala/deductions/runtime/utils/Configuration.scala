@@ -54,6 +54,8 @@ trait Configuration {
   /** download Possible Values in edit forms (otherwise, just rely on /lookup service) */
   def downloadPossibleValues: Boolean
 
+  def geoMapURL: String
+
   def useTDB2: Boolean
   def useTextQuery: Boolean
   /** considered if useTextQuery */

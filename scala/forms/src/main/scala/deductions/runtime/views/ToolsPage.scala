@@ -7,10 +7,13 @@ import deductions.runtime.utils.{I18NMessages, URIManagement}
 import deductions.runtime.core.HTTPrequest
 
 import scala.xml.{NodeSeq, Unparsed}
+import deductions.runtime.utils.Configuration
 
 trait ToolsPage extends EnterButtons
     with BasicWidgets
     with URIManagement {
+
+  val config: Configuration
 
   /** HTML page with 2 SPARQL Queries: select & construct, show Named Graphs, history, YASGUI, etc */
   def getPage(lang: String = "en", request: HTTPrequest ): NodeSeq = {
@@ -101,8 +104,7 @@ trait ToolsPage extends EnterButtons
     val buttonsNextRelease = Seq(
       <input class="btn btn-primary" type="submit" value={ I18NMessages.get("View", lang) }
              formaction="/sparql-form"/>,
-      makeLinkCarto(lang, textareaId,
-          "/assets/geo-map/geo-map.html"),
+      makeLinkCarto(lang, textareaId, config.geoMapURL ),
 //          "http://rawgit.com/Cruis-R/geo-map-component/master/docs/index.html"),
       <input class="btn btn-primary" type="submit" value={ I18NMessages.get("Table", lang) }
              formaction="/table"/>,

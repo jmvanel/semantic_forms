@@ -157,7 +157,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       })
     val mapButton: Elem = <a href={
           val sparqlQuery = URLEncoder.encode(queryWithlinksCountMap(q), "utf-8")
-          "/assets/geo-map/geo-map.html?url=" + sparqlServicesURL(request) + 
+          geoMapURL + "?url=" + sparqlServicesURL(request) +
           "?" +
           "query=" + sparqlQuery
         }
@@ -392,7 +392,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
         &lt;{ query }&gt;
         <div><a href={
           val sparqlQuery = URLEncoder.encode(reverseLinksMaps(query), "utf-8")
-          "/assets/geo-map/geo-map.html?url=" + sparqlServicesURL(request) + 
+          geoMapURL + "?url=" + sparqlServicesURL(request) +
           "?" +
           "query=" + sparqlQuery
 //          URLEncoder.encode("&enrich=yes", "utf-8")
