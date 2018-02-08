@@ -91,6 +91,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
               }
               wrapInTransaction { // for calling instanceLabel()
                 for (row <- sorted) yield {
+                  try {
                   logger.debug("row " + row(1).toString())
                   if (row(1).toString().length() > 3) {
                     val date = new Date(dateAsLong(row))
@@ -109,6 +110,11 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
                       <td>{ row(3) }</td>
                     }</tr>
                   } else <tr/>
+                  }
+                  catch {
+                    case t: Throwable => t.printStackTrace()
+                    <tr>{ t.getLocalizedMessage }</tr>
+                  }
                 }
               }.get
             }
