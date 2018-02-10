@@ -110,7 +110,9 @@ trait EnterButtons {
             </div>
 
             <div class="col-sm-4 col-sm-offset-4 col-md-2 col-md-offset-0">
-              <input class="form-control btn btn-primary sf-button-create"  type="submit" value={ messageI18N("Create") }/>
+              <input id="sf-button-create"
+                class="form-control btn btn-primary sf-button-create" type="submit"
+                value={ messageI18N("Create") }/>
             </div>
             <!--input type="submit" style="display:none"/-->
 

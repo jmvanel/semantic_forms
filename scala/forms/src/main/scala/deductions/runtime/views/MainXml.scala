@@ -81,7 +81,7 @@ trait MainXml extends ToolsPage with EnterButtons {
     <div>
       {
         if (displaySearch) {
-          <button type="button" class="btn-primary" data-toggle="collapse" data-target="#collapseDisplay" title={
+          <button id="toggleCreate" type="button" class="btn-primary" data-toggle="collapse" data-target="#collapseDisplay" title={
             messageI18N("Reduce")
           }>
             {
