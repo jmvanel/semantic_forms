@@ -35,19 +35,24 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
     } else ""
 
   private def classCriterium(classe: String): String = {
-		println(
-		  s"""classCriterium: classe: "${classe}" """)
-    if (classe === "")
-      "graph ?g1 { ?thing a ?CLASS . }"
-    else
-     s"""|
+    // TODO test preformances
+    val superclassesSearch = s"""|
          | graph ?g1 {
          |   ?thing a ?sub .
          | }
          | graph ?g2 {
          |   ?sub rdfs:subClassOf* <${expandOrUnchanged(classe)}> .
          | }""".stripMargin
-    }
+
+    println( s"""classCriterium: class: "${classe}" """)
+    if (classe === "")
+      "graph ?g1 { ?thing a ?CLASS . }"
+    else
+      s"""|
+         | graph ?g1 {
+         |   ?thing a <${expandOrUnchanged(classe)}> .
+         | }""".stripMargin
+  }
 
   private def classVariableInSelect(classe: String): String = {
     if (classe === "")
