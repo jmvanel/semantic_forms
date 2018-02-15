@@ -11,6 +11,6 @@ import org.openqa.selenium.support.ui.WebDriverWait
 trait TestBoilerPlate extends FlatSpec with Matchers with WebBrowser {
   implicit val webDriver: WebDriver
   val host: String
-  def webDriverWait = new WebDriverWait(webDriver, 5);
+  def webDriverWait = new WebDriverWait(webDriver, 15)
 
 }

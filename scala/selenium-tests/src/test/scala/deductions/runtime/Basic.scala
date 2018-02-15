@@ -11,6 +11,7 @@ import org.openqa.selenium.firefox.FirefoxDriver
 trait Basic extends TestBoilerPlate {
 
   def homePageTest = {
+    println( s"homePageTest: webDriver: $webDriver")
     go to (host + "")
     pageTitle should be ("Bienvenue à Semantic forms")
   }

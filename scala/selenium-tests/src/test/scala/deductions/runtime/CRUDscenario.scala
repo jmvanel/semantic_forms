@@ -9,7 +9,7 @@ import org.openqa.selenium.firefox.FirefoxDriver
 
 /** See doc. http://www.scalatest.org/user_guide/using_selenium */
 //class CRUDscenario extends Base with Basic with Login with CRUD {
-class CRUDscenario extends Basic with Login with CRUD with Base {
+class CRUDscenario extends Base with Basic with Login with CRUD {
 
   "The app home page" should "have the correct title" in homePageTest
 
@@ -17,6 +17,6 @@ class CRUDscenario extends Basic with Login with CRUD with Base {
 
   "The create page" should "create a Person with right first name" in createPersonTest
   
-  Thread.sleep(10)
-  webDriver.close()
+  //  Thread.sleep(10)
+  // webDriver.close()
 }

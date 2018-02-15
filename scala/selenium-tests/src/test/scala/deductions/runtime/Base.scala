@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 import org.openqa.selenium.chrome.ChromeDriver
 
 /** See doc. http://www.scalatest.org/user_guide/using_selenium */
-trait Base {
+trait Base extends TestBoilerPlate {
   /*
    * Firefox:
    * https://stackoverflow.com/questions/38751525/firefox-browser-is-not-opening-with-selenium-webbrowser-code
@@ -21,19 +21,29 @@ trait Base {
    * get the driver here :
    * https://sites.google.com/a/chromium.org/chromedriver/downloads
    */
-  System.setProperty("webdriver.gecko.driver", "geckodriver");
-  System.setProperty("webdriver.chrome.driver", "chromedriver");
   implicit val webDriver: WebDriver = {
+    val wd = chromeDriver
+    // Thread.sleep(5000)
+    println(s"webDriver initialized:: $wd")
+    wd
+  }
+
+  lazy val ffDriver = {
+    System.setProperty("webdriver.gecko.driver", "geckodriver");
     val wd =
       new FirefoxDriver
-    // new ChromeDriver
     // new HtmlUnitDriver
-    println(s"webDriver initialized: $wd")
-    Thread.sleep(5000)
      wd.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
     wd
   }
 
-  lazy val host = "http://localhost:9000"
+  lazy val chromeDriver = {
+    System.setProperty("webdriver.chrome.driver", "chromedriver");
+    val wd = new ChromeDriver
+    // wd.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+    wd
+  }
+
+    lazy val host = "http://localhost:9000"
 
 }
