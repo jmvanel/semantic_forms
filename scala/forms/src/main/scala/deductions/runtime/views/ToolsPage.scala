@@ -42,7 +42,7 @@ trait ToolsPage extends EnterButtons
       <p>
         SPARQL select {
           // TODO: the URL here appears also in Play! route!
-          sparqlQueryForm(lang,false, "", "/select-ui", Seq( querySampleSelect ))
+          sparqlQueryForm(lang,false, "", "/select-ui", Seq( querySampleSelect ), request)
         }
 
       </p>
@@ -51,7 +51,7 @@ trait ToolsPage extends EnterButtons
           sparqlQueryForm(lang,true, "",
         		  // TODO: the URL here appears also in Play! route!
               "/sparql-ui",
-            Seq( querySampleConstruct ))
+            Seq( querySampleConstruct ), request)
          } 
       </p>
       <p>
@@ -97,14 +97,14 @@ trait ToolsPage extends EnterButtons
 
   /** HTML Form for a sparql Query, with execution buttons */
   def sparqlQueryForm(lang:String = "en",viewButton: Boolean, query: String, action: String,
-      sampleQueries: Seq[String]): NodeSeq = {
+      sampleQueries: Seq[String], request: HTTPrequest): NodeSeq = {
     val textareaId = s"query-$action" . replaceAll("/", "-")
     println( "textareaId " + textareaId);
 
     val buttonsNextRelease = Seq(
       <input class="btn btn-primary" type="submit" value={ I18NMessages.get("View", lang) }
              formaction="/sparql-form"/>,
-      makeLinkCarto(lang, textareaId, config.geoMapURL ),
+      makeLinkCarto(lang, textareaId, config.geoMapURL, request ),
 //          "http://rawgit.com/Cruis-R/geo-map-component/master/docs/index.html"),
       <input class="btn btn-primary" type="submit" value={ I18NMessages.get("Table", lang) }
              formaction="/table"/>,
@@ -182,7 +182,8 @@ trait ToolsPage extends EnterButtons
   }
 
   /** make Link for (geographic) Cartography */
-  private def makeLinkCarto(lang:String = "en", textareaId: String, toolURLprefix: String): NodeSeq = {
+  private def makeLinkCarto(lang:String = "en", textareaId: String, toolURLprefix: String,
+      request: HTTPrequest): NodeSeq = {
 
     val dataServicesURL = sparqlServicesURL
     val buttonId = textareaId+"-button"
@@ -217,6 +218,8 @@ trait ToolsPage extends EnterButtons
     var url = '$toolURLprefix' +
       '?view=' + pointsOrPathValue +
       '&enrich=yes' +
+      "&link-prefix=" + ${ s""""${request.host + config.hrefDisplayPrefix}""""} +
+      "&lang=" + "${request.getLanguage()}" +
       '&url=' +
       '$dataServicesURL' + window.encodeURIComponent(query);
     console.log( 'URL= ' + url );

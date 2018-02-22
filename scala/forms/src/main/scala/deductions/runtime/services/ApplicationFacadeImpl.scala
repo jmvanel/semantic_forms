@@ -167,7 +167,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   private def mapButton(sparqlQuery: String, request: HTTPrequest): Elem =
       <a href={
           geoMapURL +
-          "?link-prefix=" + request.host + "/display?displayuri=" +
+          "?link-prefix=" + request.host + hrefDisplayPrefix +
           "&lang=" + request.getLanguage() +
           "&url=" + sparqlServicesURL(request) +
           "?" + "query=" + sparqlQuery
@@ -306,11 +306,11 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   }
 
   /** XHTML wrapper around SPARQL Construct result TODO  move to a trait in html package */
-  def sparqlConstructQueryHTML(query: String, lang: String = "en"): Elem = {
+  def sparqlConstructQueryHTML(query: String, lang: String = "en", request: HTTPrequest): Elem = {
     logger.info("Global.sparql query  " + query)
     <p>
 		{ sparqlQueryForm(lang,true,query, "/sparql-ui",
-				Seq("CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10") ) }
+				Seq("CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10"), request ) }
       <pre>
         {
 //          try {
@@ -351,12 +351,12 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   }
 
   /** Display result of a SPARQL select */
-  def selectSPARQL(query: String, lang: String = "en"): Elem = {
+  def selectSPARQL(query: String, lang: String = "en", request: HTTPrequest): Elem = {
     logger.info("sparql query  " + query)
     <p>
       {
         sparqlQueryForm(lang,false, query, "/select-ui",
-          Seq("SELECT * WHERE {{ GRAPH ?G {{?S ?P ?O . }} }} LIMIT 10"))
+          Seq("SELECT * WHERE {{ GRAPH ?G {{?S ?P ?O . }} }} LIMIT 10"), request)
       }
       <br></br>
       <style type="text/css">

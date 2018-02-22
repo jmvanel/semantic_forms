@@ -252,7 +252,7 @@ trait WebPages extends Controller with ApplicationTrait {
     def doAction(implicit request: Request[_]) = {
       logger.info("sparql: " + request)
       val lang = chooseLanguage(request)
-      outputMainPage(sparqlConstructQueryHTML(query, lang), lang)
+      outputMainPage(sparqlConstructQueryHTML(query, lang, copyRequest(request)), lang)
         // TODO factorize
         .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
         .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
@@ -281,7 +281,7 @@ trait WebPages extends Controller with ApplicationTrait {
             logger.info("sparql: " + query)
             val lang = chooseLanguage(request)
             outputMainPage(
-              selectSPARQL(query, lang), lang)
+              selectSPARQL(query, lang, copyRequest(request)), lang )
         },
         (t: Throwable) =>
           errorResultFromThrowable(t, "in SPARQL UI /select-ui"))
