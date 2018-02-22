@@ -82,8 +82,7 @@ trait DefaultConfiguration extends Configuration {
   // relative URI's
   // maybe TODO use inverse Play's URI API
   /** often used as argument hrefprefix */
-  override // val hrefDisplayPrefix = "/display?displayuri="
-    def hrefDisplayPrefix = s"/display?displayuri="
+  override def hrefDisplayPrefix = s"/display?displayuri="
 
   override val hrefDownloadPrefix = "/download?url="
   override val hrefEditPrefix = "/edit?url="

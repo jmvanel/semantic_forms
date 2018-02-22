@@ -38,7 +38,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
     /** add columns in response - NOTE: NEVER CALLED !!! */
     override def columnsForURI(node: Rdf#Node, label: String): NodeSeq = {
       <a href={
-        "/display?displayuri=" +
+        hrefDisplayPrefix +
           URLEncoder.encode(node.toString(), "UTF-8")
       } class="form-value">
         Show Triples in local database

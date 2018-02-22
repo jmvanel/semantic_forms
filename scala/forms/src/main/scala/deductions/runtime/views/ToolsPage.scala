@@ -42,13 +42,13 @@ trait ToolsPage extends EnterButtons
       <p>
         SPARQL select {
           // TODO: the URL here appears also in Play! route!
-          sparqlQueryForm(lang,false, "", "/select-ui", Seq( querySampleSelect ), request)
+          sparqlQueryForm( false, "", "/select-ui", Seq( querySampleSelect ), request)
         }
 
       </p>
       <p>
         SPARQL construct {
-          sparqlQueryForm(lang,true, "",
+          sparqlQueryForm( true, "",
         		  // TODO: the URL here appears also in Play! route!
               "/sparql-ui",
             Seq( querySampleConstruct ), request)
@@ -96,22 +96,22 @@ trait ToolsPage extends EnterButtons
   }
 
   /** HTML Form for a sparql Query, with execution buttons */
-  def sparqlQueryForm(lang:String = "en",viewButton: Boolean, query: String, action: String,
+  def sparqlQueryForm( viewButton: Boolean, query: String, action: String,
       sampleQueries: Seq[String], request: HTTPrequest): NodeSeq = {
     val textareaId = s"query-$action" . replaceAll("/", "-")
     println( "textareaId " + textareaId);
 
     val buttonsNextRelease = Seq(
-      <input class="btn btn-primary" type="submit" value={ I18NMessages.get("View", lang) }
+      <input class="btn btn-primary" type="submit" value={ I18NMessages.get("View", request.getLanguage()) }
              formaction="/sparql-form"/>,
-      makeLinkCarto(lang, textareaId, config.geoMapURL, request ),
+      makeLinkCarto( textareaId, config.geoMapURL, request ),
 //          "http://rawgit.com/Cruis-R/geo-map-component/master/docs/index.html"),
-      <input class="btn btn-primary" type="submit" value={ I18NMessages.get("Table", lang) }
+      <input class="btn btn-primary" type="submit" value={ I18NMessages.get("Table", request.getLanguage()) }
              formaction="/table"/>,
       <input class="btn btn-primary" type="submit"
              title="NOT YET IMPLEMENTED"
              disabled="disabled"
-             value={ I18NMessages.get("Tree", lang) }/>,
+             value={ I18NMessages.get("Tree", request.getLanguage() ) }/>,
       makeLink(textareaId, "/assets/rdfviewer/rdfviewer.html?url="))
 
     <form role="form">
@@ -124,7 +124,7 @@ trait ToolsPage extends EnterButtons
 
       <div class="container">
         <div class="btn-group">
-          <input class ="btn btn-primary" type="submit" value={ I18NMessages.get("Submit", lang) }  formaction ={action} />
+          <input class ="btn btn-primary" type="submit" value={ I18NMessages.get("Submit", request.getLanguage()) }  formaction ={action} />
           {	if (viewButton) buttonsNextRelease }
         </div>
       </div>
@@ -182,7 +182,7 @@ trait ToolsPage extends EnterButtons
   }
 
   /** make Link for (geographic) Cartography */
-  private def makeLinkCarto(lang:String = "en", textareaId: String, toolURLprefix: String,
+  private def makeLinkCarto(textareaId: String, toolURLprefix: String,
       request: HTTPrequest): NodeSeq = {
 
     val dataServicesURL = sparqlServicesURL
@@ -190,7 +190,8 @@ trait ToolsPage extends EnterButtons
 
     <input id={buttonId} type="submit"
            title="make LeafLet map (OSM)"
-           class="btn btn-primary" target="_blank" value={ I18NMessages.get("Map", lang)}>
+           class="btn btn-primary" target="_blank"
+           value={ I18NMessages.get("Map", request.getLanguage() )}>
     </input>
     <input class="btn btn-primary" type="checkbox" checked="true" title="points (else path)"
            id="points-path" />

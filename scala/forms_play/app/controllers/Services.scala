@@ -175,7 +175,7 @@ with RDFContentNegociation
           .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
           .withHeaders(CONTENT_TYPE -> mimeType)
       } else {
-//    	  println(s">>>> ldp: Redirect /display?displayuri=http://${request.host}/ldp/$uri")
+//    	  println(s">>>> ldp: Redirect $hrefDisplayPrefix http://${request.host}/ldp/$uri")
         val ldpURL = "http://" + request.host + "/ldp/" + URLEncoder.encode(uri, "UTF-8")
 //    	  println(s">>>> ldp: Redirect $ldpURL")
         val call = Redirect("/display", Map("displayuri" -> Seq(ldpURL)))

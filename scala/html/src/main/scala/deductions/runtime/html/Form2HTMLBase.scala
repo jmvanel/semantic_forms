@@ -161,7 +161,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
         &nbsp;-&nbsp;{ message("modified_by", lang) }
         {
           <a style="text-decoration: underline" href={
-            "/display?displayuri=" +
+            hrefDisplayPrefix +
               makeAbsoluteURIForSaving(userMetadata) }>{ userMetadata }</a>
         }&nbsp;{ message("on_date", lang) }&nbsp;{ time }
       </span>

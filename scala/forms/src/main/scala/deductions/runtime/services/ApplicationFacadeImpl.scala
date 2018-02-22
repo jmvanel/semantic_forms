@@ -309,7 +309,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   def sparqlConstructQueryHTML(query: String, lang: String = "en", request: HTTPrequest): Elem = {
     logger.info("Global.sparql query  " + query)
     <p>
-		{ sparqlQueryForm(lang,true,query, "/sparql-ui",
+		{ sparqlQueryForm( true,query, "/sparql-ui",
 				Seq("CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10"), request ) }
       <pre>
         {
@@ -355,7 +355,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     logger.info("sparql query  " + query)
     <p>
       {
-        sparqlQueryForm(lang,false, query, "/select-ui",
+        sparqlQueryForm( false, query, "/select-ui",
           Seq("SELECT * WHERE {{ GRAPH ?G {{?S ?P ?O . }} }} LIMIT 10"), request)
       }
       <br></br>
