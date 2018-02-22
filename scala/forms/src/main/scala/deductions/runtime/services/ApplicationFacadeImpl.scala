@@ -411,10 +411,12 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
         </div>)
   }
 
-  /** TODO another similar function in ToolsPage */
+  /** TODO another similar function in ToolsPage 
+   *  TODO maybe use request.localSparqlEndpoint */
   private def sparqlServicesURL(request: HTTPrequest) = {
-    val httpOrhttps = Map( true -> "https://", false -> "http://")
-    val servicesURIPrefix = httpOrhttps(request.secure) + request.host
+//    val httpOrhttps = Map( true -> "https://", false -> "http://")
+//    val servicesURIPrefix = httpOrhttps(request.secure) + request.host
+    val servicesURIPrefix = request.absoluteURL()
 //    println(s"servicesURIPrefix <$servicesURIPrefix>")
     val sparqlServicePrefix = "/sparql"
     val dataServicesURL = s"$servicesURIPrefix$sparqlServicePrefix"

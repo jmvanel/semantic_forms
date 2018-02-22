@@ -59,9 +59,12 @@ case class HTTPrequest(
 
   def getHTTPheaderValue(header: String): Option[String] = headers.get(header) .map(seq => seq.headOption ) . flatten
 
-  def absoluteURL(rawURI: String = "", secure: Boolean = false): String =
-    "http" + (if (secure) "s" else "") + "://" +
-      this.host + rawURI // + this.appendFragment
+  /** Resolve given relative URI with Slash with this request's path */
+  def absoluteURL(relativeURIwithSlash: String = "",
+      secure: Boolean = this.secure): String =
+    "http" + (if (secure) "s" else "") +
+      "://" +
+      this.host + relativeURIwithSlash // + this.appendFragment
 
   def userId(): String = {
     val usernameFromSession = for (
@@ -73,6 +76,8 @@ case class HTTPrequest(
   }
 
   def substringAfter(s: String, k: String) = { s.indexOf(k) match { case -1 => ""; case i => s.substring(i + k.length) } }
+
+  /** URL Encoded local Sparql Endpoint */
   def localSparqlEndpoint = URLEncoder.encode(absoluteURL("/sparql"), "UTF-8")
 
   def getLanguage(): String = {
