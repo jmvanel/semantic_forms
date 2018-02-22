@@ -167,7 +167,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   private def mapButton(sparqlQuery: String, request: HTTPrequest): Elem =
       <a href={
           geoMapURL +
-          "?link-prefix=" + request.host + hrefDisplayPrefix +
+          "?link-prefix=" + "http://" /*TODO https case*/+ request.host + hrefDisplayPrefix +
           "&lang=" + request.getLanguage() +
           "&url=" + sparqlServicesURL(request) +
           "?" + "query=" + sparqlQuery
