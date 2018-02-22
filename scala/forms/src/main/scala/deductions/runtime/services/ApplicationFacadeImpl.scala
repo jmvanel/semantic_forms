@@ -155,21 +155,25 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       { // fillMemory() ;
         searchString(q, hrefDisplayPrefix, request.getLanguage(), clas)
       })
-    val mapButton: Elem = <a href={
-          val sparqlQuery = URLEncoder.encode(queryWithlinksCountMap(q), "utf-8")
-          geoMapURL + "?url=" + sparqlServicesURL(request) +
-          "?" +
-          "query=" + sparqlQuery
-        }
-        target="_blank"
-     > Map </a>
-//    println( "**** wordsearchFuture queryWithlinksCount " + queryWithlinksCountMap(q) )
+    val sparqlQuery = URLEncoder.encode(queryWithlinksCountMap(q), "utf-8")
     wrapSearchResults(fut, q,
       mess =
-        Seq( mapButton,
+        Seq( mapButton(sparqlQuery, request),
              <span>In class &lt;{ clas }&gt;, searched for</span>
         ) )
   }
+
+  /** Button for geographical map */
+  private def mapButton(sparqlQuery: String, request: HTTPrequest): Elem =
+      <a href={
+          geoMapURL +
+          "?link-prefix=" + request.host + "/display?displayuri=" +
+          "&lang=" + request.getLanguage() +
+          "&url=" + sparqlServicesURL(request) +
+          "?" + "query=" + sparqlQuery
+        }
+        target="_blank"
+     > Map </a>
 
   /** for test, creates an OutOfMemoryError exception */
   private def fillMemory() = {
@@ -381,25 +385,30 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   }
 
   def backlinksFuture(query: String = "", request: HTTPrequest): Future[NodeSeq] = {
-//    println( s"====ZZZZZZZZZZZZ backlinksFuture request $request")
     val futureResults = backlinks(query, hrefDisplayPrefix, request)
     val label = labelForURITransaction(query, language = request.getLanguage())
-    wrapSearchResults(futureResults, "",
-      mess =
+    val sparqlQuery = URLEncoder.encode(reverseLinksMaps(query), "utf-8")
+    val messOld =
       <div>
         Searched for
-        "<a href={ createHyperlinkString(uri = query) }>{ label }</a>"
-        &lt;{ query }&gt;
+        "<a href={ createHyperlinkString(uri = query) }>{ label }</a>
+        "
+        &lt;{ query }
+        &gt;
         <div><a href={
-          val sparqlQuery = URLEncoder.encode(reverseLinksMaps(query), "utf-8")
           geoMapURL + "?url=" + sparqlServicesURL(request) +
-          "?" +
-          "query=" + sparqlQuery
-//          URLEncoder.encode("&enrich=yes", "utf-8")
-        }
-        target="_blank"
-        > Map </a></div>
-      </div>)
+            "?" +
+            "query=" + sparqlQuery
+        } target="_blank"> Map </a></div>
+      </div>
+    wrapSearchResults(futureResults, "",
+      mess =
+        <div>
+          Searched for
+          "<a href={ createHyperlinkString(uri = query) }>{ label }</a>"
+          &lt;{ query }&gt;
+          { mapButton(sparqlQuery, request) }
+        </div>)
   }
 
   /** TODO another similar function in ToolsPage */

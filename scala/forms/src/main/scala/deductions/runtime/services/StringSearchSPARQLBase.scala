@@ -35,7 +35,7 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
     } else ""
 
   private def classCriterium(classe: String): String = {
-    // TODO test preformances
+    // TODO test performances
     val superclassesSearch = s"""|
          | graph ?g1 {
          |   ?thing a ?sub .
