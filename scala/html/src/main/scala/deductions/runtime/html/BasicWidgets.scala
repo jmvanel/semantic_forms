@@ -48,17 +48,24 @@ trait BasicWidgets
   private def mess(m: String)(implicit lang: String) = I18NMessages.get(m, lang)
 
   def makeBackLinkButton(uri: String, title: String = ""): Elem = {
-    // format: OFF
     val tit = if (title === "") s" Reverse links for &lt;$uri&gt;" else title
-    // <i class="glyphicon glyphicon-search"></i>
-    <button type="button" 
+    /* val oldButton = <button type="button" 
         class="btn btn-info btn-xs" readonly="yes" title={ tit }
         data-value={s"$uri"}
         onclick={ s"backlinks( '$uri' )" } id={ s"BACK-$uri" }>
     		<img src="assets/images/Back-Link-Icon.svg" width="15" border="0" />
-    </button>
+    </button> */
+    return <a class="btn btn-default btn-xs"
+      href={
+      // URLEncoder.encode(uri,"UTF-8")
+      "/backlinks?q=" + uri
+      }
+      title={ tit }
+      data-value={s"$uri"} >
+      <img src="assets/images/Back-Link-Icon.svg" width="15" border="0" />
+    </a>
   }
-  
+
   def makeDrawGraphLink( uri: String,
       toolURLprefix: String="/assets/rdfviewer/rdfviewer.html?url=",
       toolname: String="RDF Viewer",

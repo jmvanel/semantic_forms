@@ -52,6 +52,7 @@ function cloneWidget(widget,button) {
     return addedWidget;
 }
 
+// UNUSED !
 function backlinks(uri) {
     var url = window.document.location.origin + '/backlinks?q=' + encodeURIComponent(uri);
     window.document.location.assign( url );
