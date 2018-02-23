@@ -19,13 +19,20 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
    /** fragment of SPARQL for text Query, with or without text:query
     *  see https://jena.apache.org/documentation/query/text-query.html
     * used both in /lookup and /searchword */
-   private def textQuery(search: String) =
+   private def textQuery(search: String, unionGraph: Boolean=false) =
     if (search.length() > 0) {
       val searchStringPrepared = prepareSearchString(search).trim()
       if (config.useTextQuery)
         // include * for Lucene search
         s"?thing text:query ( '$searchStringPrepared*' ) ."
       else
+        if( unionGraph )
+          s"""
+              ?thing ?P1 ?O1 .
+              FILTER ( isLiteral( ?O1) )
+              FILTER ( regex( str(?O1), '$searchStringPrepared.*', "i" ) )
+          """
+        else
         s"""graph ?gtext {
               ?thing ?P1 ?O1 .
               FILTER ( isLiteral( ?O1) )
@@ -34,18 +41,15 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
             """
     } else ""
 
-  private def classCriterium(classe: String): String = {
-    // TODO test performances
-    val superclassesSearch = s"""|
-         | graph ?g1 {
-         |   ?thing a ?sub .
-         | }
-         | graph ?g2 {
-         |   ?sub rdfs:subClassOf* <${expandOrUnchanged(classe)}> .
-         | }""".stripMargin
-
-    println( s"""classCriterium: class: "${classe}" """)
-    if (classe === "")
+  private def classCriterium(classe: String, unionGraph: Boolean = false): String = {
+    println(s"""classCriterium: class: "${classe}" """)
+    if (unionGraph)
+      if (classe === "")
+        "  ?thing a ?CLASS ."
+      else
+        s"""|  ?thing a ?sub .
+            |  ?sub rdfs:subClassOf* <${expandOrUnchanged(classe)}> .""".stripMargin
+    else if (classe === "")
       "graph ?g1 { ?thing a ?CLASS . }"
     else
       s"""|
@@ -79,7 +83,26 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |""".stripMargin
 
   /** query With links Count, with or without text query */
-  def queryWithlinksCount(search: String,
+  def queryWithlinksCount(
+    search: String,
+    classe: String = "") =
+    s"""
+    |${declarePrefix(text)}
+    |${declarePrefix(rdfs)}
+    |${declarePrefix(form)}
+    |SELECT DISTINCT ?thing ?COUNT WHERE {
+    |  ${textQuery(search, unionGraph=true)}
+    |  GRAPH <urn:x-arq:UnionGraph> {
+    |    ${classCriterium(classe, unionGraph=true)}
+    |    $countPattern
+    |  }
+    |}
+    |ORDER BY DESC(?COUNT)
+    |LIMIT 20
+    |""".stripMargin
+
+  /** query With links Count, with or without text query */
+  private def queryWithlinksCountNoUnionGraph(search: String,
                           classe: String = "") = s"""
          |${declarePrefix(text)}
          |${declarePrefix(rdfs)}
