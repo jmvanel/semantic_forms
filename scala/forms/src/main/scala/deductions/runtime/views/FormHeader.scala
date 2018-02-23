@@ -44,8 +44,10 @@ trait FormHeader[Rdf <: RDF, DATASET]
     } else new Text(""))
     
     val expertLinksOWL = (if (showExpertButtons && isOWLURI(uri) ) {
-      new Text("  ")
-      makeDrawGraphLinkVOWL(uri)
+      new Text("  ") ++
+      makeDrawGraphLinkVOWL(uri) ++
+      new Text("  ") ++
+      makeOOPSlink(uri)
     } else new Text(""))
 
     def downloadLink(syntax: String = "Turtle"): NodeSeq = {

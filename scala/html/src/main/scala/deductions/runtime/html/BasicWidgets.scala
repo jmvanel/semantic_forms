@@ -90,7 +90,7 @@ trait BasicWidgets
     </a>
     else NodeSeq.Empty
   }
-  
+
   def makeNeighborhoodLink( uri: String ): Elem = {
 		val link = "/history?uri=" + URLEncoder.encode( uri, "utf-8")
     if( uri != "" )
@@ -103,23 +103,40 @@ trait BasicWidgets
 		else <div></div>
   }
 
-  /** make link to  WebVOWL
+  /** make link to WebVOWL
    *  TODO: paste of preceding function !!!!!!!!!!!!! */
   def makeDrawGraphLinkVOWL( uri: String,
+      icon: String = "http://visualdataweb.de/webvowl/favicon.ico"
+      ): Elem = {
+    makeToolLink( uri, icon=icon )
+  }
+
+  /** make link to OOPS */
+  def makeOOPSlink( uri: String,
+      toolURLprefix: String = "http://oops.linkeddata.es/response.jsp?uri=",
+      toolname: String = "OOPS (OntOlogy Pitfall Scanner)",
+      icon: String = "http://oops.linkeddata.es/images/logoWhite65.png"): Elem = {
+    makeToolLink( uri, toolURLprefix, toolname, icon )
+  }
+
+  /** make link to external tool (generic) */
+  private def makeToolLink( uri: String,
       toolURLprefix: String="http://visualdataweb.de/webvowl/#iri=",
       toolname: String="Web VOWL",
+      icon: String = "https://www.w3.org/RDF/icons/rdf_flyer.svg",
       imgWidth:Int=15): Elem = {
-
     val link = URLEncoder.encode( uri, "utf-8")
 
     if( uri != "" )
-    <a class="btn btn-default" href={ s"$toolURLprefix$link" }
-    title={s"Draw VOWL graph with $toolname for $uri"}
-    target="_blank">
-			<img width={imgWidth.toString()} border="0" src="https://www.w3.org/RDF/icons/rdf_flyer.svg"
-           alt="Web VOWL"/>
-    </a>
-    else <div></div>
+      <a class="btn btn-default" href={ s"$toolURLprefix$link" }
+      title={s"Launch tool $toolname for $uri"}
+      target="_blank">
+      <img width={imgWidth.toString()} border="0"
+        src={icon}
+        alt={toolname}/>
+      </a>
+    else
+      <div></div>
   }
 
 }
