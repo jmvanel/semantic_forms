@@ -14,7 +14,7 @@ import scalaz._
 import Scalaz._
 
 /** Basic Widgets with no access to the FormSyntax:
- *  GUI integration: rdfviewer, ... */
+ *  GUI integration: RDFviewer, VOWL, ... */
 trait BasicWidgets
   extends RDFPrefixesInterface
   with URIHelpers {
@@ -49,12 +49,6 @@ trait BasicWidgets
 
   def makeBackLinkButton(uri: String, title: String = ""): Elem = {
     val tit = if (title === "") s" Reverse links for &lt;$uri&gt;" else title
-    /* val oldButton = <button type="button" 
-        class="btn btn-info btn-xs" readonly="yes" title={ tit }
-        data-value={s"$uri"}
-        onclick={ s"backlinks( '$uri' )" } id={ s"BACK-$uri" }>
-    		<img src="assets/images/Back-Link-Icon.svg" width="15" border="0" />
-    </button> */
     return <a class="btn btn-default btn-xs"
       href={
       // URLEncoder.encode(uri,"UTF-8")
@@ -91,16 +85,12 @@ trait BasicWidgets
     else NodeSeq.Empty
   }
 
-  def makeNeighborhoodLink( uri: String ): Elem = {
-		val link = "/history?uri=" + URLEncoder.encode( uri, "utf-8")
-    if( uri != "" )
-      <a class="btn btn-default btn-xs" href={ link }
-         title={s"Neighborhood for <$uri> paths of length <= 2 sorted in chronological order"}
-         target="_blank">
-			  <img width="20" border="0" src="/assets/images/radial_layout.png"
-             alt=""/>
-      </a>
-		else <div></div>
+  def makeNeighborhoodLink( uri: String,
+      toolURLprefix: String = "/history?uri=",
+      toolname: String =
+        "Neighborhood: \npaths of length <= 2 sorted in chronological order\n",
+      icon: String = "/assets/images/radial_layout.png"): Elem = {
+    makeToolLink( uri, toolURLprefix, toolname, icon, imgWidth=35 )
   }
 
   /** make link to WebVOWL
@@ -116,7 +106,7 @@ trait BasicWidgets
       toolURLprefix: String = "http://oops.linkeddata.es/response.jsp?uri=",
       toolname: String = "OOPS (OntOlogy Pitfall Scanner)",
       icon: String = "http://oops.linkeddata.es/images/logoWhite65.png"): Elem = {
-    makeToolLink( uri, toolURLprefix, toolname, icon )
+    makeToolLink( uri, toolURLprefix, toolname, icon, imgWidth=35 )
   }
 
   /** make link to external tool (generic) */
@@ -124,12 +114,12 @@ trait BasicWidgets
       toolURLprefix: String="http://visualdataweb.de/webvowl/#iri=",
       toolname: String="Web VOWL",
       icon: String = "https://www.w3.org/RDF/icons/rdf_flyer.svg",
-      imgWidth:Int=15): Elem = {
+      imgWidth:Int=25): Elem = {
     val link = URLEncoder.encode( uri, "utf-8")
 
     if( uri != "" )
       <a class="btn btn-default" href={ s"$toolURLprefix$link" }
-      title={s"Launch tool $toolname for $uri"}
+      title={s"Launch tool $toolname for <$uri>"}
       target="_blank">
       <img width={imgWidth.toString()} border="0"
         src={icon}
