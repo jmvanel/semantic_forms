@@ -66,7 +66,13 @@ case class HTTPrequest(
       "://" +
       this.host + relativeURIwithSlash // + this.appendFragment
 
-  def userId(): String = {
+  def adjustSecure(url:String): String =
+    if (secure)
+      url.replaceFirst("^http://", "https://")
+    else
+      url.replaceFirst("^https://", "http://")
+
+      def userId(): String = {
     val usernameFromSession = for (
       cookie <- cookies.get("PLAY_SESSION");
       value = cookie.value
