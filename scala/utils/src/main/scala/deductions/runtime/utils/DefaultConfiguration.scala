@@ -64,10 +64,10 @@ trait DefaultConfiguration extends Configuration {
   /** use Text indexing with Lucene or SOLR */
   override def useTextQuery: Boolean = true
   
-//  override def geoMapURL = "/assets/geo-map/geo-map.html"
+  override def geoMapURL = "/assets/geo-map/geo-map.html"
 //  override def geoMapURL = "https://jmvanel.github.io/rdf-geo-map/geo-map.html"
 //  override def geoMapURL = "https://raw.githubusercontent.com/jmvanel/rdf-geo-map/master/docs/geo-map.html"
-  override def geoMapURL = "https://rawgit.com/jmvanel/rdf-geo-map/master/docs/geo-map.html"
+//  override def geoMapURL = "https://rawgit.com/jmvanel/rdf-geo-map/master/docs/geo-map.html"
 
   override def useTDB2: Boolean = false // true
 
