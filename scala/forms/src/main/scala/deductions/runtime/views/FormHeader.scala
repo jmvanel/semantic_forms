@@ -97,10 +97,10 @@ trait FormHeader[Rdf <: RDF, DATASET]
             //          <a href={ uri }>{ message }</a>
           }
         </div>
-        { downloadLink() ++
-//          Text(" - ") ++
+        {
+          <span class="sf-local-rdf-link">Data export: </span> ++
+          downloadLink() ++
           downloadLink("JSON-LD") ++
-//          Text(" - ") ++
           downloadLink("RDF/XML")}
       </div>
   }
