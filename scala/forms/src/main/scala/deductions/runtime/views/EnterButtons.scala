@@ -122,8 +122,9 @@ trait EnterButtons {
 
   /** suggested Classes For Creation;
    *  NOTE currently the label is NOT displayed by Firefox :( , only by Chrome */
-  def suggestedClassesForCreation: NodeSeq = {
-    <option label="foaf:Person" selected="selected"> { foafForms("personForm") } </option>
+  private def suggestedClassesForCreation: NodeSeq = {
+    <option label="foaf:Person" selected="selected"
+            title="Person (test)"> { foafForms("personForm") } </option>
     <option label="doap:Project">                    { prefixesMap2("doap")("Project") } </option>
     <option label="Desc. Of A Software (DOAS)">      { prefixesMap2("doas")("Software") } </option>
     <option label="foaf:Project">                    { foaf.Project } </option>
@@ -138,9 +139,11 @@ trait EnterButtons {
     <option label="sioc:Thread">                     { sioc("Thread") } </option>
     <option label="sioc:Post">                       { sioc("Post") } </option>
     <option label="schema:Event">                    { prefixesMap2("schema")("Event") } </option>
+    <!--
     <option label="event:Event">                     { prefixesMap2("event")("Event") } </option>
     <option label="ical:Vevent">                     { prefixesMap2("ical")("Vevent") } </option>
-    
+    -->
+
     <option label="owl:Class">                       { prefixesMap2("owl")("Class") } </option>
     <option label="owl:DatatypeProperty">            { prefixesMap2("owl")("DatatypeProperty") } </option>
     <option label="owl:ObjectProperty">              { prefixesMap2("owl")("ObjectProperty") } </option>
