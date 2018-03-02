@@ -39,12 +39,12 @@ $(document).ready(function() {
                 var typeName;
                 var stringToSearch;
                 var $el = $(event.target);
-               /* if ($el) {
+                if ($el) {
                     var type = $el.attr('data-rdf-type').split('/');
                     if (type) {
                         typeName = type[type.length - 1];
                     }
-                }*/
+                }
                 typeName = $el.attr('data-rdf-type');
                 // typeName = "";
                 console.log('typeName "' + typeName + '"');
