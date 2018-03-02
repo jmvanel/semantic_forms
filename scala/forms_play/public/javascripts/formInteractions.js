@@ -21,11 +21,14 @@ function cloneWidget(widget,button) {
         addedWidget
             .val('')
             .attr('class',widget.attr('class'))
-            //.addClass( widget.attr('id'))
             .attr('id', widget.attr('id')+'-'+cardinal)
             .attr('name', widgetName)
             .attr('title', widget.attr('title'))
-            .attr('hidden', 'false');
+            .attr('hidden', 'false')
+            .attr('data-rdf-subject', widget.attr('data-rdf-subject'))
+            .attr('data-rdf-property', widget.attr('data-rdf-property'))
+            .attr('data-rdf-object', widget.attr('data-rdf-object'))
+            .attr('data-rdf-type', widget.attr('data-rdf-type'))
         parent.prepend(addedWidget, widget);
     }
     else {
