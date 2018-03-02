@@ -65,6 +65,7 @@ $(document).ready(function() {
 			+ " - " + cutStringAfterCharacter(m.description, '.')
 			+  " - " + m.type
 			+  " - refCount " + m.refCount
+			+  "  <" + m.uri + ">"
 			, "value": m.uri }
                     }))
                 }).fail(function (error){
