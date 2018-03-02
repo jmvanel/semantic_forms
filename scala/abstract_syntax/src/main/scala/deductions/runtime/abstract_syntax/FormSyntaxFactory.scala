@@ -397,6 +397,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
   /**
    * add Triple: <subject> rdf:type <classs>
+   * PENDING: why treat rfs:type here differently from other properties?
    *  @return augmented fields argument
    */
   private def addTypeTriples(subject: Rdf#Node, classses: Seq[Rdf#Node],
@@ -411,7 +412,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
             "type", "class", // TODO not I18N
             rdf.typ, ResourceValidator(Set(owl.Class)), classs,
             alreadyInDatabase = alreadyInDatabase,
-            htmlName = makeHTMLName(makeTriple(subject, rdf.typ, nullURI)))
+            htmlName = makeHTMLName(makeTriple(subject, rdf.typ, nullURI)),
+            type_ = Seq(rdfs.Class) )
         }
       (fields ++ classFormEntry).toSeq
     } else fields.toSeq

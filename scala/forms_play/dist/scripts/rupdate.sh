@@ -3,7 +3,7 @@
 PASSADMIN=gott-ueber-alles
 
 if [ -z "$1" ]; then
-    echo rupdate.sh QUERY SERVER
+    echo 'rupdate.sh QUERY SERVER (without /update)'
     exit 1
 fi
 QUERY=$1
