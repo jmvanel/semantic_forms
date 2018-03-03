@@ -2,7 +2,7 @@ package deductions.runtime.utils
 
 import java.net._
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import deductions.runtime.core.HTTPrequest
 
 import scalaz._
@@ -121,11 +121,11 @@ trait URIManagement extends URIHelpers {
 
         else {
           // the server is not registered on DNS or in /etc/hosts : get the actual IPV4 port
-          val nis = NetworkInterface.getNetworkInterfaces().toList
+          val nis = NetworkInterface.getNetworkInterfaces().asScala.toList
           val adresses = for (
             networkInterface <- nis;
             _ = println1("servicesURIPrefix2: "+getNetworkInterfaceInfo(networkInterface));
-            adress <- networkInterface.getInetAddresses;
+            adress <- networkInterface.getInetAddresses.asScala ;
             hostAddress = adress.getHostAddress;
             _ = println1(s"servicesURIPrefix2: ni $networkInterface hostAddress $hostAddress")
           ) yield adress
@@ -207,7 +207,7 @@ trait URIManagement extends URIHelpers {
     }
     var ipAddress = "";
     val netAddresses = netif.getInetAddresses();
-    for (inetAddress <- netAddresses) {
+    for (inetAddress <- netAddresses.asScala) {
       if (inetAddress.isInstanceOf[Inet4Address]) {
         ipAddress = ipAddress + inetAddress.getHostAddress() +
           s" isAnyLocalAddress ${inetAddress.isAnyLocalAddress()} isLinkLocalAddress ${inetAddress.isLinkLocalAddress} - "

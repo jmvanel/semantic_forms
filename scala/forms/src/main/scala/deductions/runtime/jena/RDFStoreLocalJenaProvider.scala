@@ -15,7 +15,8 @@ import org.apache.jena.tdb.transaction.TransactionManager
 import org.apache.log4j.Logger
 import org.w3.banana.jena.{Jena, JenaDatasetStore, JenaModule}
 
-import scala.collection.JavaConversions.asScalaIterator
+import scala.collection.JavaConverters._
+
 import scala.util.Try
 import org.w3.banana.jena.io.TripleSink
 import org.apache.jena.riot.RDFParser
@@ -141,7 +142,7 @@ trait RDFStoreLocalJenaProvider
   }
 
   /** List the names of graphs */
-  def listNames(ds: DATASET): Iterator[String] = ds.listNames()
+  def listNames(ds: DATASET): Iterator[String] = ds.listNames().asScala
 
   /** make an MGraph from a Dataset */
   def makeMGraph(graphURI: Rdf#URI, ds: DATASET = dataset): Rdf#MGraph = {
@@ -277,8 +278,9 @@ trait RDFGraphPrinter extends RDFStoreLocalJena1Provider {
   def printGraphList() {
     rdfStore.r(dataset, {
       val lgn = dataset.asDatasetGraph().listGraphNodes()
-      Logger.getRootLogger().info(s"listGraphNodes size ${lgn.size}")
-      for (gn <- lgn) {
+      val lgnasScala = lgn.asScala
+      Logger.getRootLogger().info(s"listGraphNodes size ${lgnasScala.size}")
+      for (gn <- lgnasScala) {
         Logger.getRootLogger().info(s"${gn.toString()}")
       }
       Logger.getRootLogger().info(s"afer listGraphNodes")

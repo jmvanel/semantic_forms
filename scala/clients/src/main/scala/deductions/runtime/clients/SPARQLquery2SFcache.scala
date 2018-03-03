@@ -2,6 +2,8 @@ package deductions.runtime.clients
 
 import java.net.URLEncoder
 
+import scala.collection.JavaConverters._
+
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
@@ -30,7 +32,6 @@ trait SPARQLquery2SFcache {
     results.mkString("")
   }
 
-  import scala.collection.JavaConversions._
   val varName = "sub" // "URI"
   def sendQuery(queryString: String, endpoint: String): Iterator[String] = {
     import sparqlOps._
@@ -45,7 +46,7 @@ trait SPARQLquery2SFcache {
     val solutions = solutionsTry.get
 
     val rr = for (
-      solution <- solutions;
+      solution <- solutions.asScala ;
       x = solution.get(varName);
       res = x.asResource() ;
       uri = res.getURI

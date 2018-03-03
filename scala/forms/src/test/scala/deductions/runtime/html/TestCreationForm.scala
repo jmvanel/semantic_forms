@@ -12,7 +12,7 @@ import org.apache.log4j.Logger
 import org.scalatest.{BeforeAndAfter, FunSuite}
 import org.w3.banana.{FOAFPrefix, OWLPrefix, RDF, RDFOps, RDFOpsModule, RDFSPrefix, TurtleWriterModule}
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import scala.xml.{Elem, NodeSeq}
 
 /**
@@ -67,7 +67,7 @@ class TestCreationForm extends {
     })
     println("""dataset.listNames().mkString("\n")""")
     rdfStore.rw(dataset, {
-      println(dataset.listNames().mkString("\n"))
+      println(dataset.listNames().asScala.mkString("\n"))
     }).get
   }
 

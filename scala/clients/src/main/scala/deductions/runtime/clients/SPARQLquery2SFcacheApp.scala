@@ -20,7 +20,11 @@ import org.w3.banana.jena.JenaModule
     } LIMIT 5"
        http://taxref.mnhn.fr/sparql
        http://localhost:9000
-   </pre> */
+   </pre>
+   
+   * (all on one ligne because of SBT )
+   * 
+   * CAUTION: main variable MUST be ?sub */
 object SPARQLquery2SFcacheApp
   extends JenaModule
   with SPARQLquery2SFcache with App {

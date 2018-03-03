@@ -1,6 +1,6 @@
 package deductions.runtime.sparql_cache.apps
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
 //import scala.collection.JavaConverters
@@ -166,12 +166,12 @@ trait FixBadURI[Rdf <: RDF, DATASET]
     println("Dataset " + ds)
     val names = ds.listNames()
     println("names " + names)
-    for (n <- names) {
+    for (n <- names.asScala) {
       println("name " + n)
       val model = ds.getNamedModel(n)
       println(model)
       val stats = model.listStatements()
-      for (st <- stats) {
+      for (st <- stats.asScala) {
         val s = st.getSubject
         val p = st.getPredicate
         val o = st.getObject

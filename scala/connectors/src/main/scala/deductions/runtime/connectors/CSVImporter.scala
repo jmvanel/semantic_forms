@@ -14,7 +14,7 @@ import scala.language.postfixOps
 import deductions.runtime.utils.{Configuration, RDFPrefixes, URIHelpers}
 import org.w3.banana.{RDF, RDFOps, RDFPrefix, XSDPrefix}
 
-import scala.collection.JavaConversions.{asScalaBuffer, asScalaIterator, mapAsScalaMap}
+import scala.collection.JavaConverters._
 
 /** made from CSVExtractor from Any23;
  *  TODO: probably should be in another SBT project */
@@ -74,7 +74,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       else
         doc + "/row/"
     }
-    for( record <- csvParser.getRecords ) {
+    for( record <- csvParser.getRecords.asScala ) {
       val rowSubject = URI( rowSubjectPrefix + index)
       // list += Triple(rowSubject, rdf.typ, rowType)
       produceRowStatements(rowSubject, record, list)
@@ -125,7 +125,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       documentURI: URI): ArrayBuffer[URI] = {
     val result = ArrayBuffer.fill( header.size )(URI(""))
     var index = 0
-    for (h <- header.keys) {
+    for (h <- (header.keySet).asScala) {
       val candidate = h.trim()
       val headerURI =
         recognizePrefixedURI(candidate) match {
@@ -179,7 +179,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
     list: ArrayBuffer[Rdf#Triple]) {
     val values = record.iterator()
     var index = 0
-    for (cell <- values) {
+    for (cell <- values.asScala) {
       if (index < headerURIs.length) {
         if (cell != "") {
           val predicate = headerURIs(index)
