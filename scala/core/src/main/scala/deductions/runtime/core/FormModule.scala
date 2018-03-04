@@ -99,6 +99,14 @@ trait FormModule[NODE, URI <: NODE] {
       }
 //      println(s"==== nonEmptyFields: $ret")
     }
+
+    def types() = {
+      nonEmptyFields().filter {
+        entry => entry.property .toString() . endsWith("type")
+      } . map {
+        entry => entry.value
+      }
+    }
   }
 
   val nullFormSyntax = FormSyntax(nullURI, Seq() )

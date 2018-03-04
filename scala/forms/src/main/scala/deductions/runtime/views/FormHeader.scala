@@ -9,14 +9,17 @@ import deductions.runtime.utils.{Configuration, I18NMessages, RDFHelpers, RDFPre
 import org.w3.banana.{OWLPrefix, PointedGraph, RDF}
 
 import scala.xml.{NodeSeq, Text}
+import deductions.runtime.html.Form2HTMLDisplay
 
-/** generic application: links on top of the form: Edit, Display, Download Links */
+/** generic application: links on top of the form: Edit, Display, Download Links
+ *  TODO rename GenericApplicationHeader */
 trait FormHeader[Rdf <: RDF, DATASET]
     extends FormModule[Rdf#Node, Rdf#URI]
     with RDFStoreLocalProvider[Rdf, DATASET]
     with RDFHelpers[Rdf]
     with BasicWidgets
-    with RDFPrefixes[Rdf] {
+    with RDFPrefixes[Rdf]
+    with Form2HTMLDisplay[Rdf#Node, Rdf#URI] {
 
 //  self: ApplicationFacadeImpl[Rdf, _] =>
 
@@ -74,14 +77,20 @@ trait FormHeader[Rdf <: RDF, DATASET]
               { expertLinks }
               { expertLinksOWL }
             </strong>
-            {
-              if (formSyntax.thumbnail.isDefined) {
+            { if (formSyntax.thumbnail.isDefined) {
                 <a class="image-popup-vertical-fit" href={ formSyntax.thumbnail.get.toString() } title={ s"Image of ${formSyntax.title}: ${formSyntax.subject.toString()}" }>
                   <img src={ formSyntax.thumbnail.get.toString() } css="sf-thumbnail" height="40" alt={
                     s"Image of ${formSyntax.title}: ${formSyntax.subject.toString()}"
                   }/>
                 </a>
               } else NodeSeq.Empty
+            }
+            { creationButton(
+                 nodeToString(formSyntax.subject), // classURIstringValue,
+                 // Seq("#Class"),
+                 formSyntax.types() . map( _ . toString ),
+                 lang
+              )
             }
           </h3>
         </div>

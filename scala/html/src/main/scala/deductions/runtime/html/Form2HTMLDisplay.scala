@@ -154,14 +154,14 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       }</a> ++
       {makeUserInfoOnTriples(r)}
 
-  private def creationButton(objectURIstringValue: String, types: Seq[String], lang: String): NodeSeq = {
+  def creationButton(classURIstringValue: String, types: Seq[String], lang: String): NodeSeq = {
     val imageURL = "/assets/images/create-instance.svg"
     def messageI18N(key: String) = I18NMessages.get(key, lang)
-    val mess = messageI18N("Create_instance_of") + s" <$objectURIstringValue>"
+    val mess = messageI18N("Create_instance_of") + s" <$classURIstringValue>"
     if ( types.exists { t => t.endsWith("#Class") } ) {
 //      println(s"==== creationButton: typ: $typ")
         <a href={
-          "/create?uri=" + URLEncoder.encode(objectURIstringValue, "UTF-8")
+          "/create?uri=" + URLEncoder.encode(classURIstringValue, "UTF-8")
         } title={ mess }>
           <img src={ imageURL } css="sf-thumbnail" height="40" alt={ mess }/>
         </a>
