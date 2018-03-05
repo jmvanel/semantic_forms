@@ -43,7 +43,7 @@ trait LDP[Rdf <: RDF, DATASET]
 
   import ops._
 
-  val schemeName = "ldp:"
+  val schemeName = "ldp/"
 
   /**
    * for LDP GET
@@ -76,61 +76,40 @@ trait LDP[Rdf <: RDF, DATASET]
          |}""".stripMargin
   }
 
-  private def makeQueryStringOld(uri: String, rawURI: String): String = {
-    println(s"makeQueryString rawURI $rawURI")
-    if ( ! rawURI.startsWith( schemeName )) {
-      // URI created with forms engine
-      println("! rawURI.startsWith( schemeName )")
-      val absoluteURI = makeURIFromString(uri)
-      s"""
-         |CONSTRUCT { <$absoluteURI> ?p ?o } WHERE {
-         |  GRAPH ?G {
-         |    <$absoluteURI> ?p ?o .
-         |  }
-         |}""".stripMargin
-
-    } else
-      // URI created with LDP POST
-      s"""
-         |CONSTRUCT { ?s ?p ?o } WHERE {
-         |  graph <$schemeName$uri> {
-         |    ?s ?p ?o .
-         |  }
-         |}""".stripMargin
-  }
-
-  /** for LDP PUT
-   *  TODO content type negotiation is done elsewhere */
+  /** for LDP PUT or POST */
   def putTriples(uri: String, link: Option[String], contentType: Option[String],
     slug: Option[String],
     content: Option[String], request: HTTPrequest): Try[String] = {
-    val putURI = schemeName + uri + slug.getOrElse("unnamed")
+    val putURI = schemeName + uri +
+      ( if( uri.endsWith("/") ) "" else "/" ) +
+      slug.getOrElse("unnamed")
 
     println(s"putTriples: content: ${content.get}")
     println(s"putTriples: contentType: ${contentType}")
     println(s"putTriples: slug: ${slug}")
+    println(s"putTriples: PUT (graph) URI: ${putURI}")
+
     val r = rdfStore.rw( dataset, {
-      val reader =
+   // TODO content type negotiation is done elsewhere
+   val reader =
           if (contentType.get.contains("text/turtle"))
             turtleReader
           else jsonldReader
-      for {
+      val resFor = for {
         graph <- reader.read(new StringReader(content.get), putURI)
         res <- {
           println("putTriples: graph: " + graph);
           rdfStore.removeGraph(dataset, URI(putURI))
         }
         res2 <- {
-          println("putTriples: appendToGraph: " + putURI);
+          println("putTriples: appendToGraph: URI= " + putURI);
           val res = rdfStore.appendToGraph(dataset, URI(putURI), graph)
-          println("putTriples: after appendToGraph: " + putURI)
+          println("putTriples: after appendToGraph: URI= " + putURI)
           res
         }
       } yield res2
     })
     println("putTriples: transaction result " + r)
-    //    r.flatMap{ res:Failure[ Try[Unit]](err) => Success(putURI)}
-    //    r.flatMap{ case res:Failure[Try[Unit]](err) => Success(putURI)}
     Success(putURI)
   }
 }

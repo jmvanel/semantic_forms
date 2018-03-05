@@ -184,14 +184,12 @@ with RDFContentNegociation
       }
   }
 
-  /** TODO:
-   * - maybe the stored named graph should be user specific
-   * - this is blocking code !!!
-   */
-  def ldpPOSTAction(uri: String) =
-    withUser {
-      implicit userid =>
-        implicit request =>
+  /** */
+  def ldpPOSTAction(uri: String = "") =
+//    withUser {
+//      implicit userid =>
+//        implicit request =>
+        Action { implicit request: Request[AnyContent] =>
           logger.info("LDP: " + request)
           val slug = request.headers.get("Slug")
           val link = request.headers.get("Link")
@@ -199,13 +197,18 @@ with RDFContentNegociation
           val content = getContent(request)
           logger.info(s"LDP: slug: $slug, link $link")
           logger.info(s"LDP: content: $content")
+          val copiedRequest = copyRequest(request)
           val serviceCalled =
-            ldpPOST(uri, link, contentType, slug, content, copyRequest(request) ).getOrElse("default")
-          Ok(serviceCalled).as("text/plain; charset=utf-8")
-            .withHeaders("Access-Control-Allow-Origin" -> "*")
-    }
+            ldpPOST(uri, link, contentType, slug, content, copiedRequest ).getOrElse("default")
+          Ok("").as("text/plain; charset=utf-8")
+            .withHeaders(
+                "Access-Control-Allow-Origin" -> "*",
+                "Location" -> (copiedRequest.absoluteURL() + "/" + serviceCalled),
+                "Link" -> """<http://www.w3.org/ns/ldp#Resource>; rel="type""""
+                )
+  }
 
-
+  def ldpPOSTActionNoURI() = ldpPOSTAction()
 
 
   //  implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(
@@ -245,6 +248,39 @@ with RDFContentNegociation
         }
       },
       (t: Throwable) =>
-        errorActionFromThrowable(t, "in /import URI"))
+        errorActionFromThrowable(t, "in importing URI"))
+  }
+
+  def loadURIpost(): Action[AnyContent] = {
+    recoverFromOutOfMemoryErrorGeneric[Action[AnyContent]](
+      {
+        Action { implicit request: Request[AnyContent] =>
+          def loadURI(uri: String): String = {
+            val tryGraph = retrieveURIBody(
+              ops.URI(uri), dataset, copyRequest(request), transactionsInside = true)
+            val result = tryGraph match {
+              case Success(gr)           => s"Success loading <$uri>, size: ${gr.size()}"
+              case scala.util.Failure(f) => f.getLocalizedMessage
+            }
+            result
+          }
+
+          val content = getContent(request)
+          println("loadURIpost " + content)
+          val finalResults = content match {
+            case None =>
+              Ok("ERROR")
+            case Some(urisString) =>
+              val uris = urisString.split("\n")
+              val results = for (uri <- uris) yield {
+                loadURI(uri)
+              }
+              Ok(results.mkString("\n"))
+          }
+          finalResults
+        }
+      },
+      (t: Throwable) =>
+        errorActionFromThrowable(t, "in POST /load-uri"))
   }
 }

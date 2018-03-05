@@ -22,6 +22,7 @@ GET /robots.txt             controllers.Assets.at(path="/public", file="robots.t
 
 GET     /display            controllers.Application.displayURI(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="")
 GET     /load-uri           controllers.Application.loadURI(uri:String)
+POST    /load-uri           controllers.Application.loadURIpost()
 # GET     /display2            controllers.Application.displayURI2(displayuri:String)
 POST    /load               controllers.Application.loadAction()
 GET     /table              controllers.Application.table()
@@ -88,6 +89,8 @@ GET     /files/*file                controllers.Files.at(file)
 # LDP
 GET     /ldp/*uri              controllers.Application.ldp(uri: String)
 POST    /ldp/*uri              controllers.Application.ldpPOSTAction(uri: String)
+POST    /ldp                   controllers.Application.ldpPOSTActionNoURI()
 PUT     /ldp/*uri              controllers.Application.ldpPOSTAction(uri: String)
+PUT     /ldp                   controllers.Application.ldpPOSTActionNoURI()
 
 OPTIONS /*path                 controllers.Application.httpOptions(path)
