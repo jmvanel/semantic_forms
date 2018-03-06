@@ -119,8 +119,9 @@ trait FormHeader[Rdf <: RDF, DATASET]
   private lazy val owl = OWLPrefix[Rdf]
 
   def isOWLURI(uri: String): Boolean = {
-    val triples = find(allNamedGraph, URI(uri), ANY, ANY).toList
+//    val triples = find(allNamedGraph, URI(uri), ANY, ANY).toList
 //    val v = URI(uri) / rdf.typ
+    println(s"isOWLURI(uri=$uri)")
     val pg = PointedGraph( URI(uri), allNamedGraph )
     val types = ( pg / rdf.typ ) . nodes . toList
     println( s"isOWLURI: $types" )

@@ -43,7 +43,7 @@ trait LDP[Rdf <: RDF, DATASET]
 
   import ops._
 
-  val schemeName = "ldp/"
+  val servicePrefix = "/ldp/"
 
   /**
    * for LDP GET
@@ -80,9 +80,9 @@ trait LDP[Rdf <: RDF, DATASET]
   def putTriples(uri: String, link: Option[String], contentType: Option[String],
     slug: Option[String],
     content: Option[String], request: HTTPrequest): Try[String] = {
-    val putURI = schemeName + uri +
+    val putURI = request.absoluteURL( servicePrefix + uri +
       ( if( uri.endsWith("/") ) "" else "/" ) +
-      slug.getOrElse("unnamed")
+      slug.getOrElse("unnamed") )
 
     println(s"putTriples: content: ${content.get}")
     println(s"putTriples: contentType: ${contentType}")

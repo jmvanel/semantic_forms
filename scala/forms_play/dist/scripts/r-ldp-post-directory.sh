@@ -36,7 +36,7 @@ function put {
      --header="Content-Type: $MIME" \
      --header="Slug: $file"
 
-  echo file=$RDF_DIR/GIVEN_PATH sent to server $LDP_SERVICE 
+  echo file=$GIVEN_PATH sent to server $LDP_SERVICE
   echo result saved in FILE "FILE" :
   cat FILE
 }
