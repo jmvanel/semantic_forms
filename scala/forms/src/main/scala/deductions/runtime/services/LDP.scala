@@ -65,16 +65,36 @@ trait LDP[Rdf <: RDF, DATASET]
     r.get.get
   }
 
+
   private def makeQueryString(uri: String, rawURI: String, request: HTTPrequest): String = {
 		  println(s"makeQueryString rawURI $rawURI")
 		  val absoluteURI = request . absoluteURL(rawURI)
       s"""
-         |CONSTRUCT { <$absoluteURI> ?p ?o } WHERE {
+         |CONSTRUCT {
+         |  ?s ?p ?o .
+         |  <$absoluteURI> ?p ?o .
+         |} WHERE {
+         |  {
+         |  GRAPH <$absoluteURI> {
+         |    ?s ?p ?o .
+         |  }
+         |  } UNION {
          |  GRAPH ?G {
          |    <$absoluteURI> ?p ?o .
-         |  }
+         |  } }
          |}""".stripMargin
   }
+
+//  private def makeQueryStringOLD(uri: String, rawURI: String, request: HTTPrequest): String = {
+//		  println(s"makeQueryString rawURI $rawURI")
+//		  val absoluteURI = request . absoluteURL(rawURI)
+//      s"""
+//         |CONSTRUCT { <$absoluteURI> ?p ?o } WHERE {
+//         |  GRAPH ?G {
+//         |    <$absoluteURI> ?p ?o .
+//         |  }
+//         |}""".stripMargin
+//  }
 
   /** for LDP PUT or POST */
   def putTriples(uri: String, link: Option[String], contentType: Option[String],

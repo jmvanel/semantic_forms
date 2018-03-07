@@ -151,8 +151,7 @@ with RDFContentNegociation
     implicit request: Request[_] =>
       logger.info("LDP GET: request " + request)
       val acceptedTypes = request.acceptedTypes
-      logger.info(
-          s"acceptedTypes $acceptedTypes")
+      logger.info( s"acceptedTypes $acceptedTypes")
 
       val httpRequest = copyRequest(request)
       val accept = httpRequest.getHTTPheaderValue("Accept")
@@ -164,9 +163,9 @@ with RDFContentNegociation
         else
           jsonldMime
 
-      println(s">>>> ldp: mimeType $mimeType")
+      println(s">>>> ldp($uri): mimeType $mimeType")
       if (mimeType != htmlMime) {
-        val response = getTriples(uri, request.path, mimeType, copyRequest(request))
+        val response = getTriples(uri, request.path, mimeType, httpRequest)
         logger.info("LDP: GET: result " + response)
         val contentType = mimeType + "; charset=utf-8"
         logger.info(s"contentType $contentType")
@@ -174,7 +173,8 @@ with RDFContentNegociation
           .as(contentType)
           .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
           .withHeaders(CONTENT_TYPE -> mimeType)
-      } else {
+
+      } else { //// Redirect to /display ////
 //    	  println(s">>>> ldp: Redirect $hrefDisplayPrefix http://${request.host}/ldp/$uri")
         val ldpURL = "http://" + request.host + "/ldp/" + URLEncoder.encode(uri, "UTF-8")
 //    	  println(s">>>> ldp: Redirect $ldpURL")
@@ -203,7 +203,7 @@ with RDFContentNegociation
           Ok("").as("text/plain; charset=utf-8")
             .withHeaders(
                 "Access-Control-Allow-Origin" -> "*",
-                "Location" -> (copiedRequest.absoluteURL() + "/" + serviceCalled),
+                "Location" -> serviceCalled,
                 "Link" -> """<http://www.w3.org/ns/ldp#Resource>; rel="type""""
                 )
   }
