@@ -285,8 +285,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   private def updateFormFromConfig(formSyntax: FormSyntax, formConfigOption: Option[Rdf#Node])(implicit graph: Rdf#Graph): FormSyntax = {
     formConfigOption.map {
       formConfig =>
+        logger.info(s">>>> updateFormFromConfig: updateOneFormFromConfig(formSyntax, formConfig =<$formConfig>)")
         updateOneFormFromConfig(formSyntax, formConfig)
-        // shallow recursion
+        logger.info(s">>>> updateFormFromConfig: shallow recursion")
         for ( fs <- formSyntax.propertiesGroups ) updateOneFormFromConfig(fs, formConfig)
     }
     formSyntax
@@ -330,13 +331,14 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       formPrefix("exactlyOne") -> exactlyOne
     }
     val triplesInFormConfig = find(graph, formSpecif, ANY, ANY).toSeq
+    logger.debug( s">>>> updateOneFormFromConfig: formSpecif <$formSpecif> , ${triplesInFormConfig.size} triplesInFormConfig" )
 
     for (field <- formSyntax.fields) {
       val fieldSpecs = lookFieldSpecInConfiguration(field.property)
       if (!fieldSpecs.isEmpty)
         fieldSpecs.map {
           fieldSpec =>
-//            logger.info( s">>>> fieldSpec $fieldSpec" )
+            logger.info( s"\tupdateOneFormFromConfig: fieldSpec <$fieldSpec> , fieldSpec.subject <${fieldSpec.subject}>" )
             val specTriples = find(graph, fieldSpec.subject, ANY, ANY).toSeq
             for (t <- specTriples)
               field.addTriple(t.subject, t.predicate, t.objectt)
@@ -388,7 +390,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     }
 
     for (t <- triplesInFormConfig) {
-      logger.debug("updateFormForClass formConfig " + t)
+      logger.debug("updateOneFormFromConfig triple from formConfig: " + t)
       if (t.predicate == formPrefix("defaultCardinality")) {
         formSyntax.defaults.defaultCardinality = uriToCardinalities.getOrElse(t.objectt, zeroOrOne)
       }
