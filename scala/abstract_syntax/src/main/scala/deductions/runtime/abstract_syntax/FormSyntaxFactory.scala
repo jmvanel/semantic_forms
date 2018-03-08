@@ -234,7 +234,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     // TODO make it functional #170
     val res = time(
       s"createFormDetailed2: updateFormFromConfig(formConfig=$formConfig)",
-      updateFormFromConfig(formSyntax, formConfig))
+      updateFormFromConfig(formSyntax, formConfig),
+      logger.isDebugEnabled() )
     logger.debug(s"createFormDetailed2: createForm 2 " + this)
 //        check(formSyntax.fields, "res")
     res
@@ -318,7 +319,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   }
 
   /** non recursive update of given `formSyntax` from given `formSpecif`;
-   * see form_specs/foaf.form.ttl for an example of form specification */
+   * see form_specs/foaf.form.ttl for an example of form specification
+   * TODO rename updateOneFormFromSpecif */
   private def updateOneFormFromConfig(formSyntax: FormSyntax, formSpecif: Rdf#Node)(implicit graph: Rdf#Graph)
   : Unit // TODO #170 FormSyntax
   = {
@@ -330,8 +332,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       formPrefix("zeroOrOne") -> zeroOrOne;
       formPrefix("exactlyOne") -> exactlyOne
     }
-    val triplesInFormConfig = find(graph, formSpecif, ANY, ANY).toSeq
-    logger.debug( s">>>> updateOneFormFromConfig: formSpecif <$formSpecif> , ${triplesInFormConfig.size} triplesInFormConfig" )
 
     for (field <- formSyntax.fields) {
       val fieldSpecs = lookFieldSpecInConfiguration(field.property)
@@ -389,10 +389,15 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         }
     }
 
-    for (t <- triplesInFormConfig) {
-      logger.debug("updateOneFormFromConfig triple from formConfig: " + t)
-      if (t.predicate == formPrefix("defaultCardinality")) {
-        formSyntax.defaults.defaultCardinality = uriToCardinalities.getOrElse(t.objectt, zeroOrOne)
+    if (formSpecif != nullURI) {
+      val triplesInFormConfig = find(graph, formSpecif, ANY, ANY).toSeq
+      logger.debug(s">>>> updateOneFormFromConfig: formSpecif <$formSpecif> , ${triplesInFormConfig.size} triplesInFormConfig")
+
+      for (t <- triplesInFormConfig) {
+        logger.debug("updateOneFormFromConfig triple from formConfig: " + t)
+        if (t.predicate == formPrefix("defaultCardinality")) {
+          formSyntax.defaults.defaultCardinality = uriToCardinalities.getOrElse(t.objectt, zeroOrOne)
+        }
       }
     }
   }
