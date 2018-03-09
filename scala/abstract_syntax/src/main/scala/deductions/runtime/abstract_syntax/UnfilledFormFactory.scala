@@ -84,7 +84,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
 
       createFormDetailed(makeUri(newId),
           classFromSpecsOrGiven,
-        CreationMode, URI(formSpecURI0) )
+        CreationMode, nullURI, URI(formSpecURI0) )
       
   } . getOrElse( FormSyntax( nullURI, Seq() ) )
   }

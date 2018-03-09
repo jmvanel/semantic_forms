@@ -99,7 +99,7 @@ trait FormSyntaxFactoryTest[Rdf <: RDF, DATASET] extends FormSyntaxFactory[Rdf, 
 //        Seq(foaf.title,
 //          foaf.name, foaf.knows),
         URI(""),
-        EditionMode)
+        EditionMode, nullURI, nullURI)
       form
     })
     res.get
@@ -129,7 +129,7 @@ trait FormSyntaxFactoryTest[Rdf <: RDF, DATASET] extends FormSyntaxFactory[Rdf, 
       fact.createFormDetailed(URI("betehess"),
 //          Seq(foaf.topic_interest), 
           foaf.Person,
-        DisplayMode)
+        DisplayMode, nullURI, nullURI)
     })
   }
 
