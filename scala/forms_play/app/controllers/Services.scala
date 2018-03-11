@@ -202,7 +202,7 @@ with RDFContentNegociation
             ldpPOST(uri, link, contentType, slug, content, copiedRequest ).getOrElse("default")
           Ok("").as("text/plain; charset=utf-8")
             .withHeaders(
-                "Access-Control-Allow-Origin" -> "*",
+//              ACCESS_CONTROL_ALLOW_ORIGIN -> "*",
                 "Location" -> serviceCalled,
                 "Link" -> """<http://www.w3.org/ns/ldp#Resource>; rel="type""""
                 )
