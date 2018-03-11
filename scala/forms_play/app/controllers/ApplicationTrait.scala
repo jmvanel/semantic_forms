@@ -103,8 +103,9 @@ trait ApplicationTrait extends Controller
     val lang = httpRequest.getLanguage()
     val map = httpRequest.formMap
     logger.debug(
-      s"""ApplicationTrait.saveOnly: request $httpRequest ,
-        map $map""")
+      s"""
+        ApplicationTrait.saveOnly: request $httpRequest ,
+        ApplicationTrait.saveOnly: map $map""")
     // cf http://danielwestheide.com/blog/2012/12/26/the-neophytes-guide-to-scala-part-6-error-handling-with-try.html
     val subjectUriTryOption = Try {
       saveForm(map, lang, userid, graphURI, host)

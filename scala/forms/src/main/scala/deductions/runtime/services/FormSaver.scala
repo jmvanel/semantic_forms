@@ -275,7 +275,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
       f onSuccess {
         case _ =>
           logger.info(s""" Successfully stored ${triplesToAdd.size} triples
-            ${triplesToAdd.mkString(", ")}
+            ${triplesToAdd.mkString("\n")}
             and removed ${triplesToRemove.size}
             triplesToRemove:
             ${triplesToRemove.mkString("\n")}

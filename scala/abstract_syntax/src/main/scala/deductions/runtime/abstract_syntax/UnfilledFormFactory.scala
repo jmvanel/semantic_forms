@@ -63,7 +63,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
         val classFromSpecs = lookClassInFormSpec( URI(formSpecURI), graph)
         uriNodeToURI(classFromSpecs)
       } else classs
-    println(s">>> UnfilledFormFactory.createFormFromClass: classFromSpecsOrGiven <$classFromSpecsOrGiven>")
+    println(s">>> UnfilledFormFactory.createFormFromClass: formSpecURI=<> , class <$classe> => classFromSpecsOrGiven <$classFromSpecsOrGiven>")
 
     val instanceURI = getFirstNonEmptyInMap(request.queryString, "subjecturi")
     val newId = if (instanceURI === "")

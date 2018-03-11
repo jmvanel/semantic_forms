@@ -171,7 +171,7 @@ with RDFContentNegociation
         logger.info(s"contentType $contentType")
         Ok(response)
           .as(contentType)
-          .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+          // DEBUG for yannick TODO reestablish !!!!!!!!!!!!!!! .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
           .withHeaders(CONTENT_TYPE -> mimeType)
 
       } else { //// Redirect to /display ////
