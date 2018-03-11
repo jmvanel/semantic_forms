@@ -102,7 +102,8 @@ trait LDP[Rdf <: RDF, DATASET]
     content: Option[String], request: HTTPrequest): Try[String] = {
     val putURI = request.absoluteURL( servicePrefix + uri +
       ( if( uri.endsWith("/") ) "" else "/" ) +
-      slug.getOrElse("unnamed") )
+      slug.getOrElse( makeId("") ) )
+//          "unnamed") )
 
     println(s"putTriples: content: ${content.get}")
     println(s"putTriples: contentType: ${contentType}")
