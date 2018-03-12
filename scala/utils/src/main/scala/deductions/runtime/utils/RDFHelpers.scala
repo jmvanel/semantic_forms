@@ -337,6 +337,9 @@ extends URIManagement {
           "\"" * 3
         else
           "\""
-        wrapping + rawString + wrapping + suffix
+        /* FIX ERROR riot [line: 2, col: 13] Illegal escape sequence value: (0x0D) ,
+         * occuring in a <pre> block with \ followed by carriage return */
+        val turtleString = rawString.replaceAll("""\\\r""", """\\\\\u000d""")
+        wrapping + turtleString + wrapping + suffix
       })
 }
