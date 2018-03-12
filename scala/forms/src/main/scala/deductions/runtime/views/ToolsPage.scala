@@ -37,6 +37,8 @@ trait ToolsPage extends EnterButtons
          |#WHERE {GRAPH ?GRAPH { ?sub geo:long ?LON .?sub geo:lat ?LAT . ?sub rdfs:label ?LAB.  } }"""
     .stripMargin
 
+
+
     <link href="assets/images/favicon.png" type="image/png" rel="shortcut icon"/>
     <div>
       <p>
@@ -85,7 +87,8 @@ trait ToolsPage extends EnterButtons
         (un autre requêteur SPARQL)
       </p>
 
-      <p> <a href="/showNamedGraphs">{ I18NMessages.get("showNamedGraphs", lang) }</a> </p>
+      { showNamedGraphsForm(request) }
+
       <p> <a href="/history">{ I18NMessages.get("Dashboard", lang) }</a> </p>
       {
         implicit val lang1: String = lang
@@ -239,4 +242,12 @@ trait ToolsPage extends EnterButtons
     println(s">>>> dataServicesURL $dataServicesURL")
     dataServicesURL
   }
+
+  private def showNamedGraphsForm( request: HTTPrequest ) =
+    <form action="/showNamedGraphs">
+      <p>{ I18NMessages.get("showNamedGraphs", request.getLanguage()) }</p>
+      { makeSubformForOffsetLimit() }
+      <input value="submit" type="submit" />
+  </form>
 }
+

@@ -12,6 +12,8 @@ import scala.xml.{Elem, NodeSeq, Text}
 import scala.xml.Unparsed
 import deductions.runtime.core.HTTPrequest
 
+import scalaz._
+import Scalaz._
 
 trait SPARQLQueryMaker[Rdf <: RDF] {
   // TODO : search: String*
@@ -184,12 +186,16 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
   }
 
   private def addLimit(rawQueryString: String, httpRequest: HTTPrequest) = {
-    val queryWithLimit = httpRequest.getHTTPparameterValue("limit") match {
-      case Some(limit) => s"$rawQueryString LIMIT $limit"
+    val limitOption = httpRequest.getHTTPparameterValue("limit")
+    val queryWithLimit = limitOption match {
+      case Some(limit) if( limit =/= "" ) => s"$rawQueryString LIMIT $limit"
+      case Some(_) => rawQueryString
       case None => rawQueryString
     }
-    httpRequest.getHTTPparameterValue("offset") match {
-      case Some(offset) => s"$queryWithLimit OFFSET $offset"
+    val offsetOption = httpRequest.getHTTPparameterValue("offset")
+    offsetOption match {
+      case Some(offset)  if(offset =/= "" ) => s"$queryWithLimit OFFSET $offset"
+      case Some(_) => rawQueryString
       case None => queryWithLimit
     }
   }

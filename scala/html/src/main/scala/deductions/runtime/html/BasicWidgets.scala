@@ -129,4 +129,12 @@ trait BasicWidgets
       <div></div>
   }
 
+  def makeSubformForOffsetLimit(): NodeSeq = {
+    def simpleFormField(label: String) =
+     <label for={label}>{label}</label><input name={label} />
+    simpleFormField("offset") ++
+    simpleFormField("limit") ++
+    simpleFormField("pattern")
+  }
+
 }

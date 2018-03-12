@@ -42,7 +42,7 @@ extends RDFPrefixes[Rdf] {
     ) yield {
       gr.triples.head
     }
-    // hack to make script work: ./forms_play/dist/scripts/rgraphremove.sh
+    /* hack to make script work: forms_play/dist/scripts/rgraphremove.sh (the /register service) */
     val nullURI = URI("")
     triple.getOrElse(Triple(nullURI, form(param), Literal("")))
   }
