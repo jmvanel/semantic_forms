@@ -12,6 +12,7 @@ import deductions.runtime.utils.I18NMessages
 
 import scalaz._
 import Scalaz._
+import deductions.runtime.core.HTTPrequest
 
 /** Basic Widgets with no access to the FormSyntax:
  *  GUI integration: RDFviewer, VOWL, ... */
@@ -129,7 +130,14 @@ trait BasicWidgets
       <div></div>
   }
 
-  def makeSubformForOffsetLimit(): NodeSeq = {
+  def showNamedGraphsForm( request: HTTPrequest ) =
+    <form role="form" >
+      <p>{ I18NMessages.get("showNamedGraphs", request.getLanguage()) }</p>
+      { makeSubformForOffsetLimit() }
+      <input value="submit" type="submit" formaction="/showNamedGraphs" />
+  </form>
+
+  private def makeSubformForOffsetLimit(): NodeSeq = {
     def simpleFormField(label: String) =
      <label for={label}>{label}</label><input name={label} />
     simpleFormField("offset") ++

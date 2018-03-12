@@ -68,10 +68,9 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
       println(s"\tsearch(): URI's size ${uris.size}")
       val graph: Rdf#Graph = allNamedGraph
       val elems = Seq(
-        <button value="Sort" id="sort">
-          Sort
-        </button>,
+        <button value="Sort" id="sort"> Sort </button>,
         sortJSscript,
+        showNamedGraphsForm( httpRequest ),
         <div id="container" class={ css.tableCSSClasses.formRootCSSClass }> {
           css.localCSS ++
             uris.map {
@@ -194,7 +193,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     }
     val offsetOption = httpRequest.getHTTPparameterValue("offset")
     offsetOption match {
-      case Some(offset)  if(offset =/= "" ) => s"$queryWithLimit OFFSET $offset"
+      case Some(offset)  if( offset =/= "" ) => s"$queryWithLimit OFFSET $offset"
       case Some(_) => rawQueryString
       case None => queryWithLimit
     }

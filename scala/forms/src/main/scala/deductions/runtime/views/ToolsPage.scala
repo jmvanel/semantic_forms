@@ -242,12 +242,5 @@ trait ToolsPage extends EnterButtons
     println(s">>>> dataServicesURL $dataServicesURL")
     dataServicesURL
   }
-
-  private def showNamedGraphsForm( request: HTTPrequest ) =
-    <form action="/showNamedGraphs">
-      <p>{ I18NMessages.get("showNamedGraphs", request.getLanguage()) }</p>
-      { makeSubformForOffsetLimit() }
-      <input value="submit" type="submit" />
-  </form>
 }
 
