@@ -13,19 +13,24 @@ trait NamedGraphsSPARQL[Rdf <: RDF, DATASET]
     extends ParameterizedSPARQL[Rdf, DATASET] {
 
   private implicit val searchStringQueryMaker = new SPARQLQueryMaker[Rdf] {
-    override def makeQueryString(search: String*): String =
+    override def makeQueryString(search: String*): String = {
       // TODO show # of triples
+      val filterClause = if( search.size > 0 ) {
+        s"  FILTER (CONTAINS(STR(?thing),'${search(0)}'))"
+      }
+      else ""
       s"""
          |SELECT DISTINCT ?thing 
          |    # ?CLASS
          |    WHERE {
          |  graph ?thing {
          |    [] ?p ?O .
-         |
          |    # TODO: lasts very long with this
          |    # OPTIONAL { ?thing a ?CLASS . }
          |  }
+         |  $filterClause
          |}""".stripMargin
+  }
 
     /** add columns in response */
     override def columnsForURI(node: Rdf#Node, label: String): NodeSeq = {
@@ -41,7 +46,12 @@ trait NamedGraphsSPARQL[Rdf <: RDF, DATASET]
   
   def showNamedGraphs(httpRequest: HTTPrequest): Future[NodeSeq] = {
     val lang = httpRequest.getLanguage()
-    search("/showTriplesInGraph?uri=", lang, Seq(),
+    val patternOption = httpRequest.getHTTPparameterValue("pattern")
+    val searchArg = patternOption  match {
+      case Some(patt) => Seq(patt)
+      case None => Seq()
+    }
+    search("/showTriplesInGraph?uri=", lang, searchArg,
         httpRequest=httpRequest)
   }
 
