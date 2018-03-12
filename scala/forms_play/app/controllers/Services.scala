@@ -195,8 +195,8 @@ with RDFContentNegociation
           val link = request.headers.get("Link")
           val contentType = request.contentType
           val content = getContent(request)
-          logger.info(s"LDP: slug: $slug, link $link")
-          logger.info(s"LDP: content: $content")
+          logger.info(s"LDP POST: slug: $slug, link $link")
+          logger.info(s"LDP POST: content: $content")
           val copiedRequest = copyRequest(request)
           val serviceCalled =
             ldpPOST(uri, link, contentType, slug, content, copiedRequest ).getOrElse("default")
@@ -209,6 +209,19 @@ with RDFContentNegociation
   }
 
   def ldpPOSTActionNoURI() = ldpPOSTAction()
+
+  def ldpDeleteResource(uri: String) =
+    Action { implicit request: Request[AnyContent] =>
+      logger.info("LDP DELETE: " + request)
+      val httpRequest = copyRequest(request)
+      deleteResource(uri, httpRequest) match {
+        case Success(s) =>
+          NoContent.as("text/plain; charset=utf-8")
+            .withHeaders("Link" -> """<http://www.w3.org/ns/ldp#Resource>; rel="type"""")
+        case scala.util.Failure(f) =>
+          InternalServerError(f.toString())
+      }
+    }
 
 
   //  implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(

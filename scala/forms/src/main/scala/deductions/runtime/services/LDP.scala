@@ -10,6 +10,7 @@ import org.w3.banana.RDF
 import org.w3.banana.io._
 
 import scala.util.{Success, Try}
+import scala.util.Failure
 
 /**
  * A simple (partial) LDP implementation backed by SPARQL
@@ -100,7 +101,8 @@ trait LDP[Rdf <: RDF, DATASET]
   def putTriples(uri: String, link: Option[String], contentType: Option[String],
     slug: Option[String],
     content: Option[String], request: HTTPrequest): Try[String] = {
-    val putURI = request.absoluteURL( servicePrefix + uri +
+    val putURI = request.absoluteURL(
+      servicePrefix + uri +
       ( if( uri.endsWith("/") ) "" else "/" ) +
       slug.getOrElse( makeId("") ) )
 //          "unnamed") )
@@ -119,7 +121,7 @@ trait LDP[Rdf <: RDF, DATASET]
       val resFor = for {
         graph <- reader.read(new StringReader(content.get), putURI)
         res <- {
-          println("putTriples: graph: " + graph);
+          println("putTriples: before removeGraph: graph: " + graph);
           rdfStore.removeGraph(dataset, URI(putURI))
         }
         res2 <- {
@@ -132,5 +134,21 @@ trait LDP[Rdf <: RDF, DATASET]
     })
     println("putTriples: transaction result " + r)
     Success(putURI)
+  }
+
+  /** for LDP DELETE */
+  def deleteResource(uri: String, request: HTTPrequest): Try[String] = {
+    if (uri.matches(s"${(".*/.*")}")) {
+      val r = rdfStore.rw(dataset, {
+        val graphURI = request.absoluteURL("/ldp/"+uri)
+        println( s"deleteResource: remove Graph $graphURI")
+        rdfStore.removeGraph(dataset, URI(graphURI) )
+      })
+      r.flatten match {
+        case Success(_) => Success(s"deleteResource(uri=$uri): Success")
+        case Failure(f) => Failure(new Exception(s"deleteResource(uri=$uri): $f", f))
+      }
+    } else Failure(new Exception(
+      s"deleteResource(uri=$uri): URI looks like a user created data; only possible to LDP DELETE URI's like /ldp/fileOrDir"))
   }
 }

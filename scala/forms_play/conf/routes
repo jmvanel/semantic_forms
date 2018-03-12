@@ -92,5 +92,6 @@ POST    /ldp/*uri              controllers.Application.ldpPOSTAction(uri: String
 POST    /ldp                   controllers.Application.ldpPOSTActionNoURI()
 PUT     /ldp/*uri              controllers.Application.ldpPOSTAction(uri: String)
 PUT     /ldp                   controllers.Application.ldpPOSTActionNoURI()
+DELETE  /ldp/*uri              controllers.Application.ldpDeleteResource(uri: String)
 
 OPTIONS /*path                 controllers.Application.httpOptions(path)
