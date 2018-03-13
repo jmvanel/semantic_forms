@@ -10,27 +10,17 @@ import deductions.runtime.core.HTTPrequest
 
 /** Show named graphs */
 trait NamedGraphsSPARQL[Rdf <: RDF, DATASET]
-    extends ParameterizedSPARQL[Rdf, DATASET] {
+    extends NavigationSPARQLBase[Rdf]
+    with ParameterizedSPARQL[Rdf, DATASET] {
 
   private implicit val searchStringQueryMaker = new SPARQLQueryMaker[Rdf] {
     override def makeQueryString(search: String*): String = {
-      // TODO show # of triples
-      val filterClause = if( search.size > 0 ) {
-        s"  FILTER (CONTAINS(STR(?thing),'${search(0)}'))"
+      val searchArg = if( search.size > 0 ) {
+        Some(search(0))
       }
-      else ""
-      s"""
-         |SELECT DISTINCT ?thing 
-         |    # ?CLASS
-         |    WHERE {
-         |  graph ?thing {
-         |    [] ?p ?O .
-         |    # TODO: lasts very long with this
-         |    # OPTIONAL { ?thing a ?CLASS . }
-         |  }
-         |  $filterClause
-         |}""".stripMargin
-  }
+      else None
+      namedGraphs(searchArg)
+    }
 
     /** add columns in response */
     override def columnsForURI(node: Rdf#Node, label: String): NodeSeq = {

@@ -111,4 +111,23 @@ trait NavigationSPARQLBase[Rdf <: RDF]
          |}
          |ORDER BY DESC(?COUNT)
          |""".stripMargin
+
+  def namedGraphs(search: Option[String]): String = {
+      // TODO show # of triples
+      val filterClause = search match {
+        case Some(pattern) => s"  FILTER (CONTAINS(STR(?thing),'${pattern}'))"
+        case None => ""
+      }
+      s"""
+         |SELECT DISTINCT ?thing
+         |    # ?CLASS
+         |    WHERE {
+         |  graph ?thing {
+         |    [] ?p ?O .
+         |    # TODO: lasts very long with this
+         |    # OPTIONAL { ?thing a ?CLASS . }
+         |  }
+         |  $filterClause
+         |}""".stripMargin
+  }
 }
