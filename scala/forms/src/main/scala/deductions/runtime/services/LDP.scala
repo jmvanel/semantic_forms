@@ -11,6 +11,8 @@ import org.w3.banana.io._
 
 import scala.util.{Success, Try}
 import scala.util.Failure
+import scala.util.matching.Regex
+import deductions.runtime.utils.RDFPrefixes
 
 /**
  * A simple (partial) LDP implementation backed by SPARQL
@@ -33,6 +35,8 @@ trait LDP[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
     with SPARQLHelpers[Rdf, DATASET]
     with RDFContentNegociationIO[Rdf, DATASET]
+    with NavigationSPARQLBase[Rdf]
+    with RDFPrefixes[Rdf]
     with URIManagement {
 
   val turtleWriter: RDFWriter[Rdf, Try, Turtle]
@@ -47,8 +51,9 @@ trait LDP[Rdf <: RDF, DATASET]
   val servicePrefix = "/ldp/"
 
   /**
-   * for LDP GET
+   * for LDP GET , getting a RDF resource
    *  @param uri relative URI received by LDP GET
+   *  TODO document @param rawURI
    */
   def getTriples(uri: String, rawURI: String, accept: String, request: HTTPrequest): String = {
     println(s"LDP GET: (uri <$uri>, rawURI <$rawURI>, request $request)")
@@ -66,7 +71,9 @@ trait LDP[Rdf <: RDF, DATASET]
     r.get.get
   }
 
-
+  /** For LDP GET: http://localhost:9000/ldp/a/b/c returns BOTH triples in that named graph,
+   *  AND triples with that subject, which is coherent with what LDP PUT does,
+   *  and also with plain SF forms on local data. */
   private def makeQueryString(uri: String, rawURI: String, request: HTTPrequest): String = {
 		  println(s"makeQueryString rawURI $rawURI")
 		  val absoluteURI = request . absoluteURL(rawURI)
@@ -86,16 +93,51 @@ trait LDP[Rdf <: RDF, DATASET]
          |}""".stripMargin
   }
 
-//  private def makeQueryStringOLD(uri: String, rawURI: String, request: HTTPrequest): String = {
-//		  println(s"makeQueryString rawURI $rawURI")
-//		  val absoluteURI = request . absoluteURL(rawURI)
-//      s"""
-//         |CONSTRUCT { <$absoluteURI> ?p ?o } WHERE {
-//         |  GRAPH ?G {
-//         |    <$absoluteURI> ?p ?o .
-//         |  }
-//         |}""".stripMargin
-//  }
+  /** for LDP GET , listing of a basic container */
+  def listContainer(uri: String, link: Option[String], contentType: Option[String]):
+  Try[String] = {
+    val ldpPrefix = "http://www.w3.org/ns/ldp#"
+    val urisWithGivenPrefixRaw = sparqlSelectQueryVariablesNT(
+      /* match e.g.
+        http://semantic-forms.cc:9111/ldp/yannick/fludy/d4a6350c81.ttl
+        but not
+        http://localhost:9000/ldp/1513608041265-77442744222862
+       */
+      namedGraphs(regex = Some(s"$uri/\w+/.*")),
+      Seq("?thing"))
+    val urisWithGivenPrefix = urisWithGivenPrefixRaw.flatten.map {
+      uri => nodeToString(uri)
+    }
+    val directPathChildren =  filterDirectPathChildren(uri, urisWithGivenPrefix)
+    val triples = directPathChildren . map {
+      child => Triple( URI(uri), URI(ldpPrefix+"contains"), URI(child))
+    }
+    val graph = makeGraph(
+        Triple( URI(uri), rdf.typ, URI(ldpPrefix+"Container")) ::
+        triples )
+
+    //  TODO use conneg helper
+    turtleWriter.asString(graph, base = uri)
+
+    /* # EXAMPLE from LDP primer
+     * @prefix ldp: <http://www.w3.org/ns/ldp#>.
+     * <http://example.org/alice/> a ldp:Container, ldp:BasicContainer;
+     * ldp:contains XXX */
+
+//    tryString . match {
+//      case Success(s) => s
+//      case Failure(f) => f.toString
+//    }
+  }
+
+  private def filterDirectPathChildren(parent: String, paths: List[String]): List[String] = {
+    val regexDirectPathChildren = (s"$parent/\w+/\w+").r
+    for (path <- paths) yield {
+      path match {
+        case regexDirectPathChildren(_*) => path
+      }
+    }
+  }
 
   /** for LDP PUT or POST */
   def putTriples(uri: String, link: Option[String], contentType: Option[String],
@@ -105,7 +147,6 @@ trait LDP[Rdf <: RDF, DATASET]
       servicePrefix + uri +
       ( if( uri.endsWith("/") ) "" else "/" ) +
       slug.getOrElse( makeId("") ) )
-//          "unnamed") )
 
     println(s"putTriples: content: ${content.get}")
     println(s"putTriples: contentType: ${contentType}")

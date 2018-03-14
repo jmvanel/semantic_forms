@@ -15,7 +15,7 @@ import scala.util.Try
 trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DATASET]
     with SPARQLHelpers[Rdf, DATASET] {
 
-  val turtleWriter: RDFWriter[Rdf, Try, Turtle]
+//  val turtleWriter: RDFWriter[Rdf, Try, Turtle]
 
   /**
    * used in Play! app;

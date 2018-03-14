@@ -762,6 +762,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   /**
    * RDF graph to String
    *  @param format "turtle" or "rdfxml" or "jsonld"
+   *  TODO REFACTOR, use conneg helper
    */
   def graph2String(triples: Try[Rdf#Graph], baseURI: String, format: String = "turtle"): String = {
     logger.info(s"graph2String: base URI <$baseURI>, format $format, ${triples}")

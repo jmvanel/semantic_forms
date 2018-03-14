@@ -112,10 +112,15 @@ trait NavigationSPARQLBase[Rdf <: RDF]
          |ORDER BY DESC(?COUNT)
          |""".stripMargin
 
-  def namedGraphs(search: Option[String]): String = {
+  /** list of named graphs matching a string or regex */
+  def namedGraphs(contains: Option[String] = None, regex: Option[String] = None): String = {
       // TODO show # of triples
-      val filterClause = search match {
-        case Some(pattern) => s"  FILTER (CONTAINS(STR(?thing),'${pattern}'))"
+      val containsFilterClause = contains match {
+        case Some(pattern) => s"  FILTER ( CONTAINS(STR(?thing),'${pattern}'))"
+        case None => ""
+      }
+      val regexFilterClause = regex match {
+        case Some(pattern) => s"  FILTER ( REGEX(STR(?thing),'${pattern}'))"
         case None => ""
       }
       s"""
@@ -127,7 +132,8 @@ trait NavigationSPARQLBase[Rdf <: RDF]
          |    # TODO: lasts very long with this
          |    # OPTIONAL { ?thing a ?CLASS . }
          |  }
-         |  $filterClause
+         |  $containsFilterClause
+         |  $regexFilterClause
          |}""".stripMargin
   }
 }
