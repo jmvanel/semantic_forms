@@ -133,13 +133,14 @@ trait BasicWidgets
   def showNamedGraphsForm( request: HTTPrequest ) =
     <form role="form" >
       <p>{ I18NMessages.get("showNamedGraphs", request.getLanguage()) }</p>
-      { makeSubformForOffsetLimit() }
+      { makeSubformForOffsetLimit(request) }
       <input value="submit" type="submit" formaction="/showNamedGraphs" />
   </form>
 
-  private def makeSubformForOffsetLimit(): NodeSeq = {
+  private def makeSubformForOffsetLimit( request: HTTPrequest ): NodeSeq = {
     def simpleFormField(label: String) =
-     <label for={label}>{label}</label><input name={label} />
+     <label for={label}>{label}</label><input name={label} value={
+       request.getHTTPparameterValue(label).getOrElse("")}></input>
     simpleFormField("offset") ++
     simpleFormField("limit") ++
     simpleFormField("pattern")
