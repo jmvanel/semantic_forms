@@ -14,6 +14,7 @@ trait EnterButtons {
 
   private lazy val prefixes = new ImplementationSettings.RDFModule with RDFPrefixes[ImplementationSettings.Rdf] with DefaultConfiguration {}
   import prefixes._
+  import ops._
 
   protected def messageI18N(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
 
@@ -99,9 +100,12 @@ trait EnterButtons {
             </div>
 
             <div class="col-xs-10 col-sm-10 col-md-6">
-              <input class="form-control" type="text" name="uri" placeholder={
+              <input class="form-control sfLookup" type="text" name="uri" placeholder={
                 messageI18N("Paste_ontology")
-              } dropzone="copy"></input>
+                } dropzone="copy"
+                data-rdf-type={fromUri(rdfs.Class)}
+                data-rdf-property={fromUri(rdf.typ)}
+              ></input>
               <select class="form-control selectable" type="text" name="uri" list="class_uris">
                 <optgroup label={ messageI18N("Other_vocabs") }>
                   { suggestedClassesForCreation }

@@ -37,7 +37,7 @@ trait MainXml extends ToolsPage with EnterButtons {
     </html>
       }
 
-  /** HTML head, to be redefined */
+  /** HTML <head> tag, to be redefined */
   def head(title: String = "")(implicit lang: String = "en"): NodeSeq = <head></head>
 
   /** page bottom (overridable!) **/
@@ -94,7 +94,7 @@ trait MainXml extends ToolsPage with EnterButtons {
     <div class="collapse" id="collapseDisplay">{
       if (displaySearch) {
         enterURItoDownloadAndDisplay() ++
-          enterClassForCreatingInstance()
+        enterClassForCreatingInstance()
       }
     }</div>
     <div>{ enterSearchTerm() }</div>

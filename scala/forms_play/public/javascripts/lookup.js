@@ -5,7 +5,8 @@ $(document).ready(function() {
     var suggestionSearchCSSclass = 'sf-suggestion-search-sf';
     var topics = [];
 
-    $(".sf-standard-form").on('focus', '.sfLookup', function(event) {
+    // $(".sf-standard-form").on('focus', '.sfLookup', function(event) {
+    $("form").on('focus', '.sfLookup', function(event) {
 	var inputElement = $(this);
         $(this).autocomplete({
             autoFocus: true,
@@ -17,14 +18,14 @@ $(document).ready(function() {
                 $(this).removeClass(suggestionSearchCSSclass)
             },
             select: function( event, ui ) {
-                console.log( "Topic chosen label event ");
-                console.log($(this));
-                console.log( "Topic chosen label ui");
-                console.log(ui);
+                // console.log( "Topic chosen label event "); console.log($(this));
+                console.log( "Topic chosen label ui"); console.log(ui);
                 $emptyFields = $(this).siblings().filter(function(index) { return $(this).val() == ''}).length;
                 console.log('Champs vides : '+ $emptyFields);
                 if ($emptyFields === 0) {
-                    addedWidget = cloneWidget($(this))
+                    /* fails on class creation input, and anyway does not work anymore
+                     * (goal is to add a fresh new input field when user has chosen in the menu */
+                    // addedWidget = cloneWidget($(this))
                 }
             },
             source: function(request, callback) {
