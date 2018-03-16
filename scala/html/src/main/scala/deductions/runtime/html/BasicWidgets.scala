@@ -132,18 +132,40 @@ trait BasicWidgets
 
   def showNamedGraphsForm( request: HTTPrequest ) =
     <form role="form" >
-      <p>{ I18NMessages.get("showNamedGraphs", request.getLanguage()) }</p>
+      <p>{ I18NMessages.get("showNamedGraphs", request.getLanguage()) }
+         for offset {offsetInt(request)}, limit {limitInt(request)},
+         pattern "{paramAsString("pattern", request)}" </p>
       { makeSubformForOffsetLimit(request) }
       <input value="submit" type="submit" formaction="/showNamedGraphs" />
   </form>
 
   private def makeSubformForOffsetLimit( request: HTTPrequest ): NodeSeq = {
-    def simpleFormField(label: String) =
-     <label for={label}>{label}</label><input name={label} value={
-       request.getHTTPparameterValue(label).getOrElse("")}></input>
-    simpleFormField("offset") ++
+    def simpleFormField(label: String, increment: Int=0) = {
+      val valueOption = request.getHTTPparameterValue(label)
+      val value = toInt(valueOption) match {
+        case Some(int) => (int + increment).toString()
+        case None => valueOption.getOrElse("")
+      }
+     <label for={label}>{label}</label><input name={label} value={value}></input>
+    }
+    simpleFormField("offset", limitInt(request)) ++
     simpleFormField("limit") ++
     simpleFormField("pattern")
   }
-
+  def limitInt(request: HTTPrequest) = toInt( request.getHTTPparameterValue("limit").getOrElse("200") ) . getOrElse(200)
+  def offsetInt(request: HTTPrequest) = toInt( request.getHTTPparameterValue("offset").getOrElse("1") ) . getOrElse(1)
+  def paramAsString(param: String, request: HTTPrequest) = request.getHTTPparameterValue(param).getOrElse("") 
+  def toInt(s: Option[String]):Option[Int] = {
+    s match {
+      case Some(s) => toInt(s)
+      case None => None
+    }
+  }
+  def toInt(s: String):Option[Int] = {
+    try {
+      Some(s.toInt)
+    } catch {
+      case e: NumberFormatException => None
+    }
+  }
 }

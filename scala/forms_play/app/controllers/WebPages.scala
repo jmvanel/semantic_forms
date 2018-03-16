@@ -323,7 +323,8 @@ trait WebPages extends Controller with ApplicationTrait {
   def showNamedGraphsAction() = Action.async {
     implicit request: Request[_] =>
     val httpRequest = copyRequest(request).
-      setDefaultHTTPparameterValue("limit", "200")
+      setDefaultHTTPparameterValue("limit", "200").
+      setDefaultHTTPparameterValue("offset", "1")
     val fut = recoverFromOutOfMemoryError( showNamedGraphs(httpRequest) )
     val lang = httpRequest.getLanguage()
     val rr = fut.map( r => outputMainPage( r, lang ) )
