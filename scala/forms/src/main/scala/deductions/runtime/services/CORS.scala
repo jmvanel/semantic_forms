@@ -18,6 +18,11 @@ trait CORS //extends Configuration
     "Access-Control-Allow-Origin" -> allow_Origin,
     "Access-Control-Allow-Methods" -> "GET, POST",
     "Access-Control-Allow-Headers" -> "Slug, Link, Origin, Content-Type, Accept",
-    "Content-Type" -> "text/turtle; charset=utf-8, application/ld+json; charset=utf-8"
+    "Content-Type" -> "text/turtle; charset=utf-8, application/ld+json; charset=utf-8",
+
+    "Allow" -> "OPTIONS,HEAD,GET,POST,PUT,PATCH",
+    "Accept-Post" -> "text/turtle, application/ld+json",
+    "Accept-Patch" -> "text/ldpatch",
+    "Link" -> """<http://www.w3.org/ns/ldp#BasicContainer>; rel="type", <http://www.w3.org/ns/ldp#Resource>; rel="type""""
   )
 }
