@@ -211,12 +211,13 @@ trait LDP[Rdf <: RDF, DATASET]
     content: Option[String], request: HTTPrequest): Try[String] = {
     val putURI = request.absoluteURL(
       servicePrefix + uri +
-      ( if( uri.endsWith("/") ) "" else "/" ) +
+      ( if( uri === "" || uri.endsWith("/") ) "" else "/" ) +
       slug.getOrElse( makeId("") ) )
 
     logger.info(s"putTriples: content: ${content.get}")
-    logger.info(s"putTriples: contentType: ${contentType}")
-    logger.info(s"putTriples: slug: ${slug}")
+    logger.info(s"""putTriples: contentType: "${contentType}""")
+    logger.info(s"""putTriples: slug: "${slug}"""")
+    logger.info(s"""putTriples: uri (path): "${uri}"""")
     logger.info(s"putTriples: PUT (graph) URI: ${putURI}")
 
     val r = rdfStore.rw( dataset, {
