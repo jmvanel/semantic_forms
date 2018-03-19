@@ -88,6 +88,7 @@ GET     /files/*file                controllers.Files.at(file)
 
 # LDP
 GET     /ldp/*uri              controllers.Application.ldp(uri: String)
+GET     /ldp                   controllers.Application.ldp(uri: String ?= "")
 POST    /ldp/*uri              controllers.Application.ldpPOSTAction(uri: String)
 POST    /ldp                   controllers.Application.ldpPOSTActionNoURI()
 PUT     /ldp/*uri              controllers.Application.ldpPOSTAction(uri: String)

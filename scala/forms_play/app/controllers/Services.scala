@@ -166,18 +166,18 @@ with RDFContentNegociation
 
       println(s">>>> ldp($uri): mimeType $mimeType")
       if (mimeType != htmlMime) {
-        val response = getTriples(uri, request.path, mimeType, httpRequest)
-        logger.info("LDP: GET: result " + response)
+        val responseBody = getTriples(uri, request.path, mimeType, httpRequest)
+        logger.info("LDP: GET: response Body\n" + responseBody)
         val contentType = mimeType + "; charset=utf-8"
         logger.info(s"contentType $contentType")
-        Ok(response)
+        Ok(responseBody)
           .as(contentType)
           // DEBUG for yannick TODO reestablish !!!!!!!!!!!!!!! .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
           .withHeaders(CONTENT_TYPE -> mimeType)
           .withHeaders("Link" -> """<http://www.w3.org/ns/ldp#BasicContainer>; rel="type", <http://www.w3.org/ns/ldp#Resource>; rel="type"""")
           .withHeaders("Allow" -> "OPTIONS,GET,POST,PUT,PATCH,HEAD")
           // TODO rather use timestamp on TDB2
-          .withHeaders("ETag" -> """"${DigestUtils.md5Hex(response)}"""" )
+          .withHeaders("ETag" -> s""""${DigestUtils.md5Hex(responseBody)}"""" )
           // ,PATCH, HEAD,
           .withHeaders("Accept-Post" -> """"text/turtle, application/ld+json""")
       } else { //// Redirect to /display ////
@@ -211,7 +211,7 @@ with RDFContentNegociation
             .withHeaders(
 //              ACCESS_CONTROL_ALLOW_ORIGIN -> "*",
                 "Location" -> serviceCalled,
-                "Link" -> """<http://www.w3.org/ns/ldp#Resource>; rel="type""""
+                "Link" -> """<http://www.w3.org/ns/ldp#BasicContainer>; rel="type", <http://www.w3.org/ns/ldp#Resource>; rel="type""""
                 )
           logger.info(s"	LDP POST: $result")
           result
