@@ -5,7 +5,7 @@ echo Beware: This script can take hours! You may have to start from a virgin dat
 echo Press RETURN
 read WAIT
 
-DBPEDIA_VERSION=2015-10
+DBPEDIA_VERSION=2016-10
 DBPEDIA_DIR=~/data/dbpedia.org/$DBPEDIA_VERSION
 DBPEDIA_GRAPH_URI=~/data/dbpedia.org/$DBPEDIA_VERSION
 

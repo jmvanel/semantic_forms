@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DBPEDIA_VERSION=2015-10
+DBPEDIA_VERSION=2016-10
 DBPEDIA_DIR=$HOME/data/dbpedia.org/$DBPEDIA_VERSION
 DBPEDIA_GRAPH_URI=file://$HOME/data/dbpedia.org/$DBPEDIA_VERSION
 JENA=apache-jena-3.1.0

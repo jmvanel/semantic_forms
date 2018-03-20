@@ -1,7 +1,7 @@
 #!/bin/bash
 
 LANG=fr
-DBPEDIA_VERSION=2015-10
+DBPEDIA_VERSION=2016-10
 DBPEDIA_DOWNLOAD=http://downloads.dbpedia.org/$DBPEDIA_VERSION/core-i18n
 EXT=ttl.bz2
 
