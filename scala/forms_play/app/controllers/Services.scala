@@ -173,7 +173,7 @@ with RDFContentNegociation
         Ok(responseBody)
           .as(contentType)
           // DEBUG for yannick TODO reestablish !!!!!!!!!!!!!!! .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
-          .withHeaders(CONTENT_TYPE -> mimeType)
+//          .withHeaders(CONTENT_TYPE -> mimeType)
           .withHeaders("Link" -> """<http://www.w3.org/ns/ldp#BasicContainer>; rel="type", <http://www.w3.org/ns/ldp#Resource>; rel="type"""")
           .withHeaders("Allow" -> "OPTIONS,GET,POST,PUT,PATCH,HEAD")
           // TODO rather use timestamp on TDB2
