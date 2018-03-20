@@ -18,25 +18,20 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
   import config._
 
   private[html] def createHTMLiteralReadonlyField(
-    l:       formMod#LiteralEntry,
-    request: HTTPrequest          = HTTPrequest()): NodeSeq = {
-    val userLanguage = request.getLanguage()
-    val dataLanguage = l.lang
-    // TODO this behavior sould be configurable
-    if (userLanguage == dataLanguage
-      || dataLanguage == "en"
-      || dataLanguage == "")
+    literalEntry: formMod#LiteralEntry,
+    request:      HTTPrequest          = HTTPrequest()): NodeSeq = {
+    if (isLanguageDataFittingRequest(literalEntry, request))
       <xml:group>
         {
           val valueDisplayed =
-            if (l.type_.toString().endsWith("dateTime"))
-              l.valueLabel.replaceFirst("T00:00:00$", "")
+            if (literalEntry.type_.toString().endsWith("dateTime"))
+              literalEntry.valueLabel.replaceFirst("T00:00:00$", "")
             else
-              l.valueLabel
+              literalEntry.valueLabel
           Unparsed(valueDisplayed)
         }
-        { makeUserInfoOnTriples(l, userLanguage) }
-        <div>{ if (l.lang != "" && l.lang != "No_language") " > " + l.lang }</div>
+        { makeUserInfoOnTriples(literalEntry, request.getLanguage()) }
+        <div>{ if (literalEntry.lang != "" && literalEntry.lang != "No_language") " > " + literalEntry.lang }</div>
       </xml:group>
     else
       <span/>

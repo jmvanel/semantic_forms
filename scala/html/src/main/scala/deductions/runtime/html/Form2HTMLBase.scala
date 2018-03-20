@@ -9,6 +9,7 @@ import org.joda.time.DateTime
 
 import scalaz._
 import Scalaz._
+import deductions.runtime.core.HTTPrequest
 
 /** generate HTML from abstract Form : common parts for Display & edition */
 private[html] trait Form2HTMLBase[NODE, URI <: NODE]
@@ -171,4 +172,13 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
 
   def firstNODEOrElseEmptyString(set: Iterable[NODE]): String = set.headOption.getOrElse("").toString()
 
+  def isLanguageDataFittingRequest(
+    literalEntry: formMod#LiteralEntry,
+    request:      HTTPrequest): Boolean = {
+    val userLanguage = request.getLanguage()
+    val dataLanguage = literalEntry.lang
+    userLanguage == dataLanguage ||
+      dataLanguage == "en" ||
+      dataLanguage == ""
+  }
 }

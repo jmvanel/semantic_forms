@@ -121,8 +121,8 @@ import scala.xml.Comment
           if (editable ||
               toPlainString(field.value) != "" ||
               isSeparator(field)) {
-            val fieldDataOrInput = makeFieldDataOrInput(
-                field, hrefPrefix, editable, lang, request, css=cssForURI)
+            val fieldDataOrInput =
+                  createHTMLField(field, editable, hrefPrefix, lang, request, css=cssForURI)
             if( fieldDataOrInput != <span/> )
              <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
               makeFieldSubject(field) ++
@@ -214,7 +214,7 @@ import scala.xml.Comment
    *  - form subject URI
    *  - class or Form specification
    */
-  private def dataFormHeader(form: formMod#FormSyntax, lang: String) = {
+  private def dataFormHeader(form: formMod#FormSyntax, lang: String): NodeSeq = {
     import form._
     if (subject != "") {
       Text(form.title) ++
@@ -336,23 +336,12 @@ import scala.xml.Comment
 
   /** make Field Data (display) Or Input (edit)
    *  TODO: does not do much! */
-  private def makeFieldDataOrInput(field: formMod#Entry, hrefPrefix: String = config.hrefDisplayPrefix,
-                                   editable: Boolean, lang: String = "en",
-                                   request: HTTPrequest = HTTPrequest(),
-                                   css: String="")(implicit form: FormModule[NODE, URI]#FormSyntax) = {
-
-    def doIt = createHTMLField(field, editable, hrefPrefix, lang, request, css=css)
-
-    if (shouldAddAddRemoveWidgets(field, editable))
-      doIt
-    else if (editable)
-      // that's for corporate_risk: TODO : simplify <<<<<<<<<<<<<<
-      <div >
-        { doIt }
-      </div>
-    else
-      doIt
-  }
+//  private def makeFieldDataOrInput(field: formMod#Entry, hrefPrefix: String = config.hrefDisplayPrefix,
+//                                   editable: Boolean, lang: String = "en",
+//                                   request: HTTPrequest = HTTPrequest(),
+//                                   css: String="")(implicit form: FormModule[NODE, URI]#FormSyntax) = {
+//    createHTMLField(field, editable, hrefPrefix, lang, request, css=css)
+//  }
 
 }
 
