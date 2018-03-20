@@ -138,9 +138,7 @@ trait WebPages extends Controller with ApplicationTrait {
           def result(request: HTTPrequest): NodeSeq = {
             val precomputed: MainPagePrecompute = MainPagePrecompute(request)
             import precomputed._
-            //        println( s"==== displayURI: precomputed $precomputed")
             logger.info(s"displayURI: expandOrUnchanged $uri")
-            //        callAllServiceListeners(request)
             val userInfo = displayUser(userid, uri, title, lang)
             htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
               graphURI = makeAbsoluteURIForSaving(userid),

@@ -53,15 +53,15 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
               editable=$editable lang=$lang graphURI <$graphURI>""")
     val uri = uri0.trim()
     var typeChange = false
-    if (uri != null && uri != "")
+    if (uri =/= null && uri =/= "")
       try {
         val datasetOrDefault = getDatasetOrDefault(database)
         val result: Try[NodeSeq] = {
 
           // 1. retrieve or check URI from Internet
 
-            val (tryGraph: Try[Rdf#Graph], failureOrStatistics: NodeSeq ) =
-              if (blankNode != "true") {
+          val (tryGraph: Try[Rdf#Graph], failureOrStatistics: NodeSeq ) =
+              if (blankNode =/= "true") {
                 // TODO pass datasetOrDefault)
               val tryGraph = retrieveURIBody(
                 makeUri(uri), datasetOrDefault, request, transactionsInside=true)
@@ -76,25 +76,24 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
               }
               (tryGraph, failureOrStatistics)
             } else
-              (Success(emptyGraph), "") // ??? makeUri("_:" + uri ) else makeUri(uri),
+              (Success(emptyGraph), "")
 
           tryGraph match {
             case Success(gr) =>
 
-              println(s"htmlForm: Success !!!!!!!!!!")
+              logger.debug(s"htmlForm: Success !!!!!!!!!!")
               wrapInReadTransaction {
                 // FEATURE: annotate plain Web site
-                
                 // TODO use exists( triple => ... )
                 typeChange = gr.size === 1 && gr.triples.head.objectt == foaf.Document
-                //     println(s">>>> htmlForm typeChange $typeChange") ; printGraph( gr )
+                logger.debug(s">>>> htmlForm typeChange $typeChange")
               }
 
               import scala.concurrent.ExecutionContext.Implicits.global
               Future {
                 wrapInTransaction {
                   // TODO should be done in FormSaver
-                  println(s"Search in <$uri> duplicate graph rooted at blank node: size " +
+                  logger.debug(s"Search in <$uri> duplicate graph rooted at blank node: size " +
                     ops.getTriples(gr).size)
                   manageBlankNodesReload(gr,
                     URI(uri), datasetOrDefault)
@@ -108,8 +107,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
           // FEATURE: annotate plain Web site
           val editable2 = editable || typeChange
 
-//          wrapInTransaction({  // or wrapInReadTransaction ?
-            implicit val graph = allNamedGraph
+          implicit val graph = allNamedGraph
           val (formItself, formSyntax) =
             htmlFormElemRaw(
               uri, graph, hrefDisplayPrefix, blankNode, editable = editable2,
@@ -118,16 +116,14 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
               graphURI = graphURI,
               database = database,
               request = request, inputGraph = tryGraph)
-//            println(s">>>> after htmlFormElemRaw, formSyntax $formSyntax")
+            logger.debug(s">>>> after htmlFormElemRaw, formSyntax $formSyntax")
 
             wrapInTransaction({  // or wrapInReadTransaction ?
             Text("\n") ++
               titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable2) ++
-              // PENDING : really need this wrapping?
-              <div class="row">
-                <!-- + "Above div wraps failure Or Statistics form header (form generation traceability) ++-->
-                <div class="col-xs-12">{ failureOrStatistics }</div>
-              </div> ++
+              <div class="col-xs-12">
+                <!--++ div wraps failure Or Statistics form header (form generation traceability) ++-->
+                { failureOrStatistics }</div> ++
               profileClaimUI(request) ++
               formItself
           }, datasetOrDefault)

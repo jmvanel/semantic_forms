@@ -38,7 +38,6 @@ import scala.xml.Comment
    *  @param actionURI, actionURI2 HTML actions for the 2 submit buttons
    *  @param graphURI URI for named graph to save user inputs
    */
-//  private[html]
   def generateHTML(form: FormModule[NODE, URI]#FormSyntax,
                    hrefPrefix: String = config.hrefDisplayPrefix,
                    editable: Boolean = false,
@@ -56,30 +55,22 @@ import scala.xml.Comment
     def wrapFieldsWithFormTag(htmlFormFields: NodeSeq): NodeSeq =
 
       <form class="sf-standard-form" action={ actionURI } method="POST" id="form">
-      { if( actionURI != "" )
-        <div class="row">
-          <div class="col col-sm-4 col-sm-offset-4">
-            <input value={ mess("SAVE") }
-          type="submit" class="form-control btn btn-primary "/></div> <!--class="pull-right"-->
-        </div>
-      }
+        { addSaveButton(actionURI2) }
         <br></br>
-
         { htmlFormFields }
-
-      { if( actionURI2 != "" )
-        <div class="row">
-          <div class="col col-sm-4 col-sm-offset-4">
-            <input value={ mess("SAVE") }
-              formaction={ actionURI2 } type="submit" class="form-control btn btn-primary "/></div>
-              <!--class="pull-right"-->
-        </div>
-      }
+        { addSaveButton(actionURI2) }
       </form>
+
+    def addSaveButton(actionURIarg: String) =
+      if (actionURIarg =/= "")
+        <div class="col col-sm-4 col-sm-offset-4">
+          <input value={ mess("SAVE") } formaction={ actionURIarg }
+          type="submit" class="form-control btn btn-primary "/>
+        </div>
 
     def mess(m: String): String = message(m, lang)
 
-//    println(s"======== generateHTML: $form" ) // DEBUG
+    //// output begins ////
 
     if (editable)
       wrapFieldsWithFormTag(htmlFormFields)
@@ -103,47 +94,41 @@ import scala.xml.Comment
 
     implicit val formImpl: formMod#FormSyntax = form
 
-    val hidden: NodeSeq = if (editable) {
-      <input type="hidden" name="url" value={ urlEncode(form.subject) }/>
-      <input type="hidden" name="graphURI" value={ urlEncode(graphURI) }/>
-    } else Seq()
+    val hiddenInputs: NodeSeq =
+      if (editable) {
+        <input type="hidden" name="url" value={ urlEncode(form.subject) }/>
+        <input type="hidden" name="graphURI" value={ urlEncode(graphURI) }/>
+      } else Seq()
 
     /* make Fields Label And Data */
-    def makeFieldsLabelAndData(fields: Seq[FormEntry],
-                             cssForURI: String = "",
-                             cssForProperty: String = ""): NodeSeq = {
+    def makeFieldsLabelAndData(
+      fields:         Seq[FormEntry],
+      cssForURI:      String         = "",
+      cssForProperty: String         = ""): NodeSeq = {
       if (!fields.isEmpty) {
         val lastEntry = fields.last
-        val fieldsHTML = for (
+        for (
           (preceding, field) <- (lastEntry +: fields) zip fields // do not display NullResourceEntry
-          if (field.property.toString != "")
+          if ( toPlainString(field.property) =/= "")
         ) yield {
           if (editable ||
-              toPlainString(field.value) != "" ||
-              isSeparator(field)) {
-            val fieldDataOrInput =
-                  createHTMLField(field, editable, hrefPrefix, lang, request, css=cssForURI)
-            if( fieldDataOrInput != <span/> )
-             <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
+            toPlainString(field.value) =/= "" ||
+            isSeparator(field)) {
+            <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
               makeFieldSubject(field) ++
-                makeFieldLabel(preceding, field, editable, lang
-                    , cssForProperty = cssForProperty
-                    ) ++
-               fieldDataOrInput
-             }</div>
-            else
-              Text("\n")
-          } else
-            Text("\n")
+                makeFieldLabel(preceding, field, editable, lang,
+                  cssForProperty = cssForProperty) ++
+                createHTMLField(field, editable, hrefPrefix, lang, request, css = cssForURI)
+            }</div>
+          } else Text("\n")
         }
-        fieldsHTML
       } else Text("\n")
     }
 
     /* makeFieldsGroups Builds a groups of HTML fields to be used with the jQuery UI tabs generator
      *
-     * @return NodeSeq Fragment HTML contenant un groupe de champs
-     */
+     * TODO extract Fields Groups feature in specific Trait
+     * @return NodeSeq Fragment HTML containing a group of fields */
     def makeFieldsGroups(): NodeSeq = {
       val map = form.propertiesGroups
 
@@ -182,26 +167,26 @@ import scala.xml.Comment
       } else NodeSeq.Empty
     }
 
-    /// output begins ////
+    //// output begins ////
 
     val htmlResult: NodeSeq =
-      hidden ++
-        <div class={css.cssClasses.formRootCSSClass  } >
+      hiddenInputs ++
+        <div class={ css.cssClasses.formRootCSSClass }>
           {
-              Comment(s"Above div wraps second form header and form (form generation traceability) class=${css.cssClasses.formRootCSSClass  }") ++
+            Comment(s"Above div wraps second form header and form (form generation traceability) class=${css.cssClasses.formRootCSSClass}") ++
               <input type="hidden" name="uri" value={ urlEncode(form.subject) }/> ++
               <div class="form-group">
-                <div class="col-xs-12"> {dataFormHeader(form, lang) }
-              </div></div> ++
+                <div class="col-xs-12">
+                  { dataFormHeader(form, lang) }
+                </div>
+              </div> ++
               {
-//                if (request.rawQueryString.contains("tabs=true")) {
-//                println(s">>>> queryString ${request.queryString}")
                 if (request.queryString.contains("tabs")) {
-//                	println(s">>>> makeFieldsGroups")
                   makeFieldsGroups()
                 } else
-                  makeFieldsLabelAndData(form.fields,
-                             cssForURI, cssForProperty)
+                  makeFieldsLabelAndData(
+                    form.fields,
+                    cssForURI, cssForProperty)
               }
           }
         </div>
@@ -209,14 +194,15 @@ import scala.xml.Comment
   }
 
   /**
-   * Form Header inside the form box with data fields: displays:
+   * Form Header inside the form box with data fields;
+   * it displays:
    *  - form title
    *  - form subject URI
    *  - class or Form specification
    */
   private def dataFormHeader(form: formMod#FormSyntax, lang: String): NodeSeq = {
     import form._
-    if (subject != "") {
+    if (toPlainString(subject) =/= "") {
       Text(form.title) ++
         (if (form.subject != nullURI)
           Text(", at URI ") ++
@@ -236,7 +222,6 @@ import scala.xml.Comment
               I18NMessages.get("Form_specification", lang) + ": " ++
                 createHyperlinkElement(toPlainString(formURI), formLabel)
             case _ =>
-              // "Class " ++
 //            ( for(classe <- classs) yield
 //              createHyperlinkElement(toPlainString(classe), toPlainString(classe)) ++
 //              " (automatic form)"
@@ -312,7 +297,7 @@ import scala.xml.Comment
         <span/>
     }
 
-    if( xmlField != <span/> )
+    if( xmlField != Seq(<span/>) )
     // TODO if() below seems useless !!!!
     if (displayInTable === true) {
       Seq(createAddRemoveWidgets(field, editable)) ++
