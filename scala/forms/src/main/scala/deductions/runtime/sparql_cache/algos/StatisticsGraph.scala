@@ -31,7 +31,7 @@ trait StatisticsGraph[Rdf <: RDF, DATASET] extends RDFHelpers[Rdf]
     val linkToClasses = getObjects(graph, focus, rdf.typ).toList
 //    val classesAsTurtleTerms = linkToClasses.map { abbreviateTurtle(_) }
     val subjectsLink = makeHyperlinkTtoGraphContent(focus, s" $subjectsCount subjects ", subjectsCount)
-    <p class="sf-statistics">
+    <p class="sf-statistics sf-local-rdf-link">
     RDF document:
       { triplesCount } triples,
       { subjectsLink } ,
