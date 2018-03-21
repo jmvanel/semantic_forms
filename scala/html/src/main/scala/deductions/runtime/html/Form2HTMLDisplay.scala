@@ -9,6 +9,9 @@ import java.net.URLEncoder
 import deductions.runtime.utils.I18NMessages
 import deductions.runtime.core.HTMLutils
 
+import scalaz._
+import Scalaz._
+
 /** generate HTML from abstract Form for Display (Read only) */
 trait Form2HTMLDisplay[NODE, URI <: NODE]
   extends Form2HTMLBase[NODE, URI]
@@ -184,4 +187,41 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     <a href={ "/table?query=" + URLEncoder.encode(sparlqlQuery, "UTF-8") } target="_blank">TABLE</a>
   }
 
+
+  /**
+   * Statistics about languages In Data:
+   *  - total number of literal triples,
+   *  - excluded ones
+   */
+  def languagesInDataStatistics(
+    form:    formMod#FormSyntax,
+    request: HTTPrequest): NodeSeq = {
+    val fittingCount = countLanguageDataFittingRequest( form, request)
+    val literalEntriesCount = getLiteralEntries(form).size
+
+    println(s"fittingCount $fittingCount, literalEntriesCount $literalEntriesCount")
+        form.fields.collect {
+      case l: formMod#LiteralEntry => l
+    } . foreach ( println(_) )
+
+    if(fittingCount != literalEntriesCount)
+      <span>{literalEntriesCount - fittingCount} data not fitting user language ({request.getLanguage()})</span>
+    else NodeSeq.Empty
+  }
+
+  private def getLiteralEntries(form: formMod#FormSyntax) = {
+    form.fields.collect {
+//        case l: formMod#LiteralEntry if ( l.valueLabel =/= "" ) => l
+        case l: formMod#LiteralEntry if ( toPlainString(l.value) =/= "" ) => l
+    }
+  }
+
+  private def countLanguageDataFittingRequest(
+    form:    formMod#FormSyntax,
+    request: HTTPrequest): Int = {
+    getLiteralEntries(form).count(
+      f => f match {
+        case l => isLanguageDataFittingRequest(l, request)
+      })
+  }
 }

@@ -47,16 +47,16 @@ import scala.xml.Comment
                    cssForURI: String = "",
                    cssForProperty: String = "" ): NodeSeq = {
 
-   val htmlFormFields = time("generateHTMLJustFields",
+    val htmlFormFields = time(
+      "generateHTMLJustFields",
       generateHTMLJustFields(form, hrefPrefix, editable, graphURI, lang, request,
-    		  cssForURI, cssForProperty ))
+        cssForURI, cssForProperty),
+      logger.isInfoEnabled())
 
 		/* wrap Fields With HTML <form> Tag */
     def wrapFieldsWithFormTag(htmlFormFields: NodeSeq): NodeSeq =
-
       <form class="sf-standard-form" action={ actionURI } method="POST" id="form">
         { addSaveButton(actionURI2) }
-        <br></br>
         { htmlFormFields }
         { addSaveButton(actionURI2) }
       </form>
@@ -75,6 +75,7 @@ import scala.xml.Comment
     if (editable)
       wrapFieldsWithFormTag(htmlFormFields)
     else
+      languagesInDataStatistics( form, request) ++
       htmlFormFields
   }
 
@@ -98,6 +99,7 @@ import scala.xml.Comment
       if (editable) {
         <input type="hidden" name="url" value={ urlEncode(form.subject) }/>
         <input type="hidden" name="graphURI" value={ urlEncode(graphURI) }/>
+        <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
       } else Seq()
 
     /* make Fields Label And Data */
@@ -173,8 +175,8 @@ import scala.xml.Comment
       hiddenInputs ++
         <div class={ css.cssClasses.formRootCSSClass }>
           {
-            Comment(s"Above div wraps second form header and form (form generation traceability) class=${css.cssClasses.formRootCSSClass}") ++
-              <input type="hidden" name="uri" value={ urlEncode(form.subject) }/> ++
+            Comment(s"""Above div wraps second form header and form (form generation traceability)
+              class=${css.cssClasses.formRootCSSClass}""") ++
               <div class="form-group">
                 <div class="col-xs-12">
                   { dataFormHeader(form, lang) }
