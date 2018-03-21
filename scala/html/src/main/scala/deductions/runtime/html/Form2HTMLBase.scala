@@ -178,7 +178,8 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     val userLanguage = request.getLanguage()
     val dataLanguage = literalEntry.lang
     userLanguage == dataLanguage ||
-      dataLanguage == "en" ||
-      dataLanguage == ""
+      dataLanguage === "en" ||
+      dataLanguage === ""||
+      dataLanguage === "No_language"
   }
 }
