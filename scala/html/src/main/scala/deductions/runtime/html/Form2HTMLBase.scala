@@ -173,13 +173,18 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
   def firstNODEOrElseEmptyString(set: Iterable[NODE]): String = set.headOption.getOrElse("").toString()
 
   def isLanguageDataFittingRequest(
-    literalEntry: formMod#LiteralEntry,
-    request:      HTTPrequest): Boolean = {
-    val userLanguage = request.getLanguage()
-    val dataLanguage = literalEntry.lang
-    userLanguage == dataLanguage ||
-      dataLanguage === "en" ||
-      dataLanguage === ""||
-      dataLanguage === "No_language"
+    entry:   formMod#Entry,
+    request: HTTPrequest): Boolean = {
+    entry match {
+      case literalEntry: formMod#LiteralEntry =>
+        val userLanguage = request.getLanguage()
+        val dataLanguage = literalEntry.lang
+        userLanguage == dataLanguage ||
+          dataLanguage === "en" ||
+          dataLanguage === "" ||
+          dataLanguage === "No_language"
+      case _ => true
+    }
   }
+
 }

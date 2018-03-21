@@ -111,18 +111,18 @@ import scala.xml.Comment
         val lastEntry = fields.last
         for (
           (preceding, field) <- (lastEntry +: fields) zip fields // do not display NullResourceEntry
-          if ( toPlainString(field.property) =/= "")
+          if (toPlainString(field.property) =/= "" &&
+            isLanguageDataFittingRequest(field, request) &&
+            (editable ||
+              toPlainString(field.value) =/= "" ||
+              isSeparator(field)))
         ) yield {
-          if (editable ||
-            toPlainString(field.value) =/= "" ||
-            isSeparator(field)) {
-            <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
-              makeFieldSubject(field) ++
-                makeFieldLabel(preceding, field, editable, lang,
-                  cssForProperty = cssForProperty) ++
-                createHTMLField(field, editable, hrefPrefix, lang, request, css = cssForURI)
-            }</div>
-          } else Text("\n")
+          <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
+            makeFieldSubject(field) ++
+            makeFieldLabel(preceding, field, editable, lang,
+              cssForProperty = cssForProperty) ++
+            createHTMLField(field, editable, hrefPrefix, lang, request, css = cssForURI)
+          }</div>
         }
       } else Text("\n")
     }
@@ -299,7 +299,7 @@ import scala.xml.Comment
         <span/>
     }
 
-    if( xmlField != Seq(<span/>) )
+    if( xmlField != (<span/>) )
     // TODO if() below seems useless !!!!
     if (displayInTable === true) {
       Seq(createAddRemoveWidgets(field, editable)) ++
