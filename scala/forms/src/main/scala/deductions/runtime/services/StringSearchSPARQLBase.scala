@@ -90,11 +90,13 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
     |${declarePrefix(text)}
     |${declarePrefix(rdfs)}
     |${declarePrefix(form)}
+    |${declarePrefix(dbo)}
     |SELECT DISTINCT ?thing ?COUNT WHERE {
     |  ${textQuery(search, unionGraph=true)}
     |  GRAPH <urn:x-arq:UnionGraph> {
     |    ${classCriterium(classe, unionGraph=true)}
     |    $countPattern
+    |    $excludePerson
     |  }
     |}
     |ORDER BY DESC(?COUNT)
