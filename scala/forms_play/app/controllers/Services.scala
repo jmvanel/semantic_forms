@@ -16,8 +16,7 @@ import org.apache.commons.codec.digest.DigestUtils
 
 /** controller for non-SPARQL Services (or SPARQL related but not in the W3C recommendations) */
 trait Services extends ApplicationTrait
-with RDFContentNegociation
-{
+with RDFContentNegociation {
 
   /** /form-data service; like /form but raw JSON data */
   def formDataAction(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
@@ -172,14 +171,13 @@ with RDFContentNegociation
         logger.info(s"contentType $contentType")
         Ok(responseBody)
           .as(contentType)
-          // DEBUG for yannick TODO reestablish !!!!!!!!!!!!!!! .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
-//          .withHeaders(CONTENT_TYPE -> mimeType)
-          .withHeaders("Link" -> """<http://www.w3.org/ns/ldp#BasicContainer>; rel="type", <http://www.w3.org/ns/ldp#Resource>; rel="type"""")
-          .withHeaders("Allow" -> "OPTIONS,GET,POST,PUT,PATCH,HEAD")
-          // TODO rather use timestamp on TDB2
           .withHeaders("ETag" -> s""""${DigestUtils.md5Hex(responseBody)}"""" )
-          // ,PATCH, HEAD,
-          .withHeaders("Accept-Post" -> """"text/turtle, application/ld+json""")
+          // TODO rather use timestamp on TDB2
+
+          .withHeaders(defaultLDPheaders : _* )
+//          .withHeaders("Link" -> """<http://www.w3.org/ns/ldp#BasicContainer>; rel="type", <http://www.w3.org/ns/ldp#Resource>; rel="type"""")
+//          .withHeaders("Allow" -> "OPTIONS,GET,POST,PUT,PATCH,HEAD")
+//          .withHeaders("Accept-Post" -> """"text/turtle, application/ld+json""")
       } else { //// Redirect to /display ////
 //    	  println(s">>>> ldp: Redirect $hrefDisplayPrefix http://${request.host}/ldp/$uri")
         val ldpURL = "http://" + request.host + "/ldp/" + URLEncoder.encode(uri, "UTF-8")
@@ -189,6 +187,13 @@ with RDFContentNegociation
         call
       }
   }
+
+  val defaultLDPheaders = Seq(
+    // DEBUG for yannick TODO reestablish !!!!!! ACCESS_CONTROL_ALLOW_ORIGIN -> "*",
+    "Link" -> """<http://www.w3.org/ns/ldp#BasicContainer>; rel="type", <http://www.w3.org/ns/ldp#Resource>; rel="type"""",
+    "Allow" -> "OPTIONS,GET,POST,PUT,PATCH,HEAD",
+    "Accept-Post" -> """"text/turtle, application/ld+json"""
+  )
 
   /** */
   def ldpPOSTAction(uri: String = "") =
@@ -239,6 +244,8 @@ with RDFContentNegociation
       Ok("")
       // TODO, like GET <<<<<<<<<<<<
       .withHeaders("ETag" -> "123456789") // """"${DigestUtils.md5Hex(response)}"""" )
+      .withHeaders(defaultLDPheaders : _* )
+      .withHeaders( CONTENT_TYPE -> defaultContentType )
     }
 
   //  implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(

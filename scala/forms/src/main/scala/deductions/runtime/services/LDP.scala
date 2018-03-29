@@ -42,6 +42,8 @@ trait LDP[Rdf <: RDF, DATASET]
     with RDFPrefixes[Rdf]
     with URIManagement {
 
+  val defaultContentType = jsonldMime
+
   val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   implicit val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]
   val rdfXMLWriter: RDFWriter[Rdf, Try, RDFXML]
@@ -61,7 +63,7 @@ trait LDP[Rdf <: RDF, DATASET]
    */
   def getTriples(uri: String, relativeURIpath: String, accept: String, request: HTTPrequest): String = {
     val triplesResource = getTriplesNonContainer(uri, relativeURIpath, accept, request)
-//    logger.info(s"""getTriples(<$uri>: triplesResource (triplesNonContainer) "$triplesResource" """)
+    logger.info(s"""getTriples(<$uri>: triplesResource (triplesNonContainer) "$triplesResource" """)
 //    println( """triplesNonContainer.startsWith("{ }") """ + triplesResource.startsWith("{ }") )
     // TODO getTriplesNonContainer() should return a graph , not a string
     val acceptHeader = request.getHTTPheaderValue("Accept")
