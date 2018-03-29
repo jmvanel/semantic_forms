@@ -153,12 +153,13 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
 		  case ((k, v), next) => new scala.xml.UnprefixedAttribute(k, v, next)
 		  })
 
+  /** make User Info On given Triple entry */
   def makeUserInfoOnTriples(entry: formMod#Entry, lang: String="en") ={
     val userMetadata = entry.metadata
     val timeMetadata = entry.timeMetadata
     val time: String = new DateTime(timeMetadata).toDateTime.toString("dd/MM/yyyy HH:mm")
     if (timeMetadata != -1){
-      <span>
+      <span class="sf-local-rdf-link">
         &nbsp;-&nbsp;{ message("modified_by", lang) }
         {
           <a style="text-decoration: underline" href={
