@@ -3,6 +3,12 @@ Play! framework application for generic semantic data manipulation and navigatio
 
 semantic\_forms is a framework for building all sorts of applications backed by a SPARQL database, and whose data model is specified by a sumple OWL ontology.
    
+# Run from sources
+
+```shell
+sbt run
+```
+
 # Choice of applications and libraries
 
 - generic web application in [forms\_play](forms_play) : usable both by semantic web aware users and non computer skilled users

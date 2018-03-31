@@ -1,18 +1,18 @@
 <!--
-gh-md-toc README.md
-pandoc --standalone README.md > README.html -->
+gh-md-toc --insert README.md
+pandoc --standalone README.md > README.html
+-->
 
 Play! framework implementations
 ---
 
-Table of Contents
-=================
-
-   * [Table of Contents](#table-of-contents)
+<!--ts-->
+      * [Play! framework implementations](#play-framework-implementations)
    * [Introduction](#introduction)
       * [Terminology](#terminology)
    * [How to run](#how-to-run)
       * [Run locally from sources](#run-locally-from-sources)
+         * [Other developer's tasks](#other-developers-tasks)
       * [Run without development environment](#run-without-development-environment)
          * [Obtaining the zipped application](#obtaining-the-zipped-application)
          * [Runnning the zipped application](#runnning-the-zipped-application)
@@ -38,6 +38,9 @@ Table of Contents
       * [Features list](#features-list)
       * [Unimplemented features](#unimplemented-features)
 
+<!-- Added by: jmv, at: 2018-03-31T19:04+02:00 -->
+
+<!--te-->
 
 # Introduction
 Here is a web application with Play! framework around the [form generator](../forms/README.md) that does:
@@ -90,8 +93,6 @@ Then SBT will download the libraries and dependencies.
   - change directory to `scala/` within the source downloaded from github;
   - type in the SBT console :
 ```
-projects
-project forms_play
 run
 ```
 NOTE: we moved to Multi-project build in SBT on 20167-03-18 . The common settings are in
@@ -121,6 +122,13 @@ A convenience link to [local semantic\_forms ScalaDoc](../forms/target/scala-2.1
 
 
 Some references on ScalaDoc: http://docs.scala-lang.org/style/scaladoc.html , http://docs.scala-lang.org/overviews/scaladoc/for-library-authors.html , http://stackoverflow.com/questions/15394322/how-to-disambiguate-links-to-methods-in-scaladoc
+
+### Other developer's tasks
+Checking dependencies
+```
+project forms
+dependencyUpdates
+```
 
 ## Run without development environment
 There are several use cases:

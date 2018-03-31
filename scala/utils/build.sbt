@@ -8,7 +8,7 @@ libraryDependencies ++= Seq(
   bananaDependency,
   jenaDependency
 )
-libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
+libraryDependencies += xmlDependency
 
 publishArtifact in (Compile, packageDoc) := false
 sources in (Compile,doc) := Seq.empty

@@ -15,15 +15,16 @@ object Common {
   val jenaPermissionsDependency = "org.apache.jena" % "jena-permissions" % jenaVersion	exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
   val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion		exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
 
-  val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
+  val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.1.0" // 1.0.6"
 
   val junitDependency = "junit" % "junit" % "4.12" % Test
   val scalatestDependency = "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 
+  val log4jVersion = "2.11.0" // 2.9.1"
   val loggingDependencies = Seq(
-    "org.apache.logging.log4j" % "log4j-api" % "2.9.0",
-    "org.apache.logging.log4j" % "log4j-core" % "2.9.0",
-    "org.apache.logging.log4j" % "log4j-slf4j-impl" % "2.9.0" 
+    "org.apache.logging.log4j" % "log4j-api" % log4jVersion,
+    "org.apache.logging.log4j" % "log4j-core" % log4jVersion,
+    "org.apache.logging.log4j" % "log4j-slf4j-impl" % log4jVersion
   )
 
   val scalazDependency = "org.scalaz" %% "scalaz-core" % "7.2.8"
@@ -39,10 +40,11 @@ object Common {
 
 	junitDependency, scalatestDependency,
 
-    "com.typesafe.play" %% "play-json" % "2.5.16",
+    "com.typesafe.play" %% "play-json" %  "2.6.9", // "2.5.18",
+    "com.typesafe.play" %% "play-iteratees" % "2.6.1",
 
-    "org.apache.lucene" % "lucene-suggest" % "6.6.1", // "6.4.1" , // 4.9.1" ,
-    "org.apache.lucene" % "lucene-demo" % "6.6.1", // "6.4.1" , // 4.9.1" ,
+    "org.apache.lucene" % "lucene-suggest" % "6.6.3", // 6.6.1", // "6.4.1"
+    "org.apache.lucene" % "lucene-demo" % "6.6.3", // 6.6.1", // "6.4.1"
 /*
     "org.apache.lucene" % "lucene-suggest" % "4.9.1" ,
     "org.apache.lucene" % "lucene-demo" % "4.9.1" ,
@@ -58,7 +60,7 @@ object Common {
     "org.scala-lang.modules" %% "scala-async" % "0.9.7" ,
 
     "org.apache.commons" % "commons-csv" % "1.5" ,
-    "org.apache.any23" % "apache-any23-csvutils" %  "2.1" // 2.0" // "1.1"
+    "org.apache.any23" % "apache-any23-csvutils" %  "2.2" // "2.1"
   )
 
 }
