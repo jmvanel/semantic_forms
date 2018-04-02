@@ -35,7 +35,8 @@ with RegisterPage[Rdf, DATASET] {
    *  enter URI, search, create instance
    */
   override def mainPageHeader(implicit lang: String = "en", userInfo: NodeSeq,
-      displaySearch: Boolean = true): NodeSeq = {
+      displaySearch: Boolean = true,
+      messages: NodeSeq=NodeSeq.Empty): NodeSeq = {
     <header class="col col-sm-12">
       <div class="raw">
         <div class="col col-sm-9">

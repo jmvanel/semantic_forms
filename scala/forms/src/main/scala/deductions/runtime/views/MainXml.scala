@@ -26,8 +26,7 @@ trait MainXml extends ToolsPage with EnterButtons {
         { head(title)(lang) }
       </head>
       <body>
-        {mainPageHeader(lang, userInfo, displaySearch)}
-        { messages }
+        {mainPageHeader(lang, userInfo, displaySearch, messages)}
         <div id="appMessages"></div>
         <div class={classForContent}>
         {content}
@@ -60,7 +59,8 @@ trait MainXml extends ToolsPage with EnterButtons {
    * main Page Header for generic app:
    *  enter URI, search, create instance
    */
-  def mainPageHeader(implicit lang: String = "en", userInfo: NodeSeq, displaySearch: Boolean = true): NodeSeq = {
+  def mainPageHeader(implicit lang: String = "en", userInfo: NodeSeq, displaySearch: Boolean = true,
+              messages: NodeSeq=NodeSeq.Empty ): NodeSeq = {
 
     <header>
       <div class="row">
@@ -79,6 +79,7 @@ trait MainXml extends ToolsPage with EnterButtons {
       </div>
     </header>
     <div>
+      { messages }
       {
         if (displaySearch) {
           <button id="toggleCreate" type="button" class="btn-primary" data-toggle="collapse" data-target="#collapseDisplay" title={
