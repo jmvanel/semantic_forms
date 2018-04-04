@@ -62,3 +62,5 @@ input.form-control[type='text']
 
 .sf-local-rdf-link { font-size: xx-small; }
 
+tr:nth-child(even) {background: #CCC}
+tr:nth-child(odd) {background: #FFF}
