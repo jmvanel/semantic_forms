@@ -45,7 +45,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
       computePropsFromConfig(classesOfSubject, formuri)
 
     val classesOfSubjectOrFromConfig =
-      if (classesOfSubject . isEmpty && formuri != "") {
+      if (classesOfSubject . isEmpty && formuri =/= "") {
         println(s"computePropertiesList tryClassFromConfig $tryClassFromConfig")
         List( uriNodeToURI(tryClassFromConfig.getOrElse(nullURI)) )
       } else

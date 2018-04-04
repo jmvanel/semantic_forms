@@ -187,7 +187,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
 
   private def storeInstanceLabel(node: Rdf#Node, label: String,
                                  graph: Rdf#Graph, lang: String) = {
-    if (label != "") {
+    if (label  =/=  "") {
       val computedDisplayLabel = (node -- displayLabelPred ->- Literal(label)).graph
       val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
       rdfStore.appendToGraph(datasetForLabels, labelsGraphUri, computedDisplayLabel)

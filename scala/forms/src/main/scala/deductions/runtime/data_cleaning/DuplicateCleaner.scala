@@ -53,7 +53,7 @@ trait DuplicateCleaner[Rdf <: RDF, DATASET]
   type URIMergeSpecifications = List[URIMergeSpecification]
   case class URIMergeSpecification(replacedURI: Rdf#URI, replacingURI: Rdf#URI,
     newLabel: String = "", comment: String = "") {
-	  def isRenaming() = newLabel != ""
+	  def isRenaming() = newLabel  =/=  ""
 	  def isreplacing() = replacedURI != nullURI
 	}
 
@@ -123,8 +123,8 @@ type MergeGroups = Seq[MergeGroup]
 
     println(s"\nuriTokeep <$uriTokeep>")
     for (mergeSpecification <- mergeSpecifications0) {
-      val assertion = mergeSpecification.replacedURI != "" &&
-        mergeSpecification.replacingURI != ""
+      val assertion = mergeSpecification.replacedURI !=  "" &&
+        mergeSpecification.replacingURI !=  ""
       println(s"mergeSpecification $mergeSpecification assertion $assertion")
       System.out.flush() ; if (!assertion) System.exit(0)
     }
@@ -133,8 +133,8 @@ type MergeGroups = Seq[MergeGroup]
     val mergeSpecifications = mergeSpecifications0.filter { mergeSpecification =>
       mergeSpecification.replacingURI != nullURI &&
         (mergeSpecification.replacedURI != nullURI ||
-          mergeSpecification.newLabel != "" ||
-          mergeSpecification.comment != "")
+          mergeSpecification.newLabel  =/=  "" ||
+          mergeSpecification.comment  =/=  "")
     }
     val duplicateURIs: List[Rdf#URI] =
       for (mergeSpecification <- mergeSpecifications) yield mergeSpecification.replacedURI
@@ -150,7 +150,7 @@ type MergeGroups = Seq[MergeGroup]
     val newLabels = for (
       mergeSpecification <- mergeSpecifications;
       newLabel = mergeSpecification.newLabel;
-      if (newLabel != "")
+      if (newLabel  =/=  "")
     ) yield mergeSpecification.newLabel
     if (newLabels.size > 1)
       System.err.println(s"WARNING! several new Labels for $uriTokeep: $newLabels")
@@ -163,7 +163,7 @@ type MergeGroups = Seq[MergeGroup]
 
       for (mergeSpecification <- mergeSpecifications) {
         // recycle old rdfs:label's as skos:altLabel's
-        if (mergeSpecification.replacedURI != mergeSpecification.replacingURI) {
+        if (mergeSpecification.replacedURI !=  mergeSpecification.replacingURI) {
           val labelsFromReplacedURI: List[Quad] = removeFromQuadQuery(mergeSpecification.replacedURI, rdfs.label, ANY)
 //          if (!labelsFromReplacedURI.isEmpty) {
             val newTriples = for (removedQuad <- labelsFromReplacedURI)
@@ -173,7 +173,7 @@ type MergeGroups = Seq[MergeGroup]
         }
 
         // add rdfs:comment from given merge Specification
-        if (mergeSpecification.comment != "") {
+        if (mergeSpecification.comment  =/=  "") {
           val commentTriple = Triple(mergeSpecification.replacingURI,
             rdfs.comment, Literal(mergeSpecification.comment))
           rdfStore.appendToGraph(dataset, nodeToURI(named_graph), makeGraph(List(commentTriple)))
@@ -199,15 +199,15 @@ type MergeGroups = Seq[MergeGroup]
     newLabel: String = "",
     merge_marker: String = mergeMarker,
     graphToWrite: Rdf#Node = URI("")) = {
-    if (uri.toString() != "") {
-      val label = if (newLabel != "") {
+    if (uri.toString()  =/=  "") {
+      val label = if (newLabel  =/=  "") {
         newLabel
       } else {
         println(s"storeLabelWithMergeMarker: WARNING: no new label provided for URI <$uri> , taking its rdfs:label")
         implicit val graph = allNamedGraph: Rdf#Graph
         getStringHeadOrElse(uri, rdfs.label)
       }
-      if (label != "") {
+      if (label  =/=  "") {
         val newLabelTriple = Triple(uri, rdfs.label, Literal(label + merge_marker))
 //        replaceRDFTriple(newLabelTriple, graphToWrite, dataset)
         replaceRDFTripleAnyGraph(newLabelTriple, dataset)
@@ -281,7 +281,7 @@ type MergeGroups = Seq[MergeGroup]
     val dupsTriples = {
       for (
         duplicateURI <- duplicateURIs;
-        oldLabel = makeInstanceLabel(duplicateURI, originalGraph, "fr") if (oldLabel != newLabel)
+        oldLabel = makeInstanceLabel(duplicateURI, originalGraph, "fr") if (oldLabel  =/=  newLabel)
       ) yield {
         List( Triple(uriTokeep, restruc("mergedFrom"),duplicateURI ),
         Triple(uriTokeep, restruc("oldLabel"), Literal(oldLabel)) )

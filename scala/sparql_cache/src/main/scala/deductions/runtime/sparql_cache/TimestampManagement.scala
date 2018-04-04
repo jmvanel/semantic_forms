@@ -135,7 +135,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
 
           def tryHeaderField(headerName: String): (Boolean, Boolean, Long) = {
             val dateString = getHeaderField( headerName, connection)
-            if (dateString != "") {
+            if (dateString  =/=  "") {
               // from Apache http client - Date objects are in coordinated universal time (UTC)
               val dateFromHTTPHeader: java.util.Date = DateUtils.parseDate(dateString)
               println("TimestampManagement.lastModified(): responseCode: " + responseCode +
@@ -172,7 +172,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
   private [sparql_cache] def getHeaderField(headerName: String, connection: HttpURLConnection):
   String = {
     val headerString = connection.getHeaderField(headerName)
-    if (headerString != null) {
+    if (headerString  =/=  null) {
       println("TimestampManagement.tryHeaderField: " +
         s", header: $headerName = " + headerString +
         "; url: " + connection.getURL )

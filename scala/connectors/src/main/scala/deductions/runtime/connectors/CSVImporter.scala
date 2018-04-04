@@ -16,6 +16,9 @@ import org.w3.banana.{RDF, RDFOps, RDFPrefix, XSDPrefix}
 
 import scala.collection.JavaConverters._
 
+import scalaz._
+import Scalaz._
+
 /** made from CSVExtractor from Any23;
  *  TODO: probably should be in another SBT project */
 trait CSVImporter[Rdf <: RDF, DATASET]
@@ -181,7 +184,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
     var index = 0
     for (cell <- values.asScala) {
       if (index < headerURIs.length) {
-        if (cell != "") {
+        if (cell  =/=  "") {
           val predicate = headerURIs(index)
           val `object` = getObjectFromCell(cell)
           list += Triple(rowSubject, predicate, `object`)

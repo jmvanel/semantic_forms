@@ -34,7 +34,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
           Unparsed(valueDisplayed)
         }
         { makeUserInfoOnTriples(literalEntry, request.getLanguage()) }
-        <div>{ if (literalEntry.lang != "" && literalEntry.lang != "No_language") " > " + literalEntry.lang }</div>
+        <div>{ if (literalEntry.lang  =/=  "" && literalEntry.lang  =/=  "No_language") " > " + literalEntry.lang }</div>
       </xml:group>
     else
       <span/>
@@ -91,7 +91,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
      *  digits ([0-9]), hyphens ("-"), underscores ("_"), colons (":"), and periods ("."). */
 
     val objectURIstringValue = resourceEntry.value.toString()
-    if( objectURIstringValue != "" && id != "") {
+    if( objectURIstringValue  =/=  "" && id  =/=  "") {
       <a href={ "#" + id } draggable="true">
         <i class="glyphicon glyphicon-link"></i>
       </a>
@@ -105,7 +105,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     val types = if(types0 == "") type_ else types0
     addTripleAttributesToXMLElement(
       <a href={createHyperlinkString(hrefPrefix, objectURIstringValue)} class={cssForURI(objectURIstringValue)} title=
-      {s"""Value ${if (objectURIstringValue != valueLabel) objectURIstringValue else ""}
+      {s"""Value ${if (objectURIstringValue  =/=  valueLabel) objectURIstringValue else ""}
               of type(s) ${types}"""} draggable="true">
         {valueLabel}
       </a>,
@@ -204,7 +204,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       case l: formMod#LiteralEntry => l
     } . foreach ( println(_) )
 
-    if(fittingCount != literalEntriesCount)
+    if(fittingCount  =/=  literalEntriesCount)
       <span>{literalEntriesCount - fittingCount} data not fitting user language ({request.getLanguage()})</span>
     else NodeSeq.Empty
   }

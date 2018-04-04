@@ -23,6 +23,9 @@ import deductions.runtime.utils.DatabaseChanges
 import scala.concurrent.Future
 import org.w3.banana.SparqlUpdate
 
+import scalaz._
+import Scalaz._
+
 trait RDFLinksCounter[Rdf <: RDF, DATASET]
     extends RDFPrefixes[Rdf]
     with RDFSyntax[Rdf] {
@@ -120,7 +123,7 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
         	 oldCount + increment
         logger.debug(s"updateLinksCount: URI $uri , oldCount $oldCount, count $count")
 
-        if (count != oldCount) {
+        if (count  =/=  oldCount) {
           rdfStore.removeTriples(linksCountDataset, linksCountGraphURI,
             Seq(Triple(uri,
               linksCountPred,

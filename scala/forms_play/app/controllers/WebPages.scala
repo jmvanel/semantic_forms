@@ -24,6 +24,8 @@ import deductions.runtime.core.SemanticController
 import play.api.mvc.Result
 import play.api.mvc.EssentialAction
 
+import scalaz._
+import Scalaz._
 
 /** controller for HTML pages ("generic application") */
 trait WebPages extends Controller with ApplicationTrait {
@@ -140,13 +142,13 @@ trait WebPages extends Controller with ApplicationTrait {
             import precomputed._
             logger.info(s"displayURI: expandOrUnchanged $uri")
             val userInfo = displayUser(userid, uri, title, lang)
-            htmlForm(uri, blanknode, editable = Edit != "", lang, formuri,
+            htmlForm(uri, blanknode, editable = Edit  =/=  "", lang, formuri,
               graphURI = makeAbsoluteURIForSaving(userid),
               request = request)._1
           }
         }
 
-        if (needLoginForDisplaying || (needLoginForEditing && Edit != ""))
+        if (needLoginForDisplaying || (needLoginForEditing && Edit  =/=  ""))
           outputMainPageWithContentLogged(contentMaker)
         else
           outputMainPageWithContent(contentMaker)
@@ -207,7 +209,7 @@ trait WebPages extends Controller with ApplicationTrait {
             val lang = chooseLanguage(request)
             val requestCopy = getRequestCopy()
             val userid = requestCopy.userId()
-            Ok(htmlForm(uri, blankNode, editable = Edit != "", lang, formuri,
+            Ok(htmlForm(uri, blankNode, editable = Edit  =/=  "", lang, formuri,
               graphURI = makeAbsoluteURIForSaving(userid), database = database)._1)
               .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
               .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
@@ -235,7 +237,7 @@ trait WebPages extends Controller with ApplicationTrait {
           outputMainPage(
             createHTMLFormFromSPARQL(
               query,
-              editable = Edit != "",
+              editable = Edit  =/=  "",
               formuri, requestCopy),
             lang, userInfo)
         },
@@ -306,7 +308,7 @@ trait WebPages extends Controller with ApplicationTrait {
           val lang = httpRequest.getLanguage()
           val classe =
             clas match {
-              case classe if (classe != "") => classe
+              case classe if (classe  =/=  "") => classe
               case _                        => copyRequest(request).getHTTPparameterValue("clas").getOrElse("")
             }
           val fut: Future[Elem] = wordsearchFuture(q, classe, httpRequest)

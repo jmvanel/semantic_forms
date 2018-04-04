@@ -36,7 +36,7 @@ trait URIManagement extends URIHelpers {
     else if(stringFromUser.contains("@"))
       "mailto:" + stringFromUser .replaceAll(" ", "")
     else {
-      if (stringFromUser != "")
+      if (stringFromUser  =/=  "")
         instanceURIPrefix +
           makeURIPartFromString(stringFromUser)
       else ""
@@ -84,7 +84,7 @@ trait URIManagement extends URIHelpers {
 
   def instanceURIPrefix(request: HTTPrequest): String = {
     val hostname =
-      if (request.host != "" // if one wants to avoid localhost (but why?)
+      if (request.host  =/=  "" // if one wants to avoid localhost (but why?)
       //    && request.host.contains(".")
       )
         request.host

@@ -67,9 +67,9 @@ trait PreferredLanguageLiteral[Rdf <: RDF] {
 
     val (preferedLanguageValue, enValue, noLanguageValue) = computeValues
     (preferedLanguageValue, enValue, noLanguageValue) match {
-      case _ if (preferedLanguageValue != "") => preferedLanguageValue
-      case _ if (enValue != "") => enValue
-      case _ if (noLanguageValue != "") => noLanguageValue
+      case _ if (preferedLanguageValue  =/=  "") => preferedLanguageValue
+      case _ if (enValue  =/=  "") => enValue
+      case _ if (noLanguageValue  =/=  "") => noLanguageValue
       case _ =>
         val mess = s"""preferedLanguageValue "$preferedLanguageValue", enValue "$enValue"", noLanguageValue "$noLanguageValue""""
         println(

@@ -256,10 +256,10 @@ extends
             case Some(connection) =>
               val etag = getHeaderField("ETag", connection)
               val etagFromDataset = dataset2.r { getETagFromDataset(uri, dataset2) }.get
-              if (etag != etagFromDataset) {
+              if (etag  =/=  etagFromDataset) {
                 val graph = readStoreURITry(uri, uri, dataset)
                 println(s"""updateLocalVersion: <$uri> was OUTDATED by ETag; downloaded.
-                  etag "$etag" != etagFromDataset "$etagFromDataset" """)
+                  etag "$etag"  =/=  etagFromDataset "$etagFromDataset" """)
                 rdfStore.rw(dataset2, { addETagToDatasetNoTransaction(uri, etag, dataset2) })
                 graph
               } else Success(emptyGraph)
@@ -427,7 +427,7 @@ extends
             val graphFromMicrodata = graphTryLoadedFromURL.getOrElse {
               if (activateMicrodataLoading) microdataLoading(uri) else emptyGraph }
 
-//            if( contentType != "ERROR" ) {
+//            if( contentType  =/=  "ERROR" ) {
             /* NOTE: hoping that Jena > 3.4.0 will solve all issues on RDFDataMgr,
              * but before that , we try this */
             val gr =

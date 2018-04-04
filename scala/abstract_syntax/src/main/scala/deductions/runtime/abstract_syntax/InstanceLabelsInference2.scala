@@ -80,22 +80,22 @@ trait InstanceLabelsInference2[Rdf <: RDF]
         implicit val prlng = lang
 
         val l = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, rdfs.label, "")
-        if (l != "") return l
+        if (l  =/=  "") return l
         val n = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, foaf.name, "")
-        if (n != "") return n
+        if (n  =/=  "") return n
         val s = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, skos("prefLabel"), "")
-        if (s != "") return s
+        if (s  =/=  "") return s
         val dctitle = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, dc("title"), "")
-        if (dctitle != "") return dctitle
+        if (dctitle  =/=  "") return dctitle
         val geoname = getLiteralInPreferedLanguageFromSubjectAndPredicate(node,
             URI("http://www.geonames.org/ontology#name"), "")
-        if (geoname != "") return geoname
+        if (geoname  =/=  "") return geoname
         val pairPreferedLabel = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, pairPreferedLabelProp, "")
-        if (pairPreferedLabel != "") return pairPreferedLabel
+        if (pairPreferedLabel  =/=  "") return pairPreferedLabel
 
         //        val cl = instanceClassLabel( node, graph, lang)
         ////        println( s"""instanceClassLabel $node "$cl" """ )
-        //        if (cl != "") return cl
+        //        if (cl  =/=  "") return cl
         last_segment(node)
       }
     }

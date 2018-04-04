@@ -7,6 +7,9 @@ import org.w3.banana.RDF
 import scala.collection.mutable
 import scala.language.{existentials, postfixOps}
 
+import scalaz._
+import Scalaz._
+
 /** TODO move to package user */
 trait UserTraceability[Rdf <: RDF, DATASET]
   extends FormModule[Rdf#Node, Rdf#URI]
@@ -81,7 +84,7 @@ trait UserTraceability[Rdf <: RDF, DATASET]
   private def addUserFromGraph(field: Entry): Entry = {
     try {
     val resMainDatabase = {
-      if (nodeToString(field.value) != "") {
+      if (nodeToString(field.value) =/= "") {
         val queryMainDatabase = s"""
       SELECT ?USER
       WHERE {

@@ -118,7 +118,7 @@ trait BasicWidgets
       imgWidth:Int=25): Elem = {
     val link = URLEncoder.encode( uri, "utf-8")
 
-    if( uri != "" )
+    if( uri  =/=  "" )
       <a class="btn btn-default" href={ s"$toolURLprefix$link" }
       title={s"Launch tool $toolname for <$uri>"}
       target="_blank">

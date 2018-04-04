@@ -36,6 +36,9 @@ import play.api.mvc.AnyContentAsXml
 import play.api.mvc.AnyContentAsJson
 import play.api.mvc.Action
 
+import scalaz._
+import Scalaz._
+
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
 //    Future{ BadRequest("""Bad Request: "$error" """) }
@@ -172,7 +175,7 @@ trait ApplicationTrait extends Controller
     map: Map[String, Seq[String]],
     uri: String): String = {
     val uriArgs = map.getOrElse(uri, Seq())
-    uriArgs.find { uri => uri != "" }.getOrElse("") . trim()
+    uriArgs.find { uri => uri  =/=  "" }.getOrElse("") . trim()
   }
 
   /** @return in case of Form Url Encoded, the first value in Map,

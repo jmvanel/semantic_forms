@@ -159,7 +159,7 @@ extends Controller
       logger.info(s"authenticate: previous url <$previousURL>")
       val call = previousURL match {
         case (url) if (
-          url != "" &&
+          url =/= "" &&
           !url.endsWith("/login") &&
           !url.endsWith("/authenticate")) => Call("GET", url)
         case _ => routes.Application.index

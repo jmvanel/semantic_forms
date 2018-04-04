@@ -207,7 +207,7 @@ trait SparqlServices extends ApplicationTrait
                 ${request.body.getClass}
             """)
               val bodyAsText = request.body.asText.getOrElse("")
-              if (bodyAsText != "")
+              if (bodyAsText  =/=  "")
                 bodyAsText
               else
                 request.body.asFormUrlEncoded.getOrElse(Map()).getOrElse("query", Seq("")).headOption.getOrElse("")

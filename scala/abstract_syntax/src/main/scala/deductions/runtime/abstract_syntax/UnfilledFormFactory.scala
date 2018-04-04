@@ -47,7 +47,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
 
 //      {
 //        val (propsListInFormConfig, formConfig) =
-//          if (formSpecURI != "") {
+//          if (formSpecURI  =/=  "") {
 //            (propertiesListFromFormConfiguration(URI(formSpecURI)),
 //              URI(formSpecURI))
 //          } else {
@@ -59,7 +59,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
 //      }
 
     val classFromSpecsOrGiven =
-      if (formSpecURI != "" && classs == nullURI ) {
+      if (formSpecURI  =/=  "" && classs == nullURI ) {
         val classFromSpecs = lookClassInFormSpec( URI(formSpecURI), graph)
         uriNodeToURI(classFromSpecs)
       } else classs
@@ -94,6 +94,6 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
     map: Map[String, Seq[String]],
     uri: String): String = {
     val uriArgs = map.getOrElse(uri, Seq())
-    uriArgs.find { uri => uri != "" }.getOrElse("") . trim()
+    uriArgs.find { uri => uri  =/=  "" }.getOrElse("") . trim()
   }
 }

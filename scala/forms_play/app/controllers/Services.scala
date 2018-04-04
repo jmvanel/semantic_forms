@@ -119,7 +119,7 @@ with RDFContentNegociation {
         makeJSONResult(
           createJSONFormFromSPARQL(
             query,
-            editable = (Edit != ""),
+            editable = (Edit  =/=  ""),
             formuri,
             copyRequest(request)))
       }
@@ -141,7 +141,7 @@ with RDFContentNegociation {
       makeJSONResult(
         createJSONFormFromSPARQL(
           sparqlQuery,
-          editable = (Edit != ""),
+          editable = (Edit  =/=  ""),
           formuri,
           httpRequest))
   }
@@ -164,7 +164,7 @@ with RDFContentNegociation {
           jsonldMime
 
       println(s">>>> ldp($uri): mimeType $mimeType")
-      if (mimeType != htmlMime) {
+      if (mimeType  =/=  htmlMime) {
         val responseBody = getTriples(uri, request.path, mimeType, httpRequest)
         logger.info("LDP: GET: response Body\n" + responseBody)
         val contentType = mimeType + "; charset=utf-8"

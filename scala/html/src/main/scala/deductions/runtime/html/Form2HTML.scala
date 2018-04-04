@@ -299,7 +299,7 @@ import scala.xml.Comment
         <span/>
     }
 
-    if( xmlField != (<span/>) )
+    if( xmlField  !=  (<span/>) )
     // TODO if() below seems useless !!!!
     if (displayInTable === true) {
       Seq(createAddRemoveWidgets(field, editable)) ++

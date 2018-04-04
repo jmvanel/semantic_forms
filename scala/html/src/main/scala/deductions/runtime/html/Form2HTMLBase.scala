@@ -35,7 +35,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
       cssForProperty: String = css.cssClasses.formLabelCSSClass )
   (implicit form: FormModule[NODE, URI]#FormSyntax) = {
     // display field label only if different from preceding
-    if (preceding.label != field.label)
+    if (preceding.label  =/=  field.label)
       // PENDING is it correct HTML5 ?
       <label for={
         field.htmlName
@@ -158,7 +158,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     val userMetadata = entry.metadata
     val timeMetadata = entry.timeMetadata
     val time: String = new DateTime(timeMetadata).toDateTime.toString("dd/MM/yyyy HH:mm")
-    if (timeMetadata != -1){
+    if (timeMetadata  =/=  -1){
       <span class="sf-local-rdf-link">
         &nbsp;-&nbsp;{ message("modified_by", lang) }
         {

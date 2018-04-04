@@ -9,7 +9,8 @@ name := "core"
 // lazy val connectors = (project in file(".")) .dependsOn(utils)
 
 libraryDependencies ++= Seq(
-  xmlDependency
+  xmlDependency,
+  scalazDependency
 )
 
 publishArtifact in (Compile, packageDoc) := false
