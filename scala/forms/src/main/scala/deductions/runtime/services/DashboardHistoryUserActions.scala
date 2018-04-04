@@ -72,11 +72,11 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
           <thead>
             <tr>
               <th title="Resource URI visited by user">{ mess("Resource") }</th>
-              <th title="Type">Type</th>
-              <th title="Action (Create, Display, Update)">{ mess("Action") }</th>
+              <th title="Type (class)">Type</th>
+              <!-- th title="Action (Create, Display, Update)">{ mess("Action") }</th-->
               <th title="Time visited by user">{ mess("Time") }</th>
-              <th title="Number of fields (triples) edited by user">{ mess("Count") }</th>
               <th>{ mess("User") }</th>
+              <th title="Number of fields (triples) edited by user">{ mess("Count") }</th>
               <!--th>IP</th-->
             </tr>
           </thead>
@@ -104,10 +104,10 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
                           getClassOrNullURI(row(0))(allNamedGraph),
                           lang, allNamedGraph, config.hrefDisplayPrefix)
                       }</td>
-                      <td>{ "Edit" /* TODO */ }</td>
+                      <!-- td>{ "Edit" /* TODO */ }</td -->
                       <td>{ dateFormat.format(date) }</td>
-                      <td>{ makeStringFromLiteral(row(2)) }</td>
                       <td>{ row(3) }</td>
+                      <td>{ makeStringFromLiteral(row(2)) }</td>
                     }</tr>
                   } else <tr/>
                   }
