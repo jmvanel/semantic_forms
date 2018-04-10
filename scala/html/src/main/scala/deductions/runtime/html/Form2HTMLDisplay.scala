@@ -160,7 +160,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
         <a href={
           "/create?uri=" + URLEncoder.encode(classURIstringValue, "UTF-8")
         } title={ messCreate_instance }>
-          <img src={ imageURL } css="sf-thumbnail" height="40" alt={ mess }/>
+          <img src={ imageURL } css="sf-thumbnail" height="40" alt={ messCreate_instance }/>
         </a>
     } else NodeSeq.Empty
   }
