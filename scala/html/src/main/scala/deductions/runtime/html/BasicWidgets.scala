@@ -127,19 +127,20 @@ trait BasicWidgets
       <div></div>
   }
 
-  def showContinuationForm( request: HTTPrequest ) = {
+  def showContinuationForm( request: HTTPrequest, formaction: Option[String]=None ) = {
 //    println(s"showContinuationForm: request $request")
     val requestPath = request.path
     val requestKind = request.path . replace("/", "")
     implicit val _ = request
     <form role="form" >
-      <p>{ messRequest(requestKind) }
+      <p>{ messRequest(formaction.getOrElse(s"$requestKind")) }
          { messRequest("with") }
          { messRequest("offset") } {offsetInt(request)},
          { messRequest("limit") } {limitInt(request)},
          { messRequest("pattern") } "{paramAsString("pattern", request)}" </p>
       { makeSubformForOffsetLimit(request) }
-      <input value="submit" type="submit" formaction={s"$requestPath"} />
+      <input value="submit" type="submit"
+             formaction={ formaction.getOrElse(s"$requestPath") } />
   </form>
   }
 

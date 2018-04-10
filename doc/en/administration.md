@@ -1,10 +1,11 @@
 <!--
-gh-md-toc administration.md
+gh-md-toc --insert administration.md
 pandoc --standalone administration.md > administration.html -->
 
 Application and database administration
 =======================================
 
+<!--ts-->
    * [Application and database administration](#application-and-database-administration)
    * [Introduction](#introduction)
    * [Running auxiliary programs](#running-auxiliary-programs)
@@ -14,17 +15,23 @@ Application and database administration
       * [TDB databases](#tdb-databases)
       * [Loading RDF content](#loading-rdf-content)
       * [Preloading RDF content](#preloading-rdf-content)
-      * [Updating RDF content](#updating-rdf-content)
+      * [Updating and loading RDF content](#updating-and-loading-rdf-content)
          * [Jena commands](#jena-commands)
          * [Remote shell commands](#remote-shell-commands)
+         * [Administrative SPARQL](#administrative-sparql)
          * [Misc.](#misc)
       * [Dump and reload](#dump-and-reload)
          * [Example of a shell session to reload a dump](#example-of-a-shell-session-to-reload-a-dump)
+      * [Mirror SPARQL site into SF semantic cache](#mirror-sparql-site-into-sf-semantic-cache)
    * [Semantize raw stuff](#semantize-raw-stuff)
    * [SPARQL queries](#sparql-queries)
    * [Populating with dbPedia (mirroring dbPedia)](#populating-with-dbpedia-mirroring-dbpedia)
    * [Text indexing with Lucene or SOLR](#text-indexing-with-lucene-or-solr)
       * [Lucene commands](#lucene-commands)
+
+<!-- Added by: jmv, at: 2018-04-10T13:19+02:00 -->
+
+<!--te-->
 
 # Introduction
 
@@ -362,7 +369,7 @@ the arguments are :
 - SPARQL endpoint
 - ULR prefix of semantic_forms target instance
 
- <pre>
+```shell
    java -cp $JARS deductions.runtime.clients.SPARQLquery2SFcacheApp \
     "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
     SELECT * 
@@ -372,7 +379,7 @@ the arguments are :
     } LIMIT 5" \
        http://taxref.mnhn.fr/sparql \
        http://localhost:9000
-</pre>
+```
 
 Of course, remove the limit for a real run.
 
@@ -380,7 +387,7 @@ __Copy all resources of a given rdf:type class__
 
 The Lotico.com organization is dedicated to Semantic Web community since many years, and its Jena backed dataset holds almost 60_000 `foaf:Person`'s.
 
- <pre>
+```shell
    java -cp $JARS deductions.runtime.clients.SPARQLquery2SFcacheApp \
     "PREFIX foaf: <http://xmlns.com/foaf/0.1/> 
     SELECT * 
@@ -389,10 +396,10 @@ The Lotico.com organization is dedicated to Semantic Web community since many ye
     } LIMIT 5" \
        http://www.lotico.com:3030/lotico/query \
        http://localhost:9000
-</pre>
+```
 
 Or, from the SBT console:
- <pre>
+```scala
    val sparql = """
     PREFIX foaf: <http://xmlns.com/foaf/0.1/> 
     SELECT * 
@@ -404,8 +411,7 @@ Or, from the SBT console:
        sparql,
        "http://www.lotico.com:3030/lotico/query",
        "http://localhost:9000" ))
-</pre>
-
+```
 
 # Semantize raw stuff
 

@@ -87,7 +87,7 @@ trait ToolsPage extends EnterButtons
         (un autre requêteur SPARQL)
       </p>
 
-      { showContinuationForm(request) }
+      { showContinuationForm(request, Some("showNamedGraphs")) }
 
       <p> <a href="/history">{ I18NMessages.get("Dashboard", lang) }</a> </p>
       {
