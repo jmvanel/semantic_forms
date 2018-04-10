@@ -130,14 +130,16 @@ trait BasicWidgets
       <div></div>
   }
 
-  def showNamedGraphsForm( request: HTTPrequest ) =
+  def showContinuationForm( request: HTTPrequest ) = {
+//    println(s"showContinuationForm: request $request")
     <form role="form" >
       <p>{ I18NMessages.get("showNamedGraphs", request.getLanguage()) }
          for offset {offsetInt(request)}, limit {limitInt(request)},
          pattern "{paramAsString("pattern", request)}" </p>
       { makeSubformForOffsetLimit(request) }
-      <input value="submit" type="submit" formaction="/showNamedGraphs" />
+      <input value="submit" type="submit" formaction={s"${request.uri}"} />
   </form>
+  }
 
   private def makeSubformForOffsetLimit( request: HTTPrequest ): NodeSeq = {
     def simpleFormField(label: String, increment: Int=0) = {
@@ -146,11 +148,15 @@ trait BasicWidgets
         case Some(int) => (int + increment).toString()
         case None => valueOption.getOrElse("")
       }
-     <label for={label}>{label}</label><input name={label} value={value}></input>
+      <label for={label}>{label}</label><input name={label} value={value}></input>
+    }
+    val inputsFromRequest = for((name, values) <- request.queryString) yield {
+      <input type="hidden" name={name} value={values.headOption.getOrElse("")}></input>
     }
     simpleFormField("offset", limitInt(request)) ++
     simpleFormField("limit") ++
-    simpleFormField("pattern")
+    simpleFormField("pattern") ++
+    inputsFromRequest
   }
   def limitInt(request: HTTPrequest) = toInt( request.getHTTPparameterValue("limit").getOrElse("200") ) . getOrElse(200)
   def offsetInt(request: HTTPrequest) = toInt( request.getHTTPparameterValue("offset").getOrElse("1") ) . getOrElse(1)

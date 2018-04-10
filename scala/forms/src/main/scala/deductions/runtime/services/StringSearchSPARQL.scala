@@ -7,6 +7,7 @@ import org.w3.banana.RDF
 
 import scala.concurrent.Future
 import scala.xml.NodeSeq
+import deductions.runtime.core.HTTPrequest
 
 /** String Search with simple SPARQL or SPARQL + Lucene,
  *  depending on config. item useTextQuery
@@ -52,12 +53,14 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
   }
 
   def searchString(searchString: String, hrefPrefix: String = config.hrefDisplayPrefix,
-                   lang: String = "", classURI: String = ""): Future[NodeSeq] = {
+                   request: HTTPrequest=HTTPrequest(), classURI: String = ""
+                   ): Future[NodeSeq] = {
 		println( s"searchString: SPARQL ${indexBasedQuery.makeQueryString(searchString, classURI)}")
-    search(hrefPrefix, lang,
+    search(hrefPrefix, request.getLanguage(),
         Seq(searchString, classURI),
 //        Seq("?thing", "?CLASS"))
-        Seq("?thing"))
+        Seq("?thing"),
+        httpRequest=request)
 }
 
 }

@@ -70,7 +70,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
       val elems = Seq(
         <button value="Sort" id="sort"> Sort </button>,
         sortJSscript,
-        showNamedGraphsForm( httpRequest ),
+        showContinuationForm( httpRequest ),
         <div id="container" class={ css.tableCSSClasses.formRootCSSClass }> {
           css.localCSS ++
             uris.map {

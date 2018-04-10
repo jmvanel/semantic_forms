@@ -93,6 +93,23 @@ case class HTTPrequest(
 //        log("chooseLanguage", this) + s"\t$resLang" )
     resLang
   }
+
+  override def toString(): String = {
+    s"""    host:  = $host,
+    remoteAddress: $remoteAddress,
+    rawQueryString: $rawQueryString,
+    queryString: $queryString,
+    content: $content,
+    headers: $headers,
+    cookies: $cookies,
+    acceptLanguages: $acceptLanguages,
+    path: $path,
+    formMap: $formMap,
+    uri: $uri,
+    secure: $secure,
+    domain: $domain
+      """
+  }
 }
 
 /** Borrowed from Play */

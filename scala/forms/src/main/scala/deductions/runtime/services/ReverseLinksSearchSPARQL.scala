@@ -27,7 +27,8 @@ trait ReverseLinksSearchSPARQL[Rdf <: RDF, DATASET]
             ops.URI(uri), dataset, request, transactionsInside = true)
     search(hrefPrefix,
       request.getLanguage(),
-      Seq(uri))
+      Seq(uri),
+      httpRequest=request)
   }
 
 }

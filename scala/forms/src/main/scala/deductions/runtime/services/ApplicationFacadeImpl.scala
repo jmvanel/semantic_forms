@@ -153,7 +153,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   def wordsearchFuture(q: String = "", clas: String = "", request: HTTPrequest): Future[Elem] = {
     val fut = recoverFromOutOfMemoryError(
       { // fillMemory() ;
-        searchString(q, hrefDisplayPrefix, request.getLanguage(), clas)
+        searchString(q, hrefDisplayPrefix, request, clas)
       })
     val sparqlQuery = URLEncoder.encode(queryWithlinksCountMap(q), "utf-8")
     wrapSearchResults(fut, q,

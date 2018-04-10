@@ -14,4 +14,7 @@ trait SPARQLBase {
        ?thing a ?sub .
        ?sub rdfs:subClassOf* dbo:Person } )"""
 
+    val excludePlace = """  FILTER( NOT EXISTS {
+       ?thing a ?sub .
+       ?sub rdfs:subClassOf* dbo:Place } )"""
 }
