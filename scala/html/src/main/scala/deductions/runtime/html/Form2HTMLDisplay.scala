@@ -6,7 +6,6 @@ import org.joda.time.DateTime
 import scala.xml.{NodeSeq, Unparsed}
 import deductions.runtime.core.HTTPrequest
 import java.net.URLEncoder
-import deductions.runtime.utils.I18NMessages
 import deductions.runtime.core.HTMLutils
 
 import scalaz._
@@ -154,13 +153,13 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
 
   def creationButton(classURIstringValue: String, types: Seq[String], lang: String): NodeSeq = {
     val imageURL = "/assets/images/create-instance.svg"
-    def messageI18N(key: String) = I18NMessages.get(key, lang)
-    val mess = messageI18N("Create_instance_of") + s" <$classURIstringValue>"
+    implicit val _ = lang
+    val messCreate_instance = mess("Create_instance_of") + s" <$classURIstringValue>"
     if ( types.exists { t => t.endsWith("#Class") } ) {
 //      println(s"==== creationButton: typ: $typ")
         <a href={
           "/create?uri=" + URLEncoder.encode(classURIstringValue, "UTF-8")
-        } title={ mess }>
+        } title={ messCreate_instance }>
           <img src={ imageURL } css="sf-thumbnail" height="40" alt={ mess }/>
         </a>
     } else NodeSeq.Empty

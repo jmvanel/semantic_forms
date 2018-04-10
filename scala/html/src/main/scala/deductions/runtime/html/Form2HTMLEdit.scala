@@ -123,7 +123,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
   }
   private def resourceOrBN_Placeholder(r: formMod#Entry, lang: String = "en") = {
     if (lookupActivatedFor(r))
-      I18NMessages.get("Completion", lang)
+      message("Completion", lang)
       else {
         val typ0 = firstNODEOrElseEmptyString(r.type_)
         val typ = if (

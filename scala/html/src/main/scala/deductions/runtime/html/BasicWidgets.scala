@@ -8,11 +8,10 @@ import scala.xml.Elem
 import deductions.runtime.utils.URIHelpers
 import scala.xml.NodeSeq
 import deductions.runtime.utils.Configuration
-import deductions.runtime.utils.I18NMessages
+import deductions.runtime.core.HTTPrequest
 
 import scalaz._
 import Scalaz._
-import deductions.runtime.core.HTTPrequest
 
 /** Basic Widgets with no access to the FormSyntax:
  *  GUI integration: RDFviewer, VOWL, ... */
@@ -45,8 +44,6 @@ trait BasicWidgets
       <i class="glyphicon"></i>
     </a>
   }
-
-  private def mess(m: String)(implicit lang: String) = I18NMessages.get(m, lang)
 
   def makeBackLinkButton(uri: String, title: String = ""): Elem = {
     val tit = if (title === "") s" Reverse links for &lt;$uri&gt;" else title
@@ -132,12 +129,17 @@ trait BasicWidgets
 
   def showContinuationForm( request: HTTPrequest ) = {
 //    println(s"showContinuationForm: request $request")
+    val requestPath = request.path
+    val requestKind = request.path . replace("/", "")
+    implicit val _ = request
     <form role="form" >
-      <p>{ I18NMessages.get("showNamedGraphs", request.getLanguage()) }
-         for offset {offsetInt(request)}, limit {limitInt(request)},
-         pattern "{paramAsString("pattern", request)}" </p>
+      <p>{ messRequest(requestKind) }
+         { messRequest("with") }
+         { messRequest("offset") } {offsetInt(request)},
+         { messRequest("limit") } {limitInt(request)},
+         { messRequest("pattern") } "{paramAsString("pattern", request)}" </p>
       { makeSubformForOffsetLimit(request) }
-      <input value="submit" type="submit" formaction={s"${request.uri}"} />
+      <input value="submit" type="submit" formaction={s"$requestPath"} />
   </form>
   }
 

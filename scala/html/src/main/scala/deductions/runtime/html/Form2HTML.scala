@@ -6,13 +6,11 @@ import deductions.runtime.core.FormModule
 import deductions.runtime.utils.{RDFPrefixesInterface, Timer}
 import deductions.runtime.core.HTTPrequest
 import deductions.runtime.core.Cookie
-import deductions.runtime.utils.I18NMessages
 
 import org.apache.commons.codec.digest.DigestUtils
 
 import scala.xml.NodeSeq.seqToNodeSeq
 import scala.xml.{Elem, NodeSeq, Text}
-import deductions.runtime.utils.I18NMessages
 
 import scalaz._
 import Scalaz._
@@ -221,7 +219,7 @@ import scala.xml.Comment
         <div>{
           form.formURI match {
             case Some(formURI) if formURI != nullURI =>
-              I18NMessages.get("Form_specification", lang) + ": " ++
+              message("Form_specification", lang) + ": " ++
                 createHyperlinkElement(toPlainString(formURI), formLabel)
             case _ =>
 //            ( for(classe <- classs) yield

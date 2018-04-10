@@ -62,8 +62,8 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
           label.substring(1).replaceAll("-(-)+", "")
         else if (isSeparator(field) )
           label .
-          replace("separator_props_From_Subject", I18NMessages.get("separator_props_From_Subject", lang)) .
-          replace("separator_props_From_Classes", I18NMessages.get("separator_props_From_Classes", lang)) .
+          replace("separator_props_From_Subject", message("separator_props_From_Subject", lang)) .
+          replace("separator_props_From_Classes", message("separator_props_From_Classes", lang)) .
           replace("_", " ")
         else label
       }</a>
@@ -94,8 +94,6 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
   }
   
   def isSeparator(field: formMod#Entry) = toPlainString(field.property).contains("separator_props_")
-
-  def message(m: String,lang: String): String = I18NMessages.get(m, lang)
 
   def isFirstFieldForProperty( field: formMod#Entry )
     (implicit form: FormModule[NODE, URI]#FormSyntax): Boolean = {
