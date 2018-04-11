@@ -48,10 +48,7 @@ trait BasicWidgets
   def makeBackLinkButton(uri: String, title: String = ""): Elem = {
     val tit = if (title === "") s" Reverse links for &lt;$uri&gt;" else title
     return <a class="btn btn-default btn-xs"
-      href={
-      // URLEncoder.encode(uri,"UTF-8")
-      "/backlinks?q=" + uri
-      }
+      href={ "/backlinks?q=" + URLEncoder.encode(uri,"UTF-8") }
       title={ tit }
       data-value={s"$uri"} >
       <img src="assets/images/Back-Link-Icon.svg" width="15" border="0" />

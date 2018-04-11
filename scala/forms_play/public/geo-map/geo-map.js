@@ -61,6 +61,15 @@ function computeMinInPoints(initialData, key/*: String*/) {
             return result
         }
 
+   function isLeafLetBoundsValid(bounds) {
+      console.log( "isLeafLetBoundsValid " + (bounds._northEast.lat != Infinity))
+      return (
+        bounds._northEast.lat != Infinity &&
+        bounds._northEast.lng != Infinity &&
+        bounds._southWest.lat != Infinity &&
+        bounds._southWest.lng != Infinity )
+    }
+
 /*global Map*/
 class Map{
 
@@ -78,7 +87,8 @@ class Map{
       var bounds = findGeographicZone(initialData,keyLat,keyLong)
       console.log("bounds")
       console.log(bounds)
-      this.OSM = L.map(mapId) .fitBounds( bounds )
+      if( isLeafLetBoundsValid(bounds) ) {
+        this.OSM = L.map(mapId) .fitBounds( bounds )
         // .setView([48.862725, 2.287592000000018], 10);
 
         this.pins = []
@@ -93,7 +103,9 @@ class Map{
                 this.addPin(initialData[key][keyLat],initialData[key][keyLong],key,initialData[key][keyText])
             }
         }
+        }
     }
+
     /**
      *
      * @param mapId -- id de la div
