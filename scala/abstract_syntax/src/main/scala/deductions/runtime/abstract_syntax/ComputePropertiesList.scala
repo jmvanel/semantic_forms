@@ -158,7 +158,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
         for (classe <- classes) yield {
           val (propertiesList, formConfiguration) = lookPropertiesListInConfiguration(classe)
           //          logger.debug(
-          println(
+          logger.debug(
             s"computePropsFromConfig: class <$classe> : $propertiesList")
           (propertiesList, formConfiguration, Success(classe))
         }
@@ -196,7 +196,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
         if (formuri === "") {
           val (propertiesList, formConfiguration) = lookPropertiesListInConfiguration(classe)
 //          logger.debug(
-              println(
+              logger.debug(
               s"computePropsFromConfig: class <$classe> : $propertiesList")
           (propertiesList, formConfiguration, Success(classe))
         } else {
