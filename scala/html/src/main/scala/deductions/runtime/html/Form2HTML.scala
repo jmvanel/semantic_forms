@@ -110,12 +110,16 @@ import scala.xml.Comment
         for (
           (preceding, field) <- (lastEntry +: fields) zip fields // do not display NullResourceEntry
           if (toPlainString(field.property) =/= "" &&
-            isLanguageDataFittingRequest(field, request) &&
             (editable ||
               toPlainString(field.value) =/= "" ||
               isSeparator(field)))
         ) yield {
-          <div class={ css.cssClasses.formLabelAndInputCSSClass }>{
+          val dataCSSclass = if (isLanguageDataFittingRequest(field, request))
+            ""
+          else "sf-data-not-fitting-user-language"
+          // println ( s"makeFieldsLabelAndData: ${field.property} dataClass : $dataCSSclass" )
+          <div class={ css.cssClasses.formLabelAndInputCSSClass + " " +
+             dataCSSclass }>{
             makeFieldSubject(field) ++
             makeFieldLabel(preceding, field, editable, lang,
               cssForProperty = cssForProperty) ++

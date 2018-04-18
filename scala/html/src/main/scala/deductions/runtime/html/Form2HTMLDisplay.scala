@@ -22,8 +22,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
   private[html] def createHTMLiteralReadonlyField(
     literalEntry: formMod#LiteralEntry,
     request:      HTTPrequest          = HTTPrequest()): NodeSeq = {
-    if (isLanguageDataFittingRequest(literalEntry, request))
-      <xml:group>
+    <span>
         {
           val valueDisplayed =
             if (literalEntry.type_.toString().endsWith("dateTime"))
@@ -34,9 +33,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
         }
         { makeUserInfoOnTriples(literalEntry, request.getLanguage()) }
         <div>{ if (literalEntry.lang  =/=  "" && literalEntry.lang  =/=  "No_language") " > " + literalEntry.lang }</div>
-      </xml:group>
-    else
-      <span/>
+      </span>
   }
 
   /** create HTML Resource Readonly Field
@@ -202,9 +199,16 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
         form.fields.collect {
       case l: formMod#LiteralEntry => l
     } . foreach ( println(_) )
-
     if(fittingCount  =/=  literalEntriesCount)
       <span>{literalEntriesCount - fittingCount} data not fitting user language ({request.getLanguage()})</span>
+      <button
+        onclick="
+console.log(document.getElementsByClassName('sf-data-not-fitting-user-language'));
+Array.from(document.getElementsByClassName('sf-data-not-fitting-user-language')).map(
+  elem => elem.style.display='block' );"
+      >
+        Show all
+      </button>
     else NodeSeq.Empty
   }
 

@@ -405,7 +405,7 @@ Or, from the SBT console:
     SELECT * 
     WHERE {
      ?sub a foaf:Person .
-    } LIMIT 5"""
+    } """
    deductions.runtime.clients.SPARQLquery2SFcacheApp . main(
      Array(
        sparql,
