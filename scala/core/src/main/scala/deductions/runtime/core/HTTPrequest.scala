@@ -87,11 +87,13 @@ case class HTTPrequest(
   def localSparqlEndpoint = URLEncoder.encode(absoluteURL("/sparql"), "UTF-8")
 
   def getLanguage(): String = {
-    val languages = acceptLanguages
-    val resLang = if (languages.length > 0) languages(0) else "en"
-//    logger.info(
-//        log("chooseLanguage", this) + s"\t$resLang" )
+    val resLang = if (acceptLanguages.length > 0) acceptLanguages(0) else "en"
+//    logger.debug("chooseLanguage", this) + s"\t$resLang" )
     resLang
+  }
+
+  def isLanguageFitting(lang: String): Boolean = {
+    acceptLanguages.contains(lang)
   }
 
   override def toString(): String = {

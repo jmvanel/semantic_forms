@@ -176,12 +176,12 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     request: HTTPrequest): Boolean = {
     entry match {
       case literalEntry: formMod#LiteralEntry =>
-        val userLanguage = request.getLanguage()
         val dataLanguage = literalEntry.lang
-        userLanguage == dataLanguage ||
+        request.acceptLanguages.exists( userLanguage =>
+          userLanguage == dataLanguage ||
           dataLanguage === "en" ||
           dataLanguage === "" ||
-          dataLanguage === "No_language"
+          dataLanguage === "No_language" )
       case _ => true
     }
   }
