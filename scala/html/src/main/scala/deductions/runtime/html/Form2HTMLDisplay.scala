@@ -196,9 +196,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     val literalEntriesCount = getLiteralEntries(form).size
 
     logger.info(s"fittingCount $fittingCount, literalEntriesCount $literalEntriesCount")
-        form.fields.collect {
-      case l: formMod#LiteralEntry => l
-    } . foreach ( println(_) )
+    // form.fields.collect { case l: formMod#LiteralEntry => l } . foreach ( println(_) )
     if(fittingCount  =/=  literalEntriesCount)
       <span>{literalEntriesCount - fittingCount} data not fitting user language ({request.getLanguage()})</span>
       <button
