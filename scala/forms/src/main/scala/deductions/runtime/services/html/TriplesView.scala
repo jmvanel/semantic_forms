@@ -246,14 +246,6 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     implicit val graph: Rdf#Graph = graphe
     implicit val lang = lang0
 
-//    try {
-//      // NOTE graphSize DANGEROUS with large database !
-//      //    	println(s"TableViewModule.graf2form(graph: graph first triple: ${getTriples(graph).headOption}, graphURI <$graphURI>")
-//      //    	println(s"TableViewModule.graf2form(graph: graph first triple: ${ops.graphSize(graph)}, graphURI <$graphURI>")
-//      logger.debug(s"TableViewModule.graf2form(graph: graph : ${graph}, graphURI <$graphURI>")
-//    } catch {
-//      case t: Throwable => "graf2form : getting graph.size" + t.getLocalizedMessage()
-//    }
     val formSyntax = time("createAbstractForm",
       createAbstractForm(uri, editable, blankNode, formGroup, formuri))
 

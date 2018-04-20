@@ -54,7 +54,8 @@ import scala.xml.Comment
 		/* wrap Fields With HTML <form> Tag */
     def wrapFieldsWithFormTag(htmlFormFields: NodeSeq): NodeSeq =
       <form class="sf-standard-form" action={ actionURI } method="POST" id="form">
-        { addSaveButton(actionURI2) }
+        { if(form.fields.size > 3) // for login form
+            addSaveButton(actionURI2) }
         { htmlFormFields }
         { addSaveButton(actionURI2) }
       </form>
