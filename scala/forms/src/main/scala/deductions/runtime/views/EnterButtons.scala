@@ -153,7 +153,7 @@ trait EnterButtons {
     <option label="owl:ObjectProperty">              { prefixesMap2("owl")("ObjectProperty") } </option>
 
     <option label="bioc:Planting">                   { prefixesMap2("bioc")("Planting") } </option>
-    <option label="nature:Observation">              { prefixesMap2("nature")("Obvervation") } </option>
+    <option label="nature:Observation">              { prefixesMap2("nature")("Observation") } </option>
     <option label="seeds:SeedsBatch">                { prefixesMap2("seeds")("SeedsBatch") } </option>
   }
 /*

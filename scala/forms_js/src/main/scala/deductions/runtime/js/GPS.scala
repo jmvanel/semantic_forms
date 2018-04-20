@@ -22,7 +22,8 @@ trait GPS {
 
     val longitude = p.coords.longitude
     val latitude = p.coords.latitude
-    println(s"Got from GPS: latitude=${latitude} , longitude=${longitude}")
+    val altitude = p.coords.altitude
+    println(s"Got from GPS: latitude=${latitude} , longitude=${longitude}, altitude=${altitude}")
 
     // TODO Handling abnormal location results, see http://www.andygup.net/how-accurate-is-html5-geolocation-really-part-2-mobile-web/
 
@@ -34,6 +35,10 @@ trait GPS {
     ) {
       fillOneCoordinate(longitudeInput, longitude.toString())
       fillOneCoordinate(latitudeInput, latitude.toString())
+    }
+    // altitude Input is facultative in form
+    for ( altitudeInput <- geoCoordinatesFields.matchesAltitudeInput ) {
+      fillOneCoordinate(altitudeInput, altitude.toString())
     }
   }
 
@@ -50,7 +55,9 @@ trait GPS {
 
 case class GeoCoordinatesFields(needsUpdate: Boolean,
     matchesLongitudeInput: NodeList,
-    matchesLatitudeInput: NodeList)
+    matchesLatitudeInput: NodeList,
+    matchesAltitudeInput: NodeList
+    )
 
 object GeoCoordinatesFields {
   	// TODO later depend on module utils
@@ -61,6 +68,8 @@ object GeoCoordinatesFields {
       s"input[data-rdf-property='${geoRDFPrefix}long']")
     val matchesLatitudeInput = dom.document.querySelectorAll(
       s"input[data-rdf-property='${geoRDFPrefix}lat']")
+    val matchesAltitudeInput = dom.document.querySelectorAll(
+      s"input[data-rdf-property='${geoRDFPrefix}alt']")
 
     dom.window.console.info(s"matchesLongitudeInput $matchesLongitudeInput, length ${matchesLongitudeInput.length}")
     // dom.window.console.info(s"matchesLatitudeInput $matchesLatitudeInput" )
@@ -71,7 +80,7 @@ object GeoCoordinatesFields {
         inputIsEmptyLongitude
     if( ! inputIsEmptyLongitude )
       println("Longitude is already filled")
-    GeoCoordinatesFields(needs, matchesLongitudeInput, matchesLatitudeInput)
+    GeoCoordinatesFields(needs, matchesLongitudeInput, matchesLatitudeInput, matchesAltitudeInput)
   }
 
   private def inputIsEmpty(nodeList: NodeList): Boolean = {
