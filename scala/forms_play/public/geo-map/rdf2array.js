@@ -10,13 +10,15 @@
 
 /*global rdfFetch rdf */
 
-// let foaf = "http://xmlns.com/foaf/0.1/"
+let foaf = "http://xmlns.com/foaf/0.1/"
 let rdfs = "http://www.w3.org/2000/01/rdf-schema#"
 let rdfsLabel = rdfs + "label"
 let geo = "http://www.w3.org/2003/01/geo/wgs84_pos#"
 let geoLong = geo + "long"
 let geoLat = geo + "lat"
 let displayLabel = "urn:displayLabel"
+let foafDepictionURI = foaf + "depiction"
+let foafImgURI = foaf + "img"
 
 /** From a JSON-LD URL , produce a structure like :
  * [{"@id":"http://dbpedia.org/resource/Lyon","label":"Lyon",
@@ -59,21 +61,27 @@ function rdfURL2SimpleArray(/*String: */url)/*: Promise*/ {
 		if( rdfsLabelValue == "" || rdfsLabelValue == undefined )
 			rdfsLabelOrElse = subj.toString()
 		return rdfsLabelOrElse
-
 	}
-	function getGeoLong(subj) { return filterQuad(subj, longCriterium) }
+
+	function imgCriterium(quad, subject) {
+      return plainPropertyCriterium(quad, subject, foafImgURI ) }
+	function depictionCriterium(quad, subject) {
+      return plainPropertyCriterium(quad, subject, foafDepictionURI ) }
+
+	function getGeoLong(subj){ return filterQuad(subj, longCriterium) }
 	function getGeoLat(subj) { return filterQuad(subj, latCriterium) }
+    function getImage(subj)  { return filterQuad(subj, imgCriterium) ||
+                                      filterQuad(subj, depictionCriterium) }
 
 	/** filter Quad with given criterium
-	 * @return value, e.g. of rdfs:label */
+	 * @return string value, e.g. of rdfs:label , or undefined */
 	function filterQuad(subj, criterium) {
-      // 
       // console.log('subj ' + subj);
-      let rdfsLabelQuad = dataset.filter((quad) => {
+      let criteriumQuads = dataset.filter((quad) => {
         return criterium(quad, subj)
       }).toArray().shift()
-//      console.log('\n rdfsLabelQuad ' + rdfsLabelQuad );
-      return rdfsLabelQuad && rdfsLabelQuad.object.value;
+      // console.log('\n criteriumQuads ' + criteriumQuads );
+      return criteriumQuads && criteriumQuads.object.value;
     }
 
     console.log( 'RDF FETCH dataset:' ); console.log( dataset );
@@ -82,16 +90,18 @@ function rdfURL2SimpleArray(/*String: */url)/*: Promise*/ {
     .toArray()
 //    console.log( 'LATs: ' ); console.log( lats );
 
-    var subjs = lats.map((latQuad) => { return latQuad.subject; });
+    var subjs = lats.map( (latQuad) => { return latQuad.subject; });
     console.log( 'LAT subjs ' + subjs )
 
     let simpleArray = subjs . map((subj) => {
       return {
         "@id": (subj.toString()),
-        "label":	getRdfsLabel(subj),
+        "label":    getRdfsLabel(subj),
         "long":	getGeoLong(subj),
-        "lat":	getGeoLat(subj)
-    }
+        "lat":	getGeoLat(subj),
+        "img": getImage(subj)
+        // 'http://commons.wikimedia.org/wiki/Special:FilePath/Trevoux-008.JPG?width=300'
+      }
     })
     // console.log( 'rdfURL2SimpleArray: simpleArray: ' + JSON.stringify(simpleArray) )
     return simpleArray

@@ -82,7 +82,7 @@ class Map{
      * @param keyLong: String -- clé pour accéder à la valeur :longitude
      * @param keyText: String -- clé pour accéder à la valeur :text affiché
      */
-    constructor(mapId,initialData,keyLat,keyLong,keyText) {
+    constructor(mapId,initialData,keyLat,keyLong,keyText, keyImage) {
 
       var bounds = findGeographicZone(initialData,keyLat,keyLong)
       console.log("bounds")
@@ -98,9 +98,11 @@ class Map{
         this.keyLat = keyLat
         this.keyLong = keyLong
         this.keyLat = keyLat
+        this.keyImage = keyImage
         for(let key in initialData){
             if (initialData.hasOwnProperty(key)) {
-                this.addPin(initialData[key][keyLat],initialData[key][keyLong],key,initialData[key][keyText])
+                this.addPin(initialData[key][keyLat],initialData[key][keyLong],
+                    key, initialData[key][keyText], initialData[key][keyImage] )
             }
         }
         }
@@ -114,9 +116,9 @@ class Map{
      * @param keyId -- clé pour accéder à la valeur :id
      * @param keyLat -- clé pour accéder à la valeur :latitude
      * @param keyLong -- clé pour accéder à la valeur :longitude
-     * @param keyText -- clé pour accéder à la valeur :text affiché
+     * @param keyText -- clé pour accéder à la valeur :texte affiché
      */
-    static constructorWithArray(mapId, initialData,keyId,keyLat,keyLong,keyText) {
+    static constructorWithArray(mapId, initialData,keyId,keyLat,keyLong,keyText, keyImage) {
 //        console.log('in constructor: initialData'); console.log(initialData);
       let objectFromArray = {}
         initialData.forEach(
@@ -124,7 +126,7 @@ class Map{
             objectFromArray[element[keyId]] = element
         })
         console.log( "constructorWithArray: objectFromArray: " ) ; console.log( objectFromArray )
-        return new Map(mapId, objectFromArray, keyLat,keyLong,keyText)
+        return new Map(mapId, objectFromArray, keyLat,keyLong,keyText, keyImage)
     }
 
     /**
@@ -154,15 +156,18 @@ class Map{
     }
 
 
-    addPin(latitude,longitude, key, text) {
+    addPin(latitude,longitude, key, text, image) {
       "use strict"
       var pinText = text
       console.log('addPin key '); console.log( key )
-      if( key.length > 0 )
-
-         // TODO should be usable not embedded inside semantic_forms
+      if( key.length > 0 ) {
+        // TODO should be usable not embedded inside semantic_forms
         pinText = '<a href="/display?displayuri=' + encodeURIComponent(key) + '" target="_blank">' + text + '</a>'
-
+        if( image != null && image != '')
+          pinText = pinText +
+          '<img src='+image+' css="sf-thumbnail" height="40">'
+      } else
+        pinText = ''
       this.pins[key] = L.marker([latitude,longitude],
           {draggable:'true'} )
           .bindPopup(pinText)

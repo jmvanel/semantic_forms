@@ -43,7 +43,7 @@
  if (loadVal != null) {
    var url = loadVal
    rdfURL2SimpleArray(url).then( (data) => {
-     let map = Map.constructorWithArray(mapid, data, "@id", "lat","long","label");
+     let map = Map.constructorWithArray(mapid, data, "@id", "lat","long","label", "img");
      console.log("Display all points for URL " + url);
      map.pinShowAll();
    })
