@@ -91,10 +91,13 @@ trait NavigationSPARQLBase[Rdf <: RDF]
          |${declarePrefix(form)}
          |${declarePrefix(rdfs)}
          |${declarePrefix(geo)}
+         |${declarePrefix(foaf)}
+
          |CONSTRUCT {
          |  ?thing geo:long ?LONG .
          |  ?thing geo:lat ?LAT .
          |  ?thing rdfs:label ?LAB .
+         |  ?thing foaf:depiction ?IMG .
          |} WHERE {
          |  graph ?g {
          |    ?thing ?p <${search}> .
@@ -102,11 +105,19 @@ trait NavigationSPARQLBase[Rdf <: RDF]
          |    ?thing geo:lat ?LAT .
          |  }
          |  OPTIONAL {
-         |  graph ?g1 {
+         |   graph ?g1 {
          |    ?thing rdfs:label ?LAB } }
          |  OPTIONAL {
-         |  graph ?g2 {
+         |   graph ?g2 {
          |    ?thing <urn:displayLabel> ?LAB } }
+         |
+         |  OPTIONAL {
+         |   graph ?g3 {
+         |    ?thing foaf:depiction ?IMG } }
+         |  OPTIONAL {
+         |   graph ?g4 {
+         |    ?thing foaf:img ?IMG } }
+         |
          |  $countPattern
          |}
          |ORDER BY DESC(?COUNT)

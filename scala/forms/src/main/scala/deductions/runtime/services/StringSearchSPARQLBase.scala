@@ -97,6 +97,7 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
     |    ${classCriterium(classe, unionGraph=true)}
     |    $countPattern
     |    $excludePerson
+    |  # $excludePlace
     |  }
     |}
     |ORDER BY DESC(?COUNT)
@@ -118,17 +119,20 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |LIMIT 10
          |""".stripMargin
 
-  /** query With links Count, with or without text query */
+  /** query With links Count, with or without text query
+   *  TODO duplicate stuff with NavigationSPARQLBase.reverseLinksMaps */
   def queryWithlinksCountMap(search: String,
                           classe: String = "") = s"""
          |${declarePrefix(text)}
          |${declarePrefix(rdfs)}
          |${declarePrefix(form)}
          |${declarePrefix(geo)}
+         |${declarePrefix(foaf)}
          |CONSTRUCT {
          |  ?thing geo:long ?LONG .
          |  ?thing geo:lat ?LAT .
          |  ?thing rdfs:label ?LAB .
+         |  ?thing foaf:depiction ?IMG .
          |} WHERE {
          |  ${textQuery(search)}
          |  ${classCriterium(classe)} .
@@ -137,11 +141,19 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |    ?thing geo:lat ?LAT .
          |  }
          |  OPTIONAL {
-         |  graph ?grlab {
+         |   graph ?grlab {
          |    ?thing rdfs:label ?LAB } }
          |  OPTIONAL {
-         |  graph ?grlab2 {
+         |   graph ?grlab2 {
          |    ?thing <urn:displayLabel> ?LAB } }
+         |
+         |  OPTIONAL {
+         |   graph ?g3 {
+         |    ?thing foaf:depiction ?IMG } }
+         |  OPTIONAL {
+         |   graph ?g4 {
+         |    ?thing foaf:img ?IMG } }
+         |
          |  $countPattern
          |}
          |ORDER BY DESC(?COUNT)
