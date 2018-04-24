@@ -34,11 +34,13 @@ function rdfURL2SimpleArray(/*String: */url)/*: Promise*/ {
 
     /** For filtering with RDF lang */
     function rdfsLabelCriterium(quad, subject) {
+    var userLanguage = (navigator.language || navigator.userLanguage ). substring(0,2)
     var ret = (
        quad.predicate.value === rdfsLabel ||
        quad.predicate.value === displayLabel
        )
-     // TODO:	&& quad.object.language === 'en'
+     && ( quad.object.language === userLanguage ||
+          quad.object.language === "" )
      &&  quad.subject.toString() == subject.toString()
 //     console.log( 'rdfsLabelCriterium quad: ' + quad)
      return ret
@@ -96,10 +98,10 @@ function rdfURL2SimpleArray(/*String: */url)/*: Promise*/ {
     let simpleArray = subjs . map((subj) => {
       return {
         "@id": (subj.toString()),
-        "label":    getRdfsLabel(subj),
-        "long":	getGeoLong(subj),
-        "lat":	getGeoLat(subj),
-        "img": getImage(subj)
+        "label":getRdfsLabel(subj),
+        "long": getGeoLong(subj),
+        "lat":  getGeoLat(subj),
+        "img":  getImage(subj)
         // 'http://commons.wikimedia.org/wiki/Special:FilePath/Trevoux-008.JPG?width=300'
       }
     })
