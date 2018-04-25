@@ -45,11 +45,11 @@ trait CommonVocabulariesLoader[Rdf <: RDF, DATASET]
        * .ttl is still broken ?
        * ( asked on https://github.com/mhausenblas/schema-org-rdf/issues/63 )
        * 
-       * TODO the best is to use the RDFa official version at
+       * Maybe the best is to use the RDFa official version at
        * https://github.com/schemaorg/schemaorg/blob/sdo-callisto/data/schema.rdfa */
 //    	URI("http://schema.rdfs.org/all.nt") ::
       /* see also scripts/download-dbpedia.sh in Semantic_forms */
-      URI("http://downloads.dbpedia.org/2015-10/dbpedia_2015-10.nt") ::
+      URI("http://downloads.dbpedia.org/2016-10/dbpedia_2016-10.nt") ::
       /* con: */
       URI("http://www.w3.org/2003/01/geo/wgs84_pos#") ::
       URI("http://www.w3.org/2000/10/swap/pim/contact#") ::
