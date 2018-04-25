@@ -165,7 +165,9 @@ class Map{
         pinText = '<a href="/display?displayuri=' + encodeURIComponent(key) + '" target="_blank">' + text + '</a>'
         if( image != null && image != '')
           pinText = pinText +
-          '<img src='+image+' css="sf-thumbnail" height="40">'
+          '<a class="image-popup-vertical-fit" href="'+image+'">' +
+            '<img src="'+image+'" css="sf-thumbnail" height="40">' +
+          '</a>'
       } else
         pinText = ''
       this.pins[key] = L.marker([latitude,longitude],

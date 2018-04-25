@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang='fr'>
+<html>
 
 <head>
     <title>Data from RDF</title>
@@ -10,7 +10,10 @@
     <script src="geo-map.js"></script>
     <script src="https://rdf-ext.bergnet.org/dist/rdf-ext-all-1.0.0.src.js"></script>
     <script src="rdf2array.js"></script>
-        <style>
+
+    <link rel="stylesheet" href="/assets/magnific-popup/magnific-popup.css"></link>
+
+    <style>
         body {
             padding: 0;
             margin: 0;
@@ -50,3 +53,22 @@
  } else
      console.log("No url= in URL ");
 </script>
+
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"> </script>
+<script src="/assets/magnific-popup/jquery.magnific-popup.min.js"
+	type="text/javascript"> </script>
+
+<script type='text/javascript'>
+        $(document).ready( function (){
+          console.log('Register magnificPopup')
+            $('.image-popup-vertical-fit').magnificPopup({
+                type: 'image',
+                closeOnContentClick: true,
+                mainClass: 'mfp-img-mobile',
+                image: {
+                verticalFit: true
+                }
+            });
+        })
+    </script>
