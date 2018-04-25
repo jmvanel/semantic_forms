@@ -41,7 +41,8 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
     *  */
   def createHTMLResourceReadonlyField(
                                        resourceEntry: formMod#ResourceEntry,
-                                       hrefPrefix: String = hrefDisplayPrefix,
+                                       // TODO remove arg:
+                                       hrefPrefixxxxx: String = hrefDisplayPrefix,
                                        request: HTTPrequest = HTTPrequest()
                                      ): NodeSeq = {
 
@@ -76,6 +77,19 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
               >...</button>)
 
       <span class="sf-statistics">{widgets}</span>
+  }
+
+  /** TODO duplication with preceding function */
+  def createHTMLResourceReadonlyFieldBriefly(
+    resourceEntry: formMod#ResourceEntry,
+    request:       HTTPrequest           = HTTPrequest()): NodeSeq = {
+    import resourceEntry._
+    val typ = firstNODEOrElseEmptyString(type_)
+    val objectURIstringValue = value.toString()
+    hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue, valueLabel,
+      typ, // TODO pass type_
+      resourceEntry) ++
+      displayThumbnail(resourceEntry)
   }
 
   /** hyperlink To RDF property */

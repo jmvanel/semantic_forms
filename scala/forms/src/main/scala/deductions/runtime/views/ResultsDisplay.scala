@@ -52,7 +52,11 @@ extends ThumbnailInference[Rdf, DATASET] {
               uri, lang, graph,
               hrefPrefix = hrefPrefix,
               label = label,
-              sortAnd1rowPerElement = sortAnd1rowPerElement )
+              sortAnd1rowPerElement = sortAnd1rowPerElement ) ++
+              separatorSpan ++
+              makeHyperlinkForURIBriefly(
+                getClassOrNullURI(uri)(allNamedGraph),
+                lang)
 //              ++
 //              <div style="font-size:10px; opacity:.8;">{ val uriString = fromUri(uri)
 //              URLEncoder.encode( s"DROP GRAPH <$uriString>", "utf-8") }</div>
@@ -65,14 +69,16 @@ extends ThumbnailInference[Rdf, DATASET] {
               sortAnd1rowPerElement = sortAnd1rowPerElement ),
           lit => <div>{ lit.toString() }</div>
           )
-          }</div> , <span>&#160;&#160;</span> )
+          }</div> , separatorSpan )
         }
         }
         columnsFormResults
     }</div><!-- end of wrapping div displayResults -->
   }
 
-  /** make HTML hyperlink For given URI;
+  val separatorSpan = <span>&#160;&#160;&#160;&#160;</span>
+
+  /** make HTML hyperlink For given URI, with bells and whistles;
    *  this links to semantic_forms page for displaying this URI;
    * NOTE: this reuses code in Form2HTMLDisplay.createHTMLResourceReadonlyField()
    * 
@@ -89,6 +95,22 @@ extends ThumbnailInference[Rdf, DATASET] {
           makeInstanceLabel(node, graph, lang)
      val `type` = getClassOrNullURI(node)(graph)
      displayNode(uriNodeToURI(node), hrefPrefix, displayLabel,
+         property = nullURI, type_ = `type` )
+  }
+
+  def makeHyperlinkForURIBriefly(
+      node: Rdf#Node,
+      lang: String,
+      label: String = "",
+      graph: Rdf#Graph = allNamedGraph
+  ) : NodeSeq = {
+    val displayLabel =
+      if( label != "" )
+          label
+        else
+          makeInstanceLabel(node, graph, lang)
+     val `type` = getClassOrNullURI(node)(graph)
+     displayNodeBriefly(uriNodeToURI(node), displayLabel,
          property = nullURI, type_ = `type` )
   }
 
@@ -112,38 +134,55 @@ extends ThumbnailInference[Rdf, DATASET] {
 
   /** display given URI with bells and whistles,
    *  implementation:  call createHTMLResourceReadonlyField() in trait Form2HTMLDisplay */
-  private def displayNode(uri: Rdf#URI, hrefPrefix: String = config.hrefDisplayPrefix,
-		  label: String,
+  private def displayNode(uri: Rdf#URI,
+      hrefPrefix: String = config.hrefDisplayPrefix,
+      label: String,
       property: Rdf#URI,
       type_ : Rdf#Node
       ): NodeSeq = {
     if( uri != nullURI ) {
+      val resourceEntry = makeResourceEntry(uri, label, property, type_)
+
+      def hyperlink =
+        if( hrefPrefix != "" &&
+            hrefPrefix != config.hrefDisplayPrefix )
+          <a href={
+             createHyperlinkString(hrefPrefix, fromUri(uri), false)
+           } class="" title={s"hyperlink to Triples in Graph at URI <$uri>"}>
+           { label } </a>
+        else NodeSeq.Empty
+
+      hyperlink ++
+      createHTMLResourceReadonlyField( resourceEntry, hrefPrefix)
+    } else
+      <span>null URI</span>
+  }
+
+  private def displayNodeBriefly(uri: Rdf#URI,
+      label: String,
+      property: Rdf#URI,
+      type_ : Rdf#Node
+      ): NodeSeq = {
+        createHTMLResourceReadonlyFieldBriefly(
+            makeResourceEntry(uri, label, property, type_ ) )
+  }
+
+  private def makeResourceEntry(uri: Rdf#URI,
+      label: String,
+      property: Rdf#URI,
+      type_ : Rdf#Node
+      ) = {
     val fmod = new FormModule[Rdf#Node,  Rdf#URI ]{
-      val nullURI= ops.URI("")
-    }
-    val types = getClasses(uri)(allNamedGraph)
-//    println(s"==== displayNode: types: $types")
-    val resourceEntry =
-      new fmod.ResourceEntry(
+        val nullURI= ops.URI("")
+      }
+      val types = getClasses(uri)(allNamedGraph)
+      // println(s"==== displayNode: types: $types")
+       new fmod.ResourceEntry(
         valueLabel=label,
         property=property,
         value=uri,
         thumbnail = getURIimage(uri),
         type_ = types)
-
-    def hyperlink =
-      if( hrefPrefix != "" &&
-          hrefPrefix != config.hrefDisplayPrefix )
-    	<a href={
-    			createHyperlinkString(hrefPrefix, fromUri(uri), false)
-    } class="" title={s"hyperlink to Triples in Graph at URI <$uri>"}>
-    { label } </a>
-    else NodeSeq.Empty
-
-    hyperlink ++
-    createHTMLResourceReadonlyField( resourceEntry, hrefPrefix)
-    } else
-      <span>null URI</span>
   }
-  
+
 }

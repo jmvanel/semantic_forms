@@ -62,10 +62,10 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     httpRequest: HTTPrequest = HTTPrequest())(
     implicit
     queryMaker: SPARQLQueryMaker[Rdf]): Future[NodeSeq] = {
-    println(s"search($search) 1: starting TRANSACTION for dataset $dataset")
+    logger.debug(s"search($search) 1: starting TRANSACTION for dataset $dataset")
     val elem0 = rdfStore.rw(dataset, {
       val uris = search_onlyNT(search, variables, httpRequest)
-      println(s"\tsearch(): URI's size ${uris.size}")
+      logger.info(s"\tsearch(): URI's size ${uris.size}")
       val graph: Rdf#Graph = allNamedGraph
       val elems = Seq(
         <button value="Sort" id="sort"> Sort </button>,
@@ -81,7 +81,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
         }</div>)
       elems
     })
-    println(s"search: leaving TRANSACTION for dataset $dataset")
+    logger.debug(s"search: leaving TRANSACTION for dataset $dataset")
     val elem = elem0.get
     Future.successful(elem)
   }
