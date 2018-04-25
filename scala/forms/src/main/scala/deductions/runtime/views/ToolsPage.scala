@@ -30,11 +30,11 @@ trait ToolsPage extends EnterButtons
     """.stripMargin
     val querySampleConstruct =
       """|PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-         |Prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+         |PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+         |PREFIX foaf: <http://xmlns.com/foaf/0.1/>
          |CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10
-         |
-         |#CONSTRUCT { ?sub geo:long ?LON .?sub geo:lat ?LAT . ?sub rdfs:label ?LAB.}
-         |#WHERE {GRAPH ?GRAPH { ?sub geo:long ?LON .?sub geo:lat ?LAT . ?sub rdfs:label ?LAB.  } }"""
+         |#CONSTRUCT { ?S geo:long ?LON ; geo:lat ?LAT ; rdfs:label ?LAB; foaf:depiction ?IMG.}
+         |#WHERE {GRAPH ?GRAPH { ?S geo:long ?LON ; geo:lat ?LAT ; rdfs:label ?LAB. OPTIONAL{?S foaf:depiction ?IMG} OPTIONAL{?S foaf:img ?IMG} } }"""
     .stripMargin
 
 
