@@ -77,7 +77,10 @@ trait EnterButtons {
               <input class="form-control" type="text" id="q" name="q" placeholder={
                 inputMessage
               } dropzone="copy"/>
-              <input class="form-control" type="text" name="clas" placeholder={ classMessage }/>
+              <input class="form-control sfLookup" type="text" name="clas" placeholder={ classMessage }
+                data-rdf-type={fromUri(rdfs.Class)}
+                data-rdf-property={fromUri(rdf.typ)}
+                />
             </div>
 
             <div class="col-sm-4 col-sm-offset-4 col-md-2 col-md-offset-0">
