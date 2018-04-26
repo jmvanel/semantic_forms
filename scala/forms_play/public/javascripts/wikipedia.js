@@ -14,11 +14,11 @@ https://www.google.fr/search?q=ajax+example+scala.js
  */
 
 $(document).ready(function() {
-
+    var searchServiceURL = "http://lookup.dbpedia.org/api/search/KeywordSearch"
+    // "http://lookup.dbpedia.org/api/search/PrefixSearch" : currently service is down
     var resultsCount = 15;
-    var urlReqPrefix = "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=" +
-      resultsCount + "&QueryString=" ;
     var suggestionSearchCSSclass = 'sf-suggestion-search-dbpedia';
+
     var topics = [];
 
     $(".sf-standard-form").on('focus', '.hasLookup', function(event) {
@@ -72,9 +72,8 @@ $(document).ready(function() {
                     }
                 }
                 }
-
                 $.ajax({
-                    url: "http://lookup.dbpedia.org/api/search/PrefixSearch",
+                    url: searchServiceURL,
 //                    data: { MaxHits: resultsCount, QueryClass: typeName, QueryString: request.term },
                     data: { MaxHits: resultsCount, QueryString: request.term },
                     dataType: "json"
