@@ -86,7 +86,6 @@ trait RDFStoreLocalJenaProvider
       database_location: String,
       useTextQuery: Boolean = useTextQuery): ImplementationSettings.DATASET = {
     if (database_location != "") {
-
       // if the directory does not exist, create it
       val currentRelativePath = Paths.get("");
       val abs = currentRelativePath.toAbsolutePath().toString();
@@ -104,6 +103,7 @@ trait RDFStoreLocalJenaProvider
           org.apache.jena.tdb2.TDB2Factory.connectDataset(database_location)
         else
           TDBFactory.createDataset(Paths.get(database_location).toString())
+          // TODO TDBFactory.assembleDataset(assemblerFile)
 
       //      Logger.getRootLogger.info
       println(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
