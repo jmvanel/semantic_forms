@@ -111,7 +111,7 @@ extends Controller
           <a href="#register" style="font-size: medium">{I18NMessages.get( "Create_account", httpRequest.getLanguage())}</a>
         </h3>
         { loginForm }
-        <p/>
+        <p/><br><br>
         <h3 id="register" name="register">{I18NMessages.get( "Create_account", httpRequest.getLanguage())}</h3>
         { registerForm }
       </div>
