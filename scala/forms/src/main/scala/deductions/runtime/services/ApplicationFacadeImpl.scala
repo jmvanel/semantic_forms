@@ -2,6 +2,7 @@ package deductions.runtime.services
 
 import java.io.{ByteArrayInputStream, OutputStream}
 import java.net.URLDecoder
+import java.net.URLEncoder
 
 import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 import deductions.runtime.data_cleaning.BlankNodeCleanerIncremental
@@ -15,19 +16,21 @@ import deductions.runtime.user.RegisterPage
 import deductions.runtime.utils.{CSSClasses, Configuration}
 import deductions.runtime.core.HTTPrequest
 import deductions.runtime.views.{FormHeader, Results, ToolsPage}
+import deductions.runtime.utils.ServiceListenersManager
+
 import org.w3.banana.io._
+import org.w3.banana.RDF
+
 import play.api.libs.iteratee.Enumerator
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 import scala.xml.{Elem, NodeSeq}
-import deductions.runtime.utils.ServiceListenersManager
-import org.w3.banana.RDF
 
 import scalaz._
 import Scalaz._
-import java.net.URLEncoder
+import akka.stream.scaladsl.StreamConverters
 
 /**
  * a Web Application Facade,
@@ -231,13 +234,13 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
    *  TODO should be non-blocking !!!!!!!!!!!!!
    *  currently accumulates a string first !!!
    *  not sure if Banana and Jena allow a non-blocking access to SPARQL query results */
-  def download(url: String, mime: String="text/turtle"): Enumerator[Array[Byte]] = {
+  def download(url: String, mime: String="text/turtle") = {
 	  val res = downloadAsString(url, mime)
 	  val input = new ByteArrayInputStream(res.getBytes("utf-8"))
-	  Enumerator.fromStream(input, chunkSize=256*256)
+	  StreamConverters.fromInputStream(() ⇒ input)
   }
 
-  /** TODO not working !!!!!!!!!!!!!  */
+  /** not working !!!!!!!!!!!!!  */
   private def downloadKO(url: String): Enumerator[Array[Byte]] = {
     // cf https://www.playframework.com/documentation/2.3.x/ScalaStream
     // and http://greweb.me/2012/11/play-framework-enumerator-outputstream/

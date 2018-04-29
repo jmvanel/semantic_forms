@@ -46,7 +46,8 @@ trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DAT
          |}""".stripMargin
     logger.debug("search_only " + queryString)
     val res = sparqlConstructQuery(queryString)
-    println( "search_only: after sparqlConstructQuery" )
+    logger.debug( "search_only: after sparqlConstructQuery" )
+    logger.debug(s"search_only: res $res" )
     res
   }
 

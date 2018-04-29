@@ -59,16 +59,15 @@ with RDFContentNegociation {
         val httpRequest = copyRequest(request)
         def output(mime: String): Result = {
 //          println(log("downloadAction", request))
-          Ok.chunked(
+          Ok.chunked{
             // TODO >>>>>>> add database arg.
-            download(url, mime)).
-            as(s"${mime}; charset=utf-8")
-            .withHeaders("Access-Control-Allow-Origin" -> "*")
+            download(url, mime)
+          } . as(s"${mime}; charset=utf-8")
+            . withHeaders("Access-Control-Allow-Origin" -> "*")
         }
-        // Ok.stream(download(url) >>> Enumerator.eof).as("text/turtle; charset=utf-8")
 
         val accepts = httpRequest.getHTTPheaderValue("Accept")
-        val mime = computeMIMEOption(accepts) // , defaultMIME)
+        val mime = computeMIMEOption(accepts)
 
         val syntaxOption = httpRequest.getHTTPparameterValue("syntax")
 //        println((s">>>>>>>> downloadAction syntaxOption $syntaxOption"))
@@ -77,12 +76,10 @@ with RDFContentNegociation {
             val mimeOption = stringMatchesRDFsyntax(syntax)
 //            println((s">>>>>>>> downloadAction , mimeOption $mimeOption"))
             mimeOption match {
-              case Some(mimeString) =>
-                val mime = (mimeString)
-//                println((s">>>>>>>>=== downloadAction mimeString $mimeString, mime $mime"))
-                output(mime)
+              case Some(mimeStringFromSyntaxHTTPparameter) =>
+                output(mimeStringFromSyntaxHTTPparameter)
               case None =>
-               output(mime)
+                output(mime)
             }
           case None =>
             output(mime)
