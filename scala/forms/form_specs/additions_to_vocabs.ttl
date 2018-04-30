@@ -51,6 +51,9 @@ geo:lat
     a owl:DatatypeProperty ;
     rdfs:range xsd:float .
 
+geo:alt
+    a owl:DatatypeProperty ;
+    rdfs:range xsd:float .
 
 # Icons for OWL classes
 
