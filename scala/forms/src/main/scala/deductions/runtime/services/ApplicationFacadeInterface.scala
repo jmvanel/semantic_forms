@@ -1,7 +1,7 @@
 package deductions.runtime.services
 
 import deductions.runtime.core.HTTPrequest
-import play.api.libs.iteratee.Enumerator
+//import play.api.libs.iteratee.Enumerator
 
 import scala.concurrent.Future
 import scala.util.Try
@@ -35,7 +35,7 @@ trait ApplicationFacadeInterface {
   def lookup(search: String, lang: String = "en", clas: String = "", mime: String = ""): String
 
   /** implements download of RDF content from HTTP client */
-  def download(url: String, mime: String): Enumerator[Array[Byte]]
+//  def download(url: String, mime: String): Enumerator[Array[Byte]]
 
   def sparqlConstructQuery(query: String, lang: String = "en"): NodeSeq
 

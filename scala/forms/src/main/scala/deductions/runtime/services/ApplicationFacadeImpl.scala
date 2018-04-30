@@ -21,7 +21,7 @@ import deductions.runtime.utils.ServiceListenersManager
 import org.w3.banana.io._
 import org.w3.banana.RDF
 
-import play.api.libs.iteratee.Enumerator
+//import play.api.libs.iteratee.Enumerator
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -241,23 +241,23 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   }
 
   /** not working !!!!!!!!!!!!!  */
-  private def downloadKO(url: String): Enumerator[Array[Byte]] = {
-    // cf https://www.playframework.com/documentation/2.3.x/ScalaStream
-    // and http://greweb.me/2012/11/play-framework-enumerator-outputstream/
-    Enumerator.outputStream { os =>
-      val graph = search_only(url)
-      logger.info(s"after search_only($url)")
-      val r = graph.map { graph =>
-        /* non blocking */
-        val writer: RDFWriter[Rdf, Try, Turtle] = turtleWriter
-        logger.info("before writer.write()")
-        val ret = writer.write(graph, os, base = url)
-        logger.info("after writer.write()")
-        os.close()
-      }
-      logger.info("after graph.map()")
-    }
-  }
+//  private def downloadKO(url: String): Enumerator[Array[Byte]] = {
+//    // cf https://www.playframework.com/documentation/2.3.x/ScalaStream
+//    // and http://greweb.me/2012/11/play-framework-enumerator-outputstream/
+//    Enumerator.outputStream { os =>
+//      val graph = search_only(url)
+//      logger.info(s"after search_only($url)")
+//      val r = graph.map { graph =>
+//        /* non blocking */
+//        val writer: RDFWriter[Rdf, Try, Turtle] = turtleWriter
+//        logger.info("before writer.write()")
+//        val ret = writer.write(graph, os, base = url)
+//        logger.info("after writer.write()")
+//        os.close()
+//      }
+//      logger.info("after graph.map()")
+//    }
+//  }
 
 //  def edit(url: String): NodeSeq = {
 //    htmlForm(url, editable = true)._1

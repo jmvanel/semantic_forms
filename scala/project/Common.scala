@@ -41,7 +41,7 @@ object Common {
 	junitDependency, scalatestDependency,
 
     "com.typesafe.play" %% "play-json" %  "2.6.9", // "2.5.18",
-    "com.typesafe.play" %% "play-iteratees" % "2.6.1",
+    // "com.typesafe.play" %% "play-iteratees" % "2.6.1",
 
     "org.apache.lucene" % "lucene-suggest" % "6.6.3", // 6.6.1", // "6.4.1"
     "org.apache.lucene" % "lucene-demo" % "6.6.3", // 6.6.1", // "6.4.1"
