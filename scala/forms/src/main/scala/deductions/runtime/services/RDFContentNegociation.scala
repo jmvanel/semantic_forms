@@ -37,7 +37,9 @@ trait RDFContentNegociation extends StringHelpers {
       "jsonld" -> jsonldMime,
       "n3" ->  n3Mime
       )
-  /** order of arguments is historical order of RDF syntaxes */
+  /** order of arguments is historical order of RDF syntaxes;
+   *  default is Turtle;
+   *  @return pair of given function result, whether given MIME is known to be RDF */
   def foldRdfSyntax[I, O](mimeType: String, input: I = Unit)(
     funRdfXML: I => O,
     funTurtle: I => O,

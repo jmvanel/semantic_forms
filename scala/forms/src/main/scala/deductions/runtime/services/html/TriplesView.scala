@@ -102,12 +102,12 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
 
     // TODO for comprehension like in htmlForm()
 
-//println( s">>>> htmlFormElemJustFields 0" )
+println( s">>>> htmlFormElemJustFields 0" )
     val (graphURIActual, _) = doRetrieveURI(uri, blankNode, graphURI)
 //    val htmlFormTry = rdfStore.rw( dataset, {
 //println( s">>>> htmlFormElemJustFields 1" )
       implicit val graph: Rdf#Graph = allNamedGraph
-//println( s">>>> htmlFormElemJustFields 2 " )
+println( s">>>> htmlFormElemJustFields 2 " )
       val ops1 = ops
       val config1 = config
       val form = createAbstractForm(
@@ -192,7 +192,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     formGroup: Rdf#URI = nullURI)
     : Try[( NodeSeq, FormSyntax )] = {
 
-//    println( s"htmlForm dataset $dataset" )
+    println( s"htmlForm: dataset $dataset" )
 
     for {
       (graphURIActual, tryGraph) <- Try { time("doRetrieveURI", doRetrieveURI(uri, blankNode, graphURI)) }
@@ -216,10 +216,6 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     val tryGraph = if (blankNode != "true") {
       val res = retrieveURI(makeUri(uri), dataset)
       Logger.getRootLogger().info(s"After retrieveURI(makeUri($uri), dataset) isSuccess ${res.isSuccess}")
-
-      // NOTE: called in TriplesViewWithTitle
-//      println("Search duplicate graph rooted at blank node: size " + getTriples(res.get).size )
-//      manageBlankNodesReload(res.getOrElse(emptyGraph), URI(uri), dataset)
       res
     } else Success(emptyGraph)
     val graphURIActual = if (graphURI === "") uri else graphURI

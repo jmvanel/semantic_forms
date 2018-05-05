@@ -144,12 +144,12 @@ extends
               println(s"Download Graph at URI <$uri> was tried, but it's faulty: $graphDownloaded")
 
             val contentType = graphTry_MIME._2
-            println(s"""retrieveURINoTransaction: downloaded graph from URI <$uri> $graphDownloaded
+            println(s"""retrieveURIBody: downloaded graph from URI <$uri> $graphDownloaded
                     size ${if (graphDownloaded.isSuccess) graphDownloaded.get.size} content Type: $contentType""")
-            val ispureHTML = contentType.startsWith("text/html") // TODO case RDFa
+            val isDocument = isDocumentMIME(contentType) // TODO case RDFa
             graphDownloaded match {
-              case Success(gr) if (!ispureHTML) => Success(gr)
-              case Success(gr) if (ispureHTML) =>
+              case Success(gr) if (!isDocument) => Success(gr)
+              case Success(gr) if (isDocument) =>
                 // TODO pass transactionsInside
                 Success(pureHTMLwebPageAnnotateAsDocument(uri, request))
 
@@ -157,7 +157,8 @@ extends
                 println(s"Graph at URI <$uri> could not be downloaded, (exception ${f.getLocalizedMessage}, ${f.getClass} cause ${f.getCause}).")
                 f match {
                   //case ex: ImplementationSettings.RDFReadException if (ex.getMessage().contains("text/html")) =>
-                  case ex: Exception if (ex.getMessage().contains("text/html")) =>
+                  case ex: Exception if (ex.getMessage().contains("text/html") ||
+                      isDocument ) =>
                     /* Failure(org.apache.jena.riot.RiotException: Failed to determine the content type: (
                                URI=http://ihmia.afihm.org/programme/index.html : stream=text/html)) */
 
@@ -168,7 +169,7 @@ extends
               }
             }
           } else {
-            println(s"mirrorURI found: $mirrorURI")
+            println(s"retrieveURIBody: mirrorURI found: $mirrorURI")
             // TODO find in Mirror URI the relevant triples ( but currently AFAIK the graph returned by this function is not used )
             Success(emptyGraph)
           }
@@ -389,18 +390,18 @@ extends
     dataset: DATASET,
     request: HTTPrequest) = {
     readURIsf( uri, dataset, request)
-    // reactivated; fixed problem at /login
-//    readURIWithJenaRdfLoader( uri, dataset, request)
+    // readURIWithJenaRdfLoader( uri, dataset, request)
   }
 
+
   /** for downloading RDF uses Jena RDFDataMgr,
-   *  and activate Microdata Loading */
+   *  and TODO activate Microdata Loading */
   private def readURIWithJenaRdfLoader(
       uri: Rdf#URI,
       dataset: DATASET,
       request: HTTPrequest ): (Try[Rdf#Graph], String) = {
-//    Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
-    Logger.getRootLogger().info(s"Before load uri $uri")
+
+    Logger.getRootLogger().info(s"readURIWithJenaRdfLoader: Before load uri $uri")
 
     if (isDownloadableURI(uri)) {
       // To avoid troubles with Jena cf https://issues.apache.org/jira/browse/JENA-1335
@@ -413,11 +414,11 @@ extends
         // NOTE: Jena RDF loader can throw an exception "Failed to determine the content type"
         val graphTryLoadedFromURL = rdfLoader.load(new java.net.URL(withoutFragment(uri).toString()))
 //        logger.info
-        println(s"readURI: after rdfLoader.load($uri): $graphTryLoadedFromURL")
+        println(s"readURIWithJenaRdfLoader: after rdfLoader.load($uri): graphTryLoadedFromURL $graphTryLoadedFromURL")
 
         graphTryLoadedFromURL match {
 
-        case Success(gr) =>
+          case Success(gr) =>
             (graphTryLoadedFromURL, contentType)
 
           case Failure(f) =>
@@ -443,11 +444,12 @@ extends
         (Success(emptyGraph), contentType)
       }
     } else {
-      val message = s"Load uri <$uri> is not possible, not a downloadable URI."
+      val message = s"readURIWithJenaRdfLoader: Load uri <$uri> is not possible, not a downloadable URI."
       logger.warn(message)
       ( Success(emptyGraph), "" ) // TODO return Failure( new Exception("") )
     }
   }
+
 
   /**
    * read unconditionally from URI,
@@ -461,7 +463,7 @@ extends
       uri: Rdf#URI,
       dataset: DATASET,
       request: HTTPrequest ): (Try[Rdf#Graph], String) = {
-//    Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
+
     Logger.getRootLogger().info(s"Before load uri $uri")
 
     if (isDownloadableURI(uri)) {

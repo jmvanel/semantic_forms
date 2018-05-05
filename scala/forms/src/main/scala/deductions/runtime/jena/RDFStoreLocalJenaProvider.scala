@@ -223,16 +223,16 @@ trait RDFStoreLocalJenaProvider
         val reader0 = getReaderFromMIME(contentTypeNormalized)
 
         println(s"""readWithContentTypeNoJena:
-                reader from HTTP header $reader0
+                reader from HTTP header $reader0, ${reader0.getClass}
                 request $request , getAllHeaders ${
-        	for (h <- request.getAllHeaders) println(h) }
-        response $response""")
+                for (h <- request.getAllHeaders) println(h) }
+                  response $response""")
 
         val reader/*From Extention*/ = if (!isKnownRdfSyntax(contentTypeNormalized)) {
           System.err.println(
             s"readWithContentTypeNoJena: no Reader found for contentType $contentType ; trying from URI extension")
           val readerFromURI = getReaderFromURI(fromUri(withoutFragment(uri)))
-          println( s"Reader from URI extension: $readerFromURI")
+          println( s"readWithContentTypeNoJena: Reader from URI extension: $readerFromURI")
           readerFromURI.getOrElse(reader0)
         } else reader0
 
@@ -245,15 +245,10 @@ trait RDFStoreLocalJenaProvider
           println(s"readWithContentTypeNoJena: response $writer")
         }
 
-        println(s"readWithContentTypeNoJena: reader $reader =========")
+        println(s"readWithContentTypeNoJena: reader $reader ${reader.getClass} =========")
         val res = reader.read(inputStream, fromUri(withoutFragment(uri)))
         println(s"readWithContentTypeNoJena: result $res =========")
 
-//        if (fromUri(uri).contains("additions_to_vocabs.ttl")) {
-//          println(s"readWithContentTypeNoJena: ${fromUri(uri)}")
-//          println(s"readWithContentTypeNoJena: ${res.get.triples}")
-//        }
-              
         if (res.isFailure) {
           println(s"readWithContentTypeNoJena: reader.read() result: $res")
           val response = httpClient.execute(request)
@@ -261,11 +256,11 @@ trait RDFStoreLocalJenaProvider
           val rdr = new InputStreamReader(inputStream)
           val writer = new StringWriter()
           IOUtils.copy(inputStream, writer, "utf-8")
-          val rdfString = writer.toString()
-          println(s"readWithContentTypeNoJena: rdfString ${rdfString.substring(0,
-              Math.min(2000, rdfString.length() )
+          val sampleFromContentReceived = writer.toString()
+          println(s"readWithContentTypeNoJena: rdfString ${sampleFromContentReceived.substring(0,
+              Math.min(2000, sampleFromContentReceived.length() )
               )}")
-          reader.read(new StringReader(rdfString), fromUri(withoutFragment(uri)))
+          reader.read(new StringReader(sampleFromContentReceived), fromUri(withoutFragment(uri)))
         } else
           res
     }

@@ -43,4 +43,18 @@ trait URIHelpers {
       url.startsWith("file:") ||
       url.startsWith("https:")
   }
+
+
+  private val documentMIMEs = Set(
+      "text/html",
+      "application/pdf",
+      "application/vnd.oasis.opendocument.text"
+  ) // TODO word :(
+
+  /* is a Document in a broad sense, so will typed foaf:Document */
+  def isDocumentMIME(mime: String) = {
+    val res = documentMIMEs.contains(mime)
+    println(s"isDocumentMIME(mime=$mime => $res")
+    res
+  }
 }

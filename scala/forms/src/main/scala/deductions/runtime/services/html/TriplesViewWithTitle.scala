@@ -61,12 +61,12 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
           // 1. retrieve or check URI from Internet
 
           val (tryGraph: Try[Rdf#Graph], failureOrStatistics: NodeSeq ) =
-              if (blankNode =/= "true") {
+            if (blankNode =/= "true") {
                 // TODO pass datasetOrDefault)
               val tryGraph = retrieveURIBody(
                 makeUri(uri), datasetOrDefault, request, transactionsInside=true)
               val failureOrStatistics = tryGraph match {
-                case Failure(e) => e.getLocalizedMessage
+                case Failure(e) => <p>{ e.getLocalizedMessage }</p>
                 case Success(g) =>
                   val res = wrapInReadTransaction{ formatHTMLStatistics(URI(uri), g, lang) }
                   res match {
@@ -77,6 +77,9 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
               (tryGraph, failureOrStatistics)
             } else
               (Success(emptyGraph), "")
+
+
+          // LOGGING only
 
           tryGraph match {
             case Success(gr) =>
@@ -104,6 +107,8 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
 
           // 2. generate form and its header
 
+          println(s"ZZZZZZZZ = failureOrStatistics ${failureOrStatistics}")
+
           // FEATURE: annotate plain Web site
           val editable2 = editable || typeChange
 
@@ -119,7 +124,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
             logger.debug(s">>>> after htmlFormElemRaw, formSyntax $formSyntax")
 
             wrapInTransaction({  // or wrapInReadTransaction ?
-            Text("\n") ++
+              Text("\n") ++
               titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable2) ++
               <div class="col-xs-12">
                 <!--++ div wraps failure Or Statistics form header (form generation traceability) ++-->

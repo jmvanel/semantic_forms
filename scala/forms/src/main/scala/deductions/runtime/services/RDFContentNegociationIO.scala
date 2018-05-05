@@ -21,14 +21,15 @@ trait RDFContentNegociationIO[Rdf <: RDF, DATASET]
 
   def getReaderFromMIME(mimeType: String): RDFReader[Rdf, Try, _] = {
     println( s">>>> getRDFReader: mimeType $mimeType")
-    val rdfReader: RDFReader[Rdf, Try, Object] =
-      foldRdfSyntax(mimeType)(
+    val readerSearched = foldRdfSyntax(mimeType)(
         _ => rdfXMLReader,
         _ => turtleReader,
         _ => jsonldReader,
         _ => turtleReader // N3 actually (N3 exists in Jena but not Banana)
-        ) . _1
-      rdfReader
+        )
+    val rdfReader: RDFReader[Rdf, Try, Object] = readerSearched . _1
+    println(s"getReaderFromMIME: whether given MIME is known to be RDF ${readerSearched._2}")
+    rdfReader
   }
 
   def getReaderFromURI(uri: String): Option[RDFReader[Rdf, Try, _]] =
