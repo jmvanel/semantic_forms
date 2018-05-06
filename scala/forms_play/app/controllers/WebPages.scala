@@ -377,12 +377,14 @@ trait WebPages extends Controller with ApplicationTrait {
       val httpRequest = copyRequest(request)
       logger.debug(s"""ApplicationTrait.saveOnly: class ${request.body.getClass},
               request $httpRequest""")
-      val (uri, typeChanges) =
-        saveOnly(httpRequest, userid, graphURI = makeAbsoluteURIForSaving(userid))
-      logger.info(s"saveAction: uri <$uri>")
+      val (uri, typeChanges) = saveOnly(
+        httpRequest, userid, graphURI = makeAbsoluteURIForSaving(userid))
+      logger.info(s"saveAction: uri <$uri>, typeChanges=$typeChanges")
+      val saveAfterCreate = httpRequest.getHTTPheaderValue("Referer") .filter( _ .contains("/create?") ).isDefined
+      val edit = typeChanges && ! saveAfterCreate
+      val editParam = if( edit ) "edit" else ""
       val call = routes.Application.displayURI(
-        uri,
-        Edit = if (typeChanges) "edit" else "")
+        uri, Edit = editParam)
       Redirect(call)
       /* TODO */
       // recordForHistory( userid, request.remoteAddress, request.host )
