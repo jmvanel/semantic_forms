@@ -3,6 +3,7 @@ package deductions.runtime.core
 import java.net.URLEncoder
 import scala.collection.Seq
 import java.net.URLDecoder
+import scala.xml.NodeSeq
 
 /**
  * Like Request from Play! (in package play.api.mvc), but avoid Play! dependency
@@ -40,7 +41,8 @@ case class HTTPrequest(
     uri: String = "",
     to_string: String = "",
     secure: Boolean= false,
-    domain: String = ""
+    domain: String = "",
+    session: Map[String,String] = Map()
     ) {
 
   /** get RDF subject (HTTP parameter "displayuri") */
@@ -72,13 +74,23 @@ case class HTTPrequest(
     else
       url.replaceFirst("^https://", "http://")
 
-      def userId(): String = {
+  def userId(): String = {
     val usernameFromSession = for (
       cookie <- cookies.get("PLAY_SESSION");
       value = cookie.value
     ) yield { substringAfter(value, "username=") }
     URLDecoder.decode(
       usernameFromSession.getOrElse("anonymous"), "UTF-8")
+  }
+
+  def flashCookie(id: String): String = {
+    val x = for (
+      cookie <- cookies.get("PLAY_FLASH");
+      value = cookie.value
+    ) yield {
+      // println(s">>>>>>>> flashCookie value $value")
+      substringAfter(value, s"$id=") }
+    URLDecoder.decode(x . getOrElse(""), "UTF-8")
   }
 
   def substringAfter(s: String, k: String) = { s.indexOf(k) match { case -1 => ""; case i => s.substring(i + k.length) } }
@@ -112,6 +124,10 @@ case class HTTPrequest(
     domain: $domain
       """
   }
+
+  private var messages: NodeSeq = NodeSeq.Empty
+  def appMessages: NodeSeq = messages
+  def addAppMessage(m: NodeSeq): Unit = { messages = messages ++ m }
 }
 
 /** Borrowed from Play */

@@ -58,22 +58,24 @@ trait WebPages extends Controller with ApplicationTrait {
 
   /** side effet: call of All Service Listeners */
   private case class MainPagePrecompute(
-      requestCopy: HTTPrequest) {
+      val requestCopy: HTTPrequest) {
     callAllServiceListeners(requestCopy)
     val lang = requestCopy.getLanguage()
     val userid = requestCopy.userId()
     val uri = expandOrUnchanged( requestCopy.getRDFsubject() )
     val title = labelForURITransaction(uri, lang)
     val userInfo = displayUser(userid, requestCopy.getRDFsubject(), title, lang)
+    def this(request: Request[_]) = this(copyRequest(request))
   }
 
   /** output Main Page With given Content */
   private def outputMainPageWithContent(contentMaker: SemanticController) = {
     Action { request0: Request[_] =>
-        val precomputed = MainPagePrecomputePlay(request0)
+        val precomputed = new MainPagePrecompute(request0)
         import precomputed._
-        outputMainPage(contentMaker.result(requestCopy), lang, userInfo = userInfo,
-            title=precomputed.title)(request)
+        addAppMessageFromSession(requestCopy)
+        outputMainPage2(contentMaker.result(requestCopy),
+            precomputed )
     }
   }
 
@@ -82,15 +84,23 @@ trait WebPages extends Controller with ApplicationTrait {
     withUser {
       implicit userid =>
         implicit request =>
-          val precomputed = MainPagePrecomputePlay(request)
-        println(s"========= precomputed $precomputed - title ${precomputed.title}")
-          outputMainPage(contentMaker.result(precomputed.requestCopy),
-              precomputed.lang,
-              userInfo =precomputed.userInfo,
-              title=precomputed.title)(request)
+          val precomputed = new MainPagePrecompute(request)
+          import precomputed._
+          addAppMessageFromSession(requestCopy)
+          println(s"========= outputMainPageWithContentLogged precomputed $precomputed - title ${precomputed.title}")
+          outputMainPage2(contentMaker.result(requestCopy),
+            precomputed )
     }
   }
 
+  def addAppMessageFromSession(requestCopy: HTTPrequest) = {
+//    println( ">>>> addAppMessageFromSession session " + requestCopy.session )
+//    println( ">>>> addAppMessageFromSession cookies " + requestCopy.cookies )
+    val stringMess = requestCopy.flashCookie( "message" )
+//    println( ">>>> addAppMessageFromSession stringMess " + stringMess )
+    requestCopy.addAppMessage(
+      <p>{ stringMess }</p>)
+  }
   /** generate a Main Page wrapping given XHTML content */
   private def outputMainPage( content: NodeSeq,
       lang: String, userInfo: NodeSeq = <div/>, title: String = "",
@@ -98,28 +108,32 @@ trait WebPages extends Controller with ApplicationTrait {
       classForContent: String = "container sf-complete-form")
   (implicit request: Request[_]) = {
       Ok( "<!DOCTYPE html>\n" +
-        mainPage( content, userInfo, lang, title, displaySearch,
+        mainPage( content,
+            userInfo, lang, title,
+            displaySearch,
             messages = getDefaultAppMessage(),
-            classForContent )
-      ).withHeaders("Access-Control-Allow-Origin" -> "*") // for dbpedia lookup
+            classForContent, copyRequest(request) )
+      )
+      .withHeaders("Access-Control-Allow-Origin" -> "*") // for dbpedia lookup
       .as("text/html; charset=utf-8")
   }
 
-  /** UNUSED yet!
-   *  generate a Main Page wrapping given XHTML content */
+  /** generate a Main Page wrapping given XHTML content */
   private def outputMainPage2(
     content:         NodeSeq,
     precomputed:     MainPagePrecompute,
     displaySearch:   Boolean            = true,
-    classForContent: String             = "container sf-complete-form")(implicit request: Request[_]) = {
+    classForContent: String             = "container sf-complete-form") = {
     import precomputed._
     Ok("<!DOCTYPE html>\n" +
       mainPage(
-        content, userInfo,
-        lang, title,
+        content,
+        userInfo, lang, title,
         displaySearch,
         messages = getDefaultAppMessage(),
-        classForContent)).withHeaders("Access-Control-Allow-Origin" -> "*") // for dbpedia lookup
+        classForContent,
+        requestCopy))
+      .withHeaders("Access-Control-Allow-Origin" -> "*") // for dbpedia lookup
       .as("text/html; charset=utf-8")
   }
 
@@ -385,7 +399,10 @@ trait WebPages extends Controller with ApplicationTrait {
       val editParam = if( edit ) "edit" else ""
       val call = routes.Application.displayURI(
         uri, Edit = editParam)
-      Redirect(call)
+      Redirect(call).flashing(
+        "message" ->
+        s"The item <$uri> has been created" )
+        // s"The item <$uri> of type <${httpRequest.getHTTPparameterValue("clas")}> has been created" )
       /* TODO */
       // recordForHistory( userid, request.remoteAddress, request.host )
     } // end saveLocal(

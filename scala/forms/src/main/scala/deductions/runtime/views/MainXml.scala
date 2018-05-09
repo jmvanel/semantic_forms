@@ -4,30 +4,33 @@ import deductions.runtime.utils.I18NMessages
 
 import scala.xml.NodeSeq
 import scala.xml.NodeSeq.seqToNodeSeq
+import deductions.runtime.core.HTTPrequest
 
 /** HTML page skeleton for the generic SF application */
 trait MainXml extends ToolsPage with EnterButtons {
 
+  val defaultSiteMessage = <p>
+                                     New feature considered:
+                                     <a href="https://github.com/jmvanel/semantic_forms/issues/152">
+                                       Checker for good practices in RDF and OWL #152
+                                     </a>
+                                   </p>
   /**
    * main Page with a single content (typically a form)
    * Design pattern "Template method"
    */
   def mainPage(content: NodeSeq, userInfo: NodeSeq, lang: String = "en", title: String = "",
                displaySearch: Boolean = true,
-               messages: NodeSeq = <p>
-                                     New feature considered:
-                                     <a href="https://github.com/jmvanel/semantic_forms/issues/152">
-                                       Checker for good practices in RDF and OWL #152
-                                     </a>
-                                   </p>,
-               classForContent: String = "container sf-complete-form") = {
+               messages: NodeSeq = defaultSiteMessage,
+               classForContent: String = "container sf-complete-form",
+               httpRequest: HTTPrequest = HTTPrequest()) = {
     <html>
       <head>
         { head(title)(lang) }
       </head>
       <body>
         {mainPageHeader(lang, userInfo, displaySearch, messages)}
-        <div id="appMessages"></div>
+        <div id="appMessages">{httpRequest.appMessages}</div>
         <div class={classForContent}>
         {content}
         </div>
