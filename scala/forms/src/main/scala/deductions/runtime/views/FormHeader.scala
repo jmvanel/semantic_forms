@@ -121,10 +121,10 @@ trait FormHeader[Rdf <: RDF, DATASET]
   def isOWLURI(uri: String): Boolean = {
 //    val triples = find(allNamedGraph, URI(uri), ANY, ANY).toList
 //    val v = URI(uri) / rdf.typ
-    println(s"isOWLURI(uri=$uri)")
+    logger.debug(s"isOWLURI(uri=$uri)")
     val pg = PointedGraph( URI(uri), allNamedGraph )
     val types = ( pg / rdf.typ ) . nodes . toList
-    println( s"isOWLURI: $types" )
+    logger.debug( s"isOWLURI: $types" )
     types . contains( owl.Class) ||
     types . contains( owl.ObjectProperty) ||
     types . contains( owl.DatatypeProperty) ||

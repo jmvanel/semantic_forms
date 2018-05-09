@@ -91,7 +91,7 @@ trait ApplicationTrait extends Controller
   }
 
   protected def callAllServiceListeners(request: HTTPrequest) = {
-    println( s">>>> callAllServiceListeners $request => ${request.uri}")
+    logger.debug( s">>>> callAllServiceListeners $request => ${request.uri}")
     implicit val rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET] = this
     callServiceListeners(request)(request.userId(), rdfLocalProvider)
   }

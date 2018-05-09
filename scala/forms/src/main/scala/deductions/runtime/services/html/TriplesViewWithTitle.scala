@@ -107,8 +107,6 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
 
           // 2. generate form and its header
 
-          println(s"ZZZZZZZZ = failureOrStatistics ${failureOrStatistics}")
-
           // FEATURE: annotate plain Web site
           val editable2 = editable || typeChange
 

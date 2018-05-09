@@ -69,7 +69,7 @@ extends
 //  {
 //    HttpOp.setDefaultHttpClient(HttpClients.createMinimal())
 //    //	  logger.warn(
-//    println(">>>> RDFCacheAlgo: setDefaultHttpClient(createMinimal())")
+//    logger.debug(">>>> RDFCacheAlgo: setDefaultHttpClient(createMinimal())")
 //  }
 
   import config._
@@ -89,7 +89,7 @@ extends
     rdfStore.r(dataset, {
       for (graph <- rdfStore.getGraph(dataset, uri)) yield {
         val uriGraphIsEmpty = graph.size === 0
-        println("uriGraphIsEmpty " + uriGraphIsEmpty)
+        logger.debug("uriGraphIsEmpty " + uriGraphIsEmpty)
         !uriGraphIsEmpty
       }
     }).flatMap { identity }.getOrElse(false)
@@ -115,7 +115,7 @@ extends
                       transactionsInside: Boolean): Try[Rdf#Graph] = {
 
     val tryGraphLocallyManagedData = getLocallyManagedUrlAndData(uri, request, transactionsInside: Boolean)
-//    println( s"retrieveURIBody: tryGraphLocallyManagedData $tryGraphLocallyManagedData")
+//    logger.debug( s"retrieveURIBody: tryGraphLocallyManagedData $tryGraphLocallyManagedData")
 
     tryGraphLocallyManagedData match {
       case Some(tgr) => Success(tgr)
@@ -125,7 +125,7 @@ extends
 
         val result =
           if (nothingStoredLocally) { // then read unconditionally from URI and store in TDB
-          println(s"""retrieveURIBody: stored Graph Is Empty for URI <$uri>""")
+          logger.debug(s"""retrieveURIBody: stored Graph Is Empty for URI <$uri>""")
           val mirrorURI = getMirrorURI(uri)
           val vv = if (mirrorURI === "") {
             val graphTry_MIME = readURI(uri, dataset, request)
@@ -137,14 +137,14 @@ extends
                 storeURINoTransaction(graphTry, uri, dataset)
             }
             val vv = if (graphDownloaded.isSuccess) {
-              println(s"""Graph at URI <$uri>, size ${graphDownloaded.get.size}
+              logger.debug(s"""Graph at URI <$uri>, size ${graphDownloaded.get.size}
                     Either new addition was downloaded, or locally managed data""")
               addTimestampToDataset(uri, dataset2)
             } else
-              println(s"Download Graph at URI <$uri> was tried, but it's faulty: $graphDownloaded")
+              logger.debug(s"Download Graph at URI <$uri> was tried, but it's faulty: $graphDownloaded")
 
             val contentType = graphTry_MIME._2
-            println(s"""retrieveURIBody: downloaded graph from URI <$uri> $graphDownloaded
+            logger.debug(s"""retrieveURIBody: downloaded graph from URI <$uri> $graphDownloaded
                     size ${if (graphDownloaded.isSuccess) graphDownloaded.get.size} content Type: $contentType""")
             val isDocument = isDocumentMIME(contentType) // TODO case RDFa
             graphDownloaded match {
@@ -154,7 +154,7 @@ extends
                 Success(pureHTMLwebPageAnnotateAsDocument(uri, request))
 
               case Failure(f) => {
-                println(s"Graph at URI <$uri> could not be downloaded, (exception ${f.getLocalizedMessage}, ${f.getClass} cause ${f.getCause}).")
+                logger.debug(s"Graph at URI <$uri> could not be downloaded, (exception ${f.getLocalizedMessage}, ${f.getClass} cause ${f.getCause}).")
                 f match {
                   //case ex: ImplementationSettings.RDFReadException if (ex.getMessage().contains("text/html")) =>
                   case ex: Exception if (ex.getMessage().contains("text/html") ||
@@ -169,7 +169,7 @@ extends
               }
             }
           } else {
-            println(s"retrieveURIBody: mirrorURI found: $mirrorURI")
+            logger.debug(s"retrieveURIBody: mirrorURI found: $mirrorURI")
             // TODO find in Mirror URI the relevant triples ( but currently AFAIK the graph returned by this function is not used )
             Success(emptyGraph)
           }
@@ -198,13 +198,13 @@ extends
       val sizeAndGraph =
         tryGraphFromRdfStore match {
           case Failure(f) =>
-            println(s"""checkIfNothingStoredLocally: URI <$uri> : $f""")
+            logger.error(s"""checkIfNothingStoredLocally: URI <$uri> : $f""")
             (0, emptyGraph)
           case Success(graphStoredLocally) => {
             (graphStoredLocally.size, graphStoredLocally)
           }
         }
-      println(s"""checkIfNothingStoredLocally: TDB graph at URI <$uri> size ${sizeAndGraph._1}""")
+      logger.debug(s"""checkIfNothingStoredLocally: TDB graph at URI <$uri> size ${sizeAndGraph._1}""")
       (sizeAndGraph._1 === 0, sizeAndGraph._2)
       //      nothingStoredAndGraph.getOrElse((false, emptyGraph))
     }
@@ -214,7 +214,7 @@ extends
         doCheckIfNothingStoredLocally
       }
       if (nothingStoredAndGraph.isFailure)
-        System.err.println(s"checkIfNothingStoredLocally: ${nothingStoredAndGraph}")
+        logger.warn(s"checkIfNothingStoredLocally: ${nothingStoredAndGraph}")
       nothingStoredAndGraph.getOrElse((false, emptyGraph))
     } else
       doCheckIfNothingStoredLocally
@@ -231,19 +231,19 @@ extends
      * TODO: code too complex */
     localTimestamp match {
       case Success(longLocalTimestamp) => {
-        println(s"updateLocalVersion: $uri local TDB Timestamp: ${new Date(longLocalTimestamp)} - $longLocalTimestamp .")
+        logger.debug(s"updateLocalVersion: $uri local TDB Timestamp: ${new Date(longLocalTimestamp)} - $longLocalTimestamp .")
         val (noError, timestampFromHTTPHeader, connectionOption) = lastModified(uri.toString(), httpHeadTimeout)
-        println(s"updateLocalVersion: <$uri> last Modified: ${new Date(timestampFromHTTPHeader)} - no Error: $noError .")
+        logger.debug(s"updateLocalVersion: <$uri> last Modified: ${new Date(timestampFromHTTPHeader)} - no Error: $noError .")
 
         if (isDocumentExpired(connectionOption)) {
-          println(s"updateLocalVersion: <$uri> was OUTDATED by Expires HTPP header field")
+          logger.debug(s"updateLocalVersion: <$uri> was OUTDATED by Expires HTPP header field")
           return readStoreURITry(uri, uri, dataset)
         }
 
         if (noError && (timestampFromHTTPHeader > longLocalTimestamp
           || longLocalTimestamp === Long.MaxValue)) {
           val graph = readStoreURITry(uri, uri, dataset)
-          println(s"updateLocalVersion: <$uri> was OUTDATED by timestamp; downloaded.")
+          logger.debug(s"updateLocalVersion: <$uri> was OUTDATED by timestamp; downloaded.")
 
           // TODO pass arg. timestampFromHTTPHeader to addTimestampToDataset
           addTimestampToDataset(uri, dataset2) // PENDING: maybe do this in a Future
@@ -259,7 +259,7 @@ extends
               val etagFromDataset = dataset2.r { getETagFromDataset(uri, dataset2) }.get
               if (etag  =/=  etagFromDataset) {
                 val graph = readStoreURITry(uri, uri, dataset)
-                println(s"""updateLocalVersion: <$uri> was OUTDATED by ETag; downloaded.
+                logger.debug(s"""updateLocalVersion: <$uri> was OUTDATED by ETag; downloaded.
                   etag "$etag"  =/=  etagFromDataset "$etagFromDataset" """)
                 rdfStore.rw(dataset2, { addETagToDatasetNoTransaction(uri, etag, dataset2) })
                 graph
@@ -270,7 +270,7 @@ extends
         } else Success(emptyGraph)
       }
       case Failure(fail) =>
-        println(s"updateLocalVersion: <$uri> had no local Timestamp ($fail); download it:")
+        logger.debug(s"updateLocalVersion: <$uri> had no local Timestamp ($fail); download it:")
         readStoreURITry(uri, uri, dataset)
     }
   }
@@ -301,7 +301,7 @@ extends
    */
   private def readStoreURIinOwnGraph(uri: Rdf#URI): Rdf#Graph = {
     val graphFromURI = readStoreURI(uri, uri, dataset)
-    println("After RDFCacheAlgo.storeURI " + uri + " size: " + graphFromURI.size)
+    logger.debug("After RDFCacheAlgo.storeURI " + uri + " size: " + graphFromURI.size)
     wrapInTransaction {
       val it = find(graphFromURI, ANY, owl.imports, ANY)
       for (importedOntology <- it) {
@@ -375,7 +375,7 @@ extends
     logger.info(s"readStoreURINoTransaction: Before appendToGraph graphUri <$graphUri>")
     if (graphTry.isSuccess) rdfStore.appendToGraph(dataset, graphUri, graphTry.get)
     else
-      println(s"storeURINoTransaction: $graphTry")
+      logger.debug(s"storeURINoTransaction: $graphTry")
     // TODO: reuse appendToGraph return
     logger.info(s"readStoreURINoTransaction: stored into graphUri <$graphUri>")
     graphTry
@@ -406,7 +406,7 @@ extends
     if (isDownloadableURI(uri)) {
       // To avoid troubles with Jena cf https://issues.apache.org/jira/browse/JENA-1335
       val contentType = getContentTypeFromHEADRequest(fromUri(uri))
-    	println(s""">>>> readURIWithJenaRdfLoader: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
+    	logger.debug(s""">>>> readURIWithJenaRdfLoader: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
       if (
 //          !contentType.startsWith("text/html") &&
           !contentType.startsWith("ERROR") ) {
@@ -414,7 +414,7 @@ extends
         // NOTE: Jena RDF loader can throw an exception "Failed to determine the content type"
         val graphTryLoadedFromURL = rdfLoader.load(new java.net.URL(withoutFragment(uri).toString()))
 //        logger.info
-        println(s"readURIWithJenaRdfLoader: after rdfLoader.load($uri): graphTryLoadedFromURL $graphTryLoadedFromURL")
+        logger.debug(s"readURIWithJenaRdfLoader: after rdfLoader.load($uri): graphTryLoadedFromURL $graphTryLoadedFromURL")
 
         graphTryLoadedFromURL match {
 
@@ -422,7 +422,7 @@ extends
             (graphTryLoadedFromURL, contentType)
 
           case Failure(f) =>
-            println(s""">>>> readURIWithJenaRdfLoader: Failed with Jena RDF loader for <$uri>
+            logger.debug(s""">>>> readURIWithJenaRdfLoader: Failed with Jena RDF loader for <$uri>
                trying read With explicit content Type; ContentType From HEAD Request "$contentType" """)
             // after Java-RDFa is updated to latest Jena
             val graphFromMicrodata = graphTryLoadedFromURL.getOrElse {
@@ -436,7 +436,7 @@ extends
                 readWithContentType( uri, contentType, dataset): Try[Rdf#Graph]
               else
                 Success(graphFromMicrodata)
-            println(s"""readURIWithJenaRdfLoader After readWithContentType: ${gr}""")
+            logger.debug(s"""readURIWithJenaRdfLoader After readWithContentType: ${gr}""")
             ( gr, contentType)
         }
 
@@ -469,13 +469,13 @@ extends
     if (isDownloadableURI(uri)) {
       // To avoid troubles with Jena cf https://issues.apache.org/jira/browse/JENA-1335
       val contentType = getContentTypeFromHEADRequest(fromUri(withoutFragment(uri)))
-    	println(s""">>>> readURI: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
+    	logger.debug(s""">>>> readURI: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
       if (!contentType.startsWith("text/html") &&
           !contentType.startsWith("ERROR") ) {
-            println(s""">>>> readURIsf: for <$uri>
+            logger.debug(s""">>>> readURIsf: for <$uri>
                trying read With explicit content Type; ContentType From HEAD Request "$contentType" """)
             val gr = readWithContentType( uri, contentType, dataset): Try[Rdf#Graph]
-            println(s"""readURIsf After readWithContentType: ${gr}""")
+            logger.debug(s"""readURIsf After readWithContentType: ${gr}""")
             ( gr, contentType)
 
       } else {
@@ -502,7 +502,7 @@ extends
           "Accept",
           "application/rdf+xml, text/turtle; charset=utf-8, application/ld+json; charset=utf-8")
 
-      System.out.println("Executing request " + httpHead.getRequestLine());
+      logger.debug("Executing request " + httpHead.getRequestLine());
       // Create a custom response handler
       val responseHandler = new ResponseHandler[String]() {
         override
@@ -515,7 +515,7 @@ extends
             val ct = response.getFirstHeader("Content-Type")
             if ( ct == null ) "" else ct.getValue
           } else {
-            System.err.println(s"---- ${response.getStatusLine()}");
+            logger.error(s"---- ${response.getStatusLine()}");
             throw new ClientProtocolException(
                 s"getContentTypeFromHEADRequest: Unexpected response status: $status");
           }
@@ -526,12 +526,12 @@ extends
           httpclient.execute(httpHead, responseHandler)
         else
           ""
-      System.out.println(s"getContentTypeFromHEADRequest: $responseHandled");
+      logger.debug(s"getContentTypeFromHEADRequest: $responseHandled");
       responseHandled
     }
     catch {
       case t: Throwable =>
-        System.err.println(s"getContentTypeFromHEADRequest($url): ${t.getLocalizedMessage}")
+        logger.error(s"getContentTypeFromHEADRequest($url): ${t.getLocalizedMessage}")
         "ERROR"
     }
     finally {
@@ -609,7 +609,7 @@ extends
             dataset,
             graphURI,
             newGraphWithUrl)
-          println(s"""pureHTMLwebPageAnnotateAsDocument: saved $newGraphWithUrl
+          logger.debug(s"""pureHTMLwebPageAnnotateAsDocument: saved $newGraphWithUrl
             in graph <${makeAbsoluteURIForSaving(request.userId())}>""")
           newGraphWithUrl
         } else emptyGraph
@@ -619,11 +619,11 @@ extends
     val currentPageTriplesIterator = wrapInReadTransaction {
       find(allNamedGraph, uri, ANY, ANY)
     }.getOrElse(Iterator.empty).toIterable
-    println(s"""pureHTMLwebPageAnnotateAsDocument: addedGraphTry $addedGraphTry""")
+    logger.debug(s"""pureHTMLwebPageAnnotateAsDocument: addedGraphTry $addedGraphTry""")
     val result = addedGraphTry.getOrElse(emptyGraph). // newGraphWithUrl.
       // NOTE: after user added triples, this way typeChange will not be triggered
       union(makeGraph(currentPageTriplesIterator))
-    println(s"pureHTMLwebPageAnnotateAsDocument: ret $result")
+    logger.debug(s"pureHTMLwebPageAnnotateAsDocument: ret $result")
     result
   }
 }

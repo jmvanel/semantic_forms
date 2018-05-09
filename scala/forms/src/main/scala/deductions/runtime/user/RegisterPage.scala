@@ -43,7 +43,7 @@ trait RegisterPage[Rdf <: RDF, DATASET]
         if ( isNamedUser(userid) ) {
           val userLabel = wrapInTransaction {
             val personFromAccount = getPersonFromAccount(userid)
-            println( s"==== displayUser: personFromAccount <$personFromAccount> <-- userid '$userid'" )
+            logger.debug( s"==== displayUser: personFromAccount <$personFromAccount> <-- userid '$userid'" )
             // link to User profile
             makeHyperlinkForURI(
                 URI( absoluteURIForUserid ),

@@ -42,10 +42,10 @@ trait OWLsameAsFormProcessing[Rdf <: RDF, DATASET]
 
     for (
       graph <- sparqlConstructQuery(query2);
-      _ = println(s"OWLsameAsFormProcessing: After sparqlConstructQueryGraph graph size ${graph.size}");
+      _ = logger.debug(s"OWLsameAsFormProcessing: After sparqlConstructQueryGraph graph size ${graph.size}");
       tr <- getTriples(graph)
     ) {
-      //    	println(s"OWLsameAsFormProcessing: loop ${tr}") ;
+      //    	logger.debug(s"OWLsameAsFormProcessing: loop ${tr}") ;
       val entry =
         foldNode(tr.objectt)(
           uri =>

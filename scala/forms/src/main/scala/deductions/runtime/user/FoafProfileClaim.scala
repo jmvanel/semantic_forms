@@ -58,7 +58,7 @@ http.send(content);
 
     val label = instanceLabelFromTDB(uri, request.getLanguage())
     val personFromAccount = getPersonFromAccount(request.userId())
-    println( s">>>>==== profileClaimUI: personFromAccount ${request.userId()} --> <$personFromAccount>")
+    logger.debug( s">>>>==== profileClaimUI: personFromAccount ${request.userId()} --> <$personFromAccount>")
     if (currentPageIsAfoafPerson) {
       if (request.userId() != "" &&
           request.userId() != "anonymous"
@@ -70,7 +70,7 @@ http.send(content);
           <$uri> foaf:account <${absoluteURIForUserid}> .
           <$absoluteURIForUserid> foaf:isAccountOf <$uri>  .
           """
-//        println( s"profileClaimUI: rdfString $rdfString")
+//        logger.debug( s"profileClaimUI: rdfString $rdfString")
         // `` : ECMAScript 6 (ES6)
         <div>
           <script type="text/javascript">

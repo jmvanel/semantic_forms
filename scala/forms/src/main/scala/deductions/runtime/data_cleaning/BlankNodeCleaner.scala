@@ -22,7 +22,7 @@ trait BlankNodeCleanerBase[Rdf <: RDF, DATASET]
 
   def isProperty(uriTokeep: Rdf#Node): Boolean = {
     val types = quadQuery(uriTokeep, rdf.typ, ANY).toList
-    println( s"isProperty( $uriTokeep ) : types $types" )
+    logger.debug( s"isProperty( $uriTokeep ) : types $types" )
     types.exists { typ => propTypes.contains(typ._1.objectt) }
   }
 
@@ -30,7 +30,7 @@ trait BlankNodeCleanerBase[Rdf <: RDF, DATASET]
 
   def isClass(uriTokeep: Rdf#Node): Boolean = {
     val types = quadQuery(uriTokeep, rdf.typ, ANY).toList
-    println( s"isProperty( $uriTokeep ) : types $types" )
+    logger.debug( s"isProperty( $uriTokeep ) : types $types" )
     types.exists { typ => classTypes.contains(typ._1.objectt) }
   }
 
@@ -70,15 +70,15 @@ trait BlankNodeCleanerIncremental[Rdf <: RDF, DATASET] extends BlankNodeCleanerB
       }
     }
 
-    println(s"""\nFor graph URI <graphUri>:
+    logger.debug(s"""\nFor graph URI <graphUri>:
       Search duplicate graph rooted at blank node: input size """ + getTriples(incomingGraph).size)
     val blanksIncomingGraphGroupedByPredicate = groupByPredicateThenObjectGraphs(incomingGraph, graphUri)
     val blanksLocalGraphGroupedByPredicate = {
       val localGraph = rdfStore.getGraph( dataset, graphUri).get // TODO : OrElse(emptyGraph)
       groupByPredicateThenObjectGraphs(localGraph, graphUri)
     }
-    println("Search duplicate graph rooted at blank node: number of predicates, Incoming " + blanksIncomingGraphGroupedByPredicate.size)
-    println("Search duplicate graph rooted at blank node: number of predicates, Local " + blanksLocalGraphGroupedByPredicate.size)
+    logger.debug("Search duplicate graph rooted at blank node: number of predicates, Incoming " + blanksIncomingGraphGroupedByPredicate.size)
+    logger.debug("Search duplicate graph rooted at blank node: number of predicates, Local " + blanksLocalGraphGroupedByPredicate.size)
 
     var localGraphsSizeRemoved = 0
     var localTriplesRemoved = 0
@@ -88,14 +88,14 @@ trait BlankNodeCleanerIncremental[Rdf <: RDF, DATASET] extends BlankNodeCleanerB
       incomingGraphs <- blanksIncomingGraphGroupedByPredicate.get(pred);
       localGraphs <- blanksLocalGraphGroupedByPredicate.get(pred)
     ) {
-      println(
+      logger.debug(
           s"Search duplicate graph rooted at blank node: for predicate <$pred>, number of local graphs Grouped By Predicate " +
           localGraphs.size)
       // and now, complexity O(N^2) !!!
       val removed = scala.collection.mutable.Set[Rdf#Graph]()
       val duplicates = scala.collection.mutable.Set[Rdf#Graph]()
       for (incomingSubGraph <- incomingGraphs) {
-        println("Search duplicate graph rooted at blank node: incoming subgraph size " + getTriples(incomingSubGraph).size)
+        logger.debug("Search duplicate graph rooted at blank node: incoming subgraph size " + getTriples(incomingSubGraph).size)
         for (localGraph <- localGraphs) {
           if (
 //              !removed.contains(localGraph) &&
@@ -116,12 +116,12 @@ trait BlankNodeCleanerIncremental[Rdf <: RDF, DATASET] extends BlankNodeCleanerB
             }
             removed += localGraph
             duplicates += incomingSubGraph
-            println(s"Duplicate graph for <$pred> rooted at blank node: deleted:\n\t" + getTriples(localGraph))
+            logger.debug(s"Duplicate graph for <$pred> rooted at blank node: deleted:\n\t" + getTriples(localGraph))
           }
         }
       }
     }
-    println(s"Duplicate graph rooted at blank node: number of local graphs removed: $localGraphsSizeRemoved, # of triples removed $localTriplesRemoved\n")
+    logger.debug(s"Duplicate graph rooted at blank node: number of local graphs removed: $localGraphsSizeRemoved, # of triples removed $localTriplesRemoved\n")
   }
 }
 
@@ -147,7 +147,7 @@ extends BlankNodeCleanerBase[Rdf, DATASET] {
    */
   def cleanUnreachableBlankNodeSubGraph(): Unit = {
     val triplesAll = find(allNamedGraph, ANY, ANY, ANY)
-    println("triples size " + triplesAll size)
+    logger.debug("cleanUnreachableBlankNodeSubGraph: triples size " + triplesAll size)
     val names = listNames().toList
     var triplesRemoveCount = 0
     
@@ -155,7 +155,7 @@ extends BlankNodeCleanerBase[Rdf, DATASET] {
       val graphURI = URI(name)
       rdfStore.rw( dataset, {
         val graph = rdfStore.getGraph( dataset, graphURI).get
-        println(s"graph <$graphURI> size ${graph.size}")
+        logger.debug(s"cleanUnreachableBlankNodeSubGraph: graph <$graphURI> size ${graph.size}")
 
         val triples = find(graph, ANY, ANY, ANY).toList
         var count = 0
@@ -168,12 +168,12 @@ extends BlankNodeCleanerBase[Rdf, DATASET] {
           }.
           filter { s =>
             count = count + 1
-            // if (s.isBNode) println(s"s.isBNode: # $count, $s")
+            // if (s.isBNode) logger.debug(s"s.isBNode: # $count, $s")
             s.isBNode
           }.
           filter { s =>
             val tt = find(graph, ANY, ANY, s).toList
-            // if (!tt.isEmpty) println("ANY, ANY, s: " + tt)
+            // if (!tt.isEmpty) logger.debug("ANY, ANY, s: " + tt)
             find(graph, ANY, ANY, s) isEmpty
           }.
           filter { s =>
@@ -182,25 +182,25 @@ extends BlankNodeCleanerBase[Rdf, DATASET] {
           }
 
        val bss = blankSubjects.toList
-       println(s"=========== blankSubjects size ${blankSubjects size}")
+       logger.debug(s"=========== blankSubjects size ${blankSubjects size}")
        val mess = bss.map {
           s =>
             if (bss.size > 0) {    
               val triples = find(graph, s, ANY, ANY).toList
-              println("TO REMOVE: " + triples)
+              logger.debug("cleanUnreachableBlankNodeSubGraph: TO REMOVE: " + triples)
               triplesRemoveCount = triplesRemoveCount + bss.size
               rdfStore.removeTriples( dataset, graphURI, triples) . get;
               {
               val triples = find(graph, s, ANY, ANY).toList
-              println("Verification " + triples)
+              logger.debug("cleanUnreachableBlankNodeSubGraph: Verification " + triples)
               s"Remaining size for <$graphURI> ($s): ${triples.size}"
               }
             } else "Nothing to remove."
         }
-       println(mess)
+       logger.debug(mess)
       })
     }
-    println( s"\ntriplesRemoveCount $triplesRemoveCount" )
+    logger.debug( s"\ntriplesRemoveCount $triplesRemoveCount" )
     ()
   }
 
@@ -212,7 +212,7 @@ extends BlankNodeCleanerBase[Rdf, DATASET] {
 //        """ )
 //    }
   val ret = s"DELETE GRAPH ?G { _:$s ?P ?O .} WHERE { GRAPH ?G { _:$s ?P ?O .} }"
-  println( ret )
+  logger.debug( ret )
   ret
 }
   def makeSPARQLselect(s: Rdf#Node): String = {

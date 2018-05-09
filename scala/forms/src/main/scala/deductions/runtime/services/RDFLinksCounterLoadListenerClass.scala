@@ -41,20 +41,20 @@ class RDFLinksCounterLoadListenerClass(val config: Configuration,
 
     import scala.concurrent.ExecutionContext.Implicits.global
     Future {
-      println(s"\nRDFLinksCounterLoadListenerClass notifyServiceCall: ${request.rawQueryString} - dataset ${datasetUsed}")
+      logger.debug(s"\nRDFLinksCounterLoadListenerClass notifyServiceCall: ${request.rawQueryString} - dataset ${datasetUsed}")
       TimeUnit.MILLISECONDS.sleep(500)
       for (
         uri <- request.getHTTPparameterValue("displayuri") if (request.path === "/display");
         uri1 = expandOrUnchanged(uri);
         graph = {
           val graph = checkIfNothingStoredLocally(ops.URI(uri1), transactionsInside = true)._2;
-          println(s"  notifyServiceCall: URI $uri1 graph")
+          logger.debug(s"  notifyServiceCall: URI $uri1 graph")
           graph
         };
         //      retrieveURIBody(ops.URI(uri1),
         addedTriples <- wrapInReadTransaction {
           val triples = getTriples(graph).toSeq
-          println(s"  >>>> RDFLinksCounterLoadListenerClass notifyServiceCall: addedTriples ${triples.size}")
+          logger.debug(s"  >>>> RDFLinksCounterLoadListenerClass notifyServiceCall: addedTriples ${triples.size}")
           triples
         }
       ) {
@@ -64,9 +64,9 @@ class RDFLinksCounterLoadListenerClass(val config: Configuration,
           linksCountGraphURI = defaultLinksCountGraphURI,
           replaceCount = true)
       }
-      println(s"RDFLinksCounterLoadListenerClass notifyServiceCall Future ENDED: ${request.rawQueryString}\n")
+      logger.debug(s"RDFLinksCounterLoadListenerClass notifyServiceCall Future ENDED: ${request.rawQueryString}\n")
     }
-    println(s"RDFLinksCounterLoadListenerClass notifyServiceCall Future CALLED: ${request.rawQueryString}\n")
+    logger.debug(s"RDFLinksCideounterLoadListenerClass notifyServiceCall Future CALLED: ${request.rawQueryString}\n")
   }
 
 }
