@@ -82,16 +82,15 @@ trait URIManagement extends URIHelpers {
     instanceURIPrefix + System.currentTimeMillis() + "-" + System.nanoTime() // currentId = currentId + 1
   }
 
+  /** create URI Prefix for a new instance */
   def instanceURIPrefix(request: HTTPrequest): String = {
-    val hostname =
-      if (request.host  =/=  "" // if one wants to avoid localhost (but why?)
-      //    && request.host.contains(".")
-      )
-        request.host
-      else request.remoteAddress
-
-    val serverPortPart = if (hostname.contains(":")) "" else ":" + serverPort
-    val urip = "http://" + hostname + serverPortPart + "/" + relativeURIforCreatedResourcesByForm
+//    val hostname =
+//      if (request.host  =/=  "")
+//        request.host
+//      else request.remoteAddress
+//    val serverPortPart = if (hostname.contains(":")) "" else ":" + serverPort
+//    val urip = "http://" + hostname + serverPortPart + "/" + relativeURIforCreatedResourcesByForm
+    val urip = request.absoluteURL( "/" + relativeURIforCreatedResourcesByForm )
     println1(s"instance URI Prefix <$urip> - $request")
     urip
   }
