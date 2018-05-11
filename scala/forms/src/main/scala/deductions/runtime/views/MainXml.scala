@@ -65,21 +65,14 @@ trait MainXml extends ToolsPage with EnterButtons {
   def mainPageHeader(implicit lang: String = "en", userInfo: NodeSeq, displaySearch: Boolean = true,
               messages: NodeSeq=NodeSeq.Empty ): NodeSeq = {
 
+    <div class="sf-userInfo" > { userInfo } </div>
+
     <header>
-      <div class="row">
-        <div class="col col-sm-8 col-sm-offset-1">
+        <div class="">
           <a href="/" title="Open a new Semantic_forms in a new tab." target="_blank">
-            <h1>
-              {
-                messageI18N("Welcome")
-              }
-            </h1>
+            <p> { messageI18N("New tab") } </p>
           </a>
         </div>
-        <div class="col col-sm-3">
-          { userInfo }
-        </div>
-      </div>
     </header>
     <div>
       { messages }

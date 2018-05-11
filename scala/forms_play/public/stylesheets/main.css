@@ -67,3 +67,5 @@ tr:nth-child(odd) {background: #FFF}
 
 .sf-data-not-fitting-user-language { display: none; }
 
+.sf-userInfo { float: right; }
+

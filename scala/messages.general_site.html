@@ -1,0 +1,39 @@
+<!-- To set this as the application header, rename it to messages.html -->
+
+<script type='text/javascript'>
+$(document).ready(function() {
+    var known = { en: true, fr: true };
+    var lang  = ((navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage || 'en').substr(0, 2);
+    // alert("GGGGGGG messages " + lang)
+    if(!known[lang])
+        lang = 'en';
+    // Find all <div>s with a class of "wrapper" and lang attribute equal to `lang`
+    // and make them visibile.
+    $('div.wrapper[lang='  + lang + ']').show();
+    // Find all <div>s with a class of "wrapper" and lang attribute not equal
+    // to `lang` and make them invisibile.
+    $('div.wrapper[lang!=' + lang + ']').hide();
+});
+</script>
+
+<div  lang="fr" class="wrapper" style="display: none;">
+<h4>Réseau social sémantique, interopérable, transparent et loyal
+</h4>
+Site collaboratif (technos Sémantiques, économie de la transition, biodiversité, permaculture, etc)
+<br/>
+Données publiques (LOD, RDF, Web sémantique). Reprennez la maîtrise de vos données!
+<br/>
+Créez du sens et du lien.
+<a href="http://semantic-forms.cc:1952/ldp/who_are_we">Qui sommes nous?</a>
+</div>
+<div  lang="en" class="wrapper" >
+<h4>Collaborative website (Semantic technos, transition economy, biodiversity, permaculture, etc.)</h4>
+<br/>
+
+Semantic social network, interoperable, transparent and loyal
+<br/>
+Public data (LOD, RDF, Semantic Web). Take control of your data! Create meaning and connections.
+
+<a href="http://semantic-forms.cc:1952/ldp/who_are_we">Qui sommes nous?</a>
+</div>
+
