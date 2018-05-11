@@ -113,7 +113,7 @@ trait URIManagement extends URIHelpers {
     val (hostNameUsed: String, isDNS: Boolean) =
       if (useLocalHostPrefixForURICreation) {
         val hostNameFromAPI = InetAddress.getLocalHost().getCanonicalHostName // getHostName()
-        println( s"servicesURIPrefix2: hostNameFromAPI <$hostNameFromAPI>")
+        println1( s"servicesURIPrefix2: hostNameFromAPI <$hostNameFromAPI>")
 
         if (hostNameFromAPI.contains("."))
           ("http://" + hostNameFromAPI, true)
