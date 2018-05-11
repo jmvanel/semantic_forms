@@ -70,7 +70,7 @@ trait MainXml extends ToolsPage with EnterButtons {
     <header>
         <div class="">
           <a href="/" title="Open a new Semantic_forms in a new tab." target="_blank">
-            <p> { messageI18N("New tab") } </p>
+            <p> { messageI18N("New_tab") } </p>
           </a>
         </div>
     </header>

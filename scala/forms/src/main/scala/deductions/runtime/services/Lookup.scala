@@ -42,7 +42,7 @@ trait Lookup[Rdf <: RDF, DATASET]
   def lookup(search: String, lang: String = "en", clas: String = "", mime: String): String = {
     
     val rawResult = searchStringOrClass(search, clas)
-    println(s"lookup(search=$search, clas=<$clas> => $rawResult")
+    logger.info(s"lookup(search=$search, clas=<$clas> => $rawResult")
 
     makeJSONorXML(rawResult, lang, mime)
 //    rawResult.mkString("\n")
@@ -50,7 +50,7 @@ trait Lookup[Rdf <: RDF, DATASET]
 
   /** make JSON or XML */
   def makeJSONorXML(res: List[Iterable[Rdf#Node]], lang: String, mime: String): String = {
-    println(s"lookup: after searchStringOrClass, starting TRANSACTION for dataset $dataset")
+    logger.debug(s"lookup: after searchStringOrClass, starting TRANSACTION for dataset $dataset")
     val transaction = rdfStore.rw( dataset, {
       val urilabels = res.map {
         uris =>
@@ -64,7 +64,7 @@ trait Lookup[Rdf <: RDF, DATASET]
       }
       urilabels
     })
-    println(s"lookup: leaved TRANSACTION for dataset $dataset")
+    logger.debug(s"lookup: leaved TRANSACTION for dataset $dataset")
     val list = transaction.get
 
     if (mime.contains("xml"))
@@ -78,7 +78,8 @@ trait Lookup[Rdf <: RDF, DATASET]
    */
   private def searchStringOrClass(search: String, clas: String = ""): List[Iterable[Rdf#Node]] = {
     val queryString = indexBasedQuery.makeQueryString(search, clas)
-    println(s"""searchStringOrClass(search="$search", clas <$clas>, queryString "$queryString" """)
+    logger.debug(
+        s"""searchStringOrClass(search="$search", clas <$clas>, queryString "$queryString" """)
     val rawResult: List[Seq[Rdf#Node]] = sparqlSelectQueryVariables(queryString, Seq("thing"))
 //    val res = sparqlSelectQuery(queryString) ; res . get
     rawResult
@@ -115,7 +116,7 @@ trait Lookup[Rdf <: RDF, DATASET]
           "refCount" -> refCount
           )
     }
-    println(s"list2 $list - $list2")
+    logger.trace(s"list2 $list - $list2")
     val results =  Json.obj( "results" -> list2 )
     Json.prettyPrint(results)
   }
@@ -130,7 +131,7 @@ trait Lookup[Rdf <: RDF, DATASET]
 
       val search = searchStrings(0)
       val clas = if( searchStrings.size > 1 ) {
-        println(
+        logger.debug(
           s"makeQueryString searchStrings $searchStrings , searchStrings(1) = ${searchStrings(1)}")
         searchStrings(1)
       } else ""
