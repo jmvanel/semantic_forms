@@ -15,7 +15,7 @@ case class HTTPrequest(
      */
     host: String = "localhost",
 
-    /* The client IP address.
+    /** The client IP address.
      *
      * the last untrusted proxy
      * from the Forwarded-Headers or the X-Forwarded-*-Headers.
@@ -28,9 +28,7 @@ case class HTTPrequest(
 
     content: Option[String] = None,
 
-    /* YET UNUSED */
     headers: Map[String, Seq[String]] = Map(),
-//    cookies: List[Cookie] = List())
     cookies: Map[String, Cookie] = Map(),
     acceptLanguages: Seq[String] = Seq(),
     path: String="",
@@ -61,7 +59,7 @@ case class HTTPrequest(
 
   def getHTTPheaderValue(header: String): Option[String] = headers.get(header) .map(seq => seq.headOption ) . flatten
 
-  /** Resolve given relative URI with Slash with this request's path */
+  /** Resolve given relative URI starting with Slash with this request's path */
   def absoluteURL(relativeURIwithSlash: String = "",
       secure: Boolean = this.secure): String =
     "http" + (if (secure) "s" else "") +

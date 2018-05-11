@@ -20,7 +20,6 @@ trait RDFContentNegociationIO[Rdf <: RDF, DATASET]
   }
 
   def getReaderFromMIME(mimeType: String): RDFReader[Rdf, Try, _] = {
-    println( s">>>> getRDFReader: mimeType $mimeType")
     val readerSearched = foldRdfSyntax(mimeType)(
         _ => rdfXMLReader,
         _ => turtleReader,
@@ -28,7 +27,7 @@ trait RDFContentNegociationIO[Rdf <: RDF, DATASET]
         _ => turtleReader // N3 actually (N3 exists in Jena but not Banana)
         )
     val rdfReader: RDFReader[Rdf, Try, Object] = readerSearched . _1
-    println(s"getReaderFromMIME: whether given MIME is known to be RDF ${readerSearched._2}")
+    logger.debug(s"getReaderFromMIME: mimeType $mimeType: whether given MIME is known to be RDF: ${readerSearched._2}")
     rdfReader
   }
 

@@ -89,15 +89,15 @@ trait RDFStoreLocalJenaProvider
       // if the directory does not exist, create it
       val currentRelativePath = Paths.get("");
       val abs = currentRelativePath.toAbsolutePath().toString();
-      System.out.println("Current relative path is: " + abs);
+      logger.debug("Current relative path is: " + abs);
       val dir = new File(abs, database_location)
       if (!dir.exists()) {
-        System.out.println("creating database directory: " +
+        logger.debug("creating database directory: " +
           database_location + " as " + dir + " - current (.) : " + new File(".").getAbsolutePath);
         dir.mkdirs()
       }
 
-      println(s"""RDFStoreLocalJena1Provider: dataset create: database_location "$database_location" in ${System.getProperty("user.dir")} """)
+      logger.debug(s"""RDFStoreLocalJena1Provider: dataset create: database_location "$database_location" in ${System.getProperty("user.dir")} """)
       val dts =
         if (useTDB2)
           org.apache.jena.tdb2.TDB2Factory.connectDataset(database_location)
@@ -106,11 +106,11 @@ trait RDFStoreLocalJenaProvider
           // TODO TDBFactory.assembleDataset(assemblerFile)
 
       //      Logger.getRootLogger.info
-      println(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
+      logger.debug(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
 
       try {
         val res = configureLuceneIndex(dts, useTextQuery)
-        println(s"configureLuceneIndex DONE useTextQuery: $useTextQuery => $res")
+        logger.debug(s"configureLuceneIndex DONE useTextQuery: $useTextQuery => $res")
         res
       } catch {
         case t: Throwable =>
@@ -131,11 +131,11 @@ trait RDFStoreLocalJenaProvider
    */
   override def allNamedGraph: Rdf#Graph = {
     time(s"allNamedGraph dataset $dataset", {
-      //      println(s"Union Graph: entering for $dataset")
+      //      logger.debug(s"Union Graph: entering for $dataset")
 
       // NOTE: very important to use the properly configured rdfStore (with defensiveCopy=false)
       val ang = rdfStore.getGraph(dataset, makeUri("urn:x-arq:UnionGraph")).get
-      //      println(s"Union Graph: hashCode ${ang.hashCode()} : size ${ang.size}")
+      //      logger.debug(s"Union Graph: hashCode ${ang.hashCode()} : size ${ang.size}")
       ang
     })
     //    union(dataset.getDefaultModel.getGraph :: unionGraph :: Nil)
@@ -174,7 +174,7 @@ trait RDFStoreLocalJenaProvider
       import org.apache.jena.riot.LangBuilder
       val contentTypeNoEncoding = contentType.replaceFirst(";.*", "")
       val lang = RDFLanguages.contentTypeToLang(contentTypeNoEncoding)
-      println(s"readWithContentType: $lang , contentType $contentType, contentTypeNoEncoding $contentTypeNoEncoding")
+      logger.debug(s"readWithContentType: $lang , contentType $contentType, contentTypeNoEncoding $contentTypeNoEncoding")
       RDFParser.create()
         .httpClient(
           CachingHttpClientBuilder.create()
@@ -206,7 +206,7 @@ trait RDFStoreLocalJenaProvider
 
     // For Virtuoso :(
     val contentTypeNormalized = contentType.replaceAll(";.*", "")
-    println(s"readWithContentTypeNoJena: contentTypeNormalized: $contentTypeNormalized")
+    logger.debug(s"readWithContentTypeNoJena: uri <$uri> , contentTypeNormalized: $contentTypeNormalized")
 
     val tryResponse = Try {
       // TODO case of file:// URL
@@ -222,17 +222,17 @@ trait RDFStoreLocalJenaProvider
       case Success(response) =>
         val reader0 = getReaderFromMIME(contentTypeNormalized)
 
-        println(s"""readWithContentTypeNoJena:
+        logger.debug(s"""readWithContentTypeNoJena:
                 reader from HTTP header $reader0, ${reader0.getClass}
                 request $request , getAllHeaders ${
-                for (h <- request.getAllHeaders) println(h) }
+                for (h <- request.getAllHeaders) logger.debug(h) }
                   response $response""")
 
         val reader/*From Extention*/ = if (!isKnownRdfSyntax(contentTypeNormalized)) {
-          System.err.println(
-            s"readWithContentTypeNoJena: no Reader found for contentType $contentType ; trying from URI extension")
+          logger.error(
+            s"readWithContentTypeNoJena($uri): no Reader found for contentType $contentType; trying from URI extension")
           val readerFromURI = getReaderFromURI(fromUri(withoutFragment(uri)))
-          println( s"readWithContentTypeNoJena: Reader from URI extension: $readerFromURI")
+          logger.debug( s"readWithContentTypeNoJena: Reader from URI extension: $readerFromURI")
           readerFromURI.getOrElse(reader0)
         } else reader0
 
@@ -242,22 +242,22 @@ trait RDFStoreLocalJenaProvider
           val rdr = new InputStreamReader(inputStream)
           val writer = new StringWriter()
           IOUtils.copy(inputStream, writer, "utf-8")
-          println(s"readWithContentTypeNoJena: response $writer")
+          logger.debug(s"readWithContentTypeNoJena: response $writer")
         }
 
-        println(s"readWithContentTypeNoJena: reader $reader ${reader.getClass} =========")
+        logger.debug(s"readWithContentTypeNoJena: reader $reader ${reader.getClass} =========")
         val res = reader.read(inputStream, fromUri(withoutFragment(uri)))
-        println(s"readWithContentTypeNoJena: result $res =========")
+        logger.debug(s"readWithContentTypeNoJena: result $res =========")
 
         if (res.isFailure) {
-          println(s"readWithContentTypeNoJena: reader.read() result: $res")
+          logger.debug(s"readWithContentTypeNoJena: reader.read() result: $res")
           val response = httpClient.execute(request)
           val inputStream = response.getEntity.getContent
           val rdr = new InputStreamReader(inputStream)
           val writer = new StringWriter()
           IOUtils.copy(inputStream, writer, "utf-8")
           val sampleFromContentReceived = writer.toString()
-          println(s"readWithContentTypeNoJena: rdfString ${sampleFromContentReceived.substring(0,
+          logger.debug(s"readWithContentTypeNoJena: rdfString ${sampleFromContentReceived.substring(0,
               Math.min(2000, sampleFromContentReceived.length() )
               )}")
           reader.read(new StringReader(sampleFromContentReceived), fromUri(withoutFragment(uri)))

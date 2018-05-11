@@ -38,7 +38,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
     val opt = connectionOption.map {
       conn =>
         val expires = getHeaderField("Expires", conn)
-        println( s"""isDocumentExpired: Expires: "$expires"""" )
+        logger.debug( s"""isDocumentExpired: Expires: "$expires"""" )
         if( expires === "" )
           false
         else {
@@ -69,7 +69,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
    *  No Transaction */
   def addTimestampToDatasetNoTransaction(uri: Rdf#URI, dataset: DATASET) = {
 	  val time = lastModified(fromUri(uri), 1000)
-	  println("addTimestampToDatasetNoTransaction: " + time._2 )
+	  logger.debug("addTimestampToDatasetNoTransaction: " + time._2 )
     replaceRDFTriple(
       makeTriple(
         uri,
@@ -84,7 +84,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
    *  No Transaction
    */
   def getTimestampFromDataset(uri: Rdf#URI, dataset: DATASET): Try[Long] = {
-    println(s"getTimestampFromDataset: uri: $uri")
+    logger.debug(s"getTimestampFromDataset: uri: <$uri>")
     import java.math.BigInteger
     val queryString = s"""
          |SELECT DISTINCT ?ts WHERE {
@@ -109,7 +109,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
           }
       }
     }
-    println(s"getTimestampFromDataset: result: $result")
+    logger.debug(s"getTimestampFromDataset: result: $result")
     result.map { x => x.next.longValue() }
   }
   
@@ -127,7 +127,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
       val connection0 = new URL(url).openConnection()
       connection0 match {
         case connection: HttpURLConnection if( ! url.startsWith("file:/") ) =>
-          println(s"lastModified: HTTP URL")
+          logger.debug(s"lastModified: case of HTTP URL")
           connection.setConnectTimeout(timeout)
           connection.setReadTimeout(timeout)
           connection.setRequestMethod("HEAD")
@@ -138,7 +138,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
             if (dateString  =/=  "") {
               // from Apache http client - Date objects are in coordinated universal time (UTC)
               val dateFromHTTPHeader: java.util.Date = DateUtils.parseDate(dateString)
-              println("TimestampManagement.lastModified(): responseCode: " + responseCode +
+              logger.debug("TimestampManagement.lastModified(): responseCode: " + responseCode +
                 ", date: " + dateFromHTTPHeader + ", dateString " + dateString)
               (true, 200 <= responseCode && responseCode <= 399, dateFromHTTPHeader.getTime())
             } else (false, false, Long.MaxValue)
@@ -152,18 +152,17 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
 
         case _ if(url.startsWith("file:/") ) =>
           val f = new File( new java.net.URI(url) )
-          println(s"lastModified: file:// ${new java.util.Date(f.lastModified)}")
+          logger.debug(s"lastModified: case of file:// ${new java.util.Date(f.lastModified)}")
           (true,  f.lastModified(), None )
           
         case _ =>
-          println( s"lastModified(): Case not implemented: $url - $connection0")
+          logger.error( s"lastModified(): Case not implemented: $url - $connection0")
           (false, Long.MaxValue, None )
 
       }
     } catch {
       case exception: IOException =>
-        println(s"lastModified($url0")
-//        logger.warn("")
+        logger.warn(s"lastModified($url0) : exception $exception")
         (false, Long.MaxValue, None)
       case e: Throwable           => throw e
     }
@@ -173,7 +172,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
   String = {
     val headerString = connection.getHeaderField(headerName)
     if (headerString  =/=  null) {
-      println("TimestampManagement.tryHeaderField: " +
+      logger.debug("TimestampManagement.tryHeaderField: " +
         s", header: $headerName = " + headerString +
         "; url: " + connection.getURL )
         headerString
