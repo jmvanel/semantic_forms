@@ -72,8 +72,8 @@ trait PreferredLanguageLiteral[Rdf <: RDF] {
       case _ if (noLanguageValue  =/=  "") => noLanguageValue
       case _ =>
         val mess = s"""preferedLanguageValue "$preferedLanguageValue", enValue "$enValue"", noLanguageValue "$noLanguageValue""""
-        println(
-          s"getPreferedLanguageFromValues: case not expected in values ${values.mkString(", ")}: $mess");
+        if( values . size > 0 ) logger.warn(
+          s"getPreferedLanguageFromValues: case not expected in values (${values.mkString(", ")}) : $mess");
         "no value"
     }
   }

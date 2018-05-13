@@ -39,7 +39,8 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   }
 
   def instanceImage(subjectNode: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
-	  stringFromLiteralPred(subjectNode, foaf.img, lang ).getOrElse("")
+//	  stringFromLiteralPred(subjectNode, foaf.img, lang ).getOrElse("")
+	  stringFromObjectPred(subjectNode, foaf.img ).getOrElse("")
   }
 
   def instanceTypeLabel(subjectNode: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
