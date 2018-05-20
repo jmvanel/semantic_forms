@@ -95,10 +95,25 @@ java -cp $JARS tdb.tdbdump --loc=TDB > dump.nq
 # Database Administration
 
 **CAUTION:**
-The server must not be started, because Jena TDB does not allow access to the database on disk from 2 different processes.
+When running command line scripts, the server must not be started, because Jena TDB does not allow access to the database on disk from 2 different processes.
 
-Be sure to read previous paragrah (Running auxiliary programs)[Running auxiliary programs] before running the commands below.
- 
+Be sure to read previous paragraph [Running auxiliary programs](#running-auxiliary-programs) before running the commands below.
+
+`semantic_forms` is one of those programs that are mainly driven by what is inside the database, which contains:
+
+- ontologies (data structure definition)
+- form specifications
+- internationalization labels (I18N) for ontologies
+- some additions to existing ontologies, that are not always accurate enough for SF, see [additions\_to\_vocabs.ttl](../../scala/forms/form_specs/additions_to_vocabs.ttl)
+
+So, according to her needs, the application manager can:
+
+- preload RDF content with a JVM (Scala) script, see [preloading RDF content](#preloading-rdf-content)
+- run with the "naked" database (and then use the links in the data pages `/display` to download ontologies and form specifications as needed)
+- devise a personalized script, either using the Scala API, or the HTTP API
+
+or a combination of the above. It is generally not a problem to run the script for preloading RDF content; there is script to undo all or one of the 4 categories of configuration data.
+
 ## TDB databases
 - TDB/ : data: user edits and cached URL's from internet
 - TDB2/ : timestamp for named graphs
@@ -139,9 +154,11 @@ PopulateRDFCache can run, with Lucene activated, with this memory setting:
     # With Jena it is possible to directly load from Internet:
     runMain tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me http://jmvanel.free.fr/jmv.rdf#me 
 ```
-The typical pattern for data is to load in a graph named after the URI source, so that the cache feature works using the URI source timestamp.
+The typical pattern for data in SF is to load in a graph named after the URI source, so that the cache feature works using the URI source timestamp.
+This is the case for the ontologies. But all the from specifications loaded by PopulateRDFCache are in the graph `urn:form_specs` .
+The I18N stuff is managed in the file [translations\_list.ttl](https://github.com/jmvanel/rdf-i18n/blob/master/translations_list.ttl) in a sister github project.
 
-CAUTION: do not load data or configuration into the un-named (default) graph. It would not be taken in account by the framework.
+**CAUTION** do not load data or configuration into the un-named (default) graph. It would not be taken in account by the framework.
 
 
 ## Updating and loading RDF content
