@@ -112,7 +112,7 @@ So, according to her needs, the application manager can:
 - run with the "naked" database (and then use the links in the data pages `/display` to download ontologies and form specifications as needed)
 - devise a personalized script, either using the Scala API, or the HTTP API
 
-or a combination of the above. It is generally not a problem to run the script for preloading RDF content; there is script to undo all or one of the 4 categories of configuration data.
+or a combination of the above. It is generally not a problem to run the script for preloading RDF content; there is a script to undo all or one of the 4 categories of configuration data.
 
 ## TDB databases
 - TDB/ : data: user edits and cached URL's from internet
@@ -157,6 +157,8 @@ PopulateRDFCache can run, with Lucene activated, with this memory setting:
 The typical pattern for data in SF is to load in a graph named after the URI source, so that the cache feature works using the URI source timestamp.
 This is the case for the ontologies. But all the from specifications loaded by PopulateRDFCache are in the graph `urn:form_specs` .
 The I18N stuff is managed in the file [translations\_list.ttl](https://github.com/jmvanel/rdf-i18n/blob/master/translations_list.ttl) in a sister github project.
+For example, the FOAF I18N stuff in https://github.com/jmvanel/rdf-i18n/tree/master/foaf is loaded in their respective HTPP github paths and corresponding graph URI
+https://rawgit.com/jmvanel/rdf-i18n/master/foaf/foaf.fr.ttl .
 
 **CAUTION** do not load data or configuration into the un-named (default) graph. It would not be taken in account by the framework.
 

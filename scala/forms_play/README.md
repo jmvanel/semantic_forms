@@ -222,6 +222,12 @@ sbt gen-ensime
 ```
     eclipse with-source=true
 ```
+- in case of strange errors like "JenaTransactionException: end() called for WRITE transaction without commit or abort having been called." , or others, be sure to clean all in sbt:
+```
+project scala
+clean
+```
+
 - to remove the red errors in eclipse in Play! project, apply this workaround: http://stackoverflow.com/posts/28551583/revisions
 
 Useful SBT plugins you may install for developppement purposes (add in ~/.sbt/0.13/plugins/plugins.sbt ):

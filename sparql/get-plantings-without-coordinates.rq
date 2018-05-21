@@ -1,0 +1,11 @@
+PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix bioc: <http://deductions.github.io/biological-collections.owl.ttl#>
+
+select ?S ?SPEC
+where {
+  GRAPH ?GR {
+  ?S a bioc:Planting .
+  ?S bioc:species ?SPEC .
+  FILTER ( NOT EXISTS { ?S geo:lat ?LAT } )
+  }
+}
