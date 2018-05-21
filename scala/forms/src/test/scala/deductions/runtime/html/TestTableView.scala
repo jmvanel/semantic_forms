@@ -31,7 +31,9 @@ class TestTableView extends FunSuite
 
   test("display form FOAF editable") {
     val uri = "http://jmvanel.free.fr/jmv.rdf#me"
-    val fo = htmlFormElem(uri, editable = true)
+    val fo = htmlFormElem(uri, editable = true,
+              request = HTTPrequest()
+)
     val f = TestCreationForm.wrapWithHTML(fo)
     val result = f.toString()
     val correct = result.contains("Jean-Marc")

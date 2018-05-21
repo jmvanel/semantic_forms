@@ -76,10 +76,12 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     lang: String = "en",
     graphURI: String = "",
     actionURI2: String = "/save",
-    formGroup: String = fromUri(nullURI)): NodeSeq = {
+    formGroup: String = fromUri(nullURI),
+    request: HTTPrequest
+    ): NodeSeq = {
 
     htmlForm(uri, hrefPrefix, blankNode, editable, actionURI,
-      lang, graphURI, actionURI2, URI(formGroup)) match {
+      lang, graphURI, actionURI2, URI(formGroup), request) match {
         case Success(e) => e._1
         case Failure(e) => <p>htmlFormElem: Exception occured: { e }</p>
       }
@@ -163,7 +165,7 @@ println( s">>>> htmlFormElemJustFields 2 " )
                           formGroup: Rdf#URI = nullURI,
                           formuri: String="",
                           database: String = "TDB",
-                          request: HTTPrequest = HTTPrequest(),
+                          request: HTTPrequest,
                           inputGraph: Try[Rdf#Graph] = Success(emptyGraph)
 		  ): Try[( NodeSeq, FormSyntax)] = {
 
@@ -189,7 +191,9 @@ println( s">>>> htmlFormElemJustFields 2 " )
     lang: String = "en",
     graphURI: String = "",
     actionURI2: String = "/save",
-    formGroup: Rdf#URI = nullURI)
+    formGroup: Rdf#URI = nullURI,
+    request: HTTPrequest
+)
     : Try[( NodeSeq, FormSyntax )] = {
 
     println( s"htmlForm: dataset $dataset" )
@@ -202,7 +206,7 @@ println( s">>>> htmlFormElemJustFields 2 " )
       
 //      form <- rdfStore.rw( dataset, {
         form = graf2form(allNamedGraph, uri, hrefPrefix, blankNode, editable,
-          actionURI, lang, graphURIActual, actionURI2, formGroup)
+          actionURI, lang, graphURIActual, actionURI2, formGroup, "", request)
 //      })
     } yield form
   }
@@ -236,8 +240,8 @@ println( s">>>> htmlFormElemJustFields 2 " )
     actionURI2: String = "/save",
     formGroup: Rdf#URI = nullURI,
     formuri: String="",
-    request: HTTPrequest = HTTPrequest()
-		  ) : ( NodeSeq , FormSyntax ) = {
+    request: HTTPrequest
+  ) : ( NodeSeq , FormSyntax ) = {
 
     implicit val graph: Rdf#Graph = graphe
     implicit val lang = lang0

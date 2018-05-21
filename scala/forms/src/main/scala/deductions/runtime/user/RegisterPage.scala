@@ -16,6 +16,7 @@ import scala.xml.Text
 import scala.xml.Node
 import deductions.runtime.utils.URIManagement
 import scala.xml.Unparsed
+import deductions.runtime.core.HTTPrequest
 
 /** Register HTML Page */
 trait RegisterPage[Rdf <: RDF, DATASET]
@@ -88,7 +89,9 @@ trait RegisterPage[Rdf <: RDF, DATASET]
   private def claimIdentityAction(uri: String) = {
     val rawForm = htmlFormElem(uri,
       actionURI = "/saveuser",
-      actionURI2 = "/saveuser")
+      actionURI2 = "/saveuser",
+      request = HTTPrequest()
+    )
     // TODO put the password after name field inside the form
     <p>
       { passWordField }
