@@ -210,9 +210,17 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     }
   }
 
+
+  /** Getting the runtime reference from system */
+  private val runtime = Runtime.getRuntime
+
   def recoverFromOutOfMemoryErrorGeneric[T](
     sourceCode: => T,
     error: Throwable => T ): T = {
+   val freeMemory = runtime.freeMemory()
+   if( freeMemory < 1024 * 1024 * 10)
+     error(new OutOfMemoryError("Free Memory < 10 mb, retry later."))
+   else
     try {
       sourceCode
     } catch {
@@ -443,10 +451,6 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
   def formatMemory(): String = {
     val mb = 1024 * 1024
-
-    //Getting the runtime reference from system
-    val runtime = Runtime.getRuntime
-
     "\n##### Heap utilization statistics [MB] #####\n" +
     "Used Memory:" + (runtime.totalMemory() - runtime.freeMemory()) / mb +
     "\nFree Memory:" + runtime.freeMemory() / mb +
@@ -455,5 +459,5 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     "\nMax Memory:" + runtime.maxMemory() / mb + "\n"
   }
 
-  def printMemory() = println( formatMemory() )
+  def printMemory() = logger.error( formatMemory() )
 }
