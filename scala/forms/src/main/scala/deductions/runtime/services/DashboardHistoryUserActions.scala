@@ -40,13 +40,20 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
 
   private def mess(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
 
-  /**
+  /** make Table of History of User Actions;
    * leverage on ParameterizedSPARQL.makeHyperlinkForURI()
    */
   def makeTableHistoryUserActions(request: HTTPrequest)(limit: String): NodeSeq = {
-    val metadata0 = getMetadata()(limit)
+    val metadata0 = getMetadata()(
+//        if( request.getHTTPparameterValue("sparql").isDefined )
+//          ""
+//        else
+        limit)
+    logger.debug(s">>>> makeTableHistoryUserActions limit '$limit' metadata0 ${metadata0.size} $metadata0")
     val metadata1 = filterMetadata(metadata0, request)
+    logger.debug(s">>>> makeTableHistoryUserActions metadata1 $metadata1")
     val metadata = filterMetadataFocus(metadata1, request)
+    logger.debug(s">>>> makeTableHistoryUserActions metadata $metadata")
     implicit val lang = request.getLanguage()
     val historyLink: Elem = {
       if (limit != "")
@@ -59,7 +66,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       val title: NodeSeq = {
         metadata._2 match {
           case Some(uri) =>
-            println(s"==== makeTableHistoryUserActions: title: uri <$uri>")
+            logger.debug(s"==== makeTableHistoryUserActions: title: uri <$uri>")
             val focusPrettyPrinted = makeHyperlinkForURItr(URI(uri), lang, allNamedGraph)
             <div>{mess("View_centered")} </div> ++ focusPrettyPrinted
           case None => <div/>
@@ -138,7 +145,8 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       (params.size === 1 &&
         params.head._1 =/= "limit" &&
         params.head._1 =/= "uri" &&
-        params.head._1 =/= "query")) {
+        params.head._1 =/= "query" &&
+        params.head._1 =/= "sparql") ) {
 
       wrapInReadTransaction {
         var filteredURIs = metadata
@@ -151,7 +159,12 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       metadata
   }
 
-  /**  @param metadata List of Seq'q with subject, timestamp, triple count, user; ordered by recent first; */
+  /** filter given List according to One Criterium on first column:
+   *  ?URI <param> <value> .
+   *  @param param0 abbreviated Turtle URI for triple predicate
+   *  @param values abbreviated Turtle URI for triple object
+   *  @param metadata List of Seq'q with subject, timestamp, triple count, user;
+   *         ordered by recent first; */
   private def filterOneCriterium(
     param0: String, values: Seq[String],
     metadata: List[Seq[Rdf#Node]]): List[Seq[Rdf#Node]] = {
@@ -160,7 +173,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       val param = expandOrUnchanged(param0)
       for (value0 <- values) {
         val value = expandOrUnchanged(value0)
-        println(s"filterMetadata: actually filter for param <$param> = <$value>")
+        logger.debug(s"filterMetadata: actually filter for param <$param> = <$value>")
         filteredURIs = filteredURIs.filter {
           row =>
             val uri = row(0)
@@ -175,7 +188,8 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
 
   /**
    * filter Metadata with focus on an URI, according to HTTP request, eg
-   *  uri=http://site.com
+   *  uri=http://site.com ,
+   * or filter Metadata according to a SPARQL query , given by sparql= HTTP parameter
    */
   private def filterMetadataFocus(
     metadata:    List[Seq[Rdf#Node]],
@@ -185,11 +199,18 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     val params = request.queryString
     if (params.contains("uri")) {
       val focusURI = expandOrUnchanged( params("uri").headOption.getOrElse("") )
-      println(s"""===== filterMetadataFocus: params.contains("uri") ${focusURI}""")
-      val sparql = neighborhoodSearchSPARQL( focusURI )
+      logger.debug(s"""===== filterMetadataFocus: params.contains("uri") ${focusURI}""")
+      val sparqlQuery = neighborhoodSearchSPARQL( focusURI )
       (filterMetadataSPARQL(
-        metadata, request, sparql), Some(focusURI))
-    } else (metadata, None)
+        metadata, request, sparqlQuery), Some(focusURI))
+
+    } else if( params.contains("sparql")) {
+      logger.debug(s"""===== filterMetadataFocus: params.contains("sparql") """)
+      (filterMetadataSPARQL(
+        metadata, request, params("sparql").headOption.getOrElse("")), Some("/user-query"))
+
+    } else
+      (metadata, None)
   }
 
   /**
@@ -200,10 +221,10 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   private def filterMetadataSPARQL(
     metadata: List[Seq[Rdf#Node]],
     request:  HTTPrequest, querySPARQL: String = ""): List[Seq[Rdf#Node]] = {
-    println (s"""===== filterMetadataSPARQL: querySPARQL $querySPARQL""")
+    logger.debug(s"""===== filterMetadataSPARQL: querySPARQL $querySPARQL""")
 
     val results = sparqlSelectQuery(querySPARQL)
-//    println (s"""===== filterMetadataSPARQL: results $results """)
+//    logger.trace(s"""===== filterMetadataSPARQL: results $results """)
 
     /* merge URI's from query with metadata:
      * filter metadata with URI's in result */
@@ -211,12 +232,13 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       l => l.headOption.getOrElse(nullURI)
     }.toSet
 
-    println (s"""===== filterMetadataSPARQL: uris $uris""")
-
+    logger.trace(
+        s"""===== filterMetadataSPARQL: sparql Select result: uris $uris""")
+    logger.debug(s"===== filterMetadataSPARQL: metadata.size ${metadata.size}")
     metadata.filter {
       row =>
         val uri = row(0)
-        println (s"""== uri $uri""")
+        logger.debug(s"""== uri $uri""")
         uris . contains(uri)
     }
   }

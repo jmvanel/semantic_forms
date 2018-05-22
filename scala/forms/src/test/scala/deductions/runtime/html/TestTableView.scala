@@ -8,6 +8,7 @@ import deductions.runtime.utils.DefaultConfiguration
 import org.apache.log4j.Logger
 import org.junit.Assert
 import org.scalatest.{BeforeAndAfter, FunSuite}
+import deductions.runtime.core.HTTPrequest
 
 class TestTableView extends FunSuite
     with ImplementationSettings.RDFModule

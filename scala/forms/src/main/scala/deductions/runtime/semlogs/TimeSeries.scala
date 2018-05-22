@@ -118,7 +118,7 @@ with SPARQLHelpers[Rdf, DATASET] {
     logger.debug("getMetadata: query " + query)
     val res = sparqlSelectQueryVariables( query,
         Seq("SUBJECT", "TIME", "COUNT", "USER"), dataset2 )
-    logger.debug("getMetadata: res " + res)
+    logger.debug(s"getMetadata: size ${res.size} res $res")
     res
   }
 
@@ -191,8 +191,7 @@ with SPARQLHelpers[Rdf, DATASET] {
       LIMIT $limit
       OFFSET $offset
     """
-//    logger.debug(
-      println(
+      logger.debug(
         s"getMetadataAboutTriple: query $query")
     val res = sparqlSelectQueryVariables( query,
         Seq("TIME", "USER"), dataset2 )

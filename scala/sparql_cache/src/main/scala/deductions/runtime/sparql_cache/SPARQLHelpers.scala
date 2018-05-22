@@ -59,7 +59,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         logger.debug("sparqlConstructQuery: before parseConstruct")
         parseConstruct(queryString)
       }
-      //      _ = println( s"sparqlConstructQuery: query $query" )
+      //      _ = logger.debug( s"sparqlConstructQuery: query $query" )
       es <- {
         logger.debug("sparqlConstructQuery: before executeConstruct")
         if (checkUnionDefaultGraph(context))
@@ -93,7 +93,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
           Literal(instanceLabelFromTDB))
 //          Literal.tagged(instanceLabelFromTDB, Lang(lang)))
       }
-      println( s">>>> enrichGraphFromTDB: addedTriples: $addedTriples" )
+      logger.debug( s">>>> enrichGraphFromTDB: addedTriples: $addedTriples" )
       graph union (Graph(addedTriples))
     } else graph
   }
@@ -111,7 +111,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         logger.debug("sparqlConstructQuery: before parseConstruct")
         parseConstruct(queryString)
       }
-//      _ = println( s"sparqlConstructQueryFromGraph: query $query" )
+//      _ = logger.debug( s"sparqlConstructQueryFromGraph: query $query" )
       es <- {
         logger.debug("sparqlConstructQueryFromGraph: before executeConstruct")
         sparqlGraph.executeConstruct(graph, query, bindings)
@@ -387,7 +387,6 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
                                  ds: DATASET = dataset): List[Seq[Rdf#Node]] = {
     logger.debug("RRRRRRRRRR sparqlSelectQueryVariables before transaction")
     val transaction = rdfStore.r( ds, {
-//    val transaction = ds.r({
       sparqlSelectQueryVariablesNT(queryString, variables, ds)
     })
     logger.debug("RRRRRRRRRR sparqlSelectQueryVariables after transaction")
@@ -441,7 +440,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     }
     catch {
       case t: Throwable =>
-        System.err.println( s"ERROR in sparqlSelectQueryVariablesNT: ${t.getLocalizedMessage}" )
+        logger.error( s"ERROR in sparqlSelectQueryVariablesNT: ${t.getLocalizedMessage}" )
         t.printStackTrace()
         List(Seq())
     }
@@ -458,8 +457,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 		  ): Try[List[Iterable[Rdf#Node]]] = {
     // DEBUG
     val dsg = ds.asInstanceOf[org.apache.jena.sparql.core.DatasetImpl].asDatasetGraph()
-    println(s">>>> sparqlSelectQuery: dsg class : ${dsg.getClass}")
-    println(s">>>> sparqlSelectQuery: ds: ${ds}")
+    logger.debug(s">>>> sparqlSelectQuery: dsg class : ${dsg.getClass}")
+    logger.debug(s">>>> sparqlSelectQuery: ds: ${ds}")
 
     val transaction = rdfStore.r( ds, {
 //    val transaction = ds.r({
@@ -514,7 +513,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
             val variables = row.varnames().toList
             columnsMap2 ++= variables
         }
-//        println(s"columnsMap2 $columnsMap2")
+//        logger.debug(s"columnsMap2 $columnsMap2")
 
         val results: Iterable[Iterable[Rdf#Node]] = solsIterable . map {
           row =>
@@ -522,7 +521,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
             for (variable <- columnsMap2) rowSeq +=
               row(variable).getOrElse(Literal(""))
 //              row(variable).getOrElse(Literal("") ).as[Rdf#Node].get
-//            println(s"rowSeq $rowSeq")
+//            logger.debug(s"rowSeq $rowSeq")
             rowSeq
         }
         logger.debug("sparqlSelectQuery: after results")
@@ -535,11 +534,11 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
             scala.Ordering.by(lit => fromLiteral(lit)._1 )
           val r = columnsMap2 .map {
         	  name =>
-        	  println(s"name $name")
+        	  logger.debug(s"name $name")
         	  Literal(name)
           }
           val headerRow = r . toList // . sorted
-     		  println(s"headerRow $headerRow ")
+     		  logger.debug(s"headerRow $headerRow ")
 
           val rrr = headerRow :: results.to[List]
           rrr
@@ -723,12 +722,12 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
     val q = parseSelect(queryString)
     if( q.isFailure )
-    	System.err.println(s"runSparqlSelectNodes $q")
+    	logger.error(s"runSparqlSelectNodes $q")
     val query = q.get
     val a = sparqlGraph.executeSelect(graph, query, Map())
-    println(s"runSparqlSelectNodes answers $a")
+    logger.trace(s"runSparqlSelectNodes answers $a")
     val answers = a.get
-//    println(s"runSparqlSelectNodes answers size ${answers.toIterable.size}")
+//    logger.debug(s"runSparqlSelectNodes answers size ${answers.toIterable.size}")
 
     val results = answers.toIterable map {
       row =>
@@ -777,11 +776,11 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
           else
             (turtleWriter, s"# graph size ${graphSize}\n")
 
-//        println( s">>>> graph2String writer $writer, stats $stats, baseURI $baseURI, graph $graph" )
+//        logger.debug( s">>>> graph2String writer $writer, stats $stats, baseURI $baseURI, graph $graph" )
 
         stats + {
           val tryString = writer.asString(graph, base = "") // baseURI)
-//        println( s">>>> graph2String tryString $tryString" )
+//        logger.debug( s">>>> graph2String tryString $tryString" )
           tryString match {
             case Success(s) => s
             case Failure(f) => s"graph2String: trouble in writing graph: $f"
