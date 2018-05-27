@@ -47,8 +47,18 @@ trait URIManagement extends URIHelpers {
   def makeURIPartFromString(stringFromUser: String): String =
     if (stringFromUser.contains("@"))
       stringFromUser
-    else
-      URLEncoder.encode(stringFromUser.replaceAll(" ", "_"), "UTF-8")
+    else {
+//      URLEncoder.encode(stringFromUser.replaceAll(" ", "_"), "UTF-8")
+      val res = stringFromUser.map { b =>
+        if( b === ' ' )
+          '_'
+        else if( ! Character.isLetterOrDigit(b) )
+          '-'
+        else
+          b
+      }
+      res
+    }
 
   /**
    * make Absolute URI For Saving in user named graph:
