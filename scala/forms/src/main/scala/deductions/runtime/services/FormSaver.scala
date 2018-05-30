@@ -17,6 +17,7 @@ import scala.util.Success
 import scalaz._
 import Scalaz._
 
+/** HTML Form Saver: given HTML parameters Map, updates the RDF database */
 trait FormSaver[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
     with TypeAddition[Rdf, DATASET]
@@ -132,7 +133,6 @@ trait FormSaver[Rdf <: RDF, DATASET]
         val graphURI =
           if (graphURIOption === Some("")) subjectUri
           else URLDecoder.decode(graphURIOption.getOrElse(subjectUri0), "utf-8")
- 
         val databaseChanges = computeDatabaseChangesFromMap( httpParamsMap, lang)
 
         doSave(graphURI, databaseChanges)
@@ -219,7 +219,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
         // FEATURE: change type triggers edit mode
         if (originalTriple.predicate == rdf.typ && differingUserInput) {
-          println(s">>>> computeDatabaseChanges: typeChange! objectFromUser($objectFromUser)")
+          logger.info(s">>>> computeDatabaseChanges: typeChange! objectFromUser($objectFromUser)")
           typeChange = true
         }
       }
@@ -285,8 +285,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
     }
 
   private def log(s: String) =
-//    println("FormSaver: "+s)
-    logger.debug(s)
+    logger.debug(s"FormSaver: $s")
 
 }
 

@@ -62,11 +62,11 @@ with SPARQLHelpers[Rdf, DATASET] {
       rdfStore.rw( dataset2, {
         val (graphUri, metadata ) = makeGraphURIAndMetadata(addedTriples, removedTriples)
         rdfStore.appendToGraph( dataset2, metadataGraph, metadata)
-        logger.debug(s"notifyDataEvent: saved to graph <$metadataGraph> : metadata $metadata")
+        logger.debug(s"TimeSeries.notifyDataEvent: saved to graph <$metadataGraph> : metadata $metadata")
 
         val graph = makeGraph(addedTriples)
         rdfStore.appendToGraph( dataset2, graphUri, graph)
-        logger.debug(s"notifyDataEvent: saved to new graph <$graphUri> : added Triples: $addedTriples")
+        logger.debug(s"TimeSeries.notifyDataEvent: saved to new graph <$graphUri> : added Triples: $addedTriples")
       })
       Unit
   }
@@ -115,10 +115,10 @@ with SPARQLHelpers[Rdf, DATASET] {
       ORDER BY DESC(xsd:integer(?TIME))
       $limitClause
     """
-    logger.debug("getMetadata: query " + query)
+    logger.debug("TimeSeries: getMetadata: query " + query)
     val res = sparqlSelectQueryVariables( query,
         Seq("SUBJECT", "TIME", "COUNT", "USER"), dataset2 )
-    logger.debug(s"getMetadata: size ${res.size} res $res")
+    logger.debug(s"TimeSeries: getMetadata: size ${res.size} res $res")
     res
   }
 
@@ -156,11 +156,11 @@ with SPARQLHelpers[Rdf, DATASET] {
       LIMIT $limit
       OFFSET $offset
     """
-    logger.debug(s"getMetadataAboutSubject: query $queryHistoryDatabase")
+    logger.debug(s"TimeSeries: getMetadataAboutSubject: query $queryHistoryDatabase")
     val resHistoryDatabase = sparqlSelectQueryVariables( queryHistoryDatabase,
         Seq("PROP", "OBJECT", "TIME", "USER"),
         dataset2 )
-    logger.debug(s"getMetadataAboutSubject: resHistoryDatabase $resHistoryDatabase")
+    logger.debug(s"TimeSeries: getMetadataAboutSubject: resHistoryDatabase $resHistoryDatabase")
     resHistoryDatabase
   }
 
@@ -192,10 +192,10 @@ with SPARQLHelpers[Rdf, DATASET] {
       OFFSET $offset
     """
       logger.debug(
-        s"getMetadataAboutTriple: query $query")
+        s"TimeSeries: getMetadataAboutTriple: query $query")
     val res = sparqlSelectQueryVariables( query,
         Seq("TIME", "USER"), dataset2 )
-    logger.debug("getMetadata: res " + res)
+    logger.debug("TimeSeries: getMetadata: res " + res)
     res
   }
 
