@@ -15,12 +15,14 @@ else
     echo "server: $SERVER"
 fi
 
+MIME=text/turtle
 echo "Processing query \"$QUERY\" on SPARQL server <$SERVER>"
 
 wget    \
 	--content-on-error \
 	--method=POST \
 	--body-data="query=$QUERY" \
+	--header="Accept: $MIME" \
 	$SERVER
 
 echo "SPARQL database <$SERVER> : processed query \"$QUERY\" ; RETURN_CODE: $?"

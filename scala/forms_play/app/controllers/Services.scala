@@ -5,14 +5,16 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Request
 import play.api.mvc.Result
 
-import deductions.runtime.services.RDFContentNegociation
-import java.net.URLEncoder
+import java.net.URLDecoder
 
 import scalaz._
 import Scalaz._
-import play.mvc.EssentialAction
 import scala.util.Success
+
 import org.apache.commons.codec.digest.DigestUtils
+
+import deductions.runtime.services.RDFContentNegociation
+
 
 /** controller for non-SPARQL Services (or SPARQL related but not in the W3C recommendations) */
 trait Services extends ApplicationTrait
@@ -58,7 +60,7 @@ with RDFContentNegociation {
       implicit request: Request[_] =>
         val httpRequest = copyRequest(request)
         def output(mime: String): Result = {
-//          println(log("downloadAction", request))
+//          logger.debug(log("downloadAction", request))
           Ok.chunked{
             // TODO >>>>>>> add database arg.
             download(url, mime)
@@ -70,11 +72,11 @@ with RDFContentNegociation {
         val mime = computeMIMEOption(accepts)
 
         val syntaxOption = httpRequest.getHTTPparameterValue("syntax")
-//        println((s">>>>>>>> downloadAction syntaxOption $syntaxOption"))
+//        logger.debug((s">>>>>>>> downloadAction syntaxOption $syntaxOption"))
         syntaxOption match {
           case Some(syntax) =>
             val mimeOption = stringMatchesRDFsyntax(syntax)
-//            println((s">>>>>>>> downloadAction , mimeOption $mimeOption"))
+//            logger.debug((s">>>>>>>> downloadAction , mimeOption $mimeOption"))
             mimeOption match {
               case Some(mimeStringFromSyntaxHTTPparameter) =>
                 output(mimeStringFromSyntaxHTTPparameter)
@@ -144,8 +146,9 @@ with RDFContentNegociation {
   }
 
   /** LDP GET */
-  def ldp(uri: String) = Action {
+  def ldp(uri0: String) = Action {
     implicit request: Request[_] =>
+      val uri = URLDecoder.decode(uri0, "UTF-8")
       logger.info("LDP GET: request " + request)
       val acceptedTypes = request.acceptedTypes
       logger.info( s"acceptedTypes $acceptedTypes")
@@ -160,7 +163,7 @@ with RDFContentNegociation {
         else
           jsonldMime
 
-      println(s">>>> ldp($uri): mimeType $mimeType")
+      logger.debug(s">>>> ldp($uri): mimeType $mimeType")
       if (mimeType  =/=  htmlMime) {
         val responseBody = getTriples(uri, request.path, mimeType, httpRequest)
         logger.info("LDP: GET: response Body\n" + responseBody)
@@ -176,11 +179,14 @@ with RDFContentNegociation {
 //          .withHeaders("Allow" -> "OPTIONS,GET,POST,PUT,PATCH,HEAD")
 //          .withHeaders("Accept-Post" -> """"text/turtle, application/ld+json""")
       } else { //// Redirect to /display ////
-//    	  println(s">>>> ldp: Redirect $hrefDisplayPrefix http://${request.host}/ldp/$uri")
-        val ldpURL = "http://" + request.host + "/ldp/" + URLEncoder.encode(uri, "UTF-8")
-//    	  println(s">>>> ldp: Redirect $ldpURL")
+//    	  logger.debug(s">>>> ldp: Redirect $hrefDisplayPrefix http://${request.host}/ldp/$uri")
+        val ldpURL = "http://" + request.host + "/ldp/" + 
+//        URLEncoder.encode(
+            uri
+//            , "UTF-8")
+//    	  logger.debug(s">>>> ldp: Redirect $ldpURL")
         val call = Redirect("/display", Map("displayuri" -> Seq(ldpURL)))
-//        println(s">>>> ldp: call $call")
+//        logger.debug(s">>>> ldp: call $call")
         call
       }
   }
@@ -301,7 +307,7 @@ with RDFContentNegociation {
           }
 
           val content = getContent(request)
-          println("loadURIpost " + content)
+          logger.info("loadURIpost " + content)
           val finalResults = content match {
             case None =>
               Ok("ERROR")
