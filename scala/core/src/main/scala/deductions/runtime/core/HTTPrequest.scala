@@ -43,10 +43,15 @@ case class HTTPrequest(
     session: Map[String,String] = Map()
     ) {
 
-  /** get RDF subject (HTTP parameter "displayuri") */
+  /** get RDF subject, that is "focus" (HTTP parameter "displayuri") */
   def getRDFsubject(): String =
     getHTTPparameterValue("displayuri").getOrElse(
       getHTTPparameterValue("q").getOrElse(""))
+
+  /** is it a locally hosted URI? (that is created by a user by /create ) */
+  def isFocusURIlocal(): Boolean = {
+    getRDFsubject().startsWith(absoluteURL())
+  }
 
   def getHTTPparameterValue(param: String): Option[String] = queryString.get(param) .map(seq => seq.headOption ) . flatten
   def setDefaultHTTPparameterValue(param: String, value: String): HTTPrequest = {

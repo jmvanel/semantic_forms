@@ -47,7 +47,8 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
                formuri: String = "",
                graphURI: String = "",
                database: String = "TDB",
-               request: HTTPrequest = HTTPrequest()): (NodeSeq, Boolean) = {
+               request: HTTPrequest
+  ): (NodeSeq, Boolean) = {
     logger.info(
       s"""ApplicationFacadeImpl.htmlForm URI <$uri0> blankNode "$blankNode"
               editable=$editable lang=$lang graphURI <$graphURI>""")
@@ -68,7 +69,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
               val failureOrStatistics = tryGraph match {
                 case Failure(e) => <p>{ e.getLocalizedMessage }</p>
                 case Success(g) =>
-                  val res = wrapInReadTransaction{ formatHTMLStatistics(URI(uri), g, lang) }
+                  val res = wrapInReadTransaction{ formatHTMLStatistics(URI(uri), g, request) }
                   res match {
                     case Success(xmlNodes) => xmlNodes
                     case Failure(e) => <p> Error in formatHTMLStatistics: {e}</p>

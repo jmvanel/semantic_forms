@@ -565,7 +565,8 @@ extends
   /** get Locally Managed graph from given URI : <URI> ?P ?O */
   private def getLocallyManagedUrlAndData(uri: Rdf#URI, request: HTTPrequest, transactionsInside: Boolean): Option[Rdf#Graph] =
     // TODO accept URI's differing only on htttp versus https
-    if (!fromUri(uri).startsWith(request.absoluteURL())) { // TODO ? "ldp"
+    if (!fromUri(uri).startsWith(request.absoluteURL())) {
+      // TODO use isFocusURIlocal()
       // then it can be a "pure" HTML web page, or an RDF document
       None
     } else {

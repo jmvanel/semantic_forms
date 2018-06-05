@@ -8,6 +8,7 @@ import org.w3.banana.RDF
 import scala.xml.{Elem, NodeSeq}
 import deductions.runtime.views.ResultsDisplay
 import deductions.runtime.core.HTMLutils
+import deductions.runtime.core.HTTPrequest
 
 /** print Statistics for given Graph in HTML */
 trait StatisticsGraph[Rdf <: RDF, DATASET] extends RDFHelpers[Rdf]
@@ -19,7 +20,7 @@ trait StatisticsGraph[Rdf <: RDF, DATASET] extends RDFHelpers[Rdf]
   import ops._
 
   def formatHTMLStatistics(focus: Rdf#URI, graph: Rdf#Graph,
-                           lang: String = "en"): NodeSeq = {
+      request: HTTPrequest): NodeSeq = {
     val triples = getTriples(graph)
     val predsCount = triples.map { trip => trip.predicate }.toList.distinct.size
     val subjects = triples.map { trip => trip.subject }.toList.distinct
@@ -43,7 +44,7 @@ trait StatisticsGraph[Rdf <: RDF, DATASET] extends RDFHelpers[Rdf]
       objects from page URI, type(s)
       {
         val links0 = for (link <- linkToClasses) yield {
-          makeHyperlinkForURI(link, lang, graph)
+          makeHyperlinkForURI(link, request.getLanguage(), graph)
         }
         val links = links0.flatten
         if( links.size <=1 )
@@ -53,6 +54,9 @@ trait StatisticsGraph[Rdf <: RDF, DATASET] extends RDFHelpers[Rdf]
           showHideHTMLOnClick( links.tail, fromUri(focus),
               <button title="Show all classes"
               >....</button> )
+      }
+      { if( ! request.isFocusURIlocal)
+        <a href={"/showTriplesInGraph?uri=" + URLEncoder.encode(fromUri(focus),"UTF-8")}>Named graph</a>
       }
     </p>
   }

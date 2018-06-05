@@ -224,7 +224,7 @@ trait WebPages extends Controller with ApplicationTrait {
             val requestCopy = getRequestCopy()
             val userid = requestCopy.userId()
             Ok(htmlForm(uri, blankNode, editable = Edit  =/=  "", lang, formuri,
-              graphURI = makeAbsoluteURIForSaving(userid), database = database)._1)
+              graphURI = makeAbsoluteURIForSaving(userid), database = database, HTTPrequest() )._1)
               .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
               .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
               .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")

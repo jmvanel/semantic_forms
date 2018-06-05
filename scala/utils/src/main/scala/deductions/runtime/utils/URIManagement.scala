@@ -92,7 +92,7 @@ trait URIManagement extends URIHelpers {
     instanceURIPrefix + System.currentTimeMillis() + "-" + System.nanoTime() // currentId = currentId + 1
   }
 
-  /** create URI Prefix for a new instance */
+  /** create URI Prefix for a new instance - TODO move to HTTPrequest */
   def instanceURIPrefix(request: HTTPrequest): String = {
 //    val hostname =
 //      if (request.host  =/=  "")
