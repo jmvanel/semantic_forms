@@ -72,9 +72,20 @@ trait SparqlServices extends ApplicationTrait
           logInfo(s"""sparqlConstruct: sparql: request $request
             sparql: $query
             accepts ${request.acceptedTypes} """)
+
+      val httpRequest = copyRequest(request)
+      val accepts = httpRequest.getHTTPheaderValue("Accept")
+      val firstMimeTypeAccepted = accepts.getOrElse("").replaceFirst(",.*", "")
+      logger.debug( "firstMimeTypeAccepted " + firstMimeTypeAccepted )
+      if (firstMimeTypeAccepted == "text/html") {
+        val call = routes.Application.sparql(query)
+        Redirect(call).flashing(
+         "message" -> "Redirect to SPARQL UI" )
+      } else {
           val isSelect = (checkSPARQLqueryType(query) === "select")
           outputSPARQL(query, request.acceptedTypes, isSelect, bindings, context,
                        getRequestCopy() )
+      }
   }
 
   /**
