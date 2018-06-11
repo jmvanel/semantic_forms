@@ -99,7 +99,7 @@ trait ToolsPage extends EnterButtons
   }
 
   /** HTML Form for a sparql Query, with execution buttons */
-  def sparqlQueryForm( viewButton: Boolean, query: String, action: String,
+  def sparqlQueryForm( viewButtons: Boolean, query: String, action: String,
       sampleQueries: Seq[String], request: HTTPrequest): NodeSeq = {
     val textareaId = s"query-$action" . replaceAll("/", "-")
     println( "textareaId " + textareaId);
@@ -127,8 +127,12 @@ trait ToolsPage extends EnterButtons
 
       <div class="container">
         <div class="btn-group">
-          <input class ="btn btn-primary" type="submit" value={ I18NMessages.get("Submit", request.getLanguage()) }  formaction ={action} />
-          {	if (viewButton) buttonsNextRelease }
+          <input class ="btn btn-primary" type="submit"
+                 value={ I18NMessages.get("Submit", request.getLanguage()) } formaction ={action} />
+          <label>unionDefaultGraph</label>
+          <input name="unionDefaultGraph" type="checkbox"
+                 checked={if (request.getHTTPparameterValue("unionDefaultGraph").isDefined) "yes" else null} />
+          {	if (viewButtons) buttonsNextRelease }
         </div>
       </div>
     </form>

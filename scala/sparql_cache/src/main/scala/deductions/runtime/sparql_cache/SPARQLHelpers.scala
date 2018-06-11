@@ -98,9 +98,10 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     } else graph
   }
 
-  private def checkUnionDefaultGraph(context: Map[String,String]) =
-    context.get("unionDefaultGraph").getOrElse("") === "true"
-
+  private def checkUnionDefaultGraph(context: Map[String,String]) = {
+    val okValues = Set("true", "on")
+    okValues contains ( context.get("unionDefaultGraph").getOrElse("") )
+  }
   val sparqlGraph: SparqlEngine[Rdf, Try, Rdf#Graph]
 
   /** */

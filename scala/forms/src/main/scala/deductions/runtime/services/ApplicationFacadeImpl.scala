@@ -361,7 +361,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     else "# Empty query result !!!"
   }
 
-  /** Display result of a SPARQL select */
+/** Display result of a SPARQL select, plus a form to edit the SPARQL text */
   def selectSPARQL(query: String, lang: String = "en", request: HTTPrequest): Elem = {
     logger.info("sparql query  " + query)
     <p>
