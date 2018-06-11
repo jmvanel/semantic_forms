@@ -111,6 +111,12 @@ case class HTTPrequest(
     acceptLanguages.contains(lang)
   }
 
+  /** like queryString, but returns the first value only for a key */
+  def queryString2: Map[String, String] =
+    for ( (key, seq) <- queryString ) yield {
+      (key, seq.headOption.getOrElse(""))
+    }
+
   override def toString(): String = {
     s"""    host:  = $host,
     remoteAddress: $remoteAddress,

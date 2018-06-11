@@ -450,12 +450,12 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    * run SPARQL on given dataset; transactional;
    * the first row is the variables' list
    *  used in SPARQL results Web page
+   *  @param context used for setting UnionGraph
    */
   def sparqlSelectQuery(queryString: String,
                         ds: DATASET = dataset,
                         context: Map[String,String] = Map()
 		  ): Try[List[Iterable[Rdf#Node]]] = {
-    // DEBUG
     val dsg = ds.asInstanceOf[org.apache.jena.sparql.core.DatasetImpl].asDatasetGraph()
     logger.debug(s">>>> sparqlSelectQuery: dsg class : ${dsg.getClass}")
     logger.debug(s">>>> sparqlSelectQuery: ds: ${ds}")

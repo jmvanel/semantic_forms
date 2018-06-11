@@ -375,7 +375,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       </style>
       {
         if (query != "") {
-          val rowsTry = sparqlSelectQuery(query)
+          val rowsTry = sparqlSelectQuery(query, context=request.queryString2 )
           rowsTry match {
             case Success(rows) =>
               <div>Result: {rows.size} rows</div>
