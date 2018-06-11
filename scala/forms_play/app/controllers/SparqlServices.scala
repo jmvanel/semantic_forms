@@ -113,7 +113,7 @@ trait SparqlServices extends ApplicationTrait
         val query0 = map.getOrElse("query", Seq())
         val query = query0 . mkString("\n")
         logInfo(s"""sparql as FormUrlEncoded: $query""" )
-        makeSPARQLoutput(query, request)
+        makeSPARQLoutput(query, request, context)
       }
       r match {
         case Some(r) => r

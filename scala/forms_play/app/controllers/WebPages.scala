@@ -288,7 +288,6 @@ trait WebPages extends Controller with ApplicationTrait {
   def select(query: String) =
     Action {
     implicit request: Request[_] =>
-//    recoverFromOutOfMemoryErrorResult(
       recoverFromOutOfMemoryErrorGeneric(
         {
             logger.info("sparql: " + request)

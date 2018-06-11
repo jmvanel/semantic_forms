@@ -128,7 +128,7 @@ trait ApplicationTrait extends Controller
   
   protected val turtle = AcceptsTTL.mimeType
 
-	// format = "turtle" or "rdfxml" or "jsonld"
+	/** mime Abbrevs, format = "turtle" or "rdfxml" or "jsonld" */
 	val mimeAbbrevs = Map(
 	    AcceptsTTL -> "turtle",
 	    AcceptsJSONLD -> "jsonld",

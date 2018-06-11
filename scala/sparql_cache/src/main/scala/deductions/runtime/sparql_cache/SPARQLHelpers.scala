@@ -644,6 +644,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
                        ds: DATASET = dataset,
                        context: Map[String,String] = Map()): String = {
     val result = sparqlSelectQuery(queryString, ds, context)
+//    println(s">>>> sparqlSelectJSON: queryString '$queryString', context $context, result $result")
     val output = result match {
       case Success(res) =>
         if (!res.isEmpty) {
