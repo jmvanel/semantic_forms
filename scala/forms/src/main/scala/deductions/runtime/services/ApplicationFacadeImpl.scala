@@ -317,7 +317,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   }
 
   /** XHTML wrapper around SPARQL Construct result TODO  move to a trait in html package */
-  def sparqlConstructQueryHTML(query: String, lang: String = "en", request: HTTPrequest): Elem = {
+  def sparqlConstructQueryHTML(query: String, lang: String = "en", request: HTTPrequest,
+      context: Map[String,String] ): Elem = {
     logger.info("Global.sparql query  " + query)
     <p>
 		{ sparqlQueryForm( true,query, "/sparql-ui",
@@ -325,8 +326,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       <pre>
         {
 //          try {
-        	  if( query != "" )
-        		  sparqlConstructQueryTR(query)
+          if( query != "" )
+            sparqlConstructQueryTR(query, context=context)
         		  match {
         		    case Success(str) => str
         		    case Failure(f) => f.getLocalizedMessage
