@@ -3,6 +3,10 @@ package deductions.runtime.sparql_cache.apps
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.sparql_cache.SPARQLHelpers
 import deductions.runtime.utils.DefaultConfiguration
+import scala.util.Success
+import scala.util.Failure
+import scala.util.Try
+
 /**
   * Created by LaFaucheuse on 06/07/2017.
   */
@@ -15,14 +19,16 @@ object SPARQLHelperApp extends ImplementationSettings.RDFModule
   }
 
   def selectJSON(queryString: String): String = {
-    sparqlSelectJSON(queryString)
+    prinTry( sparqlSelectJSON(queryString) )
   }
 
   def selectXML(queryString: String): String = {
-    sparqlSelectXML(queryString)
+    prinTry( sparqlSelectXML(queryString) )
   }
-  //  def select(queryString: String): String = {
-  //    sparqlSelectQuery(queryString).toString()
-  //  }
 
+  private def prinTry(ts: Try[String]) =
+    ts match {
+      case Success(s) => s
+      case Failure(f) => f.getLocalizedMessage
+   }
 }

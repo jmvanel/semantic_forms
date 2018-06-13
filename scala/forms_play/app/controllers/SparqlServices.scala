@@ -193,7 +193,9 @@ trait SparqlServices extends ApplicationTrait
       )
     }
     logInfo(s"result 10 first lines: $result".split("\n").take(10).mkString("\n"))
-    Ok(result)
+    result match {
+      case Success(result) =>
+        Ok(result)
       .as(s"${simpleString2mimeMap.getOrElse(resultFormat, defaultMIMEaPriori).mimeType }")
       .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
       .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
@@ -202,6 +204,8 @@ trait SparqlServices extends ApplicationTrait
        * DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,
        * If-Modified-Since,Cache-Control,Content-Type,Accept-Encoding" */
       // charset=utf-8" ?
+      case Failure(f) => InternalServerError(f.getLocalizedMessage)
+    }
   }
 
   private def update(update: String) =

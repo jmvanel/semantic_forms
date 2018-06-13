@@ -179,7 +179,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         sparqlConstructQuery(queryString, context=context),
         "", format)
     })
-    transaction // .get
+    transaction .flatten
   }
 
   /** transactional */
@@ -557,7 +557,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   def sparqlSelectConneg(queryString: String,
                          format: String = "xml",
                          ds: DATASET = dataset,
-                         context: Map[String,String] = Map()): String = {
+                         context: Map[String,String] = Map()): Try[String] = {
     logger.debug(s"format $format")
     format match {
       case "jsonld" => sparqlSelectJSON(queryString, ds, context)
@@ -574,10 +574,11 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    */
   def sparqlSelectXML(queryString: String,
                       ds: DATASET = dataset,
-                      context: Map[String,String] = Map()): String = {
+                      context: Map[String,String] = Map()): Try[String] = {
     val result = sparqlSelectQuery(queryString, ds, context)
     val output = result match {
       case Success(res) =>
+        val printer = new scala.xml.PrettyPrinter(80, 2)
         if (!res.isEmpty) {
           val header = res.head.map { node => literalNodeToString(node) }
           logger.debug(s"sparqlSelectXML: header $header")
@@ -616,33 +617,31 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
                 }
               </results>
             </sparql>
-          xml
+          Success( printer.format(xml) )
         } else {
           val xml =
             <sparql xmlns="http://www.w3.org/2005/sparql-results#">
               <head></head>
               <results></results>
             </sparql>
-          xml
+          Success( printer.format(xml) )
         }
-      case Failure(f) =>
-        <sparql>
-          {
-            Comment(
-              "ERROR in sparql Select:\n" +
-                f.getLocalizedMessage)
-          }
-        </sparql>
+      case Failure(f) => Failure(f)
+//        <sparql>
+//          {
+//            Comment(
+//              "ERROR in sparql Select:\n" +
+//                f.getLocalizedMessage)
+//          }
+//        </sparql>
     }
-    //    output.toString()
-    val printer = new scala.xml.PrettyPrinter(80, 2)
-    printer.format(output)
+    output
   }
 
   /** sparql Select, JSON output, see https://www.w3.org/TR/sparql11-results-json/#example */
   def sparqlSelectJSON(queryString: String,
                        ds: DATASET = dataset,
-                       context: Map[String,String] = Map()): String = {
+                       context: Map[String,String] = Map()): Try[String] = {
     val result = sparqlSelectQuery(queryString, ds, context)
 //    println(s">>>> sparqlSelectJSON: queryString '$queryString', context $context, result $result")
     val output = result match {
@@ -681,14 +680,19 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
               binding
           }
           val resultsValue = Json.obj("bindings" -> bindings)
+          Success(
+          Json.prettyPrint(
           Json.obj(
             "head" -> headValue,
-            "results" -> resultsValue)
+            "results" -> resultsValue) ) )
         } else
-          Json.obj("head" -> "", "results" -> "" )
-      case Failure(f) => Json.toJson(f.getLocalizedMessage)
+          Success(
+          Json.prettyPrint(
+              Json.obj("head" -> "", "results" -> "" )))
+      case Failure(f) => Failure(f)
+        // Json.toJson(f.getLocalizedMessage)
     }
-    Json.prettyPrint(output)
+    output
   }
 
   /**
@@ -765,7 +769,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    *  @param format "turtle" or "rdfxml" or "jsonld"
    *  TODO REFACTOR, use conneg helper
    */
-  def graph2String(triples: Try[Rdf#Graph], baseURI: String, format: String = "turtle"): String = {
+  def graph2String(triples: Try[Rdf#Graph], baseURI: String, format: String = "turtle"): Try[String] = {
     logger.info(s"graph2String: base URI <$baseURI>, format $format, ${triples}")
     triples match {
       case Success(graph) =>
@@ -780,15 +784,15 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
 //        logger.debug( s">>>> graph2String writer $writer, stats $stats, baseURI $baseURI, graph $graph" )
 
-        stats + {
+        Success( stats + {
           val tryString = writer.asString(graph, base = "") // baseURI)
 //        logger.debug( s">>>> graph2String tryString $tryString" )
           tryString match {
             case Success(s) => s
             case Failure(f) => s"graph2String: trouble in writing graph: $f"
           }
-        }
-      case Failure(f) => f.getLocalizedMessage
+        })
+      case Failure(f) => Failure(f)
     }
   }
 

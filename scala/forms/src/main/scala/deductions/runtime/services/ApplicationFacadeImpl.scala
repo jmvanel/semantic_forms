@@ -347,19 +347,19 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
    */
   def sparqlConstructResult(query: String, lang: String,
       format: String = "turtle",
-      context: Map[String,String] = Map()): String = {
+      context: Map[String,String] = Map()): Try[String] = {
     logger.info("Global.sparql query  " + query)
     if (query != "")
       sparqlConstructQueryTR(query, format,
           context + ("lang" -> lang))
-      // TODO this code is in several places !!!!!! make function printTry( tr: Try[_] , mime:String)
-      match {
-        case Success(s) => s
-        case Failure(f) =>
-          if( format === "turtle")
-          s"# $f" else "{error: \"" + f + "\" }"
-      }
-    else "# Empty query result !!!"
+//      match {
+//        case Success(s) => Success(s)
+//        case Failure(f) => Failure(f)
+////          Failure( new Exception(
+////            if( format === "turtle")
+////              s"# $f" else "{error: \"" + f + "\" }" ))
+//      }
+    else  Success("# Empty query result !!!")
   }
 
 /** Display result of a SPARQL select, plus a form to edit the SPARQL text */
