@@ -41,7 +41,12 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   private def mess(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
 
   /** make Table of History of User Actions;
-   * leverage on ParameterizedSPARQL.makeHyperlinkForURI()
+   * leverage on ParameterizedSPARQL.makeHyperlinkForURI();
+   * available filters in HTML parameters:
+   * - triple pattern, eg rdf:type=foaf:Person
+   * - centered in given URI, eg uri=http://site.com ,
+   * - filter according to a SPARQL query , given by sparql= , eg
+   *   http://localhost:9000/history?sparql=SELECT DISTINCT ?thing WHERE {GRAPH ?G {?thing a <http://xmlns.com/foaf/0.1/Person> . }}
    */
   def makeTableHistoryUserActions(request: HTTPrequest)(limit: String): NodeSeq = {
     val metadata0 = getMetadata()(
@@ -204,10 +209,16 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       (filterMetadataSPARQL(
         metadata, request, sparqlQuery), Some(focusURI))
 
-    } else if( params.contains("sparql")) {
-      logger.debug(s"""===== filterMetadataFocus: params.contains("sparql") """)
-      (filterMetadataSPARQL(
-        metadata, request, params("sparql").headOption.getOrElse("")), Some("/user-query"))
+    } else if( params.contains("sparql") ||
+               params.contains("query")) {
+      logger.debug(s"""===== filterMetadataFocus: params.contains("sparql") or "query" """)
+      val sparqlQuery = params.getOrElse("sparql",
+                        params.getOrElse("query", Seq() )
+                        ) .headOption.getOrElse("")
+          params("query")
+      println(s"filterMetadataFocus sparqlQuery $sparqlQuery")
+      (filterMetadataSPARQL( metadata, request, sparqlQuery),
+        Some("/user-query"))
 
     } else
       (metadata, None)

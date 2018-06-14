@@ -111,6 +111,7 @@ trait ToolsPage extends EnterButtons
 //          "http://rawgit.com/Cruis-R/geo-map-component/master/docs/index.html"),
       <input class="btn btn-primary" type="submit" value={ I18NMessages.get("Table", request.getLanguage()) }
              formaction="/table"/>,
+
       <input class="btn btn-primary" type="submit"
              title="NOT YET IMPLEMENTED"
              disabled="disabled"
@@ -132,7 +133,10 @@ trait ToolsPage extends EnterButtons
           <label>unionDefaultGraph</label>
           <input name="unionDefaultGraph" type="checkbox"
                  checked={if (request.getHTTPparameterValue("unionDefaultGraph").isDefined) "yes" else null} />
-          {	if (viewButtons) buttonsNextRelease }
+          { if (viewButtons) buttonsNextRelease
+          else
+             <input class="btn btn-primary" type="submit" value={ I18NMessages.get("History", request.getLanguage()) }
+             formaction="/history"/> }
         </div>
       </div>
     </form>
