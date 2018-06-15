@@ -38,31 +38,35 @@ trait MicrodataLoaderJena extends MicrodataLoader[Jena] {
   }
 
   def load(url: java.net.URL): Try[Rdf#Graph] = {
-        val graph = emptyGraph
-    val model = ModelFactory.createModelForGraph(graph)
-    val sink = new JenaStatementSink(model)
+    Success(emptyGraph)
 
-    // TODO RDFa settings
-    val format = Format.XHTML;
-//    val reader = ParserFactory.createReaderForFormat(sink, format, new URIResolver());
-    val reader = ParserFactory.createReaderForFormat(sink, Format.XHTML, Setting.OnePointOne);
+    // DEACTIVATED before rdfa-java 4.3
 
-    /* TODO set HTTP connection on connection object, somtheting like
-     * URL url = new URL("http://www.something.com/blah.xml");
-       ParserAdapter xml = new ParserAdapter();
-       xml.parse(new InputSource(url.openStream()));
-       or see
-       https://stackoverflow.com/questions/16840365/set-timeout-on-url-openstream-android
-    */
-    // to avoid HTTP 403 from server; alternatively maybe set agent on the URL connection
-    System.setProperty("http.agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36     (KHTML, like Gecko) Chrome/28.0.1500.29 Safari/537.36");
-    val defaultReadTimeout = "40000"
-    val defaultConnectTimeout = "40000"
-    System.setProperty("sun.net.client.defaultReadTimeout", defaultReadTimeout)
-    System.setProperty("sun.net.client.defaultConnectTimeout", defaultConnectTimeout)
-
-    reader.parse(url.toExternalForm())
-    Success(model.getGraph.asInstanceOf[Rdf#Graph])
+//    val graph = emptyGraph
+//    val model = ModelFactory.createModelForGraph(graph)
+//    val sink = new JenaStatementSink(model)
+//
+//    // TODO RDFa settings
+//    val format = Format.XHTML;
+////    val reader = ParserFactory.createReaderForFormat(sink, format, new URIResolver());
+//    val reader = ParserFactory.createReaderForFormat(sink, Format.HTML, Setting.OnePointOne);
+//
+//    /* TODO set HTTP connection on connection object, somtheting like
+//     * URL url = new URL("http://www.something.com/blah.xml");
+//       ParserAdapter xml = new ParserAdapter();
+//       xml.parse(new InputSource(url.openStream()));
+//       or see
+//       https://stackoverflow.com/questions/16840365/set-timeout-on-url-openstream-android
+//    */
+//    // to avoid HTTP 403 from server; alternatively maybe set agent on the URL connection
+//    System.setProperty("http.agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36     (KHTML, like Gecko) Chrome/28.0.1500.29 Safari/537.36");
+//    val defaultReadTimeout = "40000"
+//    val defaultConnectTimeout = "40000"
+//    System.setProperty("sun.net.client.defaultReadTimeout", defaultReadTimeout)
+//    System.setProperty("sun.net.client.defaultConnectTimeout", defaultConnectTimeout)
+//
+//    reader.parse(url.toExternalForm())
+//    Success(model.getGraph.asInstanceOf[Rdf#Graph])
   }
 
   def loadOLD(url: java.net.URL): Try[Rdf#Graph] = {
