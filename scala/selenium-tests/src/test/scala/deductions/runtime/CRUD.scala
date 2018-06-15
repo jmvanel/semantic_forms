@@ -60,8 +60,7 @@ trait CRUD extends TestBoilerPlate {
     val SaveButton = xpath( "//input[@value='SAUVER']" )
     Thread.sleep(20)
     click on SaveButton
-     val SaveButton2 = xpath( "//input[@value='SAUVER']" )
-    click on SaveButton2
+    // val SaveButton2 = xpath( "//input[@value='SAUVER']" ) ; click on SaveButton2
 
     // check page content: rdf:type, foaf:firstName, foaf:knows
     // page should contain "Violette" (twice, in h3 and in span), a link named "Jean-Marc Vanel",
