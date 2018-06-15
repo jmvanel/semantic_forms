@@ -578,7 +578,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     val result = sparqlSelectQuery(queryString, ds, context)
     val output = result match {
       case Success(res) =>
-        val printer = new scala.xml.PrettyPrinter(80, 2)
+        val printer = new scala.xml.PrettyPrinter(1000, 2) // (80, 2)
         if (!res.isEmpty) {
           val header = res.head.map { node => literalNodeToString(node) }
           logger.debug(s"sparqlSelectXML: header $header")
@@ -595,7 +595,13 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
                       val listOfElements = list.map {
                         node =>
                           foldNode(node)(
-                            uri => <uri>{ fromUri(uri) }</uri>,
+                            uri =>
+//                              { if(uri.toString.startsWith(
+//                                  "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl"))
+//                                println(s"sparqlSelectXML !!!!!!! <$uri> ")
+                              <uri>{ fromUri(uri) }</uri>
+//                                }
+                              ,
                             bn => <bnode>{ fromBNode(bn) }</bnode>,
                             lit => {
                               val litTuple = fromLiteral(lit)
