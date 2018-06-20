@@ -34,7 +34,10 @@ trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
                            request: HTTPrequest): FormSyntax = {
     logger.debug( s"""query:
         $query""")
-    val tryGraph = sparqlConstructQueryGraph(query)
+    val tryGraph = sparqlConstructQueryGraph(
+          query,
+          context=request.queryString2
+        )
     logger.debug( s"tryGraph: $tryGraph")
     tryGraph match {
       case Success(graph) =>

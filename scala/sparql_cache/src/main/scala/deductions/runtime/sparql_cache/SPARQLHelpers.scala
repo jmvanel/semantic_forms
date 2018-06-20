@@ -125,8 +125,10 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    * sparql Construct Query;
    * With transaction
    */
-  def sparqlConstructQueryGraph(queryString: String): Try[Rdf#Graph] =
-    wrapInReadTransaction(sparqlConstructQuery(queryString)).flatten
+  def sparqlConstructQueryGraph(
+      queryString: String,
+      context: Map[String,String] = Map()): Try[Rdf#Graph] =
+    wrapInReadTransaction(sparqlConstructQuery(queryString, context=context)).flatten
 
   /**
    * sparql Update Query;
