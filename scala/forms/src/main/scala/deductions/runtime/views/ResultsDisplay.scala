@@ -69,15 +69,16 @@ extends ThumbnailInference[Rdf, DATASET] {
               sortAnd1rowPerElement = sortAnd1rowPerElement ),
           lit => <div>{ lit.toString() }</div>
           )
-          }</div> , separatorSpan )
+          }</div> , separatorTriple )
         }
         }
         columnsFormResults
     }</div><!-- end of wrapping div displayResults -->
   }
 
-  val separatorSpan = <span>&#160;&#160;&#160;&#160;</span>
-
+  val separatorSpan = <span>&#160;&#160;</span>
+  val separatorTriple = " | "
+  
   /** make HTML hyperlink For given URI, with bells and whistles;
    *  this links to semantic_forms page for displaying this URI;
    * NOTE: this reuses code in Form2HTMLDisplay.createHTMLResourceReadonlyField()
