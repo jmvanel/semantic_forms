@@ -1,7 +1,6 @@
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-select ( count(?S) AS ?count )
+# Show classes ordered by number of instances
+select ( count(?S) AS ?count ) ?CLASS
 where {
-   ?S a foaf:Person .
-#  ?S a foaf:Organization .
-#  ?S a foaf:Project .
-}
+  ?S a ?CLASS
+} GROUP BY ?CLASS
+ORDER BY DESC (?count)

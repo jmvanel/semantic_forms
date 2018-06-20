@@ -1,0 +1,8 @@
+# Show named graphs ordered by number of instances
+select ( count(?S) AS ?count ) ?G
+where {
+  GRAPH ?G {
+    ?S ?P ?O
+  }
+} GROUP BY ?G
+ORDER BY DESC (?count)
