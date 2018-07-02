@@ -1,0 +1,1 @@
+sbt 'testOnly *CRUDsc*'
