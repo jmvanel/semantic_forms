@@ -62,6 +62,8 @@ object Common {
 
     "org.apache.commons" % "commons-csv" % "1.5" ,
     "org.apache.any23" % "apache-any23-csvutils" %  "2.2" // "2.1"
+    // for Java 9 (works also with Java 8)
+ , "javax.xml.bind" % "jaxb-api" % "2.3.0"
   )
 
 }
