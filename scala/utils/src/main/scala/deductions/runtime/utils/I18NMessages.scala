@@ -15,12 +15,21 @@ import Scalaz._
 /** use https://github.com/NET-A-PORTER/scala-i18n */
 object I18NMessages {
   val messages = ResourceBundle("messages.messages")
+  private val javaSpecification = System.getProperty("java.vm.specification.version")
+  val java9 = javaSpecification == "9" || javaSpecification == "1.9"
+//  println(s"I18NMessages: getProperties = ${System.getProperties}")
+//  println(s"java.vm.specification.version ${System.getProperty("java.vm.specification.version")}")
+//  println(s"I18NMessages: java.version = ${System.getProperty("java.version")} , java.runtime.version = ${System.getProperty("java.runtime.version")} , java9 $java9")
 
   def get(messageId: String, lang: String) = {
     val language = if (lang === "") "en" else lang
     val s = messages.getOrElse(messageId,
       Locale.forLanguageTag(language), messageId)
-    new String(s.getBytes("ISO-8859-1"), "UTF-8")
+      // println(s"I18NMessages: s $s")
+      if( java9 )
+        s
+      else // fallback
+        new String(s.getBytes("ISO-8859-1"), "UTF-8")
   }
 
   def format(messageId: String, lang: String, messageArguments: String*): String = {

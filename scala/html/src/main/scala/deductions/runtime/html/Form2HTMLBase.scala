@@ -60,11 +60,13 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
         // hack before implementing real separators
         if (label.contains("----"))
           label.substring(1).replaceAll("-(-)+", "")
-        else if (isSeparator(field) )
+        else if (isSeparator(field) ) {
+//          println(s">>> makeFieldLabel: label $label, message ${message("separator_props_From_Subject", lang)}")
           label .
           replace("separator_props_From_Subject", message("separator_props_From_Subject", lang)) .
           replace("separator_props_From_Classes", message("separator_props_From_Classes", lang)) .
           replace("_", " ")
+        }
         else label
       }</a>
       </label>
