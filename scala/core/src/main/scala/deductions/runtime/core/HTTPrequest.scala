@@ -40,7 +40,8 @@ case class HTTPrequest(
     to_string: String = "",
     secure: Boolean= false,
     domain: String = "",
-    session: Map[String,String] = Map()
+    session: Map[String,String] = Map(),
+    username : Option[String] = None
     ) {
 
   /** get RDF subject, that is "focus" (HTTP parameter "displayuri") */
@@ -78,12 +79,8 @@ case class HTTPrequest(
       url.replaceFirst("^https://", "http://")
 
   def userId(): String = {
-    val usernameFromSession = for (
-      cookie <- cookies.get("PLAY_SESSION");
-      value = cookie.value
-    ) yield { substringAfter(value, "username=") }
-    URLDecoder.decode(
-      usernameFromSession.getOrElse("anonymous"), "UTF-8")
+    // Play 2.6 & 2.5
+    URLDecoder.decode( username.getOrElse("anonymous"), "UTF-8")
   }
 
   def flashCookie(id: String): String = {
