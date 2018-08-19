@@ -39,7 +39,7 @@ trait ToolsPage extends EnterButtons
 
 
 
-    <link href="assets/images/favicon.png" type="image/png" rel="shortcut icon"/>
+    <link href="/assets/images/favicon.png" type="image/png" rel="shortcut icon"/>
     <div>
       <p>
         SPARQL select {

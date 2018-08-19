@@ -8,10 +8,14 @@ import Common._
 name := "semantic_forms-root"
 
 organization in ThisBuild := "deductions"
-// version in ThisBuild := "2.5"
 version in ThisBuild := "2.X-SNAPSHOT"
 
-scalaVersion in ThisBuild := "2.11.12" // "2.12.4"
+// 
+scalaVersion := "2.12.6"
+// lazy val commonSettings = Seq( scalaVersion := "2.12.6", organization := "deductions")
+// crossScalaVersions := Seq("2.11.12", "2.12.6")
+
+// scalaVersion in ThisBuild := "2.11.12" // "2.12.6"
 javacOptions in ThisBuild := Seq("-source","1.8", "-target","1.8")
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-explaintypes", "-language:_", "-Xlint:_")
 
@@ -26,21 +30,13 @@ lazy val forms_play = (project in file("forms_play"))
 .settings(
    scalaJSProjects := Seq(forms_js),
    pipelineStages in Assets := Seq(scalaJSPipeline),
-   pipelineStages := Seq(digest, gzip),
+   // pipelineStages := Seq(digest, gzip),
 // triggers scalaJSPipeline when using compile or continuous compilation
    compile in Compile := ((compile in Compile) dependsOn scalaJSPipeline).value,
    libraryDependencies ++= Seq(
      ( "com.vmunier" %% "scalajs-scripts" % "1.1.1" ) . exclude("com.typesafe.play", "twirl-api_2.11")
    )
    )
-/*
-[warn] Found version conflict(s) in library dependencies; some are suspected to be binary incompatible:
-[warn] 
-[warn] 	* com.typesafe.play:twirl-api_2.11:1.3.3 is selected over 1.1.1
-[warn] 	    +- com.vmunier:scalajs-scripts_2.11:1.1.1             (depends on 1.3.3)
-[warn] 	    +- deductions:semantic_forms_play_2.11:2.1-SNAPSHOT   (depends on 1.1.1)
-[warn] 	    +- com.typesafe.play:play_2.11:2.5.15                 (depends on 1.1.1)
-*/
 
 lazy val core = project
 lazy val utils = project .dependsOn(core)
@@ -74,13 +70,14 @@ lazy val mobion = project .dependsOn(forms)
 // Added for locally compiled Java-RDFa:
 // resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
 resolvers in ThisBuild += Resolver.mavenLocal
+resolvers += Resolver.url("typesafe", url("http://repo.typesafe.com/typesafe/ivy-releases/"))(Resolver.ivyStylePatterns)
 
 // PENDING: really necessary?
 // resolvers in ThisBuild += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
 // resolvers in ThisBuild += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
 // loads the server project at sbt startup
-onLoad in Global := (Command.process("project forms_play", _: State)) compose (onLoad in Global).value
+onLoad in Global := (onLoad in Global).value andThen {s: State => "project forms_play" :: s}
 
 // Scala code checkers
 

@@ -1,9 +1,9 @@
 // import sbt.Keys._
 // import sbt._
 
-scalaVersion in ThisBuild := "2.11.11" // "2.11.8" // "2.12.2"
+// scalaVersion := "2.12.6"
 
-  val jenaVersion =  "3.3.0"
+  val jenaVersion =  "3.8.0"
 
   val jenaDependency = "org.apache.jena" % "apache-jena-libs" % jenaVersion 
   val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion

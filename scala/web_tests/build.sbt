@@ -7,8 +7,9 @@ name := "web_tests"
 lazy val web_tests = (project in file("."))
 	.enablePlugins(GatlingPlugin)
 
-// scalaVersion in ThisBuild := "2.11.12"
-// crossScalaVersions := Seq("2.11.12", "2.12.4")
+// 
+scalaVersion := "2.11.12"
+// crossScalaVersions := Seq("2.11.12", "2.12.6")
 
 // fork a new JVM for 'test:run', but not 'run'
 // fork in Test := true

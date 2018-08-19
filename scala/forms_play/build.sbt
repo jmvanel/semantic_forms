@@ -16,9 +16,10 @@ baseDirectory in run := file(".") // does not work: the TDB files are in parent 
 connectInput in run := true
 
 routesGenerator := StaticRoutesGenerator
+libraryDependencies += guice
 
 libraryDependencies += filters
-libraryDependencies += "org.scalatestplus" %% "play" % "1.4.0" % Test
+libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0-M1" % "test"
 
 // fork a new JVM for 'test:run' and 'run'
 // fork in run := true

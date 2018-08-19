@@ -33,6 +33,8 @@ object Common {
   // allready in Banana
   // val httpComponents = "org.apache.httpcomponents" % "httpclient" % "4.5.2"
 
+  val any23Dependencies = "org.apache.any23" % "apache-any23-csvutils" % "2.2"
+
   val commonDependencies =
     loggingDependencies ++
     Seq( bananaDependency,
@@ -61,9 +63,9 @@ object Common {
     "org.scala-lang.modules" %% "scala-async" % "0.9.7" ,
 
     "org.apache.commons" % "commons-csv" % "1.5" ,
-    "org.apache.any23" % "apache-any23-csvutils" %  "2.2" // "2.1"
+    any23Dependencies
     // for Java 9 (works also with Java 8)
- , "javax.xml.bind" % "jaxb-api" % "2.3.0"
+    , "javax.xml.bind" % "jaxb-api" % "2.3.0"
   )
 
 }

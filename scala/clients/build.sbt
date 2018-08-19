@@ -7,7 +7,7 @@ name := "clients"
 libraryDependencies ++= Seq(
   bananaDependency0,
   jenaDependency
-)
+) ++ loggingDependencies
 // libraryDependencies += httpComponents // allready in Banana
 
 publishArtifact in (Compile, packageDoc) := false
