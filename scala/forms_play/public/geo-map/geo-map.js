@@ -172,7 +172,14 @@ class Map{
         pinText = ''
       this.pins[key] = L.marker([latitude,longitude],
           {draggable:'true'} )
-          .bindPopup(pinText)
+          .bindPopup(pinText, {autoClose:false} )
+
+      var popupLocation = new L.LatLng( latitude,longitude );
+      var popup = L.popup();
+      popup.setLatLng(popupLocation);
+      popup.setContent(pinText);
+      this.OSM.addLayer(popup)
+
       this.pinShow(key)
     }
 
