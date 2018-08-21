@@ -51,11 +51,9 @@ make_shared_file  /tmp/MainXml.scala
 echo  which $SBT ; which $SBT
 cd $SRC/..
 make_shared_dir $HOME/.ivy2
+
 echo Launching $SBT -J-Xmx2G 'project forms_play' 'dist'
-$SBT -J-Xmx2G << EOF
-  project forms_play
-  dist
-EOF
+$SBT -J-Xmx2G 'project forms_play' dist
 SBT_RETURN_CODE=$?
 echo $SBT RETURN CODE: $SBT_RETURN_CODE
 make_shared_dir $HOME/.ivy2
@@ -64,6 +62,7 @@ then echo "Trouble in SBT!" ; exit
 else
 cp /tmp/MainXml.orig.scala $MainXml
 echo "sofware recompiled!"
+
 for f in */target
 do
   make_shared_dir $f
