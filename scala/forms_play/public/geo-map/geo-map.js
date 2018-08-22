@@ -144,6 +144,21 @@ class Map{
 
             }
         }
+
+        // display user location
+        var map = this.OSM
+        function onLocationFound(e) {
+          var radius = e.accuracy / 2;
+          L.marker(e.latlng).addTo(map)
+            .bindPopup("" + radius + " meters").openPopup();
+          L.circle(e.latlng, {
+            radius: radius,
+            // color: 'blue', 
+            opacity: 0.85}).addTo(map);
+        }
+        map.on('locationfound', onLocationFound);
+        // map.locate({setView: true, watch: true, maxZoom: 8});
+        map.locate({watch: true, maxZoom: 8});
     }
 
     pinShow(key){
