@@ -178,6 +178,12 @@ class Map{
       if( key.length > 0 ) {
         // TODO should be usable not embedded inside semantic_forms
         pinText = '<a href="/display?displayuri=' + encodeURIComponent(key) + '" target="_blank">' + text + '</a>'
+
+        // For a HTTPS page,try to obtain HTTPS images
+        if ( image != undefined && window.location.protocol == "https:" )
+          image = image.toString().replace("http://", "https://")
+        if ( image != undefined ) { console.log('image') ; console.log(image) }
+
         if( image != null && image != '')
           pinText = pinText +
           '<a class="image-popup-vertical-fit" href="'+image+'">' +
