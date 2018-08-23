@@ -93,7 +93,9 @@ class Map{
 
         this.pins = []
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            maxZoom: 30,
+            maxNativeZoom: 18
         }).addTo(this.OSM )
         this.keyLat = keyLat
         this.keyLong = keyLong
@@ -158,7 +160,9 @@ class Map{
         }
         map.on('locationfound', onLocationFound);
         // map.locate({setView: true, watch: true, maxZoom: 8});
-        map.locate({watch: true, maxZoom: 8});
+        map.locate({watch: true, setView: false
+          // maxZoom: 8
+        });
     }
 
     pinShow(key){
