@@ -156,10 +156,10 @@ trait ToolsPage extends EnterButtons
                toolname: String,
                imgWidth: Int): NodeSeq = {
 
-    val sparqlServicePrefix = URLEncoder.encode( URLEncoder.encode("sparql?query=", "UTF-8"), "UTF-8")
+    val sparqlServicePrefix = URLEncoder.encode("sparql?query=", "UTF-8")
     val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
     println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
-    val servicesURIPrefixEncoded = URLEncoder.encode( URLEncoder.encode(servicesURIPrefix, "UTF-8"), "UTF-8")
+    val servicesURIPrefixEncoded = URLEncoder.encode(servicesURIPrefix, "UTF-8")
     val servicesURL = s"$toolURLprefix$servicesURIPrefixEncoded$sparqlServicePrefix"
     println(s">>>> servicesURL $servicesURL")
 
@@ -182,8 +182,7 @@ trait ToolsPage extends EnterButtons
     console.log( 'query in textarea ' + query);
     console.log( 'services URL $servicesURL' );
     var url = '$servicesURL' +
-      window.encodeURIComponent( window.encodeURIComponent(query)) +
-      '%0D%0Aurldecode';
+      window.encodeURIComponent( window.encodeURIComponent(query));
     console.log( 'URL ' + url );
     if($isDNS)
       window.open( url , '_blank' );
