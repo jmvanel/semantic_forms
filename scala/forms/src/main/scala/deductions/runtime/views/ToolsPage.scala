@@ -116,7 +116,13 @@ trait ToolsPage extends EnterButtons
              title="NOT YET IMPLEMENTED"
              disabled="disabled"
              value={ I18NMessages.get("Tree", request.getLanguage() ) }/>,
-      makeLink(textareaId, "/assets/rdfviewer/rdfviewer.html?url="))
+      makeLinkGraphTool(textareaId,
+          "/assets/rdfviewer/rdfviewer.html?url=",
+          "RDF_Viewer", 15),
+      makeLinkGraphTool(textareaId, "http://spoggy.herokuapp.com?" +
+          "sparql=" + URLEncoder.encode(servicesURIPrefix, "UTF-8") +
+          "&url=", "Spoggy", 15)
+      )
 
     <form role="form">
       <textarea name="query" id={textareaId} style="min-width:80em; min-height:8em" title="To get started, uncomment one of these lines.">{
@@ -142,21 +148,22 @@ trait ToolsPage extends EnterButtons
     </form>
   }
 
-  /** NOTE: for RDF Viewer this cannot work in localhost (because of rdfviewer limitations);
+  /** make Link to Graph (diagram) Tool
+   *  NOTE: for RDF Viewer this cannot work in localhost (because of rdfviewer limitations);
    *  works only on a hosted Internet server.
    *  TODO merge with function makeLinkCarto */
-  private def makeLink(textareaId: String, toolURLprefix: String,
-               toolname: String = "RDF Viewer",
-               imgWidth: Int = 15): NodeSeq = {
+  private def makeLinkGraphTool(textareaId: String, toolURLprefix: String,
+               toolname: String,
+               imgWidth: Int): NodeSeq = {
 
     val sparqlServicePrefix = URLEncoder.encode( URLEncoder.encode("sparql?query=", "UTF-8"), "UTF-8")
-    val buttonId = textareaId+"-button-1"
     val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
     println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
     val servicesURIPrefixEncoded = URLEncoder.encode( URLEncoder.encode(servicesURIPrefix, "UTF-8"), "UTF-8")
     val servicesURL = s"$toolURLprefix$servicesURIPrefixEncoded$sparqlServicePrefix"
     println(s">>>> servicesURL $servicesURL")
 
+    val buttonId = textareaId+"-button-" + toolname
     <button id={buttonId}
     class="btn btn-default" title={ s"Draw RDF graph diagram with $toolname" } target="_blank">
       <img width={ imgWidth.toString() } border="0" src="https://www.w3.org/RDF/icons/rdf_flyer.svg"
@@ -192,7 +199,7 @@ trait ToolsPage extends EnterButtons
     </script>
   }
 
-  /** make Link for (geographic) Cartography */
+    /** make Link for (geographic) Cartography */
   private def makeLinkCarto(textareaId: String, toolURLprefix: String,
       request: HTTPrequest): NodeSeq = {
 
@@ -243,7 +250,7 @@ trait ToolsPage extends EnterButtons
   }
    
   private lazy val sparqlServicesURL = {
-		val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
+    val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
     println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
     val sparqlServicePrefix = "sparql?query="
     val dataServicesURL = s"$servicesURIPrefix$sparqlServicePrefix"
