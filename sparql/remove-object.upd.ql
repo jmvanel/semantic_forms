@@ -5,14 +5,20 @@
 
 DELETE {
   GRAPH ?G {
-    ?S ?P ?O .
+    ?S ?P ?DEL .
+  }
+  GRAPH ?GR {
+    ?DEL ?P1 ?O1 .
   }
 }
 
 WHERE {
-  BIND ( <file:///home/jmv/deploy/naturalistes/post-07-512.png> AS ?O )
+  BIND ( <file:///home/jmv/deploy/naturalistes/post-07-512.png> AS ?DEL )
 
   GRAPH ?G {
-    ?S ?P ?O .
+    ?S ?P ?DEL .
+  }
+  GRAPH ?GR {
+    ?DEL ?P1 ?O1 .
   }
 }

@@ -1,0 +1,32 @@
+# replace <urn:taxref/row/nnn> ?ptaxon ?otaxon by
+#         <http://taxref.mnhn.fr/lod/taxon/?INPNnum/11.0> ?ptaxon ?otaxon
+# NOTE : <urn:taxref/row/nnn> have some info that taxref.mnhn.fr does not have
+
+PREFIX nature: <http://deductions.github.io/nature_observation.owl.ttl#>
+
+DELETE {
+  GRAPH ?taxonGRAPH {
+    ?taxon ?ptaxon ?otaxon .
+  }
+  GRAPH ?obsGRAPH {
+    ?obs nature:taxon ?taxon .
+  }
+}
+INSERT {
+  GRAPH ?MNHN_TAXON {
+    ?MNHN_TAXON ?ptaxon ?otaxon .
+  }
+  GRAPH ?obsGRAPH {
+    ?obs nature:taxon ?MNHN_TAXON .
+  }
+}
+WHERE {
+  GRAPH ?obsGRAPH {
+    ?obs nature:taxon ?taxon .
+  }
+  GRAPH ?taxonGRAPH {
+    ?taxon <http://rs.tdwg.org/dwc/terms/INPN-num> ?INPNnum .
+    ?taxon ?ptaxon ?otaxon .
+    BIND ( CONCAT( '<http://taxref.mnhn.fr/lod/taxon/', ?INPNnum, '/11.0' ) AS ?MNHN_TAXON )
+  }
+}

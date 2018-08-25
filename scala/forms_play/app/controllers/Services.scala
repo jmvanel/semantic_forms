@@ -172,6 +172,7 @@ with RDFContentNegociation {
         Ok(responseBody)
           .as(contentType)
           .withHeaders("ETag" -> s""""${DigestUtils.md5Hex(responseBody)}"""" )
+          .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
           // TODO rather use timestamp on TDB2
 
           .withHeaders(defaultLDPheaders : _* )
