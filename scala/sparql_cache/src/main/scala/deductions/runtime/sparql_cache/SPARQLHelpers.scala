@@ -669,6 +669,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
                       "value" -> fromBNode(bn)),
                     lit => {
                       val litTuple = fromLiteral(lit)
+                      if(litTuple._1 != "" )
                       Json.obj(
                         "type" -> "literal",
                         "value" -> litTuple._1,
@@ -679,6 +680,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
                           case None => ""
                         }}
                         )
+                        else Json.obj()
                     })
               }
               val v = header.zip(listOfJSONobjects).map {
