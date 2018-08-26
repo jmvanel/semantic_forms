@@ -231,7 +231,10 @@ trait SparqlServices extends ApplicationTrait
           val lang = chooseLanguage(request) // for logging
           val res = wrapInTransaction( sparqlUpdateQuery(update2) ) .flatten
           res match {
-            case Success(s) => Ok(s"$res")
+            case Success(s) =>
+              Ok(s"$res")
+                .withHeaders("Access-Control-Allow-Origin" -> "*") // for Spoggy, TODO something more secure!
+
             case Failure(f) =>
               logger.error(res.toString())
               BadRequest(f.toString())
