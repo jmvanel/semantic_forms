@@ -45,7 +45,7 @@ trait BasicWidgets
     </a>
   }
 
-  def makeBackLinkButton(uri: String, title: String = ""): Elem = {
+  def makeBackLinkButton(uri: String, title: String = ""): NodeSeq = {
     val tit = if (title === "") s" Reverse links for &lt;$uri&gt;" else title
     return <a class="btn btn-default btn-xs"
       href={ "/backlinks?q=" + URLEncoder.encode(uri,"UTF-8") }

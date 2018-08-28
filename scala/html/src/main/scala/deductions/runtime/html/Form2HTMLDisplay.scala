@@ -10,6 +10,7 @@ import deductions.runtime.core.HTMLutils
 
 import scalaz._
 import Scalaz._
+import scala.xml.Text
 
 /** generate HTML from abstract Form for Display (Read only) */
 trait Form2HTMLDisplay[NODE, URI <: NODE]
@@ -62,6 +63,7 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       displayThumbnail(resourceEntry) ++
       backLinkButton(resourceEntry) ++
       makeUserInfoOnTriples(resourceEntry, request.getLanguage()) ++
+      // TODO harmonize with expertLinks() below
       showHideHTMLOnClick(
           normalNavigationButton(resourceEntry) ++
             makeDrawGraphLink(objectURIstringValue) ++
@@ -79,7 +81,16 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
       <span class="sf-statistics">{widgets}</span>
   }
 
-  /** TODO duplication with preceding function */
+  /** expert Links for page header (triples' subject) */
+  def expertLinks(uri: String): NodeSeq =
+    (if (showExpertButtons) {
+      makeBackLinkButton(uri) ++
+        Seq(new Text("  ")) ++
+        makeDrawGraphLink(uri) ++
+        makeNeighborhoodLink(uri)
+    } else NodeSeq.Empty )
+
+    /** TODO duplication with preceding function */
   def createHTMLResourceReadonlyFieldBriefly(
     resourceEntry: formMod#ResourceEntry,
     request:       HTTPrequest           = HTTPrequest()): NodeSeq = {
@@ -239,4 +250,5 @@ Array.from(document.getElementsByClassName('sf-data-not-fitting-user-language'))
         case l => isLanguageDataFittingRequest(l, request)
       })
   }
+
 }

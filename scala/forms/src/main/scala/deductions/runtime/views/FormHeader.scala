@@ -39,19 +39,20 @@ trait FormHeader[Rdf <: RDF, DATASET]
       else
         hyperlinkForEditingURI(uri, lang)
 
-    val expertLinks = (if (showExpertButtons) {
-      Seq(makeBackLinkButton(uri),
-        new Text("  "),
-        makeDrawGraphLink(uri),
-        makeNeighborhoodLink(uri))
-    } else new Text(""))
-    
+//    val expertLinks: NodeSeq = expertLinks(uri)
+//      (if (showExpertButtons) {
+//      makeBackLinkButton(uri) ++
+//        NodeSeq.Empty ++
+//        makeDrawGraphLink(uri) ++
+//        makeNeighborhoodLink(uri)
+//    } else NodeSeq.Empty )
+
     val expertLinksOWL = (if (showExpertButtons && isOWLURI(uri) ) {
       new Text("  ") ++
       makeDrawGraphLinkVOWL(uri) ++
       new Text("  ") ++
       makeOOPSlink(uri)
-    } else new Text(""))
+    } else NodeSeq.Empty )
 
     def downloadLink(syntax: String = "Turtle"): NodeSeq = {
       // col-xs-12
@@ -74,7 +75,7 @@ trait FormHeader[Rdf <: RDF, DATASET]
             }
             <strong>
               { linkToShow }
-              { expertLinks }
+              { expertLinks(uri) }
               { expertLinksOWL }
             </strong>
             { if (formSyntax.thumbnail.isDefined) {
