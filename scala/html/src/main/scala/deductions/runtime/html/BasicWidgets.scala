@@ -12,12 +12,14 @@ import deductions.runtime.core.HTTPrequest
 
 import scalaz._
 import Scalaz._
+import deductions.runtime.utils.URIManagement
 
 /** Basic Widgets with no access to the FormSyntax:
  *  GUI integration: RDFviewer, VOWL, ... */
 trait BasicWidgets
   extends RDFPrefixesInterface
-  with URIHelpers {
+  with URIHelpers
+  with URIManagement {
 
     val config: Configuration
     import config._
@@ -55,6 +57,7 @@ trait BasicWidgets
     </a>
   }
 
+  /** make Link for Drawing Graph; default values are for RDF Viewer */
   def makeDrawGraphLink( uri: String,
       toolURLprefix: String="/assets/rdfviewer/rdfviewer.html?url=",
       toolname: String="RDF Viewer",
@@ -78,6 +81,14 @@ trait BasicWidgets
            alt="RDF Resource Description Framework Flyer Icon"/>
     </a>
     else NodeSeq.Empty
+  }
+
+  def makeDrawGraphLinkSpoggy( uri: String): NodeSeq = {
+    makeDrawGraphLink( uri,
+        "http://spoggy.herokuapp.com?" +
+          "sparql=" + URLEncoder.encode(servicesURIPrefix, "UTF-8") +
+          "&url=",
+          "Spoggy")
   }
 
   def makeNeighborhoodLink( uri: String,

@@ -70,14 +70,14 @@ with FormModule[NODE, URI]
       showHideHTMLOnClick(
           normalNavigationButton(resourceEntry) ++
             makeDrawGraphLink(objectURIstringValue) ++
-            creationButton(
-              objectURIstringValue,
+            makeDrawGraphLinkSpoggy(objectURIstringValue) ++
+            creationButton(objectURIstringValue,
               type_.map { t => t.toString() },
               request.getLanguage()) ++
             makeClassTableButton(resourceEntry) ++
             makeNeighborhoodLink(objectURIstringValue) ++
             hyperlinkForEditingURIinsideForm(objectURIstringValue, request.getLanguage()),
-          resourceEntry.value.toString(),
+              resourceEntry.value.toString(),
           <button title={s"""Show "expert" buttons: navigate, edit, graph, for value <${resourceEntry.value}>"""}
               style="height: 20px"
           >...</button>)
@@ -107,6 +107,7 @@ with FormModule[NODE, URI]
         normalNavigationButton(resourceEntry) ++
         Seq(new Text("  ")) ++
         makeDrawGraphLink(uri) ++
+        makeDrawGraphLinkSpoggy(uri) ++
         makeClassTableButton(resourceEntry) ++
         makeNeighborhoodLink(uri)
     } else NodeSeq.Empty )
