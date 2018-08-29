@@ -116,7 +116,11 @@ trait FormModule[NODE, URI <: NODE] {
   case class Triple(val s: NODE, val p: URI, val o: NODE)
 
   val nullURI: URI
+
+
   def makeURI(n: NODE): URI = nullURI
+  def stringToAbstractURI(uri: String): URI
+  def toPlainString(n: NODE): String
 
   val NullResourceEntry = new ResourceEntry("", "", nullURI, ResourceValidator(Set()))
 

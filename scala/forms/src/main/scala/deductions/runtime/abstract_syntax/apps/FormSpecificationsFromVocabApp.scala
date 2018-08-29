@@ -9,6 +9,7 @@ import deductions.runtime.utils.DefaultConfiguration
 import scala.util.Try
 import scalaz._
 import Scalaz._
+import deductions.runtime.utils.FormModuleBanana
 
 /**
   * Created by LaFaucheuse on 07/07/2017.
@@ -16,7 +17,8 @@ import Scalaz._
 object FormSpecificationsFromVocabApp extends RDFStoreLocalJena1Provider
   with App
   with FormSpecificationsFromVocab
-    [ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+    [ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+  with FormModuleBanana[ImplementationSettings.Rdf] {
 
   val config = new DefaultConfiguration {
     override val useTextQuery = false

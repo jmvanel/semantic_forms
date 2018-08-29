@@ -16,14 +16,13 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     extends BasicWidgets
     with CSSClasses
     with RDFPrefixesInterface
-    with URIManagement {
+    with URIManagement
+    with FormModule[NODE, URI] {
 
   val config: Configuration
   import config._
 
 
-  def toPlainString(n: NODE): String = n.toString()
-  
   type formMod = FormModule[NODE, URI]
   type FormEntry = formMod#Entry
 

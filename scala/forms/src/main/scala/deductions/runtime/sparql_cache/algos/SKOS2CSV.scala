@@ -9,6 +9,7 @@ import deductions.runtime.utils.{Configuration, DefaultConfiguration, RDFHelpers
 import org.w3.banana.{OWLPrefix, Prefix, RDF, RDFOps, RDFPrefix}
 
 import scala.collection.immutable.ListMap
+import deductions.runtime.utils.FormModuleBanana
 
 /** output given SKOS file as CSV */
 object SKOS2CSVApp extends  {
@@ -19,7 +20,8 @@ object SKOS2CSVApp extends  {
 with RDFStoreLocalJena1Provider
 with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 with DefaultConfiguration 
-with SKOS2CSV[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+with SKOS2CSV[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+with FormModuleBanana[ImplementationSettings.Rdf] {
 
   val addEmptyLineBetweenLabelGroups = false
   override lazy val owl = OWLPrefix[Rdf]

@@ -3,6 +3,8 @@ package controllers
 import deductions.runtime.services.html.Form2HTMLObject
 import deductions.runtime.utils.DefaultConfiguration
 import play.api.Play
+import deductions.runtime.utils.FormModuleBanana
+import deductions.runtime.jena.ImplementationSettings
 
 /** object Application in another file to facilitate redefinition */
 object Application extends {
@@ -28,7 +30,8 @@ object Application extends {
   }
 } with Services
   with WebPages
-  with SparqlServices {
+  with SparqlServices
+  with FormModuleBanana[ImplementationSettings.Rdf] {
   override lazy val htmlGenerator =
     Form2HTMLObject.makeDefaultForm2HTML(config)(ops)
 }

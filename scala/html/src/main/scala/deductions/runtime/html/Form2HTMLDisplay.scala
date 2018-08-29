@@ -11,11 +11,14 @@ import deductions.runtime.core.HTMLutils
 import scalaz._
 import Scalaz._
 import scala.xml.Text
+import deductions.runtime.core.FormModule
 
 /** generate HTML from abstract Form for Display (Read only) */
 trait Form2HTMLDisplay[NODE, URI <: NODE]
   extends Form2HTMLBase[NODE, URI]
-  with RDFPrefixesInterface
+//  with RDFPrefixesInterface
+with FormModule[NODE, URI]
+
   with HTMLutils {
 
   import config._
@@ -71,26 +74,45 @@ trait Form2HTMLDisplay[NODE, URI <: NODE]
               objectURIstringValue,
               type_.map { t => t.toString() },
               request.getLanguage()) ++
-              makeClassTableButton(resourceEntry) ++
-              hyperlinkForEditingURIinsideForm(objectURIstringValue, request.getLanguage()),
-              resourceEntry.value.toString(),
-              <button title={s"""Show "expert" buttons: navigate, edit, graph, for value <${resourceEntry.value}>"""}
+            makeClassTableButton(resourceEntry) ++
+            makeNeighborhoodLink(objectURIstringValue) ++
+            hyperlinkForEditingURIinsideForm(objectURIstringValue, request.getLanguage()),
+          resourceEntry.value.toString(),
+          <button title={s"""Show "expert" buttons: navigate, edit, graph, for value <${resourceEntry.value}>"""}
               style="height: 20px"
-              >...</button>)
+          >...</button>)
 
       <span class="sf-statistics">{widgets}</span>
   }
 
   /** expert Links for page header (triples' subject) */
-  def expertLinks(uri: String): NodeSeq =
+  def expertLinks(uri: String
+      // request: HTTPrequest
+      ): NodeSeq = {
+    val resourceEntry = ResourceEntry(value=stringToAbstractURI(uri))
+    expertLinks(resourceEntry)
+  }
+
+  /** expert Links for page header (triples' subject)
+   * TODO harmonize with showHideHTMLOnClick above
+   *  */
+  def expertLinks(
+      resourceEntry: formMod#ResourceEntry
+      // request: HTTPrequest
+      ): NodeSeq = {
+    import resourceEntry._
+    val uri = value.toString()
     (if (showExpertButtons) {
       makeBackLinkButton(uri) ++
+        normalNavigationButton(resourceEntry) ++
         Seq(new Text("  ")) ++
         makeDrawGraphLink(uri) ++
+        makeClassTableButton(resourceEntry) ++
         makeNeighborhoodLink(uri)
     } else NodeSeq.Empty )
+  }
 
-    /** TODO duplication with preceding function */
+  /** TODO duplication with preceding function */
   def createHTMLResourceReadonlyFieldBriefly(
     resourceEntry: formMod#ResourceEntry,
     request:       HTTPrequest           = HTTPrequest()): NodeSeq = {

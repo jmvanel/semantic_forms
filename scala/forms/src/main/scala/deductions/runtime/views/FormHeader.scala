@@ -32,20 +32,13 @@ trait FormHeader[Rdf <: RDF, DATASET]
       editable: Boolean = false)(implicit graph: Rdf#Graph): NodeSeq = {
     val uri = nodeToString(formSyntax.subject)
     implicit val _ = lang
-    // show the button to change the current editable state
-    val linkToShow =
+
+    // button to change the current editable state
+    val editOrUnEditButton =
       if (editable)
         hyperlinkForDisplayingURI(uri, lang)
       else
         hyperlinkForEditingURI(uri, lang)
-
-//    val expertLinks: NodeSeq = expertLinks(uri)
-//      (if (showExpertButtons) {
-//      makeBackLinkButton(uri) ++
-//        NodeSeq.Empty ++
-//        makeDrawGraphLink(uri) ++
-//        makeNeighborhoodLink(uri)
-//    } else NodeSeq.Empty )
 
     val expertLinksOWL = (if (showExpertButtons && isOWLURI(uri) ) {
       new Text("  ") ++
@@ -67,6 +60,7 @@ trait FormHeader[Rdf <: RDF, DATASET]
         -
       </span>
     }
+
     <div class="row">
         <div class="col-xs-12">
           <h3 id="subject">
@@ -74,7 +68,7 @@ trait FormHeader[Rdf <: RDF, DATASET]
               formSyntax.title
             }
             <strong>
-              { linkToShow }
+              { editOrUnEditButton }
               { expertLinks(uri) }
               { expertLinksOWL }
             </strong>

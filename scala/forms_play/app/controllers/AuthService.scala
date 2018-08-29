@@ -27,6 +27,7 @@ import play.api.mvc.Security
 
 import scalaz._
 import Scalaz._
+import deductions.runtime.utils.FormModuleBanana
 
 object AuthService extends AuthServiceTrait {
   override implicit val config: Configuration = new DefaultConfiguration {
@@ -42,7 +43,9 @@ object AuthService extends AuthServiceTrait {
 trait AuthServiceTrait
 extends ImplementationSettings.RDFModule
 with ImplementationSettings.RDFCache // RDFStoreLocalJena1Provider
-with AuthServiceTrait2[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+with AuthServiceTrait2[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+with FormModuleBanana[ImplementationSettings.Rdf] {
+
   logger.info(s"object Auth")
   /** NOTE otherwise we get "Lock obtain timed out", because
    *  LUCENE transactions would overlap with main database TDB/ */

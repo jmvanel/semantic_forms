@@ -8,7 +8,9 @@ import org.w3.banana.RDF
 
 import scala.xml.NodeSeq
 import deductions.runtime.abstract_syntax.ThumbnailInference
+import deductions.runtime.utils.FormModuleBanana
 
+/** Results Display, typically SPARQL SELECT */
 trait ResultsDisplay[Rdf <: RDF, DATASET]
 extends ThumbnailInference[Rdf, DATASET] {
 
@@ -173,7 +175,10 @@ extends ThumbnailInference[Rdf, DATASET] {
       property: Rdf#URI,
       type_ : Rdf#Node
       ) = {
-    val fmod = new FormModule[Rdf#Node,  Rdf#URI ]{
+    val ops1 = ops
+    val fmod = new FormModule[Rdf#Node,  Rdf#URI ]
+                   with FormModuleBanana[Rdf] {
+      val ops = ops1
         val nullURI= ops.URI("")
       }
       val types = getClasses(uri)(allNamedGraph)

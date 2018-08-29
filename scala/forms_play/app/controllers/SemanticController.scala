@@ -10,6 +10,7 @@ import deductions.runtime.mobion.GeoController
 import deductions.runtime.mobion.PerVehicleView
 import deductions.apps.ContactsFrontPage
 import deductions.apps.ContactsDashboard
+import deductions.runtime.utils.FormModuleBanana
 
 /** RDF based HTTP Controller/router;
  *  this allows to create new pages or services ("plugins")
@@ -22,7 +23,8 @@ object SemanticController extends Controller
     with ImplementationSettings.RDFCache
     with CentralSemanticController[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with LanguageManagement
-    with RegisterPage[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+    with RegisterPage[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with FormModuleBanana[ImplementationSettings.Rdf] {
 
   import ops._
 
@@ -36,10 +38,11 @@ object SemanticController extends Controller
   /** add/remove plugin pages */
   val actions: Seq[deductions.runtime.core.SemanticController] =
     Seq(
-      new DependenciesNoTextQuery with GeoController[Rdf, DATASET] {},
-      new DependenciesNoTextQuery with PerVehicleView[Rdf, DATASET] {},
-      new DependenciesNoTextQuery with ContactsFrontPage[Rdf, DATASET] {},
-      new DependenciesNoTextQuery with ContactsDashboard[Rdf, DATASET] {}
+      new DependenciesNoTextQuery with GeoController[Rdf, DATASET] with FormModuleBanana[Rdf] {},
+      new DependenciesNoTextQuery with PerVehicleView[Rdf, DATASET] with FormModuleBanana[Rdf] {},
+      new DependenciesNoTextQuery with ContactsFrontPage[Rdf, DATASET] with FormModuleBanana[Rdf]  {},
+      new DependenciesNoTextQuery with ContactsDashboard[Rdf, DATASET]
+        with FormModuleBanana[Rdf] {}
       )
   //////////////////////////////////////////////////////////////
 
