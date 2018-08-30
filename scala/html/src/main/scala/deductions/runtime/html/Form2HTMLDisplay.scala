@@ -71,6 +71,7 @@ with FormModule[NODE, URI]
           normalNavigationButton(resourceEntry) ++
             makeDrawGraphLink(objectURIstringValue) ++
             makeDrawGraphLinkSpoggy(objectURIstringValue) ++
+            makeDrawGraphLinkLodLive(objectURIstringValue) ++
             creationButton(objectURIstringValue,
               type_.map { t => t.toString() },
               request.getLanguage()) ++
@@ -106,6 +107,7 @@ with FormModule[NODE, URI]
         normalNavigationButton(resourceEntry) ++
         makeDrawGraphLink(uri) ++
         makeDrawGraphLinkSpoggy(uri) ++
+        makeDrawGraphLinkLodLive(uri) ++
         makeClassTableButton(resourceEntry) ++
         makeNeighborhoodLink(uri),
       uri)

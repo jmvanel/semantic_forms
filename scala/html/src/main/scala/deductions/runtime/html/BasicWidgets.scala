@@ -91,6 +91,12 @@ trait BasicWidgets
           "Spoggy")
   }
 
+  def makeDrawGraphLinkLodLive( uri: String): NodeSeq = {
+    makeDrawGraphLink( uri,
+        "http://en.lodlive.it/?",
+          "LodLive")
+  }
+
   def makeNeighborhoodLink( uri: String,
       toolURLprefix: String = "/history?uri=",
       toolname: String =
