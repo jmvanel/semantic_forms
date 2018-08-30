@@ -8,6 +8,7 @@ import scala.xml.Attribute
 
 trait HTMLutils {
 
+  /** show or Hide given HTML fragment On Clicking on given button */
   def showHideHTMLOnClick(html: NodeSeq,
         resourceId: String,
         buttonToggle: Elem = <button>...</button>
@@ -22,5 +23,15 @@ trait HTMLutils {
       // NOTE script to show/Hide HTML On click is hooked in head.html
       html
     }</span>
+  }
+
+/** Same as #showHideHTMLOnClick, but button is generated for Expert Buttons */
+  def showHideExpertButtonsOnClick(html: NodeSeq,
+      resourceId: String) = {
+    showHideHTMLOnClick(html, resourceId,
+          <button title={
+      s"""Show "expert" buttons: navigate, edit, graph, for value <${resourceId}>"""}
+              style="height: 20px"
+          >...</button>)
   }
 }

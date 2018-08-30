@@ -67,7 +67,7 @@ with FormModule[NODE, URI]
       backLinkButton(resourceEntry) ++
       makeUserInfoOnTriples(resourceEntry, request.getLanguage()) ++
       // TODO harmonize with expertLinks() below
-      showHideHTMLOnClick(
+      showHideExpertButtonsOnClick(
           normalNavigationButton(resourceEntry) ++
             makeDrawGraphLink(objectURIstringValue) ++
             makeDrawGraphLinkSpoggy(objectURIstringValue) ++
@@ -77,10 +77,8 @@ with FormModule[NODE, URI]
             makeClassTableButton(resourceEntry) ++
             makeNeighborhoodLink(objectURIstringValue) ++
             hyperlinkForEditingURIinsideForm(objectURIstringValue, request.getLanguage()),
-              resourceEntry.value.toString(),
-          <button title={s"""Show "expert" buttons: navigate, edit, graph, for value <${resourceEntry.value}>"""}
-              style="height: 20px"
-          >...</button>)
+          resourceEntry.value.toString()
+      )
 
       <span class="sf-statistics">{widgets}</span>
   }
@@ -103,13 +101,14 @@ with FormModule[NODE, URI]
     import resourceEntry._
     val uri = value.toString()
     (if (showExpertButtons) {
+      showHideExpertButtonsOnClick(
       makeBackLinkButton(uri) ++
         normalNavigationButton(resourceEntry) ++
-        Seq(new Text("  ")) ++
         makeDrawGraphLink(uri) ++
         makeDrawGraphLinkSpoggy(uri) ++
         makeClassTableButton(resourceEntry) ++
-        makeNeighborhoodLink(uri)
+        makeNeighborhoodLink(uri),
+      uri)
     } else NodeSeq.Empty )
   }
 
