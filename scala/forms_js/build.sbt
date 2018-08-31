@@ -13,11 +13,13 @@ publishArtifact in (Compile, packageDoc) := false
 sources in (Compile,doc) := Seq.empty
 
 libraryDependencies ++= Seq(
-  "org.scala-js" %%% "scalajs-dom" % "0.9.5" ,
+  // "org.scala-js" %%% "scalajs-dom" % "0.9.5" ,
+  "org.scala-js" %%% "scalajs-dom" % "0.9.6" ,
   "org.w3" %%  "banana-plantain" % "0.8.4-SNAPSHOT"
 )
 
-libraryDependencies += "be.doeraene" %%% "scalajs-jquery" % "0.9.3"
+// libraryDependencies += "be.doeraene" %%% "scalajs-jquery" % "0.9.3"
+libraryDependencies += "be.doeraene" %%% "scalajs-jquery" % "0.9.4"
 
 // resolvers += Resolver.jcenterRepo
 // libraryDependencies += "com.definitelyscala" %%% "scala-js-jqueryui" % "1.0.2"

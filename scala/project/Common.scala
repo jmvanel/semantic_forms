@@ -21,14 +21,15 @@ object Common {
   val junitDependency = "junit" % "junit" % "4.12" % Test
   val scalatestDependency = "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 
-  val log4jVersion = "2.11.0" // 2.9.1"
+  val log4jVersion = "2.11.1" // "2.11.0"
   val loggingDependencies = Seq(
     "org.apache.logging.log4j" % "log4j-api" % log4jVersion,
     "org.apache.logging.log4j" % "log4j-core" % log4jVersion,
     "org.apache.logging.log4j" % "log4j-slf4j-impl" % log4jVersion
   )
 
-  val scalazDependency = "org.scalaz" %% "scalaz-core" % "7.2.8"
+  // val scalazDependency = "org.scalaz" %% "scalaz-core" % "7.2.8"
+  val scalazDependency = "org.scalaz" %% "scalaz-core" % "7.2.26"
 
   // allready in Banana
   // val httpComponents = "org.apache.httpcomponents" % "httpclient" % "4.5.2"
@@ -43,11 +44,12 @@ object Common {
 
 	junitDependency, scalatestDependency,
 
-    "com.typesafe.play" %% "play-json" %  "2.6.9", // "2.5.18",
+    // "com.typesafe.play" %% "play-json" %  "2.6.9",
+    "com.typesafe.play" %% "play-json" %  "2.6.10",
     // "com.typesafe.play" %% "play-iteratees" % "2.6.1",
 
-    "org.apache.lucene" % "lucene-suggest" % "6.6.3", // 6.6.1", // "6.4.1"
-    "org.apache.lucene" % "lucene-demo" % "6.6.3", // 6.6.1", // "6.4.1"
+    "org.apache.lucene" % "lucene-suggest" % "6.6.5", // 6.6.3", // 6.6.1", // "6.4.1"
+    "org.apache.lucene" % "lucene-demo"    % "6.6.5", // "6.6.3", // 6.6.1", // "6.4.1"
 /*
     "org.apache.lucene" % "lucene-suggest" % "4.9.1" ,
     "org.apache.lucene" % "lucene-demo" % "4.9.1" ,
