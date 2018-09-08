@@ -72,6 +72,9 @@ case class HTTPrequest(
       "://" +
       this.host + relativeURIwithSlash // + this.appendFragment
 
+  def originalURL(): String = absoluteURL(path +
+      (if(rawQueryString != "") "?" + rawQueryString else ""))
+
   def adjustSecure(url:String): String =
     if (secure)
       url.replaceFirst("^http://", "https://")

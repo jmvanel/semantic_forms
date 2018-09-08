@@ -179,15 +179,11 @@ with RDFContentNegociation {
 //          .withHeaders("Link" -> """<http://www.w3.org/ns/ldp#BasicContainer>; rel="type", <http://www.w3.org/ns/ldp#Resource>; rel="type"""")
 //          .withHeaders("Allow" -> "OPTIONS,GET,POST,PUT,PATCH,HEAD")
 //          .withHeaders("Accept-Post" -> """"text/turtle, application/ld+json""")
+
       } else { //// Redirect to /display ////
-//    	  logger.debug(s">>>> ldp: Redirect $hrefDisplayPrefix http://${request.host}/ldp/$uri")
-        val ldpURL = "http://" + request.host + "/ldp/" + 
-//        URLEncoder.encode(
-            uri
-//            , "UTF-8")
-//    	  logger.debug(s">>>> ldp: Redirect $ldpURL")
+        val ldpURL = httpRequest.originalURL
+        logger.debug(s">>>> ldp: Redirect to /display?displayuri= $ldpURL")
         val call = Redirect("/display", Map("displayuri" -> Seq(ldpURL)))
-//        logger.debug(s">>>> ldp: call $call")
         call
       }
   }
