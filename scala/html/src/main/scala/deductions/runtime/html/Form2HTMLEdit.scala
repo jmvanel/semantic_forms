@@ -211,8 +211,8 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
 
     val (input, html5Type) = type0 match {
 
-      // TODO in FormSyntaxFactory match graph pattern for interval datatype ; see issue #17
       case typ if typ === ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
+        // TODO in FormSyntaxFactory match graph pattern for interval datatype ; see issue #17
         val html5Type = "radio"
         ( <div>{
         if (radioForIntervals)
@@ -278,7 +278,8 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
           ></input>
 
           val input: Elem =
-            if( lit.widgetType == ShortString)
+            if( lit.widgetType == ShortString ||
+                html5Type != "text" )
               inputElement
             else {
               val te : Elem = <textarea>{ toPlainString(value) }</textarea>
