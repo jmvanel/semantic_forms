@@ -124,7 +124,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
 
             wrapInTransaction({  // or wrapInReadTransaction ?
               Text("\n") ++
-              titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable2) ++
+              titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable2, request) ++
               <div class="col-xs-12">
                 <!--++ div wraps failure Or Statistics form header (form generation traceability) ++-->
                 { failureOrStatistics }</div> ++

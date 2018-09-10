@@ -13,6 +13,7 @@ import deductions.runtime.core.HTTPrequest
 import scalaz._
 import Scalaz._
 import deductions.runtime.utils.URIManagement
+import deductions.runtime.utils.I18NMessages
 
 /** Basic Widgets with no access to the FormSyntax:
  *  GUI integration: RDFviewer, VOWL, ... */
@@ -47,8 +48,11 @@ trait BasicWidgets
     </a>
   }
 
-  def makeBackLinkButton(uri: String, title: String = ""): NodeSeq = {
-    val tit = if (title === "") s" Reverse links for &lt;$uri&gt;" else title
+  def makeBackLinkButton(uri: String, title: String = "",
+                         request: HTTPrequest): NodeSeq = {
+    val tit = if (title === "")
+      I18NMessages.get("Reverse-links-reaching", request.getLanguage()) +
+        s"<$uri>;" else title
     return <a class="btn btn-default btn-xs"
       href={ "/backlinks?q=" + URLEncoder.encode(uri,"UTF-8") }
       title={ tit }

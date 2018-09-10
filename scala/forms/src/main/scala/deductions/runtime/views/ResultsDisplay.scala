@@ -9,6 +9,7 @@ import org.w3.banana.RDF
 import scala.xml.NodeSeq
 import deductions.runtime.abstract_syntax.ThumbnailInference
 import deductions.runtime.utils.FormModuleBanana
+import deductions.runtime.core.HTTPrequest
 
 /** Results Display, typically SPARQL SELECT */
 trait ResultsDisplay[Rdf <: RDF, DATASET]
@@ -89,6 +90,7 @@ extends ThumbnailInference[Rdf, DATASET] {
   def makeHyperlinkForURI( node: Rdf#Node, lang: String, graph: Rdf#Graph = allNamedGraph,
       hrefPrefix: String = config.hrefDisplayPrefix,
       label: String = "",
+      request: HTTPrequest = HTTPrequest(),
       sortAnd1rowPerElement:Boolean = false )
     : NodeSeq = {
     val displayLabel =
@@ -98,7 +100,7 @@ extends ThumbnailInference[Rdf, DATASET] {
           makeInstanceLabel(node, graph, lang)
      val `type` = getClassOrNullURI(node)(graph)
      displayNode(uriNodeToURI(node), hrefPrefix, displayLabel,
-         property = nullURI, type_ = `type` )
+         property = nullURI, type_ = `type` ) // TODO request<<<<<
   }
 
   def makeHyperlinkForURIBriefly(
@@ -131,7 +133,7 @@ extends ThumbnailInference[Rdf, DATASET] {
     			makeHyperlinkForURI( node, lang, graph,
     					hrefPrefix,
     					label,
-    					sortAnd1rowPerElement)
+    					sortAnd1rowPerElement=sortAnd1rowPerElement)
     		} . getOrElse(<div/>)
   }
 
@@ -156,7 +158,7 @@ extends ThumbnailInference[Rdf, DATASET] {
         else NodeSeq.Empty
 
       hyperlink ++
-      createHTMLResourceReadonlyField( resourceEntry, hrefPrefix)
+      createHTMLResourceReadonlyField( resourceEntry, hrefPrefix, HTTPrequest() )
     } else
       <span>null URI</span>
   }

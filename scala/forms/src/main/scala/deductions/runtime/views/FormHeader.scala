@@ -10,6 +10,7 @@ import org.w3.banana.{OWLPrefix, PointedGraph, RDF}
 
 import scala.xml.{NodeSeq, Text}
 import deductions.runtime.html.Form2HTMLDisplay
+import deductions.runtime.core.HTTPrequest
 
 /** generic application: links on top of the form: Edit, Display, Download Links
  *  TODO rename GenericApplicationHeader */
@@ -29,7 +30,9 @@ trait FormHeader[Rdf <: RDF, DATASET]
 
   /** title and links on top of the form: Edit, Display, Download Links */
   def titleEditDisplayDownloadLinksThumbnail(formSyntax: FormSyntax, lang: String,
-      editable: Boolean = false)(implicit graph: Rdf#Graph): NodeSeq = {
+      editable: Boolean = false,
+      request: HTTPrequest
+  )(implicit graph: Rdf#Graph): NodeSeq = {
     val uri = nodeToString(formSyntax.subject)
     implicit val _ = lang
 
@@ -69,7 +72,7 @@ trait FormHeader[Rdf <: RDF, DATASET]
             }
             <strong>
               { editOrUnEditButton }
-              { expertLinks(uri) }
+              { expertLinks(uri, request) }
               { expertLinksOWL }
             </strong>
             { if (formSyntax.thumbnail.isDefined) {

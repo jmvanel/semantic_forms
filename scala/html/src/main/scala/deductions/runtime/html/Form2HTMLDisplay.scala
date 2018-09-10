@@ -12,6 +12,7 @@ import scalaz._
 import Scalaz._
 import scala.xml.Text
 import deductions.runtime.core.FormModule
+import deductions.runtime.utils.I18NMessages
 
 /** generate HTML from abstract Form for Display (Read only) */
 trait Form2HTMLDisplay[NODE, URI <: NODE]
@@ -47,7 +48,7 @@ with FormModule[NODE, URI]
                                        resourceEntry: formMod#ResourceEntry,
                                        // TODO remove arg:
                                        hrefPrefixxxxx: String = hrefDisplayPrefix,
-                                       request: HTTPrequest = HTTPrequest()
+                                       request: HTTPrequest
                                      ): NodeSeq = {
 
     import resourceEntry._
@@ -64,7 +65,7 @@ with FormModule[NODE, URI]
           typ, // TODO pass type_
           resourceEntry) ++
       displayThumbnail(resourceEntry) ++
-      backLinkButton(resourceEntry) ++
+      backLinkButton(resourceEntry, request) ++
       makeUserInfoOnTriples(resourceEntry, request.getLanguage()) ++
       // TODO harmonize with expertLinks() below
       showHideExpertButtonsOnClick(
@@ -85,25 +86,23 @@ with FormModule[NODE, URI]
   }
 
   /** expert Links for page header (triples' subject) */
-  def expertLinks(uri: String
-      // request: HTTPrequest
-      ): NodeSeq = {
+  def expertLinks(uri: String, request: HTTPrequest ): NodeSeq = {
     val resourceEntry = ResourceEntry(value=stringToAbstractURI(uri))
-    expertLinks(resourceEntry)
+    expertLinks(resourceEntry,request)
   }
 
   /** expert Links for page header (triples' subject)
    * TODO harmonize with showHideHTMLOnClick above
    *  */
   def expertLinks(
-      resourceEntry: formMod#ResourceEntry
-      // request: HTTPrequest
+      resourceEntry: formMod#ResourceEntry,
+      request: HTTPrequest
       ): NodeSeq = {
     import resourceEntry._
     val uri = value.toString()
     (if (showExpertButtons) {
       showHideExpertButtonsOnClick(
-      makeBackLinkButton(uri) ++
+      makeBackLinkButton(uri, "", request) ++
         normalNavigationButton(resourceEntry) ++
         makeDrawGraphLink(uri) ++
         makeDrawGraphLinkSpoggy(uri) ++
@@ -157,12 +156,14 @@ with FormModule[NODE, URI]
       resourceEntry)
   }
 
-  private def backLinkButton(resourceEntry: formMod#ResourceEntry) = {
+  private def backLinkButton(resourceEntry: formMod#ResourceEntry,
+      request: HTTPrequest) = {
     import resourceEntry._
     val objectURIstringValue = resourceEntry.value.toString()
     (if (objectURIstringValue.size > 0 && showExpertButtons) {
-      val title = s""" Reverse links reaching "$valueLabel" <$value> """
-      makeBackLinkButton(objectURIstringValue, title = title)
+      val mess = I18NMessages.get("Reverse-links-reaching", request.getLanguage())
+      val title = s""" $mess "$valueLabel" <$value> """
+      makeBackLinkButton(objectURIstringValue, title = title, request)
     } else NodeSeq.Empty)
   }
 
