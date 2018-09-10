@@ -254,60 +254,39 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
         </div>
 
       case _ =>
-        // TODO most attributes are pasted for <input> and <textarea>
-        val input: Elem =
-          if( lit.widgetType == ShortString)
-          <input class={ css.cssClasses.formInputCSSClass }
-          value={
-            toPlainString(value)
-          } name={ lit.htmlName } type={
+        val input: Elem = {
+          val html5Type ={
             if( lit.property.toString() . toLowerCase().endsWith("password"))
               "password"
             else
               xsd2html5TnputType(type0)
           }
+          val inputElement = <input class={ css.cssClasses.formInputCSSClass }
+          value={
+            toPlainString(value)
+          } name={ lit.htmlName } type={html5Type}
           step = {xsd2html5Step(type0)}
           placeholder={ placeholder } title={ placeholder } size={
             inputSize.toString()
           } dropzone="copy" id={ htmlId }
           ></input>
-          else
-          <textarea class={ css.cssClasses.formInputCSSClass }
-          name={ lit.htmlName } type={
-            if( lit.property.toString() . toLowerCase().endsWith("password"))
-              "password"
-            else
-              xsd2html5TnputType(type0)
+
+          if( lit.widgetType == ShortString)
+            inputElement
+          else {
+            val te : Elem = <textarea>{ toPlainString(value) }</textarea>
+            // attributes are thus pasted from <input> to <textarea>
+            te % (inputElement . attributes)
           }
-          step = {xsd2html5Step(type0)}
-          placeholder={ placeholder } title={ placeholder } size={
-            inputSize.toString()
-          } dropzone="copy" id={ htmlId }
-          >{
-            toPlainString(value)
-          }</textarea>
-          ;
+      }
+      ;
 
         <div class={ css.cssClasses.formDivInputCSSClass }>
-        {addTripleAttributesToXMLElement(
-        input,
-          lit )
-          }
-          <!--
-          <script>{Unparsed(s"""
-        		var inputElement = document.getElementById( '$htmlId' );
-        		inputElement.addEventListener("dblclick",function(e){
-              /*your handler here */
-              console.log( 'inputElement '+ inputElement);
-              // ????? inputElement.select();
-        		},false);
-          """)}
-          </script>
-          -->
+          { addTripleAttributesToXMLElement( input, lit ) }
           { makeUserInfoOnTriples(lit, request.getLanguage()) }
         </div>
-        <div class={ css.cssClasses.formDivEditInputCSSClass }>
-          {
+
+        <div class={ css.cssClasses.formDivEditInputCSSClass }>{
             if (showEditButtons && ! (lit.widgetType == ShortString) )
               <input class="btn btn-primary" type="button" value="EDIT" onClick={
 //                s"""PopupEditor.launchEditorWindow( document.getElementById( "$htmlId" ));"""
@@ -316,7 +295,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
                   var content = input .value;
                   $$('#$htmlId') .summernote( 'code', content );
                   """
-              } title="Click to edit multiline text">
+              } title="Click to edit multiline text in HTML editor">
               </input>
           }
         </div>
