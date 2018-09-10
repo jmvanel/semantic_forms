@@ -209,13 +209,15 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
 
     val htmlId = makeHTML_Id(lit)
 
-    val elem = type0 match {
+    val (input, html5Type) = type0 match {
 
       // TODO in FormSyntaxFactory match graph pattern for interval datatype ; see issue #17
       case typ if typ === ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
+        val html5Type = "radio"
+        ( <div>{
         if (radioForIntervals)
           (for (n <- Range(0, 6)) yield (
-            <input type="radio" name={
+            <input type={html5Type} name={
               lit.htmlName } id={
               lit.htmlName } checked={
               if (n.toString.equals(value)) "checked" else null
@@ -230,17 +232,21 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
             { formatPossibleValues(lit) }
           </select>
         }
+        }</div>
+        , html5Type )
 
       case typ if typ === xsdPrefix + "boolean" =>
+        val html5Type = "radio"
+        (
         <div class="wrapper">
           <label for="yes_radio" id="yes-lbl">Oui</label>
-          <input type="radio" name={
+          <input type={html5Type} name={
             lit.htmlName } id="yes_radio"
           checked={toPlainString(value) match {case "true" => "true" ; case _ => null } }
           value="true" ></input>
 
           <label for="maybe_radio" id="maybe-lbl">?</label>
-          <input type="radio" name={
+          <input type={html5Type} name={
             lit.htmlName } id="maybe_radio"
           checked={toPlainString(value) match {case "" => "checked" ; case _ => null } }
           value="" ></input>
@@ -252,9 +258,9 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
           value="false" ></input>
           <div class="toggle"></div>
         </div>
+        , html5Type )
 
       case _ =>
-        val input: Elem = {
           val html5Type ={
             if( lit.property.toString() . toLowerCase().endsWith("password"))
               "password"
@@ -271,23 +277,27 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
           } dropzone="copy" id={ htmlId }
           ></input>
 
-          if( lit.widgetType == ShortString)
-            inputElement
-          else {
-            val te : Elem = <textarea>{ toPlainString(value) }</textarea>
-            // attributes are thus pasted from <input> to <textarea>
-            te % (inputElement . attributes)
-          }
+          val input: Elem =
+            if( lit.widgetType == ShortString)
+              inputElement
+            else {
+              val te : Elem = <textarea>{ toPlainString(value) }</textarea>
+              // attributes are thus pasted from <input> to <textarea>
+              te % (inputElement . attributes)
+            }
+        (input, html5Type )
       }
-      ;
 
+        Text("\n") ++
         <div class={ css.cssClasses.formDivInputCSSClass }>
           { addTripleAttributesToXMLElement( input, lit ) }
           { makeUserInfoOnTriples(lit, request.getLanguage()) }
-        </div>
-
+        </div> ++
         <div class={ css.cssClasses.formDivEditInputCSSClass }>{
-            if (showEditButtons && ! (lit.widgetType == ShortString) )
+            if (showEditButtons &&
+                 ! (lit.widgetType == ShortString) &&
+                 html5Type == "text"
+               )
               <input class="btn btn-primary" type="button" value="EDIT" onClick={
 //                s"""PopupEditor.launchEditorWindow( document.getElementById( "$htmlId" ));"""
                 s"""
@@ -299,8 +309,6 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
               </input>
           }
         </div>
-    }
-    Text("\n") ++ elem
   }
 
   private def makeHTMLIdForDatalist(re: formMod#Entry): String = {
