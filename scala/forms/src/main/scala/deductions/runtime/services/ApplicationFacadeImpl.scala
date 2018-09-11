@@ -400,19 +400,6 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     val futureResults = backlinks(query, hrefDisplayPrefix, request)
     val label = labelForURITransaction(query, language = request.getLanguage())
     val sparqlQuery = URLEncoder.encode(reverseLinksMaps(query), "utf-8")
-    val messOld =
-      <div>
-        Searched for
-        "<a href={ createHyperlinkString(uri = query) }>{ label }</a>
-        "
-        &lt;{ query }
-        &gt;
-        <div><a href={
-          request.adjustSecure(geoMapURL) + "?url=" + sparqlServicesURL(request) +
-            "?" +
-            "query=" + sparqlQuery
-        } target="_blank"> Map </a></div>
-      </div>
     wrapSearchResults(futureResults, "",
       mess =
         <div>

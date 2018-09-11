@@ -113,7 +113,8 @@ with FormModule[NODE, URI]
     } else NodeSeq.Empty )
   }
 
-  /** TODO duplication with preceding function */
+  /** create HTML Resource Readonly Field, just hyperlink to URI and thumbnail
+   *  TODO duplication with preceding function createHTMLResourceReadonlyField() */
   def createHTMLResourceReadonlyFieldBriefly(
     resourceEntry: formMod#ResourceEntry,
     request:       HTTPrequest           = HTTPrequest()): NodeSeq = {
@@ -179,6 +180,7 @@ with FormModule[NODE, URI]
     } else NodeSeq.Empty)
   }
 
+  /** display Thumbnail from triple foaf:img , etc , or self image if URI is an image */
   private def displayThumbnail(resourceEntry: formMod#ResourceEntry): NodeSeq = {
     import resourceEntry._
     val imageURL = if (isImage) Some(value)

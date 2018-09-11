@@ -29,7 +29,9 @@ extends ThumbnailInference[Rdf, DATASET] {
       hrefPrefix: String = config.hrefDisplayPrefix,
       lang: String = "",
       graph: Rdf#Graph,
-      sortAnd1rowPerElement:Boolean = false )
+      sortAnd1rowPerElement:Boolean = false,
+      request: HTTPrequest = HTTPrequest()
+)
 //  (implicit queryMaker: SPARQLQueryMaker[Rdf] )
   : NodeSeq = {
     val wrappingClass = "row sf-triple-block"
@@ -55,6 +57,7 @@ extends ThumbnailInference[Rdf, DATASET] {
               uri, lang, graph,
               hrefPrefix = hrefPrefix,
               label = label,
+              request,
               sortAnd1rowPerElement = sortAnd1rowPerElement ) ++
               separatorSpan ++
               makeHyperlinkForURIBriefly(
@@ -100,7 +103,7 @@ extends ThumbnailInference[Rdf, DATASET] {
           makeInstanceLabel(node, graph, lang)
      val `type` = getClassOrNullURI(node)(graph)
      displayNode(uriNodeToURI(node), hrefPrefix, displayLabel,
-         property = nullURI, type_ = `type` ) // TODO request<<<<<
+         property = nullURI, type_ = `type`, request)
   }
 
   def makeHyperlinkForURIBriefly(
@@ -143,7 +146,8 @@ extends ThumbnailInference[Rdf, DATASET] {
       hrefPrefix: String = config.hrefDisplayPrefix,
       label: String,
       property: Rdf#URI,
-      type_ : Rdf#Node
+      type_ : Rdf#Node,
+      request: HTTPrequest = HTTPrequest()
       ): NodeSeq = {
     if( uri != nullURI ) {
       val resourceEntry = makeResourceEntry(uri, label, property, type_)
@@ -158,11 +162,12 @@ extends ThumbnailInference[Rdf, DATASET] {
         else NodeSeq.Empty
 
       hyperlink ++
-      createHTMLResourceReadonlyField( resourceEntry, hrefPrefix, HTTPrequest() )
+      createHTMLResourceReadonlyField( resourceEntry, hrefPrefix, request )
     } else
       <span>null URI</span>
   }
 
+  /** create HTML Resource Readonly Field, just hyperlink to URI and thumbnail */
   private def displayNodeBriefly(uri: Rdf#URI,
       label: String,
       property: Rdf#URI,

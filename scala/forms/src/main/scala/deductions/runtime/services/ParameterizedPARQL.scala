@@ -76,7 +76,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
             uris.map {
               u =>
                 // println(s"\tsearch(): URI row $u")
-                displayResults(u, hrefPrefix, lang, graph, false)
+                displayResults(u, hrefPrefix, lang, graph, false, httpRequest)
             }
         }</div>)
       elems
