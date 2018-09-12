@@ -82,7 +82,8 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |LIMIT 10
          |""".stripMargin
 
-  /** query With links Count, with or without text query */
+  /** query With links Count, with or without text query
+   *  TODO LIMIT should *not* be hardcoded , cf BasicWidgets */
   def queryWithlinksCount(
     search: String,
     classe: String = "") =
@@ -101,10 +102,10 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
     |  }
     |}
     |ORDER BY DESC(?COUNT)
-    |LIMIT 20
+    |LIMIT 200
     |""".stripMargin
 
-  /** query With links Count, with or without text query */
+  /** query With links Count, with or without text query - UNUSED */
   private def queryWithlinksCountNoUnionGraph(search: String,
                           classe: String = "") = s"""
          |${declarePrefix(text)}
@@ -159,7 +160,8 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |ORDER BY DESC(?COUNT)
          |""".stripMargin
 
-  /** query With links Count, with or without text query, returning class */
+  /** query With links Count, with or without text query, returning class 
+   *  UNUSED */
   private def queryWithlinksCountAndClass(search: String,
                           classe: String = "") = s"""
          |${declarePrefix(text)}
@@ -189,8 +191,9 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |LIMIT 15
          |""".stripMargin
 
-  /** prepare Search String: trim, and replace ' with \' */
+  /** prepare Search String: trim, and replace ' with \' ,
+   *  _ by a space */
   private def prepareSearchString(search: String) = {
-    search.trim().replace("'", """\'""")
+    search.trim().replace("'", """\'""").replace("_", " ")
   }
 }

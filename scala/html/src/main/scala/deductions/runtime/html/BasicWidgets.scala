@@ -179,6 +179,8 @@ trait BasicWidgets
     simpleFormField("pattern") ++
     inputsFromRequest
   }
+
+  /** TODO LIMIT should *not* be hardcoded , cf StringSearchSPARQLBase */
   def limitInt(request: HTTPrequest) = toInt( request.getHTTPparameterValue("limit").getOrElse("200") ) . getOrElse(200)
   def offsetInt(request: HTTPrequest) = toInt( request.getHTTPparameterValue("offset").getOrElse("1") ) . getOrElse(1)
   def paramAsString(param: String, request: HTTPrequest) = request.getHTTPparameterValue(param).getOrElse("") 
