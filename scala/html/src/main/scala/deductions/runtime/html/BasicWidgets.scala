@@ -22,6 +22,9 @@ trait BasicWidgets
   with URIHelpers
   with URIManagement {
 
+  /** TODO LIMIT should *not* be hardcoded */
+  val defaultSPARQLlimit = 20
+
     val config: Configuration
     import config._
 
@@ -145,6 +148,7 @@ trait BasicWidgets
       <div></div>
   }
 
+  /** show Continuation Form: print offset, limit, pattern, Sub-form For Continuation */
   def showContinuationForm( request: HTTPrequest, formaction: Option[String]=None ) = {
 //    println(s"showContinuationForm: request $request")
     val requestPath = request.path
@@ -162,32 +166,47 @@ trait BasicWidgets
   </form>
   }
 
+  /** show Sub-form For Continuation: offset, limit, pattern */
   private def makeSubformForOffsetLimit( request: HTTPrequest ): NodeSeq = {
-    def simpleFormField(label: String, increment: Int=0) = {
-      val valueOption = request.getHTTPparameterValue(label)
-      val value = toInt(valueOption) match {
-        case Some(int) => (int + increment).toString()
-        case None => valueOption.getOrElse("")
-      }
-      <label for={label}>{label}</label><input name={label} value={value}></input>
+    def simpleFormField(label: String, default: String = "", increment: Int=0) = {
+      val value = inputFromRequestWihIncrement( label, request, default, increment)
+//    logger.debug(s"==== makeSubformForOffsetLimit: label $label, request, default $default, increment $increment ==> 'value'")
+      <label for={label}>{label}</label>
+      <input name={label} value={value}></input>
     }
-    val inputsFromRequest = for((name, values) <- request.queryString) yield {
+
+    simpleFormField("offset", "1", increment=limitInt(request)) ++
+    simpleFormField("limit", defaultSPARQLlimit.toString()) ++
+    simpleFormField("pattern") ++ // re-send HTTP GET parameters From Request:
+    ( for((name, values) <- request.queryString) yield {
       <input type="hidden" name={name} value={values.headOption.getOrElse("")}></input>
-    }
-    simpleFormField("offset", limitInt(request)) ++
-    simpleFormField("limit") ++
-    simpleFormField("pattern") ++
-    inputsFromRequest
+    } )
   }
 
-  /** TODO LIMIT should *not* be hardcoded , cf StringSearchSPARQLBase */
-  def limitInt(request: HTTPrequest) = toInt( request.getHTTPparameterValue("limit").getOrElse("200") ) . getOrElse(200)
-  def offsetInt(request: HTTPrequest) = toInt( request.getHTTPparameterValue("offset").getOrElse("1") ) . getOrElse(1)
-  def paramAsString(param: String, request: HTTPrequest) = request.getHTTPparameterValue(param).getOrElse("") 
-  def toInt(s: Option[String]):Option[Int] = {
+  /** */
+  def inputFromRequestWihIncrement(
+    label:   String,
+    request: HTTPrequest, default: String = "", increment: Int = 0): String = {
+    val valueOption = request.getHTTPparameterValue(label)
+    toInt(valueOption, default) match {
+      case Some(int) => (int + increment).toString()
+      case None      => valueOption.getOrElse(default)
+    }
+  }
+
+  def limitInt(request: HTTPrequest) = toInt(
+      request.getHTTPparameterValue("limit").getOrElse(defaultSPARQLlimit.toString()) )
+      . getOrElse(defaultSPARQLlimit)
+  def offsetInt(request: HTTPrequest) = toInt(
+      request.getHTTPparameterValue("offset").getOrElse("1") ) . getOrElse(1)
+  def paramAsString(param: String, request: HTTPrequest) =
+    request.getHTTPparameterValue(param).getOrElse("") 
+
+  def toInt(s: Option[String], default: String = ""):Option[Int] = {
     s match {
       case Some(s) => toInt(s)
-      case None => None
+      case None =>
+        toInt(default)
     }
   }
   def toInt(s: String):Option[Int] = {
@@ -197,4 +216,5 @@ trait BasicWidgets
       case e: NumberFormatException => None
     }
   }
+
 }

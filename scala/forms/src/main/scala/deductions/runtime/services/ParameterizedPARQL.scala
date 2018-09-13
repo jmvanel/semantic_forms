@@ -75,7 +75,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
           css.localCSS ++
             uris.map {
               u =>
-                // println(s"\tsearch(): URI row $u")
+                // logger.trace(s"\tsearch(): URI row $u")
                 displayResults(u, hrefPrefix, lang, graph, false, httpRequest)
             }
         }</div>)
@@ -129,7 +129,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
             uris.map {
               // create table like HTML
               u =>
-                //            println(s"**** search2 u $u")
+                // logger.trace(s"**** search2 u $u")
                 displayResults(u.toIterable, hrefPrefix, lang, graph)
             }
         }</div>
@@ -149,16 +149,17 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
 	  Future[List[Seq[Rdf#Node]]]
 			  // : Future[Iterator[Rdf#Node]]
 		= {
-    println(s"search 2: starting TRANSACTION for dataset $dataset")
+    logger.debug(s"search 2: starting TRANSACTION for dataset $dataset")
     val transaction =
       rdfStore.r(dataset, {
         search_onlyNT(search)
       })
     val tryIteratorRdfNode = transaction // .flatMap { identity }
-    println(s"after search_only(search tryIteratorRdfNode $tryIteratorRdfNode")
+    logger.debug(s"after search_only(search tryIteratorRdfNode $tryIteratorRdfNode")
     tryIteratorRdfNode.asFuture
   }
   
+  /** search only Non Transactional */
   private def search_onlyNT(search: Seq[String], variables: Seq[String] = Seq("?thing"),
       httpRequest: HTTPrequest = HTTPrequest())
   (implicit queryMaker: SPARQLQueryMaker[Rdf] ) = {
@@ -166,10 +167,10 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
       val rawQueryString = queryMaker.makeQueryString(search :_* )
       addLimit(rawQueryString, httpRequest)
     }
-//    logger.debug(
-        println( s"search_onlyNT(search='$search') \n$queryString \n\tdataset Class ${dataset.getClass().getName}" )
+    logger.debug(
+      s"search_onlyNT(search='$search') \n$queryString \n\tdataset Class ${dataset.getClass().getName}" )
     // NOTE: if class is specified in request, then ?CLASS is not in results, and vice-versa
-    println( s"search_onlyNT: search: ($search) : SPARQL variables $variables" )
+    logger.debug( s"search_onlyNT: search: ($search) : SPARQL variables $variables" )
     sparqlSelectQueryVariablesNT(queryString, variables )
   }
 
@@ -177,19 +178,19 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
   private def search_only2(search: String)
   (implicit queryMaker: SPARQLQueryMaker[Rdf] ): List[Seq[Rdf#Node]] = {
     val dsg = dataset.asInstanceOf[org.apache.jena.sparql.core.DatasetImpl].asDatasetGraph()
-    println(s">>>> dsg class : ${dsg.getClass}")
+    logger.debug(s">>>> dsg class : ${dsg.getClass}")
     
     val queryString = queryMaker.makeQueryString(search)
-	  println( s"search_only2( search $search" )
+	  logger.debug( s"search_only2( search $search" )
     sparqlSelectQueryVariables(queryString, queryMaker.variables )
   }
 
   private def addLimit(rawQueryString: String, httpRequest: HTTPrequest) = {
     val limitOption = httpRequest.getHTTPparameterValue("limit")
     val queryWithLimit = limitOption match {
-      case Some(limit) if( limit =/= "" ) => s"$rawQueryString LIMIT $limit"
-      case Some(_) => rawQueryString
-      case None => rawQueryString
+      case Some(limit) if (limit =/= "") => s"$rawQueryString LIMIT $limit"
+      case Some(_)                       => s"$rawQueryString LIMIT $defaultSPARQLlimit"
+      case None                          => s"$rawQueryString LIMIT $defaultSPARQLlimit"
     }
     val offsetOption = httpRequest.getHTTPparameterValue("offset")
     offsetOption match {

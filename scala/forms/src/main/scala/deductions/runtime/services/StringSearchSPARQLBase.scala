@@ -82,8 +82,7 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          |LIMIT 10
          |""".stripMargin
 
-  /** query With links Count, with or without text query
-   *  TODO LIMIT should *not* be hardcoded , cf BasicWidgets */
+  /** query With links Count, with or without text query */
   def queryWithlinksCount(
     search: String,
     classe: String = "") =

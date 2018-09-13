@@ -247,13 +247,14 @@ trait ToolsPage extends EnterButtons
 """)}
     </script>
   }
-   
+
+  /** TODO also in ApplicationFacadeImpl */
   private lazy val sparqlServicesURL = {
     val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
     println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
     val sparqlServicePrefix = "sparql?query="
     val dataServicesURL = s"$servicesURIPrefix$sparqlServicePrefix"
-    println(s">>>> dataServicesURL $dataServicesURL")
+    logger.debug(s">>>> lazy val dataServicesURL $dataServicesURL")
     dataServicesURL
   }
 }

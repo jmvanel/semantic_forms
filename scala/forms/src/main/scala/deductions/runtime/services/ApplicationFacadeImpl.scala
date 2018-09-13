@@ -419,7 +419,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 //    println(s"servicesURIPrefix <$servicesURIPrefix>")
     val sparqlServicePrefix = "/sparql"
     val dataServicesURL = s"$servicesURIPrefix$sparqlServicePrefix"
-    println(s">>>> dataServicesURL <$dataServicesURL>")
+    logger.debug(s">>>> sparqlServicesURL: dataServicesURL <$dataServicesURL>")
     dataServicesURL
   }
  
