@@ -23,7 +23,7 @@ trait BasicWidgets
   with URIManagement {
 
   /** TODO LIMIT should *not* be hardcoded */
-  val defaultSPARQLlimit = 20
+  val defaultSPARQLlimit = 100
 
     val config: Configuration
     import config._

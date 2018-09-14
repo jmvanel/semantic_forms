@@ -101,7 +101,6 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
     |  }
     |}
     |ORDER BY DESC(?COUNT)
-    |LIMIT 200
     |""".stripMargin
 
   /** query With links Count, with or without text query - UNUSED */
