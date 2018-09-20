@@ -105,6 +105,13 @@ task:price form:shortString true .
 task:group form:shortString true .
 task:hardness form:shortString true .
 
+# example of redefining a label in form different from the one in ontology
+foaf-forms:org:memberOf--personPerson
+	form:fieldAppliesToForm foaf-forms:personForm ;
+	form:fieldAppliesToProperty org:memberOf ;
+	form:label "belongs to organization "@en ;
+	form:label "appartient à l'organisation "@fr .
+
 #### Project ####
 
 foaf-forms:projectForm
