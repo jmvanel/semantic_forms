@@ -26,9 +26,11 @@ import play.api.mvc.EssentialAction
 
 import scalaz._
 import Scalaz._
+import deductions.runtime.views.FormHeader
 
 /** controller for HTML pages ("generic application") */
-trait WebPages extends Controller with ApplicationTrait {
+trait WebPages extends Controller with ApplicationTrait
+  with FormHeader[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
   import config._
 
   def index(): EssentialAction = {
@@ -109,15 +111,20 @@ trait WebPages extends Controller with ApplicationTrait {
         .withHeaders("Access-Control-Allow-Origin" -> "*") // for dbpedia lookup
         .as("text/html; charset=utf-8")
     }
-    /** HTTP headers for  */
-    def addHttpHeadersLinks( precomputed: MainPagePrecompute): Result = {
-      // TODO use code from FormHeader.downloadLink()
-      // precomputed.requestCopy.path
-      // http://localhost:9111/download?url=http%3A%2F%2Flocalhost%3A9000%2Fldp%-374255838943677&syntax=RDF/XML
-      // http://localhost:9111/download?url=http%3A%2F%2Flocalhost%3A9000%2Fldp%-374255838943677&syntax=Turtle
-      // http://localhost:9111/download?url=http%3A%2F%2Flocalhost%3A9000%2Fldp%-374255838943677&syntax=JSON-LD
-      result .withHeaders("Link" ->
-      "<http://dbpedia.org/data/Lyon.xml>; rel='alternate'; type='application/rdf+xml'")
+    /** HTTP header Link rel='alternate' for declaring other RDF formats */
+    def addHttpHeadersLinks(precomputed: MainPagePrecompute): Result = {
+      addHttpHeadersLinks(precomputed.requestCopy.uri)
+    }
+    /** HTTP header Link rel='alternate' for declaring other RDF formats */
+    def addHttpHeadersLinks(uri: String): Result = {
+      val seq =
+        for (
+          (syntax, mime) <- Seq(
+            ("Turtle", "application/turtle"),
+            ("RDF/XML", "application/rdf+xml"),
+            ("JSON-LD", "application/ld+json"))
+        ) yield downloadURI(uri, syntax) + s"; rel='alternate'; type='$mime' , "
+      result.withHeaders("Link" -> seq.mkString(""))
     }
   }
   import scala.language.implicitConversions
@@ -137,6 +144,7 @@ trait WebPages extends Controller with ApplicationTrait {
             classForContent, copyRequest(request) )
       )
       .addHttpHeaders()
+      .addHttpHeadersLinks( request.uri )
   }
 
   /** generate a Main Page wrapping given XHTML content */

@@ -28,6 +28,12 @@ trait FormHeader[Rdf <: RDF, DATASET]
   import config._
   import ops._
 
+  def downloadURI(uri: String, syntax: String = "Turtle"): String = {
+    hrefDownloadPrefix +
+      URLEncoder.encode(uri, "utf-8") +
+      s"&syntax=$syntax"
+  }
+
   /** title and links on top of the form: Edit, Display, Download Links */
   def titleEditDisplayDownloadLinksThumbnail(formSyntax: FormSyntax, lang: String,
       editable: Boolean = false,
@@ -53,11 +59,8 @@ trait FormHeader[Rdf <: RDF, DATASET]
     def downloadLink(syntax: String = "Turtle"): NodeSeq = {
       // col-xs-12
       <span class="sf-local-rdf-link">
-        <a href={
-          hrefDownloadPrefix +
-            URLEncoder.encode(uri, "utf-8") +
-            s"&syntax=$syntax"
-        } title={ mess("Triples_tooltip") }>
+        <a href={ downloadURI(uri, syntax) }
+        title={ mess("Triples_tooltip") }>
           { mess("Triples") + " " + syntax}
         </a>
         -
