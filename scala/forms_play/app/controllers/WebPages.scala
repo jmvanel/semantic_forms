@@ -101,6 +101,28 @@ trait WebPages extends Controller with ApplicationTrait {
     requestCopy.addAppMessage(
       <p>{ stringMess }</p>)
   }
+
+  class ResultEnhanced(result: Result) {
+    /** common HTTP headers for HTML */
+    def addHttpHeaders(): Result = {
+      result
+        .withHeaders("Access-Control-Allow-Origin" -> "*") // for dbpedia lookup
+        .as("text/html; charset=utf-8")
+    }
+    /** HTTP headers for  */
+    def addHttpHeadersLinks( precomputed: MainPagePrecompute): Result = {
+      // TODO use code from FormHeader.downloadLink()
+      // precomputed.requestCopy.path
+      // http://localhost:9111/download?url=http%3A%2F%2Flocalhost%3A9000%2Fldp%-374255838943677&syntax=RDF/XML
+      // http://localhost:9111/download?url=http%3A%2F%2Flocalhost%3A9000%2Fldp%-374255838943677&syntax=Turtle
+      // http://localhost:9111/download?url=http%3A%2F%2Flocalhost%3A9000%2Fldp%-374255838943677&syntax=JSON-LD
+      result .withHeaders("Link" ->
+      "<http://dbpedia.org/data/Lyon.xml>; rel='alternate'; type='application/rdf+xml'")
+    }
+  }
+  import scala.language.implicitConversions
+  implicit def resultToResult(r: Result) = new ResultEnhanced(r)
+
   /** generate a Main Page wrapping given XHTML content */
   private def outputMainPage( content: NodeSeq,
       lang: String, userInfo: NodeSeq = <div/>, title: String = "",
@@ -114,8 +136,7 @@ trait WebPages extends Controller with ApplicationTrait {
             messages = getDefaultAppMessage(),
             classForContent, copyRequest(request) )
       )
-      .withHeaders("Access-Control-Allow-Origin" -> "*") // for dbpedia lookup
-      .as("text/html; charset=utf-8")
+      .addHttpHeaders()
   }
 
   /** generate a Main Page wrapping given XHTML content */
@@ -133,8 +154,8 @@ trait WebPages extends Controller with ApplicationTrait {
         messages = getDefaultAppMessage(),
         classForContent,
         requestCopy))
-      .withHeaders("Access-Control-Allow-Origin" -> "*") // for dbpedia lookup
-      .as("text/html; charset=utf-8")
+      .addHttpHeaders()
+      .addHttpHeadersLinks( precomputed )
   }
 
   /**
@@ -373,9 +394,9 @@ trait WebPages extends Controller with ApplicationTrait {
             uri, editable = true,
             lang = chooseLanguage(request), graphURI = makeAbsoluteURIForSaving(userid),
             request = copyRequest(request))._1
-          Ok("<!DOCTYPE html>\n" + mainPage(content, userInfo, lang))
-            .as("text/html; charset=utf-8").
-            withHeaders("Access-Control-Allow-Origin" -> "*") // TODO dbpedia only
+          Ok("<!DOCTYPE html>\n" +
+             mainPage(content, userInfo, lang))
+             .addHttpHeaders()
         },
         (t: Throwable) =>
           errorResultFromThrowable(t, "in /edit"))
