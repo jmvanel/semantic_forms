@@ -322,6 +322,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
   /** non recursive update of given `formSyntax` from given `formSpecif`;
    * see form_specs/foaf.form.ttl for an example of form specification
+   * NOTE: formSyntax.formURI.get == formSpecif
+   * 
    * TODO rename updateOneFormFromSpecif */
   private def updateOneFormFromConfig(formSyntax: FormSyntax, formSpecif: Rdf#Node)(implicit graph: Rdf#Graph)
   : Unit // TODO #170 FormSyntax
@@ -336,6 +338,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     }
 
     for (field <- formSyntax.fields) {
+      // triples in specifications matching property
       val fieldSpecs = lookFieldSpecInConfiguration(field.property)
       if (!fieldSpecs.isEmpty)
         fieldSpecs.map {
@@ -354,9 +357,10 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
               //// DBPedia Lookup ////
 
-              logger.info( s">>>> updateOneFormFromConfig specTriple $specTriple" )
-              if (specTriple.predicate == formPrefix("widgetClass")
-                && specTriple.objectt == formPrefix("DBPediaLookup")) {
+              logger.debug( s">>>> updateOneFormFromConfig specTriple $specTriple" )
+              if ( specTriple.predicate == formPrefix("widgetClass") &&
+                   specTriple.objectt   == formPrefix("DBPediaLookup")) {
+                formSyntax.formURI.get == formSpecif
                 val field2 = field.copyEntry(widgetType = DBPediaLookup)
                 formSyntax.fields = replace(formSyntax.fields, field, field2)
                 logger.debug(s"updateOneFormFromConfig: Lookup: $field -> $field2")
@@ -378,14 +382,20 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
                   prop <- (formSpecGraph / formPrefix("fieldAppliesToProperty")).takeOnePointedGraph;
                   property = prop.pointer;
                   formPointedGraph <- (formSpecGraph / formPrefix("fieldAppliesToForm")).takeOnePointedGraph;
-                  form = formPointedGraph.pointer
+                  formmmm = formPointedGraph.pointer
                 ) {
-                  // TODO asResource: wrong !!!!!!!!!! => implement copy for an Entry
-//                  val field2 = field.asResource.copy(cardinality = cardinality)
                   val field2 = field.copyEntry(cardinality = cardinality)                 
                   formSyntax.fields = replace(formSyntax.fields, field, field2)
                   logger.debug(s"updateOneFormFromConfig: cardinality: prop $prop: $cardinality, $field -> $field2")
                 }
+              }
+
+              //// label ////
+
+              if (specTriple.predicate == formPrefix("label")) {
+                val field2 = field.copyEntry(label = nodeToString(specTriple.objectt))
+                formSyntax.fields = replace(formSyntax.fields, field, field2)
+                logger.debug(s"updateOneFormFromConfig: label: $field -> $field2")
               }
             }
         }

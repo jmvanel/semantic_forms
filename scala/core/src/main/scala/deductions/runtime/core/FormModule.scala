@@ -176,26 +176,30 @@ trait FormModule[NODE, URI <: NODE] {
 
     def isClass: Boolean = false
 
-    /** clone this */
+    /** clone this - TODO remove copy - paste !!!! */
     def copyEntry(
       cardinality: Cardinality = Entry.this.cardinality,
       widgetType: WidgetType = Entry.this.widgetType,
       fromProperty: NODE = Entry.this.property,
       fromMetadata: String = Entry.this.metadata,
-      fromTimeMetadata: Long = Entry.this.timeMetadata): Entry = {
+      fromTimeMetadata: Long = Entry.this.timeMetadata,
+      label: String = Entry.this.label
+      ): Entry = {
       this match {
         case r: ResourceEntry => r.copy(
           cardinality = cardinality,
           widgetType = widgetType,
           property = fromProperty,
           metadata = fromMetadata,
-          timeMetadata = fromTimeMetadata)
+          timeMetadata = fromTimeMetadata,
+          label = label)
         case e: LiteralEntry => e.copy(
           cardinality = cardinality,
           widgetType = widgetType,
           property = fromProperty,
           metadata = fromMetadata,
-          timeMetadata = fromTimeMetadata)
+          timeMetadata = fromTimeMetadata,
+          label = label)
         case e: BlankNodeEntry => e.copy(
           cardinality = cardinality,
           widgetType = widgetType,
@@ -244,7 +248,7 @@ trait FormModule[NODE, URI <: NODE] {
 
   /** @param possibleValues a couple of an RDF node id and the label to display, see trait RangeInference */
   case class ResourceEntry(
-                            override val label: String="",
+                            label: String="",
                             override val comment: String="",
                             override val property: ObjectProperty = nullURI,
                             val validator: ResourceValidator = ResourceValidator(Set()),
