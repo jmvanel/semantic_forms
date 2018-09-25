@@ -31,7 +31,8 @@ trait HTML5TypesTrait[Rdf <: RDF] extends HTML5Types {
       else
         null
 
-  /** see http://www.w3.org/TR/html-markup/input.html */
+  /** see
+   *  https://www.w3.org/TR/html5/sec-forms.html#local-date-and-time-state-typedatetimelocal */
   lazy val xsd2html5 = Map[Rdf#Node, String](
     xsd.string -> "text",
     xsd.integer -> "number",
@@ -48,7 +49,7 @@ trait HTML5TypesTrait[Rdf <: RDF] extends HTML5Types {
 
     xsd.dateTime -> "datetime-local",
     xsd.dateTimeStamp -> "datetime-local",
-    xsd("date") -> "datetime-local",
+    xsd("date") -> "date",
 
     xsd.anyURI -> "url",
     xsd.boolean -> "radio"
