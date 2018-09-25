@@ -8,6 +8,8 @@ import scalaz._
 import Scalaz._
 
 /**
+  * sbt runMain deductions.runtime.sparql_cache.apps.FormSpecificationsLoaderApp
+  *
   * Created by LaFaucheuse on 06/07/2017.
   */
 object FormSpecificationsLoaderApp extends {

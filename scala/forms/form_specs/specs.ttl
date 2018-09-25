@@ -12,6 +12,7 @@
 @prefix nature: <http://deductions.github.io/nature_observation.owl.ttl#> .
 @prefix geoloc: <http://deductions.github.io/geoloc.owl.ttl#>.
 @prefix vehman: <http://deductions.github.io/vehicule-management.owl.ttl#>.
+@prefix event:  <http://purl.org/NET/c4dm/event.owl#> .
 
 # list of pre-defined form specifications for various classes in common vocabularies (loaded with deductions.runtime.sparql_cache.apps.FormSpecificationsLoaderApp)
 # NOTE : it's the relative URI's of the Turtle documents, not the URI's of the forms themselves
@@ -24,7 +25,9 @@ sioc: form:ontologyHasFormSpecification <sioc.form.ttl> .
 bioc: form:ontologyHasFormSpecification <https://deductions.github.io/biological-collections.form.ttl> .
 nature: form:ontologyHasFormSpecification <http://deductions.github.io/nature_observation.form.ttl> .
 seeds: form:ontologyHasFormSpecification <https://deductions.github.io/seeds.form.ttl> .
-tm:   form:ontologyHasFormSpecification <https://deductions.github.io/task-management.form.ttl> .
+tm:    form:ontologyHasFormSpecification <https://deductions.github.io/task-management.form.ttl> .
+event: form:ontologyHasFormSpecification <https://deductions.github.io/event.form.ttl> .
+
 skos: form:ontologyHasFormSpecification <skos.form.ttl> .
 doas: form:ontologyHasFormSpecification <http://deductions.github.io/doas.form.ttl> .
 form: form:ontologyHasFormSpecification <login.form.ttl> .
