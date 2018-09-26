@@ -110,7 +110,7 @@ trait BasicWidgets
       toolname: String =
         "Neighborhood: \npaths of length <= 2 sorted in chronological order\n",
       icon: String = "/assets/images/radial_layout.png"): Elem = {
-    makeToolLink( uri, toolURLprefix, toolname, icon, imgWidth=35 )
+    makeToolLink( uri, toolURLprefix, toolname, icon, imgWidth=25 )
   }
 
   /** make link to WebVOWL
@@ -138,7 +138,7 @@ trait BasicWidgets
     val link = URLEncoder.encode( uri, "utf-8")
 
     if( uri  =/=  "" )
-      <a class="btn btn-default" href={ s"$toolURLprefix$link" }
+      <a class="sf-button btn-default" href={ s"$toolURLprefix$link" }
       title={s"Launch tool $toolname for <$uri>"}
       target="_blank">
       <img width={imgWidth.toString()} border="0"

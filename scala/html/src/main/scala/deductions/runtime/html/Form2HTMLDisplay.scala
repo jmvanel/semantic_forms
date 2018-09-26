@@ -173,7 +173,8 @@ with FormModule[NODE, URI]
     (if (objectURIstringValue.size > 0 &&
         isDownloadableURL(objectURIstringValue) && showExpertButtons) {
     	val value = resourceEntry.value
-      <a class="btn btn-primary btn-xs" href={objectURIstringValue} title={s"Normal HTTP link to $value"}
+      // class="btn btn-primary btn-xs"
+      <a class="sf-button btn-primary" href={objectURIstringValue} title={s"Normal HTTP link to $value"}
          draggable="true">
         <i class="glyphicon glyphicon-share-alt"></i>
       </a>
@@ -235,7 +236,7 @@ with FormModule[NODE, URI]
     val imageURL = "/assets/images/little-table-grid.svg"
     <a href={ "/table?query=" + URLEncoder.encode(sparlqlQuery, "UTF-8") } target="_blank"
        title={s"Table view for <$classURI>"}>
-         <img src={ imageURL } css="sf-thumbnail" height="25" alt="Table view"/>
+         <img src={ imageURL } css="sf-thumbnail" height="20" alt="Table view"/>
     </a>
   }
 
