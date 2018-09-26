@@ -72,11 +72,13 @@ trait ApplicationTrait extends Controller
          .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
          .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
 
-  protected def getDefaultAppMessage(): NodeSeq = {
-    val messagesFile = "messages.html"
+  protected def getDefaultAppMessage(): NodeSeq = readXHTMLFile( "messages.html" )
+  protected def getDefaultHeadExtra():  NodeSeq = readXHTMLFile( "head-extra.html", <meta/>)
+
+  private def readXHTMLFile(messagesFile: String, default: NodeSeq=(<p>...</p>)): NodeSeq = {
     if (new File(messagesFile).exists()) {
       try {
-     	  scala.xml.Unparsed(
+        scala.xml.Unparsed(
           Source.fromFile(messagesFile, "UTF-8").getLines().mkString("\n"))
       }
       catch { case e: Exception => <p>Exception in reading message file: { e }</p> }

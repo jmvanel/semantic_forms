@@ -141,7 +141,9 @@ trait WebPages extends Controller with ApplicationTrait
             userInfo, lang, title,
             displaySearch,
             messages = getDefaultAppMessage(),
-            classForContent, copyRequest(request) )
+            headExtra = getDefaultHeadExtra(),
+            classForContent,
+            copyRequest(request) )
       )
       .addHttpHeaders()
       .addHttpHeadersLinks( request.uri )
@@ -160,8 +162,10 @@ trait WebPages extends Controller with ApplicationTrait
         userInfo, lang, title,
         displaySearch,
         messages = getDefaultAppMessage(),
+        headExtra = getDefaultHeadExtra(),
         classForContent,
-        requestCopy))
+        requestCopy
+    ))
       .addHttpHeaders()
       .addHttpHeadersLinks( precomputed )
   }

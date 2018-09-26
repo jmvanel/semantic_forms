@@ -22,11 +22,13 @@ trait MainXml extends ToolsPage with EnterButtons {
   def mainPage(content: NodeSeq, userInfo: NodeSeq, lang: String = "en", title: String = "",
                displaySearch: Boolean = true,
                messages: NodeSeq = defaultSiteMessage,
+               headExtra: NodeSeq = NodeSeq.Empty,
                classForContent: String = "container sf-complete-form",
                httpRequest: HTTPrequest = HTTPrequest()) = {
     <html>
       <head>
         { head(title)(lang) }
+        { headExtra }
       </head>
       <body>
         {mainPageHeader(lang, userInfo, displaySearch, messages)}
