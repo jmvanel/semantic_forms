@@ -14,8 +14,9 @@ https://www.google.fr/search?q=ajax+example+scala.js
  */
 
 $(document).ready(function() {
-    var searchServiceURL = "http://lookup.dbpedia.org/api/search/KeywordSearch"
-    // "http://lookup.dbpedia.org/api/search/PrefixSearch" : currently service is down
+    var searchServiceURL = "http://lookup.dbpedia-spotlight.org/api/search/PrefixSearch"
+    // fallback : "http://lookup.dbpedia.org/api/search/KeywordSearch"
+    // "http://lookup.dbpedia.org/api/search/PrefixSearch" : currently this service is down
     var resultsCount = 15;
     var suggestionSearchCSSclass = 'sf-suggestion-search-dbpedia';
 
