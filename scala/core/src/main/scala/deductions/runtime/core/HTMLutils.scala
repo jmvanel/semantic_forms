@@ -16,9 +16,9 @@ trait HTMLutils {
     val wrapperId = resourceId+"-wrap"
     val buttonId = resourceId+"-button"
     // <button id={buttonId} class="showHideButton">...</button>
-    buttonToggle % Attribute(
-        None, "id", XMLText(buttonId), Null) % Attribute(
-        None, "class", XMLText("showHideButton"), Null) ++
+    buttonToggle %
+      Attribute( None, "id", XMLText(buttonId), Null) %
+      Attribute( None, "class", XMLText("showHideButton sf-button"), Null) ++
     <span id={wrapperId} style="display: none">{
       // NOTE script to show/Hide HTML On click is hooked in head.html
       html

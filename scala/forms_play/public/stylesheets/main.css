@@ -27,6 +27,7 @@
     /*margin-bottom: 10px;*/
 }
 
+.sf-button {height: 20px; vertical-align: middle; padding:0}
 .sf-suggestion-search-dbpedia {
     background-image: url(../images/ripple.gif);
     background-repeat: no-repeat;

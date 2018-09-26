@@ -56,11 +56,12 @@ trait BasicWidgets
     val tit = if (title === "")
       I18NMessages.get("Reverse-links-reaching", request.getLanguage()) +
         s"<$uri>;" else title
-    return <a class="btn btn-default btn-xs"
+//    <a class="btn btn-default btn-xs"
+    <a class="sf-button"
       href={ "/backlinks?q=" + URLEncoder.encode(uri,"UTF-8") }
       title={ tit }
       data-value={s"$uri"} >
-      <img src="assets/images/Back-Link-Icon.svg" width="15" border="0" />
+        <img src="/assets/images/Back-Link-Icon.svg" width="32" height="32" border="0" />
     </a>
   }
 
