@@ -254,8 +254,10 @@ with FormModule[NODE, URI]
 
     logger.info(s"fittingCount $fittingCount, literalEntriesCount $literalEntriesCount")
     // form.fields.collect { case l: formMod#LiteralEntry => l } . foreach ( println(_) )
+
+    // TODO I18N
     if(fittingCount  =/=  literalEntriesCount)
-      <span>{literalEntriesCount - fittingCount} data not fitting user language ({request.getLanguage()})</span>
+      <span>{literalEntriesCount - fittingCount} data not fitting user language ({request.getLanguage()}) </span>
       <button
         onclick="
 console.log(document.getElementsByClassName('sf-data-not-fitting-user-language'));

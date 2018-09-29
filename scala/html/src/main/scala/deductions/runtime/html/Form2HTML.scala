@@ -71,11 +71,11 @@ import scala.xml.Comment
 
     //// output begins ////
 
-    if (editable)
-      wrapFieldsWithFormTag(htmlFormFields)
-    else
-      languagesInDataStatistics( form, request) ++
-      htmlFormFields
+    languagesInDataStatistics(form, request) ++ (
+      if (editable)
+        wrapFieldsWithFormTag(htmlFormFields)
+      else
+        htmlFormFields)
   }
 
   /**
@@ -107,9 +107,15 @@ import scala.xml.Comment
       cssForURI:      String         = "",
       cssForProperty: String         = ""): NodeSeq = {
       if (!fields.isEmpty) {
-        val lastEntry = fields.last
+        /* TODO mechanism too complex;
+         * implementation:
+         * probably use List for fields,
+         * or record in FormField the alreadySeenProperty & neverDisplayedPropertyLabel statuses,
+         * or some kind of forward backward iterator, or List.sliding()
+         */
+        val firstEntry = LiteralEntry()
         for (
-          (preceding, field) <- (lastEntry +: fields) zip fields // do not display NullResourceEntry
+          (preceding, field) <- (firstEntry +: fields) zip fields // do not display NullResourceEntry
           if (toPlainString(field.property) =/= "" &&
             (editable ||
               toPlainString(field.value) =/= "" ||

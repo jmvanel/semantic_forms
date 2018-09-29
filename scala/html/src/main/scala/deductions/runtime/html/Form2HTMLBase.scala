@@ -34,7 +34,12 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
       cssForProperty: String = css.cssClasses.formLabelCSSClass )
   (implicit form: FormModule[NODE, URI]#FormSyntax) = {
     // display field label only if different from preceding
-    if (preceding.label  =/=  field.label)
+    /* TODO mechanism not compatible with hiding "data not fitting user language",
+     * see languagesInDataStatistics();
+     * should display property label on first triple that is not hiden;
+     * implementation: probably use Map to record property label shown
+     */
+    if (preceding.label =/= field.label )
       // PENDING is it correct HTML5 ?
       <label for={
         field.htmlName
