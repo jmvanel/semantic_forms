@@ -242,10 +242,13 @@ with RDFContentNegociation {
       logger.info("\nLDP: HEAD: " + request)
       val httpRequest = copyRequest(request)
       Ok("")
-      // TODO, like GET <<<<<<<<<<<<
+      // NOTE: this does not work, see:
+      // https://www.playframework.com/documentation/2.6.x/ScalaResults#Changing-the-default-Content-Type
+      // .withHeaders( CONTENT_TYPE -> defaultContentType )
+      // TODO, ETag like GET <<<<<<<<<<<<
       .withHeaders("ETag" -> "123456789") // """"${DigestUtils.md5Hex(response)}"""" )
-      .withHeaders(defaultLDPheaders : _* )
-      .withHeaders( CONTENT_TYPE -> defaultContentType )
+       .withHeaders(defaultLDPheaders : _* )
+       .as(defaultContentType)
     }
 
   //  implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(
