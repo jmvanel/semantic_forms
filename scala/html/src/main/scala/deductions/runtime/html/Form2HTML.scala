@@ -15,6 +15,7 @@ import scala.xml.{Elem, NodeSeq, Text}
 import scalaz._
 import Scalaz._
 import scala.xml.Comment
+import scala.xml.Unparsed
 
 /** Abstract Form Syntax to HTML;
  * different modes: display or edit;
@@ -54,6 +55,17 @@ import scala.xml.Comment
 		/* wrap Fields With HTML <form> Tag */
     def wrapFieldsWithFormTag(htmlFormFields: NodeSeq): NodeSeq =
       <form class="sf-standard-form" action={ actionURI } method="POST" id="form">
+       <script>{
+         // Prevent a FORM SUBMIT with ENTER
+         Unparsed("""
+           document.getElementById("form").onkeypress = function(e) {
+             var key = e.charCode || e.keyCode || 0;
+             if (key == 13) {
+               e.preventDefault();
+             }
+           }
+         """ ) }
+</script>
         { if(form.fields.size > 3) // for login form
             addSaveButton(actionURI2) }
         { htmlFormFields }
