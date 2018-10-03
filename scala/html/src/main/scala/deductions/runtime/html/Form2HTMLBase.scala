@@ -163,10 +163,11 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     val timeMetadata = entry.timeMetadata
     val time: String = new DateTime(timeMetadata).toDateTime.toString("dd/MM/yyyy HH:mm")
     if (timeMetadata  =/=  -1){
+      <!-- implemented in makeUserInfoOnTriples() -->
       <span class="sf-local-rdf-link">
         &nbsp;-&nbsp;{ message("modified_by", lang) }
         {
-          <a style="text-decoration: underline" href={
+          <a style="text-decoration: underline" tabindex="-1" href={
             hrefDisplayPrefix +
               makeAbsoluteURIForSaving(userMetadata) }>{ userMetadata }</a>
         }&nbsp;{ message("on_date", lang) }&nbsp;{ time }
