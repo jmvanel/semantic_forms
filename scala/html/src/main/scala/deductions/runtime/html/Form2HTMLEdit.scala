@@ -300,11 +300,17 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
                  html5Type == "text"
                )
               <input class="btn btn-primary" type="button" value="EDIT" onClick={
-//                s"""PopupEditor.launchEditorWindow( document.getElementById( "$htmlId" ));"""
+                // s"""PopupEditor.launchEditorWindow( document.getElementById( "$htmlId" ));"""
                 s"""
-                  var input = document.getElementById( "$htmlId" );
-                  var content = input .value;
-                  $$('#$htmlId') .summernote( 'code', content );
+                  // var input = document.getElementById( "$htmlId" );
+                  // var content = input .value;
+                  $$('#$htmlId') .summernote( // 'code', content,
+                  {
+                    height: 250,      // set editor height
+                    minHeight: null,  // set minimum height of editor
+                    maxHeight: null,  // set maximum height of editor
+                    focus: true       // set focus to editable area after initializing summernote
+                  } );
                   """
               } title="Click to edit multiline text in HTML editor">
               </input>
