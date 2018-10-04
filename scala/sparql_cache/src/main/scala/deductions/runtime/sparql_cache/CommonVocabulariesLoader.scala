@@ -68,7 +68,7 @@ trait CommonVocabulariesLoader[Rdf <: RDF, DATASET]
       URI(geoloc.prefixIri) ::
       URI(vehman.prefixIri) ::
       URI(event.prefixIri) ::
-      URI("http://lov.okfn.org/dataset/lov/vocabs/void/versions/2011-03-06.n3") ::
+      URI("http://vocab.deri.ie/void.ttl") ::
       Nil
       // "http://purl.org/ontology/mo/"
    
