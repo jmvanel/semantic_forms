@@ -267,7 +267,6 @@ extends
           addTimestampToDataset(uri, dataset2) // PENDING: maybe do this in a Future
 
           graph
-          //          } else Success(emptyGraph) // ????
 
         } else if (!noError ||
           timestampFromHTTPHeader === Long.MaxValue) {
@@ -489,7 +488,10 @@ extends
     if (isDownloadableURI(uri)) {
       // To avoid troubles with Jena cf https://issues.apache.org/jira/browse/JENA-1335
       val contentType = getContentTypeFromHEADRequest(fromUri(withoutFragment(uri)))
-    	logger.debug(s""">>>> readURI: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
+
+      //    	logger.debug(
+      println(
+    	    s""">>>> readURI: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
       contentType match {
         case Success(typ) =>
           if (!typ.startsWith("text/html")) {
@@ -536,15 +538,16 @@ extends
         def handleResponse(response: HttpResponse):String = {
           val status = response.getStatusLine().getStatusCode();
           if (
-              (status >= 200 && status < 300) ||
-              status === 406 ||status === 404 // Not Acceptable
+              (status >= 200 && status < 300)
+              // NOTE: why did I do this ???
+              // || status === 406 /* Not Acceptable */ || status === 404 
               ) {
             val ct = response.getFirstHeader("Content-Type")
             if ( ct == null ) "" else ct.getValue
           } else {
             logger.error(s"---- ${response.getStatusLine()}");
             throw new ClientProtocolException(
-                s"getContentTypeFromHEADRequest: Unexpected response status: $status");
+                s"getContentTypeFromHEADRequest: Unexpected HTTP response status: on $status <$url>");
           }
         }
       };
