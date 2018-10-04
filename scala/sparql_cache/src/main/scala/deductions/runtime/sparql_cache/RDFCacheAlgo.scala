@@ -115,7 +115,8 @@ extends
                       transactionsInside: Boolean): Try[Rdf#Graph] = {
 
     val tryGraphLocallyManagedData = getLocallyManagedUrlAndData(uri, request, transactionsInside: Boolean)
-//    logger.debug( s"retrieveURIBody: tryGraphLocallyManagedData $tryGraphLocallyManagedData")
+//    logger.debug(
+    println( s"retrieveURIBody: tryGraphLocallyManagedData $tryGraphLocallyManagedData")
 
     tryGraphLocallyManagedData match {
       case Some(tgr) => Success(tgr)
@@ -129,6 +130,8 @@ extends
           val mirrorURI = getMirrorURI(uri)
           val vv = if (mirrorURI === "") {
             val graphTry_MIME = readURI(uri, dataset, request)
+            println(
+                  s""">>>> retrieveURIBody graphTry_MIME $graphTry_MIME""")
             val graphDownloaded = {
               val graphTry = graphTry_MIME._1
               if (transactionsInside)
@@ -137,11 +140,14 @@ extends
                 storeURINoTransaction(graphTry, uri, dataset)
             }
             val vv = if (graphDownloaded.isSuccess) {
-              logger.debug(s"""Graph at URI <$uri>, size ${graphDownloaded.get.size}
+//              logger.debug(
+              println(
+                  s"""Graph at URI <$uri>, size ${graphDownloaded.get.size}
                     Either new addition was downloaded, or locally managed data""")
               addTimestampToDataset(uri, dataset2)
             } else
-              logger.debug(s"Download Graph at URI <$uri> was tried, but it's faulty: $graphDownloaded")
+              logger.error(
+                s"Download Graph at URI <$uri> was tried, but it's faulty: $graphDownloaded")
 
             val contentType = graphTry_MIME._2
             logger.debug(s"""retrieveURIBody: downloaded graph from URI <$uri> $graphDownloaded
@@ -395,7 +401,8 @@ extends
 
 
   /** for downloading RDF uses Jena RDFDataMgr,
-   *  and TODO activate Microdata Loading */
+   *  and TODO activate Microdata Loading
+   * @return  */
   private def readURIWithJenaRdfLoader(
       uri: Rdf#URI,
       dataset: DATASET,
@@ -407,9 +414,9 @@ extends
       // To avoid troubles with Jena cf https://issues.apache.org/jira/browse/JENA-1335
       val contentType = getContentTypeFromHEADRequest(fromUri(uri))
     	logger.debug(s""">>>> readURIWithJenaRdfLoader: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
-      if (
-//          !contentType.startsWith("text/html") &&
-          !contentType.startsWith("ERROR") ) {
+      contentType match {
+        case Success(typ) =>
+    	// if ( contentType.isSuccess ) {
         setTimeoutsFromConfig()
         // NOTE: Jena RDF loader can throw an exception "Failed to determine the content type"
         val graphTryLoadedFromURL = rdfLoader.load(new java.net.URL(withoutFragment(uri).toString()))
@@ -419,7 +426,7 @@ extends
         graphTryLoadedFromURL match {
 
           case Success(gr) =>
-            (graphTryLoadedFromURL, contentType)
+            (graphTryLoadedFromURL, typ)
 
           case Failure(f) =>
             logger.debug(s""">>>> readURIWithJenaRdfLoader: Failed with Jena RDF loader for <$uri>
@@ -433,15 +440,16 @@ extends
              * but before that , we try this */
             val gr =
               if(graphFromMicrodata.size == 0)
-                readWithContentType( uri, contentType, dataset): Try[Rdf#Graph]
+                readWithContentType( uri, "ERROR", dataset): Try[Rdf#Graph]
               else
                 Success(graphFromMicrodata)
             logger.debug(s"""readURIWithJenaRdfLoader After readWithContentType: ${gr}""")
-            ( gr, contentType)
+            ( Failure(f), "ERROR")
         }
-
-      } else {
-        (Success(emptyGraph), contentType)
+        case Failure(f) => 
+//      } else {
+//        (Success(emptyGraph), contentType)
+        (Failure(f), "ERROR")
       }
     } else {
       val message = s"readURIWithJenaRdfLoader: Load uri <$uri> is not possible, not a downloadable URI."
@@ -470,16 +478,23 @@ extends
       // To avoid troubles with Jena cf https://issues.apache.org/jira/browse/JENA-1335
       val contentType = getContentTypeFromHEADRequest(fromUri(withoutFragment(uri)))
     	logger.debug(s""">>>> readURI: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
-      if (!contentType.startsWith("text/html") &&
-          !contentType.startsWith("ERROR") ) {
+      contentType match {
+        case Success(typ) =>
+          if (!typ.startsWith("text/html")) {
+//          if (!contentType.startsWith("text/html") &&
+//          !contentType.startsWith("ERROR") ) {
             logger.debug(s""">>>> readURIsf: for <$uri>
                trying read With explicit content Type; ContentType From HEAD Request "$contentType" """)
-            val gr = readWithContentType( uri, contentType, dataset): Try[Rdf#Graph]
+            val gr = readWithContentType( uri, typ, dataset): Try[Rdf#Graph]
             logger.debug(s"""readURIsf After readWithContentType: ${gr}""")
-            ( gr, contentType)
-
-      } else {
-        (Success(emptyGraph), contentType)
+            ( gr, typ)
+          } else {
+            ( Success(emptyGraph), typ)
+          }
+        case Failure(f) =>
+//      } else {
+//        (Success(emptyGraph), contentType)
+          ( Failure(f), "ERROR")
       }
     } else {
       val message = s"Load uri <$uri> is not possible, not a downloadable URI."
@@ -491,7 +506,7 @@ extends
   /** pasted from Apache HTTP client doc
    *  https://hc.apache.org/httpcomponents-client-ga/
    * */
-  def getContentTypeFromHEADRequest(url0: String): String = {
+  def getContentTypeFromHEADRequest(url0: String): Try[String] = {
     val url = url0 // TODO: test more: fromUri(withoutFragment(URI(url0)))
     val requestConfig = RequestConfig.custom().setConnectTimeout(5 * 1000).build();
     val httpclient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
@@ -526,18 +541,19 @@ extends
           httpclient.execute(httpHead, responseHandler)
         else
           ""
-      logger.debug(s"getContentTypeFromHEADRequest: $responseHandled");
-      responseHandled
+      logger.debug(s"getContentTypeFromHEADRequest: response Handled '$responseHandled'");
+      Success(responseHandled)
     }
     catch {
       case t: Throwable =>
-        logger.error(s"getContentTypeFromHEADRequest($url): ${t.getLocalizedMessage}")
-        "ERROR"
+        logger.error(s"getContentTypeFromHEADRequest($url): execute: => ${t} '${t.getLocalizedMessage}'")
+        Failure(t)
     }
     finally {
       httpclient.close();
     }
   }
+
   /** unused function : commented for modularization */
   private def microdataLoading(uri: Rdf#URI): Rdf#Graph = {
     logger.info(s"Trying RDFa for <$uri>")
@@ -564,8 +580,10 @@ extends
   /* test if given URI is a locally managed URL, that is created locally and 100% located here */
   /** get Locally Managed graph from given URI : <URI> ?P ?O */
   private def getLocallyManagedUrlAndData(uri: Rdf#URI, request: HTTPrequest, transactionsInside: Boolean): Option[Rdf#Graph] =
-    // TODO accept URI's differing only on htttp versus https
+    // TODO ? accept URI's differing only on http versus https ??
     if (!fromUri(uri).startsWith(request.absoluteURL())) {
+      print("getLocallyManagedUrlAndData ")
+      print( fromUri(uri) ) ; print(" ") ; println( request.absoluteURL())
       // TODO use isFocusURIlocal()
       // then it can be a "pure" HTML web page, or an RDF document
       None
