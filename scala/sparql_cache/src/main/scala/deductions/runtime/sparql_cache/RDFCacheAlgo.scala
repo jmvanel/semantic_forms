@@ -111,27 +111,35 @@ extends
    *  @return the more recent RDF data from Internet if any, or the old data
    */
   def retrieveURIBody(uri: Rdf#URI, dataset: DATASET,
-                      request: HTTPrequest,
+                      request:            HTTPrequest,
                       transactionsInside: Boolean): Try[Rdf#Graph] = {
+    val ret = retrieveURIResourceStatus(uri, dataset,
+      request: HTTPrequest, transactionsInside)
+    ret._1
+  }
 
+  def retrieveURIResourceStatus(uri: Rdf#URI, dataset: DATASET,
+                      request: HTTPrequest,
+                      transactionsInside: Boolean): (Try[Rdf#Graph], Try[String]) = {
     val tryGraphLocallyManagedData = getLocallyManagedUrlAndData(uri, request, transactionsInside: Boolean)
+
 //    logger.debug(
     println( s"retrieveURIBody: tryGraphLocallyManagedData $tryGraphLocallyManagedData")
 
     tryGraphLocallyManagedData match {
-      case Some(tgr) => Success(tgr)
+      case Some(tgr) => (Success(tgr), Success(""))
       case None =>
 
         val (nothingStoredLocally, graphStoredLocally) = checkIfNothingStoredLocally(uri, transactionsInside)
 
-        val result =
+        val result: (Try[Rdf#Graph], Try[String]) =
           if (nothingStoredLocally) { // then read unconditionally from URI and store in TDB
           logger.debug(s"""retrieveURIBody: stored Graph Is Empty for URI <$uri>""")
           val mirrorURI = getMirrorURI(uri)
-          val vv = if (mirrorURI === "") {
+          val resultWhenNothingStoredLocally: (Try[Rdf#Graph], Try[String]) =
+            if (mirrorURI === "") {
             val graphTry_MIME = readURI(uri, dataset, request)
-            println(
-                  s""">>>> retrieveURIBody graphTry_MIME $graphTry_MIME""")
+            println( s""">>>> retrieveURIBody graphTry_MIME $graphTry_MIME""")
             val graphDownloaded = {
               val graphTry = graphTry_MIME._1
               if (transactionsInside)
@@ -139,13 +147,14 @@ extends
               else
                 storeURINoTransaction(graphTry, uri, dataset)
             }
-            val vv = if (graphDownloaded.isSuccess) {
+            if (graphDownloaded.isSuccess) {
 //              logger.debug(
               println(
                   s"""Graph at URI <$uri>, size ${graphDownloaded.get.size}
                     Either new addition was downloaded, or locally managed data""")
               addTimestampToDataset(uri, dataset2)
-            } else
+              //, Success("") )
+              } else
               logger.error(
                 s"Download Graph at URI <$uri> was tried, but it's faulty: $graphDownloaded")
 
@@ -154,10 +163,10 @@ extends
                     size ${if (graphDownloaded.isSuccess) graphDownloaded.get.size} content Type: $contentType""")
             val isDocument = isDocumentMIME(contentType) // TODO case RDFa
             graphDownloaded match {
-              case Success(gr) if (!isDocument) => Success(gr)
+              case Success(gr) if (!isDocument) => (Success(gr), Success(""))
               case Success(gr) if (isDocument) =>
                 // TODO pass transactionsInside
-                Success(pureHTMLwebPageAnnotateAsDocument(uri, request))
+                (Success(pureHTMLwebPageAnnotateAsDocument(uri, request)), Success(""))
 
               case Failure(f) => {
                 logger.debug(s"Graph at URI <$uri> could not be downloaded, (exception ${f.getLocalizedMessage}, ${f.getClass} cause ${f.getCause}).")
@@ -169,22 +178,25 @@ extends
                                URI=http://ihmia.afihm.org/programme/index.html : stream=text/html)) */
 
                     // TODO pass transactionsInside
-                    Success(pureHTMLwebPageAnnotateAsDocument(uri, request))
-                  case _ => graphDownloaded
+                    (Success(pureHTMLwebPageAnnotateAsDocument(uri, request)), Failure(f))
+                  case _ => (graphDownloaded, Success(""))
                 }
               }
             }
           } else {
             logger.debug(s"retrieveURIBody: mirrorURI found: $mirrorURI")
             // TODO find in Mirror URI the relevant triples ( but currently AFAIK the graph returned by this function is not used )
-            Success(emptyGraph)
+            (Success(emptyGraph), Success(""))
           }
-          vv
+          resultWhenNothingStoredLocally
+
         } else { // something Stored Locally: get a chance for more recent RDF data, that will be shown next time
+          val resourceStatus = Success("undefined")
           Future {
+            // TODO, retrieve HTTP HEAD status
             updateLocalVersion(uri, dataset).getOrElse(graphStoredLocally)
           }
-          Success(graphStoredLocally)
+          ( Success(graphStoredLocally), resourceStatus)
         }
         result
     }

@@ -64,11 +64,20 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
           val (tryGraph: Try[Rdf#Graph], failureOrStatistics: NodeSeq ) =
             if (blankNode =/= "true") {
                 // TODO pass datasetOrDefault)
-              val tryGraph = retrieveURIBody(
+              val (tryGraph, resourceStatus) = retrieveURIResourceStatus(
                 makeUri(uri), datasetOrDefault, request, transactionsInside=true)
+                println(s">>>> htmlForm resourceStatus $resourceStatus")
               val failureOrStatistics = tryGraph match {
-                case Failure(e) => <p>{ e.getLocalizedMessage }</p>
+                case Failure(e) =>
+                  println(s">>>> tryGraph Failure $e")
+                  <p>{ e.getLocalizedMessage }</p>
+
+                case Success(g) if(resourceStatus.isFailure) =>
+                   println(s">>>> tryGraph Failure resourceStatus $resourceStatus")
+                  <p>{ resourceStatus }</p>
+
                 case Success(g) =>
+                  println(s">>>> htmlForm tryGraph Success")
                   val res = wrapInReadTransaction{ formatHTMLStatistics(URI(uri), g, request) }
                   res match {
                     case Success(xmlNodes) => xmlNodes
