@@ -82,7 +82,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
         historyLink ++
         <table class="table">
           <thead>
-            <tr>
+            <tr style="color: LightGray; font-size: small">
               <th title="Resource URI visited by user">{ mess("Resource") }</th>
               <th title="Type (class)">Type</th>
               <!-- th title="Action (Create, Display, Update)">{ mess("Action") }</th-->
@@ -108,7 +108,9 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
                   if (row(1).toString().length() > 3) {
                     val date = new Date(dateAsLong(row))
                     val dateFormat = new SimpleDateFormat(
-                      "EEEE dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
+                      "dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
+                    val dateFormat2 = new SimpleDateFormat("EEEE", Locale.forLanguageTag(lang))
+
                     <tr class="sf-table-row">{
                       <td>{ makeHyperlinkForURI(row(0), lang, allNamedGraph, config.hrefDisplayPrefix) }</td>
                       <td>{
@@ -117,7 +119,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
                           lang, allNamedGraph, config.hrefDisplayPrefix)
                       }</td>
                       <!-- td>{ "Edit" /* TODO */ }</td -->
-                      <td>{ dateFormat.format(date) }</td>
+                      <td title={ dateFormat2.format(date) }>{ dateFormat.format(date) }</td>
                       <td>{ row(3) }</td>
                       <td>{ makeStringFromLiteral(row(2)) }</td>
                     }</tr>
