@@ -66,18 +66,18 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
                 // TODO pass datasetOrDefault)
               val (tryGraph, resourceStatus) = retrieveURIResourceStatus(
                 makeUri(uri), datasetOrDefault, request, transactionsInside=true)
-                println(s">>>> htmlForm resourceStatus $resourceStatus")
+                logger.debug(  "LOADING " +s">>>> htmlForm resourceStatus $resourceStatus")
               val failureOrStatistics = tryGraph match {
                 case Failure(e) =>
-                  println(s">>>> tryGraph Failure $e")
+                  logger.debug(  "LOADING " +s">>>> tryGraph Failure $e")
                   <p>{ e.getLocalizedMessage }</p>
 
                 case Success(g) if(resourceStatus.isFailure) =>
-                   println(s">>>> tryGraph Failure resourceStatus $resourceStatus")
+                   logger.debug(  "LOADING " +s">>>> tryGraph Failure resourceStatus $resourceStatus")
                   <p>{ resourceStatus }</p>
 
                 case Success(g) =>
-                  println(s">>>> htmlForm tryGraph Success")
+                  logger.debug(  "LOADING " +s">>>> htmlForm tryGraph Success")
                   val res = wrapInReadTransaction{ formatHTMLStatistics(URI(uri), g, request) }
                   res match {
                     case Success(xmlNodes) => xmlNodes

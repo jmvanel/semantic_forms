@@ -9,7 +9,7 @@ import org.apache.http.client.utils.DateUtils
 
 import org.w3.banana.RDF
 
-import scala.util.{Success, Try}
+import scala.util.{Success, Try, Failure}
 
 import scalaz._
 import Scalaz._
@@ -34,7 +34,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
 
   //// Expires ////
 
-  def isDocumentExpired(connectionOption: Option[HttpURLConnection]) = {
+  def isDocumentExpired(connectionOption: Try[HttpURLConnection]) = {
     val opt = connectionOption.map {
       conn =>
         val expires = getHeaderField("Expires", conn)
@@ -121,7 +121,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
    * return Long.MaxValue if no timestamp is available;
    *  NOTE elsewhere akka HTTP client is used
    */
-  def lastModified(url0: String, timeout: Int): (Boolean, Long, Option[HttpURLConnection]) = {
+  def lastModified(url0: String, timeout: Int): (Boolean, Long, Try[HttpURLConnection]) = {
     val url = url0.replaceFirst("https", "http"); // Otherwise an exception may be thrown on invalid SSL certificates.
     try {
       val connection0 = new URL(url).openConnection()
@@ -146,24 +146,24 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
           
           val lm = tryHeaderField("Last-Modified")
           val r = if (lm._1) {
-            (lm._2, lm._3, Some(connection) )
-          } else (false, Long.MaxValue, Some(connection) )
+            (lm._2, lm._3, Success(connection) )
+          } else (false, Long.MaxValue, Success(connection) )
           return r
 
         case _ if(url.startsWith("file:/") ) =>
           val f = new File( new java.net.URI(url) )
           logger.debug(s"lastModified: case of file:// ${new java.util.Date(f.lastModified)}")
-          (true,  f.lastModified(), None )
+          (true,  f.lastModified(), Success(null) )
           
         case _ =>
           logger.error( s"lastModified(): Case not implemented: $url - $connection0")
-          (false, Long.MaxValue, None )
+          (false, Long.MaxValue, Success(null) )
 
       }
     } catch {
       case exception: IOException =>
         logger.warn(s"lastModified($url0) : exception $exception")
-        (false, Long.MaxValue, None)
+        (false, Long.MaxValue, Failure(exception))
       case e: Throwable           => throw e
     }
   }

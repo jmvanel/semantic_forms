@@ -124,7 +124,7 @@ extends
     val tryGraphLocallyManagedData = getLocallyManagedUrlAndData(uri, request, transactionsInside: Boolean)
 
 //    logger.debug(
-    println( s"retrieveURIBody: tryGraphLocallyManagedData $tryGraphLocallyManagedData")
+    logger.debug(  "LOADING " + s"retrieveURIBody: tryGraphLocallyManagedData $tryGraphLocallyManagedData")
 
     tryGraphLocallyManagedData match {
       case Some(tgr) => (Success(tgr), Success(""))
@@ -139,7 +139,7 @@ extends
           val resultWhenNothingStoredLocally: (Try[Rdf#Graph], Try[String]) =
             if (mirrorURI === "") {
             val graphTry_MIME = readURI(uri, dataset, request)
-            println( s""">>>> retrieveURIBody graphTry_MIME $graphTry_MIME""")
+            logger.debug(  "LOADING " + s""">>>> retrieveURIBody graphTry_MIME $graphTry_MIME""")
             val graphDownloaded = {
               val graphTry = graphTry_MIME._1
               if (transactionsInside)
@@ -149,7 +149,7 @@ extends
             }
             if (graphDownloaded.isSuccess) {
 //              logger.debug(
-              println(
+              logger.debug(  "LOADING " +
                   s"""Graph at URI <$uri>, size ${graphDownloaded.get.size}
                     Either new addition was downloaded, or locally managed data""")
               addTimestampToDataset(uri, dataset2)
@@ -241,7 +241,8 @@ extends
   /**
    * according to stored and HTTP timestamps, download if outdated;
    * with NO transaction,
-   * @return a graph with more recent RDF data or None
+   * @return a graph with more recent RDF data or Failure
+   * TODO return a couple (Try[Rdf#Graph], Try[HttpURLConnection]), to indicate network error
    */
   private def updateLocalVersion(uri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
     val localTimestamp = dataset2.r { getTimestampFromDataset(uri, dataset2) }.get
@@ -250,16 +251,17 @@ extends
     localTimestamp match {
       case Success(longLocalTimestamp) => {
         logger.debug(s"updateLocalVersion: $uri local TDB Timestamp: ${new Date(longLocalTimestamp)} - $longLocalTimestamp .")
-        val (noError, timestampFromHTTPHeader, connectionOption) = lastModified(uri.toString(), httpHeadTimeout)
-        logger.debug(s"updateLocalVersion: <$uri> last Modified: ${new Date(timestampFromHTTPHeader)} - no Error: $noError .")
+        val (noErrorLastModified, timestampFromHTTPHeader, connectionOption) = lastModified(uri.toString(), httpHeadTimeout)
+        logger.debug(s"updateLocalVersion: <$uri> last Modified: ${new Date(timestampFromHTTPHeader)} - no Error: $noErrorLastModified .")
 
         if (isDocumentExpired(connectionOption)) {
           logger.debug(s"updateLocalVersion: <$uri> was OUTDATED by Expires HTPP header field")
           return readStoreURITry(uri, uri, dataset)
         }
 
-        if (noError && (timestampFromHTTPHeader > longLocalTimestamp
-          || longLocalTimestamp === Long.MaxValue)) {
+        if (noErrorLastModified &&
+           (timestampFromHTTPHeader > longLocalTimestamp
+            || longLocalTimestamp === Long.MaxValue)) {
           val graph = readStoreURITry(uri, uri, dataset)
           logger.debug(s"updateLocalVersion: <$uri> was OUTDATED by timestamp; downloaded.")
 
@@ -268,10 +270,10 @@ extends
 
           graph
 
-        } else if (!noError ||
+        } else if (!noErrorLastModified ||
           timestampFromHTTPHeader === Long.MaxValue) {
           connectionOption match {
-            case Some(connection) =>
+            case Success(connection) =>
               val etag = getHeaderField("ETag", connection)
               val etagFromDataset = dataset2.r { getETagFromDataset(uri, dataset2) }.get
               if (etag  =/=  etagFromDataset) {
@@ -281,7 +283,7 @@ extends
                 rdfStore.rw(dataset2, { addETagToDatasetNoTransaction(uri, etag, dataset2) })
                 graph
               } else Success(emptyGraph)
-            case None =>
+            case Failure(f) =>
               readStoreURITry(uri, uri, dataset)
           }
         } else Success(emptyGraph)
@@ -476,7 +478,7 @@ extends
    * use SF specific implementation for downloading RDF, not Jena RDFDataMgr
    * TODO:
    * - also load an URI with the # part
-   * - load a file: URI
+   * - load a file:// URI
    */
   private def readURIsf(
       uri: Rdf#URI,
@@ -490,7 +492,7 @@ extends
       val contentType = getContentTypeFromHEADRequest(fromUri(withoutFragment(uri)))
 
       //    	logger.debug(
-      println(
+      logger.debug(  "LOADING " +
     	    s""">>>> readURI: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
       contentType match {
         case Success(typ) =>
@@ -597,8 +599,8 @@ extends
   private def getLocallyManagedUrlAndData(uri: Rdf#URI, request: HTTPrequest, transactionsInside: Boolean): Option[Rdf#Graph] =
     // TODO ? accept URI's differing only on http versus https ??
     if (!fromUri(uri).startsWith(request.absoluteURL())) {
-      print("getLocallyManagedUrlAndData ")
-      print( fromUri(uri) ) ; print(" ") ; println( request.absoluteURL())
+      logger.debug(  """LOADING getLocallyManagedUrlAndData
+      <$uri> """ + request.absoluteURL() )
       // TODO use isFocusURIlocal()
       // then it can be a "pure" HTML web page, or an RDF document
       None
