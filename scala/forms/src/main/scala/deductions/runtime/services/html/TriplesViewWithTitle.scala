@@ -70,7 +70,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
               val failureOrStatistics = tryGraph match {
                 case Failure(e) =>
                   logger.debug(  "LOADING " +s">>>> tryGraph Failure $e")
-                  <p>{ e.getLocalizedMessage }</p>
+                  <p class="sf-error">{ e.getLocalizedMessage }</p>
 
                 case Success(g) if(resourceStatus.isFailure) =>
                    logger.debug(  "LOADING " +s">>>> tryGraph Failure resourceStatus $resourceStatus")
