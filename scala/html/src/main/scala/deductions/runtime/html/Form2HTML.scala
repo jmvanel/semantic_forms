@@ -121,9 +121,11 @@ import scala.xml.Unparsed
       if (!fields.isEmpty) {
         /* TODO mechanism too complex;
          * implementation:
-         * probably use List for fields,
-         * or record in FormField the alreadySeenProperty & neverDisplayedPropertyLabel statuses,
-         * or some kind of forward backward iterator, or List.sliding()
+         * - use groupBy
+             fields.groupBy(f => f.property)
+         * - use List for fields,
+         * - or record in FormField the alreadySeenProperty & neverDisplayedPropertyLabel statuses,
+         * - or some kind of forward backward iterator, or List.sliding()
          */
         val firstEntry = LiteralEntry()
         for (

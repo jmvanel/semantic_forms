@@ -19,7 +19,8 @@ trait NavigationSPARQLBase[Rdf <: RDF]
        |ORDER BY DESC(?count)
        """.stripMargin
 
-  /** neighborhood Search SPARQL: like extendedSearchSPARQL + reverse + direct */
+  /** neighborhood Search SPARQL: like extendedSearchSPARQL + reverse + direct
+   *  used in /history?uri= page */
   def neighborhoodSearchSPARQL(search: String) = s"""
        |SELECT DISTINCT ?thing 
        |# (COUNT(*) as ?count)

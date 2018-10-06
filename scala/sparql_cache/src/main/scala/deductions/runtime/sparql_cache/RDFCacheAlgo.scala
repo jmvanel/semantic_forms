@@ -118,6 +118,16 @@ extends
     ret._1
   }
 
+  /**  TODO [Marco] collect possible behavior patterns
+to give more meaningful feedback to user
+1. site is down
+2. rdf incorrect
+3. server response but no triples
+etc
+JMV:
+- probably need to leverage in class inheritance on Java exceptions
+- On Internet data, I want to store more: HTTP headers like Last-updated, number of triples, checksum, user who did the loading, what more ?
+ */
   def retrieveURIResourceStatus(uri: Rdf#URI, dataset: DATASET,
                       request: HTTPrequest,
                       transactionsInside: Boolean): (Try[Rdf#Graph], Try[String]) = {
