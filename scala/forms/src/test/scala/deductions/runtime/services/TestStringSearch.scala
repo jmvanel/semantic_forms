@@ -12,6 +12,8 @@ import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 import scala.language.postfixOps
 import scala.util.Try
+import deductions.runtime.utils.FormModuleBanana
+
 trait TestStringSearchTrait[Rdf <: RDF, DATASET] extends FunSuite
     with BeforeAndAfterAll
     with RDFStoreLocalProvider[Rdf, DATASET]
@@ -57,6 +59,7 @@ class TestStringSearch extends FunSuite
   with RDFStoreLocalJena1Provider
   with TestStringSearchTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
   with DefaultConfiguration
-  with LuceneIndex {
+  with LuceneIndex
+  with FormModuleBanana[ImplementationSettings.Rdf]{
     val config = new DefaultConfiguration{}
 }

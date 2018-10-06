@@ -28,16 +28,9 @@ trait TestCreationForm2[Rdf <: RDF, DATASET] extends FunSuite
     with GraphTest[Rdf]
     with BeforeAndAfterAll {
 
-//	override val config = new DefaultConfiguration{}
+  def stringToAbstractURI(uri: String): Rdf#URI = ???
+  def toPlainString(n: deductions.runtime.jena.ImplementationSettings.Rdf#Node): String = ???
 
-  // PASTED code:
-//	val conf = config
-//  val ops1 = ops
-//  val htmlGenerator = new Form2HTMLBanana[Rdf] {
-//    implicit val ops = ops1
-//    val config = conf
-//    val nullURI = ops.URI("")
-//  }
 	override lazy val htmlGenerator =
 			Form2HTMLObject.makeDefaultForm2HTML(config)(ops)
   

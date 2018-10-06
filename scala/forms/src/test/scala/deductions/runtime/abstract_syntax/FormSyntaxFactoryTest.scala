@@ -19,6 +19,9 @@ class FormSyntaxFactoryTestJena extends FunSuite
   }
   val logger = Logger.getRootLogger()
 
+  def stringToAbstractURI(uri: String): deductions.runtime.jena.ImplementationSettings.Rdf#URI = ???
+  def toPlainString(n: deductions.runtime.jena.ImplementationSettings.Rdf#Node): String = ???
+
   test("form contains label and data") {
     val form = createFormWithGivenProps
     println("form:\n" + form)

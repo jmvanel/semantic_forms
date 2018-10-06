@@ -32,14 +32,8 @@ class TestCreationForm extends {
     with Configuration
     with DefaultConfiguration {
 
-	// PASTED code:
-//	val conf = config
-//  val ops1 = ops
-//  val htmlGenerator = new Form2HTMLBanana[ImplementationSettings.Rdf] {
-//    implicit val ops = ops1
-//    val config = conf
-//    val nullURI = ops.URI("")
-//  }
+  def stringToAbstractURI(uri: String): deductions.runtime.jena.ImplementationSettings.Rdf#URI = ???
+  def toPlainString(n: deductions.runtime.jena.ImplementationSettings.Rdf#Node): String = ???
 
 	override lazy val htmlGenerator =
     Form2HTMLObject.makeDefaultForm2HTML(config)(ops)

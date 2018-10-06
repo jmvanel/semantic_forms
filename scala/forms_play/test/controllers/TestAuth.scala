@@ -20,6 +20,9 @@ class TestAuth
     with Secured
     {
 
+  def stringToAbstractURI(uri: String): deductions.runtime.jena.ImplementationSettings.Rdf#URI = ???
+  def toPlainString(n: deductions.runtime.jena.ImplementationSettings.Rdf#Node): String = ???
+
   lazy val config = new DefaultConfiguration {
     override val needLoginForEditing = true
     override val needLoginForDisplaying = true
