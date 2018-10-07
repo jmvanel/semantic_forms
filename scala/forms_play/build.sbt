@@ -37,3 +37,4 @@ resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + 
 // show full stack trace in SBT
 // testOptions in Test += Tests.Argument("-oF")
 
+// PlayKeys.devSettings += "play.server.http.port" -> "9111"

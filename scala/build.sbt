@@ -26,6 +26,7 @@ lazy val forms_play = (project in file("forms_play"))
 	.dependsOn(forms)
 	.dependsOn(contacts_management)
 	.dependsOn(mobion)
+	.dependsOn(clients)
 .enablePlugins(PlayScala) .disablePlugins(PlayLogback)
 .settings(
    scalaJSProjects := Seq(forms_js),
