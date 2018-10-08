@@ -11,7 +11,7 @@ organization in ThisBuild := "deductions"
 version in ThisBuild := "2.X-SNAPSHOT"
 
 // 
-scalaVersion := "2.12.6"
+scalaVersion := "2.12.7"
 // lazy val commonSettings = Seq( scalaVersion := "2.12.6", organization := "deductions")
 // crossScalaVersions := Seq("2.11.12", "2.12.6")
 

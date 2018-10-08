@@ -6,9 +6,8 @@ object Common {
     val localResolver = Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
     val bananaResolver = "bblfish-snapshots" at "http://bblfish.net/work/repo/releases"
 
-//val jenaVersion =  "3.6.0"
-//val jenaVersion =  "3.7.0"
-  val jenaVersion =  "3.8.0"
+//val jenaVersion =  "3.8.0"
+  val jenaVersion =  "3.9.0"
 
   val bananaDependency0 = "org.w3" %%  "banana-jena" % "0.8.4-SNAPSHOT" 
   val bananaDependency = bananaDependency0 exclude("org.slf4j", "slf4j-api" )	exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
@@ -16,7 +15,7 @@ object Common {
   val jenaPermissionsDependency = "org.apache.jena" % "jena-permissions" % jenaVersion	exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
   val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion		exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
 
-  val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.1.0" // 1.0.6"
+  val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.1.1"
 
   val junitDependency = "junit" % "junit" % "4.12" % Test
   val scalatestDependency = "org.scalatest" %% "scalatest" % "3.0.5" % "test"
@@ -48,8 +47,8 @@ object Common {
     "com.typesafe.play" %% "play-json" %  "2.6.10",
     // "com.typesafe.play" %% "play-iteratees" % "2.6.1",
 
-    "org.apache.lucene" % "lucene-suggest" % "6.6.5", // 6.6.3", // 6.6.1", // "6.4.1"
-    "org.apache.lucene" % "lucene-demo"    % "6.6.5", // "6.6.3", // 6.6.1", // "6.4.1"
+    "org.apache.lucene" % "lucene-suggest" % "7.5.0", // 6.6.5",
+    "org.apache.lucene" % "lucene-demo"    % "7.5.0", // 6.6.5",
 /*
     "org.apache.lucene" % "lucene-suggest" % "4.9.1" ,
     "org.apache.lucene" % "lucene-demo" % "4.9.1" ,
@@ -64,10 +63,10 @@ object Common {
 
     "org.scala-lang.modules" %% "scala-async" % "0.9.7" ,
 
-    "org.apache.commons" % "commons-csv" % "1.5" ,
+    "org.apache.commons" % "commons-csv" % "1.6" ,
     any23Dependencies
     // for Java 9 (works also with Java 8)
-    , "javax.xml.bind" % "jaxb-api" % "2.3.0"
+    , "javax.xml.bind" % "jaxb-api" % "2.3.1"
   )
 
 }
