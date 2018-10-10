@@ -59,7 +59,7 @@ trait GeoController[Rdf <: RDF, DATASET] extends GeoPath[Rdf, DATASET]
       };
       _ = println(s"statisticsGraph formSyntax ${formSyntax}")
     ) yield {
-      val html = generate(formSyntax)
+      val html = generate(formSyntax, HTTPrequest())
       println(s"statisticsGraph html ${html.size}")
       html
     }

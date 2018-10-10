@@ -239,10 +239,10 @@ trait WebPages extends Controller with ApplicationTrait
       val config = new DefaultConfiguration {}
       val nullURI = ops.URI("")
     }
-    tv.generate(formSyntax)
+    tv.generate(formSyntax, request: HTTPrequest)
   }
 
-  private def queryFromRequest(request: HTTPrequest) =
+  private def queryFromRequest(request: HTTPrequest): String =
     request.queryString.getOrElse("query", Seq()).headOption.getOrElse("")
 
   /** "naked" HTML form */

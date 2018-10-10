@@ -5,6 +5,7 @@ import deductions.runtime.utils.{RDFPrefixesInterface, UnicityList}
 
 import scala.collection.mutable
 import scala.xml.NodeSeq
+import deductions.runtime.core.HTTPrequest
 
 /** Table View; base for a future editable Table View */
 trait TableView[NODE, URI <: NODE]
@@ -25,7 +26,7 @@ trait TableView[NODE, URI <: NODE]
   /** used for printing property label in header */
   private val propertiesMap = mutable.Map[NODE, Entry]()
 
-  def generate(form: formMod#FormSyntax): NodeSeq = {
+  def generate(form: formMod#FormSyntax, request: HTTPrequest): NodeSeq = {
 
     for (entry <- form.fields) {
       properties.add(entry.property)
@@ -43,7 +44,7 @@ trait TableView[NODE, URI <: NODE]
         for (row <- rows.list) yield {
           <tr>
             <td> { uriColumn(row) } </td>
-            { dataColumns(row) }
+            { dataColumns(row,request: HTTPrequest) }
           </tr>
         }
       }
@@ -73,18 +74,24 @@ trait TableView[NODE, URI <: NODE]
   }
 
   /** data (triple objects) columns */
-  private def dataColumns(row: NODE) = {
+  private def dataColumns(row: NODE, request: HTTPrequest) = {
     for (property <- properties.list) yield {
       Seq(
         <td>{
           val cellOption = cellsMap.get((row, property))
           cellOption match {
             case Some(entry) =>
-              createHTMLField(entry, editable = false, displayInTable = true)(nullFormSyntax)
+              createHTMLField(entry,
+                  editable = isEditableFromRequest(request),
+                  displayInTable = true)(nullFormSyntax)
             case _ => ""
           }
         }</td>)
-    }
+   }
   }
-      
+
+  /** TODO also elsewhere */
+  private def isEditableFromRequest(request: HTTPrequest): Boolean =
+    request.queryString.getOrElse("edit", Seq()).headOption.getOrElse("") != ""
+
 }
