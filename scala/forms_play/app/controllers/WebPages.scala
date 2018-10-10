@@ -213,23 +213,37 @@ trait WebPages extends Controller with ApplicationTrait
         val title = "Table view from SPARQL"
         val lang = chooseLanguage(request)
         val userInfo = displayUser(userid, "", title, lang)
+        val editButton = <button action="/table" title="Edit each cell of the table (like a spreadheet)">Edit</button>
         outputMainPage(
-          <div>
-            <a href={ "/sparql-ui?query=" + URLEncoder.encode(query, "UTF-8") }>Back to SPARQL page</a>
-          </div>
-            ++
-            tableFromSPARQL(requestCopy),
-          lang, title = title, userInfo = userInfo,
+            <div>
+              <a href={ "/sparql-ui?query=" + URLEncoder.encode(query, "UTF-8") }>Back to SPARQL page</a>
+            </div> ++
+            <form> {
+              editButton ++
+              <input name="query" type="hidden" value={query}></input> ++
+              <input name="edit" type="hidden" value={
+                // request.queryString.getOrElse("edit", Seq()).headOption.getOrElse("yes")
+                "yes"
+              }></input> ++
+              tableFromSPARQL(requestCopy)
+            } </form>,
+          lang, title = title,
+          userInfo = userInfo,
           classForContent = "")
       },
       (t: Throwable) =>
         errorResultFromThrowable(t, s"in make table /table?query=$query"))
   }
 
+
   private def tableFromSPARQL(request: HTTPrequest): NodeSeq = {
+    /** TODO also elsewhere */
+    def isEditableFromRequest(request: HTTPrequest): Boolean =
+      request.queryString.getOrElse("edit", Seq()).headOption.getOrElse("") != ""
+
     val query = queryFromRequest(request)
     val formSyntax = createFormFromSPARQL(query,
-      editable = false,
+      editable = isEditableFromRequest(request),
       formuri = "", request)
     val tv = new TableView[ImplementationSettings.Rdf#Node, ImplementationSettings.Rdf#URI]
         with Form2HTMLBanana[ImplementationSettings.Rdf]
