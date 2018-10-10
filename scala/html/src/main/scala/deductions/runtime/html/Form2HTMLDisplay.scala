@@ -234,7 +234,8 @@ with FormModule[NODE, URI]
       } }
       """
     val imageURL = "/assets/images/little-table-grid.svg"
-    <a href={ "/table?query=" + URLEncoder.encode(sparlqlQuery, "UTF-8") } target="_blank"
+    <a href={ "/table?query=" + URLEncoder.encode(sparlqlQuery, "UTF-8") +
+        s"&label=<$classURI>"} target="_blank"
        title={s"Table view for <$classURI>"}>
          <img src={ imageURL } css="sf-thumbnail" height="20" alt="Table view"/>
     </a>

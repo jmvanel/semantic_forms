@@ -38,6 +38,9 @@ trait TableView[NODE, URI <: NODE]
       rowsMap(entry.subject) = entry
     }
 
+    <p>{
+      request.getHTTPparameterValue("label").getOrElse("")
+    }</p> ++
     <table class="table table-striped table-bordered">
       <tr> { headerRow } </tr>
       {
