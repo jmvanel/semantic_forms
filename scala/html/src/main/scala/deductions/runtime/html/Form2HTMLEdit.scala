@@ -238,7 +238,8 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
       case typ if typ === xsdPrefix + "boolean" =>
         val html5Type = "radio"
         (
-        <div class="wrapper">
+        <div class="wrapper"
+             title={lit.property.toString()} >
           <label for="yes_radio" id="yes-lbl">Oui</label>
           <input type={html5Type} name={
             lit.htmlName } id="yes_radio"
@@ -299,7 +300,8 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
                  ! (lit.widgetType == ShortString) &&
                  html5Type == "text"
                )
-              <input class="btn btn-primary" type="button" value="EDIT" onClick={
+              <input class="btn btn-primary" type="button" value="EDIT"
+                onClick={
                 // s"""PopupEditor.launchEditorWindow( document.getElementById( "$htmlId" ));"""
                 s"""
                   // var input = document.getElementById( "$htmlId" );

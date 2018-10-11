@@ -225,6 +225,8 @@ trait WebPages extends Controller with ApplicationTrait
                 // request.queryString.getOrElse("edit", Seq()).headOption.getOrElse("yes")
                 "yes"
               }></input> ++
+              <input type="hidden" name="graphURI" value={ requestCopy.userId() }/>
+              <button action="/save">Submit</button> ++
               tableFromSPARQL(requestCopy)
             } </form>,
           lang, title = title,
