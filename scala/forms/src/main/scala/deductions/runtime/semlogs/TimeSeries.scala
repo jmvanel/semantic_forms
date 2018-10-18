@@ -171,9 +171,9 @@ with SPARQLHelpers[Rdf, DATASET] {
    * @return rows of
    * timestamp, user;
    * ordered by recent first
-   * TODO return a List of (timestamp, user)
    */
-  def getMetadataAboutTriple(subject: Rdf#Node, predicate: Rdf#Node, objet: Rdf#Node, limit: Int =100, offset: Int = 0)
+  def getMetadataAboutTriple(subject: Rdf#Node, predicate: Rdf#Node, objet: Rdf#Node,
+      limit: Int =100, offset: Int = 0)
   : List[Seq[Rdf#Node]] = {
 		  val query = s"""
       ${declarePrefix(xsd)}
@@ -184,7 +184,7 @@ with SPARQLHelpers[Rdf, DATASET] {
               <$userPredURI> ?USER .
         }
         GRAPH ?GR {
-         <$subject> <$predicate> <$objet>. }
+         <$subject> <$predicate> ${makeTurtleTerm(objet)} . }
       }
       GROUP BY ?USER
       ORDER BY DESC(xsd:integer(?TS))

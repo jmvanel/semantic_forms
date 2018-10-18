@@ -244,9 +244,14 @@ trait WebPages extends Controller with ApplicationTrait
       request.queryString.getOrElse("edit", Seq()).headOption.getOrElse("") != ""
 
     val query = queryFromRequest(request)
-    val formSyntax = createFormFromSPARQL(query,
-      editable = isEditableFromRequest(request),
-      formuri = "", request)
+    implicit val graph: Rdf#Graph = allNamedGraph
+    // form Syntax With user Info
+    val formSyntax =
+      addUserInfoOnAllTriples(
+        createFormFromSPARQL(query,
+          editable = isEditableFromRequest(request),
+          formuri = "", request))
+
     val tv = new TableView[ImplementationSettings.Rdf#Node, ImplementationSettings.Rdf#URI]
         with Form2HTMLBanana[ImplementationSettings.Rdf]
         with ImplementationSettings.RDFModule
@@ -255,7 +260,7 @@ trait WebPages extends Controller with ApplicationTrait
       val config = new DefaultConfiguration {}
       val nullURI = ops.URI("")
     }
-    tv.generate(formSyntax, request: HTTPrequest)
+    tv.generate(formSyntax, request)
   }
 
   private def queryFromRequest(request: HTTPrequest): String =

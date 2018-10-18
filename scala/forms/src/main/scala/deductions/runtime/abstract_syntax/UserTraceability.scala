@@ -15,6 +15,7 @@ trait UserTraceability[Rdf <: RDF, DATASET]
   extends FormModule[Rdf#Node, Rdf#URI]
     with TimeSeries[Rdf, DATASET] {
 
+  /** add User Info On Triples whose subject is form subject */
   def addUserInfoOnTriples(
                             formSyntax: FormSyntax)(
                             implicit graph: Rdf#Graph,
@@ -22,18 +23,18 @@ trait UserTraceability[Rdf <: RDF, DATASET]
     try {
     logger.info("XXXXXXXXXXXXXXXX addUserInfoOnTriples")
     val metadata = getMetadataAboutSubject(formSyntax.subject)
+    /* Map : (property,objet) -> userId */
     val resultsUser = mutable.Map[(String,String), String]()
+    /* Map : (property,objet) -> timeElement */
     val resultsTimestamp = mutable.Map[(String,String), Long]()
 
     for (row: Seq[Rdf#Node] <- metadata){
       logger.info(row)
 
-      // each row: property, object, timestamp, user
+      // each row contains: property, object, timestamp, user
       val propertyId =0; val objectId=1; val timestampId=2; val userId=3;
 
-      val timeElementStr = row(timestampId).toString
-      // TODO there is something smarter in Banana:
-      val timeElement  = timeElementStr.splitAt(timeElementStr.indexOf("^"))._1.replaceAll("\"","").toLong
+      val timeElement  = rdfNodeToLong(row(timestampId))
       val property = row(propertyId).toString
       val objet = row(objectId).toString
 
@@ -81,6 +82,42 @@ trait UserTraceability[Rdf <: RDF, DATASET]
     }
   }
 
+  /** TODO there is something smarter in Banana */
+  private def rdfNodeToLong(node: Rdf#Node): Long = {
+    val timeElementStr = node.toString
+    timeElementStr.splitAt(timeElementStr.indexOf("^"))._1.replaceAll("\"","").toLong
+  }
+
+  /** add User Info On all Triples */
+  def addUserInfoOnAllTriples(
+    formSyntax: FormSyntax)(
+    implicit
+    graph: Rdf#Graph,
+    lang:  String    = "en"): FormSyntax = {
+    try {
+      logger.info("XXXXXXXXXXXXXXXX addUserInfoOnAllTriples")
+      val entries =
+        for (field: Entry <- formSyntax.fields) yield {
+          val metadata: List[Seq[Rdf#Node]] = getMetadataAboutTriple(
+              field.subject, field.property, field.value, 100, 0)
+          logger.debug( s">>>> addUserInfoOnAllTriples field $field, metadata $metadata")
+          for (row: Seq[Rdf#Node] <- metadata) yield {
+            field.copyEntry(
+              fromTimeMetadata = rdfNodeToLong(row(0)),
+              fromMetadata = row(1).toString())
+          }
+        }
+//      println( s">>>> addUserInfoOnAllTriples entries $entries")
+      formSyntax.fields = entries.flatten
+      formSyntax
+    } catch {
+      case t: Throwable =>
+        logger.error("addUserInfoOnAllTriples" + t.getLocalizedMessage)
+        t.printStackTrace(System.err)
+        return formSyntax
+    }
+  }
+    
   private def addUserFromGraph(field: Entry): Entry = {
     try {
     val resMainDatabase = {

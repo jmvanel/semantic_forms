@@ -7,7 +7,7 @@ import scala.collection.mutable
 import scala.xml.NodeSeq
 import deductions.runtime.core.HTTPrequest
 
-/** Table View; base for a future editable Table View */
+/** Table View; editable or not */
 trait TableView[NODE, URI <: NODE]
     //extends Form2HTMLBase[NODE, URI]
     extends Form2HTML[NODE, URI]
@@ -26,6 +26,7 @@ trait TableView[NODE, URI <: NODE]
   /** used for printing property label in header */
   private val propertiesMap = mutable.Map[NODE, Entry]()
 
+  /** generate Table View */
   def generate(form: formMod#FormSyntax, request: HTTPrequest): NodeSeq = {
 
     for (entry <- form.fields) {
@@ -47,7 +48,7 @@ trait TableView[NODE, URI <: NODE]
         for (row <- rows.list) yield {
           <tr>
             <td> { uriColumn(row) } </td>
-            { dataColumns(row,request: HTTPrequest) }
+            { dataColumns(row, request) }
           </tr>
         }
       }
@@ -84,6 +85,7 @@ trait TableView[NODE, URI <: NODE]
           val cellOption = cellsMap.get((row, property))
           cellOption match {
             case Some(entry) =>
+              // println(s"dataColumns: isEditableFromRequest ${isEditableFromRequest(request)}, entry $entry")
               createHTMLField(entry,
                   editable = isEditableFromRequest(request),
                   displayInTable = true)(nullFormSyntax)
