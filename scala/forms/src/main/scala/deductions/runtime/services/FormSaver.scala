@@ -128,26 +128,20 @@ trait FormSaver[Rdf <: RDF, DATASET]
       case Some(subjectUri0) =>
         val subjectUri = URLDecoder.decode(subjectUri0, "utf-8")
         log(s"FormSaver.saveTriples subjectUri $subjectUri")
-
-        // named graph in which to save:
-        val graphURI =
-          if (graphURIOption === Some("")) subjectUri
-          else URLDecoder.decode(graphURIOption.getOrElse(subjectUri0), "utf-8")
-        val databaseChanges = computeDatabaseChangesFromMap( httpParamsMap, lang)
-
-        doSave(graphURI, databaseChanges)
-
-//        { // TEST
-//          wrapInReadTransaction {
-//            val typesTriples = find(allNamedGraph, URI(subjectUri), rdf.typ, ANY).toList
-//            println(s"==== saveTriples: typesTriples $typesTriples")
-//          }
-//        }
-        ( Some(subjectUri), databaseChanges.typeChange)
-      case _ => (None, false)
+        Some(subjectUri)
+      case _ => None
     }
+    // named graph in which to save:
+    val graphURI =
+      if (graphURIOption === Some("")) subjectUriOption.getOrElse("???")
+          else URLDecoder.decode(graphURIOption.getOrElse(subjectUriOption.getOrElse("???")), "utf-8")
 
-    return subjectUriOption
+    if(graphURI != "???") {
+      val databaseChanges = computeDatabaseChangesFromMap( httpParamsMap, lang)
+      doSave(graphURI, databaseChanges)
+      ( subjectUriOption, databaseChanges.typeChange)
+    } else
+      ( subjectUriOption, false)
   }
 
   /** process a single triple from the form
@@ -286,6 +280,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
   private def log(s: String) =
     logger.debug(s"FormSaver: $s")
+    // println(s"FormSaver: $s")
 
 }
 

@@ -274,20 +274,20 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   /** save Form data in TDB
    *  @return main subject URI like [[FormSaver.saveTriples]],
    *  type change flag */
-  def saveForm(request: Map[String, Seq[String]], lang: String = "",
+  def saveForm(requestMap: Map[String, Seq[String]], lang: String = "",
       userid: String, graphURI: String = "", host: String= "")
   : (Option[String], Boolean) = {
-    logger.info(s"ApplicationFacadeImpl.saveForm: request :$request, userid <$userid>")
+    logger.info(s"ApplicationFacadeImpl.saveForm: request :$requestMap, userid <$userid>")
     val mainSubjectURI = try {
       implicit val userURI: String = userid
-      saveTriples(request,lang)
+      saveTriples(requestMap,lang)
     } catch {
       case t: Throwable =>
         logger.error(s"""Exception in saveTriples: $t
             ${t.getStackTrace.slice(0,5).mkString("\n")}""")
         throw t
     }
-    val uriOption = (request).getOrElse("uri", Seq()).headOption
+    val uriOption = (requestMap).getOrElse("uri", Seq()).headOption
     logger.info(s"ApplicationFacadeImpl.saveForm: uriOption $uriOption, graphURI $graphURI")
     uriOption match {
       case Some(url1) =>
@@ -298,7 +298,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
             lang )
     	})
     	logger.info( s"Save: normal! $uriOption" )
-      case _ => logger.error( s"Save:  NOT normal! uriOption: $uriOption request $request" )
+      case _ => logger.error( s"Save: focus URI not defined, request graphURI ${requestMap.getOrElse("graphURI", "?")}" )
     }
     
     // associate userid with graphURI
