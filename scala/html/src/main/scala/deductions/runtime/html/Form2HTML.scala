@@ -188,7 +188,7 @@ import scala.xml.Unparsed
         val subjectField =
           // NOTE: over-use of class ResourceEntry to display the subject instead of normally the object triple:
           ResourceEntry(value = field.subject, valueLabel = field.subjectLabel)
-        createHTMLField(subjectField, editable, hrefPrefix, lang, css="")
+        createHTMLField(subjectField, editable, hrefPrefix, lang, css="", request=HTTPrequest() )
       } else NodeSeq.Empty
     }
 
@@ -263,7 +263,7 @@ import scala.xml.Unparsed
    * should not need to be overriden */
   def createHTMLField(field: formMod#Entry, editable: Boolean,
                               hrefPrefix: String = config.hrefDisplayPrefix, lang: String = "en",
-                              request: HTTPrequest = HTTPrequest(),
+                              request: HTTPrequest,
                               displayInTable: Boolean = false,
                               css: String="sf-value-block col-xs-12 col-sm-9 col-md-9")(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
 
@@ -276,7 +276,7 @@ import scala.xml.Unparsed
     val editableByUser =
               field.metadata === request.userId() ||
               field.metadata === userURI(request)
-//    println(s"DEBUG !!!!!!!!!! editableByUser=$editableByUser <- field.metadata=${field.metadata} =? request.userId()=${request.userId()}")
+    // println(s"DEBUG !!!!! $field :: editableByUser=$editableByUser <- field.metadata=${field.metadata} =? request.userId()=${request.userId()}")
 
     // hack instead of true form separator in the form spec in RDF:
     if (field.label.contains("----"))

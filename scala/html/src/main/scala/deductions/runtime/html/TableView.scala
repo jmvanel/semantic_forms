@@ -88,7 +88,7 @@ trait TableView[NODE, URI <: NODE]
               // println(s"dataColumns: isEditableFromRequest ${isEditableFromRequest(request)}, entry $entry")
               createHTMLField(entry,
                   editable = isEditableFromRequest(request),
-                  displayInTable = true)(nullFormSyntax)
+                  displayInTable = true, request=request )(nullFormSyntax)
             case _ => ""
           }
         }</td>)

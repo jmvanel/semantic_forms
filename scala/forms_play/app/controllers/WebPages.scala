@@ -218,7 +218,7 @@ trait WebPages extends Controller with ApplicationTrait
             <div>
               <a href={ "/sparql-ui?query=" + URLEncoder.encode(query, "UTF-8") }>Back to SPARQL page</a>
             </div> ++
-            <form> {
+            <form method="post"> {
               editButton ++
               <input name="query" type="hidden" value={query}></input> ++
               <input name="edit" type="hidden" value={
@@ -226,7 +226,7 @@ trait WebPages extends Controller with ApplicationTrait
                 "yes"
               }></input> ++
               <input type="hidden" name="graphURI" value={ requestCopy.userId() }/>
-              <button action="/save">Submit</button> ++
+              <button formaction="/save">Submit</button> ++
               tableFromSPARQL(requestCopy)
             } </form>,
           lang, title = title,
