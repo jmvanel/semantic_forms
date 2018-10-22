@@ -218,15 +218,15 @@ trait WebPages extends Controller with ApplicationTrait
             <div>
               <a href={ "/sparql-ui?query=" + URLEncoder.encode(query, "UTF-8") }>Back to SPARQL page</a>
             </div> ++
-            <form method="post"> {
+            <form> {
               editButton ++
               <input name="query" type="hidden" value={query}></input> ++
               <input name="edit" type="hidden" value={
                 // request.queryString.getOrElse("edit", Seq()).headOption.getOrElse("yes")
                 "yes"
               }></input> ++
-              <input type="hidden" name="graphURI" value={ requestCopy.userId() }/>
-              <button formaction="/save">Submit</button> ++
+              <input type="hidden" name="graphURI" value={ makeAbsoluteURIForSaving(requestCopy.userId()) }/>
+              <button formaction="/save" formmethod="post">Submit</button> ++
               tableFromSPARQL(requestCopy)
             } </form>,
           lang, title = title,
