@@ -101,6 +101,8 @@ trait NavigationSPARQLBase[Rdf <: RDF]
          |} WHERE {
          |  graph ?g {
          |    ?thing ?p <${search}> .
+         |  }
+         |  graph ?gcoord {
          |    ?thing geo:long ?LONG .
          |    ?thing geo:lat ?LAT .
          |  }
