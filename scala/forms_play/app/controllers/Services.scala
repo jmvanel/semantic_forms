@@ -14,6 +14,7 @@ import scala.util.Success
 import org.apache.commons.codec.digest.DigestUtils
 
 import deductions.runtime.services.RDFContentNegociation
+import java.net.URI
 
 
 /** controller for non-SPARQL Services (or SPARQL related but not in the W3C recommendations) */
@@ -145,10 +146,17 @@ with RDFContentNegociation {
           httpRequest))
   }
 
-  /** LDP GET */
+  /** LDP GET
+   *  @param uri0 relative URI, URL encoded */
   def ldp(uri0: String) = Action {
     implicit request: Request[_] =>
-      val uri = URLDecoder.decode(uri0, "UTF-8")
+      val uri = {
+        val uriObject = new URI(URLDecoder.decode(uri0, "UTF-8"))
+        println( ">>>>>>>> ldp: " + uri0)
+        println( ">>>>>>>> ldp: " + uriObject.getPath)
+        // for Facebook
+        uriObject.getPath
+      }
       logger.info("LDP GET: request " + request)
       val acceptedTypes = request.acceptedTypes
       logger.info( s"acceptedTypes $acceptedTypes")
@@ -180,8 +188,8 @@ with RDFContentNegociation {
 //          .withHeaders("Allow" -> "OPTIONS,GET,POST,PUT,PATCH,HEAD")
 //          .withHeaders("Accept-Post" -> """"text/turtle, application/ld+json""")
 
-      } else { //// Redirect to /display ////
-        val ldpURL = httpRequest.originalURL
+      } else { //// Redirect to /display, without HTTP GET query (for Facebook)  ////
+        val ldpURL = httpRequest.originalURLNoQuery()
         logger.debug(s">>>> ldp: Redirect to /display?displayuri= $ldpURL")
         val call = Redirect("/display", Map("displayuri" -> Seq(ldpURL)))
         call
@@ -275,6 +283,7 @@ with RDFContentNegociation {
     }
   }
 
+  /** TODO add arg. publisher (provenance) for triple with dct:publisher */
   def loadURI(uri: String): Action[AnyContent] = {
     recoverFromOutOfMemoryErrorGeneric[Action[AnyContent]](
       {

@@ -75,6 +75,8 @@ case class HTTPrequest(
   def originalURL(): String = absoluteURL(path +
       (if(rawQueryString != "") "?" + rawQueryString else ""))
 
+  def originalURLNoQuery(): String = absoluteURL(path)
+
   def adjustSecure(url:String): String =
     if (secure)
       url.replaceFirst("^http://", "https://")
