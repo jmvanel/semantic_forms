@@ -47,8 +47,8 @@ object Common {
     "com.typesafe.play" %% "play-json" %  "2.6.10",
     // "com.typesafe.play" %% "play-iteratees" % "2.6.1",
 
-    "org.apache.lucene" % "lucene-suggest" % "7.5.0", // 6.6.5",
-    "org.apache.lucene" % "lucene-demo"    % "7.5.0", // 6.6.5",
+    "org.apache.lucene" % "lucene-suggest" % "6.4.1" , // "7.5.0", // 6.6.5",
+    "org.apache.lucene" % "lucene-demo"    % "6.4.1" , // "7.5.0", // 6.6.5",
 /*
     "org.apache.lucene" % "lucene-suggest" % "4.9.1" ,
     "org.apache.lucene" % "lucene-demo" % "4.9.1" ,

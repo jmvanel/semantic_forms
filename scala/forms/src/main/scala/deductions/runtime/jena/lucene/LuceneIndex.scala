@@ -81,7 +81,7 @@ trait LuceneIndex // [Rdf <: RDF]
   ImplementationSettings.DATASET
   = {
     println(s"configureLuceneIndex: useTextQuery $useTextQuery")
-    //    println(s"configureLuceneIndex: ${Thread.currentThread().getStackTrace().slice(0, 15).mkString("\n")}")
+    //  println(s"configureLuceneIndex: ${Thread.currentThread().getStackTrace().slice(0, 15).mkString("\n")}")
     if (useTextQuery) {
       println(
           s"""configureLuceneIndex: rdfIndexing getPredicates("text").size ${rdfIndexing.getPredicates("text").size}""")
@@ -90,9 +90,8 @@ trait LuceneIndex // [Rdf <: RDF]
     	  textIndexConfig . setMultilingualSupport(true)
     	  val textIndex: TextIndex = TextDatasetFactory.createLuceneIndex(
     			  directory, textIndexConfig )
-//       ( TextDatasetFactory.create(dataset, textIndex, true), textIndex)
         TextDatasetFactory.create(dataset, textIndex, true)
-//        TextDatasetFactory.createLucene(dataset, directory, rdfIndexing,  new StandardAnalyzer())
+//        TextDatasetFactory.createLucene(dataset, directory, textIndexConfig) // , new StandardAnalyzer())
     } else
       dataset
   }
