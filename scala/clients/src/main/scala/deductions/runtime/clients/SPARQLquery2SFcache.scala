@@ -31,6 +31,7 @@ trait SPARQLquery2SFcache {
     val results = for (uri <- uris) yield {
       sendGetToSemantic_Forms(uri, sfInstancePrefix, endpoint)
     }
+    println(s"importFromQuery: ${results.size} URI results imported in SF ($sfInstancePrefix)")
     results.mkString("")
   }
 
