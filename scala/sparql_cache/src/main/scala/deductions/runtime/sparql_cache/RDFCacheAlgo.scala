@@ -118,7 +118,8 @@ extends
     ret._1
   }
 
-  /**  TODO [Marco] collect possible behavior patterns
+  /** retrieve URI with Resource Status
+   * TODO [Marco] collect possible behavior patterns
 to give more meaningful feedback to user
 1. site is down
 2. rdf incorrect

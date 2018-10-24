@@ -11,10 +11,14 @@ import org.apache.jena.query.QueryExecutionFactory
 import org.w3.banana.RDFOps
 import org.w3.banana.SparqlOps
 import org.w3.banana.jena.Jena
+import org.apache.http.params.BasicHttpParams
+import org.apache.http.client.utils.URIBuilder
 
 /** SPARQL query to Semantic_Forms cache */
 trait SPARQLquery2SFcache {
-  val serverPrefixWithParam = "/load-uri?uri="
+  val serverPrefix = "/load-uri"
+  val serverParam = "uri"
+  // val serverPrefixWithParam = "/load-uri?uri="
   // "/display?displayuri="
   var num = 0
 
@@ -66,9 +70,14 @@ trait SPARQLquery2SFcache {
     uri: String, sfInstancePrefix: String, publisher: String=""): String = {
     val httpclient = HttpClients.createDefault()
 
-    val httpGet = new HttpGet(
-        sfInstancePrefix.replaceFirst("/$", "") + serverPrefixWithParam +
-        URLEncoder.encode(uri, "UTF-8"))
+    val uriObject = new URIBuilder(
+      sfInstancePrefix.replaceFirst("/$", "") + serverPrefix)
+      .setParameter(serverParam, URLEncoder.encode(uri, "UTF-8"))
+      .setParameter("publisher", publisher)
+      .build()
+
+    val httpGet = new HttpGet(uriObject)
+
     val response1 = httpclient.execute(httpGet)
     // The underlying HTTP connection is still held by the response object
     // to allow the response content to be streamed directly from the network socket.

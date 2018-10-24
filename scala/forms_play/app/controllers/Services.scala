@@ -283,17 +283,32 @@ with RDFContentNegociation {
     }
   }
 
-  /** @param publisher (provenance) for adding triple with dct:publisher */
-  def loadURI(uri: String): Action[AnyContent] = {
+  /** HTTP param publisher (provenance) for adding triple with dct:publisher */
+  def loadURI(uriString: String): Action[AnyContent] = {
     recoverFromOutOfMemoryErrorGeneric[Action[AnyContent]](
       {
         Action { implicit request: Request[_] =>
+          val uri = ops.URI(URLDecoder.decode(uriString, "UTF-8"))
+          val httpRequest = copyRequest(request)
+//          println( s">>>> loadURI: httpRequest $httpRequest")
           val tryGraph = retrieveURIBody(
-            ops.URI(uri), dataset, copyRequest(request), transactionsInside = true)
-          val result = tryGraph match {
+            uri, dataset, httpRequest, transactionsInside = true)
+          val result:String = tryGraph match {
             case Success(gr)           =>
-              // TODO add triple <uri> dct:publisher <dct:publisher> to graph <uri> */
-              s"Success loading <$uri>, size: ${ wrapInReadTransaction( gr.size() ) }"
+              val rr = wrapInTransaction {
+                // add triple <uri> dct:publisher <dct:publisher> to graph <uri> */
+                httpRequest.getHTTPparameterValue("publisher")  match {
+                  case Some(publisherURI) =>
+                  val triple = ops.Triple( uri, dct("publisher"),
+                    ops.URI(publisherURI) )
+//                  println( s">>>> loadURI: publisher URI <$publisherURI> , $triple")
+                  rdfStore.appendToGraph(dataset, uri, ops.makeGraph(
+                    Seq( triple ) ) )
+                  case None => println( s">>>> loadURI: <$uri> no publisher URI")
+                }
+              s"Success loading <$uriString>, size: ${ gr.size() }"
+              }
+              rr . toString()
             case scala.util.Failure(f) => f.getLocalizedMessage
           }
           Ok(result)
