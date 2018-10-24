@@ -19,6 +19,7 @@ import scala.xml.Comment
 
 import scalaz._
 import Scalaz._
+import org.w3.banana.OWLPrefix
 
 /**
  * TODO separate stuff depending on dataset, and stuff taking a graph in argument
@@ -804,6 +805,23 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         })
       case Failure(f) => Failure(f)
     }
+  }
+
+  private val owl = OWLPrefix[Rdf]
+  private lazy val propTypes = List(rdf.Property, owl.ObjectProperty, owl.DatatypeProperty)
+
+  def isProperty(uriTokeep: Rdf#Node): Boolean = {
+    val types = quadQuery(uriTokeep, rdf.typ, ANY).toList
+    logger.debug( s"isProperty( $uriTokeep ) : types $types" )
+    types.exists { typ => propTypes.contains(typ._1.objectt) }
+  }
+
+  private lazy val classTypes = List(rdfs.Class, owl.Class)
+
+  def isClass(uriTokeep: Rdf#Node): Boolean = {
+    val types = quadQuery(uriTokeep, rdf.typ, ANY).toList
+    logger.debug( s"isProperty( $uriTokeep ) : types $types" )
+    types.exists { typ => classTypes.contains(typ._1.objectt) }
   }
 
   def dumpGraph(implicit graph: Rdf#Graph) = {

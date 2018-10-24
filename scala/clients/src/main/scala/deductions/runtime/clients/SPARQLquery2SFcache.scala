@@ -22,12 +22,14 @@ trait SPARQLquery2SFcache {
   implicit val sparqlOps: SparqlOps[Jena]
 
   /** import into  Semantic_Forms From SPARQL Query to any SPARQL endpoint
-   *  @param sfInstancePrefix Semantic_Forms Instance URL Prefix
+   *  @param query SPARQL query
+   *  @param endpoint SPARQL data source
+   *  @param sfInstancePrefix Semantic_Forms Instance URL Prefix, data destination
    *  ( #serverPrefixWithParam will be appended)  */
   def importFromQuery(query: String, endpoint: String, sfInstancePrefix: String): String = {
     val uris = sendQuery(query, endpoint)
     val results = for (uri <- uris) yield {
-      sendGetToSemantic_Forms(uri, sfInstancePrefix)
+      sendGetToSemantic_Forms(uri, sfInstancePrefix, endpoint)
     }
     results.mkString("")
   }
@@ -54,13 +56,19 @@ trait SPARQLquery2SFcache {
     rr
   }
 
-  /** send HTTP Get To Semantic_Forms */
+  /** send HTTP Get To Semantic_Forms for loading the RDF document;
+   *  the relative service URI is #serverPrefixWithParam
+   *  @param uri the remote source RDF document
+   *  @param sfInstancePrefix Semantic_Forms Instance URL Prefix, data destination
+   *  @param publisher TODO for adding a triple <uri> dcterms:publisher <publisher> to tag the URI in SF (facultative) */
   def sendGetToSemantic_Forms(
-    uri: String, sfInstancePrefix: String): String = {
+    uri: String, sfInstancePrefix: String, publisher: String=""): String = {
     val httpclient = HttpClients.createDefault()
 
-    val httpGet = new HttpGet(sfInstancePrefix + serverPrefixWithParam + URLEncoder.encode(uri, "UTF-8"))
-    val response1 = httpclient.execute(httpGet);
+    val httpGet = new HttpGet(
+        sfInstancePrefix.replaceFirst("/$", "") + serverPrefixWithParam +
+        URLEncoder.encode(uri, "UTF-8"))
+    val response1 = httpclient.execute(httpGet)
     // The underlying HTTP connection is still held by the response object
     // to allow the response content to be streamed directly from the network socket.
     // In order to ensure correct deallocation of system resources
