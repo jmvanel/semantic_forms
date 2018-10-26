@@ -96,3 +96,6 @@ PUT     /ldp                   controllers.Application.ldpPOSTActionNoURI()
 DELETE  /ldp/*uri              controllers.Application.ldpDeleteResource(uri: String)
 HEAD    /ldp/*uri              controllers.Application.ldpHEAD(uri: String)
 OPTIONS /*path                 controllers.Application.httpOptions(path)
+
+# see https://www.w3.org/TR/void/#well-known
+GET /.well-known/void          controllers.Application.wellKnownVoid()

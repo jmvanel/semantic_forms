@@ -15,6 +15,7 @@ import org.apache.commons.codec.digest.DigestUtils
 
 import deductions.runtime.services.RDFContentNegociation
 import java.net.URI
+import java.io.File
 
 
 /** controller for non-SPARQL Services (or SPARQL related but not in the W3C recommendations) */
@@ -349,5 +350,18 @@ with RDFContentNegociation {
       },
       (t: Throwable) =>
         errorActionFromThrowable(t, "in POST /load-uri"))
+  }
+
+  def wellKnownVoid(): Action[AnyContent] = {
+    Action { implicit request: Request[AnyContent] =>
+    val file = "void.ttl"
+    val void =
+    if (new File(file).exists()) {
+      scala.io.Source.fromFile( file, "UTF-8").getLines().mkString("\n")
+    } else
+      "# VOID file void.ttl not provided"
+
+      Ok(void).as("text/turtle; charset=utf-8")
+    }
   }
 }
