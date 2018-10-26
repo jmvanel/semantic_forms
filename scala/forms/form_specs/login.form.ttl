@@ -43,5 +43,6 @@ forms:userid--loginForm
 	:fieldAppliesToForm forms:registerForm ;
 	:fieldAppliesToProperty form:userid ;
 	:fieldAppliesToProperty form:password ;
+	:fieldAppliesToProperty form:confirmPassword ;
         :cardinality :exactlyOne .
 
