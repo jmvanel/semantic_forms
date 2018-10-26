@@ -36,4 +36,12 @@ forms:registerForm
 form:userid 
 form:password
 form:confirmPassword
-) .
+)
+
+forms:userid--loginForm
+	:fieldAppliesToForm forms:loginForm ;
+	:fieldAppliesToForm forms:registerForm ;
+	:fieldAppliesToProperty form:userid ;
+	:fieldAppliesToProperty form:password ;
+        :cardinality :exactlyOne .
+ .

@@ -57,10 +57,7 @@ foaf-forms:cco-expertise--personPerson
 	:widgetClass form:DBPediaLookup .
 
 
-foaf-forms:givenName--personPerson
-	:fieldAppliesToForm foaf-forms:personForm ;
-	:fieldAppliesToProperty foaf:givenName ;
-        :cardinality :exactlyOne .
+# foaf-forms:givenName--personPerson :fieldAppliesToForm foaf-forms:personForm ; :fieldAppliesToProperty foaf:givenName ; :cardinality :exactlyOne .
 foaf-forms:familyName--personPerson
 	:fieldAppliesToForm foaf-forms:personForm ;
 	:fieldAppliesToProperty foaf:familyName ;
