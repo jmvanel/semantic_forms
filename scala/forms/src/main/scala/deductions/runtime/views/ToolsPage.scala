@@ -108,7 +108,6 @@ trait ToolsPage extends EnterButtons
       <input class="btn btn-primary" type="submit" value={ I18NMessages.get("View", request.getLanguage()) }
              formaction="/sparql-form"/>,
       makeLinkCarto( textareaId, config.geoMapURL, request ),
-//          "http://rawgit.com/Cruis-R/geo-map-component/master/docs/index.html"),
       <input class="btn btn-primary" type="submit" value={ I18NMessages.get("Table", request.getLanguage()) }
              formaction="/table"/>,
 
@@ -137,7 +136,7 @@ trait ToolsPage extends EnterButtons
           <input class ="btn btn-primary" type="submit"
                  value={ I18NMessages.get("Submit", request.getLanguage()) } formaction ={action} />
           <label>unionDefaultGraph</label>
-          <input name="unionDefaultGraph" type="checkbox"
+          <input name="unionDefaultGraph" id="unionDefaultGraph" type="checkbox"
                  checked={if (request.getHTTPparameterValue("unionDefaultGraph").isDefined) "yes" else null} />
           { if (viewButtons) buttonsNextRelease
           else
@@ -202,7 +201,6 @@ trait ToolsPage extends EnterButtons
   private def makeLinkCarto(textareaId: String, toolURLprefix: String,
       request: HTTPrequest): NodeSeq = {
 
-    val dataServicesURL = sparqlServicesURL
     val buttonId = textareaId+"-button"
 
     <input id={buttonId} type="submit"
@@ -216,11 +214,16 @@ trait ToolsPage extends EnterButtons
         { Unparsed( s"""
 (function() {
   var textarea = document.getElementById('$textareaId');
+  var unionDefaultGraph = document.getElementById('unionDefaultGraph').checked;
+
   console.log('textareaId "$textareaId", textarea ' + textarea);
   var button = document.getElementById('$buttonId');
 
   var pointsCheckbox = document.getElementById('points-path');
   var pointsOrPath = pointsCheckbox.checked;
+  var dataServicesURL = '${sparqlServicesURL()}'
+  if (unionDefaultGraph)
+    dataServicesURL = '${sparqlServicesURL("2")}'
   console.log('pointsOrPath ' + pointsOrPath);
   if( pointsOrPath )
     var pointsOrPathValue = 'points';
@@ -232,14 +235,14 @@ trait ToolsPage extends EnterButtons
     console.log( 'elementById ' + textarea);
     var query = textarea.value;
     console.log( 'query in textarea ' + query);
-    console.log( 'data services URL= $dataServicesURL' );
+    console.log( 'data services URL= ' + dataServicesURL );
     var url = '$toolURLprefix' +
       '?view=' + pointsOrPathValue +
       '&enrich=yes' +
       "&link-prefix=" + ${ s""""${request.host + config.hrefDisplayPrefix}""""} +
       "&lang=" + "${request.getLanguage()}" +
       '&url=' +
-      '$dataServicesURL' + window.encodeURIComponent(query);
+      dataServicesURL + window.encodeURIComponent(query);
     console.log( 'URL= ' + url );
     window.open( url , '_blank' );
   });
@@ -249,10 +252,10 @@ trait ToolsPage extends EnterButtons
   }
 
   /** TODO also in ApplicationFacadeImpl */
-  private lazy val sparqlServicesURL = {
+  private def sparqlServicesURL( suffix: String = "" ) = {
     val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
     println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
-    val sparqlServicePrefix = "sparql?query="
+    val sparqlServicePrefix = s"sparql$suffix?query="
     val dataServicesURL = s"$servicesURIPrefix$sparqlServicePrefix"
     logger.debug(s">>>> lazy val dataServicesURL $dataServicesURL")
     dataServicesURL

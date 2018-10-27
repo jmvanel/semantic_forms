@@ -15,6 +15,7 @@ import Scalaz._
 import deductions.runtime.core.ShortString
 import scala.xml.NodeBuffer
 import deductions.runtime.core.exactlyOne
+import deductions.runtime.core.zeroOrOne
 
 /** generate HTML from abstract Form for Edition */
 private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
@@ -33,7 +34,9 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
     (implicit form: FormModule[NODE, URI]#FormSyntax): Boolean = {
     // println( "showPlusButtons " + showPlusButtons)
     editable && field.defaults.multivalue && field.openChoice && showPlusButtons &&
-    isFirstFieldForProperty(field) && field.cardinality != exactlyOne
+    isFirstFieldForProperty(field) &&
+        field.cardinality != exactlyOne &&
+        field.cardinality != zeroOrOne
   }
 
   def createAddRemoveWidgets(field: formMod#Entry, editable: Boolean)
