@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [ -z "$1" ]; then
+    echo 'search string in "TDB" TDB database'
+    echo 'tdbsearch.sh search_string'
+    exit 1
+fi
+
 for f in lib/*.jar
 do
   JARS=$JARS:$f

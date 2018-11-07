@@ -1,0 +1,4 @@
+select ( count(?S) AS ?count )
+where { GRAPH ?G {
+  ?S ?P ?O 
+} }

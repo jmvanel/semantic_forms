@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [ -z "$1" ]; then
+    echo 'Re-load dump made with dump.sh from given directory'
+    echo './load_dump_no_erase.sh DIR'
+    exit 1
+fi
+
 ###############################################################################
 # This script is usefull when the application has been packaged with "sbt dist"
 # (see README.md), and the resulting zip has been unzipped on the target server.
@@ -21,5 +27,5 @@ java -cp $JARS tdb.tdbloader --loc TDB2 $DIR/dump_timestamps.nq
 java -cp $JARS tdb.tdbloader --loc TDB3 $DIR/dump_accounts.nq
         echo 'DONE dump_accounts.nq --> TDB3' ; echo
 
-echo DONE re-load dumps dump.nq , dump_timestamps.nq , dump_accounts.nq
+echo DONE re-load dumps dump.nq , dump_timestamps.nq , dump_accounts.nq from directory $DIR
 

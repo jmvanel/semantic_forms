@@ -38,7 +38,7 @@ The zipped application is available as a [github release](https://github.com/jmv
 Download this zip on the server, unzip and type (on Linux or Mac):
 ```shell
 VERSION=2.4
-cd semantic_forms_play-$VERSION-SNAPSHOT
+cd semantic_forms_play-$VERSION
 nohup bin/semantic_forms_play -J-Xmx50M &
 ```
 
@@ -129,6 +129,7 @@ scripts/tdbsearch.sh
 
 Of course, all the Jena command line tools are available, see:
 https://jena.apache.org/documentation/tools/index.html
+and for TDB, https://jena.apache.org/documentation/tdb/commands.html
 
 ## Managing server update
 
