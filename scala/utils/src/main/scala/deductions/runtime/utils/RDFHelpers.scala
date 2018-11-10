@@ -192,6 +192,13 @@ extends URIManagement {
     foldNode(node)(
       uri => uri, x => URI(""),
       literal => URI("") )
+
+  /** use case : when the node should be an URI, but may actually be a literal */
+  def forceNodeToURI(node: Rdf#Node): Rdf#URI =
+    foldNode(node)(
+      uri => uri, x => URI(""),
+      literal => URI(fromLiteral(literal)._1) )
+
   /** avoids the "" around the literal */
   def nodeToString(node: Rdf#Node): String =
     foldNode(node)(

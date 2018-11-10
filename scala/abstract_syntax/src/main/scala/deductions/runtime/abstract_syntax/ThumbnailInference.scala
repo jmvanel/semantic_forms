@@ -38,6 +38,6 @@ trait ThumbnailInference[Rdf <: RDF, DATASET]
     val imageURIOption = correspondingProperty.map {
       correspondingProperty => getObjects(allNamedGraph, subject, correspondingProperty).headOption
     }
-    imageURIOption.flatten
+    imageURIOption.flatten .map { forceNodeToURI(_) }
   }
 }
