@@ -1,0 +1,13 @@
+# Show user data from user named graph
+# replace graph name with yours
+prefix sioc: <http://rdfs.org/sioc/ns#>
+
+select 
+    ?S ?P ?O
+where {
+  GRAPH <user:jmvanel> {
+    ?S ?P ?O .
+    # ?S a sioc:Post .
+  }
+}
+# ORDER BY ?S
