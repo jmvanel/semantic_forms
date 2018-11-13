@@ -253,7 +253,7 @@ with FormModule[NODE, URI]
     val fittingCount = countLanguageDataFittingRequest( form, request)
     val literalEntriesCount = getLiteralEntries(form).size
 
-    logger.info(s"fittingCount $fittingCount, literalEntriesCount $literalEntriesCount")
+    logger.debug(s"languagesInData: fittingCount $fittingCount, literalEntriesCount $literalEntriesCount")
     // form.fields.collect { case l: formMod#LiteralEntry => l } . foreach ( println(_) )
 
     // TODO I18N

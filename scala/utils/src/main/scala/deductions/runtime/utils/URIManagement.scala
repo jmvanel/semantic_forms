@@ -18,7 +18,8 @@ trait URIManagement extends URIHelpers {
   val config: Configuration
 //  import config._
   import config.{defaultInstanceURIHostPrefix, relativeURIforCreatedResourcesByForm, serverPort, useLocalHostPrefixForURICreation}
-
+  private var neverLogged: Boolean = true
+  
   def makeId(request: HTTPrequest): String = {
     makeId(instanceURIPrefix(request))
   }
@@ -123,7 +124,7 @@ trait URIManagement extends URIHelpers {
     val (hostNameUsed: String, isDNS: Boolean) =
       if (useLocalHostPrefixForURICreation) {
         val hostNameFromAPI = InetAddress.getLocalHost().getCanonicalHostName // getHostName()
-        println1( s"servicesURIPrefix2: hostNameFromAPI <$hostNameFromAPI>")
+        printlnOnce( s"servicesURIPrefix2: hostNameFromAPI <$hostNameFromAPI>")
 
         if (hostNameFromAPI.contains("."))
           ("http://" + hostNameFromAPI, true)
@@ -133,10 +134,10 @@ trait URIManagement extends URIHelpers {
           val nis = NetworkInterface.getNetworkInterfaces().asScala.toList
           val adresses = for (
             networkInterface <- nis;
-            _ = println1("servicesURIPrefix2: "+getNetworkInterfaceInfo(networkInterface));
+            _ = printlnOnce("servicesURIPrefix2: "+getNetworkInterfaceInfo(networkInterface));
             adress <- networkInterface.getInetAddresses.asScala ;
             hostAddress = adress.getHostAddress;
-            _ = println1(s"servicesURIPrefix2: ni $networkInterface hostAddress $hostAddress")
+            _ = printlnOnce(s"servicesURIPrefix2: ni $networkInterface hostAddress $hostAddress")
           ) yield adress
 
           val internetAdresses = adresses.filter { adress =>
@@ -155,8 +156,8 @@ trait URIManagement extends URIHelpers {
                 hostAddress.startsWith("192.168."))
             )
           }
-          println1(s"servicesURIPrefix2: intranetAdresses $intranetAdresses")
-          println1(s"servicesURIPrefix2: internetAdresses $internetAdresses")
+          printlnOnce(s"servicesURIPrefix2: intranetAdresses $intranetAdresses")
+          printlnOnce(s"servicesURIPrefix2: internetAdresses $internetAdresses")
           val (adresses2, isDNS) = if (!internetAdresses.isEmpty) {
             if (internetAdresses.size > 1)
               System.err.println(s"CAUTION: several Internet Adresses: $internetAdresses")
@@ -166,7 +167,7 @@ trait URIManagement extends URIHelpers {
               System.err.println(s"CAUTION: servicesURIPrefix2: several Intranet Adresses: $intranetAdresses")
             (intranetAdresses, false)
           }
-          println1(s"servicesURIPrefix2: adresses2 $adresses2")
+          printlnOnce(s"servicesURIPrefix2: adresses2 $adresses2")
           val result = {
             val adress22 = adresses2.toList.headOption.getOrElse("127.0.0.1")
             "http://" + adress22.toString().replaceFirst("^/", "")
@@ -175,7 +176,7 @@ trait URIManagement extends URIHelpers {
           (result, isDNS)
         }
       } else (defaultInstanceURIHostPrefix, true)
-    println1(s"servicesURIPrefix2: hostNameUsed <$hostNameUsed>")
+    printlnOnce(s"servicesURIPrefix2: hostNameUsed <$hostNameUsed>")
     ( hostNameUsed + ":" + serverPort + "/" , isDNS)
   }
 
@@ -226,6 +227,9 @@ trait URIManagement extends URIHelpers {
     return ipAddress;
   }
 
-  def println1(mess: String) = if (logActive) println(mess)
-
+  private def printlnOnce(mess: String) =
+        if(neverLogged) {
+          println1( mess )
+          neverLogged =false
+        }
 }

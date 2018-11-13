@@ -42,7 +42,7 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
     } else ""
 
   private def classCriterium(classe: String, unionGraph: Boolean = false): String = {
-    println(s"""classCriterium: class: "${classe}" """)
+    logger.debug(s"""classCriterium: class( "${classe}" )""")
     if (unionGraph)
       if (classe === "")
         "  ?thing a ?CLASS ."

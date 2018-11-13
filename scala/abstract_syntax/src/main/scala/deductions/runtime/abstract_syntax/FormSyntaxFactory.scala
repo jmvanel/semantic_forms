@@ -206,7 +206,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
     // TODO make it functional #170
     val fieldsCompleteList: Seq[Entry] = makeEntriesFromFormSyntax(step1)
-    logger.info( s"==== createFormDetailed2: fieldsCompleteList $fieldsCompleteList")
+    logger.debug(
+        s"==== createFormDetailed2: fieldsCompleteList ${fieldsCompleteList.map{ f => f.toString().substring(0, 80)}}")
     val subject = step1.subject
     val classs = step1.classs
 
@@ -288,9 +289,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   private def updateFormFromConfig(formSyntax: FormSyntax, formConfigOption: Option[Rdf#Node])(implicit graph: Rdf#Graph): FormSyntax = {
     formConfigOption.map {
       formConfig =>
-        logger.info(s">>>> updateFormFromConfig: updateOneFormFromConfig(formSyntax, formConfig =<$formConfig>)")
+        logger.debug(s">>>> updateFormFromConfig: updateOneFormFromConfig(formSyntax, formConfig =<$formConfig>)")
         updateOneFormFromConfig(formSyntax, formConfig)
-        logger.info(s">>>> updateFormFromConfig: shallow recursion")
+        logger.debug(s">>>> updateFormFromConfig: shallow recursion:")
         for ( fs <- formSyntax.propertiesGroups ) updateOneFormFromConfig(fs, formConfig)
     }
     formSyntax
@@ -588,7 +589,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       }
     }
 
-    logger.info(s">>>> makeEntryFromTriple <$prop>, chooseRDFNodeType '$chooseRDFNodeType' is nullURI: ${chooseRDFNodeType == nullURI}")
+    logger.debug(s">>>> makeEntryFromTriple <$prop>, chooseRDFNodeType '$chooseRDFNodeType' is nullURI: ${chooseRDFNodeType == nullURI}")
     chooseRDFNodeType match {
       case `nullURI` =>
         val re = resourceEntry

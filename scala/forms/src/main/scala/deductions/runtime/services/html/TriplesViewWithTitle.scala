@@ -50,7 +50,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
                request: HTTPrequest
   ): (NodeSeq, Boolean) = {
     logger.info(
-      s"""ApplicationFacadeImpl.htmlForm URI <$uri0> blankNode "$blankNode"
+      s"""ApplicationFacadeImpl.htmlForm ${request.logRequest()}
               editable=$editable lang=$lang graphURI <$graphURI>""")
     val uri = uri0.trim()
     var typeChange = false

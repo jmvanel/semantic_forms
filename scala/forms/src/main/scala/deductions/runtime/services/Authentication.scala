@@ -169,10 +169,8 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
         digest(password.getBytes))
   }
 
-  override def println1(message: String) =
-    if(false) 
-      println(message)
-    else
-      logger.info(message)
+  def println1(message: String) =
+//      println(message)
+    logger.debug(message)
 
 }

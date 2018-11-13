@@ -15,7 +15,8 @@ trait UserTraceability[Rdf <: RDF, DATASET]
   extends FormModule[Rdf#Node, Rdf#URI]
     with TimeSeries[Rdf, DATASET] {
 
-  /** add User Info On Triples whose subject is form subject */
+  /** add User Info On Triples whose subject is form subject;
+   *  for editing in /table view */
   def addUserInfoOnTriples(
                             formSyntax: FormSyntax)(
                             implicit graph: Rdf#Graph,
@@ -117,7 +118,10 @@ trait UserTraceability[Rdf <: RDF, DATASET]
         return formSyntax
     }
   }
-    
+
+  /** add User in form entry From main Graph;
+   *  NOTE: the URI added is not necessarily a user, but if not,
+   *  it will simply not match current user and the triple will not be editable. */
   private def addUserFromGraph(field: Entry): Entry = {
     try {
     val resMainDatabase = {
@@ -140,7 +144,7 @@ trait UserTraceability[Rdf <: RDF, DATASET]
       row <- resMainDatabase;
       node <- row
     ) yield {
-      logger.info(s"addUserFromGraph: ?USER node ${node.getClass()} $node from subject <${field.subject}>")
+      logger.debug(s"addUserFromGraph: ?USER node ${node.getClass()} $node from subject <${field.subject}>")
       field.copyEntry(fromMetadata = node.toString)
     }
     fieldWithUsers.headOption.getOrElse(field)

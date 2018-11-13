@@ -10,4 +10,5 @@ package object utils extends Timer {
 //    super.time(mess, sourceCode, activate = logger.isDebugEnabled())
 //  }
   val logActive = false
+  def println1(mess: String) = if (logActive) println(mess)
 }

@@ -187,7 +187,7 @@ trait WebPages extends Controller with ApplicationTrait
           def result(request: HTTPrequest): NodeSeq = {
             val precomputed: MainPagePrecompute = MainPagePrecompute(request)
             import precomputed._
-            logger.info(s"displayURI: expandOrUnchanged $uri")
+            logger.debug(s"displayURI: expandOrUnchanged <$uri>")
             val userInfo = displayUser(userid, uri, title, lang)
             htmlForm(uri, blanknode, editable = Edit  =/=  "", lang, formuri,
               graphURI = makeAbsoluteURIForSaving(userid),
@@ -243,6 +243,7 @@ trait WebPages extends Controller with ApplicationTrait
     def isEditableFromRequest(request: HTTPrequest): Boolean =
       request.queryString.getOrElse("edit", Seq()).headOption.getOrElse("") != ""
 
+    println(s">>>> tableFromSPARQL: $request")
     val query = queryFromRequest(request)
     implicit val graph: Rdf#Graph = allNamedGraph
     // form Syntax With user Info
@@ -375,6 +376,7 @@ trait WebPages extends Controller with ApplicationTrait
       recoverFromOutOfMemoryErrorGeneric(
         {
           val httpRequest = copyRequest(request)
+          logRequest(httpRequest)
           val classe =
             clas match {
               case classe if (classe =/= "") => classe
@@ -563,8 +565,7 @@ trait WebPages extends Controller with ApplicationTrait
         def result(request: HTTPrequest): NodeSeq = {
           val precomputed: MainPagePrecompute = MainPagePrecompute(request)
           import precomputed._
-          logger.info(s"makeHistoryUserActionsAction:  $limit")
-          logger.info("makeHistoryUserActionsAction: cookies: " + request.cookies.mkString("; "))
+          logger.info(s"makeHistoryUserActionsAction: ${request.logRequest()}, limit='$limit', cookies: ${request.cookies.mkString("; ")}" )
           makeHistoryUserActions(limit, request)
         }
       }
@@ -574,4 +575,7 @@ trait WebPages extends Controller with ApplicationTrait
         errorActionFromThrowable(t, s"in make History of User Actions /history?limit=$limit"))
   }
 
+  def logRequest(httpRequest: HTTPrequest) {
+    logger.info(httpRequest.logRequest)
+  }
 }

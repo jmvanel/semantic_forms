@@ -55,7 +55,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
   def searchString(searchString: String, hrefPrefix: String = config.hrefDisplayPrefix,
                    request: HTTPrequest=HTTPrequest(), classURI: String = ""
                    ): Future[NodeSeq] = {
-		println( s"searchString: SPARQL ${indexBasedQuery.makeQueryString(searchString, classURI)}")
+		logger.debug( s"searchString: SPARQL ${indexBasedQuery.makeQueryString(searchString, classURI)}")
     search(hrefPrefix, request.getLanguage(),
         Seq(searchString, classURI),
 //        Seq("?thing", "?CLASS"))
