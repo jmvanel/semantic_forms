@@ -1,0 +1,20 @@
+prefix sioc: <http://rdfs.org/sioc/ns#>
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix doas: <http://deductions.github.io/doas.owl.ttl#>
+
+# Dump all user's data
+CONSTRUCT {
+    ?S ?P ?O .
+} where {
+  GRAPH ?GR {
+    ?S ?P ?O .
+    # ?S a sioc:Post .
+    # ?S a foaf:Person .
+    # ?S a foaf:Organization .
+    # ?S a doas:Software .
+    # ?S a foaf:Document .
+  }
+  FILTER ( STRSTARTS( str(?GR), "user:" ) ||
+           STRSTARTS( str(?GR), "mailto:" ) )
+  FILTER ( str(?GR) != "user:" )
+}

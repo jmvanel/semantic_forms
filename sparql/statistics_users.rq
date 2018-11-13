@@ -1,0 +1,10 @@
+# Show user's named graphs ordered by number of instances
+select ( count(?S) AS ?count ) ?GR
+where {
+  GRAPH ?GR {
+    ?S ?P ?O
+  }
+  FILTER ( STRSTARTS( str(?GR), "user:" ) ||
+           STRSTARTS( str(?GR), "mailto:" ) )
+} GROUP BY ?GR
+ORDER BY DESC (?count)
