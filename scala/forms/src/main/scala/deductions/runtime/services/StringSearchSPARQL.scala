@@ -48,7 +48,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
   }
 
   private implicit def searchStringQueryMaker: SPARQLQueryMaker[Rdf] = {
-		println( s"searchStringQueryMaker: useTextQuery $useTextQuery")
+		logger.debug( s"searchStringQueryMaker: useTextQuery $useTextQuery")
     indexBasedQuery
   }
 

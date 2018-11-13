@@ -487,20 +487,17 @@ trait WebPages extends Controller with ApplicationTrait
     withUser { implicit userid => implicit request =>
       recoverFromOutOfMemoryErrorGeneric(
         {
-          logger.info(s"create: request $request")
           // URI of RDF class from which to create instance
           val uri0 = getFirstNonEmptyInMap(request.queryString, "uri")
           val uri = expandOrUnchanged(uri0)
           // URI of form Specification
           val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formuri")
-          logger.info(s"""create: "$uri" """)
           logger.info(s"formSpecURI from HTTP request: <$formSpecURI>")
           val lang = chooseLanguage(request)
-          val userInfo = displayUser(userid, uri, s"Create a $uri", lang)
           outputMainPage(
-            create(uri, chooseLanguage(request),
+            create(uri, lang,
               formSpecURI, makeAbsoluteURIForSaving(userid), copyRequest(request)).getOrElse(<div/>),
-            lang, userInfo = userInfo)
+            lang, userInfo = displayUser(userid, uri, s"Create a $uri", lang))
         },
         (t: Throwable) =>
           errorResultFromThrowable(t, "in create Actions /create"))

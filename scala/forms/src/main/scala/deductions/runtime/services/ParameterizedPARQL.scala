@@ -65,7 +65,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     logger.debug(s"search($search) 1: starting TRANSACTION for dataset $dataset")
     val elem0 = rdfStore.rw(dataset, {
       val uris = search_onlyNT(search, variables, httpRequest)
-      logger.info(s"\tsearch(): URI's size ${uris.size}")
+      logger.info(s"${httpRequest.logRequest()}: URI's size ${uris.size}")
       val graph: Rdf#Graph = allNamedGraph
       val elems = Seq(
         <button value="Sort" id="sort"> Sort </button>,
