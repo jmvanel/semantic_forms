@@ -1,5 +1,5 @@
 # Show user's named graphs ordered by number of instances
-select ( count(?S) AS ?count ) ?GR
+select ?GR ( count(?S) AS ?count )
 where {
   GRAPH ?GR {
     ?S ?P ?O
