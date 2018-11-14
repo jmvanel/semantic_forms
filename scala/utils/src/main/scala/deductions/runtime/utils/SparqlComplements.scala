@@ -8,7 +8,13 @@ trait SparqlComplements[Rdf <: RDF, DATASET] {
     dataset: DATASET, query: Rdf#ConstructQuery,
     bindings: Map[String, Rdf#Node] = Map()): Try[Rdf#Graph]
 
-    def executeSelectUnionGraph(
+  def executeSelectUnionGraph(
         dataset: DATASET, query: Rdf#SelectQuery,
         bindings: Map[String, Rdf#Node]) : Try[Rdf#Solutions]
+
+  /** Executes a Construct query with ARQ Syntax (Jena);
+   *  see https://issues.apache.org/jira/browse/JENA-1629,
+   *  https://issues.apache.org/jira/browse/JENA-1629 */
+  def executeConstructArqSyntax(dataset: DATASET, query: String,
+                                bindings: Map[String, Rdf#Node]): Try[DATASET]
 }

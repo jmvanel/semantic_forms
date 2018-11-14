@@ -46,7 +46,29 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   val jenaComplements: SparqlComplements[Rdf, DATASET]
   
   /**
-   * sparql Construct Query;
+   * sparql Construct Query with Arq Syntax;
+   * used in SPARQL results Web page
+   * NEEDS transaction
+   */
+  private def sparqlConstructQueryArqSyntax(
+		  queryString: String,
+      bindings: Map[String, Rdf#Node] = Map(),
+      context: Map[String,String] = Map()
+      ): Try[DATASET] = {
+
+    val result = for {
+      es <- {
+        logger.debug("sparqlConstructQueryArqSyntax: before executeConstruct")
+        jenaComplements.executeConstructArqSyntax(dataset, queryString, bindings)
+      }
+    } yield {
+      es
+    }
+    result
+  }
+
+  /**
+   * sparql Construct Query with SPARQL 1.1 Syntax;
    * used in SPARQL results Web page
    * NEEDS transaction
    */
@@ -74,6 +96,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     result
   }
 
+  /** enrich given Graph with computed labels From TDB */
   private def enrichGraphFromTDB(graph: Rdf#Graph, context: Map[String, String]) = {
     if (context.get("enrich").isDefined) {
       /* loop on each unique subject ?S in graph:

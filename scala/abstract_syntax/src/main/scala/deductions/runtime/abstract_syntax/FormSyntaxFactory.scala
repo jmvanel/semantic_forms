@@ -344,7 +344,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       if (!fieldSpecs.isEmpty)
         fieldSpecs.map {
           fieldSpec =>
-            logger.info( s"\tupdateOneFormFromConfig: fieldSpec <$fieldSpec> , fieldSpec.subject <${fieldSpec.subject}>" )
+            logger.debug( s"""\tupdateOneFormFromConfig: fieldSpec <$fieldSpec> ,
+              subject <${fieldSpec.subject}>""" )
             val specTriples = find(graph, fieldSpec.subject, ANY, ANY).toSeq
             for (t <- specTriples)
               field.addTriple(t.subject, t.predicate, t.objectt)
