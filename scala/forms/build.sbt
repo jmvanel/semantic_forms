@@ -3,7 +3,7 @@
 
 import Common._
 libraryDependencies ++= commonDependencies
-libraryDependencies += "com.typesafe.akka" %% "akka-stream" % "2.5.17"
+libraryDependencies += "com.typesafe.akka" %% "akka-stream" % "2.5.18"
 
 // necessary to set the working directory when running tests from starting SBT in parent directory
 fork := true
