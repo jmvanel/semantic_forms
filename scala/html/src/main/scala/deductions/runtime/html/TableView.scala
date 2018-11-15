@@ -21,7 +21,8 @@ trait TableView[NODE, URI <: NODE]
 
   private val properties = UnicityList[NODE]
   private val rows = UnicityList[NODE]
-  private val cellsMap = mutable.Map[(NODE, NODE), Entry]()
+  private val cellsMap = mutable.Map[(NODE, NODE), List[Entry]]().withDefaultValue(List())
+  /** used for generating special URI (first) column */
   private val rowsMap = mutable.Map[NODE, Entry]()
   /** used for printing property label in header */
   private val propertiesMap = mutable.Map[NODE, Entry]()
@@ -35,7 +36,8 @@ trait TableView[NODE, URI <: NODE]
     }
     for (entry <- form.fields) {
       rows.add(entry.subject)
-      cellsMap((entry.subject, entry.property)) = entry
+      val key = (entry.subject, entry.property)
+      cellsMap(key) = entry :: cellsMap(key)
       rowsMap(entry.subject) = entry
     }
 
@@ -84,11 +86,13 @@ trait TableView[NODE, URI <: NODE]
         <td>{
           val cellOption = cellsMap.get((row, property))
           cellOption match {
-            case Some(entry) =>
-              // println(s"dataColumns: isEditableFromRequest ${isEditableFromRequest(request)}, entry $entry")
-              createHTMLField(entry,
+            case Some(entriesList) =>
+              for( entry <- entriesList) yield {
+//              println(s"dataColumns: isEditableFromRequest ${isEditableFromRequest(request)}, entry $entry")
+                createHTMLField(entry,
                   editable = isEditableFromRequest(request),
                   displayInTable = true, request=request )(nullFormSyntax)
+              }
             case _ => ""
           }
         }</td>)
