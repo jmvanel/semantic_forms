@@ -27,7 +27,7 @@ trait TableView[NODE, URI <: NODE]
   /** used for printing property label in header */
   private val propertiesMap = mutable.Map[NODE, Entry]()
 
-  /** generate Table View */
+  /** generate HTML Table View from triples in FormSyntax */
   def generate(form: formMod#FormSyntax, request: HTTPrequest): NodeSeq = {
 
     for (entry <- form.fields) {
@@ -40,6 +40,7 @@ trait TableView[NODE, URI <: NODE]
       cellsMap(key) = entry :: cellsMap(key)
       rowsMap(entry.subject) = entry
     }
+    logger.info( s"TableView.generate: cells count: ${cellsMap.size}")
 
     <p>{
       request.getHTTPparameterValue("label").getOrElse("")

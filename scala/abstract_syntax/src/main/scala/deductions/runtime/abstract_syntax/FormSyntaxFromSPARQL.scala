@@ -28,6 +28,7 @@ trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
         query, editable, formuri, request))
   }
 
+  /** create FormSyntax from result of CONSTRUCT SPARQL query */
   def createFormFromSPARQL(query: String,
                            editable: Boolean = false,
                            formuri: String = "",
@@ -36,8 +37,7 @@ trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
         $query""")
     val tryGraph = sparqlConstructQueryGraph(
           query,
-          context=request.queryString2
-        )
+          context=request.queryString2 )
     logger.debug( s"tryGraph: $tryGraph")
     tryGraph match {
       case Success(graph) =>
@@ -57,19 +57,19 @@ trait FormSyntaxFromSPARQL[Rdf <: RDF, DATASET]
 
   }
 
-  /** needs READ transaction */
+  /** create FormSyntax from triples; needs READ transaction */
   def createFormFromTriples(
     triples: Seq[Rdf#Triple],
     editable: Boolean = false,
     formuri: String = "")(implicit graph: Rdf#Graph, lang:String): FormSyntax = {
-    logger.debug( s"triples: $triples")
+    logger.debug( s"createFormFromTriples: triples: $triples")
+    logger.info( s"createFormFromTriples: triples count: ${triples.size}")
     val formEntries =
       triples.map {
         triple =>
           val (subject, prop, objet) = fromTriple(triple)
           makeEntryFromTriple(subject, prop, objet, formMode = FormMode(editable))
       }
-//    ).get
     FormSyntax(subject = nullURI, fields = formEntries)
   }
 }

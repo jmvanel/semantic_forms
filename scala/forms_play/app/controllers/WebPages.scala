@@ -204,6 +204,9 @@ trait WebPages extends Controller with ApplicationTrait
         errorActionFromThrowable(t, "in /display URI"))
   }
 
+  /** table view, see makeClassTableButton() for a relevant SPARQL query
+   *  IMPLEMENTATION: pipeline:
+   *  URI --> query --> triples --> form syntax --> table cells */
   def table = Action { implicit request: Request[_] =>
     val requestCopy = getRequestCopy()
     val query = queryFromRequest(requestCopy)
@@ -237,7 +240,7 @@ trait WebPages extends Controller with ApplicationTrait
         errorResultFromThrowable(t, s"in make table /table?query=$query"))
   }
 
-
+  /** generate an HTML table From SPARQL in request */
   private def tableFromSPARQL(request: HTTPrequest): NodeSeq = {
     /** TODO also elsewhere */
     def isEditableFromRequest(request: HTTPrequest): Boolean =
