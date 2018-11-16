@@ -6,6 +6,7 @@ import deductions.runtime.utils.{RDFPrefixesInterface, UnicityList}
 import scala.collection.mutable
 import scala.xml.NodeSeq
 import deductions.runtime.core.HTTPrequest
+import scala.xml.Unparsed
 
 /** Table View; editable or not */
 trait TableView[NODE, URI <: NODE]
@@ -27,6 +28,35 @@ trait TableView[NODE, URI <: NODE]
   /** used for printing property label in header */
   private val propertiesMap = mutable.Map[NODE, Entry]()
 
+  /** inspired by https://stackoverflow.com/questions/7558182/sort-a-table-fast-by-its-first-column-with-javascript-or-jquery */
+  private val sortingJavascript = """
+    if (typeof(asc) == "undefined") 
+      var asc = 1
+
+    function sortTable(colSortIndex){
+    console.log("Sorting on column " + colSortIndex)
+    var tbl = document.getElementById("sf-table").tBodies[0];
+//    console.log("table tBodies") ; console.log(tbl)
+    var store = [];
+    for(var i=1, len=tbl.rows.length; i<len; i++){
+        var row = tbl.rows[i];
+//        console.log("row") ; console.log(row)
+        var sortnr = (row.cells[colSortIndex].textContent || row.cells[colSortIndex].innerText);
+        store.push([sortnr, row]);
+//        console.log("sortnr") ; console.log(sortnr)
+    }
+    store.sort(
+      function(x,y){
+        return (x[0] == y[0]) ? 0 :
+              ((x[0] >  y[0]) ? asc : -1 * asc);
+    })
+    for(var i=0, len=store.length; i<len; i++){
+        tbl.appendChild(store[i][1]);
+    }
+    store = null;
+    asc = -asc
+}"""
+
   /** generate HTML Table View from triples in FormSyntax */
   def generate(form: formMod#FormSyntax, request: HTTPrequest): NodeSeq = {
 
@@ -45,7 +75,8 @@ trait TableView[NODE, URI <: NODE]
     <p>{
       request.getHTTPparameterValue("label").getOrElse("")
     }</p> ++
-    <table class="table table-striped table-bordered">
+    <script>{Unparsed(sortingJavascript)}</script> ++
+    <table class="table table-striped table-bordered" id="sf-table">
       <tr> { headerRow } </tr>
       {
         for (row <- rows.list) yield {
@@ -63,7 +94,8 @@ trait TableView[NODE, URI <: NODE]
     <th>URI</th>,
     {
       for (property <- properties.list) yield {
-        <th>{
+        <th onclick="sortTable(this.cellIndex)"
+            title="Click to sort">{
           val entry = propertiesMap(property)
           makeFieldLabel(NullResourceEntry, entry, editable = false)(nullFormSyntax)
         }</th>
