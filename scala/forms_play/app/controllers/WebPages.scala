@@ -250,12 +250,16 @@ trait WebPages extends Controller with ApplicationTrait
     val query = queryFromRequest(request)
     implicit val graph: Rdf#Graph = allNamedGraph
     // form Syntax With user Info
-    val formSyntax =
-      addUserInfoOnAllTriples(
-        createFormFromSPARQL(query,
-          editable = isEditableFromRequest(request),
-          formuri = "", request))
-
+    val formSyntax = {
+      val isEditable = isEditableFromRequest(request)
+        val formSyntaxRaw = createFormFromSPARQL(query,
+          editable = isEditable,
+          formuri = "", request)
+      if(isEditable)
+        addUserInfoOnAllTriples(formSyntaxRaw)
+      else
+        formSyntaxRaw
+    }
     val tv = new TableView[ImplementationSettings.Rdf#Node, ImplementationSettings.Rdf#URI]
         with Form2HTMLBanana[ImplementationSettings.Rdf]
         with ImplementationSettings.RDFModule

@@ -13,6 +13,7 @@ import Scalaz._
 import scala.xml.Text
 import deductions.runtime.core.FormModule
 import deductions.runtime.utils.I18NMessages
+import scala.xml.Comment
 
 /** generate HTML from abstract Form for Display (Read only) */
 trait Form2HTMLDisplay[NODE, URI <: NODE]
@@ -237,7 +238,9 @@ with FormModule[NODE, URI]
     <a href={ "/table?query=" + URLEncoder.encode(sparlqlQuery, "UTF-8") +
         s"&label=<$classURI>"} target="_blank"
        title={s"Table view for <$classURI>"}>
-         <img src={ imageURL } css="sf-thumbnail" height="20" alt="Table view"/>
+         <img src={ imageURL } css="sf-thumbnail" height="20" alt="Table view">
+          {Comment(s" makeClassTableButton URI $classURI ")}
+        </img>
     </a>
   }
 

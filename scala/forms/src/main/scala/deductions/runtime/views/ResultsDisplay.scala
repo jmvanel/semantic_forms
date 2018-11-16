@@ -86,7 +86,7 @@ extends ThumbnailInference[Rdf, DATASET] {
   val separatorTriple = " | "
   
   /** make HTML hyperlink For given URI, with bells and whistles;
-   *  this links to semantic_forms page for displaying this URI;
+   *  link to semantic_forms page for displaying this URI;
    * NOTE: this reuses code in Form2HTMLDisplay.createHTMLResourceReadonlyField()
    * 
    * NON transactional, needs rw transaction */
@@ -141,7 +141,7 @@ extends ThumbnailInference[Rdf, DATASET] {
   }
 
   /** display given URI with bells and whistles,
-   *  implementation:  call createHTMLResourceReadonlyField() in trait Form2HTMLDisplay */
+   *  implementation: call createHTMLResourceReadonlyField() from trait Form2HTMLDisplay */
   private def displayNode(uri: Rdf#URI,
       hrefPrefix: String = config.hrefDisplayPrefix,
       label: String,
@@ -195,7 +195,8 @@ extends ThumbnailInference[Rdf, DATASET] {
         property=property,
         value=uri,
         thumbnail = getURIimage(uri),
-        type_ = types)
+        type_ = types,
+        isClass = isClass(uri) )
   }
 
 }

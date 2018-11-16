@@ -89,7 +89,7 @@ trait UserTraceability[Rdf <: RDF, DATASET]
     timeElementStr.splitAt(timeElementStr.indexOf("^"))._1.replaceAll("\"","").toLong
   }
 
-  /** add User Info On all Triples */
+  /** add User Info On all Triples in given FormSyntax */
   def addUserInfoOnAllTriples(
     formSyntax: FormSyntax)(
     implicit
