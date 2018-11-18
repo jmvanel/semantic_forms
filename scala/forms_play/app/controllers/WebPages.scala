@@ -216,20 +216,24 @@ trait WebPages extends Controller with ApplicationTrait
         val title = "Table view from SPARQL"
         val lang = chooseLanguage(request)
         val userInfo = displayUser(userid, "", title, lang)
+
         val editButton = <button action="/table" title="Edit each cell of the table (like a spreadheet)">Edit</button>
+        val submitButton = <button formaction="/save" formmethod="post" title="Save changes in the table">Submit</button>
+
         outputMainPage(
             <div>
               <a href={ "/sparql-ui?query=" + URLEncoder.encode(query, "UTF-8") }>Back to SPARQL page</a>
             </div> ++
             <form> {
-              editButton ++
               <input name="query" type="hidden" value={query}></input> ++
-              <input name="edit" type="hidden" value={
-                // request.queryString.getOrElse("edit", Seq()).headOption.getOrElse("yes")
-                "yes"
-              }></input> ++
-              <input type="hidden" name="graphURI" value={ makeAbsoluteURIForSaving(requestCopy.userId()) }/>
-              <button formaction="/save" formmethod="post">Submit</button> ++
+              <input name="edit" type="hidden" value="yes"></input> ++
+              <input type="hidden" name="graphURI" value={ makeAbsoluteURIForSaving(requestCopy.userId()) }/> ++
+              { if (isEditableFromRequest(requestCopy) )
+                  submitButton
+                else {
+                  <!-- launch this table in edit mode -->
+                  editButton }
+              } ++
               tableFromSPARQL(requestCopy)
             } </form>,
           lang, title = title,
@@ -240,12 +244,12 @@ trait WebPages extends Controller with ApplicationTrait
         errorResultFromThrowable(t, s"in make table /table?query=$query"))
   }
 
-  /** generate an HTML table From SPARQL in request */
-  private def tableFromSPARQL(request: HTTPrequest): NodeSeq = {
-    /** TODO also elsewhere */
-    def isEditableFromRequest(request: HTTPrequest): Boolean =
-      request.queryString.getOrElse("edit", Seq()).headOption.getOrElse("") != ""
+  /** TODO also elsewhere */
+  def isEditableFromRequest(request: HTTPrequest): Boolean =
+    request.queryString.getOrElse("edit", Seq()).headOption.getOrElse("") != ""
 
+   /** generate an HTML table From SPARQL in request */
+  private def tableFromSPARQL(request: HTTPrequest): NodeSeq = {
     println(s">>>> tableFromSPARQL: $request")
     val query = queryFromRequest(request)
     implicit val graph: Rdf#Graph = allNamedGraph
