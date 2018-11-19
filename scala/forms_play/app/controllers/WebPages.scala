@@ -73,28 +73,30 @@ trait WebPages extends Controller with ApplicationTrait
   }
 
   /** output Main Page With given Content */
-  private def outputMainPageWithContent(contentMaker: SemanticController) = {
+  private def outputMainPageWithContent(contentMaker: SemanticController, classForContent: String = "") = {
     Action { request0: Request[_] =>
-        val precomputed = new MainPagePrecompute(request0)
-        import precomputed._
-//        println(s"========= outputMainPageWithContent precomputed $precomputed - title ${precomputed.title}")
-        addAppMessageFromSession(requestCopy)
-        outputMainPage2(contentMaker.result(requestCopy),
-            precomputed )
+      val precomputed = new MainPagePrecompute(request0)
+      import precomputed._
+      //        println(s"========= outputMainPageWithContent precomputed $precomputed - title ${precomputed.title}")
+      addAppMessageFromSession(requestCopy)
+      outputMainPage2(
+        contentMaker.result(requestCopy),
+        precomputed, classForContent = classForContent)
     }
   }
 
   /** same as before, but Logging is enforced */
-  private def outputMainPageWithContentLogged(contentMaker: SemanticController) = {
-    withUser {
-      implicit userid =>
-        implicit request =>
-          val precomputed = new MainPagePrecompute(request)
-          import precomputed._
-          addAppMessageFromSession(requestCopy)
-//          println(s"========= outputMainPageWithContentLogged precomputed $precomputed - title ${precomputed.title}")
-          outputMainPage2(contentMaker.result(requestCopy),
-            precomputed )
+  private def outputMainPageWithContentLogged(
+    contentMaker:    SemanticController,
+    classForContent: String             = "container sf-complete-form") = {
+    withUser { implicit userid => implicit request =>
+      val precomputed = new MainPagePrecompute(request)
+      import precomputed._
+      addAppMessageFromSession(requestCopy)
+      //          println(s"========= outputMainPageWithContentLogged precomputed $precomputed - title ${precomputed.title}")
+      outputMainPage2(
+        contentMaker.result(requestCopy),
+        precomputed, classForContent = classForContent)
     }
   }
 
@@ -210,11 +212,11 @@ trait WebPages extends Controller with ApplicationTrait
   /** decide whether Login isRequired */
   private def decideLoginRequired(
       request: HTTPrequest,
-    contentMaker: SemanticController): EssentialAction =
+    contentMaker: SemanticController, classForContent: String=""): EssentialAction =
     if (needLoginForDisplaying || isEditableFromRequest(request))
-      outputMainPageWithContentLogged(contentMaker)
+      outputMainPageWithContentLogged(contentMaker, classForContent)
     else
-      outputMainPageWithContent(contentMaker)
+      outputMainPageWithContent(contentMaker, classForContent)
 
 
   /** table view, see makeClassTableButton() for a relevant SPARQL query
