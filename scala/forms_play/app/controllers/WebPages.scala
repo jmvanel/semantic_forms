@@ -27,6 +27,8 @@ import play.api.mvc.EssentialAction
 import scalaz._
 import Scalaz._
 import deductions.runtime.views.FormHeader
+import play.api.mvc.AnyContent
+import play.api.mvc.RequestHeader
 
 /** controller for HTML pages ("generic application") */
 trait WebPages extends Controller with ApplicationTrait
@@ -75,6 +77,7 @@ trait WebPages extends Controller with ApplicationTrait
     Action { request0: Request[_] =>
         val precomputed = new MainPagePrecompute(request0)
         import precomputed._
+//        println(s"========= outputMainPageWithContent precomputed $precomputed - title ${precomputed.title}")
         addAppMessageFromSession(requestCopy)
         outputMainPage2(contentMaker.result(requestCopy),
             precomputed )
@@ -89,7 +92,7 @@ trait WebPages extends Controller with ApplicationTrait
           val precomputed = new MainPagePrecompute(request)
           import precomputed._
           addAppMessageFromSession(requestCopy)
-          println(s"========= outputMainPageWithContentLogged precomputed $precomputed - title ${precomputed.title}")
+//          println(s"========= outputMainPageWithContentLogged precomputed $precomputed - title ${precomputed.title}")
           outputMainPage2(contentMaker.result(requestCopy),
             precomputed )
     }
@@ -194,7 +197,7 @@ trait WebPages extends Controller with ApplicationTrait
               request = request)._1
           }
         }
-
+// TODO decideLoginRequired(contentMaker)
         if (needLoginForDisplaying || (needLoginForEditing && Edit  =/=  ""))
           outputMainPageWithContentLogged(contentMaker)
         else
@@ -204,51 +207,59 @@ trait WebPages extends Controller with ApplicationTrait
         errorActionFromThrowable(t, "in /display URI"))
   }
 
+  /** decide whether Login isRequired */
+  private def decideLoginRequired(
+      request: HTTPrequest,
+    contentMaker: SemanticController): EssentialAction =
+    if (needLoginForDisplaying || isEditableFromRequest(request))
+      outputMainPageWithContentLogged(contentMaker)
+    else
+      outputMainPageWithContent(contentMaker)
+
+
   /** table view, see makeClassTableButton() for a relevant SPARQL query
    *  IMPLEMENTATION: pipeline:
    *  URI --> query --> triples --> form syntax --> table cells */
-  def table = Action { implicit request: Request[_] =>
-    val requestCopy = getRequestCopy()
-    val query = queryFromRequest(requestCopy)
-    recoverFromOutOfMemoryErrorGeneric(
-      {
-        val userid = requestCopy.userId()
-        val title = "Table view from SPARQL"
-        val lang = chooseLanguage(request)
-        val userInfo = displayUser(userid, "", title, lang)
+  def table() = EssentialAction { implicit requestHeader: RequestHeader =>
+    decideLoginRequired(copyRequestHeader(requestHeader), tableContentMaker)(requestHeader)
+  }
 
-        val editButton = <button action="/table" title="Edit each cell of the table (like a spreadheet)">Edit</button>
-        val submitButton = <button formaction="/save" formmethod="post" title="Save changes in the table">Submit</button>
+  private val tableContentMaker: SemanticController = new SemanticController {
+    def result(request: HTTPrequest): NodeSeq = {
+      val query = queryFromRequest(request)
+      val userid = request.userId()
+      val title = "Table view from SPARQL"
+      val lang = request.getLanguage
+      val userInfo = displayUser(userid, "", title, lang)
 
-        outputMainPage(
-            <div>
-              <a href={ "/sparql-ui?query=" + URLEncoder.encode(query, "UTF-8") }>Back to SPARQL page</a>
-            </div> ++
-            <form> {
-              <input name="query" type="hidden" value={query}></input> ++
+      val editButton = <button action="/table" title="Edit each cell of the table (like a spreadheet)">Edit</button>
+      val submitButton: NodeSeq /*Elem*/ =
+        <button formaction="/save" formmethod="post" title="Save changes in the table">Submit</button>
+      return  <div>
+          <a href={ "/sparql-ui?query=" + URLEncoder.encode(query, "UTF-8") }>Back to SPARQL page</a>
+        </div> ++
+        <form> {
+            <input name="query" type="hidden" value={ query }></input> ++
               <input name="edit" type="hidden" value="yes"></input> ++
-              <input type="hidden" name="graphURI" value={ makeAbsoluteURIForSaving(requestCopy.userId()) }/> ++
-              { if (isEditableFromRequest(requestCopy) )
+              <input type="hidden" name="graphURI" value={ makeAbsoluteURIForSaving(request.userId()) }/> ++
+              {
+                if (isEditableFromRequest(request))
                   submitButton
                 else {
                   <!-- launch this table in edit mode -->
-                  editButton }
+                  editButton
+                }
               } ++
-              tableFromSPARQL(requestCopy)
-            } </form>,
-          lang, title = title,
-          userInfo = userInfo,
-          classForContent = "")
-      },
-      (t: Throwable) =>
-        errorResultFromThrowable(t, s"in make table /table?query=$query"))
+              tableFromSPARQL(request)
+        } </form>
+    }
   }
 
   /** TODO also elsewhere */
   def isEditableFromRequest(request: HTTPrequest): Boolean =
     request.queryString.getOrElse("edit", Seq()).headOption.getOrElse("") != ""
 
-   /** generate an HTML table From SPARQL in request */
+  /** generate an HTML table From SPARQL in request */
   private def tableFromSPARQL(request: HTTPrequest): NodeSeq = {
     println(s">>>> tableFromSPARQL: $request")
     val query = queryFromRequest(request)

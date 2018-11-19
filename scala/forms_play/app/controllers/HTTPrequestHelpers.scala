@@ -19,7 +19,7 @@ trait HTTPrequestHelpers {
   def copyRequest(request: Request[_]): HTTPrequest =
     copyRequestHeader(request) . copy( formMap = getFormMap(request) )
 
-  private def copyRequestHeader(request: RequestHeader): HTTPrequest = {
+  def copyRequestHeader(request: RequestHeader): HTTPrequest = {
     import request._
     val cookiesMap = cookies.map { cookie => (cookie.name -> copyCookie(cookie)) } . toMap
 //    val formMap = getFormMap(request)
