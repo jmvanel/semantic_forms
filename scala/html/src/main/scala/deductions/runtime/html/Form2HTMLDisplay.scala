@@ -239,7 +239,9 @@ with FormModule[NODE, URI]
         s"&label=<$classURI>"} target="_blank"
        title={s"Table view for <$classURI>"}>
          <img src={ imageURL } css="sf-thumbnail" height="20" alt="Table view">
-          {Comment(s" makeClassTableButton URI $classURI ")}
+          {
+//            println(s"makeClassTableButton: classURI <$classURI>")
+            Comment( s" makeClassTableButton URI ${classURI.replace("--", "\\-\\-")} ") }
         </img>
     </a>
   }
