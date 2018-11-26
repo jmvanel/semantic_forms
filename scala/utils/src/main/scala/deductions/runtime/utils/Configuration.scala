@@ -20,6 +20,7 @@ trait Configuration {
   def relativeURIforCreatedResourcesByForm: String
   def relativeURIforCreatedResourcesByLDP = relativeURIforCreatedResourcesByForm
 
+  /** 3 timeouts in milliseconds */
   def defaultReadTimeout: Int
   def defaultConnectTimeout: Int
   def httpHeadTimeout: Int

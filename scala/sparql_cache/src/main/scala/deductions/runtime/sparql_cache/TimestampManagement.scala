@@ -113,21 +113,26 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
     result.map { x => x.next.longValue() }
   }
   
-  /** get lastModified HTTP header
+  /** get Last-Modified HTTP header, uses plain Java library
    * @return tuple:
    * _1 : true <=> no error
    * _2 : timestamp from HTTP HEAD request or local file
    * _3 : Option[HttpURLConnection] ;
    * return Long.MaxValue if no timestamp is available;
    *  NOTE elsewhere akka HTTP client is used
+   *  see also getContentTypeFromHEADRequest(), which uses Apache HTTP client
    */
   def lastModified(url0: String, timeout: Int): (Boolean, Long, Try[HttpURLConnection]) = {
-    val url = url0.replaceFirst("https", "http"); // Otherwise an exception may be thrown on invalid SSL certificates.
+    val url = url0
+    /* TODO do this only when needed!!!!
+     * val url = url0.replaceFirst("https", "http");
+     * // Otherwise an exception may be thrown on invalid SSL certificates.
+     */
     try {
       val connection0 = new URL(url).openConnection()
       connection0 match {
         case connection: HttpURLConnection if( ! url.startsWith("file:/") ) =>
-          logger.debug(s"lastModified: case of HTTP URL")
+          logger.debug(s"lastModified: case of HTTP URL <$url>, timeout $timeout")
           connection.setConnectTimeout(timeout)
           connection.setReadTimeout(timeout)
           connection.setRequestMethod("HEAD")

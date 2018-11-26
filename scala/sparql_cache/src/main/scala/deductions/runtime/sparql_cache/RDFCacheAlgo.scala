@@ -532,10 +532,11 @@ JMV:
 
   /** pasted from Apache HTTP client doc
    *  https://hc.apache.org/httpcomponents-client-ga/
+   * See also lastModified(), which uses plain Java library
    * */
   def getContentTypeFromHEADRequest(url0: String): Try[String] = {
     val url = url0 // TODO: test more: fromUri(withoutFragment(URI(url0)))
-    val requestConfig = RequestConfig.custom().setConnectTimeout(5 * 1000).build();
+    val requestConfig = RequestConfig.custom().setConnectTimeout(defaultConnectTimeout).build();
     val httpclient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
     try {
       val httpHead = new HttpHead(url)

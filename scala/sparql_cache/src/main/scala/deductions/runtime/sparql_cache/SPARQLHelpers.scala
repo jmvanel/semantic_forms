@@ -830,7 +830,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     }
   }
 
-  private val owl = OWLPrefix[Rdf]
+  private lazy val owl = OWLPrefix[Rdf]
   private lazy val propTypes = List(rdf.Property, owl.ObjectProperty, owl.DatatypeProperty)
 
   def isProperty(uriTokeep: Rdf#Node): Boolean = {

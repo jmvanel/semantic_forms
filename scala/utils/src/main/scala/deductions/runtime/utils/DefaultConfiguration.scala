@@ -29,9 +29,10 @@ trait DefaultConfiguration extends Configuration {
     "9000"
   }
 
-  override val defaultReadTimeout = 10
-  override val defaultConnectTimeout = 5
-  override val httpHeadTimeout = 5
+  /** 3 timeouts in milliseconds */
+  override val defaultReadTimeout = 10000
+  override val defaultConnectTimeout = 5000
+  override val httpHeadTimeout = 5000
 
   //  override val formVocabPrefix = "http://deductions-software.com/ontologies/forms.owl.ttl#"
 
