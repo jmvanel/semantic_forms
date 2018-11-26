@@ -50,6 +50,7 @@ trait HTML5TypesTrait[Rdf <: RDF] extends HTML5Types {
     xsd.dateTime -> "datetime-local",
     xsd.dateTimeStamp -> "datetime-local",
     xsd("date") -> "date",
+    xsd("time") -> "date",
 
     xsd.anyURI -> "url",
     xsd.boolean -> "radio"
