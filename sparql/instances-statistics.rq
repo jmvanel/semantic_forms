@@ -1,8 +1,8 @@
-select distinct ?C (count(?O) as ?INSTANCES)
+select distinct ?CLASS (count(?O) as ?INSTANCES)
 where { GRAPH ?G {
-  ?S a ?C .
+  ?S a ?CLASS .
   ?S ?P ?O .
-  # ?C rdfs:label ?LAB.
+  # ?CLASS rdfs:label ?LAB.
 }
-} group by ?C # ?LAB
+} group by ?CLASS # ?LAB
 ORDER BY DESC (?INSTANCES)

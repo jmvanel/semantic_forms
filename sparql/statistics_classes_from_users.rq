@@ -1,0 +1,16 @@
+# Show class instances, made by a user, ordered by number of instances
+# Run e.g. with:
+# java -cp $JARS tdb.tdbquery \
+#      --loc=TDB \
+#      --query sparql/statistics_classes_from_users.rq 
+
+select distinct ?CLASS (count(?O) as ?INSTANCES)
+where {
+ GRAPH ?GR {
+  ?S a ?CLASS .
+  ?S ?P ?O .
+}
+FILTER ( STRSTARTS( STR(?GR), "user")  ||
+         STRSTARTS( str(?GR), "mailto:" ) )
+} group by ?CLASS
+ORDER BY DESC (?INSTANCES)

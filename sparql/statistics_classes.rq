@@ -1,7 +1,9 @@
 # Show classes ordered by number of instances
 # Run e.g. with:
-# java -cp $JARS tdb.tdbquery --loc=TDB --set tdb:unionDefaultGraph=true \
-#      --query parql/statistics_classes.rq 
+# java -cp $JARS tdb.tdbquery \
+#      --loc=TDB \
+#      --set tdb:unionDefaultGraph=true \
+#      --query sparql/statistics_classes.rq 
 select ( count(?S) AS ?count ) ?CLASS
 where {
   ?S a ?CLASS

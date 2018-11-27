@@ -266,7 +266,7 @@ JMV:
         logger.debug(s"updateLocalVersion: <$uri> last Modified: ${new Date(timestampFromHTTPHeader)} - no Error: $noErrorLastModified .")
 
         if (isDocumentExpired(connectionOption)) {
-          logger.debug(s"updateLocalVersion: <$uri> was OUTDATED by Expires HTPP header field")
+          logger.info(s"updateLocalVersion: <$uri> was OUTDATED by Expires HTPP header field")
           return readStoreURITry(uri, uri, dataset)
         }
 
@@ -274,7 +274,8 @@ JMV:
            (timestampFromHTTPHeader > longLocalTimestamp
             || longLocalTimestamp === Long.MaxValue)) {
           val graph = readStoreURITry(uri, uri, dataset)
-          logger.debug(s"updateLocalVersion: <$uri> was OUTDATED by timestamp; downloaded.")
+          logger.info(
+            s"updateLocalVersion: <$uri> was OUTDATED by timestamp ${new Date(timestampFromHTTPHeader)}; downloaded.")
 
           // TODO pass arg. timestampFromHTTPHeader to addTimestampToDataset
           addTimestampToDataset(uri, dataset2) // PENDING: maybe do this in a Future
