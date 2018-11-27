@@ -1,0 +1,9 @@
+construct {
+ graph ?gr
+  { ?s ?p ?o }
+}
+where { 
+ graph ?gr
+  { ?s ?p ?o }
+}
+limit 11
