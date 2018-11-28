@@ -36,18 +36,11 @@ trait CommonVocabulariesLoader[Rdf <: RDF, DATASET]
       
   /** larger and less known vocab's, they are NOT necessarily "self-hosted" */
   val largerVocabs: List[Rdf#URI] =
-    URI(githubcontent + "/edumbill/doap/master/schema/doap.rdf") ::
+//    URI(githubcontent + "/edumbill/doap/master/schema/doap.rdf") ::
+      URI("https://github.com/ewilderj/doap/raw/master/schema/doap.rdf") ::
       URI("http://rdfs.org/sioc/ns#") ::
       URI(orgVocab.prefixIri) ::
-      URI("http://schema.org/version/3.3/schema.ttl") ::
-      /* NOTES
-       * schema.rdfs.org is down on 25 april 2016
-       * .ttl is still broken ?
-       * ( asked on https://github.com/mhausenblas/schema-org-rdf/issues/63 )
-       * 
-       * Maybe the best is to use the RDFa official version at
-       * https://github.com/schemaorg/schemaorg/blob/sdo-callisto/data/schema.rdfa */
-//    	URI("http://schema.rdfs.org/all.nt") ::
+      URI("http://schema.org/version/3.4/schema.ttl") ::
       /* see also scripts/download-dbpedia.sh in Semantic_forms */
       URI("http://downloads.dbpedia.org/2016-10/dbpedia_2016-10.nt") ::
       /* con: */
