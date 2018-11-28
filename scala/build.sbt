@@ -4,18 +4,16 @@ import Common._
 // https://github.com/playframework/playframework/issues/5823
 
 // offline := true
-
-name := "semantic_forms-root"
+lazy val root = Project("semantic_forms-root", file("."))
+    .aggregate(forms_play, forms, core, utils, sparql_cache,
+               abstract_syntax, html, clients, rdf_links_rank)
 
 organization in ThisBuild := "deductions"
 version in ThisBuild := "2.X-SNAPSHOT"
 
-// 
 scalaVersion := "2.12.7"
-// lazy val commonSettings = Seq( scalaVersion := "2.12.6", organization := "deductions")
 // crossScalaVersions := Seq("2.11.12", "2.12.6")
 
-// scalaVersion in ThisBuild := "2.11.12" // "2.12.6"
 javacOptions in ThisBuild := Seq("-source","1.8", "-target","1.8")
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-explaintypes", "-language:_", "-Xlint:_")
 
