@@ -7,6 +7,7 @@ import scala.collection.mutable
 import scala.xml.NodeSeq
 import deductions.runtime.core.HTTPrequest
 import scala.xml.Unparsed
+import deductions.runtime.utils.I18NMessages
 
 /** Table View; editable or not */
 trait TableView[NODE, URI <: NODE]
@@ -77,7 +78,7 @@ trait TableView[NODE, URI <: NODE]
     }</p> ++
     <script>{Unparsed(sortingJavascript)}</script> ++
     <table class="table table-striped table-bordered" id="sf-table">
-      <tr> { headerRow } </tr>
+      <tr> { headerRow(request) } </tr>
       {
         for (row <- rows.list) yield {
           <tr>
@@ -90,12 +91,12 @@ trait TableView[NODE, URI <: NODE]
   }
 
   /** */
-  private def headerRow = Seq(
+  private def headerRow(request: HTTPrequest) = Seq(
     <th>URI</th>,
     {
       for (property <- properties.list) yield {
         <th onclick="sortTable(this.cellIndex)"
-            title="Click to sort">{
+            title={ I18NMessages.get("Click_to_sort", request.getLanguage()) }>{
           val entry = propertiesMap(property)
           makeFieldLabel(NullResourceEntry, entry, editable = false)(nullFormSyntax)
         }</th>
