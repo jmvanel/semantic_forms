@@ -297,29 +297,29 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     formSyntax
   }
 
-  private def getRDFSranges(prop: Rdf#Node)(implicit graph: Rdf#Graph): Set[Rdf#Node] = {
-    val ranges = objectsQuery(prop, rdfs.range)
-    val rangesSize = ranges.size
-    logger.debug(
-      if (rangesSize > 1) {
-        s"""WARNING: ranges $ranges for property $prop are multiple;
-            taking first if not owl:Thing
-            """
-      } else if (rangesSize === 0) {
-        s"""WARNING: There is no range for property $prop
-            """
-      } else "")
-
-    if (rangesSize > 1) {
-      val owlThing = prefixesMap2("owl")("Thing")
-      if (ranges.contains(owlThing)) {
-        logger.warn(
-          s"""WARNING: ranges $ranges for property <$prop> contain owl:Thing;
-               removing owl:Thing, and take first remaining: <${(ranges - owlThing).head}>""")
-      }
-      ranges - owlThing
-    } else ranges
-  }
+//  def getRDFSranges(prop: Rdf#Node)(implicit graph: Rdf#Graph): Set[Rdf#Node] = {
+//    val ranges = objectsQuery(prop, rdfs.range)
+//    val rangesSize = ranges.size
+//    logger.debug(
+//      if (rangesSize > 1) {
+//        s"""WARNING: ranges $ranges for property $prop are multiple;
+//            taking first if not owl:Thing
+//            """
+//      } else if (rangesSize === 0) {
+//        s"""WARNING: There is no range for property $prop
+//            """
+//      } else "")
+//
+//    if (rangesSize > 1) {
+//      val owlThing = prefixesMap2("owl")("Thing")
+//      if (ranges.contains(owlThing)) {
+//        logger.warn(
+//          s"""WARNING: ranges $ranges for property <$prop> contain owl:Thing;
+//               removing owl:Thing, and take first remaining: <${(ranges - owlThing).head}>""")
+//      }
+//      ranges - owlThing
+//    } else ranges
+//  }
 
   /** non recursive update of given `formSyntax` from given `formSpecif`;
    * see form_specs/foaf.form.ttl for an example of form specification

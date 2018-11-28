@@ -16,6 +16,7 @@ import scala.util.Success
 
 import scalaz._
 import Scalaz._
+import org.w3.banana.OWLPrefix
 
 /** HTML Form Saver: given HTML parameters Map, updates the RDF database */
 trait FormSaver[Rdf <: RDF, DATASET]
@@ -137,9 +138,18 @@ trait FormSaver[Rdf <: RDF, DATASET]
           else URLDecoder.decode(graphURIOption.getOrElse(subjectUriOption.getOrElse("???")), "utf-8")
 
     if(graphURI != "???") {
-      val databaseChanges = computeDatabaseChangesFromMap( httpParamsMap, lang)
-      doSave(graphURI, databaseChanges)
-      ( subjectUriOption, databaseChanges.typeChange)
+      val databaseChanges =
+        wrapInReadTransaction {
+          computeDatabaseChangesFromMap( httpParamsMap, lang) }
+      if( databaseChanges.isSuccess ) {
+          val pair = for( dbc <- databaseChanges ) yield {
+            doSave(graphURI, dbc)
+            ( subjectUriOption, dbc.typeChange) }
+          pair.get // TODO calling get is bad !
+      } else {
+        logger.error(s"saveTriples: ERROR: $databaseChanges")
+        ( subjectUriOption, false)
+      }
     } else
       ( subjectUriOption, false)
   }
@@ -172,19 +182,27 @@ trait FormSaver[Rdf <: RDF, DATASET]
             }
           },
 
-          _ => BNode(objectStringFromUser.replaceAll(" ", "_")), // ?? really do this ?
+        _ => BNode(objectStringFromUser.replaceAll(" ", "_")), // ?? really do this ?
 
-          _ =>
-            if(isAbsoluteURI(objectStringFromUser))
-              /* use case: an non-URI string was in database, but an URI is entered by user;
-               * TODO : check that it's OK for this property
-              */
-              URI( expandOrUnchanged(objectStringFromUser) )
-            // avoids that numbers get a language tag
-            else if ("[a-zA-Z]".r .findFirstMatchIn(objectStringFromUser) .isDefined )
-              Literal.tagged(objectStringFromUser,Lang(lang))
-            else
-              Literal(objectStringFromUser)
+        _ => { // ==== Literal ===
+          implicit val graph = allNamedGraph
+          val ranges = getRDFSranges(originalTriple.predicate)
+          val hasXSDtype = ranges . exists { typ => nodeToString(typ).startsWith(xsd.prefixIri) }
+          lazy val owl = OWLPrefix[Rdf]
+          val isObjectProperty = getClasses(originalTriple.predicate) . contains (owl.ObjectProperty)
+
+          if (isObjectProperty && isAbsoluteURI(objectStringFromUser))
+            /* use case: an non-URI string was in database, but an URI is entered by user;
+               * DONE : checked that it's OK for this property */
+            URI(expandOrUnchanged(objectStringFromUser))
+          else if (hasXSDtype)
+            Literal(objectStringFromUser, uriNodeToURI(ranges.head))
+          // avoids that numbers get a language tag
+          else if ("[a-zA-Z]".r.findFirstMatchIn(objectStringFromUser).isDefined)
+            Literal.tagged(objectStringFromUser, Lang(lang))
+          else
+            Literal(objectStringFromUser)
+          }
         )
         val originalData = nodeToString(originalTriple.objectt)
         val emptyUserInput: Boolean = objectStringFromUser === ""
@@ -231,8 +249,8 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
     // DEBUG
     val dsg = dataset.asInstanceOf[org.apache.jena.sparql.core.DatasetImpl].asDatasetGraph()
-    logger.debug(s">>>> doSave: dsg class : ${dsg.getClass}")
-    logger.debug(s">>>> doSave: ds: ${dataset}")
+    log(s">>>> doSave: dsg class : ${dsg.getClass}")
+    log(s">>>> doSave: userURI $userURI, graphURI $graphURI, ds: ${dataset}")
 
       val transaction = wrapInTransaction {
         time("removeTriples",

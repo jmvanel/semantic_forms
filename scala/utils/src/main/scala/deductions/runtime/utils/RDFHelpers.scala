@@ -11,9 +11,11 @@ import scala.util.control.NonFatal
 
 import scalaz._
 import Scalaz._
+import org.w3.banana.RDFSPrefix
 
 /** */
-trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
+trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf]
+    with RDFPrefixes[Rdf] {
 
   implicit val ops: RDFOps[Rdf]
 //  val rdfh: RDFHelpers[Rdf] = this
@@ -64,6 +66,30 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf] {
 
   def getClassOrNullURI(subject: Rdf#Node)(implicit graph: Rdf#Graph): Rdf#Node =
     getClasses(subject).headOption.getOrElse(nullURI)
+
+  def getRDFSranges(prop: Rdf#Node)(implicit graph: Rdf#Graph): Set[Rdf#Node] = {
+    val ranges = objectsQuery(prop, rdfs.range)
+    val rangesSize = ranges.size
+//    logger.debug(
+//      if (rangesSize > 1) {
+//        s"""WARNING: ranges $ranges for property $prop are multiple;
+//            taking first if not owl:Thing
+//            """
+//      } else if (rangesSize === 0) {
+//        s"""WARNING: There is no range for property $prop
+//            """
+//      } else "")
+
+    if (rangesSize > 1) {
+      val owlThing = prefixesMap2("owl")("Thing")
+      if (ranges.contains(owlThing)) {
+//        logger.warn(
+//          s"""WARNING: ranges $ranges for property <$prop> contain owl:Thing;
+//               removing owl:Thing, and take first remaining: <${(ranges - owlThing).head}>""")
+      }
+      ranges - owlThing
+    } else ranges
+  }
 
   /** replace Same Language triple(s):
    *  given triple ?S ?P ?O ,
@@ -346,7 +372,11 @@ extends URIManagement {
           "\""
         /* FIX ERROR riot [line: 2, col: 13] Illegal escape sequence value: (0x0D) ,
          * occuring in a <pre> block with \ followed by carriage return */
-        val turtleString = rawString.replaceAll("""\\\r""", """\\\\\u000d""")
+        val turtleString =
+          if(rawString.endsWith("\""))
+            rawString.replaceAll("\"", "\\\"")
+          else
+            rawString.replaceAll("""\\\r""", """\\\\\u000d""")
         wrapping + turtleString + wrapping + suffix
       })
 }
