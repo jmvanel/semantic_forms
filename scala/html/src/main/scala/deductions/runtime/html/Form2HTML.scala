@@ -310,9 +310,9 @@ import scala.xml.Unparsed
 
       case r: formMod#RDFListEntry => <p>RDF List: {
         r.values.fields.map {
-          field => field.valueLabel
-        }.
-          mkString(", ")
+          field =>
+            createHTMLField(field, editableByUser, request=request)
+        }
       }</p>
 
       case _ =>
