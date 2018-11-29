@@ -297,30 +297,6 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     formSyntax
   }
 
-//  def getRDFSranges(prop: Rdf#Node)(implicit graph: Rdf#Graph): Set[Rdf#Node] = {
-//    val ranges = objectsQuery(prop, rdfs.range)
-//    val rangesSize = ranges.size
-//    logger.debug(
-//      if (rangesSize > 1) {
-//        s"""WARNING: ranges $ranges for property $prop are multiple;
-//            taking first if not owl:Thing
-//            """
-//      } else if (rangesSize === 0) {
-//        s"""WARNING: There is no range for property $prop
-//            """
-//      } else "")
-//
-//    if (rangesSize > 1) {
-//      val owlThing = prefixesMap2("owl")("Thing")
-//      if (ranges.contains(owlThing)) {
-//        logger.warn(
-//          s"""WARNING: ranges $ranges for property <$prop> contain owl:Thing;
-//               removing owl:Thing, and take first remaining: <${(ranges - owlThing).head}>""")
-//      }
-//      ranges - owlThing
-//    } else ranges
-//  }
-
   /** non recursive update of given `formSyntax` from given `formSpecif`;
    * see form_specs/foaf.form.ttl for an example of form specification
    * NOTE: formSyntax.formURI.get == formSpecif
@@ -489,13 +465,17 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val precomputProp = PrecomputationsFromProperty(prop)
     import precomputProp.{prop => _, _}
     
-    def rdfListEntry = makeRDFListEntry(label, comment, prop, objet0, subject = subject)
+    val rdfListEntry = makeRDFListEntry(label, comment, prop, objet0, subject = subject)
 
     val nullLiteral = Literal("")
     val nullBNode = BNode("")
-
-    val chooseRDFNodeType: Rdf#Node =
+    val chooseRDFNodeType: Rdf#Node ={
+      /* TODO this old code is error prone and should be redesigned, and features made explicit with tests;
+       * in general, priority should be given to actual data over vocabularies,
+       * with some exception(s?): literal value and ObjectProperty.
+       * See also FormSaver */
       rangeClasses match {
+        case _ if rdfListEntry.isDefined => rdf.List
         // give priority to actual value (triple object) over property
         case _ if objet0.isLiteral &&
           !propClasses.contains(owl.ObjectProperty) => nullLiteral
@@ -509,14 +489,14 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         case _ if rangeClasses.contains(owl.Class) => nullURI
         case _ if rangeClasses.contains(rdf.Property) => nullURI
         case _ if ranges.contains(owl.Thing) => nullURI
-        case _ if isURI(objet0) => nullURI
 
-        case _ if rdfListEntry.isDefined => rdf.List
+        case _ if isURI(objet0) => nullURI
         case _ if isBN(objet0) => nullBNode
         case _ if objet0.toString.startsWith("_:") => nullBNode
 
         case _ => nullLiteral
       }
+  }
 
     val objet =
       if (objet0 == nullURI)
@@ -590,7 +570,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       }
     }
 
-    logger.debug(s">>>> makeEntryFromTriple <$prop>, chooseRDFNodeType '$chooseRDFNodeType' is nullURI: ${chooseRDFNodeType == nullURI}")
+    logger.debug(
+       s">>>> makeEntryFromTriple <$prop>, chooseRDFNodeType '$chooseRDFNodeType' is nullURI: ${chooseRDFNodeType == nullURI}")
     chooseRDFNodeType match {
       case `nullURI` =>
         val re = resourceEntry

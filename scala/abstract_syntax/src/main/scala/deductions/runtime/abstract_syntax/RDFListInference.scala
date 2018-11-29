@@ -29,10 +29,8 @@ trait RDFListInference[Rdf <: RDF, DATASET]
     widgetType: WidgetType = Textarea): Option[RDFListEntry] = {
 
     val graph = allNamedGraph
-//    val nodesList = getRDFList(makeTurtleTerm(value)): List[Rdf#Node]
     val nodesListForRDFList = nodeSeqToURISeq(rdfListToSeq(Some(value))(allNamedGraph))
-
-    println(s"makeRDFListEntry list $nodesListForRDFList")
+    logger.debug(s">>>> makeRDFListEntry for property <$property>, list $nodesListForRDFList")
     val entriesListForRDFList: Seq[Entry] = nodesListForRDFList . map {
       node => ops.foldNode(node)(
           uri => ResourceEntry(value=uri, valueLabel=makeInstanceLabel(node, graph, "en")),
