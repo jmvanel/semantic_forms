@@ -29,7 +29,7 @@ trait HTMLutils {
   def showHideExpertButtonsOnClick(html: NodeSeq,
       resourceId: String) = {
     showHideHTMLOnClick(html, resourceId,
-          <button title={
+          <button type="button" title={
       s"""Show "expert" buttons: navigate, edit, graph, for value <${resourceId}>"""}
               style="height: 20px"
           >...</button>)
