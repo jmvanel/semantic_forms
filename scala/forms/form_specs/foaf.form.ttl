@@ -140,16 +140,17 @@ foaf-forms:organizationForm
   form:showProperties (
 	rdfs:label rdfs:comment
 	foaf:homepage
-	foaf:maker
 	foaf:mbox
+	foaf:based_near
+	dct:subject
+	rdfs:seeAlso
+	foaf:maker
 	foaf:fundedBy
 	foaf:isPrimaryTopicOf
 	foaf:depiction
 	foaf:holdsAccount
 	foaf:age
-	dct:subject
 	foaf:topic_interest
-	rdfs:seeAlso
   ) .
 
 
