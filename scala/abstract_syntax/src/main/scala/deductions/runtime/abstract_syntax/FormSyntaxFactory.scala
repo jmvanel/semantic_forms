@@ -582,6 +582,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       case rdf.List => rdfListEntry.get
       case _       => literalEntry
     }
+    // end of makeEntryFromTriple()
   }
 
   /** make Widget Type From Triple, for literal triple */

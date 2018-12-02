@@ -137,13 +137,6 @@ object PopupEditor extends JSApp {
   }
 
   private def addButtonsToWindow(popupDocument: org.scalajs.dom.raw.HTMLDocument) = {//    val child = popupDocument.createElement("script")
-//    val typ = popupDocument.createAttribute("type")
-//      typ.value = "text/javascript"
-//      child.attributes.setNamedItem(typ)
-//    val src = popupDocument.createAttribute("src")
-//      src.value = "https://rawgit.com/sofish/pen/master/src/markdown.js"
-//      child.attributes.setNamedItem(src)
-//    popupDocument.head.appendChild( child )
 
     val closeButton = makeButton(popupDocument, "SAVE")
     val exitButton = makeButton(popupDocument, "DISMISS")

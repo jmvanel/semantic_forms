@@ -6,7 +6,8 @@ import scala.scalajs.js
  * using OSM tiles and RDF-ext;
  * currently done in JavaScript in directory geo-map/
  * 
- * see RDF-ext example: http://rawgit.com/rdf-ext/rdf-examples/develop/parse-jsonld-to-dataset.html
+ * see RDF-ext example:
+ * https://raw.githubusercontent.com/rdf-ext/rdf-examples/develop/parse-jsonld-to-dataset.html
  * NOTES:
  * RDF-ext has no Scala.js JavaScript facade,
  * see doc. for JavaScript facades
