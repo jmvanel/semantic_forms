@@ -379,15 +379,15 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
           val rowsTry = sparqlSelectQuery(query, context=request.queryString2 )
           rowsTry match {
             case Success(rows) =>
-              <div>Result: {rows.size} rows</div>
-
+              <div>Result: {
+                // NOTE: the first row is an empty List() !?
+                rows.size - 1 } rows</div>
               <table class="sf-sparql-table">{
-                val printedRows = for (row <- rows) yield {
+                for (row <- rows) yield {
                   <tr>
                     { for (cell <- row) yield <td> { cell } </td> }
                   </tr>
                 }
-                printedRows
               }</table>
             case Failure(e)=> e.toString()
           }
