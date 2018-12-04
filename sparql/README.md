@@ -6,3 +6,4 @@ $HOME/src/semantic_forms/scala/forms_play/dist/scripts/rupdate.sh \
   http://localhost:9000
 ```
 
+The files named  *.rq are SPARQL queries, and *.upd.rq are SPARQL update files.

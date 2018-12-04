@@ -370,9 +370,10 @@ INFO  ** Completed: 35,922 quads loaded in 1.82 seconds [Rate: 19,759.08 per sec
 
 ## Mirror SPARQL site into SF semantic cache
 
-From a SPARQL query to another endpoint, load URI's returned by the query into SF.
+The input is a SPARQL query to another endpoint. This client program loads URI's returned by the query into SF.
 In the end it is like if a user had pasted all those URI's and clicked on "Display".
 It amounts to make linked copies of all these semantic URI's into SF's semantic cache.
+It leverages in the /load-uri service in SF.
 
 **Examples of running**
 
@@ -431,6 +432,19 @@ Or, from the SBT console:
        "http://www.lotico.com:3030/lotico/query",
        "http://localhost:9000" ))
 ```
+
+__Copy all dbo:Garden from dbPedia__
+
+The query on dbPedia is:
+```sparql
+PREFIX dbo: <http://dbpedia.org/ontology/>
+select ?G where {
+  { ?G a dbo:Garden . }
+  UNION
+  { ?G a <http://dbpedia.org/class/yago/Garden103417345> . }
+}
+```
+The endpoint is http://dbpedia.org/sparql .
 
 # Semantize raw stuff
 

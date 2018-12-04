@@ -13,10 +13,12 @@ import org.w3.banana.SparqlOps
 import org.w3.banana.jena.Jena
 import org.apache.http.params.BasicHttpParams
 import org.apache.http.client.utils.URIBuilder
+import scala.collection.JavaConverters._
 
+   
 /** SPARQL query to Semantic_Forms cache */
 trait SPARQLquery2SFcache {
-  val serverPrefix = "/load-uri"
+  val servicePrefix = "/load-uri"
   val serverParam = "uri"
   // val serverPrefixWithParam = "/load-uri?uri="
   // "/display?displayuri="
@@ -39,7 +41,6 @@ trait SPARQLquery2SFcache {
     results.mkString("")
   }
 
-  val varName = "sub" // "URI"
   def sendQuery(queryString: String, endpoint: String): Iterator[String] = {
     import sparqlOps._
     // Banana
@@ -54,7 +55,8 @@ trait SPARQLquery2SFcache {
 
     val rr = for (
       solution <- solutions.asScala ;
-      x = solution.get(varName);
+      varName1 <- solution.varNames().asScala ;
+      x = solution.get(varName1) ;
       res = x.asResource() ;
       uri = res.getURI
     ) yield uri
@@ -71,7 +73,7 @@ trait SPARQLquery2SFcache {
     val httpclient = HttpClients.createDefault()
 
     val uriObject = new URIBuilder(
-      sfInstancePrefix.replaceFirst("/$", "") + serverPrefix)
+      sfInstancePrefix.replaceFirst("/$", "") + servicePrefix)
       .setParameter(serverParam, URLEncoder.encode(uri, "UTF-8"))
       .setParameter("publisher", publisher)
       .build()
