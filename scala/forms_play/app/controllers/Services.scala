@@ -16,6 +16,7 @@ import org.apache.commons.codec.digest.DigestUtils
 import deductions.runtime.services.RDFContentNegociation
 import java.net.URI
 import java.io.File
+import scala.concurrent.Future
 
 
 /** controller for non-SPARQL Services (or SPARQL related but not in the W3C recommendations) */
@@ -284,11 +285,15 @@ with RDFContentNegociation {
     }
   }
 
+
+  import scala.concurrent.ExecutionContext.Implicits.global
+
   /** HTTP param publisher (provenance) for adding triple with dct:publisher */
   def loadURI(uriString: String): Action[AnyContent] = {
     recoverFromOutOfMemoryErrorGeneric[Action[AnyContent]](
       {
         Action { implicit request: Request[_] =>
+         val resultFuture = Future {
           val uri = ops.URI(URLDecoder.decode(uriString, "UTF-8"))
           val httpRequest = copyRequest(request)
 //          println( s">>>> loadURI: httpRequest $httpRequest")
@@ -312,7 +317,9 @@ with RDFContentNegociation {
               rr . toString()
             case scala.util.Failure(f) => f.getLocalizedMessage
           }
-          Ok(result)
+          logger.info("Future ended: " +result)
+         }
+         Ok("Task started: " + resultFuture.toString())
         }
       },
       (t: Throwable) =>
