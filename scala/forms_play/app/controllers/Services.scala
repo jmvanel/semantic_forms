@@ -293,7 +293,7 @@ with RDFContentNegociation {
     recoverFromOutOfMemoryErrorGeneric[Action[AnyContent]](
       {
         Action { implicit request: Request[_] =>
-         val resultFuture = Future {
+//         val resultFuture = Future {
           val uri = ops.URI(URLDecoder.decode(uriString, "UTF-8"))
           val httpRequest = copyRequest(request)
 //          println( s">>>> loadURI: httpRequest $httpRequest")
@@ -318,8 +318,9 @@ with RDFContentNegociation {
             case scala.util.Failure(f) => f.getLocalizedMessage
           }
           logger.info("Future ended: " +result)
-         }
-         Ok("Task started: " + resultFuture.toString())
+//         }
+//         Ok("Task started: " + resultFuture.toString())
+         Ok("Task result: " + result)
         }
       },
       (t: Throwable) =>

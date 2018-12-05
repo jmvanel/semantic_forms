@@ -560,9 +560,9 @@ JMV:
             val ct = response.getFirstHeader("Content-Type")
             if ( ct == null ) "" else ct.getValue
           } else {
-            logger.error(s"---- ${response.getStatusLine()}");
+            logger.error(s"---- ${response.getStatusLine()} - ${response.getAllHeaders()}");
             throw new ClientProtocolException(
-                s"getContentTypeFromHEADRequest: Unexpected HTTP response status: on $status <$url>");
+                s"getContentTypeFromHEADRequest: Unexpected HTTP response status: '$status' on <$url>");
           }
         }
       };
