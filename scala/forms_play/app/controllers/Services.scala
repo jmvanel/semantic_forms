@@ -317,7 +317,7 @@ with RDFContentNegociation {
               rr . toString()
             case scala.util.Failure(f) => f.getLocalizedMessage
           }
-          logger.info("Future ended: " +result)
+          logger.info("Task ended: " +result)
 //         }
 //         Ok("Task started: " + resultFuture.toString())
          Ok("Task result: " + result)

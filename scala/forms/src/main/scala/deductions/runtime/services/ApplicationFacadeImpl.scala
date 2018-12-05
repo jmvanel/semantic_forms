@@ -158,7 +158,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       { // fillMemory() ;
         searchString(q, hrefDisplayPrefix, request, clas)
       })
-    val sparqlQuery = URLEncoder.encode(queryWithlinksCountMap(q), "utf-8")
+    val sparqlQuery = URLEncoder.encode(queryWithlinksCountMap(q, clas), "utf-8")
     wrapSearchResults(fut, q,
       mess =
         Seq( mapButton(sparqlQuery, request),

@@ -42,7 +42,7 @@ trait Lookup[Rdf <: RDF, DATASET]
   def lookup(search: String, lang: String = "en", clas: String = "", mime: String): String = {
     
     val rawResult = searchStringOrClass(search, clas)
-    logger.info(s"lookup(search=$search, clas=<$clas> => $rawResult")
+    logger.info(s"lookup(search=$search, clas=<$clas> => ${rawResult.take(5)}")
 
     makeJSONorXML(rawResult, lang, mime)
 //    rawResult.mkString("\n")

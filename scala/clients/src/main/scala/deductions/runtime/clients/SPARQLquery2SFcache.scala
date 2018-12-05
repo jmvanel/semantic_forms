@@ -34,10 +34,12 @@ trait SPARQLquery2SFcache {
    *  ( #serverPrefixWithParam will be appended)  */
   def importFromQuery(query: String, endpoint: String, sfInstancePrefix: String): String = {
     val uris = sendQuery(query, endpoint)
+    val task = s"${uris.size} URI results in SF ($sfInstancePrefix)"
+    println(s"importFromQuery: starting importing $task")
     val results = for (uri <- uris) yield {
       sendGetToSemantic_Forms(uri, sfInstancePrefix, endpoint)
     }
-    println(s"importFromQuery: ${results.size} URI results imported in SF ($sfInstancePrefix)")
+    println(s"importFromQuery: imported $task")
     results.mkString("")
   }
 
