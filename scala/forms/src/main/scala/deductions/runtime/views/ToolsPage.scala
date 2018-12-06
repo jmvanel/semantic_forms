@@ -104,21 +104,27 @@ trait ToolsPage extends EnterButtons
     val textareaId = s"query-$action" . replaceAll("/", "-")
     println( "textareaId " + textareaId);
 
-    val buttonsNextRelease = Seq(
-      <input class="btn btn-primary" type="submit" value={ I18NMessages.get("View", request.getLanguage()) }
+    val buttonsAllRDFViews = Seq(
+      <input title="Plain form view"
+             class="btn btn-primary" type="submit" value={ I18NMessages.get("View", request.getLanguage()) }
              formaction="/sparql-form"/>,
       makeLinkCarto( textareaId, config.geoMapURL, request ),
-      <input class="btn btn-primary" type="submit" value={ I18NMessages.get("Table", request.getLanguage()) }
+      makeLinkToVisualTool(textareaId,
+          "/assets/rdf-calendar/rdf-calendar.html?url=",
+          "Calendar", 15,
+          "/assets/images/calendar-tool-for-time-organization.svg"),
+      <input title="Table view"
+             class="btn btn-primary" type="submit" value={ I18NMessages.get("Table", request.getLanguage()) }
              formaction="/table"/>,
 
-      <input class="btn btn-primary" type="submit"
-             title="NOT YET IMPLEMENTED"
+      <input title="Tree view - NOT YET IMPLEMENTED"
+             class="btn btn-primary" type="submit"
              disabled="disabled"
              value={ I18NMessages.get("Tree", request.getLanguage() ) }/>,
-      makeLinkGraphTool(textareaId,
+      makeLinkToVisualTool(textareaId,
           "/assets/rdfviewer/rdfviewer.html?url=",
           "RDF_Viewer", 15),
-      makeLinkGraphTool(textareaId, "http://spoggy.herokuapp.com?" +
+      makeLinkToVisualTool(textareaId, "http://spoggy.herokuapp.com?" +
           "sparql=" + URLEncoder.encode(servicesURIPrefix, "UTF-8") +
           "&url=", "Spoggy", 15)
       )
@@ -138,7 +144,9 @@ trait ToolsPage extends EnterButtons
           <label>unionDefaultGraph</label>
           <input name="unionDefaultGraph" id="unionDefaultGraph" type="checkbox"
                  checked={if (request.getHTTPparameterValue("unionDefaultGraph").isDefined) "yes" else null} />
-          { if (viewButtons) buttonsNextRelease
+
+          { if (viewButtons)
+            buttonsAllRDFViews
           else
              <input class="btn btn-primary" type="submit" value={ I18NMessages.get("History", request.getLanguage()) }
              formaction="/history"/> }
@@ -147,25 +155,26 @@ trait ToolsPage extends EnterButtons
     </form>
   }
 
-  /** make Link to Graph (diagram) Tool
+  /** make Link to visualization Tool, Graph (diagram) or other kind.
    *  NOTE: for RDF Viewer this cannot work in localhost (because of rdfviewer limitations);
    *  works only on a hosted Internet server.
    *  TODO merge with function makeLinkCarto */
-  private def makeLinkGraphTool(textareaId: String, toolURLprefix: String,
+  private def makeLinkToVisualTool(textareaId: String, toolURLprefix: String,
                toolname: String,
-               imgWidth: Int): NodeSeq = {
+               imgWidth: Int,
+               imgURL: String="https://www.w3.org/RDF/icons/rdf_flyer.svg"): NodeSeq = {
 
     val sparqlServicePrefix = URLEncoder.encode("sparql?query=", "UTF-8")
     val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
     println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
     val servicesURIPrefixEncoded = URLEncoder.encode(servicesURIPrefix, "UTF-8")
     val servicesURL = s"$toolURLprefix$servicesURIPrefixEncoded$sparqlServicePrefix"
-    println(s">>>> servicesURL $servicesURL")
+    println(s">>>> makeLinkToVisualTool: servicesURL $servicesURL")
 
     val buttonId = textareaId+"-button-" + toolname
     <button id={buttonId}
-    class="btn btn-default" title={ s"Draw RDF graph diagram with $toolname" } target="_blank">
-      <img width={ imgWidth.toString() } border="0" src="https://www.w3.org/RDF/icons/rdf_flyer.svg"
+    class="btn btn-default" title={ s"Draw RDF with $toolname" } target="_blank">
+      <img width={ imgWidth.toString() } border="0" src={imgURL}
       alt="RDF Resource Description Framework Flyer Icon"/>
     </button>
     <script>
