@@ -31,7 +31,7 @@ trait CSSClasses {
     val formSelectDivCSSClass: String = "col-xs-1",
     val formSelectCSSClass: String = "form-select")
 
-  /** actually applied CSS classes are here */
+  /** table CSS Classes (Bootstrap), actually applied CSS classes are here */
   lazy val tableCSSClasses = CSSClasses(
     // See https://getbootstrap.com/docs/3.3/css/#forms-horizontal
     formRootCSSClass = "form-horizontal",
@@ -39,6 +39,7 @@ trait CSSClasses {
     formFieldCSSClass = "",
     formLabelAndInputCSSClass = "form-group",
     formLabelCSSClass = "col-xs-3 col-sm-2 col-md-2 control-label",
+//    formLabelCSSClass = "control-label",
 //    formLabelCSSClass = "control-label",
     formDivInputCSSClass = "col-xs-8",
     formInputCSSClass = "form-control",

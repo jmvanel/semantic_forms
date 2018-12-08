@@ -254,7 +254,7 @@ println( s">>>> htmlFormElemJustFields 2 " )
     val htmlForm =
       generateHTML(formSyntaxWithInfo, hrefPrefix, editable, actionURI, graphURI,
         actionURI2, lang, request,
-        cssForURI = "sf-value-block col-xs-12 col-sm-9 col-md-9",
+        cssForURI = "sf-value-block", //  col-xs-12 col-sm-9 col-md-9",
         cssForProperty = cssClasses.formLabelCSSClass
         // "col-xs-3 col-sm-2 col-md-2 control-label"
         )

@@ -32,16 +32,36 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
   def makeFieldLabel(preceding: formMod#Entry, field: formMod#Entry, editable: Boolean,
       lang:String="en",
       cssForProperty: String = css.cssClasses.formLabelCSSClass )
-  (implicit form: FormModule[NODE, URI]#FormSyntax) = {
+  (implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     // display field label only if different from preceding
     /* TODO mechanism not compatible with hiding "data not fitting user language",
      * see languagesInDataStatistics();
-     * should display property label on first triple that is not hiden;
+     * should display property label on first triple that is not hidden;
      * implementation: probably use Map to record property label shown
      */
     if (preceding.label =/= field.label )
-      // PENDING is it correct HTML5 ?
-      <label for={
+      makeFieldLabelBasic(field, editable, lang, cssForProperty)
+
+    else if(editable){
+      <label class={
+        cssForProperty
+      } title={
+      field.comment + " - " + field.property
+      }> -- </label>
+        <div class={css.cssClasses.formAddDivCSSClass}></div>
+    }
+    else {
+      <label class={
+        cssForProperty } title={
+      field.comment + " - " + field.property
+      } tabindex="-1"> -- </label>
+    }
+  }
+
+  def makeFieldLabelBasic(field: formMod#Entry, editable: Boolean,
+      lang:String="en",
+      cssForProperty: String = css.cssClasses.formLabelCSSClass ): NodeSeq =
+              <label for={
         field.htmlName
       } class={
         cssForProperty
@@ -56,7 +76,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     text-decoration: none;
     color: #000;
     font-weight: bold;
-"""}
+    """}
       draggable="true"
       data-uri-property={field.property.toString()}
       tabindex="-1">{
@@ -74,22 +94,8 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
         else label
       }</a>
       </label>
-    else if(editable){
-      <label class={
-        cssForProperty
-      } title={
-      field.comment + " - " + field.property
-      }> -- </label>
-        <div class={css.cssClasses.formAddDivCSSClass}></div>
-    }
-    else {
-      <label class={
-        cssForProperty } title={
-      field.comment + " - " + field.property
-      } tabindex="-1"> -- </label>
-    }
-  }
 
+    
   private def labelTooltip(field: formMod#Entry) = {
     val details = if( displayTechnicalSemWebDetails )
         s"""

@@ -16,6 +16,8 @@ import scalaz._
 import Scalaz._
 import scala.xml.Comment
 import scala.xml.Unparsed
+import scala.collection.mutable.LinkedHashMap
+import scala.collection.mutable.LinkedHashSet
 
 /** Abstract Form Syntax to HTML;
  * different modes: display or edit;
@@ -55,7 +57,7 @@ import scala.xml.Unparsed
 		/* wrap Fields With HTML <form> Tag */
     def wrapFieldsWithFormTag(htmlFormFields: NodeSeq): NodeSeq =
       <form class="sf-standard-form" action={ actionURI } method="POST" id="form">
-       <script>{
+        <script>{
          // Prevent a FORM SUBMIT with ENTER
          Unparsed("""
            document.getElementById("form").onkeypress = function(e) {
@@ -65,7 +67,7 @@ import scala.xml.Unparsed
              }
            }
          """ ) }
-</script>
+        </script>
         { if(form.fields.size > 3) // for login form
             addSaveButton(actionURI2) }
         { htmlFormFields }
@@ -113,7 +115,7 @@ import scala.xml.Unparsed
         <input type="hidden" name="uri" value={ urlEncode(form.subject) }/>
       } else Seq()
 
-    /* make Fields Label And Data */
+    /** make Fields Label And Data for all fields */
     def makeFieldsLabelAndData(
       fields:         Seq[FormEntry],
       cssForURI:      String         = "",
@@ -150,7 +152,44 @@ import scala.xml.Unparsed
       } else Text("\n")
     }
 
-    /* makeFieldsGroups Builds a groups of HTML fields to be used with the jQuery UI tabs generator
+    /** See https://stackoverflow.com/questions/9594431/scala-groupby-preserving-insertion-order */
+    def groupByOrdered[A, K](t: Traversable[A], f: A => K): scala.collection.mutable.Map[K, LinkedHashSet[A]] = {
+      val map = LinkedHashMap[K, LinkedHashSet[A]]().withDefault(_ => LinkedHashSet[A]())
+      for (i <- t) {
+        val key = f(i)
+        map(key) = map(key) + i
+      }
+      map
+    }
+
+    /** make Fields Label And Data for all fields */
+    def makeFieldsLabelAndDataNEW(
+      fields:         Seq[FormEntry],
+      cssForURI:      String         = "",
+      cssForProperty: String         = ""): NodeSeq = {
+        val property2EntryMap0 = fields.groupBy(f => f.property)
+        val fieldsFiltered = fields.filter(
+            field => toPlainString(field.property) =/= "" &&
+            ( editable ||
+              toPlainString(field.value) =/= "" ||
+              isSeparator(field) )
+        )
+        val property2EntryMap = groupByOrdered(
+            fieldsFiltered,
+            ((f:FormEntry) => f.property))
+        val labelsAndData = for ( (p, entries) <- property2EntryMap ) yield {
+          val field = entries.head
+        val htmlForEntries =
+          for (entry <- entries) yield createHTMLField(
+            entry, editable, hrefPrefix, lang, request, css = cssForURI)
+          makeFieldSubject(field) ++
+          makeFieldLabelBasic(field, editable, lang, cssForProperty) ++
+          htmlForEntries.flatten
+        }
+        labelsAndData . toSeq . flatten
+      }
+
+      /* makeFieldsGroups Builds a groups of HTML fields to be used with the jQuery UI tabs generator
      *
      * TODO extract Fields Groups feature in specific Trait
      * @return NodeSeq Fragment HTML containing a group of fields */
@@ -265,7 +304,8 @@ import scala.xml.Unparsed
                               hrefPrefix: String = config.hrefDisplayPrefix, lang: String = "en",
                               request: HTTPrequest,
                               displayInTable: Boolean = false,
-                              css: String="sf-value-block col-xs-12 col-sm-9 col-md-9")(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
+                              css: String="sf-value-block col-xs-12 col-sm-9 col-md-9"
+)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
 
     if( isSeparator(field) )
       return NodeSeq.Empty
