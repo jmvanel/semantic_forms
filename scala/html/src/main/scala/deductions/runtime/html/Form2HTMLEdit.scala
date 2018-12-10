@@ -51,9 +51,9 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
         else if (field.widgetType == URIWidget)
           "sfLookup"
         else ""
-      <div class={ css.cssClasses.formAddDivCSSClass } > <!-- TODO : hidden="true" -->
+      <div class={ cssConfig.formAddDivCSSClass } > <!-- TODO : hidden="true" -->
       <button type="button" class="btn btn-primary add-widget" readonly="yes" size="1" title={
-        "Add another value for " + field.label } input-class={s"${css.cssClasses.formInputCSSClass} $lookupCSSClass"} input-name={field.htmlName} input-title={ resourceOrBN_Placeholder(field) }  >
+        "Add another value for " + field.label } input-class={s"${cssConfig.formInputCSSClass} $lookupCSSClass"} input-name={field.htmlName} input-title={ resourceOrBN_Placeholder(field) }  >
         <i class="glyphicon glyphicon-plus"></i>
       </button>
 			</div>
@@ -73,10 +73,10 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
       Text("\n"),
     		// format: OFF
         if (openChoice)
-          <div class={ css.cssClasses.formDivInputCSSClass }>
+          <div class={ cssConfig.formDivInputCSSClass }>
             {
       addTripleAttributesToXMLElement(
-          <input class={ css.cssClasses.formInputCSSClass +
+          <input class={ cssConfig.formInputCSSClass +
             " " + hasLookupCSSclass }
             value={ toPlainString(value) }
             name={ resourceEntry.htmlName }
@@ -148,9 +148,9 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
     val placeholder = resourceOrBN_Placeholder(r)
     Seq(
       if (r.openChoice) {
-        <div class={ css.cssClasses.formDivInputCSSClass }>
+        <div class={ cssConfig.formDivInputCSSClass }>
         {addTripleAttributesToXMLElement(
-        <input class={ css.cssClasses.formInputCSSClass } value={
+        <input class={ cssConfig.formInputCSSClass } value={
           r.value.toString
         } name={
           // makeHTMLNameBN(r)
@@ -172,8 +172,8 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
   private def renderPossibleValues(r: formMod#Entry)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     if (hasPossibleValues(r) &&
       isFirstFieldForProperty(r)) {
-      <div class={ css.cssClasses.formSelectDivCSSClass }>
-        <select class={ css.cssClasses.formSelectCSSClass } value={ r.value.toString } name={
+      <div class={ cssConfig.formSelectDivCSSClass }>
+        <select class={ cssConfig.formSelectCSSClass } value={ r.value.toString } name={
 //          makeHTMLName(r)
           r.htmlName
         } id={
@@ -272,7 +272,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
             else
               xsd2html5TnputType(type0)
           }
-          val inputElement = <input class={ css.cssClasses.formInputCSSClass }
+          val inputElement = <input class={ cssConfig.formInputCSSClass }
           value={
             toPlainString(value)
           } name={ lit.htmlName } type={html5Type}
@@ -295,11 +295,11 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
       }
 
         Text("\n") ++
-        <div class={ css.cssClasses.formDivInputCSSClass }>
+        <div class={ cssConfig.formDivInputCSSClass }>
           { addTripleAttributesToXMLElement( input, lit ) }
           { makeUserInfoOnTriples(lit, request.getLanguage()) }
         </div> ++
-        <div class={ css.cssClasses.formDivEditInputCSSClass }>{
+        <div class={ cssConfig.formDivEditInputCSSClass }>{
             if (showEditButtons &&
                  ! (lit.widgetType == ShortString) &&
                  html5Type == "text"

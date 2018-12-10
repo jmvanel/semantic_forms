@@ -72,7 +72,8 @@ trait DefaultConfiguration extends Configuration {
   /** when #useTextQuery is true, use Text indexing with SOLR */
   override def elasticSearchIndexing: Boolean = false
 
-  override val css: CSSClasses = new CSSClasses {}
+  override val cssConfig: CSSClasses = // tableCSSClasses
+    multipleValuesInArowCSSClasses
   override val radioForIntervals = false
 
   //  override val activateUserInputHistory = false

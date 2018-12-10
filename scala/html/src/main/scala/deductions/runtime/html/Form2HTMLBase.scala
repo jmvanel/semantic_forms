@@ -31,7 +31,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
   
   def makeFieldLabel(preceding: formMod#Entry, field: formMod#Entry, editable: Boolean,
       lang:String="en",
-      cssForProperty: String = css.cssClasses.formLabelCSSClass )
+      cssForProperty: String = cssConfig.formLabelCSSClass )
   (implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     // display field label only if different from preceding
     /* TODO mechanism not compatible with hiding "data not fitting user language",
@@ -48,7 +48,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
       } title={
       field.comment + " - " + field.property
       }> -- </label>
-        <div class={css.cssClasses.formAddDivCSSClass}></div>
+        <div class={cssConfig.formAddDivCSSClass}></div>
     }
     else {
       <label class={
@@ -60,8 +60,8 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
 
   def makeFieldLabelBasic(field: formMod#Entry, editable: Boolean,
       lang:String="en",
-      cssForProperty: String = css.cssClasses.formLabelCSSClass ): NodeSeq =
-              <label for={
+      cssForProperty: String = cssConfig.formLabelCSSClass ): NodeSeq =
+    <label for={
         field.htmlName
       } class={
         cssForProperty

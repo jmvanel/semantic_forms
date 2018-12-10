@@ -4,7 +4,7 @@ package deductions.runtime.utils
  * All Configuration flags and values for the library;
  * 100% abstract, ie all members are abstract
  */
-trait Configuration {
+trait Configuration extends CSSClasses {
 
   /** URI Prefix prepended to newly created resource instances */
   def defaultInstanceURIHostPrefix: String
@@ -62,7 +62,7 @@ trait Configuration {
   /** considered if useTextQuery */
   def elasticSearchIndexing: Boolean
 
-  def css: CSSClasses
+  def cssConfig: CSSClasses
 
   def radioForIntervals: Boolean //  = false 
   //  def activateUserInputHistory = false

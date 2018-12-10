@@ -116,19 +116,12 @@ import scala.collection.mutable.LinkedHashSet
       } else Seq()
 
     /** make Fields Label And Data for all fields */
-    def makeFieldsLabelAndData(
+    def makeFieldsLabelAndDataTable(
       fields:         Seq[FormEntry],
       cssForURI:      String         = "",
       cssForProperty: String         = ""): NodeSeq = {
       if (!fields.isEmpty) {
-        /* TODO mechanism too complex;
-         * implementation:
-         * - use groupBy
-             fields.groupBy(f => f.property)
-         * - use List for fields,
-         * - or record in FormField the alreadySeenProperty & neverDisplayedPropertyLabel statuses,
-         * - or some kind of forward backward iterator, or List.sliding()
-         */
+        /* mechanism too complex */
         val firstEntry = LiteralEntry()
         for (
           (preceding, field) <- (firstEntry +: fields) zip fields // do not display NullResourceEntry
@@ -141,7 +134,7 @@ import scala.collection.mutable.LinkedHashSet
             ""
           else "sf-data-not-fitting-user-language"
           // println ( s"makeFieldsLabelAndData: ${field.property} dataClass : $dataCSSclass" )
-          <div class={ css.cssClasses.formLabelAndInputCSSClass + " " +
+          <div class={ cssConfig.formLabelAndInputCSSClass + " " +
              dataCSSclass }>{
             makeFieldSubject(field) ++
             makeFieldLabel(preceding, field, editable, lang,
@@ -162,8 +155,8 @@ import scala.collection.mutable.LinkedHashSet
       map
     }
 
-    /** make Fields Label And Data for all fields */
-    def makeFieldsLabelAndDataNEW(
+    /** make Fields Label And Data for all fields: new layout: Show multiple values in a row */
+    def makeFieldsLabelAndData(
       fields:         Seq[FormEntry],
       cssForURI:      String         = "",
       cssForProperty: String         = ""): NodeSeq = {
@@ -182,9 +175,11 @@ import scala.collection.mutable.LinkedHashSet
         val htmlForEntries =
           for (entry <- entries) yield createHTMLField(
             entry, editable, hrefPrefix, lang, request, css = cssForURI)
-          makeFieldSubject(field) ++
-          makeFieldLabelBasic(field, editable, lang, cssForProperty) ++
-          htmlForEntries.flatten
+          <div class="sf-values-group">{
+            makeFieldSubject(field) ++
+            makeFieldLabelBasic(field, editable, lang) ++
+            htmlForEntries.flatten
+          }</div>
         }
         labelsAndData . toSeq . flatten
       }
@@ -231,14 +226,14 @@ import scala.collection.mutable.LinkedHashSet
       } else NodeSeq.Empty
     }
 
-    //// output begins ////
+    //// output begins - generateHTMLJustFields() ////
 
     val htmlResult: NodeSeq =
       hiddenInputs ++
-        <div class={ css.cssClasses.formRootCSSClass }>
+        <div class={ cssConfig.formRootCSSClass }>
           {
             Comment(s"""Above div wraps second form header and form (form generation traceability)
-              class=${css.cssClasses.formRootCSSClass}""") ++
+              class=${cssConfig.formRootCSSClass}""") ++
               <div class="form-group">
                 <div class="col-xs-12">
                   { dataFormHeader(form, lang) }
@@ -248,9 +243,12 @@ import scala.collection.mutable.LinkedHashSet
                 if (request.queryString.contains("tabs")) {
                   makeFieldsGroups()
                 } else
-                  makeFieldsLabelAndData(
-                    form.fields,
-                    cssForURI, cssForProperty)
+                  if( cssConfig.style == "multiple values" )
+                    makeFieldsLabelAndData(
+                      form.fields, cssForURI, cssForProperty)
+                  else
+                    makeFieldsLabelAndDataTable(
+                      form.fields, cssForURI, cssForProperty)
               }
           }
         </div>
@@ -304,7 +302,7 @@ import scala.collection.mutable.LinkedHashSet
                               hrefPrefix: String = config.hrefDisplayPrefix, lang: String = "en",
                               request: HTTPrequest,
                               displayInTable: Boolean = false,
-                              css: String="sf-value-block col-xs-12 col-sm-9 col-md-9"
+                              css: String= cssConfig.formFieldCSSClass
 )(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
 
     if( isSeparator(field) )

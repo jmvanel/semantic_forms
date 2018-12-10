@@ -41,7 +41,8 @@ with CSSClasses {
       editable = true,
       actionURI = actionURI,
       lang = lang, graphURI = graphURI, request = request,
-      cssForURI = "sf-value-block col-xs-12 col-sm-9 col-md-9",
+      cssForURI = cssClasses.formFieldCSSClass,
+        // "sf-value-block col-xs-12 col-sm-9 col-md-9",
       cssForProperty = cssClasses.formLabelCSSClass)
 
     val editingHeaders = (

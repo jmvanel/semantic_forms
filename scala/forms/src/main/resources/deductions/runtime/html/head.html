@@ -49,7 +49,10 @@
         $(document).ready( function (){
             // commented out, because rich HTML content in forms values are displayed badly
             // $(".form-horizontal").tabs();
-            $(".form-group").on('click', '.add-widget', function(event) {
+            //$(".form-group").on('click', '.add-widget', function(event) {
+            $(".sf-values-group").on('click', '.add-widget', function(event) {
+            // $(".add-widget").on('click', function(event) {
+                console.log('Cloning field :');
                 $model = $(this).parent().parent().find('.sf-value-block').first().children().first().children().first()
                 console.log('Clonage du champ :');
                 console.log($model);

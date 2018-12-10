@@ -18,7 +18,7 @@ trait Results {
       <section class="label-search-results">
         <p class="label-search-header">{ mess } "{ query }" :</p>
         <div>
-          { css.localCSS }
+          { localCSS }
           { v }
         </div>
       </section>

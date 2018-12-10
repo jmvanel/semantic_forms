@@ -3,7 +3,8 @@ package deductions.runtime.utils
 /** CSS for forms */
 trait CSSClasses {
 
-  lazy val cssClasses = tableCSSClasses
+  /** actually applied CSS classes are set here */
+  lazy val cssClasses = multipleValuesInArowCSSClasses // tableCSSClasses
 
   val cssRules = """
       input.form-control[type='text']
@@ -20,6 +21,7 @@ trait CSSClasses {
 
   /** default is here */
   case class CSSClasses(
+    val style:String = "",
     val formRootCSSClass: String = "form",
     val formFieldCSSClass: String = "form-group",
     val formLabelAndInputCSSClass: String = "row",
@@ -31,16 +33,15 @@ trait CSSClasses {
     val formSelectDivCSSClass: String = "col-xs-1",
     val formSelectCSSClass: String = "form-select")
 
-  /** table CSS Classes (Bootstrap), actually applied CSS classes are here */
+  /** table CSS Classes (Bootstrap) */
   lazy val tableCSSClasses = CSSClasses(
+    style = "table, Bootstrap",
     // See https://getbootstrap.com/docs/3.3/css/#forms-horizontal
     formRootCSSClass = "form-horizontal",
 
-    formFieldCSSClass = "",
+    formFieldCSSClass = "sf-value-block col-xs-12 col-sm-9 col-md-9",
     formLabelAndInputCSSClass = "form-group",
     formLabelCSSClass = "col-xs-3 col-sm-2 col-md-2 control-label",
-//    formLabelCSSClass = "control-label",
-//    formLabelCSSClass = "control-label",
     formDivInputCSSClass = "col-xs-8",
     formInputCSSClass = "form-control",
     formDivEditInputCSSClass = "col-xs-4",
@@ -57,4 +58,21 @@ trait CSSClasses {
     else
       "sf-internal-link" )
   }
+
+  /** CSS Classes : show multiple values in a row (not in columns) #184 */
+  lazy val multipleValuesInArowCSSClasses = CSSClasses(
+    style = "multiple values",
+    // See https://getbootstrap.com/docs/3.3/css/#forms-horizontal
+    formRootCSSClass = "form-horizontal",
+
+    formFieldCSSClass = "sf-value-block",
+    formLabelAndInputCSSClass = "form-group",
+    formLabelCSSClass = "control-label sf-property-label",
+    formDivInputCSSClass = "",
+    formInputCSSClass = "form-control",
+    formDivEditInputCSSClass = "",
+    formAddDivCSSClass = "",
+    formSelectDivCSSClass = "",
+    formSelectCSSClass = "form-control form-select")
+
 }

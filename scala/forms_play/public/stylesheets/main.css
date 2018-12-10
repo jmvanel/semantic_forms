@@ -1,11 +1,27 @@
 .sf-value-block {
     /*border: 1px solid #ccc;*/
     display: inline-block;
+    margin-left: 10px;
     /*
     border-size:2px;
     border-style:solid;
     border-color:black;
     */
+}
+
+.sf-values-group{
+  /* display: block; */
+  display: flex;
+  align-items: stretch;
+}
+.sf-values-group:before { display: block; }
+
+
+.sf-property-label{
+  padding-right: 1.5em;
+  text-align: left;
+  float: left
+  position: relative;
 }
 
 .sf-separator{

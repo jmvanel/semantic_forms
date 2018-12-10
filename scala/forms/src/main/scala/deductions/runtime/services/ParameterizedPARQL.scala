@@ -71,8 +71,8 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
         <button value="Sort" id="sort"> Sort </button>,
         sortJSscript,
         showContinuationForm( httpRequest ),
-        <div id="container" class={ css.tableCSSClasses.formRootCSSClass }> {
-          css.localCSS ++
+        <div id="container" class={ cssConfig.formRootCSSClass }> {
+          localCSS ++
             uris.map {
               u =>
                 // logger.trace(s"\tsearch(): URI row $u")
@@ -122,10 +122,10 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     val elem0 =
       rdfStore.rw(dataset, {
         val graph: Rdf#Graph = allNamedGraph
-        <div class={ css.tableCSSClasses.formRootCSSClass }>
+        <div class={ cssConfig.formRootCSSClass }>
         <div>Size: { uris.size }</div>
         {
-          css.localCSS ++
+          localCSS ++
             uris.map {
               // create table like HTML
               u =>
