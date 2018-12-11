@@ -9,9 +9,8 @@ import deductions.runtime.core.HTTPrequest
 import scala.xml.Unparsed
 import deductions.runtime.utils.I18NMessages
 
-/** Table View; editable or not */
+/** Table View; editable or not; usable one time, table data structures are never cleaned */
 trait TableView[NODE, URI <: NODE]
-    //extends Form2HTMLBase[NODE, URI]
     extends Form2HTML[NODE, URI]
     with HTML5Types
     with FormModule[NODE, URI]
@@ -60,7 +59,18 @@ trait TableView[NODE, URI <: NODE]
 
   /** generate HTML Table View from triples in FormSyntax */
   def generate(form: formMod#FormSyntax, request: HTTPrequest): NodeSeq = {
+    populateTableStructures(form)
+    generateTableHTML(request)
+    // generateSummarySentencesHTML(request)
+  }
 
+    /** generate HTML summary sentence of URI's à la Google search (#200) from triples in FormSyntax */
+  def generateSummarySentences(form: formMod#FormSyntax, request: HTTPrequest): NodeSeq = {
+    populateTableStructures(form)
+    generateSummarySentencesHTML(request)
+  }
+
+  private def populateTableStructures(form: deductions.runtime.core.FormModule[NODE,URI]#FormSyntax) = {
     for (entry <- form.fields) {
       properties.add(entry.property)
       propertiesMap(entry.property) = entry
@@ -72,7 +82,9 @@ trait TableView[NODE, URI <: NODE]
       rowsMap(entry.subject) = entry
     }
     logger.info( s"TableView.generate: cells count: ${cellsMap.size}")
+  }
 
+  private def generateTableHTML(request: HTTPrequest): NodeSeq = {
     <p>{
       request.getHTTPparameterValue("label").getOrElse("")
     }</p> ++
@@ -88,6 +100,22 @@ trait TableView[NODE, URI <: NODE]
         }
       }
     </table>
+  }
+
+  private def generateSummarySentencesHTML(request: HTTPrequest): NodeSeq = {
+    <p>{
+      request.getHTTPparameterValue("label").getOrElse("")
+    }</p> ++
+    <p class="sf-values-group" id="sf-table">
+        {
+          for (row <- rows.list) yield {
+            <p>
+              <span> { uriColumn(row) } </span>
+              { dataSentencesForRow(row, request) }
+            </p>
+          }
+        }
+    </p>
   }
 
   /** */
@@ -133,8 +161,27 @@ trait TableView[NODE, URI <: NODE]
    }
   }
 
+    /** data (triple objects) <span> elements */
+  private def dataSentencesForRow(row: NODE, request: HTTPrequest) = {
+    for (property <- properties.list) yield {
+      Seq(
+        <span>{
+          val cellOption = cellsMap.get((row, property))
+          cellOption match {
+            case Some(entriesList) =>
+              for( entry <- entriesList) yield {
+//              println(s"dataColumns: isEditableFromRequest ${isEditableFromRequest(request)}, entry $entry")
+                createHTMLField(entry,
+                  editable = isEditableFromRequest(request),
+                  displayInTable = true, request=request )(nullFormSyntax)
+              }
+            case _ => ""
+          }
+        }</span>)
+   }
+  }
+
   /** TODO also elsewhere */
   private def isEditableFromRequest(request: HTTPrequest): Boolean =
     request.queryString.getOrElse("edit", Seq()).headOption.getOrElse("") != ""
-
 }
