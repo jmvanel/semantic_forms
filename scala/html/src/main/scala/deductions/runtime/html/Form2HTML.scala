@@ -137,8 +137,7 @@ import scala.collection.mutable.LinkedHashSet
           <div class={ cssConfig.formLabelAndInputCSSClass + " " +
              dataCSSclass }>{
             makeFieldSubject(field) ++
-            makeFieldLabel(preceding, field, editable, lang,
-              cssForProperty = cssForProperty) ++
+            makeFieldLabel(preceding, field, editable, lang) ++
             createHTMLField(field, editable, hrefPrefix, lang, request, css = cssForURI)
           }</div>
         }
