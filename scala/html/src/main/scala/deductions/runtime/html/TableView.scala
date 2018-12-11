@@ -8,6 +8,8 @@ import scala.xml.NodeSeq
 import deductions.runtime.core.HTTPrequest
 import scala.xml.Unparsed
 import deductions.runtime.utils.I18NMessages
+import scala.xml.Text
+import scala.xml.Comment
 
 /** Table View; editable or not; usable one time, table data structures are never cleaned */
 trait TableView[NODE, URI <: NODE]
@@ -65,7 +67,7 @@ trait TableView[NODE, URI <: NODE]
   }
 
     /** generate HTML summary sentence of URI's à la Google search (#200) from triples in FormSyntax */
-  def generateSummarySentences(form: formMod#FormSyntax, request: HTTPrequest): NodeSeq = {
+  private def generateSummarySentences(form: formMod#FormSyntax, request: HTTPrequest): NodeSeq = {
     populateTableStructures(form)
     generateSummarySentencesHTML(request)
   }
@@ -106,14 +108,15 @@ trait TableView[NODE, URI <: NODE]
     <p>{
       request.getHTTPparameterValue("label").getOrElse("")
     }</p> ++
-    <p class="sf-values-group" id="sf-table">
+    <p class="sf-values-group" id="sf-sentences">
         {
           for (row <- rows.list) yield {
-            <p>
+            Text("\n") ++
+            <p class="sf-sentence">
               <span> { uriColumn(row) } </span>
               { dataSentencesForRow(row, request) }
             </p>
-          }
+          } ++: Comment(s"""${rows.list.toSeq.size} items for "${rowsMap(row).subjectLabel.replaceAll("--", ",")}" """)
         }
     </p>
   }
@@ -161,24 +164,27 @@ trait TableView[NODE, URI <: NODE]
    }
   }
 
-    /** data (triple objects) <span> elements */
-  private def dataSentencesForRow(row: NODE, request: HTTPrequest) = {
-    for (property <- properties.list) yield {
-      Seq(
-        <span>{
-          val cellOption = cellsMap.get((row, property))
-          cellOption match {
-            case Some(entriesList) =>
-              for( entry <- entriesList) yield {
-//              println(s"dataColumns: isEditableFromRequest ${isEditableFromRequest(request)}, entry $entry")
-                createHTMLField(entry,
-                  editable = isEditableFromRequest(request),
-                  displayInTable = true, request=request )(nullFormSyntax)
-              }
-            case _ => ""
+  /** data (triple objects) <span> elements */
+  private def dataSentencesForRow(row: NODE, request: HTTPrequest): NodeSeq = {
+    val x = for (property <- properties.list.toSeq) yield {
+      val cellOption = cellsMap.get((row, property))
+      val xx = cellOption match {
+        case Some(entriesList) =>
+          for (entry <- entriesList) yield {
+            // println(s"dataColumns: isEditableFromRequest ${isEditableFromRequest(request)}, entry $entry")
+            Comment({entry.label}) ++
+            {
+              createHTMLField(
+                entry,
+                editable = isEditableFromRequest(request),
+                displayInTable = true, request = request)(nullFormSyntax)
+            }
           }
-        }</span>)
-   }
+        case _ => NodeSeq.Empty
+      }
+      xx . flatten ++ (if (xx.size >1) <span>===</span> else NodeSeq.Empty)
+    }
+    x .flatten
   }
 
   /** TODO also elsewhere */

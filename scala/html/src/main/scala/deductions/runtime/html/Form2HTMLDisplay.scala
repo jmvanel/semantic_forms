@@ -38,7 +38,7 @@ with FormModule[NODE, URI]
           Unparsed(valueDisplayed)
         }
         { makeUserInfoOnTriples(literalEntry, request.getLanguage()) }
-        <div>{ if (literalEntry.lang  =/=  "" && literalEntry.lang  =/=  "No_language") " > " + literalEntry.lang }</div>
+        <span>{ if (literalEntry.lang  =/=  "" && literalEntry.lang  =/=  "No_language") " > " + literalEntry.lang }</span>
       </span>
   }
 
