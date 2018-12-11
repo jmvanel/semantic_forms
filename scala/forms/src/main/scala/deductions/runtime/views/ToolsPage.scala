@@ -99,7 +99,7 @@ trait ToolsPage extends EnterButtons
   }
 
   /** HTML Form for a sparql Query, with execution buttons */
-  def sparqlQueryForm( viewButtons: Boolean, query: String, action: String,
+  def sparqlQueryForm( viewButtonsForConstruct: Boolean, query: String, action: String,
       sampleQueries: Seq[String], request: HTTPrequest): NodeSeq = {
     val textareaId = s"query-$action" . replaceAll("/", "-")
     println( "textareaId " + textareaId);
@@ -116,9 +116,7 @@ trait ToolsPage extends EnterButtons
       <input title="Table view"
              class="btn btn-primary" type="submit" value={ I18NMessages.get("Table", request.getLanguage()) }
              formaction="/table"/>,
-    <input class="btn btn-primary" type="checkbox" title="paragraphs view (else table)"
-           id="paragraphs" name="paragraphs" />
-
+      {paragraphsViewInput},
       <input title="Tree view - NOT YET IMPLEMENTED"
              class="btn btn-primary" type="submit"
              disabled="disabled"
@@ -141,21 +139,27 @@ trait ToolsPage extends EnterButtons
 
       <div class="container">
         <div class="btn-group">
+          <!-- Buttons common to CONSTRUCT and SELECT -->
           <input class ="btn btn-primary" type="submit"
                  value={ I18NMessages.get("Submit", request.getLanguage()) } formaction ={action} />
           <label>unionDefaultGraph</label>
           <input name="unionDefaultGraph" id="unionDefaultGraph" type="checkbox"
                  checked={if (request.getHTTPparameterValue("unionDefaultGraph").isDefined) "yes" else null} />
 
-          { if (viewButtons)
+          { if (viewButtonsForConstruct)
             buttonsAllRDFViews
           else
              <input class="btn btn-primary" type="submit" value={ I18NMessages.get("History", request.getLanguage()) }
-             formaction="/history"/> }
+             formaction="/history"/> ++
+             {paragraphsViewInput}
+          }
         </div>
       </div>
     </form>
   }
+
+  val paragraphsViewInput = <input class="btn btn-primary" type="checkbox" title="paragraphs view (else table)"
+   id="paragraphs" name="paragraphs" />
 
   /** make Link to visualization Tool, Graph (diagram) or other kind.
    *  NOTE: for RDF Viewer this cannot work in localhost (because of rdfviewer limitations);
