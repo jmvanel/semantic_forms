@@ -116,6 +116,8 @@ trait ToolsPage extends EnterButtons
       <input title="Table view"
              class="btn btn-primary" type="submit" value={ I18NMessages.get("Table", request.getLanguage()) }
              formaction="/table"/>,
+    <input class="btn btn-primary" type="checkbox" title="paragraphs view (else table)"
+           id="paragraphs" name="paragraphs" />
 
       <input title="Tree view - NOT YET IMPLEMENTED"
              class="btn btn-primary" type="submit"

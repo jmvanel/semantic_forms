@@ -59,11 +59,14 @@ trait TableView[NODE, URI <: NODE]
     asc = -asc
 }"""
 
-  /** generate HTML Table View from triples in FormSyntax */
+  /** generate HTML Table View (or paragraphs=sentences) from triples in FormSyntax */
   def generate(form: formMod#FormSyntax, request: HTTPrequest): NodeSeq = {
     populateTableStructures(form)
-    generateTableHTML(request)
-    // generateSummarySentencesHTML(request)
+    val paragraphs = request.getHTTPparameterValue("paragraphs").getOrElse("")
+    if( paragraphs == "on" )
+      generateSummarySentencesHTML(request)
+    else
+      generateTableHTML(request)
   }
 
     /** generate HTML summary sentence of URI's à la Google search (#200) from triples in FormSyntax */
