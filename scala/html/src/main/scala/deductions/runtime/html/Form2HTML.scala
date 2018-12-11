@@ -172,9 +172,9 @@ import scala.collection.mutable.LinkedHashSet
             ((f:FormEntry) => f.property))
         val labelsAndData = for ( (p, entries) <- property2EntryMap ) yield {
           val field = entries.head
-        val htmlForEntries =
-          for (entry <- entries) yield createHTMLField(
-            entry, editable, hrefPrefix, lang, request, css = cssForURI)
+          val htmlForEntries =
+            for (entry <- entries) yield createHTMLField(
+              entry, editable, hrefPrefix, lang, request, css = cssForURI)
           <div class="sf-values-group">{
             makeFieldSubject(field) ++
             makeFieldLabelBasic(field, editable, lang) ++
@@ -357,7 +357,7 @@ import scala.collection.mutable.LinkedHashSet
         logger.error(
           s"createHTMLField: Should not happen! $field")
         // <p>Should not happen! createHTMLField({ field })</p>
-        <span/>
+        NodeSeq.Empty
     }
 
     if( xmlField  !=  (<span/>) )
