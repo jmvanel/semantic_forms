@@ -5,7 +5,8 @@ import deductions.runtime.core.FormModule
 import org.w3.banana.RDFOps
 
 trait FormModuleBanana[Rdf <: RDF]
-    extends FormModule[Rdf#Node, Rdf#URI] {
+    extends FormModule[Rdf#Node, Rdf#URI]
+    with RDFPrefixes[Rdf] {
 
   implicit val ops: RDFOps[Rdf]
   import ops._
@@ -19,5 +20,6 @@ trait FormModuleBanana[Rdf <: RDF]
       },
       fromLiteral(_)._1)
 
-  override def stringToAbstractURI(uri: String): Rdf#URI = URI(uri)
+  override def stringToAbstractURI(uri: String): Rdf#URI =
+    URI(expandOrUnchanged(uri))
 }

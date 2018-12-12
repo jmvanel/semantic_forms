@@ -22,8 +22,8 @@ trait TableView[NODE, URI <: NODE]
   type FormSyntax = formMod#FormSyntax
   type Entry = formMod#Entry
 
-  private val properties = UnicityList[NODE]
-  private val rows = UnicityList[NODE]
+  private val properties = UnicityList[NODE]()
+  private var rows = UnicityList[NODE]()
   private val cellsMap = mutable.Map[(NODE, NODE), List[Entry]]().withDefaultValue(List())
   /** used for generating special URI (first) column */
   private val rowsMap = mutable.Map[NODE, Entry]()
@@ -62,6 +62,11 @@ trait TableView[NODE, URI <: NODE]
   /** generate HTML Table View (or paragraphs=sentences) from triples in FormSyntax */
   def generate(form: formMod#FormSyntax, request: HTTPrequest): NodeSeq = {
     populateTableStructures(form)
+    val orderby = request.getHTTPparameterValue("orderby").getOrElse("")
+    if(orderby != "") {
+      orderBy(stringToAbstractURI(orderby))
+      println(s"Sorted by $orderby - <${stringToAbstractURI(orderby)}>")
+    }
     val paragraphs = request.getHTTPparameterValue("paragraphs").getOrElse("")
     if( paragraphs == "on" )
       generateSummarySentencesHTML(request)
@@ -193,4 +198,13 @@ trait TableView[NODE, URI <: NODE]
   /** TODO also elsewhere */
   private def isEditableFromRequest(request: HTTPrequest): Boolean =
     request.queryString.getOrElse("edit", Seq()).headOption.getOrElse("") != ""
+
+  private def orderBy(property: NODE) = {
+    def comparison(n: NODE) = cellsMap(n, property).headOption.getOrElse(NullResourceEntry).valueLabel
+    val l = rows.list.toSeq.sortWith { (n1, n2) =>
+      comparison(n1) < comparison(n2) }
+//    println(s"orderBy $property : l $l")
+    rows = UnicityList(l)
+//    println(s"orderBy $property : rows ${rows.list}")
+  }
 }
