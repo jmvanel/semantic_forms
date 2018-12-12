@@ -118,6 +118,9 @@ trait ToolsPage extends EnterButtons
              formaction="/table"/>,
       {paragraphsViewInput(request)},
       {orderbyViewInput(request)},
+      {detailsViewInput(request)},
+      {labelViewInput(request)},
+
       <input title="Tree view - NOT YET IMPLEMENTED"
              class="btn btn-primary" type="submit"
              disabled="disabled"
@@ -167,6 +170,14 @@ trait ToolsPage extends EnterButtons
     <input class="" title="Order by given property"
       id="orderby" name="orderby"
       value={ request.getHTTPparameterValue("orderby").getOrElse(null) } />
+  def detailsViewInput(request: HTTPrequest) =
+    <input class="" title="Details level (default full details)"
+      id="details" name="details"
+      value={ request.getHTTPparameterValue("details").getOrElse(null) } />
+  def labelViewInput(request: HTTPrequest) =
+    <input class="" title="A title for the query and its views"
+      id="label" name="label"
+      value={ request.getHTTPparameterValue("label").getOrElse(null) } />
 
   /** make Link to visualization Tool, Graph (diagram) or other kind.
    *  NOTE: for RDF Viewer this cannot work in localhost (because of rdfviewer limitations);

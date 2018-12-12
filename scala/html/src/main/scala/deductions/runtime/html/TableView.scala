@@ -121,7 +121,7 @@ trait TableView[NODE, URI <: NODE]
           for (row <- rows.list) yield {
             Text("\n") ++
             <p class="sf-sentence">
-              <span> { uriColumn(row) } </span>
+              <span class="sf-value-block"> { uriColumn(row) } </span>
               { dataSentencesForRow(row, request) }
             </p>
           } ++: Comment(s"""${rows.list.toSeq.size} items for "${rowsMap(row).subjectLabel.replaceAll("--", ",")}" """)
@@ -186,11 +186,12 @@ trait TableView[NODE, URI <: NODE]
                 entry,
                 editable = isEditableFromRequest(request),
                 displayInTable = true, request = request)(nullFormSyntax)
-            }
+            } ++
+            Text(", ")
           }
         case _ => NodeSeq.Empty
       }
-      xx . flatten ++ (if (xx.size >1) <span>===</span> else NodeSeq.Empty)
+      xx . flatten ++ (if (xx.size >1) <span> ; </span> else NodeSeq.Empty)
     }
     x .flatten
   }

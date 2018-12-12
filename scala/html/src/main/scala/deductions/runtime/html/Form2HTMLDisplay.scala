@@ -60,10 +60,13 @@ with FormModule[NODE, URI]
     val typ = firstNODEOrElseEmptyString(type_)
 //  println(s"==== createHTMLResourceReadonlyField: typ: $typ")
 
+    val details = request.getHTTPparameterValue("details").getOrElse("")
+
     val widgets =
+     if( details == "") // default full details
       hyperlinkToField(resourceEntry) ++
       hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue, valueLabel,
-          typ, // TODO pass type_
+          typ, // TODO not pass typ; type_ is in resourceEntry
           resourceEntry) ++
       displayThumbnail(resourceEntry) ++
       backLinkButton(resourceEntry, request) ++
@@ -82,6 +85,9 @@ with FormModule[NODE, URI]
             hyperlinkForEditingURIinsideForm(objectURIstringValue, request.getLanguage()),
           resourceEntry.value.toString()
       )
+      else
+        hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue, valueLabel,
+          typ, resourceEntry)
 
       <span class="sf-statistics">{widgets}</span>
   }
