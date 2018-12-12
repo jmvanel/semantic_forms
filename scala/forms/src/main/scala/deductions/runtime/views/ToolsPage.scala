@@ -116,7 +116,8 @@ trait ToolsPage extends EnterButtons
       <input title="Table view"
              class="btn btn-primary" type="submit" value={ I18NMessages.get("Table", request.getLanguage()) }
              formaction="/table"/>,
-      {paragraphsViewInput},
+      {paragraphsViewInput(request)},
+      {orderbyViewInput(request)},
       <input title="Tree view - NOT YET IMPLEMENTED"
              class="btn btn-primary" type="submit"
              disabled="disabled"
@@ -144,22 +145,28 @@ trait ToolsPage extends EnterButtons
                  value={ I18NMessages.get("Submit", request.getLanguage()) } formaction ={action} />
           <label>unionDefaultGraph</label>
           <input name="unionDefaultGraph" id="unionDefaultGraph" type="checkbox"
-                 checked={if (request.getHTTPparameterValue("unionDefaultGraph").isDefined) "yes" else null} />
+                 checked={ request.getHTTPparameterValue("unionDefaultGraph").getOrElse(null) } />
 
           { if (viewButtonsForConstruct)
             buttonsAllRDFViews
           else
              <input class="btn btn-primary" type="submit" value={ I18NMessages.get("History", request.getLanguage()) }
              formaction="/history"/> ++
-             {paragraphsViewInput}
+             {paragraphsViewInput(request)}
           }
         </div>
       </div>
     </form>
   }
 
-  val paragraphsViewInput = <input class="btn btn-primary" type="checkbox" title="paragraphs view (else table)"
-   id="paragraphs" name="paragraphs" />
+  def paragraphsViewInput(request: HTTPrequest) =
+    <input class="btn btn-primary" type="checkbox" title="paragraphs view (else table)"
+      id="paragraphs" name="paragraphs"
+      checked={ request.getHTTPparameterValue("paragraphs").getOrElse(null) } />
+  def orderbyViewInput(request: HTTPrequest) =
+    <input class="" title="Order by given property"
+      id="orderby" name="orderby"
+      value={ request.getHTTPparameterValue("orderby").getOrElse(null) } />
 
   /** make Link to visualization Tool, Graph (diagram) or other kind.
    *  NOTE: for RDF Viewer this cannot work in localhost (because of rdfviewer limitations);

@@ -238,7 +238,10 @@ trait WebPages extends Controller with ApplicationTrait
       val submitButton: NodeSeq /*Elem*/ =
         <button formaction="/save" formmethod="post" title="Save changes in the table">Submit</button>
       return  <div>
-          <a href={ "/sparql-ui?query=" + URLEncoder.encode(query, "UTF-8") }>Back to SPARQL page</a>
+        <a href={
+          //  "/sparql-ui?query=" + URLEncoder.encode(query, "UTF-8")
+          request.uri.replaceFirst("/table", "/sparql-ui")
+        }>Edit SPARQL query</a>
         </div> ++
         <form> {
             <input name="query" type="hidden" value={ query }></input> ++
