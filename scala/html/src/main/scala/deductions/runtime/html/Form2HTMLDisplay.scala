@@ -85,6 +85,11 @@ with FormModule[NODE, URI]
             hyperlinkForEditingURIinsideForm(objectURIstringValue, request.getLanguage()),
           resourceEntry.value.toString()
       )
+      else if( details.contains("images") )
+        hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue, valueLabel,
+          typ, resourceEntry) ++
+        displayThumbnail(resourceEntry)
+
       else
         hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue, valueLabel,
           typ, resourceEntry)
