@@ -76,7 +76,7 @@ import scala.collection.mutable.LinkedHashSet
 
     def addSaveButton(actionURIarg: String) =
       if (actionURIarg =/= "")
-        <div class="col col-sm-4 col-sm-offset-4">
+        <div class="sf-save" zzclass="col col-sm-4 col-sm-offset-4">
           <input value={ mess("SAVE") } formaction={ actionURIarg }
           type="submit" class="form-control btn btn-primary "/>
         </div>
@@ -233,10 +233,8 @@ import scala.collection.mutable.LinkedHashSet
           {
             Comment(s"""Above div wraps second form header and form (form generation traceability)
               class=${cssConfig.formRootCSSClass}""") ++
-              <div class="form-group">
-                <div class="col-xs-12">
-                  { dataFormHeader(form, lang) }
-                </div>
+              <div class="form-group sf-data-header">
+               { dataFormHeader(form, lang) }
               </div> ++
               {
                 if (request.queryString.contains("tabs")) {
@@ -367,9 +365,6 @@ import scala.collection.mutable.LinkedHashSet
     }
     else {
       Seq(createAddRemoveWidgets(field, editable)) ++
-        // Jeremy M recommended img-rounded from Bootstrap, but not effect
-//        <div class="sf-value-block col-xs-12 col-sm-9 col-md-9">      
-//        <div class="sf-value-block">
         <span class={css}>
           {xmlField}
         </span>

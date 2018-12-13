@@ -57,7 +57,6 @@ trait FormHeader[Rdf <: RDF, DATASET]
     } else NodeSeq.Empty )
 
     def downloadLink(syntax: String = "Turtle"): NodeSeq = {
-      // col-xs-12
       <span class="sf-local-rdf-link">
         <a href={ downloadURI(uri, syntax) }
         title={ mess("Triples_tooltip") }>
@@ -97,7 +96,6 @@ trait FormHeader[Rdf <: RDF, DATASET]
         </div>
       </div>
       <div class="row sf-links-row">
-        <!--div class="col-md-6"-->
         <div class="col-xs-12 sf-local-rdf-link">
           {
             //          val message = if (uri.contains("/ldp/"))

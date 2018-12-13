@@ -23,6 +23,10 @@
 
 .sf-property-label{}
 
+.sf-save{
+  width: 33.33333333%;
+}
+
 .sf-separator{
     background:#F87431;
     border:0;
