@@ -88,7 +88,8 @@ trait WebPages extends Controller with ApplicationTrait
   /** same as before, but Logging is enforced */
   private def outputMainPageWithContentLogged(
     contentMaker:    SemanticController,
-    classForContent: String             = "container sf-complete-form") = {
+    classForContent: String             // = "container sf-complete-form"
+    ) = {
     withUser { implicit userid => implicit request =>
       val precomputed = new MainPagePrecompute(request)
       import precomputed._
@@ -139,7 +140,7 @@ trait WebPages extends Controller with ApplicationTrait
   private def outputMainPage( content: NodeSeq,
       lang: String, userInfo: NodeSeq = <div/>, title: String = "",
       displaySearch:Boolean = true,
-      classForContent: String = "container sf-complete-form")
+      classForContent: String ) // = "container sf-complete-form")
   (implicit request: Request[_]) = {
       Ok( "<!DOCTYPE html>\n" +
         mainPage( content,
@@ -159,7 +160,8 @@ trait WebPages extends Controller with ApplicationTrait
     content:         NodeSeq,
     precomputed:     MainPagePrecompute,
     displaySearch:   Boolean            = true,
-    classForContent: String             = "container sf-complete-form") = {
+    classForContent: String             // = "container sf-complete-form"
+    ) = {
     import precomputed._
     Ok("<!DOCTYPE html>\n" +
       mainPage(
@@ -201,7 +203,7 @@ trait WebPages extends Controller with ApplicationTrait
         }
 // TODO decideLoginRequired(contentMaker)
         if (needLoginForDisplaying || (needLoginForEditing && Edit  =/=  ""))
-          outputMainPageWithContentLogged(contentMaker)
+          outputMainPageWithContentLogged(contentMaker, "")
         else
           outputMainPageWithContent(contentMaker)
       },
@@ -335,7 +337,7 @@ trait WebPages extends Controller with ApplicationTrait
               query,
               editable = Edit  =/=  "",
               formuri, requestCopy),
-            lang, userInfo)
+            lang, userInfo, classForContent="sf-complete-form")
         },
         (t: Throwable) =>
           errorResultFromThrowable(t, "in /sparql-form"))
@@ -351,7 +353,7 @@ trait WebPages extends Controller with ApplicationTrait
       val lang = httpRequest.getLanguage()
       outputMainPage(
           sparqlConstructQueryHTML(query, lang, httpRequest, context=httpRequest.queryString2),
-          lang)
+          lang, classForContent="")
         // TODO factorize
         .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
         .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
@@ -379,7 +381,7 @@ trait WebPages extends Controller with ApplicationTrait
             logger.info("sparql: " + query)
             val lang = chooseLanguage(request)
             outputMainPage(
-              selectSPARQL(query, lang, copyRequest(request)), lang )
+              selectSPARQL(query, lang, copyRequest(request)), lang, classForContent="" )
         },
         (t: Throwable) =>
           errorResultFromThrowable(t, "in SPARQL UI /select-ui"))
@@ -410,7 +412,7 @@ trait WebPages extends Controller with ApplicationTrait
               case _                         => httpRequest.getHTTPparameterValue("clas").getOrElse("")
             }
           val fut = wordsearchFuture(q, classe, httpRequest)
-          fut.map(r => outputMainPage(r, httpRequest.getLanguage()))
+          fut.map(r => outputMainPage(r, httpRequest.getLanguage(), classForContent=""))
         },
         (t: Throwable) =>
           Future{ errorResultFromThrowable(t, "in word search /wordsearch") }
@@ -425,7 +427,7 @@ trait WebPages extends Controller with ApplicationTrait
       setDefaultHTTPparameterValue("offset", "1")
     val fut = recoverFromOutOfMemoryError( showNamedGraphs(httpRequest) )
     val lang = httpRequest.getLanguage()
-    val rr = fut.map( r => outputMainPage( r, lang ) )
+    val rr = fut.map( r => outputMainPage( r, lang , classForContent="") )
     rr
   }
 
@@ -436,7 +438,7 @@ trait WebPages extends Controller with ApplicationTrait
       val fut = recoverFromOutOfMemoryError(
         Future.successful(showTriplesInGraph(uri, lang)),
         s"in show Triples In Graph /showTriplesInGraph?uri=$uri")
-      val rr = fut.map(r => outputMainPage(r, lang))
+      val rr = fut.map(r => outputMainPage(r, lang, classForContent=""))
       rr
     }
   }
@@ -524,7 +526,7 @@ trait WebPages extends Controller with ApplicationTrait
           outputMainPage(
             create(uri, lang,
               formSpecURI, makeAbsoluteURIForSaving(userid), copyRequest(request)).getOrElse(<div/>),
-            lang, userInfo = displayUser(userid, uri, s"Create a $uri", lang))
+            lang, userInfo = displayUser(userid, uri, s"Create a $uri", lang), classForContent="" )
         },
         (t: Throwable) =>
           errorResultFromThrowable(t, "in create Actions /create"))
@@ -552,7 +554,7 @@ trait WebPages extends Controller with ApplicationTrait
       fut.map { formattedResults =>
         outputMainPage(
           extendedSearchLink ++ formattedResults,
-          lang, userInfo)
+          lang, userInfo, classForContent="")
       }
   }
 
@@ -561,7 +563,7 @@ trait WebPages extends Controller with ApplicationTrait
 	  val lang = chooseLanguage(request)
     val fut = recoverFromOutOfMemoryError(esearchFuture(q))
     fut.map(r =>
-    outputMainPage(r, lang))
+    outputMainPage(r, lang, classForContent=""))
   }
 
   //  implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(
@@ -576,7 +578,7 @@ trait WebPages extends Controller with ApplicationTrait
           outputMainPage(
             new ToolsPage with ImplementationSettings.RDFModule with RDFPrefixes[ImplementationSettings.Rdf] {
               override val config: Configuration = config1
-            }.getPage(lang, copyRequest(request)), lang, displaySearch = false, userInfo = userInfo)
+            }.getPage(lang, copyRequest(request)), lang, displaySearch = false, userInfo = userInfo, classForContent="")
             .as("text/html; charset=utf-8")
 
     }

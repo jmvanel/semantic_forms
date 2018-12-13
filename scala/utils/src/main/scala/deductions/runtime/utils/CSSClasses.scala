@@ -63,11 +63,11 @@ trait CSSClasses {
   lazy val multipleValuesInArowCSSClasses = CSSClasses(
     style = "multiple values",
     // See https://getbootstrap.com/docs/3.3/css/#forms-horizontal
-    formRootCSSClass = "form-horizontal",
+    formRootCSSClass = "sf-complete-form",
 
     formFieldCSSClass = "sf-value-block",
     formLabelAndInputCSSClass = "form-group",
-    formLabelCSSClass = "control-label sf-property-label",
+    formLabelCSSClass = "sf-property-label",
     formDivInputCSSClass = "",
     formInputCSSClass = "form-control",
     formDivEditInputCSSClass = "",

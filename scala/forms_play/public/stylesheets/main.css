@@ -15,20 +15,13 @@
   display: flex;
   align-items: stretch;
   flex-wrap: wrap;
-  justify-content: space-evenly;
+  justify-content: left; /* space-evenly;*/
   align-content: /*space-around; */ flex-start;
 }
 .sf-values-group:before { display: block; }
 
 
-.sf-property-label{
-  padding-right: 1.5em;
-  padding-left: 0.5em;
-  text-align: left;
-/*  float: left
-  position: relative;
-*/
-}
+.sf-property-label{}
 
 .sf-separator{
     background:#F87431;
@@ -43,7 +36,8 @@
     top: 18px;
 }*/
 .sf-complete-form{
-    padding-bottom: 70px;
+  /* padding-bottom: 70px; */
+  padding-left: 10px;
 }
 .sf-space-form{
     /*margin-bottom: 10px;*/
