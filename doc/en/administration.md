@@ -291,7 +291,7 @@ Or with sbt:
 
     sbt "runMain tdb.tdbdump --loc=TDB" > dump.nq
 
-To re-load the database from N-Triples format (possibly delete the TDB directory before) :
+To re-load the database from N-Quads format (possibly delete the TDB directory before) :
 
     sbt "runMain tdb.tdbloader --loc=TDB dump.nq"
 

@@ -14,6 +14,8 @@ object Common {
   val jenaDependency = "org.apache.jena" % "apache-jena-libs" % jenaVersion  exclude("log4j", "log4j") exclude("org.slf4j", "slf4j-api" ) exclude( "org.apache.logging.log4j" , "log4j-slf4j-impl" )	exclude("org.slf4j", "slf4j-log4j12")		exclude("org.apache.logging.log4j","log4j-slf4j-impl")
   val jenaPermissionsDependency = "org.apache.jena" % "jena-permissions" % jenaVersion	exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
   val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion		exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
+  val jenaSpatialDependency = "org.apache.jena" % "jena-spatial" % jenaVersion		exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
+
 
   val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.1.1"
 
@@ -37,8 +39,8 @@ object Common {
 
   val commonDependencies =
     loggingDependencies ++
-    Seq( bananaDependency,
-	jenaDependency, jenaPermissionsDependency, jenaTextDependency,
+    Seq(bananaDependency,
+	jenaDependency, jenaPermissionsDependency, jenaTextDependency, jenaSpatialDependency,
 	xmlDependency,
 
 	junitDependency, scalatestDependency,

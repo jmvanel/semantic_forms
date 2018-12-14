@@ -13,6 +13,8 @@ import deductions.runtime.utils.{Configuration, RDFPrefixes}
 import org.w3.banana.{FOAFPrefix, Prefix, RDFOps, RDFSPrefix}
 import org.apache.jena.query.text.TextIndex
 import org.apache.jena.query.text.TextIndexConfig
+import org.apache.jena.query.spatial.SpatialDatasetFactory
+import org.apache.jena.query.DatasetFactory
 
 /**
  * see https://jena.apache.org/documentation/query/text-query.html
@@ -75,13 +77,11 @@ trait LuceneIndex // [Rdf <: RDF]
 
   lazy val rdfIndexing = rdfIndexingBIG
 
-  /** configure Lucene or SOLR Index for Jena */
-  def configureLuceneIndex(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean):
+  /** configure Lucene Index for Jena - TEST spatial Textual */
+  def configureLuceneIndexTESTspatial_Textual(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean):
 //  (ImplementationSettings.DATASET, TextIndex)
-  ImplementationSettings.DATASET
-  = {
+  ImplementationSettings.DATASET = {
     println(s"configureLuceneIndex: useTextQuery $useTextQuery")
-    //  println(s"configureLuceneIndex: ${Thread.currentThread().getStackTrace().slice(0, 15).mkString("\n")}")
     if (useTextQuery) {
       println(
           s"""configureLuceneIndex: rdfIndexing getPredicates("text").size ${rdfIndexing.getPredicates("text").size}""")
@@ -90,9 +90,23 @@ trait LuceneIndex // [Rdf <: RDF]
     	  textIndexConfig . setMultilingualSupport(true)
     	  val textIndex: TextIndex = TextDatasetFactory.createLuceneIndex(
     			  directory, textIndexConfig )
-        TextDatasetFactory.create(dataset, textIndex, true)
-//        TextDatasetFactory.createLucene(dataset, directory, textIndexConfig) // , new StandardAnalyzer())
+
+        val textualDataset = TextDatasetFactory.create(dataset, textIndex, true)
+
+        val directorySpatial = new NIOFSDirectory(Paths.get("LUCENESpatial"))
+        val entityDefinitionsSpatial = new org.apache.jena.query.spatial.EntityDefinition("entityField", "geoField")
+        val spatialDataset = SpatialDatasetFactory.createLucene(textualDataset, directorySpatial, entityDefinitionsSpatial)
+
+        spatialDataset
     } else
       dataset
   }
+
+  /** configure Lucene Index for Jena */
+  def configureLuceneIndex(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean):
+    ImplementationSettings.DATASET = {
+       DatasetFactory.assemble( "jena.spatial.assembler.ttl",
+        "http://localhost/jena_example/#spatial_dataset")
+  }
+
 }
