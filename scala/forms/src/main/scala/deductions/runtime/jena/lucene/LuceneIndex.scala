@@ -78,7 +78,7 @@ trait LuceneIndex // [Rdf <: RDF]
   lazy val rdfIndexing = rdfIndexingBIG
 
   /** configure Lucene Index for Jena - TEST spatial Textual */
-  def configureLuceneIndexTESTspatial_Textual(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean):
+  private def configureLuceneIndexTESTspatial_Textual(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean):
 //  (ImplementationSettings.DATASET, TextIndex)
   ImplementationSettings.DATASET = {
     println(s"configureLuceneIndex: useTextQuery $useTextQuery")
@@ -97,16 +97,21 @@ trait LuceneIndex // [Rdf <: RDF]
         val entityDefinitionsSpatial = new org.apache.jena.query.spatial.EntityDefinition("entityField", "geoField")
         val spatialDataset = SpatialDatasetFactory.createLucene(textualDataset, directorySpatial, entityDefinitionsSpatial)
 
-        spatialDataset
+        return spatialDataset
     } else
       dataset
   }
 
-  /** configure Lucene Index for Jena */
-  def configureLuceneIndex(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean):
+  /** configure Lucene Index for Jena, with Jena assembly file */
+  private def configureLuceneIndexAssembly(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean):
     ImplementationSettings.DATASET = {
        DatasetFactory.assemble( "jena.spatial.assembler.ttl",
         "http://localhost/jena_example/#spatial_dataset")
   }
+
+    def configureLuceneIndex(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean):
+    ImplementationSettings.DATASET =
+//    configureLuceneIndexTESTspatial_Textual(dataset, useTextQuery)
+      configureLuceneIndexAssembly(dataset, useTextQuery)
 
 }
