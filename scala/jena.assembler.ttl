@@ -33,7 +33,7 @@ text:TextIndexLucene  rdfs:subClassOf   text:TextIndex .
     spatial:dataset   <#dataset> ;
     spatial:index     <#indexLucene> ;
     text:dataset   <#dataset> ;
-    text:index     <#indexLucene> ;
+    text:index     <#indexLuceneText> ;
     .
 
 <#dataset> rdf:type      tdb:DatasetTDB ;
@@ -51,7 +51,7 @@ text:TextIndexLucene  rdfs:subClassOf   text:TextIndex .
     .
 
 # Text index description
-<#indexLucene> a text:TextIndexLucene ;
+<#indexLuceneText> a text:TextIndexLucene ;
     text:directory <file:/home/jmv/src/semantic_forms/scala/LUCENE> ;
     text:entityMap <#entMap> ;
     text:storeValues true ; 
