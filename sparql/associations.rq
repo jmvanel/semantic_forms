@@ -1,0 +1,15 @@
+CONSTRUCT {
+  ?S <http://xmlns.com/foaf/0.1/depiction> ?IMAGE .
+  ?S <http://purl.org/dc/terms/subject> ?SUB .
+  ?S <http://www.w3.org/2000/01/rdf-schema#comment> ?COM .
+  ?S <http://xmlns.com/foaf/0.1/based_near> ?CITY .
+  ?S <http://xmlns.com/foaf/0.1/homepage> ?PAGE .
+} WHERE {
+  OPTIONAL { ?S <http://xmlns.com/foaf/0.1/depiction> ?IMAGE . }
+  OPTIONAL { ?S <http://purl.org/dc/terms/subject> ?SUB . }
+  OPTIONAL { ?S <http://www.w3.org/2000/01/rdf-schema#comment> ?COM . }
+  OPTIONAL { ?S <http://xmlns.com/foaf/0.1/based_near> ?CITY . }
+  OPTIONAL { ?S <http://xmlns.com/foaf/0.1/homepage> ?PAGE . }
+  ?S a <http://xmlns.com/foaf/0.1/Organization> .
+  ?S ?A <http://www.wikidata.org/entity/Q48204> .
+}

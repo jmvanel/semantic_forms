@@ -102,8 +102,8 @@ trait LuceneIndex // [Rdf <: RDF]
       dataset
   }
 
-  /** configure Lucene Index for Jena, with Jena assembly file */
-  private def configureLuceneIndexAssembly(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean):
+  /** configure Lucene Index for Jena, with Jena assembler file */
+  private def configureLuceneIndexAssembler(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean):
     ImplementationSettings.DATASET = {
        DatasetFactory.assemble( "jena.spatial.assembler.ttl",
         "http://localhost/jena_example/#spatial_dataset")
@@ -112,6 +112,6 @@ trait LuceneIndex // [Rdf <: RDF]
     def configureLuceneIndex(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean):
     ImplementationSettings.DATASET =
 //    configureLuceneIndexTESTspatial_Textual(dataset, useTextQuery)
-      configureLuceneIndexAssembly(dataset, useTextQuery)
+      configureLuceneIndexAssembler(dataset, useTextQuery)
 
 }
