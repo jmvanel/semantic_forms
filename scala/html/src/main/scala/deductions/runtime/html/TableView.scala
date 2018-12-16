@@ -95,9 +95,7 @@ trait TableView[NODE, URI <: NODE]
   }
 
   private def generateTableHTML(request: HTTPrequest): NodeSeq = {
-    <p>{
-      request.getHTTPparameterValue("label").getOrElse("")
-    }</p> ++
+    makeHTMLselfLink(request) ++
     <script>{Unparsed(sortingJavascript)}</script> ++
     <table class="table table-striped table-bordered" id="sf-table">
       <tr> { headerRow(request) } </tr>
@@ -112,10 +110,16 @@ trait TableView[NODE, URI <: NODE]
     </table>
   }
 
+  private def makeHTMLselfLink(request: HTTPrequest): NodeSeq =
+    <p>
+      <a href={request.uri}
+         title="Link to this page, suitable to paste somewhere else.">{
+        request.getHTTPparameterValue("label").getOrElse("")
+      }</a>
+    </p>
+
   private def generateSummarySentencesHTML(request: HTTPrequest): NodeSeq = {
-    <p>{
-      request.getHTTPparameterValue("label").getOrElse("")
-    }</p> ++
+    makeHTMLselfLink(request) ++
     <p class="sf-values-group" id="sf-sentences">
         {
           for (row <- rows.list) yield {

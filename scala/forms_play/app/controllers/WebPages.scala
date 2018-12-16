@@ -282,7 +282,7 @@ trait WebPages extends Controller with ApplicationTrait
       else
         formSyntaxRaw
     }
-    val tv = new TableView[ImplementationSettings.Rdf#Node, ImplementationSettings.Rdf#URI]
+    val tableView = new TableView[ImplementationSettings.Rdf#Node, ImplementationSettings.Rdf#URI]
         with Form2HTMLBanana[ImplementationSettings.Rdf]
         with ImplementationSettings.RDFModule
         with HTML5TypesTrait[ImplementationSettings.Rdf]
@@ -290,7 +290,7 @@ trait WebPages extends Controller with ApplicationTrait
       val config = new DefaultConfiguration {}
       val nullURI = ops.URI("")
     }
-    tv.generate(formSyntax, request)
+    tableView.generate(formSyntax, request)
   }
 
   private def queryFromRequest(request: HTTPrequest): String =
