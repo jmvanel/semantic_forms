@@ -1,0 +1,57 @@
+## TDB dataset and index
+
+@prefix :        <http://localhost/jena_example/#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix tdb:     <http://jena.hpl.hp.com/2008/tdb#> .
+@prefix ja:      <http://jena.hpl.hp.com/2005/11/Assembler#> .
+@prefix text:    <http://jena.apache.org/text#> .
+
+# Initialize TDB
+[] ja:loadClass "org.apache.jena.tdb.TDB" .
+tdb:DatasetTDB  rdfs:subClassOf  ja:RDFDataset .
+tdb:GraphTDB    rdfs:subClassOf  ja:Model .
+
+## Initialize text query
+[] ja:loadClass       "org.apache.jena.query.text.TextQuery" .
+# A TextDataset is a regular dataset with a text index.
+text:TextDataset      rdfs:subClassOf   ja:RDFDataset .
+# Lucene index
+text:TextIndexLucene  rdfs:subClassOf   text:TextIndex .
+
+## ---------------------------------------------------------------
+## This URI must be fixed - it's used to assemble the dataset.
+
+:spatial_dataset
+    rdf:type     text:TextDataset ;
+    text:dataset   <#dataset> ;
+    text:index     <#indexLuceneText> ;
+    .
+
+<#dataset> rdf:type      tdb:DatasetTDB ;
+    tdb:location "TDB" ;
+    .
+
+# Text index description
+<#indexLuceneText> a text:TextIndexLucene ;
+    text:directory <file:/home/jmv/src/semantic_forms/scala/LUCENE> ;
+    text:entityMap <#entMap> ;
+    text:storeValues true ; 
+    text:analyzer [ a text:StandardAnalyzer ] ;
+    text:queryAnalyzer [ a text:KeywordAnalyzer ] ;
+    text:queryParser text:AnalyzingQueryParser ;
+    # text:defineAnalyzers [ . . . ] ;
+    text:multilingualSupport true ;
+ .
+
+<#entMap> a text:EntityMap ;
+    text:defaultField     "label" ;
+    text:entityField      "uri" ;
+    text:uidField         "uid" ;
+    text:langField        "lang" ;
+    text:graphField       "graph" ;
+    text:map (
+         [ text:field "label" ; 
+           text:predicate rdfs:label ]
+         ) .
+

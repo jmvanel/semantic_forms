@@ -351,9 +351,10 @@ trait WebPages extends Controller with ApplicationTrait
       logger.info("sparql: " + request)
       val httpRequest = copyRequest(request)
       val lang = httpRequest.getLanguage()
+      val userInfo = displayUser(getUsername(request).getOrElse("anonymous"), "pageURI", "title", "lang")
       outputMainPage(
           sparqlConstructQueryHTML(query, lang, httpRequest, context=httpRequest.queryString2),
-          lang, classForContent="")
+          lang, userInfo=userInfo, classForContent="")
         // TODO factorize
         .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
         .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
@@ -377,11 +378,13 @@ trait WebPages extends Controller with ApplicationTrait
     implicit request: Request[_] =>
       recoverFromOutOfMemoryErrorGeneric(
         {
-            logger.info("sparql: " + request)
-            logger.info("sparql: " + query)
-            val lang = chooseLanguage(request)
-            outputMainPage(
-              selectSPARQL(query, lang, copyRequest(request)), lang, classForContent="" )
+          logger.info("sparql: " + request)
+          logger.info("sparql: " + query)
+          val lang = chooseLanguage(request)
+          val userInfo = displayUser(getUsername(request).getOrElse("anonymous"), "pageURI", "title", "lang")
+          outputMainPage(
+              selectSPARQL(query, lang, copyRequest(request)), lang,
+                userInfo=userInfo, classForContent="" )
         },
         (t: Throwable) =>
           errorResultFromThrowable(t, "in SPARQL UI /select-ui"))
@@ -412,7 +415,8 @@ trait WebPages extends Controller with ApplicationTrait
               case _                         => httpRequest.getHTTPparameterValue("clas").getOrElse("")
             }
           val fut = wordsearchFuture(q, classe, httpRequest)
-          fut.map(r => outputMainPage(r, httpRequest.getLanguage(), classForContent=""))
+          val userInfo = displayUser(getUsername(request).getOrElse("anonymous"), "pageURI", "title", "lang")
+          fut.map(r => outputMainPage(r, httpRequest.getLanguage(), userInfo=userInfo, classForContent=""))
         },
         (t: Throwable) =>
           Future{ errorResultFromThrowable(t, "in word search /wordsearch") }

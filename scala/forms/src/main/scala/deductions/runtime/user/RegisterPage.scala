@@ -33,7 +33,8 @@ trait RegisterPage[Rdf <: RDF, DATASET]
   import config._
   import ops._
 
-  /** display User information in pages - transactional */
+  /** display User information in pages - transactional
+   *  TODO: UNUSED pageURI, pageLabel */
   def displayUser(userid: String, pageURI: String, pageLabel: String,
       lang: String = "en"): NodeSeq = {
 

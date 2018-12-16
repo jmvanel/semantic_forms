@@ -23,7 +23,7 @@ trait HTTPrequestHelpers {
     import request._
     val cookiesMap = cookies.map { cookie => (cookie.name -> copyCookie(cookie)) } . toMap
 //    val formMap = getFormMap(request)
-    val username = request.session.get(Security.username)
+    val username = getUsername(request)
     logger.debug(s"copyRequestHeader: username '$username'")
     val res = HTTPrequest(host, remoteAddress,
       rawQueryString, queryString,
@@ -47,6 +47,8 @@ trait HTTPrequestHelpers {
 //        tags ${request.tags}""")
     res
   }
+
+  private def getUsername(request: RequestHeader): Option[String] = request.session.get(Security.username)
 
   def copyCookie(cookie: play.api.mvc.Cookie): Cookie = {
     import cookie._
