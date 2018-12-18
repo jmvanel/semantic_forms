@@ -198,8 +198,8 @@ extends URIManagement {
       .map { node => node.asInstanceOf[Rdf#URI] }
   }
 
-  def isURI(node: Rdf#Node) = foldNode(node)(identity, x => None, x => None) != None
-  def isBN(node: Rdf#Node) = foldNode(node)(x => None, identity, x => None) != None
+  def isURI(node: Rdf#Node): Boolean = foldNode(node)(identity, x => None, x => None) != None
+  def isBN(node: Rdf#Node): Boolean = foldNode(node)(x => None, identity, x => None) != None
   def toBN(node: Rdf#Node): Rdf#BNode = foldNode(node)(x => BNode(""), identity, x => BNode(""))
   def isCorrectURI(node: Rdf#Node): Boolean =
     foldNode(node)(uri =>

@@ -39,7 +39,7 @@ trait InstanceLabelsInference2[Rdf <: RDF]
    *  NON transactional
    */
   def makeInstanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String = ""): String = {
-    if (node == nullURI) return ""
+    if (node == nullURI || ! (isURI(node) || isBN(node))) return ""
     //    println("**** makeInstanceLabel " + find( graph, node, foaf.givenName, ANY) . toList )
 
     val pgraph = PointedGraph(node, graph)

@@ -65,10 +65,15 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   private def stringFromLiteralPred(
     subjectNode: Rdf#Node, predNode: Rdf#Node,
     lang: String = "en"): Option[String] = {
-    val triples = find(allNamedGraph, subjectNode, predNode, ANY).toIterable
-    val values = triples.map(triple => triple.objectt)
-    Some(
-      getPreferedLanguageLiteral(values)(allNamedGraph, lang))
+    subjectNode.fold(
+      uri => {
+        val triples = find(allNamedGraph, subjectNode, predNode, ANY).toIterable
+        val values = triples.map(triple => triple.objectt)
+        Some(
+          getPreferedLanguageLiteral(values)(allNamedGraph, lang))
+      },
+      funBNode => None,
+      funLiteral => None)
   }
 //    for (
 //      triple <- find(allNamedGraph, subjectNode, predNode, ANY).toSeq.headOption;
@@ -189,6 +194,8 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   private def storeInstanceLabel(node: Rdf#Node, label: String,
                                  graph: Rdf#Graph, lang: String) = {
     if (label  =/=  "") {
+      if(!isURI(node))
+        logger.error(s">>>> storeInstanceLabel(node=$node, label⁼$label): Node should be URI")
       val computedDisplayLabel = (node -- displayLabelPred ->- Literal(label)).graph
       val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
       rdfStore.appendToGraph(datasetForLabels, labelsGraphUri, computedDisplayLabel)
