@@ -63,8 +63,9 @@ trait DefaultConfiguration extends Configuration {
   override def downloadPossibleValues: Boolean = false
 
   /** use Text indexing with Lucene or SOLR */
-  override def useTextQuery: Boolean = true
-  
+  override def useTextQuery: Boolean = false // true
+  override def useSpatialIndex: Boolean = true
+
   override def geoMapURL = "/assets/geo-map/geo-map.html"
 
   override def useTDB2: Boolean = false // true

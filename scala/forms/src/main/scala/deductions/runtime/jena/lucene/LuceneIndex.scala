@@ -103,18 +103,28 @@ trait LuceneIndex // [Rdf <: RDF]
   }
 
   /** configure Lucene Index for Jena, with Jena assembler file */
-  private def configureLuceneIndexAssembler(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean):
+  private def configureLuceneIndexAssembler(assemblerFile: String):
     ImplementationSettings.DATASET = {
-       DatasetFactory.assemble( "jena.assembler.ttl",
-           "http://localhost/jena_example/#spatial_dataset")
-//        "http://localhost/jena_example/#text_dataset")
+       DatasetFactory.assemble( assemblerFile,
+         "http://localhost/jena_example/#indexed-dataset")
   }
 
-    def configureLuceneIndex(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean):
-    ImplementationSettings.DATASET =
-    if (useTextQuery)
-//    configureLuceneIndexTESTspatial_Textual(dataset, useTextQuery)
-      configureLuceneIndexAssembler(dataset, useTextQuery)
-    else dataset
-
+  def configureLuceneIndex(dataset: ImplementationSettings.DATASET,
+        useTextQuery: Boolean,
+        useSpatialIndex: Boolean):
+  ImplementationSettings.DATASET = {
+    val assemblerFile =
+      if (useTextQuery && useSpatialIndex)
+        Some("jena.spatial+text2.assembler.ttl")
+      else if (useTextQuery && !useSpatialIndex)
+        Some("jena.text.assembler.ttl")
+      else if (!useTextQuery && useSpatialIndex)
+         Some("jena.spatial.assembler.ttl")
+      else None // "jena.plain.assembler.ttl"
+    println(s"configureLuceneIndex: assemblerFile: $assemblerFile")
+    assemblerFile match {
+      case Some(file) => configureLuceneIndexAssembler(file)
+      case _ => dataset
+    }
+  }
 }

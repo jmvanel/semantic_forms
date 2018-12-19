@@ -8,7 +8,7 @@ import org.apache.lucene.search.suggest.InputIterator
 import org.apache.lucene.search.suggest.analyzing.AnalyzingInfixSuggester
 import org.apache.lucene.util.Version
 
-/** unused yet !!!! */
+/** UNUSED yet !!!! */
 trait TextIndexerWeight extends LuceneIndex {
 
   /**
@@ -22,7 +22,7 @@ trait TextIndexerWeight extends LuceneIndex {
    * http://lucene.apache.org/core/6_3_0/core/overview-summary.html#overview.description
    */
   def addRDFWeights(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean) = {
-    val datasetLucene = configureLuceneIndex(dataset: ImplementationSettings.DATASET, useTextQuery: Boolean)
+    val datasetLucene = configureLuceneIndex(dataset, useTextQuery, false)
     if (datasetLucene != dataset) {
       val dsg = datasetLucene.asDatasetGraph()
       datasetLucene match {

@@ -32,7 +32,10 @@ extends RDFOPerationsDB[Rdf, DATASET] {
   val databaseLocation: String = "TDB"
 
   /** create (or re-connect to) TDB Database in given directory */
-  def createDatabase(database_location: String = databaseLocation, useTextQuery: Boolean= config.useTextQuery): DATASET
+  def createDatabase(database_location: String = databaseLocation,
+      useTextQuery: Boolean= config.useTextQuery,
+      useSpatialIndex: Boolean= config.useSpatialIndex
+      ): DATASET
 
   lazy val dataset: DATASET = createDatabase(databaseLocation)
 
@@ -42,8 +45,8 @@ extends RDFOPerationsDB[Rdf, DATASET] {
    *  sets a default location for the Jena TDB store directory : TDB2/ */
   val databaseLocation2 = "TDB2"
   val databaseLocation3 = "TDB3"
-  lazy val dataset2: DATASET = createDatabase(databaseLocation2, false)
-  lazy val dataset3: DATASET = createDatabase(databaseLocation3, false)
+  lazy val dataset2: DATASET = createDatabase(databaseLocation2, false, false)
+  lazy val dataset3: DATASET = createDatabase(databaseLocation3, false, false)
   // TODO datasetForLabels
   
   /** List the names of graphs */

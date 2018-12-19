@@ -92,7 +92,7 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
     |${declarePrefix(form)}
     |${declarePrefix(dbo)}
     |SELECT DISTINCT ?thing ?COUNT WHERE {
-    |  ${textQuery(search, unionGraph=true)}
+    |  ${textQuery(search, unionGraph=false)}
     |  GRAPH <urn:x-arq:UnionGraph> {
     |    ${classCriterium(classe, unionGraph=true)}
     |    $countPattern

@@ -20,7 +20,7 @@ spatial:SpatialIndexLucene  rdfs:subClassOf   spatial:SpatialIndex .
 ## ---------------------------------------------------------------
 ## This URI must be fixed - it's used to assemble the spatial dataset.
 
-:spatial_dataset rdf:type     spatial:SpatialDataset ;
+:indexed-dataset rdf:type     spatial:SpatialDataset ;
     spatial:dataset   <#dataset> ;
     spatial:index     <#indexLucene> ;
     .

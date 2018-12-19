@@ -22,7 +22,7 @@ text:TextIndexLucene  rdfs:subClassOf   text:TextIndex .
 ## ---------------------------------------------------------------
 ## This URI must be fixed - it's used to assemble the dataset.
 
-:spatial_dataset
+:indexed-dataset
     rdf:type     text:TextDataset ;
     text:dataset   <#dataset> ;
     text:index     <#indexLuceneText> ;

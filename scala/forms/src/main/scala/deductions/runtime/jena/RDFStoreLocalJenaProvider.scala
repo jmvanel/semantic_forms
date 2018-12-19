@@ -84,7 +84,9 @@ trait RDFStoreLocalJenaProvider
    */
   override def createDatabase(
       database_location: String,
-      useTextQuery: Boolean = useTextQuery): ImplementationSettings.DATASET = {
+      useTextQuery: Boolean = useTextQuery,
+      useSpatialIndex: Boolean= useSpatialIndex
+  ): ImplementationSettings.DATASET = {
     if (database_location != "") {
       // if the directory does not exist, create it
       val currentRelativePath = Paths.get("");
@@ -109,8 +111,11 @@ trait RDFStoreLocalJenaProvider
       logger.debug(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
 
       try {
-        val res = configureLuceneIndex(dts, useTextQuery)
-        logger.debug(s"configureLuceneIndex DONE useTextQuery: $useTextQuery => $res")
+        logger.info(
+          s"configureLuceneIndex, useTextQuery: $useTextQuery, useSpatialIndex: $useSpatialIndex")
+        val res = configureLuceneIndex(dts, useTextQuery, useSpatialIndex)
+        logger.info(
+          s"configureLuceneIndex DONE => $res")
         res
       } catch {
         case t: Throwable =>

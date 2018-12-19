@@ -59,6 +59,8 @@ trait Configuration extends CSSClasses {
 
   def useTDB2: Boolean
   def useTextQuery: Boolean
+  def useSpatialIndex: Boolean
+
   /** considered if useTextQuery */
   def elasticSearchIndexing: Boolean
 
