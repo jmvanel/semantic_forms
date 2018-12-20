@@ -264,15 +264,20 @@ with RDFContentNegociation {
   //  implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(
 
   def lookupService(search: String, clas: String = "") = {
-    Action { implicit request: Request[_] =>
-      logger.info(s"""Lookup: $request
+    recoverFromOutOfMemoryErrorGeneric[Action[AnyContent]](
+      {
+      Action { implicit request: Request[AnyContent] =>
+        logger.info(s"""Lookup: $request
             accepts ${request.acceptedTypes} """)
-      val lang = chooseLanguage(request)
-      val mime = request.acceptedTypes.headOption.map { typ => typ.toString() }.getOrElse(Accepts.Xml.mimeType)
-      logger.info(s"mime $mime")
-      Ok(lookup(search, lang, clas, mime)).as(s"$mime; charset=utf-8")
-      .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
-    }
+        val lang = chooseLanguage(request)
+        val mime = request.acceptedTypes.headOption.map { typ => typ.toString() }.getOrElse(Accepts.Xml.mimeType)
+        logger.info(s"mime $mime")
+        Ok(lookup(search, lang, clas, mime)).as(s"$mime; charset=utf-8")
+          .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+      }
+    },
+      (t: Throwable) =>
+        errorActionFromThrowable(t, "in GET /lookup"))
   }
 
   def httpOptions(path: String) = {
