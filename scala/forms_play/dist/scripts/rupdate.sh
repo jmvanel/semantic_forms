@@ -3,7 +3,7 @@
 PASSADMIN=gott-ueber-alles
 
 if [ -z "$1" ]; then
-    echo 'rupdate.sh QUERY (string) SERVER (without /update)'
+    echo 'rupdate.sh QUERY (string) SERVER (without /update) - default SERVER=http://localhost:9000'
     exit 1
 fi
 QUERY=$1
@@ -13,8 +13,8 @@ if [ -z "$2" ]; then
     echo "default value for server: $SERVER"
 else
     SERVER=$2
-    echo "server: $SERVER"
 fi
+echo "server prefix: $SERVER"
 
 
 echo "Processing update \"$QUERY\" on SPARQL server <$SERVER>"

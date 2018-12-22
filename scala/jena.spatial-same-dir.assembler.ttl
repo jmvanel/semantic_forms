@@ -1,0 +1,40 @@
+## TDB dataset and spatial index: ad-hoc assembler to index spatially a LUCENE dir already indexed textually
+
+@prefix :        <http://localhost/jena_example/#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix tdb:     <http://jena.hpl.hp.com/2008/tdb#> .
+@prefix ja:      <http://jena.hpl.hp.com/2005/11/Assembler#> .
+@prefix spatial: <http://jena.apache.org/spatial#> .
+
+# TDB
+[] ja:loadClass "org.apache.jena.tdb.TDB" .
+tdb:DatasetTDB  rdfs:subClassOf  ja:RDFDataset .
+tdb:GraphTDB    rdfs:subClassOf  ja:Model .
+
+# Spatial
+[] ja:loadClass "org.apache.jena.query.spatial.SpatialQuery" .
+spatial:SpatialDataset  rdfs:subClassOf  ja:RDFDataset .
+spatial:SpatialIndexLucene  rdfs:subClassOf   spatial:SpatialIndex .
+
+## ---------------------------------------------------------------
+## This URI must be fixed - it's used to assemble the spatial dataset.
+
+:indexed-dataset rdf:type     spatial:SpatialDataset ;
+    spatial:dataset   <#dataset> ;
+    spatial:index     <#indexLucene> ;
+    .
+
+<#dataset> rdf:type      tdb:DatasetTDB ;
+    tdb:location "TDB" ;
+    .
+
+<#indexLucene> a spatial:SpatialIndexLucene ;
+    spatial:directory <file:LUCENE> ;
+    spatial:definition <#definition> ;
+    .
+
+<#definition> a spatial:EntityDefinition ;
+    spatial:entityField      "uri" ;
+    spatial:geoField     "geo" 
+    .

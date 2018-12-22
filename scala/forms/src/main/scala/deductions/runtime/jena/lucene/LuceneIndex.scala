@@ -130,6 +130,32 @@ trait LuceneIndex // [Rdf <: RDF]
       return dataset
   }
 
+    /** USED - configure Lucene Index for Jena - trial 3 spatial Textual:
+   *  text query works, spatial TOO */
+  private def configureLuceneIndexTEST3spatial_Textual(dataset: ImplementationSettings.DATASET,
+      useTextQuery: Boolean):
+    ImplementationSettings.DATASET = {
+    println(s"configureLuceneIndex: useTextQuery $useTextQuery")
+    if (useTextQuery) {
+      println(
+        s"""configureLuceneIndex spatial + Textual by code 3: rdfIndexing getPredicates("text").size ${rdfIndexing.getPredicates("text").size}""")
+      val directory = new NIOFSDirectory(Paths.get("LUCENE"))
+      val textIndexConfig = new TextIndexConfig(rdfIndexing)
+      textIndexConfig.setMultilingualSupport(true)
+      val textIndex: TextIndex = TextDatasetFactory.createLuceneIndex(
+        directory, textIndexConfig)
+      val textualDataset = TextDatasetFactory.create(dataset, textIndex, true)
+
+      val directorySpatial = new NIOFSDirectory(Paths.get("LUCENE"))
+      val entityDefinitionsSpatial = new org.apache.jena.query.spatial.EntityDefinition("entityField", "geoField")
+      val spatialIndex: SpatialIndex =
+        SpatialDatasetFactory.createLuceneIndex(directorySpatial, entityDefinitionsSpatial)
+      textualDataset.getContext().set(SpatialQuery.spatialIndex, spatialIndex)
+      return textualDataset
+    } else
+      return dataset
+  }
+
   /** configure Lucene Index for Jena, with Jena assembler file */
   private def configureLuceneIndexAssembler(assemblerFile: String):
     ImplementationSettings.DATASET = {
@@ -141,8 +167,9 @@ trait LuceneIndex // [Rdf <: RDF]
         useTextQuery: Boolean,
         useSpatialIndex: Boolean):
   ImplementationSettings.DATASET = {
-    configureLuceneIndexWithAssembler(dataset, useTextQuery, useSpatialIndex)
+//    configureLuceneIndexWithAssembler(dataset, useTextQuery, useSpatialIndex)
 //    configureLuceneIndexTEST2spatial_Textual(dataset, useTextQuery)
+    configureLuceneIndexTEST3spatial_Textual(dataset, useTextQuery)
   }
 
   def configureLuceneIndexWithAssembler(dataset: ImplementationSettings.DATASET,
