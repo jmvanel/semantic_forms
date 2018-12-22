@@ -130,8 +130,8 @@ trait LuceneIndex // [Rdf <: RDF]
       return dataset
   }
 
-    /** USED - configure Lucene Index for Jena - trial 3 spatial Textual:
-   *  text query works, spatial TOO */
+    /** UNUSED - configure Lucene Index for Jena - trial 3 spatial Textual:
+   *  text query works, spatial NO */
   private def configureLuceneIndexTEST3spatial_Textual(dataset: ImplementationSettings.DATASET,
       useTextQuery: Boolean):
     ImplementationSettings.DATASET = {
@@ -167,9 +167,9 @@ trait LuceneIndex // [Rdf <: RDF]
         useTextQuery: Boolean,
         useSpatialIndex: Boolean):
   ImplementationSettings.DATASET = {
-//    configureLuceneIndexWithAssembler(dataset, useTextQuery, useSpatialIndex)
+    configureLuceneIndexWithAssembler(dataset, useTextQuery, useSpatialIndex)
 //    configureLuceneIndexTEST2spatial_Textual(dataset, useTextQuery)
-    configureLuceneIndexTEST3spatial_Textual(dataset, useTextQuery)
+//    configureLuceneIndexTEST3spatial_Textual(dataset, useTextQuery)
   }
 
   def configureLuceneIndexWithAssembler(dataset: ImplementationSettings.DATASET,
