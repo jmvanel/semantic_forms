@@ -97,7 +97,7 @@ trait LuceneIndex // [Rdf <: RDF]
         val textualDataset = TextDatasetFactory.create(dataset, textIndex, true)
 
         val directorySpatial = new NIOFSDirectory(Paths.get("LUCENESpatial"))
-        val entityDefinitionsSpatial = new org.apache.jena.query.spatial.EntityDefinition("entityField", "geoField")
+        val entityDefinitionsSpatial = new org.apache.jena.query.spatial.EntityDefinition("uri", "geo")
         val spatialDataset = SpatialDatasetFactory.createLucene(textualDataset, directorySpatial, entityDefinitionsSpatial)
 
         return spatialDataset
@@ -123,7 +123,7 @@ trait LuceneIndex // [Rdf <: RDF]
       val textualDataset = TextDatasetFactory.create(dataset, textIndex, true)
 
       val directorySpatial = new NIOFSDirectory(Paths.get("LUCENESpatial"))
-      val entityDefinitionsSpatial = new org.apache.jena.query.spatial.EntityDefinition("entityField", "geoField")
+      val entityDefinitionsSpatial = new org.apache.jena.query.spatial.EntityDefinition("uri", "geo")
       val spatialIndex: SpatialIndex =
         SpatialDatasetFactory.createLuceneIndex(directorySpatial, entityDefinitionsSpatial)
       textualDataset.getContext().set(SpatialQuery.spatialIndex, spatialIndex)
@@ -132,9 +132,12 @@ trait LuceneIndex // [Rdf <: RDF]
       return dataset
   }
 
-    /** UNUSED - configure Lucene Index for Jena - trial 3 spatial Textual:
-     *  Use same Lucene directory for both spatial and textual
-   *  text query works, spatial NO */
+  /** UNUSED - configure Lucene Index for Jena - trial 3 spatial Textual:
+   *  Use same Lucene directory for both spatial and textual
+   * FAILS !!!
+   * ERROR jena - !!!!! createDatabase: Exception: org.apache.lucene.store.LockObtainFailedException: Lock held by this virtual machine: /home/jmv/src/semantic_forms/scala/LUCENE/write.lock
+   * 
+   * text query works, spatial NO */
   private def configureLuceneIndexTEST3spatial_Textual(dataset: ImplementationSettings.DATASET,
       useTextQuery: Boolean):
     ImplementationSettings.DATASET = {
@@ -150,7 +153,7 @@ trait LuceneIndex // [Rdf <: RDF]
       val textualDataset = TextDatasetFactory.create(dataset, textIndex, true)
 
       val directorySpatial = new NIOFSDirectory(Paths.get("LUCENE"))
-      val entityDefinitionsSpatial = new org.apache.jena.query.spatial.EntityDefinition("entityField", "geoField")
+      val entityDefinitionsSpatial = new org.apache.jena.query.spatial.EntityDefinition("uri", "geo")
       val spatialIndex: SpatialIndex =
         SpatialDatasetFactory.createLuceneIndex(directorySpatial, entityDefinitionsSpatial)
       textualDataset.getContext().set(SpatialQuery.spatialIndex, spatialIndex)
@@ -161,7 +164,9 @@ trait LuceneIndex // [Rdf <: RDF]
 
   /** UNUSED - configure Lucene Index for Jena - trial 4 spatial Textual:
    *  Use same Lucene directory for both spatial and textual
-   *  text query works, spatial NO */
+   * FAILS !!!
+   * ERROR jena - !!!!! createDatabase: Exception: org.apache.lucene.store.LockObtainFailedException: Lock held by this virtual machine: /home/jmv/src/semantic_forms/scala/LUCENE/write.lock
+   * text query works, spatial NO */
   private def configureLuceneIndexTEST4spatial_Textual(dataset: ImplementationSettings.DATASET,
       useTextQuery: Boolean):
     ImplementationSettings.DATASET = {
@@ -176,7 +181,7 @@ trait LuceneIndex // [Rdf <: RDF]
         directory, textIndexConfig)
       val textualDataset = TextDatasetFactory.create(dataset, textIndex, true)
 
-      val entityDefinitionsSpatial = new org.apache.jena.query.spatial.EntityDefinition("entityField", "geoField")
+      val entityDefinitionsSpatial = new org.apache.jena.query.spatial.EntityDefinition("uri", "geo")
       val spatialIndex: SpatialIndex =
         SpatialDatasetFactory.createLuceneIndex(directory, entityDefinitionsSpatial)
       textualDataset.getContext().set(SpatialQuery.spatialIndex, spatialIndex)
@@ -228,6 +233,7 @@ trait LuceneIndex // [Rdf <: RDF]
         useSpatialIndex: Boolean):
   ImplementationSettings.DATASET = {
 //    configureLuceneIndexWithAssembler(dataset, useTextQuery, useSpatialIndex)
+//    configureLuceneIndexTESTspatial_Textual(dataset, useTextQuery)
 //    configureLuceneIndexTEST2spatial_Textual(dataset, useTextQuery)
 //    configureLuceneIndexTEST3spatial_Textual(dataset, useTextQuery)
 //      configureLuceneIndexTEST4spatial_Textual(dataset, useTextQuery)
@@ -245,7 +251,7 @@ trait LuceneIndex // [Rdf <: RDF]
       else if (!useTextQuery && useSpatialIndex)
          Some("jena.spatial.assembler.ttl")
       else None // "jena.plain.assembler.ttl"
-    println(s"configureLuceneIndex: assemblerFile: $assemblerFile")
+    println(s"configureLuceneIndex With Assembler: assemblerFile: $assemblerFile")
     assemblerFile match {
       case Some(file) => configureLuceneIndexAssembler(file)
       case _ => dataset
