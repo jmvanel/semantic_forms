@@ -17,6 +17,7 @@ import org.apache.jena.query.spatial.SpatialDatasetFactory
 import org.apache.jena.query.DatasetFactory
 import org.apache.jena.query.spatial.SpatialIndex
 import org.apache.jena.query.spatial.SpatialQuery
+import org.apache.jena.query.text.TextQuery
 
 /**
  * see https://jena.apache.org/documentation/query/text-query.html
@@ -105,6 +106,7 @@ trait LuceneIndex // [Rdf <: RDF]
   }
 
   /** UNUSED - configure Lucene Index for Jena - TEST 2 spatial Textual:
+   *  add to textual Dataset's Context a spatialIndex key to the spatialIndex
    *  text query works, spatial NO */
   private def configureLuceneIndexTEST2spatial_Textual(dataset: ImplementationSettings.DATASET,
       useTextQuery: Boolean):
@@ -131,6 +133,7 @@ trait LuceneIndex // [Rdf <: RDF]
   }
 
     /** UNUSED - configure Lucene Index for Jena - trial 3 spatial Textual:
+     *  Use same Lucene directory for both spatial and textual
    *  text query works, spatial NO */
   private def configureLuceneIndexTEST3spatial_Textual(dataset: ImplementationSettings.DATASET,
       useTextQuery: Boolean):
@@ -156,6 +159,63 @@ trait LuceneIndex // [Rdf <: RDF]
       return dataset
   }
 
+  /** UNUSED - configure Lucene Index for Jena - trial 4 spatial Textual:
+   *  Use same Lucene directory for both spatial and textual
+   *  text query works, spatial NO */
+  private def configureLuceneIndexTEST4spatial_Textual(dataset: ImplementationSettings.DATASET,
+      useTextQuery: Boolean):
+    ImplementationSettings.DATASET = {
+    println(s"configureLuceneIndex: useTextQuery $useTextQuery")
+    if (useTextQuery) {
+      println(
+        s"""configureLuceneIndex spatial + Textual by code 4: rdfIndexing getPredicates("text").size ${rdfIndexing.getPredicates("text").size}""")
+      val directory = new NIOFSDirectory(Paths.get("LUCENE"))
+      val textIndexConfig = new TextIndexConfig(rdfIndexing)
+      textIndexConfig.setMultilingualSupport(true)
+      val textIndex: TextIndex = TextDatasetFactory.createLuceneIndex(
+        directory, textIndexConfig)
+      val textualDataset = TextDatasetFactory.create(dataset, textIndex, true)
+
+      val entityDefinitionsSpatial = new org.apache.jena.query.spatial.EntityDefinition("entityField", "geoField")
+      val spatialIndex: SpatialIndex =
+        SpatialDatasetFactory.createLuceneIndex(directory, entityDefinitionsSpatial)
+      textualDataset.getContext().set(SpatialQuery.spatialIndex, spatialIndex)
+      println( ">>>> configureLuceneIndexTEST4spatial_Textual: " + textualDataset.getContext() )
+      return textualDataset
+    } else
+      return dataset
+  }
+
+  /** USED ! configure Lucene Index for Jena - TEST 5 spatial Textual:
+   *  add to textual Dataset's Context a spatialIndex key to the spatialIndex
+   *  text query works, spatial NO */
+  private def configureLuceneIndexTEST5spatial_Textual(dataset: ImplementationSettings.DATASET,
+      useTextQuery: Boolean):
+    ImplementationSettings.DATASET = {
+    println(s"configureLuceneIndex: useTextQuery $useTextQuery")
+    if (useTextQuery) {
+      println(
+          s"""configureLuceneIndex spatial + Textual by code 5: rdfIndexing getPredicates("text").size ${rdfIndexing.getPredicates("text").size}""")
+      val directory = new NIOFSDirectory(Paths.get("LUCENE"))
+      val textIndexConfig = new TextIndexConfig(rdfIndexing)
+      textIndexConfig.setMultilingualSupport(true)
+      val textIndex: TextIndex = TextDatasetFactory.createLuceneIndex(
+        directory, textIndexConfig)
+      val textualDataset = TextDatasetFactory.create(dataset, textIndex, true)
+        val directorySpatial = new NIOFSDirectory(Paths.get("LUCENESpatial"))
+        val entityDefinitionsSpatial = new org.apache.jena.query.spatial.EntityDefinition("uri", "geo")
+        val spatialDataset =
+          SpatialDatasetFactory.createLucene(dataset, directorySpatial, entityDefinitionsSpatial)
+        val returnedDataset = textualDataset // spatialDataset : works too!
+        returnedDataset.getContext().set(SpatialQuery.spatialIndex, spatialDataset.getContext.get(SpatialQuery.spatialIndex, null))
+        returnedDataset.getContext().set(TextQuery.textIndex, textIndex)
+        println( ">>>> configureLuceneIndexTEST5spatial_Textual: getContext\n\t" + returnedDataset.getContext() +
+            s"\n\treturned Dataset: $returnedDataset" )
+      return returnedDataset
+    } else
+      return dataset
+  }
+
   /** configure Lucene Index for Jena, with Jena assembler file */
   private def configureLuceneIndexAssembler(assemblerFile: String):
     ImplementationSettings.DATASET = {
@@ -167,9 +227,11 @@ trait LuceneIndex // [Rdf <: RDF]
         useTextQuery: Boolean,
         useSpatialIndex: Boolean):
   ImplementationSettings.DATASET = {
-    configureLuceneIndexWithAssembler(dataset, useTextQuery, useSpatialIndex)
+//    configureLuceneIndexWithAssembler(dataset, useTextQuery, useSpatialIndex)
 //    configureLuceneIndexTEST2spatial_Textual(dataset, useTextQuery)
 //    configureLuceneIndexTEST3spatial_Textual(dataset, useTextQuery)
+//      configureLuceneIndexTEST4spatial_Textual(dataset, useTextQuery)
+      configureLuceneIndexTEST5spatial_Textual(dataset, useTextQuery)
   }
 
   def configureLuceneIndexWithAssembler(dataset: ImplementationSettings.DATASET,
