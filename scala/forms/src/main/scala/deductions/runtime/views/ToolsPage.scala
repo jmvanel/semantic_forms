@@ -182,7 +182,9 @@ trait ToolsPage extends EnterButtons
   /** make Link to visualization Tool, Graph (diagram) or other kind.
    *  NOTE: for RDF Viewer this cannot work in localhost (because of rdfviewer limitations);
    *  works only on a hosted Internet server.
-   *  TODO merge with function makeLinkCarto */
+   *  TODO
+   *  - probably no need of this complex JavaScript just to send a form! Should as simple as action "/table".
+   *  - merge with function makeLinkCarto */
   private def makeLinkToVisualTool(textareaId: String, toolURLprefix: String,
                toolname: String,
                imgWidth: Int,
@@ -274,6 +276,7 @@ trait ToolsPage extends EnterButtons
       '&enrich=yes' +
       "&link-prefix=" + ${ s""""${request.host + config.hrefDisplayPrefix}""""} +
       "&lang=" + "${request.getLanguage()}" +
+      "&label=" + "${request.getHTTPparameterValue("label").getOrElse("")}" +
       '&url=' +
       dataServicesURL + window.encodeURIComponent(query);
     console.log( 'URL= ' + url );
