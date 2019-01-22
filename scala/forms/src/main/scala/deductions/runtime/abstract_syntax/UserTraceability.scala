@@ -60,11 +60,11 @@ trait UserTraceability[Rdf <: RDF, DATASET]
     	logger.info("\t" + elem)
     }
 
-    logger.debug(s"YYYYYYYY Before add User Info\n${formSyntax.fields.mkString("\n")}\n")
+    debug(s"YYYYYYYY Before add User Info\n${formSyntax.fields.mkString("\n")}\n")
     val entries =
       for (field: Entry <- formSyntax.fields) yield {
       if (resultsUser.contains( (field.property.toString, field.value.toString) ) ){
-    	  logger.debug(s"ZZZZ add User Info ${field.label} ${field.value}")
+    	  debug(s"ZZZZ add User Info ${field.label} ${field.value}")
         field.copyEntry(
             fromMetadata = resultsUser( (field.property.toString, field.value.toString)),
             fromTimeMetadata = resultsTimestamp.getOrElse( (field.property.toString, field.value.toString), 0 ) )
@@ -86,7 +86,10 @@ trait UserTraceability[Rdf <: RDF, DATASET]
   /** TODO there is something smarter in Banana */
   private def rdfNodeToLong(node: Rdf#Node): Long = {
     val timeElementStr = node.toString
-    timeElementStr.splitAt(timeElementStr.indexOf("^"))._1.replaceAll("\"","").toLong
+    val nodeWithoutType = timeElementStr.splitAt(timeElementStr.indexOf("^"))._1.replaceAll("\"","")
+    if(nodeWithoutType == "")
+      0
+    else nodeWithoutType.toLong
   }
 
   /** add User Info On all Triples in given FormSyntax */
@@ -101,7 +104,7 @@ trait UserTraceability[Rdf <: RDF, DATASET]
         for (field: Entry <- formSyntax.fields) yield {
           val metadata: List[Seq[Rdf#Node]] = getMetadataAboutTriple(
               field.subject, field.property, field.value, 100, 0)
-          logger.debug( s">>>> addUserInfoOnAllTriples field $field, metadata $metadata")
+          debug( s">>>> addUserInfoOnAllTriples field $field, metadata $metadata")
           for (row: Seq[Rdf#Node] <- metadata) yield {
             field.copyEntry(
               fromTimeMetadata = rdfNodeToLong(row(0)),
@@ -132,19 +135,19 @@ trait UserTraceability[Rdf <: RDF, DATASET]
         GRAPH ?USER {
          <${field.subject}> <${field.property}> ${makeTurtleTerm(field.value)} . }
       } """
-        logger.debug(s"addUserFromGraph: queryMainDatabase $queryMainDatabase")
+        debug(s"addUserFromGraph: queryMainDatabase $queryMainDatabase")
         sparqlSelectQueryVariables(
           queryMainDatabase,
           Seq("USER"),
           dataset)
       } else List(Seq())
     }
-    logger.debug(s"addUserFromGraph: resMainDatabase $resMainDatabase")
+    debug(s"addUserFromGraph: resMainDatabase $resMainDatabase")
     val fieldWithUsers = for (
       row <- resMainDatabase;
       node <- row
     ) yield {
-      logger.debug(s"addUserFromGraph: ?USER node ${node.getClass()} $node from subject <${field.subject}>")
+      debug(s"addUserFromGraph: ?USER node ${node.getClass()} $node from subject <${field.subject}>")
       field.copyEntry(fromMetadata = node.toString)
     }
     fieldWithUsers.headOption.getOrElse(field)
@@ -155,4 +158,7 @@ trait UserTraceability[Rdf <: RDF, DATASET]
         field
     }
   }
+
+  private def debug(s: String) = // println( "!!!! "+s) //
+    logger.debug(s)
 }

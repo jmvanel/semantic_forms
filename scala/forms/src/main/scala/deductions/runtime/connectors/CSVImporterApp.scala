@@ -46,7 +46,6 @@ object CSVImporterApp extends {
   // make URI prefix
   val documentURI: Rdf#URI = URI(
     if (args.size > 1) args(1) else {
-      //      url })
       val d = url match {
         case _ if (url.endsWith("#")) => url
         case _ if (url.endsWith("/")) => url
@@ -80,7 +79,7 @@ object CSVImporterApp extends {
     println(s"""Write $outputFile,
       # of triples ${graph.size()}""")
     val os = new FileOutputStream(outputFile)
-    turtleWriter.write(graph, os, fromUri(documentURI))
+    turtleWriter.write(graph, os, "") // fromUri(documentURI))
   }
 
   println(s"""Remove graph URI <$documentURI> and populate it""")

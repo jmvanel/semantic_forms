@@ -319,8 +319,10 @@ import scala.collection.mutable.LinkedHashSet
     val xmlField = field match {
       case l: formMod#LiteralEntry =>
 //        println(s">>>>>>>>>>>>>>>>>>> createHTMLField ${field.value.toString()}")
-        if (editable && (editableByUser || isCreateRequest ||
-          toPlainString(field.value) === ""))
+        if (editable &&
+            (editableByUser ||
+                isCreateRequest ||
+                toPlainString(field.value) === "") )
           createHTMLiteralEditableField(l, request)
         else
           createHTMLiteralReadonlyField(l, request)

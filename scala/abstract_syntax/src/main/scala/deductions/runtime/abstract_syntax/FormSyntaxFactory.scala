@@ -16,6 +16,10 @@ import scala.util.Failure
 
 import scalaz._
 import Scalaz._
+import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+import java.time.LocalDate
 
 /** one of EditionMode, DisplayMode, CreationMode */
 abstract sealed class FormMode { val editable = true }
@@ -515,7 +519,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         subject, prop, objet0, formMode)
       // TODO match graph pattern for interval datatype ; see issue #17
       // case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
-      val res = LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
+      val literalEntry =
+        LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
         value,
         subject = subject,
         subjectLabel = makeInstanceLabel(subject, graph, lang),
@@ -524,8 +529,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         valueLabel = nodeToString(value),
         htmlName = htmlName,
         widgetType = widgetType)
-      //      logger.info(s">>>> literalEntry ${res.valueLabel} - $res")
-      res
+      // logger.info(s">>>> literalEntry valueLabel ${literalEntry.valueLabel} - $res")
+      literalEntry
     }
 
     def resourceEntry = {
@@ -608,5 +613,50 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val ranges: Set[Rdf#Node] = getRDFSranges(prop)
     val rangeClasses: Set[Rdf#Node] = objectsQueries(ranges, rdf_type)
   }
-      
+
+
+  def fixValues(formSyntax : FormSyntax): FormSyntax = {
+   val entries =
+      for (field: Entry <- formSyntax.fields) yield {
+        parseValue(field)
+      }
+    formSyntax . fields = entries
+    formSyntax
+    }
+
+  /** try to fix values (use case: after loading tabular data): parse Value in case of xsd:date */
+  private def parseValue(entry: Entry): Entry =
+    entry match {
+      case literalEntry : LiteralEntry =>
+    literalEntry.copy(
+      value =
+        if (literalEntry.type_.contains(xsd("date"))) {
+          val parser = DateTimeFormatter.ofPattern ( "d MMMM yyyy" ,
+              Locale.FRENCH // TODO user language
+              )
+          val s = nodeToString(literalEntry.value).replaceFirst("\\w+ *", "")
+          .replaceFirst("(\\d\\d\\d\\d) .*", "$1")
+          logger.debug(s"==== parseValue s '$s'")
+          val lit = Literal(
+           try{
+             val date = LocalDate.parse(s, parser)
+             val isoDate = date.toString // formatter.format( date )
+             logger.debug( s"==== parseValue isoDate $isoDate" )
+             isoDate
+           } catch {
+             case t: Throwable =>
+               logger.debug( "parseValue: ERROR: " + t.getLocalizedMessage() )
+               s
+           },
+            xsd("date"))
+          logger.debug(s">>>> parseValue lit $lit")
+          lit
+        } else {
+          logger.debug(s">>>> parseValue literalEntry.type_ <${literalEntry.type_}>")
+          logger.debug(s">>>> parseValue value")
+          literalEntry.value
+        })
+        case _ => entry
+  }
+
 }

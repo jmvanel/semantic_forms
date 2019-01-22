@@ -246,19 +246,20 @@ println( s">>>> htmlFormElemJustFields 2 " )
     implicit val graph: Rdf#Graph = graphe
     implicit val lang = lang0
 
-    val formSyntax = time("createAbstractForm",
+    lazy val formSyntax = time("createAbstractForm",
       createAbstractForm(uri, editable, blankNode, formGroup, formuri))
 
-    val formSyntaxWithInfo = addUserInfoOnTriples(formSyntax)
+    lazy val formSyntaxWithInfo = addUserInfoOnTriples(formSyntax)
+    lazy val formSyntaxWithInfoAndFixedValues = fixValues( formSyntaxWithInfo )
 
     val htmlForm =
-      generateHTML(formSyntaxWithInfo, hrefPrefix, editable, actionURI, graphURI,
+      generateHTML(formSyntaxWithInfoAndFixedValues, hrefPrefix, editable, actionURI, graphURI,
         actionURI2, lang, request,
         cssForURI = "sf-value-block",
         cssForProperty = cssClasses.formLabelCSSClass
         // "col-xs-3 col-sm-2 col-md-2 control-label"
         )
-    ( htmlForm, formSyntaxWithInfo )
+    ( htmlForm, formSyntaxWithInfoAndFixedValues )
   }
 
   /** calls createFormTR; TRANSACTIONAL */
