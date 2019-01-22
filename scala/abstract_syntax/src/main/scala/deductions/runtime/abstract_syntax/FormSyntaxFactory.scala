@@ -615,25 +615,25 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   }
 
 
-  def fixValues(formSyntax : FormSyntax): FormSyntax = {
+  def fixValues(formSyntax : FormSyntax, request: HTTPrequest): FormSyntax = {
    val entries =
       for (field: Entry <- formSyntax.fields) yield {
-        parseValue(field)
+        parseValue(field, request)
       }
     formSyntax . fields = entries
     formSyntax
     }
 
   /** try to fix values (use case: after loading tabular data): parse Value in case of xsd:date */
-  private def parseValue(entry: Entry): Entry =
+  private def parseValue(entry: Entry, request: HTTPrequest): Entry =
     entry match {
       case literalEntry : LiteralEntry =>
     literalEntry.copy(
       value =
         if (literalEntry.type_.contains(xsd("date"))) {
           val parser = DateTimeFormatter.ofPattern ( "d MMMM yyyy" ,
-              Locale.FRENCH // TODO user language
-              )
+              new Locale(request.getLanguage()) // .FRENCH
+          )
           val s = nodeToString(literalEntry.value).replaceFirst("\\w+ *", "")
           .replaceFirst("(\\d\\d\\d\\d) .*", "$1")
           logger.debug(s"==== parseValue s '$s'")

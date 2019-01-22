@@ -50,7 +50,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
   def htmlFormElemRaw(uri: String, unionGraph: Rdf#Graph=allNamedGraph, hrefPrefix: String = config.hrefDisplayPrefix, blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",
-    lang: String = "en",
+    lang: String,
     graphURI: String = "",
     actionURI2: String = "/save",
     formGroup: String = fromUri(nullURI),
@@ -159,7 +159,7 @@ println( s">>>> htmlFormElemJustFields 2 " )
                           blankNode: String = "",
                           editable: Boolean = false,
                           actionURI: String = "/save",
-                          lang: String = "en",
+                          lang: String,
                           graphURI: String = "",
                           actionURI2: String = "/save",
                           formGroup: Rdf#URI = nullURI,
@@ -236,7 +236,7 @@ println( s">>>> htmlFormElemJustFields 2 " )
     hrefPrefix: String = config.hrefDisplayPrefix, blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",
-    lang0: String = "en", graphURI: String,
+    lang0: String, graphURI: String,
     actionURI2: String = "/save",
     formGroup: Rdf#URI = nullURI,
     formuri: String="",
@@ -250,7 +250,7 @@ println( s">>>> htmlFormElemJustFields 2 " )
       createAbstractForm(uri, editable, blankNode, formGroup, formuri))
 
     lazy val formSyntaxWithInfo = addUserInfoOnTriples(formSyntax)
-    lazy val formSyntaxWithInfoAndFixedValues = fixValues( formSyntaxWithInfo )
+    lazy val formSyntaxWithInfoAndFixedValues = fixValues( formSyntaxWithInfo, request )
 
     val htmlForm =
       generateHTML(formSyntaxWithInfoAndFixedValues, hrefPrefix, editable, actionURI, graphURI,
@@ -277,9 +277,5 @@ println( s">>>> htmlFormElemJustFields 2 " )
 
     createFormTR(subjectNode, editable, formGroup, formuri)
   }
-
-//  private def graf2formString(graph1: Rdf#Graph, uri: String, graphURI: String): String = {
-//    graf2form(graph1, uri, graphURI = graphURI)._1.toString
-//  }
 
 }
