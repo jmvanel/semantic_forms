@@ -6,6 +6,7 @@ import org.w3.banana.RDFOps
 
 import scalaz._
 import Scalaz._
+import org.w3.banana.Prefix
 
 //object HTML5TypesJena extends JenaModule with HTML5TypesTrait[Jena]
 
@@ -18,6 +19,7 @@ trait HTML5TypesTrait[Rdf <: RDF] extends HTML5Types {
   import ops._
 
   private lazy val xsd = XSDPrefix[Rdf]
+  private lazy val schema = Prefix[Rdf]("schema", "http://schema.org/")
 
   def xsd2html5TnputType(xsdDatatype: String): String =
     xsd2html5.getOrElse(URI(xsdDatatype), "text")
@@ -50,10 +52,19 @@ trait HTML5TypesTrait[Rdf <: RDF] extends HTML5Types {
     xsd.dateTime -> "datetime-local",
     xsd.dateTimeStamp -> "datetime-local",
     xsd("date") -> "date",
-    xsd("time") -> "date",
+    xsd("time") -> "time",
 
     xsd.anyURI -> "url",
-    xsd.boolean -> "radio"
+    xsd.boolean -> "radio",
+
+    // https://schema.org/DataType
+    schema("Boolean")  -> "radio",
+    schema("Date")  -> "date",
+    schema("DateTime")  -> "datetime-local",
+    schema("Number")  -> "number",
+    schema("Text")  -> "text",
+    schema("Time")  -> "time"
+
   /* Symfony stuff:
    * ⓘ input type=text
 ⓘ input type=password
