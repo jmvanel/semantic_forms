@@ -91,6 +91,9 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf]
     } else ranges
   }
 
+  def getSchemaOrgRanges(prop: Rdf#Node)(implicit graph: Rdf#Graph): Set[Rdf#Node] =
+    objectsQuery(prop, schema("rangeIncludes"))
+
   /** replace Same Language triple(s):
    *  given triple ?S ?P ?O ,
    *  remove triple(s)  ?S ?P ?O1 whose language matches input triple,

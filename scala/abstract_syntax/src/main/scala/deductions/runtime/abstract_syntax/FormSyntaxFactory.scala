@@ -496,12 +496,13 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         case _ if rangeClasses.contains(owl.Class) => nullURI
         case _ if rangeClasses.contains(rdf.Property) => nullURI
         case _ if ranges.contains(owl.Thing) => nullURI
+        case _ if rangesSchemaOrg.exists{ r => getClasses(r) . contains(schema("DataType")) } => nullLiteral
 
         case _ if isURI(objet0) => nullURI
         case _ if isBN(objet0) => nullBNode
         case _ if objet0.toString.startsWith("_:") => nullBNode
 
-        case _ => nullLiteral
+        case _ => nullURI
       }
   }
 
@@ -615,6 +616,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val propClasses: Set[Rdf#Node] = objectsQuery(prop, rdf_type)
     val ranges: Set[Rdf#Node] = getRDFSranges(prop)
     val rangeClasses: Set[Rdf#Node] = objectsQueries(ranges, rdf_type)
+    val rangesSchemaOrg = getSchemaOrgRanges(prop)
   }
 
 
