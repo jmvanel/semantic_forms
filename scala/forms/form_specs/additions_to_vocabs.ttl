@@ -55,6 +55,9 @@ geo:alt
     a owl:DatatypeProperty ;
     rdfs:range xsd:float .
 
+dct:subject a owl:ObjectProperty ;
+    rdfs:label "sujet (thème, topic)"@fr .
+
 # Icons for OWL classes
 
 foaf:Person foaf:img <https://mirrors.creativecommons.org/presskit/icons/by.svg> .
