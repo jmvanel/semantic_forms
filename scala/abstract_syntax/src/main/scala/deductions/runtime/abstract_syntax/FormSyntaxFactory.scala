@@ -475,15 +475,17 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val nullLiteral = Literal("")
     val nullBNode = BNode("")
     val chooseRDFNodeType: Rdf#Node ={
-      /* TODO this old code is error prone and should be redesigned, and features made explicit with tests;
-       * in general, priority should be given to actual data over vocabularies,
-       * with some exception(s?): literal value and ObjectProperty.
-       * See also FormSaver */
+
+      /* in general, priority is given to actual data over vocabularies,
+       * with some exception(s?): literal value and ObjectProperty if display mode;
+       * See also FormSaver
+       * TODO this old code is error prone and should be redesigned, and features made explicit with tests;
+       * */
+
       rangeClasses match {
         case _ if rdfListEntry.isDefined => rdf.List
-        // give priority to actual value (triple object) over property
-        case _ if objet0.isLiteral &&
-          !propClasses.contains(owl.ObjectProperty) => nullLiteral
+        // if display mode, give priority to actual value (triple object) over property in vocab'
+        case _ if formMode == DisplayMode && objet0.isLiteral => nullLiteral
 
         case _ if rangeClasses.exists { c => c.toString startsWith (xsdPrefix) } => nullLiteral
         case _ if rangeClasses.contains(rdfs.Literal) => nullLiteral
