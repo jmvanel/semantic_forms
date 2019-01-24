@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.time.LocalDate
+import scala.util.Try
 
 /** one of EditionMode, DisplayMode, CreationMode */
 abstract sealed class FormMode { val editable = true }
@@ -628,35 +629,67 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   private def parseValue(entry: Entry, request: HTTPrequest): Entry =
     entry match {
       case literalEntry : LiteralEntry =>
+      val originalValue = literalEntry.value
     literalEntry.copy(
       value =
         if (literalEntry.type_.contains(xsd("date"))) {
-          val parser = DateTimeFormatter.ofPattern ( "d MMMM yyyy" ,
-              new Locale(request.getLanguage()) // .FRENCH
-          )
-          val s = nodeToString(literalEntry.value).replaceFirst("\\w+ *", "")
-          .replaceFirst("(\\d\\d\\d\\d) .*", "$1")
+//          val parser = DateTimeFormatter.ofPattern ( "d MMMM yyyy", // .FRENCH
+//              new Locale(request.getLanguage()) )
+
+          // Succeeds with "D 28 avril 2019"
+          // Fails with "D 21 avril Pâques 2019"
+          val s = nodeToString(originalValue)
+            .replaceFirst("^(\\p{Alpha}+ *)?", "")
+            .replaceFirst("(\\d\\d\\d\\d) .*", "$1")
           logger.debug(s"==== parseValue s '$s'")
           val lit = Literal(
-           try{
-             val date = LocalDate.parse(s, parser)
-             val isoDate = date.toString // formatter.format( date )
-             logger.debug( s"==== parseValue isoDate $isoDate" )
-             isoDate
-           } catch {
-             case t: Throwable =>
-               logger.debug( "parseValue: ERROR: " + t.getLocalizedMessage() )
-               s
-           },
+//           try{
+//             val date = LocalDate.parse(s, parser)
+//             val isoDate = date.toString
+//             logger.debug( s"==== parseValue isoDate $isoDate" )
+//             isoDate
+             normalizeDate(s, new Locale(request.getLanguage())).getOrElse(s)
+//           } catch {
+//             case t: Throwable =>
+//               logger.debug( "parseValue: ERROR: " + t.getLocalizedMessage() )
+//               s
+//           }
+           ,
             xsd("date"))
           logger.debug(s">>>> parseValue lit $lit")
           lit
         } else {
           logger.debug(s">>>> parseValue literalEntry.type_ <${literalEntry.type_}>")
           logger.debug(s">>>> parseValue value")
-          literalEntry.value
+          originalValue
         })
         case _ => entry
   }
 
+
+  /** inpired by https://medium.com/@hussachai/normalizing-a-date-string-in-the-scala-way-f37a2bdcc4b9 */
+  private val dateFormats = List(
+    "dd/MM/yyyy",
+    "MMM dd, yyyy",
+    "d MMMM yyyy",
+    "dd MMM yyyy",
+    "dd-MM-yyyy",
+    "yyyy-MM-dd"
+    ).map(p => (p, DateTimeFormatter.ofPattern(p)))
+  private val iso8601DateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
+
+  def normalizeDate(dateStr: String, locale: Locale): Option[String] = {
+    val trimmedDate = dateStr.trim
+    if (trimmedDate.isEmpty) None
+    else {
+      dateFormats.toStream.map {
+        case (pattern, fmt) =>
+          Try {
+            LocalDate.parse(trimmedDate, fmt)
+          }
+      }.find(_.isSuccess).map { t =>
+        iso8601DateFormatter.format(t.get)
+      }
+    }
+  }
 }
