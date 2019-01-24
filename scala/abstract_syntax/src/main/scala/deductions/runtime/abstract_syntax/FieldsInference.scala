@@ -53,7 +53,9 @@ with FormModule[Rdf#Node, Rdf#URI]
     /* retrieve properties from rdfs:domain's From given Class */
     def propertiesFromDomainsFromClass(classs: Rdf#Node): List[Rdf#Node] = {
       if (classs != owl.Thing) {
-        val relevantPredicates = getSubjects(graph, rdfs.domain, classs).toSeq
+        val relevantPredicates =
+          getSubjects(graph, rdfs.domain, classs).toSeq ++
+          getSubjects(graph, schema("domainIncludes"), classs).toSeq
         logger.debug(s"""Predicates with domain = Class <$classs> , relevant Predicates size ${relevantPredicates.size}  ; ${relevantPredicates.mkString(", ")}""")
         filterObsoletePredicates(relevantPredicates.distinct).toList ++
         unionOfDomainsFromClass(classs)
@@ -71,7 +73,7 @@ with FormModule[Rdf#Node, Rdf#URI]
       // @prefix vs: <http://www.w3.org/2003/06/sw-vocab-status/ns#> .
     }
 
-    /* retrieve rdfs:domain's being unionOf from given Class
+    /** retrieve rdfs:domain's being unionOf from given Class
      *  NOTE: SPARQL query that covers also what domainsFromClass() does
      */
     def unionOfDomainsFromClass(classe: Rdf#Node): List[Rdf#Node] = {
