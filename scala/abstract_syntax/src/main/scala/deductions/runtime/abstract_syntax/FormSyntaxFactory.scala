@@ -515,7 +515,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     def htmlName: String = makeHTMLName( makeTriple(subject, uriNodeToURI(prop), objet) )
 
     def firstType = firstNodeOrElseNullURI(precomputProp.ranges)
-    def typesFromRanges = precomputProp.ranges.toSeq
+    def typesFromRanges = ranges.toSeq ++ rangesSchemaOrg.toSeq
 
     def literalEntry = {
       val value = getLiteralNodeOrElse(objet, literalInitialValue)
