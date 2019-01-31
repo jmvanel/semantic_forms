@@ -7,6 +7,7 @@ import org.w3.banana.RDF
 import scala.util.Success
 import scalaz._
 import Scalaz._
+import scala.concurrent.Future
 
 /** wraps InstanceLabelsInference to cache Instance Labels in TDB */
 trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
@@ -31,6 +32,16 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     if (labelFromTDB === "" || labelFromTDB === "Thing" || isLabelLikeURI(node, labelFromTDB ) )
       computeInstanceLabelAndStoreInTDB(node, graph, lang)
     else labelFromTDB
+  }
+
+  import scala.concurrent.ExecutionContext.Implicits.global
+  /** get instance Label From TDB, and if recorded label is not usable, compute it in a Future */
+  def makeInstanceLabelFuture(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
+    val labelFromTDB = instanceLabelFromTDB(node, lang)
+    if (labelFromTDB === "" || labelFromTDB === "Thing" || isLabelLikeURI(node, labelFromTDB ) ) {
+      Future { computeInstanceLabelAndStoreInTDB(node, graph, lang) }
+    }
+    labelFromTDB
   }
 
   def instanceDescription(subjectNode: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
@@ -83,23 +94,25 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
 //        literal => fromLiteral(literal)._1)
 //    ) yield result
 
-  /** NON transactional, needs rw transaction */
+  /** NON transactional, needs r transaction */
   def instanceLabelFromTDB(node: Rdf#Node, lang: String): String = {
+    val localDebuginstanceLabelFromTDB = false
+    def printlnLocal(s: String): Unit = if(localDebuginstanceLabelFromTDB) println(s)
     if( nodeToString(node) === "" ) return ""
-//	  println(s"""instanceLabelFromTDB node "$node" """ )
+	  printlnLocal(s"""\ninstanceLabelFromTDB node "$node" """ )
     val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
     val labelsGraph0 = rdfStore.getGraph( datasetForLabels, labelsGraphUri)
-//	  println( s"instanceLabelFromTDB after .getGraph( dataset3, labelsGraphUri) $dataset3 $labelsGraph0" )
+	  printlnLocal( s"instanceLabelFromTDB after .getGraph( dataset3, labelsGraphUri) $dataset3 $labelsGraph0" )
     val labelsGraph = labelsGraph0.get
-//	  println( s"instanceLabelFromTDB after labelsGraph.get $labelsGraphUri $labelsGraph")
+	  printlnLocal( s"instanceLabelFromTDB after labelsGraph.get $labelsGraphUri $labelsGraph")
     val displayLabelsIt = find(labelsGraph, node, displayLabelPred, ANY)
-//	  println(s"instanceLabelFromTDB after find(labelsGraph, node, displayLabelPred, ANY)" )
+	  printlnLocal(s"instanceLabelFromTDB after find(labelsGraph, node, displayLabelPred, ANY)" )
     displayLabelsIt.toIterable match {
       case it if (!it.isEmpty) =>
-        // println( s"recover displayLabel from TDB: $node" )
-        val tr = it.head
-//        println("instanceLabelFromTDB tr " + tr)
-        val label = tr.objectt
+         printlnLocal( s"recover displayLabel from TDB: $node" )
+        val triple = it.head
+        printlnLocal("instanceLabelFromTDB triple " + triple)
+        val label = triple.objectt
         foldNode(label)(_ => "", _ => "", lit => fromLiteral(lit)._1)
       case _ => ""
     }
@@ -177,7 +190,8 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
       val v = instanceLabelFromLabelProperty(node)
       v match {
         case Some(node) =>
-          foldNode(node)( uri => makeInstanceLabel(uri, graph, lang),
+          foldNode(node)(
+              uri => makeInstanceLabel(uri, graph, lang),
               _ => makeInstanceLabel(node, graph, lang),
               lab => fromLiteral(lab)._1 )
         case _ => label

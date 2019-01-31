@@ -37,7 +37,8 @@ extends ThumbnailInference[Rdf, DATASET] {
     val wrappingClass = "row sf-triple-block"
     <div class={wrappingClass} >{
       val res = res0 .toSeq
-      val uriLabelCouples = res.map(uri => (uri, makeInstanceLabel(uri, graph, lang)))
+      val uriLabelCouples = res.map(uri => (uri, makeInstanceLabelFuture(uri, graph, lang)))
+//      val uriLabelCouples = res.map(uri => (uri, makeInstanceLabel(uri, graph, lang)))
 //      println(s"displayResults: sortAnd1rowPerElement $sortAnd1rowPerElement")
 
       val uriLabelCouples2 =
@@ -61,8 +62,7 @@ extends ThumbnailInference[Rdf, DATASET] {
               sortAnd1rowPerElement = sortAnd1rowPerElement ) ++
               separatorSpan ++
               makeHyperlinkForURIBriefly(
-                getClassOrNullURI(uri)(allNamedGraph),
-                lang)
+                getClassOrNullURI(uri)(allNamedGraph), lang )
 //              ++
 //              <div style="font-size:10px; opacity:.8;">{ val uriString = fromUri(uri)
 //              URLEncoder.encode( s"DROP GRAPH <$uriString>", "utf-8") }</div>
@@ -116,7 +116,9 @@ extends ThumbnailInference[Rdf, DATASET] {
       if( label != "" )
           label
         else
-          makeInstanceLabel(node, graph, lang)
+          makeInstanceLabelFuture(node, graph, lang)
+          // instanceLabelFromTDB(node, lang)
+          // makeInstanceLabel(node, graph, lang)
      val `type` = getClassOrNullURI(node)(graph)
      displayNodeBriefly(uriNodeToURI(node), displayLabel,
          property = nullURI, type_ = `type` )

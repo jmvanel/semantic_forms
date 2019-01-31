@@ -197,7 +197,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
   def createHTMLiteralEditableField(
       lit: formMod#LiteralEntry,
       request: HTTPrequest = HTTPrequest())(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
-    println(s"==== createHTMLiteralEditableField lit $lit")
+//    println(s"==== createHTMLiteralEditableField lit $lit")
     import lit._
     val type0 = firstNODEOrElseEmptyString(type_)
     val placeholder = {
