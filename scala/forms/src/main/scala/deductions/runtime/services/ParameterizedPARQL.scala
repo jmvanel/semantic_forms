@@ -47,7 +47,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    * Generic SPARQL SELECT with single result columns (must be named "thing"),
    * generate a column of HTML hyperlinks for given search string;
    * search and display results as an XHTML element
-   * transactional
+   * read transactional
    * @param hrefPrefix URL prefix for creating hyperlinks ((URI of each query result is concatenated)
    *
    * TODO
@@ -63,9 +63,10 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     implicit
     queryMaker: SPARQLQueryMaker[Rdf]): Future[NodeSeq] = {
     logger.debug(s"search($search) 1: starting TRANSACTION for dataset $dataset")
-    val elem0 = rdfStore.rw(dataset, {
+//    val elem0 = rdfStore.rw(dataset, {
+    val elem0 = rdfStore.r(dataset, {
       val uris = search_onlyNT(search, variables, httpRequest)
-      logger.info(s"${httpRequest.logRequest()}: URI's size ${uris.size}")
+      logger.info(s"search: ${httpRequest.logRequest()}: URI's size ${uris.size}")
       val graph: Rdf#Graph = allNamedGraph
       val elems = Seq(
         <button value="Sort" id="sort"> Sort </button>,
@@ -159,7 +160,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     tryIteratorRdfNode.asFuture
   }
   
-  /** search only Non Transactional */
+  /** search only Non Transactional; need READ transaction */
   private def search_onlyNT(search: Seq[String], variables: Seq[String] = Seq("?thing"),
       httpRequest: HTTPrequest = HTTPrequest())
   (implicit queryMaker: SPARQLQueryMaker[Rdf] ) = {

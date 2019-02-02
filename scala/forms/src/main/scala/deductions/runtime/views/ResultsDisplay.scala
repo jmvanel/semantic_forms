@@ -10,6 +10,7 @@ import scala.xml.NodeSeq
 import deductions.runtime.abstract_syntax.ThumbnailInference
 import deductions.runtime.utils.FormModuleBanana
 import deductions.runtime.core.HTTPrequest
+import scala.util.Try
 
 /** Results Display, typically SPARQL SELECT */
 trait ResultsDisplay[Rdf <: RDF, DATASET]
@@ -30,11 +31,10 @@ extends ThumbnailInference[Rdf, DATASET] {
       lang: String = "",
       graph: Rdf#Graph,
       sortAnd1rowPerElement:Boolean = false,
-      request: HTTPrequest = HTTPrequest()
-)
-//  (implicit queryMaker: SPARQLQueryMaker[Rdf] )
+      request: HTTPrequest = HTTPrequest() )
   : NodeSeq = {
     val wrappingClass = "row sf-triple-block"
+    val tryResult = Try{
     <div class={wrappingClass} >{
       val res = res0 .toSeq
       val uriLabelCouples = res.map(uri => (uri, makeInstanceLabelFuture(uri, graph, lang)))
@@ -60,9 +60,9 @@ extends ThumbnailInference[Rdf, DATASET] {
               label = label,
               request,
               sortAnd1rowPerElement = sortAnd1rowPerElement ) ++
-              separatorSpan ++
-              makeHyperlinkForURIBriefly(
-                getClassOrNullURI(uri)(allNamedGraph), lang )
+            separatorSpan ++
+            makeHyperlinkForURIBriefly(
+              getClassOrNullURI(uri)(allNamedGraph), lang )
 //              ++
 //              <div style="font-size:10px; opacity:.8;">{ val uriString = fromUri(uri)
 //              URLEncoder.encode( s"DROP GRAPH <$uriString>", "utf-8") }</div>
@@ -80,6 +80,12 @@ extends ThumbnailInference[Rdf, DATASET] {
         }
         columnsFormResults
     }</div><!-- end of wrapping div displayResults -->
+    }
+    tryResult.getOrElse{
+      val mess = s"ERROR in displayResults(): $tryResult"
+      logger.error(mess)
+      <div>{ mess }</div>
+    }
   }
 
   val separatorSpan = <span>&#160;&#160;</span>
@@ -198,7 +204,9 @@ extends ThumbnailInference[Rdf, DATASET] {
         value=uri,
         thumbnail = getURIimage(uri),
         type_ = types,
-        isClass = isClass(uri) )
+        isClass = containsClassType(types)
+          // isClass(uri)
+        )
   }
 
 }

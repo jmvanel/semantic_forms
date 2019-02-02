@@ -390,6 +390,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     val variables = v :+ "?G" // append ?G
 
     val queryString = s"""
+         |# quadQuery($s, $p, $o)
          | SELECT
          |     ${variables.mkString(" ")}
          |     ?G
@@ -421,12 +422,18 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   }
 
   /** run SPARQL on given dataset, knowing result variables;
-   *  NOT transactional (needs to be called within a transaction)
+   *  NOT transactional (needs to be called within a Read transaction)
       CAUTION: slow with /lookup and /search , why ??? */
   def sparqlSelectQueryVariablesNT(queryString: String, variables: Seq[String],
                                    ds: DATASET = dataset): List[Seq[Rdf#Node]] = {
+//    if(queryString.contains("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>"))
+//      println(s"sparqlSelectQueryVariablesNT( $queryString")
+
+    val queryForLog = "'" + queryString
+    .substring(0, Math.min(40, queryString.length() - 1))
+    .replace( '\n', ' ')  + "'"
     val solutionsTry =
-      time("sparqlSelectQueryVariablesNT", {
+      time("sparqlSelectQueryVariablesNT: time: " + queryForLog, {
       for {
         query <- parseSelect(queryString)
         es <- ds.executeSelect(query, Map())
@@ -434,15 +441,16 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     }, logger.isDebugEnabled() )
 
     try {
-    time("sparqlSelectQueryVariablesNT 2", {
+    time("sparqlSelectQueryVariablesNT 2: " + queryForLog, {
       solutionsTry match {
         case Success(solutions) =>
-          //    logger.debug( "solutionsTry.isSuccess " + solutionsTry.isSuccess )
+          logger.debug( "sparqlSelectQueryVariablesNT: solutionsTry.isSuccess " + solutionsTry.isSuccess )
           // TODO nullPointer on empty database
           val results = solutions.iterator.toIterable.map {
             row =>
               // TODO rather loop on row.varnames() , to make sparqlSelectQueryVariablesNT more robust
-              for (variable <- variables) yield {
+               logger.debug( s"sparqlSelectQueryVariablesNT: row $row" )
+               for (variable <- variables) yield {
                 val cell = row(variable)
                 cell match {
                   case Success(node) => node
@@ -840,13 +848,20 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     types.exists { typ => propTypes.contains(typ._1.objectt) }
   }
 
+
   private lazy val classTypes = List(rdfs.Class, owl.Class)
 
   def isClass(uriTokeep: Rdf#Node): Boolean = {
-    val types = quadQuery(uriTokeep, rdf.typ, ANY).toList
-    logger.debug( s"isProperty( $uriTokeep ) : types $types" )
-    types.exists { typ => classTypes.contains(typ._1.objectt) }
+    val typeQuads = quadQuery(uriTokeep, rdf.typ, ANY).toList
+    logger.debug( s"isProperty( $uriTokeep ) : types $typeQuads" )
+    val types = typeQuads.map { typ => typ._1.objectt }
+//    typeQuads.exists { typ => classTypes.contains(typ._1.objectt) }
+    containsClassType(types)
   }
+
+  def containsClassType( types: List[Rdf#Node]): Boolean =
+    types.exists { typ => classTypes.contains(typ) }
+
 
   def dumpGraph(implicit graph: Rdf#Graph) = {
     val selectAll = """

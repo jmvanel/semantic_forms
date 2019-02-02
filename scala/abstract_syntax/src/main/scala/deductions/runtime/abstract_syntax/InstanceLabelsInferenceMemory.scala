@@ -99,7 +99,8 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
 //        literal => fromLiteral(literal)._1)
 //    ) yield result
 
-  /** NON transactional, needs r transaction */
+  /** get instance (URI node) Label From TDB
+   *  NON transactional, needs r transaction */
   def instanceLabelFromTDB(node: Rdf#Node, lang: String): String = {
     val localDebuginstanceLabelFromTDB = false
     def printlnLocal(s: String): Unit = if(localDebuginstanceLabelFromTDB) println(s)
@@ -198,7 +199,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
           foldNode(node)(
               uri => makeInstanceLabel(uri, graph, lang),
               _ => makeInstanceLabel(node, graph, lang),
-              lab => fromLiteral(lab)._1 )
+              lit => fromLiteral(lit)._1 )
         case _ => label
       }
   }  else label

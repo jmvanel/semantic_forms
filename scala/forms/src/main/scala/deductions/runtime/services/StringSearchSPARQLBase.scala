@@ -87,6 +87,7 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
     search: String,
     classe: String = "") =
     s"""
+    |# search "$search" class <$classe>
     |${declarePrefix(text)}
     |${declarePrefix(rdfs)}
     |${declarePrefix(form)}
