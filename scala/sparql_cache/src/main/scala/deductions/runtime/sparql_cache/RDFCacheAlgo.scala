@@ -420,8 +420,10 @@ JMV:
     uri:     Rdf#URI,
     dataset: DATASET,
     request: HTTPrequest) = {
-    readURIsf( uri, dataset, request)
-    // readURIWithJenaRdfLoader( uri, dataset, request)
+    if( fromUri(uri) . startsWith("file:"))
+      readURIWithJenaRdfLoader( uri, dataset, request)
+    else
+      readURIsf( uri, dataset, request)
   }
 
 
