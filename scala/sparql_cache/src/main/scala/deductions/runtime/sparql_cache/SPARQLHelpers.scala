@@ -420,7 +420,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     transaction.get
   }
 
-  /** run SPARQL on given dataset, knowing result variables; NOT transactional
+  /** run SPARQL on given dataset, knowing result variables;
+   *  NOT transactional (needs to be called within a transaction)
       CAUTION: slow with /lookup and /search , why ??? */
   def sparqlSelectQueryVariablesNT(queryString: String, variables: Seq[String],
                                    ds: DATASET = dataset): List[Seq[Rdf#Node]] = {
@@ -551,7 +552,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 //            logger.debug(s"rowSeq $rowSeq")
             rowSeq
         }
-        logger.debug("sparqlSelectQuery: after results")
+        logger.debug("makeListofListsFromSolutions: after results")
 
         if (addHeaderRow) {
 //          val columnsCount = columnsMap.keys.max
@@ -565,7 +566,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         	  Literal(name)
           }
           val headerRow = r . toList // . sorted
-     		  logger.debug(s"headerRow $headerRow ")
+          logger.debug(s"makeListofListsFromSolutions: headerRow $headerRow ")
 
           val rrr = headerRow :: results.to[List]
           rrr

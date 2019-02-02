@@ -35,12 +35,17 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   }
 
   import scala.concurrent.ExecutionContext.Implicits.global
-  /** get instance Label From TDB, and if recorded label is not usable, compute it in a Future */
+  /** get instance Label From TDB, and if recorded label is not usable, compute it in a Future
+   *  Transactional, creates a Read+Write transaction */
   def makeInstanceLabelFuture(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
     val labelFromTDB = instanceLabelFromTDB(node, lang)
-    if (labelFromTDB === "" || labelFromTDB === "Thing" || isLabelLikeURI(node, labelFromTDB ) ) {
-      Future { computeInstanceLabelAndStoreInTDB(node, graph, lang) }
-    }
+    if (labelFromTDB === "" ||
+        // labelFromTDB === "Thing" ||
+        isLabelLikeURI(node, labelFromTDB))
+      Future {
+        wrapInTransaction(
+          computeInstanceLabelAndStoreInTDB(node, graph, lang))
+      }
     labelFromTDB
   }
 

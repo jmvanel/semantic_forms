@@ -89,7 +89,7 @@ extends ThumbnailInference[Rdf, DATASET] {
    *  link to semantic_forms page for displaying this URI;
    * NOTE: this reuses code in Form2HTMLDisplay.createHTMLResourceReadonlyField()
    * 
-   * NON transactional, needs rw transaction */
+   * NON transactional, needs Read transaction */
   def makeHyperlinkForURI( node: Rdf#Node, lang: String, graph: Rdf#Graph = allNamedGraph,
       hrefPrefix: String = config.hrefDisplayPrefix,
       label: String = "",
@@ -100,7 +100,7 @@ extends ThumbnailInference[Rdf, DATASET] {
       if( label != "" )
           label
         else
-          makeInstanceLabel(node, graph, lang)
+          makeInstanceLabelFuture(node, graph, lang)
      val `type` = getClassOrNullURI(node)(graph)
      displayNode(uriNodeToURI(node), hrefPrefix, displayLabel,
          property = nullURI, type_ = `type`, request)
