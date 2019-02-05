@@ -146,9 +146,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     // TODO val step3 = addOWLinverseOf(step2)
     ) yield {
       rdfStore.rw(dataset,
-        { createFormDetailed2(step2, formGroup) })
+        { Try {createFormDetailed2(step2, formGroup) }})
     }
-    tryFormSyntax.flatten match {
+    tryFormSyntax.flatten.flatten match {
       case Success(fs) =>
         logger.debug(s"createFormTR: Success FormSyntax: $fs")
         fs

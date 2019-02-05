@@ -8,6 +8,7 @@ import scala.util.Success
 import scalaz._
 import Scalaz._
 import scala.concurrent.Future
+import scala.util.Try
 
 /** wraps InstanceLabelsInference to cache Instance Labels in TDB */
 trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
@@ -36,7 +37,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
 
   import scala.concurrent.ExecutionContext.Implicits.global
   /** get instance Label From TDB, and if recorded label is not usable, compute it in a Future
-   *  Transactional, creates a Read+Write transaction */
+   *  Transactional, creates a Read transaction */
   def makeInstanceLabelFuture(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
     val labelFromTDB = instanceLabelFromTDB(node, lang)
     if (labelFromTDB === "" ||
@@ -108,9 +109,9 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
 	  printlnLocal(s"""\ninstanceLabelFromTDB node "$node" """ )
     val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
     val labelsGraph0 = rdfStore.getGraph( datasetForLabels, labelsGraphUri)
-	  printlnLocal( s"instanceLabelFromTDB after .getGraph( dataset3, labelsGraphUri) $dataset3 $labelsGraph0" )
+	  // printlnLocal( s"instanceLabelFromTDB after .getGraph( dataset3, labelsGraphUri) $dataset3 ${Try{labelsGraph0}}" )
     val labelsGraph = labelsGraph0.get
-	  printlnLocal( s"instanceLabelFromTDB after labelsGraph.get $labelsGraphUri $labelsGraph")
+	  // printlnLocal( s"instanceLabelFromTDB after labelsGraph.get $labelsGraphUri $${Try{labelsGraph}}")
     val displayLabelsIt = find(labelsGraph, node, displayLabelPred, ANY)
 	  printlnLocal(s"instanceLabelFromTDB after find(labelsGraph, node, displayLabelPred, ANY)" )
     displayLabelsIt.toIterable match {
