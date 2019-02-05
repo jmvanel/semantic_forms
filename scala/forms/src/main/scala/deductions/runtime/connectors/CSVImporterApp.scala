@@ -30,6 +30,17 @@ object CSVImporterApp extends {
 
   import ops._
 
+  if(args.length < 1) {
+    println("""This application transforms CSV into a Turtle file; the args are:
+0 - URL or File of CSV,
+1 - URI prefix for the rows (facultative),
+2 - URL or File ( in Turtle ) for adding details to each row (facultative); for example it contains:
+	`<any:ROW> a foaf:Person .`
+3 - separator in CSV (facultative)
+4 - graph URI where to put the triples (facultative; can be user:user_name )
+""")
+    System.exit(0)
+  }
   println(s"Arguments: ${args.mkString(", ")}")
   val urlOrFile = args(0)
 
@@ -44,7 +55,7 @@ object CSVImporterApp extends {
   }
 
   // make URI prefix
-  val documentURI: Rdf#URI = URI(
+  val uriPrefix: Rdf#URI = URI(
     if (args.size > 1) args(1) else {
       val d = url match {
         case _ if (url.endsWith("#")) => url
@@ -53,8 +64,7 @@ object CSVImporterApp extends {
       }
       d
     })
-  println(s"""document URI
-		  $documentURI""")
+  println(s"""URI prefix $uriPrefix""")
 
   val in: InputStream = getUrlInputStream(url)
   val graph = if (args.size > 2) {
@@ -69,10 +79,10 @@ object CSVImporterApp extends {
     }
   val separator = if (args.size > 3) args(3)(0) else ','
 	  println(s"separator '$separator'")
-	  run(in, documentURI,
+	  run(in, uriPrefix,
       propertyValueForEachRow, separator)
   } else
-    run(in, documentURI)
+    run(in, uriPrefix)
 
   {
     val outputFile = urlOrFile + ".ttl"
@@ -81,10 +91,13 @@ object CSVImporterApp extends {
     val os = new FileOutputStream(outputFile)
     turtleWriter.write(graph, os, "") // fromUri(documentURI))
   }
-
-  println(s"""Remove graph URI <$documentURI> and populate it""")
-  rdfStore.removeGraph(dataset, documentURI)
-  rdfStore.appendToGraph(dataset, documentURI, graph)
+  println(s"args ${args.mkString(", ")}" )
+  if (args.size > 4) {
+    val graphURI = URI(args(4))
+    println(s"""populate graph URI <$graphURI>""")
+//    rdfStore.removeGraph(dataset, graphURI)
+    rdfStore.appendToGraph(dataset, graphURI, graph)
+  }
 
   /**
    * See http://alvinalexander.com/blog/post/java/how-open-url-read-contents-http...

@@ -51,10 +51,10 @@ trait CSVImporter[Rdf <: RDF, DATASET]
   private def csvPredicate(p: String) = URI(CSV.NS + p)
 
   /** run the parser and "semantize"
-   *  @param documentURI document URI to be predended to column names */
+   *  @param uriPrefix	URI prefix to be predended to column names */
   def run(
       in: InputStream,
-      documentURI: URI,
+      uriPrefix: URI,
       /* property Value pair to add For Each Row */
       propertyValueForEachRow: List[(Rdf#URI, Rdf#Node)] = List(),
       separator: Char = ','): Rdf#Graph = {
@@ -64,19 +64,21 @@ trait CSVImporter[Rdf <: RDF, DATASET]
 
     csvParser = new CSVParser( new InputStreamReader(in), csvFormat)
     val header: java.util.Map[String, Integer] = csvParser.getHeaderMap
-    headerURIs = processHeader(header, documentURI)
+    headerURIs = processHeader(header, uriPrefix)
     
     val list = ArrayBuffer[Rdf#Triple]()
     
     writeHeaderPropertiesMetadata(header, list)
-    var index = 0
     val rowSubjectPrefix = {
-      val doc = documentURI.toString
+      val doc = uriPrefix.toString
       if( doc.endsWith("/") ||
         doc.endsWith("#") ) doc + "row/"
       else
         doc + "/row/"
     }
+    println( s"rowSubjectPrefix: $rowSubjectPrefix")
+
+    var index = 0
     for( record <- csvParser.getRecords.asScala ) {
       val rowSubject = URI( rowSubjectPrefix + index)
       // list += Triple(rowSubject, rdf.typ, rowType)
@@ -87,7 +89,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       // list += Triple(rowSubject, csvPredicate(CSV.ROW_POSITION), Literal( String.valueOf(index) ) )
       index = index + 1
     }
-    addTableMetadataStatements(documentURI, list, index, headerURIs.length)
+    addTableMetadataStatements(uriPrefix, list, index, headerURIs.length)
     makeGraph(list)
   }
 
@@ -182,11 +184,13 @@ trait CSVImporter[Rdf <: RDF, DATASET]
     list: ArrayBuffer[Rdf#Triple]) {
     val values = record.iterator()
     var index = 0
+    // println( s"rowSubject : $rowSubject")
     for (cell <- values.asScala) {
       if (index < headerURIs.length) {
         if (cell  =/=  "") {
           val predicate = headerURIs(index)
           val `object` = getObjectFromCell(cell)
+          // println( s"Triple : ${Triple(rowSubject, predicate, `object`)}")
           list += Triple(rowSubject, predicate, `object`)
         }
         index += 1
