@@ -534,38 +534,31 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   }
 
   /** @param addHeaderRow the first row is the variables' list */
-  def makeListofListsFromSolutions(solutionsTry: Try[Rdf#Solutions],
-                                   addHeaderRow: Boolean = true): Try[List[Iterable[Rdf#Node]]] = {
+  def makeListofListsFromSolutions(
+    solutionsTry: Try[Rdf#Solutions],
+    addHeaderRow: Boolean            = true): Try[List[Iterable[Rdf#Node]]] = {
+
     import scala.collection._
     val res = solutionsTry.map {
       solutions =>
-        val solsIterable = solutions.iterator.toIterable
-
-//        val columnsMap2: scala.collection.mutable.SortedSet[String] = scala.collection.mutable.SortedSet()
-//        val columnsMap2: scala.collection.mutable.Set[String] = scala.collection.mutable.Set()
+        val solsIterable = solutions.iterator
         val columnsMap2: mutable.TreeSet[String] = mutable.TreeSet()
         solsIterable foreach {
           row =>
             val variables = row.varnames().toList
             columnsMap2 ++= variables
         }
-//        logger.debug(s"columnsMap2 $columnsMap2")
-
-        val results: Iterable[Iterable[Rdf#Node]] = solsIterable . map {
+        val results = solsIterable . map {
           row =>
             val rowSeq: mutable.Buffer[Rdf#Node] = mutable.Buffer()
             for (variable <- columnsMap2) rowSeq +=
               row(variable).getOrElse(Literal(""))
-//              row(variable).getOrElse(Literal("") ).as[Rdf#Node].get
 //            logger.debug(s"rowSeq $rowSeq")
             rowSeq
         }
         logger.debug("makeListofListsFromSolutions: after results")
 
         if (addHeaderRow) {
-//          val columnsCount = columnsMap.keys.max
-//          val actualColumnsList = columnsMap(columnsCount)
-
           implicit val literalIsOrdered: scala.Ordering[Rdf#Literal] =
             scala.Ordering.by(lit => fromLiteral(lit)._1 )
           val r = columnsMap2 .map {
@@ -575,10 +568,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
           }
           val headerRow = r . toList // . sorted
           logger.debug(s"makeListofListsFromSolutions: headerRow $headerRow ")
-
           val rrr = headerRow :: results.to[List]
           rrr
-
         } else results.to[List]
     }
     logger.debug("makeListofListsFromSolutions: before res")
