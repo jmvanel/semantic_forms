@@ -140,7 +140,16 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
     val tryFormSyntax = for ( // TODO rw is just for possibly recomputing labels; should be separated and possibly done in a Future
       step1 <- rdfStore.rw(dataset,
-        { computePropertiesList(subject, editable, formuri) });
+        {
+        val tr = Try(
+            computePropertiesList(subject, editable, formuri))
+        tr match {
+          case Success(step) => step
+          case Failure(f) =>
+            logger.error(s"ERROR in computePropertiesList: $f")
+            throw f
+            // FormSyntax()
+          }});
       step2 <- rdfStore.r(dataset,
         { addOWLsameAs(step1) })
     // TODO val step3 = addOWLinverseOf(step2)
@@ -633,35 +642,24 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   private def parseValue(entry: Entry, request: HTTPrequest): Entry =
     entry match {
       case literalEntry : LiteralEntry =>
-      val originalValue = literalEntry.value
-    literalEntry.copy(
-      value =
+        val originalValue = literalEntry.value
+        val originalValueToString = nodeToString(originalValue)
+        literalEntry.copy(
+          value =
         if (literalEntry.type_.contains(xsd("date"))) {
-//          val parser = DateTimeFormatter.ofPattern ( "d MMMM yyyy", // .FRENCH
-//              new Locale(request.getLanguage()) )
-
           // Succeeds with "D 28 avril 2019"
           // Fails with "D 21 avril Pâques 2019"
-          val s = nodeToString(originalValue)
+            originalValueToString
             .replaceFirst("^(\\p{Alpha}+ *)?", "")
             .replaceFirst("(\\d\\d\\d\\d) .*", "$1")
-          logger.debug(s"==== parseValue s '$s'")
+          logger.debug(s"==== parseValue s '$originalValueToString'")
           val lit = Literal(
-//           try{
-//             val date = LocalDate.parse(s, parser)
-//             val isoDate = date.toString
-//             logger.debug( s"==== parseValue isoDate $isoDate" )
-//             isoDate
-             normalizeDate(s, new Locale(request.getLanguage())).getOrElse(s)
-//           } catch {
-//             case t: Throwable =>
-//               logger.debug( "parseValue: ERROR: " + t.getLocalizedMessage() )
-//               s
-//           }
-           ,
+            normalizeDate(originalValueToString, new Locale(request.getLanguage())).getOrElse(originalValueToString) ,
             xsd("date"))
           logger.debug(s">>>> parseValue lit $lit")
           lit
+        } else if (literalEntry.type_.contains(xsd("time"))) {
+          Literal(originalValueToString.replaceFirst(" *h *", ":"), xsd("time"))
         } else {
           logger.debug(s">>>> parseValue literalEntry.type_ <${literalEntry.type_}>")
           logger.debug(s">>>> parseValue value")
