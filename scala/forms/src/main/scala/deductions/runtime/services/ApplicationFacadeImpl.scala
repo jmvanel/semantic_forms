@@ -218,9 +218,12 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     sourceCode: => T,
     error: Throwable => T ): T = {
    val freeMemory = runtime.freeMemory()
-   if( freeMemory < 1024 * 1024 * 10)
-     error(new OutOfMemoryError("Free Memory < 10 mb, retry later."))
-   else
+   if( freeMemory < 1024 * 1024 * 10) {
+            System.gc()
+            val freeMemoryAfter = Runtime.getRuntime().freeMemory()
+            logger.info(s"recoverFromOutOfMemoryErrorGeneric: JVM Free memory after gc(): $freeMemoryAfter")
+     error(new OutOfMemoryError(s"Free Memory was $freeMemory < 10 mb, retry later (now $freeMemoryAfter)"))
+   } else
     try {
       sourceCode
     } catch {
