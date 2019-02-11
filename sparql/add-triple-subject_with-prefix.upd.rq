@@ -1,0 +1,19 @@
+# Example of adding triples where subject matches given prefix and specific class
+
+INSERT {
+  GRAPH ?G {
+    ?S ?PROP ?OBJECT .
+  }
+} WHERE {
+  GRAPH ?G {
+    # Settings:
+    BIND ( 'http://www.linneenne-lyon.org/spip3/spip.php?page=evenement.ttl' AS ?PREFIX )
+    BIND ( <http://purl.org/NET/c4dm/event.owl#agent> AS ?PROP )
+    BIND (  <http://www.linneenne-lyon.org> AS ?OBJECT )
+
+    ?S a <http://schema.org/Event> .
+    FILTER ( STRSTARTS( str(?S), ?PREFIX ) )
+  }
+}
+
+

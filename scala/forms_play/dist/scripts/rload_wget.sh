@@ -3,6 +3,7 @@ LOAD_SERVICE=$2
 GRAPH=$3
 # default value for arg. 4, Content-Type
 if [ -z "$3" ]; then
+  echo 'Load triples in given graph URI (SPARQL Load service)'
   echo 'Arguments: RDF_FILE LOAD_SERVICE GRAPH [MIME]'
   echo 'Content-Type [MIME] : application/ld+json application/rdf+xml text/turtle'
   exit
