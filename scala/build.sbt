@@ -41,6 +41,7 @@ lazy val core = project
 lazy val utils = project .dependsOn(core)
 lazy val connectors = project .dependsOn(utils)
 lazy val sparql_cache = project .dependsOn(utils)
+	.dependsOn(connectors)
 lazy val abstract_syntax = project .dependsOn(core)   .dependsOn(sparql_cache)
 lazy val html = project .dependsOn(utils)
 lazy val rdf_links_rank = project .dependsOn(utils)
@@ -48,7 +49,7 @@ lazy val clients = project
 lazy val forms = project
 	.dependsOn(html)
 	.dependsOn(abstract_syntax)
-	.dependsOn(connectors)
+	// .dependsOn(connectors)
 	.dependsOn(rdf_links_rank)
 
 // lazy val web_tests = project

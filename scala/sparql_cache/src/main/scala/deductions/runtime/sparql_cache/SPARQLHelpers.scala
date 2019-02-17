@@ -20,6 +20,7 @@ import scala.xml.Comment
 import scalaz._
 import Scalaz._
 import org.w3.banana.OWLPrefix
+import deductions.runtime.connectors.icalendar.RDF2ICalendar
 
 /**
  * TODO separate stuff depending on dataset, and stuff taking a graph in argument
@@ -29,6 +30,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
     with RDFHelpers0[Rdf]
     with RDFPrefixes[Rdf]
+    with RDF2ICalendar[Rdf]
     with Timer {
 
   val config: Configuration
@@ -808,6 +810,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     triples match {
       case Success(graph) =>
         val graphSize = graph.size
+        if (format != "ical") {
         val (writer, stats) =
           if (format === "jsonld")
             (jsonldCompactedWriter, "")
@@ -825,7 +828,11 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
             case Success(s) => s
             case Failure(f) => s"graph2String: trouble in writing graph: $f"
           }
-        })
+        }
+        )
+        } else
+          Success( graph2iCalendar(graph) )
+
       case Failure(f) => Failure(f)
     }
   }
