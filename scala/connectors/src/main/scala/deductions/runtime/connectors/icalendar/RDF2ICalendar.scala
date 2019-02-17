@@ -7,6 +7,7 @@ import deductions.runtime.utils.RDFHelpers
 
 /** RDF graph to ICalendar converter
  *  see https://en.wikipedia.org/wiki/ICalendar
+ *  Passed through validator https://icalendar.org/validator.html
  *  */
 trait RDF2ICalendar[Rdf <: RDF] extends RDFPrefixes[Rdf] with RDFHelpers[Rdf] {
   implicit val ops: RDFOps[Rdf]
@@ -21,7 +22,7 @@ trait RDF2ICalendar[Rdf <: RDF] extends RDFPrefixes[Rdf] with RDFHelpers[Rdf] {
     def addLine(s: String): StringBuilder = {
       if (s != "") {
         events append s
-        events append '\n'
+        events append "\r\n"
       }
       return events
     }
@@ -43,10 +44,11 @@ trait RDF2ICalendar[Rdf <: RDF] extends RDFPrefixes[Rdf] with RDFHelpers[Rdf] {
       val pred = triple.predicate;
       val objet = triple.objectt
       addLine( pred match {
-        case dbo("startDate") => "DTSTAMP:" + nodeToString(objet).replaceAll("-", "")
+        case dbo("startDate") =>
+          "DTSTAMP:" + nodeToString(objet).replaceAll("-", "") + "\r\n" +
+          "DTSTART:" + nodeToString(objet).replaceAll("-", "")
         case URI("http://purl.org/NET/c4dm/event.owl#agent") =>
           "ORGANIZER:" + getDisplayLabel(objet)
-        case dbo("startDate") => "DTSTART:" + nodeToString(objet).replaceAll("-", "")
         case dbo("endDate")   => "DTEND:" + nodeToString(objet).replaceAll("-", "")
         case URI("urn:displayLabel")   => "SUMMARY:" + nodeToString(objet)
         case URI("http://purl.org/NET/c4dm/event.owl#place") =>
@@ -60,10 +62,11 @@ trait RDF2ICalendar[Rdf <: RDF] extends RDFPrefixes[Rdf] with RDFHelpers[Rdf] {
         processSubject(triple.subject);
     }
 
-    return """BEGIN:VCALENDAR
-      |VERSION:2.0""".stripMargin +
+    return "BEGIN:VCALENDAR\r\n" +
+      "VERSION:2.0\r\n" +
+      "PRODID:https://github.com/jmvanel/semantic_forms/wiki\r\n" +
       events.toString() +
-      "END:VCALENDAR"
+      "END:VCALENDAR\r\n"
   }
   
 /* Output:
