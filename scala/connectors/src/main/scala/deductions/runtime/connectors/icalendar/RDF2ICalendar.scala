@@ -43,14 +43,17 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
       nodeToString(getObjects(allNamedGraph, objet, URI("urn:displayLabel")).toList.headOption.getOrElse(Literal("")))
     }
 
-    def formatDateTime( objet: Rdf#Node) = {
-          val t1 = nodeToString(objet).replaceAll("-", "")
-          val t2 = if ( t1 . contains("T"))
-            t1
-          else
-            t1 + "T120000"
-          "DTSTAMP:" + t2 + "\r\n" +
-          "DTSTART:" + t2
+    def formatDateTime( objet: Rdf#Node): String = {
+      val value = nodeToString(objet)
+      if( value == "")
+        return ""
+      val t1 = value.replaceAll("-", "")
+      val t2 = if ( t1 . contains("T"))
+        t1
+      else
+        t1 + "T120000"
+      "DTSTAMP:" + t2 + "\r\n" +
+      "DTSTART:" + t2
     }
     def processTriple(triple: Rdf#Triple) = {
       val pred = triple.predicate;
@@ -58,6 +61,7 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
       // println(s"processTriple( $triple")
       addLine( pred match {
         case dbo("startDate") => formatDateTime( objet )
+        case schema("doorTime") => formatDateTime( objet )
         case URI("http://purl.org/NET/c4dm/event.owl#agent") =>
           "ORGANIZER:" + getDisplayLabel(objet)
         case dbo("endDate")   => "DTEND:" + nodeToString(objet).replaceAll("-", "")
@@ -66,6 +70,7 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
         case URI("http://purl.org/NET/c4dm/event.owl#place") =>
                                  "GEO:" + getDisplayLabel(objet)
         case rdfs.comment     => "DESCRIPTION:" + nodeToString(objet)
+        case dct("abstract")  => "DESCRIPTION:" + nodeToString(objet)
         case _                => ""
       })
     }
