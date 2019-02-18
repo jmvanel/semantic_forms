@@ -30,7 +30,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     extends RDFStoreLocalProvider[Rdf, DATASET]
     with RDFHelpers0[Rdf]
     with RDFPrefixes[Rdf]
-    with RDF2ICalendar[Rdf]
+    with RDF2ICalendar[Rdf, DATASET]
     with Timer {
 
   val config: Configuration
@@ -806,7 +806,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    *  TODO REFACTOR, use conneg helper
    */
   def graph2String(triples: Try[Rdf#Graph], baseURI: String, format: String = "turtle"): Try[String] = {
-    logger.info(s"graph2String: base URI <$baseURI>, format $format, ${triples}")
+    logger.info(s"graph2String: base URI <$baseURI>, format $format, triples ${triples}")
     triples match {
       case Success(graph) =>
         val graphSize = graph.size

@@ -4,6 +4,7 @@ import java.io.FileOutputStream
 import deductions.runtime.connectors.icalendar.RDF2ICalendar
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.utils.DefaultConfiguration
+import deductions.runtime.sparql_cache.SPARQLHelpers
 
 /** simple App that takes all triples and formats the schema:Event in ICalendar format */
 object RDF2ICalendarApp
@@ -13,9 +14,12 @@ object RDF2ICalendarApp
     }
   } with App
   with ImplementationSettings.RDFCache
-  with RDF2ICalendar[ImplementationSettings.Rdf] {
+  with RDF2ICalendar[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+  with SPARQLHelpers[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
-  writeGraph(allNamedGraph)
+  wrapInReadTransaction {
+    writeGraph(allNamedGraph)
+  }
 
   def writeGraph(graph: Rdf#Graph) {
     val outputFile = "from-RDF.ics"

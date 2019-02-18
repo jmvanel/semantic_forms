@@ -4,12 +4,14 @@ import org.w3.banana.RDF
 import org.w3.banana.RDFOps
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.utils.RDFHelpers
+import deductions.runtime.utils.RDFStoreLocalProvider
 
 /** RDF graph to ICalendar converter
  *  see https://en.wikipedia.org/wiki/ICalendar
  *  Passed through validator https://icalendar.org/validator.html
  *  */
-trait RDF2ICalendar[Rdf <: RDF] extends RDFPrefixes[Rdf] with RDFHelpers[Rdf] {
+trait RDF2ICalendar[Rdf <: RDF, DATASET] extends RDFPrefixes[Rdf] with RDFHelpers[Rdf] 
+with RDFStoreLocalProvider[Rdf, DATASET]{
   implicit val ops: RDFOps[Rdf]
   import ops._
 
@@ -31,26 +33,36 @@ trait RDF2ICalendar[Rdf <: RDF] extends RDFPrefixes[Rdf] with RDFHelpers[Rdf] {
       addLine ("BEGIN:VEVENT")
       addLine( "UID:" + subject )
       for (
-          triple2 <- find(graph, subject, ANY, ANY);
-          _ = processTriple(triple2)
-      ){}
+          triple2 <- find(graph, subject, ANY, ANY)
+      ){ processTriple(triple2) }
       addLine( "END:VEVENT" )
     }
 
-    def getDisplayLabel(objet: Rdf#Node) =
-      nodeToString(getObjects(graph, objet, URI("urn:displayLabel")).headOption.getOrElse(Literal("")))
+    def getDisplayLabel(objet: Rdf#Node) = {
+//      println(s"getDisplayLabel: objet $objet ${getObjects(allNamedGraph, objet, URI("urn:displayLabel")).toList}")
+      nodeToString(getObjects(allNamedGraph, objet, URI("urn:displayLabel")).toList.headOption.getOrElse(Literal("")))
+    }
 
+    def formatDateTime( objet: Rdf#Node) = {
+          val t1 = nodeToString(objet).replaceAll("-", "")
+          val t2 = if ( t1 . contains("T"))
+            t1
+          else
+            t1 + "T120000"
+          "DTSTAMP:" + t2 + "\r\n" +
+          "DTSTART:" + t2
+    }
     def processTriple(triple: Rdf#Triple) = {
       val pred = triple.predicate;
       val objet = triple.objectt
+      // println(s"processTriple( $triple")
       addLine( pred match {
-        case dbo("startDate") =>
-          "DTSTAMP:" + nodeToString(objet).replaceAll("-", "") + "\r\n" +
-          "DTSTART:" + nodeToString(objet).replaceAll("-", "")
+        case dbo("startDate") => formatDateTime( objet )
         case URI("http://purl.org/NET/c4dm/event.owl#agent") =>
           "ORGANIZER:" + getDisplayLabel(objet)
         case dbo("endDate")   => "DTEND:" + nodeToString(objet).replaceAll("-", "")
-        case URI("urn:displayLabel")   => "SUMMARY:" + nodeToString(objet)
+        case URI("urn:displayLabel") => "SUMMARY:" + nodeToString(objet)
+        case rdfs.label              => "SUMMARY:" + nodeToString(objet)
         case URI("http://purl.org/NET/c4dm/event.owl#place") =>
                                  "GEO:" + getDisplayLabel(objet)
         case rdfs.comment     => "DESCRIPTION:" + nodeToString(objet)
