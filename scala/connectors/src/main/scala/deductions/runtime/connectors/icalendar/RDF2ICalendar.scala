@@ -8,7 +8,8 @@ import deductions.runtime.utils.RDFStoreLocalProvider
 
 /** RDF graph to ICalendar converter
  *  see https://en.wikipedia.org/wiki/ICalendar
- *  Passed through validator https://icalendar.org/validator.html
+ *  Passed through validator https://icalendar.org/validator.html,
+ *  Apple Calendar, Linux calcurse.
  *  */
 trait RDF2ICalendar[Rdf <: RDF, DATASET] extends RDFPrefixes[Rdf] with RDFHelpers[Rdf] 
 with RDFStoreLocalProvider[Rdf, DATASET]{
@@ -49,7 +50,7 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
       val value = nodeToString(objet)
       if( value == "")
         return ""
-      val t1 = value.replaceAll("-", "")
+      val t1 = value.replaceAll("-", "").replaceAll(":", "")
       val t2 = if ( t1 . contains("T"))
         t1
       else
@@ -59,8 +60,7 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
     }
 
     def formatText(t: String): String =
-      t.grouped(60).fold("")((a,b) => a+b+CRLF+" ")
-      // t.grouped(60).reduce((a,b) => a+b+CRLF+" ")
+      t.replaceAll("\n", CRLF+" ").grouped(60).fold("")((a,b) => a+b+CRLF+" ")
 
     def processTriple(triple: Rdf#Triple) = {
       val pred = triple.predicate;
