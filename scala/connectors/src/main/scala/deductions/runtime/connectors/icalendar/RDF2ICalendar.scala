@@ -20,11 +20,13 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
 
     val eventTriples = find(graph, ANY, rdf.typ, schema("Event"))
     val events = new StringBuilder()
+    val CRLF = "\r\n"
 
     def addLine(s: String): StringBuilder = {
       if (s != "") {
         events append s
-        events append "\r\n"
+        if ( ! s . endsWith(CRLF) )
+          events append CRLF
       }
       return events
     }
@@ -38,9 +40,9 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
       addLine( "END:VEVENT" )
     }
 
-    def getDisplayLabel(objet: Rdf#Node) = {
+    def getDisplayLabel(objet: Rdf#Node, prop: Rdf#URI =URI("urn:displayLabel")) = {
 //      println(s"getDisplayLabel: objet $objet ${getObjects(allNamedGraph, objet, URI("urn:displayLabel")).toList}")
-      nodeToString(getObjects(allNamedGraph, objet, URI("urn:displayLabel")).toList.headOption.getOrElse(Literal("")))
+      nodeToString(getObjects(allNamedGraph, objet, prop).toList.headOption.getOrElse(Literal("")))
     }
 
     def formatDateTime( objet: Rdf#Node): String = {
@@ -52,9 +54,14 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
         t1
       else
         t1 + "T120000"
-      "DTSTAMP:" + t2 + "\r\n" +
+      "DTSTAMP:" + t2 + CRLF +
       "DTSTART:" + t2
     }
+
+    def formatText(t: String): String =
+      t.grouped(60).fold("")((a,b) => a+b+CRLF+" ")
+      // t.grouped(60).reduce((a,b) => a+b+CRLF+" ")
+
     def processTriple(triple: Rdf#Triple) = {
       val pred = triple.predicate;
       val objet = triple.objectt
@@ -65,12 +72,16 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
         case URI("http://purl.org/NET/c4dm/event.owl#agent") =>
           "ORGANIZER:" + getDisplayLabel(objet)
         case dbo("endDate")   => "DTEND:" + nodeToString(objet).replaceAll("-", "")
-        case URI("urn:displayLabel") => "SUMMARY:" + nodeToString(objet)
-        case rdfs.label              => "SUMMARY:" + nodeToString(objet)
+        case URI("urn:displayLabel") => formatText("SUMMARY:" + nodeToString(objet))
+        case rdfs.label              => formatText("SUMMARY:" + nodeToString(objet))
         case URI("http://purl.org/NET/c4dm/event.owl#place") =>
                                  "GEO:" + getDisplayLabel(objet)
-        case rdfs.comment     => "DESCRIPTION:" + nodeToString(objet)
-        case dct("abstract")  => "DESCRIPTION:" + nodeToString(objet)
+        case rdfs.comment     => formatText("DESCRIPTION:" + nodeToString(objet))
+        case dct("abstract")  => formatText("DESCRIPTION:" + nodeToString(objet))
+        case con("participant")
+                              => formatText("ATTENDEE;CN="+
+                              getDisplayLabel(objet) +
+                              ":MAILTO:" + getDisplayLabel(objet, foaf.mbox).replaceFirst("^mailto:", "") )
         case _                => ""
       })
     }

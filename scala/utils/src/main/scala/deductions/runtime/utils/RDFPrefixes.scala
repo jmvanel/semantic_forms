@@ -69,7 +69,8 @@ lazy val loginForms = Prefix[Rdf]("login-forms",
   lazy val vehma = Prefix[Rdf]("vehma", "http://deductions.github.io/vehicule-management.owl.ttl#")
   lazy val dcat = Prefix[Rdf]("dcat", "http://www.w3.org/ns/dcat#")
   lazy val void = Prefix[Rdf]("void", "http://rdfs.org/ns/void#" ) // non self-hosted :( !
-  
+  lazy val con = Prefix[Rdf]("con", "http://www.w3.org/2000/10/swap/pim/contact#" )
+
   /** Scala 2.11.18 : strange !!!!!!!! without private, we get a clash:
    * SPARQLHelpers.scala:430: value apache is not a member of org.w3.banana.Prefix[Rdf] */
   private lazy val org = Prefix[Rdf]("org", "http://www.w3.org/ns/org#" )
@@ -105,6 +106,7 @@ lazy val loginForms = Prefix[Rdf]("login-forms",
     Prefix[Rdf]("cco", "http://purl.org/ontology/cco/core#" ),
     geo, event,
     dcat,
+    void,
     org,
 
     // prefixes for resources
