@@ -47,7 +47,9 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
         wrapInTransaction(
           computeInstanceLabelAndStoreInTDB(node, graph, lang))
       }
-    labelFromTDB
+    if (labelFromTDB.length() === 0)
+      last_segment(node)
+    else labelFromTDB
   }
 
   def instanceDescription(subjectNode: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
