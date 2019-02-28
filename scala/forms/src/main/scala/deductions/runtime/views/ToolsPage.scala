@@ -98,7 +98,8 @@ trait ToolsPage extends EnterButtons
     </div>
   }
 
-  /** HTML Form for a sparql Query, with execution buttons */
+  /** HTML Form for a sparql Query, with execution buttons
+   *  TODO : harmonize HTTP parameters sparql and sfserver */
   def sparqlQueryForm( viewButtonsForConstruct: Boolean, query: String, action: String,
       sampleQueries: Seq[String], request: HTTPrequest): NodeSeq = {
     val textareaId = s"query-$action" . replaceAll("/", "-")
@@ -110,7 +111,9 @@ trait ToolsPage extends EnterButtons
              formaction="/sparql-form"/>,
       makeLinkCarto( textareaId, config.geoMapURL, request ),
       makeLinkToVisualTool(textareaId,
-          "/assets/rdf-calendar/rdf-calendar.html?url=",
+          "/assets/rdf-calendar/rdf-calendar.html?" +
+          "sfserver=" + URLEncoder.encode(servicesURIPrefix, "UTF-8") +
+          "&url=",
           "Calendar", 15,
           "/assets/images/calendar-tool-for-time-organization.svg"),
       <input title="Table view"
@@ -188,7 +191,8 @@ trait ToolsPage extends EnterButtons
   private def makeLinkToVisualTool(textareaId: String, toolURLprefix: String,
                toolname: String,
                imgWidth: Int,
-               imgURL: String="https://www.w3.org/RDF/icons/rdf_flyer.svg"): NodeSeq = {
+               imgURL: String="https://www.w3.org/RDF/icons/rdf_flyer.svg",
+               extraURLParameter: String=""): NodeSeq = {
 
     val sparqlServicePrefix = URLEncoder.encode("sparql?query=", "UTF-8")
     val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
