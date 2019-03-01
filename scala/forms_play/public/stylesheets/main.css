@@ -76,6 +76,8 @@ input.form-control[type='text']
     border-collapse: separate;
     border-width: 10px; }
 
+.sf-search { float:left ; margin-right: 7px; }
+
 .sf-external-link {color: Darkred !important; background-color: lightyellow;}
 .sf-internal-link { text-decoration: underline }
 .sf-sparql-table td { padding:0px 10px; }

@@ -59,6 +59,25 @@ trait EnterButtons {
   }
 
   def enterSearchTerm()(implicit lang: String = "en") = {
+    val inputMessage = messageI18N("Search_placeholder")
+    val classMessage = messageI18N("Class_placeholder")
+        <form  role="form" action="/search" class="sf-margin-top-10">
+              <input class="sf-search" type="text" id="q" name="q" size="40"
+                placeholder={ inputMessage }
+                title={ inputMessage }
+                dropzone="copy"/>
+              <input class="sf-search sfLookup" type="text" name="clas" size="25"
+                placeholder={ classMessage }
+                title={ classMessage }
+                data-rdf-type={fromUri(rdfs.Class)}
+                data-rdf-property={fromUri(rdf.typ)}
+                />
+            <input class="btn btn-primary" type="submit" value={ messageI18N("Search") }/>
+        </form>
+  }
+
+  /*
+  def enterSearchTermOLD()(implicit lang: String = "en") = {
     val mess = messageI18N("String_to_search")
     val inputMessage = messageI18N("Search_placeholder")
     val classMessage = messageI18N("Class_placeholder")
@@ -91,6 +110,7 @@ trait EnterButtons {
       </div>
     </div>
   }
+*/
 
   def enterClassForCreatingInstance()(implicit lang: String = "en") =
 
