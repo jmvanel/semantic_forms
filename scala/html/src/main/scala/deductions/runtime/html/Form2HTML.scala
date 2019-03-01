@@ -262,11 +262,13 @@ import scala.collection.mutable.LinkedHashSet
   private def dataFormHeader(form: formMod#FormSyntax, lang: String): NodeSeq = {
     import form._
     if (toPlainString(subject) =/= "") {
-      Text(form.title) ++
+      <p class="sf-local-rdf-link">{
+        Text(form.title) ++
         (if (form.subject != nullURI)
-          Text(", at URI ") ++
+          Text(", @ URI ") ++
           <a href={ toPlainString(form.subject) } style="color: rgb(44,133,254);">&lt;{ form.subject }&gt;</a>
-        else NodeSeq.Empty) ++
+        else NodeSeq.Empty)
+      }</p> ++
         {
           val warningNoTriples =
             if (form.nonEmptyFields().isEmpty &&
@@ -275,7 +277,7 @@ import scala.collection.mutable.LinkedHashSet
             else Text("")
           warningNoTriples
         } ++
-        <div>{
+        <div class="sf-local-rdf-link">{
           form.formURI match {
             case Some(formURI) if formURI != nullURI =>
               message("Form_specification", lang) + ": " ++
