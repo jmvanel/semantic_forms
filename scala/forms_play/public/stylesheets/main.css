@@ -82,6 +82,10 @@ input.form-control[type='text']
 .sf-sparql-table tr:first-of-type { font-weight:bold; }
 
 .sf-local-rdf-link { font-size: xx-small; }
+.sf-local-rdf-link img {
+    max-height:16px; width:auto; }
+.sf-local-rdf-link button {
+    max-height:16px; width:auto; }
 
 tr:nth-child(even) {background: #CCC}
 tr:nth-child(odd) {background: #FFF}
