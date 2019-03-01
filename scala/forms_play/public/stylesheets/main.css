@@ -21,7 +21,7 @@
 .sf-values-group:before { display: block; }
 
 
-.sf-property-label{}
+.sf-property-label{ margin-right: 7px; }
 
 .sf-save{
   width: 33.33333333%;
