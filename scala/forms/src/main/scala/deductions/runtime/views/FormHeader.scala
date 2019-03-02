@@ -95,7 +95,7 @@ trait FormHeader[Rdf <: RDF, DATASET]
           </h3>
         </div>
       </div>
-      <div class="row sf-links-row">
+      <div class="sf-links-row">
         <div class="col-xs-12 sf-local-rdf-link">
           {
             //          val message = if (uri.contains("/ldp/"))
