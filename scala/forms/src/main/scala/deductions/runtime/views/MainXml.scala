@@ -49,7 +49,7 @@ trait MainXml extends ToolsPage with EnterButtons {
 
   def linkToToolsPage(lang: String = "en") =
 
-          <footer id="footer" class="navbar navbar-default navbar-fixed-bottom sf-footer">
+          <footer id="footer" class="navbar-default navbar-fixed-bottom sf-footer">
             <a href="/tools">{ I18NMessages.get("Tools", lang) }</a> /
             <a href="https://github.com/jmvanel/semantic_forms/wiki/User_manual">User Manual</a> /
             <a href="https://github.com/jmvanel/semantic_forms/wiki/Manuel-utilisateur">Manuel utilisateur</a> /
