@@ -84,7 +84,8 @@ trait FormSpecificationFactory[Rdf <: RDF, DATASET]
         form => ops.foldNode(form)(uri => Some(uri), bn => Some(bn), lit => None)
       }.headOption
       if (forms.size > 1)
-        logger.warn(s"WARNING: several form specs for $classe; chosen $formSpecOption")
+        logger.warn(
+          s"WARNING: several form specs for <$classe>; chosen $formSpecOption \n\tother form specs: ${forms.mkString("", "\n\t", "")}")
       logger.info(s"lookFormSpecInConfiguration: found for <$classe> : $formSpecOption")
       formSpecOption
     }

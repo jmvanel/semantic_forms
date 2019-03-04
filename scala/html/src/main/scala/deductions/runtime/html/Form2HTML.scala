@@ -1,16 +1,16 @@
 package deductions.runtime.html
 
-import java.net.{URLDecoder, URLEncoder}
+import java.net.{ URLDecoder, URLEncoder }
 
 import deductions.runtime.core.FormModule
-import deductions.runtime.utils.{RDFPrefixesInterface, Timer}
+import deductions.runtime.utils.{ RDFPrefixesInterface, Timer }
 import deductions.runtime.core.HTTPrequest
 import deductions.runtime.core.Cookie
 
 import org.apache.commons.codec.digest.DigestUtils
 
 import scala.xml.NodeSeq.seqToNodeSeq
-import scala.xml.{Elem, NodeSeq, Text}
+import scala.xml.{ Elem, NodeSeq, Text }
 
 import scalaz._
 import Scalaz._
@@ -18,17 +18,19 @@ import scala.xml.Comment
 import scala.xml.Unparsed
 import scala.collection.mutable.LinkedHashMap
 import scala.collection.mutable.LinkedHashSet
+import scala.xml.EntityRef
 
-/** Abstract Form Syntax to HTML;
+/**
+ * Abstract Form Syntax to HTML;
  * different modes: display or edit;
  *  takes in account datatype
  */
- trait Form2HTML[NODE, URI <: NODE]
-    extends Form2HTMLDisplay[NODE, URI]
-    with Form2HTMLEdit[NODE, URI]
-    with FormModule[NODE, URI]
-    with Timer
-    with RDFPrefixesInterface  {
+trait Form2HTML[NODE, URI <: NODE]
+  extends Form2HTMLDisplay[NODE, URI]
+  with Form2HTMLEdit[NODE, URI]
+  with FormModule[NODE, URI]
+  with Timer
+  with RDFPrefixesInterface {
   self: HTML5Types =>
 
   import config._
@@ -39,14 +41,15 @@ import scala.collection.mutable.LinkedHashSet
    *  @param actionURI, actionURI2 HTML actions for the 2 submit buttons
    *  @param graphURI URI for named graph to save user inputs
    */
-  def generateHTML(form: FormModule[NODE, URI]#FormSyntax,
-                   hrefPrefix: String = config.hrefDisplayPrefix,
-                   editable: Boolean = false,
-                   actionURI: String = "/save", graphURI: String = "",
-                   actionURI2: String = "/save", lang: String = "en",
-                   request: HTTPrequest = HTTPrequest(),
-                   cssForURI: String = "",
-                   cssForProperty: String = "" ): NodeSeq = {
+  def generateHTML(
+    form:       FormModule[NODE, URI]#FormSyntax,
+    hrefPrefix: String                           = config.hrefDisplayPrefix,
+    editable:   Boolean                          = false,
+    actionURI:  String                           = "/save", graphURI: String = "",
+    actionURI2: String = "/save", lang: String = "en",
+    request:        HTTPrequest = HTTPrequest(),
+    cssForURI:      String      = "",
+    cssForProperty: String      = ""): NodeSeq = {
 
     val htmlFormFields = time(
       "generateHTMLJustFields",
@@ -54,22 +57,26 @@ import scala.collection.mutable.LinkedHashSet
         cssForURI, cssForProperty),
       logger.isInfoEnabled())
 
-		/* wrap Fields With HTML <form> Tag */
+    /* wrap Fields With HTML <form> Tag */
     def wrapFieldsWithFormTag(htmlFormFields: NodeSeq): NodeSeq =
       <form class="sf-standard-form" action={ actionURI } method="POST" id="form">
-        <script>{
-         // Prevent a FORM SUBMIT with ENTER
-         Unparsed("""
+        <script>
+          {
+            // Prevent a FORM SUBMIT with ENTER
+            Unparsed("""
            document.getElementById("form").onkeypress = function(e) {
              var key = e.charCode || e.keyCode || 0;
              if (key == 13) {
                e.preventDefault();
              }
            }
-         """ ) }
+         """)
+          }
         </script>
-        { if(form.fields.size > 3) // for login form
-            addSaveButton(actionURI2) }
+        {
+          if (form.fields.size > 3) // for login form
+            addSaveButton(actionURI2)
+        }
         { htmlFormFields }
         { addSaveButton(actionURI2) }
       </form>
@@ -77,8 +84,7 @@ import scala.collection.mutable.LinkedHashSet
     def addSaveButton(actionURIarg: String) =
       if (actionURIarg =/= "")
         <div class="sf-save" zzclass="col col-sm-4 col-sm-offset-4">
-          <input value={ mess("SAVE") } formaction={ actionURIarg }
-          type="submit" class="form-control btn btn-primary "/>
+          <input value={ mess("SAVE") } formaction={ actionURIarg } type="submit" class="form-control btn btn-primary "/>
         </div>
 
     def mess(m: String): String = message(m, lang)
@@ -95,16 +101,17 @@ import scala.collection.mutable.LinkedHashSet
   /**
    * generate HTML, but Just Fields;
    * this lets application developers create their own submit button(s) and <form> tag
-   *  
+   *
    * PENDING if inner functions should need to be overridden, they should NOT be inner
    */
-  def generateHTMLJustFields(form: formMod#FormSyntax,
-                             hrefPrefix: String = config.hrefDisplayPrefix,
-                             editable: Boolean = false,
-                             graphURI: String = "", lang: String = "en",
-                             request: HTTPrequest = HTTPrequest(),
-                             cssForURI: String = "",
-                             cssForProperty: String = "" ): NodeSeq = {
+  def generateHTMLJustFields(
+    form:       formMod#FormSyntax,
+    hrefPrefix: String             = config.hrefDisplayPrefix,
+    editable:   Boolean            = false,
+    graphURI:   String             = "", lang: String = "en",
+    request:        HTTPrequest = HTTPrequest(),
+    cssForURI:      String      = "",
+    cssForProperty: String      = ""): NodeSeq = {
 
     implicit val formImpl: formMod#FormSyntax = form
 
@@ -134,11 +141,13 @@ import scala.collection.mutable.LinkedHashSet
             ""
           else "sf-data-not-fitting-user-language"
           // println ( s"makeFieldsLabelAndData: ${field.property} dataClass : $dataCSSclass" )
-          <div class={ cssConfig.formLabelAndInputCSSClass + " " +
-             dataCSSclass }>{
+          <div class={
+            cssConfig.formLabelAndInputCSSClass + " " +
+              dataCSSclass
+          }>{
             makeFieldSubject(field) ++
-            makeFieldLabel(preceding, field, editable, lang) ++
-            createHTMLField(field, editable, hrefPrefix, lang, request, css = cssForURI)
+              makeFieldLabel(preceding, field, editable, lang) ++
+              createHTMLField(field, editable, hrefPrefix, lang, request, css = cssForURI)
           }</div>
         }
       } else Text("\n")
@@ -159,31 +168,37 @@ import scala.collection.mutable.LinkedHashSet
       fields:         Seq[FormEntry],
       cssForURI:      String         = "",
       cssForProperty: String         = ""): NodeSeq = {
-        val property2EntryMap0 = fields.groupBy(f => f.property)
-        val fieldsFiltered = fields.filter(
-            field => toPlainString(field.property) =/= "" &&
-            ( editable ||
-              toPlainString(field.value) =/= "" ||
-              isSeparator(field) )
-        )
-        val property2EntryMap = groupByOrdered(
-            fieldsFiltered,
-            ((f:FormEntry) => f.property))
-        val labelsAndData = for ( (p, entries) <- property2EntryMap ) yield {
-          val field = entries.head
-          val htmlForEntries =
-            for (entry <- entries) yield createHTMLField(
-              entry, editable, hrefPrefix, lang, request, css = cssForURI)
-          <div class="sf-values-group">{
-            makeFieldSubject(field) ++
-            makeFieldLabelBasic(field, editable, lang) ++
-            htmlForEntries.flatten
-          }</div>
-        }
-        labelsAndData . toSeq . flatten
-      }
 
-      /* makeFieldsGroups Builds a groups of HTML fields to be used with the jQuery UI tabs generator
+      val fieldsFiltered = fields.filter(
+        field => toPlainString(field.property) =/= "" &&
+          (editable ||
+            toPlainString(field.value) =/= "" ||
+            isSeparator(field)))
+
+      lazy val property2EntryMap0 = groupByOrdered(
+        fieldsFiltered,
+        ((f: FormEntry) => f.property));
+      lazy val property2EntryMap = for ((n, s) <- property2EntryMap0) yield (n, s.toSeq)
+
+      val labelsAndData = for ((p, entries) <- property2EntryMap) yield {
+        val field = entries.head
+        val htmlForEntries =
+          for (entry <- entries) yield {
+            createHTMLField(
+              entry, editable, hrefPrefix, lang, request, css = cssForURI) +:
+              EntityRef("nbsp") +:
+              Text(", ")
+          }
+        <div class="sf-values-group">{
+          makeFieldSubject(field) ++
+            makeFieldLabelBasic(field, editable, lang) ++
+            (htmlForEntries.flatten.flatten)
+        }</div>
+      }
+      labelsAndData.toSeq
+    }
+
+    /* makeFieldsGroups Builds a groups of HTML fields to be used with the jQuery UI tabs generator
      *
      * TODO extract Fields Groups feature in specific Trait
      * @return NodeSeq Fragment HTML containing a group of fields */
@@ -221,7 +236,7 @@ import scala.collection.mutable.LinkedHashSet
         val subjectField =
           // NOTE: over-use of class ResourceEntry to display the subject instead of normally the object triple:
           ResourceEntry(value = field.subject, valueLabel = field.subjectLabel)
-        createHTMLField(subjectField, editable, hrefPrefix, lang, css="", request=HTTPrequest() )
+        createHTMLField(subjectField, editable, hrefPrefix, lang, css = "", request = HTTPrequest())
       } else NodeSeq.Empty
     }
 
@@ -234,18 +249,17 @@ import scala.collection.mutable.LinkedHashSet
             Comment(s"""Above div wraps second form header and form (form generation traceability)
               class=${cssConfig.formRootCSSClass}""") ++
               <div class="form-group sf-data-header">
-               { dataFormHeader(form, lang) }
+                { dataFormHeader(form, lang) }
               </div> ++
               {
                 if (request.queryString.contains("tabs")) {
                   makeFieldsGroups()
-                } else
-                  if( cssConfig.style == "multiple values" )
-                    makeFieldsLabelAndData(
-                      form.fields, cssForURI, cssForProperty)
-                  else
-                    makeFieldsLabelAndDataTable(
-                      form.fields, cssForURI, cssForProperty)
+                } else if (cssConfig.style == "multiple values")
+                  makeFieldsLabelAndData(
+                    form.fields, cssForURI, cssForProperty)
+                else
+                  makeFieldsLabelAndDataTable(
+                    form.fields, cssForURI, cssForProperty)
               }
           }
         </div>
@@ -264,15 +278,15 @@ import scala.collection.mutable.LinkedHashSet
     if (toPlainString(subject) =/= "") {
       <p class="sf-local-rdf-link">{
         Text(form.title) ++
-        (if (form.subject != nullURI)
-          Text(", @ URI ") ++
-          <a href={ toPlainString(form.subject) } style="color: rgb(44,133,254);">&lt;{ form.subject }&gt;</a>
-        else NodeSeq.Empty)
+          (if (form.subject != nullURI)
+            Text(", @ URI ") ++
+            <a href={ toPlainString(form.subject) } style="color: rgb(44,133,254);">&lt;{ form.subject }&gt;</a>
+          else NodeSeq.Empty)
       }</p> ++
         {
           val warningNoTriples =
             if (form.nonEmptyFields().isEmpty &&
-                form.subject != nullURI) // case of login form
+              form.subject != nullURI) // case of login form
               <b> No triple for this URI! Click on subjects link above.</b>
             else Text("")
           warningNoTriples
@@ -283,36 +297,37 @@ import scala.collection.mutable.LinkedHashSet
               message("Form_specification", lang) + ": " ++
                 createHyperlinkElement(toPlainString(formURI), formLabel)
             case _ =>
-//            ( for(classe <- classs) yield
-//              createHyperlinkElement(toPlainString(classe), toPlainString(classe)) ++
-//              " (automatic form)"
-//            )
-            Text(s"(automatic form for ${classs.size} classes and data)")
+              //            ( for(classe <- classs) yield
+              //              createHyperlinkElement(toPlainString(classe), toPlainString(classe)) ++
+              //              " (automatic form)"
+              //            )
+              Text(s"(automatic form for ${classs.size} classes and data)")
           }
         }</div>
     } else Text("")
   }
 
-  /** create HTML data Field, the value part;
+  /**
+   * create HTML data Field, the value part;
    *  dispatch to various Entry's: LiteralEntry, ResourceEntry, BlankNodeEntry, RDFListEntry,
    * editable or not;
-   * should not need to be overriden */
+   * should not need to be overriden
+   */
   def createHTMLField(field: formMod#Entry, editable: Boolean,
-                              hrefPrefix: String = config.hrefDisplayPrefix, lang: String = "en",
-                              request: HTTPrequest,
-                              displayInTable: Boolean = false,
-                              css: String= cssConfig.formFieldCSSClass
-)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
+                      hrefPrefix: String = config.hrefDisplayPrefix, lang: String = "en",
+                      request:        HTTPrequest,
+                      displayInTable: Boolean     = false,
+                      css:            String      = cssConfig.formFieldCSSClass)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
 
-    if( isSeparator(field) )
+    if (isSeparator(field))
       return NodeSeq.Empty
-//    if( field.property.toString().contains("species"))
-//    	println(s"DEBUG !!!!!!!!!! $field")
+    //    if( field.property.toString().contains("species"))
+    //    	println(s"DEBUG !!!!!!!!!! $field")
 
     val isCreateRequest = request.path.contains("create")
     val editableByUser =
-              field.metadata === request.userId() ||
-              field.metadata === userURI(request)
+      field.metadata === request.userId() ||
+        field.metadata === userURI(request)
     // println(s"DEBUG !!!!! $field :: editableByUser=$editableByUser <- field.metadata=${field.metadata} =? request.userId()=${request.userId()}")
 
     // hack instead of true form separator in the form spec in RDF:
@@ -320,11 +335,11 @@ import scala.collection.mutable.LinkedHashSet
       return <hr class="sf-separator"/> // Text("----")
     val xmlField = field match {
       case l: formMod#LiteralEntry =>
-//        println(s">>>>>>>>>>>>>>>>>>> createHTMLField ${field.value.toString()}")
+        //        println(s">>>>>>>>>>>>>>>>>>> createHTMLField ${field.value.toString()}")
         if (editable &&
-            (editableByUser ||
-                isCreateRequest ||
-                toPlainString(field.value) === "") )
+          (editableByUser ||
+            isCreateRequest ||
+            toPlainString(field.value) === ""))
           createHTMLiteralEditableField(l, request)
         else
           createHTMLiteralReadonlyField(l, request)
@@ -350,7 +365,7 @@ import scala.collection.mutable.LinkedHashSet
       case r: formMod#RDFListEntry => <p>RDF List: {
         r.values.fields.map {
           field =>
-            createHTMLField(field, editableByUser, request=request)
+            createHTMLField(field, editableByUser, request = request)
         }
       }</p>
 
@@ -361,18 +376,17 @@ import scala.collection.mutable.LinkedHashSet
         NodeSeq.Empty
     }
 
-    if( xmlField  !=  (<span/>) )
-    // TODO if() below seems useless !!!!
-    if (displayInTable === true) {
-      Seq(createAddRemoveWidgets(field, editable)) ++
-      {xmlField}
-    }
-    else {
-      Seq(createAddRemoveWidgets(field, editable)) ++
-        <span class={css}>
-          {xmlField}
-        </span>
-    }
+    if (xmlField != (<span/>))
+      // TODO if() below seems useless !!!!
+      if (displayInTable === true) {
+        Seq(createAddRemoveWidgets(field, editable)) ++
+          { xmlField }
+      } else {
+        Seq(createAddRemoveWidgets(field, editable)) ++
+          <span class={ css }>
+            { xmlField }
+          </span>
+      }
     else <span/>
   }
 
@@ -380,14 +394,16 @@ import scala.collection.mutable.LinkedHashSet
     makeAbsoluteURIForSaving(request.userId())
   }
 
-  /** make Field Data (display) Or Input (edit)
-   *  TODO: does not do much! */
-//  private def makeFieldDataOrInput(field: formMod#Entry, hrefPrefix: String = config.hrefDisplayPrefix,
-//                                   editable: Boolean, lang: String = "en",
-//                                   request: HTTPrequest = HTTPrequest(),
-//                                   css: String="")(implicit form: FormModule[NODE, URI]#FormSyntax) = {
-//    createHTMLField(field, editable, hrefPrefix, lang, request, css=css)
-//  }
+  /**
+   * make Field Data (display) Or Input (edit)
+   *  TODO: does not do much!
+   */
+  //  private def makeFieldDataOrInput(field: formMod#Entry, hrefPrefix: String = config.hrefDisplayPrefix,
+  //                                   editable: Boolean, lang: String = "en",
+  //                                   request: HTTPrequest = HTTPrequest(),
+  //                                   css: String="")(implicit form: FormModule[NODE, URI]#FormSyntax) = {
+  //    createHTMLField(field, editable, hrefPrefix, lang, request, css=css)
+  //  }
 
 }
 
