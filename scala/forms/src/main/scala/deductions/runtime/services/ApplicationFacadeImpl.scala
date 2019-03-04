@@ -367,7 +367,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
 
 /** Display result of a SPARQL select, plus a form to edit the SPARQL text */
   def selectSPARQL(query: String, lang: String = "en", request: HTTPrequest): Elem = {
-    logger.info("sparql query  " + query)
+    logger.debug("sparql query  " + query)
     <p>
       {
         sparqlQueryForm( false, query, "/select-ui",

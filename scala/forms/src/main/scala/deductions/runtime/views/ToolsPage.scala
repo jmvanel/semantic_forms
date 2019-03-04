@@ -103,7 +103,7 @@ trait ToolsPage extends EnterButtons
   def sparqlQueryForm( viewButtonsForConstruct: Boolean, query: String, action: String,
       sampleQueries: Seq[String], request: HTTPrequest): NodeSeq = {
     val textareaId = s"query-$action" . replaceAll("/", "-")
-    println( "textareaId " + textareaId);
+//    println( "textareaId " + textareaId);
 
     val buttonsAllRDFViews = Seq(
       <input title="Plain form view"
@@ -199,10 +199,10 @@ trait ToolsPage extends EnterButtons
 
     val sparqlServicePrefixEncoded = URLEncoder.encode("sparql?query=", "UTF-8")
     val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
-    println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
+    logger.debug(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
     val servicesURIPrefixEncoded = URLEncoder.encode(servicesURIPrefix, "UTF-8")
     val servicesURL = s"$toolURLprefix$servicesURIPrefixEncoded$sparqlServicePrefixEncoded"
-    println(s">>>> makeLinkToVisualTool: servicesURL $servicesURL")
+    logger.debug(s">>>> makeLinkToVisualTool: servicesURL $servicesURL")
 
     val buttonId = textareaId+"-button-" + toolname
     <button id={buttonId}
@@ -298,7 +298,7 @@ trait ToolsPage extends EnterButtons
   /** TODO also in ApplicationFacadeImpl */
   private def sparqlServicesURL( suffix: String = "" ) = {
     val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
-    println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
+//    println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
     val sparqlServicePrefix = s"sparql$suffix?query="
     val dataServicesURL = s"$servicesURIPrefix$sparqlServicePrefix"
     logger.debug(s">>>> lazy val dataServicesURL $dataServicesURL")
