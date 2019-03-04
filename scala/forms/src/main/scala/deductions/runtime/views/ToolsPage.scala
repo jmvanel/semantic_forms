@@ -115,7 +115,8 @@ trait ToolsPage extends EnterButtons
           "sfserver=" + URLEncoder.encode(servicesURIPrefix, "UTF-8") +
           "&url=",
           "Calendar", 15,
-          "/assets/images/calendar-tool-for-time-organization.svg"),
+          "/assets/images/calendar-tool-for-time-organization.svg",
+          request=request),
       <input title="Table view"
              class="btn btn-primary" type="submit" value={ I18NMessages.get("Table", request.getLanguage()) }
              formaction="/table"/>,
@@ -130,10 +131,12 @@ trait ToolsPage extends EnterButtons
              value={ I18NMessages.get("Tree", request.getLanguage() ) }/>,
       makeLinkToVisualTool(textareaId,
           "/assets/rdfviewer/rdfviewer.html?url=",
-          "RDF_Viewer", 15),
+          "RDF_Viewer", 15,
+          request=request),
       makeLinkToVisualTool(textareaId, "http://spoggy.herokuapp.com?" +
           "sparql=" + URLEncoder.encode(servicesURIPrefix, "UTF-8") +
-          "&url=", "Spoggy", 15)
+          "&url=", "Spoggy", 15,
+          request=request)
       )
 
     <form role="form">
@@ -192,13 +195,13 @@ trait ToolsPage extends EnterButtons
                toolname: String,
                imgWidth: Int,
                imgURL: String="https://www.w3.org/RDF/icons/rdf_flyer.svg",
-               extraURLParameter: String=""): NodeSeq = {
+               request: HTTPrequest): NodeSeq = {
 
-    val sparqlServicePrefix = URLEncoder.encode("sparql?query=", "UTF-8")
+    val sparqlServicePrefixEncoded = URLEncoder.encode("sparql?query=", "UTF-8")
     val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
     println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
     val servicesURIPrefixEncoded = URLEncoder.encode(servicesURIPrefix, "UTF-8")
-    val servicesURL = s"$toolURLprefix$servicesURIPrefixEncoded$sparqlServicePrefix"
+    val servicesURL = s"$toolURLprefix$servicesURIPrefixEncoded$sparqlServicePrefixEncoded"
     println(s">>>> makeLinkToVisualTool: servicesURL $servicesURL")
 
     val buttonId = textareaId+"-button-" + toolname
@@ -220,7 +223,8 @@ trait ToolsPage extends EnterButtons
     console.log( 'query in textarea ' + query);
     console.log( 'services URL $servicesURL' );
     var url = '$servicesURL' +
-      window.encodeURIComponent( window.encodeURIComponent(query));
+      window.encodeURIComponent( window.encodeURIComponent(query)) +
+      "&label=" + "${request.getHTTPparameterValue("label").getOrElse("")}"
     console.log( 'URL ' + url );
     if($isDNS)
       window.open( url , '_blank' );
