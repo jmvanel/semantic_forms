@@ -153,7 +153,8 @@ trait Form2HTML[NODE, URI <: NODE]
       } else Text("\n")
     }
 
-    /** See https://stackoverflow.com/questions/9594431/scala-groupby-preserving-insertion-order */
+    /** group by preserving insertion order
+     *  See https://stackoverflow.com/questions/9594431/scala-groupby-preserving-insertion-order */
     def groupByOrdered[A, K](t: Traversable[A], f: A => K): scala.collection.mutable.Map[K, LinkedHashSet[A]] = {
       val map = LinkedHashMap[K, LinkedHashSet[A]]().withDefault(_ => LinkedHashSet[A]())
       for (i <- t) {
@@ -175,26 +176,30 @@ trait Form2HTML[NODE, URI <: NODE]
             toPlainString(field.value) =/= "" ||
             isSeparator(field)))
 
-      lazy val property2EntryMap0 = groupByOrdered(
+      lazy val property2EntryMap = groupByOrdered(
         fieldsFiltered,
-        ((f: FormEntry) => f.property));
-      lazy val property2EntryMap = for ((n, s) <- property2EntryMap0) yield (n, s.toSeq)
+        ((f: FormEntry) => f.property))
 
-      val labelsAndData = for ((p, entries) <- property2EntryMap) yield {
+      val labelsAndData = for ((prop, entries) <- property2EntryMap) yield {
+
         val field = entries.head
         val htmlForEntries =
           for (entry <- entries) yield {
-            createHTMLField(
-              entry, editable, hrefPrefix, lang, request, css = cssForURI) +:
-              EntityRef("nbsp") +:
-              Text(", ")
+            val htmlField = createHTMLField(
+              entry, editable, hrefPrefix, lang, request, css = cssForURI);
+            val htmlFieldWithSeparator = htmlField :+
+              EntityRef("nbsp") :+
+              Text(", ");
+            htmlFieldWithSeparator
           }
+
         <div class="sf-values-group">{
           makeFieldSubject(field) ++
             makeFieldLabelBasic(field, editable, lang) ++
-            (htmlForEntries.flatten.flatten)
+            { htmlForEntries }
         }</div>
       }
+
       labelsAndData.toSeq
     }
 
@@ -297,10 +302,6 @@ trait Form2HTML[NODE, URI <: NODE]
               message("Form_specification", lang) + ": " ++
                 createHyperlinkElement(toPlainString(formURI), formLabel)
             case _ =>
-              //            ( for(classe <- classs) yield
-              //              createHyperlinkElement(toPlainString(classe), toPlainString(classe)) ++
-              //              " (automatic form)"
-              //            )
               Text(s"(automatic form for ${classs.size} classes and data)")
           }
         }</div>
@@ -311,6 +312,8 @@ trait Form2HTML[NODE, URI <: NODE]
    * create HTML data Field, the value part;
    *  dispatch to various Entry's: LiteralEntry, ResourceEntry, BlankNodeEntry, RDFListEntry,
    * editable or not;
+   * this display of a single RDF triple given in field data structure;
+   * the property and its label are done elsewhere in makeFieldsLabelAndData();
    * should not need to be overriden
    */
   def createHTMLField(field: formMod#Entry, editable: Boolean,
@@ -321,21 +324,17 @@ trait Form2HTML[NODE, URI <: NODE]
 
     if (isSeparator(field))
       return NodeSeq.Empty
-    //    if( field.property.toString().contains("species"))
-    //    	println(s"DEBUG !!!!!!!!!! $field")
 
     val isCreateRequest = request.path.contains("create")
     val editableByUser =
       field.metadata === request.userId() ||
         field.metadata === userURI(request)
-    // println(s"DEBUG !!!!! $field :: editableByUser=$editableByUser <- field.metadata=${field.metadata} =? request.userId()=${request.userId()}")
 
     // hack instead of true form separator in the form spec in RDF:
     if (field.label.contains("----"))
       return <hr class="sf-separator"/> // Text("----")
     val xmlField = field match {
       case l: formMod#LiteralEntry =>
-        //        println(s">>>>>>>>>>>>>>>>>>> createHTMLField ${field.value.toString()}")
         if (editable &&
           (editableByUser ||
             isCreateRequest ||
