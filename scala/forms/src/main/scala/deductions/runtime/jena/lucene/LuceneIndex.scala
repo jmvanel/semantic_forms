@@ -18,6 +18,7 @@ import org.apache.jena.query.DatasetFactory
 import org.apache.jena.query.spatial.SpatialIndex
 import org.apache.jena.query.spatial.SpatialQuery
 import org.apache.jena.query.text.TextQuery
+import org.apache.jena.rdf.model.ResourceFactory
 
 /**
  * see https://jena.apache.org/documentation/query/text-query.html
@@ -193,12 +194,14 @@ trait LuceneIndex // [Rdf <: RDF]
 
   /** USED ! configure Lucene Index for Jena - TEST 5 spatial Textual:
    *  add to textual Dataset's Context a spatialIndex key to the spatialIndex
-   *  text query works, spatial NO */
+   *  text query works, spatial too */
   private def configureLuceneIndexTEST5spatial_Textual(dataset: ImplementationSettings.DATASET,
       useTextQuery: Boolean):
     ImplementationSettings.DATASET = {
     println(s"configureLuceneIndex: useTextQuery $useTextQuery")
     if (useTextQuery) {
+
+      val (textualDataset, textIndex) = {
       println(
           s"""configureLuceneIndex spatial + Textual by code 5: rdfIndexing getPredicates("text").size ${rdfIndexing.getPredicates("text").size}""")
       val directory = new NIOFSDirectory(Paths.get("LUCENE"))
@@ -206,14 +209,22 @@ trait LuceneIndex // [Rdf <: RDF]
       textIndexConfig.setMultilingualSupport(true)
       val textIndex: TextIndex = TextDatasetFactory.createLuceneIndex(
         directory, textIndexConfig)
-      val textualDataset = TextDatasetFactory.create(dataset, textIndex, true)
-        val directorySpatial = new NIOFSDirectory(Paths.get("LUCENESpatial"))
+        (TextDatasetFactory.create(dataset, textIndex, true), textIndex)
+      }
+
+      val spatialDataset = {
         val entityDefinitionsSpatial = new org.apache.jena.query.spatial.EntityDefinition("uri", "geo")
-        val spatialDataset =
-          SpatialDatasetFactory.createLucene(dataset, directorySpatial, entityDefinitionsSpatial)
-        val returnedDataset = textualDataset // spatialDataset : works too!
-        returnedDataset.getContext().set(SpatialQuery.spatialIndex, spatialDataset.getContext.get(SpatialQuery.spatialIndex, null))
-        returnedDataset.getContext().set(TextQuery.textIndex, textIndex)
+        val lat_1 = ResourceFactory.createResource("http://dbpedia.org/property/latD")
+        val long_1 = ResourceFactory.createResource("http://dbpedia.org/property/longD")
+        entityDefinitionsSpatial.addSpatialPredicatePair(lat_1, long_1)
+        val directorySpatial = new NIOFSDirectory(Paths.get("LUCENESpatial"))
+        SpatialDatasetFactory.createLucene(dataset, directorySpatial, entityDefinitionsSpatial)
+      }
+
+      val returnedDataset = textualDataset // spatialDataset : works too!
+      returnedDataset.getContext().set(SpatialQuery.spatialIndex,
+        spatialDataset.getContext.get(SpatialQuery.spatialIndex, null))
+      returnedDataset.getContext().set(TextQuery.textIndex, textIndex)
         println( ">>>> configureLuceneIndexTEST5spatial_Textual: getContext\n\t" + returnedDataset.getContext() +
             s"\n\treturned Dataset: $returnedDataset" )
       return returnedDataset
