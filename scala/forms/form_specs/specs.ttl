@@ -13,6 +13,7 @@
 @prefix geoloc: <http://deductions.github.io/geoloc.owl.ttl#>.
 @prefix vehman: <http://deductions.github.io/vehicule-management.owl.ttl#>.
 @prefix event:  <http://purl.org/NET/c4dm/event.owl#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#>.
 
 # list of pre-defined form specifications for various classes in common vocabularies (loaded with deductions.runtime.sparql_cache.apps.FormSpecificationsLoaderApp)
 # NOTE : it's the relative URI's of the Turtle documents, not the URI's of the forms themselves
@@ -27,6 +28,7 @@ nature: form:ontologyHasFormSpecification <http://deductions.github.io/nature_ob
 seeds: form:ontologyHasFormSpecification <https://deductions.github.io/seeds.form.ttl> .
 tm:    form:ontologyHasFormSpecification <https://deductions.github.io/task-management.form.ttl> .
 event: form:ontologyHasFormSpecification <https://deductions.github.io/event.form.ttl> .
+dcat:  form:ontologyHasFormSpecification <https://deductions.github.io/dcat.form.ttl> .
 
 skos: form:ontologyHasFormSpecification <skos.form.ttl> .
 doas: form:ontologyHasFormSpecification <http://deductions.github.io/doas.form.ttl> .
