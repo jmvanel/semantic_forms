@@ -33,16 +33,17 @@ trait SPARQLquery2SFcache {
    *  @param sfInstancePrefix Semantic_Forms Instance URL Prefix, data destination
    *  ( #serverPrefixWithParam will be appended)  */
   def importFromQuery(query: String, endpoint: String, sfInstancePrefix: String): String = {
-    val uris = sendQuery(query, endpoint)
+    val uris = sendQuery(query, endpoint) . toSeq
     val task = s"${uris.size} URI results in SF ($sfInstancePrefix)"
     println(s"importFromQuery: starting importing $task")
     val results = for (uri <- uris) yield {
       sendGetToSemantic_Forms(uri, sfInstancePrefix, endpoint)
     }
-    println(s"importFromQuery: imported $task")
+    println(s"importFromQuery: imported $task: results:")
     results.mkString("")
   }
 
+  /** send SPARQL Query */
   def sendQuery(queryString: String, endpoint: String): Iterator[String] = {
     import sparqlOps._
     // Banana
@@ -65,7 +66,7 @@ trait SPARQLquery2SFcache {
     rr
   }
 
-  /** send HTTP Get To Semantic_Forms for loading the RDF document;
+  /** send HTTP Get To Semantic_Forms for loading a single URI of an RDF document;
    *  the relative service URI is #serverPrefixWithParam
    *  @param uri the remote source RDF document
    *  @param sfInstancePrefix Semantic_Forms Instance URL Prefix, data destination
@@ -80,6 +81,7 @@ trait SPARQLquery2SFcache {
       .setParameter("publisher", publisher)
       .build()
 
+    // println( s"sendGetToSemantic_Forms: uriObject $uriObject")
     val httpGet = new HttpGet(uriObject)
 
     val response1 = httpclient.execute(httpGet)
