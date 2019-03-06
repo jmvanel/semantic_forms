@@ -1,5 +1,4 @@
-## TDB dataset and spatial index
-
+## TDB dataset and spatial index 
 @prefix :        <http://localhost/jena_example/#> .
 @prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
@@ -46,7 +45,10 @@ text:TextIndexLucene  rdfs:subClassOf   text:TextIndex .
 
 <#definition> a spatial:EntityDefinition ;
     spatial:entityField      "uri" ;
-    spatial:geoField     "geo" 
+    spatial:geoField     "geo" ;
+    spatial:hasSpatialPredicatePairs (
+         [ spatial:latitude <http://dbpedia.org/property/latD> ; spatial:longitude <http://dbpedia.org/property/longD> ]
+    )
     .
 
 # Text index description
