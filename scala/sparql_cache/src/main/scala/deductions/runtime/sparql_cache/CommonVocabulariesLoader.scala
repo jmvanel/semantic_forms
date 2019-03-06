@@ -62,6 +62,7 @@ trait CommonVocabulariesLoader[Rdf <: RDF, DATASET]
       URI(vehman.prefixIri) ::
       URI(event.prefixIri) ::
       URI("http://vocab.deri.ie/void.ttl") ::
+      prefixesMap("dcat") ::
       Nil
       // "http://purl.org/ontology/mo/"
    
