@@ -87,6 +87,8 @@ trait InstanceLabelsInference2[Rdf <: RDF]
         if (s  =/=  "") return s
         val dctitle = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, dc("title"), "")
         if (dctitle  =/=  "") return dctitle
+        val dcttitle = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, dct("title"), "")
+        if (dcttitle  =/=  "") return dcttitle
         val geoname = getLiteralInPreferedLanguageFromSubjectAndPredicate(node,
             URI("http://www.geonames.org/ontology#name"), "")
         if (geoname  =/=  "") return geoname
