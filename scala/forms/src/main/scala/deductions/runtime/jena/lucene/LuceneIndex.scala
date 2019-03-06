@@ -194,7 +194,9 @@ trait LuceneIndex // [Rdf <: RDF]
 
   /** USED ! configure Lucene Index for Jena - TEST 5 spatial Textual:
    *  add to textual Dataset's Context a spatialIndex key to the spatialIndex
-   *  text query works, spatial too */
+   *  text query works, spatial too;
+   *  but text indexing is not dynamic (spatial indexing is).
+   *  cf https://jena.apache.org/documentation/query/spatial-query.html#supported-geo-data-for-indexing-and-querying */
   private def configureLuceneIndexTEST5spatial_Textual(dataset: ImplementationSettings.DATASET,
       useTextQuery: Boolean):
     ImplementationSettings.DATASET = {

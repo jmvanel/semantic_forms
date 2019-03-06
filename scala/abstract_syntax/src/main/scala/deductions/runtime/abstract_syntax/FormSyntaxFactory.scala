@@ -524,7 +524,16 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     def htmlName: String = makeHTMLName( makeTriple(subject, uriNodeToURI(prop), objet) )
 
     def firstType = firstNodeOrElseNullURI(precomputProp.ranges)
-    def typesFromRanges = ranges.toSeq ++ rangesSchemaOrg.toSeq
+    def typesFromRanges: Seq[Rdf#Node] = {
+      val filteredNonMeanningfulTypes = ranges.toSeq.
+        filter { typ =>
+          typ != rdfs("Literal") &&
+          typ != xsd("string")
+        }
+      val ret = filteredNonMeanningfulTypes ++
+        rangesSchemaOrg.toSeq
+      return ret
+    }
 
     def literalEntry = {
       val value = getLiteralNodeOrElse(objet, literalInitialValue)
