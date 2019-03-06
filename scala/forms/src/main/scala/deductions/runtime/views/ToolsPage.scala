@@ -224,7 +224,7 @@ trait ToolsPage extends EnterButtons
     console.log( 'services URL $servicesURL' );
     var url = '$servicesURL' +
       window.encodeURIComponent( window.encodeURIComponent(query)) +
-      "&label=" + "${request.getHTTPparameterValue("label").getOrElse("")}"
+      "&label=" + document.getElementById('label').value
     console.log( 'URL ' + url );
     if($isDNS)
       window.open( url , '_blank' );
@@ -284,9 +284,9 @@ trait ToolsPage extends EnterButtons
       '&enrich=yes' +
       "&link-prefix=" + ${ s""""${request.host + config.hrefDisplayPrefix}""""} +
       "&lang=" + "${request.getLanguage()}" +
-      "&label=" + "${request.getHTTPparameterValue("label").getOrElse("")}" +
+      "&label=" + document.getElementById('label').value +
       '&url=' +
-      dataServicesURL + window.encodeURIComponent(query);
+        dataServicesURL + window.encodeURIComponent(query);
     console.log( 'URL= ' + url );
     window.open( url , '_blank' );
   });
