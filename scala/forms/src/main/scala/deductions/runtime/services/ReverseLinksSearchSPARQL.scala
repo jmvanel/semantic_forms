@@ -21,14 +21,21 @@ trait ReverseLinksSearchSPARQL[Rdf <: RDF, DATASET]
     }
   }
 
+  /** Reverse Links Search; side effect: download URI into TDB */
   def backlinks(uri: String, hrefPrefix: String = config.hrefDisplayPrefix,
-      request:HTTPrequest): Future[NodeSeq] = {
-      val tryGraph = retrieveURIBody(
-            ops.URI(uri), dataset, request, transactionsInside = true)
-    search(hrefPrefix,
+                request: HTTPrequest): Future[NodeSeq] = {
+    import scala.concurrent.ExecutionContext.Implicits.global
+    Future {
+      retrieveURIBody(
+        ops.URI(uri), dataset, request, transactionsInside = true)
+    }
+
+    // NOTE queryMaker is passed here implicitly!
+    search(
+      hrefPrefix,
       request.getLanguage(),
       Seq(uri),
-      httpRequest=request)
+      httpRequest = request)
   }
 
 }
