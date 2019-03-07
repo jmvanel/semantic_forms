@@ -59,13 +59,16 @@ don't mix them*/
     val tit = if (title === "")
       I18NMessages.get("Reverse-links-reaching", request.getLanguage()) +
         s"<$uri>;" else title
-//    <a class="btn btn-default btn-xs"
-    <a class="sf-button"
-      href={ "/backlinks?q=" + URLEncoder.encode(uri,"UTF-8") }
-      title={ tit }
-      data-value={s"$uri"} >
-        <img src="/assets/images/Back-Link-Icon.svg" width="32" height="32" border="0" />
-    </a>
+    <form action="/backlinks" style='display:inline;' >
+      <input type="hidden" name="q" value={ uri } />
+      <input type="image" alt="Submit" class="sf-button"
+        title={ tit }
+        data-value={s"$uri"}
+        src="/assets/images/Back-Link-Icon.svg" width="32" height="32"
+        border="0" >
+      </input>
+      <input type="checkbox" name="load-uris" title="load the bunch of backlinks URI's" style="height: 7px" />
+    </form>
   }
 
   /** make Link for Drawing Graph; default values are for RDF Viewer */

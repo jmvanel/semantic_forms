@@ -21,7 +21,7 @@ trait ReverseLinksSearchSPARQL[Rdf <: RDF, DATASET]
     }
   }
 
-  /** Reverse Links Search; side effect: download URI into TDB */
+  /** Reverse Links Search; side effect: download URI into TDB in a Future */
   def backlinks(uri: String, hrefPrefix: String = config.hrefDisplayPrefix,
                 request: HTTPrequest): Future[NodeSeq] = {
     import scala.concurrent.ExecutionContext.Implicits.global
