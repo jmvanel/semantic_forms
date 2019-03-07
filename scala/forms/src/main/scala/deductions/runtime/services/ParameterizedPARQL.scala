@@ -14,6 +14,7 @@ import deductions.runtime.core.HTTPrequest
 
 import scalaz._
 import Scalaz._
+import deductions.runtime.sparql_cache.RDFCacheAlgo
 
 trait SPARQLQueryMaker[Rdf <: RDF] {
   // TODO : search: String*
@@ -39,7 +40,8 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     with PreferredLanguageLiteral[Rdf]
     with SPARQLHelpers[Rdf, DATASET]
     with Form2HTMLDisplay[Rdf#Node, Rdf#URI]
-    with ResultsDisplay[Rdf, DATASET] {
+    with ResultsDisplay[Rdf, DATASET]
+    with RDFCacheAlgo[Rdf, DATASET] {
 
   import config._
 
@@ -67,6 +69,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     val elem0 = rdfStore.r(dataset, {
       val uris = search_onlyNT(search, variables, httpRequest)
       logger.info(s"search: ${httpRequest.logRequest()}: URI's size ${uris.size}")
+      loadURIsIfRequested( uris, httpRequest)
       val graph: Rdf#Graph = allNamedGraph
       val elems = Seq(
         <button value="Sort" id="sort"> Sort </button>,
@@ -86,6 +89,24 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     val elem = elem0.get
     Future.successful(elem)
   }
+
+  import scala.concurrent.ExecutionContext.Implicits.global
+  /**
+   * load URI's If Requested, that is when HTTP parameter "load-uris" is Defined
+   * in a Future
+   */
+  private def loadURIsIfRequested(
+    uris:        List[Seq[Rdf#Node]],
+    httpRequest: HTTPrequest) =
+    if (httpRequest.getHTTPparameterValue("load-uris").isDefined)
+      for (uriRow <- uris)
+        Future {
+          val uri = uriRow.headOption.getOrElse(nullURI)
+          retrieveURIBody(
+            forceNodeToURI(uri), dataset,
+            httpRequest, transactionsInside = true)
+          logger.info(s"loadURIsIfRequested: $uri was loaded.")
+        }
 
   private val sortJSscript =
     <script> {
