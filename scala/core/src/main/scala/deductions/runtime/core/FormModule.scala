@@ -158,7 +158,7 @@ trait FormModule[NODE, URI <: NODE] {
 
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]): Entry
     override def toString(): String = {
-      s"""Entry <$property> ${getClass.getSimpleName} label "$label", "$comment" "$widgetType", openChoice: $openChoice, metadata '$metadata'"""
+      s"""Entry $subject <$property> value $value. ${getClass.getSimpleName} label "$label", "$comment" "$widgetType", openChoice: $openChoice, metadata '$metadata'"""
     }
     def addTriple(s: NODE, p: URI, o: NODE) = {
       val t = Triple(s, p, o)

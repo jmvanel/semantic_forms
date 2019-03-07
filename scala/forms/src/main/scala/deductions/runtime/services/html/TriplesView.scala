@@ -135,6 +135,7 @@ println( s">>>> htmlFormElemJustFields 2 " )
                                editable: Boolean = false,
                                formuri: String = "", request: HTTPrequest): NodeSeq = {
     val formSyntax = createFormFromSPARQL(query, editable, formuri, request)
+//    println(s">>>> createHTMLFormFromSPARQL: formSyntax $formSyntax")
     generateHTML(formSyntax, request=request, hrefPrefix = config.hrefDisplayPrefix,
                    cssForURI = "",
                    cssForProperty = "")

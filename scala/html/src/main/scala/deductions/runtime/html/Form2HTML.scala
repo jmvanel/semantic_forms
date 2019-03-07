@@ -176,8 +176,30 @@ trait Form2HTML[NODE, URI <: NODE]
             toPlainString(field.value) =/= "" ||
             isSeparator(field)))
 
-      lazy val property2EntryMap = groupByOrdered(
+      lazy val subject2EntryMap = groupByOrdered(
         fieldsFiltered,
+        ((f: FormEntry) => f.subject ))
+
+      val labelsAndData = for ((subject, entries) <- subject2EntryMap) yield {
+        makeFieldsLabelAndDataSingleSubject(
+          entries.toSeq,
+          cssForURI,
+          cssForProperty)
+      }
+      labelsAndData.toSeq.flatten
+    }
+
+    /**
+     * make Fields Label And Data for all fields, assuming Single Subject
+     * layout: Show multiple values in a row
+     */
+    def makeFieldsLabelAndDataSingleSubject(
+      fields:         Seq[FormEntry],
+      cssForURI:      String         = "",
+      cssForProperty: String         = ""): NodeSeq = {
+
+      lazy val property2EntryMap = groupByOrdered(
+        fields,
         ((f: FormEntry) => f.property))
 
       val labelsAndData = for ((prop, entries) <- property2EntryMap) yield {
@@ -199,7 +221,6 @@ trait Form2HTML[NODE, URI <: NODE]
             { htmlForEntries }
         }</div>
       }
-
       labelsAndData.toSeq
     }
 
