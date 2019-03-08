@@ -32,7 +32,7 @@ trait StatisticsGraph[Rdf <: RDF, DATASET] extends RDFHelpers[Rdf]
     val linkToClasses = getObjects(graph, focus, rdf.typ).toList
 //    val classesAsTurtleTerms = linkToClasses.map { abbreviateTurtle(_) }
     val subjectsLink = makeHyperlinkTtoGraphContent(focus, s" $subjectsCount subjects ", subjectsCount)
-    <p class="sf-statistics sf-local-rdf-link">
+    <span class="sf-statistics sf-local-rdf-link">
     RDF document:
       { triplesCount } triples,
       { subjectsLink } ,
@@ -58,7 +58,7 @@ trait StatisticsGraph[Rdf <: RDF, DATASET] extends RDFHelpers[Rdf]
       { if( ! request.isFocusURIlocal)
         <a href={"/showTriplesInGraph?uri=" + URLEncoder.encode(fromUri(focus),"UTF-8")}>Named graph</a>
       }
-    </p>
+    </span>
   }
 
   /** hyperlink to given graph content with service /sparql-form?query= */
