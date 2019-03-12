@@ -2,7 +2,7 @@ package deductions.runtime.html
 
 import java.nio.file.{Files, Paths}
 
-import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJenaProvider}
 import deductions.runtime.services.html.{CreationFormAlgo, Form2HTMLObject}
 import deductions.runtime.utils.{DefaultConfiguration, FileUtils, RDFPrefixes}
 import org.apache.log4j.Logger
@@ -20,7 +20,7 @@ with FunSuite with TestForJena
 with TestCreationForm2[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 
 trait TestForJena extends JenaModule
-  with RDFStoreLocalJena1Provider
+  with RDFStoreLocalJenaProvider
 
 /** Test Creation Form with form specification */
 trait TestCreationForm2[Rdf <: RDF, DATASET] extends FunSuite

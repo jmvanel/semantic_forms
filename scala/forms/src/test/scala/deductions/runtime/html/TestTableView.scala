@@ -2,7 +2,7 @@ package deductions.runtime.html
 
 import java.nio.file.{Files, Paths}
 
-import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJenaProvider}
 import deductions.runtime.services.html.{Form2HTMLObject, TriplesViewModule}
 import deductions.runtime.utils.DefaultConfiguration
 import org.apache.log4j.Logger
@@ -13,7 +13,7 @@ import deductions.runtime.core.HTTPrequest
 class TestTableView extends FunSuite
     with ImplementationSettings.RDFModule
     with TriplesViewModule[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with RDFStoreLocalJena1Provider
+    with RDFStoreLocalJenaProvider
     with BeforeAndAfter //    with DefaultConfiguration
     {
   val config = new DefaultConfiguration {}

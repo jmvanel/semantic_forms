@@ -1,6 +1,6 @@
 package deductions.runtime.abstract_syntax
 
-import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJenaProvider}
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.DefaultConfiguration
 import org.scalatest.FunSuite
@@ -8,7 +8,7 @@ import org.w3.banana.jena.JenaModule
 
 class InstanceLabelsInferenceMemoryTest extends FunSuite
     with JenaModule
-    with RDFStoreLocalJena1Provider
+    with RDFStoreLocalJenaProvider
     with InstanceLabelsInferenceMemory[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
   val config = new DefaultConfiguration {

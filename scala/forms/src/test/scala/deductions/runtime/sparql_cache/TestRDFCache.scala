@@ -1,6 +1,6 @@
 package deductions.runtime.sparql_cache
 
-import deductions.runtime.jena.{RDFCache, RDFStoreLocalJena1Provider}
+import deductions.runtime.jena.{RDFCache, RDFStoreLocalJenaProvider}
 import deductions.runtime.utils.{DefaultConfiguration, FileUtils}
 import org.scalatest.{BeforeAndAfterAll, FunSuite}
 import org.w3.banana.SparqlOpsModule
@@ -11,7 +11,7 @@ class TestRDFCache extends FunSuite with RDFCache
     with SparqlOpsModule
     with BeforeAndAfterAll
     with JenaModule
-    with RDFStoreLocalJena1Provider
+    with RDFStoreLocalJenaProvider
     with SitesURLForDownload {
 
   val config = new DefaultConfiguration {

@@ -19,7 +19,7 @@ trait SaveListenersManager[Rdf <: RDF] {
   def callSaveListeners(addedTriples: Seq[Rdf#Triple], removedTriples: Seq[Rdf#Triple])
   (implicit userURI: String, rdfLocalProvider: RDFStoreLocalProvider[Rdf, _]) = {
     
-    // TODO move the test to relavant implementation
+    // TODO move the test to relevant implementation
     if (config.recordUserActions)
 
       saveListeners.map {

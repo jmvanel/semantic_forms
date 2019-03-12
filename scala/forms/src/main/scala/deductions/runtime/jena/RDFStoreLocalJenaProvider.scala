@@ -42,15 +42,11 @@ object ImplementationSettings {
   type Rdf = Jena
   type RDFModule = JenaModule
   /** actually just RDF database location; TODO rename RDFDatabase */
-  type RDFCache = RDFStoreLocalJena1Provider
+  type RDFCache = RDFStoreLocalJenaProvider
   type RDFReadException = RiotException
 }
 
-/** For user data and RDF cache, sets a default location for the Jena TDB store directory : TDB */
-trait RDFStoreLocalJena1Provider
-  extends RDFStoreLocalJenaProvider
-
-/**
+/** For user data and RDF cache, sets a default location for the Jena TDB store directory : TDB
  * NOTES:
  * - mandatory that JenaModule (RDFModule) is first; otherwise ops may be null
  */
@@ -99,7 +95,7 @@ trait RDFStoreLocalJenaProvider
         dir.mkdirs()
       }
 
-      logger.debug(s"""RDFStoreLocalJena1Provider: dataset create: database_location "$database_location" in ${System.getProperty("user.dir")} """)
+      logger.debug(s"""RDFStoreLocalJenaProvider: dataset create: database_location "$database_location" in ${System.getProperty("user.dir")} """)
       val dts =
         if (useTDB2)
           org.apache.jena.tdb2.TDB2Factory.connectDataset(database_location)
@@ -108,7 +104,7 @@ trait RDFStoreLocalJenaProvider
           // TODO TDBFactory.assembleDataset(assemblerFile)
 
       //      Logger.getRootLogger.info
-      logger.debug(s"RDFStoreLocalJena1Provider $database_location, dataset created: $dts")
+      logger.debug(s"RDFStoreLocalJenaProvider $database_location, dataset created: $dts")
 
       try {
         logger.info(
@@ -157,6 +153,13 @@ trait RDFStoreLocalJenaProvider
   }
 
   def close(ds: DATASET) = ds.close()
+
+  def closeAllTDBs() {
+    close(dataset)
+    close(dataset2)
+    close(dataset3)
+    println(s"StopJenaTDB: dataset, dataset2, dataset3 closed.")
+  }
 
   private val requestConfig =
         RequestConfig.custom()
@@ -274,7 +277,7 @@ trait RDFStoreLocalJenaProvider
 }
 
 /** TODO implement independently of Jena */
-trait RDFGraphPrinter extends RDFStoreLocalJena1Provider {
+trait RDFGraphPrinter extends RDFStoreLocalJenaProvider {
   def printGraphList() {
     rdfStore.r(dataset, {
       val lgn = dataset.asDatasetGraph().listGraphNodes()

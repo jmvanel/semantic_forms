@@ -26,7 +26,7 @@ trait TestJenaHelpersRaw
   def test() {
     lazy val dataset1 = TDBFactory.createDataset("TDB")
     val jh =
-      new RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET] with RDFStoreLocalJena1Provider {
+      new RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET] with RDFStoreLocalJenaProvider {
         val config = new DefaultConfiguration {
           override val useTextQuery = false
         }

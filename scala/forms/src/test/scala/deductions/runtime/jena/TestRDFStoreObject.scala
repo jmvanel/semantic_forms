@@ -76,7 +76,7 @@ trait TestRDFStoreObject[Rdf <: RDF, DATASET]
 
 //@Ignore
 class TestRDFStoreObjectJena extends TestRDFStoreObject[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with RDFStoreLocalJena1Provider with ImplementationSettings.RDFModule {
+    with RDFStoreLocalJenaProvider with ImplementationSettings.RDFModule {
   val config = new DefaultConfiguration {
     override val useTextQuery = false
   }

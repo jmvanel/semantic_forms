@@ -1,6 +1,6 @@
 package deductions.runtime.semlogs
 
-import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJenaProvider}
 import deductions.runtime.utils.DefaultConfiguration
 import org.junit.Assert
 import org.scalatest.FunSuite
@@ -40,7 +40,7 @@ trait TimeSeriesTest[Rdf <: RDF, DATASET] extends FunSuite with TimeSeries[Rdf, 
 }
 
 class TimeSeriesTestJena extends FunSuite
-    with RDFStoreLocalJena1Provider
+    with RDFStoreLocalJenaProvider
     with TimeSeriesTest[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
   val config = new DefaultConfiguration {
     override val useTextQuery = false

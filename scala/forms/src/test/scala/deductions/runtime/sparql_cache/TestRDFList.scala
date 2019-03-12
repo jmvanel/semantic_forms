@@ -1,6 +1,6 @@
 package deductions.runtime.sparql_cache
 
-import deductions.runtime.jena.RDFStoreLocalJena1Provider
+import deductions.runtime.jena.RDFStoreLocalJenaProvider
 import deductions.runtime.utils.DefaultConfiguration
 import org.scalatest.FunSuite
 import org.w3.banana.{RDF, RDFOps, RDFStore}
@@ -11,7 +11,7 @@ import scala.util.Try
 
 class TestRDFList extends FunSuite
     with JenaModule
-    with RDFStoreLocalJena1Provider
+    with RDFStoreLocalJenaProvider
     with TestRDFListTrait[Jena] {
   val config = new DefaultConfiguration {
     override val useTextQuery = false

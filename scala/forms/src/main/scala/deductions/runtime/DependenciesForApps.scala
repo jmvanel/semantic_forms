@@ -1,6 +1,6 @@
 package deductions.runtime
 
-import deductions.runtime.jena.{ImplementationSettings, RDFCache, RDFStoreLocalJena1Provider}
+import deductions.runtime.jena.{ImplementationSettings, RDFCache, RDFStoreLocalJenaProvider}
 import deductions.runtime.sparql_cache.SitesURLForDownload
 
 /**
@@ -25,5 +25,5 @@ trait DependenciesForApps
  */
 trait DependenciesForAppsNoCache
   extends ImplementationSettings.RDFModule
-  with RDFStoreLocalJena1Provider
+  with RDFStoreLocalJenaProvider
   with App

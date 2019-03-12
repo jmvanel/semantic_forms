@@ -42,7 +42,7 @@ object AuthService extends AuthServiceTrait {
 
 trait AuthServiceTrait
 extends ImplementationSettings.RDFModule
-with ImplementationSettings.RDFCache // RDFStoreLocalJena1Provider
+with ImplementationSettings.RDFCache
 with AuthServiceTrait2[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 with FormModuleBanana[ImplementationSettings.Rdf] {
 

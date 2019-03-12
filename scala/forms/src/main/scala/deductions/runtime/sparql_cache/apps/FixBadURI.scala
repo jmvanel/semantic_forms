@@ -36,7 +36,7 @@ object FixBadURIApp extends  {
   }
 } with ImplementationSettings.RDFModule
     with FixBadURI[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with ImplementationSettings.RDFCache // RDFStoreLocalJena1Provider
+    with ImplementationSettings.RDFCache // RDFStoreLocalJenaProvider
     with URIHelpers
     with App {
   

@@ -3,7 +3,7 @@ package deductions.runtime.html
 import java.nio.file.{Files, Paths}
 
 import deductions.runtime.abstract_syntax.FormSyntaxFactoryTest
-import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJenaProvider}
 import deductions.runtime.services.html.Form2HTMLBanana
 import deductions.runtime.utils.DefaultConfiguration
 import org.apache.log4j.Logger
@@ -13,7 +13,7 @@ import deductions.runtime.core.HTTPrequest
 
 class Form2HTMLTest
     extends FunSuite
-    with RDFStoreLocalJena1Provider
+    with RDFStoreLocalJenaProvider
     with Form2HTMLBanana[ImplementationSettings.Rdf]
     with FormSyntaxFactoryTest[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
   val config = new DefaultConfiguration {

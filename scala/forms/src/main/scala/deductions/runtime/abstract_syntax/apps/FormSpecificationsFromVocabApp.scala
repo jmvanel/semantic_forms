@@ -3,7 +3,7 @@ package deductions.runtime.abstract_syntax.apps
 import java.io.File
 
 import deductions.runtime.abstract_syntax.FormSpecificationsFromVocab
-import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJenaProvider}
 import deductions.runtime.utils.DefaultConfiguration
 
 import scala.util.Try
@@ -14,7 +14,7 @@ import deductions.runtime.utils.FormModuleBanana
 /**
   * Created by LaFaucheuse on 07/07/2017.
   */
-object FormSpecificationsFromVocabApp extends RDFStoreLocalJena1Provider
+object FormSpecificationsFromVocabApp extends RDFStoreLocalJenaProvider
   with App
   with FormSpecificationsFromVocab
     [ImplementationSettings.Rdf, ImplementationSettings.DATASET]

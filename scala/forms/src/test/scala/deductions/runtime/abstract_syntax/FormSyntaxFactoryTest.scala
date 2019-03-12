@@ -2,7 +2,7 @@ package deductions.runtime.abstract_syntax
 
 import java.io.{FileInputStream, FileOutputStream}
 
-import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJenaProvider}
 import deductions.runtime.utils.DefaultConfiguration
 import org.apache.log4j.Logger
 import org.hamcrest.BaseMatcher
@@ -11,7 +11,7 @@ import org.scalatest.FunSuite
 import org.w3.banana.RDF
 
 class FormSyntaxFactoryTestJena extends FunSuite
-    with RDFStoreLocalJena1Provider
+    with RDFStoreLocalJenaProvider
     with FormSyntaxFactoryTest[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with DefaultConfiguration {
   val config = new DefaultConfiguration {

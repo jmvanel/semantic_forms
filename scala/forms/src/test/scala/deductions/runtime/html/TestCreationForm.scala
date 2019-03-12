@@ -4,7 +4,7 @@ import java.io.PrintStream
 import java.nio.file.{Files, Paths}
 
 import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
-import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJenaProvider}
 import deductions.runtime.services.html.{CreationFormAlgo, Form2HTMLObject}
 import deductions.runtime.sparql_cache.SPARQLHelpers
 import deductions.runtime.utils.{Configuration, DefaultConfiguration}
@@ -25,7 +25,7 @@ class TestCreationForm extends {
     with ImplementationSettings.RDFModule
     with CreationFormAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with GraphTestEnum[ImplementationSettings.Rdf]
-    with RDFStoreLocalJena1Provider
+    with RDFStoreLocalJenaProvider
     with SPARQLHelpers[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with InstanceLabelsInferenceMemory[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with BeforeAndAfter

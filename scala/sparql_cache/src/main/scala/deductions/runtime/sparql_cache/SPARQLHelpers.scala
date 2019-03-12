@@ -620,7 +620,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         } else results
     }
 //    logger.info(s"makeListofListsFromSolutions: size: ${ for(l <- res ) l.size}")
-    logger.info(s"makeListofListsFromSolutions: size: ${ if( res isSuccess) res .get. size}")
+    // logger.info(s"makeListofListsFromSolutions: size: ${ if( res isSuccess) res .get. size}")
     res
   }
 

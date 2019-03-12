@@ -3,7 +3,7 @@ package deductions.runtime.sparql_cache.algos
 import java.io.{File, PrintStream}
 
 import deductions.runtime.abstract_syntax.FieldsInference
-import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJenaProvider}
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.{Configuration, DefaultConfiguration, RDFHelpers}
 import org.w3.banana.{OWLPrefix, Prefix, RDF, RDFOps, RDFPrefix}
@@ -17,7 +17,7 @@ object SKOS2CSVApp extends  {
     override val useTextQuery = false
   }
 } with App
-with RDFStoreLocalJena1Provider
+with RDFStoreLocalJenaProvider
 with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 with DefaultConfiguration 
 with SKOS2CSV[ImplementationSettings.Rdf, ImplementationSettings.DATASET]

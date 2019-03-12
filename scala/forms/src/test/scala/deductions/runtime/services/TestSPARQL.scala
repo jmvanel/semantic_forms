@@ -1,7 +1,7 @@
 package deductions.runtime.services
 
 import deductions.runtime.utils.RDFStoreLocalProvider
-import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJenaProvider}
 import deductions.runtime.jena.lucene.LuceneIndex
 import deductions.runtime.utils.{DefaultConfiguration, FileUtils}
 import org.scalatest.{BeforeAndAfterAll, FunSuite}
@@ -93,7 +93,7 @@ trait TestSPARQLTrait[Rdf <: RDF, DATASET] extends FunSuite
 
 //@Ignore
 class TestSPARQL extends FunSuite
-    with RDFStoreLocalJena1Provider
+    with RDFStoreLocalJenaProvider
     with TestSPARQLTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with DefaultConfiguration
     with LuceneIndex {

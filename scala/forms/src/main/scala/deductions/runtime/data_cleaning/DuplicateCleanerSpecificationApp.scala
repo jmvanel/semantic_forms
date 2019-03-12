@@ -3,7 +3,7 @@ package deductions.runtime.data_cleaning
 import java.io.{File, FileInputStream}
 
 import deductions.runtime.connectors.CSVImporter
-import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJenaProvider}
 import deductions.runtime.sparql_cache.{RDFCacheAlgo, SPARQLHelpers}
 import deductions.runtime.utils.DefaultConfiguration
 
@@ -30,7 +30,7 @@ object DuplicateCleanerSpecificationApp extends {
     override val useTextQuery = false
   }
 } with App
-    with RDFStoreLocalJena1Provider
+    with RDFStoreLocalJenaProvider
     with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with DuplicateCleaner[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with SPARQLHelpers[ImplementationSettings.Rdf, ImplementationSettings.DATASET]

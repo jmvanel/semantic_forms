@@ -1,6 +1,6 @@
 package deductions.runtime.data_cleaning
 
-import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJena1Provider}
+import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJenaProvider}
 import deductions.runtime.utils.DefaultConfiguration
 
 /**
@@ -13,7 +13,7 @@ object DuplicateCleanerApp
         override val useTextQuery = false
       }
     } with App
-    with RDFStoreLocalJena1Provider
+    with RDFStoreLocalJenaProvider
     with DuplicateCleaner[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
   // override val databaseLocation: String = "" // in-memory
 

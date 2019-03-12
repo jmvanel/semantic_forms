@@ -2,7 +2,7 @@ package deductions.runtime.services
 
 import java.net.URLEncoder
 
-import deductions.runtime.jena.{ImplementationSettings, RDFCache, RDFStoreLocalJena1Provider}
+import deductions.runtime.jena.{ImplementationSettings, RDFCache, RDFStoreLocalJenaProvider}
 import deductions.runtime.utils.DefaultConfiguration
 import org.apache.log4j.Logger
 import org.scalatest.FunSuite
@@ -17,7 +17,7 @@ class TestFormSaver
     with SparqlGraphModule
     with SparqlOpsModule
     with JenaModule
-    with RDFStoreLocalJena1Provider
+    with RDFStoreLocalJenaProvider
     with FormSaver[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with DefaultConfiguration {
 
