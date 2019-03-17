@@ -52,7 +52,10 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
         return ""
       val t1 = value.replaceAll("-", "").replaceAll(":", "")
       val t2 = if ( t1 . contains("T"))
-        t1
+        if ( (t1.split("T"))(1) . length() == 4 )
+          t1 + "00"
+        else
+          t1
       else
         t1 + "T120000"
       "DTSTAMP:" + t2 + CRLF +
@@ -60,7 +63,7 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
     }
 
     def formatText(t: String): String =
-      t.replaceAll("\n", CRLF+" ").grouped(60).fold("")((a,b) => a+b+CRLF+" ")
+      t.replaceAll("\n", CRLF+" ").grouped(60).mkString(CRLF+" ")
 
     def processTriple(triple: Rdf#Triple) = {
       val pred = triple.predicate;
