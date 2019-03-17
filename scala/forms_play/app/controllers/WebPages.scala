@@ -136,23 +136,33 @@ trait WebPages extends Controller with ApplicationTrait
   import scala.language.implicitConversions
   implicit def resultToResult(r: Result) = new ResultEnhanced(r)
 
-  /** generate a Main Page wrapping given XHTML content */
+  /** generate a Main Page wrapping given XHTML content;
+   *  if HTTP URL contains &layout=form , do not apply SF application HTML header */
   private def outputMainPage( content: NodeSeq,
       lang: String, userInfo: NodeSeq = <div/>, title: String = "",
       displaySearch:Boolean = true,
       classForContent: String ) // = "container sf-complete-form")
   (implicit request: Request[_]) = {
-      Ok( "<!DOCTYPE html>\n" +
-        mainPage( content,
+    val httpRequest = copyRequest(request)
+    val layout = httpRequest.getHTTPparameterValue("layout")
+
+    def httpWrapper( content: NodeSeq ) =
+      Ok( "<!DOCTYPE html>\n" + content )
+        .addHttpHeaders()
+        .addHttpHeadersLinks( request.uri )
+
+    httpWrapper(
+      layout match {
+        case Some("form") => content
+        case _ =>
+          mainPage( content,
             userInfo, lang, title,
             displaySearch,
             messages = getDefaultAppMessage(),
             headExtra = getDefaultHeadExtra(),
             classForContent,
-            copyRequest(request) )
-      )
-      .addHttpHeaders()
-      .addHttpHeadersLinks( request.uri )
+            httpRequest )
+    } )
   }
 
   /** generate a Main Page wrapping given XHTML content */
