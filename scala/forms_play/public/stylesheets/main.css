@@ -84,6 +84,7 @@ input.form-control[type='text']
 .sf-sparql-table tr:first-of-type { font-weight:bold; }
 
 .sf-local-rdf-link { font-size: xx-small; }
+.sf-expert         { font-size: xx-small; }
 .sf-local-rdf-link img {
     max-height:16px; width:auto; }
 .sf-local-rdf-link button {
@@ -97,3 +98,4 @@ tr:nth-child(odd) {background: #FFF}
 .sf-userInfo { float: right; }
 
 .sf-error { color: red; font-style: bold }
+
