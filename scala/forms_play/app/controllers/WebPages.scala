@@ -251,7 +251,6 @@ trait WebPages extends Controller with ApplicationTrait
         <button formaction="/save" formmethod="post" title="Save changes in the table">Submit</button>
       return  <div>
         <a href={
-          //  "/sparql-ui?query=" + URLEncoder.encode(query, "UTF-8")
           request.uri.replaceFirst("/table", "/sparql-ui")
         }>Edit SPARQL query</a>
         </div> ++

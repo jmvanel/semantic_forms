@@ -15,6 +15,7 @@ import deductions.runtime.core.HTTPrequest
 import scalaz._
 import Scalaz._
 import deductions.runtime.sparql_cache.RDFCacheAlgo
+import java.net.URLEncoder
 
 trait SPARQLQueryMaker[Rdf <: RDF] {
   // TODO : search: String*
@@ -53,6 +54,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    * @param hrefPrefix URL prefix for creating hyperlinks ((URI of each query result is concatenated)
    *
    * TODO
+   * - lang is already part of httpRequest
    * - displayResults should be a function argument
    * - search2 is very similar!
    */
@@ -65,7 +67,6 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     implicit
     queryMaker: SPARQLQueryMaker[Rdf]): Future[NodeSeq] = {
     logger.debug(s"search($search) 1: starting TRANSACTION for dataset $dataset")
-//    val elem0 = rdfStore.rw(dataset, {
     val elem0 = rdfStore.r(dataset, {
       val uris = search_onlyNT(search, variables, httpRequest)
       logger.info(s"search: ${httpRequest.logRequest()}: URI's size ${uris.size}")
@@ -74,6 +75,14 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
       val elems = Seq(
         <button value="Sort" id="sort"> Sort </button>,
         sortJSscript,
+
+        <span class="sf-expert">
+        <a href={
+          "/select-ui?query=" +
+          URLEncoder.encode( queryMaker.makeQueryString(search(0)), "utf-8")
+        }>Edit SPARQL query</a>
+        "&nbsp;</span>,
+
         showContinuationForm( httpRequest ),
         <div id="container" class={ cssConfig.formRootCSSClass }> {
           localCSS ++

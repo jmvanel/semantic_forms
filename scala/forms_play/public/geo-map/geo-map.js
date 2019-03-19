@@ -1,9 +1,9 @@
+/* populate LeafLet map with array data */
+
 /* TODO pass to Scala.js ,
  * see Scala.js bindings for Leaflet.js : https://github.com/fancellu/scalajs-leaflet
  * API http://leafletjs.com/reference-1.2.0.html
 */
-
-/*global L */
 
 /*private*/
 function computeMinInPoints(initialData, key/*: String*/) {
