@@ -78,7 +78,7 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
         case URI("urn:displayLabel") => formatText("SUMMARY:" + nodeToString(objet))
         case rdfs.label              => formatText("SUMMARY:" + nodeToString(objet))
         case URI("http://purl.org/NET/c4dm/event.owl#place") =>
-                                 "GEO:" + getDisplayLabel(objet)
+                                 "LOCATION:" + getDisplayLabel(objet)
         case rdfs.comment     => formatText("DESCRIPTION:" + nodeToString(objet))
         case dct("abstract")  => formatText("DESCRIPTION:" + nodeToString(objet))
         case con("participant")
@@ -96,6 +96,9 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
     return "BEGIN:VCALENDAR\r\n" +
       "VERSION:2.0\r\n" +
       "PRODID:https://github.com/jmvanel/semantic_forms/wiki\r\n" +
+      "CALSCALE:GREGORIAN\r\n" +
+      "METHOD:PUBLISH\r\n" +
+      "X-WR-TIMEZONE:Europe/Paris" +
       events.toString() +
       "END:VCALENDAR\r\n"
   }
@@ -111,7 +114,7 @@ ORGANIZER;CN=John Doe:MAILTO:john.doe@example.com
 DTSTART:19970714T170000Z
 DTEND:19970715T035959Z
 SUMMARY:Bastille Day Party
-GEO:48.85299;2.36885
+LOCATION:48.85299;2.36885
 END:VEVENT
 END:VCALENDAR
 Input:
