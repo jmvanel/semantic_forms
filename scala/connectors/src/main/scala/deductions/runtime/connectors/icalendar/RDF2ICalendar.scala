@@ -32,13 +32,24 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
       return events
     }
 
-    def processSubject( subject: Rdf#Node) = {
-      addLine ("BEGIN:VEVENT")
-      addLine( "UID:" + subject )
-      for (
+
+    def processSubject(subject: Rdf#Node) = {
+      def hasProperty(prop: Rdf#Node) = {
+        val triples = find(graph, subject, prop, ANY).toList
+        triples.size > 0 &&
+        nodeToString( triples(0).objectt ) .length() >= 8
+      }
+      // No output for events without date !
+      if (hasProperty(dbo("startDate")) ||
+        hasProperty(schema("doorTime"))) {
+
+        addLine("BEGIN:VEVENT")
+        addLine("UID:" + subject)
+        for (
           triple2 <- find(graph, subject, ANY, ANY)
-      ){ processTriple(triple2) }
-      addLine( "END:VEVENT" )
+        ) { processTriple(triple2) }
+        addLine("END:VEVENT")
+      }
     }
 
     def getDisplayLabel(objet: Rdf#Node, prop: Rdf#URI =URI("urn:displayLabel")) = {
