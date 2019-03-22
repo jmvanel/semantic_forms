@@ -50,7 +50,9 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
       val value = nodeToString(objet)
       if( value == "")
         return ""
-      val t1 = value.replaceAll("-", "").replaceAll(":", "")
+      val t0 = value.replaceAll("-", "").replaceAll(":", "")
+      // "2013-09-18T14:30:00+02:00" : cut string after character "+" (otherwise not accepted by online validator)
+      val t1 = t0.split( """\+""" )(0)
       val t2 = if ( t1 . contains("T"))
         if ( (t1.split("T"))(1) . length() == 4 )
           t1 + "00"
@@ -63,7 +65,11 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
     }
 
     def formatText(t: String): String =
-      t.replaceAll("\n", CRLF+" ").grouped(60).mkString(CRLF+" ")
+      t
+      .replaceFirst("\n$" ,"")
+      .grouped(60)
+      .map( s => s.replace("\n", "\\n") )
+      .mkString("", CRLF+" ", "")
 
     def processTriple(triple: Rdf#Triple) = {
       val pred = triple.predicate;
@@ -98,7 +104,7 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
       "PRODID:https://github.com/jmvanel/semantic_forms/wiki\r\n" +
       "CALSCALE:GREGORIAN\r\n" +
       "METHOD:PUBLISH\r\n" +
-      "X-WR-TIMEZONE:Europe/Paris" +
+      "X-WR-TIMEZONE:Europe/Paris\r\n" +
       events.toString() +
       "END:VCALENDAR\r\n"
   }
