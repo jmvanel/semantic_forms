@@ -24,8 +24,9 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
   /** index Based or not, depending on config. item useTextQuery */
   private val indexBasedQuery = new SPARQLQueryMaker[Rdf] with ColsInResponse {
     override def makeQueryString(searchStrings: String*): String = {
-      val search =  searchStrings(0)
-      val clas = searchStrings(1)
+//      println( s"makeQueryString ${searchStrings.mkString(", ")}")
+      val search =  searchStrings.headOption.getOrElse("")
+      val clas = if(searchStrings.size >= 2 ) searchStrings(1) else ""
 
       // TODO add argument "limit" to queryWithlinksCount()
       val limit = if( clas != "" ) "" else "LIMIT 15"

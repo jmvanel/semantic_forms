@@ -85,7 +85,7 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
   /** query With links Count, with or without text query */
   def queryWithlinksCount(
     search: String,
-    classe: String = "") =
+    classe: String = ""): String =
     s"""
     |# search "$search" class <$classe>
     |${declarePrefix(text)}
