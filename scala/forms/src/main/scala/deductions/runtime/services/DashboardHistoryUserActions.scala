@@ -73,7 +73,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
           case Some(uri) =>
             logger.debug(s"==== makeTableHistoryUserActions: title: uri <$uri>")
             val focusPrettyPrinted = makeHyperlinkForURItr(URI(uri), lang, allNamedGraph)
-            <div>{mess("View_centered")} </div> ++ focusPrettyPrinted
+            <span>{mess("View_centered")} </span> ++ focusPrettyPrinted
           case None => <div/>
         }
       }
