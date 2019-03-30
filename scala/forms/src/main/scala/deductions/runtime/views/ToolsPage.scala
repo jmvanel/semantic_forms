@@ -159,8 +159,10 @@ trait ToolsPage extends EnterButtons
           { if (viewButtonsForConstruct)
             buttonsAllRDFViews
           else
-             <input class="btn btn-primary" type="submit" value={ I18NMessages.get("History", request.getLanguage()) }
-             formaction="/history"/> ++
+             <input class="btn btn-primary" type="submit" value={
+                 I18NMessages.get("History", request.getLanguage()) }
+               formaction="/history"
+               title="Chronological view (only local edits)"/> ++
              {paragraphsViewInput(request)}
           }
         </div>
