@@ -11,7 +11,7 @@ addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.6.20")
 // Let sbt eclipse plugin be available to eclipse users
 addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "5.2.4")
 
-addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.24")
+addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.26")
 // addSbtPlugin("io.gatling" % "gatling-sbt" % "2.1.7")
 
 

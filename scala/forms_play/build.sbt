@@ -38,3 +38,6 @@ resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + 
 // testOptions in Test += Tests.Argument("-oF")
 
 // PlayKeys.devSettings += "play.server.http.port" -> "9111"
+
+PlayKeys.devSettings := Seq("play.akka.dev-mode.akka.http.parsing.max-uri-length" -> "20480")
+

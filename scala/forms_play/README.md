@@ -85,7 +85,6 @@ Then SBT will download the libraries and dependencies.
 - start sbt from the shell
 - type in the SBT console :
 ```
-       ++2.11.12
        publishLocal
 ```
 - download the source from [semantic\_forms on github](https://github.com/jmvanel/semantic_forms/)
