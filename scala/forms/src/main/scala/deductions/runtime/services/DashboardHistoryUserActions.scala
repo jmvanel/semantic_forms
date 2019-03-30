@@ -68,15 +68,8 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     }
 
     {
-      val title: NodeSeq = {
-        metadata._2 match {
-          case Some(uri) =>
-            logger.debug(s"==== makeTableHistoryUserActions: title: uri <$uri>")
-            val focusPrettyPrinted = makeHyperlinkForURItr(URI(uri), lang, allNamedGraph)
-            <span>{mess("View_centered")} </span> ++ focusPrettyPrinted
-          case None => <div/>
-        }
-      }
+      val title: NodeSeq =
+        <span>{mess("View_centered")} </span> ++ metadata._2
       val html: NodeSeq =
         title ++
         historyLink ++
@@ -201,7 +194,8 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   private def filterMetadataFocus(
     metadata:    List[Seq[Rdf#Node]],
     request:     HTTPrequest,
-    querySPARQL: String              = ""): (List[Seq[Rdf#Node]], Option[String]) = {
+    querySPARQL: String              = ""):
+    (List[Seq[Rdf#Node]], NodeSeq ) = {
 
     val params = request.queryString
     if (params.contains("uri")) {
@@ -209,7 +203,9 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       logger.debug(s"""===== filterMetadataFocus: params.contains("uri") ${focusURI}""")
       val sparqlQuery = neighborhoodSearchSPARQL( focusURI )
       ( filterMetadataSPARQL( metadata, request, sparqlQuery),
-        Some(focusURI) )
+          // focus URI Pretty Printed
+          makeHyperlinkForURItr(URI(focusURI), request.getLanguage(), allNamedGraph)
+      )
 
     } else if( params.contains("sparql") ||
                params.contains("query")) {
@@ -219,11 +215,11 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
                         ) .headOption.getOrElse("")
           params("query")
 //      println(s"filterMetadataFocus sparqlQuery: $sparqlQuery")
-      (filterMetadataSPARQL( metadata, request, sparqlQuery),
-        Some("/user-query"))
+      ( filterMetadataSPARQL( metadata, request, sparqlQuery),
+        sparqlQueryButton(sparqlQuery) )
 
     } else
-      (metadata, None)
+      (metadata, NodeSeq.Empty )
   }
 
   /**

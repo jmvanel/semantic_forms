@@ -72,17 +72,11 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
       logger.info(s"search: ${httpRequest.logRequest()}: URI's size ${uris.size}")
       loadURIsIfRequested( uris, httpRequest)
       val graph: Rdf#Graph = allNamedGraph
+      val sparqlQuery = queryMaker.makeQueryString(search(0))
       val elems = Seq(
         <button value="Sort" id="sort"> Sort </button>,
         sortJSscript,
-
-        <span class="sf-expert">
-        <a href={
-          "/select-ui?query=" +
-          URLEncoder.encode( queryMaker.makeQueryString(search(0)), "utf-8")
-        }>Edit SPARQL query</a>
-        "&nbsp;</span>,
-
+        sparqlQueryButton(sparqlQuery),
         showContinuationForm( httpRequest ),
         <div id="container" class={ cssConfig.formRootCSSClass }> {
           localCSS ++
@@ -98,6 +92,16 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     val elem = elem0.get
     Future.successful(elem)
   }
+
+  /** Edit Select SPARQL query button */
+  def sparqlQueryButton(sparqlQuery: String) =
+    <span class="sf-expert">
+      <a href={
+        "/select-ui?query=" +
+          URLEncoder.encode(sparqlQuery, "utf-8")
+      }>Edit SPARQL query</a>
+      &nbsp;
+    </span>
 
   import scala.concurrent.ExecutionContext.Implicits.global
   /**
