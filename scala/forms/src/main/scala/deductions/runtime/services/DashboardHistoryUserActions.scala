@@ -208,8 +208,8 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       val focusURI = expandOrUnchanged( params("uri").headOption.getOrElse("") )
       logger.debug(s"""===== filterMetadataFocus: params.contains("uri") ${focusURI}""")
       val sparqlQuery = neighborhoodSearchSPARQL( focusURI )
-      (filterMetadataSPARQL(
-        metadata, request, sparqlQuery), Some(focusURI))
+      ( filterMetadataSPARQL( metadata, request, sparqlQuery),
+        Some(focusURI) )
 
     } else if( params.contains("sparql") ||
                params.contains("query")) {
@@ -218,7 +218,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
                         params.getOrElse("query", Seq() )
                         ) .headOption.getOrElse("")
           params("query")
-      println(s"filterMetadataFocus sparqlQuery $sparqlQuery")
+//      println(s"filterMetadataFocus sparqlQuery: $sparqlQuery")
       (filterMetadataSPARQL( metadata, request, sparqlQuery),
         Some("/user-query"))
 
@@ -236,11 +236,10 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     request:  HTTPrequest, querySPARQL: String = ""): List[Seq[Rdf#Node]] = {
     logger.debug(s"""===== filterMetadataSPARQL: querySPARQL $querySPARQL""")
 
-    val results = sparqlSelectQuery(querySPARQL)
-//    logger.trace(s"""===== filterMetadataSPARQL: results $results """)
+    val results = sparqlSelectQuery(querySPARQL,
+        context=request.queryString2 )
+    logger.trace(s"""===== filterMetadataSPARQL: results: $results """)
 
-    /* merge URI's from query with metadata:
-     * filter metadata with URI's in result */
     val uris = results.get.map {
       l => l.headOption.getOrElse(nullURI)
     }.toSet
@@ -248,6 +247,9 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     logger.trace(
         s"""===== filterMetadataSPARQL: sparql Select result: uris $uris""")
     logger.debug(s"===== filterMetadataSPARQL: metadata.size ${metadata.size}")
+
+    /* merge URI's from query with metadata:
+     * filter metadata with URI's in SPARQL result */
     metadata.filter {
       row =>
         val uri = row(0)
