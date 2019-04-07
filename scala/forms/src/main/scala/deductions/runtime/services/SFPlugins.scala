@@ -12,4 +12,6 @@ trait SFPlugins[Rdf <: RDF, DATASET] {
   addSaveListener(this) // for TimeSeries
   addSaveListener(new RDFLinksCounterListenerClass(config))
   addServiceListener(new RDFLinksCounterLoadListenerClass(config, this))
+
+  addSaveListener(new URIsLoaderListenerClass(config))
 }
