@@ -9,6 +9,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix sioc: <http://rdfs.org/sioc/ns#> .
 @prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix ded: <http://deductions.github.io/> .
 
 # Additions to FOAF vocab' ;
 # the forms system infers possible values based on rdfs:range,
@@ -61,8 +62,8 @@ dct:subject a owl:ObjectProperty ;
 # Icons for OWL classes
 
 foaf:Person foaf:img <https://mirrors.creativecommons.org/presskit/icons/by.svg> .
-foaf:Project foaf:img <noun_247207_cc.svg> .
-foaf:Document foaf:img <noun_1037431_cc.svg> .
+foaf:Project foaf:img ded:noun_247207_cc.svg .
+foaf:Document foaf:img ded:noun_1037431_cc.svg .
 foaf:Organization foaf:img <https://d30y9cdsu7xlg0.cloudfront.net/png/220170-200.png> .
 
 owl:Ontology foaf:img <https://upload.wikimedia.org/wikipedia/commons/b/b1/MBED_Top_Level_Ontology.jpg> .
@@ -71,15 +72,15 @@ owl:ObjectProperty foaf:img <https://upload.wikimedia.org/wikipedia/commons/b/b1
 owl:DatatypeProperty foaf:img <https://upload.wikimedia.org/wikipedia/commons/b/b1/MBED_Top_Level_Ontology.jpg> .
 
 @prefix vehma: <http://deductions.github.io/vehicule-management.owl.ttl#> .
-vehma:Vehicle foaf:img <noun_1245_cc.svg> .
-vehma:SIMCard foaf:img <SIMCard.svg> .
+vehma:Vehicle foaf:img ded:noun_1245_cc.svg .
+vehma:SIMCard foaf:img ded:SIMCard.svg .
 @prefix geoloc: <http://deductions.github.io/geoloc.owl.ttl#> .
 geoloc:MobilePoint foaf:img <point.png> .
 geoloc:Mobile foaf:img <mobile.png> .
 
 sioc:Post foaf:img <post-07-512.png> .
 sioc:Thread foaf:img <chat_019-message_thread-conversation-bubble-talk-512.png> .
-sioc:Item foaf:img <if_speech-bubble-alt-3_2628494.svg> .
+sioc:Item foaf:img ded:if_speech-bubble-alt-3_2628494.svg .
 
 dcat:Dataset foaf:img <dataset-78-256.png> .
 dcat:Catalog foaf:img <catalog_seo2-34-256.png> .
