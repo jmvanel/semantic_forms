@@ -51,24 +51,26 @@ http.send(content);
 
   def profileClaimUI(request: HTTPrequest): NodeSeq = {
     // this URI is actually a foaf:Person
-    val uri = URI(request.getRDFsubject())
+    val currentFocusURI = URI(request.getRDFsubject())
     val currentPageIsAfoafPerson: Boolean =
-      uri != nullURI &&
-      getObjects(allNamedGraph, uri, rdf.typ).toSeq.contains(foaf.Person)
+      currentFocusURI != nullURI &&
+      getObjects(allNamedGraph, currentFocusURI, rdf.typ).toSeq.contains(foaf.Person)
 
-    val label = instanceLabelFromTDB(uri, request.getLanguage())
+    val label = instanceLabelFromTDB(currentFocusURI, request.getLanguage())
     val personFromAccount = getPersonFromAccount(request.userId())
     logger.debug( s">>>>==== profileClaimUI: personFromAccount ${request.userId()} --> <$personFromAccount>")
     if (currentPageIsAfoafPerson) {
       if (request.userId() != "" &&
-          request.userId() != "anonymous"
+          request.userId() != "anonymous" &&
+          // if currentFocusURI is already a foaf:Person attached to account do not display button
+          currentFocusURI != personFromAccount
           ) {
         val absoluteURIForUserid = makeAbsoluteURIForSaving(request.userId())
         // propose to claim current page's identity (foaf:Person)
         val rdfString = s"""
           ${declarePrefix(foaf)}
-          <$uri> foaf:account <${absoluteURIForUserid}> .
-          <$absoluteURIForUserid> foaf:isAccountOf <$uri>  .
+          <$currentFocusURI> foaf:account <${absoluteURIForUserid}> .
+          <$absoluteURIForUserid> foaf:isAccountOf <$currentFocusURI>  .
           """
 //        logger.debug( s"profileClaimUI: rdfString $rdfString")
         // `` : ECMAScript 6 (ES6)
