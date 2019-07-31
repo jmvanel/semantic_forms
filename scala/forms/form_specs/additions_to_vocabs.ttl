@@ -65,6 +65,8 @@ foaf:Person foaf:img <https://mirrors.creativecommons.org/presskit/icons/by.svg>
 foaf:Project foaf:img ded:noun_247207_cc.svg .
 foaf:Document foaf:img ded:noun_1037431_cc.svg .
 foaf:Organization foaf:img <https://d30y9cdsu7xlg0.cloudfront.net/png/220170-200.png> .
+<http://schema.org/Event> foaf:img ded:event.svg .
+<http://purl.org/NET/c4dm/event.owl#Event> foaf:img ded:event.svg .
 
 owl:Ontology foaf:img <https://upload.wikimedia.org/wikipedia/commons/b/b1/MBED_Top_Level_Ontology.jpg> .
 owl:Class foaf:img <https://upload.wikimedia.org/wikipedia/commons/b/b1/MBED_Top_Level_Ontology.jpg> .
