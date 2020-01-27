@@ -75,10 +75,11 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    * NEEDS transaction
    */
   def sparqlConstructQuery(
-		  queryString: String,
+		  queryString0: String,
       bindings: Map[String, Rdf#Node] = Map(),
       context: Map[String,String] = Map()
       ): Try[Rdf#Graph] = {
+    val queryString = sparqlEnsureLimit(queryString0)
     val result = for {
       query <- {
         logger.debug("sparqlConstructQuery: before parseConstruct")
@@ -96,6 +97,14 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       enrichGraphFromTDB(es, context)
     }
     result
+  }
+
+  /** SPARQL: Ensure presence of Limit in query */
+  private def sparqlEnsureLimit(queryString: String): String = {
+    if( queryString.contains("LIMIT ") )
+        queryString
+    else
+      queryString + " LIMIT 5000"
   }
 
   /** enrich given Graph with computed labels From TDB */
