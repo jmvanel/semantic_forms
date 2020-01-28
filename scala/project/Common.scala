@@ -20,7 +20,7 @@ object Common {
   val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.1.1"
 
   val junitDependency = "junit" % "junit" % "4.12" % Test
-  val scalatestDependency = "org.scalatest" %% "scalatest" % "3.0.5" % "test"
+  val scalatestDependency = "org.scalatest" %% "scalatest" % "3.0.8" % "test"
 
   val log4jVersion = "2.13.0" // "2.11.2" // "2.11.1"
   val loggingDependencies = Seq(
@@ -46,8 +46,7 @@ object Common {
 
 	junitDependency, scalatestDependency,
 
-    // "com.typesafe.play" %% "play-json" %  "2.6.9",
-    "com.typesafe.play" %% "play-json" %  "2.6.10",
+    "com.typesafe.play" %% "play-json" %  "2.6.14",
     // "com.typesafe.play" %% "play-iteratees" % "2.6.1",
 
     "org.apache.lucene" % "lucene-suggest" % "6.4.1" , // "7.5.0", // 6.6.5",

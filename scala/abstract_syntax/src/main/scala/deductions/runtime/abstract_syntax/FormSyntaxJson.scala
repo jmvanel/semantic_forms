@@ -9,9 +9,6 @@ trait FormSyntaxJson[Rdf <: RDF]
     extends FormModule[Rdf#Node, Rdf#URI]
     with RDFHelpers[Rdf] {
 
-  def formSyntax2JSONString(formSyntax: FormSyntax) : String = Json.prettyPrint(formSyntax2JSON(formSyntax))
-  def formSyntax2JSON(formSyntax: FormSyntax): JsValue = Json.toJson(formSyntax)
-
   implicit val nodeWrites = new Writes[Rdf#Node] {
     def writes(n: Rdf#Node) = new JsString(n.toString())
   }
@@ -79,5 +76,8 @@ trait FormSyntaxJson[Rdf <: RDF]
 
       "fields" -> fs.fields)
   }
+
+  def formSyntax2JSONString(formSyntax: FormSyntax) : String = Json.prettyPrint(formSyntax2JSON(formSyntax))
+  def formSyntax2JSON(formSyntax: FormSyntax): JsValue = Json.toJson(formSyntax)
 
 }
