@@ -22,11 +22,12 @@ object Common {
   val junitDependency = "junit" % "junit" % "4.12" % Test
   val scalatestDependency = "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 
-  val log4jVersion = "2.11.1" // "2.11.0"
+  val log4jVersion = "2.13.0" // "2.11.2" // "2.11.1"
   val loggingDependencies = Seq(
     "org.apache.logging.log4j" % "log4j-api" % log4jVersion,
     "org.apache.logging.log4j" % "log4j-core" % log4jVersion,
     "org.apache.logging.log4j" % "log4j-slf4j-impl" % log4jVersion
+//, "org.apache.logging.log4j" % "log4j-web" % log4jVersion
   )
 
   // val scalazDependency = "org.scalaz" %% "scalaz-core" % "7.2.8"
