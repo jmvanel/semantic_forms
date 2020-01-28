@@ -361,6 +361,8 @@ And with SBT configuring maximum logging is like this
 cd $HOME/src/semantic_forms/scala
 sbt -Dlog4j.configurationFile=forms_play/conf/log4j2.debug.properties
 ```
+About the Log4j syntax , see [Log4j manual/configuration.html#Properties](https://logging.apache.org/log4j/2.x/manual/configuration.html#Properties)
+If no "log4j.configurationFile" system property is given, SF should use the default one log4j2.properties in the classpath ( same content as log4j2.warn.properties ) ; see [Log4j manual/configuration.html#AutomaticConfiguration](https://logging.apache.org/log4j/2.x/manual/configuration.html#AutomaticConfiguration) about how Log4j detects congiguration.
 
 ## Download Java on a headless server
 To download Java from the server with no browser (see http://stackoverflow.com/questions/10268583/downloading-java-jdk-on-linux-via-wget-is-shown-license-page-instead):

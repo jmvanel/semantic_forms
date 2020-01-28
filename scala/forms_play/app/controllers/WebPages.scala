@@ -277,7 +277,7 @@ trait WebPages extends Controller with ApplicationTrait
 
   /** generate an HTML table From SPARQL in request */
   private def tableFromSPARQL(request: HTTPrequest): NodeSeq = {
-    println(s">>>> tableFromSPARQL: $request")
+    logger.debug(s">>>> tableFromSPARQL: $request")
     val query = queryFromRequest(request)
     implicit val graph: Rdf#Graph = allNamedGraph
     // form Syntax With user Info

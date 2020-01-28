@@ -51,10 +51,10 @@ trait URIHelpers {
       "application/vnd.oasis.opendocument.text"
   ) // TODO word :(
 
-  /* is a Document in a broad sense, so will typed foaf:Document */
+  /** is a Document in a broad sense, so will typed foaf:Document */
   def isDocumentMIME(mime: String) = {
     val res = documentMIMEs.contains(mime)
-    println(s"isDocumentMIME(mime=$mime => $res")
+    // logger.debug(s"isDocumentMIME(mime=$mime => $res")
     res
   }
 }
