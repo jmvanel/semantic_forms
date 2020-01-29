@@ -60,6 +60,7 @@ trait LuceneIndex // [Rdf <: RDF]
     entMap.set("text", dwc("specificEpithet"))
 
     entMap.set("text", sioc("content"))
+    entMap.set("text", sioc("content_encoded"))
 
     // for Grands Voisins:
     lazy val gvoi = Prefix[ImplementationSettings.Rdf]("gvoi",
@@ -219,6 +220,8 @@ trait LuceneIndex // [Rdf <: RDF]
         val lat_1 = ResourceFactory.createResource("http://dbpedia.org/property/latD")
         val long_1 = ResourceFactory.createResource("http://dbpedia.org/property/longD")
         entityDefinitionsSpatial.addSpatialPredicatePair(lat_1, long_1)
+        entityDefinitionsSpatial.setSpatialContextFactory(
+            "com.spatial4j.core.context.jts.JtsSpatialContextFactory");
         val directorySpatial = new NIOFSDirectory(Paths.get("LUCENESpatial"))
         SpatialDatasetFactory.createLucene(dataset, directorySpatial, entityDefinitionsSpatial)
       }
