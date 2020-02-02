@@ -4,11 +4,13 @@ import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.html.Form2HTMLObject
 import deductions.runtime.user.RegisterPage
 import deductions.runtime.utils.DefaultConfiguration
-import play.api.mvc.{Action, Controller, Request}
+import play.api.mvc.{Action, Request}
 import deductions.runtime.utils.FormModuleBanana
+import play.api.mvc.ControllerComponents
+import javax.inject.Inject
 
 /** Dummy controller for helping in creating new web pages or services */
-object DummyController extends Controller
+class DummyController @Inject() (val controllerComponents: ControllerComponents) extends PlaySettings.MyControllerBase
     with ImplementationSettings.RDFCache
     with LanguageManagement
     with RegisterPage[ImplementationSettings.Rdf, ImplementationSettings.DATASET]

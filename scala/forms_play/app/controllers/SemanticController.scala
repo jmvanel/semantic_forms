@@ -5,7 +5,7 @@ import deductions.runtime.services.html.Form2HTMLObject
 import deductions.runtime.services.{CentralSemanticController, TypicalSFDependencies}
 import deductions.runtime.user.RegisterPage
 import deductions.runtime.utils.DefaultConfiguration
-import play.api.mvc.{Action, Controller, Request}
+import play.api.mvc.{Action, Request}
 import deductions.runtime.mobion.GeoController
 import deductions.runtime.mobion.PerVehicleView
 import deductions.apps.ContactsFrontPage
@@ -19,8 +19,9 @@ import deductions.runtime.utils.FormModuleBanana
  *
  * To create a new service, just implement interface in trait SemanticController,
  * and add this to val actions below. */
-object SemanticController extends Controller
-    with ImplementationSettings.RDFCache
+object SemanticController
+extends play.api.mvc.Results with
+    ImplementationSettings.RDFCache
     with CentralSemanticController[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with LanguageManagement
     with RegisterPage[ImplementationSettings.Rdf, ImplementationSettings.DATASET]

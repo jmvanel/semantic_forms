@@ -21,7 +21,6 @@ import deductions.runtime.views.MainXmlWithHead
 
 import play.api.mvc.Action
 import play.api.mvc.Call
-import play.api.mvc.Controller
 import play.api.mvc.Request
 import play.api.mvc.Security
 
@@ -29,7 +28,13 @@ import scalaz._
 import Scalaz._
 import deductions.runtime.utils.FormModuleBanana
 
-object AuthService extends AuthServiceTrait {
+//import javax.inject.Inject
+//import play.api.mvc.ControllerComponents
+
+class AuthService
+// @Inject() (val controllerComponents: ControllerComponents)
+extends PlaySettings.MyControllerBase with
+AuthServiceTrait {
   override implicit val config: Configuration = new DefaultConfiguration {
     override val needLoginForEditing = true
     override val needLoginForDisplaying = true
@@ -54,7 +59,7 @@ with FormModuleBanana[ImplementationSettings.Rdf] {
 /** Controller for registering account, login, logout;
  *  see https://www.playframework.com/documentation/2.4.x/ScalaSessionFlash */
 trait AuthServiceTrait2[Rdf <: RDF, DATASET]
-extends Controller
+extends PlaySettings.MyControllerBase
  with Authentication[Rdf, DATASET]
  with RDFStoreLocalUserManagement[Rdf, DATASET]
  with TriplesViewModule[Rdf, DATASET]

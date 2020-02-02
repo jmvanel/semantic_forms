@@ -17,7 +17,6 @@ import deductions.runtime.core.HTTPrequest
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.views.ToolsPage
 import play.api.mvc.Action
-import play.api.mvc.Controller
 import play.api.mvc.Request
 import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.core.SemanticController
@@ -31,7 +30,8 @@ import play.api.mvc.AnyContent
 import play.api.mvc.RequestHeader
 
 /** controller for HTML pages ("generic application") */
-trait WebPages extends Controller with ApplicationTrait
+trait WebPages extends PlaySettings.MyControllerBase
+with ApplicationTrait
   with FormHeader[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
   import config._
 
@@ -39,7 +39,7 @@ trait WebPages extends Controller with ApplicationTrait
     recoverFromOutOfMemoryErrorGeneric(
       {
         val contentMaker = new SemanticController {
-          def result(request: HTTPrequest): NodeSeq =
+          override def result(request: HTTPrequest): NodeSeq =
             makeHistoryUserActions("15", request)
         }
         outputMainPageWithContent(contentMaker)
@@ -201,7 +201,7 @@ trait WebPages extends Controller with ApplicationTrait
     recoverFromOutOfMemoryErrorGeneric(
       {
         val contentMaker = new SemanticController {
-          def result(request: HTTPrequest): NodeSeq = {
+          override def result(request: HTTPrequest): NodeSeq = {
             val precomputed: MainPagePrecompute = MainPagePrecompute(request)
             import precomputed._
             logger.debug(s"displayURI: expandOrUnchanged <$uri>")
@@ -239,7 +239,7 @@ trait WebPages extends Controller with ApplicationTrait
   }
 
   private val tableContentMaker: SemanticController = new SemanticController {
-    def result(request: HTTPrequest): NodeSeq = {
+    override def result(request: HTTPrequest): NodeSeq = {
       val query = queryFromRequest(request)
       val userid = request.userId()
       val title = "Table view from SPARQL"
@@ -601,7 +601,7 @@ trait WebPages extends Controller with ApplicationTrait
     recoverFromOutOfMemoryErrorGeneric(
       {
       val contentMaker: SemanticController = new SemanticController {
-        def result(request: HTTPrequest): NodeSeq = {
+        override def result(request: HTTPrequest): NodeSeq = {
           val precomputed: MainPagePrecompute = MainPagePrecompute(request)
           import precomputed._
           logger.info(s"makeHistoryUserActionsAction: ${request.logRequest()}, limit='$limit', cookies: ${request.cookies.mkString("; ")}" )

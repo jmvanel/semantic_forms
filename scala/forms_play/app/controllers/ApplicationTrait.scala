@@ -23,7 +23,6 @@ import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.mvc.AnyContentAsRaw
 import play.api.mvc.AnyContentAsText
 import play.api.mvc.Codec
-import play.api.mvc.Controller
 import play.api.mvc.RawBuffer
 import play.api.mvc.Request
 import play.api.mvc.RequestHeader
@@ -35,6 +34,7 @@ import scala.io.Source
 import play.api.mvc.AnyContentAsXml
 import play.api.mvc.AnyContentAsJson
 import play.api.mvc.Action
+//import play.api.mvc.ControllerComponents
 
 import scalaz._
 import Scalaz._
@@ -45,9 +45,14 @@ import Scalaz._
 //  }
 //}
 
+object PlaySettings {
+  type MyControllerBase = play.api.mvc.Controller
+    // play.api.mvc.BaseController
+}
+
 /** controller base;
  *  HTML pages & HTTP services are in WebPages and Services */
-trait ApplicationTrait extends Controller
+trait ApplicationTrait extends PlaySettings.MyControllerBase
     with ApplicationFacadeImpl[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with LanguageManagement
     with Secured
@@ -58,7 +63,6 @@ trait ApplicationTrait extends Controller
     with RequestUtils
     with RDFStoreLocalJenaProvider
 {
-
 	val config: Configuration
 
 	implicit val myCustomCharset = Codec.javaSupported("utf-8")
