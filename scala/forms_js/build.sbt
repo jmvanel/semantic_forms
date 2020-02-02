@@ -26,7 +26,7 @@ libraryDependencies += "be.doeraene" %%% "scalajs-jquery" % "0.9.4"
 // libraryDependencies += "com.definitelyscala" %%% "scala-js-jqueryui" % "1.0.2"
 // Classes and traits are available in the package com.definitelyscala.jqueryui, scaladoc is provided.
 
-resolvers += "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/"
+resolvers += "Typesafe Repo" at "https://repo.typesafe.com/typesafe/releases/"
 resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
 // updateBrowsers <<= updateBrowsers.triggeredBy(fastOptJS in Compile)
 

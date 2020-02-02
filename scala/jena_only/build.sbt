@@ -15,6 +15,6 @@ libraryDependencies ++= Seq(
 jenaDependency, jenaTextDependency
 )
 
-resolvers += "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/"
+resolvers += "Typesafe Repo" at "https://repo.typesafe.com/typesafe/releases/"
 resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
 
