@@ -5,21 +5,29 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Request
 import play.api.mvc.Result
 
-import java.net.URLDecoder
-
 import scalaz._
 import Scalaz._
+
 import scala.util.Success
+import scala.concurrent.Future
 
 import org.apache.commons.codec.digest.DigestUtils
 
 import deductions.runtime.services.RDFContentNegociation
 import java.net.URI
+import java.net.URLDecoder
 import java.io.File
-import scala.concurrent.Future
 
 
-/** controller for non-SPARQL Services (or SPARQL related but not in the W3C recommendations) */
+class ServicesApp extends  {
+    override implicit val config = new PlayDefaultConfiguration
+  }
+  with Services
+  with HTMLGenerator
+
+
+/** controller for non-SPARQL Services (or SPARQL related but not in the W3C recommendations)
+ *  including LDP */
 trait Services extends ApplicationTrait
 with RDFContentNegociation {
 
@@ -293,7 +301,7 @@ with RDFContentNegociation {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  /** HTTP param publisher (provenance) for adding triple with dct:publisher */
+  /** load URI into TDB; HTTP param publisher (provenance) for adding triple with dct:publisher */
   def loadURI(uriString: String): Action[AnyContent] = {
     recoverFromOutOfMemoryErrorGeneric[Action[AnyContent]](
       {

@@ -21,20 +21,20 @@ GET /robots.txt             controllers.Assets.at(path="/public", file="robots.t
 # GET /bla controllers.HomeController.bla()
 
 GET     /display            controllers.Application.displayURI(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="")
-GET     /load-uri           controllers.Application.loadURI(uri:String)
-POST    /load-uri           controllers.Application.loadURIpost()
-# GET     /display2            controllers.Application.displayURI2(displayuri:String)
+GET     /load-uri          @controllers.ServicesApp.loadURI(uri:String)
+POST    /load-uri          @controllers.ServicesApp.loadURIpost()
+
 POST    /load               controllers.Application.loadAction()
 GET     /table              controllers.Application.table()
 
 GET     /edit               controllers.Application.edit( url:String )
 POST    /save               controllers.Application.saveAction()
 GET     /create             controllers.Application.createAction()
-GET     /create-data        controllers.Application.createData()
+GET     /create-data       @controllers.ServicesApp.createData()
 
-GET     /download           controllers.Application.downloadAction( url:String, database:String ?="TDB" )
+GET     /download          @controllers.ServicesApp.downloadAction( url:String, database:String ?="TDB" )
 GET     /form               controllers.Application.form(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="", database:String ?="TDB")
-GET     /form-data          controllers.Application.formDataAction(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="", database:String ?="TDB")
+GET     /form-data         @controllers.ServicesApp.formDataAction(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="", database:String ?="TDB")
 GET     /sparql-form        controllers.Application.sparqlForm(query:String, Edit:String?="", formuri:String ?="", database:String ?="TDB")
 
 GET     /page               controllers.SemanticController.page()
@@ -50,8 +50,8 @@ GET     /sparql2            controllers.Application.sparqlGetUnionGraph( query:S
 POST    /sparql             controllers.Application.sparqlPOST()
 POST    /sparql2            controllers.Application.sparqlPOSTUnionGraph()
 
-POST    /sparql-data        controllers.Application.sparqlDataPOST()
-GET     /sparql-data        controllers.Application.sparqlDataGET(query: String)
+POST    /sparql-data       @controllers.ServicesApp.sparqlDataPOST()
+GET     /sparql-data       @controllers.ServicesApp.sparqlDataGET(query: String)
 
 GET     /select-ui          controllers.Application.select( query:String )
 POST    /select-ui          controllers.Application.select( query:String )
@@ -62,7 +62,7 @@ POST    /update             controllers.Application.updatePOST()
 
 GET     /wordsearch         controllers.Application.wordsearchAction(q:String ?= "", clas: String ?= "")
 GET     /search             controllers.Application.searchOrDisplayAction(q:String ?= "")
-GET     /lookup             controllers.Application.lookupService(QueryString:String, QueryClass: String ?= "")
+GET     /lookup            @controllers.ServicesApp.lookupService(QueryString:String, QueryClass: String ?= "")
 
 GET     /backlinks          controllers.Application.backlinksAction(q:String ?= "")
 GET     /esearch            controllers.Application.extSearch(q:String ?= "")
@@ -87,15 +87,16 @@ GET     /assets/*file               @controllers.Assets.at(path="/public", file)
 GET     /files/*file                @controllers.Files.at(file)
 
 # LDP
-GET     /ldp/*uri              controllers.Application.ldp(uri: String)
-GET     /ldp                   controllers.Application.ldp(uri: String ?= "")
-POST    /ldp/*uri              controllers.Application.ldpPOSTAction(uri: String)
-POST    /ldp                   controllers.Application.ldpPOSTActionNoURI()
-PUT     /ldp/*uri              controllers.Application.ldpPOSTAction(uri: String)
-PUT     /ldp                   controllers.Application.ldpPOSTActionNoURI()
-DELETE  /ldp/*uri              controllers.Application.ldpDeleteResource(uri: String)
-HEAD    /ldp/*uri              controllers.Application.ldpHEAD(uri: String)
-OPTIONS /*path                 controllers.Application.httpOptions(path)
+GET     /ldp/*uri             @controllers.ServicesApp.ldp(uri: String)
+GET     /ldp                  @controllers.ServicesApp.ldp(uri: String ?= "")
+POST    /ldp/*uri             @controllers.ServicesApp.ldpPOSTAction(uri: String)
+POST    /ldp                  @controllers.ServicesApp.ldpPOSTActionNoURI()
+PUT     /ldp/*uri             @controllers.ServicesApp.ldpPOSTAction(uri: String)
+PUT     /ldp                  @controllers.ServicesApp.ldpPOSTActionNoURI()
+DELETE  /ldp/*uri             @controllers.ServicesApp.ldpDeleteResource(uri: String)
+HEAD    /ldp/*uri             @controllers.ServicesApp.ldpHEAD(uri: String)
+
+OPTIONS /*path                @controllers.ServicesApp.httpOptions(path)
 
 # see https://www.w3.org/TR/void/#well-known
-GET /.well-known/void          controllers.Application.wellKnownVoid()
+GET /.well-known/void         @controllers.ServicesApp.wellKnownVoid()
