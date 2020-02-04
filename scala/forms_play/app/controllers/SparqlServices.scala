@@ -78,7 +78,7 @@ trait SparqlServices extends ApplicationTrait
       val firstMimeTypeAccepted = accepts.getOrElse("").replaceFirst(",.*", "")
       logger.debug( "firstMimeTypeAccepted " + firstMimeTypeAccepted )
       if (firstMimeTypeAccepted == "text/html") {
-        val call = routes.Application.sparql(query)
+        val call = routes.WebPagesApp.sparql(query)
         Redirect(call).flashing(
          "message" -> "Redirect to SPARQL UI" )
       } else {

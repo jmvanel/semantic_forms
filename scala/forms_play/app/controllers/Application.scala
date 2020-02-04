@@ -4,7 +4,6 @@ package controllers
 object Application extends {
     override implicit val config = new PlayDefaultConfiguration
   }
-  // with Services
-  with WebPages
+  // with WebPages
   with SparqlServices
   with HTMLGenerator

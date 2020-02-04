@@ -13,34 +13,34 @@
 # http://spray.io/documentation/1.2.4/spray-routing/ ==> spray is no longer maintained and has been superseded by Akka HTTP.
 
 # Home page
-GET     /                   controllers.Application.index
+GET     /                   controllers.WebPagesApp.index
 
 # TODO put it in files/
 GET /robots.txt             controllers.Assets.at(path="/public", file="robots.txt")
 
 # GET /bla controllers.HomeController.bla()
 
-GET     /display            controllers.Application.displayURI(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="")
+GET     /display            controllers.WebPagesApp.displayURI(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="")
 GET     /load-uri          @controllers.ServicesApp.loadURI(uri:String)
 POST    /load-uri          @controllers.ServicesApp.loadURIpost()
 
 POST    /load               controllers.Application.loadAction()
-GET     /table              controllers.Application.table()
+GET     /table              controllers.WebPagesApp.table()
 
-GET     /edit               controllers.Application.edit( url:String )
-POST    /save               controllers.Application.saveAction()
-GET     /create             controllers.Application.createAction()
+GET     /edit               controllers.WebPagesApp.edit( url:String )
+POST    /save               controllers.WebPagesApp.saveAction()
+GET     /create             controllers.WebPagesApp.createAction()
 GET     /create-data       @controllers.ServicesApp.createData()
 
 GET     /download          @controllers.ServicesApp.downloadAction( url:String, database:String ?="TDB" )
-GET     /form               controllers.Application.form(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="", database:String ?="TDB")
+GET     /form              @controllers.WebPagesTechApp.form(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="", database:String ?="TDB")
 GET     /form-data         @controllers.ServicesApp.formDataAction(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="", database:String ?="TDB")
-GET     /sparql-form        controllers.Application.sparqlForm(query:String, Edit:String?="", formuri:String ?="", database:String ?="TDB")
+GET     /sparql-form        controllers.WebPagesApp.sparqlForm(query:String, Edit:String?="", formuri:String ?="", database:String ?="TDB")
 
 GET     /page               controllers.SemanticController.page()
 
-GET     /sparql-ui          controllers.Application.sparql( query:String )
-POST    /sparql-ui          controllers.Application.sparql( query:String )
+GET     /sparql-ui          controllers.WebPagesApp.sparql( query:String )
+POST    /sparql-ui          controllers.WebPagesApp.sparql( query:String )
 
 # Construct or SELECT 
 GET     /sparql             controllers.Application.sparqlGET( query:String )
@@ -50,27 +50,28 @@ GET     /sparql2            controllers.Application.sparqlGetUnionGraph( query:S
 POST    /sparql             controllers.Application.sparqlPOST()
 POST    /sparql2            controllers.Application.sparqlPOSTUnionGraph()
 
+
 POST    /sparql-data       @controllers.ServicesApp.sparqlDataPOST()
 GET     /sparql-data       @controllers.ServicesApp.sparqlDataGET(query: String)
 
-GET     /select-ui          controllers.Application.select( query:String )
-POST    /select-ui          controllers.Application.select( query:String )
+GET     /select-ui          controllers.WebPagesApp.select( query:String )
+POST    /select-ui          controllers.WebPagesApp.select( query:String )
 
 GET     /update             controllers.Application.updateGET( update:String )
 POST    /update             controllers.Application.updatePOST()
 
 
-GET     /wordsearch         controllers.Application.wordsearchAction(q:String ?= "", clas: String ?= "")
-GET     /search             controllers.Application.searchOrDisplayAction(q:String ?= "")
+GET     /wordsearch         controllers.WebPagesApp.wordsearchAction(q:String ?= "", clas: String ?= "")
+GET     /search             controllers.WebPagesApp.searchOrDisplayAction(q:String ?= "")
 GET     /lookup            @controllers.ServicesApp.lookupService(QueryString:String, QueryClass: String ?= "")
 
-GET     /backlinks          controllers.Application.backlinksAction(q:String ?= "")
-GET     /esearch            controllers.Application.extSearch(q:String ?= "")
+GET     /backlinks          controllers.WebPagesApp.backlinksAction(q:String ?= "")
+GET     /esearch            controllers.WebPagesApp.extSearch(q:String ?= "")
 
-GET     /tools			    controllers.Application.toolsPage
-GET     /showNamedGraphs    controllers.Application.showNamedGraphsAction
-GET     /showTriplesInGraph controllers.Application.showTriplesInGraphAction(uri: String)
-GET     /history            controllers.Application.makeHistoryUserActionsAction(limit: String?= "")
+GET     /tools		    controllers.WebPagesApp.toolsPage
+GET     /showNamedGraphs    controllers.WebPagesApp.showNamedGraphsAction
+GET     /showTriplesInGraph  controllers.WebPagesApp.showTriplesInGraphAction(uri: String)
+GET     /history            controllers.WebPagesApp.makeHistoryUserActionsAction(limit: String?= "")
 
 # authentication
 

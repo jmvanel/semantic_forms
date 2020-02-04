@@ -29,6 +29,14 @@ import deductions.runtime.views.FormHeader
 import play.api.mvc.AnyContent
 import play.api.mvc.RequestHeader
 
+
+object WebPagesApp extends {
+    override implicit val config = new PlayDefaultConfiguration
+  }
+  with WebPages
+  with HTMLGenerator
+
+
 /** controller for HTML pages ("generic application") */
 trait WebPages extends PlaySettings.MyControllerBase
 with ApplicationTrait
@@ -302,33 +310,12 @@ with ApplicationTrait
     tableView.generate(formSyntax, request)
   }
 
+  ///////////////// SPARQL related ////////////////////////
+
   private def queryFromRequest(request: HTTPrequest): String =
     request.queryString.getOrElse("query", Seq()).headOption.getOrElse("")
 
-  /** "naked" HTML form */
-  def form(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "",
-           database: String = "TDB") =
-    Action {
-      implicit request: Request[_] =>
-        recoverFromOutOfMemoryErrorGeneric(
-          {
-            logger.info(s"""form: request $request : "$Edit" formuri <$formuri> """)
-            val lang = chooseLanguage(request)
-            val requestCopy = getRequestCopy()
-            val userid = requestCopy.userId()
-            Ok(htmlForm(uri, blankNode, editable = Edit  =/=  "", lang, formuri,
-              graphURI = makeAbsoluteURIForSaving(userid), database = database, HTTPrequest() )._1)
-              .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
-              .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
-              .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
-              .as("text/html; charset=utf-8")
-          },
-          (t: Throwable) =>
-            errorResultFromThrowable(t, s"in /form?uri=$uri"))
-    }
-
-  /**
-   * /sparql-form service: Create HTML form or view from SPARQL (construct);
+  /** /sparql-form service: Create HTML form or view from SPARQL (construct);
    *  like /sparql has input a SPARQL query;
    *  like /form and /display has parameters Edit, formuri & database
    */
@@ -351,6 +338,7 @@ with ApplicationTrait
         (t: Throwable) =>
           errorResultFromThrowable(t, "in /sparql-form"))
     }
+
 
   /** SPARQL Construct UI */
   def sparql(query: String) : EssentialAction = {
@@ -496,7 +484,7 @@ with ApplicationTrait
       val saveAfterCreate = httpRequest.getHTTPheaderValue("Referer") .filter( _ .contains("/create?") ).isDefined
       val edit = typeChanges && ! saveAfterCreate
       val editParam = if( edit ) "edit" else ""
-      val call = routes.Application.displayURI(
+      val call = routes.WebPagesApp.displayURI(
         uri, Edit = editParam)
       Redirect(call).flashing(
         "message" ->

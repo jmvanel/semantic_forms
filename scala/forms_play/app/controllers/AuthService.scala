@@ -170,7 +170,7 @@ extends PlaySettings.MyControllerBase
           url =/= "" &&
           !url.endsWith("/login") &&
           !url.endsWith("/authenticate")) => Call("GET", url)
-        case _ => routes.Application.index
+        case _ => routes.WebPagesApp.index
       }
       Redirect(call).withSession(Security.username -> useridOption.get )
         .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
@@ -235,7 +235,7 @@ extends PlaySettings.MyControllerBase
       if (registerChecked) {
         // TODO also Redirect to the URL before login
         logger.info(s"register: user: $useridOption")
-        Redirect(routes.Application.index).withSession(
+        Redirect(routes.WebPagesApp.index).withSession(
           Security.username -> makeURIPartFromString(useridOption.get))
           .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
