@@ -28,6 +28,8 @@ import Scalaz._
 import deductions.runtime.views.FormHeader
 import play.api.mvc.AnyContent
 import play.api.mvc.RequestHeader
+import deductions.runtime.core.SemanticControllerWrapper
+import deductions.runtime.core.IPFilter
 
 
 object WebPagesApp extends {
@@ -40,8 +42,11 @@ object WebPagesApp extends {
 /** controller for HTML pages ("generic application") */
 trait WebPages extends PlaySettings.MyControllerBase
 with ApplicationTrait
-  with FormHeader[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+  with FormHeader[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+  with SemanticControllerWrapper {
   import config._
+
+  private val ipFilterInstance = new IPFilter{}
 
   def index(): EssentialAction = {
     recoverFromOutOfMemoryErrorGeneric(
@@ -214,12 +219,15 @@ with ApplicationTrait
             import precomputed._
             logger.debug(s"displayURI: expandOrUnchanged <$uri>")
             val userInfo = displayUser(userid, uri, title, lang)
+            val content : () => NodeSeq = () =>
             htmlForm(uri, blanknode, editable = Edit  =/=  "", lang, formuri,
               graphURI = makeAbsoluteURIForSaving(userid),
               request = request)._1
+            filterRequestResult( request, content, ipFilterInstance)
           }
         }
-// TODO decideLoginRequired(contentMaker)
+
+        // TODO decideLoginRequired(contentMaker)
         if (needLoginForDisplaying || (needLoginForEditing && Edit  =/=  ""))
           outputMainPageWithContentLogged(contentMaker, "")
         else
@@ -243,7 +251,11 @@ with ApplicationTrait
    *  IMPLEMENTATION: pipeline:
    *  URI --> query --> triples --> form syntax --> table cells */
   def table() = EssentialAction { implicit requestHeader: RequestHeader =>
-    decideLoginRequired(copyRequestHeader(requestHeader), tableContentMaker)(requestHeader)
+    val request = copyRequestHeader(requestHeader)
+    decideLoginRequired(
+        request,
+        filterRequest(request, tableContentMaker, ipFilterInstance )
+        )(requestHeader)
   }
 
   private val tableContentMaker: SemanticController = new SemanticController {
