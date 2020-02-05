@@ -10,6 +10,8 @@ import java.net.URL
 
 import deductions.runtime.core.FormModule
 import deductions.runtime.utils.RDFPrefixes
+import deductions.runtime.core.HTTPrequest
+
 import org.w3.banana.RDF
 
 import scala.io.Source
@@ -85,7 +87,7 @@ trait FormSpecificationsFromVocab[Rdf <: RDF, DATASET]
       classTriple <- find(vocabGraph, ANY, rdf.typ, owl.Class);
       _ = println(s"makeFormSpecificationsFromVocab: class Triple $classTriple");
       classe = classTriple.subject;
-      formSyntax = createFormFromClass(makeURI(classe))(graph, "en");
+      formSyntax = createFormFromClass( makeURI(classe), request=HTTPrequest() )(graph, "en");
       _ = println(s"makeFormSpecificationsFromVocab: formSyntax $formSyntax")
     ) yield {
       union(Seq(

@@ -267,13 +267,13 @@ JMV:
 
         if (isDocumentExpired(connectionOption)) {
           logger.info(s"updateLocalVersion: <$uri> was OUTDATED by Expires HTPP header field")
-          return readStoreURITry(uri, uri, dataset)
+          return readStoreURITry(uri, uri, dataset, request=HTTPrequest() )
         }
 
         if (noErrorLastModified &&
            (timestampFromHTTPHeader > longLocalTimestamp
             || longLocalTimestamp === Long.MaxValue)) {
-          val graph = readStoreURITry(uri, uri, dataset)
+          val graph = readStoreURITry(uri, uri, dataset, request=HTTPrequest() )
           logger.info(
             s"updateLocalVersion: <$uri> was OUTDATED by timestamp ${new Date(timestampFromHTTPHeader)}; downloaded.")
 
@@ -289,20 +289,20 @@ JMV:
               val etag = getHeaderField("ETag", connection)
               val etagFromDataset = dataset2.r { getETagFromDataset(uri, dataset2) }.get
               if (etag  =/=  etagFromDataset) {
-                val graph = readStoreURITry(uri, uri, dataset)
+                val graph = readStoreURITry(uri, uri, dataset, request=HTTPrequest())
                 logger.debug(s"""updateLocalVersion: <$uri> was OUTDATED by ETag; downloaded.
                   etag "$etag"  =/=  etagFromDataset "$etagFromDataset" """)
                 rdfStore.rw(dataset2, { addETagToDatasetNoTransaction(uri, etag, dataset2) })
                 graph
               } else Success(emptyGraph)
             case Failure(f) =>
-              readStoreURITry(uri, uri, dataset)
+              readStoreURITry(uri, uri, dataset, request=HTTPrequest())
           }
         } else Success(emptyGraph)
       }
       case Failure(fail) =>
         logger.debug(s"updateLocalVersion: <$uri> had no local Timestamp ($fail); download it:")
-        readStoreURITry(uri, uri, dataset)
+        readStoreURITry(uri, uri, dataset, request=HTTPrequest() )
     }
   }
 
@@ -340,7 +340,8 @@ JMV:
           logger.info(s"Before Loading imported Ontology $importedOntology")
           foldNode(importedOntology.subject)(ontoMain => Some(ontoMain), _ => None, _ => None) match {
             case Some(uri /* : Rdf#URI */ ) =>
-              foldNode(importedOntology.objectt)(onto => readStoreURINoTransaction(onto, onto, dataset),
+              foldNode(importedOntology.objectt)(onto => readStoreURINoTransaction(onto, onto, dataset,
+                  request=HTTPrequest() ),
                 _ => emptyGraph,
                 _ => emptyGraph); Unit
             case None => Unit
@@ -364,7 +365,7 @@ JMV:
    */
   def readStoreURI(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
     val r = rdfStore.rw(dataset, {
-      readStoreURINoTransaction(uri, graphUri, dataset)
+      readStoreURINoTransaction(uri, graphUri, dataset, request=HTTPrequest() )
     })
     r.flatten match {
       case Success(g) => g
@@ -382,13 +383,13 @@ JMV:
    * TODO: remove, to split read (no Transaction needed) & Store (Transaction needed)
    */
   private def readStoreURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET,
-                                        request: HTTPrequest = HTTPrequest()): Try[Rdf#Graph] = {
+                                        request: HTTPrequest ): Try[Rdf#Graph] = {
     val graphTry = readURI(uri, dataset, request) . _1
     storeURINoTransaction(graphTry, graphUri, dataset)
   }
   /** read unconditionally from URI and store in TDB, Transaction inside */
   private def readStoreURITry(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET,
-                              request: HTTPrequest = HTTPrequest()): Try[Rdf#Graph] = {
+                              request: HTTPrequest ): Try[Rdf#Graph] = {
     val graphTry = readURI(uri, dataset, request) . _1
     storeURI(graphTry, graphUri, dataset)
   }

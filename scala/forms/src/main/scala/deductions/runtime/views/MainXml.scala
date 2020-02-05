@@ -24,7 +24,7 @@ trait MainXml extends ToolsPage with EnterButtons {
                messages: NodeSeq = defaultSiteMessage,
                headExtra: NodeSeq = NodeSeq.Empty,
                classForContent: String = "container sf-complete-form",
-               httpRequest: HTTPrequest = HTTPrequest()) = {
+               httpRequest: HTTPrequest) = {
     <html>
       <head>
         { head(title)(lang) }

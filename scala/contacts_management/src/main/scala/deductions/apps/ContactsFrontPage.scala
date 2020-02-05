@@ -27,7 +27,8 @@ with RegisterPage[Rdf, DATASET] {
     mainPage(content, userInfo = userInfo
       , lang = "en", title = "Contacts Mgnt",
       displaySearch = true,
-      messages = <p/> )
+      messages = <p/>,
+      httpRequest = request )
 	}
 
   /**

@@ -63,7 +63,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     lang:        String,
     search:      Seq[String],
     variables:   Seq[String] = Seq("?thing"),
-    httpRequest: HTTPrequest = HTTPrequest())(
+    httpRequest: HTTPrequest )(
     implicit
     queryMaker: SPARQLQueryMaker[Rdf]): Future[NodeSeq] = {
     logger.debug(s"search($search) 1: starting TRANSACTION for dataset $dataset")
@@ -165,7 +165,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
               // create table like HTML
               u =>
                 // logger.trace(s"**** search2 u $u")
-                displayResults(u.toIterable, hrefPrefix, lang, graph)
+                displayResults(u.toIterable, hrefPrefix, lang, graph, request=HTTPrequest() )
             }
         }</div>
       })
@@ -187,7 +187,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     logger.debug(s"search 2: starting TRANSACTION for dataset $dataset")
     val transaction =
       rdfStore.r(dataset, {
-        search_onlyNT(search)
+        search_onlyNT(search, httpRequest=HTTPrequest())
       })
     val tryIteratorRdfNode = transaction // .flatMap { identity }
     logger.debug(s"after search_only(search tryIteratorRdfNode $tryIteratorRdfNode")
@@ -196,7 +196,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
   
   /** search only Non Transactional; need READ transaction */
   private def search_onlyNT(search: Seq[String], variables: Seq[String] = Seq("?thing"),
-      httpRequest: HTTPrequest = HTTPrequest())
+      httpRequest: HTTPrequest)
   (implicit queryMaker: SPARQLQueryMaker[Rdf] ) = {
     val queryString: String = {
       val rawQueryString = queryMaker.makeQueryString(search :_* )

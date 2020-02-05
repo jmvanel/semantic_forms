@@ -31,7 +31,7 @@ extends ThumbnailInference[Rdf, DATASET] {
       lang: String = "",
       graph: Rdf#Graph,
       sortAnd1rowPerElement:Boolean = false,
-      request: HTTPrequest = HTTPrequest() )
+      request: HTTPrequest )
   : NodeSeq = {
     val wrappingClass = "row sf-triple-block"
     val tryResult = Try{
@@ -72,7 +72,8 @@ extends ThumbnailInference[Rdf, DATASET] {
               bnode, lang, graph,
               hrefPrefix = hrefPrefix,
               label = label,
-              sortAnd1rowPerElement = sortAnd1rowPerElement ),
+              sortAnd1rowPerElement = sortAnd1rowPerElement,
+              request=HTTPrequest() ),
           lit => <div>{ lit.toString() }</div>
           )
           }</div> , separatorTriple )
@@ -99,7 +100,7 @@ extends ThumbnailInference[Rdf, DATASET] {
   def makeHyperlinkForURI( node: Rdf#Node, lang: String, graph: Rdf#Graph = allNamedGraph,
       hrefPrefix: String = config.hrefDisplayPrefix,
       label: String = "",
-      request: HTTPrequest = HTTPrequest(),
+      request: HTTPrequest,
       sortAnd1rowPerElement:Boolean = false )
     : NodeSeq = {
     val displayLabel =
@@ -145,7 +146,8 @@ extends ThumbnailInference[Rdf, DATASET] {
     			makeHyperlinkForURI( node, lang, graph,
     					hrefPrefix,
     					label,
-    					sortAnd1rowPerElement=sortAnd1rowPerElement)
+    					sortAnd1rowPerElement=sortAnd1rowPerElement,
+    					request=HTTPrequest())
     		} . getOrElse(<div/>)
   }
 
@@ -156,7 +158,7 @@ extends ThumbnailInference[Rdf, DATASET] {
       label: String,
       property: Rdf#URI,
       type_ : Rdf#Node,
-      request: HTTPrequest = HTTPrequest()
+      request: HTTPrequest
       ): NodeSeq = {
     if( uri != nullURI ) {
       val resourceEntry = makeResourceEntry(uri, label, property, type_)
@@ -183,7 +185,8 @@ extends ThumbnailInference[Rdf, DATASET] {
       type_ : Rdf#Node
       ): NodeSeq = {
         createHTMLResourceReadonlyFieldBriefly(
-            makeResourceEntry(uri, label, property, type_ ) )
+            makeResourceEntry(uri, label, property, type_ ),
+            request=HTTPrequest() )
   }
 
   private def makeResourceEntry(uri: Rdf#URI,

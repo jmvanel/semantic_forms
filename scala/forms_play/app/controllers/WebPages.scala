@@ -467,12 +467,13 @@ with ApplicationTrait
           val pageLabel = labelForURITransaction(uri, lang)
           val userInfo = displayUser(userid, pageURI, pageLabel, lang)
           logger.info(s"userInfo $userInfo, userid $userid")
+          val httpRequest = copyRequest(request)
           val content = htmlForm(
             uri, editable = true,
             lang = chooseLanguage(request), graphURI = makeAbsoluteURIForSaving(userid),
-            request = copyRequest(request))._1
+            request = httpRequest )._1
           Ok("<!DOCTYPE html>\n" +
-             mainPage(content, userInfo, lang))
+             mainPage(content, userInfo, lang, httpRequest=httpRequest))
              .addHttpHeaders()
         },
         (t: Throwable) =>
@@ -573,8 +574,9 @@ with ApplicationTrait
 
   def extSearch(q: String = "") = Action.async {
 	  implicit request: Request[_] =>
-	  val lang = chooseLanguage(request)
-    val fut = recoverFromOutOfMemoryError(esearchFuture(q))
+	  val httpRequest = copyRequest(request)
+	  val lang = httpRequest.getLanguage()// chooseLanguage(request)
+    val fut = recoverFromOutOfMemoryError(esearchFuture(q, httpRequest))
     fut.map(r =>
     outputMainPage(r, lang, classForContent=""))
   }

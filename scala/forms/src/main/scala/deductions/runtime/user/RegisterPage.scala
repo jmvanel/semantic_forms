@@ -49,9 +49,9 @@ trait RegisterPage[Rdf <: RDF, DATASET]
             // link to User profile
             makeHyperlinkForURI(
                 URI( absoluteURIForUserid ),
-                lang, allNamedGraph) ++
+                lang, allNamedGraph, request=HTTPrequest()) ++
             // link to User's foaf:Person :
-            makeHyperlinkForURI(personFromAccount, lang, allNamedGraph)
+            makeHyperlinkForURI(personFromAccount, lang, allNamedGraph, request=HTTPrequest())
           }
           val displayUserLabel: NodeSeq = userLabel match {
             case Success(lab) => Text(s"${I18NMessages.get("User", lang)}: ") ++ lab
@@ -109,7 +109,7 @@ trait RegisterPage[Rdf <: RDF, DATASET]
 //  (implicit graph: Rdf#Graph)
   = {
 	  implicit val graph: Rdf#Graph = allNamedGraph
-    val rawForm = create(uri //      , actionURI = "/saveuser", // TODO
+    val rawForm = create(uri, request= HTTPrequest() //      , actionURI = "/saveuser", // TODO
     //      actionURI2 = "/saveuser"
     )
     // TODO put the password after name field inside the form

@@ -27,7 +27,8 @@ with FormModule[NODE, URI]
 
   private[html] def createHTMLiteralReadonlyField(
     literalEntry: formMod#LiteralEntry,
-    request:      HTTPrequest          = HTTPrequest()): NodeSeq = {
+    request:      HTTPrequest
+  ): NodeSeq = {
     <span>
         {
           val valueDisplayed =
@@ -128,7 +129,7 @@ with FormModule[NODE, URI]
    *  TODO duplication with preceding function createHTMLResourceReadonlyField() */
   def createHTMLResourceReadonlyFieldBriefly(
     resourceEntry: formMod#ResourceEntry,
-    request:       HTTPrequest           = HTTPrequest()): NodeSeq = {
+    request:       HTTPrequest           ): NodeSeq = {
     import resourceEntry._
     val typ = firstNODEOrElseEmptyString(type_)
     val objectURIstringValue = value.toString()

@@ -196,7 +196,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
   /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
   def createHTMLiteralEditableField(
       lit: formMod#LiteralEntry,
-      request: HTTPrequest = HTTPrequest())(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
+      request: HTTPrequest )(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
 //    println(s"==== createHTMLiteralEditableField lit $lit")
     import lit._
     val type0 = firstNODEOrElseEmptyString(type_)

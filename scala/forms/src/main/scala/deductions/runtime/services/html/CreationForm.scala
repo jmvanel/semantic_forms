@@ -32,7 +32,8 @@ with CSSClasses {
    *  TODO classUri should be an Option
    */
   def create(classUri: String, lang: String = "en",
-             formSpecURI: String = "", graphURI: String = "", request: HTTPrequest = HTTPrequest()): Try[NodeSeq] = {
+             formSpecURI: String = "", graphURI: String = "",
+             request: HTTPrequest ): Try[NodeSeq] = {
 
     val form = createData(classUri, lang, formSpecURI, request)
 
@@ -71,7 +72,7 @@ with CSSClasses {
   def createDataAsJSON(classUri: String, lang: String = "en",
                        formSpecURI: String = "",
 //                       graphURI: String = "",
-                       request: HTTPrequest = HTTPrequest()) = {
+                       request: HTTPrequest ) = {
     val formSyntax =
 //      rdfStore.rw( dataset, {
       createData(classUri, lang, formSpecURI, request)
@@ -93,7 +94,7 @@ with CSSClasses {
   (implicit graph: Rdf#Graph)
   : NodeSeq = {
     //	  Await.result(
-    create(uri, lang).getOrElse(
+    create(uri, lang, request=HTTPrequest() ).getOrElse(
       <p>Problem occured when creating an XHTML input form from a class URI.</p>)
     //			  5 seconds )
   }

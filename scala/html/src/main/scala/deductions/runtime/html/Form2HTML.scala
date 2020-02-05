@@ -47,7 +47,7 @@ trait Form2HTML[NODE, URI <: NODE]
     editable:   Boolean                          = false,
     actionURI:  String                           = "/save", graphURI: String = "",
     actionURI2: String = "/save", lang: String = "en",
-    request:        HTTPrequest = HTTPrequest(),
+    request:        HTTPrequest,
     cssForURI:      String      = "",
     cssForProperty: String      = ""): NodeSeq = {
 
@@ -109,7 +109,7 @@ trait Form2HTML[NODE, URI <: NODE]
     hrefPrefix: String             = config.hrefDisplayPrefix,
     editable:   Boolean            = false,
     graphURI:   String             = "", lang: String = "en",
-    request:        HTTPrequest = HTTPrequest(),
+    request:        HTTPrequest,
     cssForURI:      String      = "",
     cssForProperty: String      = ""): NodeSeq = {
 
@@ -413,18 +413,6 @@ trait Form2HTML[NODE, URI <: NODE]
   private def userURI(request: HTTPrequest): String = {
     makeAbsoluteURIForSaving(request.userId())
   }
-
-  /**
-   * make Field Data (display) Or Input (edit)
-   *  TODO: does not do much!
-   */
-  //  private def makeFieldDataOrInput(field: formMod#Entry, hrefPrefix: String = config.hrefDisplayPrefix,
-  //                                   editable: Boolean, lang: String = "en",
-  //                                   request: HTTPrequest = HTTPrequest(),
-  //                                   css: String="")(implicit form: FormModule[NODE, URI]#FormSyntax) = {
-  //    createHTMLField(field, editable, hrefPrefix, lang, request, css=css)
-  //  }
-
 }
 
 object Form2HTML {

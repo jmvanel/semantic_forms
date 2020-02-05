@@ -446,8 +446,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     dataServicesURL
   }
  
-  def esearchFuture(q: String = ""): Future[Elem] = {
-    val fut = extendedSearch(q)
+  def esearchFuture(q: String = "", httpRequest: HTTPrequest): Future[Elem] = {
+    val fut = extendedSearch(q, httpRequest)
     wrapSearchResults(fut, q, mess= <div>"Extended search for</div>)
   }
 

@@ -105,11 +105,13 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
                     val dateFormat2 = new SimpleDateFormat("EEEE", Locale.forLanguageTag(lang))
 
                     <tr class="sf-table-row">{
-                      <td>{ makeHyperlinkForURI(row(0), lang, allNamedGraph, config.hrefDisplayPrefix) }</td>
+                      <td>{ makeHyperlinkForURI(row(0), lang, allNamedGraph, config.hrefDisplayPrefix,
+                          request=request ) }</td>
                       <td>{
                         makeHyperlinkForURI(
                           getClassOrNullURI(row(0))(allNamedGraph),
-                          lang, allNamedGraph, config.hrefDisplayPrefix)
+                          lang, allNamedGraph, config.hrefDisplayPrefix,
+                          request=request )
                       }</td>
                       <!-- td>{ "Edit" /* TODO */ }</td -->
                       <td title={ dateFormat2.format(date) }>{ dateFormat.format(date) }</td>

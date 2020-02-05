@@ -5,6 +5,7 @@ import org.w3.banana.RDF
 
 import scala.concurrent.Future
 import scala.xml.NodeSeq
+import deductions.runtime.core.HTTPrequest
 
 /**
  * Broader "interest" search in simple search results page
@@ -27,10 +28,11 @@ trait ExtendedSearchSPARQL[Rdf <: RDF, DATASET]
     }
   }
 
-  def extendedSearch(uri: String, hrefPrefix: String = hrefDisplayPrefix): Future[NodeSeq] =
+  def extendedSearch(uri: String, httpRequest: HTTPrequest, hrefPrefix: String = hrefDisplayPrefix): Future[NodeSeq] =
     search(
-      hrefPrefix,
-      "fr", // TODO <<<<<<<<<<<<<<
-      Seq(uri))
+      hrefPrefix = hrefPrefix, // TODO <<<<<<<<<<<<<<
+      lang = "fr", // TODO <<<<<<<<<<<<<<
+      search = Seq(uri), httpRequest = httpRequest
+      )
 
 }

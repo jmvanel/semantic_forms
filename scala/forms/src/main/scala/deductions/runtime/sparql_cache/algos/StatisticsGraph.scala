@@ -44,7 +44,8 @@ trait StatisticsGraph[Rdf <: RDF, DATASET] extends RDFHelpers[Rdf]
       objects from page URI, type(s)
       {
         val links0 = for (link <- linkToClasses) yield {
-          makeHyperlinkForURI(link, request.getLanguage(), graph)
+          makeHyperlinkForURI(link, request.getLanguage(), graph,
+              request=request )
         }
         val links = links0.flatten
         if( links.size <=1 )

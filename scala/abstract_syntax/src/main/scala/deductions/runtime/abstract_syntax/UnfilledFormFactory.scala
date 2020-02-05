@@ -31,7 +31,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
    *  Transaction inside (RW)
    */
   def createFormFromClass(classe: Rdf#URI,
-    formSpecURI0: String = "" , request: HTTPrequest= HTTPrequest() )
+    formSpecURI0: String = "" , request: HTTPrequest )
   	  (implicit graph: Rdf#Graph, lang:String) : FormSyntax = {
 
     wrapInTransaction {

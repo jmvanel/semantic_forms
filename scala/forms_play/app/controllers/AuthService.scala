@@ -124,7 +124,9 @@ extends PlaySettings.MyControllerBase
         { registerForm }
       </div>
 
-    val page = mainPage(content, userInfo = <div/>, lang = httpRequest.getLanguage(), title = "")
+        // TODO remove lang
+    val page = mainPage(content, userInfo = <div/>, lang = httpRequest.getLanguage(), title = "",
+        httpRequest=httpRequest)
 
     Ok("<!DOCTYPE html>\n" + page)
       .as("text/html; charset=utf-8")
@@ -184,7 +186,7 @@ extends PlaySettings.MyControllerBase
 
   private def makeBadRequest(message: NodeSeq) = BadRequest(
     "<!DOCTYPE html>\n" +
-      mainPage(message, userInfo = NodeSeq.Empty))
+      mainPage(message, userInfo = NodeSeq.Empty, httpRequest=HTTPrequest() ))
     .as("text/html; charset=utf-8")
           
   def decodeResponse(httpRequest: HTTPrequest) = {

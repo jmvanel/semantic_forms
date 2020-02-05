@@ -56,7 +56,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     formGroup: String = fromUri(nullURI),
     formuri: String="",
     database: String = "TDB",
-    request: HTTPrequest = HTTPrequest(),
+    request: HTTPrequest,
     inputGraph: Try[Rdf#Graph] = Success(emptyGraph)
   ): ( NodeSeq, FormSyntax ) = {
     htmlFormRawTry(uri, unionGraph, hrefPrefix, blankNode, editable, actionURI,

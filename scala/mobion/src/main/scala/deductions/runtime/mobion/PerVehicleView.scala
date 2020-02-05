@@ -107,7 +107,7 @@ trait PerVehicleView[Rdf <: RDF, DATASET]
         <p>
           {
             // hyperlink  to SF specific wiew
-            makeHyperlinkForURI( vehicle, "fr"/*lang*/, allNamedGraph )
+            makeHyperlinkForURI( vehicle, "fr"/*lang*/, allNamedGraph, request=request )
 //            val dis = makeURIForDisplay(vehicle)(allNamedGraph, request.getLanguage())
 //            dis.label
           }
