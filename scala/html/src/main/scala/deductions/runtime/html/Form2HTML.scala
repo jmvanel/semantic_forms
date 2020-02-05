@@ -373,7 +373,7 @@ trait Form2HTML[NODE, URI <: NODE]
           toPlainString(field.value) === ""))
           createHTMLResourceEditableField(r, lang)
         else
-          createHTMLResourceReadonlyField(r, hrefPrefix, request)
+          createHTMLResourceReadonlyField(r, request)
 
       case r: formMod#BlankNodeEntry =>
         if (editable && (editableByUser || isCreateRequest ||
@@ -430,6 +430,7 @@ trait Form2HTML[NODE, URI <: NODE]
 object Form2HTML {
   def urlEncode(node: Any) = URLEncoder.encode(node.toString, "utf-8")
 
+  /** create URL String for HTML Hyperlink */
   def createHyperlinkString(hrefPrefix: String, uri: String, blanknode: Boolean = false): String = {
     if (hrefPrefix === "")
       uri

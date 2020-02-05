@@ -47,8 +47,6 @@ with FormModule[NODE, URI]
     *  */
   def createHTMLResourceReadonlyField(
                                        resourceEntry: formMod#ResourceEntry,
-                                       // TODO remove arg:
-                                       hrefPrefixxxxx: String = hrefDisplayPrefix,
                                        request: HTTPrequest
                                      ): NodeSeq = {
 
@@ -125,7 +123,8 @@ with FormModule[NODE, URI]
     } else NodeSeq.Empty )
   }
 
-  /** create HTML Resource Readonly Field, just hyperlink to URI and thumbnail
+  /** create HTML Resource Readonly Field, just hyperlink to URI and thumbnail,
+   *  short, no expert stuff
    *  TODO duplication with preceding function createHTMLResourceReadonlyField() */
   def createHTMLResourceReadonlyFieldBriefly(
     resourceEntry: formMod#ResourceEntry,

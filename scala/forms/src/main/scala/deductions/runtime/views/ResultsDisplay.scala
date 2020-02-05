@@ -112,6 +112,7 @@ extends ThumbnailInference[Rdf, DATASET] {
          property = nullURI, type_ = `type`, request)
   }
 
+  /** make HTML Hyperlink For URI, short, no expert stuff */
   def makeHyperlinkForURIBriefly(
       node: Rdf#Node,
       lang: String,
@@ -170,7 +171,7 @@ extends ThumbnailInference[Rdf, DATASET] {
         else NodeSeq.Empty
 
       hyperlink ++
-      createHTMLResourceReadonlyField( resourceEntry, hrefPrefix, request )
+      createHTMLResourceReadonlyField( resourceEntry, request )
     } else
       <span>null URI</span>
   }
