@@ -316,7 +316,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   }
 
   /** XHTML wrapper around SPARQL Construct result TODO  move to a trait in html package */
-  def sparqlConstructQueryHTML(query: String, lang: String = "en", request: HTTPrequest,
+  def sparqlConstructQueryHTML(query: String, request: HTTPrequest,
       context: Map[String,String] ): Elem = {
     logger.info("Global.sparql query  " + query)
     <p>
@@ -362,7 +362,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   }
 
 /** Display result of a SPARQL select, plus a form to edit the SPARQL text */
-  def selectSPARQL(query: String, lang: String = "en", request: HTTPrequest): Elem = {
+  def selectSPARQL(query: String, request: HTTPrequest): Elem = {
     logger.debug("sparql query  " + query)
     <p>
       {

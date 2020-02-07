@@ -22,7 +22,7 @@ trait HtmlGeneratorInterface[NODE, URI <: NODE] extends RDFPrefixesInterface {
                    hrefPrefix: String,
                    editable: Boolean = false,
                    actionURI: String = "/save", graphURI: String = "",
-                   actionURI2: String = "/save", lang: String = "en",
+                   actionURI2: String = "/save",
                    request: HTTPrequest,
                    cssForURI: String = "",
                    cssForProperty: String = ""
@@ -32,7 +32,7 @@ trait HtmlGeneratorInterface[NODE, URI <: NODE] extends RDFPrefixesInterface {
   def generateHTMLJustFields(form: FormModule[NODE, URI]#FormSyntax,
                              hrefPrefix: String,
                              editable: Boolean = false,
-                             graphURI: String = "", lang: String = "en",
+                             graphURI: String = "",
                              request: HTTPrequest,
                              cssForURI: String = "",
                              cssForProperty: String = ""

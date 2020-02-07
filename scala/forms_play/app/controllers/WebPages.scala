@@ -152,7 +152,7 @@ with ApplicationTrait
   /** generate a Main Page wrapping given XHTML content;
    *  if HTTP URL contains &layout=form , do not apply SF application HTML header */
   private def outputMainPage( content: NodeSeq,
-      lang: String, userInfo: NodeSeq = <div/>, title: String = "",
+      userInfo: NodeSeq = <div/>, title: String = "",
       displaySearch:Boolean = true,
       classForContent: String ) // = "container sf-complete-form")
   (implicit request: Request[_]) = {
@@ -169,7 +169,7 @@ with ApplicationTrait
         case Some("form") => content
         case _ =>
           mainPage( content,
-            userInfo, lang, title,
+            userInfo, title,
             displaySearch,
             messages = getDefaultAppMessage(),
             headExtra = getDefaultHeadExtra(),
@@ -189,7 +189,7 @@ with ApplicationTrait
     Ok("<!DOCTYPE html>\n" +
       mainPage(
         content,
-        userInfo, lang, title,
+        userInfo, title,
         displaySearch,
         messages = getDefaultAppMessage(),
         headExtra = getDefaultHeadExtra(),
@@ -220,7 +220,7 @@ with ApplicationTrait
             logger.debug(s"displayURI: expandOrUnchanged <$uri>")
             val userInfo = displayUser(userid, uri, title, lang)
             val content : () => NodeSeq = () =>
-            htmlForm(uri, blanknode, editable = Edit  =/=  "", lang, formuri,
+            htmlForm(uri, blanknode, editable = Edit  =/=  "", formuri,
               graphURI = makeAbsoluteURIForSaving(userid),
               request = request)._1
             filterRequestResult( request, content, ipFilterInstance)
@@ -345,7 +345,7 @@ with ApplicationTrait
               query,
               editable = Edit  =/=  "",
               formuri, requestCopy),
-            lang, userInfo, classForContent="sf-complete-form")
+            userInfo, classForContent="sf-complete-form")
         },
         (t: Throwable) =>
           errorResultFromThrowable(t, "in /sparql-form"))
@@ -362,8 +362,8 @@ with ApplicationTrait
       val lang = httpRequest.getLanguage()
       val userInfo = displayUser(getUsername(request).getOrElse("anonymous"), "pageURI", "title", "lang")
       outputMainPage(
-          sparqlConstructQueryHTML(query, lang, httpRequest, context=httpRequest.queryString2),
-          lang, userInfo=userInfo, classForContent="")
+          sparqlConstructQueryHTML(query, httpRequest, context=httpRequest.queryString2),
+          userInfo=userInfo, classForContent="")
         // TODO factorize
         .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
         .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
@@ -389,10 +389,9 @@ with ApplicationTrait
         {
           logger.info("sparql: " + request)
           logger.info("sparql: " + query)
-          val lang = chooseLanguage(request)
           val userInfo = displayUser(getUsername(request).getOrElse("anonymous"), "pageURI", "title", "lang")
           outputMainPage(
-              selectSPARQL(query, lang, copyRequest(request)), lang,
+              selectSPARQL(query, copyRequest(request)),
                 userInfo=userInfo, classForContent="" )
         },
         (t: Throwable) =>
@@ -425,7 +424,7 @@ with ApplicationTrait
             }
           val fut = wordsearchFuture(q, classe, httpRequest)
           val userInfo = displayUser(getUsername(request).getOrElse("anonymous"), "pageURI", "title", "lang")
-          fut.map(r => outputMainPage(r, httpRequest.getLanguage(), userInfo=userInfo, classForContent=""))
+          fut.map(r => outputMainPage(r, userInfo=userInfo, classForContent=""))
         },
         (t: Throwable) =>
           Future{ errorResultFromThrowable(t, "in word search /wordsearch") }
@@ -440,7 +439,7 @@ with ApplicationTrait
       setDefaultHTTPparameterValue("offset", "1")
     val fut = recoverFromOutOfMemoryError( showNamedGraphs(httpRequest) )
     val lang = httpRequest.getLanguage()
-    val rr = fut.map( r => outputMainPage( r, lang , classForContent="") )
+    val rr = fut.map( r => outputMainPage( r, classForContent="") )
     rr
   }
 
@@ -451,7 +450,7 @@ with ApplicationTrait
       val fut = recoverFromOutOfMemoryError(
         Future.successful(showTriplesInGraph(uri, lang)),
         s"in show Triples In Graph /showTriplesInGraph?uri=$uri")
-      val rr = fut.map(r => outputMainPage(r, lang, classForContent=""))
+      val rr = fut.map(r => outputMainPage(r, classForContent=""))
       rr
     }
   }
@@ -470,7 +469,7 @@ with ApplicationTrait
           val httpRequest = copyRequest(request)
           val content = htmlForm(
             uri, editable = true,
-            lang = chooseLanguage(request), graphURI = makeAbsoluteURIForSaving(userid),
+            graphURI = makeAbsoluteURIForSaving(userid),
             request = httpRequest )._1
           Ok("<!DOCTYPE html>\n" +
              mainPage(content, userInfo, lang, httpRequest=httpRequest))
@@ -538,9 +537,9 @@ with ApplicationTrait
           logger.info(s"formSpecURI from HTTP request: <$formSpecURI>")
           val lang = chooseLanguage(request)
           outputMainPage(
-            create(uri, lang,
+            create(uri,
               formSpecURI, makeAbsoluteURIForSaving(userid), copyRequest(request)).getOrElse(<div/>),
-            lang, userInfo = displayUser(userid, uri, s"Create a $uri", lang), classForContent="" )
+            userInfo = displayUser(userid, uri, s"Create a $uri", lang), classForContent="" )
         },
         (t: Throwable) =>
           errorResultFromThrowable(t, "in create Actions /create"))
@@ -568,7 +567,7 @@ with ApplicationTrait
       fut.map { formattedResults =>
         outputMainPage(
           extendedSearchLink ++ formattedResults,
-          lang, userInfo, classForContent="")
+          userInfo, classForContent="")
       }
   }
 
@@ -578,7 +577,7 @@ with ApplicationTrait
 	  val lang = httpRequest.getLanguage()// chooseLanguage(request)
     val fut = recoverFromOutOfMemoryError(esearchFuture(q, httpRequest))
     fut.map(r =>
-    outputMainPage(r, lang, classForContent=""))
+    outputMainPage(r, classForContent=""))
   }
 
   //  implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(
@@ -593,7 +592,7 @@ with ApplicationTrait
           outputMainPage(
             new ToolsPage with ImplementationSettings.RDFModule with RDFPrefixes[ImplementationSettings.Rdf] {
               override val config: Configuration = config1
-            }.getPage(lang, copyRequest(request)), lang, displaySearch = false, userInfo = userInfo, classForContent="")
+            }.getPage( copyRequest(request)), displaySearch = false, userInfo = userInfo, classForContent="")
             .as("text/html; charset=utf-8")
 
     }

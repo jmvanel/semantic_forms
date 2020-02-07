@@ -83,7 +83,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
             uris.map {
               u =>
                 // logger.trace(s"\tsearch(): URI row $u")
-                displayResults(u, hrefPrefix, lang, graph, false, httpRequest)
+                displayResults(u, hrefPrefix, graph, false, httpRequest)
             }
         }</div>)
       elems
@@ -165,7 +165,8 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
               // create table like HTML
               u =>
                 // logger.trace(s"**** search2 u $u")
-                displayResults(u.toIterable, hrefPrefix, lang, graph, request=HTTPrequest() )
+                displayResults(u.toIterable, hrefPrefix, graph,
+                    request=HTTPrequest(acceptLanguages=Seq(lang)) )
             }
         }</div>
       })

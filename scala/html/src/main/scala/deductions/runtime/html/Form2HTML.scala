@@ -46,14 +46,15 @@ trait Form2HTML[NODE, URI <: NODE]
     hrefPrefix: String                           = config.hrefDisplayPrefix,
     editable:   Boolean                          = false,
     actionURI:  String                           = "/save", graphURI: String = "",
-    actionURI2: String = "/save", lang: String = "en",
+    actionURI2: String = "/save",
     request:        HTTPrequest,
     cssForURI:      String      = "",
     cssForProperty: String      = ""): NodeSeq = {
 
+    val lang = request.getLanguage // TODO remove lang
     val htmlFormFields = time(
       "generateHTMLJustFields",
-      generateHTMLJustFields(form, hrefPrefix, editable, graphURI, lang, request,
+      generateHTMLJustFields(form, hrefPrefix, editable, graphURI, request,
         cssForURI, cssForProperty),
       logger.isInfoEnabled())
 
@@ -108,12 +109,13 @@ trait Form2HTML[NODE, URI <: NODE]
     form:       formMod#FormSyntax,
     hrefPrefix: String             = config.hrefDisplayPrefix,
     editable:   Boolean            = false,
-    graphURI:   String             = "", lang: String = "en",
+    graphURI:   String             = "",
     request:        HTTPrequest,
     cssForURI:      String      = "",
     cssForProperty: String      = ""): NodeSeq = {
 
     implicit val formImpl: formMod#FormSyntax = form
+    val lang = request.getLanguage
 
     val hiddenInputs: NodeSeq =
       if (editable) {
@@ -147,7 +149,7 @@ trait Form2HTML[NODE, URI <: NODE]
           }>{
             makeFieldSubject(field) ++
               makeFieldLabel(preceding, field, editable, lang) ++
-              createHTMLField(field, editable, hrefPrefix, lang, request, css = cssForURI)
+              createHTMLField(field, editable, hrefPrefix, request, css = cssForURI)
           }</div>
         }
       } else Text("\n")
@@ -208,7 +210,7 @@ trait Form2HTML[NODE, URI <: NODE]
         val htmlForEntries =
           for (entry <- entries) yield {
             val htmlField = createHTMLField(
-              entry, editable, hrefPrefix, lang, request, css = cssForURI);
+              entry, editable, hrefPrefix, request, css = cssForURI);
             val htmlFieldWithSeparator = htmlField :+
               EntityRef("nbsp") :+
               Text(", ");
@@ -262,7 +264,8 @@ trait Form2HTML[NODE, URI <: NODE]
         val subjectField =
           // NOTE: over-use of class ResourceEntry to display the subject instead of normally the object triple:
           ResourceEntry(value = field.subject, valueLabel = field.subjectLabel)
-        createHTMLField(subjectField, editable, hrefPrefix, lang, css = "", request = HTTPrequest())
+        createHTMLField(subjectField, editable, hrefPrefix, css = "",
+            request = HTTPrequest(acceptLanguages=Seq(lang)))
       } else NodeSeq.Empty
     }
 
@@ -338,7 +341,7 @@ trait Form2HTML[NODE, URI <: NODE]
    * should not need to be overriden
    */
   def createHTMLField(field: formMod#Entry, editable: Boolean,
-                      hrefPrefix: String = config.hrefDisplayPrefix, lang: String = "en",
+                      hrefPrefix: String = config.hrefDisplayPrefix,
                       request:        HTTPrequest,
                       displayInTable: Boolean     = false,
                       css:            String      = cssConfig.formFieldCSSClass)(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
@@ -371,7 +374,7 @@ trait Form2HTML[NODE, URI <: NODE]
            * (like in N3Form in EulerGUI ) */
         if (editable && (editableByUser || isCreateRequest ||
           toPlainString(field.value) === ""))
-          createHTMLResourceEditableField(r, lang)
+          createHTMLResourceEditableField(r, request.getLanguage )
         else
           createHTMLResourceReadonlyField(r, request)
 

@@ -28,7 +28,6 @@ extends ThumbnailInference[Rdf, DATASET] {
    *   (for issues "Named graph view" : https://github.com/jmvanel/semantic_forms/issues/136 , etc) */
   def displayResults(res0: Iterable[Rdf#Node],
       hrefPrefix: String = config.hrefDisplayPrefix,
-      lang: String = "",
       graph: Rdf#Graph,
       sortAnd1rowPerElement:Boolean = false,
       request: HTTPrequest )
@@ -37,6 +36,7 @@ extends ThumbnailInference[Rdf, DATASET] {
     val tryResult = Try{
     <div class={wrappingClass} >{
       val res = res0 .toSeq
+      val lang = request.getLanguage
       val uriLabelCouples = res.map(uri => (uri, makeInstanceLabelFuture(uri, graph, lang)))
 //      val uriLabelCouples = res.map(uri => (uri, makeInstanceLabel(uri, graph, lang)))
 //      println(s"displayResults: sortAnd1rowPerElement $sortAnd1rowPerElement")
@@ -55,7 +55,7 @@ extends ThumbnailInference[Rdf, DATASET] {
           foldNode(node) (
           uri =>
             makeHyperlinkForURI(
-              uri, lang, graph,
+              uri, graph,
               hrefPrefix = hrefPrefix,
               label = label,
               request,
@@ -69,11 +69,11 @@ extends ThumbnailInference[Rdf, DATASET] {
             ,
           bnode =>
             makeHyperlinkForURI(
-              bnode, lang, graph,
+              bnode, graph,
               hrefPrefix = hrefPrefix,
               label = label,
               sortAnd1rowPerElement = sortAnd1rowPerElement,
-              request=HTTPrequest() ),
+              request=request ),
           lit => <div>{ lit.toString() }</div>
           )
           }</div> , separatorTriple )
@@ -97,7 +97,7 @@ extends ThumbnailInference[Rdf, DATASET] {
    * NOTE: this reuses code in Form2HTMLDisplay.createHTMLResourceReadonlyField()
    * 
    * NON transactional, needs Read transaction */
-  def makeHyperlinkForURI( node: Rdf#Node, lang: String, graph: Rdf#Graph = allNamedGraph,
+  def makeHyperlinkForURI( node: Rdf#Node, graph: Rdf#Graph = allNamedGraph,
       hrefPrefix: String = config.hrefDisplayPrefix,
       label: String = "",
       request: HTTPrequest,
@@ -107,7 +107,7 @@ extends ThumbnailInference[Rdf, DATASET] {
       if( label != "" )
           label
         else
-          makeInstanceLabelFuture(node, graph, lang)
+          makeInstanceLabelFuture(node, graph, request.getLanguage())
      val `type` = getClassOrNullURI(node)(graph)
      displayNode(uriNodeToURI(node), hrefPrefix, displayLabel,
          property = nullURI, type_ = `type`, request)
@@ -143,11 +143,11 @@ extends ThumbnailInference[Rdf, DATASET] {
       sortAnd1rowPerElement:Boolean = false )
     : NodeSeq = {
     		wrapInTransaction{
-    			makeHyperlinkForURI( node, lang, graph,
+    			makeHyperlinkForURI( node, graph,
     					hrefPrefix,
     					label,
     					sortAnd1rowPerElement=sortAnd1rowPerElement,
-    					request=HTTPrequest())
+    					request=HTTPrequest(acceptLanguages=Seq(lang)))
     		} . getOrElse(<div/>)
   }
 

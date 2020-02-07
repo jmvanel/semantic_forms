@@ -33,8 +33,9 @@ with ApplicationTrait
             val lang = chooseLanguage(request)
             val requestCopy = getRequestCopy()
             val userid = requestCopy.userId()
-            Ok(htmlForm(uri, blankNode, editable = Edit  =/=  "", lang, formuri,
-              graphURI = makeAbsoluteURIForSaving(userid), database = database, HTTPrequest() )._1)
+            Ok(htmlForm(uri, blankNode, editable = Edit  =/=  "", formuri,
+              graphURI = makeAbsoluteURIForSaving(userid), database = database,
+              HTTPrequest( acceptLanguages=Seq(lang) ) )._1)
               .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
               .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
               .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")

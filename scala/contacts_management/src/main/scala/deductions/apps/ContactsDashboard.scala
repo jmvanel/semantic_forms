@@ -90,7 +90,7 @@ with SemanticController {
           ) yield uri
 
           wrapInTransaction(
-            displayResults(uris, lang = "en", graph = allNamedGraph, request=HTTPrequest() ))
+            displayResults(uris, graph = allNamedGraph, request=HTTPrequest() ))
         }
         val tryXHTML = v . flatten
         tryXHTML match {

@@ -19,12 +19,14 @@ trait MainXml extends ToolsPage with EnterButtons {
    * main Page with a single content (typically a form)
    * Design pattern "Template method"
    */
-  def mainPage(content: NodeSeq, userInfo: NodeSeq, lang: String = "en", title: String = "",
+  def mainPage(content: NodeSeq, userInfo: NodeSeq,
+      title: String = "",
                displaySearch: Boolean = true,
                messages: NodeSeq = defaultSiteMessage,
                headExtra: NodeSeq = NodeSeq.Empty,
                classForContent: String = "container sf-complete-form",
                httpRequest: HTTPrequest) = {
+    val lang = httpRequest.getLanguage()
     <html>
       <head>
         { head(title)(lang) }

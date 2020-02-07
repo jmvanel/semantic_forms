@@ -16,10 +16,11 @@ trait ToolsPage extends EnterButtons
   val config: Configuration
 
   /** HTML page with 2 SPARQL Queries: select & construct, show Named Graphs, history, YASGUI, etc */
-  def getPage(lang: String = "en", request: HTTPrequest ): NodeSeq = {
+  def getPage(request: HTTPrequest ): NodeSeq = {
 		def absoluteURI = request.absoluteURL()
 		def localSparqlEndpoint = URLEncoder.encode(absoluteURI + "/sparql2", "UTF-8")
 
+    val lang = request.getLanguage()
     val querySampleSelect =
     """|PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
        |PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -36,8 +37,6 @@ trait ToolsPage extends EnterButtons
          |#CONSTRUCT { ?S geo:long ?LON ; geo:lat ?LAT ; rdfs:label ?LAB; foaf:depiction ?IMG.}
          |#WHERE {GRAPH ?GRAPH { ?S geo:long ?LON ; geo:lat ?LAT ; rdfs:label ?LAB. OPTIONAL{?S foaf:depiction ?IMG} OPTIONAL{?S foaf:img ?IMG} } }"""
     .stripMargin
-
-
 
     <link href="/assets/images/favicon.png" type="image/png" rel="shortcut icon"/>
     <div>
@@ -88,7 +87,6 @@ trait ToolsPage extends EnterButtons
       </p>
 
       { showContinuationForm(request, Some("showNamedGraphs")) }
-
       <p> <a href="/history">{ I18NMessages.get("Dashboard", lang) }</a> </p>
       {
         implicit val lang1: String = lang

@@ -43,7 +43,6 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
   def htmlForm(uri0: String,
                blankNode: String = "",
                editable: Boolean = false,
-               lang: String = "en",
                formuri: String = "",
                graphURI: String = "",
                database: String = "TDB",
@@ -51,7 +50,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
   ): (NodeSeq, Boolean) = {
     logger.info(
       s"""ApplicationFacadeImpl.htmlForm ${request.logRequest()}
-              editable=$editable lang=$lang graphURI <$graphURI>""")
+              editable=$editable lang=${request.getLanguage()} graphURI <$graphURI>""")
     val uri = uri0.trim()
     var typeChange = false
     if (uri =/= null && uri =/= "")
@@ -124,7 +123,6 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
           val (formItself, formSyntax) =
             htmlFormElemRaw(
               uri, graph, hrefDisplayPrefix, blankNode, editable = editable2,
-              lang = lang,
               formuri = formuri,
               graphURI = graphURI,
               database = database,
@@ -133,7 +131,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
 
             wrapInTransaction({  // or wrapInReadTransaction ?
               Text("\n") ++
-              titleEditDisplayDownloadLinksThumbnail(formSyntax, lang, editable2, request) ++
+              titleEditDisplayDownloadLinksThumbnail(formSyntax, editable2, request) ++
               <div class="sf-statistics" zzclass="col-xs-12">
                 <!--++ div wraps failure Or Statistics form header (form generation traceability) ++-->
                 { failureOrStatistics }</div> ++

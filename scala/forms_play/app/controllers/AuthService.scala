@@ -91,7 +91,6 @@ extends PlaySettings.MyControllerBase
             "",
             editable = true,
             actionURI = "",
-            lang = httpRequest.getLanguage(),
             graphURI = "",
             actionURI2 = "/authenticate",
             formuri = fromUri(loginFormURI),
@@ -103,7 +102,6 @@ extends PlaySettings.MyControllerBase
             "",
             editable = true,
             actionURI = "",
-            lang = httpRequest.getLanguage(),
             graphURI = "",
             actionURI2 = "/register",
             formuri = fromUri(registerFormURI),
@@ -124,8 +122,7 @@ extends PlaySettings.MyControllerBase
         { registerForm }
       </div>
 
-        // TODO remove lang
-    val page = mainPage(content, userInfo = <div/>, lang = httpRequest.getLanguage(), title = "",
+    val page = mainPage(content, userInfo = <div/>, title = "",
         httpRequest=httpRequest)
 
     Ok("<!DOCTYPE html>\n" + page)

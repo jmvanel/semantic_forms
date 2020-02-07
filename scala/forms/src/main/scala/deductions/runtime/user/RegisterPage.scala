@@ -49,9 +49,10 @@ trait RegisterPage[Rdf <: RDF, DATASET]
             // link to User profile
             makeHyperlinkForURI(
                 URI( absoluteURIForUserid ),
-                lang, allNamedGraph, request=HTTPrequest()) ++
+                allNamedGraph, request=HTTPrequest(acceptLanguages=Seq(lang))) ++
             // link to User's foaf:Person :
-            makeHyperlinkForURI(personFromAccount, lang, allNamedGraph, request=HTTPrequest())
+            makeHyperlinkForURI(personFromAccount, allNamedGraph,
+                request=HTTPrequest(acceptLanguages=Seq(lang)))
           }
           val displayUserLabel: NodeSeq = userLabel match {
             case Success(lab) => Text(s"${I18NMessages.get("User", lang)}: ") ++ lab

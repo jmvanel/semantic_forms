@@ -31,17 +31,18 @@ with CSSClasses {
    *  transactional
    *  TODO classUri should be an Option
    */
-  def create(classUri: String, lang: String = "en",
+  def create(classUri: String,
              formSpecURI: String = "", graphURI: String = "",
              request: HTTPrequest ): Try[NodeSeq] = {
 
-    val form = createData(classUri, lang, formSpecURI, request)
+    val lang = request.getLanguage()
+    val form = createData(classUri, formSpecURI, request)
 
     val rawForm = generateHTML(
       form, hrefPrefix = "",
       editable = true,
       actionURI = actionURI,
-      lang = lang, graphURI = graphURI, request = request,
+      graphURI = graphURI, request = request,
       cssForURI = cssClasses.formFieldCSSClass,
       cssForProperty = cssClasses.formLabelCSSClass)
 
@@ -57,10 +58,11 @@ with CSSClasses {
   }
 
   /** raw Data for instance creation; transactions Inside */
-  def createData(classUri: String, lang0: String = "en",
+  def createData(classUri: String,
                  formSpecURI: String = "",
                  request: HTTPrequest
                  ) : FormSyntax = {
+    val lang0 = request.getLanguage()
     val classURI = URI(classUri)
     retrieveURIBody(classURI, dataset, request, transactionsInside = true)
     implicit val lang = lang0
@@ -69,13 +71,13 @@ with CSSClasses {
     form
   }
 
-  def createDataAsJSON(classUri: String, lang: String = "en",
+  def createDataAsJSON(classUri: String,
                        formSpecURI: String = "",
 //                       graphURI: String = "",
                        request: HTTPrequest ) = {
     val formSyntax =
 //      rdfStore.rw( dataset, {
-      createData(classUri, lang, formSpecURI, request)
+      createData(classUri, formSpecURI, request)
 //    }) . get
     formSyntax2JSONString(formSyntax)
   }

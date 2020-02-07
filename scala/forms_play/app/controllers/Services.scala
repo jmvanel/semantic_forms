@@ -54,7 +54,7 @@ with RDFContentNegociation {
       logger.info(s"create: class URI <$classUri>")
       logger.info(s"create: formSpecURI from HTTP request: <$formSpecURI>")
 
-      Ok(createDataAsJSON(classUri, chooseLanguage(request),
+      Ok(createDataAsJSON(classUri,
         formSpecURI,
         copyRequest(request))).
         as(AcceptsJSONLD.mimeType + "; charset=" + myCustomCharset.charset)

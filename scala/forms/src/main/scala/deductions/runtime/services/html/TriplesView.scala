@@ -50,7 +50,6 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
   def htmlFormElemRaw(uri: String, unionGraph: Rdf#Graph=allNamedGraph, hrefPrefix: String = config.hrefDisplayPrefix, blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",
-    lang: String,
     graphURI: String = "",
     actionURI2: String = "/save",
     formGroup: String = fromUri(nullURI),
@@ -60,7 +59,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     inputGraph: Try[Rdf#Graph] = Success(emptyGraph)
   ): ( NodeSeq, FormSyntax ) = {
     htmlFormRawTry(uri, unionGraph, hrefPrefix, blankNode, editable, actionURI,
-      lang, graphURI, actionURI2, URI(formGroup), formuri, database, request, inputGraph) match {
+      graphURI, actionURI2, URI(formGroup), formuri, database, request, inputGraph) match {
         case Success(e) => e
         case Failure(e) => ( <p>htmlFormElem: Exception occured: { e }</p>, FormSyntax(nullURI, Seq() ) )
       }
@@ -73,15 +72,14 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
   def htmlFormElem(uri: String, hrefPrefix: String = config.hrefDisplayPrefix, blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",
-    lang: String = "en",
     graphURI: String = "",
     actionURI2: String = "/save",
     formGroup: String = fromUri(nullURI),
     request: HTTPrequest
     ): NodeSeq = {
-
+    val lang = request.getLanguage()
     htmlForm(uri, hrefPrefix, blankNode, editable, actionURI,
-      lang, graphURI, actionURI2, URI(formGroup), request) match {
+      graphURI, actionURI2, URI(formGroup), request) match {
         case Success(e) => e._1
         case Failure(e) => <p>htmlFormElem: Exception occured: { e }</p>
       }
@@ -160,7 +158,6 @@ println( s">>>> htmlFormElemJustFields 2 " )
                           blankNode: String = "",
                           editable: Boolean = false,
                           actionURI: String = "/save",
-                          lang: String,
                           graphURI: String = "",
                           actionURI2: String = "/save",
                           formGroup: Rdf#URI = nullURI,
@@ -176,8 +173,9 @@ println( s">>>> htmlFormElemJustFields 2 " )
       s"htmlFormRawTry dataset $dataset, graphURI <$graphURI>")
 
     val graphURIActual = if (graphURI === "") uri else graphURI
+    val lang = request.getLanguage()
     Success(graf2form(unionGraph, uri, hrefPrefix, blankNode, editable,
-      actionURI, lang, graphURIActual, actionURI2, formGroup, formuri, request))
+      actionURI, graphURIActual, actionURI2, formGroup, formuri, request))
   }
   
   /**
@@ -189,7 +187,6 @@ println( s">>>> htmlFormElemJustFields 2 " )
   private def htmlForm(uri: String, hrefPrefix: String = config.hrefDisplayPrefix, blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",
-    lang: String = "en",
     graphURI: String = "",
     actionURI2: String = "/save",
     formGroup: Rdf#URI = nullURI,
@@ -205,9 +202,9 @@ println( s">>>> htmlFormElemJustFields 2 " )
       // TODO find another way of reporting download failures: 
       //      graphDownloaded <- tryGraph
       
-//      form <- rdfStore.rw( dataset, {
+        val lang = request.getLanguage()
         form = graf2form(allNamedGraph, uri, hrefPrefix, blankNode, editable,
-          actionURI, lang, graphURIActual, actionURI2, formGroup, "", request)
+          actionURI, graphURIActual, actionURI2, formGroup, "", request)
 //      })
     } yield form
   }
@@ -237,7 +234,7 @@ println( s">>>> htmlFormElemJustFields 2 " )
     hrefPrefix: String = config.hrefDisplayPrefix, blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",
-    lang0: String, graphURI: String,
+    graphURI: String,
     actionURI2: String = "/save",
     formGroup: Rdf#URI = nullURI,
     formuri: String="",
@@ -245,7 +242,7 @@ println( s">>>> htmlFormElemJustFields 2 " )
   ) : ( NodeSeq , FormSyntax ) = {
 
     implicit val graph: Rdf#Graph = graphe
-    implicit val lang = lang0
+    implicit val lang = request.getLanguage
 
     lazy val formSyntax = time("createAbstractForm",
       createAbstractForm(uri, editable, blankNode, formGroup, formuri))
@@ -255,7 +252,7 @@ println( s">>>> htmlFormElemJustFields 2 " )
 
     val htmlForm =
       generateHTML(formSyntaxWithInfoAndFixedValues, hrefPrefix, editable, actionURI, graphURI,
-        actionURI2, lang, request,
+        actionURI2, request,
         cssForURI = "sf-value-block",
         cssForProperty = cssClasses.formLabelCSSClass
         // "col-xs-3 col-sm-2 col-md-2 control-label"

@@ -25,7 +25,7 @@ with RegisterPage[Rdf, DATASET] {
     val content = contactsDashboardHTML(request)
 
     mainPage(content, userInfo = userInfo
-      , lang = "en", title = "Contacts Mgnt",
+      , title = "Contacts Mgnt",
       displaySearch = true,
       messages = <p/>,
       httpRequest = request )

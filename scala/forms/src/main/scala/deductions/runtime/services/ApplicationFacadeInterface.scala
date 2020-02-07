@@ -20,14 +20,14 @@ trait ApplicationFacadeInterface {
 
   def htmlForm(uri: String, blankNode: String = "",
     editable: Boolean = false,
-    lang: String = "en", formuri: String = "",
+    formuri: String = "",
     graphURI: String = "",
     database: String = "TDB", request: HTTPrequest = HTTPrequest()): (NodeSeq, Boolean)
 
   def saveForm(request: Map[String, Seq[String]], lang: String = "",
     userid: String = "", graphURI: String = "", host: String = ""): (Option[String], Boolean)
 
-  def create(uri: String, lang: String = "en",
+  def create(uri: String,
     formSpecURI: String = "", graphURI: String = "", request: HTTPrequest = HTTPrequest()): NodeSeq
 
   def wordsearch(q: String = "", lang: String = "", clas: String = ""): Future[Elem]

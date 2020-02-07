@@ -91,7 +91,7 @@ http.send(content);
           // link to current page's associated user account
           <div>
             Account for this Person:{
-              makeHyperlinkForURI(accountFromPerson, request.getLanguage(), allNamedGraph,
+              makeHyperlinkForURI(accountFromPerson, allNamedGraph,
                   request=request )
             }
           </div>

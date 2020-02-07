@@ -35,12 +35,12 @@ trait FormHeader[Rdf <: RDF, DATASET]
   }
 
   /** title and links on top of the form: Edit, Display, Download Links */
-  def titleEditDisplayDownloadLinksThumbnail(formSyntax: FormSyntax, lang: String,
+  def titleEditDisplayDownloadLinksThumbnail(formSyntax: FormSyntax,
       editable: Boolean = false,
       request: HTTPrequest
   )(implicit graph: Rdf#Graph): NodeSeq = {
     val uri = nodeToString(formSyntax.subject)
-    implicit val _ = lang
+    implicit val lang = request.getLanguage
 
     // button to change the current editable state
     val editOrUnEditButton =
