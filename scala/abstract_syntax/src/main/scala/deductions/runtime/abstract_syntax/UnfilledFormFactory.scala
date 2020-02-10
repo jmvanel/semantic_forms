@@ -32,7 +32,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
    */
   def createFormFromClass(classe: Rdf#URI,
     formSpecURI0: String = "" , request: HTTPrequest )
-  	  (implicit graph: Rdf#Graph, lang:String) : FormSyntax = {
+  	  (implicit graph: Rdf#Graph) : FormSyntax = {
 
     wrapInTransaction {
     // if classs argument is not an owl:Class, check if it is a form:specification, then use it as formSpecURI
@@ -58,6 +58,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
     else
       instanceURI
 
+      implicit val lang = request.getLanguage()
       createFormDetailed(makeUri(newId),
         classFromSpecsOrGiven,
         CreationMode, nullURI, URI(formSpecURI0) )

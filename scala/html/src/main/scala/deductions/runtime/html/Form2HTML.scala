@@ -51,12 +51,13 @@ trait Form2HTML[NODE, URI <: NODE]
     cssForURI:      String      = "",
     cssForProperty: String      = ""): NodeSeq = {
 
-    val lang = request.getLanguage // TODO remove lang
     val htmlFormFields = time(
       "generateHTMLJustFields",
       generateHTMLJustFields(form, hrefPrefix, editable, graphURI, request,
         cssForURI, cssForProperty),
       logger.isInfoEnabled())
+
+    val lang = request.getLanguage
 
     /* wrap Fields With HTML <form> Tag */
     def wrapFieldsWithFormTag(htmlFormFields: NodeSeq): NodeSeq =
@@ -82,13 +83,13 @@ trait Form2HTML[NODE, URI <: NODE]
         { addSaveButton(actionURI2) }
       </form>
 
+    def mess(m: String): String = message(m, lang )
+
     def addSaveButton(actionURIarg: String) =
       if (actionURIarg =/= "")
         <div class="sf-save" zzclass="col col-sm-4 col-sm-offset-4">
           <input value={ mess("SAVE") } formaction={ actionURIarg } type="submit" class="form-control btn btn-primary "/>
         </div>
-
-    def mess(m: String): String = message(m, lang)
 
     //// output begins ////
 

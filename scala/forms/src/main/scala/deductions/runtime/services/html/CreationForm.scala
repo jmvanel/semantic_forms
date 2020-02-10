@@ -62,10 +62,9 @@ with CSSClasses {
                  formSpecURI: String = "",
                  request: HTTPrequest
                  ) : FormSyntax = {
-    val lang0 = request.getLanguage()
     val classURI = URI(classUri)
     retrieveURIBody(classURI, dataset, request, transactionsInside = true)
-    implicit val lang = lang0
+    implicit val lang = request.getLanguage()
     implicit val graph: Rdf#Graph = allNamedGraph
     val form = createFormFromClass(classURI, formSpecURI, request)
     form
