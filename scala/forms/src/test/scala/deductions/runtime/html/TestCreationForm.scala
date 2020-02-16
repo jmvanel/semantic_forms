@@ -14,6 +14,7 @@ import org.w3.banana.{FOAFPrefix, OWLPrefix, RDF, RDFOps, RDFOpsModule, RDFSPref
 
 import scala.collection.JavaConverters._
 import scala.xml.{Elem, NodeSeq}
+import deductions.runtime.core.HTTPrequest
 
 /**
  * Test Creation Form from class URI, without form specification
@@ -94,7 +95,8 @@ class TestCreationForm extends {
     rdfStore.rw(dataset, {
       replaceInstanceLabel(subjectURI, allNamedGraph, lang)
     })
-    val rawForm = create(classUri.toString(), lang = lang).get
+    val rawForm = create(classUri.toString(),
+        request = HTTPrequest( acceptLanguages = Seq(lang) ) ).get
     //    val rawForm = createElem(classUri.toString(), lang = "fr")
     //    val rawForm = createFormFromClass(classUri )
     val form = TestCreationForm.wrapWithHTML(rawForm)
@@ -118,7 +120,7 @@ class TestCreationForm extends {
       }).get
     //    implicit val graph = rdfStore.rw(dataset, { allNamedGraph }).get
     //    val rawForm = createElem("Person", lang = "fr")
-    val rawForm = create("Person", lang = "fr").get
+    val rawForm = create("Person", request = HTTPrequest( acceptLanguages = Seq("fr") )).get
     val form = TestCreationForm.wrapWithHTML(rawForm)
     val file = "example.creation.form2.html"
     Files.write(Paths.get(file), form.toString().getBytes);

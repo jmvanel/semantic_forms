@@ -61,7 +61,9 @@ class FormSyntaxFactoryTestJena extends FunSuite
 
 ///////////////////////
 
-/** NOTE: the TDB database is not used here, 
+/** Test FormSyntaxFactory with fake data; TODO : should be in module abstract_syntax
+ *
+ *  NOTE: the TDB database is not used here,
  * the data and vocab' are passed by:
  * implicit val graph */
 trait FormSyntaxFactoryTest[Rdf <: RDF, DATASET] extends FormSyntaxFactory[Rdf, DATASET] {

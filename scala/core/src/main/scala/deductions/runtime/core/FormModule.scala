@@ -76,8 +76,7 @@ trait FormModule[NODE, URI <: NODE] {
 
     /** comes from a refactor, maybe remove */
     def propertiesList: Seq[NODE] = {
-//      entriesList . map ( _.property )
-            fields . map ( _.property )
+      fields . map ( _.property )
     }
 
     /** Map from property to possible Values  */
@@ -183,7 +182,8 @@ trait FormModule[NODE, URI <: NODE] {
       fromProperty: NODE = Entry.this.property,
       fromMetadata: String = Entry.this.metadata,
       fromTimeMetadata: Long = Entry.this.timeMetadata,
-      label: String = Entry.this.label
+      label: String = Entry.this.label,
+      value: NODE = Entry.this.value
       ): Entry = {
       this match {
         case r: ResourceEntry => r.copy(
@@ -192,22 +192,26 @@ trait FormModule[NODE, URI <: NODE] {
           property = fromProperty,
           metadata = fromMetadata,
           timeMetadata = fromTimeMetadata,
-          label = label)
+          label = label,
+          value = value)
         case e: LiteralEntry => e.copy(
           cardinality = cardinality,
           widgetType = widgetType,
           property = fromProperty,
           metadata = fromMetadata,
           timeMetadata = fromTimeMetadata,
-          label = label)
+          label = label,
+          value = value)
         case e: BlankNodeEntry => e.copy(
           cardinality = cardinality,
           widgetType = widgetType,
-          property = fromProperty)
+          property = fromProperty,
+          value = value)
         case e: RDFListEntry => e.copy(
           cardinality = cardinality,
           widgetType = widgetType,
-          property = fromProperty)
+          property = fromProperty,
+          value = value)
         case e: Entry =>
           System.err.println(s"copyEntry: copying plain entry !!!! $e")
           e
