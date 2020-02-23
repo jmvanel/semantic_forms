@@ -401,17 +401,11 @@ trait Form2HTML[NODE, URI <: NODE]
     }
 
     if (xmlField != (<span/>))
-      // TODO if() below seems useless !!!!
-      if (displayInTable === true) {
         Seq(createAddRemoveWidgets(field, editable)) ++
-          { xmlField }
-      } else {
-        Seq(createAddRemoveWidgets(field, editable)) ++
-          <span class={ css }>
+          <span class={ if (displayInTable === true) "" else css }>
             { xmlField }
           </span> ++
           makeUserInfoOnTriples(field, request.getLanguage())
-      }
     else <span/>
   }
 
