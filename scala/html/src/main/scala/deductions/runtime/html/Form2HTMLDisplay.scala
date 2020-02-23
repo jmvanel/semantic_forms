@@ -38,7 +38,6 @@ with FormModule[NODE, URI]
               literalEntry.valueLabel
           Unparsed(valueDisplayed)
         }
-        { makeUserInfoOnTriples(literalEntry, request.getLanguage()) }
         <span>{ if (literalEntry.lang  =/=  "" && literalEntry.lang  =/=  "No_language") " > " + literalEntry.lang }</span>
       </span>
   }
@@ -69,7 +68,6 @@ with FormModule[NODE, URI]
           resourceEntry) ++
       displayThumbnail(resourceEntry) ++
       backLinkButton(resourceEntry, request) ++
-      makeUserInfoOnTriples(resourceEntry, request.getLanguage()) ++
       // TODO harmonize with expertLinks() below
       showHideExpertButtonsOnClick(
           normalNavigationButton(resourceEntry) ++
@@ -210,8 +208,7 @@ with FormModule[NODE, URI]
                                                       hrefPrefix: String = config.hrefDisplayPrefix) =
     <a href={ Form2HTML.createHyperlinkString(hrefPrefix, r.value.toString, true) }>{
       r.valueLabel
-      }</a> ++
-      {makeUserInfoOnTriples(r)}
+      }</a>
 
   def creationButton(classURIstringValue: String, types: Seq[String], lang: String): NodeSeq = {
     val imageURL = "/assets/images/create-instance.svg"

@@ -409,7 +409,8 @@ trait Form2HTML[NODE, URI <: NODE]
         Seq(createAddRemoveWidgets(field, editable)) ++
           <span class={ css }>
             { xmlField }
-          </span>
+          </span> ++
+          makeUserInfoOnTriples(field, request.getLanguage())
       }
     else <span/>
   }

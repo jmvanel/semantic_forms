@@ -100,7 +100,6 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
                 ""}
             >
           </input> , resourceEntry) }
-          { makeUserInfoOnTriples(resourceEntry, lang) }
 		  </div>
 		else new Text("") // format: ON
       ,
@@ -161,7 +160,6 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
         title={ placeholder }
         >
         </input> , r) }
-        {makeUserInfoOnTriples(r)}
 				</div>
       }else new Text("\n")
       ,
@@ -298,7 +296,6 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
         Text("\n") ++
         <div class={ cssConfig.formDivInputCSSClass }>
           { addTripleAttributesToXMLElement( input, lit ) }
-          { makeUserInfoOnTriples(lit, request.getLanguage()) }
         </div> ++
         <div class={ cssConfig.formDivEditInputCSSClass }>{
             if (showEditButtons &&
