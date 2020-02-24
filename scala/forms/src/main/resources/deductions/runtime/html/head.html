@@ -108,5 +108,29 @@
         -webkit-user-select: text;
         -ms-user-select: text;
     }
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: orange;
+  color: black;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+
+.tooltip-container:hover .tooltiptext {
+  visibility: visible;
+}
     </style>
 </head>
