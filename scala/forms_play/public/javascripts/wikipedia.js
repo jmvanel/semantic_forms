@@ -77,7 +77,9 @@ $(document).ready(function() {
                 $.ajax({
                     url: searchServiceURL,
 //                    data: { MaxHits: resultsCount, QueryClass: typeName, QueryString: request.term },
-                    data: { MaxHits: resultsCount, QueryString: request.term },
+                    data: { QueryString: request.term,
+                            MaxHits: resultsCount
+                    },
                     dataType: "json"
                     , timeout: 30000
                 }).done(function (response) {
