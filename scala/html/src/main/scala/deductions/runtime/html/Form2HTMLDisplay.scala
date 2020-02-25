@@ -14,12 +14,13 @@ import scala.xml.Text
 import deductions.runtime.core.FormModule
 import deductions.runtime.utils.I18NMessages
 import scala.xml.Comment
+import deductions.runtime.utils.StringHelpers
 
 /** generate HTML from abstract Form for Display (Read only) */
 trait Form2HTMLDisplay[NODE, URI <: NODE]
   extends Form2HTMLBase[NODE, URI]
-//  with RDFPrefixesInterface
 with FormModule[NODE, URI]
+with StringHelpers
 
   with HTMLutils {
 
@@ -197,17 +198,13 @@ with FormModule[NODE, URI]
     val imageURL = if (isImage) Some(value)
     else thumbnail
     if (isImage || thumbnail.isDefined) {
+      val url = introduceProxyIfnecessary( imageURL.get.toString() )
       <a class="image-popup-vertical-fit" href={ imageURL.get.toString() } title={ s"Image of $valueLabel: ${value.toString()}" }>
-        <img src={ introduceProxyIfnecessary( imageURL.get.toString() ) }
+        <img src={ url }
              css="sf-thumbnail" height="40" alt={ s"Image of $valueLabel: ${value.toString()}" }/>
       </a>
     } else NodeSeq.Empty
   }
-
-  private def introduceProxyIfnecessary(url: String): String =
-    if(url.startsWith("https://"))
-      "/proxy?originalurl=" + URLEncoder.encode(url, "UTF-8")
-    else url
 
   private[html] def createHTMLBlankNodeReadonlyField(
                                                       r: formMod#BlankNodeEntry,
