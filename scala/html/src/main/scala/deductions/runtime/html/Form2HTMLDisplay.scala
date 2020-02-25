@@ -198,10 +198,16 @@ with FormModule[NODE, URI]
     else thumbnail
     if (isImage || thumbnail.isDefined) {
       <a class="image-popup-vertical-fit" href={ imageURL.get.toString() } title={ s"Image of $valueLabel: ${value.toString()}" }>
-        <img src={ imageURL.get.toString() } css="sf-thumbnail" height="40" alt={ s"Image of $valueLabel: ${value.toString()}" }/>
+        <img src={ introduceProxyIfnecessary( imageURL.get.toString() ) }
+             css="sf-thumbnail" height="40" alt={ s"Image of $valueLabel: ${value.toString()}" }/>
       </a>
     } else NodeSeq.Empty
   }
+
+  private def introduceProxyIfnecessary(url: String): String =
+    if(url.startsWith("https://"))
+      "/proxy?originalurl=" + URLEncoder.encode(url, "UTF-8")
+    else url
 
   private[html] def createHTMLBlankNodeReadonlyField(
                                                       r: formMod#BlankNodeEntry,
