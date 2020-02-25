@@ -86,6 +86,7 @@ GET     /logout                     @controllers.AuthService.logout
 GET     /assets/*file               @controllers.Assets.at(path="/public", file)
 # files in local files/ directory are served like Apache does:
 GET     /files/*file                @controllers.Files.at(file)
+GET     /proxy                @controllers.ServicesApp.getProxy(originalurl: String)
 
 # LDP
 GET     /ldp/*uri             @controllers.ServicesApp.ldp(uri: String)
