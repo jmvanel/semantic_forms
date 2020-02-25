@@ -415,6 +415,7 @@ with RDFContentNegociation {
     url:            String,
     connectTimeout: Int    = 5000,
     readTimeout:    Int    = 5000,
+    requestProperties: Map[String, Seq[String]] = Map(("Accept", Seq("application/json"))),
     requestMethod:  String = "GET") =
   {
     import java.net.{ URL, HttpURLConnection }
@@ -422,6 +423,8 @@ with RDFContentNegociation {
     connection.setConnectTimeout(connectTimeout)
     connection.setReadTimeout(readTimeout)
     connection.setRequestMethod(requestMethod)
+    for (prop <- requestProperties ; property <- prop._2)
+      connection.setRequestProperty(prop._1, property)
     val inputStream = connection.getInputStream
     val byteArray = org.apache.commons.io.IOUtils.toByteArray(inputStream)
     if (inputStream != null) inputStream.close
@@ -432,8 +435,11 @@ with RDFContentNegociation {
    *  same for dbPedia Lookup */
   def getProxy(originalurl: String) = Action {
     implicit request =>
-      val (content, connection) = get(originalurl)
-      Ok(content).as(connection.getContentType)
+      val headers = request.headers.toMap
+      val headersList = headers.toList
+      val headersListFlat = for ( h <- headersList; header <- h._2 ; key  = h._1 ) yield {(key, header)}
+      val (content, connection) = get(originalurl, requestProperties=headers)
+      Ok(content).withHeaders(headersListFlat:_*).as(connection.getContentType)
   }
 
 }

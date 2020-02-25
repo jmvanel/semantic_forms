@@ -1,5 +1,7 @@
 import Common._
 
+maintainer := "jeanmarc.vanel@gmail.com"
+
 // Discussion on get rid of twirl in playframework
 // https://github.com/playframework/playframework/issues/5823
 

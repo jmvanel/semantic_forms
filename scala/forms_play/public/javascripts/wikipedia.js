@@ -1,4 +1,5 @@
 // require("jquery-ui")
+// See doc here https://jqueryui.com/autocomplete/#remote
 
 // https://github.com/dbpedia/lookup
 // wget "http://    lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=10&QueryString=berl" --header='Accept: application/json'
@@ -14,10 +15,8 @@ https://www.google.fr/search?q=ajax+example+scala.js
  */
 
 $(document).ready(function() {
-    var searchServiceURL = "/proxy?originalurl=http://lookup.dbpedia.org/api/search/PrefixSearch"
-    // var searchServiceURL = "https://semantic-forms.cc:1953/proxy?originalurl=http://lookup.dbpedia.org/api/search/PrefixSearch"
-    // var searchServiceURL = "http://lookup.dbpedia.org/api/search/KeywordSearch"
-    // "http://lookup.dbpedia.org/api/search/PrefixSearch" : currently service is down
+    var searchServiceURL = "/proxy?originalurl=" + "http://lookup.dbpedia.org/api/search/PrefixSearch"
+    // var searchServiceURL = "/proxy?originalurl=" + encodeURIComponent("http://lookup.dbpedia.org/api/search/PrefixSearch")
     var resultsCount = 15;
     var suggestionSearchCSSclass = 'sf-suggestion-search-dbpedia';
 
@@ -75,13 +74,12 @@ $(document).ready(function() {
                 }
                 }
                 $.ajax({
-                    url: searchServiceURL,
-//                    data: { MaxHits: resultsCount, QueryClass: typeName, QueryString: request.term },
-                    data: { QueryString: request.term,
-                            MaxHits: resultsCount
-                    },
-                    dataType: "json"
-                    , timeout: 30000
+                    url: searchServiceURL + "?QueryString="+request.term
+                                          + "&MaxHits="+resultsCount +
+                                          + "&QueryClass="+typeName,
+//                  data: { MaxHits: resultsCount, QueryClass: typeName, QueryString: request.term },
+                    dataType: "json" ,
+                    timeout: 30000
                 }).done(function (response) {
                     console.log(response)
                     callback(response.results.map(function (m) {
