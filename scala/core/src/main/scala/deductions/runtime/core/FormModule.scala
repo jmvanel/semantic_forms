@@ -143,7 +143,7 @@ trait FormModule[NODE, URI <: NODE] {
     val possibleValues: Seq[(NODE, NODE)] // = Seq()
     val defaults: FormDefaults = FormModule.formDefaults
     /** for multi-subject forms */
-    val subject: NODE// = nullURI
+    val subject: NODE // TODO should be a type generalizing URI and BLANK !
     val cardinality: Cardinality// = zeroOrMore
     val htmlName: String
 

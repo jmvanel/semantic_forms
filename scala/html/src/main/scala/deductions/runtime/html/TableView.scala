@@ -150,9 +150,9 @@ trait TableView[NODE, URI <: NODE]
   private def uriColumn(row: NODE): NodeSeq = {
     val entry = rowsMap(row)
     hyperlinkToURI(config.hrefDisplayPrefix, entry.subject.toString(),
-      entry.subjectLabel,
-      firstNODEOrElseEmptyString(entry.type_),
-      NullResourceEntry) ++
+//      entry.subjectLabel,
+      entry asResource()
+      ) ++
     hyperlinkForEditingURI(toPlainString(row), "en")
   }
 

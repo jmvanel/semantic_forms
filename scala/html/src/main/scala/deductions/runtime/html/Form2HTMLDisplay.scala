@@ -64,8 +64,7 @@ with StringHelpers
     val widgets =
      if( details == "") // default full details
       hyperlinkToField(resourceEntry) ++
-      hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue, valueLabel,
-          typ, // TODO not pass typ; type_ is in resourceEntry
+      hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue,
           resourceEntry) ++
       displayThumbnail(resourceEntry) ++
       backLinkButton(resourceEntry, request) ++
@@ -84,13 +83,13 @@ with StringHelpers
           resourceEntry.value.toString()
       )
       else if( details.contains("images") )
-        hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue, valueLabel,
-          typ, resourceEntry) ++
+        hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue,
+          resourceEntry) ++
         displayThumbnail(resourceEntry)
 
       else
-        hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue, valueLabel,
-          typ, resourceEntry)
+        hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue,
+          resourceEntry)
 
       <span class="sf-statistics">{widgets}</span>
   }
@@ -132,8 +131,7 @@ with StringHelpers
     import resourceEntry._
     val typ = firstNODEOrElseEmptyString(type_)
     val objectURIstringValue = value.toString()
-    hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue, valueLabel,
-      typ, // TODO pass type_
+    hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue,
       resourceEntry) ++
       displayThumbnail(resourceEntry)
   }
@@ -155,8 +153,11 @@ with StringHelpers
     } else NodeSeq.Empty
   }
 
-  private[html] def hyperlinkToURI(hrefPrefix: String, objectURIstringValue: String, valueLabel: String,
-      type_ : String, resourceEntry: formMod#ResourceEntry) = {
+  private[html] def hyperlinkToURI(hrefPrefix: String, objectURIstringValue: String,
+      resourceEntry: formMod#ResourceEntry) = {
+    val type_ = firstNODEOrElseEmptyString(resourceEntry.type_)
+    val valueLabel = resourceEntry.valueLabel
+//  println(s"==== createHTMLResourceReadonlyField: typ: $typ")
     val types0 = resourceEntry.type_.mkString(", ")
     val types = if(types0 == "") type_ else types0
     addTripleAttributesToXMLElement(
@@ -198,10 +199,11 @@ with StringHelpers
     val imageURL = if (isImage) Some(value)
     else thumbnail
     if (isImage || thumbnail.isDefined) {
+      val title = s"Image of $valueLabel: ${value.toString()}"
       val url = introduceProxyIfnecessary( imageURL.get.toString() )
-      <a class="image-popup-vertical-fit" href={ imageURL.get.toString() } title={ s"Image of $valueLabel: ${value.toString()}" }>
+      <a class="image-popup-vertical-fit" href={ imageURL.get.toString() } title={title}>
         <img src={ url }
-             css="sf-thumbnail" height="40" alt={ s"Image of $valueLabel: ${value.toString()}" }/>
+             css="sf-thumbnail" height="40" alt={title}/>
       </a>
     } else NodeSeq.Empty
   }

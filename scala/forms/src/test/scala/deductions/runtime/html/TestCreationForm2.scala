@@ -12,6 +12,7 @@ import org.w3.banana.io.{RDFWriter, Turtle}
 import org.w3.banana.jena.JenaModule
 
 import scala.util.Try
+import deductions.runtime.core.HTTPrequest
 
 class TestCreationForm2Jena extends {
     override val config = new DefaultConfiguration{}
@@ -54,7 +55,7 @@ trait TestCreationForm2[Rdf <: RDF, DATASET] extends FunSuite
     rdfStore.rw(dataset, {
       rdfStore.appendToGraph(dataset, makeUri("test"), personFormSpec)
     })
-    val form = create(uri, lang = "fr")
+    val form = create(uri, request = HTTPrequest(acceptLanguages = Seq("fr") ))
     val file = "creation.form.2.html"
     Files.write(Paths.get(file), form.toString().getBytes);
     println(s"file created $file")
