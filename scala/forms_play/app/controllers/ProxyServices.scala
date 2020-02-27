@@ -9,8 +9,9 @@ trait ProxyServices  extends PlaySettings.MyControllerBase {
 import org.apache.http.{HttpEntity, HttpResponse}
 import org.apache.http.client._
 import org.apache.http.client.methods.HttpGet
-import org.apache.http.impl.client.DefaultHttpClient
-import org.apache.http.params.HttpConnectionParams
+import org.apache.http.impl.client.HttpClientBuilder
+import org.apache.http.client.config.RequestConfig
+//import scala.collection.JavaConverters._
 
 /**
   * Returns the text (content) from a REST URL as a String.
@@ -42,19 +43,40 @@ def getRestContent(url: String,
         if (inputStream != null) inputStream.close
         byteArray
     } else Array[Byte]()
-    httpClient.getConnectionManager.shutdown
+    httpClient.close()
     (content, httpResponse)
 }
 
-private def buildHttpClient(connectionTimeout: Int, socketTimeout: Int):
-DefaultHttpClient = {
-    val httpClient = new DefaultHttpClient
-    val httpParams = httpClient.getParams
-    HttpConnectionParams.setConnectionTimeout(httpParams, connectionTimeout)
-    HttpConnectionParams.setSoTimeout(httpParams, socketTimeout)
-    httpClient.setParams(httpParams)
+private def buildHttpClient(connectionTimeout: Int, socketTimeout: Int) = {
+  val requestConfig = RequestConfig.custom()
+    .setSocketTimeout(socketTimeout)
+    .setConnectTimeout(connectionTimeout)
+    .setConnectionRequestTimeout(connectionTimeout)
+//    .setStaleConnectionCheckEnabled(true)
+    .build()
+
+//   HttpClient httpClient = HttpClientBuilder.create().setMaxConnTotal(10).setMaxConnPerRoute(10)
+//                 .setDefaultRequestConfig(requestConfig).build();
+
+  val httpClient0 = HttpClientBuilder.create()
+//  val headers = List( new BasicHeader(HttpHeaders.TIMEOUT, connectionTimeout toString()) )
+//  httpClient0.setDefaultHeaders(headers.asJava)
+  val httpClient = httpClient0.setDefaultRequestConfig(requestConfig).build()
+//    val httpParams = httpClient.getParams
+//    HttpConnectionParams.setConnectionTimeout(httpParams, connectionTimeout)
+//    HttpConnectionParams.setSoTimeout(httpParams, socketTimeout)
     httpClient
 }
+
+//private def buildHttpClient_old(connectionTimeout: Int, socketTimeout: Int):
+//DefaultHttpClient = {
+//    val httpClient = new DefaultHttpClient
+//    val httpParams = httpClient.getParams
+//    HttpConnectionParams.setConnectionTimeout(httpParams, connectionTimeout)
+//    HttpConnectionParams.setSoTimeout(httpParams, socketTimeout)
+//    httpClient.setParams(httpParams)
+//    httpClient
+//}
 
 
   private def getContentType(httpResponse: HttpResponse): String = {
@@ -77,7 +99,7 @@ DefaultHttpClient = {
   }
 
 
-  /**
+  /*
    * Returns the text (content) from a REST URL as a String.
    * Inspired by http://matthewkwong.blogspot.com/2009/09/scala-scalaiosource-fromurl-blockshangs.html
    * and http://alvinalexander.com/blog/post/java/how-open-url-read-contents-httpurl-connection-java
