@@ -12,6 +12,8 @@ trait StringHelpers {
     Some(s.substring( li +1, s.length() ))
   }
 
+  /** introduce Proxy If necessary, that is if URL is HTTP
+   *  TODO should not use proxy if SF server is HTTP */
   def introduceProxyIfnecessary(url: String): String =
     if(url.startsWith("http://"))
       "/proxy?originalurl=" + URLEncoder.encode(url, "UTF-8")
