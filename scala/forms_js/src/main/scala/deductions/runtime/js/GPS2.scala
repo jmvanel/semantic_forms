@@ -43,13 +43,14 @@ object GPS2 extends GPS {
    /* obtain longitude & latitude from HTML5 GPS API,
     * and then call fillCoords();
     * cf http://stackoverflow.com/questions/40483880/geolocation-in-scala-js */
-   import scala.scalajs.js.Dynamic.{literal => json}
-   val gpsParameters = json(
+    import scala.scalajs.js.Dynamic.{literal => json}
+    val gpsParameters = json(
 //     new org.scalajs.dom.raw.PositionOptions {
 		   enableHighAccuracy=true,
 		   maximumAge=20000,
 		   timeout=15000 )
-   geo.watchPosition( fillCoords _, onError _ , gpsParameters.asInstanceOf[PositionOptions] )
+    geo.watchPosition( fillCoords _, onError _ , gpsParameters.asInstanceOf[PositionOptions] )
+    print("Callback fillCoords() set by watchPosition")
   }
 
   import scala.scalajs.js.Dynamic.global

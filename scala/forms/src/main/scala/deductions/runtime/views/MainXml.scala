@@ -46,8 +46,12 @@ trait MainXml extends ToolsPage with EnterButtons {
   /** HTML <head> tag, to be redefined */
   def head(title: String = "")(implicit lang: String = "en"): NodeSeq = <head></head>
 
+  /** Technical stuff (JS) that needs to be after page <body> */
+  def tail() : NodeSeq = NodeSeq.Empty
+
   /** page bottom (overridable!) **/
-  def pageBottom(lang: String = "en"): NodeSeq = linkToToolsPage(lang)
+  def pageBottom(lang: String = "en"): NodeSeq = linkToToolsPage(lang) ++
+    tail()
 
   def linkToToolsPage(lang: String = "en") =
 

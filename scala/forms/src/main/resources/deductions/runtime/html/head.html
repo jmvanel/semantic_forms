@@ -38,49 +38,7 @@
 
     <script src="assets/javascripts/forms_js-fastopt.js" type="text/javascript"> </script>
 
-    <script type='text/javascript'>
-        $(document).ready( function (){
-            // commented out, because rich HTML content in forms values are displayed badly
-            // $(".form-horizontal").tabs();
-            //$(".form-group").on('click', '.add-widget', function(event) {
-            $(".sf-values-group").on('click', '.add-widget', function(event) {
-            // $(".add-widget").on('click', function(event) {
-                console.log('Cloning field :');
-                $model = $(this).parent().parent().find('.sf-value-block').first().children().first().children().first()
-                console.log('Clonage du champ :');
-                console.log($model);
-                cloneWidget($model,$(this))
-            });
 
-            $('.image-popup-vertical-fit').magnificPopup({
-                type: 'image',
-                closeOnContentClick: true,
-                mainClass: 'mfp-img-mobile',
-                image: {
-                verticalFit: true
-                }
-            });
-
-            $('.showHideButton').on('click', function(event) {
-              var button = event.target
-              var wrapper = button . nextSibling
-              wrapper .style.removeProperty("display")
-              window.console.log("OK removed Property display on " + "$wrapperId" )
-            });
-        })
-    </script>
-
-    <script type='text/javascript'>
-        $(document).ready( function (){
-        //// Bootstraping Popup Editor & GPS (Scala.js) ////
-        deductions.runtime.js.PopupEditor().main();
-        function launchEditorWindow(input){
-          deductions.runtime.js.PopupEditor().launchEditorWindow(input); };
-
-        GPS2.listenToSubmitEventFillGeoCoordinates();
-        console.log('Called listenToSubmitEventFillGeoCoordinates');
-        })
-    </script>
 
     <style type="text/css">
     .resize {

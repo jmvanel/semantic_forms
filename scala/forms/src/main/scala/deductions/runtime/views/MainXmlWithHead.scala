@@ -13,10 +13,12 @@ import scala.xml.NodeSeq
 trait MainXmlWithHead extends MainXml {
 
   private def add(e: Elem, c: Node): Elem = e.copy(child = e.child ++ c)
-  private val basicHead =
+  private def addFile(name: String): NodeSeq =
     scala.xml.Unparsed(
       // this way, head.html is in forms/ module, removing a dependency in forms_play/ module
-      Source.fromURL(getClass.getResource("/deductions/runtime/html/head.html")).getLines().mkString("\n"))
+      Source.fromURL(getClass.getResource("/deductions/runtime/html/" + name)).getLines().mkString("\n"))
+
+  private val basicHead = addFile("head.html")
 
   /** HTML head content */
   override def head(title: String = "")(implicit lang: String = "en"): NodeSeq = {
@@ -35,4 +37,6 @@ trait MainXmlWithHead extends MainXml {
     <meta name="Description" content={title}/>
   }
 
+  /** Technical stuff (JS) that needs to be after page <body> */
+  override def tail(): NodeSeq = addFile("tail.html")
 }

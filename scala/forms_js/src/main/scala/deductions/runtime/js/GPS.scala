@@ -47,8 +47,8 @@ trait GPS {
     node match {
       case input: Input =>
         input.value = coord
-        dom.window.console.info(s"fillGeoCoordinates: value ${input.value}")
-      case el => dom.window.console.info(s"fillGeoCoordinates: $el unexpected")
+        print(s"fillGeoCoordinates: value ${input.value}")
+      case el => print(s"fillGeoCoordinates: $el unexpected")
     }
   }
 }
@@ -71,8 +71,7 @@ object GeoCoordinatesFields {
     val matchesAltitudeInput = dom.document.querySelectorAll(
       s"input[data-rdf-property='${geoRDFPrefix}alt']")
 
-    dom.window.console.info(s"matchesLongitudeInput $matchesLongitudeInput, length ${matchesLongitudeInput.length}")
-    // dom.window.console.info(s"matchesLatitudeInput $matchesLatitudeInput" )
+    print(s"matchesLongitudeInput $matchesLongitudeInput, length ${matchesLongitudeInput.length}")
     val inputIsEmptyLongitude = inputIsEmpty(matchesLongitudeInput)
     val needs =
       ( matchesLatitudeInput.length > 0 ||
@@ -84,9 +83,14 @@ object GeoCoordinatesFields {
   }
 
   private def inputIsEmpty(nodeList: NodeList): Boolean = {
+    print("inputIsEmpty: nodeList.length: " + nodeList.length)
     nodeList . map {
-      case input: Input => input.value == ""
+      case input: Input =>
+        if( input.value.size > 0 ) print("inputIsEmpty: input.value: '" +  input.value.toString + "'")
+        input.value == ""
       case _ => true
     } . headOption . getOrElse(false)
   }
+
+  private def print(m: String) = dom.window.console.info(m)
 }
