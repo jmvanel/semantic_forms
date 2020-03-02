@@ -19,11 +19,12 @@ trait GPS {
  *  ?S geo:lat  ?LAT .
  */
   def fillCoords(p: Position) = {
-
-    val longitude = p.coords.longitude
-    val latitude = p.coords.latitude
-    val altitude = p.coords.altitude
-    println(s"Got from GPS: latitude=${latitude} , longitude=${longitude}, altitude=${altitude}")
+    val coords = p.coords
+    val longitude = coords.longitude
+    val latitude = coords.latitude
+    val altitude = coords.altitude
+    println(s"Got from GPS: latitude=${latitude}, longitude=${longitude}, altitude=${altitude}")
+    println(s"(La précision est de ${coords.accuracy} mètres.)")
 
     // TODO Handling abnormal location results, see http://www.andygup.net/how-accurate-is-html5-geolocation-really-part-2-mobile-web/
 
