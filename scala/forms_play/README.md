@@ -102,9 +102,9 @@ To run on another port than 9000 :
 
     run 9053
 
-To use HTTPS, also just change the port to 9443, see:
-https://www.playframework.com/documentation/2.4.x/ConfiguringHttps
+To use HTTPS, specify the port like this (see https://www.playframework.com/documentation/2.6.x/ConfiguringHttps )
 
+    run -Dhttps.port=9143 -Dhttp.port=9000
 
 To raise the memory, set this environment variable:
 

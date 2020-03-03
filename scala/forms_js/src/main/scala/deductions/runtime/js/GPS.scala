@@ -14,9 +14,12 @@ import org.scalajs.dom.raw.NodeList
  *  */
 trait GPS {
 
-  /** callback for Geo HTML5 function watchPosition() that populates RDF triples:
- *  ?S geo:long ?LONG .
- *  ?S geo:lat  ?LAT .
+  /** callback for Geo HTML5 function watchPosition() that fills coordinates
+ * in relevant <input> elements;
+ * so everytime a new GPS Position is received, the form is updated;
+ * after saving form, the server will populate RDF triples:
+ *   ?S geo:long ?LONG .
+ *   ?S geo:lat  ?LAT .
  */
   def fillCoords(p: Position) = {
     val coords = p.coords
@@ -42,18 +45,20 @@ trait GPS {
     }
   }
 
+  /** fill One Coordinate in <input> element */
   private def fillOneCoordinate(node: Node, coord: String): Any = {
     // println( s"fillOneCoordinate( $l: Node, $coord)" )
     node match {
       case input: Input =>
         input.value = coord
-        print(s"fillGeoCoordinates: value ${input.value}")
-      case el => print(s"fillGeoCoordinates: $el unexpected")
+        print(s"fillGeoCoordinates: value ${input.value}, ")
+      case el => print(s"fillGeoCoordinates: $el unexpected, ")
     }
   }
 }
 
-case class GeoCoordinatesFields(needsUpdate: Boolean,
+case class GeoCoordinatesFields(
+    needsUpdate: Boolean,
     matchesLongitudeInput: NodeList,
     matchesLatitudeInput: NodeList,
     matchesAltitudeInput: NodeList
@@ -77,19 +82,21 @@ object GeoCoordinatesFields {
       ( matchesLatitudeInput.length > 0 ||
         matchesLongitudeInput.length > 0 ) &&
         inputIsEmptyLongitude
+    println("needs GPS input: " + needs)
     if( ! inputIsEmptyLongitude )
-      println("Longitude is already filled")
+      println("Longitude is already filled: " + matchesLongitudeInput)
     GeoCoordinatesFields(needs, matchesLongitudeInput, matchesLatitudeInput, matchesAltitudeInput)
   }
 
+  /** input field exists and Is Empty */
   private def inputIsEmpty(nodeList: NodeList): Boolean = {
-    print("inputIsEmpty: nodeList.length: " + nodeList.length)
+    print("inputIsEmpty(): nodeList.length: " + nodeList.length)
     nodeList . map {
       case input: Input =>
-        if( input.value.size > 0 ) print("inputIsEmpty: input.value: '" +  input.value.toString + "'")
+        if( input.value.size > 0 ) print("inputIsEmpty(): input.value: '" +  input.value.toString + "'")
         input.value == ""
       case _ => true
-    } . headOption . getOrElse(false)
+    } . headOption . getOrElse(true)
   }
 
   private def print(m: String) = dom.window.console.info(m)

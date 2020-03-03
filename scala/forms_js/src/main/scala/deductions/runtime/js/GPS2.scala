@@ -49,7 +49,7 @@ object GPS2 extends GPS {
   private def fillGeoCoordinates {
     geo.watchPosition( fillCoords _, onError _ ,
      gpsParameters.asInstanceOf[PositionOptions] )
-    print("Callback fillCoords() set by watchPosition")
+    println("Callback fillCoords() set by watchPosition")
   }
 
   import scala.scalajs.js.Dynamic.global
