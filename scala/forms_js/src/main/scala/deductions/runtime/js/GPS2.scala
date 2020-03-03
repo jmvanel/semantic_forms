@@ -37,9 +37,9 @@ object GPS2 extends GPS {
   @JSExport
   def listenToSubmitEventFillGeoCoordinates(): Unit = {
     if( GeoCoordinatesFields.pageNeedsGeoCoordinates() . needsUpdate )
-      window.addEventListener("load",
-        (e: dom.Event) =>
-        { fillPositionsOnce(); println("Called fillPositionsOnce"); fillGeoCoordinates })
+      // window.addEventListener("load", (e: dom.Event) =>
+        { fillPositionsOnce(); println("Called fillPositionsOnce");
+          fillGeoCoordinates }
   }
 
   /**

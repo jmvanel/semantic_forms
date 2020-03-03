@@ -29,7 +29,6 @@ trait GPS {
     // TODO Handling abnormal location results, see http://www.andygup.net/how-accurate-is-html5-geolocation-really-part-2-mobile-web/
 
     val geoCoordinatesFields = GeoCoordinatesFields.pageNeedsGeoCoordinates()
-//    if( geoCoordinatesFields . needsUpdate )
     for (
       longitudeInput <- geoCoordinatesFields.matchesLongitudeInput;
       latitudeInput <- geoCoordinatesFields.matchesLatitudeInput
