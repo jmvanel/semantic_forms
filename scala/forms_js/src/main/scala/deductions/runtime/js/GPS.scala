@@ -84,7 +84,7 @@ object GeoCoordinatesFields {
         inputIsEmptyLongitude
     println("needs GPS input: " + needs)
     if( ! inputIsEmptyLongitude )
-      println("Longitude is already filled: " + matchesLongitudeInput)
+      println("Longitude is already filled: '" + matchesLongitudeInput + "'")
     GeoCoordinatesFields(needs, matchesLongitudeInput, matchesLatitudeInput, matchesAltitudeInput)
   }
 

@@ -16,6 +16,7 @@ import org.scalajs.dom.raw.PositionOptions
 // for for loop with NodeList:
 import org.scalajs.dom.ext._
 import scala.scalajs.js.Dynamic.{literal => json}
+import org.scalajs.dom.raw.HTMLElement
 
 @JSExportTopLevel("GPS2")
 object GPS2 extends GPS {
@@ -27,6 +28,7 @@ object GPS2 extends GPS {
 		   enableHighAccuracy=true,
 		   maximumAge=20000,
 		   timeout=15000 )
+    var watchID: Int = -1
 
   /** start watching Position from GPS,
    * to fill Geo Coordinates from GPS in form
@@ -43,13 +45,19 @@ object GPS2 extends GPS {
   }
 
   /**
-   * fill longitude & latitude from HTML5 GPS API into relevant geo:long & geo:lat triples ,
+   * fill continuously longitude & latitude from HTML5 GPS API into relevant geo:long & geo:lat triples ,
    * See https://developer.mozilla.org/fr/docs/Using_geolocation
    */
   private def fillGeoCoordinates {
-    geo.watchPosition( fillCoords _, onError _ ,
+    watchID = geo.watchPosition( fillCoords _, onError _,
      gpsParameters.asInstanceOf[PositionOptions] )
     println("Callback fillCoords() set by watchPosition")
+  }
+
+  @JSExport
+  def clearWatch() = {
+    geo.clearWatch(watchID);
+    watchID = -1
   }
 
   import scala.scalajs.js.Dynamic.global
@@ -59,6 +67,11 @@ object GPS2 extends GPS {
     global.console.log(message)
     val appMessagesZone = dom. document.getElementById("appMessages")
     appMessagesZone.innerHTML = message
+    appMessagesZone match {
+      case elem: HTMLElement => elem.style = // "Color: red"
+      "Background-Color: red"
+      case _ =>
+    }
     import scala.scalajs.js.timers._
     setTimeout( 40000 ) { appMessagesZone.innerHTML = "" }
   }
