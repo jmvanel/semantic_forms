@@ -78,12 +78,13 @@ object GeoCoordinatesFields {
 
     print(s"matchesLongitudeInput $matchesLongitudeInput, length ${matchesLongitudeInput.length}")
     val inputIsEmptyLongitude = inputIsEmpty(matchesLongitudeInput)
+    val longitudeFieldExists = matchesLongitudeInput.length > 0
     val needs =
       ( matchesLatitudeInput.length > 0 ||
-        matchesLongitudeInput.length > 0 ) &&
+        longitudeFieldExists ) &&
         inputIsEmptyLongitude
     println("needs GPS input: " + needs)
-    if( ! inputIsEmptyLongitude )
+    if( longitudeFieldExists && ! inputIsEmptyLongitude )
       println("Longitude is already filled: '" + matchesLongitudeInput + "'")
     GeoCoordinatesFields(needs, matchesLongitudeInput, matchesLatitudeInput, matchesAltitudeInput)
   }
