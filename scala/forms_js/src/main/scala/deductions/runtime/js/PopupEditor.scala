@@ -3,7 +3,7 @@ package deductions.runtime.js
 import scala.scalajs.js.annotation.JSExport
 import org.scalajs.dom
 import org.scalajs.dom.html
-import scala.scalajs.js.JSApp
+//import scala.scalajs.js.JSApp
 import scala.scalajs.js
 import js.Dynamic.literal
 import org.scalajs.dom.raw.BeforeUnloadEvent
@@ -18,10 +18,13 @@ import scala.scalajs.js.JSON
  *  currently we use inline JS code in createHTMLiteralEditableField,
  *  not this nor the JavaScript in forms_play/public/
  */
-object PopupEditor extends JSApp {
+object PopupEditor
+// extends JSApp
+{
 
   @JSExport
-  def main() = ()
+  // def main() = ()
+  def main(args: Array[String]): Unit = ()
 
   @JSExport
   def launchEditorWindow(input: html.Input): Unit =

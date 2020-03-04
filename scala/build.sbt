@@ -56,7 +56,7 @@ lazy val forms = project
 // lazy val web_tests = project
 lazy val forms_js = project .settings(
   scalaJSUseMainModuleInitializer := true,
-  emitSourceMaps in fastOptJS := true
+  // emitSourceMaps in fastOptJS := true
 ).enablePlugins(ScalaJSPlugin, ScalaJSWeb)
 
 lazy val generic_app = project
