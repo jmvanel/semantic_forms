@@ -5,6 +5,7 @@ import Common._
 // offline := true
 
 name := "semantic_forms_play"
+maintainer := "jeanmarc.vanel@gmail.com"
 
 publishArtifact in (Compile, packageDoc) := false
 sources in (Compile,doc) := Seq.empty
