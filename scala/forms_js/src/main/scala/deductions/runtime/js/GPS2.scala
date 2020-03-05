@@ -27,7 +27,7 @@ object GPS2 extends GPS {
     val gpsParameters = json(
 		   enableHighAccuracy=true,
 		   maximumAge=20000,
-		   timeout=15000 )
+		   timeout=30000 )
     var watchID: Int = -1
 
   /** start watching Position from GPS,
