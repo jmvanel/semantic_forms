@@ -49,10 +49,16 @@ case class HTTPrequest(
     getHTTPparameterValue("displayuri").getOrElse(
       getHTTPparameterValue("q").getOrElse(""))
 
-  /** is it a locally hosted URI? (that is created by a user by /create ) */
+  /** is the RDF subject (=focus URI) a locally hosted URI?
+   *  (that is created by a user by /create )
+   *  accept URI's differing only on http versus https */
   def isFocusURIlocal(): Boolean = {
-    getRDFsubject().startsWith(absoluteURL())
+    removeHTTPprotocolFromURI(getRDFsubject()).
+      startsWith(removeHTTPprotocolFromURI(absoluteURL()))
   }
+
+  private def removeHTTPprotocolFromURI(uri:String): String =
+    uri.replaceFirst("https?://", "")
 
   def getHTTPparameterValue(param: String): Option[String] = queryString.get(param) .map(seq => seq.headOption ) . flatten
   def setDefaultHTTPparameterValue(param: String, value: String): HTTPrequest = {
@@ -68,8 +74,7 @@ case class HTTPrequest(
   /** Resolve given relative URI starting with Slash with this request's path */
   def absoluteURL(relativeURIwithSlash: String = "",
       secure: Boolean = this.secure): String =
-    "http" + (if (secure) "s" else "") +
-      "://" +
+        s"http${if(secure) "s" else ""}://" +
       this.host + relativeURIwithSlash // + this.appendFragment
 
   def originalURL(): String = absoluteURL(path +

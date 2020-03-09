@@ -134,7 +134,6 @@ JMV:
                       transactionsInside: Boolean): (Try[Rdf#Graph], Try[String]) = {
     val tryGraphLocallyManagedData = getLocallyManagedUrlAndData(uri, request, transactionsInside: Boolean)
 
-//    logger.debug(
     logger.debug(  "LOADING " + s"retrieveURIBody: tryGraphLocallyManagedData $tryGraphLocallyManagedData")
 
     tryGraphLocallyManagedData match {
@@ -613,11 +612,10 @@ JMV:
   /* test if given URI is a locally managed URL, that is created locally and 100% located here */
   /** get Locally Managed graph from given URI : <URI> ?P ?O */
   private def getLocallyManagedUrlAndData(uri: Rdf#URI, request: HTTPrequest, transactionsInside: Boolean): Option[Rdf#Graph] =
-    // TODO ? accept URI's differing only on http versus https ??
-    if (!fromUri(uri).startsWith(request.absoluteURL())) {
-      logger.debug(  """LOADING getLocallyManagedUrlAndData
-      <$uri> """ + request.absoluteURL() )
-      // TODO use isFocusURIlocal()
+    if (! request.isFocusURIlocal() ) {
+//    if (!fromUri(uri).startsWith(request.absoluteURL())) {
+      logger.debug(  """getLocallyManagedUrlAndData: LOADING
+        <$uri> from <${request.absoluteURL()}>""" )
       // then it can be a "pure" HTML web page, or an RDF document
       None
     } else {

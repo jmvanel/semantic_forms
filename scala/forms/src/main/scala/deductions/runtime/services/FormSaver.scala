@@ -253,23 +253,25 @@ trait FormSaver[Rdf <: RDF, DATASET]
     log(s">>>> doSave: userURI $userURI, graphURI $graphURI, ds: ${dataset}")
 
       val transaction = wrapInTransaction {
+        log( s"doSave: triplesToRemove ${triplesToRemove.mkString(", ")}")
+        val res0 =
         time("removeTriples",
           rdfStore.removeTriples( dataset,
             URI(graphURI),
             triplesToRemove.toIterable), logger.isDebugEnabled() )
+          log( s"res0 removeTriples $res0")
 
           // special case of triples  ?S rdf:type foaf:Document.
           rdfStore.removeTriples( dataset,
             URI("user:anonymous"),
             triplesToRemove.toIterable)
 
+        log( s"doSave: triplesToAdd ${triplesToAdd.mkString(", ")}")
         val res =
           time("appendToGraph",
             rdfStore.appendToGraph( dataset,
               URI(graphURI),
               makeGraph(triplesToAdd)), logger.isDebugEnabled())
-        log( s"doSave: triplesToRemove ${triplesToRemove.mkString(", ")}")
-        log( s"doSave: triplesToAdd ${triplesToAdd.mkString(", ")}")
         res
       }
 

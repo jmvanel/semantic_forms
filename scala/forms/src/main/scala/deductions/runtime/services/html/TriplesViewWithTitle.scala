@@ -85,6 +85,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
               }
               (tryGraph, failureOrStatistics)
             } else
+              // TODO display blankNode
               (Success(emptyGraph), "")
 
 
