@@ -59,6 +59,11 @@ geo:alt
 dct:subject a owl:ObjectProperty ;
     rdfs:label "sujet (thème, topic)"@fr .
 
+cco:expertise rdfs:label "expertise"@fr .
+
+# see also https://github.com/jmvanel/rdf-i18n
+
+
 # Icons for OWL classes
 
 foaf:Person foaf:img <https://mirrors.creativecommons.org/presskit/icons/by.svg> .

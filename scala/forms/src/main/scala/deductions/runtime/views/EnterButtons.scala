@@ -141,7 +141,7 @@ trait EnterButtons {
                 class="form-control btn btn-primary sf-button-create" type="submit"
                 value={ messageI18N("Create") }/>
             </div>
-            <!--input type="submit" style="display:none"/-->
+            <input type="text" style="display:none" name="prefill" value="no">no</input>
 
         </form>
       </div>
