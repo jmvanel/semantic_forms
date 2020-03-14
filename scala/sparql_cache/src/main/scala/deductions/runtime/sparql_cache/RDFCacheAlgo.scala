@@ -614,7 +614,7 @@ JMV:
   private def getLocallyManagedUrlAndData(uri: Rdf#URI, request: HTTPrequest, transactionsInside: Boolean): Option[Rdf#Graph] =
     if (! request.isFocusURIlocal() ) {
 //    if (!fromUri(uri).startsWith(request.absoluteURL())) {
-      logger.debug(  """getLocallyManagedUrlAndData: LOADING
+      logger.debug(  s"""getLocallyManagedUrlAndData: LOADING
         <$uri> from <${request.absoluteURL()}>""" )
       // then it can be a "pure" HTML web page, or an RDF document
       None

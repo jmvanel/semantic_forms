@@ -4,6 +4,7 @@ import java.net.URLEncoder
 import scala.collection.Seq
 import java.net.URLDecoder
 import scala.xml.NodeSeq
+import java.net.URI
 
 /**
  * Like Request from Play! (in package play.api.mvc), but avoid Play! dependency
@@ -47,14 +48,20 @@ case class HTTPrequest(
   /** get RDF subject, that is "focus" (HTTP parameter "displayuri") */
   def getRDFsubject(): String =
     getHTTPparameterValue("displayuri").getOrElse(
-      getHTTPparameterValue("q").getOrElse(""))
+      getHTTPparameterValue("q").getOrElse(
+        getHTTPparameterValue("url").
+          getOrElse("")))
+
+  private def getHostOfRDFsubject(): String = {
+    new URI(getRDFsubject()).getHost
+  }
 
   /** is the RDF subject (=focus URI) a locally hosted URI?
    *  (that is created by a user by /create )
    *  accept URI's differing only on http versus https */
   def isFocusURIlocal(): Boolean = {
-    removeHTTPprotocolFromURI(getRDFsubject()).
-      startsWith(removeHTTPprotocolFromURI(absoluteURL()))
+//    println(s"""getHostOfRDFsubject: $getHostOfRDFsubject  =? hostNoPort $hostNoPort""")
+    getHostOfRDFsubject() == hostNoPort
   }
 
   private def removeHTTPprotocolFromURI(uri:String): String =
@@ -123,6 +130,13 @@ case class HTTPrequest(
     for ( (key, seq) <- queryString ) yield {
       (key, seq.headOption.getOrElse(""))
     }
+
+  def hostNoPort = {
+    val colonIndex = host.indexOf(":")
+    if( colonIndex == -1 ) host
+    else
+    host.subSequence(0, colonIndex)
+  }
 
   override def toString(): String = {
     s"""    host:  = $host,
