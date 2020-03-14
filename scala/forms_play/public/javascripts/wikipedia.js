@@ -74,7 +74,7 @@ $(document).ready(function() {
                 }
                 }
                 $.ajax({
-                    url: searchServiceURL + "?QueryString="+request.term
+                    url: searchServiceURL + "?QueryString=" + request.term . replace( / /g, "_" )
                                           + "&MaxHits="+resultsCount +
                                           + "&QueryClass="+typeName,
 //                  data: { MaxHits: resultsCount, QueryClass: typeName, QueryString: request.term },
