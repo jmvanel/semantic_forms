@@ -153,19 +153,26 @@ with StringHelpers
     } else NodeSeq.Empty
   }
 
+  private[html] def makeHyperlinkToURI(
+    hrefPrefix:     String,
+    uriStringValue: String,
+    linkText:       String, typ: Seq[NODE]) = {
+    val type_ = firstNODEOrElseEmptyString(typ)
+    val types0 = typ.mkString(", ")
+    val types = if (types0 == "") type_ else types0
+    <a href={ createHyperlinkString(hrefPrefix, uriStringValue) } class={ cssForURI(uriStringValue) } title={
+      s"""Value ${if (uriStringValue =/= linkText) uriStringValue else ""}
+              of type(s) ${types}"""
+    } draggable="true">
+      { linkText }
+    </a>
+  }
+
   private[html] def hyperlinkToURI(hrefPrefix: String, objectURIstringValue: String,
-      resourceEntry: formMod#ResourceEntry) = {
-    val type_ = firstNODEOrElseEmptyString(resourceEntry.type_)
-    val valueLabel = resourceEntry.valueLabel
-//  println(s"==== createHTMLResourceReadonlyField: typ: $typ")
-    val types0 = resourceEntry.type_.mkString(", ")
-    val types = if(types0 == "") type_ else types0
+                                   resourceEntry: formMod#ResourceEntry) = {
     addTripleAttributesToXMLElement(
-      <a href={createHyperlinkString(hrefPrefix, objectURIstringValue)} class={cssForURI(objectURIstringValue)} title=
-      {s"""Value ${if (objectURIstringValue  =/=  valueLabel) objectURIstringValue else ""}
-              of type(s) ${types}"""} draggable="true">
-        {valueLabel}
-      </a>,
+      makeHyperlinkToURI(hrefPrefix, uriStringValue = objectURIstringValue,
+        linkText = resourceEntry.valueLabel, typ = resourceEntry.type_),
       resourceEntry)
   }
 
