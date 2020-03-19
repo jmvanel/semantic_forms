@@ -307,10 +307,10 @@ trait Form2HTML[NODE, URI <: NODE]
     import form._
     if (toPlainString(subject) =/= "") {
       <p class="sf-local-rdf-link">{
-        Text(form.title) ++
+        <a href={ toPlainString(form.subject) } style="color: rgb(44,133,254);">{ form.title }</a> ++
           (if (form.subject != nullURI)
-            Text(", @ URI ") ++
-            <a href={ toPlainString(form.subject) } style="color: rgb(44,133,254);">&lt;{ form.subject }&gt;</a>
+            <span> &nbsp;&nbsp;&nbsp;= </span> ++
+            <span>&lt;<a href={ toPlainString(form.subject) } style="color: rgb(44,133,254);">{ form.subject }</a>&gt;</span>
           else NodeSeq.Empty)
       }</p> ++
         {
