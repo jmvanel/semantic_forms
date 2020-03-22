@@ -267,6 +267,14 @@ cd scala/forms
 sbt test
 ```
 
+To test only one class:
+```shell
+cd scala/forms
+sbt
+testOnly  deductions.runtime.services.TestStringSearch
+```
+
+
 ### Testing web services
 ```shell
  wget --method=OPTIONS --save-headers http://localhost:9000/bla

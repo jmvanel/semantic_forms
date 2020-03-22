@@ -7,7 +7,8 @@ object Common {
     val bananaResolver = "bblfish-snapshots" at "http://bblfish.net/work/repo/releases"
 
 //val jenaVersion =  "3.9.0"
-  val jenaVersion =  "3.10.0"
+//val jenaVersion =  "3.10.0"
+  val jenaVersion =  "3.11.0"
 
   val bananaDependency0 = "org.w3" %%  "banana-jena" % "0.8.4-SNAPSHOT" 
   val bananaDependency = bananaDependency0 exclude("org.slf4j", "slf4j-api" )	exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
