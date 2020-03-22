@@ -252,15 +252,17 @@ trait LuceneIndex // [Rdf <: RDF]
       val directory = new NIOFSDirectory(Paths.get("LUCENE"))
       val textIndexConfig = new TextIndexConfig(rdfIndexing)
       textIndexConfig.setMultilingualSupport(true)
+      logger.debug( ">>>> before createLuceneIndex")
       val textIndex: TextIndex = TextDatasetFactory.createLuceneIndex(
         directory, textIndexConfig)
+      logger.debug( ">>>> After createLuceneIndex")
         (TextDatasetFactory.create(dataset, textIndex, true), textIndex)
       }
 
       val returnedDataset = textualDataset
-      returnedDataset.getContext().set(TextQuery.textIndex, textIndex)
-        println( ">>>> configureLuceneIndexTEST5spatial_Textual: getContext\n\t" + returnedDataset.getContext() +
-            s"\n\treturned Dataset: $returnedDataset" )
+//      returnedDataset.getContext().set(TextQuery.textIndex, textIndex)
+//        println( ">>>> configureLuceneIndex Textual: getContext\n\t" + returnedDataset.getContext() +
+//            s"\n\treturned Dataset: $returnedDataset" )
       return returnedDataset
     } else
       return dataset
