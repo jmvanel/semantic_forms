@@ -27,7 +27,8 @@ trait TestJenaRDFDataMgrRaw extends ImplementationSettings.RDFModule {
   val graphUri = ops.makeUri("urn:foaf")
 
   def test() {
-    val uri = "file:///home/jmv/ontologies/foaf.n3"
+    val uri = "src/test/resources/foaf.n3"
+      // "file:///home/jmv/ontologies/foaf.n3"
     readURL(uri)
   }
 

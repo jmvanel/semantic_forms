@@ -42,8 +42,9 @@ trait TestStringSearchTrait[Rdf <: RDF, DATASET] extends FunSuite
     import scala.concurrent.ExecutionContext.Implicits.global
     res.onSuccess {
       case r =>
-        println(r)
-        assert(r.toString().contains("Jean-Marc"))
+        // println(r.toString().)
+        // assert(r.toString().contains("Jean-Marc"))
+        assert(r.toString().contains("jmv.rdf#me"))
     }
     res.onFailure {
       case e =>
