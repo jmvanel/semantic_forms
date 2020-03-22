@@ -76,7 +76,7 @@ class LDPSpec extends PlaySpec
           ("Slug", file),
           ("Content-Type", "text/turtle")
       ). withTextBody(bodyTTL)
-    val action = Application.ldpPOSTAction(ldpContainerURI)
+    val action = new ServicesApp().ldpPOSTAction(ldpContainerURI)
     val result = call(action, request)
       
     info( s"POST to URL $appURL")
@@ -96,7 +96,7 @@ class LDPSpec extends PlaySpec
     {
       val query = s"SELECT * WHERE { GRAPH <$ldpDataFileURI> {?S ?P ?O.}}"
       info(s"query $query")
-      val action = Application.select(query)
+      val action = WebPagesApp.select(query)
       val request = FakeRequest(Helpers.GET, "")
       val result = call(action, request)
       val sresult: String = contentAsString(result)
@@ -112,7 +112,7 @@ class LDPSpec extends PlaySpec
     info( s"""GET: $getRelativeURI""" )
 	  val request = FakeRequest( Helpers.GET, getRelativeURI ).
 	  withHeaders(( "Accept", "text/turtle")) // , application/ld+json") )
-    val action = Application.ldp(ldpContainerURI + file)
+    val action = new ServicesApp().ldp(ldpContainerURI + file)
     val result = call(action, request)
 //    val enum: Enumerator[Array[Byte]] = Enumerator() ; val result = enum run result0 
     val content = contentAsString(result)(timeout)
