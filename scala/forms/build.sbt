@@ -14,3 +14,9 @@ fork := true
 publishArtifact in (Compile, packageDoc) := false
 sources in (Compile,doc) := Seq.empty
 
+//required for the javaOptions to be passed in
+// fork := true
+
+// javaOptions in (Test) += "-Xdebug"
+// javaOptions in (Test) += "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9999"
+

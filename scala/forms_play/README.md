@@ -249,6 +249,7 @@ See https://docs.oracle.com/javase/8/docs/technotes/guides/management/jconsole.h
 ## Debug
 See [playframework documentation/2.4.x/IDE](https://www.playframework.com/documentation/2.4.x/IDE)
 
+Run command "eclipse" in STB.
 Start SBT like below; then type run. Then start a remote debug in eclipse or another IDE with port 9999.
 ```shell
 export SBT_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9999" && sbt
@@ -369,6 +370,24 @@ And with SBT configuring maximum logging is like this
 cd $HOME/src/semantic_forms/scala
 sbt -Dlog4j.configurationFile=forms_play/conf/log4j2.debug.properties
 ```
+
+If that does not work, put this in scala/forms/src/main/resources/log4j2.xml :
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="DEBUG">
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Root level="debug">
+      <AppenderRef ref="Console"/>
+    </Root>
+  </Loggers>
+</Configuration>
+```
+
 About the Log4j syntax , see [Log4j manual/configuration.html#Properties](https://logging.apache.org/log4j/2.x/manual/configuration.html#Properties)
 If no "log4j.configurationFile" system property is given, SF should use the default one log4j2.properties in the classpath ( same content as log4j2.warn.properties ) ; see [Log4j manual/configuration.html#AutomaticConfiguration](https://logging.apache.org/log4j/2.x/manual/configuration.html#AutomaticConfiguration) about how Log4j detects congiguration.
 

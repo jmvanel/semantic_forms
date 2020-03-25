@@ -1,7 +1,6 @@
 package deductions.runtime.core
 
 import scala.xml.NodeSeq
-import scala.xml.Text
 import scala.io.Source
 import scala.util.Try
 
@@ -49,6 +48,7 @@ trait SemanticControllerWrapper {
     }
   }
 
+  import scala.xml.Text
   def filterRequestResult(
     request:    HTTPrequest,
     content: () => NodeSeq, filter: HTTPFilter): NodeSeq =

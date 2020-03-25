@@ -286,16 +286,16 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
       val f = transaction.asFuture
 
-      f onSuccess {
-        case _ =>
+      f onComplete {
+        case Success(_) =>
           logger.info(s""" Successfully stored ${triplesToAdd.size} triples
             ${triplesToAdd.mkString("\n")}
             and removed ${triplesToRemove.size}
             triplesToRemove:
             ${triplesToRemove.mkString("\n")}
           in graph <$graphURI>""")
+        case Failure (t) => logger.error(s"doSave: Failure $t")
       }
-      f.onFailure { case t => logger.error(s"doSave: Failure $t") }
     }
 
   private def log(s: String) =

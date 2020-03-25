@@ -1,43 +1,35 @@
 package deductions.runtime.services
 
 import org.w3.banana.RDF
+import scala.xml.Elem
 
 /** Show named graphs */
 trait TriplesInGraphSPARQL[Rdf <: RDF, DATASET]
     extends ParameterizedSPARQL[Rdf, DATASET] {
 
-  private def where(graphURI: String*): String = s"""
+  private implicit val searchStringQueryMaker = new SPARQLQueryMaker[Rdf] {
+
+    override def variables = Seq("thing", "p", "o")
+
+    override def makeQueryString(graphURI: String*): String =
+      s"""|construct {?thing ?p ?o}
+          |  ${where(graphURI:_*)}""".stripMargin
+//    override def columnsForURI( node: Rdf#Node, label: String): NodeSeq =
+//      Text("test")    
+
+      private def where(graphURI: String*): String = s"""
         |WHERE {
         |  graph <${graphURI(0)}> {
         |    ?thing ?p ?o .
         |  }
         |}""".stripMargin
-
-  private implicit val searchStringQueryMaker =
-    new SPARQLQueryMaker[Rdf] {
-    override def makeQueryString(graphURI: String*): String =
-      s"""
-         |SELECT DISTINCT ?thing ?p ?o
-         |  ${where(graphURI:_*)}
-         |LIMIT 500""".stripMargin
-      /* LIMIT 500 because of computed labels Graph urn:/semforms/labelsGraphUri/ 
-       * in the case of a large database , e.g. dbPedia mirror */
-
-    override def variables = Seq("thing", "p", "o")
-
-    def constructQuery(graphURI: String*): String =
-      s"""|construct {?thing ?p ?o}
-          |  ${where(graphURI:_*)}""".stripMargin
-//    override def columnsForURI( node: Rdf#Node, label: String): NodeSeq =
-//      Text("test")    
   }
 
-  def showTriplesInGraph(graphURI: String, lang: String = "") //  : Future[Elem]
-  = {
-//		  println(s"showTriplesInGraph: hrefDisplayPrefix ${config.hrefDisplayPrefix}")
+  def showTriplesInGraph(graphURI: String, lang: String = "") : Elem = {
     <p>
       <p> Triples in Graph &lt;{ graphURI }> 
-        <a href={"/sparql?query=" + searchStringQueryMaker.constructQuery(graphURI)} class="sf-local-rdf-link">Data export: download Triples</a>
+        <a href={"/sparql?query=" + searchStringQueryMaker.makeQueryString(graphURI)}
+           class="sf-local-rdf-link">Data export: download Triples</a>
       </p>
       { search2(graphURI, config.hrefDisplayPrefix, lang) }
     </p>

@@ -197,15 +197,14 @@ println( s">>>> htmlFormElemJustFields 2 " )
     println( s"htmlForm: dataset $dataset" )
 
     for {
-      (graphURIActual, tryGraph) <- Try { time("doRetrieveURI", doRetrieveURI(uri, blankNode, graphURI)) }
-
+      (graphURIActual, tryGraph) <- Try {
+        time("doRetrieveURI", doRetrieveURI(uri, blankNode, graphURI))
+      }
       // TODO find another way of reporting download failures: 
       //      graphDownloaded <- tryGraph
-      
-        val lang = request.getLanguage()
+        lang = request.getLanguage()
         form = graf2form(allNamedGraph, uri, hrefPrefix, blankNode, editable,
           actionURI, graphURIActual, actionURI2, formGroup, "", request)
-//      })
     } yield form
   }
 
