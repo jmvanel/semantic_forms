@@ -44,27 +44,31 @@ trait TestCreationForm2[Rdf <: RDF, DATASET] extends FunSuite
  /** CAUTION: BeforeAndAfterAll.afterAll DOES NOT WORK directly with FunSuite:
   * afterAll runs after EACH test */
   override def afterAll {
-    FileUtils.deleteLocalSPARQL()
+    close()
+    //  FileUtils.deleteLocalSPARQL()
   }
 
-  test("display form custom") {
-
-    val uri = "http://xmlns.com/foaf/0.1/Person"
-    retrieveURI(makeUri(uri), dataset)
+  test("display form custom") ({
+    val classe = foaf("Person")
+    val uri = classe.getString
+    retrieveURI( classe, dataset)
     // NOTE: without form_specs/foaf.form.ttl
     rdfStore.rw(dataset, {
       rdfStore.appendToGraph(dataset, makeUri("test"), personFormSpec)
     })
-    val form = create(uri, request = HTTPrequest(acceptLanguages = Seq("fr") ))
+    val form0 = create(uri, request = HTTPrequest(acceptLanguages = Seq("fr") ))
+    val form = form0.get
     val file = "creation.form.2.html"
-    Files.write(Paths.get(file), form.toString().getBytes);
+    val formString = form.toString()
+    Files.write(Paths.get(file), formString.getBytes);
     println(s"file created $file")
-    assert(form.toString().contains("firstName"))
-    assert(form.toString().contains("lastName"))
+    assert(formString.contains("firstName"))
+    assert(formString.contains("lastName"))
     // should not contain field homepage, because foaf:homepage rdfs:domain owl:Thing .
-    assert(!form.toString().contains(">homepage<"))
-  }
+    assert(!formString.contains(">homepage<"))
+  })
 
+  println("personFormSpec")
   println(turtleWriter.asString(personFormSpec, "base"))
 }
 

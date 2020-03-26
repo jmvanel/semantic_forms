@@ -288,6 +288,7 @@ JMV:
               val etag = getHeaderField("ETag", connection)
               val etagFromDataset = dataset2.r { getETagFromDataset(uri, dataset2) }.get
               if (etag  =/=  etagFromDataset) {
+                logger.debug(s"""updateLocalVersion: <$uri> was OUTDATED by ETag; downloading...""")
                 val graph = readStoreURITry(uri, uri, dataset, request=HTTPrequest())
                 logger.debug(s"""updateLocalVersion: <$uri> was OUTDATED by ETag; downloaded.
                   etag "$etag"  =/=  etagFromDataset "$etagFromDataset" """)

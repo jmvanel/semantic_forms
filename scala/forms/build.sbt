@@ -8,13 +8,18 @@ libraryDependencies += "com.typesafe.akka" %% "akka-stream" % "2.5.17"
 // https://mvnrepository.com/artifact/org.locationtech.jts/jts
 //libraryDependencies += "org.locationtech.jts" % "jts" % "1.16.1" pomOnly()
 
-// necessary to set the working directory when running tests from starting SBT in parent directory
-fork := true
+// NOTE: fork := true necessary to set the working directory when running tests from starting SBT in parent directory
+fork := false
+parallelExecution in Test := false
+
+// cf http://www.scalatest.org/user_guide/using_scalatest_with_sbt
+logBuffered in Test := false
 
 publishArtifact in (Compile, packageDoc) := false
 sources in (Compile,doc) := Seq.empty
 
-//required for the javaOptions to be passed in
+
+// NOTE: required for the javaOptions to be passed in
 // fork := true
 
 // javaOptions in (Test) += "-Xdebug"

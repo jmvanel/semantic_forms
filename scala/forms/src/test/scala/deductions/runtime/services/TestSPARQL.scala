@@ -40,7 +40,8 @@ trait TestSPARQLTrait[Rdf <: RDF, DATASET] extends FunSuite
   }
 
   override def afterAll {
-    FileUtils.deleteLocalSPARQL()
+    // FileUtils.deleteLocalSPARQL()
+    close()
   }
 
   test("sparql 1") {

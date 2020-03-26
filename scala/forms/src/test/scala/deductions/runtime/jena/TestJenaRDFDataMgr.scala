@@ -13,6 +13,8 @@ object TestJenaRDFDataApp extends App with TestJenaRDFDataMgrRaw {
 }
 
 //@Ignore
+/** NOTE: no assertion !
+ *  should be:  useTextQuery = false */
 class TestJenaRDFDataMgr extends FunSuite with TestJenaRDFDataMgrRaw {
   test("JenaHelpers.storeURI") { test() }
 }

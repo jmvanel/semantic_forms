@@ -34,7 +34,8 @@ trait TestStringSearchTrait[Rdf <: RDF, DATASET] extends FunSuite
   }
 
   override def afterAll {
-    FileUtils.deleteLocalSPARQL()
+    close()
+//    FileUtils.deleteLocalSPARQL()
   }
 
   test("search 1") {

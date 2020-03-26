@@ -102,6 +102,8 @@ trait RDFStoreLocalJenaProvider
         else
           TDBFactory.createDataset(Paths.get(database_location).toString())
           // TODO TDBFactory.assembleDataset(assemblerFile)
+//      logger.info
+      println(s"TDB Dataset created in '$database_location' in directory '$abs'")
 
       //      Logger.getRootLogger.info
       logger.debug(s"RDFStoreLocalJenaProvider $database_location, dataset created: $dts")
@@ -154,7 +156,7 @@ trait RDFStoreLocalJenaProvider
     nm.getGraph
   }
 
-  def close(ds: DATASET) = ds.close()
+  def close(ds: DATASET) = { println(s"close(ds=$ds"); ds.close() }
 
   def closeAllTDBs() {
     close(dataset)

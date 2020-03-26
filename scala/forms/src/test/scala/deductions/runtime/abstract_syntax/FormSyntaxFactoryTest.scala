@@ -9,11 +9,15 @@ import org.hamcrest.BaseMatcher
 import org.junit.Assert
 import org.scalatest.FunSuite
 import org.w3.banana.RDF
+import org.scalatest.BeforeAndAfterAll
+import scala.xml.Source
+import deductions.runtime.TestsBase
 
 class FormSyntaxFactoryTestJena extends FunSuite
     with RDFStoreLocalJenaProvider
     with FormSyntaxFactoryTest[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with DefaultConfiguration {
+    with DefaultConfiguration
+    with BeforeAndAfterAll {
   val config = new DefaultConfiguration {
     override val useTextQuery = false
   }
@@ -24,7 +28,7 @@ class FormSyntaxFactoryTestJena extends FunSuite
 
   test("form contains label and data") {
     val form = createFormWithGivenProps
-    println("form:\n" + form)
+    println("form:\n" + form.toString().substring(0, 5000))
     Assert.assertThat("form contains label and data", form.toString,
       new BaseMatcher[String]() {
         def matches(a: Any): Boolean = {
@@ -39,7 +43,7 @@ class FormSyntaxFactoryTestJena extends FunSuite
 
   test("form With inferred fields") {
     val form = createFormWithInferredProps()
-    println("form:\n" + form)
+    println("form:\n" + form.toString().substring(0, 5000))
     Assert.assertThat("form contains label and data", form.toString,
       new BaseMatcher[String]() {
         def matches(a: Any): Boolean = {
@@ -57,6 +61,10 @@ class FormSyntaxFactoryTestJena extends FunSuite
     println("form:\n" + form)
   }
 
+  override def afterAll {
+    close()
+  }
+
 }
 
 ///////////////////////
@@ -66,7 +74,8 @@ class FormSyntaxFactoryTestJena extends FunSuite
  *  NOTE: the TDB database is not used here,
  * the data and vocab' are passed by:
  * implicit val graph */
-trait FormSyntaxFactoryTest[Rdf <: RDF, DATASET] extends FormSyntaxFactory[Rdf, DATASET] {
+trait FormSyntaxFactoryTest[Rdf <: RDF, DATASET] extends FormSyntaxFactory[Rdf, DATASET]
+with TestsBase {
   import ops._
   import rdfStore.transactorSyntax._
 
@@ -85,9 +94,14 @@ trait FormSyntaxFactoryTest[Rdf <: RDF, DATASET] extends FormSyntaxFactory[Rdf, 
   }
 
   def makeGraphwithFOAFvocabandData() = {
-		  val graph1 = makeFOAFsample
-		  val resource = new FileInputStream("src/test/resources/foaf.n3")
-		  val graph2 = turtleReader.read(resource, foaf.prefixIri).get
+    val graph1 = makeFOAFsample
+    val resource = new FileInputStream( relativeTestDir + "/src/test/resources/foaf.n3")
+      // getClass.getResourceAsStream("foaf.n3")
+
+    println(">>>> makeGraphwithFOAFvocabandData")
+    // println( Source.fromInputStream(resource).getByteStream )
+
+    val graph2 = turtleReader.read(resource, foaf.prefixIri).get
 		  union(Seq(graph1, graph2))
   }
   
@@ -97,7 +111,7 @@ trait FormSyntaxFactoryTest[Rdf <: RDF, DATASET] extends FormSyntaxFactory[Rdf, 
     implicit val graph = makeGraphwithFOAFvocabandData()
     implicit val lang = "en"
     val factory = this
-    println((graph.triples).mkString("\n"))
+    println((graph.triples).take(10).mkString("\n"))
     val res = dataset.r({
       val form = factory.createFormDetailed(
         URI("betehess"),
@@ -120,9 +134,9 @@ trait FormSyntaxFactoryTest[Rdf <: RDF, DATASET] extends FormSyntaxFactory[Rdf, 
   }
 
   def createFormFromClass() = {
-    val resource = new FileInputStream("src/test/resources/foaf.n3")
+    val resource = new FileInputStream(relativeTestDir + "/src/test/resources/foaf.n3")
     val graph2 = turtleReader.read(resource, foaf.prefixIri).get
-    val formspec = new FileInputStream("form_specs/foaf.form.ttl")
+    val formspec = new FileInputStream( relativeTestDir + "/form_specs/foaf.form.ttl")
     val graph1 = turtleReader.read(formspec, "").get
     implicit val graph = union(Seq(graph1, graph2))
     implicit val lang = "en"

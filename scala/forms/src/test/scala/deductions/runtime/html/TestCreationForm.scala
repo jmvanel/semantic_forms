@@ -60,9 +60,9 @@ class TestCreationForm extends {
       // NOTE: this named graph was added in  TestCreationForm2 :
       dataset.removeNamedModel("test")
     })
-    println("""dataset.listNames().mkString("\n")""")
+    println("""dataset.listNames().take(20).mkString("\n")""")
     rdfStore.rw(dataset, {
-      println(dataset.listNames().asScala.mkString("\n"))
+      println(dataset.listNames().asScala.take(20).mkString("\n"))
     }).get
   }
 

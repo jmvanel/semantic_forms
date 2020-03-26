@@ -275,6 +275,10 @@ sbt
 testOnly  deductions.runtime.services.TestStringSearch
 ```
 
+To see the tests list:
+```
+show definedTests
+```
 
 ### Testing web services
 ```shell

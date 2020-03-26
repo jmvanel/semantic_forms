@@ -8,6 +8,8 @@ import org.apache.log4j.Logger
 import org.scalatest.FunSuite
 import org.w3.banana.{PointedGraph, RDFOpsModule, SparqlGraphModule, SparqlOpsModule}
 import org.w3.banana.jena.JenaModule
+import org.scalatest.BeforeAndAfterAll
+
 //import deductions.runtime.jena.RDFStoreLocalProvider
 
 class TestFormSaver
@@ -19,7 +21,8 @@ class TestFormSaver
     with JenaModule
     with RDFStoreLocalJenaProvider
     with FormSaver[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with DefaultConfiguration {
+    with DefaultConfiguration
+    with BeforeAndAfterAll {
 
   val config = new DefaultConfiguration {
     override val useTextQuery = false
@@ -52,4 +55,10 @@ class TestFormSaver
   }
   ////
   def encode(uri: String) = { URLEncoder.encode(uri, "utf-8") }
+
+  override def afterAll {
+    close()
+    close(dataset2)
+    println("TDB Databases closed.")
+  }
 }

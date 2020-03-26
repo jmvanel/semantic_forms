@@ -9,9 +9,16 @@ import deductions.runtime.utils.RDFStoreLocalProvider
 
 import scalaz._
 import Scalaz._
+import org.scalatest.BeforeAndAfterAll
+import java.io.File
+import deductions.runtime.TestsBase
 
-trait TimeSeriesTest[Rdf <: RDF, DATASET] extends FunSuite with TimeSeries[Rdf, DATASET] {
-  
+trait TimeSeriesTest[Rdf <: RDF, DATASET]
+extends FunSuite
+with TestsBase
+with TimeSeries[Rdf, DATASET]
+with BeforeAndAfterAll
+  {
   import ops._
   val xsd = XSDPrefix[Rdf]
   val label = "my label"
@@ -23,6 +30,7 @@ trait TimeSeriesTest[Rdf <: RDF, DATASET] extends FunSuite with TimeSeries[Rdf, 
   val addedTriples2 = Seq( Triple(URI("a"), predURI, Literal("2", xsd.double )), tLabel)
       
   test("notifyDataEvent + getTimeSeries") {
+    println(s"TimeSeriesTest: Directory: ${new File(".").getAbsolutePath}")
     implicit val userURI = "urn:jmv1"
     implicit val rdfLocalProvider: RDFStoreLocalProvider[Rdf, _] = this
     notifyDataEvent(addedTriples1, /*removedTriples*/ Seq(),
@@ -37,12 +45,17 @@ trait TimeSeriesTest[Rdf <: RDF, DATASET] extends FunSuite with TimeSeries[Rdf, 
     		( resPair._2 == 1.0d )   || 
         ( resPair._2 == 2.0d ) )
   }
+
+  override def afterAll {
+    close()
+    close(dataset2)
+    println("TDB Databases closed.") }
 }
 
 class TimeSeriesTestJena extends FunSuite
     with RDFStoreLocalJenaProvider
     with TimeSeriesTest[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
-  val config = new DefaultConfiguration {
+  override val config = new DefaultConfiguration {
     override val useTextQuery = false
   }
 }

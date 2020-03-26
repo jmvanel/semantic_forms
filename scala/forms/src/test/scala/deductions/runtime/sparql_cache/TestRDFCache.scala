@@ -21,21 +21,26 @@ class TestRDFCache extends FunSuite with RDFCache
   //  val uri2 = "http://live.dbpedia.org/page/Taraxacum_japonicum"
   //  val uri2 = uri 
   val uri2 = githubcontent + "/jmvanel/rdf-i18n/master/foaf/foaf.fr.ttl"
-  //  src/test/resources/foaf.n3
 
   import ops._
   import sparqlOps._
 
   override def afterAll {
-    println("afterAll: deleteLocalSPARQL")
-    FileUtils.deleteLocalSPARQL()
+    // FileUtils.deleteLocalSPARQL()
+    close()
+    close(dataset2)
+    println("afterAll: close TDB & TDB2")
   }
 
   test("save to enpoint cache and check with SPARQL that endpoint is populated.") {
     val uriNode = makeUri(uri)
+    println("test 1")
     val gr = retrieveURI(uriNode, dataset)
-    val r = rdfStore.rw(dataset, {
-      println("graph from " + uri + " size " + gr.get.size)
+    println("test 2")
+    println(s"rdfStore: $rdfStore")
+    val r = rdfStore.r(dataset, {
+      println(s"gr: $gr")
+      println("graph from " + uri + " size " + gr.getOrElse(emptyGraph).size)
       val g = rdfStore.getGraph(dataset, uriNode)
       g
     })
@@ -45,7 +50,10 @@ class TestRDFCache extends FunSuite with RDFCache
 
   test("save to enpoint cache with storeURI() and check with SPARQL.") {
     val uriNode = makeUri(uri2)
+    println(s"test 3 $uriNode")
+
     readStoreUriInNamedGraph(uriNode)
+    println("test 4")
     checkNamedGraph(uri2)
     println("In this case only the 2 triples for the timestamp")
   }
@@ -53,7 +61,6 @@ class TestRDFCache extends FunSuite with RDFCache
   /** check with SPARQL that endpoint is populated. */
   def checkNamedGraph(uri: String) = {
     val queryString = s"""
-      # PREFIX foaf:
       CONSTRUCT {
         <$uri> ?P ?V .
         <$uri> <is:in> ?G .
@@ -67,7 +74,6 @@ class TestRDFCache extends FunSuite with RDFCache
         query <- parseConstruct(queryString)
         es <- rdfStore.executeConstruct(dataset, query, Map())
       } yield es
-
       val r = result.get
       val size = r.size()
       println("checkNamedGraph size " + size)
