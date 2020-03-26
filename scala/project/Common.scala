@@ -8,7 +8,12 @@ object Common {
 
 //val jenaVersion =  "3.9.0"
 //val jenaVersion =  "3.10.0"
-  val jenaVersion =  "3.11.0"
+// ==>  val jenaVersion =  "3.11.0"
+//val jenaVersion =  "3.12.0"
+//val jenaVersion =  "3.13.0"
+// val jenaVersion =  "3.13.1"
+// 
+val jenaVersion =  "3.14.0"
 
   val bananaDependency0 = "org.w3" %%  "banana-jena" % "0.8.4-SNAPSHOT" 
   val bananaDependency = bananaDependency0 exclude("org.slf4j", "slf4j-api" )	exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
@@ -18,12 +23,14 @@ object Common {
   val jenaSpatialDependency = "org.apache.jena" % "jena-spatial" % jenaVersion		exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
 
 
-  val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.1.1"
+  val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.2.0"
 
-  val junitDependency = "junit" % "junit" % "4.12" % Test
-  val scalatestDependency = "org.scalatest" %% "scalatest" % "3.0.8" % "test"
+  val junitDependency = "junit" % "junit" % "4.13" % Test
+  libraryDependencies += "org.scalactic" %% "scalactic" % "3.1.1"
+  val scalatestDependency = "org.scalatest" %% "scalatest" % "3.1.1" % "test"
+  logBuffered in Test := false
 
-  val log4jVersion = "2.13.0" // "2.11.2" // "2.11.1"
+  val log4jVersion = "2.13.1" // "2.11.2" // "2.11.1"
   val loggingDependencies = Seq(
     "org.apache.logging.log4j" % "log4j-api" % log4jVersion,
     "org.apache.logging.log4j" % "log4j-core" % log4jVersion,
@@ -42,7 +49,8 @@ object Common {
   val commonDependencies =
     loggingDependencies ++
     Seq(bananaDependency,
-	jenaDependency, jenaPermissionsDependency, jenaTextDependency, jenaSpatialDependency,
+	jenaDependency, jenaPermissionsDependency, jenaTextDependency,
+// jenaSpatialDependency,
 	xmlDependency,
 
 	junitDependency, scalatestDependency,
@@ -50,8 +58,8 @@ object Common {
     "com.typesafe.play" %% "play-json" %  "2.6.14",
     // "com.typesafe.play" %% "play-iteratees" % "2.6.1",
 
-    "org.apache.lucene" % "lucene-suggest" % "6.4.1" , // "7.5.0", // 6.6.5",
-    "org.apache.lucene" % "lucene-demo"    % "6.4.1" , // "7.5.0", // 6.6.5",
+    "org.apache.lucene" % "lucene-suggest" % "7.4.0" , // "6.4.1" , // "7.5.0", // 6.6.5",
+    "org.apache.lucene" % "lucene-demo"    % "7.4.0" , // "6.4.1" , // "7.5.0", // 6.6.5",
 /*
     "org.apache.lucene" % "lucene-suggest" % "4.9.1" ,
     "org.apache.lucene" % "lucene-demo" % "4.9.1" ,
