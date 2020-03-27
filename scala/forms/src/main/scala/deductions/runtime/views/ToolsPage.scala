@@ -282,7 +282,7 @@ trait ToolsPage extends EnterButtons
     var url = '$toolURLprefix' +
       '?view=' + pointsOrPathValue +
       '&enrich=yes' +
-      "&link-prefix=" + ${ s""""${request.host + config.hrefDisplayPrefix}""""} +
+      "&link-prefix=" + ${ s""""${request.absoluteURL() + config.hrefDisplayPrefix}""""} +
       "&lang=" + "${request.getLanguage()}" +
       "&label=" + document.getElementById('label').value +
       '&url=' +

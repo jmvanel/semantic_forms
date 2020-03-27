@@ -25,7 +25,8 @@ trait HTTPrequestHelpers {
 //    val formMap = getFormMap(request)
     val username = getUsername(request)
     logger.debug(s"copyRequestHeader: username '$username'")
-    val res = HTTPrequest(host, remoteAddress,
+    val res = HTTPrequest(
+      host, remoteAddress,
       rawQueryString, queryString,
       headers = headers.toMap,
       cookies = cookiesMap,
@@ -45,6 +46,11 @@ trait HTTPrequestHelpers {
 //    println(s"copyRequest: cookiesMap $cookiesMap , userId ${res.userId()}")
 //    println(s"""===========>>>>>>>>> copyRequest request $request
 //        tags ${request.tags}""")
+
+//    println(s""">>>> copyRequest: $request ,
+//      host ${request.host}
+//      domain ${request.domain} , remoteAddress ${request.remoteAddress} ,
+//      secure ${request.connection.secure } """)
     res
   }
 

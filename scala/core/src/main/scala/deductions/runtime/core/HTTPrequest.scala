@@ -82,7 +82,9 @@ case class HTTPrequest(
   def absoluteURL(relativeURIwithSlash: String = "",
       secure: Boolean = this.secure): String =
         s"http${if(secure) "s" else ""}://" +
-      this.host + relativeURIwithSlash // + this.appendFragment
+        // IPv6:
+        {if( this.hostNoPort == "localhost") "[" + this.remoteAddress + "]:" + this.port else this.host} +
+        relativeURIwithSlash // + this.appendFragment
 
   def originalURL(): String = absoluteURL(path +
       (if(rawQueryString != "") "?" + rawQueryString else ""))
@@ -133,9 +135,18 @@ case class HTTPrequest(
 
   def hostNoPort = {
     val colonIndex = host.indexOf(":")
-    if( colonIndex == -1 ) host
+    if( colonIndex == -1 )
+      host
     else
-    host.subSequence(0, colonIndex)
+      host.subSequence(0, colonIndex)
+  }
+
+  def port = {
+    val colonIndex = host.indexOf(":")
+    if( colonIndex == -1 )
+      80
+    else
+      host.substring(colonIndex+1)
   }
 
   override def toString(): String = {
