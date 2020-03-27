@@ -64,7 +64,7 @@ trait RDFI18NLoaderTrait[Rdf <: RDF, DATASET]
       uri =>
         println(s"BEFORE loading <$uri> into <$i18NGraph>")
         readStoreURI(uriNodeToURI(uri), i18NGraph, dataset)
-        println(s"DONE loaded <$uri> into <$i18NGraph>")
+        println(s"DONE loaded    <$uri> into <$i18NGraph>")
     }
   }
 }

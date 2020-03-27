@@ -264,9 +264,9 @@ trait ToolsPage extends EnterButtons
 
   var pointsCheckbox = document.getElementById('points-path');
   var pointsOrPath = pointsCheckbox.checked;
-  var dataServicesURL = '${sparqlServicesURL()}'
+  var dataServicesURL = '${sparqlServicesURL("", request)}'
   if (unionDefaultGraph)
-    dataServicesURL = '${sparqlServicesURL("2")}'
+    dataServicesURL = '${sparqlServicesURL("2", request)}'
   console.log('pointsOrPath ' + pointsOrPath);
   if( pointsOrPath )
     var pointsOrPathValue = 'points';
@@ -296,10 +296,10 @@ trait ToolsPage extends EnterButtons
   }
 
   /** TODO also in ApplicationFacadeImpl */
-  private def sparqlServicesURL( suffix: String = "" ) = {
-    val ( servicesURIPrefix, isDNS) = servicesURIPrefix2
-//    println(s"servicesURIPrefix $servicesURIPrefix, is DNS $isDNS")
-    val sparqlServicePrefix = s"sparql$suffix?query="
+  private def sparqlServicesURL( suffix: String = "",
+      request: HTTPrequest ) = {
+    val servicesURIPrefix = request.absoluteURL()
+    val sparqlServicePrefix = s"/sparql$suffix?query="
     val dataServicesURL = s"$servicesURIPrefix$sparqlServicePrefix"
     logger.debug(s">>>> lazy val dataServicesURL $dataServicesURL")
     dataServicesURL

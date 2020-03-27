@@ -94,7 +94,7 @@ trait CommonVocabulariesLoader[Rdf <: RDF, DATASET]
     vocabularies map {
       voc =>
         try {
-          println(s"load Common Vocabulary $voc")
+          println(s"load Common Vocabulary <$voc>")
           readStoreUriInNamedGraph(voc)
             print("JVM Total memory (bytes): " +
               Runtime.getRuntime().totalMemory());
