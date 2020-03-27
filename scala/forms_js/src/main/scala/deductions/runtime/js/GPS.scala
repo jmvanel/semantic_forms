@@ -65,28 +65,30 @@ case class GeoCoordinatesFields(
     )
 
 object GeoCoordinatesFields {
-  	// TODO later depend on module utils
-  val geoRDFPrefix = "http://www.w3.org/2003/01/geo/wgs84_pos#"
+  // TODO later depend on module utils
+  private val geoRDFPrefix = "http://www.w3.org/2003/01/geo/wgs84_pos#"
+
+  def matchesGeoCoordinatesInput( coordinateName: String): NodeList =
+    dom.document.querySelectorAll(
+      s"input[data-rdf-property='${geoRDFPrefix}$coordinateName']")
 
   def pageNeedsGeoCoordinates(): GeoCoordinatesFields = {
-    val matchesLongitudeInput = dom.document.querySelectorAll(
-      s"input[data-rdf-property='${geoRDFPrefix}long']")
-    val matchesLatitudeInput = dom.document.querySelectorAll(
-      s"input[data-rdf-property='${geoRDFPrefix}lat']")
-    val matchesAltitudeInput = dom.document.querySelectorAll(
-      s"input[data-rdf-property='${geoRDFPrefix}alt']")
+    val matchesLongitudeInput = matchesGeoCoordinatesInput("long")
+    val matchesLatitudeInput = matchesGeoCoordinatesInput("lat")
+    val matchesAltitudeInput = matchesGeoCoordinatesInput("alt")
 
     print(s"matchesLongitudeInput $matchesLongitudeInput, length ${matchesLongitudeInput.length}")
     val inputIsEmptyLongitude = inputIsEmpty(matchesLongitudeInput)
     val longitudeFieldExists = matchesLongitudeInput.length > 0
-    val needs =
-      ( matchesLatitudeInput.length > 0 ||
-        longitudeFieldExists ) &&
+    val latitudeFieldExists  = matchesLatitudeInput.length > 0
+    val needsGPSfilling =
+        ( latitudeFieldExists ||
+          longitudeFieldExists   ) &&
         inputIsEmptyLongitude
-    println("needs GPS input: " + needs)
+    println("needs GPS filling: " + needsGPSfilling)
     if( longitudeFieldExists && ! inputIsEmptyLongitude )
       println("Longitude is already filled: '" + matchesLongitudeInput + "'")
-    GeoCoordinatesFields(needs, matchesLongitudeInput, matchesLatitudeInput, matchesAltitudeInput)
+    GeoCoordinatesFields(needsGPSfilling, matchesLongitudeInput, matchesLatitudeInput, matchesAltitudeInput)
   }
 
   /** input field exists and Is Empty */

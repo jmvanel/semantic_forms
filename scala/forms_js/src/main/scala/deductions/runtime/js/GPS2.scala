@@ -44,6 +44,22 @@ object GPS2 extends GPS {
           fillGeoCoordinates }
   }
 
+  @JSExport
+  /** When user empties longitude, start GPS filling */
+  def listenToEmptyInputLongitude(): Unit = {
+    val matchesLongitudeInput = GeoCoordinatesFields.matchesGeoCoordinatesInput("long")
+    for (node <- matchesLongitudeInput) {
+      node.addEventListener(
+        "input",
+        (ev: dom.Event) => {
+          node match {
+            case input: Input if (input.value == "") =>
+              fillGeoCoordinates
+              print(s"Empty longitude => fillGeoCoordinates started")
+          }
+        })
+    }
+  }
   /**
    * fill continuously longitude & latitude from HTML5 GPS API into relevant geo:long & geo:lat triples ,
    * See https://developer.mozilla.org/fr/docs/Using_geolocation

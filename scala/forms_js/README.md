@@ -1,4 +1,4 @@
-Currently not activated in Play! app.
+Currently activated in Play! app.
 
 To build JavaScript from Scala:
 
@@ -11,3 +11,6 @@ Then add the resulting JS to the web app.:
 	rm $JSDIR/formInteractions.js
 
 See http://www.scala-js.org/tutorial/basic/
+
+For testing, get the local IP adress with `ifconfig`
+

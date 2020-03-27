@@ -38,7 +38,8 @@
         function launchEditorWindow(input){
           deductions.runtime.js.PopupEditor().launchEditorWindow(input); };
 
-        GPS2.listenToSubmitEventFillGeoCoordinates();
+        GPS2.listenToSubmitEventFillGeoCoordinates()
+        GPS2.listenToEmptyInputLongitude()
         console.log('Called listenToSubmitEventFillGeoCoordinates');
         })
 

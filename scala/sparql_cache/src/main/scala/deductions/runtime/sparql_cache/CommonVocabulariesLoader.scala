@@ -94,11 +94,12 @@ trait CommonVocabulariesLoader[Rdf <: RDF, DATASET]
     vocabularies map {
       voc =>
         try {
+          println(s"load Common Vocabulary $voc")
           readStoreUriInNamedGraph(voc)
-            println("JVM Total memory (bytes): " +
+            print("JVM Total memory (bytes): " +
               Runtime.getRuntime().totalMemory());
             System.gc()
-            println("JVM Free memory after gc(): " +
+            println(" -- JVM Free memory after gc(): " +
               Runtime.getRuntime().freeMemory())
         } catch {
           case e: Exception =>
