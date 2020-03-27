@@ -15,6 +15,8 @@ import deductions.runtime.core.HTTPrequest
 import scalaz._
 import Scalaz._
 import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.utils.I18NMessages
+
 import java.net.URLEncoder
 
 trait SPARQLQueryMaker[Rdf <: RDF] {
@@ -74,7 +76,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
       val graph: Rdf#Graph = allNamedGraph
       val sparqlQuery = queryMaker.makeQueryString(search(0))
       val elems = Seq(
-        <button value="Sort" id="sort"> Sort </button>,
+        <button value="Sort" id="sort">{ I18NMessages.get("Sort", httpRequest.getLanguage() ) }</button>,
         sortJSscript,
         sparqlQueryButton(sparqlQuery),
         showContinuationForm( httpRequest ),
