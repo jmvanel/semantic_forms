@@ -23,7 +23,7 @@ val jenaVersion =  "3.14.0"
   val jenaSpatialDependency = "org.apache.jena" % "jena-spatial" % jenaVersion		exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
 
 
-  val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.2.0"
+  val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.3.0"
 
   val junitDependency = "junit" % "junit" % "4.13" % Test
   libraryDependencies += "org.scalactic" %% "scalactic" % "3.1.1"
@@ -44,7 +44,7 @@ val jenaVersion =  "3.14.0"
   // allready in Banana
   // val httpComponents = "org.apache.httpcomponents" % "httpclient" % "4.5.2"
 
-  val any23Dependencies = "org.apache.any23" % "apache-any23-csvutils" % "2.2"
+  val any23Dependencies = "org.apache.any23" % "apache-any23-csvutils" % "2.3"
 
   val commonDependencies =
     loggingDependencies ++
@@ -55,7 +55,7 @@ val jenaVersion =  "3.14.0"
 
 	junitDependency, scalatestDependency,
 
-    "com.typesafe.play" %% "play-json" %  "2.6.14",
+    "com.typesafe.play" %% "play-json" %  "2.8.1" , // 2.6.14",
     // "com.typesafe.play" %% "play-iteratees" % "2.6.1",
 
     "org.apache.lucene" % "lucene-suggest" % "7.4.0" , // "6.4.1" , // "7.5.0", // 6.6.5",
@@ -74,7 +74,7 @@ val jenaVersion =  "3.14.0"
 
     "org.scala-lang.modules" %% "scala-async" % "0.9.7" ,
 
-    "org.apache.commons" % "commons-csv" % "1.6" ,
+    "org.apache.commons" % "commons-csv" % "1.8" ,
     any23Dependencies
     // for Java 9 (works also with Java 8)
     , "javax.xml.bind" % "jaxb-api" % "2.3.1"
