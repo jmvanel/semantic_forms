@@ -28,7 +28,8 @@ trait FormSaver[Rdf <: RDF, DATASET]
     with RDFHelpers[Rdf]
     with SPARQLHelpers[Rdf, DATASET]
     with Timer
-    with URIManagement {
+    with URIManagement
+    with ReceivedTriplesFixes[Rdf] {
 
   import ops._
 
@@ -109,7 +110,9 @@ trait FormSaver[Rdf <: RDF, DATASET]
    * Important HTTP parameters:
    * - uri: (main) subject URI
    * - graphURI: URI of named graph in which save triples will be saved
-   * 
+   *
+   * TODO pass HTTPrequest
+   *
    * transactional
    * @param map a raw map of HTTP response parameters
    * @return main subject URI,
@@ -132,26 +135,28 @@ trait FormSaver[Rdf <: RDF, DATASET]
         Some(subjectUri)
       case _ => None
     }
+
     // named graph in which to save:
     val graphURI =
       if (graphURIOption === Some("")) subjectUriOption.getOrElse("???")
-          else URLDecoder.decode(graphURIOption.getOrElse(subjectUriOption.getOrElse("???")), "utf-8")
+      else URLDecoder.decode(graphURIOption.getOrElse(subjectUriOption.getOrElse("???")), "utf-8")
 
-    if(graphURI != "???") {
-      val databaseChanges =
-        wrapInReadTransaction {
-          computeDatabaseChangesFromMap( httpParamsMap, lang) }
-      if( databaseChanges.isSuccess ) {
-          val pair = for( dbc <- databaseChanges ) yield {
-            doSave(graphURI, dbc)
-            ( subjectUriOption, dbc.typeChange) }
-          pair.get // TODO calling get is bad !
+    if (graphURI != "???") {
+      val databaseChanges = wrapInReadTransaction {
+        computeDatabaseChangesFromMap(httpParamsMap, lang)
+      }
+      if (databaseChanges.isSuccess) {
+        val pair = for (dbc <- databaseChanges) yield {
+          doSave(graphURI, fixReceivedTriples(dbc))
+          (subjectUriOption, dbc.typeChange)
+        }
+        pair.get // TODO calling get is bad !
       } else {
         logger.error(s"saveTriples: ERROR: $databaseChanges")
-        ( subjectUriOption, false)
+        (subjectUriOption, false)
       }
     } else
-      ( subjectUriOption, false)
+      (subjectUriOption, false)
   }
 
   /** process a single triple from the form
