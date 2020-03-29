@@ -4,6 +4,7 @@ import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.utils.{DefaultConfiguration, I18NMessages, RDFPrefixes}
 
 import scala.xml.NodeSeq
+import scala.xml.Elem
 
 /**
  * Buttons for loading/display/edit, search, and create;
@@ -18,6 +19,8 @@ trait EnterButtons {
 
   protected def messageI18N(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
 
+  /** Used in ToolsPage
+   *  TODO duplicate code with enterSearchTerm() */
   def enterURItoDownloadAndDisplay()(implicit lang: String = "en") = {
 
     <div class="row sf-margin-top-10">
@@ -33,11 +36,7 @@ trait EnterButtons {
               <input class="form-control" type="text" name="displayuri" list="start_uris"
               dropzone="copy string:text/plain"
               placeholder={messageI18N("Display_placeholder")}/>
-              <datalist id="start_uris">
-                <option label="J.M. Vanel FOAF profile"> http://jmvanel.free.fr/jmv.rdf#me </option>
-                <option label="Paris dbpedia.org"> http://dbpedia.org/resource/Paris </option>
-                <option label="H. Story FOAF profile"> http://bblfish.net/people/henry/card#me </option>
-              </datalist>
+              { rdfStartingPoints }
             </div>
 
 
@@ -58,6 +57,15 @@ trait EnterButtons {
     </div>
   }
 
+  private val rdfStartingPoints: Elem =
+    <datalist id="start_uris">
+      <option label="J.M. Vanel FOAF profile"> http://jmvanel.free.fr/jmv.rdf#me </option>
+      <option label="Paris dbpedia.org"> http://dbpedia.org/resource/Paris </option>
+      <option label="H. Story FOAF profile"> http://bblfish.net/people/henry/card#me </option>
+    </datalist>
+
+  /** enter Search Term or URI
+   *  Used in main page */
   def enterSearchTerm()(implicit lang: String = "en") = {
     val inputMessage = messageI18N("Search_placeholder")
     val classMessage = messageI18N("Class_placeholder")
@@ -65,53 +73,21 @@ trait EnterButtons {
               <input class="sf-search" type="text" id="q" name="q" size="40"
                 placeholder={ inputMessage }
                 title={ inputMessage }
-                dropzone="copy"/>
+                dropzone="copy"
+                list="start_uris"
+                />
               <input class="sf-search sfLookup" type="text" name="clas" size="25"
                 placeholder={ classMessage }
                 title={ classMessage }
                 data-rdf-type={fromUri(rdfs.Class)}
                 data-rdf-property={fromUri(rdf.typ)}
                 />
+              { rdfStartingPoints }
             <input class="btn btn-primary" type="submit" value={ messageI18N("Search") }/>
         </form>
   }
 
-  /*
-  def enterSearchTermOLD()(implicit lang: String = "en") = {
-    val mess = messageI18N("String_to_search")
-    val inputMessage = messageI18N("Search_placeholder")
-    val classMessage = messageI18N("Class_placeholder")
-    <div class="row sf-margin-top-10">
-      <div class="col-xs-12 col-sm-12 col-md-12 col-md-offset-1">
-        <form  role="form" action="/search">
-
-            <div class="col-xs-2 col-sm-2 col-md-1">
-              <label class="control-label" for="q"
-                     title={ mess }>
-                { mess }
-              </label>
-            </div>
-
-            <div class="col-xs-10 col-sm-10 col-md-6">
-              <input class="form-control" type="text" id="q" name="q" placeholder={
-                inputMessage
-              } dropzone="copy"/>
-              <input class="form-control sfLookup" type="text" name="clas" placeholder={ classMessage }
-                data-rdf-type={fromUri(rdfs.Class)}
-                data-rdf-property={fromUri(rdf.typ)}
-                />
-            </div>
-
-            <div class="col-sm-4 col-sm-offset-4 col-md-2 col-md-offset-0">
-              <input class="form-control btn btn-primary" type="submit" value={ messageI18N("Search") }/>
-            </div>
-            <!--input type="submit" style="display:none"/-->
-        </form>
-      </div>
-    </div>
-  }
-*/
-
+  /** Used in main page */
   def enterClassForCreatingInstance()(implicit lang: String = "en") =
 
     <div class="row sf-margin-top-10">
