@@ -73,7 +73,9 @@ trait FormHeader[Rdf <: RDF, DATASET]
               formSyntax.title
             }
             <strong>
-              { editOrUnEditButton }
+              { editOrUnEditButton ++
+                makeBackLinkButton(uri, "", request)
+}
               { expertLinks(uri, request) }
               { expertLinksOWL }
             </strong>

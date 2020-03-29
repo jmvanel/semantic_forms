@@ -111,7 +111,7 @@ with StringHelpers
     val uri = value.toString()
     (if (showExpertButtons) {
       showHideExpertButtonsOnClick(
-      makeBackLinkButton(uri, "", request) ++
+//      makeBackLinkButton(uri, "", request) ++
         normalNavigationButton(resourceEntry) ++
         makeDrawGraphLink(uri) ++
         makeDrawGraphLinkSpoggy(uri) ++
