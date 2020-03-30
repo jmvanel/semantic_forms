@@ -19,12 +19,8 @@ trait InstanceLabelsFromLabelProperty[Rdf <: RDF, DATASET]
   import rdfStore.sparqlEngineSyntax._
   import sparqlOps._
 
-  /**
-   * inferring possible label from:
-   *
-   * form:labelProperty in the rdf:type class
-   */
-  private val query = s"""
+  lazy val compiledQuery: Rdf#SelectQuery = {
+    val query = s"""
 		|${declarePrefix(form)}
     |SELECT ?LABEL_URI
     |WHERE {
@@ -36,21 +32,26 @@ trait InstanceLabelsFromLabelProperty[Rdf <: RDF, DATASET]
     |    ?thing ?PROP ?LABEL_URI.
     |} }
     """.stripMargin
-
-  lazy val compiledQuery : Rdf#SelectQuery = parseSelect(query) match {
-    case Success(q) => q
-    case Failure(f) =>
-      logger.error( s"InstanceLabelsFromLabelProperty: $f")
-       parseSelect("SELECT ?Z WHERE{<aa> <bb> <cc> .}").get
+    parseSelect(query) match {
+      case Success(q) => q
+      case Failure(f) =>
+        logger.error(s"InstanceLabelsFromLabelProperty: $f")
+        parseSelect("SELECT ?Z WHERE{<aa> <bb> <cc> .}").get
+    }
   }
 
+ /**
+   * inferring possible label from:
+   *
+   * form:labelProperty in the rdf:type class
+   */
   def instanceLabelFromLabelProperty(node: Rdf#Node): Option[Rdf#Node] = {
     ops.foldNode(node)(
-      node => {
-        if (node == nullURI )
+      uri => {
+        if (uri == nullURI )
           None
         else {
-        	val bindings: Map[String, Rdf#Node] = Map("?thing" -> node )
+          val bindings: Map[String, Rdf#Node] = Map("?thing" -> uri )
 //        	println( s">>>> instanceLabelFromLabelProperty ?thing node $node compiledQuery $compiledQuery" )
         	val solutionsTry = for {
         		es <- dataset.executeSelect(compiledQuery, bindings)
