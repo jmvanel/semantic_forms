@@ -10,7 +10,8 @@ import Scalaz._
 import scala.concurrent.Future
 import scala.util.Try
 
-/** wraps InstanceLabelsInference to cache Instance Labels in TDB */
+/** wraps InstanceLabelsInference to cache Instance Labels in TDB
+ *  should be called InstanceLabelsInferenceMemoization , cf https://en.wikipedia.org/wiki/Memoization TODO */
 trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     extends InstanceLabelsInference2[Rdf]
     with PreferredLanguageLiteral[Rdf]
@@ -27,7 +28,8 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   val labelsGraphUriPrefix = "urn:/semforms/labelsGraphUri/"
   val displayLabelPred = URI("urn:displayLabel")
 
-  /** NON transactional, needs rw transaction */
+  /** make Instance Label, by retrieving from TDB, or else compute and Store In TDB
+   *  NON transactional, needs rw transaction */
   override def makeInstanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
     val labelFromTDB = instanceLabelFromTDB(node, lang)
     if (labelFromTDB === "" || labelFromTDB === "Thing" || isLabelLikeURI(node, labelFromTDB ) )
@@ -196,12 +198,12 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
 //    println(s"computeInstanceLabeAndStoreInTDB: $node .toString() , computed label $label")
 //    println(s"$node .toString().endsWith( label.substring(label.length()-1) = ${label.substring(0, label.length()-1)}")
     val label2 = if( label === "" || isLabelLikeURI(node: Rdf#Node, label) ) {
-      val v = instanceLabelFromLabelProperty(node)
-      v match {
+      val labelFromLabelProperty = instanceLabelFromLabelProperty(node)
+      labelFromLabelProperty match {
         case Some(node) =>
           foldNode(node)(
               uri => makeInstanceLabel(uri, graph, lang),
-              _ => makeInstanceLabel(node, graph, lang),
+              bn => makeInstanceLabel(node, graph, lang),
               lit => fromLiteral(lit)._1 )
         case _ => label
       }
@@ -210,13 +212,20 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     label2
   }
   
-  def isLabelLikeURI(node: Rdf#Node, label: String) =
-		  node.toString().endsWith(label) ||
-		  node.toString().endsWith(label.substring(0, label.length()-1))
+  def isLabelLikeURI(node: Rdf#Node, label: String): Boolean = {
+    val nodeString = node.toString()
+    nodeString.endsWith(label) ||
+    nodeString.endsWith(label.substring(0, label.length()-1))
+  }
 
   private def storeInstanceLabel(node: Rdf#Node, label: String,
-                                 graph: Rdf#Graph, lang: String) = {
-    if (label =/= "") {
+                                 graph: Rdf#Graph, lang: String): Try[Unit] = {
+    def doStore: Try[Unit] = {
+      val computedLabelTriple = (node -- displayLabelPred ->- Literal(label)).graph
+      val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
+      rdfStore.appendToGraph(datasetForLabels, labelsGraphUri, computedLabelTriple)
+    }
+    if (label =/= "" && !isLabelLikeURI(node, label)) {
       foldNode(node)(
         uri => doStore,
         bn => doStore,
@@ -224,14 +233,9 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
           logger.error(s">>>> storeInstanceLabel(node=$node, label⁼$label): Node should be URI or BN")
           Success(Unit)
         })
-      def doStore = {
-        val computedLabelTriple = (node -- displayLabelPred ->- Literal(label)).graph
-        val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
-        rdfStore.appendToGraph(datasetForLabels, labelsGraphUri, computedLabelTriple)
-      }
     } else Success(Unit)
   }
-  
+
   def cleanStoredLabels(lang: String) {
     val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
     rdfStore.removeGraph( datasetForLabels, labelsGraphUri)
