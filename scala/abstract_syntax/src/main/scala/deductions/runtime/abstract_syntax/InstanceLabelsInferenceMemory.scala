@@ -139,43 +139,43 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     list.toList map { node => makeInstanceLabel(node, graph, lang) }
     // list.map { node => instanceLabelFromTDB(node, lang)
 
-  /** this was tried during trials to fix a ConcurrentModificationException,
-   *  but the solution was in calling levels:
-   *  https://github.com/jmvanel/semantic_forms/commit/6d1263530c337d69358670674de5178fd23d1765
-   *   */
-  private def instanceLabelsComplex(list: Seq[Rdf#Node], lang: String = "")
-  (implicit graph: Rdf#Graph): Seq[String] = {
-    val labelsFromTDB:Map[Rdf#Node, String] =
-      list.toList.map { node => node -> instanceLabelFromTDB(node, lang) } . toMap
-    var recomputeCount = 0
-    val labelsComputedOrFromTDB =
-      labelsFromTDB . map { (node_label)  =>
-        node_label._1 -> {
-          val recompute = node_label._2 === ""
-          (
-            (if (recompute) {
-              recomputeCount = recomputeCount + 1
-              super.makeInstanceLabel(node_label._1, graph, lang)
-            } else node_label._2),
-            recompute)
-        }
-      }
-      println("labelsComputedOrFromTDB size " + list.size + ", recomputeCount "+recomputeCount)
-      labelsComputedOrFromTDB . map {
-        node_label_boolean  =>
-          if( node_label_boolean._2._2)
-            storeInstanceLabel(node_label_boolean._1,
-                node_label_boolean._2._1, graph, lang)
-                else Success(Unit)
-      }
-      println("labelsComputedOrFromTDB 2")
-      val ret = labelsComputedOrFromTDB . map {
-        node_label_boolean  => node_label_boolean._2._1
-      } . toList
-      println("labelsComputedOrFromTDB 3")
-      println("labelsComputedOrFromTDB 3 " + ret )
-      ret
-  }
+//  /** this was tried during trials to fix a ConcurrentModificationException,
+//   *  but the solution was in calling levels:
+//   *  https://github.com/jmvanel/semantic_forms/commit/6d1263530c337d69358670674de5178fd23d1765
+//   *   */
+//  private def instanceLabelsComplex(list: Seq[Rdf#Node], lang: String = "")
+//  (implicit graph: Rdf#Graph): Seq[String] = {
+//    val labelsFromTDB:Map[Rdf#Node, String] =
+//      list.toList.map { node => node -> instanceLabelFromTDB(node, lang) } . toMap
+//    var recomputeCount = 0
+//    val labelsComputedOrFromTDB =
+//      labelsFromTDB . map { (node_label)  =>
+//        node_label._1 -> {
+//          val recompute = node_label._2 === ""
+//          (
+//            (if (recompute) {
+//              recomputeCount = recomputeCount + 1
+//              super.makeInstanceLabel(node_label._1, graph, lang)
+//            } else node_label._2),
+//            recompute)
+//        }
+//      }
+//      println("labelsComputedOrFromTDB size " + list.size + ", recomputeCount "+recomputeCount)
+//      labelsComputedOrFromTDB . map {
+//        node_label_boolean  =>
+//          if( node_label_boolean._2._2)
+//            storeInstanceLabel(node_label_boolean._1,
+//                node_label_boolean._2._1, graph, lang)
+//                else Success(Unit)
+//      }
+//      println("labelsComputedOrFromTDB 2")
+//      val ret = labelsComputedOrFromTDB . map {
+//        node_label_boolean  => node_label_boolean._2._1
+//      } . toList
+//      println("labelsComputedOrFromTDB 3")
+//      println("labelsComputedOrFromTDB 3 " + ret )
+//      ret
+//  }
 
   /** compute Instance Label and store it in TDB,
    *  then replace label in special named Graph */
@@ -216,12 +216,19 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
 
   private def storeInstanceLabel(node: Rdf#Node, label: String,
                                  graph: Rdf#Graph, lang: String) = {
-    if (label  =/=  "") {
-      if(!isURI(node))
-        logger.error(s">>>> storeInstanceLabel(node=$node, label⁼$label): Node should be URI")
-      val computedDisplayLabel = (node -- displayLabelPred ->- Literal(label)).graph
-      val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
-      rdfStore.appendToGraph(datasetForLabels, labelsGraphUri, computedDisplayLabel)
+    if (label =/= "") {
+      foldNode(node)(
+        uri => doStore,
+        bn => doStore,
+        literal => {
+          logger.error(s">>>> storeInstanceLabel(node=$node, label⁼$label): Node should be URI or BN")
+          Success(Unit)
+        })
+      def doStore = {
+        val computedLabelTriple = (node -- displayLabelPred ->- Literal(label)).graph
+        val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
+        rdfStore.appendToGraph(datasetForLabels, labelsGraphUri, computedLabelTriple)
+      }
     } else Success(Unit)
   }
   
