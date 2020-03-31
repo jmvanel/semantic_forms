@@ -31,6 +31,7 @@ import scala.xml.{Elem, NodeSeq}
 import scalaz._
 import Scalaz._
 import akka.stream.scaladsl.StreamConverters
+import deductions.runtime.utils.I18NMessages
 
 /**
  * a Web Application Facade,
@@ -172,7 +173,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
           "?" + "query=" + sparqlQuery
         }
         target="_blank"
-     > Map </a>
+     > { I18NMessages.get("Map", request.getLanguage()) } </a>
 
   /** for test, creates an OutOfMemoryError exception */
   private def fillMemory() = {
