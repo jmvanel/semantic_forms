@@ -43,7 +43,9 @@ trait InstanceLabelsFromLabelProperty[Rdf <: RDF, DATASET]
  /**
    * inferring possible label from:
    *
-   * form:labelProperty in the rdf:type class
+   * form:labelProperty in the rdf:type class of given node
+   *
+   * @return URI from which to get the desired label
    */
   def instanceLabelFromLabelProperty(node: Rdf#Node): Option[Rdf#Node] = {
     ops.foldNode(node)(
@@ -58,7 +60,7 @@ trait InstanceLabelsFromLabelProperty[Rdf <: RDF, DATASET]
         	} yield es
           makeListofListsFromSolutions(solutionsTry, addHeaderRow = false) match {
             case Success(List(Seq(lab, _*), _*)) =>
-              //      	  println( s">>>> instanceLabelFromLabelProperty label $lab" )
+              // println( s">>>> instanceLabelFromLabelProperty label $lab" )
               Some(lab)
             case res =>
               //        	    println( s">>>> instanceLabelFromLabelProperty result $res" )

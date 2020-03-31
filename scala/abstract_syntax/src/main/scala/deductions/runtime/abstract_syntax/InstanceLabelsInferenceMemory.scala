@@ -191,31 +191,33 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
 
   /** compute Instance Label and store it in TDB */
   private def computeInstanceLabelAndStoreInTDB(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
-    logger.debug( s"compute displayLabel for <$node>" )
-    if( node.toString() === "" ) return ""
+    logger.debug(s"compute displayLabel for <$node>")
+    if (node.toString() === "") return ""
 
     val label = super.makeInstanceLabel(node, graph, lang)
-//    println(s"computeInstanceLabeAndStoreInTDB: $node .toString() , computed label $label")
-//    println(s"$node .toString().endsWith( label.substring(label.length()-1) = ${label.substring(0, label.length()-1)}")
-    val label2 = if( label === "" || isLabelLikeURI(node: Rdf#Node, label) ) {
-      val labelFromLabelProperty = instanceLabelFromLabelProperty(node)
-      labelFromLabelProperty match {
-        case Some(node) =>
-          foldNode(node)(
+    logger.debug(s"computeInstanceLabeAndStoreInTDB: $node , computed label $label")
+    val label2 =
+      if (label === "" || isLabelLikeURI(node: Rdf#Node, label)) {
+        val labelFromLabelProperty = instanceLabelFromLabelProperty(node)
+        logger.debug(s"computeInstanceLabeAndStoreInTDB: $node labelFromLabelProperty $labelFromLabelProperty")
+        labelFromLabelProperty match {
+          case Some(node) =>
+            foldNode(node)(
               uri => makeInstanceLabel(uri, graph, lang),
               bn => makeInstanceLabel(node, graph, lang),
-              lit => fromLiteral(lit)._1 )
-        case _ => label
-      }
-  }  else label
+              lit => fromLiteral(lit)._1)
+          case _ => label
+        }
+      } else label
     storeInstanceLabel(node, label2, graph, lang)
     label2
   }
-  
+
   def isLabelLikeURI(node: Rdf#Node, label: String): Boolean = {
     val nodeString = node.toString()
     nodeString.endsWith(label) ||
-    nodeString.endsWith(label.substring(0, label.length()-1))
+    nodeString.endsWith(label.substring(0, label.length()-1)) ||
+    nodeString.endsWith("#")
   }
 
   private def storeInstanceLabel(node: Rdf#Node, label: String,
@@ -226,6 +228,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
       rdfStore.appendToGraph(datasetForLabels, labelsGraphUri, computedLabelTriple)
     }
     if (label =/= "" && !isLabelLikeURI(node, label)) {
+      logger.debug(s"storeInstanceLabel: actually store: node <$node>, label '$label', lang $lang")
       foldNode(node)(
         uri => doStore,
         bn => doStore,
