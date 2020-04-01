@@ -218,7 +218,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
           params("query")
 //      println(s"filterMetadataFocus sparqlQuery: $sparqlQuery")
       ( filterMetadataSPARQL( metadata, request, sparqlQuery),
-        sparqlQueryButton(sparqlQuery) )
+        sparqlQueryButton(sparqlQuery, request) )
 
     } else
       (metadata, NodeSeq.Empty )

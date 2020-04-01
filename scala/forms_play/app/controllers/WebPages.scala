@@ -30,6 +30,7 @@ import play.api.mvc.AnyContent
 import play.api.mvc.RequestHeader
 import deductions.runtime.core.SemanticControllerWrapper
 import deductions.runtime.core.IPFilter
+import deductions.runtime.utils.I18NMessages
 
 
 object WebPagesApp extends {
@@ -272,7 +273,7 @@ with ApplicationTrait
       return  <div>
         <a href={
           request.uri.replaceFirst("/table", "/sparql-ui")
-        }>Edit SPARQL query</a>
+        }>{I18NMessages.get( "Edit SPARQL query", lang) }</a>
         </div> ++
         <form> {
             <input name="query" type="hidden" value={ query }></input> ++

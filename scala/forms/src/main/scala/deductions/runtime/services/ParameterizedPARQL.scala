@@ -78,7 +78,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
       val elems = Seq(
         <button value="Sort" id="sort">{ I18NMessages.get("Sort", httpRequest.getLanguage() ) }</button>,
         sortJSscript,
-        sparqlQueryButton(sparqlQuery),
+        sparqlQueryButton(sparqlQuery, httpRequest),
         showContinuationForm( httpRequest ),
         <div id="container" class={ cssConfig.formRootCSSClass }> {
           localCSS ++
@@ -96,12 +96,12 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
   }
 
   /** Edit Select SPARQL query button */
-  def sparqlQueryButton(sparqlQuery: String) =
+  def sparqlQueryButton(sparqlQuery: String, request: HTTPrequest) =
     <span class="sf-expert">
       <a href={
         "/select-ui?query=" +
           URLEncoder.encode(sparqlQuery, "utf-8")
-      }>Edit SPARQL query</a>
+      }>{I18NMessages.get( "Edit_SPARQL_query", request.getLanguage()) }</a>
       &nbsp;
     </span>
 
