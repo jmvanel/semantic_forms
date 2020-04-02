@@ -94,6 +94,17 @@ trait MainXml extends ToolsPage with EnterButtons {
           </button>
         }
       }
+
+      { I18NMessages.get("Expert_Mode", lang) }
+      <input id="expertModeCheckbox" type="checkbox" />
+      <script type="text/javascript">
+        {
+          xml.Unparsed("""
+            var expertModeCheckbox = document.querySelector('input[id="expertModeCheckbox"]')
+            expertModeCheckbox.addEventListener('click', toggleExpertMode )
+          """)
+        }
+      </script>
     </div>
     <div class="collapse" id="collapseDisplay">{
       if (displaySearch) {
