@@ -166,7 +166,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
     val time: String = new DateTime(timeMetadata).toDateTime.toString("dd/MM/yyyy HH:mm")
     if (timeMetadata  =/=  -1){
       <!-- implemented in makeUserInfoOnTriples() -->
-      <span class="sf-local-rdf-link">
+      <span class="sf-UserInfoOnTriples">
         &nbsp;-&nbsp;{ message("modified_by", lang) }
         {
           <a style="text-decoration: underline" tabindex="-1" href={
