@@ -31,8 +31,8 @@
     </script>
 
     <script type='text/javascript'>
-        // Really necessary to use $(document).ready() ? This code is at the page end...
-        $(document).ready( function (){
+      // Really necessary to use $(document).ready() ? This code is at the page end...
+      $(document).ready( function (){
         //// Bootstraping Popup Editor & GPS (Scala.js) ////
 //        deductions.runtime.js.PopupEditor().main([]);
         function launchEditorWindow(input){
@@ -41,10 +41,11 @@
         GPS2.listenToSubmitEventFillGeoCoordinates()
         GPS2.listenToEmptyInputLongitude()
         console.log('Called listenToSubmitEventFillGeoCoordinates');
-        })
+        checkExpertModeOnPageLoad()
+      })
 
-        window.onunload = function() {
+      window.onunload = function() {
           GPS2.clearWatch();
           console.log("GPS2.clearWatch() called.")
-        }
+      }
     </script>
