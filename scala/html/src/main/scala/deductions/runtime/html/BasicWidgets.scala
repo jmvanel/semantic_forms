@@ -53,7 +53,7 @@ trait BasicWidgets
 
   /** TODO [Marco] settle on a good name for the feature
 back links, reverse links or incoming links
-don't mix them*/
+don't mix them */
   def makeBackLinkButton(uri: String, title: String = "",
                          request: HTTPrequest): NodeSeq = {
     val tit = if (title === "")
