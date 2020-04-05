@@ -116,7 +116,7 @@ don't mix them */
       toolURLprefix: String = "/history?uri=",
       icon: String = "/assets/images/radial_layout.png"): Elem = {
     val toolname = I18NMessages.get("Neighborhood", request.getLanguage())
-    makeToolLink( uri, toolURLprefix, toolname, icon, imgWidth=25 )
+    makeToolLink( uri, request, toolURLprefix, toolname, icon, imgWidth=25 )
   }
 
   /** make link to WebVOWL
@@ -124,7 +124,7 @@ don't mix them */
   def makeDrawGraphLinkVOWL( uri: String,
       icon: String = "http://visualdataweb.de/webvowl/favicon.ico"
       ): Elem = {
-    makeToolLink( uri, icon=icon )
+    makeToolLink( uri, HTTPrequest(), icon=icon )
   }
 
   /** make link to OOPS */
@@ -132,11 +132,12 @@ don't mix them */
       toolURLprefix: String = "http://oops.linkeddata.es/response.jsp?uri=",
       toolname: String = "OOPS (OntOlogy Pitfall Scanner)",
       icon: String = "http://oops.linkeddata.es/images/logoWhite65.png"): Elem = {
-    makeToolLink( uri, toolURLprefix, toolname, icon, imgWidth=35 )
+    makeToolLink( uri, HTTPrequest(), toolURLprefix, toolname, icon, imgWidth=35 )
   }
 
   /** make link to external tool (generic) */
   private def makeToolLink( uri: String,
+      request: HTTPrequest,
       toolURLprefix: String="http://visualdataweb.de/webvowl/#iri=",
       toolname: String="Web VOWL",
       icon: String = "https://www.w3.org/RDF/icons/rdf_flyer.svg",
@@ -145,7 +146,7 @@ don't mix them */
 
     if( uri  =/=  "" )
       <a class="sf-button btn-default" href={ s"$toolURLprefix$link" }
-      title={s"Launch tool $toolname for <$uri>"}
+      title={s"${I18NMessages.get("Launch_tool",request.getLanguage())} $toolname for <$uri>"}
       target="_blank">
       <img width={imgWidth.toString()} border="0"
         src={icon}

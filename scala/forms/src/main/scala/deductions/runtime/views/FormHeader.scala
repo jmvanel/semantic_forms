@@ -74,8 +74,9 @@ trait FormHeader[Rdf <: RDF, DATASET]
             }
             <strong>
               { editOrUnEditButton ++
-                makeBackLinkButton(uri, "", request)
-}
+                makeBackLinkButton(uri, "", request) ++
+                makeNeighborhoodLink(uri, request)
+              }
               { expertLinks(uri, request) }
               { expertLinksOWL }
             </strong>
@@ -90,25 +91,15 @@ trait FormHeader[Rdf <: RDF, DATASET]
               } else NodeSeq.Empty
             }
             { creationButton(
-                 nodeToString(formSyntax.subject), // classURIstringValue,
-                 // Seq("#Class"),
+                 nodeToString(formSyntax.subject),
                  formSyntax.types() . map( _ . toString ),
-                 lang
+                 request
               )
             }
           </h3>
         </div>
       </div>
       <div class="sf-links-row">
-        <div class="col-xs-12 sf-local-rdf-link">
-          {
-            //          val message = if (uri.contains("/ldp/"))
-            //            "Download local URI"
-            //          else
-            //            mess("Download_original_URI")
-            //          <a href={ uri }>{ message }</a>
-          }
-        </div>
         {
           <span class="sf-local-rdf-link">Data export: </span> ++
           downloadLink() ++

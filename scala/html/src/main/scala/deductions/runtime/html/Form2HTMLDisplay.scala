@@ -57,33 +57,19 @@ with StringHelpers
     val css = cssForURI(objectURIstringValue)
 
     val typ = firstNODEOrElseEmptyString(type_)
-//  println(s"==== createHTMLResourceReadonlyField: typ: $typ")
 
     val details = request.getHTTPparameterValue("details").getOrElse("")
 
-    val widgets =
-     if( details == "") // default full details
+    val widgets = if( details == "") { // default full details
       hyperlinkToField(resourceEntry) ++
       hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue,
           resourceEntry) ++
       displayThumbnail(resourceEntry) ++
       backLinkButton(resourceEntry, request) ++
-      // TODO harmonize with expertLinks() below
-      showHideExpertButtonsOnClick(
-          normalNavigationButton(resourceEntry) ++
-            makeDrawGraphLink(objectURIstringValue) ++
-            makeDrawGraphLinkSpoggy(objectURIstringValue) ++
-            makeDrawGraphLinkLodLive(objectURIstringValue) ++
-            creationButton(objectURIstringValue,
-              type_.map { t => t.toString() },
-              request.getLanguage()) ++
-            makeClassTableButton(resourceEntry) ++
-            hyperlinkForEditingURIinsideForm(objectURIstringValue, request.getLanguage()),
-          resourceEntry.value.toString()
-      ) ++
-      makeNeighborhoodLink(objectURIstringValue, request)
+      makeNeighborhoodLink(objectURIstringValue, request) ++
+      expertLinks(resourceEntry, request)
 
-      else if( details.contains("images") )
+    } else if( details.contains("images") )
         hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue,
           resourceEntry) ++
         displayThumbnail(resourceEntry)
@@ -101,9 +87,7 @@ with StringHelpers
     expertLinks(resourceEntry,request)
   }
 
-  /** expert Links for page header (triples' subject)
-   * TODO harmonize with showHideHTMLOnClick above
-   *  */
+  /** expert Links for page header (triples' subject) */
   def expertLinks(
       resourceEntry: formMod#ResourceEntry,
       request: HTTPrequest
@@ -112,13 +96,15 @@ with StringHelpers
     val uri = value.toString()
     (if (showExpertButtons) {
       showHideExpertButtonsOnClick(
-//      makeBackLinkButton(uri, "", request) ++
         normalNavigationButton(resourceEntry) ++
         makeDrawGraphLink(uri) ++
         makeDrawGraphLinkSpoggy(uri) ++
         makeDrawGraphLinkLodLive(uri) ++
+        creationButton(uri,
+              type_.map { t => t.toString() },
+              request) ++
         makeClassTableButton(resourceEntry) ++
-        makeNeighborhoodLink(uri, request),
+        hyperlinkForEditingURIinsideForm(uri, request.getLanguage()),
       uri)
     } else NodeSeq.Empty )
   }
@@ -223,12 +209,13 @@ with StringHelpers
       r.valueLabel
       }</a>
 
-  def creationButton(classURIstringValue: String, types: Seq[String], lang: String): NodeSeq = {
+  def creationButton(classURIstringValue: String, types: Seq[String],
+                     request: HTTPrequest): NodeSeq = {
     val imageURL = "/assets/images/create-instance.svg"
-    implicit val _ = lang
+    implicit val _ = request.getLanguage()
     val messCreate_instance = mess("Create_instance_of") + s" <$classURIstringValue>"
+//    println(s">>>> creationButton: classURIstringValue: $classURIstringValue, types: $types")
     if ( types.exists { t => t.endsWith("#Class") } ) {
-//      println(s"==== creationButton: typ: $typ")
         <a href={
           "/create?uri=" + URLEncoder.encode(classURIstringValue, "UTF-8")
         } title={ messCreate_instance }>
