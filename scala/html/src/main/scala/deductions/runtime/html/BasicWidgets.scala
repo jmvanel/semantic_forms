@@ -59,6 +59,20 @@ don't mix them */
     val tit = if (title === "")
       I18NMessages.get("Reverse-links-reaching", request.getLanguage()) +
         s"<$uri>;" else title
+      <a href={s"/backlinks?q=$uri"}
+        class="sf-button"
+        title={ tit }
+        data-value={s"$uri"}
+        border="0" >
+        <img src="/assets/images/Back-Link-Icon.svg" width="32" height="32" />
+      </a>
+  }
+
+  def makeBackLinkButtonWithCheckbox(uri: String, title: String = "",
+                                     request: HTTPrequest): NodeSeq = {
+    val tit = if (title === "")
+      I18NMessages.get("Reverse-links-reaching", request.getLanguage()) +
+        s"<$uri>;" else title
     <form action="/backlinks" style='display:inline;' >
       <input type="hidden" name="q" value={ uri } />
       <input type="image" alt="Submit" class="sf-button"
