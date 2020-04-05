@@ -112,10 +112,10 @@ don't mix them */
   }
 
   def makeNeighborhoodLink( uri: String,
+      request: HTTPrequest,
       toolURLprefix: String = "/history?uri=",
-      toolname: String =
-        "Neighborhood: \npaths of length <= 2 sorted in chronological order\n",
       icon: String = "/assets/images/radial_layout.png"): Elem = {
+    val toolname = I18NMessages.get("Neighborhood", request.getLanguage())
     makeToolLink( uri, toolURLprefix, toolname, icon, imgWidth=25 )
   }
 

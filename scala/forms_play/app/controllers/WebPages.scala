@@ -273,7 +273,7 @@ with ApplicationTrait
       return  <div>
         <a href={
           request.uri.replaceFirst("/table", "/sparql-ui")
-        }>{I18NMessages.get( "Edit SPARQL query", lang) }</a>
+        }>{I18NMessages.get( "Edit_SPARQL_query", lang) }</a>
         </div> ++
         <form> {
             <input name="query" type="hidden" value={ query }></input> ++

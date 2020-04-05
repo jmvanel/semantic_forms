@@ -78,10 +78,11 @@ with StringHelpers
               type_.map { t => t.toString() },
               request.getLanguage()) ++
             makeClassTableButton(resourceEntry) ++
-            makeNeighborhoodLink(objectURIstringValue) ++
             hyperlinkForEditingURIinsideForm(objectURIstringValue, request.getLanguage()),
           resourceEntry.value.toString()
-      )
+      ) ++
+      makeNeighborhoodLink(objectURIstringValue, request)
+
       else if( details.contains("images") )
         hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue,
           resourceEntry) ++
@@ -117,7 +118,7 @@ with StringHelpers
         makeDrawGraphLinkSpoggy(uri) ++
         makeDrawGraphLinkLodLive(uri) ++
         makeClassTableButton(resourceEntry) ++
-        makeNeighborhoodLink(uri),
+        makeNeighborhoodLink(uri, request),
       uri)
     } else NodeSeq.Empty )
   }
