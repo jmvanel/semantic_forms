@@ -34,7 +34,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
     formSpecURI0: String = "" , request: HTTPrequest )
   	  (implicit graph: Rdf#Graph) : FormSyntax = {
 
-    wrapInTransaction {
+    val formFromClass = wrapInTransaction {
     // if classs argument is not an owl:Class, check if it is a form:specification, then use it as formSpecURI
     val checkIsOWLClass = find( graph, classe, rdf.typ, owl.Class)
     val checkIsRDFSClass = find( graph, classe, rdf.typ, rdfs.Class)
@@ -61,8 +61,12 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
       implicit val lang = request.getLanguage()
       createFormDetailed(makeUri(newId),
         classFromSpecsOrGiven,
-        CreationMode, nullURI, URI(formSpecURI0) )
+        CreationMode, nullURI, URI(formSpecURI0), request )
   } . getOrElse( FormSyntax( nullURI, Seq() ) )
+
+//    addExtraTypesFromHTTPrequest( formFromClass, request)
+
+    formFromClass
   }
 
   // TODO put in reusable trait

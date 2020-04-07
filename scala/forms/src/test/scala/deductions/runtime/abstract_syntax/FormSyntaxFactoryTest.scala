@@ -12,6 +12,7 @@ import org.w3.banana.RDF
 import org.scalatest.BeforeAndAfterAll
 import scala.xml.Source
 import deductions.runtime.TestsBase
+import deductions.runtime.core.HTTPrequest
 
 class FormSyntaxFactoryTestJena extends FunSuite
     with RDFStoreLocalJenaProvider
@@ -118,7 +119,8 @@ with TestsBase {
 //        Seq(foaf.title,
 //          foaf.name, foaf.knows),
         URI(""),
-        EditionMode, nullURI, nullURI)
+        EditionMode, nullURI, nullURI,
+        HTTPrequest())
       form
     })
     res.get
@@ -148,7 +150,8 @@ with TestsBase {
       fact.createFormDetailed(URI("betehess"),
 //          Seq(foaf.topic_interest), 
           foaf.Person,
-        DisplayMode, nullURI, nullURI)
+        DisplayMode, nullURI, nullURI,
+        HTTPrequest())
     })
   }
 

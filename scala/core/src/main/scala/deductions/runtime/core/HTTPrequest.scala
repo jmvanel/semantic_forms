@@ -67,8 +67,13 @@ case class HTTPrequest(
   private def removeHTTPprotocolFromURI(uri:String): String =
     uri.replaceFirst("https?://", "")
 
-  def getHTTPparameterValue(param: String): Option[String] = queryString.get(param) .map(seq => seq.headOption ) . flatten
-  def setDefaultHTTPparameterValue(param: String, value: String): HTTPrequest = {
+  def getHTTPparameterValue(param: String): Option[String] =
+    queryString.get(param) .map(seq => seq.headOption ) . flatten
+
+  def getHTTPparameterValues(param: String): Seq[String] =
+    queryString.get(param).headOption.getOrElse(Seq() )
+
+    def setDefaultHTTPparameterValue(param: String, value: String): HTTPrequest = {
     getHTTPparameterValue(param) match {
       case Some(v) => this
       case None => this.copy(

@@ -5,11 +5,11 @@ $Id$
  */
 package deductions.runtime.abstract_syntax
 
-import deductions.runtime.utils.{Configuration, RDFHelpers, RDFPrefixes, Timer}
-import org.w3.banana.{PointedGraph, RDF, RDFPrefix, RDFSPrefix, XSDPrefix}
+import deductions.runtime.utils.{ Configuration, RDFHelpers, RDFPrefixes, Timer }
+import org.w3.banana.{ PointedGraph, RDF, RDFPrefix, RDFSPrefix, XSDPrefix }
 
 import scala.collection.mutable
-import scala.language.{existentials, postfixOps}
+import scala.language.{ existentials, postfixOps }
 import deductions.runtime.core._
 import scala.util.Success
 import scala.util.Failure
@@ -24,11 +24,12 @@ import scala.util.Try
 
 /** one of EditionMode, DisplayMode, CreationMode */
 abstract sealed class FormMode { val editable = true }
-object FormMode{ def apply( editable:Boolean = true) = if(editable) EditionMode else DisplayMode }
+object FormMode { def apply(editable: Boolean = true) = if (editable) EditionMode else DisplayMode }
 object EditionMode extends FormMode { override def toString() = "EditionMode" }
 object DisplayMode extends FormMode {
   override def toString() = "DisplayMode"
-  override val editable = false }
+  override val editable = false
+}
 object CreationMode extends FormMode { override def toString() = "CreationMode" }
 
 /** simple data class to hold an URI with its computed label (rdfs:label, foaf;name, etc) */
@@ -39,12 +40,16 @@ class ResourceWithLabel[Rdf <: RDF](val resource: Rdf#Node, val label: Rdf#Node)
   // def apply[Rdf <: RDF](couple: (Rdf#Node, Rdf#Node) ) = new ResourceWithLabel(couple)
 }
 
-/** store in memory the "Possible Values" for each RDF class;
+/**
+ * store in memory the "Possible Values" for each RDF class;
  * by "Possible Values" one means the objets URI's whose class match the rdfs:range
- * of a property in the form. */
+ * of a property in the form.
+ */
 trait PossibleValues[Rdf <: RDF] {
-  /** Correspondence between resource for a class and
-   *  instances of that class with their human readable label */
+  /**
+   * Correspondence between resource for a class and
+   *  instances of that class with their human readable label
+   */
   private var possibleValues = Map[Rdf#Node, Seq[ResourceWithLabel[Rdf]]]()
   /** check if possible Values in this (class) URI have already been computed */
   def isDefined(uri: Rdf#Node): Boolean = possibleValues.contains(uri)
@@ -53,21 +58,20 @@ trait PossibleValues[Rdf <: RDF] {
     possibleValues = possibleValues + (uri -> values)
     resourcesWithLabel2Tuples(values)
   }
-  def getPossibleValues( uri: Rdf#Node): Seq[ResourceWithLabel[Rdf]] = { possibleValues.getOrElse(uri, Seq()) }
+  def getPossibleValues(uri: Rdf#Node): Seq[ResourceWithLabel[Rdf]] = { possibleValues.getOrElse(uri, Seq()) }
   def getPossibleValuesAsTuple(uri: Rdf#Node): Seq[(Rdf#Node, Rdf#Node)] = {
-    resourcesWithLabel2Tuples( getPossibleValues(uri) )
+    resourcesWithLabel2Tuples(getPossibleValues(uri))
   }
-  
+
   def resourcesWithLabel2Tuples(values: Seq[ResourceWithLabel[Rdf]]) =
     values.map { r => (r.resource, r.label) }
-  
+
   def tuples2ResourcesWithLabel(tuples: Seq[(Rdf#Node, Rdf#Node)]) = {
-	  tuples.map { (couple: (Rdf#Node, Rdf#Node)) =>
-	  new ResourceWithLabel(couple._1, couple._2)
-	  }
+    tuples.map { (couple: (Rdf#Node, Rdf#Node)) =>
+      new ResourceWithLabel(couple._1, couple._2)
+    }
   }
 }
-
 
 /**
  * Factory for an abstract Form Syntax;
@@ -75,34 +79,34 @@ trait PossibleValues[Rdf <: RDF] {
  * NON transactional
  */
 trait FormSyntaxFactory[Rdf <: RDF, DATASET]
-    extends FormModule[Rdf#Node, Rdf#URI]
-    with RDFHelpers[Rdf]
-    with FieldsInference[Rdf, DATASET]
-    with RangeInference[Rdf, DATASET]
-    with PreferredLanguageLiteral[Rdf]
-    with PossibleValues[Rdf]
-   	with FormSpecificationFactory[Rdf, DATASET]
-   	with ComputePropertiesList[Rdf, DATASET]
-    with FormConfigurationReverseProperties[Rdf, DATASET]
-    with RDFListInference[Rdf, DATASET]
-    with ThumbnailInference[Rdf, DATASET]
-    with FormSyntaxFromSPARQL[Rdf, DATASET]
-    with RDFPrefixes[Rdf]
-    with UniqueFieldID[Rdf]
-    //with UserTraceability[Rdf, DATASET]
-    with OWLsameAsFormProcessing[Rdf, DATASET]
-    with Timer
-    with FormGroups[Rdf, DATASET] {
+  extends FormModule[Rdf#Node, Rdf#URI]
+  with RDFHelpers[Rdf]
+  with FieldsInference[Rdf, DATASET]
+  with RangeInference[Rdf, DATASET]
+  with PreferredLanguageLiteral[Rdf]
+  with PossibleValues[Rdf]
+  with FormSpecificationFactory[Rdf, DATASET]
+  with ComputePropertiesList[Rdf, DATASET]
+  with FormConfigurationReverseProperties[Rdf, DATASET]
+  with RDFListInference[Rdf, DATASET]
+  with ThumbnailInference[Rdf, DATASET]
+  with FormSyntaxFromSPARQL[Rdf, DATASET]
+  with RDFPrefixes[Rdf]
+  with UniqueFieldID[Rdf]
+  //with UserTraceability[Rdf, DATASET]
+  with OWLsameAsFormProcessing[Rdf, DATASET]
+  with Timer
+  with FormGroups[Rdf, DATASET] {
 
   val config: Configuration
   import config._
-  
+
   val defaults: FormDefaults = FormModule.formDefaults
-  
+
   import ops._
-//  object NullRawDataForForm extends RawDataForForm[Rdf#Node, Rdf#URI](Seq(), nullURI, nullURI )
+  //  object NullRawDataForForm extends RawDataForForm[Rdf#Node, Rdf#URI](Seq(), nullURI, nullURI )
   //val NullRawDataForForm = RawDataForForm[Rdf#Node, Rdf#URI](Seq(), nullURI, nullURI )
-  val NullFormSyntax = FormSyntax(nullURI,Seq(),Seq())
+  val NullFormSyntax = FormSyntax(nullURI, Seq(), Seq())
 
   val literalInitialValue = ""
   private val rdf_type = RDFPrefix[Rdf].typ
@@ -111,21 +115,21 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     fromUri(_), fromBNode(_), fromLiteral(_)._1))
 
   override lazy val rdf = RDFPrefix[Rdf]
-  
-  
-  /** create Form abstract syntax from an instance (subject) URI;
+
+  /**
+   * create Form abstract syntax from an instance (subject) URI;
    *  the Form Specification is inferred from the class of instance;
-   *  NO transaction, should be called within a transaction */
-  private def createForm(subject: Rdf#Node,
-    editable: Boolean = false,
-    formGroup: Rdf#URI = nullURI, formuri: String="")
-    (implicit graph: Rdf#Graph, lang: String="en" )
-  : FormSyntax = {
+   *  NO transaction, should be called within a transaction
+   */
+  private def createForm(
+    subject:   Rdf#Node,
+    editable:  Boolean  = false,
+    formGroup: Rdf#URI  = nullURI, formuri: String = "")(implicit graph: Rdf#Graph, lang: String = "en"): FormSyntax = {
 
     val step1 = computePropertiesList(subject, editable, formuri)
     val step2 = addOWLsameAs(step1)
-    // TODO val step3 = addOWLinverseOf(step2)   
-    createFormDetailed2( step2, formGroup )
+    // TODO val step3 = addOWLinverseOf(step2)
+    createFormDetailed2(step2, formGroup)
   }
 
   /**
@@ -134,28 +138,33 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    *  with transaction, should NOT be called within a transaction;
    *  @param formGroup used only in corporateRisk @return FormSyntax TODO return Try[FormSyntax]
    */
-  def createFormTR(subject: Rdf#Node,
-                   editable: Boolean = false,
-                   formGroup: Rdf#URI = nullURI, formuri: String = "")(implicit graph: Rdf#Graph, lang: String = "en"): FormSyntax = {
+  def createFormTR(
+    subject:   Rdf#Node,
+    editable:  Boolean  = false,
+    formGroup: Rdf#URI  = nullURI, formuri: String = "")(implicit graph: Rdf#Graph, lang: String = "en"): FormSyntax = {
 
     val tryFormSyntax = for ( // TODO rw is just for possibly recomputing labels; should be separated and possibly done in a Future
-      step1 <- rdfStore.rw(dataset,
+      step1 <- rdfStore.rw(
+        dataset,
         {
-        val tr = Try(
+          val tr = Try(
             computePropertiesList(subject, editable, formuri))
-        tr match {
-          case Success(step) => step
-          case Failure(f) =>
-            logger.error(s"ERROR in computePropertiesList: $f")
-            throw f
+          tr match {
+            case Success(step) => step
+            case Failure(f) =>
+              logger.error(s"ERROR in computePropertiesList: $f")
+              throw f
             // FormSyntax()
-          }});
-      step2 <- rdfStore.r(dataset,
+          }
+        });
+      step2 <- rdfStore.r(
+        dataset,
         { addOWLsameAs(step1) })
     // TODO val step3 = addOWLinverseOf(step2)
     ) yield {
-      rdfStore.rw(dataset,
-        { Try {createFormDetailed2(step2, formGroup) }})
+      rdfStore.rw(
+        dataset,
+        { Try { createFormDetailed2(step2, formGroup) } })
     }
     tryFormSyntax.flatten.flatten match {
       case Success(fs) =>
@@ -167,7 +176,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     }
   }
 
-  private [abstract_syntax] def addRDFSLabelComment(propertiesList: Seq[Rdf#Node]): Seq[Rdf#Node] = {
+  private[abstract_syntax] def addRDFSLabelComment(propertiesList: Seq[Rdf#Node]): Seq[Rdf#Node] = {
     if (addRDFS_label_comment &&
       !propertiesList.contains(rdfs.label)) {
       Seq(rdfs.label, rdfs.comment) ++ propertiesList
@@ -179,72 +188,69 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    * For each given property (props)
    *  look at its rdfs:range ?D
    *  see if ?D is a datatype or an OWL or RDFS class;
-   * 
-   * TODO : add lang argument
    *
    * used directly for creating an empty Form from a class URI,
    * and indirectly for other cases;
    * NO transaction, should be called within a transaction
    */
-  def createFormDetailed(subject: Rdf#Node,
-    classs: Rdf#URI,
-    formMode: FormMode,
-    formGroup: Rdf#URI = nullURI,
-    formConfig: Rdf#Node
-//    = URI("")
-    )
-    (implicit graph: Rdf#Graph, lang:String) : FormSyntax = {
+  def createFormDetailed(
+    subject:    Rdf#Node,
+    classs:     Rdf#URI,
+    formMode:   FormMode,
+    formGroup:  Rdf#URI     = nullURI,
+    formConfig: Rdf#Node,
+    request:    HTTPrequest)(implicit graph: Rdf#Graph, lang: String): FormSyntax = {
 
-		val step1 = computePropertiesList(subject, formMode.editable, fromUri(uriNodeToURI(formConfig)), classs )
-    createFormDetailed2( step1, formGroup )
+    val step1 = computePropertiesList(subject, formMode.editable, fromUri(uriNodeToURI(formConfig)), classs)
+
+    val step2 = createFormDetailed2(step1, formGroup)
+    addExtraTypesFromHTTPrequest(step2, request)
   }
-  
-  /** */
+
+  /** create Form step 2: from Properties List, actually populate the form structure
+   *  see makeEntriesFromFormSyntax() */
   private def createFormDetailed2(
-		  step1: FormSyntax,
-		  formGroup: Rdf#URI = nullURI)
-    (implicit graph: Rdf#Graph,  lang: String="")
-  : FormSyntax = {
+    step1:     FormSyntax,
+    formGroup: Rdf#URI    = nullURI)(implicit graph: Rdf#Graph, lang: String = ""): FormSyntax = {
 
     val formConfig = step1.formURI
     logger.info(
-    s">>>> createFormDetailed2 fields size ${step1.fields.size}, formConfig <$formConfig> , lang $lang")
-    
+      s">>>> createFormDetailed2 fields size ${step1.fields.size}, formConfig <$formConfig> , lang $lang")
+
     // TODO make it functional #170
     // http://sujitpal.blogspot.fr/2013/06/functional-chain-of-responsibility.html
     // https://www.scala-lang.org/blog/2016/12/07/implicit-function-types.html
     val valuesFromFormGroup = possibleValuesFromFormGroup(formGroup: Rdf#URI, graph)
-
 
     //// compute Form Syntax ////
 
     // TODO make it functional #170
     val fieldsCompleteList: Seq[Entry] = makeEntriesFromFormSyntax(step1)
     logger.debug(
-        s"==== createFormDetailed2: fieldsCompleteList ${fieldsCompleteList.map{ f => f.toString().substring(0, 80)}}")
+      s"==== createFormDetailed2: fieldsCompleteList ${fieldsCompleteList.map { f => f.toString().substring(0, 80) }}")
     val subject = step1.subject
     val classs = step1.classs
 
-
     val formSyntax0 = FormSyntax(
-        subject,
-        fieldsCompleteList, // ++ step1.fields,
-//        Seq(),
-        classs,
-        thumbnail = getURIimage(subject),
-        title = makeInstanceLabel( subject, allNamedGraph, lang ),
-        formURI = step1.formURI,
-        formLabel= step1.formURI match {
-          case None => ""
-          case Some(uri) => makeInstanceLabel( uri, allNamedGraph, lang )
-        } )
+      subject,
+      fieldsCompleteList, // ++ step1.fields,
+      //        Seq(),
+      classs,
+      thumbnail = getURIimage(subject),
+      title = makeInstanceLabel(subject, allNamedGraph, lang),
+      formURI = step1.formURI,
+      formLabel = step1.formURI match {
+        case None      => ""
+        case Some(uri) => makeInstanceLabel(uri, allNamedGraph, lang)
+      })
 
     val formSyntax = expandPropertiesGroups(graph, lang)(formSyntax0)
 
-//    check(formSyntax.fields, "formSyntax")
+    //    check(formSyntax.fields, "formSyntax")
 
     // TODO make it functional #170
-    if( step1.editable && downloadPossibleValues )
+    logger.debug(s"createFormDetailed2: step1.editable=${step1.editable}, && downloadPossibleValues=$downloadPossibleValues")
+    if (step1.editable && downloadPossibleValues)
       addAllPossibleValues(formSyntax, valuesFromFormGroup)
     logger.debug(s"createFormDetailed2: createForm " + this)
 
@@ -252,44 +258,44 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val res = time(
       s"createFormDetailed2: updateFormFromConfig(formConfig=$formConfig)",
       updateFormFromConfig(formSyntax, formConfig),
-      logger.isDebugEnabled() )
+      logger.isDebugEnabled())
     logger.debug(s"createFormDetailed2: createForm 2 " + this)
-//        check(formSyntax.fields, "res")
+    //        check(formSyntax.fields, "res")
     res
   }
 
   /** the heart of the algo: create the form entries from properties List */
-  protected def makeEntriesFromFormSyntax(step1: FormSyntax)
-  (implicit graph: Rdf#Graph,  lang: String="")
-  : Seq[Entry] = {
-      val subject = step1.subject
-      val props = step1.propertiesList
-      val classses = step1.classs
-      val formMode: FormMode = if (step1.editable) EditionMode else DisplayMode
+  protected def makeEntriesFromFormSyntax(step1: FormSyntax)(implicit graph: Rdf#Graph, lang: String = ""): Seq[Entry] = {
+    val subject = step1.subject
+    val props = step1.propertiesList
+    val classses = step1.classs
+    val formMode: FormMode = if (step1.editable) EditionMode else DisplayMode
 
-//      logger.info( s"""==== makeEntriesFromFormSyntax: step1 $step1
-//          entriesList ${step1.entriesList.mkString("\n")}
-//      """)
+    //      logger.info( s"""==== makeEntriesFromFormSyntax: step1 $step1
+    //          entriesList ${step1.entriesList.mkString("\n")}
+    //      """)
 
-      logger.debug(
-          s"makeEntriesFromformSyntax subject <$subject>, classs <$classses>, props $props")
+    logger.debug(
+      s"makeEntriesFromformSyntax subject <$subject>, classs <$classses>, props $props")
 
-      val entries = for (
-        prop <- props if prop != displayLabelPred
-      ) yield {
-        logger.debug(s"makeEntriesFromformSyntax subject $subject, prop $prop")
-          time(s"makeEntriesForSubject(${prop})",
-          makeEntriesForSubject(subject, prop, formMode))
-      }
-      val fields = entries.flatten
-//    	logger.info( s"""==== makeEntriesFromFormSyntax: fields $fields""" )
-
-      val fields2 = addTypeTriples(subject, classses, fields)
-      addInverseTriples(fields2, step1)
+    val entries = for (
+      prop <- props if prop != displayLabelPred
+    ) yield {
+      logger.debug(s"makeEntriesFromformSyntax subject $subject, prop $prop")
+      time(
+        s"makeEntriesForSubject(${prop})",
+        makeEntriesForSubject(subject, prop, formMode))
     }
+    val fields = entries.flatten
+    //    	logger.info( s"""==== makeEntriesFromFormSyntax: fields $fields""" )
 
-  protected def addInverseTriples(fields2: Seq[Entry],
-      step1: FormSyntax): Seq[Entry]
+    val fields2 = addTypeTriples(subject, classses, fields)
+    addInverseTriples(fields2, step1)
+  }
+
+  protected def addInverseTriples(
+    fields2: Seq[Entry],
+    step1:   FormSyntax): Seq[Entry]
 
   /**
    * update given Form,
@@ -306,21 +312,22 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         logger.debug(s">>>> updateFormFromConfig: updateOneFormFromConfig(formSyntax, formConfig =<$formConfig>)")
         updateOneFormFromConfig(formSyntax, formConfig)
         logger.debug(s">>>> updateFormFromConfig: shallow recursion:")
-        for ( fs <- formSyntax.propertiesGroups ) updateOneFormFromConfig(fs, formConfig)
+        for (fs <- formSyntax.propertiesGroups) updateOneFormFromConfig(fs, formConfig)
     }
     formSyntax
   }
 
-  /** non recursive update of given `formSyntax` from given `formSpecif`;
+  /**
+   * non recursive update of given `formSyntax` from given `formSpecif`;
    * see form_specs/foaf.form.ttl for an example of form specification
    * NOTE: formSyntax.formURI.get == formSpecif
-   * 
-   * TODO rename updateOneFormFromSpecif */
-  private def updateOneFormFromConfig(formSyntax: FormSyntax, formSpecif: Rdf#Node)(implicit graph: Rdf#Graph)
-  : Unit // TODO #170 FormSyntax
+   *
+   * TODO rename updateOneFormFromSpecif
+   */
+  private def updateOneFormFromConfig(formSyntax: FormSyntax, formSpecif: Rdf#Node)(implicit graph: Rdf#Graph): Unit // TODO #170 FormSyntax
   = {
 
-	  // TODO try the Object - semantic mapping of Banana-RDF
+    // TODO try the Object - semantic mapping of Banana-RDF
     val uriToCardinalities = Map[Rdf#Node, Cardinality] {
       formPrefix("zeroOrMore") -> zeroOrMore;
       formPrefix("oneOrMore") -> oneOrMore;
@@ -334,8 +341,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       if (!fieldSpecs.isEmpty)
         fieldSpecs.map {
           fieldSpec =>
-            logger.debug( s"""\tupdateOneFormFromConfig: fieldSpec <$fieldSpec> ,
-              subject <${fieldSpec.subject}>""" )
+            logger.debug(s"""\tupdateOneFormFromConfig: fieldSpec <$fieldSpec> ,
+              subject <${fieldSpec.subject}>""")
             val specTriples = find(graph, fieldSpec.subject, ANY, ANY).toSeq
             for (t <- specTriples)
               field.addTriple(t.subject, t.predicate, t.objectt)
@@ -349,9 +356,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
               //// DBPedia Lookup ////
 
-              logger.debug( s">>>> updateOneFormFromConfig specTriple $specTriple" )
-              if ( specTriple.predicate == formPrefix("widgetClass") &&
-                   specTriple.objectt   == formPrefix("DBPediaLookup")) {
+              logger.debug(s">>>> updateOneFormFromConfig specTriple $specTriple")
+              if (specTriple.predicate == formPrefix("widgetClass") &&
+                specTriple.objectt == formPrefix("DBPediaLookup")) {
                 formSyntax.formURI.get == formSpecif
                 val field2 = field.copyEntry(widgetType = DBPediaLookup)
                 formSyntax.fields = replace(formSyntax.fields, field, field2)
@@ -361,7 +368,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
               //// cardinality ////
 
               if (specTriple.predicate == formPrefix("cardinality")) {
-            	  /* Decode such RDF:
+                /* Decode such RDF:
             	  forms:givenName--personPerson
 	            	  :fieldAppliesToForm forms:personForm ;
 	            	  :fieldAppliesToProperty foaf:givenName ;
@@ -376,7 +383,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
                   formPointedGraph <- (formSpecGraph / formPrefix("fieldAppliesToForm")).takeOnePointedGraph;
                   formmmm = formPointedGraph.pointer
                 ) {
-                  val field2 = field.copyEntry(cardinality = cardinality)                 
+                  val field2 = field.copyEntry(cardinality = cardinality)
                   formSyntax.fields = replace(formSyntax.fields, field, field2)
                   logger.debug(s"updateOneFormFromConfig: cardinality: prop $prop: $cardinality, $field -> $field2")
                 }
@@ -419,71 +426,70 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       && !(subject == nullURI)) {
       val classFormEntry =
         for (classs <- classses) yield {
+          // println(s"addTypeTriples: classs <$classs>")
           new ResourceEntry(
             "type", "class", // TODO not I18N
             rdf.typ, ResourceValidator(Set(owl.Class)), classs,
             alreadyInDatabase = alreadyInDatabase,
             htmlName = makeHTMLName(makeTriple(subject, rdf.typ, nullURI)),
-            type_ = Seq(rdfs.Class) )
+            type_ = Seq(rdfs.Class))
         }
       (fields ++ classFormEntry).toSeq
     } else fields.toSeq
   }
 
-  /** make form Entries (possibly several lines in form) for given subject and property,
-   * thus taking in account multi-valued properties;
+  /**
+   * make form Entries (possibly several lines in form) for given subject and property,
+   * querying object in database,
+   * taking in account multi-valued properties;
    * try to get rdfs:label, comment, rdf:type,
    * or else display terminal Part of URI as label;
    */
   private def makeEntriesForSubject(
-      subject: Rdf#Node, prop: Rdf#Node,
-      formMode: FormMode
-      )
-	  (implicit graph: Rdf#Graph, lang:String)
-  : Seq[Entry] = {
+    subject: Rdf#Node, prop: Rdf#Node,
+    formMode: FormMode)(implicit graph: Rdf#Graph, lang: String): Seq[Entry] = {
     try {
-    logger.debug( s"makeEntriesForSubject subject <$subject>, prop <$prop> lang $lang")
+      // logger.debug
+      // println(s"makeEntriesForSubject subject <$subject>, prop <$prop> lang $lang")
 
-    val objects = objectsQuery(subject, uriNodeToURI(prop) ); logger.debug(s"makeEntriesForSubject subject <$subject>, objects: $objects")
-    val result = mutable.ArrayBuffer[Entry]()
-    for (obj <- objects)
-      result += makeEntryFromTriple(subject, prop, obj, formMode)
+      val objects = objectsQuery(subject, uriNodeToURI(prop)); logger.debug(s"makeEntriesForSubject subject <$subject>, objects: $objects")
+      val result = mutable.ArrayBuffer[Entry]()
+      for (obj <- objects)
+        result += makeEntryFromTriple(subject, prop, obj, formMode)
 
-    if (objects isEmpty) result += makeEntryFromTriple(subject, prop, nullURI, formMode)
+      if (objects isEmpty) result += makeEntryFromTriple(subject, prop, nullURI, formMode)
 
-    logger.debug("result: Entry's " + result)
-    result
-    }
-    catch {
+      logger.debug("result: Entry's " + result)
+      result
+    } catch {
       case t: Exception =>
         val message = s"ERROR in makeEntriesForSubject: subject <$subject>, prop <$prop> , ${t.getLocalizedMessage}"
-        logger.error( s"$message - ${Thread.currentThread().getStackTrace().slice(0, 5).mkString("\n")}" )
+        logger.error(s"$message - ${Thread.currentThread().getStackTrace().slice(0, 5).mkString("\n")}")
         t.printStackTrace()
-        Seq( LiteralEntry(
-            property=prop,
-            value=ops.Literal(message)) )
+        Seq(LiteralEntry(
+          property = prop,
+          value = ops.Literal(message)))
     }
   }
 
   /** make Entry (a single line in form) From Triple */
   protected def makeEntryFromTriple(
-    subject: Rdf#Node,
-    prop: Rdf#Node,
-    objet0: Rdf#Node,
-    formMode: FormMode
-    )(implicit graph: Rdf#Graph, lang:String): Entry = {
+    subject:  Rdf#Node,
+    prop:     Rdf#Node,
+    objet0:   Rdf#Node,
+    formMode: FormMode)(implicit graph: Rdf#Graph, lang: String): Entry = {
 
     val xsdPrefix = XSDPrefix[Rdf].prefixIri
     val rdfs = RDFSPrefix[Rdf]
 
     val precomputProp = PrecomputationsFromProperty(prop)
-    import precomputProp.{prop => _, _}
-    
+    import precomputProp.{ prop => _, _ }
+
     val rdfListEntry = makeRDFListEntry(label, comment, prop, objet0, subject = subject)
 
     val nullLiteral = Literal("")
     val nullBNode = BNode("")
-    val chooseRDFNodeType: Rdf#Node ={
+    val chooseRDFNodeType: Rdf#Node = {
 
       /* in general, priority is given to actual data over vocabularies,
        * with some exception(s?): literal value and ObjectProperty if display mode;
@@ -505,7 +511,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         case _ if rangeClasses.contains(owl.Class) => nullURI
         case _ if rangeClasses.contains(rdf.Property) => nullURI
         case _ if ranges.contains(owl.Thing) => nullURI
-        case _ if rangesSchemaOrg.exists{ r => getClasses(r) . contains(schema("DataType")) } => nullLiteral
+        case _ if rangesSchemaOrg.exists { r => getClasses(r).contains(schema("DataType")) } => nullLiteral
 
         case _ if isURI(objet0) => nullURI
         case _ if isBN(objet0) => nullBNode
@@ -513,22 +519,22 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
         case _ => nullURI
       }
-  }
+    }
 
     val objet =
       if (objet0 == nullURI)
         chooseRDFNodeType
       else
         objet0
-    
-    def htmlName: String = makeHTMLName( makeTriple(subject, uriNodeToURI(prop), objet) )
+
+    def htmlName: String = makeHTMLName(makeTriple(subject, uriNodeToURI(prop), objet))
 
     def firstType = firstNodeOrElseNullURI(precomputProp.ranges)
     def typesFromRanges: Seq[Rdf#Node] = {
       val filteredNonMeanningfulTypes = ranges.toSeq.
         filter { typ =>
           typ != rdfs("Literal") &&
-          typ != xsd("string")
+            typ != xsd("string")
         }
       val ret = filteredNonMeanningfulTypes ++
         rangesSchemaOrg.toSeq
@@ -543,14 +549,14 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       // case t if t == ("http://www.bizinnov.com/ontologies/quest.owl.ttl#interval-1-5") =>
       val literalEntry =
         LiteralEntry(label, comment, prop, DatatypeValidator(ranges),
-        value,
-        subject = subject,
-        subjectLabel = makeInstanceLabel(subject, graph, lang),
-        type_ = typesFromRanges, //  firstType,
-        lang = getLang(objet).toString(),
-        valueLabel = nodeToString(value),
-        htmlName = htmlName,
-        widgetType = widgetType)
+          value,
+          subject = subject,
+          subjectLabel = makeInstanceLabel(subject, graph, lang),
+          type_ = typesFromRanges, //  firstType,
+          lang = getLang(objet).toString(),
+          valueLabel = nodeToString(value),
+          htmlName = htmlName,
+          widgetType = widgetType)
       // logger.info(s">>>> literalEntry valueLabel ${literalEntry.valueLabel} - $res")
       literalEntry
     }
@@ -572,63 +578,63 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         htmlName = htmlName)
     }
     /* UNUSED */
-    def entryFromObject = {
-      if (showRDFtype || prop != rdf.typ) {
-        val res = time(s"""resourceEntry objet "$objet" """,
-          foldNode(objet)(
-            objet => resourceEntry,
-            objet => makeBN(label, comment, prop, ResourceValidator(ranges), objet,
-              typ = firstType),
-            _ => literalEntry))
-        res
-      } else NullResourceEntry
-    }
+//    def entryFromObject = {
+//      if (showRDFtype || prop != rdf.typ) {
+//        val res = time(
+//          s"""resourceEntry objet "$objet" """,
+//          foldNode(objet)(
+//            objet => resourceEntry,
+//            objet => makeBN(label, comment, prop, ResourceValidator(ranges), objet,
+//              typ = firstType),
+//            _ => literalEntry))
+//        res
+//      } else NullResourceEntry
+//    }
 
     def makeBN(label: String, comment: String,
                property: ObjectProperty, validator: ResourceValidator,
                value: Rdf#BNode,
-               typ: Rdf#Node = nullURI) = {
+               typ:   Rdf#Node  = nullURI) = {
       new BlankNodeEntry(label, comment, property, validator, value,
-    		subject=subject,
-    		subjectLabel = makeInstanceLabel(subject, graph, lang),
+        subject = subject,
+        subjectLabel = makeInstanceLabel(subject, graph, lang),
         type_ = Seq(typ), valueLabel = makeInstanceLabel(value, graph, lang),
-        htmlName=htmlName) {
+        htmlName = htmlName) {
         override def getId: String = nodeToString(value)
       }
     }
 
     logger.debug(
-       s">>>> makeEntryFromTriple <$prop>, chooseRDFNodeType '$chooseRDFNodeType' is nullURI: ${chooseRDFNodeType == nullURI}")
+      s">>>> makeEntryFromTriple <$prop>, chooseRDFNodeType '$chooseRDFNodeType' is nullURI: ${chooseRDFNodeType == nullURI}")
     chooseRDFNodeType match {
       case `nullURI` =>
         val re = resourceEntry
-//        logger.info(s">>>> makeEntryFromTriple resourceEntry $re")
+        //        logger.info(s">>>> makeEntryFromTriple resourceEntry $re")
         re
       case `nullLiteral` => literalEntry
-      case `nullBNode` => resourceEntry // ??????????????? rather makeBN() ???
-      case rdf.List => rdfListEntry.get
-      case _       => literalEntry
+      case `nullBNode`   => resourceEntry // ??????????????? rather makeBN() ???
+      case rdf.List      => rdfListEntry.get
+      case _             => literalEntry
     }
     // end of makeEntryFromTriple()
   }
 
   /** make Widget Type From Triple, for literal triple */
   private def makeWidgetTypeFromTriple(
-    subject: Rdf#Node,
-    prop: Rdf#Node,
-    objet0: Rdf#Node,
-    formMode: FormMode
-    )(implicit graph: Rdf#Graph, lang:String): WidgetType = {
-    val isShortString = ! find( graph, prop, form("shortString"),
-        Literal("true", xsd.boolean)) . isEmpty
-    val res = if( isShortString )
+    subject:  Rdf#Node,
+    prop:     Rdf#Node,
+    objet0:   Rdf#Node,
+    formMode: FormMode)(implicit graph: Rdf#Graph, lang: String): WidgetType = {
+    val isShortString = !find(graph, prop, form("shortString"),
+      Literal("true", xsd.boolean)).isEmpty
+    val res = if (isShortString)
       ShortString
     else Textarea
-//    logger.info(s"==== makeWidgetTypeFromTriple: $prop -> $res")
+    //    logger.info(s"==== makeWidgetTypeFromTriple: $prop -> $res")
     res
   }
 
-  private case class PrecomputationsFromProperty(prop: Rdf#Node)(implicit graph: Rdf#Graph, lang:String) {
+  private case class PrecomputationsFromProperty(prop: Rdf#Node)(implicit graph: Rdf#Graph, lang: String) {
     val label: String = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.label, terminalPart(prop))
     val comment: String = getLiteralInPreferedLanguageFromSubjectAndPredicate(prop, rdfs.comment, "")
     val propClasses: Set[Rdf#Node] = objectsQuery(prop, rdf_type)
@@ -637,46 +643,44 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val rangesSchemaOrg = getSchemaOrgRanges(prop)
   }
 
-
-  def fixValues(formSyntax : FormSyntax, request: HTTPrequest): FormSyntax = {
-   val entries =
+  def fixValues(formSyntax: FormSyntax, request: HTTPrequest): FormSyntax = {
+    val entries =
       for (field: Entry <- formSyntax.fields) yield {
         parseValue(field, request)
       }
-    formSyntax . fields = entries
+    formSyntax.fields = entries
     formSyntax
-    }
+  }
 
   /** try to fix values (use case: after loading tabular data): parse Value in case of xsd:date */
   private def parseValue(entry: Entry, request: HTTPrequest): Entry =
     entry match {
-      case literalEntry : LiteralEntry =>
+      case literalEntry: LiteralEntry =>
         val originalValue = literalEntry.value
         val originalValueToString = nodeToString(originalValue)
         literalEntry.copy(
           value =
-        if (literalEntry.type_.contains(xsd("date"))) {
-          // Succeeds with "D 28 avril 2019"
-          // Fails with "D 21 avril Pâques 2019"
-            originalValueToString
-            .replaceFirst("^(\\p{Alpha}+ *)?", "")
-            .replaceFirst("(\\d\\d\\d\\d) .*", "$1")
-          logger.debug(s"==== parseValue s '$originalValueToString'")
-          val lit = Literal(
-            normalizeDate(originalValueToString, new Locale(request.getLanguage())).getOrElse(originalValueToString) ,
-            xsd("date"))
-          logger.debug(s">>>> parseValue lit $lit")
-          lit
-        } else if (literalEntry.type_.contains(xsd("time"))) {
-          Literal(originalValueToString.replaceFirst(" *h *", ":"), xsd("time"))
-        } else {
-          logger.debug(s">>>> parseValue literalEntry.type_ <${literalEntry.type_}>")
-          logger.debug(s">>>> parseValue value")
-          originalValue
-        })
-        case _ => entry
-  }
-
+            if (literalEntry.type_.contains(xsd("date"))) {
+              // Succeeds with "D 28 avril 2019"
+              // Fails with "D 21 avril Pâques 2019"
+              originalValueToString
+                .replaceFirst("^(\\p{Alpha}+ *)?", "")
+                .replaceFirst("(\\d\\d\\d\\d) .*", "$1")
+              logger.debug(s"==== parseValue s '$originalValueToString'")
+              val lit = Literal(
+                normalizeDate(originalValueToString, new Locale(request.getLanguage())).getOrElse(originalValueToString),
+                xsd("date"))
+              logger.debug(s">>>> parseValue lit $lit")
+              lit
+            } else if (literalEntry.type_.contains(xsd("time"))) {
+              Literal(originalValueToString.replaceFirst(" *h *", ":"), xsd("time"))
+            } else {
+              logger.debug(s">>>> parseValue literalEntry.type_ <${literalEntry.type_}>")
+              logger.debug(s">>>> parseValue value")
+              originalValue
+            })
+      case _ => entry
+    }
 
   /** inpired by https://medium.com/@hussachai/normalizing-a-date-string-in-the-scala-way-f37a2bdcc4b9 */
   private val dateFormats = List(
@@ -685,8 +689,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     "d MMMM yyyy",
     "dd MMM yyyy",
     "dd-MM-yyyy",
-    "yyyy-MM-dd"
-    ).map(p => (p, DateTimeFormatter.ofPattern(p)))
+    "yyyy-MM-dd").map(p => (p, DateTimeFormatter.ofPattern(p)))
   private val iso8601DateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
 
   def normalizeDate(dateStr: String, locale: Locale): Option[String] = {
@@ -702,5 +705,29 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         iso8601DateFormatter.format(t.get)
       }
     }
+  }
+
+  /** Add extra type(s) from HTTP request /create?uri=
+   *  TESTED with http://localhost:9000/create?uri=bioc%3APlanting&uri=seeds%3APlantOffering&prefill=no
+   *  ( create a form with fields from class bioc:Planting and additional class seeds:PlantOffering )*/
+  def addExtraTypesFromHTTPrequest(
+    formFromClass: FormSyntax,
+    request:       HTTPrequest): FormSyntax = {
+    println(s"addExtraTypesFromHTTPrequest: formFromClass.classs ${formFromClass.classs}")
+    val extraFields: Seq[ResourceEntry] = for (
+      classURIexpanded <- request.getHTTPparameterValues("uri")
+        . map { u => expandOrUnchanged(u) }
+        . filter(u => u != "")
+        . filter(u => ! formFromClass.classs. contains( URI(u)))
+    ) yield {
+      ResourceEntry(
+      subject = formFromClass.subject, property = rdf.typ, value = URI(classURIexpanded),
+      type_ = Seq(owl.Class),
+      htmlName = makeHTMLName(makeTriple(formFromClass.subject, rdf.typ, URI(classURIexpanded))))
+    }
+//    println(s"addExtraTypesFromHTTPrequest: ${extraFields.mkString("\n")}")
+
+    formFromClass.fields = formFromClass.fields ++ extraFields
+    formFromClass
   }
 }

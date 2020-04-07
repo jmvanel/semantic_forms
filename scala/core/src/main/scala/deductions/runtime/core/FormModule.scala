@@ -343,7 +343,7 @@ trait FormModule[NODE, URI <: NODE] {
 
     extends Entry {
     override def toString(): String = {
-      "BN: " + super.toString + s", $value , possibleValues count:${possibleValues.size}"
+      "BN: " + super.toString + s", <$value> , possibleValues count:${possibleValues.size}"
     }
     def getId: String = value.toString
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = {
