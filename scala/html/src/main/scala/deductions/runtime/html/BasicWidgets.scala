@@ -59,7 +59,7 @@ don't mix them */
     val tit = if (title === "")
       I18NMessages.get("Reverse-links-reaching", request.getLanguage()) +
         s"<$uri>;" else title
-      <a href={s"/backlinks?q=$uri"}
+      <a href={s"/backlinks?q=${URLEncoder.encode(uri, "utf-8")}"}
         class="sf-button"
         title={ tit }
         data-value={s"$uri"}
