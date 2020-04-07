@@ -183,17 +183,17 @@ don't mix them */
          { messRequest("limit") } {limitInt(request)},
          { messRequest("pattern") } "{paramAsString("pattern", request)}" </p>
       { makeSubformForOffsetLimit(request) }
-      <input value="submit" type="submit"
+      <input value={ messRequest("continuation") } type="submit"
              formaction={ formaction.getOrElse(s"$requestPath") } />
   </form>
   }
 
   /** show Sub-form For Continuation: offset, limit, pattern */
-  private def makeSubformForOffsetLimit( request: HTTPrequest ): NodeSeq = {
+  private def makeSubformForOffsetLimit( implicit request: HTTPrequest ): NodeSeq = {
     def simpleFormField(label: String, default: String = "", increment: Int=0) = {
       val value = inputFromRequestWihIncrement( label, request, default, increment)
 //    logger.debug(s"==== makeSubformForOffsetLimit: label $label, request, default $default, increment $increment ==> 'value'")
-      <label for={label}>{label}</label>
+      <label for={label}>&nbsp;{ messRequest(label) }&nbsp;</label>
       <input name={label} value={value}></input>
     }
 
