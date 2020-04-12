@@ -88,7 +88,7 @@ trait EnterButtons {
   }
 
   /** Used in main page */
-  def enterClassForCreatingInstance()(implicit lang: String = "en") =
+  def enterClassForCreatingInstance()(implicit lang: String = "en"): NodeSeq =
 
     <div class="row sf-margin-top-10">
       <div class="col-xs-12 col-sm-12 col-md-12 col-md-offset-1">
@@ -105,11 +105,7 @@ trait EnterButtons {
                 data-rdf-type={fromUri(rdfs.Class)}
                 data-rdf-property={fromUri(rdf.typ)}
               ></input>
-              <select class="form-control selectable" type="text" name="uri" list="class_uris">
-                <optgroup label={ messageI18N("Other_vocabs") }>
                   { suggestedClassesForCreation }
-                </optgroup>
-              </select>
             </div>
 
             <div class="col-sm-4 col-sm-offset-4 col-md-2 col-md-offset-0">
@@ -126,23 +122,29 @@ trait EnterButtons {
   /** suggested Classes For Creation;
    *  NOTE currently the label is NOT displayed by Firefox :( , only by Chrome */
   private def suggestedClassesForCreation: NodeSeq = {
+   <select class="form-control selectable" type="text" name="uri" list="class_uris">
     <option label="foaf:Person" selected="selected"
             title="Person (test)"> { foafForms("personForm") } </option>
+    <option label="foaf:Organization">               { foaf.Organization } </option>
+
+   <option label="bioc:Planting">                   { prefixesMap2("bioc")("Planting") } </option>
+    <option label="nature:Observation">              { prefixesMap2("nature")("Observation") } </option>
+
+    <option label="sioc:Post">                       { sioc("Post") } </option>
+    <option label="sioc:Thread">                     { sioc("Thread") } </option>
+    <option label="schema:Event">                    { prefixesMap2("schema")("Event") } </option>
+
     <option label="doap:Project">                    { prefixesMap2("doap")("Project") } </option>
     <option label="Desc. Of A Software (DOAS)">      { prefixesMap2("doas")("Software") } </option>
     <option label="foaf:Project">                    { foaf.Project } </option>
     <option label="foaf:Group">                      { foaf.Group } </option>
-    <option label="foaf:Organization">               { foaf.Organization } </option>
 
     <option label="Tâche"> { prefixesMap2("tm")("Task") }</option>
     <option label="Bien ou service"> { prefixesMap2("gr")("Offering") }</option>
     <option label="Oeuvre">                          { prefixesMap2("schema")("CreativeWork") } </option>
     <option label="cco:Skill">                       { prefixesMap2("cco")("Skill") } </option>
 
-    <option label="sioc:Thread">                     { sioc("Thread") } </option>
-    <option label="sioc:Post">                       { sioc("Post") } </option>
-    <option label="schema:Event">                    { prefixesMap2("schema")("Event") } </option>
-    <!--
+   <!--
     <option label="event:Event">                     { prefixesMap2("event")("Event") } </option>
     <option label="ical:Vevent">                     { prefixesMap2("ical")("Vevent") } </option>
     -->
@@ -151,10 +153,10 @@ trait EnterButtons {
     <option label="owl:DatatypeProperty">            { prefixesMap2("owl")("DatatypeProperty") } </option>
     <option label="owl:ObjectProperty">              { prefixesMap2("owl")("ObjectProperty") } </option>
 
-    <option label="bioc:Planting">                   { prefixesMap2("bioc")("Planting") } </option>
-    <option label="nature:Observation">              { prefixesMap2("nature")("Observation") } </option>
     <option label="seeds:SeedsBatch">                { prefixesMap2("seeds")("SeedsBatch") } </option>
+   </select>
   }
+
 /*
   val avOptgroup =
     <optgroup label="Assemblée Virtuelle">
