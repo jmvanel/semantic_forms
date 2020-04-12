@@ -5,6 +5,7 @@ import deductions.runtime.utils.{DefaultConfiguration, I18NMessages, RDFPrefixes
 
 import scala.xml.NodeSeq
 import scala.xml.Elem
+import java.net.URLEncoder
 
 /**
  * Buttons for loading/display/edit, search, and create;
@@ -110,7 +111,7 @@ trait EnterButtons {
 
             <div class="col-sm-4 col-sm-offset-4 col-md-2 col-md-offset-0">
               <input id="sf-button-create"
-                class="form-control btn btn-primary sf-button-create" type="submit"
+                class="form-control btn btn-primary sf-button-create sf-local-rdf-link" type="submit"
                 value={ messageI18N("Create") }/>
             </div>
             <input type="text" style="display:none" name="prefill" value="no">no</input>
@@ -119,42 +120,60 @@ trait EnterButtons {
       </div>
     </div>
 
-  /** suggested Classes For Creation;
-   *  NOTE currently the label is NOT displayed by Firefox :( , only by Chrome */
+  /** suggested Classes For Creation */
   private def suggestedClassesForCreation: NodeSeq = {
-   <select class="form-control selectable" type="text" name="uri" list="class_uris">
-    <option label="foaf:Person" selected="selected"
-            title="Person (test)"> { foafForms("personForm") } </option>
-    <option label="foaf:Organization">               { foaf.Organization } </option>
+    def encode(u: Rdf#URI): String = URLEncoder.encode(fromUri(u), "UTF-8")
+   <div>
+    <a href={ "/create?uri=" + encode(foafForms("personForm") ) } >
+    foaf:Person</a> -
+    <a href={ "/create?uri=" + encode(foaf.Organization ) } >
+    foaf:Organization</a> -
 
-   <option label="bioc:Planting">                   { prefixesMap2("bioc")("Planting") } </option>
-    <option label="nature:Observation">              { prefixesMap2("nature")("Observation") } </option>
+   <a href={ "/create?uri=" + encode(prefixesMap2("bioc")("Planting") ) } >
+   bioc:Planting</a> -
+   <a href={ "/create?uri=" + encode(prefixesMap2("nature")("Observation") ) } >
+   nature:Observation</a> -
 
-    <option label="sioc:Post">                       { sioc("Post") } </option>
-    <option label="sioc:Thread">                     { sioc("Thread") } </option>
-    <option label="schema:Event">                    { prefixesMap2("schema")("Event") } </option>
+   <a href={ "/create?uri=" + encode(sioc("Post") ) } >
+   sioc:Post</a> -
+   <a href={ "/create?uri=" + encode(sioc("Thread") ) } >
+   sioc:Thread</a> -
+   <a href={ "/create?uri=" + encode(prefixesMap2("schema")("Event") ) } >
+   schema:Event</a> -
 
-    <option label="doap:Project">                    { prefixesMap2("doap")("Project") } </option>
-    <option label="Desc. Of A Software (DOAS)">      { prefixesMap2("doas")("Software") } </option>
-    <option label="foaf:Project">                    { foaf.Project } </option>
-    <option label="foaf:Group">                      { foaf.Group } </option>
+   <a href={ "/create?uri=" + encode(prefixesMap2("doap")("Project") ) } >
+   doap:Project</a> -
+   <a href={ "/create?uri=" + encode(prefixesMap2("doas")("Software") ) } >
+   Desc. Of A Software (DOAS)</a> -
+   <a href={ "/create?uri=" + encode(foaf.Project ) } >
+   foaf:Project</a> -
+   <a href={ "/create?uri=" + encode(foaf.Group ) } >
+   foaf:Group</a> -
 
-    <option label="Tâche"> { prefixesMap2("tm")("Task") }</option>
-    <option label="Bien ou service"> { prefixesMap2("gr")("Offering") }</option>
-    <option label="Oeuvre">                          { prefixesMap2("schema")("CreativeWork") } </option>
-    <option label="cco:Skill">                       { prefixesMap2("cco")("Skill") } </option>
-
+   <a href={ "/create?uri=" + encode(prefixesMap2("tm")("Task")) }>
+   Tâche</a> -
+   <a href={ "/create?uri=" + encode(prefixesMap2("gr")("Offering")) }>
+   Bien ou service</a> -
+   <a href={ "/create?uri=" + encode(prefixesMap2("schema")("CreativeWork") ) } >
+   Oeuvre</a> -
+   <a href={ "/create?uri=" + encode(prefixesMap2("cco")("Skill") ) } >
+   cco:Skill</a> -
    <!--
-    <option label="event:Event">                     { prefixesMap2("event")("Event") } </option>
-    <option label="ical:Vevent">                     { prefixesMap2("ical")("Vevent") } </option>
+    <a href=
+{ "/create?uri=" + encode(prefixesMap2("event")("Event") ) } >
+event:Event</a> -
+    <a href=
+{ "/create?uri=" + encode(prefixesMap2("ical")("Vevent") ) } >
+ical:Vevent</a> -
     -->
-
-    <option label="owl:Class">                       { prefixesMap2("owl")("Class") } </option>
-    <option label="owl:DatatypeProperty">            { prefixesMap2("owl")("DatatypeProperty") } </option>
-    <option label="owl:ObjectProperty">              { prefixesMap2("owl")("ObjectProperty") } </option>
-
-    <option label="seeds:SeedsBatch">                { prefixesMap2("seeds")("SeedsBatch") } </option>
-   </select>
+    <a href={ "/create?uri=" + encode(prefixesMap2("owl")("Class") ) } >
+    owl:Class</a> -
+    <a href={ "/create?uri=" + encode(prefixesMap2("owl")("DatatypeProperty") ) } >
+    owl:DatatypeProperty</a> -
+    <a href={ "/create?uri=" + encode(prefixesMap2("owl")("ObjectProperty") ) } >
+    owl:ObjectProperty</a> -
+    <a href={ encode( prefixesMap2("seeds")("SeedsBatch") ) } >seeds SeedsBatch</a> -
+   </div>
   }
 
 /*
@@ -162,8 +181,8 @@ trait EnterButtons {
     <optgroup label="Assemblée Virtuelle">
       <optgroup label="Acteur">
         <option label="foaf:Person long"> http://www.virtual-assembly.org/ontologies/1.0/forms#PersonForm </option>
-        <option label="foaf:Group">                      { foaf.Group } </option>
-        <option label="foaf:Organization">               { foaf.Organization } </option>
+        <option label="foaf:Group">                      { foaf.Group ) } </option>
+        <option label="foaf:Organization">               { foaf.Organization ) } </option>
       </optgroup>
       <optgroup label="Idée">
         <option label="av:Theme"> { prefixAVontology }Theme </option>
