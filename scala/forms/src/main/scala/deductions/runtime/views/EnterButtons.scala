@@ -99,7 +99,7 @@ trait EnterButtons {
             </div>
 
             <div class="col-xs-10 col-sm-10 col-md-6">
-              <input class="form-control sfLookup" type="text" name="uri" placeholder={
+              <input class="form-control sfLookup sf-local-rdf-link" type="text" name="uri" placeholder={
                 messageI18N("Paste_ontology")
                 } dropzone="copy"
                 data-rdf-type={fromUri(rdfs.Class)}
