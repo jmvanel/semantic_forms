@@ -56,7 +56,7 @@ trait ApplicationTrait extends PlaySettings.MyControllerBase
     with ApplicationFacadeImpl[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with LanguageManagement
     with Secured
-    with MainXmlWithHead
+    with MainXmlWithHead[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with CORS
     with HTTPrequestHelpers
     with RDFPrefixes[ImplementationSettings.Rdf]

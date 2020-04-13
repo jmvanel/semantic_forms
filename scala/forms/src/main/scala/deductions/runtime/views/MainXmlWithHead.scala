@@ -8,9 +8,10 @@ import scala.xml.XML
 //import controllers.routes
 // import deductions.runtime.views.MainXml
 import scala.xml.NodeSeq
+import org.w3.banana.RDF
 
 /** HTML page skeleton */
-trait MainXmlWithHead extends MainXml {
+trait MainXmlWithHead[Rdf <: RDF, DATASET] extends MainXml[Rdf, DATASET] {
 
   private def add(e: Elem, c: Node): Elem = e.copy(child = e.child ++ c)
   private def addFile(name: String): NodeSeq =

@@ -10,7 +10,7 @@ import deductions.runtime.user.RegisterPage
 
 /** HTML Front page skeleton for the Contacts SF application */
 trait ContactsFrontPage[Rdf <: RDF, DATASET]
-extends MainXmlWithHead
+extends MainXmlWithHead[Rdf, DATASET]
 with ContactsDashboard[Rdf, DATASET]
 with RegisterPage[Rdf, DATASET] {
 

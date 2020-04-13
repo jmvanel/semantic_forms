@@ -70,7 +70,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with DashboardHistoryUserActions[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with StatisticsGraph[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with FormJSON[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with ToolsPage
+    with ToolsPage[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with CSSClasses
     with Results
     with ServiceListenersManager[ImplementationSettings.Rdf, ImplementationSettings.DATASET]

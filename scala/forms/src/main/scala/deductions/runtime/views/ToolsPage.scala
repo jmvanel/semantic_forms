@@ -8,8 +8,9 @@ import deductions.runtime.core.HTTPrequest
 
 import scala.xml.{NodeSeq, Unparsed}
 import deductions.runtime.utils.Configuration
+import org.w3.banana.RDF
 
-trait ToolsPage extends EnterButtons
+trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
     with BasicWidgets
     with URIManagement {
 

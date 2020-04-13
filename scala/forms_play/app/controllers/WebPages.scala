@@ -591,7 +591,10 @@ with ApplicationTrait
           val config1 = config
           val userInfo = displayUser(userid, "", "", lang)
           outputMainPage(
-            new ToolsPage with ImplementationSettings.RDFModule with RDFPrefixes[ImplementationSettings.Rdf] {
+            new ToolsPage[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+            with ImplementationSettings.RDFCache
+//            with RDFPrefixes[ImplementationSettings.Rdf]
+          {
               override val config: Configuration = config1
             }.getPage( copyRequest(request)), displaySearch = false, userInfo = userInfo, classForContent="")
             .as("text/html; charset=utf-8")

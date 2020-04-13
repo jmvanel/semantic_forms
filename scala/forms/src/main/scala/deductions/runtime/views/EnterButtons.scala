@@ -6,16 +6,22 @@ import deductions.runtime.utils.{DefaultConfiguration, I18NMessages, RDFPrefixes
 import scala.xml.NodeSeq
 import scala.xml.Elem
 import java.net.URLEncoder
+import org.w3.banana.RDF
+import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
+import scala.util.Success
+import scala.util.Failure
+import scala.xml.Text
 
 /**
  * Buttons for loading/display/edit, search, and create;
  * this the default HTML UI before the form
  * ("generic" application)
  */
-trait EnterButtons {
+trait EnterButtons[Rdf <: RDF, DATASET] extends InstanceLabelsInferenceMemory[Rdf, DATASET]
+{
 
-  private lazy val prefixes = new ImplementationSettings.RDFModule with RDFPrefixes[ImplementationSettings.Rdf] with DefaultConfiguration {}
-  import prefixes._
+  // private lazy val prefixes = new ImplementationSettings.RDFModule with RDFPrefixes[ImplementationSettings.Rdf] with DefaultConfiguration {}
+  // import prefixes._
   import ops._
 
   protected def messageI18N(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
@@ -88,6 +94,55 @@ trait EnterButtons {
         </form>
   }
 
+  /** suggested Classes For Creation */
+  private lazy val suggestedClassesForCreation: Map[String, NodeSeq] = {
+    def encode(u: Rdf#URI): String = URLEncoder.encode(fromUri(u), "UTF-8")
+    def suggestedClassForCreation(uri: Rdf#URI, lang: String): NodeSeq = {
+      <span><a href={
+       "/create?uri=" + encode(uri) } >
+         {instanceLabelFromTDB(uri, lang)} ({abbreviateTurtle(uri)})</a> -</span>
+    }
+    val resultTry = wrapInReadTransaction {
+
+      val suggestedClasses = Seq(
+          foafForms("personForm"),
+          foaf.Organization,
+          prefixesMap2("bioc")("Planting"),
+          prefixesMap2("nature")("Observation"),
+          sioc("Post"),
+          sioc("Thread"),
+          prefixesMap2("schema")("Event"),
+          foaf.Project,
+          prefixesMap2("doas")("Software"),
+          prefixesMap2("tm")("Task")
+          // foaf.Group, prefixesMap2("doap")("Project"), 
+          // prefixesMap2("gr")("Offering")
+          // prefixesMap2("schema")("CreativeWork")  // Oeuvre
+          // prefixesMap2("cco")("Skill")
+          // prefixesMap2("owl")("Class")
+          // prefixesMap2("owl")("DatatypeProperty")
+          // prefixesMap2("owl")("ObjectProperty")
+          // prefixesMap2("seeds")("SeedsBatch")
+      )
+      val resultMap0 = for (lang <- Seq("fr", "en")) yield {
+        lang -> {
+          val nodes = for (suggestedClass <- suggestedClasses) yield suggestedClassForCreation(suggestedClass, lang)
+          val nf: NodeSeq = nodes.flatten
+          nf
+        } // . flatten
+      }
+      resultMap0.toMap
+    }
+    resultTry match{
+      case Success(nodesSeq) => nodesSeq
+      case Failure(f) =>
+        Map(
+            "fr" -> <p>{s"Erreur dans les liens de création: $f"}</p>,
+            "en" -> <p>{s"Error in creation links: $f"}</p>
+        )
+    }
+  }
+
   /** Used in main page */
   def enterClassForCreatingInstance()(implicit lang: String = "en"): NodeSeq =
 
@@ -106,7 +161,7 @@ trait EnterButtons {
                 data-rdf-type={fromUri(rdfs.Class)}
                 data-rdf-property={fromUri(rdf.typ)}
               ></input>
-                  { suggestedClassesForCreation }
+                  { suggestedClassesForCreation(lang) }
             </div>
 
             <div class="col-sm-4 col-sm-offset-4 col-md-2 col-md-offset-0">
@@ -120,61 +175,6 @@ trait EnterButtons {
       </div>
     </div>
 
-  /** suggested Classes For Creation */
-  private def suggestedClassesForCreation: NodeSeq = {
-    def encode(u: Rdf#URI): String = URLEncoder.encode(fromUri(u), "UTF-8")
-   <div>
-    <a href={ "/create?uri=" + encode(foafForms("personForm") ) } >
-    foaf:Person</a> -
-    <a href={ "/create?uri=" + encode(foaf.Organization ) } >
-    foaf:Organization</a> -
-
-   <a href={ "/create?uri=" + encode(prefixesMap2("bioc")("Planting") ) } >
-   bioc:Planting</a> -
-   <a href={ "/create?uri=" + encode(prefixesMap2("nature")("Observation") ) } >
-   nature:Observation</a> -
-
-   <a href={ "/create?uri=" + encode(sioc("Post") ) } >
-   sioc:Post</a> -
-   <a href={ "/create?uri=" + encode(sioc("Thread") ) } >
-   sioc:Thread</a> -
-   <a href={ "/create?uri=" + encode(prefixesMap2("schema")("Event") ) } >
-   schema:Event</a> -
-
-   <a href={ "/create?uri=" + encode(prefixesMap2("doap")("Project") ) } >
-   doap:Project</a> -
-   <a href={ "/create?uri=" + encode(prefixesMap2("doas")("Software") ) } >
-   Desc. Of A Software (DOAS)</a> -
-   <a href={ "/create?uri=" + encode(foaf.Project ) } >
-   foaf:Project</a> -
-   <a href={ "/create?uri=" + encode(foaf.Group ) } >
-   foaf:Group</a> -
-
-   <a href={ "/create?uri=" + encode(prefixesMap2("tm")("Task")) }>
-   Tâche</a> -
-   <a href={ "/create?uri=" + encode(prefixesMap2("gr")("Offering")) }>
-   Bien ou service</a> -
-   <a href={ "/create?uri=" + encode(prefixesMap2("schema")("CreativeWork") ) } >
-   Oeuvre</a> -
-   <a href={ "/create?uri=" + encode(prefixesMap2("cco")("Skill") ) } >
-   cco:Skill</a> -
-   <!--
-    <a href=
-{ "/create?uri=" + encode(prefixesMap2("event")("Event") ) } >
-event:Event</a> -
-    <a href=
-{ "/create?uri=" + encode(prefixesMap2("ical")("Vevent") ) } >
-ical:Vevent</a> -
-    -->
-    <a href={ "/create?uri=" + encode(prefixesMap2("owl")("Class") ) } >
-    owl:Class</a> -
-    <a href={ "/create?uri=" + encode(prefixesMap2("owl")("DatatypeProperty") ) } >
-    owl:DatatypeProperty</a> -
-    <a href={ "/create?uri=" + encode(prefixesMap2("owl")("ObjectProperty") ) } >
-    owl:ObjectProperty</a> -
-    <a href={ encode( prefixesMap2("seeds")("SeedsBatch") ) } >seeds SeedsBatch</a> -
-   </div>
-  }
 
 /*
   val avOptgroup =

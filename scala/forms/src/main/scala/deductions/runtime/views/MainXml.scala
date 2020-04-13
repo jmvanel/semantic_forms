@@ -5,9 +5,10 @@ import deductions.runtime.utils.I18NMessages
 import scala.xml.NodeSeq
 import scala.xml.NodeSeq.seqToNodeSeq
 import deductions.runtime.core.HTTPrequest
+import org.w3.banana.RDF
 
 /** HTML page skeleton for the generic SF application */
-trait MainXml extends ToolsPage with EnterButtons {
+trait MainXml[Rdf <: RDF, DATASET] extends ToolsPage[Rdf, DATASET] {
 
   val defaultSiteMessage = <p>
                                      New feature considered:

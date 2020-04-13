@@ -64,7 +64,7 @@ extends PlaySettings.MyControllerBase
  with RDFStoreLocalUserManagement[Rdf, DATASET]
  with TriplesViewModule[Rdf, DATASET]
  with HTTPrequestHelpers
- with MainXmlWithHead
+ with MainXmlWithHead[Rdf, DATASET]
  with FormSaver[Rdf, DATASET] {
 
   import ops._
