@@ -23,7 +23,7 @@ class ServicesApp extends  {
     override implicit val config = new PlayDefaultConfiguration
   }
   with Services
-  with HTMLGenerator
+  with HTMLGenerator // TODO: why is it needed ?
 
 
 /** controller for non-SPARQL Services (or SPARQL related but not in the W3C recommendations)
@@ -156,118 +156,6 @@ with RDFContentNegociation {
           httpRequest))
   }
 
-  /** LDP GET
-   *  @param uri0 relative URI, URL encoded */
-  def ldp(uri0: String) = Action {
-    implicit request: Request[_] =>
-      val uri = {
-        val uriObject = new URI(URLDecoder.decode(uri0, "UTF-8"))
-        println( ">>>>>>>> ldp: " + uri0)
-        println( ">>>>>>>> ldp: " + uriObject.getPath)
-        // for Facebook
-        uriObject.getPath
-      }
-      logger.info("LDP GET: request " + request)
-      val acceptedTypes = request.acceptedTypes
-      logger.info( s"acceptedTypes $acceptedTypes")
-
-      val httpRequest = copyRequest(request)
-      val accept = httpRequest.getHTTPheaderValue("Accept")
-      val firstMimeTypeAccepted = accept.getOrElse("").replaceFirst(",.*", "")
-      val mimeType =
-        if( isKnownRdfSyntax(firstMimeTypeAccepted) ||
-            firstMimeTypeAccepted === htmlMime )
-          firstMimeTypeAccepted
-        else
-          jsonldMime
-
-      logger.debug(s">>>> ldp($uri): mimeType $mimeType")
-      if (mimeType  =/=  htmlMime) {
-        val responseBody = getTriples(uri, request.path, mimeType, httpRequest)
-        logger.info("LDP: GET: response Body\n" + responseBody)
-        val contentType = mimeType + "; charset=utf-8"
-        logger.info(s"contentType $contentType")
-        Ok(responseBody)
-          .as(contentType)
-          .withHeaders("ETag" -> s""""${DigestUtils.md5Hex(responseBody)}"""" )
-          .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
-          // TODO rather use timestamp on TDB2
-
-          .withHeaders(defaultLDPheaders : _* )
-//          .withHeaders("Link" -> """<http://www.w3.org/ns/ldp#BasicContainer>; rel="type", <http://www.w3.org/ns/ldp#Resource>; rel="type"""")
-//          .withHeaders("Allow" -> "OPTIONS,GET,POST,PUT,PATCH,HEAD")
-//          .withHeaders("Accept-Post" -> """"text/turtle, application/ld+json""")
-
-      } else { //// Redirect to /display, without HTTP GET query (for Facebook)  ////
-        val ldpURL = httpRequest.originalURLNoQuery()
-        logger.debug(s">>>> ldp: Redirect to /display?displayuri= $ldpURL")
-        val call = Redirect("/display", Map("displayuri" -> Seq(ldpURL)))
-        call
-      }
-  }
-
-  val defaultLDPheaders = Seq(
-    // DEBUG for yannick TODO reestablish !!!!!! ACCESS_CONTROL_ALLOW_ORIGIN -> "*",
-    "Link" -> """<http://www.w3.org/ns/ldp#BasicContainer>; rel="type", <http://www.w3.org/ns/ldp#Resource>; rel="type"""",
-    "Allow" -> "OPTIONS,GET,POST,PUT,PATCH,HEAD",
-    "Accept-Post" -> """"text/turtle, application/ld+json"""
-  )
-
-  /** */
-  def ldpPOSTAction(uri: String = "") =
-//    withUser {
-//      implicit userid =>
-//        implicit request =>
-        Action { implicit request: Request[AnyContent] =>
-          logger.info("\nLDP: " + request)
-          val slug = request.headers.get("Slug")
-          val link = request.headers.get("Link")
-          val contentType = request.contentType
-          val content = getContent(request)
-          logger.info(s"LDP POST: slug: $slug, link $link")
-          logger.info(s"	LDP POST: content: $content")
-          logger.info(s"	LDP POST: headers: ${request.headers}")
-          val copiedRequest = copyRequest(request)
-          val serviceCalled =
-            ldpPOST(uri, link, contentType, slug, content, copiedRequest ).getOrElse("default")
-          val result = Created("").as("text/plain; charset=utf-8")
-            .withHeaders(
-//              ACCESS_CONTROL_ALLOW_ORIGIN -> "*",
-                "Location" -> serviceCalled,
-                "Link" -> """<http://www.w3.org/ns/ldp#BasicContainer>; rel="type", <http://www.w3.org/ns/ldp#Resource>; rel="type""""
-                )
-          logger.info(s"	LDP POST: $result")
-          result
-  }
-
-  def ldpPOSTActionNoURI() = ldpPOSTAction()
-
-  def ldpDeleteResource(uri: String) =
-    Action { implicit request: Request[AnyContent] =>
-      logger.info("\nLDP DELETE: " + request)
-      val httpRequest = copyRequest(request)
-      deleteResource(uri, httpRequest) match {
-        case Success(s) =>
-          NoContent.as("text/plain; charset=utf-8")
-            .withHeaders("Link" -> """<http://www.w3.org/ns/ldp#Resource>; rel="type"""")
-        case scala.util.Failure(f) =>
-          InternalServerError(f.toString())
-      }
-    }
-
-  def ldpHEAD(uri: String) =
-    Action { implicit request: Request[AnyContent] =>
-      logger.info("\nLDP: HEAD: " + request)
-      val httpRequest = copyRequest(request)
-      Ok("")
-      // NOTE: this does not work, see:
-      // https://www.playframework.com/documentation/2.6.x/ScalaResults#Changing-the-default-Content-Type
-      // .withHeaders( CONTENT_TYPE -> defaultContentType )
-      // TODO, ETag like GET <<<<<<<<<<<<
-      .withHeaders("ETag" -> "123456789") // """"${DigestUtils.md5Hex(response)}"""" )
-       .withHeaders(defaultLDPheaders : _* )
-       .as(defaultContentType)
-    }
 
   //  implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(
 
