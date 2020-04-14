@@ -21,66 +21,7 @@ class LDPservicesApp extends  {
   with LDPservice
   with HTMLGenerator // TODO: should not be needed!
 
-trait LDPservice extends ApplicationTrait
-//with RDFContentNegociation
-{
-
-  /** LDP GET
-   *  @param uri0 relative URI, URL encoded */
-  def ldp(uri0: String) = Action {
-    implicit request: Request[_] =>
-      val uri = {
-        val uriObject = new URI(URLDecoder.decode(uri0, "UTF-8"))
-        println( ">>>>>>>> ldp: " + uri0)
-        println( ">>>>>>>> ldp: " + uriObject.getPath)
-        // for Facebook
-        uriObject.getPath
-      }
-      logger.info("LDP GET: request " + request)
-      val acceptedTypes = request.acceptedTypes
-      logger.info( s"acceptedTypes $acceptedTypes")
-
-      val httpRequest = copyRequest(request)
-      val accept = httpRequest.getHTTPheaderValue("Accept")
-      val firstMimeTypeAccepted = accept.getOrElse("").replaceFirst(",.*", "")
-      val mimeType =
-        if( isKnownRdfSyntax(firstMimeTypeAccepted) ||
-            firstMimeTypeAccepted === htmlMime )
-          firstMimeTypeAccepted
-        else
-          jsonldMime
-
-      logger.debug(s">>>> ldp($uri): mimeType $mimeType")
-      if (mimeType  =/=  htmlMime) {
-        val responseBody = getTriples(uri, request.path, mimeType, httpRequest)
-        logger.info("LDP: GET: response Body\n" + responseBody)
-        val contentType = mimeType + "; charset=utf-8"
-        logger.info(s"contentType $contentType")
-        Ok(responseBody)
-          .as(contentType)
-          .withHeaders("ETag" -> s""""${DigestUtils.md5Hex(responseBody)}"""" )
-          .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
-          // TODO rather use timestamp on TDB2
-
-          .withHeaders(defaultLDPheaders : _* )
-//          .withHeaders("Link" -> """<http://www.w3.org/ns/ldp#BasicContainer>; rel="type", <http://www.w3.org/ns/ldp#Resource>; rel="type"""")
-//          .withHeaders("Allow" -> "OPTIONS,GET,POST,PUT,PATCH,HEAD")
-//          .withHeaders("Accept-Post" -> """"text/turtle, application/ld+json""")
-
-      } else { //// Redirect to /display, without HTTP GET query (for Facebook)  ////
-        val ldpURL = httpRequest.originalURLNoQuery()
-        logger.debug(s">>>> ldp: Redirect to /display?displayuri= $ldpURL")
-        val call = Redirect("/display", Map("displayuri" -> Seq(ldpURL)))
-        call
-      }
-  }
-
-  val defaultLDPheaders = Seq(
-    // DEBUG for yannick TODO reestablish !!!!!! ACCESS_CONTROL_ALLOW_ORIGIN -> "*",
-    "Link" -> """<http://www.w3.org/ns/ldp#BasicContainer>; rel="type", <http://www.w3.org/ns/ldp#Resource>; rel="type"""",
-    "Allow" -> "OPTIONS,GET,POST,PUT,PATCH,HEAD",
-    "Accept-Post" -> """"text/turtle, application/ld+json"""
-  )
+trait LDPservice extends ApplicationTrait {
 
   /** */
   def ldpPOSTAction(uri: String = "") =

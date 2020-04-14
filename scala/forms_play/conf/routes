@@ -89,15 +89,15 @@ GET     /files/*file                @controllers.Files.at(file)
 
 GET     /proxy                @controllers.ProxyServicesApp.getProxy(originalurl: String)
 
-# LDP
-GET     /ldp/*uri             @controllers.ServicesApp.ldp(uri: String)
-GET     /ldp                  @controllers.ServicesApp.ldp(uri: String ?= "")
-POST    /ldp/*uri             @controllers.ServicesApp.ldpPOSTAction(uri: String)
-POST    /ldp                  @controllers.ServicesApp.ldpPOSTActionNoURI()
-PUT     /ldp/*uri             @controllers.ServicesApp.ldpPOSTAction(uri: String)
-PUT     /ldp                  @controllers.ServicesApp.ldpPOSTActionNoURI()
-DELETE  /ldp/*uri             @controllers.ServicesApp.ldpDeleteResource(uri: String)
-HEAD    /ldp/*uri             @controllers.ServicesApp.ldpHEAD(uri: String)
+GET     /ldp/*uri             @controllers.LDPgetServicesApp.ldp(uri: String)
+GET     /ldp                  @controllers.LDPgetServicesApp.ldp(uri: String ?= "")
+
+POST    /ldp/*uri             @controllers.LDPservicesApp.ldpPOSTAction(uri: String)
+POST    /ldp                  @controllers.LDPservicesApp.ldpPOSTActionNoURI()
+PUT     /ldp/*uri             @controllers.LDPservicesApp.ldpPOSTAction(uri: String)
+PUT     /ldp                  @controllers.LDPservicesApp.ldpPOSTActionNoURI()
+DELETE  /ldp/*uri             @controllers.LDPservicesApp.ldpDeleteResource(uri: String)
+HEAD    /ldp/*uri             @controllers.LDPservicesApp.ldpHEAD(uri: String)
 
 OPTIONS /*path                @controllers.ServicesApp.httpOptions(path)
 
