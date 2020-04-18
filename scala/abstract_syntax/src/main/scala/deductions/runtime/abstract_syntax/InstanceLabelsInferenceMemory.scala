@@ -25,8 +25,8 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   lazy val datasetForLabels = dataset
   /* TODO : does not work because the transaction has been started on the other dataset ! 
   val datasetForLabels = dataset3   */
-  val labelsGraphUriPrefix = "urn:/semforms/labelsGraphUri/"
-  val displayLabelPred = URI("urn:displayLabel")
+  lazy val labelsGraphUriPrefix = "urn:/semforms/labelsGraphUri/"
+  lazy val displayLabelPred = URI("urn:displayLabel")
 
   /** make Instance Label, by retrieving from TDB, or else compute and Store In TDB
    *  NON transactional, needs rw transaction */
