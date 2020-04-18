@@ -5,10 +5,12 @@
 // wget "http://    lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=10&QueryString=berl" --header='Accept: application/json'
 
 /* pulldown menu in <input> does show on Chrome; Opera, Android ????
+Regular dbpedia/lookup server tried, then 2 fallbacks: lookup.dbpedia-spotlight.org, then SF server /lookup
+
 see
 https://jqueryui.com/autocomplete/
 https://github.com/RubenVerborgh/dbpedia-lookup-page
-alternate implementation, abandoned: http://blog.teamtreehouse.com/creating-autocomplete-dropdowns-datalist-element
+
 TODO: translate in Scala:
 https://github.com/scala-js/scala-js-jquery
 https://www.google.fr/search?q=ajax+example+scala.js
@@ -17,7 +19,11 @@ https://www.google.fr/search?q=ajax+example+scala.js
 const resultsCount = 15
 
 $(document).ready(function() {
-    var searchServiceURL = "/proxy?originalurl=" + "http://lookup.dbpedia.org/api/search/PrefixSearch"
+const lookupServer = "http://lookup.dbpedia.org"
+const alternativeLookupServer = "http://lookup.dbpedia-spotlight.org"
+function makeLookupURL(baseURL) { return "/proxy?originalurl=" + baseURL + "/api/search/PrefixSearch"}
+
+    var searchServiceURL = makeLookupURL(lookupServer)
     // var searchServiceURL = "/proxy?originalurl=" + encodeURIComponent("http://lookup.dbpedia.org/api/search/PrefixSearch")
     var suggestionSearchCSSclass = 'sf-suggestion-search-dbpedia';
 
@@ -59,16 +65,19 @@ $(document).ready(function() {
 
                 ajax.fail(function (error){
 
-                  // in lookup.js, the same completion is launched on CSS class .sfLookup
-                  if( ! $el.hasClass('.sfLookup') ) {
+                  var ajax = makeAjax(makeLookupURL(alternativeLookupServer), request, inputElement, callback)
+                  console.log(ajax)
+                  ajax.fail(function (error){
 
+                   // in lookup.js, the same completion is launched on CSS class .sfLookup
+                   if( ! $el.hasClass('.sfLookup') ) {
                     console.log("lookup.dbpedia.org FAILED: error:" + error.statusText )
                     console.log(error )
                     console.log("lookup.dbpedia.org FAILED => launch local /lookup '" + request.term + "'" )
-
                     var ajax = makeAjax( "/lookup", request, inputElement, callback)
                     console.log(ajax)
-                  }
+                   }
+                  })
                 })
             }
             }
