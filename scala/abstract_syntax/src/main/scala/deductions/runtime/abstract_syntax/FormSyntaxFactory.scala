@@ -168,7 +168,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     }
     tryFormSyntax.flatten.flatten match {
       case Success(fs) =>
-        logger.debug(s"createFormTR: Success FormSyntax: $fs")
+        logger.debug(s"createFormTR: Success FormSyntax: formLabel ${fs.formLabel} ${fs.fields.size} fields")
         fs
       case Failure(f) =>
         logger.error(s"createFormTR: ERROR: $f, getCause ${f.getCause} ${f.getStackTrace().mkString("\n")}")
@@ -509,6 +509,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
         case _ if propClasses.contains(owl.ObjectProperty) => nullURI
         case _ if rangeClasses.contains(owl.Class) => nullURI
+//        case _ if rangeClasses.contains(rdfs.Class) => nullURI
         case _ if rangeClasses.contains(rdf.Property) => nullURI
         case _ if ranges.contains(owl.Thing) => nullURI
         case _ if rangesSchemaOrg.exists { r => getClasses(r).contains(schema("DataType")) } => nullLiteral
