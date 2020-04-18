@@ -14,10 +14,11 @@ https://github.com/scala-js/scala-js-jquery
 https://www.google.fr/search?q=ajax+example+scala.js
  */
 
+const resultsCount = 15
+
 $(document).ready(function() {
     var searchServiceURL = "/proxy?originalurl=" + "http://lookup.dbpedia.org/api/search/PrefixSearch"
     // var searchServiceURL = "/proxy?originalurl=" + encodeURIComponent("http://lookup.dbpedia.org/api/search/PrefixSearch")
-    var resultsCount = 15;
     var suggestionSearchCSSclass = 'sf-suggestion-search-dbpedia';
 
 
@@ -44,7 +45,7 @@ $(document).ready(function() {
                 }
             },
             source: function(request, callback) {
-              console.log(" source: function: request .term " + request .term);
+              console.log(" source: function: request .term '" + request .term + "'");
               var inputElementContainsURL =
 			request .term. startsWith("http://") ||
 			request .term. startsWith("urn:")
@@ -52,7 +53,32 @@ $(document).ready(function() {
               if( inputElementContainsURL )
 			inputElement.removeClass(suggestionSearchCSSclass);
               else {
-                console.log("Déclenche l'événement lookup.dbpedia.org pour '" + request.term + "'")
+
+                var ajax = makeAjax(searchServiceURL, request, inputElement, callback)
+                console.log(ajax)
+
+                ajax.fail(function (error){
+
+                  // in lookup.js, the same completion is launched on CSS class .sfLookup
+                  if( ! $el.hasClass('.sfLookup') ) {
+
+                    console.log("lookup.dbpedia.org FAILED: error:" + error.statusText )
+                    console.log(error )
+                    console.log("lookup.dbpedia.org FAILED => launch local /lookup '" + request.term + "'" )
+
+                    var ajax = makeAjax( "/lookup", request, inputElement, callback)
+                    console.log(ajax)
+                  }
+                })
+            }
+            }
+        })
+    });
+});
+
+function makeAjax(searchServiceURL,request, inputElement, callback){
+  console.log("Déclenche l'événement lookup.dbpedia.org pour '" + request.term + "'")
+  return (
                 $.ajax({
                     url: searchServiceURL + "?QueryString=" + request.term . replace( / /g, "_" )
                                           + "&MaxHits="+resultsCount +
@@ -60,35 +86,13 @@ $(document).ready(function() {
                     dataType: "json" ,
                     timeout: 30000
                 }).done(function (ajaxResponse) {
+                    console.log('Done ' + searchServiceURL)
                     console.log(ajaxResponse)
                     callback( prettyPrintURI(ajaxResponse) )
 
-                }).fail(function (error){
-
-                    // in lookup.js, the same completion is launched on CSS class .sfLookup
-                    if( ! $el.hasClass('.sfLookup') ) {
-
-                      console.log("lookup.dbpedia.org FAILED: error:" + error.statusText )
-                      console.log(error )
-                      console.log("lookup.dbpedia.org FAILED => launch local /lookup '" + request.term + "'" )
-
-                    $.ajax({
-                        url: "/lookup",
-                        data: { MaxHits: resultsCount, QueryClass: typeName, QueryString: request.term + "*" },
-                        dataType: "json",
-                        timeout: 5000
-                    }).done(function(response) {
-                        console.log('Done');
-                        callback( prettyPrintURI(response) )
-                        // callback(response.results.map(function (m) { return { "label": m.label /* + " - " + cutStringAfterCharacter(m.description, '.') */, "value": m.uri } }))
-                    });
-                    };
                 })
-            }
-            }
-        })
-    });
-});
+  )
+}
 
 function cutStringAfterCharacter(s, c) {
     if (!(s === null)) {
