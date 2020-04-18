@@ -44,22 +44,19 @@ $(document).ready(function() {
                 }
             },
             source: function(request, callback) {
-		console.log(" source: function: request .term " + request .term);
-		var inputElementContainsURL =
+              console.log(" source: function: request .term " + request .term);
+              var inputElementContainsURL =
 			request .term. startsWith("http://") ||
-			request .term. startsWith("urn:") ;
-		if( inputElementContainsURL )
+			request .term. startsWith("urn:")
+
+              if( inputElementContainsURL )
 			inputElement.removeClass(suggestionSearchCSSclass);
-		else {
-                console.log("Déclenche l'événement lookup.dbpedia.org pour " + request.term )
-
-                var typeName = getRDFtype(event)
-                console.log("typeName=" + typeName)
-
+              else {
+                console.log("Déclenche l'événement lookup.dbpedia.org pour '" + request.term + "'")
                 $.ajax({
                     url: searchServiceURL + "?QueryString=" + request.term . replace( / /g, "_" )
                                           + "&MaxHits="+resultsCount +
-                                          + "&QueryClass="+typeName,
+                                          + getRDFtypeInURL(inputElement) ,
                     dataType: "json" ,
                     timeout: 30000
                 }).done(function (ajaxResponse) {
@@ -73,7 +70,7 @@ $(document).ready(function() {
 
                       console.log("lookup.dbpedia.org FAILED: error:" + error.statusText )
                       console.log(error )
-                      console.log("lookup.dbpedia.org FAILED => launch local /lookup " + request.term )
+                      console.log("lookup.dbpedia.org FAILED => launch local /lookup '" + request.term + "'" )
 
                     $.ajax({
                         url: "/lookup",
@@ -82,10 +79,8 @@ $(document).ready(function() {
                         timeout: 5000
                     }).done(function(response) {
                         console.log('Done');
-                        callback(response.results.map(function (m) {
-                            return { "label": m.label /* + " - " +
-                            cutStringAfterCharacter(m.description, '.') */, "value": m.uri }
-                        }))
+                        callback( prettyPrintURI(response) )
+                        // callback(response.results.map(function (m) { return { "label": m.label /* + " - " + cutStringAfterCharacter(m.description, '.') */, "value": m.uri } }))
                     });
                     };
                 })
@@ -121,10 +116,11 @@ function prettyPrintURI(ajaxResponse){
 		// view-source:http://lookup.dbpedia.org/api/search/PrefixSearch?QueryClass=Place&QueryString=berlin
 
 */
-function getRDFtype(event) {
+function getRDFtypeInURL(inputElement) {
 		// QueryClass comes from attribute data-rdf-type in <input> tag , but data-rdf-type is a full URI !
                 var typeName = "";
-                var $el = $(event.target);
+                // var $el = $(event.target);
+                var $el = inputElement;
                 if( $el && $el.attr('data-rdf-type') ) {
                    type = $el.attr('data-rdf-type').split('/');
                     if (type) {
@@ -132,5 +128,9 @@ function getRDFtype(event) {
                       console.log('typeName ' + typeName)
                     }
                 }
-  return typeName
+                if( typeName.length > 0 )
+                  typeNameInURL = "&QueryClass="+typeName
+                else
+                  typeNameInURL = ""
+  return typeNameInURL
 };
