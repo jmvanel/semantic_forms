@@ -36,7 +36,10 @@ val jenaVersion =  "3.14.0"
     "org.apache.logging.log4j" % "log4j-core" % log4jVersion,
     "org.apache.logging.log4j" % "log4j-slf4j-impl" % log4jVersion
 //, "org.apache.logging.log4j" % "log4j-web" % log4jVersion
-  )
+
+ , "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
+,  "org.slf4j" % "slf4j-simple" % "1.7.30"
+)
 
   // val scalazDependency = "org.scalaz" %% "scalaz-core" % "7.2.8"
   val scalazDependency = "org.scalaz" %% "scalaz-core" % "7.2.26"

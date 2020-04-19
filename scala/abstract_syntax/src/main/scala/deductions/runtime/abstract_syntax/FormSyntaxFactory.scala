@@ -96,7 +96,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
   //with UserTraceability[Rdf, DATASET]
   with OWLsameAsFormProcessing[Rdf, DATASET]
   with Timer
-  with FormGroups[Rdf, DATASET] {
+  with FormGroups[Rdf, DATASET]
+  with com.typesafe.scalalogging.LazyLogging {
 
   val config: Configuration
   import config._
@@ -213,6 +214,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     step1:     FormSyntax,
     formGroup: Rdf#URI    = nullURI)(implicit graph: Rdf#Graph, lang: String = ""): FormSyntax = {
 
+    // TEST SL4J
+    // logger.error("marker XXXXXXXXXXXXXXXXXXXXXXXXXXXXX message")
+
     val formConfig = step1.formURI
     logger.info(
       s">>>> createFormDetailed2 fields size ${step1.fields.size}, formConfig <$formConfig> , lang $lang")
@@ -255,10 +259,14 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     logger.debug(s"createFormDetailed2: createForm " + this)
 
     // TODO make it functional #170
+    var isDebugEnabled = false
+    logger.whenDebugEnabled{
+      isDebugEnabled = true
+    }
     val res = time(
       s"createFormDetailed2: updateFormFromConfig(formConfig=$formConfig)",
       updateFormFromConfig(formSyntax, formConfig),
-      logger.isDebugEnabled())
+      isDebugEnabled )
     logger.debug(s"createFormDetailed2: createForm 2 " + this)
     //        check(formSyntax.fields, "res")
     res
@@ -452,7 +460,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       // logger.debug
       // println(s"makeEntriesForSubject subject <$subject>, prop <$prop> lang $lang")
 
-      val objects = objectsQuery(subject, uriNodeToURI(prop)); logger.debug(s"makeEntriesForSubject subject <$subject>, objects: $objects")
+      val objects = objectsQuery(subject, uriNodeToURI(prop));
+      logger.debug(s"makeEntriesForSubject subject <$subject>, objects: $objects")
       val result = mutable.ArrayBuffer[Entry]()
       for (obj <- objects)
         result += makeEntryFromTriple(subject, prop, obj, formMode)
