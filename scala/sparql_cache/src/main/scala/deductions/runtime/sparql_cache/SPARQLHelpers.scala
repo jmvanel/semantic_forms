@@ -593,11 +593,11 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
     import scala.collection._
     val res = solutionsTry.map {
-
       /* CAUTION: an Iterator should be only in one loop, 
        * cf https://www.scala-lang.org/api/current/scala/collection/Iterator.html
        */
       solutions =>
+        Try {
         val solsIterable = solutions.iterator()
         val columnsMap2: mutable.TreeSet[String] = mutable.TreeSet()
 
@@ -628,9 +628,10 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
           headerRow :: results
         } else results
     }
+    }
 //    logger.info(s"makeListofListsFromSolutions: size: ${ for(l <- res ) l.size}")
     // logger.info(s"makeListofListsFromSolutions: size: ${ if( res isSuccess) res .get. size}")
-    res
+    res.flatten
   }
 
   /**
