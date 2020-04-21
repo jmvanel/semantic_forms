@@ -70,7 +70,7 @@ function makeLookupURL(baseURL) { return "/proxy?originalurl=" + baseURL + "/api
                   ajax.fail(function (error){
 
                    // in lookup.js, the same completion is launched on CSS class .sfLookup
-                   if( ! $el.hasClass('.sfLookup') ) {
+                   if( ! inputElement.hasClass('.sfLookup') ) {
                     console.log("lookup.dbpedia.org FAILED: error:" + error.statusText )
                     console.log(error )
                     console.log("lookup.dbpedia.org FAILED => launch local /lookup '" + request.term + "'" )
@@ -90,7 +90,7 @@ function makeAjax(searchServiceURL,request, inputElement, callback){
   return (
                 $.ajax({
                     url: searchServiceURL + "?QueryString=" + request.term . replace( / /g, "_" )
-                                          + "&MaxHits="+resultsCount +
+                                          + "&MaxHits="+resultsCount
                                           + getRDFtypeInURL(inputElement) ,
                     dataType: "json" ,
                     timeout: 30000
