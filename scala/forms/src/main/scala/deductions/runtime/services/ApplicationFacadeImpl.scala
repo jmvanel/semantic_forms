@@ -169,6 +169,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
           request.adjustSecure(geoMapURL) +
           "?link-prefix=" + "http://" /*TODO https case*/+ request.host + hrefDisplayPrefix +
           "&lang=" + request.getLanguage() +
+//          "&label=" + request.getHTTPparameterValue("label").getOrElse("") +
           "&url=" + sparqlServicesURL(request) +
           "?" + "query=" + sparqlQuery
         }

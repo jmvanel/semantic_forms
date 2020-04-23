@@ -285,6 +285,7 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
       '&enrich=yes' +
       "&link-prefix=" + ${ s""""${request.absoluteURL() + config.hrefDisplayPrefix}""""} +
       "&lang=" + "${request.getLanguage()}" +
+      // "&label=" + ${request.getHTTPparameterValue("label").getOrElse("")} +
       "&label=" + document.getElementById('label').value +
       '&url=' +
         dataServicesURL + window.encodeURIComponent(query);
