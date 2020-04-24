@@ -94,30 +94,36 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
                   dateAsLong(row1) >
                     dateAsLong(row2)
               }
+
+              val dateFormat = new SimpleDateFormat(
+                     "dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
+              val dateFormat2 = new SimpleDateFormat("EEEE", Locale.forLanguageTag(lang))
+
               wrapInTransaction { // for calling instanceLabel()
                 for (row <- sorted) yield {
                   try {
                   logger.debug("row " + row(1).toString())
-                  if (row(1).toString().length() > 3) {
+                  val subjectURI = row(0)
+                  val classOrNullURI = getClassOrNullURI(subjectURI)(allNamedGraph)
+                  if (row(1).toString().length() > 3 &&
+                      subjectURI != nullURI
+//                      classOrNullURI  != nullURI
+                  ) {
                     val date = new Date(dateAsLong(row))
-                    val dateFormat = new SimpleDateFormat(
-                      "dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
-                    val dateFormat2 = new SimpleDateFormat("EEEE", Locale.forLanguageTag(lang))
-
-                    <tr class="sf-table-row">{
-                      <td>{ makeHyperlinkForURI(row(0), allNamedGraph, config.hrefDisplayPrefix,
+                    <tr class="sf-table-row">
+                      <td>{ makeHyperlinkForURI(
+                          subjectURI, allNamedGraph, config.hrefDisplayPrefix,
                           request=request ) }</td>
                       <td>{
                         makeHyperlinkForURI(
-                          getClassOrNullURI(row(0))(allNamedGraph),
-                          allNamedGraph, config.hrefDisplayPrefix,
+                          classOrNullURI, allNamedGraph, config.hrefDisplayPrefix,
                           request=request )
                       }</td>
                       <!-- td>{ "Edit" /* TODO */ }</td -->
                       <td title={ dateFormat2.format(date) }>{ dateFormat.format(date) }</td>
                       <td>{ row(3) }</td>
                       <td>{ makeStringFromLiteral(row(2)) }</td>
-                    }</tr>
+                    </tr>
                   } else <tr/>
                   }
                   catch {
