@@ -11,7 +11,7 @@ INSERT {
 WHERE {
   GRAPH ?G {
     ?S ?P ?O .
-    filter ( xsd:time=datatype(?O) )
+    filter ( datatype(?O) = xsd:time )
     filter ( regex( str(?O), '^[0-9][0-9]:[0-9][0-9]' )  )
     BIND ( CONCAT( ?O, ":00" ) AS ?TIME )
     BIND ( xsd:time(?TIME) AS ?TIME_DT )

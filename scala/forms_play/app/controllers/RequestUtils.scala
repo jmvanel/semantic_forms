@@ -7,6 +7,7 @@ import play.api.mvc.Request
 
 trait RequestUtils extends HTTPrequestHelpers {
 
+  /** Format log message */
   def log(mess: String, request: Request[_]): String =
 		  LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")) +
       s""" $mess: IP ${request.remoteAddress}, userId "${

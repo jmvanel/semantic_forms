@@ -216,18 +216,22 @@ trait SparqlServices extends ApplicationTrait
         implicit request =>
           logInfo("sparql update: " + request)
           logInfo(s"sparql: update '$update'")
-          println(log("update", request))
+          logInfo(log("update: request", request))
           val update2 =
             if (update === "") {
-              println(s"""contentType ${request.contentType}
-                ${request.mediaType}
-                ${request.body.getClass}
-            """)
+              logInfo(s"""update: contentType ${request.contentType}
+                mediaType ${request.mediaType}
+                request.body.getClass ${request.body.getClass}
+              """)
               val bodyAsText = request.body.asText.getOrElse("")
+              logger.debug(s"update: bodyAsText: '$bodyAsText'")
               if (bodyAsText  =/=  "")
                 bodyAsText
-              else
+              else {
+                logger.debug(s"""update: request.body.asFormUrlEncoded :
+                  '${request.body.asFormUrlEncoded}""")
                 request.body.asFormUrlEncoded.getOrElse(Map()).getOrElse("query", Seq("")).headOption.getOrElse("")
+              }
             } else update
           logInfo(s"sparql: update2 '$update2'")
           val lang = chooseLanguage(request) // for logging

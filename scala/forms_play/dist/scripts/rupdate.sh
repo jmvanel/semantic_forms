@@ -24,11 +24,32 @@ wget --keep-session-cookies --save-cookies cookies.txt \
     $SERVER/register
 rm register
 
+urlencode() {
+     # urlencode <string>
+     old_lc_collate=$LC_COLLATE
+     LC_COLLATE=C
+
+     local length="${#1}"
+     for (( i = 0; i < length; i++ )); do
+         local c="${1:i:1}"
+         case $c in
+             [a-zA-Z0-9.~_-]) printf "$c" ;;
+             *) printf '%%%02X' "'$c" ;;
+         esac
+     done
+
+     LC_COLLATE=$old_lc_collate
+     echo
+}
+
+QUERY_ENCODED=`urlencode "$QUERY"`
+echo QUERY is URL ENCODED for HTTP method=POST
+
 wget --save-headers \
 	--content-on-error \
 	--load-cookies cookies.txt \
 	--method=POST \
-	--body-data="query=$QUERY" \
+	--body-data="query=$QUERY_ENCODED" \
 	$SERVER/update
 
 echo "SPARQL database <$SERVER> : processed update \"$QUERY\" ; RETURN_CODE: $?"
