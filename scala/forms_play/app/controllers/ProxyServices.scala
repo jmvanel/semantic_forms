@@ -93,7 +93,7 @@ private def buildHttpClient(connectionTimeout: Int, socketTimeout: Int) = {
       val headers = request.headers.toMap
       val headersList = headers.toList
       val headersListFlat = for ( h <- headersList; header <- h._2 ; key  = h._1 ) yield {(key, header)}
-      logger.info("getProxy: originalurl: <$originalurl> , headersListFlat: $headersListFlat")
+      logger.info(s"getProxy: originalurl: <$originalurl> , headersListFlat: $headersListFlat")
       val (content, httpResponse) = getRestContent(originalurl, requestProperties=headers)
       logger.info(s"	getProxy: httpResponse: $httpResponse")
       val contentType = getContentType(httpResponse)
