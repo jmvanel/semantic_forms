@@ -107,11 +107,12 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
 
   import scala.concurrent.ExecutionContext.Implicits.global
   /**
-   * load URI's If Requested, that is when HTTP parameter "load-uris" is Defined
-   * in a Future
+   * load URI's if Requested, that is when HTTP parameter "load-uris" is Defined.
+   * Takes first URI in each Iterable row.
+   * Works in a Future
    */
-  private def loadURIsIfRequested(
-    uris:        List[Seq[Rdf#Node]],
+  def loadURIsIfRequested(
+    uris:        List[Iterable[Rdf#Node]],
     httpRequest: HTTPrequest) =
     if (httpRequest.getHTTPparameterValue("load-uris").isDefined)
       for (uriRow <- uris)
@@ -120,7 +121,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
           retrieveURIBody(
             forceNodeToURI(uri), dataset,
             httpRequest, transactionsInside = true)
-          logger.info(s"loadURIsIfRequested: $uri was loaded.")
+          logger.info(s"loadURIsIfRequested: <$uri> was loaded.")
         }
 
   private val sortJSscript =
@@ -151,6 +152,9 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
    * search and display results as an XHTML element;
    * generate rows of HTML hyperlinks for given search string;
    * transactional
+   *
+   * Used ONLY in showTriplesInGraph()
+   *
    * @param hrefPrefix URL prefix for creating hyperlinks ((URI of each query result is concatenated)
    */
   def search2(search: String, hrefPrefix: String = config.hrefDisplayPrefix,

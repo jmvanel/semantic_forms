@@ -386,6 +386,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
                 sentencesForSPARQLresults(rows)
               else
                 tableForSPARQLresults(rows)
+              loadURIsIfRequested( rows, request)
             case Failure(e)=> e.toString()
           }
         }
