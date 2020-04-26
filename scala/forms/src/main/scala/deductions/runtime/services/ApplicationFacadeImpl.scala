@@ -382,11 +382,12 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
             case Success(rows) =>
               val paragraphs = request.getHTTPparameterValue("paragraphs").getOrElse("")
 //              println( s">>>> selectSPARQL: paragraphs '$paragraphs'")
-              if( paragraphs == "on" )
+              val results = if( paragraphs == "on" )
                 sentencesForSPARQLresults(rows)
               else
                 tableForSPARQLresults(rows)
               loadURIsIfRequested( rows, request)
+              results
             case Failure(e)=> e.toString()
           }
         }
