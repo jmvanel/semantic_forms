@@ -133,7 +133,7 @@ with StringHelpers
 
     val objectURIstringValue = resourceEntry.value.toString()
     if( objectURIstringValue  =/=  "" && id  =/=  "") {
-      <a href={ "#" + id } draggable="true">
+      <a href={ "#" + id } draggable="true" class="sf-local-rdf-link">
         <i class="glyphicon glyphicon-link"></i>
       </a>
         <a id={ id }></a>
