@@ -264,7 +264,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
         time("removeTriples",
           rdfStore.removeTriples( dataset,
             URI(graphURI),
-            triplesToRemove.toIterable), logger.isDebugEnabled() )
+            triplesToRemove.toIterable), isDebugEnabled(logger) )
           log( s"res0 removeTriples $res0")
 
           // special case of triples  ?S rdf:type foaf:Document.
@@ -277,7 +277,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
           time("appendToGraph",
             rdfStore.appendToGraph( dataset,
               URI(graphURI),
-              makeGraph(triplesToAdd)), logger.isDebugEnabled())
+              makeGraph(triplesToAdd)), isDebugEnabled(logger) )
         res
       }
 
