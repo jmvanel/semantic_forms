@@ -30,7 +30,7 @@ trait UserTraceability[Rdf <: RDF, DATASET]
     val resultsTimestamp = mutable.Map[(String,String), Long]()
 
     for (row: Seq[Rdf#Node] <- metadata){
-      logger.info(row)
+      logger.info(row.toString())
 
       // each row contains: property, object, timestamp, user
       val propertyId =0; val objectId=1; val timestampId=2; val userId=3;
