@@ -64,7 +64,7 @@ with StringHelpers
       hyperlinkToField(resourceEntry) ++
       hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue,
           resourceEntry) ++
-      displayThumbnail(resourceEntry) ++
+      displayThumbnail(resourceEntry, request) ++
       backLinkButton(resourceEntry, request) ++
       makeNeighborhoodLink(objectURIstringValue, request) ++
       expertLinks(resourceEntry, request)
@@ -72,7 +72,7 @@ with StringHelpers
     } else if( details.contains("images") )
         hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue,
           resourceEntry) ++
-        displayThumbnail(resourceEntry)
+        displayThumbnail(resourceEntry, request)
 
       else
         hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue,
@@ -120,7 +120,7 @@ with StringHelpers
     val objectURIstringValue = value.toString()
     hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue,
       resourceEntry) ++
-      displayThumbnail(resourceEntry)
+      displayThumbnail(resourceEntry, request)
   }
 
   /** hyperlink To RDF property */
@@ -188,13 +188,14 @@ with StringHelpers
   }
 
   /** display Thumbnail from triple foaf:img , etc , or self image if URI is an image */
-  private def displayThumbnail(resourceEntry: formMod#ResourceEntry): NodeSeq = {
+  private def displayThumbnail(resourceEntry: formMod#ResourceEntry,
+      request: HTTPrequest): NodeSeq = {
     import resourceEntry._
     val imageURL = if (isImage) Some(value)
     else thumbnail
     if (isImage || thumbnail.isDefined) {
       val title = s"Image of $valueLabel: ${value.toString()}"
-      val url = introduceProxyIfnecessary( imageURL.get.toString() )
+      val url = introduceProxyIfnecessary( imageURL.get.toString(), request )
       <a class="image-popup-vertical-fit" href={ imageURL.get.toString() } title={title}>
         <img src={ url }
              css="sf-thumbnail" height="40" alt={title}/>

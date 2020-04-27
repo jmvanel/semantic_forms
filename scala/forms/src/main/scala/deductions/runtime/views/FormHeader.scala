@@ -81,7 +81,7 @@ trait FormHeader[Rdf <: RDF, DATASET]
               { expertLinksOWL }
             </strong>
             { if (formSyntax.thumbnail.isDefined) {
-                val url = introduceProxyIfnecessary(formSyntax.thumbnail.get.toString())
+                val url = introduceProxyIfnecessary(formSyntax.thumbnail.get.toString(), request)
                 <a class="image-popup-vertical-fit" href={ url } title={ s"Image of ${formSyntax.title}: ${formSyntax.subject.toString()}" }>
                   <img src={ url }
                     css="sf-thumbnail" height="40" alt={

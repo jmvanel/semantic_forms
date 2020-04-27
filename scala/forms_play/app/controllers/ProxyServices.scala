@@ -1,6 +1,9 @@
 package controllers
 
 import play.api.mvc.Action
+import scala.util.Try
+import scala.util.Success
+import scala.util.Failure
 
 class ProxyServicesApp extends ProxyServices
 
@@ -27,7 +30,8 @@ def getRestContent(url: String,
                    connectionTimeout: Int    = 5000,
                    socketTimeout: Int    = 5000,
                    requestProperties: Map[String, Seq[String]] = Map(("Accept", Seq("application/json"))),
-) = {
+) =
+  Try{
     val httpClient = buildHttpClient(connectionTimeout, socketTimeout)
     val httpRequest = new HttpGet(url)
     val headers = for (prop <- requestProperties ; property <- prop._2) yield (prop._1, property)
@@ -94,11 +98,18 @@ private def buildHttpClient(connectionTimeout: Int, socketTimeout: Int) = {
       val headersList = headers.toList
       val headersListFlat = for ( h <- headersList; header <- h._2 ; key  = h._1 ) yield {(key, header)}
       logger.info(s"getProxy: originalurl: <$originalurl> , headersListFlat: $headersListFlat")
-      val (content, httpResponse) = getRestContent(originalurl, requestProperties=headers)
-      logger.info(s"	getProxy: httpResponse: $httpResponse")
-      val contentType = getContentType(httpResponse)
-      logger.info(s"	getProxy: contentType: $contentType")
-      Ok(content).withHeaders(headersListFlat:_*).as(contentType)
+//      val (content, httpResponse) = getRestContent(originalurl, requestProperties=headers)
+      val tryContentHttpResponse = getRestContent(originalurl, requestProperties=headers)
+      tryContentHttpResponse match {
+      case Success((content, httpResponse)) =>
+        logger.info(s"	getProxy: httpResponse: $httpResponse")
+        val contentType = getContentType(httpResponse)
+        logger.info(s"	getProxy: contentType: $contentType")
+        Ok(content).withHeaders(headersListFlat:_*).as(contentType)
+      case Failure(f) => logger.warn(s"getProxy($originalurl): $f")
+        val INTERNAL_SERVER_ERROR_Status = new Status(500)
+        INTERNAL_SERVER_ERROR_Status(f.getLocalizedMessage)
+      }
   }
 
 

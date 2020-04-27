@@ -1,6 +1,7 @@
 package deductions.runtime.utils
 
 import java.net.URLEncoder
+import deductions.runtime.core.HTTPrequest
 
 trait StringHelpers {
 
@@ -12,10 +13,11 @@ trait StringHelpers {
     Some(s.substring( li +1, s.length() ))
   }
 
-  /** introduce Proxy If necessary, that is if URL is HTTP
-   *  TODO should not use proxy if SF server is HTTP */
-  def introduceProxyIfnecessary(url: String): String =
-    if(url.startsWith("http://"))
+  /** introduce Proxy If necessary, that is if URL is HTTP;
+   *  does not use proxy if SF server is HTTP . */
+  def introduceProxyIfnecessary(url: String,
+      request: HTTPrequest = HTTPrequest() ): String =
+    if(url.startsWith("http://") && request.secure )
       "/proxy?originalurl=" + URLEncoder.encode(url, "UTF-8")
     else url
 
