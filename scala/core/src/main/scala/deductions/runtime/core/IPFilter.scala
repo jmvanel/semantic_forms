@@ -3,6 +3,7 @@ package deductions.runtime.core
 import scala.xml.NodeSeq
 import scala.io.Source
 import scala.util.Try
+import java.net.InetAddress
 
 trait HTTPFilter {
   /** HTTP Filter
@@ -25,13 +26,21 @@ trait IPFilter extends HTTPFilter {
     ipsFromFile getOrElse List()
   }
 
+  val responseToBlackListed = Some(
+  "Black listed, please respect robots.txt, see https://en.wikipedia.org/wiki/Robots_exclusion_standard")
+
   /** @return a message for HTTP output or None */
   def filter(request: HTTPrequest): Option[String] = {
-    if( blacklistedIPs contains request.remoteAddress ) {
-      Some(
-        "Black listed, please respect robots.txt, see https://en.wikipedia.org/wiki/Robots_exclusion_standard")
-    } else
-      None
+    val blacklistCriterium = blacklistedIPs contains request.remoteAddress
+    if( blacklistCriterium ) {
+        responseToBlackListed
+    } else {
+      val addr = InetAddress.getByName(request.remoteAddress);
+      val host = addr.getHostName()
+      if( host.endsWith( "compute.amazonaws.com.cn" ) )
+        responseToBlackListed
+      else None
+    }
   }
 }
 
