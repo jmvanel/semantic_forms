@@ -247,11 +247,13 @@ with StringHelpers
     <a href={ "/table?query=" + URLEncoder.encode(sparlqlQuery, "UTF-8") +
         s"&label=<$classURI>"} target="_blank"
        title={s"Table view for <$classURI>"}>
-         <img src={ imageURL } css="sf-thumbnail" height="20" alt="Table view">
-          {
-//            println(s"makeClassTableButton: classURI <$classURI>")
-            Comment( s" makeClassTableButton URI ${classURI.replace("--", "\\-\\-")} ") }
-        </img>
+         <img src={ imageURL } css="sf-thumbnail" height="20" alt="Table view">{
+           Comment( s" makeClassTableButton URI <${
+             classURI.replaceAll(
+                 "-[-]+",
+                 """\\-\\-""" )
+           }> ")
+        }</img>
     </a>
   }
 
