@@ -91,10 +91,10 @@ with ApplicationTrait
     Action { request0: Request[_] =>
       val precomputed = new MainPagePrecompute(request0)
       import precomputed._
-      //        println(s"========= outputMainPageWithContent precomputed $precomputed - title ${precomputed.title}")
+      // println(s"========= outputMainPageWithContent precomputed $precomputed - title ${precomputed.title}")
       addAppMessageFromSession(requestCopy)
       outputMainPage2(
-        contentMaker.result(requestCopy),
+        contentMaker,
         precomputed, classForContent = classForContent)
     }
   }
@@ -108,9 +108,9 @@ with ApplicationTrait
       val precomputed = new MainPagePrecompute(request)
       import precomputed._
       addAppMessageFromSession(requestCopy)
-      //          println(s"========= outputMainPageWithContentLogged precomputed $precomputed - title ${precomputed.title}")
+      // println(s"========= outputMainPageWithContentLogged precomputed $precomputed - title ${precomputed.title}")
       outputMainPage2(
-        contentMaker.result(requestCopy),
+        contentMaker,
         precomputed, classForContent = classForContent)
     }
   }
@@ -181,15 +181,17 @@ with ApplicationTrait
 
   /** generate a Main Page wrapping given XHTML content */
   private def outputMainPage2(
-    content:         NodeSeq,
-    precomputed:     MainPagePrecompute,
-    displaySearch:   Boolean            = true,
-    classForContent: String             // = "container sf-complete-form"
+      contentMaker: SemanticController,
+      precomputed:     MainPagePrecompute,
+      displaySearch:   Boolean            = true,
+      classForContent: String             // = "container sf-complete-form"
     ) = {
     import precomputed._
     Ok("<!DOCTYPE html>\n" +
       mainPage(
-        content,
+        // Filtered content (blacklist, ...):
+        filterRequest2content( requestCopy,
+            contentMaker, ipFilterInstance),
         userInfo, title,
         displaySearch,
         messages = getDefaultAppMessage(),
@@ -220,11 +222,9 @@ with ApplicationTrait
             import precomputed._
             logger.debug(s"displayURI: expandOrUnchanged <$uri>")
             val userInfo = displayUser(userid, uri, title, lang)
-            val content : () => NodeSeq = () =>
             htmlForm(uri, blanknode, editable = Edit  =/=  "", formuri,
               graphURI = makeAbsoluteURIForSaving(userid),
               request = request)._1
-            filterRequestResult( request, content, ipFilterInstance)
           }
         }
 
@@ -255,8 +255,8 @@ with ApplicationTrait
     val request = copyRequestHeader(requestHeader)
     decideLoginRequired(
         request,
-        filterRequest(request, tableContentMaker, ipFilterInstance )
-        )(requestHeader)
+        tableContentMaker
+    )(requestHeader)
   }
 
   private val tableContentMaker: SemanticController = new SemanticController {

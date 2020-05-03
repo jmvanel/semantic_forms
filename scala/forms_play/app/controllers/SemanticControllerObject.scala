@@ -19,7 +19,7 @@ import deductions.runtime.utils.FormModuleBanana
  *
  * To create a new service, just implement interface in trait SemanticController,
  * and add this to val actions below. */
-object SemanticController
+object SemanticControllerObject
 extends play.api.mvc.Results with
     ImplementationSettings.RDFCache
     with CentralSemanticController[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
