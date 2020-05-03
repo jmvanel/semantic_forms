@@ -5,7 +5,7 @@ import java.nio.file.{Files, Paths}
 import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJenaProvider}
 import deductions.runtime.services.html.{CreationFormAlgo, Form2HTMLObject}
 import deductions.runtime.utils.{DefaultConfiguration, FileUtils, RDFPrefixes}
-import org.apache.log4j.Logger
+//import org.apache.log4j.Logger
 import org.scalatest.{BeforeAndAfterAll, FunSuite}
 import org.w3.banana.{RDF, RDFOps}
 import org.w3.banana.io.{RDFWriter, Turtle}
@@ -13,6 +13,7 @@ import org.w3.banana.jena.JenaModule
 
 import scala.util.Try
 import deductions.runtime.core.HTTPrequest
+import com.typesafe.scalalogging.Logger
 
 class TestCreationForm2Jena extends {
     override val config = new DefaultConfiguration{}
@@ -38,7 +39,7 @@ trait TestCreationForm2[Rdf <: RDF, DATASET] extends FunSuite
 	  
   implicit val turtleWriter: RDFWriter[Rdf, Try, Turtle]
 
-  val logger = Logger.getRootLogger()
+//  val logger = Logger("test")//.getRootLogger()
   import ops._
 
  /** CAUTION: BeforeAndAfterAll.afterAll DOES NOT WORK directly with FunSuite:

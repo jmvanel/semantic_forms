@@ -6,10 +6,11 @@ import deductions.runtime.abstract_syntax.FormSyntaxFactoryTest
 import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJenaProvider}
 import deductions.runtime.services.html.Form2HTMLBanana
 import deductions.runtime.utils.DefaultConfiguration
-import org.apache.log4j.Logger
+//import org.apache.log4j.Logger
 import org.junit.Assert
 import org.scalatest.FunSuite
 import deductions.runtime.core.HTTPrequest
+import com.typesafe.scalalogging.Logger
 
 class Form2HTMLTest
     extends FunSuite
@@ -19,7 +20,7 @@ class Form2HTMLTest
   val config = new DefaultConfiguration {
     override val useTextQuery = false
   }
-  val logger = Logger.getRootLogger()
+//  val logger = Logger("test")//.getRootLogger()
 
   import ops._
   println("Entering Form2HTMLTest")

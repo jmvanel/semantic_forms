@@ -8,13 +8,14 @@ import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJenaProvide
 import deductions.runtime.services.html.{CreationFormAlgo, Form2HTMLObject}
 import deductions.runtime.sparql_cache.SPARQLHelpers
 import deductions.runtime.utils.{Configuration, DefaultConfiguration}
-import org.apache.log4j.Logger
+//import org.apache.log4j.Logger
 import org.scalatest.{BeforeAndAfter, FunSuite}
 import org.w3.banana.{FOAFPrefix, OWLPrefix, RDF, RDFOps, RDFOpsModule, RDFSPrefix, TurtleWriterModule}
 
 import scala.collection.JavaConverters._
 import scala.xml.{Elem, NodeSeq}
 import deductions.runtime.core.HTTPrequest
+import com.typesafe.scalalogging.Logger
 
 /**
  * Test Creation Form from class URI, without form specification
@@ -40,7 +41,7 @@ class TestCreationForm extends {
     Form2HTMLObject.makeDefaultForm2HTML(config)(ops)
     
   override val lookup_domain_unionOf = true
-  val logger = Logger.getRootLogger()
+//  val logger = Logger("test")//.getRootLogger()
   import ops._
 
   /* CAUTION: BeforeAndAfterAll.afterAll DOES NOT WORK directly with FunSuite:

@@ -4,7 +4,7 @@ import java.io.{FileInputStream, FileOutputStream}
 
 import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJenaProvider}
 import deductions.runtime.utils.DefaultConfiguration
-import org.apache.log4j.Logger
+//import org.apache.log4j.Logger
 import org.hamcrest.BaseMatcher
 import org.junit.Assert
 import org.scalatest.FunSuite
@@ -13,8 +13,10 @@ import org.scalatest.BeforeAndAfterAll
 import scala.xml.Source
 import deductions.runtime.TestsBase
 import deductions.runtime.core.HTTPrequest
+import com.typesafe.scalalogging.Logger
+import org.scalatest.funsuite.AnyFunSuite
 
-class FormSyntaxFactoryTestJena extends FunSuite
+class FormSyntaxFactoryTestJena extends AnyFunSuite
     with RDFStoreLocalJenaProvider
     with FormSyntaxFactoryTest[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with DefaultConfiguration
@@ -22,7 +24,7 @@ class FormSyntaxFactoryTestJena extends FunSuite
   val config = new DefaultConfiguration {
     override val useTextQuery = false
   }
-  val logger = Logger.getRootLogger()
+//  val logger = Logger("test") // .getRootLogger()
 
   def stringToAbstractURI(uri: String): deductions.runtime.jena.ImplementationSettings.Rdf#URI = ???
   def toPlainString(n: deductions.runtime.jena.ImplementationSettings.Rdf#Node): String = ???

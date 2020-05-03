@@ -5,10 +5,11 @@ import java.nio.file.{Files, Paths}
 import deductions.runtime.jena.{ImplementationSettings, RDFStoreLocalJenaProvider}
 import deductions.runtime.services.html.{Form2HTMLObject, TriplesViewModule}
 import deductions.runtime.utils.DefaultConfiguration
-import org.apache.log4j.Logger
+//import org.apache.log4j.Logger
 import org.junit.Assert
 import org.scalatest.{BeforeAndAfter, FunSuite}
 import deductions.runtime.core.HTTPrequest
+import com.typesafe.scalalogging.Logger
 
 class TestTableView extends FunSuite
     with ImplementationSettings.RDFModule
@@ -24,7 +25,7 @@ class TestTableView extends FunSuite
   override val htmlGenerator =
     Form2HTMLObject.makeDefaultForm2HTML(config)(ops)
 
-  val logger = Logger.getRootLogger()
+//  val logger = Logger("test")//.getRootLogger()
   lazy implicit val allNamedGraphs = allNamedGraph
 
   test("display form FOAF editable") {
