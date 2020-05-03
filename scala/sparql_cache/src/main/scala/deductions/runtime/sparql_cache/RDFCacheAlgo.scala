@@ -144,7 +144,7 @@ JMV:
 
         val result: (Try[Rdf#Graph], Try[String]) =
           if (nothingStoredLocally) { // then read unconditionally from URI and store in TDB
-          logger.debug(s"""retrieveURIBody: stored Graph Is Empty for URI <$uri>""")
+          logger.debug(s"retrieveURIBody: stored Graph Is Empty for URI <$uri>")
           val mirrorURI = getMirrorURI(uri)
           val resultWhenNothingStoredLocally: (Try[Rdf#Graph], Try[String]) =
             if (mirrorURI === "") {
@@ -347,7 +347,7 @@ JMV:
             case None => Unit
           }
         } catch {
-          case e: Throwable => logger.error(e)
+          case e: Throwable => logger.error(e.getLocalizedMessage)
         }
       }
     }

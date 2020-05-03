@@ -1,8 +1,7 @@
 package deductions.runtime
 
-import org.apache.logging.log4j.LogManager
+import com.typesafe.scalalogging.Logger
 
 /** */
 package object data_cleaning {
-  val logger = LogManager.getLogger("data_cleaning")
-}
+  val logger = Logger("data_cleaning") }

@@ -18,7 +18,7 @@ object JsonTest extends App {
   // Customise context...
   // Create an instance of JsonLdOptions with the standard JSON-LD options
   val options = new JsonLdOptions()
-  options.setProcessingMode(JsonLdOptions.JSON_LD_1_1_FRAME)
+  options.setProcessingMode(JsonLdOptions.JSON_LD_1_1)
 
   // Customise options...
   // Call whichever JSONLD function you want! (e.g. compact)

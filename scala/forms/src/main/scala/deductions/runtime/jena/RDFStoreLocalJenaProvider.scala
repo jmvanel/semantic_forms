@@ -237,7 +237,7 @@ trait RDFStoreLocalJenaProvider
         logger.debug(s"""readWithContentTypeNoJena:
                 reader from HTTP header $reader0, ${reader0.getClass}
                 request $request , getAllHeaders ${
-                for (h <- request.getAllHeaders) logger.debug(h) }
+                for (h <- request.getAllHeaders) logger.debug(h.toString()) }
                   response $response""")
 
         val reader/*From Extention*/ = if (!isKnownRdfSyntax(contentTypeNormalized)) {

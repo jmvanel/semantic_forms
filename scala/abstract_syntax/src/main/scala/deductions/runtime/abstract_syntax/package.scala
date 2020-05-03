@@ -1,7 +1,5 @@
 package deductions.runtime
 
-//import deductions.runtime.utils.Timer
-//import org.apache.logging.log4j.LogManager
 import com.typesafe.scalalogging.Logger
 import deductions.runtime.utils.LogUtils
 

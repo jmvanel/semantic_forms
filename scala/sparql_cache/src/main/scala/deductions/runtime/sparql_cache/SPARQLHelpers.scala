@@ -449,7 +449,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         query <- parseSelect(queryString)
         es <- ds.executeSelect(query, Map())
       } yield es
-    }, logger.isDebugEnabled() )
+    }, isDebugEnabled(logger) )
 
     try {
     time("sparqlSelectQueryVariablesNT 2: " + queryForLog, {
@@ -482,7 +482,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
           logger.error(s"sparqlSelectQueryVariablesNT: QueryParseException: $failure, queryString: $queryString")
           List(Seq(Literal(failure.getLocalizedMessage)))
       }
-    }, logger.isDebugEnabled()
+    }, isDebugEnabled(logger)
     )
     }
     catch {

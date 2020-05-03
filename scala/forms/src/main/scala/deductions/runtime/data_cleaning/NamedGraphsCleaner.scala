@@ -38,8 +38,8 @@ trait NamedGraphsCleaner[Rdf <: RDF, DATASET]
           })
           val res = result.flatten
           res  match {
-            case Success(_) => val s = Some(s" : removed !") ; logger.debug(s) ; s
-            case Failure(e) => val s = Some(s" : NOT removed ! $e") ; logger.debug(s) ; s
+            case Success(_) => val s = Some(s" : removed !") ; logger.debug(s.toString()) ; s
+            case Failure(e) => val s = Some(s" : NOT removed ! $e") ; logger.debug(s.toString()) ; s
           }
         } else None
       },

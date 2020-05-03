@@ -102,8 +102,8 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
           indexObject)
     })
 
-    logger.debug(s"""updateLinksCount: countURIsToAddSet ${countURIsToAddSet},
-      countsMap $countsMap""")
+    logger.debug(s"""updateLinksCount: countURIsToAddSet ${countURIsToAddSet.mkString(", ")},
+      countsMap $${countsMap.mkString(", ")}""")
 
     def replaceCountsInTDB(uris: Set[Rdf#Node], replaceCount: Boolean=replaceCount) =
     rdfStore.rw(linksCountDataset, {

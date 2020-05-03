@@ -1,8 +1,8 @@
 package deductions.runtime.jena
 
-import org.apache.logging.log4j.LogManager
+import com.typesafe.scalalogging.Logger
 
 /** package for Jena + Lucene specific stuff */
 package object lucene {
-  implicit val logger = LogManager.getLogger("jena")
+  implicit val logger = Logger("jena")
 }

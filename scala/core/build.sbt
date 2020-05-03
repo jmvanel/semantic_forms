@@ -12,6 +12,7 @@ libraryDependencies ++= Seq(
   xmlDependency,
   scalazDependency
 )
+libraryDependencies ++= loggingDependencies
 
 publishArtifact in (Compile, packageDoc) := false
 sources in (Compile,doc) := Seq.empty

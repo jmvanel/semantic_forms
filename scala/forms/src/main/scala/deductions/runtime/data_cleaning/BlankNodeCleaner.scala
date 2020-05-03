@@ -147,7 +147,7 @@ extends BlankNodeCleanerBase[Rdf, DATASET] {
    */
   def cleanUnreachableBlankNodeSubGraph(): Unit = {
     val triplesAll = find(allNamedGraph, ANY, ANY, ANY)
-    logger.debug("cleanUnreachableBlankNodeSubGraph: triples size " + triplesAll size)
+    logger.debug( s"cleanUnreachableBlankNodeSubGraph: triples size ${triplesAll size}" )
     val names = listNames().toList
     var triplesRemoveCount = 0
     
@@ -197,7 +197,7 @@ extends BlankNodeCleanerBase[Rdf, DATASET] {
               }
             } else "Nothing to remove."
         }
-       logger.debug(mess)
+       logger.debug(mess.toString())
       })
     }
     logger.debug( s"\ntriplesRemoveCount $triplesRemoveCount" )
