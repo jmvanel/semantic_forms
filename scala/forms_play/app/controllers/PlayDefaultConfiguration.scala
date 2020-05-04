@@ -18,7 +18,7 @@ class PlayDefaultConfiguration extends DefaultConfiguration {
     override val serverPort = {
       val tr = Try {
         val port = Play.current.configuration.
-          get[String]("http.port")
+          get[String]("play.server.http.port")
         port match {
           //        case Some(port) =>
           case port if (port != null && port != "") =>
