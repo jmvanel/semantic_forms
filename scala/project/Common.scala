@@ -32,12 +32,11 @@ val jenaVersion =  "3.14.0"
 
   val log4jVersion = "2.13.1" // "2.11.2" // "2.11.1"
   val loggingDependencies = Seq(
-    "org.apache.logging.log4j" % "log4j-api" % log4jVersion,
-    "org.apache.logging.log4j" % "log4j-core" % log4jVersion,
-    "org.apache.logging.log4j" % "log4j-slf4j-impl" % log4jVersion
+//    "org.apache.logging.log4j" % "log4j-api" % log4jVersion,
+//    "org.apache.logging.log4j" % "log4j-core" % log4jVersion,
+//    "org.apache.logging.log4j" % "log4j-slf4j-impl" % log4jVersion
 //, "org.apache.logging.log4j" % "log4j-web" % log4jVersion
-
- , "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
+   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
 ,  "org.slf4j" % "slf4j-simple" % "1.7.30"
 )
 
