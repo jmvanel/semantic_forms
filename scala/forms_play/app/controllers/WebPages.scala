@@ -159,12 +159,6 @@ with ApplicationTrait
   (implicit request: Request[_]) = {
     val httpRequest = copyRequest(request)
     val layout = httpRequest.getHTTPparameterValue("layout")
-
-    def httpWrapper( content: NodeSeq ) =
-      Ok( "<!DOCTYPE html>\n" + content )
-        .addHttpHeaders()
-        .addHttpHeadersLinks( request.uri )
-
     httpWrapper(
       layout match {
         case Some("form") => content
@@ -176,8 +170,16 @@ with ApplicationTrait
             headExtra = getDefaultHeadExtra(),
             classForContent,
             httpRequest )
-    } )
+      } ,
+      httpRequest )
   }
+
+  /** add HTML DOCTYPE and generic Headers, and HTTP 200 OK
+   *  TODO use XML API to add DOCTYPE */
+  private def httpWrapper( content: NodeSeq, httpRequest: HTTPrequest ) =
+      Ok( "<!DOCTYPE html>\n" + content )
+        .addHttpHeaders()
+        .addHttpHeadersLinks( httpRequest.uri )
 
   /** generate a Main Page wrapping given XHTML content */
   private def outputMainPage2(
@@ -187,7 +189,7 @@ with ApplicationTrait
       classForContent: String             // = "container sf-complete-form"
     ) = {
     import precomputed._
-    Ok("<!DOCTYPE html>\n" +
+    httpWrapper(
       mainPage(
         // Filtered content (blacklist, ...):
         filterRequest2content( requestCopy,
@@ -198,9 +200,8 @@ with ApplicationTrait
         headExtra = getDefaultHeadExtra(),
         classForContent,
         requestCopy
-    ))
-      .addHttpHeaders()
-      .addHttpHeadersLinks( precomputed )
+      ),
+      precomputed.requestCopy )
   }
 
   /**
@@ -472,9 +473,9 @@ with ApplicationTrait
             uri, editable = true,
             graphURI = makeAbsoluteURIForSaving(userid),
             request = httpRequest )._1
-          Ok("<!DOCTYPE html>\n" +
-             mainPage(content, userInfo, lang, httpRequest=httpRequest))
-             .addHttpHeaders()
+          httpWrapper(
+             mainPage(content, userInfo, lang, httpRequest=httpRequest) ,
+             httpRequest )
         },
         (t: Throwable) =>
           errorResultFromThrowable(t, "in /edit"))
