@@ -487,14 +487,45 @@ with ApplicationTrait
   /** show Named Graphs - pasted from above wordsearchAction */
   def showNamedGraphsAction() = Action.async {
     implicit request: Request[_] =>
-    val httpRequest = copyRequest(request).
-      setDefaultHTTPparameterValue("limit", "200").
-      setDefaultHTTPparameterValue("offset", "1")
-    val fut = recoverFromOutOfMemoryError( showNamedGraphs(httpRequest) )
-    val lang = httpRequest.getLanguage()
-    val rr = fut.map( r => outputMainPage( r, classForContent="") )
-    rr
+      val httpRequest = copyRequest(request).
+        setDefaultHTTPparameterValue("limit", "200").
+        setDefaultHTTPparameterValue("offset", "1")
+      val precomputed = MainPagePrecompute(httpRequest)
+      val contentMaker = new SemanticControllerFuture {
+        override def result(request: HTTPrequest): Future[NodeSeq] = {
+          import precomputed._
+          logger.info(s"showNamedGraphsAction: IP ${request.remoteAddress}")
+          recoverFromOutOfMemoryError(showNamedGraphs(httpRequest))
+        }
+      }
+      outputMainPageFuture(contentMaker, precomputed)
   }
+
+  def test() = boilerPlateActionFuture {
+    precomputed =>
+      import precomputed._
+      requestCopy.
+        setDefaultHTTPparameterValue("limit", "200").
+        setDefaultHTTPparameterValue("offset", "1").
+        setDefaultHTTPparameterValue("pattern", "")
+      logger.info(s"showNamedGraphsAction: IP ${requestCopy.remoteAddress}")
+      recoverFromOutOfMemoryError(showNamedGraphs(requestCopy))
+  }
+
+  /** boilerPlate for Action with Future */
+  def boilerPlateActionFuture(sourceCode: MainPagePrecompute => Future[NodeSeq]) = {
+    Action.async {
+      implicit request: Request[_] =>
+      val precomputed = new MainPagePrecompute(request)
+        val contentMaker = new SemanticControllerFuture {
+          override def result(request: HTTPrequest): Future[NodeSeq] = {
+            sourceCode(precomputed)
+          }
+        }
+        outputMainPageFuture(contentMaker, precomputed)
+    }
+  }
+//  def test() = boilerPlateActionFuture(Future( Text("tttttttttttttttttt")))
 
   /** show Triples In given Graph */
   def showTriplesInGraphAction(uri: String) = {
