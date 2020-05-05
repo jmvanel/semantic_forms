@@ -458,20 +458,30 @@ with ApplicationTrait
     implicit request: Request[_] =>
       recoverFromOutOfMemoryErrorGeneric(
         {
-          val httpRequest = copyRequest(request)
-          logRequest(httpRequest)
-          val classe =
-            clas match {
-              case classe if (classe =/= "") => classe
-              case _                         => httpRequest.getHTTPparameterValue("clas").getOrElse("")
-            }
-          val fut = wordsearchFuture(q, classe, httpRequest)
-          val userInfo = displayUser(getUsername(request).getOrElse("anonymous"), "pageURI", "title", "lang")
-          fut.map(r => outputMainPage(r, userInfo=userInfo, classForContent=""))
-        },
-        (t: Throwable) =>
+        val precomputed: MainPagePrecompute =
+          new MainPagePrecompute(request)
+        val contentMaker = new SemanticControllerFuture {
+          override def result(request: HTTPrequest): Future[NodeSeq] = {
+            import precomputed._
+            logger.info(s"wordsearchAction: '$q' - IP ${request.remoteAddress}")
+            recoverFromOutOfMemoryError({
+              val classe =
+                clas match {
+                  case classe if (classe =/= "") => classe
+                  case _                         => request.getHTTPparameterValue("clas").getOrElse("")
+                }
+              wordsearchFuture(q, classe, request)
+            })
+          }
+        }
+
+        // logRequest(httpRequest)
+        outputMainPageFuture(contentMaker, precomputed)
+      },
+
+      (t: Throwable) =>
           Future{ errorResultFromThrowable(t, "in word search /wordsearch") }
-          )
+      )
   }
 
   /** show Named Graphs - pasted from above wordsearchAction */
