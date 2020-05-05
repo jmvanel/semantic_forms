@@ -1,9 +1,13 @@
 package deductions.runtime.core
 
 import scala.xml.NodeSeq
+import scala.xml.Text
+import scala.xml.Node
+
 import scala.io.Source
 import scala.util.Try
 import java.net.InetAddress
+import scala.concurrent.Future
 
 trait HTTPFilter {
   /** HTTP Filter
@@ -30,7 +34,7 @@ trait IPFilter extends HTTPFilter {
   "Black listed, please respect robots.txt, see https://en.wikipedia.org/wiki/Robots_exclusion_standard")
 
   /** @return a message for HTTP output or None */
-  def filter(request: HTTPrequest): Option[String] = {
+  override def filter(request: HTTPrequest): Option[String] = {
     val blacklistCriterium = blacklistedIPs contains request.remoteAddress
     if( blacklistCriterium ) {
         responseToBlackListed
@@ -47,7 +51,10 @@ trait IPFilter extends HTTPFilter {
 trait SemanticControllerWrapper {
 
   /** ensure that when filtered the controller is never called */
-  def filterRequest(request: HTTPrequest, controller: SemanticController, filter: HTTPFilter): SemanticController = {
+  def filterRequest(
+      request: HTTPrequest,
+      controller: SemanticController,
+      filter: HTTPFilter): SemanticController = {
     new SemanticController {
       override val featureURI = controller.featureURI
       override def result(request: HTTPrequest) =
@@ -58,8 +65,37 @@ trait SemanticControllerWrapper {
     }
   }
 
+  import scala.concurrent.ExecutionContext.Implicits.global
+
+  def filterRequestFuture(request: HTTPrequest,
+      controller: SemanticControllerFuture, filter: HTTPFilter): SemanticControllerFuture = {
+    new SemanticControllerFuture {
+      override val featureURI = controller.featureURI
+      override def result(request: HTTPrequest) =
+        filterRequestResult0(
+          request,
+          () => controller.result(request),
+          filter) match {
+            case Left(c) => c
+            case Right(mess) => Future(mess)
+          }
+    }
+  }
+
   def filterRequest2content(request: HTTPrequest, controller: SemanticController, filter: HTTPFilter): NodeSeq =
     filterRequest(request, controller, filter).result(request)
+  def filterRequest2content(request: HTTPrequest,
+      controller: SemanticControllerFuture, filter: HTTPFilter): Future[NodeSeq] =
+    filterRequestFuture(request, controller, filter).result(request)
+
+  private def filterRequestResult0[TYPE](
+    request:    HTTPrequest,
+    content: () => TYPE,
+    filter: HTTPFilter): Either[TYPE, NodeSeq] =
+    filter.filter(request) match {
+      case None          => Left(content())
+      case Some(message) => Right(Text(message))
+    }
 
   import scala.xml.Text
   private def filterRequestResult(

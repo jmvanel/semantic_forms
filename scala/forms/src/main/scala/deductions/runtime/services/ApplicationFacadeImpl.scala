@@ -423,6 +423,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     }</p>
   }
 
+  /** backlinks: add HTML header to raw results */
   def backlinksFuture(query: String = "", request: HTTPrequest): Future[NodeSeq] = {
     val futureResults = backlinks(query, hrefDisplayPrefix, request)
     val label = labelForURITransaction(query, language = request.getLanguage())

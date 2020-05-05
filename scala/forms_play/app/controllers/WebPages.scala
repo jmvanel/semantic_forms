@@ -6,6 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.xml.Elem
 import scala.xml.NodeSeq
+import scala.xml.Text
 
 import deductions.runtime.html.TableView
 import deductions.runtime.jena.ImplementationSettings
@@ -20,6 +21,7 @@ import play.api.mvc.Action
 import play.api.mvc.Request
 import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.core.SemanticController
+import deductions.runtime.core.SemanticControllerFuture
 import play.api.mvc.Result
 import play.api.mvc.EssentialAction
 
@@ -86,7 +88,8 @@ with ApplicationTrait
     def this(request: Request[_]) = this(copyRequest(request))
   }
 
-  /** output Main Page With given Content */
+  /** output Main Page With given Content,
+   * while filtering unwanted clients, @see IPFilter */
   private def outputMainPageWithContent(contentMaker: SemanticController, classForContent: String = "") = {
     Action { request0: Request[_] =>
       val precomputed = new MainPagePrecompute(request0)
@@ -158,7 +161,7 @@ with ApplicationTrait
       userInfo: NodeSeq = <div/>, title: String = "",
       displaySearch:Boolean = true,
       classForContent: String ) // = "container sf-complete-form")
-  (implicit request: Request[_]) = {
+  (implicit request: Request[_]) : Result = {
     val httpRequest = copyRequest(request)
     val layout = httpRequest.getHTTPparameterValue("layout")
     httpWrapper(
@@ -189,8 +192,8 @@ with ApplicationTrait
       contentMaker: SemanticController,
       precomputed:     MainPagePrecompute,
       displaySearch:   Boolean            = true,
-      classForContent: String             // = "container sf-complete-form"
-    ) = {
+      classForContent: String = "" // = "container sf-complete-form"
+    ) : Result = {
     import precomputed._
     val layout = requestCopy.getHTTPparameterValue("layout")
     // Filtered content (blacklist, ...):
@@ -208,6 +211,38 @@ with ApplicationTrait
             requestCopy
         ) },
       requestCopy )
+  }
+
+  /** generate a Main Page wrapping given XHTML content from a contentMaker,
+   * while filtering unwanted clients, @see IPFilter;
+   * Future version of the above
+   */
+  private def outputMainPageFuture(
+      contentMaker: SemanticControllerFuture,
+      precomputed:     MainPagePrecompute,
+      displaySearch:   Boolean            = true,
+      classForContent: String             = "" // "container sf-complete-form"
+    )  : Future[Result] = {
+    import precomputed._
+    val layout = requestCopy.getHTTPparameterValue("layout")
+    // Filtered content (blacklist, ...):
+    val content = filterRequest2content( requestCopy,
+      contentMaker, ipFilterInstance)
+
+    content map { content =>
+      httpWrapper(
+      layout match {
+        case Some("form") => content
+        case _ => mainPage(
+            content, userInfo, title,
+            displaySearch,
+            messages = getDefaultAppMessage(),
+            headExtra = getDefaultHeadExtra(),
+            classForContent,
+            requestCopy
+        ) },
+      requestCopy )
+    }
   }
 
   /**
@@ -553,30 +588,35 @@ with ApplicationTrait
           errorResultFromThrowable(t, "in create Actions /create"))
     }
 
-  def backlinksAction(uri: String = "") = Action.async {
-    implicit request: Request[_] =>
-      val requestCopy = copyRequest(request)
-      val fut: Future[NodeSeq] =
-        recoverFromOutOfMemoryError(
-          backlinksFuture(uri, requestCopy) )
+  /** backlinks, asynchronous action */
+  def backlinksAction(uriFromHTTP: String = "") = Action.async {
+    implicit request: Request[_] => {
+      val precomputed: MainPagePrecompute =
+        new MainPagePrecompute(request)
+      val contentMaker = new SemanticControllerFuture {
+          override def result(request: HTTPrequest): Future[NodeSeq] = {
+            import precomputed._
+            logger.info(s"backlinksAction: <$uri> - IP ${request.remoteAddress}")
 
-      val extendedSearchLink =
-        <p>
-          <a href={ "/esearch?q=" + URLEncoder.encode(uri, "utf-8") }>
-            Extended Search for &lt;{ uri }
-            &gt;
-          </a>
-        </p>
+            val extendedSearchLink =
+              <p>
+                <a href={ "/esearch?q=" + URLEncoder.encode(uri, "utf-8") }>
+                  Extended Search for &lt;{ uri }
+                  &gt;
+                </a>
+              </p>
 
-      val prec = MainPagePrecompute(requestCopy)
-      val userInfo = prec.userInfo
-      val lang = prec.lang
+            val future: Future[NodeSeq] =
+              recoverFromOutOfMemoryError(
+                  backlinksFuture(uri, requestCopy) )
 
-      fut.map { formattedResults =>
-        outputMainPage(
-          extendedSearchLink ++ formattedResults,
-          userInfo, classForContent="")
+            future.map { formattedResults =>
+              extendedSearchLink ++ formattedResults
+            }
+          }
       }
+      outputMainPageFuture(contentMaker, precomputed)
+  }
   }
 
   def extSearch(q: String = "") = Action.async {
