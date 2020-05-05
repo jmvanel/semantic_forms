@@ -608,7 +608,7 @@ with ApplicationTrait
 
             val future: Future[NodeSeq] =
               recoverFromOutOfMemoryError(
-                  backlinksFuture(uri, requestCopy) )
+                backlinksFuture(uri, requestCopy) )
 
             future.map { formattedResults =>
               extendedSearchLink ++ formattedResults
@@ -616,19 +616,24 @@ with ApplicationTrait
           }
       }
       outputMainPageFuture(contentMaker, precomputed)
-  }
+    }
   }
 
   def extSearch(q: String = "") = Action.async {
-	  implicit request: Request[_] =>
-	  val httpRequest = copyRequest(request)
-	  val lang = httpRequest.getLanguage()// chooseLanguage(request)
-    val fut = recoverFromOutOfMemoryError(esearchFuture(q, httpRequest))
-    fut.map(r =>
-    outputMainPage(r, classForContent=""))
+    implicit request: Request[_] =>
+      val precomputed: MainPagePrecompute =
+        new MainPagePrecompute(request)
+      val contentMaker = new SemanticControllerFuture {
+        override def result(request: HTTPrequest): Future[NodeSeq] = {
+          import precomputed._
+          logger.info(s"extSearch: <${request.uri}> - IP ${request.remoteAddress}")
+          recoverFromOutOfMemoryError(esearchFuture(q, requestCopy))
+        }
+      }
+      outputMainPageFuture(contentMaker, precomputed)
   }
 
-  //  implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(
+  // implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(
 
   def toolsPage = {
     withUser {
