@@ -124,6 +124,7 @@ with ApplicationTrait
       <p>{ stringMess }</p>)
   }
 
+  /** UNUSED in runtime ! */
   class ResultEnhanced(result: Result) {
     /** common HTTP headers for HTML */
     def addHttpHeaders(): Result = {
@@ -148,7 +149,8 @@ with ApplicationTrait
     }
   }
   import scala.language.implicitConversions
-  implicit def resultToResult(r: Result) = new ResultEnhanced(r)
+  /** UNUSED ! */
+  private implicit def resultToResult(r: Result) = new ResultEnhanced(r)
 
   /** generate a Main Page wrapping given XHTML content;
    *  if HTTP URL contains &layout=form , do not apply SF application HTML header */
@@ -181,7 +183,8 @@ with ApplicationTrait
         .addHttpHeaders()
         .addHttpHeadersLinks( httpRequest.uri )
 
-  /** generate a Main Page wrapping given XHTML content */
+  /** generate a Main Page wrapping given XHTML content from a contentMaker,
+   *  while filtering unwanted clients, @see IPFilter */
   private def outputMainPage2(
       contentMaker: SemanticController,
       precomputed:     MainPagePrecompute,
@@ -189,19 +192,22 @@ with ApplicationTrait
       classForContent: String             // = "container sf-complete-form"
     ) = {
     import precomputed._
+    val layout = requestCopy.getHTTPparameterValue("layout")
+    // Filtered content (blacklist, ...):
+    val content = filterRequest2content( requestCopy,
+      contentMaker, ipFilterInstance)
     httpWrapper(
-      mainPage(
-        // Filtered content (blacklist, ...):
-        filterRequest2content( requestCopy,
-            contentMaker, ipFilterInstance),
-        userInfo, title,
-        displaySearch,
-        messages = getDefaultAppMessage(),
-        headExtra = getDefaultHeadExtra(),
-        classForContent,
-        requestCopy
-      ),
-      precomputed.requestCopy )
+      layout match {
+        case Some("form") => content
+        case _ => mainPage(
+            content, userInfo, title,
+            displaySearch,
+            messages = getDefaultAppMessage(),
+            headExtra = getDefaultHeadExtra(),
+            classForContent,
+            requestCopy
+        ) },
+      requestCopy )
   }
 
   /**

@@ -28,6 +28,7 @@ trait FormHeader[Rdf <: RDF, DATASET]
   import config._
   import ops._
 
+  /** Make URL for downloading RDF from this SF site */
   def downloadURI(uri: String, syntax: String = "Turtle"): String = {
     hrefDownloadPrefix +
       URLEncoder.encode(uri, "utf-8") +
