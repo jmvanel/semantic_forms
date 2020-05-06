@@ -95,6 +95,7 @@ with StringHelpers
     import resourceEntry._
     val uri = value.toString()
     (if (showExpertButtons) {
+      <span class="sf-local-rdf-link"> - </span> ++
       showHideExpertButtonsOnClick(
         normalNavigationButton(resourceEntry) ++
         makeDrawGraphLink(uri) ++

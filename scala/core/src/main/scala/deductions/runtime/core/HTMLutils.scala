@@ -32,7 +32,7 @@ trait HTMLutils {
     showHideHTMLOnClick(html, resourceId,
           <button type="button" title={
       s"""Show "expert" buttons: navigate, edit, graph, for value <${resourceId}>"""}
-              style="height: 20px"
+              style="height: 20px; width: 20px"
           >...</button>)
   }
 }
