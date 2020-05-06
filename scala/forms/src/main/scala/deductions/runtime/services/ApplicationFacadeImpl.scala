@@ -190,9 +190,14 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     }
   }
 
+  def recoverFromOutOfMemoryErrorDefaultMessage(lang: String) =
+    I18NMessages.get("recoverFromOutOfMemoryErrorDefaultMessage", lang)
+    // "ERROR! try again some time later."
+  /** recover From Out Of Memory Error, with message */
   def recoverFromOutOfMemoryError(
     sourceCode: => Future[NodeSeq],
-    message:    String             = "ERROR! try again some time later."): Future[NodeSeq] = {
+    message:    String             =
+      recoverFromOutOfMemoryErrorDefaultMessage("en") ): Future[NodeSeq] = {
     try {
       sourceCode
     } catch {

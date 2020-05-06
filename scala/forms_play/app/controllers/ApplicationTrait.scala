@@ -38,6 +38,7 @@ import play.api.mvc.Action
 
 import scalaz._
 import Scalaz._
+import deductions.runtime.utils.I18NMessages
 
 //object Global extends GlobalSettings with Results {
 //  override def onBadRequest(request: RequestHeader, error: String) = {
@@ -224,7 +225,7 @@ trait ApplicationTrait extends PlaySettings.MyControllerBase
 
   def recoverFromOutOfMemoryErrorResult(
     sourceCode: => Result,
-    message:    String    = "ERROR! try again some time later."): Result = {
+    message:    String    = recoverFromOutOfMemoryErrorDefaultMessage("en") ): Result = {
     try {
       sourceCode
     } catch {
@@ -242,9 +243,11 @@ trait ApplicationTrait extends PlaySettings.MyControllerBase
 
   def errorResultFromThrowable(
     t:               Throwable,
-    specificMessage: String    = "ERROR"): Result = {
+    specificMessage: String    = "ERROR",
+    request: Request[_] ): Result = {
     InternalServerError(
-      s"""Error $specificMessage, retry later !!!!!!!!
+      s"""Error '$specificMessage', retry later !!!!!!!!
+        ${request.uri}
           ${t.getLocalizedMessage}
           ${printMemory}""")
   }
@@ -252,8 +255,8 @@ trait ApplicationTrait extends PlaySettings.MyControllerBase
     def errorActionFromThrowable(
     t:               Throwable,
     specificMessage: String    = "ERROR") = Action {
-          implicit request: Request[AnyContent] =>
-        errorResultFromThrowable(t, specificMessage)
+          implicit request: Request[_] =>
+        errorResultFromThrowable(t, specificMessage, request)
     }
 
 }

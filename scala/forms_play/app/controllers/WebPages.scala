@@ -228,7 +228,6 @@ with ApplicationTrait
     // Filtered content (blacklist, ...):
     val content = filterRequest2content( requestCopy,
       contentMaker, ipFilterInstance)
-
     content map { content =>
       httpWrapper(
       layout match {
@@ -391,7 +390,7 @@ with ApplicationTrait
             userInfo, classForContent="sf-complete-form")
         },
         (t: Throwable) =>
-          errorResultFromThrowable(t, "in /sparql-form"))
+          errorResultFromThrowable(t, "in /sparql-form", request))
     }
 
 
@@ -438,7 +437,7 @@ with ApplicationTrait
                 userInfo=userInfo, classForContent="" )
         },
         (t: Throwable) =>
-          errorResultFromThrowable(t, "in SPARQL UI /select-ui"))
+          errorResultFromThrowable(t, "in SPARQL UI /select-ui", request))
     }
 
 
@@ -454,54 +453,27 @@ with ApplicationTrait
       wordsearchAction(q)
   }
 
-  def wordsearchAction(q: String = "", clas: String = "") = Action.async {
-    implicit request: Request[_] =>
-      recoverFromOutOfMemoryErrorGeneric(
-        {
-        val precomputed: MainPagePrecompute =
-          new MainPagePrecompute(request)
-        val contentMaker = new SemanticControllerFuture {
-          override def result(request: HTTPrequest): Future[NodeSeq] = {
-            import precomputed._
-            logger.info(s"wordsearchAction: '$q' - IP ${request.remoteAddress}")
-            recoverFromOutOfMemoryError({
-              val classe =
-                clas match {
-                  case classe if (classe =/= "") => classe
-                  case _                         => request.getHTTPparameterValue("clas").getOrElse("")
-                }
-              wordsearchFuture(q, classe, request)
-            })
-          }
-        }
+  def wordsearchAction(q: String = "", clas: String = "") =
+    boilerPlateActionFuture {
+      precomputed =>
+        import precomputed._
+        logger.info(s"wordsearchAction: '$q' - IP ${requestCopy.remoteAddress}")
+        recoverFromOutOfMemoryError(
+          {
+          val classe =
+            clas match {
+              case classe if (classe =/= "") => classe
+              case _                         => requestCopy.getHTTPparameterValue("clas").getOrElse("")
+            }
+          wordsearchFuture(q, classe, requestCopy)
+        },
+          recoverFromOutOfMemoryErrorDefaultMessage(requestCopy.getLanguage()) +
+            s", in word search /wordsearch?q=$q")
+    }
 
-        // logRequest(httpRequest)
-        outputMainPageFuture(contentMaker, precomputed)
-      },
 
-      (t: Throwable) =>
-          Future{ errorResultFromThrowable(t, "in word search /wordsearch") }
-      )
-  }
-
-  /** show Named Graphs - pasted from above wordsearchAction */
-  def showNamedGraphsAction() = Action.async {
-    implicit request: Request[_] =>
-      val httpRequest = copyRequest(request).
-        setDefaultHTTPparameterValue("limit", "200").
-        setDefaultHTTPparameterValue("offset", "1")
-      val precomputed = MainPagePrecompute(httpRequest)
-      val contentMaker = new SemanticControllerFuture {
-        override def result(request: HTTPrequest): Future[NodeSeq] = {
-          import precomputed._
-          logger.info(s"showNamedGraphsAction: IP ${request.remoteAddress}")
-          recoverFromOutOfMemoryError(showNamedGraphs(httpRequest))
-        }
-      }
-      outputMainPageFuture(contentMaker, precomputed)
-  }
-
-  def test() = boilerPlateActionFuture {
+  /** show Named Graphs */
+  def showNamedGraphsAction() = boilerPlateActionFuture {
     precomputed =>
       import precomputed._
       requestCopy.
@@ -512,7 +484,9 @@ with ApplicationTrait
       recoverFromOutOfMemoryError(showNamedGraphs(requestCopy))
   }
 
-  /** boilerPlate for Action with Future */
+  /** boilerPlate for Action with Future;
+   * generate a Main Page wrapping given XHTML content from a contentMaker,
+   * while filtering unwanted clients, @see IPFilter */
   def boilerPlateActionFuture(sourceCode: MainPagePrecompute => Future[NodeSeq]) = {
     Action.async {
       implicit request: Request[_] =>
@@ -525,18 +499,14 @@ with ApplicationTrait
         outputMainPageFuture(contentMaker, precomputed)
     }
   }
-//  def test() = boilerPlateActionFuture(Future( Text("tttttttttttttttttt")))
 
   /** show Triples In given Graph */
-  def showTriplesInGraphAction(uri: String) = {
-    Action.async { implicit request: Request[_] =>
-      val lang = chooseLanguageObject(request).language
-      val fut = recoverFromOutOfMemoryError(
+  def showTriplesInGraphAction(uri: String) = boilerPlateActionFuture {
+    precomputed =>
+      val lang = precomputed.requestCopy.getLanguage()
+      recoverFromOutOfMemoryError(
         Future.successful(showTriplesInGraph(uri, lang)),
         s"in show Triples In Graph /showTriplesInGraph?uri=$uri")
-      val rr = fut.map(r => outputMainPage(r, classForContent=""))
-      rr
-    }
   }
 
   /////////////////////////////////
@@ -560,7 +530,7 @@ with ApplicationTrait
              httpRequest )
         },
         (t: Throwable) =>
-          errorResultFromThrowable(t, "in /edit"))
+          errorResultFromThrowable(t, "in /edit", request))
     }
 
   /**
@@ -626,53 +596,40 @@ with ApplicationTrait
             userInfo = displayUser(userid, uri, s"Create a $uri", lang), classForContent="" )
         },
         (t: Throwable) =>
-          errorResultFromThrowable(t, "in create Actions /create"))
+          errorResultFromThrowable(t, "in create Actions /create", request))
     }
 
+  /** Function for backlinks, asynchronous action */
+  private val sourceCodeBacklinksAction: MainPagePrecompute => Future[NodeSeq] = {
+    precomputed =>
+      import precomputed._
+      logger.info(s"backlinksAction: <$uri> - IP ${precomputed.requestCopy.remoteAddress}")
+      val extendedSearchLink =
+        <p>
+          <a href={ "/esearch?q=" + URLEncoder.encode(uri, "utf-8") }>
+            Extended Search for &lt;{ uri }
+            &gt;
+          </a>
+        </p>
+      val future: Future[NodeSeq] =
+        recoverFromOutOfMemoryError(
+          backlinksFuture(uri, requestCopy))
+      future.map { formattedResults =>
+        extendedSearchLink ++ formattedResults }
+  }
   /** backlinks, asynchronous action */
-  def backlinksAction(uriFromHTTP: String = "") = Action.async {
-    implicit request: Request[_] => {
-      val precomputed: MainPagePrecompute =
-        new MainPagePrecompute(request)
-      val contentMaker = new SemanticControllerFuture {
-          override def result(request: HTTPrequest): Future[NodeSeq] = {
-            import precomputed._
-            logger.info(s"backlinksAction: <$uri> - IP ${request.remoteAddress}")
-
-            val extendedSearchLink =
-              <p>
-                <a href={ "/esearch?q=" + URLEncoder.encode(uri, "utf-8") }>
-                  Extended Search for &lt;{ uri }
-                  &gt;
-                </a>
-              </p>
-
-            val future: Future[NodeSeq] =
-              recoverFromOutOfMemoryError(
-                backlinksFuture(uri, requestCopy) )
-
-            future.map { formattedResults =>
-              extendedSearchLink ++ formattedResults
-            }
-          }
-      }
-      outputMainPageFuture(contentMaker, precomputed)
+  def backlinksAction(uriFromHTTP: String = "") =
+    boilerPlateActionFuture {
+      precomputed => sourceCodeBacklinksAction(precomputed)
     }
-  }
 
-  def extSearch(q: String = "") = Action.async {
-    implicit request: Request[_] =>
-      val precomputed: MainPagePrecompute =
-        new MainPagePrecompute(request)
-      val contentMaker = new SemanticControllerFuture {
-        override def result(request: HTTPrequest): Future[NodeSeq] = {
-          import precomputed._
-          logger.info(s"extSearch: <${request.uri}> - IP ${request.remoteAddress}")
-          recoverFromOutOfMemoryError(esearchFuture(q, requestCopy))
-        }
-      }
-      outputMainPageFuture(contentMaker, precomputed)
-  }
+  def extSearch(q: String = "") =
+    boilerPlateActionFuture {
+      precomputed =>
+        import precomputed._
+        logger.info(s"extSearch: <${requestCopy.uri}> - IP ${requestCopy.remoteAddress}")
+        recoverFromOutOfMemoryError(esearchFuture(q, requestCopy))
+    }
 
   // implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(
 
@@ -695,7 +652,10 @@ with ApplicationTrait
     }
   }
 
+  /** output Main Page With History of User Actions,
+   * while filtering unwanted clients, @see IPFilter*/
   def makeHistoryUserActionsAction(limit: String): EssentialAction = {
+//    request =>
     recoverFromOutOfMemoryErrorGeneric(
       {
       val contentMaker: SemanticController = new SemanticController {
@@ -709,7 +669,9 @@ with ApplicationTrait
       outputMainPageWithContent(contentMaker)
     },
       (t: Throwable) =>
-        errorActionFromThrowable(t, s"in make History of User Actions /history?limit=$limit"))
+        errorActionFromThrowable(t,
+            recoverFromOutOfMemoryErrorDefaultMessage("en" /*request.getLa*/) +
+            s", in make History of User Actions /history?limit=$limit") )
   }
 
   def logRequest(httpRequest: HTTPrequest) {

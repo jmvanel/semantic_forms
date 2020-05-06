@@ -42,7 +42,7 @@ with ApplicationTrait
               .as("text/html; charset=utf-8")
           },
           (t: Throwable) =>
-            errorResultFromThrowable(t, s"in /form?uri=$uri"))
+            errorResultFromThrowable(t, s"in /form?uri=$uri", request))
     }
   
 //    /** output Main Page With given Content */
