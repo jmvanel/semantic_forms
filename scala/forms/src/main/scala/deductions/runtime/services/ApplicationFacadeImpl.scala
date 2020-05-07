@@ -369,7 +369,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   }
 
 /** Display result of a SPARQL select, plus a form to edit the SPARQL text */
-  def selectSPARQL(query: String, request: HTTPrequest): Elem = {
+  def selectSPARQL(query: String, request: HTTPrequest): NodeSeq = {
     logger.debug("sparql query  " + query)
     <p>
       {
@@ -387,7 +387,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
             case Success(rows) =>
               val paragraphs = request.getHTTPparameterValue("paragraphs").getOrElse("")
 //              println( s">>>> selectSPARQL: paragraphs '$paragraphs'")
-              val results = if( paragraphs == "on" )
+              val results = if( paragraphs != "" )
                 sentencesForSPARQLresults(rows)
               else
                 tableForSPARQLresults(rows)

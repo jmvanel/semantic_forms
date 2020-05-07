@@ -15,6 +15,7 @@ import deductions.runtime.views.ResultsDisplay
 
 import scalaz._
 import Scalaz._
+import deductions.runtime.services.html.TriplesViewWithTitle
 
 /**
  * Show History of User Actions:
@@ -29,7 +30,8 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   with TimeSeries[Rdf, DATASET]
   with ParameterizedSPARQL[Rdf, DATASET]
   with NavigationSPARQLBase[Rdf]
-  with ResultsDisplay[Rdf, DATASET] {
+ with TriplesViewWithTitle[Rdf, DATASET]
+{
 
   import ops._
 
@@ -38,7 +40,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     override def variables = Seq("SUBJECT", "TIME", "COUNT")
   }
 
-  private def mess(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
+//  private def mess(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
 
   /** make Table of History of User Actions;
    * leverage on ParameterizedSPARQL.makeHyperlinkForURI();
@@ -54,6 +56,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
 //          ""
 //        else
         limit)
+
     logger.debug(s">>>> makeTableHistoryUserActions limit '$limit' metadata0 ${metadata0.size} $metadata0")
     val metadata1 = filterMetadata(metadata0, request)
     logger.debug(s">>>> makeTableHistoryUserActions metadata1 $metadata1")
@@ -70,9 +73,14 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     {
       val title: NodeSeq =
         <span>{mess("View_centered")} </span> ++ metadata._2
-      val html: NodeSeq =
-        title ++
-        historyLink ++
+
+      def dateAsLong(row: Seq[Rdf#Node]): Long = makeStringFromLiteral(row(1)).toLong
+      val sorted = metadata._1.sortWith {
+                (row1, row2) =>
+                  dateAsLong(row1) >
+                  dateAsLong(row2)
+              }
+        lazy val table = 
         <table class="table">
           <thead>
             <tr style="color: LightGray; font-size: small">
@@ -87,14 +95,6 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
           </thead>
           <tbody>
             {
-              def dateAsLong(row: Seq[Rdf#Node]): Long = makeStringFromLiteral(row(1)).toLong
-
-              val sorted = metadata._1.sortWith {
-                (row1, row2) =>
-                  dateAsLong(row1) >
-                    dateAsLong(row2)
-              }
-
               val dateFormat = new SimpleDateFormat(
                      "dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
               val dateFormat2 = new SimpleDateFormat("EEEE", Locale.forLanguageTag(lang))
@@ -121,8 +121,8 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
                       }</td>
                       <!-- td>{ "Edit" /* TODO */ }</td -->
                       <td title={ dateFormat2.format(date) }>{ dateFormat.format(date) }</td>
-                      <td>{ row(3) }</td>
-                      <td>{ makeStringFromLiteral(row(2)) }</td>
+                      <td>{ row(3) /* user */ }</td>
+                      <td>{ makeStringFromLiteral(row(2)) /* triple count */ }</td>
                     </tr>
                   } else <tr/>
                   }
@@ -135,26 +135,37 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
             }
           </tbody>
         </table>
-        html    
+
+    lazy val paragraphs = paragrahsView(sorted, request)
+
+      val html: NodeSeq =
+        title ++
+          historyLink ++ (
+            if (request.getHTTPparameterValue("paragraphs").isDefined)
+              paragraphs
+            else table)
+      html
     }
   }
 
   /**
-   * filter Metadata according to HTTP request, eg
+   * filter Metadata according to HTTP request,
+   * with a property-value pattern, eg
    *  rdf:type=foaf:Person
    *
-   *  @param metadata List of Seq'q with subject, timestamp, triple count, user; ordered by recent first;
+   *  @param metadata List of Seq's with subject, timestamp, triple count, user; ordered by recent first;
    */
   private def filterMetadata(
     metadata: List[Seq[Rdf#Node]],
     request:  HTTPrequest): List[Seq[Rdf#Node]] = {
     val params = request.queryString
-    if (params.size > 1 ||
-      (params.size === 1 &&
-        params.head._1 =/= "limit" &&
-        params.head._1 =/= "uri" &&
-        params.head._1 =/= "query" &&
-        params.head._1 =/= "sparql") ) {
+//    if (params.size > 1 ||
+//      (params.size === 1 &&
+//        params.head._1 =/= "limit" &&
+//        params.head._1 =/= "uri" &&
+//        params.head._1 =/= "query" &&
+//        params.head._1 =/= "sparql" &&
+//        params.head._1 =/= "paragraphs") ) {
 
       wrapInReadTransaction {
         var filteredURIs = metadata
@@ -163,8 +174,8 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
         }
         filteredURIs
       }.getOrElse(metadata)
-    } else
-      metadata
+//    } else
+//      metadata
   }
 
   /** filter given List according to One Criterium on first column:
@@ -177,11 +188,17 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     param0: String, values: Seq[String],
     metadata: List[Seq[Rdf#Node]]): List[Seq[Rdf#Node]] = {
     var filteredURIs = metadata
-    if (param0 != "limit") {
+    val isSpecialParamameterAndNotURI =
+        param0 === "limit" ||
+        param0 === "uri" ||
+        param0 === "query" ||
+        param0 === "sparql" ||
+        param0 === "paragraphs"
+    if (!isSpecialParamameterAndNotURI) {
       val param = expandOrUnchanged(param0)
       for (value0 <- values) {
         val value = expandOrUnchanged(value0)
-        logger.debug(s"filterMetadata: actually filter for param <$param> = <$value>")
+        logger.debug(s"filterOneCriterium: actually filter for param <$param> = <$value>")
         filteredURIs = filteredURIs.filter {
           row =>
             val uri = row(0)
@@ -221,7 +238,6 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       val sparqlQuery = params.getOrElse("sparql",
                         params.getOrElse("query", Seq() )
                         ) .headOption.getOrElse("")
-          params("query")
 //      println(s"filterMetadataFocus sparqlQuery: $sparqlQuery")
       ( filterMetadataSPARQL( metadata, request, sparqlQuery),
         sparqlQueryButton(sparqlQuery, request) )
@@ -233,6 +249,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   /**
    * filter Metadata according to HTTP request, eg
    *  query=CONSTRUCT ...
+   *  NOTE: only internal (users') data will appear, no external RDF data
    *  @param metadata List of Seq'q with subject, timestamp, triple count, user; ordered by recent first
    */
   private def filterMetadataSPARQL(
@@ -260,5 +277,22 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
         logger.debug(s"""== uri $uri""")
         uris . contains(uri)
     }
+  }
+
+  private def paragrahsView(rows: List[Seq[Rdf#Node]], request: HTTPrequest): NodeSeq = {
+    val zz = for (row <- rows) yield {
+      try {
+        logger.debug("row " + row(1).toString())
+        val subjectURI = row(0)
+        htmlFormElemRaw(
+          fromUri(nodeToURI(subjectURI)),
+          request = request)._1
+      } catch {
+        case t: Throwable =>
+          t.printStackTrace()
+          <p>{ t.getLocalizedMessage }</p>
+      }
+    }
+    zz.flatten
   }
 }
