@@ -162,7 +162,7 @@ don't mix them */
       <a class="sf-button btn-default" href={ s"$toolURLprefix$link" }
       title={s"${I18NMessages.get("Launch_tool",request.getLanguage())} $toolname for <$uri>"}
       target="_blank">
-      <img width={imgWidth.toString()} border="0"
+      <img width={imgWidth.toString()} style="border:1px solid"
         src={icon}
         alt={toolname}/>
       </a>
