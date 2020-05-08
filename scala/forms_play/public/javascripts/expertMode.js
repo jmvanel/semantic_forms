@@ -7,11 +7,12 @@ function getElementsExpertMode() {
 function applyExpertMode(isExpertMode) {
   const localRdfLinks = getElementsExpertMode()
   if(isExpertMode)
-    visibility = "visible"
+    visibility = "inline" // "visible"
   else
-    visibility = "hidden"
+    visibility = "none" // "hidden"
   for (var i = 0; i < localRdfLinks.length; i ++) {
-    localRdfLinks[i].style.visibility = visibility
+    // localRdfLinks[i].style.visibility = visibility
+    localRdfLinks[i].style.display = visibility
   }
 }
 
