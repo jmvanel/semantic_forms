@@ -18,10 +18,14 @@
   justify-content: left; /* space-evenly;*/
   align-content: /*space-around; */ flex-start;
 }
+.sf-values-group:before { display: block; }
+
 .sf-values-group-inline > * .sf-values-group {
   display: inline;
 }
-.sf-values-group:before { display: block; }
+.sf-values-group-inline > * .sf-navigation-button {
+  display: none;
+}
 
 
 .sf-property-label{ margin-right: 7px; }

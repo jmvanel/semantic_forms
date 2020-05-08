@@ -60,7 +60,7 @@ don't mix them */
       I18NMessages.get("Reverse-links-reaching", request.getLanguage()) +
         s"<$uri>;" else title
       <a href={s"/backlinks?q=${URLEncoder.encode(uri, "utf-8")}"}
-        class="sf-button"
+        class="sf-button sf-navigation-button"
         title={ tit }
         data-value={s"$uri"}
         border="0" >
@@ -128,9 +128,11 @@ don't mix them */
   def makeNeighborhoodLink( uri: String,
       request: HTTPrequest,
       toolURLprefix: String = "/history?uri=",
-      icon: String = "/assets/images/radial_layout.png"): Elem = {
+      icon: String = "/assets/images/radial_layout.png"): NodeSeq = {
     val toolname = I18NMessages.get("Neighborhood", request.getLanguage())
+    <span class="sf-navigation-button">{
     makeToolLink( uri, request, toolURLprefix, toolname, icon, imgWidth=25 )
+    }</span>
   }
 
   /** make link to WebVOWL

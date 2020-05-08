@@ -165,7 +165,7 @@ with StringHelpers
   }
 
   private def backLinkButton(resourceEntry: formMod#ResourceEntry,
-      request: HTTPrequest) = {
+      request: HTTPrequest): NodeSeq = {
     import resourceEntry._
     val objectURIstringValue = resourceEntry.value.toString()
     (if (objectURIstringValue.size > 0 && showExpertButtons) {
