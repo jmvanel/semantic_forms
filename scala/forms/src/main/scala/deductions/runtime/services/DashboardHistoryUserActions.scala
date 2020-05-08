@@ -284,9 +284,14 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       try {
         logger.debug("row " + row(1).toString())
         val subjectURI = row(0)
-        htmlFormElemRaw(
-          fromUri(nodeToURI(subjectURI)),
-          request = request)._1
+//        if (subjectURI != rdfs.label) {
+          val (nodesAsXHTML, formSyntax) = htmlFormElemRaw(
+            fromUri(nodeToURI(subjectURI)),
+            request = request)
+          linkToFormSubject(formSyntax, request.getLanguage()) ++
+            nodesAsXHTML ++
+            <br/>
+//        } else NodeSeq.Empty
       } catch {
         case t: Throwable =>
           t.printStackTrace()

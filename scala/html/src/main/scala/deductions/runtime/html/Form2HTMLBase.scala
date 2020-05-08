@@ -31,9 +31,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
 
   def linkToFormSubject(form: formMod#FormSyntax, lang: String="en") =
     <a href={ toPlainString(form.subject) } style="color: rgb(44,133,254);"
-       title={
-             I18NMessages.get("linkToResourceURI", lang)
-       }>{
+       title={ I18NMessages.get("linkToResourceURI", lang) }>{
       form.title
     }</a>
 

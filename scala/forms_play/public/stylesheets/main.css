@@ -26,7 +26,9 @@
 .sf-values-group-inline > * .sf-navigation-button {
   display: none;
 }
-
+.sf-values-group-inline > * .sf-data-header {
+  display: none;
+}
 
 .sf-property-label{ margin-right: 7px; }
 
@@ -49,6 +51,7 @@
 .sf-complete-form{
   /* padding-bottom: 70px; */
   padding-left: 10px;
+  display: inline;
 }
 .sf-space-form{
     /*margin-bottom: 10px;*/
