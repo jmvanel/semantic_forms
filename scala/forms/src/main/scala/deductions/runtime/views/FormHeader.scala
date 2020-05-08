@@ -35,7 +35,8 @@ trait FormHeader[Rdf <: RDF, DATASET]
       s"&syntax=$syntax"
   }
 
-  /** title and links on top of the form: Edit, Display, Download Links */
+  /** title and links on top of the form: Edit, Display, Download Links
+   *  @See also #Form2HTML.dataFormHeader() */
   def titleEditDisplayDownloadLinksThumbnail(formSyntax: FormSyntax,
       editable: Boolean = false,
       request: HTTPrequest
@@ -71,7 +72,8 @@ trait FormHeader[Rdf <: RDF, DATASET]
         <div class="col-xs-12">
           <h3 id="subject">
             {
-              formSyntax.title
+              linkToFormSubject(formSyntax, request.getLanguage())
+              // formSyntax.title
             }
             <strong>
               { editOrUnEditButton ++

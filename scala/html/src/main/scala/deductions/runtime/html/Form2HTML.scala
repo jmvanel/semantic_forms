@@ -298,16 +298,18 @@ trait Form2HTML[NODE, URI <: NODE]
 
   /**
    * Form Header inside the form box with data fields;
+   * @See also #FormHeader class;
    * it displays:
    *  - form title
    *  - form subject URI
    *  - class or Form specification
+   * class="sf-local-rdf-link" => expert mode
    */
   private def dataFormHeader(form: formMod#FormSyntax, lang: String): NodeSeq = {
     import form._
     if (toPlainString(subject) =/= "") {
       <p class="sf-local-rdf-link">{
-        <a href={ toPlainString(form.subject) } style="color: rgb(44,133,254);">{ form.title }</a> ++
+        linkToFormSubject(form, lang) ++
           (if (form.subject != nullURI)
             <span> &nbsp;&nbsp;&nbsp;= </span> ++
             <span>&lt;<a href={ toPlainString(form.subject) } style="color: rgb(44,133,254);">{ form.subject }</a>&gt;</span>

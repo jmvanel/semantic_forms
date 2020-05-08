@@ -26,9 +26,17 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
   type formMod = FormModule[NODE, URI]
   type FormEntry = formMod#Entry
 
-//  lazy val prefixes = new RDFPrefixes[ImplementationSettings.Rdf]
-//		  with ImplementationSettings.RDFModule{}
-  
+  //  lazy val prefixes = new RDFPrefixes[ImplementationSettings.Rdf]
+  //		  with ImplementationSettings.RDFModule{}
+
+  def linkToFormSubject(form: formMod#FormSyntax, lang: String="en") =
+    <a href={ toPlainString(form.subject) } style="color: rgb(44,133,254);"
+       title={
+             I18NMessages.get("linkToResourceURI", lang)
+       }>{
+      form.title
+    }</a>
+
   def makeFieldLabel(preceding: formMod#Entry, field: formMod#Entry, editable: Boolean,
       lang:String="en",
       cssForProperty: String = cssConfig.formLabelCSSClass )
