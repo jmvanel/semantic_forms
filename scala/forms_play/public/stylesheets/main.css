@@ -18,6 +18,9 @@
   justify-content: left; /* space-evenly;*/
   align-content: /*space-around; */ flex-start;
 }
+.sf-values-group-inline > * .sf-values-group {
+  display: inline;
+}
 .sf-values-group:before { display: block; }
 
 

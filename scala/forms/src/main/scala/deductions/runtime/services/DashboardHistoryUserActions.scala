@@ -280,7 +280,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   }
 
   private def paragrahsView(rows: List[Seq[Rdf#Node]], request: HTTPrequest): NodeSeq = {
-    val zz = for (row <- rows) yield {
+    val subjectsURIhtml = for (row <- rows) yield {
       try {
         logger.debug("row " + row(1).toString())
         val subjectURI = row(0)
@@ -293,6 +293,8 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
           <p>{ t.getLocalizedMessage }</p>
       }
     }
-    zz.flatten
+    <span class="sf-values-group-inline">{
+      subjectsURIhtml.flatten
+    }</span>
   }
 }
