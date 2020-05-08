@@ -67,6 +67,9 @@ with StringHelpers
       displayThumbnail(resourceEntry, request) ++
       backLinkButton(resourceEntry, request) ++
       makeNeighborhoodLink(objectURIstringValue, request) ++
+      creationButton(toPlainString(subject),
+              type_.map { t => t.toString() },
+              request) ++
       expertLinks(resourceEntry, request)
 
     } else if( details.contains("images") )
@@ -101,9 +104,9 @@ with StringHelpers
         makeDrawGraphLink(uri) ++
         makeDrawGraphLinkSpoggy(uri) ++
         makeDrawGraphLinkLodLive(uri) ++
-        creationButton(uri,
-              type_.map { t => t.toString() },
-              request) ++
+//        creationButton(uri,
+//              type_.map { t => t.toString() },
+//              request) ++
         makeClassTableButton(resourceEntry) ++
         hyperlinkForEditingURIinsideForm(uri, request.getLanguage()),
       uri)
@@ -211,6 +214,8 @@ with StringHelpers
       r.valueLabel
       }</a>
 
+  /** creation Button for a new local URI
+   *  either in form header or on rdf:type objects */
   def creationButton(classURIstringValue: String, types: Seq[String],
                      request: HTTPrequest): NodeSeq = {
     val imageURL = "/assets/images/create-instance.svg"
