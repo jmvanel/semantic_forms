@@ -290,7 +290,12 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
         val subjectURI = row(0)
         val lang = request.getLanguage()
         val formSyntax = createFormTR(subjectURI)(allNamedGraph, lang)
-        formSyntax.fields = formSyntax.fields.filterNot( field => field.property == rdfs.label )
+        formSyntax.fields = formSyntax.fields.filterNot(
+            field =>
+              field.property == rdfs.label ||
+              field.property == form("separator_props_From_Subject") ||
+              field.property == form("separator_props_From_Classes") ||
+              field.property == form("linksCount") )
         val nodesAsXHTML = generateHTMLJustFields(formSyntax, request=request)
         linkToFormSubject(formSyntax, lang) ++
           nodesAsXHTML ++
