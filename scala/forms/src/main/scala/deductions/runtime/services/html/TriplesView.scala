@@ -173,7 +173,6 @@ println( s">>>> htmlFormElemJustFields 2 " )
       s"htmlFormRawTry dataset $dataset, graphURI <$graphURI>")
 
     val graphURIActual = if (graphURI === "") uri else graphURI
-    val lang = request.getLanguage()
     Success(graf2form(unionGraph, uri, hrefPrefix, blankNode, editable,
       actionURI, graphURIActual, actionURI2, formGroup, formuri, request))
   }

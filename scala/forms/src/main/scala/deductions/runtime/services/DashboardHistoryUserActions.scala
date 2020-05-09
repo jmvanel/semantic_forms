@@ -16,6 +16,8 @@ import deductions.runtime.views.ResultsDisplay
 import scalaz._
 import Scalaz._
 import deductions.runtime.services.html.TriplesViewWithTitle
+import deductions.runtime.html.Form2HTML
+import deductions.runtime.services.html.HTML5TypesTrait
 
 /**
  * Show History of User Actions:
@@ -30,7 +32,9 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   with TimeSeries[Rdf, DATASET]
   with ParameterizedSPARQL[Rdf, DATASET]
   with NavigationSPARQLBase[Rdf]
- with TriplesViewWithTitle[Rdf, DATASET]
+  with TriplesViewWithTitle[Rdf, DATASET]
+  with Form2HTML[Rdf#Node, Rdf#URI]
+  with HTML5TypesTrait[Rdf]
 {
 
   import ops._
@@ -284,14 +288,13 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       try {
         logger.debug("row " + row(1).toString())
         val subjectURI = row(0)
-//        if (subjectURI != rdfs.label) {
-          val (nodesAsXHTML, formSyntax) = htmlFormElemRaw(
-            fromUri(nodeToURI(subjectURI)),
-            request = request)
-          linkToFormSubject(formSyntax, request.getLanguage()) ++
-            nodesAsXHTML ++
+        val lang = request.getLanguage()
+        val formSyntax = createFormTR(subjectURI)(allNamedGraph, lang)
+        formSyntax.fields = formSyntax.fields.filterNot( field => field.property == rdfs.label )
+        val nodesAsXHTML = generateHTMLJustFields(formSyntax, request=request)
+        linkToFormSubject(formSyntax, lang) ++
+          nodesAsXHTML ++
             <br/>
-//        } else NodeSeq.Empty
       } catch {
         case t: Throwable =>
           t.printStackTrace()
