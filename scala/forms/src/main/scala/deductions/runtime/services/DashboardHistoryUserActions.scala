@@ -297,7 +297,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
         val nodesAsXHTML = generateHTMLJustFields(formSyntax, request = request)
         linkToFormSubject(formSyntax, lang) ++
           nodesAsXHTML ++
-          <br/>
+          <hr class="sf-paragraphs-separator"/>
       } catch {
         case t: Throwable =>
           t.printStackTrace()

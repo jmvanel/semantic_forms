@@ -179,9 +179,12 @@ with ApplicationTrait
       httpRequest )
   }
 
-  private val DOCTYPE = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-	"""
+  private val DOCTYPE = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+    """
+//    """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+//	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+//	"""
   /** add HTML DOCTYPE and generic Headers, and HTTP 200 OK
    *  TODO use XML API to add DOCTYPE */
   private def httpWrapper( content: NodeSeq, httpRequest: HTTPrequest ) =

@@ -50,9 +50,14 @@
 }*/
 .sf-complete-form{
   /* padding-bottom: 70px; */
-  padding-left: 10px;
+  padding-left: 5px;
   display: inline;
+  text-indent: 1.5em;
 }
+.sf-paragraphs-separator{
+  border: 1px solid blue;
+}
+
 .sf-space-form{
     /*margin-bottom: 10px;*/
 }
