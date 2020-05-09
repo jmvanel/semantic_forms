@@ -107,5 +107,5 @@ tr:nth-child(odd) {background: #FFF}
 
 .sf-userInfo { float: right; }
 
-.sf-error { color: red; font-style: bold }
+.sf-error { color: red; font-weight: bold }
 
