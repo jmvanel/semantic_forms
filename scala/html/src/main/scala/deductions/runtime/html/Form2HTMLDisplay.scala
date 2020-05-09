@@ -250,10 +250,11 @@ with StringHelpers
       } }
       """
     val imageURL = "/assets/images/little-table-grid.svg"
+    // css="sf-thumbnail"
     <a href={ "/table?query=" + URLEncoder.encode(sparlqlQuery, "UTF-8") +
         s"&label=<$classURI>"} target="_blank"
        title={s"Table view for <$classURI>"}>
-         <img src={ imageURL } css="sf-thumbnail" height="20" alt="Table view">{
+         <img src={ imageURL } height="20" alt="Table view">{
            Comment( s" makeClassTableButton URI <${
              classURI.replaceAll(
                  "-[-]+",

@@ -62,9 +62,9 @@ don't mix them */
       <a href={s"/backlinks?q=${URLEncoder.encode(uri, "utf-8")}"}
         class="sf-button sf-navigation-button"
         title={ tit }
-        data-value={s"$uri"}
-        border="0" >
-        <img src="/assets/images/Back-Link-Icon.svg" width="32" height="32" />
+        data-value={s"$uri"} >
+        <img src="/assets/images/Back-Link-Icon.svg" width="32" height="32"
+             alt="Back-Link" />
       </a>
   }
 

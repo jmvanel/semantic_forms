@@ -76,6 +76,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
           <div class={ cssConfig.formDivInputCSSClass }>
             {
       addTripleAttributesToXMLElement(
+          // <!-- TODO ? dropzone="copy" -->
           <input class={ cssConfig.formInputCSSClass +
             " " + hasLookupCSSclass }
             value={ toPlainString(value) }
@@ -85,7 +86,6 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
             placeholder={ placeholder }
             title={ placeholder }
             size={inputSize.toString()}
-            dropzone="copy"
             autocomplete={if (lookupActivatedFor(resourceEntry)) "off" else null}
             type={
               /* alas the browsers do NOT consider that mailto:a@b is an email !!!! :(
@@ -271,6 +271,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
             else
               xsd2html5TnputType(type0)
           }
+          // <!-- TODO ? dropzone="copy" -->
           val inputElement = <input class={ cssConfig.formInputCSSClass }
           value={
             toPlainString(value)
@@ -278,7 +279,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
           step = {xsd2html5Step(type0)}
           placeholder={ placeholder } title={ placeholder } size={
             inputSize.toString()
-          } dropzone="copy" id={ htmlId }
+          } id={ htmlId }
           ></input>
 
           val input: Elem =

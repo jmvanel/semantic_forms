@@ -77,10 +77,10 @@ trait EnterButtons[Rdf <: RDF, DATASET] extends InstanceLabelsInferenceMemory[Rd
     val inputMessage = messageI18N("Search_placeholder")
     val classMessage = messageI18N("Class_placeholder")
         <form  role="form" action="/search" class="sf-margin-top-10">
+              <!-- TODO ? dropzone="copy" -->
               <input class="sf-search" type="text" id="q" name="q" size="40"
                 placeholder={ inputMessage }
                 title={ inputMessage }
-                dropzone="copy"
                 list="start_uris"
                 />
               <input class="sf-search sfLookup" type="text" name="clas" size="25"
