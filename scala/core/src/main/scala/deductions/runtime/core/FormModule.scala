@@ -22,6 +22,8 @@ case class FormDefaults(
     defaultCardinality == oneOrMore
 }
 
+/** data structures for user forms around RDF triples
+ *  TODO , LITERAL <: NODE */
 trait FormModule[NODE, URI <: NODE] {
 
   /**
@@ -122,7 +124,7 @@ trait FormModule[NODE, URI <: NODE] {
   def toPlainString(n: NODE): String
 
   val NullResourceEntry = new ResourceEntry("", "", nullURI, ResourceValidator(Set()))
-
+  val NullLiteralEntry = new LiteralEntry("", "", nullURI)
 
   /** an entry (for an RDF triple) in a form */
   abstract class Entry	{
@@ -171,6 +173,7 @@ trait FormModule[NODE, URI <: NODE] {
       }
     }
 
+    /** string version of value; actually used in form generation */
     def valueLabel: String = ""
 
     def isClass: Boolean = false
@@ -366,7 +369,6 @@ trait FormModule[NODE, URI <: NODE] {
                            val lang: String = "",
 //                           type_ : NODE = nullURI,
                            type_ : Seq[NODE] = Seq(),
-
                            possibleValues: Seq[(NODE, NODE)] = Seq(),
                            subject: NODE = nullURI,
                            override val subjectLabel: String = "",
@@ -374,6 +376,7 @@ trait FormModule[NODE, URI <: NODE] {
                            openChoice: Boolean = true,
                            widgetType: WidgetType = Textarea,
                            cardinality: Cardinality = zeroOrMore,
+                           /** string version of value; actually used in form generation */
                            override val valueLabel: String = "",
                            val htmlName: String = "",
 
@@ -383,7 +386,7 @@ trait FormModule[NODE, URI <: NODE] {
     extends Entry {
 
     override def toString(): String = {
-      "LiteralEntry " + super.toString + s""" value := '$value' """
+      "LiteralEntry " + super.toString // + s""" value := '$value' """
     }
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]) = {
       //      val ret = new LiteralEntry(label, comment,

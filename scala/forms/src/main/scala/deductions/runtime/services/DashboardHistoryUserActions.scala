@@ -34,8 +34,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   with NavigationSPARQLBase[Rdf]
   with TriplesViewWithTitle[Rdf, DATASET]
   with Form2HTML[Rdf#Node, Rdf#URI]
-  with HTML5TypesTrait[Rdf]
-{
+  with HTML5TypesTrait[Rdf] {
 
   import ops._
 
@@ -44,9 +43,10 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     override def variables = Seq("SUBJECT", "TIME", "COUNT")
   }
 
-//  private def mess(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
+  //  private def mess(key: String)(implicit lang: String) = I18NMessages.get(key, lang)
 
-  /** make Table of History of User Actions;
+  /**
+   * make Table of History of User Actions;
    * leverage on ParameterizedSPARQL.makeHyperlinkForURI();
    * available filters in HTML parameters:
    * - triple pattern, eg rdf:type=foaf:Person
@@ -56,10 +56,10 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
    */
   def makeTableHistoryUserActions(request: HTTPrequest)(limit: String): NodeSeq = {
     val metadata0 = getMetadata()(
-//        if( request.getHTTPparameterValue("sparql").isDefined )
-//          ""
-//        else
-        limit)
+      //        if( request.getHTTPparameterValue("sparql").isDefined )
+      //          ""
+      //        else
+      limit)
 
     logger.debug(s">>>> makeTableHistoryUserActions limit '$limit' metadata0 ${metadata0.size} $metadata0")
     val metadata1 = filterMetadata(metadata0, request)
@@ -76,15 +76,15 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
 
     {
       val title: NodeSeq =
-        <span>{mess("View_centered")} </span> ++ metadata._2
+        <span>{ mess("View_centered") } </span> ++ metadata._2
 
       def dateAsLong(row: Seq[Rdf#Node]): Long = makeStringFromLiteral(row(1)).toLong
       val sorted = metadata._1.sortWith {
-                (row1, row2) =>
-                  dateAsLong(row1) >
-                  dateAsLong(row2)
-              }
-        lazy val table = 
+        (row1, row2) =>
+          dateAsLong(row1) >
+            dateAsLong(row2)
+      }
+      lazy val table =
         <table class="table">
           <thead>
             <tr style="color: LightGray; font-size: small">
@@ -100,39 +100,40 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
           <tbody>
             {
               val dateFormat = new SimpleDateFormat(
-                     "dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
+                "dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
               val dateFormat2 = new SimpleDateFormat("EEEE", Locale.forLanguageTag(lang))
 
               wrapInTransaction { // for calling instanceLabel()
                 for (row <- sorted) yield {
                   try {
-                  logger.debug("row " + row(1).toString())
-                  val subjectURI = row(0)
-                  val classOrNullURI = getClassOrNullURI(subjectURI)(allNamedGraph)
-                  if (row(1).toString().length() > 3 &&
-                      subjectURI != nullURI
-//                      classOrNullURI  != nullURI
-                  ) {
-                    val date = new Date(dateAsLong(row))
-                    <tr class="sf-table-row">
-                      <td>{ makeHyperlinkForURI(
-                          subjectURI, allNamedGraph, config.hrefDisplayPrefix,
-                          request=request ) }</td>
-                      <td>{
-                        makeHyperlinkForURI(
-                          classOrNullURI, allNamedGraph, config.hrefDisplayPrefix,
-                          request=request )
-                      }</td>
-                      <!-- td>{ "Edit" /* TODO */ }</td -->
-                      <td title={ dateFormat2.format(date) }>{ dateFormat.format(date) }</td>
-                      <td>{ row(3) /* user */ }</td>
-                      <td>{ makeStringFromLiteral(row(2)) /* triple count */ }</td>
-                    </tr>
-                  } else <tr/>
-                  }
-                  catch {
-                    case t: Throwable => t.printStackTrace()
-                    <tr>{ t.getLocalizedMessage }</tr>
+                    logger.debug("row " + row(1).toString())
+                    val subjectURI = row(0)
+                    val classOrNullURI = getClassOrNullURI(subjectURI)(allNamedGraph)
+                    if (row(1).toString().length() > 3 &&
+                      subjectURI != nullURI //                      classOrNullURI  != nullURI
+                      ) {
+                      val date = new Date(dateAsLong(row))
+                      <tr class="sf-table-row">
+                        <td>{
+                          makeHyperlinkForURI(
+                            subjectURI, allNamedGraph, config.hrefDisplayPrefix,
+                            request = request)
+                        }</td>
+                        <td>{
+                          makeHyperlinkForURI(
+                            classOrNullURI, allNamedGraph, config.hrefDisplayPrefix,
+                            request = request)
+                        }</td>
+                        <!-- td>{ "Edit" /* TODO */ }</td -->
+                        <td title={ dateFormat2.format(date) }>{ dateFormat.format(date) }</td>
+                        <td>{ row(3) /* user */ }</td>
+                        <td>{ makeStringFromLiteral(row(2)) /* triple count */ }</td>
+                      </tr>
+                    } else <tr/>
+                  } catch {
+                    case t: Throwable =>
+                      t.printStackTrace()
+                      <tr>{ t.getLocalizedMessage }</tr>
                   }
                 }
               }.get
@@ -140,7 +141,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
           </tbody>
         </table>
 
-    lazy val paragraphs = paragrahsView(sorted, request)
+      lazy val paragraphs = paragrahsView(sorted, request)
 
       val html: NodeSeq =
         title ++
@@ -163,37 +164,32 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     metadata: List[Seq[Rdf#Node]],
     request:  HTTPrequest): List[Seq[Rdf#Node]] = {
     val params = request.queryString
-//    if (params.size > 1 ||
-//      (params.size === 1 &&
-//        params.head._1 =/= "limit" &&
-//        params.head._1 =/= "uri" &&
-//        params.head._1 =/= "query" &&
-//        params.head._1 =/= "sparql" &&
-//        params.head._1 =/= "paragraphs") ) {
 
-      wrapInReadTransaction {
-        var filteredURIs = metadata
-        for ((param0, values) <- params) {
-          filteredURIs = filterOneCriterium(param0, values, filteredURIs)
-        }
-        filteredURIs
-      }.getOrElse(metadata)
-//    } else
-//      metadata
+    wrapInReadTransaction {
+      var filteredURIs = metadata
+      for ((param0, values) <- params) {
+        filteredURIs = filterOneCriterium(param0, values, filteredURIs)
+      }
+      filteredURIs
+    }.getOrElse(metadata)
+    //    } else
+    //      metadata
   }
 
-  /** filter given List according to One Criterium on first column:
+  /**
+   * filter given List according to One Criterium on first column:
    *  ?URI <param> <value> .
    *  @param param0 abbreviated Turtle URI for triple predicate
    *  @param values abbreviated Turtle URI for triple object
    *  @param metadata List of Seq'q with subject, timestamp, triple count, user;
-   *         ordered by recent first; */
+   *         ordered by recent first;
+   */
   private def filterOneCriterium(
     param0: String, values: Seq[String],
     metadata: List[Seq[Rdf#Node]]): List[Seq[Rdf#Node]] = {
     var filteredURIs = metadata
     val isSpecialParamameterAndNotURI =
-        param0 === "limit" ||
+      param0 === "limit" ||
         param0 === "uri" ||
         param0 === "query" ||
         param0 === "sparql" ||
@@ -223,31 +219,31 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   private def filterMetadataFocus(
     metadata:    List[Seq[Rdf#Node]],
     request:     HTTPrequest,
-    querySPARQL: String              = ""):
-    (List[Seq[Rdf#Node]], NodeSeq ) = {
+    querySPARQL: String              = ""): (List[Seq[Rdf#Node]], NodeSeq) = {
 
     val params = request.queryString
     if (params.contains("uri")) {
-      val focusURI = expandOrUnchanged( params("uri").headOption.getOrElse("") )
+      val focusURI = expandOrUnchanged(params("uri").headOption.getOrElse(""))
       logger.debug(s"""===== filterMetadataFocus: params.contains("uri") ${focusURI}""")
-      val sparqlQuery = neighborhoodSearchSPARQL( focusURI )
-      ( filterMetadataSPARQL( metadata, request, sparqlQuery),
-          // focus URI Pretty Printed
-          makeHyperlinkForURItr(URI(focusURI), request.getLanguage(), allNamedGraph)
-      )
+      val sparqlQuery = neighborhoodSearchSPARQL(focusURI)
+      (
+        filterMetadataSPARQL(metadata, request, sparqlQuery),
+        // focus URI Pretty Printed
+        makeHyperlinkForURItr(URI(focusURI), request.getLanguage(), allNamedGraph))
 
-    } else if( params.contains("sparql") ||
-               params.contains("query")) {
+    } else if (params.contains("sparql") ||
+      params.contains("query")) {
       logger.debug(s"""===== filterMetadataFocus: params.contains("sparql") or "query" """)
-      val sparqlQuery = params.getOrElse("sparql",
-                        params.getOrElse("query", Seq() )
-                        ) .headOption.getOrElse("")
-//      println(s"filterMetadataFocus sparqlQuery: $sparqlQuery")
-      ( filterMetadataSPARQL( metadata, request, sparqlQuery),
-        sparqlQueryButton(sparqlQuery, request) )
+      val sparqlQuery = params.getOrElse(
+        "sparql",
+        params.getOrElse("query", Seq())).headOption.getOrElse("")
+      //      println(s"filterMetadataFocus sparqlQuery: $sparqlQuery")
+      (
+        filterMetadataSPARQL(metadata, request, sparqlQuery),
+        sparqlQueryButton(sparqlQuery, request))
 
     } else
-      (metadata, NodeSeq.Empty )
+      (metadata, NodeSeq.Empty)
   }
 
   /**
@@ -261,8 +257,9 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     request:  HTTPrequest, querySPARQL: String = ""): List[Seq[Rdf#Node]] = {
     logger.debug(s"""===== filterMetadataSPARQL: querySPARQL $querySPARQL""")
 
-    val results = sparqlSelectQuery(querySPARQL,
-        context=request.queryString2 )
+    val results = sparqlSelectQuery(
+      querySPARQL,
+      context = request.queryString2)
     logger.trace(s"""===== filterMetadataSPARQL: results: $results """)
 
     val uris = results.get.map {
@@ -270,7 +267,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     }.toSet
 
     logger.trace(
-        s"""===== filterMetadataSPARQL: sparql Select result: uris $uris""")
+      s"""===== filterMetadataSPARQL: sparql Select result: uris $uris""")
     logger.debug(s"===== filterMetadataSPARQL: metadata.size ${metadata.size}")
 
     /* merge URI's from query with metadata:
@@ -279,7 +276,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       row =>
         val uri = row(0)
         logger.debug(s"""== uri $uri""")
-        uris . contains(uri)
+        uris.contains(uri)
     }
   }
 
@@ -289,17 +286,18 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
         logger.debug("row " + row(1).toString())
         val subjectURI = row(0)
         val lang = request.getLanguage()
-        val formSyntax = createFormTR(subjectURI)(allNamedGraph, lang)
-        formSyntax.fields = formSyntax.fields.filterNot(
-            field =>
-              field.property == rdfs.label ||
-              field.property == form("separator_props_From_Subject") ||
-              field.property == form("separator_props_From_Classes") ||
-              field.property == form("linksCount") )
-        val nodesAsXHTML = generateHTMLJustFields(formSyntax, request=request)
+        val formSyntax = {
+          val formSyntax = createFormTR(subjectURI)(allNamedGraph, lang)
+          filterOutFields(formSyntax)
+          abbreviateLiterals(formSyntax)
+        }
+//        println(s"""formSyntax ${
+//          formSyntax.fields.filter(
+//              e => e.property.toString().contains("encoded"))}""")
+        val nodesAsXHTML = generateHTMLJustFields(formSyntax, request = request)
         linkToFormSubject(formSyntax, lang) ++
           nodesAsXHTML ++
-            <br/>
+          <br/>
       } catch {
         case t: Throwable =>
           t.printStackTrace()
@@ -309,5 +307,42 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     <span class="sf-values-group-inline">{
       subjectsURIhtml.flatten
     }</span>
+  }
+
+  /** filter Out Fields nor suitable for inline summary view */
+  private def filterOutFields(formSyntax: FormSyntax): Unit = {
+    formSyntax.fields = formSyntax.fields.filterNot(
+      field =>
+        field.property == rdfs.label ||
+          field.property == form("separator_props_From_Subject") ||
+          field.property == form("separator_props_From_Classes") ||
+          field.property == form("linksCount"))
+  }
+
+  /** abbreviate literal values (eg for SIOC Posts) */
+  private def abbreviateLiterals(formSyntax: FormSyntax): FormSyntax = {
+    val newFields: Seq[Entry] = for (field: Entry <- formSyntax.fields) yield {
+      (field, field.value) match {
+        case (r: ResourceEntry, _) => r
+        case (l: LiteralEntry, value : Rdf#Literal) =>
+          l.valueLabel
+            match {
+              case s: String if (s.length() > 0) =>
+                val length = s.length()
+                var valueLabel = s.substring(0, Math.min(length, 200))
+                if (length > 205) valueLabel = valueLabel + " ..."
+                valueLabel = valueLabel.replaceAll("<p>", "")
+                val newEntry = l.copy(
+                    value = Literal(valueLabel),
+                    valueLabel = valueLabel
+                  )
+                newEntry
+              case _ =>
+                l
+            }
+        case (l: LiteralEntry, _) => NullLiteralEntry
+      }
+    }
+    formSyntax.copy(fields = newFields)
   }
 }
