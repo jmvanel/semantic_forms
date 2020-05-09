@@ -115,7 +115,7 @@ with FormModule[Rdf#Node, Rdf#URI]
             Seq(classs)) )
 
         val superClasses = getObjects(graph, classs, rdfs.subClassOf)
-        logger.info(s"process Super Classes of <$classs> size ${superClasses.size} ; ${superClasses.mkString(", ")}")
+        logger.debug(s"process Super Classes of <$classs> size ${superClasses.size} ; ${superClasses.mkString(", ")}")
         superClasses foreach (sc => inferedProperties ++= propertiesFromDomainsFromClass(sc))
         val equivalentClasses = getObjects(graph, classs, owl.equivalentClass)
         equivalentClasses foreach (sc => inferedProperties ++= propertiesFromDomainsFromClass(sc))
@@ -158,7 +158,7 @@ with FormModule[Rdf#Node, Rdf#URI]
           val doms = find(graph, prop, rdfs.domain, ANY)
           if (doms.size === 0) {
             inferedProperties += prop.asInstanceOf[Rdf#URI]
-            logger.info(s"addDomainlessProperties: <$uri> add <$prop>")
+            logger.debug(s"addDomainlessProperties: <$uri> add <$prop>")
           }
         }
       }

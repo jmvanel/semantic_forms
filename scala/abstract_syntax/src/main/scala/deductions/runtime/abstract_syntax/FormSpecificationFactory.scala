@@ -77,7 +77,7 @@ trait FormSpecificationFactory[Rdf <: RDF, DATASET]
   /** lookup Form Spec from OWL class in Configuration */
   private def lookFormSpecsInConfiguration(classes: Seq[Rdf#Node])
   (implicit graph: Rdf#Graph): Seq[Rdf#Node] = {
-    val v = for (classe <- classes) yield {
+    val v = for (classe <- classes if classe != nullURI ) yield {
       val forms = getSubjects(graph, formPrefix("classDomain"), classe).toList
       logger.debug("lookFormSpecInConfiguration: forms " + forms.mkString("; "))
       val formSpecOption = forms.flatMap {
@@ -86,7 +86,7 @@ trait FormSpecificationFactory[Rdf <: RDF, DATASET]
       if (forms.size > 1)
         logger.warn(
           s"WARNING: several form specs for <$classe>; chosen $formSpecOption \n\tother form specs: ${forms.mkString("", "\n\t", "")}")
-      logger.info(s"lookFormSpecInConfiguration: found for <$classe> : $formSpecOption")
+      logger.debug(s"lookFormSpecInConfiguration: found for <$classe> : formSpecOption $formSpecOption")
       formSpecOption
     }
     v.flatten

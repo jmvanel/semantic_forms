@@ -34,9 +34,10 @@ trait RangeInference[Rdf <: RDF, DATASET]
       valuesFromFormGroup: Seq[(Rdf#Node, Rdf#Node)])(
                                implicit graph: Rdf#Graph,
                                lang: String = "en") = {
+    logger.debug( s">>>> addAllPossibleValues: fields.size=${formSyntax.fields.size}")
     for (field <- formSyntax.fields) {
     	val ranges = objectsQuery( field.property, rdfs.range)
-    	logger.debug( "> field before addPossibleValues" + field )
+    	logger.debug( ">>>> addAllPossibleValues: before addPossibleValues field " + field )
       formSyntax.possibleValuesMap.put(field.property,
         addPossibleValues(field, ranges, valuesFromFormGroup))
       logger.debug( "> field after  addPossibleValues" + field )
@@ -67,11 +68,11 @@ trait RangeInference[Rdf <: RDF, DATASET]
         val enumerated = getObjects(graph, range, owl.oneOf)
         fillPossibleValuesFromList(enumerated, possibleValuesFromOwlOneOf)
       }
-      logger.debug(s"populateFromOwlOneOf size ${possibleValuesFromOwlOneOf.size} ranges $ranges - $entryField")
+      logger.debug(s"populateFromOwlOneOf size ${possibleValuesFromOwlOneOf.size} ranges $ranges - entryField $entryField")
       if (!possibleValuesFromOwlOneOf.isEmpty) {
         /* normally we have a non empty list of possible values to propose to user,
          * and then there is no open Choice for her. */
-        println(s"populateFromOwlOneOf ${entryField.label} set openChoice = false")
+        logger.debug(s"populateFromOwlOneOf ${entryField.label} set openChoice = false")
         // entryField.openChoice = false // TODO <<<<<<<<<<
       }
 
@@ -81,29 +82,32 @@ trait RangeInference[Rdf <: RDF, DATASET]
        */
       def fillPossibleValuesFromList(
         enumerated0: Iterable[Rdf#Node],
-        possibleValues: mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]) = {
+        possibleValues: mutable.ArrayBuffer[(Rdf#Node, Rdf#Node)]): Unit = {
         def combineNodesLabels( seq: Seq[Rdf#Node]) = {
           val list = seq.toList
           val il = instanceLabels(list, lang)
+          logger.debug(s"combineNodesLabels: lang $lang, il $il")
           list zip ( il.map{ s => makeLiteral(s, xsd.string) })
         }
         /* NOTE: Iterable are like kleenex: must NOT use them twice;
          * in this case do a copy by toList. */
         val enumerated = enumerated0.toList
+        logger.debug(s"fillPossibleValuesFromList: enumerated: $enumerated")
         for (enum <- enumerated)
           foldNode(enum)(
             uri => {
               val list = (rdfh.rdfListToSeq(Some(uri)))
+              logger.debug(s"fillPossibleValuesFromList: uri $uri: combineNodesLabels(list) = ${combineNodesLabels(list)}")
               possibleValues.appendAll(
                   combineNodesLabels( list ))
             },
             x => {
-              println(s"fillPossibleValuesFromList bnode $x")
+              logger.debug(s"fillPossibleValuesFromList: bnode $x")
               val list = rdfh.rdfListToSeq(Some(x))
               possibleValues.appendAll(
                   combineNodesLabels( list ))
             },
-            x => { println(s"lit $x"); () })
+            x => { logger.debug(s"fillPossibleValuesFromList: lit $x"); () })
       }
 
       possibleValuesFromOwlOneOf.map { (couple: (Rdf#Node, Rdf#Node)) =>
@@ -167,8 +171,8 @@ trait RangeInference[Rdf <: RDF, DATASET]
               x => (x, makeInstanceLabel(x, graph, lang)),
               x => (x, ""))
         }
-//        println(s"""fillPossibleValues uriAndInstanceLabels class ${uriAndInstanceLabels.getClass} size """ )
-//        println( uriAndInstanceLabels.size)
+//        logger.debug(s"""fillPossibleValues uriAndInstanceLabels class ${uriAndInstanceLabels.getClass} size """ )
+//        logger.debug( uriAndInstanceLabels.size)
         val sortedInstanceLabels = uriAndInstanceLabels.sortBy { e => e._2 }
           sortedInstanceLabels.map {
         	  c => (c._1, makeLiteral(c._2, xsd.string))
@@ -197,12 +201,12 @@ trait RangeInference[Rdf <: RDF, DATASET]
     def getInstancesAndLabels(rangeClass: Rdf#Node): Seq[(Rdf#Node, Rdf#Node)] = {
       if (rangeClass != owl.Thing && rangeClass != rdfs.Literal) {
         val enumerated = getSubjects(graph, rdf.typ, rangeClass).toList
-//        println( s"getInstancesAndLabels rangeClass $rangeClass size " + enumerated.size )
+//        logger.debug( s"getInstancesAndLabels rangeClass $rangeClass size " + enumerated.size )
         val possibleValues2 = fillPossibleValues(enumerated)
         val subClasses = getSubjects(graph, rdfs.subClassOf, rangeClass) . toList
         val r = for (subClass <- subClasses) yield {
           val subClassesValues = getSubjects(graph, rdf.typ, subClass).toList
-//          println( s"getInstancesAndLabels subClass $subClass size " + enumerated.size )
+//          logger.debug( s"getInstancesAndLabels subClass $subClass size " + enumerated.size )
           val possibleValues3 = fillPossibleValues(subClassesValues)
           possibleValues3
         }

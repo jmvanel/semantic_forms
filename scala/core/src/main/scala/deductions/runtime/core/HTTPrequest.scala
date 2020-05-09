@@ -175,7 +175,7 @@ case class HTTPrequest(
   def appMessages: NodeSeq = messages
   def addAppMessage(m: NodeSeq): Unit = { messages = messages ++ m }
 
-  def logRequest() = s"$uri, $host, $remoteAddress"
+  def logRequest() = s"$uri, $host, IP $remoteAddress"
 }
 
 /** Borrowed from Play */

@@ -218,7 +218,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     // logger.error("marker XXXXXXXXXXXXXXXXXXXXXXXXXXXXX message")
 
     val formConfig = step1.formURI
-    logger.info(
+    logger.debug(
       s">>>> createFormDetailed2 fields size ${step1.fields.size}, formConfig <$formConfig> , lang $lang")
 
     // TODO make it functional #170
