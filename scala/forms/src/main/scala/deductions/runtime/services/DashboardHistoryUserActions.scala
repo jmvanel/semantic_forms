@@ -304,6 +304,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
           <p>{ t.getLocalizedMessage }</p>
       }
     }
+    <br/>
     <span class="sf-values-group-inline">{
       subjectsURIhtml.flatten
     }</span>

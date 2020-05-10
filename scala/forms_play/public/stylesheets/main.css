@@ -20,6 +20,7 @@
 }
 .sf-values-group:before { display: block; }
 
+/* Paragraphs & history view */
 .sf-values-group-inline > * .sf-values-group {
   display: inline;
 }
@@ -29,6 +30,10 @@
 .sf-values-group-inline > * .sf-data-header {
   display: none;
 }
+.sf-values-group-inline > * .sf-thumbnail {
+  height: 25px;
+}
+
 
 .sf-property-label{ margin-right: 7px; }
 
@@ -52,10 +57,11 @@
   /* padding-bottom: 70px; */
   padding-left: 5px;
   display: inline;
-  text-indent: 1.5em;
+  /* text-indent: 1.5em; */
 }
 .sf-paragraphs-separator{
   border: 1px solid blue;
+  margin: 1px;
 }
 
 .sf-space-form{
