@@ -55,8 +55,13 @@ with ApplicationTrait
     recoverFromOutOfMemoryErrorGeneric(
       {
         val contentMaker = new SemanticController {
-          override def result(request: HTTPrequest): NodeSeq =
-            makeHistoryUserActions("15", request)
+          override def result(request: HTTPrequest): NodeSeq = {
+            val newRequest = request.copy(
+              queryString =
+                request.queryString +
+                  ("paragraphs" -> Seq("on")))
+            makeHistoryUserActions(limit = "15", newRequest)
+          }
         }
         outputMainPageWithContent(contentMaker)
       },
