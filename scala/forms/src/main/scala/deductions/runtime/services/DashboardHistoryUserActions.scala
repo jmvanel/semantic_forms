@@ -18,6 +18,7 @@ import Scalaz._
 import deductions.runtime.services.html.TriplesViewWithTitle
 import deductions.runtime.html.Form2HTML
 import deductions.runtime.services.html.HTML5TypesTrait
+import deductions.runtime.abstract_syntax.UserTraceability
 
 /**
  * Show History of User Actions:
@@ -34,7 +35,8 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   with NavigationSPARQLBase[Rdf]
   with TriplesViewWithTitle[Rdf, DATASET]
   with Form2HTML[Rdf#Node, Rdf#URI]
-  with HTML5TypesTrait[Rdf] {
+  with HTML5TypesTrait[Rdf]
+  with UserTraceability[Rdf, DATASET]{
 
   import ops._
 
@@ -290,6 +292,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
           val formSyntax = createFormTR(subjectURI)(allNamedGraph, lang)
           filterOutFields(formSyntax)
           abbreviateLiterals(formSyntax)
+          addUserInfoOnTriples(formSyntax)(allNamedGraph)
         }
 //        println(s"""formSyntax ${
 //          formSyntax.fields.filter(
