@@ -22,7 +22,7 @@ trait UserTraceability[Rdf <: RDF, DATASET]
                             implicit graph: Rdf#Graph,
                             lang: String = "en") : FormSyntax = {
     try {
-    logger.info("XXXXXXXXXXXXXXXX addUserInfoOnTriples")
+    logger.debug("addUserInfoOnTriples")
     val metadata = getMetadataAboutSubject(formSyntax.subject)
     /* Map : (property,objet) -> userId */
     val resultsUser = mutable.Map[(String,String), String]()
@@ -30,7 +30,7 @@ trait UserTraceability[Rdf <: RDF, DATASET]
     val resultsTimestamp = mutable.Map[(String,String), Long]()
 
     for (row: Seq[Rdf#Node] <- metadata){
-      logger.info(row.toString())
+      logger.debug(s"row ${row.toString()}")
 
       // each row contains: property, object, timestamp, user
       val propertyId =0; val objectId=1; val timestampId=2; val userId=3;
@@ -40,7 +40,7 @@ trait UserTraceability[Rdf <: RDF, DATASET]
       val objet = row(objectId).toString
 
       if(resultsTimestamp.contains( (property,objet)) ){
-        logger.info(resultsTimestamp( (property,objet) )
+        logger.debug(resultsTimestamp( (property,objet) )
         + (" < ")
         + (timeElement)
         + (" = ")
@@ -57,7 +57,7 @@ trait UserTraceability[Rdf <: RDF, DATASET]
       }
     }
     for (elem <- resultsTimestamp){
-    	logger.info("\t" + elem)
+      logger.debug("\t" + elem)
     }
 
     debug(s"YYYYYYYY Before add User Info\n${formSyntax.fields.mkString("\n")}\n")

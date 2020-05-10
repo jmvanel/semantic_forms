@@ -62,23 +62,21 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       //          ""
       //        else
       limit)
-
     logger.debug(s">>>> makeTableHistoryUserActions limit '$limit' metadata0 ${metadata0.size} $metadata0")
     val metadata1 = filterMetadata(metadata0, request)
     logger.debug(s">>>> makeTableHistoryUserActions metadata1 $metadata1")
     val metadata = filterMetadataFocus(metadata1, request)
     logger.debug(s">>>> makeTableHistoryUserActions metadata $metadata")
     implicit val lang = request.getLanguage()
-    val historyLink: Elem = {
-      if (limit != "")
-        <a href="/history">Complete history</a>
-      else
-        <div></div>
-    }
+    val historyLink =
+      if( request.getHTTPparameterValue("paragraphs").isDefined )
+      <a href="/history?limit=50">
+       {I18NMessages.get("History_table",lang)}
+      </a>
+      else NodeSeq.Empty
 
     {
-      val title: NodeSeq =
-        <span>{ mess("View_centered") } </span> ++ metadata._2
+      val title: NodeSeq = metadata._2
 
       def dateAsLong(row: Seq[Rdf#Node]): Long = makeStringFromLiteral(row(1)).toLong
       val sorted = metadata._1.sortWith {
@@ -228,11 +226,13 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       val focusURI = expandOrUnchanged(params("uri").headOption.getOrElse(""))
       logger.debug(s"""===== filterMetadataFocus: params.contains("uri") ${focusURI}""")
       val sparqlQuery = neighborhoodSearchSPARQL(focusURI)
+      implicit val lang = request.getLanguage()
       (
         filterMetadataSPARQL(metadata, request, sparqlQuery),
         // focus URI Pretty Printed
-        makeHyperlinkForURItr(URI(focusURI), request.getLanguage(), allNamedGraph))
-
+        <span>{ mess("View_centered") } </span> ++
+        makeHyperlinkForURItr(URI(focusURI), request.getLanguage(), allNamedGraph)
+      )
     } else if (params.contains("sparql") ||
       params.contains("query")) {
       logger.debug(s"""===== filterMetadataFocus: params.contains("sparql") or "query" """)
