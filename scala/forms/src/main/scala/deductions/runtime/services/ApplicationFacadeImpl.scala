@@ -461,11 +461,11 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     wrapSearchResults(fut, q, mess= <div>"Extended search for</div>)
   }
 
-  def ldpPOST(uri: String, link: Option[String], contentType: Option[String],
-    slug: Option[String],
-    content: Option[String], request: HTTPrequest): Try[String] =
-    putTriples(uri, link, contentType,
-      slug, content, request)
+//  def ldpPOST(uri: String, link: Option[String], contentType: Option[String],
+//    slug: Option[String],
+//    content: Option[String], request: HTTPrequest): Try[String] =
+//    putTriples(uri, link, contentType,
+//      slug, content, request)
 
   def makeHistoryUserActions(limit: String, request: HTTPrequest): NodeSeq =
     makeTableHistoryUserActions(request)(limit)

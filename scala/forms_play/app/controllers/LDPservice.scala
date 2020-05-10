@@ -7,21 +7,31 @@ import scalaz._
 import Scalaz._
 
 import scala.util.Success
+import scala.util.Try
 
 import play.api.mvc.Action
 import play.api.mvc.Request
 import play.api.mvc.Result
+import play.api.mvc.Results._
+
 import play.api.mvc.AnyContent
 
 import org.apache.commons.codec.digest.DigestUtils
 
+import deductions.runtime.core.HTTPrequest
+import deductions.runtime.services.LDP
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.jena.RDFStoreLocalJenaProvider
+
 class LDPservicesApp extends  {
     override implicit val config = new PlayDefaultConfiguration
   }
+  with RDFStoreLocalJenaProvider
   with LDPservice
-  with HTMLGenerator // TODO: should not be needed!
 
-trait LDPservice extends ApplicationTrait {
+trait LDPservice extends HTTPrequestHelpers
+    with LDP[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with RequestUtils {
 
   /** */
   def ldpPOSTAction(uri: String = "") =
@@ -78,4 +88,10 @@ trait LDPservice extends ApplicationTrait {
        .withHeaders(defaultLDPheaders : _* )
        .as(defaultContentType)
     }
+
+  def ldpPOST(uri: String, link: Option[String], contentType: Option[String],
+    slug: Option[String],
+    content: Option[String], request: HTTPrequest): Try[String] =
+    putTriples(uri, link, contentType,
+      slug, content, request)
 }

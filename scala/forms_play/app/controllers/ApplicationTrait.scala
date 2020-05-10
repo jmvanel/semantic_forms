@@ -19,9 +19,6 @@ import deductions.runtime.utils.URIManagement
 import play.api.http.MediaRange
 import play.api.mvc.Accepting
 import play.api.mvc.AnyContent
-import play.api.mvc.AnyContentAsFormUrlEncoded
-import play.api.mvc.AnyContentAsRaw
-import play.api.mvc.AnyContentAsText
 import play.api.mvc.Codec
 import play.api.mvc.RawBuffer
 import play.api.mvc.Request
@@ -185,35 +182,6 @@ trait ApplicationTrait extends PlaySettings.MyControllerBase
     uri: String): String = {
     val uriArgs = map.getOrElse(uri, Seq())
     uriArgs.find { uri => uri  =/=  "" }.getOrElse("") . trim()
-  }
-
-  /** @return in case of Form Url Encoded, the first value in Map,
-   *  or in case of AnyContentAsRaw, the raw content,
-   *  or in case of XML, the XML content,
-   *  or in case of JSON, the JSON content,
-   *   */
-  protected def getContent(request: Request[AnyContent]): Option[String] = {
-    request.body match {
-      case AnyContentAsText(t) => Some(t)
-      case AnyContentAsFormUrlEncoded(m) =>
-        println(s"getContent 1 request.body AnyContentAsFormUrlEncoded size ${m.size}")
-        m.headOption  match {
-          case Some(v) =>
-            println(s"getContent 1.1 param '${v._1}'")
-            v . _2 . headOption
-          case None => None
-        }
-      case AnyContentAsRaw(raw: RawBuffer) =>
-        println(s"getContent 2 request.body.asRaw ${raw}")
-        raw.asBytes(raw.size.toInt).map {
-          arr => new String(arr.toArray, "UTF-8")
-        }
-
-      case AnyContentAsXml(xml) => Some(xml.toString())
-      case AnyContentAsJson(c) => Some(c.toString())
-
-      case _ => None
-    }
   }
 
   def recoverFromOutOfMemoryErrorResult(
