@@ -51,6 +51,13 @@ trait LDP[Rdf <: RDF, DATASET]
   implicit val turtleReader: RDFReader[Rdf, Try, Turtle]
   implicit val jsonldReader: RDFReader[Rdf, Try, JsonLd]
 
+	val defaultLDPheaders = Seq(
+    // DEBUG for yannick TODO reestablish !!!!!! ACCESS_CONTROL_ALLOW_ORIGIN -> "*",
+    "Link" -> """<http://www.w3.org/ns/ldp#BasicContainer>; rel="type", <http://www.w3.org/ns/ldp#Resource>; rel="type"""",
+    "Allow" -> "OPTIONS,GET,POST,PUT,PATCH,HEAD",
+    "Accept-Post" -> """"text/turtle, application/ld+json"""
+  )
+
   import ops._
 
   val servicePrefix = "/ldp/"

@@ -66,13 +66,6 @@ trait ApplicationTrait extends PlaySettings.MyControllerBase
 {
 	val config: Configuration
 
-	val defaultLDPheaders = Seq(
-    // DEBUG for yannick TODO reestablish !!!!!! ACCESS_CONTROL_ALLOW_ORIGIN -> "*",
-    "Link" -> """<http://www.w3.org/ns/ldp#BasicContainer>; rel="type", <http://www.w3.org/ns/ldp#Resource>; rel="type"""",
-    "Allow" -> "OPTIONS,GET,POST,PUT,PATCH,HEAD",
-    "Accept-Post" -> """"text/turtle, application/ld+json"""
-  )
-
   implicit val myCustomCharset = Codec.javaSupported("utf-8")
 
   protected def makeJSONResult(json: String) = makeResultMimeType(json, AcceptsJSONLD.mimeType)
