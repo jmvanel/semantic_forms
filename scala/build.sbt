@@ -13,7 +13,8 @@ lazy val root = Project("semantic_forms-root", file("."))
 organization in ThisBuild := "deductions"
 version in ThisBuild := "2.X-SNAPSHOT"
 
-scalaVersion in ThisBuild := "2.12.10"
+scalaVersion in ThisBuild := "2.12.11"
+// "2.13.2" //
 
 javacOptions in ThisBuild := Seq("-source","1.8", "-target","1.8")
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-explaintypes", "-language:_", "-Xlint:_")
