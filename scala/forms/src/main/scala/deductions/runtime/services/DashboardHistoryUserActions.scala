@@ -330,7 +330,8 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
         case (l: LiteralEntry, value : Rdf#Literal) =>
           l.valueLabel
             match {
-              case s: String if (s.length() > 0) =>
+              case s0: String if (s0.length() > 0) =>
+                val s = org.jsoup.Jsoup.parse(s0).text()
                 val length = s.length()
                 var valueLabel = s.substring(0, Math.min(length, 200))
                 if (length > 205) valueLabel = valueLabel + " ..."

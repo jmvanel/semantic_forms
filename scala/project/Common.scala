@@ -6,13 +6,6 @@ object Common {
     val localResolver = Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
     val bananaResolver = "bblfish-snapshots" at "http://bblfish.net/work/repo/releases"
 
-//val jenaVersion =  "3.9.0"
-//val jenaVersion =  "3.10.0"
-// ==>  val jenaVersion =  "3.11.0"
-//val jenaVersion =  "3.12.0"
-//val jenaVersion =  "3.13.0"
-// val jenaVersion =  "3.13.1"
-// 
 val jenaVersion =  "3.14.0"
 
   val bananaDependency0 = "org.w3" %%  "banana-jena" % "0.8.4-SNAPSHOT" 
@@ -80,6 +73,7 @@ val jenaVersion =  "3.14.0"
     any23Dependencies
     // for Java 9 (works also with Java 8)
     , "javax.xml.bind" % "jaxb-api" % "2.3.1"
+    , "org.jsoup" % "jsoup" % "1.13.1"
   )
 
 }
