@@ -291,8 +291,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
         val formSyntax = {
           val formSyntax = createFormTR(subjectURI)(allNamedGraph, lang)
           filterOutFields(formSyntax)
-          abbreviateLiterals(formSyntax)
-          addUserInfoOnTriples(formSyntax)(allNamedGraph)
+          addUserInfoOnTriples( abbreviateLiterals(formSyntax) )(allNamedGraph)
         }
 //        println(s"""formSyntax ${
 //          formSyntax.fields.filter(
