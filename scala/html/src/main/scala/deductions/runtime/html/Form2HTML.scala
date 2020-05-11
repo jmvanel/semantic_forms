@@ -218,11 +218,11 @@ trait Form2HTML[NODE, URI <: NODE]
             htmlFieldWithSeparator
           }
 
-        <div class="sf-values-group">{
+        <span class="sf-values-group">{
           makeFieldSubject(field) ++
             makeFieldLabelBasic(field, editable, lang) ++
             { htmlForEntries }
-        }</div>
+        }</span>
       }
       labelsAndData.toSeq
     }
@@ -274,7 +274,7 @@ trait Form2HTML[NODE, URI <: NODE]
 
     val htmlResult: NodeSeq =
       hiddenInputs ++
-        <div class={ cssConfig.formRootCSSClass }>
+        <span class={ cssConfig.formRootCSSClass }>
           {
             Comment(s"""Above div wraps second form header and form (form generation traceability)
               class=${cssConfig.formRootCSSClass}""") ++
@@ -292,7 +292,7 @@ trait Form2HTML[NODE, URI <: NODE]
                     form.fields, cssForURI, cssForProperty)
               }
           }
-        </div>
+        </span>
     return htmlResult
   }
 

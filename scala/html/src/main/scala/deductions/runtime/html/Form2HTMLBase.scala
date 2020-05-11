@@ -68,7 +68,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
       lang:String="en",
       cssForProperty: String = cssConfig.formLabelCSSClass ): NodeSeq =
     <label for={
-        field.htmlName
+        "field.htmlName"
       } class={
         cssForProperty
       } tabindex="-1">

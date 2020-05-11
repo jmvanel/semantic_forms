@@ -35,7 +35,7 @@
 }
 
 
-.sf-property-label{ margin-right: 7px; }
+.sf-property-label{ margin-right: 7px; display: inline; }
 
 .sf-save{
   width: 33.33333333%;

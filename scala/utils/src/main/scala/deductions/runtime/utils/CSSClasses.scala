@@ -25,7 +25,7 @@ trait CSSClasses {
     val formRootCSSClass: String = "form",
     val formFieldCSSClass: String = "form-group",
     val formLabelAndInputCSSClass: String = "row",
-    val formLabelCSSClass: String = "control-label",
+    val formLabelCSSClass: String = "" , // control-label",
     val formDivInputCSSClass: String = "col-xs-9",
     val formInputCSSClass: String = "input",
     val formDivEditInputCSSClass: String = "col-xs-1",
