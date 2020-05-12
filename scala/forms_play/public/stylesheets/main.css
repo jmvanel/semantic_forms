@@ -59,9 +59,10 @@
   display: inline;
   /* text-indent: 1.5em; */
 }
+/* For <hr> in Paragraphs & history view */
 .sf-paragraphs-separator{
   border: 1px solid blue;
-  margin: 1px;
+  margin: 4px;
 }
 
 .sf-space-form{
