@@ -309,12 +309,12 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
                 s"""
                   // var input = document.getElementById( "$htmlId" );
                   // var content = input .value;
-                  $$('#$htmlId') .summernote( // 'code', content,
-                  {
+                  $$('#$htmlId') .summernote( {
                     height: 250,      // set editor height
                     minHeight: null,  // set minimum height of editor
                     maxHeight: null,  // set maximum height of editor
-                    focus: true       // set focus to editable area after initializing summernote
+                    focus: true,      // set focus to editable area after initializing summernote
+                    codemirror: {}
                   } );
                   """
               } title="Click to edit multiline text in HTML editor">
