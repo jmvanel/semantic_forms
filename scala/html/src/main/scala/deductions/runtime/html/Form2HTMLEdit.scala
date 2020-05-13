@@ -272,7 +272,8 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
               xsd2html5TnputType(type0)
           }
           // <!-- TODO ? dropzone="copy" -->
-          val inputElement = <input class={ cssConfig.formInputCSSClass }
+          val inputElement =
+          <input class={ cssConfig.formInputCSSClass }
           value={
             toPlainString(value)
           } name={ lit.htmlName } type={html5Type}
@@ -281,14 +282,13 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
             inputSize.toString()
           } id={ htmlId }
           ></input>
-
-          val input: Elem =
+          val input =
             if( lit.widgetType == ShortString ||
                 html5Type != "text" )
               inputElement
             else {
               val te : Elem = <textarea>{ toPlainString(value) }</textarea>
-              // attributes are thus pasted from <input> to <textarea>
+              // attributes are thus pasted from <input> to <textarea> :
               te % (inputElement . attributes)
             }
         (input, html5Type )
@@ -299,25 +299,28 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
           { addTripleAttributesToXMLElement( input, lit ) }
         </div> ++
         <div class={ cssConfig.formDivEditInputCSSClass }>{
-            if (showEditButtons &&
+          val scriptUnused = <script>{ Unparsed(s"""
+            var input = document.getElementById( "$htmlId" )
+            var myCodeMirror = CodeMirror.fromTextArea(input)
+            console.log("myCodeMirror " + myCodeMirror)
+                """)
+          }</script>
+          if (showEditButtons &&
                  ! (lit.widgetType == ShortString) &&
-                 html5Type == "text"
-               )
+                 html5Type == "text" )
               <input class="btn btn-primary" type="button" value="EDIT"
-                onClick={
-                // s"""PopupEditor.launchEditorWindow( document.getElementById( "$htmlId" ));"""
-                s"""
-                  // var input = document.getElementById( "$htmlId" );
-                  // var content = input .value;
+                onClick={ s"""
+                  // var input = document.getElementById( "$htmlId" )
+                  // var content = input .value
                   $$('#$htmlId') .summernote( {
                     height: 250,      // set editor height
                     minHeight: null,  // set minimum height of editor
                     maxHeight: null,  // set maximum height of editor
-                    focus: true,      // set focus to editable area after initializing summernote
-                    codemirror: {}
-                  } );
-                  """
-              } title="Click to edit multiline text in HTML editor">
+                    focus: true      // set focus to editable area after initializing summernote
+                    // , codemirror: {}
+                  } )
+                """ }
+                title="Click to edit multiline text in HTML editor">
               </input>
           }
         </div>
