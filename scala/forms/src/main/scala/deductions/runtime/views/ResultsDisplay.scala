@@ -94,7 +94,7 @@ extends ThumbnailInference[Rdf, DATASET] {
   
   /** make HTML hyperlink For given URI, with bells and whistles;
    *  link to semantic_forms page for displaying this URI;
-   * NOTE: this reuses code in Form2HTMLDisplay.createHTMLResourceReadonlyField()
+   * NOTE: calls Form2HTMLDisplay.createHTMLResourceReadonlyField()
    * 
    * NON transactional, needs Read transaction */
   def makeHyperlinkForURI( node: Rdf#Node, graph: Rdf#Graph = allNamedGraph,
@@ -137,19 +137,11 @@ extends ThumbnailInference[Rdf, DATASET] {
    * NOTE: this reuses code in Form2HTMLDisplay.createHTMLResourceReadonlyField()
    * 
    * transactional, needs no transaction */
-  def makeHyperlinkForURItr( node: Rdf#Node, lang: String, graph: Rdf#Graph = allNamedGraph,
-      hrefPrefix: String = config.hrefDisplayPrefix,
-      label: String = "",
-      sortAnd1rowPerElement:Boolean = false )
-    : NodeSeq = {
-    		wrapInTransaction{
-    			makeHyperlinkForURI( node, graph,
-    					hrefPrefix,
-    					label,
-    					sortAnd1rowPerElement=sortAnd1rowPerElement,
-    					request=HTTPrequest(acceptLanguages=Seq(lang)))
-    		} . getOrElse(<div/>)
-  }
+  def makeHyperlinkForURItr( node: Rdf#Node, request: HTTPrequest)
+      : NodeSeq =
+    wrapInTransaction{
+      makeHyperlinkForURI( node, request = request )
+    } . getOrElse(<span>Problem in makeHyperlinkForURItr {node.toString()}</span>)
 
   /** display given URI with bells and whistles,
    *  implementation: call createHTMLResourceReadonlyField() from trait Form2HTMLDisplay */

@@ -103,7 +103,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
                 "dd MMM yyyy, HH:mm", Locale.forLanguageTag(lang))
               val dateFormat2 = new SimpleDateFormat("EEEE", Locale.forLanguageTag(lang))
 
-              wrapInTransaction { // for calling instanceLabel()
+              wrapInTransaction { // for makeHyperlinkForURI()
                 for (row <- sorted) yield {
                   try {
                     logger.debug("row " + row(1).toString())
@@ -115,14 +115,10 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
                       val date = new Date(dateAsLong(row))
                       <tr class="sf-table-row">
                         <td>{
-                          makeHyperlinkForURI(
-                            subjectURI, allNamedGraph, config.hrefDisplayPrefix,
-                            request = request)
+                          makeHyperlinkForURI(subjectURI, request = request)
                         }</td>
                         <td>{
-                          makeHyperlinkForURI(
-                            classOrNullURI, allNamedGraph, config.hrefDisplayPrefix,
-                            request = request)
+                          makeHyperlinkForURI(classOrNullURI, request = request)
                         }</td>
                         <!-- td>{ "Edit" /* TODO */ }</td -->
                         <td title={ dateFormat2.format(date) }>{ dateFormat.format(date) }</td>
@@ -231,7 +227,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
         filterMetadataSPARQL(metadata, request, sparqlQuery),
         // focus URI Pretty Printed
         <span>{ mess("View_centered") } </span> ++
-        makeHyperlinkForURItr(URI(focusURI), request.getLanguage(), allNamedGraph)
+        makeHyperlinkForURItr(URI(focusURI), request)
       )
     } else if (params.contains("sparql") ||
       params.contains("query")) {
@@ -293,13 +289,11 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
           filterOutFields(formSyntax)
           addUserInfoOnTriples( abbreviateLiterals(formSyntax) )(allNamedGraph)
         }
-//        println(s"""formSyntax ${
-//          formSyntax.fields.filter(
-//              e => e.property.toString().contains("encoded"))}""")
         val nodesAsXHTML = generateHTMLJustFields(formSyntax, request = request)
-        linkToFormSubject(formSyntax, lang) ++
-          nodesAsXHTML ++
-          <hr class="sf-paragraphs-separator"/>
+        <h3 class="sf.paragrahs-view-title">{
+          makeHyperlinkForURItr(subjectURI, request)}</h3> ++
+        nodesAsXHTML ++
+        <hr class="sf-paragraphs-separator"/>
       } catch {
         case t: Throwable =>
           t.printStackTrace()
