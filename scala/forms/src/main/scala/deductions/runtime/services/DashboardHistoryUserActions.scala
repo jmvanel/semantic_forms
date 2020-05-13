@@ -313,7 +313,10 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
         field.property == rdfs.label ||
           field.property == form("separator_props_From_Subject") ||
           field.property == form("separator_props_From_Classes") ||
-          field.property == form("linksCount"))
+          field.property == form("linksCount") ||
+          field.property == geo("lat") ||
+          field.property == geo("alt")
+    )
   }
 
   /** abbreviate literal values (eg for SIOC Posts) */
