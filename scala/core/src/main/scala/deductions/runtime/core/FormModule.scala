@@ -37,12 +37,6 @@ trait FormModule[NODE, URI <: NODE] {
                          val subject: NODE,
                          var fields: Seq[Entry],
 
-                         /** DONE remove entriesList (replaced by fields)
-                           *  cf commit
-                           *  "REFACTORING : moving each field on formSyntax + changing all rawDatForForm by formSyntax"
-                           *  (unfinished refactoring of RawDataForForms */
-//                         val entriesList: Seq[FormModule[NODE, URI]#Entry] = Seq(),
-
                          /** several types */
                          val classs: Seq[NODE] = Seq(),
                          formGroup: URI = nullURI,

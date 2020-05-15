@@ -259,9 +259,13 @@ trait Form2HTML[NODE, URI <: NODE]
       tabs.+:(tabsNames)
     }
 
-    /* make HTML for Field Subject, if different from form subject */
+    /** make HTML for Field Subject, if different from form subject */
     def makeFieldSubject(field: FormEntry): NodeSeq = {
-      if (field.subject != nullURI && field.subject != form.subject) {
+//      println(s"makeFieldSubject: form.classs ${form.classs}")
+      if (field.subject != nullURI &&
+          field.subject != form.subject &&
+          form.classs == Seq()
+      ) {
         val subjectField =
           // NOTE: over-use of class ResourceEntry to display the subject instead of normally the object triple:
           ResourceEntry(value = field.subject, valueLabel = field.subjectLabel)

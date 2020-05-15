@@ -19,6 +19,9 @@ import deductions.runtime.services.html.TriplesViewWithTitle
 import deductions.runtime.html.Form2HTML
 import deductions.runtime.services.html.HTML5TypesTrait
 import deductions.runtime.abstract_syntax.UserTraceability
+import scala.collection.mutable.ArrayBuffer
+import scala.xml.Text
+import deductions.runtime.sparql_cache.SPARQLHelpers
 
 /**
  * Show History of User Actions:
@@ -36,7 +39,8 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   with TriplesViewWithTitle[Rdf, DATASET]
   with Form2HTML[Rdf#Node, Rdf#URI]
   with HTML5TypesTrait[Rdf]
-  with UserTraceability[Rdf, DATASET]{
+  with UserTraceability[Rdf, DATASET]
+  with SPARQLHelpers[Rdf, DATASET] {
 
   import ops._
 
@@ -137,7 +141,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
           </tbody>
         </table>
 
-      lazy val paragraphs = paragrahsView(sorted, request)
+      lazy val paragraphs = paragraphsView(sorted, request)
 
       val html: NodeSeq =
         title ++
@@ -278,19 +282,19 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     }
   }
 
-  private def paragrahsView(rows: List[Seq[Rdf#Node]], request: HTTPrequest): NodeSeq = {
+  private def paragrahsViewOLD(rows: List[Seq[Rdf#Node]], request: HTTPrequest): NodeSeq = {
     val subjectsURIhtml = for (row <- rows) yield {
       try {
         logger.debug("row " + row(1).toString())
         val subjectURI = row(0)
-        val lang = request.getLanguage()
         val formSyntax = {
+          val lang = request.getLanguage()
           val formSyntax = createFormTR(subjectURI)(allNamedGraph, lang)
           filterOutFields(formSyntax)
           addUserInfoOnTriples( abbreviateLiterals(formSyntax) )(allNamedGraph)
         }
         val nodesAsXHTML = generateHTMLJustFields(formSyntax, request = request)
-        <h3 class="sf.paragrahs-view-title">{
+        <h3 class="sf-paragrahs-view-title">{
           makeHyperlinkForURItr(subjectURI, request)}</h3> ++
         nodesAsXHTML ++
         <hr class="sf-paragraphs-separator"/>
@@ -304,6 +308,167 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     <span class="sf-values-group-inline">{
       subjectsURIhtml.flatten
     }</span>
+  }
+
+  /** OLD version !!! */
+  private def paragrahsView1(rows: List[Seq[Rdf#Node]], request: HTTPrequest): NodeSeq = {
+    val formSyntaxes = for (row <- rows) yield {
+      try {
+        logger.debug("row " + row(1).toString())
+        val subjectURI = row(0)
+        val formSyntax = {
+          val lang = request.getLanguage()
+          val formSyntax = createFormTR(subjectURI)(allNamedGraph, lang)
+          filterOutFields(formSyntax)
+          addUserInfoOnTriples(abbreviateLiterals(formSyntax))(allNamedGraph)
+        }
+        formSyntax
+      } catch {
+        case t: Throwable =>
+          // t.printStackTrace()
+          logger.info(t.getLocalizedMessage)
+          FormSyntax(nullURI,Seq())
+      }
+    }
+    val htmlForFormSyntaxes =
+      for (formSyntax <- groupByClass0(formSyntaxes)) yield {
+      val nodesAsXHTML = generateHTMLJustFields(formSyntax, request = request)
+      <h3 class="sf.paragrahs-view-title">
+      {
+        ( if( isClassTR(formSyntax.subject) /* is class URI ?*/
+            ) Text("Class ") else NodeSeq.Empty ) ++ 
+        makeHyperlinkForURItr(formSyntax.subject, request)
+      }</h3> ++
+        nodesAsXHTML ++
+        <hr class="sf-paragraphs-separator"/>
+    }
+    <span class="sf-values-group-inline">{
+    htmlForFormSyntaxes. flatten
+    }</span>
+  }
+
+  /** paragraphs View */
+  private def paragraphsView(rows: List[Seq[Rdf#Node]], request: HTTPrequest): NodeSeq = {
+    val formSyntaxes = for (row <- rows) yield {
+      try {
+        logger.debug("row " + row(1).toString())
+        val subjectURI = row(0)
+        val formSyntax = {
+          val lang = request.getLanguage()
+          val formSyntax = createFormTR(subjectURI)(allNamedGraph, lang)
+          filterOutFields(formSyntax)
+          addUserInfoOnTriples(abbreviateLiterals(formSyntax))(allNamedGraph)
+        }
+        formSyntax
+      } catch {
+        case t: Throwable =>
+          // t.printStackTrace()
+          logger.info(t.getLocalizedMessage)
+          FormSyntax(nullURI,Seq())
+      }
+    }
+    val htmlForFormSyntaxes =
+      for ((header, formSyntaxesGrouped) <- groupByClass(formSyntaxes, request)) yield {
+        header ++ (
+          for (formSyntax <- formSyntaxesGrouped) yield {
+            val nodesAsXHTML = generateHTMLJustFields(formSyntax, request = request)
+            <h4 class="sf-paragraphs-view-subtitle"> {
+              makeHyperlinkForURItr(formSyntax.subject, request)
+            }</h4> ++
+            nodesAsXHTML
+          })++
+          <hr class="sf-paragraphs-separator"/>
+      }
+    <span class="sf-values-group-inline">{
+    htmlForFormSyntaxes. flatten
+    }</span>
+  }
+
+    /** group form Syntaxes By Class
+   *  @return Form Syntaxes aggregated by RDF Class, respecting original order,
+   *  plus the HTML header for each group */
+  private def groupByClass(formSyntaxes: List[FormSyntax],
+      request: HTTPrequest):
+      Seq[(NodeSeq, List[FormSyntax])] = {
+    val formSyntaxesGroupedByClass = groupByRespectingOrder( formSyntaxes,
+        (f: FormSyntax) => f.types() )
+    //    println(s"groupByClass: types ${formSyntaxesGroupedByClass.map{ fs=> fs._1 }}")
+    def makeHtmlHeader(uri: Rdf#Node, mess: NodeSeq=NodeSeq.Empty): NodeSeq =
+      <h3 class="sf.paragraphs-view-title"> {
+        mess ++
+        makeHyperlinkForURItr(uri, request)
+      }</h3>
+    val aggregatedFormSyntaxes =
+      for ((types, formSyntaxesFortypes) <- formSyntaxesGroupedByClass ) yield {
+        if (formSyntaxesFortypes.size > 1) {
+          val classURI = types.headOption.getOrElse(URI("urn:No_Class"))
+          val mess = Text( I18NMessages.get("Class", request.getLanguage()) +
+              " (" + formSyntaxesFortypes.size.toString() + ") ")
+          ( makeHtmlHeader(classURI, mess),
+            formSyntaxesFortypes)
+
+        } else {
+          val formSyntaxIsolated = formSyntaxesFortypes.headOption.getOrElse(FormSyntax(nullURI, Seq(), types) )
+          ( makeHtmlHeader(formSyntaxIsolated.subject),
+            List(formSyntaxIsolated))
+        }
+      }
+    aggregatedFormSyntaxes.toSeq
+  }
+
+  /** group form Syntaxes By Class
+   *  @return Form Syntaxes aggregated by RDF Class, respecting original order *
+   * OLD version !!! */
+private def groupByClass0(formSyntaxes: List[FormSyntax]): Seq[FormSyntax] = {
+    val formSyntaxesGroupedByClass = groupByRespectingOrder( formSyntaxes,
+        (f: FormSyntax) => f.types() )
+//    println(s"groupByClass: types ${formSyntaxesGroupedByClass.map{ fs=> fs._1 }}")
+    val typesToEntriesAggregated =
+      for ((types, formSyntaxesForTypes) <- formSyntaxesGroupedByClass) yield {
+        val allFields = for (
+          formSyntax <- formSyntaxesForTypes;
+          field <- formSyntax.fields
+        ) yield field
+        (types, allFields, formSyntaxesForTypes)
+      }
+    val aggregatedFormSyntaxes =
+      for ((types, allFields, formSyntaxesFortypes) <- typesToEntriesAggregated) yield {
+        if (formSyntaxesFortypes.size > 1) {
+          val classURI = types.headOption.getOrElse(URI("urn:No_Class"))
+          FormSyntax(classURI, allFields, types)
+        } else {
+          formSyntaxesFortypes.headOption.getOrElse(FormSyntax(nullURI, allFields, types))
+        }
+      }
+    aggregatedFormSyntaxes.toSeq
+  }
+
+  /** @return chunks aggregated by given function, respecting original order */
+  private def groupByRespectingOrder[T, K](
+      list: List[T],
+      f: T => K): List[(K, List[T])] = {
+    val result = ArrayBuffer[(K, List[T])]()
+    var precedingKey: Option[K] = None
+    var currentListForKey: List[T] = List()
+    val elemsWithKey = for( elem <- list ) {
+      val key = f(elem)
+      if( Some(key) == precedingKey ||
+          precedingKey == None ) {
+        currentListForKey = currentListForKey :+ elem
+//        println(s"""groupByRespectingOrder: :+
+//                   Key:$key
+//                   elem ${elem.toString().substring(0, 150)}""" )
+      } else {
+        result.append((precedingKey.get, currentListForKey))
+//        println(s"""groupByRespectingOrder: append:
+//                   Key:$key,
+//          precedingKey:$precedingKey,
+//          currentListForKey.size=${currentListForKey.size}""")
+        currentListForKey = List(elem)
+      }
+      precedingKey = Some(key)
+    }
+    result.toList
   }
 
   /** filter Out Fields nor suitable for inline summary view */

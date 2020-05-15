@@ -389,7 +389,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         processNodeMatch(s),
         makeURI(processNodeMatch(p)),
         processNodeMatch(o))
-      //      logger.debug(s"processNodeMatch BEFORE makeURI(result(resultIndex)) , resultIndex $resultIndex size ${result.size}" )
+        logger.debug(s"""processNodeMatch BEFORE makeURI(result(resultIndex)) ,
+        resultIndex $resultIndex size ${result.size}
+        triple $triple""" )
       (triple, makeURI(result(resultIndex)))
     }
 
@@ -905,13 +907,19 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   private lazy val classTypes = List(rdfs.Class, owl.Class)
 
-  def isClass(uriTokeep: Rdf#Node): Boolean = {
-    val typeQuads = quadQuery(uriTokeep, rdf.typ, ANY).toList
-    logger.debug( s"isProperty( $uriTokeep ) : types $typeQuads" )
+  /** needs transaction ! */
+  def isClass(uri: Rdf#Node): Boolean = {
+    val typeQuads = quadQuery(uri, rdf.typ, ANY).toList
+    logger.debug( s"isProperty( $uri ) : types $typeQuads" )
     val types = typeQuads.map { typ => typ._1.objectt }
-//    typeQuads.exists { typ => classTypes.contains(typ._1.objectt) }
     containsClassType(types)
   }
+
+    def isClassTR(uri: Rdf#Node): Boolean = {
+      wrapInReadTransaction{
+        isClass(uri)
+      } getOrElse(false)
+    }
 
   def containsClassType( types: List[Rdf#Node]): Boolean =
     types.exists { typ => classTypes.contains(typ) }
