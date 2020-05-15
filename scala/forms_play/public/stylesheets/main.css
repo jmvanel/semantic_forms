@@ -64,6 +64,11 @@
   border: 1px solid blue;
   margin: 4px;
 }
+.sf-paragraphs-view-subtitle{
+  display: inline;
+}
+.sf-paragraphs-view-title{
+}
 
 .sf-space-form{
     /*margin-bottom: 10px;*/

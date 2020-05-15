@@ -371,12 +371,14 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       for ((header, formSyntaxesGrouped) <- groupByClass(formSyntaxes, request)) yield {
         header ++ (
           for (formSyntax <- formSyntaxesGrouped) yield {
-            val nodesAsXHTML = generateHTMLJustFields(formSyntax, request = request)
-            <h4 class="sf-paragraphs-view-subtitle"> {
+            (if (formSyntaxesGrouped.size > 1)
+              <h4 class="sf-paragraphs-view-subtitle"> {
               makeHyperlinkForURItr(formSyntax.subject, request)
-            }</h4> ++
-            nodesAsXHTML
-          })++
+            }</h4>
+            else
+              NodeSeq.Empty) ++
+            generateHTMLJustFields(formSyntax, request = request)
+          }) ++
           <hr class="sf-paragraphs-separator"/>
       }
     <span class="sf-values-group-inline">{
