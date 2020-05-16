@@ -146,8 +146,8 @@ trait MainXml[Rdf <: RDF, DATASET] extends ToolsPage[Rdf, DATASET] {
     </html>
   }
 
-  /** creation Button for given RDF class */
-  def creationButton(classe: String, label: String, formuri: String = ""): NodeSeq =
+  /** (unused) creation Button (non contextual) for given RDF class */
+  private def creationButtonNonContextual(classe: String, label: String, formuri: String = ""): NodeSeq =
     <form role="form" action="/create">
       <input type="hidden" name="uri" id="uri" value={ classe }/>
       <input type="hidden" name="formuri" id="formuri" value={

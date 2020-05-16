@@ -69,7 +69,9 @@ with StringHelpers
       makeNeighborhoodLink(objectURIstringValue, request) ++
       creationButton(toPlainString(value),
               type_.map { t => t.toString() },
-              request) ++
+              clone=false,
+              request=request,
+              resourceEntry) ++
       expertLinks(resourceEntry, request)
 
     } else if( details.contains("images") )
@@ -104,9 +106,6 @@ with StringHelpers
         makeDrawGraphLink(uri) ++
         makeDrawGraphLinkSpoggy(uri) ++
         makeDrawGraphLinkLodLive(uri) ++
-//        creationButton(uri,
-//              type_.map { t => t.toString() },
-//              request) ++
         makeClassTableButton(resourceEntry) ++
         hyperlinkForEditingURIinsideForm(uri, request.getLanguage()),
       uri)
@@ -214,21 +213,26 @@ with StringHelpers
       r.valueLabel
       }</a>
 
-  /** creation Button for a new local URI
+  /** Contextual creation Button for a new local URI
    *  either in form header or on rdf:type objects */
   def creationButton(classURIstringValue: String, types: Seq[String],
-                     request: HTTPrequest): NodeSeq = {
+      clone: Boolean,
+      request: HTTPrequest,
+      resourceEntry: formMod#ResourceEntry = NullResourceEntry): NodeSeq = {
     val imageURL = "/assets/images/create-instance.svg"
     implicit val _ = request.getLanguage()
-    val messCreate_instance = mess("Create_instance_of") + s" <$classURIstringValue>"
-//    println(s">>>> creationButton: classURIstringValue: $classURIstringValue, types: $types")
+    val messCreate_instance = mess("Create_instance_of") +
+    " " + resourceEntry.valueLabel +
+    s" <$classURIstringValue>"
+    logger.debug(s">>>> creationButton: classURIstringValue: $classURIstringValue, types: $types")
     if ( types.exists { t => t.endsWith("#Class") } ) {
-        <a href={
-          "/create?uri=" + URLEncoder.encode(classURIstringValue, "UTF-8") +
-          s"&referer=${request.getRDFsubject()}"
-        } title={ messCreate_instance }>
-          <img src={ imageURL } css="sf-thumbnail" height="40" alt={ messCreate_instance }/>
-        </a>
+      <a href={
+        "/create?uri=" + URLEncoder.encode(classURIstringValue, "UTF-8") +
+          (if (clone) s"&referer=${request.getRDFsubject()}"
+          else "&prefill=no")
+      } title={ messCreate_instance + (if (clone) " (clone)" else "") }>
+        <img src={ imageURL } css="sf-thumbnail" height="40" alt={ messCreate_instance }/>
+      </a>
     } else NodeSeq.Empty
   }
 

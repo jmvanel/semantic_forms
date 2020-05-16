@@ -93,9 +93,12 @@ trait FormHeader[Rdf <: RDF, DATASET]
                 </a>
               } else NodeSeq.Empty
             }
-            { creationButton(
-                 nodeToString(formSyntax.subject),
-                 formSyntax.types() . map( _ . toString ),
+            { 
+              // <p>creationButton { formSyntax.types().mkString(", ")}</p> ++
+              creationButton(
+                 nodeToString(formSyntax.types().headOption.getOrElse(nullURI)),
+                 Seq("#Class"),
+                 clone=true,
                  request
               )
             }
