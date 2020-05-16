@@ -282,71 +282,6 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     }
   }
 
-  private def paragrahsViewOLD(rows: List[Seq[Rdf#Node]], request: HTTPrequest): NodeSeq = {
-    val subjectsURIhtml = for (row <- rows) yield {
-      try {
-        logger.debug("row " + row(1).toString())
-        val subjectURI = row(0)
-        val formSyntax = {
-          val lang = request.getLanguage()
-          val formSyntax = createFormTR(subjectURI)(allNamedGraph, lang)
-          filterOutFields(formSyntax)
-          addUserInfoOnTriples( abbreviateLiterals(formSyntax) )(allNamedGraph)
-        }
-        val nodesAsXHTML = generateHTMLJustFields(formSyntax, request = request)
-        <h3 class="sf-paragrahs-view-title">{
-          makeHyperlinkForURItr(subjectURI, request)}</h3> ++
-        nodesAsXHTML ++
-        <hr class="sf-paragraphs-separator"/>
-      } catch {
-        case t: Throwable =>
-          t.printStackTrace()
-          <p>{ t.getLocalizedMessage }</p>
-      }
-    }
-    <br/>
-    <span class="sf-values-group-inline">{
-      subjectsURIhtml.flatten
-    }</span>
-  }
-
-  /** OLD version !!! */
-  private def paragrahsView1(rows: List[Seq[Rdf#Node]], request: HTTPrequest): NodeSeq = {
-    val formSyntaxes = for (row <- rows) yield {
-      try {
-        logger.debug("row " + row(1).toString())
-        val subjectURI = row(0)
-        val formSyntax = {
-          val lang = request.getLanguage()
-          val formSyntax = createFormTR(subjectURI)(allNamedGraph, lang)
-          filterOutFields(formSyntax)
-          addUserInfoOnTriples(abbreviateLiterals(formSyntax))(allNamedGraph)
-        }
-        formSyntax
-      } catch {
-        case t: Throwable =>
-          // t.printStackTrace()
-          logger.info(t.getLocalizedMessage)
-          FormSyntax(nullURI,Seq())
-      }
-    }
-    val htmlForFormSyntaxes =
-      for (formSyntax <- groupByClass0(formSyntaxes)) yield {
-      val nodesAsXHTML = generateHTMLJustFields(formSyntax, request = request)
-      <h3 class="sf.paragrahs-view-title">
-      {
-        ( if( isClassTR(formSyntax.subject) /* is class URI ?*/
-            ) Text("Class ") else NodeSeq.Empty ) ++ 
-        makeHyperlinkForURItr(formSyntax.subject, request)
-      }</h3> ++
-        nodesAsXHTML ++
-        <hr class="sf-paragraphs-separator"/>
-    }
-    <span class="sf-values-group-inline">{
-    htmlForFormSyntaxes. flatten
-    }</span>
-  }
-
   /** paragraphs View */
   private def paragraphsView(rows: List[Seq[Rdf#Node]], request: HTTPrequest): NodeSeq = {
     val formSyntaxes = for (row <- rows) yield {
@@ -394,7 +329,6 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       Seq[(NodeSeq, List[FormSyntax])] = {
     val formSyntaxesGroupedByClass = groupByRespectingOrder( formSyntaxes,
         (f: FormSyntax) => f.types() )
-    //    println(s"groupByClass: types ${formSyntaxesGroupedByClass.map{ fs=> fs._1 }}")
     def makeHtmlHeader(uri: Rdf#Node, mess: NodeSeq=NodeSeq.Empty): NodeSeq =
       <h3 class="sf.paragraphs-view-title"> {
         mess ++
@@ -418,33 +352,6 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     aggregatedFormSyntaxes.toSeq
   }
 
-  /** group form Syntaxes By Class
-   *  @return Form Syntaxes aggregated by RDF Class, respecting original order *
-   * OLD version !!! */
-private def groupByClass0(formSyntaxes: List[FormSyntax]): Seq[FormSyntax] = {
-    val formSyntaxesGroupedByClass = groupByRespectingOrder( formSyntaxes,
-        (f: FormSyntax) => f.types() )
-//    println(s"groupByClass: types ${formSyntaxesGroupedByClass.map{ fs=> fs._1 }}")
-    val typesToEntriesAggregated =
-      for ((types, formSyntaxesForTypes) <- formSyntaxesGroupedByClass) yield {
-        val allFields = for (
-          formSyntax <- formSyntaxesForTypes;
-          field <- formSyntax.fields
-        ) yield field
-        (types, allFields, formSyntaxesForTypes)
-      }
-    val aggregatedFormSyntaxes =
-      for ((types, allFields, formSyntaxesFortypes) <- typesToEntriesAggregated) yield {
-        if (formSyntaxesFortypes.size > 1) {
-          val classURI = types.headOption.getOrElse(URI("urn:No_Class"))
-          FormSyntax(classURI, allFields, types)
-        } else {
-          formSyntaxesFortypes.headOption.getOrElse(FormSyntax(nullURI, allFields, types))
-        }
-      }
-    aggregatedFormSyntaxes.toSeq
-  }
-
   /** @return chunks aggregated by given function, respecting original order */
   private def groupByRespectingOrder[T, K](
       list: List[T],
@@ -457,15 +364,8 @@ private def groupByClass0(formSyntaxes: List[FormSyntax]): Seq[FormSyntax] = {
       if( Some(key) == precedingKey ||
           precedingKey == None ) {
         currentListForKey = currentListForKey :+ elem
-//        println(s"""groupByRespectingOrder: :+
-//                   Key:$key
-//                   elem ${elem.toString().substring(0, 150)}""" )
       } else {
         result.append((precedingKey.get, currentListForKey))
-//        println(s"""groupByRespectingOrder: append:
-//                   Key:$key,
-//          precedingKey:$precedingKey,
-//          currentListForKey.size=${currentListForKey.size}""")
         currentListForKey = List(elem)
       }
       precedingKey = Some(key)

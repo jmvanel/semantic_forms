@@ -67,7 +67,7 @@ with StringHelpers
       displayThumbnail(resourceEntry, request) ++
       backLinkButton(resourceEntry, request) ++
       makeNeighborhoodLink(objectURIstringValue, request) ++
-      creationButton(toPlainString(subject),
+      creationButton(toPlainString(value),
               type_.map { t => t.toString() },
               request) ++
       expertLinks(resourceEntry, request)
@@ -224,7 +224,8 @@ with StringHelpers
 //    println(s">>>> creationButton: classURIstringValue: $classURIstringValue, types: $types")
     if ( types.exists { t => t.endsWith("#Class") } ) {
         <a href={
-          "/create?uri=" + URLEncoder.encode(classURIstringValue, "UTF-8")
+          "/create?uri=" + URLEncoder.encode(classURIstringValue, "UTF-8") +
+          s"&referer=${request.getRDFsubject()}"
         } title={ messCreate_instance }>
           <img src={ imageURL } css="sf-thumbnail" height="40" alt={ messCreate_instance }/>
         </a>
