@@ -22,6 +22,7 @@ import deductions.runtime.abstract_syntax.UserTraceability
 import scala.collection.mutable.ArrayBuffer
 import scala.xml.Text
 import deductions.runtime.sparql_cache.SPARQLHelpers
+import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 
 /**
  * Show History of User Actions:
@@ -40,7 +41,9 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   with Form2HTML[Rdf#Node, Rdf#URI]
   with HTML5TypesTrait[Rdf]
   with UserTraceability[Rdf, DATASET]
-  with SPARQLHelpers[Rdf, DATASET] {
+  with SPARQLHelpers[Rdf, DATASET]
+  with InstanceLabelsInferenceMemory[Rdf, DATASET]
+{
 
   import ops._
 
@@ -327,29 +330,46 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
   private def groupByClass(formSyntaxes: List[FormSyntax],
       request: HTTPrequest):
       Seq[(NodeSeq, List[FormSyntax])] = {
-    val formSyntaxesGroupedByClass = groupByRespectingOrder( formSyntaxes,
+    val formSyntaxesGroupedByClass = groupByRespectingOrder(
+        formSyntaxes,
         (f: FormSyntax) => f.types() )
-    def makeHtmlHeader(uri: Rdf#Node, mess: NodeSeq=NodeSeq.Empty): NodeSeq =
+    def makeHtmlHeader(title: NodeSeq,
+        messBefore: NodeSeq=NodeSeq.Empty,
+        messAfter: String = ""
+        ): NodeSeq =
       <h3 class="sf.paragraphs-view-title"> {
-        mess ++
-        makeHyperlinkForURItr(uri, request)
+        messBefore ++
+        title ++
+        Text(messAfter)
       }</h3>
     val aggregatedFormSyntaxes =
       for ((types, formSyntaxesFortypes) <- formSyntaxesGroupedByClass ) yield {
         if (formSyntaxesFortypes.size > 1) {
           val classURI = types.headOption.getOrElse(URI("urn:No_Class"))
-          val mess = Text( I18NMessages.get("Class", request.getLanguage()) +
-              " (" + formSyntaxesFortypes.size.toString() + ") ")
-          ( makeHtmlHeader(classURI, mess),
+          val mess = Text( I18NMessages.get("Class", request.getLanguage() ) + " " )
+          val mess2 = " (" + formSyntaxesFortypes.size.toString() + ") "
+          ( makeHtmlHeader(
+              Text(instanceLabelFromTDBtr(classURI, request.getLanguage()) ),
+              mess,
+              mess2),
             formSyntaxesFortypes)
 
         } else {
           val formSyntaxIsolated = formSyntaxesFortypes.headOption.getOrElse(FormSyntax(nullURI, Seq(), types) )
-          ( makeHtmlHeader(formSyntaxIsolated.subject),
+          (
+            makeHtmlHeader(
+              makeHyperlinkForURItr(formSyntaxIsolated.subject, request)),
             List(formSyntaxIsolated))
         }
       }
     aggregatedFormSyntaxes.toSeq
+  }
+
+  /** TODO could be used elsewhere ? */
+  def instanceLabelFromTDBtr(node: Rdf#Node, lang: String): String = {
+    wrapInReadTransaction{
+      instanceLabelFromTDB(node: Rdf#Node, lang)
+    } . getOrElse(" " + node + "")
   }
 
   /** @return chunks aggregated by given function, respecting original order */
