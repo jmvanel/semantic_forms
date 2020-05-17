@@ -33,7 +33,7 @@ trait MainXml[Rdf <: RDF, DATASET] extends ToolsPage[Rdf, DATASET] {
         { head(title)(lang) }
         { headExtra }
       </head>
-      <body>
+      <body class="sf-body">
         {mainPageHeader(lang, userInfo, displaySearch, messages)}
         <div id="appMessages">{httpRequest.appMessages}</div>
         <div class={classForContent}>
