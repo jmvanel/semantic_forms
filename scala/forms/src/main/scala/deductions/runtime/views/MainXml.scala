@@ -113,7 +113,7 @@ trait MainXml[Rdf <: RDF, DATASET] extends ToolsPage[Rdf, DATASET] {
         enterClassForCreatingInstance()
       }
     }</div>
-    <div>{ enterSearchTerm() }</div>
+    <div class="sf-search-form-container">{ enterSearchTerm() }</div>
     <hr></hr>
   }
 

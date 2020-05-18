@@ -78,6 +78,13 @@
     /*margin-bottom: 10px;*/
 }
 
+.sf-search-form-container{
+    display: flex;
+    justify-content: center;
+}
+.sf-search-form{
+}
+
 .sf-button {height: 20px; vertical-align: middle; padding:0}
 .sf-suggestion-search-dbpedia {
     background-image: url(../images/ripple.gif);
