@@ -2,8 +2,6 @@ package deductions.runtime.jena
 
 import org.scalatest.FunSuite
 
-import org.apache.log4j.Logger
-
 import org.apache.jena.tdb.TDBFactory
 import org.apache.jena.riot.RDFDataMgr
 import org.scalatest.Ignore
@@ -43,14 +41,14 @@ trait TestJenaRDFDataMgrRaw extends ImplementationSettings.RDFModule {
     val uri = makeUri(uriString)
     lazy val dataset = TDBFactory.createDataset("TDB_test")
     rdfStore.rw(dataset, {
-      Logger.getRootLogger().info(s"storeURI uri $uri ")
+      logger.info(s"storeURI uri $uri ")
       try {
         val gForStore = rdfStore.getGraph(dataset, graphUri).getOrElse(emptyGraph)
         //      val gForStore = store.addGraph(graphUri)
         RDFDataMgr.read(gForStore, uri.toString())
-        Logger.getRootLogger().info(s"storeURI uri $uri : stored")
+        logger.info(s"storeURI uri $uri : stored")
       } catch {
-        case t: Throwable => Logger.getRootLogger().error("ERROR: " + t)
+        case t: Throwable => logger.error("ERROR: " + t)
       }
     })
     dataset.close

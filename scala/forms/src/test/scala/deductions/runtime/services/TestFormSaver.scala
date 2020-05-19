@@ -4,7 +4,6 @@ import java.net.URLEncoder
 
 import deductions.runtime.jena.{ImplementationSettings, RDFCache, RDFStoreLocalJenaProvider}
 import deductions.runtime.utils.DefaultConfiguration
-import org.apache.log4j.Logger
 import org.scalatest.FunSuite
 import org.w3.banana.{PointedGraph, RDFOpsModule, SparqlGraphModule, SparqlOpsModule}
 import org.w3.banana.jena.JenaModule
@@ -28,7 +27,7 @@ class TestFormSaver
     override val useTextQuery = false
   }
   import ops._
-  val logger = Logger.getRootLogger()
+  // val logger = Logger.getRootLogger()
   lazy val fs = this // new FormSaver[Jena, Dataset] {}
 
   val uri = "http://jmvanel.free.fr/jmv.rdf#me"
