@@ -6,7 +6,7 @@ object Common {
     val localResolver = Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
     val bananaResolver = "bblfish-snapshots" at "http://bblfish.net/work/repo/releases"
 
-val jenaVersion =  "3.14.0"
+val jenaVersion =  "3.15.0"
 
   val bananaDependency0 = "org.w3" %%  "banana-jena" % "0.8.4-SNAPSHOT" 
   val bananaDependency = bananaDependency0 exclude("org.slf4j", "slf4j-api" )	exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")

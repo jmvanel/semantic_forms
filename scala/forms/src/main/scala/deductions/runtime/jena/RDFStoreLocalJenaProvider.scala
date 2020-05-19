@@ -12,7 +12,6 @@ import org.apache.jena.query.DatasetFactory
 import org.apache.jena.riot.RiotException
 import org.apache.jena.tdb.TDBFactory
 import org.apache.jena.tdb.transaction.TransactionManager
-import org.apache.log4j.Logger
 import org.w3.banana.jena.{Jena, JenaDatasetStore, JenaModule}
 
 import scala.collection.JavaConverters._
@@ -105,7 +104,6 @@ trait RDFStoreLocalJenaProvider
 //      logger.info
       println(s"TDB Dataset created in '$database_location' in directory '$abs'")
 
-      //      Logger.getRootLogger.info
       logger.debug(s"RDFStoreLocalJenaProvider $database_location, dataset created: $dts")
 
       try {
@@ -286,11 +284,11 @@ trait RDFGraphPrinter extends RDFStoreLocalJenaProvider {
     rdfStore.r(dataset, {
       val lgn = dataset.asDatasetGraph().listGraphNodes()
       val lgnasScala = lgn.asScala
-      Logger.getRootLogger().info(s"listGraphNodes size ${lgnasScala.size}")
+      logger.info(s"listGraphNodes size ${lgnasScala.size}")
       for (gn <- lgnasScala) {
-        Logger.getRootLogger().info(s"${gn.toString()}")
+        logger.info(s"${gn.toString()}")
       }
-      Logger.getRootLogger().info(s"afer listGraphNodes")
+      logger.info(s"afer listGraphNodes")
     })
   }
 }

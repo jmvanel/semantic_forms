@@ -2,7 +2,6 @@ package deductions.runtime.sparql_cache
 
 import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.utils.Configuration
-import org.apache.log4j.Logger
 import org.w3.banana.RDF
 import org.w3.banana.io.RDFLoader
 
@@ -36,7 +35,7 @@ trait RDFStoreHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DA
     r match {
       case Success(g) => g
       case Failure(e) =>
-        Logger.getRootLogger().error("ERROR: " + e)
+        logger.error("ERROR: " + e)
         throw e
     }
   }
@@ -46,7 +45,7 @@ trait RDFStoreHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DA
    *  probably can also load an URI with the # part ???
    */
   def storeURINoTransaction(uri: Rdf#URI, graphUri: Rdf#URI, dataset: DATASET): Rdf#Graph = {
-    Logger.getRootLogger().info(s"Before load uri $uri into graphUri $graphUri")
+    logger.info(s"Before load uri $uri into graphUri $graphUri")
     System.setProperty("sun.net.client.defaultReadTimeout", defaultReadTimeout.toString)
     System.setProperty("sun.net.client.defaultConnectTimeout", defaultConnectTimeout.toString)
 
@@ -56,7 +55,7 @@ trait RDFStoreHelpers[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DA
       rdfLoader.load(new java.net.URL( withoutFragment(uri).toString())).get.
         asInstanceOf[Rdf#Graph]
     rdfStore.appendToGraph( dataset, graphUri, graph)
-    Logger.getRootLogger().info(s"storeURI uri $uri : stored into graphUri $graphUri")
+    logger.info(s"storeURI uri $uri : stored into graphUri $graphUri")
     graph
   }
 

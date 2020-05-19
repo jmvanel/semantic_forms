@@ -9,7 +9,7 @@ import org.apache.http.HttpResponse
 import org.apache.http.client.methods.HttpHead
 import org.apache.http.client.{ClientProtocolException, ResponseHandler}
 import org.apache.http.impl.client.HttpClients
-import org.apache.log4j.Logger
+// import org.apache.log4j.Logger
 import org.w3.banana._
 //import deductions.runtime.sparql_cache.MicrodataLoaderModule
 //import deductions.runtime.jena.ImplementationSettings
@@ -370,7 +370,7 @@ JMV:
     r.flatten match {
       case Success(g) => g
       case Failure(e) =>
-        Logger.getRootLogger().error("ERROR: " + e)
+        logger.error("ERROR: " + e)
         throw e
     }
   }
@@ -436,7 +436,7 @@ JMV:
       dataset: DATASET,
       request: HTTPrequest ): (Try[Rdf#Graph], String) = {
 
-    Logger.getRootLogger().info(s"readURIWithJenaRdfLoader: Before load uri $uri")
+    logger.info(s"readURIWithJenaRdfLoader: Before load uri $uri")
 
     if (isDownloadableURI(uri)) {
       // To avoid troubles with Jena cf https://issues.apache.org/jira/browse/JENA-1335
@@ -500,7 +500,7 @@ JMV:
       dataset: DATASET,
       request: HTTPrequest ): (Try[Rdf#Graph], String) = {
 
-    Logger.getRootLogger().info(s"Before load uri $uri")
+    logger.info(s"Before load uri $uri")
 
     if (isDownloadableURI(uri)) {
       // To avoid troubles with Jena cf https://issues.apache.org/jira/browse/JENA-1335

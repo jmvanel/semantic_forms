@@ -6,7 +6,6 @@ import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.utils.RDFOPerationsDB
 
 import deductions.runtime.utils._
-import org.apache.log4j.Logger
 import org.w3.banana.io.{JsonLdCompacted, RDFWriter, RDFXML, Turtle}
 import org.w3.banana.{RDF, TryW}
 import play.api.libs.json.{JsArray, JsString, Json}
@@ -737,7 +736,7 @@ trait SPARQLHelpers3[Rdf <: RDF, DATASET]
 
   def futureGraph2String(triples: Future[Rdf#Graph], uri: String): String = {
     val graph = Await.result(triples, 5000 millis)
-    Logger.getRootLogger().info(s"uri $uri ${graph}")
+    logger.info(s"uri $uri ${graph}")
     val to = new ByteArrayOutputStream
     val ret = turtleWriter.write(graph, to, base = uri)
     to.toString
@@ -788,7 +787,7 @@ trait SPARQLHelpers3[Rdf <: RDF, DATASET]
              ${res2.mkString("\n")}""")
   }
 
-  def info(s: String) = Logger.getRootLogger().info(s)
+  def info(s: String) = logger.info(s)
 
 }
 

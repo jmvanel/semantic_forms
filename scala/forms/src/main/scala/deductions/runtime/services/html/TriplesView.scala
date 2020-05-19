@@ -7,7 +7,6 @@ import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.{Configuration, RDFPrefixesInterface, Timer}
 import deductions.runtime.core.HTTPrequest
 import deductions.runtime.views.TableFromListListRDFNodes
-import org.apache.log4j.Logger
 import org.w3.banana.RDF
 
 import scala.util.{Failure, Success, Try}
@@ -215,7 +214,7 @@ println( s">>>> htmlFormElemJustFields 2 " )
   private def doRetrieveURI(uri: String, blankNode: String, graphURI: String): (String, Try[Rdf#Graph]) = {
     val tryGraph = if (blankNode != "true") {
       val res = retrieveURI(makeUri(uri), dataset)
-      Logger.getRootLogger().info(s"After retrieveURI(makeUri($uri), dataset) isSuccess ${res.isSuccess}")
+      logger.info(s"After retrieveURI(makeUri($uri), dataset) isSuccess ${res.isSuccess}")
       res
     } else Success(emptyGraph)
     val graphURIActual = if (graphURI === "") uri else graphURI
