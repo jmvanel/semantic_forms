@@ -230,7 +230,8 @@ with StringHelpers
         "/create?uri=" + URLEncoder.encode(classURIstringValue, "UTF-8") +
           (if (clone) s"&referer=${request.getRDFsubject()}"
           else "&prefill=no")
-      } title={ messCreate_instance + (if (clone) " (clone)" else "") }>
+      } title={ messCreate_instance + (if (clone) " (clone)" else "") }
+      class="sf-create-contextual">
         <img src={ imageURL } css="sf-thumbnail" height="40" alt={ messCreate_instance }/>
       </a>
     } else NodeSeq.Empty

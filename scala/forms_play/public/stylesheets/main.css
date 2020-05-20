@@ -37,7 +37,9 @@
 .sf-values-group-inline > * .sf-thumbnail {
   height: 25px;
 }
-
+.sf-values-group-inline > * .sf-create-contextual {
+  display: none;
+}
 
 .sf-property-label{ margin-right: 7px; display: inline; }
 
