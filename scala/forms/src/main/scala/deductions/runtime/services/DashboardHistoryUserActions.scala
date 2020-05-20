@@ -315,7 +315,9 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
             }</h4>
             else
               NodeSeq.Empty) ++
-            generateHTMLJustFields(formSyntax, request = request)
+            generateHTMLJustFields(formSyntax, request = request) ++
+            <span class="sf-paragraphs2-separator"> | </span>
+
           }) ++
           <hr class="sf-paragraphs-separator"/>
       }
