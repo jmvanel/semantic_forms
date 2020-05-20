@@ -63,6 +63,9 @@
   border-bottom: 1px dotted black; */
   display: inline;
 }
+a.sf-tooltip-container {
+  text-decoration: none;
+}
 .sf-tooltiptext {
   visibility: hidden;
   width: 120px;
@@ -142,8 +145,11 @@ input.form-control[type='text']
 
 .sf-search { float:left ; margin-right: 7px; }
 
-.sf-external-link {color: Darkred !important; background-color: lightyellow;}
-.sf-internal-link { text-decoration: underline }
+.sf-external-link {
+  color: Darkred !important;
+  /* background-color: lightyellow; */
+}
+/* .sf-internal-link { text-decoration: underline } */
 .sf-sparql-table td { padding:0px 10px; }
 .sf-sparql-table tr:first-of-type { font-weight:bold; }
 
