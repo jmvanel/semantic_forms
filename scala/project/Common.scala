@@ -53,8 +53,8 @@ val jenaVersion =  "3.15.0"
     "com.typesafe.play" %% "play-json" %  "2.8.1" , // 2.6.14",
     // "com.typesafe.play" %% "play-iteratees" % "2.6.1",
 
-    "org.apache.lucene" % "lucene-suggest" % "7.4.0" , // "6.4.1" , // "7.5.0", // 6.6.5",
-    "org.apache.lucene" % "lucene-demo"    % "7.4.0" , // "6.4.1" , // "7.5.0", // 6.6.5",
+    "org.apache.lucene" % "lucene-suggest" % "7.7.2" , // 7.4.0" , // "6.4.1" , // "7.5.0", // 6.6.5",
+    "org.apache.lucene" % "lucene-demo"    % "7.7.2" , // 7.4.0" , // "6.4.1" , // "7.5.0", // 6.6.5",
 /*
     "org.apache.lucene" % "lucene-suggest" % "4.9.1" ,
     "org.apache.lucene" % "lucene-demo" % "4.9.1" ,
