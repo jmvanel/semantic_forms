@@ -3,7 +3,9 @@
 
 import Common._
 libraryDependencies ++= commonDependencies
-libraryDependencies += "com.typesafe.akka" %% "akka-stream" % "2.6.5" // 5.30"
+libraryDependencies += "com.typesafe.akka" %% "akka-stream" %
+// "2.6.5" //
+"2.5.30"
 
 // https://mvnrepository.com/artifact/org.locationtech.jts/jts
 //libraryDependencies += "org.locationtech.jts" % "jts" % "1.16.1" pomOnly()

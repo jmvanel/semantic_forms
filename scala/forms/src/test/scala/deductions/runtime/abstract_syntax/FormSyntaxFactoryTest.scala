@@ -46,7 +46,8 @@ class FormSyntaxFactoryTestJena extends AnyFunSuite
 
   test("form With inferred fields") {
     val form = createFormWithInferredProps()
-    println("form:\n" + form.toString().substring(0, 5000))
+    val s = form.toString()
+    println("form:\n" + s.substring(0, Math.min(5000, s.length)))
     Assert.assertThat("form contains label and data", form.toString,
       new BaseMatcher[String]() {
         def matches(a: Any): Boolean = {
