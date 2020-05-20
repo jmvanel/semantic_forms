@@ -55,6 +55,30 @@
 .sf-error-message{
     color:red;
 }
+
+
+.sf-tooltip-container {
+  position: relative;
+  /* display: inline-block;
+  border-bottom: 1px dotted black; */
+  display: inline;
+}
+.sf-tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: orange;
+  color: black;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+.sf-tooltip-container:hover .sf-tooltiptext {
+  visibility: visible;
+}
+
 /*.sf-button-create{
     position: relative;
     top: 18px;
