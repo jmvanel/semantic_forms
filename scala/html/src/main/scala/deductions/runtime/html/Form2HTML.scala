@@ -408,10 +408,12 @@ trait Form2HTML[NODE, URI <: NODE]
 
     if (xmlField != (<span/>))
         Seq(createAddRemoveWidgets(field, editable)) ++
-          <span class={ if (displayInTable === true) "tooltip-container" else css + " tooltip-container" }>
-            { xmlField  ++
-              <span class="tooltiptext">
-                { makeUserInfoOnTriples(field, request.getLanguage()) }</span>
+          <span class={ if (displayInTable === true) "sf-tooltip-container" else css + " sf-tooltip-container" }>
+            { val tooltipText0 = makeUserInfoOnTriples(field, request.getLanguage())
+              val tooltipText = if(tooltipText0 != <span/> ) tooltipText0 else "data from Internet"
+              xmlField  ++
+              <span class="sf-tooltiptext">
+                { tooltipText }</span>
             }
           </span>
     else <span/>
