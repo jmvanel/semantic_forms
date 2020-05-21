@@ -308,20 +308,21 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     val htmlForFormSyntaxes =
       for ((header, formSyntaxesGrouped) <- groupByClass(formSyntaxes, request)) yield {
         header ++ (
-          for (formSyntax <- formSyntaxesGrouped) yield {
-            (if (formSyntaxesGrouped.size > 1)
-              <h4 class="sf-paragraphs-view-subtitle"> {
-              makeHyperlinkForURItr(formSyntax.subject, request)
-            }</h4>
-            else
-              NodeSeq.Empty) ++
-            generateHTMLJustFields(formSyntax, request = request) ++
-            <span class="sf-paragraphs2-separator"> | </span>
-
-          }) ++
+          <span class="sf-values-group-inline">{
+            for (formSyntax <- formSyntaxesGrouped) yield {
+              (if (formSyntaxesGrouped.size > 1)
+                <h4 class="sf-paragraphs-view-subtitle"> {
+                makeHyperlinkForURItr(formSyntax.subject, request)
+              }</h4>
+              else
+                NodeSeq.Empty) ++
+              generateHTMLJustFields(formSyntax, request = request) ++
+              <span class="sf-paragraphs2-separator"> | </span>
+            }
+          }</span>) ++
           <hr class="sf-paragraphs-separator"/>
       }
-    <span class="sf-values-group-inline">{
+    <span class="sf-values-group-container">{
     htmlForFormSyntaxes. flatten
     }</span>
   }
