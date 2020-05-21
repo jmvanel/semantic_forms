@@ -336,6 +336,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     val formSyntaxesGroupedByClass = groupByRespectingOrder(
         formSyntaxes,
         (f: FormSyntax) => f.types() )
+
     def makeHtmlHeader(title: NodeSeq,
         messBefore: NodeSeq=NodeSeq.Empty,
         messAfter: String = ""
@@ -345,6 +346,20 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
         title ++
         Text(messAfter)
       }</h3>
+
+    def makeHtmlHeaderTypes(formSyntax: FormSyntax) : NodeSeq = {
+      val labelAndThumbnailURIs =
+        for( fieldEntry <- formSyntax.fields
+            if(fieldEntry.property == rdf.typ ) ) yield {
+          val icon = fieldEntry match {
+            case re: ResourceEntry => displayThumbnail( re, request )
+            case _ => NodeSeq.Empty
+          }
+          Text(fieldEntry.valueLabel) ++ icon
+      }
+      <span>{ labelAndThumbnailURIs . flatten }</span>
+    }
+
     val aggregatedFormSyntaxes =
       for ((types, formSyntaxesFortypes) <- formSyntaxesGroupedByClass ) yield {
         if (formSyntaxesFortypes.size > 1) {
@@ -354,15 +369,21 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
           ( makeHtmlHeader(
               Text(instanceLabelFromTDBtr(classURI, request.getLanguage()) ),
               mess,
-              mess2),
+              mess2) ,
             formSyntaxesFortypes)
 
         } else {
-          val formSyntaxIsolated = formSyntaxesFortypes.headOption.getOrElse(FormSyntax(nullURI, Seq(), types) )
+          val formSyntaxIsolated =
+            formSyntaxesFortypes.headOption.getOrElse(FormSyntax(nullURI, Seq(), types) )
           (
             makeHtmlHeader(
-              makeHyperlinkForURItr(formSyntaxIsolated.subject, request)),
-            List(formSyntaxIsolated))
+              makeHyperlinkForURItr(formSyntaxIsolated.subject, request)
+              ++
+              makeHtmlHeaderTypes(
+                  formSyntaxesFortypes.headOption.getOrElse(nullFormSyntax))
+            ) ,
+            List(formSyntaxIsolated)
+          )
         }
       }
     aggregatedFormSyntaxes.toSeq

@@ -195,7 +195,7 @@ with StringHelpers
   }
 
   /** display Thumbnail from triple foaf:img , etc , or self image if URI is an image */
-  private def displayThumbnail(resourceEntry: formMod#ResourceEntry,
+  def displayThumbnail(resourceEntry: formMod#ResourceEntry,
       request: HTTPrequest): NodeSeq = {
     import resourceEntry._
     val imageURL = if (isImage) Some(value)
