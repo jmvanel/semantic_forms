@@ -63,7 +63,7 @@ with StringHelpers
     val widgets = if( details == "") { // default full details
       hyperlinkToField(resourceEntry) ++
       hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue,
-          resourceEntry) ++
+          resourceEntry, request) ++
       displayThumbnail(resourceEntry, request) ++
       backLinkButton(resourceEntry, request) ++
       makeNeighborhoodLink(objectURIstringValue, request) ++
@@ -76,12 +76,12 @@ with StringHelpers
 
     } else if( details.contains("images") )
         hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue,
-          resourceEntry) ++
+          resourceEntry, request) ++
         displayThumbnail(resourceEntry, request)
 
       else
         hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue,
-          resourceEntry)
+          resourceEntry, request)
 
       <span class="sf-statistics">{widgets}</span>
   }
@@ -122,7 +122,7 @@ with StringHelpers
     val typ = firstNODEOrElseEmptyString(type_)
     val objectURIstringValue = value.toString()
     hyperlinkToURI(hrefDisplayPrefix, objectURIstringValue,
-      resourceEntry) ++
+      resourceEntry, request) ++
       displayThumbnail(resourceEntry, request)
   }
 
@@ -146,23 +146,27 @@ with StringHelpers
   private[html] def makeHyperlinkToURI(
     hrefPrefix:     String,
     uriStringValue: String,
-    linkText:       String, typ: Seq[NODE]) = {
+    linkText:       String,
+    typ:            Seq[NODE],
+    request:       HTTPrequest=HTTPrequest()) = {
     val type_ = firstNODEOrElseEmptyString(typ)
     val types0 = typ.mkString(", ")
     val types = if (types0 == "") type_ else types0
     <a href={ createHyperlinkString(hrefPrefix, uriStringValue) } class={ cssForURI(uriStringValue) } title={
       s"""Value ${if (uriStringValue =/= linkText) uriStringValue else ""}
-              of type(s) ${types}"""
+        ${I18NMessages.get("of_types", request.getLanguage() ) } ${types}"""
     } draggable="true">
       { linkText }
     </a>
   }
 
-  private[html] def hyperlinkToURI(hrefPrefix: String, objectURIstringValue: String,
-                                   resourceEntry: formMod#ResourceEntry) = {
+  private[html] def hyperlinkToURI(hrefPrefix: String,
+      objectURIstringValue: String,
+      resourceEntry: formMod#ResourceEntry,
+      request:       HTTPrequest) = {
     addTripleAttributesToXMLElement(
       makeHyperlinkToURI(hrefPrefix, uriStringValue = objectURIstringValue,
-        linkText = resourceEntry.valueLabel, typ = resourceEntry.type_),
+        linkText = resourceEntry.valueLabel, typ = resourceEntry.type_, request),
       resourceEntry)
   }
 
