@@ -63,7 +63,7 @@ POST    /update             controllers.Application.updatePOST()
 
 GET     /wordsearch         controllers.WebPagesApp.wordsearchAction(q:String ?= "", clas: String ?= "")
 GET     /search             controllers.WebPagesApp.searchOrDisplayAction(q:String ?= "")
-GET     /lookup            @controllers.ServicesApp.lookupService(QueryString:String, QueryClass: String ?= "")
+GET     /lookup            @controllers.LookupServiceApp.lookupService(QueryString:String, QueryClass: String ?= "")
 
 GET     /backlinks          controllers.WebPagesApp.backlinksAction(q:String ?= "")
 GET     /esearch            controllers.WebPagesApp.extSearch(q:String ?= "")
