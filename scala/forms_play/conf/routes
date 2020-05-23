@@ -32,7 +32,7 @@ POST    /save               controllers.WebPagesApp.saveAction()
 GET     /create             controllers.WebPagesApp.createAction()
 GET     /create-data       @controllers.ServicesApp.createData()
 
-GET     /download          @controllers.ServicesApp.downloadAction( url:String, database:String ?="TDB" )
+GET     /download          @controllers.DownloadServiceApp.downloadAction( url:String, database:String ?="TDB" )
 GET     /form              @controllers.WebPagesTechApp.form(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="", database:String ?="TDB")
 GET     /form-data         @controllers.ServicesApp.formDataAction(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="", database:String ?="TDB")
 GET     /sparql-form        controllers.WebPagesApp.sparqlForm(query:String, Edit:String?="", formuri:String ?="", database:String ?="TDB")

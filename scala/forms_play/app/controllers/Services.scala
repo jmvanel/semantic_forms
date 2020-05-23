@@ -60,47 +60,6 @@ with RDFContentNegociation {
         as(AcceptsJSONLD.mimeType + "; charset=" + myCustomCharset.charset)
     }
 
-  /**
-   * get RDF with content negotiation (conneg) for RDF syntax;
-   *  see also LDP.scala
-   *
-   *  cf https://www.playframework.com/documentation/2.3.x/ScalaStream
-   */
-  def downloadAction(url: String, database: String = "TDB") =
-    Action {
-      implicit request: Request[_] =>
-        val httpRequest = copyRequest(request)
-        def output(mime: String): Result = {
-//          logger.debug(log("downloadAction", request))
-          Ok.chunked{
-            // TODO >>>>>>> add database arg.
-            download(url, mime)
-          } . as(s"${mime}; charset=utf-8")
-            . withHeaders("Access-Control-Allow-Origin" -> "*")
-        }
-
-        val accepts = httpRequest.getHTTPheaderValue("Accept")
-        val mime = computeMIMEOption(accepts)
-
-        val syntaxOption = httpRequest.getHTTPparameterValue("syntax")
-//        logger.debug((s">>>>>>>> downloadAction syntaxOption $syntaxOption"))
-        syntaxOption match {
-          case Some(syntax) =>
-            val mimeOption = stringMatchesRDFsyntax(syntax)
-//            logger.debug((s">>>>>>>> downloadAction , mimeOption $mimeOption"))
-            mimeOption match {
-              case Some(mimeStringFromSyntaxHTTPparameter) =>
-                output(mimeStringFromSyntaxHTTPparameter)
-              case None =>
-                output(mime)
-            }
-          case None =>
-            output(mime)
-        }
-    }
-
-
-
 
   /**
    * service /sparql-data, like /form-data spits raw JSON data for a view,
