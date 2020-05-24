@@ -16,18 +16,22 @@ import deductions.runtime.services.LoadService
 import deductions.runtime.utils.Configuration
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.utils.URIManagement
+
 import play.api.http.MediaRange
 import play.api.mvc.Accepting
 import play.api.mvc.AnyContent
-import play.api.mvc.Codec
+//import play.api.mvc.Codec
 import play.api.mvc.RawBuffer
 import play.api.mvc.Request
 import play.api.mvc.RequestHeader
 import play.api.mvc.Result
+
 import deductions.runtime.views.MainXmlWithHead
 import deductions.runtime.core.HTTPrequest
 import deductions.runtime.utils.RDFStoreLocalProvider
+
 import scala.io.Source
+
 import play.api.mvc.AnyContentAsXml
 import play.api.mvc.AnyContentAsJson
 import play.api.mvc.Action
@@ -60,19 +64,10 @@ trait ApplicationTrait extends PlaySettings.MyControllerBase
     with RDFPrefixes[ImplementationSettings.Rdf]
     with RequestUtils
     with RDFStoreLocalJenaProvider
-{
-	val config: Configuration
+    with RDFContentNegociationPlay
+    with HTTPoutputFromThrowable {
 
-  implicit val myCustomCharset = Codec.javaSupported("utf-8")
-
-  protected def makeJSONResult(json: String) = makeResultMimeType(json, AcceptsJSONLD.mimeType)
-
-  protected def makeResultMimeType(content: String, mimeType: String) =
-    Ok(content) .
-         as( AcceptsJSONLD.mimeType + "; charset=" + myCustomCharset.charset )
-         .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
-         .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
-         .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
+  val config: Configuration
 
   protected def getDefaultAppMessage(): NodeSeq = readXHTMLFile( "messages.html" )
   protected def getDefaultHeadExtra():  NodeSeq = readXHTMLFile( "head-extra.html", <meta/>)
@@ -123,30 +118,6 @@ trait ApplicationTrait extends PlaySettings.MyControllerBase
     }
   }
 
-  // TODO reuse trait RDFContentNegociation
-  protected val AcceptsTTL = Accepting("text/turtle")
-  protected val AcceptsJSONLD = Accepting("application/ld+json")
-  protected val AcceptsRDFXML = Accepting("application/rdf+xml")
-  protected val AcceptsSPARQLresults = Accepting("application/sparql-results+json")
-  protected val AcceptsSPARQLresultsXML = Accepting("application/sparql-results+xml")
-  protected val AcceptsICal = Accepting("text/calendar")
-
-  protected val turtle = AcceptsTTL.mimeType
-
-	/** mime Abbreviations, format = "turtle" or "rdfxml" or "jsonld" */
-	val mimeAbbrevs = Map(
-	    AcceptsTTL -> "turtle",
-	    AcceptsJSONLD -> "jsonld",
-	    AcceptsRDFXML -> "rdfxml",
-	    Accepts.Json -> "json",
-	    Accepts.Xml -> "xml",
-	    AcceptsSPARQLresults -> "json",
-	    AcceptsSPARQLresultsXML -> "xml",
-	    AcceptsICal -> "ical"
-	 )
-
-	 val simpleString2mimeMap = mimeAbbrevs.map(_.swap)
-
   protected def renderResult(output: Accepting => Result, default: Accepting = AcceptsTTL)(implicit request: RequestHeader): Result = {
     render {
       case AcceptsTTL()    => output(AcceptsTTL)
@@ -177,13 +148,6 @@ trait ApplicationTrait extends PlaySettings.MyControllerBase
     }
   }
 
-  protected def getFirstNonEmptyInMap(
-    map: Map[String, Seq[String]],
-    uri: String): String = {
-    val uriArgs = map.getOrElse(uri, Seq())
-    uriArgs.find { uri => uri  =/=  "" }.getOrElse("") . trim()
-  }
-
   def recoverFromOutOfMemoryErrorResult(
     sourceCode: => Result,
     message:    String    = recoverFromOutOfMemoryErrorDefaultMessage("en") ): Result = {
@@ -201,23 +165,5 @@ trait ApplicationTrait extends PlaySettings.MyControllerBase
         }
     }
   }
-
-  def errorResultFromThrowable(
-    t:               Throwable,
-    specificMessage: String    = "ERROR",
-    request: Request[_] ): Result = {
-    InternalServerError(
-      s"""Error '$specificMessage', retry later !!!!!!!!
-        ${request.uri}
-          ${t.getLocalizedMessage}
-          ${printMemory}""")
-  }
-
-    def errorActionFromThrowable(
-    t:               Throwable,
-    specificMessage: String    = "ERROR") = Action {
-          implicit request: Request[_] =>
-        errorResultFromThrowable(t, specificMessage, request)
-    }
 
 }

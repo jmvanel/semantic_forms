@@ -1,9 +1,16 @@
 package controllers
 
+import java.net.URI
+import java.net.URLDecoder
+import java.io.File
+
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.Request
 import play.api.mvc.Result
+import play.api.mvc.Results._
+import play.api.http.HeaderNames._
+import play.api.mvc.Codec
 
 import scalaz._
 import Scalaz._
@@ -14,22 +21,37 @@ import scala.concurrent.Future
 import org.apache.commons.codec.digest.DigestUtils
 
 import deductions.runtime.services.RDFContentNegociation
-import java.net.URI
-import java.net.URLDecoder
-import java.io.File
+import deductions.runtime.utils.FormModuleBanana
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.CreationAbstractForm
+import deductions.runtime.services.FormJSON
+import deductions.runtime.core.MapUtils
+import deductions.runtime.services.RecoverUtilities
+import deductions.runtime.services.CORS
+import deductions.runtime.jena.RDFStoreLocalJenaProvider
 
 
 class ServicesApp extends  {
     override implicit val config = new PlayDefaultConfiguration
   }
   with Services
-  with HTMLGenerator // TODO: why is it needed ?
+  with FormModuleBanana[ImplementationSettings.Rdf]
+  with RDFStoreLocalJenaProvider
 
 
 /** controller for non-SPARQL Services (or SPARQL related but not in the W3C recommendations)
  *  including LDP */
-trait Services extends ApplicationTrait
-with RDFContentNegociation {
+trait Services extends
+CreationAbstractForm[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+// ApplicationTrait
+with RDFContentNegociation
+with LanguageManagement
+with FormJSON[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+with RDFContentNegociationPlay
+with MapUtils
+with RecoverUtilities
+with HTTPoutputFromThrowable
+with CORS {
 
   /** /form-data service; like /form but raw JSON data */
   def formDataAction(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
@@ -115,6 +137,18 @@ with RDFContentNegociation {
           httpRequest))
   }
 
+
+  protected def makeJSONResult(json: String) = makeResultMimeType(json, jsonldMime)
+  //AcceptsJSONLD.mimeType)
+  implicit val myCustomCharset = Codec.javaSupported("utf-8")
+
+  protected def makeResultMimeType(content: String, mimeType: String) =
+    Ok(content) .
+         as( jsonldMime +
+             "; charset=" + myCustomCharset.charset )
+         .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+         .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
+         .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
 
   //  implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(
 

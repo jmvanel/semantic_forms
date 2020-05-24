@@ -33,6 +33,7 @@ import play.api.mvc.RequestHeader
 import deductions.runtime.core.SemanticControllerWrapper
 import deductions.runtime.core.IPFilter
 import deductions.runtime.utils.I18NMessages
+import deductions.runtime.core.MapUtils
 
 
 object WebPagesApp extends {
@@ -46,7 +47,8 @@ object WebPagesApp extends {
 trait WebPages extends PlaySettings.MyControllerBase
 with ApplicationTrait
   with FormHeader[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-  with SemanticControllerWrapper {
+  with SemanticControllerWrapper
+  with MapUtils {
   import config._
 
   private val ipFilterInstance = new IPFilter{}

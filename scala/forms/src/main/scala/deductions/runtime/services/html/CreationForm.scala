@@ -5,6 +5,8 @@ import deductions.runtime.html.HtmlGeneratorInterface
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.{Configuration, I18NMessages, RDFPrefixes}
 import deductions.runtime.core.HTTPrequest
+import deductions.runtime.services.CreationAbstractForm
+
 import org.w3.banana.RDF
 
 import scala.util.{Success, Try}
@@ -21,7 +23,8 @@ with HTML5TypesTrait[Rdf]
 with RDFPrefixes[Rdf]
 with FormSyntaxJson[Rdf]
 with RDFTreeDuplicator[Rdf]
-with CSSClasses {
+with CSSClasses
+with CreationAbstractForm[Rdf, DATASET] {
 
   val config: Configuration
   val htmlGenerator: HtmlGeneratorInterface[Rdf#Node, Rdf#URI]
@@ -62,29 +65,31 @@ with CSSClasses {
         rawForm)
   }
 
-  /** make raw Data for a form for instance creation; transactions Inside */
-  def createData(classUri: String,
-                 formSpecURI: String = "",
-                 request: HTTPrequest
-                 ) : FormSyntax = {
-    val classURI = URI(classUri)
-    retrieveURIBody(classURI, dataset, request, transactionsInside = true)
-    implicit val lang = request.getLanguage()
-    implicit val graph: Rdf#Graph = allNamedGraph
-    val form = createFormFromClass(classURI, formSpecURI, request)
-    form
-  }
 
-  def createDataAsJSON(classUri: String,
-                       formSpecURI: String = "",
-//                       graphURI: String = "",
-                       request: HTTPrequest ) = {
-    val formSyntax =
-//      rdfStore.rw( dataset, {
-      createData(classUri, formSpecURI, request)
-//    }) . get
-    formSyntax2JSONString(formSyntax)
-  }
+//  /** make raw Data for a form for instance creation; transactions Inside */
+//  def createData(classUri: String,
+//                 formSpecURI: String = "",
+//                 request: HTTPrequest
+//                 ) : FormSyntax = {
+//    val classURI = URI(classUri)
+//    retrieveURIBody(classURI, dataset, request, transactionsInside = true)
+//    implicit val lang = request.getLanguage()
+//    implicit val graph: Rdf#Graph = allNamedGraph
+//    val form = createFormFromClass(classURI, formSpecURI, request)
+//    form
+//  }
+//
+//  def createDataAsJSON(classUri: String,
+//                       formSpecURI: String = "",
+////                       graphURI: String = "",
+//                       request: HTTPrequest ) = {
+//    val formSyntax =
+////      rdfStore.rw( dataset, {
+//      createData(classUri, formSpecURI, request)
+////    }) . get
+//    formSyntax2JSONString(formSyntax)
+//  }
+
 
   /** make form Header about Editing: "CREATING <name of object>" */
   def makeEditingHeader(classUri: String, lang: String,
@@ -102,6 +107,7 @@ with CSSClasses {
     create(uri, lang, request=HTTPrequest() ).getOrElse(
       <p>Problem occured when creating an XHTML input form from a class URI.</p>)
   }
+
 
   /** create Prefilled input Form, from the Referer URL */
   def createPrefillForm(form: FormSyntax, request: HTTPrequest) : FormSyntax = {
