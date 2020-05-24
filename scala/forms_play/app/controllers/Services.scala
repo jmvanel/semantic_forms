@@ -9,149 +9,37 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Request
 import play.api.mvc.Result
 import play.api.mvc.Results._
-import play.api.http.HeaderNames._
-import play.api.mvc.Codec
 
-import scalaz._
-import Scalaz._
+import scalaz.Scalaz._
 
 import scala.util.Success
+import scala.util.Failure
 import scala.concurrent.Future
 
-import org.apache.commons.codec.digest.DigestUtils
-
 import deductions.runtime.services.RDFContentNegociation
-import deductions.runtime.utils.FormModuleBanana
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.CreationAbstractForm
-import deductions.runtime.services.FormJSON
-import deductions.runtime.core.MapUtils
 import deductions.runtime.services.RecoverUtilities
 import deductions.runtime.services.CORS
 import deductions.runtime.jena.RDFStoreLocalJenaProvider
+import deductions.runtime.sparql_cache.RDFCacheAlgo
 
 
 class ServicesApp extends  {
     override implicit val config = new PlayDefaultConfiguration
   }
   with Services
-  with FormModuleBanana[ImplementationSettings.Rdf]
   with RDFStoreLocalJenaProvider
 
 
 /** controller for non-SPARQL Services (or SPARQL related but not in the W3C recommendations)
  *  including LDP */
 trait Services extends
-CreationAbstractForm[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-// ApplicationTrait
+RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 with RDFContentNegociation
 with LanguageManagement
-with FormJSON[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-with RDFContentNegociationPlay
-with MapUtils
 with RecoverUtilities
 with HTTPoutputFromThrowable
 with CORS {
-
-  /** /form-data service; like /form but raw JSON data */
-  def formDataAction(uri: String, blankNode: String = "", Edit: String = "", formuri: String = "", database: String = "TDB") =
-    Action {
-        implicit request: Request[_] =>
-        val lang = chooseLanguage(request)
-       makeJSONResult(
-           formData(uri, blankNode, Edit, formuri, database, lang))
-    }
-  /**
-   * creation form as raw JSON data
-   *  TODO add database HTTP param.
-   */
-  def createData() =
-    Action { implicit request: Request[_] =>
-      logger.info("create: " + request)
-      // URI of RDF class from which to create instance
-      val classUri0 = getFirstNonEmptyInMap(request.queryString, "uri")
-      val classUri = expandOrUnchanged(classUri0)
-      // URI of form Specification
-      val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formuri")
-      logger.info(s"create: class URI <$classUri>")
-      logger.info(s"create: formSpecURI from HTTP request: <$formSpecURI>")
-
-      Ok(createDataAsJSON(classUri,
-        formSpecURI,
-        copyRequest(request))).
-        as(AcceptsJSONLD.mimeType + "; charset=" + myCustomCharset.charset)
-    }
-
-
-  /**
-   * service /sparql-data, like /form-data spits raw JSON data for a view,
-   * but from a SPARQL CONSTRUCT query,
-   *  cf issue https://github.com/jmvanel/semantic_forms/issues/115
-   */
-  def sparqlDataPOST = Action {
-    // TODO pasted from sparqlConstructPOST
-    implicit request: Request[AnyContent] =>
-      logger.info(s"""sparqlConstruct: sparql: request $request
-            accepts ${request.acceptedTypes} """)
-      val lang = chooseLanguage(request)
-      val body: AnyContent = request.body
-
-      // Expecting body as FormUrlEncoded
-      val formBody: Option[Map[String, Seq[String]]] = body.asFormUrlEncoded
-      val result = formBody.map { map =>
-
-        val query0 = map.getOrElse("query", Seq())
-        val query = query0.mkString("\n")
-        logger.info(s"""sparql-data: query $query""")
-
-        val Edit = map.getOrElse("Edit", Seq()).headOption.getOrElse("")
-        val formuri = map.getOrElse("formuri", Seq()).headOption.getOrElse("")
-
-        makeJSONResult(
-          createJSONFormFromSPARQL(
-            query,
-            editable = (Edit  =/=  ""),
-            formuri,
-            copyRequest(request)))
-      }
-
-      result match {
-        case Some(r) => r
-        case None    => BadRequest(
-          "sparqlDataPOST: BadRequest: nothing in form Body, and nothing in HTTP parameter query")
-      }
-  }
-
-  def sparqlDataGET(sparqlQuery: String) = Action {
-    implicit request: Request[AnyContent] =>
-      val httpRequest = copyRequest(request)
-      logger.info(
-          s"""sparql-data GET: query $sparqlQuery""")
-      val Edit = httpRequest.getHTTPparameterValue("Edit").getOrElse("")
-      val formuri = httpRequest.getHTTPparameterValue("formuri").getOrElse("")
-      makeJSONResult(
-        createJSONFormFromSPARQL(
-          sparqlQuery,
-          editable = (Edit  =/=  ""),
-          formuri,
-          httpRequest))
-  }
-
-
-  protected def makeJSONResult(json: String) = makeResultMimeType(json, jsonldMime)
-  //AcceptsJSONLD.mimeType)
-  implicit val myCustomCharset = Codec.javaSupported("utf-8")
-
-  protected def makeResultMimeType(content: String, mimeType: String) =
-    Ok(content) .
-         as( jsonldMime +
-             "; charset=" + myCustomCharset.charset )
-         .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
-         .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
-         .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
-
-  //  implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(
-
 
   def httpOptions(path: String) = {
 	  Action { implicit request =>
@@ -214,7 +102,7 @@ with CORS {
               ops.URI(uri), dataset, copyRequest(request), transactionsInside = true)
             val result = tryGraph match {
               case Success(gr)           => s"Success loading <$uri>, size: ${gr.size()}"
-              case scala.util.Failure(f) => f.getLocalizedMessage
+              case Failure(f) => f.getLocalizedMessage
             }
             result
           }
