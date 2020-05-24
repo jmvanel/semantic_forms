@@ -14,9 +14,7 @@ trait FormSpecificationsLoader[Rdf <: RDF, DATASET]
 
   val all_form_specs_document = githubcontent +
   "/jmvanel/semantic_forms/master/scala/forms/form_specs/specs.ttl"
-  val formSpecificationsGraphURI = URI( 
-      // all_form_specs_document +"#" ) //
-      "urn:form_specs")
+  val formSpecificationsGraphURI = URI( "urn:form_specs")
 
   /** TRANSACTIONAL */
   def resetCommonFormSpecifications() {
@@ -62,9 +60,10 @@ trait FormSpecificationsLoader[Rdf <: RDF, DATASET]
             rdfLoader.load(new java.net.URL(nodeToString(formSpecification))) . getOrElse (sys.error(
             s"couldn't read form Specification <${formSpecification.toString()}>"))
           val ret = wrapInTransaction {
-            rdfStore.appendToGraph(dataset, formSpecificationsGraphURI, form_spec_graph)
+//            rdfStore.appendToGraph(dataset, formSpecificationsGraphURI, form_spec_graph)
+            rdfStore.appendToGraph(dataset, nodeToURI(formSpecification), form_spec_graph)
           }
-          println(s"Added form_spec <$formSpecification> in named graph <$formSpecificationsGraphURI> (${form_spec_graph.size} triples) $ret")
+          println(s"Added form_spec <$formSpecification> in named graph <$formSpecification> (${form_spec_graph.size} triples) $ret")
         } catch {
           case e: Exception =>
             System.err.println(s"""!!!! Error in loadFormSpecifications:

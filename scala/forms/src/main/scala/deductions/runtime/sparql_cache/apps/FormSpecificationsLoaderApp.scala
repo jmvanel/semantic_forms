@@ -24,6 +24,7 @@ object FormSpecificationsLoaderApp extends {
     loadCommonFormSpecifications()
   else
     loadFormSpecification(args(0))
-  println(s"DONE load Common Form Specifications in named graph <$formSpecificationsGraphURI>")
+  println(s"DONE load Common Form Specifications <${if(args.size > 0) args(0) else ""}>")
+  // in named graph <$formSpecificationsGraphURI>")
   close(dataset)
 }
