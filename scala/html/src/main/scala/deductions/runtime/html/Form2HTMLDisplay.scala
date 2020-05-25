@@ -19,7 +19,7 @@ import deductions.runtime.utils.StringHelpers
 /** generate HTML from abstract Form for Display (Read only) */
 trait Form2HTMLDisplay[NODE, URI <: NODE]
   extends Form2HTMLBase[NODE, URI]
-with FormModule[NODE, URI]
+//with FormModule[NODE, URI]
 with StringHelpers
 
   with HTMLutils {
@@ -177,7 +177,7 @@ with StringHelpers
     (if (objectURIstringValue.size > 0 && showExpertButtons) {
       val mess = I18NMessages.get("Reverse-links-reaching", request.getLanguage())
       val title = s""" $mess "$valueLabel" <$value> """
-      makeBackLinkButton(objectURIstringValue, title = title, request)
+      makeBackLinkButton(objectURIstringValue, title = title, request, resourceEntry)
     } else NodeSeq.Empty)
   }
 

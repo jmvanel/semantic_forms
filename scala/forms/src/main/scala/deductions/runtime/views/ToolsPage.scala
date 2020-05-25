@@ -11,7 +11,7 @@ import deductions.runtime.utils.Configuration
 import org.w3.banana.RDF
 
 trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
-    with BasicWidgets
+    with BasicWidgets[Rdf#Node, Rdf#URI]
     with URIManagement {
 
   val config: Configuration

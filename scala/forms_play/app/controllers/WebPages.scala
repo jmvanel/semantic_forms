@@ -34,6 +34,7 @@ import deductions.runtime.core.SemanticControllerWrapper
 import deductions.runtime.core.IPFilter
 import deductions.runtime.utils.I18NMessages
 import deductions.runtime.core.MapUtils
+import deductions.runtime.utils.FormModuleBanana
 
 
 object WebPagesApp extends {
@@ -656,7 +657,7 @@ with ApplicationTrait
           outputMainPage(
             new ToolsPage[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
             with ImplementationSettings.RDFCache
-//            with RDFPrefixes[ImplementationSettings.Rdf]
+            with FormModuleBanana[ImplementationSettings.Rdf]
           {
               override val config: Configuration = config1
             }.getPage( copyRequest(request)), displaySearch = false, userInfo = userInfo, classForContent="")

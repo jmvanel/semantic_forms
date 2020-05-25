@@ -14,13 +14,17 @@ import scalaz._
 import Scalaz._
 import deductions.runtime.utils.URIManagement
 import deductions.runtime.utils.I18NMessages
+import deductions.runtime.core.FormModule
 
 /** Basic Widgets with no access to the FormSyntax:
  *  GUI integration: RDFviewer, VOWL, ... */
-trait BasicWidgets
+trait BasicWidgets[NODE, URI <: NODE]
   extends RDFPrefixesInterface
   with URIHelpers
-  with URIManagement {
+  with URIManagement
+  with FormModule[NODE, URI] {
+
+  type formMod = FormModule[NODE, URI]
 
   /** TODO LIMIT should *not* be hardcoded */
   val defaultSPARQLlimit = 100
@@ -30,11 +34,13 @@ trait BasicWidgets
 
   def hyperlinkForEditingURI(uri: String, lang: String): NodeSeq = {
     implicit val _ = lang
-    val hrefEdit = hrefEditPrefix + URLEncoder.encode(uri, "utf-8")
+    val hrefEdit = hrefEditPrefix + urlEncode(uri)
     <a class="btn btn-primary btn-xs" href={ hrefEdit } title={ mess("edit_URI") }>
       <i class="glyphicon glyphicon-edit"></i>
     </a>
   }
+
+  private def urlEncode(uri: String) = URLEncoder.encode(uri, "utf-8")
 
   def hyperlinkForEditingURIinsideForm(uri: String, lang: String): NodeSeq = {
     if( ! uri.startsWith("http://dbpedia.org/resource/"))
@@ -44,7 +50,7 @@ trait BasicWidgets
 
   def hyperlinkForDisplayingURI(uri: String, lang: String): NodeSeq = {
     implicit val _ = lang
-    val hrefDisplay = hrefDisplayPrefix() + URLEncoder.encode(uri, "utf-8") + "#subject"
+    val hrefDisplay = hrefDisplayPrefix() + urlEncode(uri) + "#subject"
     println(s">>>>>>>>>>> linkToShow: $hrefDisplay")
     <a class="btn btn-warning btn-xs" href={ hrefDisplay } title={ mess("display_URI") }>
       <i class="glyphicon"></i>
@@ -55,11 +61,13 @@ trait BasicWidgets
 back links, reverse links or incoming links
 don't mix them */
   def makeBackLinkButton(uri: String, title: String = "",
-                         request: HTTPrequest): NodeSeq = {
+                         request: HTTPrequest,
+                         resourceEntry: formMod#ResourceEntry = NullResourceEntry): NodeSeq = {
     val tit = if (title === "")
       I18NMessages.get("Reverse-links-reaching", request.getLanguage()) +
         s"<$uri>;" else title
-      <a href={s"/backlinks?q=${URLEncoder.encode(uri, "utf-8")}"}
+      val propertyURIEncoded = urlEncode(toPlainString(resourceEntry.property))
+      <a href={s"/backlinks?q=${urlEncode(uri)}&property=$propertyURIEncoded"}
         class="sf-button sf-navigation-button"
         title={ tit }
         data-value={s"$uri"} >
@@ -93,7 +101,7 @@ don't mix them */
 
     // TODO different link when we are on localhost (transmit RDF String then) or in production (or use N3.js
     // http://localhost:9000/download?url=http%3A%2F%2Fjmvanel.free.fr%2Fjmv.rdf%23me
-    val link = /*hrefDownloadPrefix + */ URLEncoder.encode( uri, "utf-8")
+    val link = /*hrefDownloadPrefix + */ urlEncode( uri)
 
     if( isDownloadableURL(uri) &&
         // TODO when we will import RDFa , be more specific here
@@ -114,7 +122,7 @@ don't mix them */
   def makeDrawGraphLinkSpoggy( uri: String): NodeSeq = {
     makeDrawGraphLink( uri,
         "http://spoggy.herokuapp.com?" +
-          "sparql=" + URLEncoder.encode(servicesURIPrefix, "UTF-8") +
+          "sparql=" + urlEncode(servicesURIPrefix) +
           "&url=",
           "Spoggy")
   }
@@ -158,7 +166,7 @@ don't mix them */
       toolname: String="Web VOWL",
       icon: String = "https://www.w3.org/RDF/icons/rdf_flyer.svg",
       imgWidth:Int=25): Elem = {
-    val link = URLEncoder.encode( uri, "utf-8")
+    val link = urlEncode( uri)
 
     if( uri  =/=  "" )
       <a class="sf-button btn-default" href={ s"$toolURLprefix$link" }

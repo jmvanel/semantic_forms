@@ -13,7 +13,7 @@ import deductions.runtime.core.HTTPrequest
 
 /** generate HTML from abstract Form : common parts for Display & edition */
 private[html] trait Form2HTMLBase[NODE, URI <: NODE]
-    extends BasicWidgets
+    extends BasicWidgets[NODE, URI]
     with CSSClasses
     with RDFPrefixesInterface
     with URIManagement
@@ -23,7 +23,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
   import config._
 
 
-  type formMod = FormModule[NODE, URI]
+//  type formMod = FormModule[NODE, URI]
   type FormEntry = formMod#Entry
 
   //  lazy val prefixes = new RDFPrefixes[ImplementationSettings.Rdf]

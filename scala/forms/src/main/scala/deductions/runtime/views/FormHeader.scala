@@ -18,7 +18,7 @@ trait FormHeader[Rdf <: RDF, DATASET]
     extends FormModule[Rdf#Node, Rdf#URI]
     with RDFStoreLocalProvider[Rdf, DATASET]
     with RDFHelpers[Rdf]
-    with BasicWidgets
+    with BasicWidgets[Rdf#Node, Rdf#URI]
     with RDFPrefixes[Rdf]
     with Form2HTMLDisplay[Rdf#Node, Rdf#URI] {
 
