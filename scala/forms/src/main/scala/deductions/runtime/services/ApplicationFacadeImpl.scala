@@ -374,17 +374,20 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   def backlinksFuture(request: HTTPrequest): Future[NodeSeq] = {
     val futureResults = backlinks(hrefDisplayPrefix, request)
     val qs = request.getQueries()
-    val query = qs(0) // uri
-    val label = labelForURITransaction(query, language = request.getLanguage())
-    val sparqlQuery = URLEncoder.encode(reverseLinksMaps(query), "utf-8")
-    wrapSearchResults(futureResults, "",
-      mess =
-        <div>
-          Searched for
-          "<a href={ createHyperlinkString(uri = query) }>{ label }</a>"
-          &lt;{ query }&gt;
-          { mapButton(sparqlQuery, request) }
-        </div>)
+    val uri = qs(0)
+    wrapSearchResults(
+      futureResults, "",
+      mess = <div>
+        Searched for
+        "<a href={ createHyperlinkString(uri = uri) }>{
+          labelForURITransaction(uri, language = request.getLanguage())
+        }</a>"
+        &lt;{ uri }&gt;
+        {
+          val sparqlQueryMap = URLEncoder.encode(reverseLinksMaps(qs), "utf-8")
+          mapButton(sparqlQueryMap, request)
+        }
+     </div>)
   }
 
   /** TODO another similar function in ToolsPage 

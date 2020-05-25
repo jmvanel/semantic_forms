@@ -17,12 +17,7 @@ trait ReverseLinksSearchSPARQL[Rdf <: RDF, DATASET]
   private implicit val queryMaker = new SPARQLQueryMaker[Rdf] {
     override def makeQueryString(search: String*): String = {
       logger.debug(s"makeQueryString: query $search")
-      if (search.size == 0)
-        reverseLinks(search(0))
-      else
-        reverseLinks(
-            search(0),
-            search(1))
+      reverseLinks(search)
     }
   }
 

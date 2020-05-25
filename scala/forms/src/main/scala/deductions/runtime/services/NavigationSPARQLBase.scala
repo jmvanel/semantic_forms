@@ -75,16 +75,13 @@ trait NavigationSPARQLBase[Rdf <: RDF]
        |  }
        | }""".stripMargin
 
-  def reverseLinks(search: String, property: String = ""): String = {
-    val propertyVariable = property match {
-      case p if (p.length() > 0) => s"<$p>"
-      case _                     => "?p"
-    }
+  def reverseLinks(search: Seq[String]): String = {
+    val propertyVariable = makePropertyVariable(search)
     s"""
          |${declarePrefix(form)}
          |SELECT DISTINCT ?thing WHERE {
          |  graph ?g {
-         |    ?thing $propertyVariable <$search> .
+         |    ?thing $propertyVariable <${search(0)}> .
          |  }
          |  $countPattern
          |}
@@ -92,8 +89,16 @@ trait NavigationSPARQLBase[Rdf <: RDF]
          |""".stripMargin
   }
 
-    /** same as #reverseLinks , but add triples for geo. maps */
-    def reverseLinksMaps(search: String): String = s"""
+  def makePropertyVariable(search: Seq[String]) =
+    search match {
+      case _ if (search.size > 0) => s"<${search(1)}>"
+      case _                      => "?p"
+    }
+
+  /** same as #reverseLinks , but add triples for geo. maps */
+  def reverseLinksMaps(search: Seq[String]): String = {
+    val propertyVariable = makePropertyVariable(search)
+    s"""
          |${declarePrefix(form)}
          |${declarePrefix(rdfs)}
          |${declarePrefix(geo)}
@@ -106,7 +111,7 @@ trait NavigationSPARQLBase[Rdf <: RDF]
          |  ?thing foaf:depiction ?IMG .
          |} WHERE {
          |  graph ?g {
-         |    ?thing ?p <${search}> .
+         |    ?thing $propertyVariable <${search(0)}> .
          |  }
          |  graph ?gcoord {
          |    ?thing geo:long ?LONG .
@@ -130,6 +135,7 @@ trait NavigationSPARQLBase[Rdf <: RDF]
          |}
          |ORDER BY DESC(?COUNT)
          |""".stripMargin
+  }
 
   /** list of named graphs matching a string or regex */
   def namedGraphs(containsFilter: Option[String] = None, regex: Option[String] = None): String = {
