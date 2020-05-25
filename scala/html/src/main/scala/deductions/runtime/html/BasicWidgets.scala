@@ -67,7 +67,7 @@ don't mix them */
       I18NMessages.get("Reverse-links-reaching", request.getLanguage()) +
         s"<$uri>;" else title
       val propertyURIEncoded = urlEncode(toPlainString(resourceEntry.property))
-      <a href={s"/backlinks?q=${urlEncode(uri)}&property=$propertyURIEncoded"}
+      <a href={s"/backlinks?q=${urlEncode(uri)}&q=$propertyURIEncoded"}
         class="sf-button sf-navigation-button"
         title={ tit }
         data-value={s"$uri"} >

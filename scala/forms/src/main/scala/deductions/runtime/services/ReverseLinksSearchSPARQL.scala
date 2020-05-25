@@ -16,16 +16,24 @@ trait ReverseLinksSearchSPARQL[Rdf <: RDF, DATASET]
 
   private implicit val queryMaker = new SPARQLQueryMaker[Rdf] {
     override def makeQueryString(search: String*): String = {
- //         println( s"query $q")
-         reverseLinks(search(0))
+      logger.debug(s"makeQueryString: query $search")
+      if (search.size == 0)
+        reverseLinks(search(0))
+      else
+        reverseLinks(
+            search(0),
+            search(1))
     }
   }
 
   /** Reverse Links Search; side effect: download URI into TDB in a Future */
-  def backlinks(uri: String, hrefPrefix: String = config.hrefDisplayPrefix,
+  def backlinks(hrefPrefix: String = config.hrefDisplayPrefix,
                 request: HTTPrequest): Future[NodeSeq] = {
     import scala.concurrent.ExecutionContext.Implicits.global
+    val qs = request.getQueries()
+    logger.debug(s"backlinks: qs: $qs")
     Future {
+      val uri = qs(0)
       retrieveURIBody(
         ops.URI(uri), dataset, request, transactionsInside = true)
     }
@@ -34,7 +42,7 @@ trait ReverseLinksSearchSPARQL[Rdf <: RDF, DATASET]
     search(
       hrefPrefix,
       request.getLanguage(),
-      Seq(uri),
+      qs,
       httpRequest = request)
   }
 

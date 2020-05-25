@@ -627,7 +627,7 @@ with ApplicationTrait
         </p>
       val future: Future[NodeSeq] =
         recoverFromOutOfMemoryError(
-          backlinksFuture(uri, requestCopy))
+          backlinksFuture(requestCopy))
       future.map { formattedResults =>
         extendedSearchLink ++ formattedResults }
   }

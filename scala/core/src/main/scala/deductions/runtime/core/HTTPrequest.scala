@@ -52,6 +52,9 @@ case class HTTPrequest(
         getHTTPparameterValue("url").
           getOrElse("")))
 
+  def getQueries() =
+    getHTTPparameterValues("q")
+
   private def getHostOfRDFsubject(): String = {
     new URI(getRDFsubject()).getHost
   }

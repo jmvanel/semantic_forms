@@ -75,16 +75,22 @@ trait NavigationSPARQLBase[Rdf <: RDF]
        |  }
        | }""".stripMargin
 
-  def reverseLinks(search: String): String = s"""
+  def reverseLinks(search: String, property: String = ""): String = {
+    val propertyVariable = property match {
+      case p if (p.length() > 0) => s"<$p>"
+      case _                     => "?p"
+    }
+    s"""
          |${declarePrefix(form)}
          |SELECT DISTINCT ?thing WHERE {
          |  graph ?g {
-         |    ?thing ?p <${search}> .
+         |    ?thing $propertyVariable <$search> .
          |  }
          |  $countPattern
          |}
          | ORDER BY DESC(?COUNT)
          |""".stripMargin
+  }
 
     /** same as #reverseLinks , but add triples for geo. maps */
     def reverseLinksMaps(search: String): String = s"""

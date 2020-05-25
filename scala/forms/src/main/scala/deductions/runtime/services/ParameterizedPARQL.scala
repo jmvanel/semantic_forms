@@ -71,10 +71,10 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     logger.debug(s"search($search) 1: starting TRANSACTION for dataset $dataset")
     val elem0 = rdfStore.r(dataset, {
       val uris = search_onlyNT(search, variables, httpRequest)
-      logger.info(s"search: ${httpRequest.logRequest()}: URI's size ${uris.size}")
+      logger.info(s"search: ${httpRequest.logRequest()}: result URI's size ${uris.size}")
       loadURIsIfRequested( uris, httpRequest)
       val graph: Rdf#Graph = allNamedGraph
-      val sparqlQuery = queryMaker.makeQueryString(search(0))
+      val sparqlQuery = queryMaker.makeQueryString(search : _*)
       val elems = Seq(
         <button value="Sort" id="sort">{ I18NMessages.get("Sort", httpRequest.getLanguage() ) }</button>,
         sortJSscript,
