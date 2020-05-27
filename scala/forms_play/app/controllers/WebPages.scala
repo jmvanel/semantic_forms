@@ -655,8 +655,8 @@ with ApplicationTrait
           val config1 = config
           val userInfo = displayUser(userid, "", "", lang)
           outputMainPage(
-            new ToolsPage[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-            with ImplementationSettings.RDFCache
+            new ImplementationSettings.RDFCache
+            with ToolsPage[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
             with FormModuleBanana[ImplementationSettings.Rdf]
           {
               override val config: Configuration = config1

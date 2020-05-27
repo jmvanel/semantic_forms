@@ -27,6 +27,6 @@ WHERE {
     ?taxon <http://rs.tdwg.org/dwc/terms/INPN-num> ?INPNnum .
     ?taxon ?ptaxon ?otaxon .
     # make URI for MNHN taxon
-    BIND ( IRI( CONCAT( '<http://taxref.mnhn.fr/lod/taxon/', STR(?INPNnum), '/12.0' )) AS ?MNHN_TAXON )
+    BIND ( IRI( CONCAT( 'http://taxref.mnhn.fr/lod/taxon/', STR(?INPNnum), '/12.0' )) AS ?MNHN_TAXON )
   }
 }
