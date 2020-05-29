@@ -367,7 +367,8 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
           val mess = Text( I18NMessages.get("Class", request.getLanguage() ) + " " )
           val mess2 = " (" + formSyntaxesFortypes.size.toString() + ") "
           ( makeHtmlHeader(
-              Text(instanceLabelFromTDBtr(classURI, request.getLanguage()) ),
+//              Text(instanceLabelFromTDBtr(classURI, request.getLanguage()) ),
+              makeHyperlinkForURItr(classURI, request),
               mess,
               mess2) ,
             formSyntaxesFortypes)
@@ -426,7 +427,8 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
           field.property == form("separator_props_From_Classes") ||
           field.property == form("linksCount") ||
           field.property == geo("lat") ||
-          field.property == geo("alt")
+          field.property == geo("alt") ||
+          field.property == rdf.typ
     )
   }
 
