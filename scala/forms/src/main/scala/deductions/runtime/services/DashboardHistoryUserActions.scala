@@ -427,8 +427,9 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
           field.property == form("separator_props_From_Classes") ||
           field.property == form("linksCount") ||
           field.property == geo("lat") ||
-          field.property == geo("alt") ||
-          field.property == rdf.typ
+          field.property == geo("alt")
+//          || // not possible to filter out rdf.typ , it suppresse all output!
+//          field.property == rdf.typ
     )
   }
 
