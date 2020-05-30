@@ -123,14 +123,17 @@ or a combination of the above. It is generally not a problem to run the script f
 
 By running this, you also index with Lucene. The URL's can be file:// URL's.
 
-    java -cp $JARS deductions.runtime.jena.RDFLoaderApp url1 url2 ...
+    java -cp $JARS deductions.runtime.sparql_cache.apps.RDFLoaderApp url1 url2 ...
 
    * downloads and stores URI content, in a graph named by its URI minus the # part,
-   *  stores the timestamp from HTTP HEAD request;
+   * stores the timestamp from HTTP HEAD request;
    * loads also the direct owl:imports , but not recursively
 
-**CAUTION:**
-Do not load data in a named graph (argument --graph below) whose name is a relative URI, like "blabla", or "a/b/c" . Use an absolute URI like urn:data/myorganization or an HTTP URL (see URI spec. https://tools.ietf.org/html/rfc3986 ).
+Works much like the /load service, see
+https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-post
+and
+https://github.com/jmvanel/semantic_forms/wiki/Application-development-manual#sparql-11-graph-store-http-protocol
+
 
 ## Preloading RDF content
 
@@ -154,6 +157,11 @@ PopulateRDFCache can run, with Lucene activated, with this memory setting:
     # With Jena it is possible to directly load from Internet:
     runMain tdb.tdbloader --loc=TDB --graph=http://jmvanel.free.fr/jmv.rdf#me http://jmvanel.free.fr/jmv.rdf#me 
 ```
+
+**CAUTION:**
+Do not load data in a named graph (argument --graph above) whose name is a relative URI, like "blabla", or "a/b/c" . Use an absolute URI like urn:data/myorganization or an HTTP URL (see URI spec. https://tools.ietf.org/html/rfc3986 ).
+
+
 The typical pattern for data in SF is to load in a graph named after the URI source, so that the cache feature works using the URI source timestamp.
 This is the case for the ontologies. But all the from specifications loaded by PopulateRDFCache are in the graph `urn:form_specs` .
 The I18N stuff is managed in the file [translations\_list.ttl](https://github.com/jmvanel/rdf-i18n/blob/master/translations_list.ttl) in a sister github project.
