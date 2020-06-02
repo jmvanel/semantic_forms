@@ -251,6 +251,12 @@ MIME
 ```
 MIME is Turtle by default.
 
+The file size is limited to 8Mb ( in loadAction() ).
+For larger files, use locally RDFLoaderApp or RDFLoaderGraphApp, e.g.
+```shell
+sbt "runMain deductions.runtime.sparql_cache.apps.RDFLoaderApp file://$HOME/data/Biologie/Taxrefld_interactions.ttl"
+```
+
 ### Administrative SPARQL
 
 Some typical SPARQL update commands are in:

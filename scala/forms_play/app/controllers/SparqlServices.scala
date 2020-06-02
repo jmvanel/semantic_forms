@@ -31,21 +31,29 @@ trait SparqlServices extends ApplicationTrait
 
 
   /** load RDF String in database, cf
-   *  https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-post */
+   *  https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-post
+   *  The file size is limited to 8Mb ;
+   *  for larger files, use locally RDFLoaderApp or RDFLoaderGraphApp .
+   */
   def loadAction() = Action( parse.anyContent(maxLength = Some((1024 * 1024 * 8 ).longValue) )) {
     implicit request: Request[AnyContent] =>
       val requestCopy = getRequestCopyAnyContent()
-      println(s"""body class ${request.getClass} request.body ${request.body.getClass}
+      logger.info(s"""body class ${request.getClass} request.body ${request.body.getClass}
       - data= "${request.getQueryString("data")}" """)
       val content = request.getQueryString("data") match {
         case Some(s) => Some(s)
         case None => getContent(request)
       }
-      println(s"content ${content.toString.substring(0, Math.min(content.toString.length,50)) + " ..."}")
+      logger.info(s"content ${content.toString.substring(0, Math.min(content.toString.length,50)) + " ..."}")
       val resultGraph = load(requestCopy.copy(content = content))
       resultGraph match {
         case Success(g) => Ok("OK")
-        case Failure(f) => InternalServerError(f.getLocalizedMessage)
+        case Failure(f) =>
+          var errorMessage = f.getLocalizedMessage
+          if(errorMessage . contains("Request Entity Too Large"))
+            errorMessage += """The file size is limited to 8Mb ( in loadAction() ).
+For larger files, use locally RDFLoaderApp or RDFLoaderGraphApp"""
+          InternalServerError(errorMessage)
       }
   }
 
