@@ -89,9 +89,9 @@ trait NavigationSPARQLBase[Rdf <: RDF]
          |""".stripMargin
   }
 
-  def makePropertyVariable(search: Seq[String]) =
+  private def makePropertyVariable(search: Seq[String]) =
     search match {
-      case _ if (search.size > 0 && search(1).size > 0) => s"<${search(1)}>"
+      case _ if (search.size >= 2 && search(1).size > 0) => s"<${search(1)}>"
       case _                      => "?p"
     }
 
