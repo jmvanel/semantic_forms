@@ -48,10 +48,7 @@ trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
 
 /** */
 trait RDFCacheAlgo[Rdf <: RDF, DATASET]
-extends 
-//RDFStoreLocalProvider[Rdf, DATASET]
-//    with 
-    RDFCacheDependencies[Rdf, DATASET]
+extends RDFCacheDependencies[Rdf, DATASET]
     with MicrodataLoaderModule[Rdf]
     with TimestampManagement[Rdf, DATASET]
     with MirrorManagement[Rdf, DATASET]
@@ -323,14 +320,6 @@ JMV:
    * load also the direct owl:imports , but not recursively ( as EulerGUI IDE does )
    */
   def readStoreUriInNamedGraph(uri: Rdf#URI): Rdf#Graph = {
-    readStoreURIinOwnGraph(uri)
-  }
-
-  /**
-   * store given URI in self graph; also store imported Ontologies by owl:imports
-   *  with transaction
-   */
-  private def readStoreURIinOwnGraph(uri: Rdf#URI): Rdf#Graph = {
     val graphFromURI = readStoreURI(uri, uri, dataset)
     logger.debug("After RDFCacheAlgo.storeURI " + uri + " size: " + graphFromURI.size)
     wrapInTransaction {
@@ -370,7 +359,7 @@ JMV:
     r.flatten match {
       case Success(g) => g
       case Failure(e) =>
-        logger.error("ERROR: " + e)
+        logger.error("ERROR in readStoreURI: " + e)
         throw e
     }
   }
@@ -444,11 +433,9 @@ JMV:
     	logger.debug(s""">>>> readURIWithJenaRdfLoader: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
       contentType match {
         case Success(typ) =>
-    	// if ( contentType.isSuccess ) {
         setTimeoutsFromConfig()
         // NOTE: Jena RDF loader can throw an exception "Failed to determine the content type"
         val graphTryLoadedFromURL = rdfLoader.load(new java.net.URL(withoutFragment(uri).toString()))
-//        logger.info
         logger.debug(s"readURIWithJenaRdfLoader: after rdfLoader.load($uri): graphTryLoadedFromURL $graphTryLoadedFromURL")
 
         graphTryLoadedFromURL match {
@@ -463,7 +450,6 @@ JMV:
             val graphFromMicrodata = graphTryLoadedFromURL.getOrElse {
               if (activateMicrodataLoading) microdataLoading(uri) else emptyGraph }
 
-//            if( contentType  =/=  "ERROR" ) {
             /* NOTE: hoping that Jena > 3.4.0 will solve all issues on RDFDataMgr,
              * but before that , we try this */
             val gr =
@@ -474,10 +460,7 @@ JMV:
             logger.debug(s"""readURIWithJenaRdfLoader After readWithContentType: ${gr}""")
             ( Failure(f), "ERROR")
         }
-        case Failure(f) => 
-//      } else {
-//        (Success(emptyGraph), contentType)
-        (Failure(f), "ERROR")
+        case Failure(f) => (Failure(f), "ERROR")
       }
     } else {
       val message = s"readURIWithJenaRdfLoader: Load uri <$uri> is not possible, not a downloadable URI."
@@ -506,14 +489,11 @@ JMV:
       // To avoid troubles with Jena cf https://issues.apache.org/jira/browse/JENA-1335
       val contentType = getContentTypeFromHEADRequest(fromUri(withoutFragment(uri)))
 
-      //    	logger.debug(
       logger.debug(  "LOADING " +
     	    s""">>>> readURI: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
       contentType match {
         case Success(typ) =>
           if (!typ.startsWith("text/html")) {
-//          if (!contentType.startsWith("text/html") &&
-//          !contentType.startsWith("ERROR") ) {
             logger.debug(s""">>>> readURIsf: for <$uri>
                trying read With explicit content Type; ContentType From HEAD Request "$contentType" """)
             val gr = readWithContentType( uri, typ, dataset): Try[Rdf#Graph]
@@ -522,10 +502,7 @@ JMV:
           } else {
             ( Success(emptyGraph), typ)
           }
-        case Failure(f) =>
-//      } else {
-//        (Success(emptyGraph), contentType)
-          ( Failure(f), "ERROR")
+        case Failure(f) => ( Failure(f), "ERROR")
       }
     } else {
       val message = s"Load uri <$uri> is not possible, not a downloadable URI."
