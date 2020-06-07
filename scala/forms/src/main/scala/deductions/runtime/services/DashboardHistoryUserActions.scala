@@ -3,24 +3,25 @@ package deductions.runtime.services
 import java.text.SimpleDateFormat
 import java.util.{ Date, Locale }
 
-import deductions.runtime.semlogs.TimeSeries
-import deductions.runtime.utils.RDFStoreLocalProvider
-import deductions.runtime.utils.I18NMessages
-import deductions.runtime.core.HTTPrequest
 import org.w3.banana.RDF
 
 import scala.xml.NodeSeq
 import scala.xml.Elem
-import deductions.runtime.views.ResultsDisplay
+import scala.xml.Text
+import scala.collection.mutable.ArrayBuffer
 
 import scalaz._
 import Scalaz._
+
+import deductions.runtime.semlogs.TimeSeries
+import deductions.runtime.utils.RDFStoreLocalProvider
+import deductions.runtime.utils.I18NMessages
+import deductions.runtime.core.HTTPrequest
+import deductions.runtime.views.ResultsDisplay
 import deductions.runtime.services.html.TriplesViewWithTitle
 import deductions.runtime.html.Form2HTML
 import deductions.runtime.services.html.HTML5TypesTrait
 import deductions.runtime.abstract_syntax.UserTraceability
-import scala.collection.mutable.ArrayBuffer
-import scala.xml.Text
 import deductions.runtime.sparql_cache.SPARQLHelpers
 import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 
@@ -404,17 +405,19 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     val result = ArrayBuffer[(K, List[T])]()
     var precedingKey: Option[K] = None
     var currentListForKey: List[T] = List()
+    def recordCurrentGroup() = result.append((precedingKey.get, currentListForKey))
     val elemsWithKey = for( elem <- list ) {
-      val key = f(elem)
-      if( Some(key) == precedingKey ||
+      val key = Some(f(elem))
+      if( key == precedingKey ||
           precedingKey == None ) {
         currentListForKey = currentListForKey :+ elem
       } else {
-        result.append((precedingKey.get, currentListForKey))
+        recordCurrentGroup()
         currentListForKey = List(elem)
       }
-      precedingKey = Some(key)
+      precedingKey = key
     }
+    recordCurrentGroup()
     result.toList
   }
 
