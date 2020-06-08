@@ -63,7 +63,7 @@ with ApplicationTrait
               queryString =
                 request.queryString +
                   ("paragraphs" -> Seq("on")))
-            makeHistoryUserActions(limit = "15", newRequest)
+            makeHistoryUserActions(limit = "25", newRequest)
           }
         }
         outputMainPageWithContent(contentMaker)
