@@ -405,7 +405,8 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     val result = ArrayBuffer[(K, List[T])]()
     var precedingKey: Option[K] = None
     var currentListForKey: List[T] = List()
-    def recordCurrentGroup() = result.append((precedingKey.get, currentListForKey))
+    def recordCurrentGroup() = if(precedingKey.isDefined)
+      result.append((precedingKey.get, currentListForKey))
     val elemsWithKey = for( elem <- list ) {
       val key = Some(f(elem))
       if( key == precedingKey ||
