@@ -7,13 +7,16 @@ object Common {
     val bananaResolver = "bblfish-snapshots" at "http://bblfish.net/work/repo/releases"
 
 val jenaVersion =  "3.15.0"
+val akkaVersion =  "2.5.26" // because of Play 2.6.25
+                  // "2.6.5" //
+val akkaHttpVersion = "10.1.12"
 
   val bananaDependency0 = "org.w3" %%  "banana-jena" % "0.8.4-SNAPSHOT" 
   val bananaDependency = bananaDependency0 exclude("org.slf4j", "slf4j-api" )	exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
-  val jenaDependency = "org.apache.jena" % "apache-jena-libs" % jenaVersion  exclude("log4j", "log4j") exclude("org.slf4j", "slf4j-api" ) exclude( "org.apache.logging.log4j" , "log4j-slf4j-impl" )	exclude("org.slf4j", "slf4j-log4j12")		exclude("org.apache.logging.log4j","log4j-slf4j-impl")
-  val jenaPermissionsDependency = "org.apache.jena" % "jena-permissions" % jenaVersion	exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
-  val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion		exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
-  val jenaSpatialDependency = "org.apache.jena" % "jena-spatial" % jenaVersion		exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
+  val jenaDependency = "org.apache.jena" % "apache-jena-libs" % jenaVersion exclude("org.slf4j", "slf4j-api")
+  val jenaPermissionsDependency = "org.apache.jena" % "jena-permissions" % jenaVersion	
+  val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion
+  val jenaSpatialDependency = "org.apache.jena" % "jena-spatial" % jenaVersion
 
 
   val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.3.0"
@@ -23,14 +26,8 @@ val jenaVersion =  "3.15.0"
   val scalatestDependency = "org.scalatest" %% "scalatest" % "3.1.1" % "test"
   logBuffered in Test := false
 
-  val log4jVersion = "2.13.1" // "2.11.2" // "2.11.1"
   val loggingDependencies = Seq(
-//    "org.apache.logging.log4j" % "log4j-api" % log4jVersion,
-//    "org.apache.logging.log4j" % "log4j-core" % log4jVersion,
-//    "org.apache.logging.log4j" % "log4j-slf4j-impl" % log4jVersion
-//, "org.apache.logging.log4j" % "log4j-web" % log4jVersion
    "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
-// ,  "org.slf4j" % "slf4j-simple" % "1.7.30"
  , "ch.qos.logback" % "logback-classic" % "1.2.3"
 
 )
@@ -64,10 +61,6 @@ val jenaVersion =  "3.15.0"
 
     // "net.rootdev" % "java-rdfa" % "0.4.3-SNAPSHOT"
     "net.rootdev" % "java-rdfa" % "0.4.2" ,
-
-    //"com.typesafe.akka" %% "akka-http-core-experimental" % "0.11"
-    // "com.typesafe.akka" %% "akka-http-core-experimental" % "2.0.5"
-    // See more at: http://search.maven.org/#search%7Cga%7C1%7Cakka-http-core ; https://typesafe.com/blog/akka-http-preview#sthash.IZR1O9fx.dpuf
 
     "org.scala-lang.modules" %% "scala-async" % "0.9.7" ,
 
