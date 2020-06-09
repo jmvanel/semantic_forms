@@ -6,7 +6,9 @@ name := "clients"
 
 libraryDependencies ++= Seq(
   bananaDependency0,
-  jenaDependency
+  jenaDependency,
+"com.typesafe.akka" %% "akka-http"   % akkaHttpVersion ,
+"com.typesafe.akka" %% "akka-stream" % akkaVersion // or whatever the latest version is
 ) ++ loggingDependencies
 // libraryDependencies += httpComponents // allready in Banana
 

@@ -11,6 +11,7 @@ import org.apache.jena.query.QueryExecutionFactory
 import org.w3.banana.RDFOps
 import org.w3.banana.SparqlOps
 import org.w3.banana.jena.Jena
+
 import org.apache.http.params.BasicHttpParams
 import org.apache.http.client.utils.URIBuilder
 import scala.collection.JavaConverters._
@@ -20,8 +21,6 @@ import scala.collection.JavaConverters._
 trait SPARQLquery2SFcache {
   val servicePrefix = "/load-uri"
   val serverParam = "uri"
-  // val serverPrefixWithParam = "/load-uri?uri="
-  // "/display?displayuri="
   var num = 0
 
   implicit val ops: RDFOps[Jena]
@@ -66,7 +65,7 @@ trait SPARQLquery2SFcache {
     rr
   }
 
-  /** send HTTP Get To Semantic_Forms for loading a single URI of an RDF document;
+  /** send HTTP Get To Semantic_Forms for loading a single URI of a remote RDF document;
    *  the relative service URI is #serverPrefixWithParam
    *  @param uri the remote source RDF document
    *  @param sfInstancePrefix Semantic_Forms Instance URL Prefix, data destination
