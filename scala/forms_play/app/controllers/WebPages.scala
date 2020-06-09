@@ -35,13 +35,26 @@ import deductions.runtime.core.IPFilter
 import deductions.runtime.utils.I18NMessages
 import deductions.runtime.core.MapUtils
 import deductions.runtime.utils.FormModuleBanana
+import org.slf4j.LoggerFactory
+import ch.qos.logback.core.util.StatusPrinter
+import ch.qos.logback.classic.LoggerContext
 
 
 object WebPagesApp extends {
     override implicit val config = new PlayDefaultConfiguration
   }
   with WebPages
-  with HTMLGenerator
+  with HTMLGenerator {
+    import ch.qos.logback.classic.util.ContextInitializer;
+       // must be set before the first call to  LoggerFactory.getLogger();
+       // ContextInitializer.CONFIG_FILE_PROPERTY is set to "logback.configurationFile"
+//       System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY,
+//           "/home/jmv/src/semantic_forms/scala/forms_play/conf/logback-test.xml" )
+  val lc: LoggerContext = LoggerFactory.getILoggerFactory().asInstanceOf[LoggerContext]
+  // print logback's internal status
+  StatusPrinter.print(lc)
+  println(">>>> AFTER StatusPrinter.print(lc)")
+  }
 
 
 /** controller for HTML pages ("generic application") */
