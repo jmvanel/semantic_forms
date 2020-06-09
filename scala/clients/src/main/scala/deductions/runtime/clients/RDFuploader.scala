@@ -38,8 +38,8 @@ object RDFuploader extends App
 //with JenaModule
 {
   val file = args(0)
-  val uri = args(1)
-  val graph = args(2)
+  val loadServiceUri = args(1)
+  val graphURI = args(2)
 
   // split RDF file in chunks
   val triples = ArrayBuffer[Triple]()
@@ -56,7 +56,7 @@ object RDFuploader extends App
       }
     }
   }
-  RDFDataMgr.parse(destination, uri)
+  RDFDataMgr.parse(destination, file)
   // send remaining Triples
   sendTriples(triples)
 
@@ -68,7 +68,7 @@ object RDFuploader extends App
       val sw = new StringWriter()
       RDFDataMgr.write(sw, graph, Lang.NTRIPLES)
       val data: String = sw.toString()
-      val uriAkka = Uri(uri+s"?graph=$graph")
+      val uriAkka = Uri(loadServiceUri+s"?graph=$graphURI")
       HttpRequest(method = HttpMethods.POST,
           uri = uriAkka,
         entity = HttpEntity(
