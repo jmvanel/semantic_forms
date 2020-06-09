@@ -14,6 +14,12 @@ import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.sparql.graph.GraphFactory
 import org.apache.jena.riot.Lang
 import java.io.StringWriter
+import scala.util.Success
+import scala.util.Failure
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 /**
  * Load triples in given graph URI (SPARQL Load service);
@@ -34,50 +40,73 @@ import java.io.StringWriter
  * https://jena.apache.org/documentation/io/streaming-io.html
  * https://jena.apache.org/documentation/io/rdf-output.html
  */
-object RDFuploader extends App
-//with JenaModule
-{
+object RDFuploader extends App {
   val file = args(0)
   val loadServiceUri = args(1)
   val graphURI = args(2)
+  val chunkSize = 10000
+  val delayBetweenRequests = 10000 // milliseconds
+
+  implicit val system = ActorSystem()
+  implicit val materializer = ActorMaterializer()
+  // needed for the future flatMap/onComplete in the end
+  implicit val executionContext = system.dispatcher
 
   // split RDF file in chunks
   val triples = ArrayBuffer[Triple]()
+  val httpResponses = ArrayBuffer[Future[HttpResponse]]()
   val destination: StreamRDF = new StreamRDFBase{
     var count = 0
     override def triple(triple: Triple ) {
       count += 1
       triples += triple
-      if(count % 10000 == 0) {
-        sendTriples(triples)
+      if(count % chunkSize == 0) {
+        httpResponses += sendTriples(triples.toSeq)
         triples.clear
-        println(s"StreamRDF: sending triples, count=$count")
-        Thread.sleep(10000)
+        logger.info(s"StreamRDF: sending triples, count=$count")
+        Thread.sleep(delayBetweenRequests)
       }
     }
   }
   RDFDataMgr.parse(destination, file)
   // send remaining Triples
-  sendTriples(triples)
+  httpResponses += sendTriples(triples toSeq)
 
-  private def sendTriples(triples: ArrayBuffer[Triple]) = {
+  // terminate when all HTTP requests are done
+  // cf https://stackoverflow.com/questions/29344430/scala-waiting-for-sequence-of-futures
+  val httpResponsesTry = httpResponses.map(_.map { Success(_) }.recover { case t => Failure(t) })
+  val httpResponsesFuture = Future.sequence(httpResponsesTry)
+  logger.info(s"Awaiting until all HTTP ${httpResponsesTry.size} requests are done")
+  Await.result(httpResponsesFuture, Duration("300 sec"))
+  if(httpResponsesFuture isCompleted )
+    system.terminate()
+  else
+    logger.warn(s"http Responses are NOT Completed")
+
+  private def sendTriples(triplesChunk: Seq[Triple]): Future[HttpResponse] = {
     import scala.concurrent.ExecutionContext.Implicits.global
-//    Future {
       val graph = GraphFactory.createDefaultGraph()
-      for (triple <- triples) graph.add(triple)
+      for (triple <- triplesChunk) graph.add(triple)
       val sw = new StringWriter()
       RDFDataMgr.write(sw, graph, Lang.NTRIPLES)
       val data: String = sw.toString()
       val uriAkka = Uri(loadServiceUri+s"?graph=$graphURI")
-      HttpRequest(method = HttpMethods.POST,
-          uri = uriAkka,
-        entity = HttpEntity(
-          // MediaType.text("turtle", "turtle")
-          MediaType.applicationWithFixedCharset("n-triples", HttpCharsets.`UTF-8`, "nt")
-          // application/n-triples
-          ,
-          data))
-      println(s"StreamRDF: sent triples, size ${triples.size}")
-//    }
+    val httpRequest = HttpRequest(
+      method = HttpMethods.POST,
+      uri = uriAkka,
+      entity = HttpEntity(
+        MediaType.applicationWithFixedCharset("n-triples", HttpCharsets.`UTF-8`, "nt"),
+        // MediaType.text("turtle", "turtle")
+        data))
+    val responseFuture: Future[HttpResponse] = Http().singleRequest(
+          httpRequest)
+    val triplesSize = triplesChunk.size
+    responseFuture . onComplete {
+        case Success(res) =>
+          logger.info(s"HttpResponse: Success: size ${triplesSize}, ${res.toString()}")
+        case Failure(f)   => sys.error(s"sendTriples: something wrong: $f")
+      }
+    logger.info(s"StreamRDF: future: send triples to $uriAkka, size ${triplesChunk.size}, responseFuture $responseFuture")
+    responseFuture
   }
 }

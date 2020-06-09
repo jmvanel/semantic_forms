@@ -44,13 +44,15 @@ trait SparqlServices extends ApplicationTrait
         case Some(s) => Some(s)
         case None => getContent(request)
       }
-      logger.info(s"content ${content.toString.substring(0, Math.min(content.toString.length,50)) + " ..."}")
+      logger.info(s"loadAction: content ${content.toString.substring(0, Math.min(content.toString.length,50)) + " ..."}")
       val resultGraph = load(requestCopy.copy(content = content))
       resultGraph match {
-        case Success(g) => Ok("OK")
+        case Success(g) => Ok(s"""OK
+          loaded ${content.toString().substring(0, 100)}
+        to graph URI <${requestCopy.getHTTPparameterValue("graph")}>""")
         case Failure(f) =>
-          var errorMessage = f.getLocalizedMessage
-          if(errorMessage . contains("Request Entity Too Large"))
+          var errorMessage = f.getMessage
+          if(errorMessage != null && errorMessage . contains("Request Entity Too Large"))
             errorMessage += """The file size is limited to 8Mb ( in loadAction() ).
 For larger files, use locally RDFLoaderApp or RDFLoaderGraphApp"""
           InternalServerError(errorMessage)
