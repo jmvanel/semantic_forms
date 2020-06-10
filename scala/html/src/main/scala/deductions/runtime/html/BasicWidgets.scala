@@ -121,9 +121,9 @@ don't mix them */
 
   def makeDrawGraphLinkSpoggy( uri: String): NodeSeq = {
     makeDrawGraphLink( uri,
-        "http://spoggy.herokuapp.com?" +
-          "sparql=" + urlEncode(servicesURIPrefix) +
-          "&url=",
+        "https://scenaristeur.github.io/spoggy-simple/?source=" ,
+//          "sparql=" + urlEncode(servicesURIPrefix) +
+//          "&url=",
           "Spoggy")
   }
 
