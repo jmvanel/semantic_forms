@@ -115,11 +115,13 @@ trait RDFStoreLocalJenaProvider
         res
       } catch {
         case t: Throwable =>
-          logger.error("!!!!! createDatabase: configureLuceneIndex: Exception: " + t.getLocalizedMessage)
+          logger.error("!!!!! createDatabase: configureLuceneIndex: Exception: " +
+              t.getLocalizedMessage)
           logger.error("	Exception " + t.getClass )
           logger.error("	Exception " + t )
           logger.error("	getCause " + t.getCause)
           logger.error("	>> Lucene will not be available.")
+          logger.error(s"${Thread.currentThread().getStackTrace().slice(0, 10).mkString("\n")}")
           dts
       }
     } else
@@ -278,17 +280,17 @@ trait RDFStoreLocalJenaProvider
 
 }
 
-/** TODO implement independently of Jena */
-trait RDFGraphPrinter extends RDFStoreLocalJenaProvider {
-  def printGraphList() {
-    rdfStore.r(dataset, {
-      val lgn = dataset.asDatasetGraph().listGraphNodes()
-      val lgnasScala = lgn.asScala
-      logger.info(s"listGraphNodes size ${lgnasScala.size}")
-      for (gn <- lgnasScala) {
-        logger.info(s"${gn.toString()}")
-      }
-      logger.info(s"afer listGraphNodes")
-    })
-  }
-}
+/** implement independently of Jena ? */
+//trait RDFGraphPrinter extends RDFStoreLocalJenaProvider {
+//  def printGraphList() {
+//    rdfStore.r(dataset, {
+//      val lgn = dataset.asDatasetGraph().listGraphNodes()
+//      val lgnasScala = lgn.asScala
+//      logger.info(s"listGraphNodes size ${lgnasScala.size}")
+//      for (gn <- lgnasScala) {
+//        logger.info(s"${gn.toString()}")
+//      }
+//      logger.info(s"afer listGraphNodes")
+//    })
+//  }
+//}
