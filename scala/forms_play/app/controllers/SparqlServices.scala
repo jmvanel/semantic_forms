@@ -18,6 +18,7 @@ import deductions.runtime.services.LoadService
 import scalaz._
 import Scalaz._
 import play.api.mvc.RequestHeader
+import deductions.runtime.services.RecoverUtilities
 
 //import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 //import deductions.runtime.sparql_cache.algos.GraphEnrichment
@@ -25,6 +26,7 @@ import play.api.mvc.RequestHeader
 /** SPARQL compliant services: SPARQL query, SPARQL update, SPARQL load */
 trait SparqlServices extends ApplicationTrait
     with LoadService[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with RecoverUtilities
 //    with GraphEnrichment[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 {
   import config._
@@ -35,7 +37,10 @@ trait SparqlServices extends ApplicationTrait
    *  The file size is limited to 8Mb ;
    *  for larger files, use locally RDFLoaderApp or RDFLoaderGraphApp .
    */
-  def loadAction() = Action( parse.anyContent(maxLength = Some((1024 * 1024 * 8 ).longValue) )) {
+  def loadAction() =
+    recoverFromOutOfMemoryErrorGeneric[Action[AnyContent]](
+      {
+    Action( parse.anyContent(maxLength = Some((1024 * 1024 * 8 ).longValue) )) {
     implicit request: Request[AnyContent] =>
       val requestCopy = getRequestCopyAnyContent()
       logger.info(s"""body class ${request.getClass} request.body ${request.body.getClass}
@@ -61,8 +66,11 @@ For larger files, use locally RDFLoaderApp or RDFLoaderGraphApp"""
               " , content: " +
               content.slice(0, 200))
       }
-  }
-
+    }
+    },
+      (t: Throwable) =>
+        errorActionFromThrowable(t, "in /load")
+    )
 
   /** sparql compliant GET Service, Construct or SELECT */
   def sparqlGET(query: String): Action[AnyContent] =

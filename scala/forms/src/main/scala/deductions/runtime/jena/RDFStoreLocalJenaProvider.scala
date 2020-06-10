@@ -156,7 +156,9 @@ trait RDFStoreLocalJenaProvider
     nm.getGraph
   }
 
-  def close(ds: DATASET) = { println(s"close(ds=$ds"); ds.close() }
+  def close(ds: DATASET) = { println(s"close(ds=$ds");
+//  ds.asDatasetGraph.close()
+  ds.close() }
 
   def closeAllTDBs() {
     close(dataset)
