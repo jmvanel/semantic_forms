@@ -50,7 +50,8 @@ object RDFuploader extends App {
   val graphURI = args(2)
   val startingTriple = args.lift(3).getOrElse("0").toInt
   val mimeInput = args.lift(4).getOrElse("turtle")
-  
+  logger.info( s"startingTriple=$startingTriple")
+
   val chunkSize = 10000
   val delayBetweenRequests = 10000 // milliseconds
 
@@ -68,11 +69,14 @@ object RDFuploader extends App {
       count += 1
       if(count >= startingTriple)
         triples += triple
+//      println(s"count $count, size=${triples.size}")
       if(count % chunkSize == 0 ) {
-        if(count >= startingTriple && triples.size > 0)
+        logger.info(s"StreamRDF: position=$count , size=${triples.size}")
+        if(count >= startingTriple && triples.size > 0) {
           httpResponses += sendTriples(triples.toSeq)
+          logger.info(s"StreamRDF: send triples, position=$count , size=${triples.size}")
+        }
         triples.clear
-        logger.info(s"StreamRDF: sending triples, count=$count")
         Thread.sleep(delayBetweenRequests)
       }
     }
