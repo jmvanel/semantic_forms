@@ -13,6 +13,8 @@ trait StringHelpers {
     Some(s.substring( li +1, s.length() ))
   }
 
+  def substringSafe(s:String, length: Int) = s.substring(0, Math.min(s.length(), length))
+
   /** introduce Proxy If necessary, that is if URL is HTTP;
    *  does not use proxy if SF server is HTTP . */
   def introduceProxyIfnecessary(url: String,

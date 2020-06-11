@@ -19,6 +19,7 @@ import scalaz._
 import Scalaz._
 import play.api.mvc.RequestHeader
 import deductions.runtime.services.RecoverUtilities
+import deductions.runtime.utils.StringHelpers
 
 //import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 //import deductions.runtime.sparql_cache.algos.GraphEnrichment
@@ -27,6 +28,7 @@ import deductions.runtime.services.RecoverUtilities
 trait SparqlServices extends ApplicationTrait
     with LoadService[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RecoverUtilities
+    with StringHelpers
 //    with GraphEnrichment[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 {
   import config._
@@ -49,11 +51,12 @@ trait SparqlServices extends ApplicationTrait
         case Some(s) => Some(s)
         case None => getContent(request)
       }
-      logger.info(s"loadAction: content ${content.toString.substring(0, Math.min(content.toString.length,50)) + " ..."}")
+      val contentAbbrev = substringSafe(content.toString, 100)
+      logger.info(s"loadAction: content $contentAbbrev ...")
       val resultGraph = load(requestCopy.copy(content = content))
       resultGraph match {
         case Success(g) => Ok(s"""OK
-          loaded ${content.toString().substring(0, 100)}
+          loaded content $contentAbbrev
         to graph URI <${requestCopy.getHTTPparameterValue("graph")}>""")
         case Failure(f) =>
           val errorMessage = f.getMessage

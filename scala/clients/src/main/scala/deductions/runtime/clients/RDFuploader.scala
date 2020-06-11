@@ -24,11 +24,15 @@ import scala.concurrent.duration.Duration
 /**
  * Load triples in given graph URI (SPARQL Load service);
  * splitting RDF file in chunks.
- * Arguments: RDF_FILE, LOAD_SERVICE, GRAPH, [MIME]
+ * Arguments: RDF_FILE, LOAD_SERVICE, GRAPH,
+ * starting triple: allows to start sending after given triple number
+ * (not implemented) [MIME]
  * Content-Type [MIME] : application/ld+json application/rdf+xml text/turtle'
  * default value for arg. 4, Content-Type
  * 
- * IMPLEMENTATION NOTE: doing streaming and chunks would be nice,
+ * IMPLEMENTATION NOTES:
+ * - no dependency to Banana, Jena's StreamRDF is needed
+ * - doing streaming and chunks would be nice,
  * but then this should occur both client and server side;
  * so this is for a future effort;
  * found no example on "akka http client streaming sending post"
@@ -44,6 +48,9 @@ object RDFuploader extends App {
   val file = args(0)
   val loadServiceUri = args(1)
   val graphURI = args(2)
+  val startingTriple = args.lift(3).getOrElse("0").toInt
+  val mimeInput = args.lift(4).getOrElse("turtle")
+  
   val chunkSize = 10000
   val delayBetweenRequests = 10000 // milliseconds
 
@@ -59,9 +66,11 @@ object RDFuploader extends App {
     var count = 0
     override def triple(triple: Triple ) {
       count += 1
-      triples += triple
-      if(count % chunkSize == 0) {
-        httpResponses += sendTriples(triples.toSeq)
+      if(count >= startingTriple)
+        triples += triple
+      if(count % chunkSize == 0 ) {
+        if(count >= startingTriple && triples.size > 0)
+          httpResponses += sendTriples(triples.toSeq)
         triples.clear
         logger.info(s"StreamRDF: sending triples, count=$count")
         Thread.sleep(delayBetweenRequests)
@@ -83,6 +92,7 @@ object RDFuploader extends App {
   else
     logger.warn(s"http Responses are NOT Completed")
 
+  /** send Triples in a Future */
   private def sendTriples(triplesChunk: Seq[Triple]): Future[HttpResponse] = {
     import scala.concurrent.ExecutionContext.Implicits.global
       val graph = GraphFactory.createDefaultGraph()
