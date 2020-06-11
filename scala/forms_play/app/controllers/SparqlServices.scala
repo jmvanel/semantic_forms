@@ -45,7 +45,10 @@ trait SparqlServices extends ApplicationTrait
     Action( parse.anyContent(maxLength = Some((1024 * 1024 * 8 ).longValue) )) {
     implicit request: Request[AnyContent] =>
       val requestCopy = getRequestCopyAnyContent()
-      logger.info(s"""body class ${request.getClass} request.body ${request.body.getClass}
+      logger.info(s"""loadAction: before System.gc(): ${formatMemory()}""")
+      System.gc()
+      logger.info(s"""loadAction: AFTER System.gc(): Free Memory: ${Runtime.getRuntime.freeMemory()}""")
+      logger.info(s"""loadAction: body class ${request.getClass} request.body ${request.body.getClass}
       - data= "${request.getQueryString("data")}" """)
       val content = request.getQueryString("data") match {
         case Some(s) => Some(s)

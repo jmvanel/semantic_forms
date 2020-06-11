@@ -41,14 +41,15 @@ trait LoadService[Rdf <: RDF, DATASET]
     val tryGraph: Try[Rdf#Graph] = for (
       anyRDFdata <- anyRDFdataEx;
       graph <- rdfReader.read(new StringReader(anyRDFdata), graphURI);
-      dummy = println(s"After read graph $graph")
+      dummy = logger.info(s"After read graph ${substringSafe(graph.toString(), 100)} ....")
     ) yield {
       graph
     }
 
-    println(s">>>> Before storeURI graphURI <$graphURI> , rdfReader $rdfReader, ${tryGraph.toString}")
+    logger.info(s""">>>> load: Before storeURI graphURI <$graphURI> , rdfReader $rdfReader,
+      triples ${substringSafe(tryGraph.toString, 150)} ...""")
     val gr = storeURI(tryGraph, URI(graphURI), dataset)
-    println(s">>>> After storeURI ${gr.toString}")
+    logger.info(s">>>> load: After storeURI  graphURI <$graphURI>")
     gr
   }
 
