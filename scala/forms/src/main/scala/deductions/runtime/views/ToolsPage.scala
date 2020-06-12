@@ -132,9 +132,11 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
           "/assets/rdfviewer/rdfviewer.html?url=",
           "RDF_Viewer", 15,
           request=request),
-      makeLinkToVisualTool(textareaId, "http://spoggy.herokuapp.com?" +
-          "sparql=" + URLEncoder.encode(servicesURIPrefix, "UTF-8") +
-          "&url=", "Spoggy", 15,
+      makeLinkToVisualTool(textareaId,
+          spoggyToolURL,
+          // "sparql=" + URLEncoder.encode(servicesURIPrefix, "UTF-8") +
+//          "&url=",
+          "Spoggy", 15,
           request=request)
       )
 

@@ -119,9 +119,11 @@ don't mix them */
     else NodeSeq.Empty
   }
 
+  val spoggyToolURL = "https://scenaristeur.github.io/spoggy-simple/?source="
+
   def makeDrawGraphLinkSpoggy( uri: String): NodeSeq = {
     makeDrawGraphLink( uri,
-        "https://scenaristeur.github.io/spoggy-simple/?source=" ,
+         spoggyToolURL,
 //          "sparql=" + urlEncode(servicesURIPrefix) +
 //          "&url=",
           "Spoggy")
