@@ -21,7 +21,7 @@ with RegisterPage[Rdf, DATASET] {
 
   override def result(request: HTTPrequest): NodeSeq = {
     val userid = request.userId()
-    val userInfo = displayUser(userid, request.getRDFsubject(), s"XXX ", request.getLanguage())
+    val userInfo = displayUser(userid, request)
     val content = contactsDashboardHTML(request)
 
     mainPage(content, userInfo = userInfo

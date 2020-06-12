@@ -33,11 +33,11 @@ trait RegisterPage[Rdf <: RDF, DATASET]
   import config._
   import ops._
 
-  /** display User information in pages - transactional
-   *  TODO: UNUSED pageURI, pageLabel */
-  def displayUser(userid: String, pageURI: String, pageLabel: String,
-      lang: String = "en"): NodeSeq = {
+  /** display User information in pages - transactional */
+  def displayUser(userid: String, request: HTTPrequest
+      ): NodeSeq = {
 
+    val lang: String = request.getLanguage()
     val absoluteURIForUserid = makeAbsoluteURIForSaving(userid)
 // 	  println( s">>>> displayUser userid $userid, absoluteURIForUserid $absoluteURIForUserid" )
     <div class="userInfo"> {

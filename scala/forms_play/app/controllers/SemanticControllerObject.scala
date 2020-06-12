@@ -57,7 +57,7 @@ extends play.api.mvc.Results with
       val userid = requestCopy.userId()
       val title = "SemanticController view"
       val lang = chooseLanguage(request)
-      val userInfo = displayUser(userid, "", title, lang)
+      val userInfo = displayUser(userid, requestCopy)
       // outputMainPage()
       Ok( result(requestCopy) ) .as("text/html; charset=utf-8")
     }

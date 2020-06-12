@@ -26,7 +26,7 @@ class DummyController @Inject() (val controllerComponents: ControllerComponents)
       val userid = requestCopy.userId()
       val title = "My view"
       val lang = chooseLanguage(request)
-      val userInfo = displayUser(userid, "", title, lang)
+      val userInfo = displayUser(userid, requestCopy)
       // outputMainPage()
       Ok("OK from DummyController")
     }

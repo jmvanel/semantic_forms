@@ -94,7 +94,7 @@ with ApplicationTrait
     val userid = requestCopy.userId()
     val uri = expandOrUnchanged( requestCopy.getRDFsubject() )
     val title = labelForURITransaction(uri, lang)
-    val userInfo = displayUser(userid, requestCopy.getRDFsubject(), title, lang)
+    val userInfo = displayUser(userid, requestCopy)
   }
 
   /** side effet: call of All Service Listeners */
@@ -105,7 +105,7 @@ with ApplicationTrait
     val userid = requestCopy.userId()
     val uri = expandOrUnchanged( requestCopy.getRDFsubject() )
     val title = labelForURITransaction(uri, lang)
-    val userInfo = displayUser(userid, requestCopy.getRDFsubject(), title, lang)
+    val userInfo = displayUser(userid, requestCopy)
     def this(request: Request[_]) = this(copyRequest(request))
   }
 
@@ -289,7 +289,7 @@ with ApplicationTrait
             val precomputed: MainPagePrecompute = MainPagePrecompute(request)
             import precomputed._
             logger.debug(s"displayURI: expandOrUnchanged <$uri>")
-            val userInfo = displayUser(userid, uri, title, lang)
+            val userInfo = displayUser(userid, request)
             htmlForm(uri, blanknode, editable = Edit  =/=  "", formuri,
               graphURI = makeAbsoluteURIForSaving(userid),
               request = request)._1
@@ -333,7 +333,7 @@ with ApplicationTrait
       val userid = request.userId()
       val title = "Table view from SPARQL"
       val lang = request.getLanguage
-      val userInfo = displayUser(userid, "", title, lang)
+      val userInfo = displayUser(userid, request)
 
       val editButton = <button action="/table" title="Edit each cell of the table (like a spreadheet)">Edit</button>
       val submitButton: NodeSeq /*Elem*/ =
@@ -408,7 +408,7 @@ with ApplicationTrait
           val requestCopy = getRequestCopy()
           val userid = requestCopy.userId()
           val lang = chooseLanguage(request)
-          val userInfo = displayUser(userid, "", "", lang)
+          val userInfo = displayUser(userid, requestCopy)
           outputMainPage(
             createHTMLFormFromSPARQL(
               query,
@@ -429,7 +429,7 @@ with ApplicationTrait
       logger.info("sparql: " + request)
       val httpRequest = copyRequest(request)
       val lang = httpRequest.getLanguage()
-      val userInfo = displayUser(getUsername(request).getOrElse("anonymous"), "pageURI", "title", "lang")
+      val userInfo = displayUser(getUsername(request).getOrElse("anonymous"), httpRequest)
       outputMainPage(
           sparqlConstructQueryHTML(query, httpRequest, context=httpRequest.queryString2),
           userInfo=userInfo, classForContent="")
@@ -458,9 +458,10 @@ with ApplicationTrait
         {
           logger.info("sparql: " + request)
           logger.info("sparql: " + query)
-          val userInfo = displayUser(getUsername(request).getOrElse("anonymous"), "pageURI", "title", "lang")
+          val httpRequest = copyRequest(request)
+          val userInfo = displayUser(getUsername(request).getOrElse("anonymous"), httpRequest)
           outputMainPage(
-              selectSPARQL(query, copyRequest(request)),
+              selectSPARQL(query, httpRequest),
                 userInfo=userInfo, classForContent="" )
         },
         (t: Throwable) =>
@@ -544,10 +545,9 @@ with ApplicationTrait
         {
           val lang = chooseLanguageObject(request).language
           val pageURI = uri
-          val pageLabel = labelForURITransaction(uri, lang)
-          val userInfo = displayUser(userid, pageURI, pageLabel, lang)
-          logger.info(s"userInfo $userInfo, userid $userid")
           val httpRequest = copyRequest(request)
+          val userInfo = displayUser(userid, httpRequest)
+          logger.info(s"userInfo $userInfo, userid $userid")
           val content = htmlForm(
             uri, editable = true,
             graphURI = makeAbsoluteURIForSaving(userid),
@@ -617,10 +617,11 @@ with ApplicationTrait
           val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formuri")
           logger.info(s"formSpecURI from HTTP request: <$formSpecURI>")
           val lang = chooseLanguage(request)
+          val httpRequest = copyRequest(request)
           outputMainPage(
             create(uri,
-              formSpecURI, makeAbsoluteURIForSaving(userid), copyRequest(request)).getOrElse(<div/>),
-            userInfo = displayUser(userid, uri, s"Create a $uri", lang), classForContent="" )
+              formSpecURI, makeAbsoluteURIForSaving(userid), httpRequest).getOrElse(<div/>),
+            userInfo = displayUser(userid, httpRequest), classForContent="" )
         },
         (t: Throwable) =>
           errorResultFromThrowable(t, "in create Actions /create", request))
@@ -666,7 +667,8 @@ with ApplicationTrait
         implicit request =>
           val lang = chooseLanguageObject(request).language
           val config1 = config
-          val userInfo = displayUser(userid, "", "", lang)
+          val httpRequest = copyRequest(request)
+          val userInfo = displayUser(userid, httpRequest)
           outputMainPage(
             new ImplementationSettings.RDFCache
             with ToolsPage[ImplementationSettings.Rdf, ImplementationSettings.DATASET]

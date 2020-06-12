@@ -47,7 +47,8 @@ trait SparqlServices extends ApplicationTrait
       val requestCopy = getRequestCopyAnyContent()
       logger.info(s"""loadAction: before System.gc(): ${formatMemory()}""")
       System.gc()
-      logger.info(s"""loadAction: AFTER System.gc(): Free Memory: ${Runtime.getRuntime.freeMemory()}""")
+      logger.info(s"""loadAction: AFTER System.gc(): Free Memory: ${
+        Runtime.getRuntime.freeMemory() / (1024 * 1024)} Mb""")
       logger.info(s"""loadAction: body class ${request.getClass} request.body ${request.body.getClass}
       - data= "${request.getQueryString("data")}" """)
       val content = request.getQueryString("data") match {
