@@ -350,6 +350,9 @@ extends URIManagement {
 
   /**
    * from an Rdf#Node, print the turtle term;
+   * CAUTION: not syntactically correct in presence of \ in literals:
+   * should use a real Turtle writer instead : TODO
+   *
    * betehess 15:22
    * @ jmvanel nothing giving you that out-of-the-box right now
    * I'd write a new typeclass to handle that

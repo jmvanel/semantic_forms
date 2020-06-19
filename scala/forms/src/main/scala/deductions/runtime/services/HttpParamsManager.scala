@@ -8,12 +8,14 @@ import org.w3.banana.io.{NTriples, RDFReader, RDFWriter}
 import scala.util.Try
 import deductions.runtime.utils.RDFPrefixes
 import org.w3.banana.io.Turtle
+import deductions.runtime.utils.StringHelpers
 
 /**
  * @author jmv
  */
 trait HttpParamsManager[Rdf <: RDF]
-extends RDFPrefixes[Rdf] {
+extends RDFPrefixes[Rdf]
+with StringHelpers {
 
   implicit val ops: RDFOps[Rdf]
 //  implicit val ntriplesReader: RDFReader[Rdf, Try, NTriples]
@@ -37,11 +39,21 @@ extends RDFPrefixes[Rdf] {
    * in N-Triple syntax, we recover here the original triple.
    */
   def httpParam2Triple(param: String): Rdf#Triple = {
-    val triple = for (
+    val triple =
+    try{
+      for (
       gr <- turtleReader.read(new StringReader(param), "")
     ) yield {
       gr.triples.head
     }
+    }
+    catch {
+      case t: Throwable =>
+        logger.error(s"httpParam2Triple: error in parsing original triple from HTML form: ${substringSafe(param, 200)} => ${t.getLocalizedMessage}")
+        logger.error(s"httpParam2Triple: param $param")
+        throw t
+    }
+//    println(s"httpParam2Triple: triple subject <${triple.get.subject}> , predicate <${triple.get.predicate}>")
     /* hack to make script work: forms_play/dist/scripts/rgraphremove.sh (the /register service) */
     val nullURI = URI("")
     triple.getOrElse(Triple(nullURI, form(param), Literal("")))

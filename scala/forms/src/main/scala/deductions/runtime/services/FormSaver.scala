@@ -89,7 +89,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
           tryTriple match {
             case Success(triple) => (triple, objects)
             case Failure(f)      =>
-              System.err.println(s"getTriplesFromHTTPparams: non foreseen case : $param0 -> $objects0 - $f")
+              logger.error(s"getTriplesFromHTTPparams: non foreseen case : $param0 -> $objects0 - $f")
               (Triple(nullURI, nullURI, nullURI), Seq())
           }
         } else {
@@ -210,6 +210,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
             Literal(objectStringFromUser)
           }
         )
+        logger.debug(s"computeDatabaseChangesFor1Triple: objectFromUser $objectFromUser")
         val originalData = nodeToString(originalTriple.objectt)
         val emptyUserInput: Boolean = objectStringFromUser === ""
         val differingUserInput: Boolean = objectStringFromUser =/= originalData
@@ -224,10 +225,13 @@ trait FormSaver[Rdf <: RDF, DATASET]
         if( !emptyUserInput && differingUserInput ||
             // NOTE: the case of pre-filled rdfs:type
             (originalTriple.predicate == rdf.typ &&
-                !emptyUserInput))
-          triplesToAdd +=
-            makeTriple(originalTriple.subject, originalTriple.predicate, objectFromUser)
-
+                !emptyUserInput)) {
+          val newTriple = makeTriple(originalTriple.subject, originalTriple.predicate, objectFromUser)
+          logger.debug(s"""computeDatabaseChangesFor1Triple: originalTriple.subject <${originalTriple.subject}> 
+            computeDatabaseChangesFor1Triple: originalTriple.predicate <${originalTriple.predicate}>""")
+          logger.debug(s"computeDatabaseChangesFor1Triple: objectFromUser $objectFromUser")
+          triplesToAdd += newTriple
+        }
         if (originalDataNonEmpty && differingUserInput)
           triplesToRemove += originalTriple
 
@@ -295,7 +299,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
       f onComplete {
         case Success(_) =>
           logger.info(s""" Successfully stored ${triplesToAdd.size} triples
-            ${triplesToAdd.mkString("\n")}
+            ${triplesToAdd.mkString("<<<<", ">>>>\n<<<<", ">>>>\n")}
             and removed ${triplesToRemove.size}
             triplesToRemove:
             ${triplesToRemove.mkString("\n")}
@@ -306,7 +310,6 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
   private def log(s: String) =
     logger.debug(s"FormSaver: $s")
-    // println(s"FormSaver: $s")
 
 }
 

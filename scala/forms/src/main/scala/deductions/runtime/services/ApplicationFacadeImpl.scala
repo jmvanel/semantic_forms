@@ -242,11 +242,11 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       val uri = URLDecoder.decode(url1, "utf-8")
       val res = rdfStore.rw( dataset, {
         // NOTE: purpose here: update Instance Label if rdfs:label has changed
-        replaceInstanceLabel( URI(uri), allNamedGraph, // TODO reuse allNamedGraph
-            lang )
+        replaceInstanceLabel( URI(uri), allNamedGraph, lang )
     	})
     	logger.info( s"Save: normal! $uriOption" )
-      case _ => logger.error( s"Save: focus URI not defined, request graphURI ${requestMap.getOrElse("graphURI", "?")}" )
+      case _ => logger.error(
+          s"Save: focus URI not defined, request graphURI ${requestMap.getOrElse("graphURI", "?")}" )
     }
     
     // associate userid with graphURI

@@ -10,8 +10,11 @@
   </appender>
 
   <!--
-  <root level="debug">
-  -->
+  <logger name="server" level="DEBUG"/>
+  <logger name="services-forms" level="DEBUG"/>
+-->
+
+  <!-- <root level="debug"> -->
   <root level="info">
     <appender-ref ref="STDOUT" />
   </root>
