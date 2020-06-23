@@ -31,6 +31,8 @@ import java.io.StringReader
 import deductions.runtime.services.RDFContentNegociationIO
 import scala.util.Success
 import deductions.runtime.utils.HTTPHelpers
+import deductions.runtime.utils.DefaultConfiguration
+
 
 /**
  * singleton for implementation settings
@@ -45,21 +47,54 @@ object ImplementationSettings {
   type RDFReadException = RiotException
 }
 
+trait RDFStoreLocalJenaProvider extends RDFStoreLocalJenaProviderImpl
+    with MicrodataLoaderModuleJena
+    with ImplementationSettings.RDFModule
+//    with RDFStoreLocalProvider[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with Timer
+    with LuceneIndex
+    with RDFContentNegociationIO[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with HTTPHelpers
+
+/** delegation to singleton RDFStoreLocalJenaProviderObject */
+trait RDFStoreLocalJenaProviderImpl {
+  val delegate = RDFStoreLocalJenaProviderObject
+
+  // Members declared in deductions.runtime.utils.RDFStoreLocalProvider
+  def allNamedGraph = delegate.allNamedGraph
+  def close(ds: deductions.runtime.jena.ImplementationSettings.DATASET = dataset): Unit = delegate.close(ds)
+  def createDatabase(database_location: String,useTextQuery: Boolean,useSpatialIndex: Boolean):
+  deductions.runtime.jena.ImplementationSettings.DATASET = delegate.createDatabase(database_location, useTextQuery, useSpatialIndex)
+  def listNames(ds: deductions.runtime.jena.ImplementationSettings.DATASET): Iterator[String] = delegate.listNames(ds)
+  def makeMGraph(graphURI: deductions.runtime.jena.ImplementationSettings.Rdf#URI,ds:
+      deductions.runtime.jena.ImplementationSettings.DATASET): deductions.runtime.jena.ImplementationSettings.Rdf#MGraph = delegate.makeMGraph(graphURI, ds)
+  def readWithContentType(uri: deductions.runtime.jena.ImplementationSettings.Rdf#URI,contentType: String,
+      dataset: deductions.runtime.jena.ImplementationSettings.DATASET):
+      scala.util.Try[deductions.runtime.jena.ImplementationSettings.Rdf#Graph] = delegate.readWithContentType(uri, contentType, dataset)
+
+  lazy val dataset = delegate.dataset
+  val jenaComplements = new JenaComplements()(delegate.ops)
+  def closeAllTDBs() = delegate.closeAllTDBs
+}
+
 /** For user data and RDF cache, sets a default location for the Jena TDB store directory : TDB
  * NOTES:
  * - mandatory that JenaModule (RDFModule) is first; otherwise ops may be null
  */
-trait RDFStoreLocalJenaProvider
-    extends MicrodataLoaderModuleJena
-    with ImplementationSettings.RDFModule
+// class
+object RDFStoreLocalJenaProviderObject
+//MicrodataLoaderModuleJena
+    extends ImplementationSettings.RDFModule
     with RDFStoreLocalProvider[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with Timer
     with LuceneIndex
     with RDFContentNegociationIO[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with HTTPHelpers {
+    with HTTPHelpers 
+    {
 
-  // CURRENTLY unused, but could be:  val config: Configuration
+  override implicit val config = new DefaultConfiguration{}
   import config._
+
   import ops._
   type DATASET = ImplementationSettings.DATASET
   /** very important that defensiveCopy=false, otherwise no update happens, and a big overhead for every operation */
@@ -128,13 +163,15 @@ trait RDFStoreLocalJenaProvider
       DatasetFactory.createTxnMem()
   }
 
+  lazy val dataset: DATASET = createDatabase(databaseLocation)
+
   /**
    * NOTES:
    *  - NEEDS transaction
    *  - no need of a transaction here, as getting Union Graph is anyway part of a transaction
    *  - Union Graph in Jena should be re-done for each use (not 100% sure, but safer anyway)
    */
-  override def allNamedGraph: Rdf#Graph = {
+  override val allNamedGraph: Rdf#Graph = {
     time(s"allNamedGraph dataset $dataset", {
       //      logger.debug(s"Union Graph: entering for $dataset")
 
@@ -282,17 +319,3 @@ trait RDFStoreLocalJenaProvider
 
 }
 
-/** implement independently of Jena ? */
-//trait RDFGraphPrinter extends RDFStoreLocalJenaProvider {
-//  def printGraphList() {
-//    rdfStore.r(dataset, {
-//      val lgn = dataset.asDatasetGraph().listGraphNodes()
-//      val lgnasScala = lgn.asScala
-//      logger.info(s"listGraphNodes size ${lgnasScala.size}")
-//      for (gn <- lgnasScala) {
-//        logger.info(s"${gn.toString()}")
-//      }
-//      logger.info(s"afer listGraphNodes")
-//    })
-//  }
-//}

@@ -91,7 +91,9 @@ trait ApplicationTrait extends PlaySettings.MyControllerBase
 
   protected def callAllServiceListeners(request: HTTPrequest) = {
     logger.debug( s">>>> callAllServiceListeners $request => ${request.uri}")
-    implicit val rdfLocalProvider: RDFStoreLocalProvider[Rdf, DATASET] = this
+    implicit val rdfLocalProvider
+//    : RDFStoreLocalProvider[Rdf, DATASET]
+    = this
     callServiceListeners(request)(request.userId(), rdfLocalProvider)
   }
               

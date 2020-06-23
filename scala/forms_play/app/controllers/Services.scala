@@ -24,7 +24,7 @@ import deductions.runtime.jena.RDFStoreLocalJenaProvider
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 
 
-class ServicesApp extends  {
+class ServicesApp extends {
     override implicit val config = new PlayDefaultConfiguration
   }
   with Services

@@ -39,10 +39,10 @@ extends play.api.mvc.Results with
   /** add/remove plugin pages */
   val actions: Seq[deductions.runtime.core.SemanticController] =
     Seq(
-      new DependenciesNoTextQuery with GeoController[Rdf, DATASET] with FormModuleBanana[Rdf] {},
-      new DependenciesNoTextQuery with PerVehicleView[Rdf, DATASET] with FormModuleBanana[Rdf] {},
-      new DependenciesNoTextQuery with ContactsFrontPage[Rdf, DATASET] with FormModuleBanana[Rdf]  {},
-      new DependenciesNoTextQuery with ContactsDashboard[Rdf, DATASET]
+      new DependenciesNoTextQuery with GeoController[Rdf, ImplementationSettings.DATASET] with FormModuleBanana[Rdf] {},
+      new DependenciesNoTextQuery with PerVehicleView[Rdf, ImplementationSettings.DATASET] with FormModuleBanana[Rdf] {},
+      new DependenciesNoTextQuery with ContactsFrontPage[Rdf, ImplementationSettings.DATASET] with FormModuleBanana[Rdf]  {},
+      new DependenciesNoTextQuery with ContactsDashboard[Rdf, ImplementationSettings.DATASET]
         with FormModuleBanana[Rdf] {}
       )
   //////////////////////////////////////////////////////////////

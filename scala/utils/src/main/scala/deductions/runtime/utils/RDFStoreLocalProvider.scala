@@ -37,7 +37,7 @@ extends RDFOPerationsDB[Rdf, DATASET] {
       useSpatialIndex: Boolean= config.useSpatialIndex
       ): DATASET
 
-  lazy val dataset: DATASET = createDatabase(databaseLocation)
+  val dataset: DATASET // = createDatabase(databaseLocation)
 
   def allNamedGraph: Rdf#Graph
   
