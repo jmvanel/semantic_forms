@@ -144,8 +144,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     editable:  Boolean  = false,
     formGroup: Rdf#URI  = nullURI, formuri: String = "")(implicit graph: Rdf#Graph, lang: String = "en"): FormSyntax = {
 
-    val tryFormSyntax = for ( // TODO rw is just for possibly recomputing labels; should be separated and possibly done in a Future
-      step1 <- rdfStore.rw(
+    val tryFormSyntax = for (
+      // rw transaction is just for possibly recomputing labels; should be separated and possibly done in a Future
+      step1 <- rdfStore.r(
         dataset,
         {
           val tr = Try(
@@ -163,7 +164,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         { addOWLsameAs(step1) })
     // TODO val step3 = addOWLinverseOf(step2)
     ) yield {
-      rdfStore.rw(
+      rdfStore.r(
         dataset,
         { Try { createFormDetailed2(step2, formGroup) } })
     }
