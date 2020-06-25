@@ -108,7 +108,7 @@ trait FormModule[NODE, URI <: NODE] {
 
   type DatatypeProperty = URI
   type ObjectProperty = NODE // URI
-  case class Triple(val s: NODE, val p: URI, val o: NODE)
+  case class TripleLocal(val s: NODE, val p: URI, val o: NODE)
 
   val nullURI: URI
 
@@ -149,14 +149,14 @@ trait FormModule[NODE, URI <: NODE] {
     val timeMetadata: Long = -1
 
     /** filled, not not used*/
-    private val triples: mutable.Buffer[Triple] = mutable.ListBuffer[Triple]()
+    private val triples: mutable.Buffer[TripleLocal] = mutable.ListBuffer[TripleLocal]()
 
     def setPossibleValues(newPossibleValues: Seq[(NODE, NODE)]): Entry
     override def toString(): String = {
       s"""Entry $subject <$property> value $value. ${getClass.getSimpleName} label "$label", "$comment" "$widgetType", openChoice: $openChoice, metadata '$metadata'"""
     }
     def addTriple(s: NODE, p: URI, o: NODE) = {
-      val t = Triple(s, p, o)
+      val t = TripleLocal(s, p, o)
       triples :+ t
     }
 

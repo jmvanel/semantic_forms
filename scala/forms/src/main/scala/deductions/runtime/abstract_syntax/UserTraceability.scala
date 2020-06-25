@@ -9,10 +9,12 @@ import scala.language.{existentials, postfixOps}
 
 import scalaz._
 import Scalaz._
+import deductions.runtime.utils.RDFHelpers0
 
 /** TODO move to package user */
 trait UserTraceability[Rdf <: RDF, DATASET]
-  extends FormModule[Rdf#Node, Rdf#URI]
+  extends RDFHelpers0[Rdf]
+    with FormModule[Rdf#Node, Rdf#URI]
     with TimeSeries[Rdf, DATASET] {
 
   /** add User Info On Triples whose subject is form subject;
@@ -129,11 +131,16 @@ trait UserTraceability[Rdf <: RDF, DATASET]
     try {
     val resMainDatabase = {
       if (nodeToString(field.value) =/= "") {
+        val triple: Rdf#Triple = ops.makeTriple(field.subject, nodeToURI(field.property), field.value)
+        val ttl = makeTurtleTriple(triple)
+        if ( ttl.isFailure ) logger.warn(s"addUserFromGraph: $ttl - $triple")
+        val tripleForQuery = ttl. getOrElse("")
+//          <${field.subject}> <${field.property}> ${makeTurtleTerm(field.value)}
         val queryMainDatabase = s"""
       SELECT ?USER
       WHERE {
         GRAPH ?USER {
-         <${field.subject}> <${field.property}> ${makeTurtleTerm(field.value)} . }
+        $tripleForQuery }
       } """
         debug(s"addUserFromGraph: queryMainDatabase $queryMainDatabase")
         sparqlSelectQueryVariables(

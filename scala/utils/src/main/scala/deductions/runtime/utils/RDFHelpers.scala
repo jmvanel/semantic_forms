@@ -12,6 +12,9 @@ import scala.util.control.NonFatal
 import scalaz._
 import Scalaz._
 import org.w3.banana.RDFSPrefix
+import org.w3.banana.io.RDFWriter
+import scala.util.Try
+import org.w3.banana.io.Turtle
 
 /** */
 trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf]
@@ -162,7 +165,8 @@ extends URIManagement {
 
   implicit val ops: RDFOps[Rdf]
   import ops._
-  
+  val turtleWriter: RDFWriter[Rdf, Try, Turtle]
+
   lazy val nullURI = URI("")
   lazy val rdf = RDFPrefix[Rdf](ops)
 
@@ -351,14 +355,14 @@ extends URIManagement {
   /**
    * from an Rdf#Node, print the turtle term;
    * CAUTION: not syntactically correct in presence of \ in literals:
-   * should use a real Turtle writer instead : TODO
+   * should use a real Turtle writer instead; use makeTurtleTriple
    *
    * betehess 15:22
    * @ jmvanel nothing giving you that out-of-the-box right now
    * I'd write a new typeclass to handle that
    * it's super easy to do
    */
-  def makeTurtleTerm(node: Rdf#Node) =
+  def makeTurtleTerm(node: Rdf#Node): String =
     foldNode(node)(
       uri => s"<${fromUri(uri)}>",
       bn => s"<_:${fromBNode(bn)}>",
@@ -385,4 +389,10 @@ extends URIManagement {
             rawString.replaceAll("""\\\r""", """\\\\\u000d""")
         wrapping + turtleString + wrapping + suffix
       })
+
+  def makeTurtleTriple(triple: Rdf#Triple): Try[String] = {
+    val graph = makeGraph(List(triple).toIterable)
+    turtleWriter.asString(graph, "")
+  }
+
 }
