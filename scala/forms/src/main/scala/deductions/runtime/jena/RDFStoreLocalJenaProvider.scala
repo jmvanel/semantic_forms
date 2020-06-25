@@ -55,10 +55,14 @@ trait RDFStoreLocalJenaProvider extends RDFStoreLocalJenaProviderImpl
     with LuceneIndex
     with RDFContentNegociationIO[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with HTTPHelpers
+    {
+      override val rdfStore = RDFStoreLocalJenaProviderObject . rdfStore
+    }
 
 /** delegation to singleton RDFStoreLocalJenaProviderObject */
 trait RDFStoreLocalJenaProviderImpl {
   val delegate = RDFStoreLocalJenaProviderObject
+  def rdfStore = delegate.rdfStore
 
   // Members declared in deductions.runtime.utils.RDFStoreLocalProvider
   def allNamedGraph = delegate.allNamedGraph
