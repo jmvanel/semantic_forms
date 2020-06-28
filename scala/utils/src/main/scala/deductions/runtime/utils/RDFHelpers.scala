@@ -15,6 +15,7 @@ import org.w3.banana.RDFSPrefix
 import org.w3.banana.io.RDFWriter
 import scala.util.Try
 import org.w3.banana.io.Turtle
+import org.w3.banana.io.NTriples
 
 /** */
 trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf]
@@ -165,7 +166,8 @@ extends URIManagement {
 
   implicit val ops: RDFOps[Rdf]
   import ops._
-  val turtleWriter: RDFWriter[Rdf, Try, Turtle]
+  // val turtleWriter: RDFWriter[Rdf, Try, Turtle]
+  val ntriplesWriter: RDFWriter[Rdf, Try, NTriples]
 
   lazy val nullURI = URI("")
   lazy val rdf = RDFPrefix[Rdf](ops)
@@ -392,7 +394,7 @@ extends URIManagement {
 
   def makeTurtleTriple(triple: Rdf#Triple): Try[String] = {
     val graph = makeGraph(List(triple).toIterable)
-    turtleWriter.asString(graph, "")
+    ntriplesWriter.asString(graph, "")
   }
 
 }
