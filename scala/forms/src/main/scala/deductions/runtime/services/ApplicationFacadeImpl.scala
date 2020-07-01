@@ -175,6 +175,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
           "?" + "query=" + sparqlQuery
         }
         target="_blank"
+        class="sf-button_important"
+        style="font-size: 1.6em;"
      > { I18NMessages.get("Map", request.getLanguage()) } </a>
 
   /** for test, creates an OutOfMemoryError exception */
