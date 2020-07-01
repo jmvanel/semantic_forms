@@ -312,22 +312,23 @@ trait Form2HTML[NODE, URI <: NODE]
   private def dataFormHeader(form: formMod#FormSyntax, lang: String): NodeSeq = {
     import form._
     if (toPlainString(subject) =/= "") {
-      <p class="sf-local-rdf-link">{
-        linkToFormSubject(form, lang) ++
-          (if (form.subject != nullURI)
-            <span> &nbsp;&nbsp;&nbsp;= </span> ++
-            <span>&lt;<a href={ toPlainString(form.subject) } style="color: rgb(44,133,254);">{ form.subject }</a>&gt;</span>
-          else NodeSeq.Empty)
-      }</p> ++
-        {
-          val warningNoTriples =
+      val warningNoTriples =
             if (form.nonEmptyFields().isEmpty &&
               form.subject != nullURI) // case of login form
               <b> No triple for this URI! Click on subjects link above.</b>
             else Text("")
-          warningNoTriples
-        } ++
-        <div class="sf-local-rdf-link">{
+
+       <p class="sf-local-rdf-link sf-link-to-form-subject">{
+        <span style="text-decoration: underline;">
+        { linkToFormSubject(form, lang) }</span> ++
+          (if (form.subject != nullURI)
+            <span>&nbsp;&nbsp;= </span> ++
+            <span>&lt;<a href={ toPlainString(form.subject) } style="color: rgb(44,133,254);">{ form.subject }</a>&gt;</span>
+          else NodeSeq.Empty)
+      }</p> ++
+      warningNoTriples ++
+      <br/> ++
+      <div class="sf-local-rdf-link">{
           form.formURI match {
             case Some(formURI) if formURI != nullURI =>
               message("Form_specification", lang) + ": " ++
