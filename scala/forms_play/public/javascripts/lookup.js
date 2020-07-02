@@ -20,6 +20,7 @@ $("form").on( 'focus', lookupCompletionCSSclass, function(event) {
             open: function() {
                 $(this).removeClass(suggestionSearchCSSclass)
             },
+
             select: function( event, ui ) {
                 // console.log( "Topic chosen label event "); console.log($(this));
                 console.log( "Topic chosen label ui"); console.log(ui);
@@ -31,6 +32,7 @@ $("form").on( 'focus', lookupCompletionCSSclass, function(event) {
                     // addedWidget = cloneWidget($(this))
                 }
             },
+
             source: function(request, callback) {
 		var inputElementContainsURL =
 			request .term. startsWith("http://") ||

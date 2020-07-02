@@ -27,26 +27,28 @@ https://www.google.fr/search?q=ajax+example+scala.js
 const resultsCount = 15
 
 $(document).ready(function() {
-const lookupServer = "http://lookup.dbpedia.org"
-const alternativeLookupServer = "http://lookup.dbpedia-spotlight.org"
-function makeDbPediaLookupURL(baseURL) { return "/proxy?originalurl=" + baseURL + "/api/search/PrefixSearch"}
+  const lookupServer = "http://lookup.dbpedia.org"
+  const alternativeLookupServer = "http://lookup.dbpedia-spotlight.org"
+  function makeDbPediaLookupURL(baseURL) { return "/proxy?originalurl=" + baseURL + "/api/search/PrefixSearch"}
 
-const searchServiceURL = makeDbPediaLookupURL(lookupServer)
-const lookupCompletionCSSclass = '.hasLookup'
-const suggestionSearchCSSclass = 'sf-suggestion-search-dbpedia'
+  const searchServiceURL = makeDbPediaLookupURL(lookupServer)
+  const lookupCompletionCSSclass = '.hasLookup'
+  const suggestionSearchCSSclass = 'sf-suggestion-search-dbpedia'
 
-
-$(".sf-standard-form").on( 'focus', lookupCompletionCSSclass, function(event) {
+  function registerCompletionGeneric( makeAjaxFunction ) {
+    $(".sf-standard-form").on( 'focus', lookupCompletionCSSclass, function(event) {
 	var inputElement = $(this);
         $(this).autocomplete({
             autoFocus: true,
             minlength: 3,
+
             search: function() {
                 $(this).addClass(suggestionSearchCSSclass)
             },
             open: function() {
                 $(this).removeClass(suggestionSearchCSSclass)
             },
+
             select: function( event, ui ) {
                 console.log( "Topic chosen label event ");
                 console.log($(this));
@@ -58,6 +60,7 @@ $(".sf-standard-form").on( 'focus', lookupCompletionCSSclass, function(event) {
                     addedWidget = cloneWidget($(this))
                 }
             },
+
             source: function(request, callback) {
               console.log(" source: function: request .term '" + request .term + "'");
               var inputElementContainsURL =
@@ -68,12 +71,12 @@ $(".sf-standard-form").on( 'focus', lookupCompletionCSSclass, function(event) {
 			inputElement.removeClass(suggestionSearchCSSclass);
               else {
 
-                var ajax = makeAjaxDbPediaLookupProtocol( searchServiceURL, request, inputElement, callback)
+                var ajax = makeAjaxFunction( searchServiceURL, request, inputElement, callback)
                 console.log(ajax)
 
                 ajax.fail(function (error){
 
-                  var ajax = makeAjaxDbPediaLookupProtocol( makeDbPediaLookupURL(alternativeLookupServer), request, inputElement, callback)
+                  var ajax = makeAjaxFunction( makeDbPediaLookupURL(alternativeLookupServer), request, inputElement, callback)
                   console.log(ajax)
                   ajax.fail(function (error){
 
@@ -82,19 +85,24 @@ $(".sf-standard-form").on( 'focus', lookupCompletionCSSclass, function(event) {
                     console.log("lookup.dbpedia.org FAILED: error:" + error.statusText )
                     console.log(error )
                     console.log("lookup.dbpedia.org FAILED => launch local /lookup '" + request.term + "'" )
-                    var ajax = makeAjaxDbPediaLookupProtocol( "/lookup", request, inputElement, callback)
+                    var ajax = makeAjaxFunction( "/lookup", request, inputElement, callback)
                     console.log(ajax)
                    }
                   })
                 })
             }
-            }
-        })
-    });
-});
+          } // end source function
+        }) // end autocomplete
+    }); // end on focus function
+  } // end function registerCompletionGeneric
 
+  registerCompletionGeneric( makeAjaxDbPediaLookupProtocolFunction )
+
+}); // end document ready function
+
+const makeAjaxDbPediaLookupProtocolFunction =
 /** @param request: user input for completion */
-function makeAjaxDbPediaLookupProtocol(searchServiceURL, request, inputElement, callback){
+function(searchServiceURL, request, inputElement, callback){
   console.log("Trigger HTTP on <" + searchServiceURL + "> for '" + request.term + "'")
   return (
     $.ajax({
@@ -132,10 +140,10 @@ function prettyPrintURIsFromDbpediaResponse(ajaxResponse){
   })
 }
 
-/** 		// DONE added QueryClass
-		// compare results: QueryClass=person , and ?QueryClass=place
-		// view-source:http://lookup.dbpedia.org/api/search/PrefixSearch?QueryClass=Person&QueryString=berlin
-		// view-source:http://lookup.dbpedia.org/api/search/PrefixSearch?QueryClass=Place&QueryString=berlin
+/**
+	compare results: QueryClass=person , and ?QueryClass=place
+	view-source:http://lookup.dbpedia.org/api/search/PrefixSearch?QueryClass=Person&QueryString=berlin
+	view-source:http://lookup.dbpedia.org/api/search/PrefixSearch?QueryClass=Place&QueryString=berlin
 
 */
 function getRDFtypeInURL(inputElement) {
