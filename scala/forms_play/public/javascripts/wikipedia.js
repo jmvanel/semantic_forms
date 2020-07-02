@@ -1,17 +1,25 @@
+/* jshint -W014 */
+/* jshint -W033 */
+/* jshint -W104 */
+
 // require("jquery-ui")
 // See doc here https://jqueryui.com/autocomplete/#remote
 
 // https://github.com/dbpedia/lookup
-// wget "http://    lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=10&QueryString=berl" --header='Accept: application/json'
+// wget "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=10&QueryString=berl" --header='Accept: application/json'
 
-/* pulldown menu in <input> does show on Chrome; Opera, Android ????
+/* pulldown menu in <input> does show on Chrome; Opera, Android
 Regular dbpedia/lookup server tried, then 2 fallbacks: lookup.dbpedia-spotlight.org, then SF server /lookup
 
 see
 https://jqueryui.com/autocomplete/
 https://github.com/RubenVerborgh/dbpedia-lookup-page
 
-TODO: translate in Scala:
+TODO: translate in Scala: see
+https://github.com/saig0/scala-js-jqueryui-example-app
+https://index.scala-lang.org/definitelyscala/scala-js-jqueryui/scala-js-jqueryui/1.0.0?target=_sjs0.6_2.11
+https://github.com/jducoeur/jquery-facade
+https://github.com/sjrd/scala-js-jquery
 https://github.com/scala-js/scala-js-jquery
 https://www.google.fr/search?q=ajax+example+scala.js
  */
@@ -21,14 +29,14 @@ const resultsCount = 15
 $(document).ready(function() {
 const lookupServer = "http://lookup.dbpedia.org"
 const alternativeLookupServer = "http://lookup.dbpedia-spotlight.org"
-function makeLookupURL(baseURL) { return "/proxy?originalurl=" + baseURL + "/api/search/PrefixSearch"}
+function makeDbPediaLookupURL(baseURL) { return "/proxy?originalurl=" + baseURL + "/api/search/PrefixSearch"}
 
-    var searchServiceURL = makeLookupURL(lookupServer)
-    // var searchServiceURL = "/proxy?originalurl=" + encodeURIComponent("http://lookup.dbpedia.org/api/search/PrefixSearch")
-    var suggestionSearchCSSclass = 'sf-suggestion-search-dbpedia';
+const searchServiceURL = makeDbPediaLookupURL(lookupServer)
+const lookupCompletionCSSclass = '.hasLookup'
+const suggestionSearchCSSclass = 'sf-suggestion-search-dbpedia'
 
 
-    $(".sf-standard-form").on('focus', '.hasLookup', function(event) {
+$(".sf-standard-form").on( 'focus', lookupCompletionCSSclass, function(event) {
 	var inputElement = $(this);
         $(this).autocomplete({
             autoFocus: true,
@@ -60,12 +68,12 @@ function makeLookupURL(baseURL) { return "/proxy?originalurl=" + baseURL + "/api
 			inputElement.removeClass(suggestionSearchCSSclass);
               else {
 
-                var ajax = makeAjax(searchServiceURL, request, inputElement, callback)
+                var ajax = makeAjaxDbPediaLookupProtocol( searchServiceURL, request, inputElement, callback)
                 console.log(ajax)
 
                 ajax.fail(function (error){
 
-                  var ajax = makeAjax(makeLookupURL(alternativeLookupServer), request, inputElement, callback)
+                  var ajax = makeAjaxDbPediaLookupProtocol( makeDbPediaLookupURL(alternativeLookupServer), request, inputElement, callback)
                   console.log(ajax)
                   ajax.fail(function (error){
 
@@ -74,7 +82,7 @@ function makeLookupURL(baseURL) { return "/proxy?originalurl=" + baseURL + "/api
                     console.log("lookup.dbpedia.org FAILED: error:" + error.statusText )
                     console.log(error )
                     console.log("lookup.dbpedia.org FAILED => launch local /lookup '" + request.term + "'" )
-                    var ajax = makeAjax( "/lookup", request, inputElement, callback)
+                    var ajax = makeAjaxDbPediaLookupProtocol( "/lookup", request, inputElement, callback)
                     console.log(ajax)
                    }
                   })
@@ -85,42 +93,43 @@ function makeLookupURL(baseURL) { return "/proxy?originalurl=" + baseURL + "/api
     });
 });
 
-function makeAjax(searchServiceURL,request, inputElement, callback){
-  console.log("Déclenche l'événement lookup.dbpedia.org pour '" + request.term + "'")
+/** @param request: user input for completion */
+function makeAjaxDbPediaLookupProtocol(searchServiceURL, request, inputElement, callback){
+  console.log("Trigger HTTP on <" + searchServiceURL + "> for '" + request.term + "'")
   return (
-                $.ajax({
-                    url: searchServiceURL + "?QueryString=" + request.term . replace( / /g, "_" )
-                                          + "&MaxHits="+resultsCount
-                                          + getRDFtypeInURL(inputElement) ,
-                    dataType: "json" ,
-                    timeout: 30000
-                }).done(function (ajaxResponse) {
-                    console.log('Done ' + searchServiceURL)
-                    console.log(ajaxResponse)
-                    callback( prettyPrintURI(ajaxResponse) )
-
-                })
+    $.ajax({
+        url: searchServiceURL + "?QueryString=" + request.term . replace( / /g, "_" )
+                              + "&MaxHits="+resultsCount
+                              + getRDFtypeInURL(inputElement) ,
+        dataType: "json" ,
+        timeout: 30000
+    }).done( function (ajaxResponse) {
+        console.log('Ajax Response from ' + searchServiceURL)
+        console.log(ajaxResponse)
+        callback( prettyPrintURIsFromDbpediaResponse(ajaxResponse) )
+    })
   )
 }
 
 function cutStringAfterCharacter(s, c) {
-    if (!(s === null)) {
+    if (s !== null) {
         var n = s.indexOf(c);
         return s.substring(0, n != -1 ? n : s.length);
     } else {
-        return s;
+        return "_"
     }
-};
+}
 
-function prettyPrintURI(ajaxResponse){
+function prettyPrintURIsFromDbpediaResponse(ajaxResponse){
   return ajaxResponse.results.map(
     function (m) {
-                        return { "label": m.label + " - " +
-                        cutStringAfterCharacter(m.description, '.')
-			+  " - " + m.classes
-			+  " - refCount " + m.refCount
-			, "value": m.uri }
-                 })
+      return {
+	      "label": m.label + " - "
+	        + cutStringAfterCharacter(m.description, '.')
+                +  " - " + m.classes
+                +  " - refCount " + m.refCount ,
+	      "value": m.uri }
+  })
 }
 
 /** 		// DONE added QueryClass
@@ -146,4 +155,4 @@ function getRDFtypeInURL(inputElement) {
                 else
                   typeNameInURL = ""
   return typeNameInURL
-};
+}

@@ -1,12 +1,15 @@
+/* jshint -W014 */
+/* jshint -W033 */
+/* JS hint "laxcomma": true */
 // require("jquery-ui")
 
 $(document).ready(function() {
 
-    var suggestionSearchCSSclass = 'sf-suggestion-search-sf';
-    var topics = [];
+const lookupCompletionCSSclass = '.sfLookup'
+const suggestionSearchCSSclass = 'sf-suggestion-search-sf';
+var topics = [];
 
-    // $(".sf-standard-form").on('focus', '.sfLookup', function(event) {
-    $("form").on('focus', '.sfLookup', function(event) {
+$("form").on( 'focus', lookupCompletionCSSclass, function(event) {
 	var inputElement = $(this);
         $(this).autocomplete({
             autoFocus: true,
@@ -38,18 +41,15 @@ $(document).ready(function() {
 		else {
 		console.log("Déclenche l'événement /lookup pour " + request.term);
                 var typeName;
-                var stringToSearch;
                 var $el = $(event.target);
-                if ($el) {
-                    var type = $el.attr('data-rdf-type').split('/');
-                    if (type) {
-                        typeName = type[type.length - 1];
-                    }
-                }
                 typeName = $el.attr('data-rdf-type');
-                // typeName = "";
-                console.log('typeName "' + typeName + '"');
-                stringToSearch = request.term; // + "*";
+                console.log('typeName "' + typeName + '"')
+
+                var stringToSearch = request.term
+                var words = stringToSearch .split(' ')
+                if( words . length > 1 )
+                  stringToSearch = words[0] + ' AND ' +  words[1]
+
                 $.ajax({
                     url: "/lookup",
                     data: { QueryClass: typeName, QueryString: stringToSearch },
@@ -78,13 +78,13 @@ $(document).ready(function() {
             }
         })
     });
-});
+})
 
 function cutStringAfterCharacter(s, c) {
-    if (!(s === null)) {
+    if (s !== null) {
         var n = s.indexOf(c);
         return s.substring(0, n != -1 ? n : s.length);
     } else {
         return s;
     }
-};
+}
