@@ -31,11 +31,15 @@ $(document).ready(function() {
   const alternativeLookupServer = "http://lookup.dbpedia-spotlight.org"
   function makeDbPediaLookupURL(baseURL) { return "/proxy?originalurl=" + baseURL + "/api/search/PrefixSearch"}
 
-  const searchServiceURL = makeDbPediaLookupURL(lookupServer)
-  const lookupCompletionCSSclass = '.hasLookup'
+  const searchServiceDbPediaURL = makeDbPediaLookupURL(lookupServer)
+  const lookupDbPediaCSSclass = '.hasLookup'
   const suggestionSearchCSSclass = 'sf-suggestion-search-dbpedia'
 
-  function registerCompletionGeneric( makeAjaxFunction ) {
+  const lookupLocalCSSclass = '.sfLookup'
+  const searchServiceLocalURL = "/lookup"
+
+  function registerCompletionGeneric( makeAjaxFunction, lookupCompletionCSSclass, searchServiceURL,
+     getRDFtypeInURL ) {
     $(".sf-standard-form").on( 'focus', lookupCompletionCSSclass, function(event) {
 	var inputElement = $(this);
         $(this).autocomplete({
@@ -71,12 +75,14 @@ $(document).ready(function() {
 			inputElement.removeClass(suggestionSearchCSSclass);
               else {
 
-                var ajax = makeAjaxFunction( searchServiceURL, request, inputElement, callback)
+                var ajax = makeAjaxFunction( searchServiceURL, request, inputElement, callback,
+                                             getRDFtypeInURL)
                 console.log(ajax)
 
                 ajax.fail(function (error){
 
-                  var ajax = makeAjaxFunction( makeDbPediaLookupURL(alternativeLookupServer), request, inputElement, callback)
+                  var ajax = makeAjaxFunction( makeDbPediaLookupURL(alternativeLookupServer), request, inputElement, callback,
+                                             getRDFtypeInURL)
                   console.log(ajax)
                   ajax.fail(function (error){
 
@@ -85,7 +91,8 @@ $(document).ready(function() {
                     console.log("lookup.dbpedia.org FAILED: error:" + error.statusText )
                     console.log(error )
                     console.log("lookup.dbpedia.org FAILED => launch local /lookup '" + request.term + "'" )
-                    var ajax = makeAjaxFunction( "/lookup", request, inputElement, callback)
+                    var ajax = makeAjaxFunction( "/lookup", request, inputElement, callback,
+		                                 getRDFtypeInURL )
                     console.log(ajax)
                    }
                   })
@@ -96,17 +103,25 @@ $(document).ready(function() {
     }); // end on focus function
   } // end function registerCompletionGeneric
 
-  registerCompletionGeneric( makeAjaxDbPediaLookupProtocolFunction )
+  registerCompletionGeneric( makeAjaxDbPediaLookupProtocolFunction, lookupDbPediaCSSclass,
+                             searchServiceDbPediaURL, getRDFtypeInURLastItem )
+  registerCompletionGeneric( makeAjaxDbPediaLookupProtocolFunction, lookupLocalCSSclass,
+                             searchServiceLocalURL, getRDFtypeInURLfullURI )
 
 }); // end document ready function
 
 const makeAjaxDbPediaLookupProtocolFunction =
 /** @param request: user input for completion */
-function(searchServiceURL, request, inputElement, callback){
+function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL){
   console.log("Trigger HTTP on <" + searchServiceURL + "> for '" + request.term + "'")
+  var stringToSearch = request.term
+  var words = stringToSearch .split(' ')
+  if( words . length > 1 )
+    stringToSearch = words[0] + ' AND ' +  words[1]
   return (
     $.ajax({
-        url: searchServiceURL + "?QueryString=" + request.term . replace( / /g, "_" )
+        url: searchServiceURL + "?QueryString=" + stringToSearch
+	    // request.term . replace( / /g, "_" )
                               + "&MaxHits="+resultsCount
                               + getRDFtypeInURL(inputElement) ,
         dataType: "json" ,
@@ -146,7 +161,7 @@ function prettyPrintURIsFromDbpediaResponse(ajaxResponse){
 	view-source:http://lookup.dbpedia.org/api/search/PrefixSearch?QueryClass=Place&QueryString=berlin
 
 */
-function getRDFtypeInURL(inputElement) {
+function getRDFtypeInURLastItem(inputElement) {
 		// QueryClass comes from attribute data-rdf-type in <input> tag , but data-rdf-type is a full URI !
                 var typeName = "";
                 // var $el = $(event.target);
@@ -163,4 +178,22 @@ function getRDFtypeInURL(inputElement) {
                 else
                   typeNameInURL = ""
   return typeNameInURL
+}
+
+function getRDFtypeInURLfullURI(inputElement) {
+  var typeName = getRDFtypeFullURI(inputElement)
+  if( typeName.length > 0 )
+                  typeNameInURL = "&QueryClass="+typeName
+                else
+                  typeNameInURL = ""
+  return typeNameInURL
+}
+
+function getRDFtypeFullURI(inputElement) {
+	// QueryClass comes from attribute data-rdf-type in <input> tag , but data-rdf-type is a full URI !
+        var typeName = "";
+        var $el = inputElement;
+        if( $el && $el.attr('data-rdf-type') )
+          typeName = $el.attr('data-rdf-type')
+  return typeName
 }
