@@ -22,7 +22,7 @@ $(document).ready(function() {
   const resultsCount = 15
   const lookupServer = ""
 
-  const lookupCSSclass = '.sfLookup'
+  const lookupCSSclass = '.virtuosoLookup'
   const suggestionSearchCSSclass = 'sf-suggestion-search-dbpedia'
 
   registerCompletionGeneric( makeAjaxSPARQLlookupProtocolFunction, lookupCSSclass ,

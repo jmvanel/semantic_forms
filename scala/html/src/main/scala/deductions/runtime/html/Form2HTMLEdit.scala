@@ -16,6 +16,7 @@ import deductions.runtime.core.ShortString
 import scala.xml.NodeBuffer
 import deductions.runtime.core.exactlyOne
 import deductions.runtime.core.zeroOrOne
+import deductions.runtime.core.SPARQLvirtuosoLookup
 
 /** generate HTML from abstract Form for Edition */
 private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
@@ -45,12 +46,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
 
       // button with an action to duplicate the original HTML widget with an empty content
 
-      val lookupCSSClass =
-        if (field.widgetType == DBPediaLookup)
-          "hasLookup"
-        else if (field.widgetType == URIWidget)
-          "sfLookup"
-        else ""
+      val lookupCSSClass = lookupCSSclass(field)
       <div class={ cssConfig.formAddDivCSSClass } > <!-- TODO : hidden="true" -->
       <button type="button" class="btn btn-primary add-widget" readonly="yes" size="1" title={
         "Add another value for " + field.label } input-class={s"${cssConfig.formInputCSSClass} $lookupCSSClass"} input-name={field.htmlName} input-title={ resourceOrBN_Placeholder(field) }  >
@@ -63,12 +59,20 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
   /** tell if given Entry is configured for lookup (completion) */
   def lookupActivatedFor(r: formMod#Entry) = r.widgetType == DBPediaLookup
 
-  /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
+  def lookupCSSclass(entry: formMod#Entry) =
+    if (lookupActivatedFor(entry) ) "hasLookup"
+      else if (entry.widgetType == SPARQLvirtuosoLookup )
+          "virtuosoLookup"
+        else if (entry.widgetType == URIWidget)
+          "sfLookup"
+        else ""
+
+  /** create HTML Resource Editable Field */
   def createHTMLResourceEditableField(resourceEntry: formMod#ResourceEntry, lang: String = "en"
       )(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {
     import resourceEntry._
     val placeholder = resourcePlaceholder(resourceEntry, lang)
-    val hasLookupCSSclass = if (lookupActivatedFor(resourceEntry) ) "hasLookup" else "sfLookup"
+    val hasLookupCSSclass = lookupCSSclass(resourceEntry)
     Seq(
       Text("\n"),
     		// format: OFF
@@ -191,7 +195,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
 
   //// stuff for Literal (string) data ////
 
-  /** create HTM Literal Editable Field, taking in account owl:DatatypeProperty's range */
+  /** create HTML Literal Editable Field, taking in account owl:DatatypeProperty's range */
   def createHTMLiteralEditableField(
       lit: formMod#LiteralEntry,
       request: HTTPrequest )(implicit form: FormModule[NODE, URI]#FormSyntax): NodeSeq = {

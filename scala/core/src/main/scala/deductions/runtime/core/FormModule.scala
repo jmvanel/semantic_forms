@@ -446,6 +446,7 @@ object PulldownMenu extends Choice
 object URIWidget extends WidgetType { override def toString() = "URI WidgetType" }
 object ListWidget extends WidgetType { override def toString() = "List WidgetType" }
 object DBPediaLookup extends WidgetType { override def toString() = "DBPediaLookup WidgetType" }
+object SPARQLvirtuosoLookup extends WidgetType { override def toString() = "SPARQLvirtuosoLookup WidgetType" }
 object UpLoad extends WidgetType
 
 

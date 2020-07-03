@@ -363,13 +363,18 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
             for (specTriple <- specTriples) {
 
-              //// DBPedia Lookup ////
+              //// DBPedia & TAXREF (SPARQL) Lookup ////
 
               logger.debug(s">>>> updateOneFormFromConfig specTriple $specTriple")
-              if (specTriple.predicate == formPrefix("widgetClass") &&
-                specTriple.objectt == formPrefix("DBPediaLookup")) {
-                formSyntax.formURI.get == formSpecif
-                val field2 = field.copyEntry(widgetType = DBPediaLookup)
+              if (specTriple.predicate == formPrefix("widgetClass")
+                ) {
+//                formSyntax.formURI.get == formSpecif
+                val widgetType = specTriple.objectt match {
+                  case formPrefix("DBPediaLookup") => DBPediaLookup
+                  case formPrefix("SPARQLvirtuosoLookup") => SPARQLvirtuosoLookup
+                  case _ => URIWidget
+                }
+                val field2 = field.copyEntry(widgetType = widgetType)
                 formSyntax.fields = replace(formSyntax.fields, field, field2)
                 logger.debug(s"updateOneFormFromConfig: Lookup: $field -> $field2")
               }

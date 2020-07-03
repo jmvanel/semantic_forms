@@ -10,7 +10,7 @@ $(document).ready(function() {
   const searchServiceLocalURL = "/lookup"
 
   registerCompletionGeneric( makeAjaxDbPediaLookupProtocolFunction, lookupDbPediaCSSclass, searchServiceDbPediaURL, getRDFtypeInURLastItem )
-  // registerCompletionGeneric( makeAjaxDbPediaLookupProtocolFunction, lookupLocalCSSclass, searchServiceLocalURL, getRDFtypeInURLfullURI )
+  registerCompletionGeneric( makeAjaxDbPediaLookupProtocolFunction, lookupLocalCSSclass, searchServiceLocalURL, getRDFtypeInURLfullURI )
 
 }); // end document ready function
 
