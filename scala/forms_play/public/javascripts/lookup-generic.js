@@ -1,21 +1,5 @@
-$(document).ready(function() {
-  const lookupServer = "http://lookup.dbpedia.org"
-  const alternativeLookupServer = "http://lookup.dbpedia-spotlight.org"
-  function makeDbPediaLookupURL(baseURL) { return "/proxy?originalurl=" + baseURL + "/api/search/PrefixSearch"}
 
-  const searchServiceDbPediaURL = makeDbPediaLookupURL(lookupServer)
-  const lookupDbPediaCSSclass = '.hasLookup'
-
-  const lookupLocalCSSclass = '.sfLookup'
-  const searchServiceLocalURL = "/lookup"
-
-  registerCompletionGeneric( makeAjaxDbPediaLookupProtocolFunction, lookupDbPediaCSSclass, searchServiceDbPediaURL, getRDFtypeInURLastItem )
-  registerCompletionGeneric( makeAjaxDbPediaLookupProtocolFunction, lookupLocalCSSclass, searchServiceLocalURL, getRDFtypeInURLfullURI )
-
-}); // end document ready function
-
-
-  const suggestionSearchCSSclass = 'sf-suggestion-search-dbpedia'
+const suggestionSearchCSSclass = 'sf-suggestion-search-dbpedia'
 
 function registerCompletionGeneric( makeAjaxFunction, lookupCompletionCSSclass, searchServiceURL,
      getRDFtypeInURL ) {

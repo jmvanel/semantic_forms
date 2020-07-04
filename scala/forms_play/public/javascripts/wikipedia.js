@@ -26,6 +26,22 @@ https://www.google.fr/search?q=ajax+example+scala.js
 
 const resultsCount = 15
 
+$(document).ready(function() {
+  const lookupServer = "http://lookup.dbpedia.org"
+  const alternativeLookupServer = "http://lookup.dbpedia-spotlight.org"
+  function makeDbPediaLookupURL(baseURL) { return "/proxy?originalurl=" + baseURL + "/api/search/PrefixSearch"}
+
+  const searchServiceDbPediaURL = makeDbPediaLookupURL(lookupServer)
+  const lookupDbPediaCSSclass = '.hasLookup'
+
+  const lookupLocalCSSclass = '.sfLookup'
+  const searchServiceLocalURL = "/lookup"
+
+  registerCompletionGeneric( makeAjaxDbPediaLookupProtocolFunction, lookupDbPediaCSSclass, searchServiceDbPediaURL, getRDFtypeInURLastItem )
+  registerCompletionGeneric( makeAjaxDbPediaLookupProtocolFunction, lookupLocalCSSclass, searchServiceLocalURL, getRDFtypeInURLfullURI )
+
+}); // end document ready function
+
 const makeAjaxDbPediaLookupProtocolFunction =
 /** @param request: user input for completion */
 function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL){
