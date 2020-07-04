@@ -1,6 +1,10 @@
 
 const suggestionSearchCSSclass = 'sf-suggestion-search-dbpedia'
 
+function makeProxiedLookupURL(baseURL) {
+  return "/proxy?originalurl=" + encodeURIComponent(baseURL)
+}
+
 function registerCompletionGeneric( makeAjaxFunction, lookupCompletionCSSclass, searchServiceURL,
      getRDFtypeInURL ) {
     $(".sf-standard-form").on( 'focus', lookupCompletionCSSclass, function(event) {
