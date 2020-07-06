@@ -5,6 +5,7 @@ import scala.collection.Seq
 import java.net.URLDecoder
 import scala.xml.NodeSeq
 import java.net.URI
+import java.net.InetAddress
 
 /**
  * Like Request from Play! (in package play.api.mvc), but avoid Play! dependency
@@ -63,8 +64,9 @@ case class HTTPrequest(
    *  (that is created by a user by /create )
    *  accept URI's differing only on http versus https */
   def isFocusURIlocal(): Boolean = {
-//    println(s"""getHostOfRDFsubject: $getHostOfRDFsubject  =? hostNoPort $hostNoPort""")
-    getHostOfRDFsubject() == hostNoPort
+    logger.debug(s""">>>> isFocusURIlocal: getHostOfRDFsubject: $getHostOfRDFsubject =? hostNoPort $hostNoPort , remoteAddress [$remoteAddress]""")
+    getHostOfRDFsubject() == hostNoPort ||
+    getHostOfRDFsubject() == s"[$remoteAddress]"
   }
 
   private def removeHTTPprotocolFromURI(uri:String): String =
@@ -90,8 +92,19 @@ case class HTTPrequest(
   def absoluteURL(relativeURIwithSlash: String = "",
       secure: Boolean = this.secure): String =
         s"http${if(secure) "s" else ""}://" +
-        // IPv6:
-        {if( this.hostNoPort == "localhost") "[" + this.remoteAddress + "]:" + this.port else this.host} +
+      // IPv6:
+      {
+        println(s"""absoluteURL this.remoteAddress ${this.remoteAddress} this.host $host
+            hostNoPort $hostNoPort relativeURIwithSlash $relativeURIwithSlash port $port""" )
+        if (this.hostNoPort == "localhost" ||
+            this.hostNoPort . startsWith("[") ) {
+          println(s"pv6 or IPV4 normalize address")
+          "[" +
+        // ipv6 or IPV4 normalize address:
+        InetAddress.getByName(this.remoteAddress).getHostAddress()+ "]:" + this.port
+        }
+        else this.host
+      } +
         relativeURIwithSlash // + this.appendFragment
 
   def originalURL(): String = absoluteURL(path +
@@ -141,16 +154,17 @@ case class HTTPrequest(
       (key, seq.headOption.getOrElse(""))
     }
 
-  def hostNoPort = {
-    val colonIndex = host.indexOf(":")
+  def hostNoPort: String = {
+    // take in account IPV6 , e.g. [::1]:9000
+    val colonIndex = host.lastIndexOf(":")
     if( colonIndex == -1 )
       host
     else
-      host.subSequence(0, colonIndex)
+      host.subSequence(0, colonIndex).toString()
   }
 
   def port = {
-    val colonIndex = host.indexOf(":")
+    val colonIndex = host.lastIndexOf(":")
     if( colonIndex == -1 )
       80
     else
@@ -178,7 +192,7 @@ case class HTTPrequest(
   def appMessages: NodeSeq = messages
   def addAppMessage(m: NodeSeq): Unit = { messages = messages ++ m }
 
-  def logRequest() = s"$uri, $host, IP $remoteAddress"
+  def logRequest() = s"$uri, host $host, IP $remoteAddress"
 }
 
 /** Borrowed from Play */

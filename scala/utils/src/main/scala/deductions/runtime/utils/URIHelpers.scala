@@ -1,6 +1,7 @@
 package deductions.runtime.utils
 
 import java.net.URI
+import java.net.InetAddress
 
 trait URIHelpers {
 
@@ -56,5 +57,18 @@ trait URIHelpers {
     val res = documentMIMEs.contains(mime)
     // logger.debug(s"isDocumentMIME(mime=$mime => $res")
     res
+  }
+
+  /** normalize URI <scheme>://<authority><path>?<query>
+   *  yet UNUSED ! */
+  def normalizeURI(uri: URI) : URI = {
+//     URI(String scheme,
+//               String userInfo, String host, int port,
+//               String path, String query, String fragment)
+    new URI( uri.getScheme, "",
+    InetAddress.getByName(uri.getHost).getHostAddress(),
+    uri.getPort,
+    uri.getPath,
+    uri.getQuery,"")
   }
 }
