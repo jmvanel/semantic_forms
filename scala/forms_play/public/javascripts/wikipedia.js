@@ -37,25 +37,38 @@ $(document).ready(function() {
   const lookupLocalCSSclass = '.sfLookup'
   const searchServiceLocalURL = "/lookup"
 
-  registerCompletionGeneric( makeAjaxDbPediaLookupProtocolFunction, lookupDbPediaCSSclass, searchServiceDbPediaURL, getRDFtypeInURLastItem )
-  registerCompletionGeneric( makeAjaxDbPediaLookupProtocolFunction, lookupLocalCSSclass, searchServiceLocalURL, getRDFtypeInURLfullURI )
+  registerCompletionGeneric( makeAjaxDbPediaLookupProtocolFunction, lookupDbPediaCSSclass,
+	  searchServiceDbPediaURL, getRDFtypeInURLastItem, prepareCompletionDbPedia )
+  registerCompletionGeneric( makeAjaxDbPediaLookupProtocolFunction, lookupLocalCSSclass,
+	  searchServiceLocalURL, getRDFtypeInURLfullURI, prepareCompletionLucene )
 
 }); // end document ready function
 
-const makeAjaxDbPediaLookupProtocolFunction =
-/** @param request: user input for completion */
-function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL){
-  console.log("Trigger HTTP on <" + searchServiceURL + "> for '" + request.term + "'")
-  var stringToSearch = request.term
+/** prepare Completion string, DbPedia lookup syntax */
+function prepareCompletionDbPedia( userString ) {
+  return userString . replace( / /g, "_" )
+}
+
+/** prepare Completion string, Lucene syntax (for Jena in SF) */
+function prepareCompletionLucene( userString ) {
+  var stringToSearch = userString
   var words = stringToSearch .split(' ')
   if( words . length > 1 )
-    stringToSearch = words[0] + ' AND ' +  words[1]
+    stringToSearch = encodeURIComponent( words[0] + '+AND+' +  words[1] )
+  return stringToSearch
+}
+
+const makeAjaxDbPediaLookupProtocolFunction =
+/** @param request: user input for completion */
+function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
+         prepareCompletionString){
+  console.log("Trigger HTTP on <" + searchServiceURL + "> for '" + request.term + "'")
+  var stringToSearch = prepareCompletionString(request.term)
   return (
     $.ajax({
         url: searchServiceURL + "?QueryString=" + stringToSearch
-	    // request.term . replace( / /g, "_" )
                               + "&MaxHits="+resultsCount
-                              + getRDFtypeInURL(inputElement) ,
+                              + encodeURIComponent(getRDFtypeInURL(inputElement)) ,
         dataType: "json" ,
         timeout: 30000
     }).done( function (ajaxResponse) {

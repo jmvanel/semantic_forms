@@ -30,6 +30,8 @@ $(document).ready(function() {
 
 }); // end document ready function
 
+// function prepareCompletionVirtuoso( userString ) { return userString .  }
+
 const makeAjaxSPARQLlookupProtocolFunction =
 /** @param request: user input for completion */
 function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL){
@@ -38,6 +40,9 @@ function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL){
   var words = stringToSearch .split(' ')
   if( words . length > 1 )
     stringToSearch = words[0] + '*_' +  words[1] + '*'
+  else
+    stringToSearch = stringToSearch + "*"
+  console.log( "stringToSearch '" + stringToSearch + "'" )
   return (
     $.ajax({
       url: makeProxiedLookupURL(

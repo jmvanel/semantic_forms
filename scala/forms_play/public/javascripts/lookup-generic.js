@@ -6,7 +6,7 @@ function makeProxiedLookupURL(baseURL) {
 }
 
 function registerCompletionGeneric( makeAjaxFunction, lookupCompletionCSSclass, searchServiceURL,
-     getRDFtypeInURL ) {
+     getRDFtypeInURL, prepareCompletionString ) {
     $(".sf-standard-form").on( 'focus', lookupCompletionCSSclass, function(event) {
 	var inputElement = $(this);
         $(this).autocomplete({
@@ -42,7 +42,7 @@ function registerCompletionGeneric( makeAjaxFunction, lookupCompletionCSSclass, 
 			inputElement.removeClass(suggestionSearchCSSclass);
               else {
                 var ajax = makeAjaxFunction( searchServiceURL, request, inputElement, callback,
-                                             getRDFtypeInURL)
+                                             getRDFtypeInURL, prepareCompletionString )
                 console.log(ajax)
 
                 ajax.fail(function (error){
