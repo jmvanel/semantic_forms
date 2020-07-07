@@ -37,7 +37,7 @@ function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL){
   var stringToSearch = request.term
   var words = stringToSearch .split(' ')
   if( words . length > 1 )
-    stringToSearch = words[0] + ' AND ' +  words[1]
+    stringToSearch = words[0] + '*_' +  words[1] + '*'
   return (
     $.ajax({
       url: makeProxiedLookupURL(
