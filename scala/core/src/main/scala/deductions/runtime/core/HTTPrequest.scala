@@ -57,23 +57,26 @@ case class HTTPrequest(
     getHTTPparameterValues("q")
 
   private def getHostOfRDFsubject(): String = {
-    new URI(getRDFsubject()).getHost
+    new URI( getRDFsubject().trim ).getHost
   }
 
   /** is the RDF subject (=focus URI) a locally hosted URI?
    *  (that is created by a user by /create )
    *  accept URI's differing only on http versus https */
   def isFocusURIlocal(): Boolean = {
-    logger.debug(s""">>>> isFocusURIlocal: getHostOfRDFsubject: $getHostOfRDFsubject =? hostNoPort $hostNoPort , remoteAddress [$remoteAddress]""")
-    getHostOfRDFsubject() == hostNoPort ||
-    getHostOfRDFsubject() == s"[$remoteAddress]"
+    val hostOfRDFsubject = getHostOfRDFsubject()
+    logger.debug(s""">>>> isFocusURIlocal: getHostOfRDFsubject: $hostOfRDFsubject =? hostNoPort $hostNoPort ,
+      remoteAddress [$remoteAddress]""")
+    hostOfRDFsubject == hostNoPort ||
+    hostOfRDFsubject == s"[$remoteAddress]"
   }
 
   private def removeHTTPprotocolFromURI(uri:String): String =
     uri.replaceFirst("https?://", "")
 
+  /** get (first) HTTP parameter Value (and trim it) */
   def getHTTPparameterValue(param: String): Option[String] =
-    queryString.get(param) .map(seq => seq.headOption ) . flatten
+    queryString.get(param) .map(seq => seq.headOption map(s => s.trim)) . flatten
 
   def getHTTPparameterValues(param: String): Seq[String] =
     queryString.get(param).headOption.getOrElse(Seq() )

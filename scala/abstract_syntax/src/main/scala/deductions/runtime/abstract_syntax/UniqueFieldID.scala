@@ -18,7 +18,7 @@ trait UniqueFieldID[Rdf <: RDF] extends RDFHelpers[Rdf] {
   def makeHTMLName(triple: Rdf#Triple): String = {
     val rawResult = {
       val ttl = makeTurtleTriple(triple)
-      if ( ttl.isFailure ) logger.warn(s"makeHTMLName: $ttl - $triple")
+      if ( ttl.isFailure ) logger.warn(s"makeHTMLName: $ttl - triple : $triple")
       ttl. getOrElse("")
     }
     URLEncoder.encode(rawResult.toString, "utf-8")
