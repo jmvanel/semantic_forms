@@ -80,7 +80,11 @@ trait InstanceLabelsInference2[Rdf <: RDF]
         implicit val prlng = lang
 
         val l = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, rdfs.label, "")
-        if (l  =/=  "") return l
+        if (l  =/=  "") return {
+          val vernacular = getLiteralInPreferedLanguageFromSubjectAndPredicate(node,
+              URI("http://taxref.mnhn.fr/lod/property/vernacularName"), "")
+          l + (if (vernacular =/= "") s" - $vernacular" else "" )
+        }
         val n = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, foaf.name, "")
         if (n  =/=  "") return n
         val s = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, skos("prefLabel"), "")
