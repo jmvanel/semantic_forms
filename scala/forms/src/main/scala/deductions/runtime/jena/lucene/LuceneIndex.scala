@@ -61,16 +61,19 @@ trait LuceneIndex // [Rdf <: RDF]
 
     entMap.set("text", sioc("content"))
     entMap.set("text", sioc("content_encoded"))
+    entMap.set("text", foaf.status)
+
+    val taxrefprop = Prefix[ImplementationSettings.Rdf]("taxrefprop", "http://taxref.mnhn.fr/lod/property/" )
+    entMap.set("text", taxrefprop("vernacularName"))
 
     // for Grands Voisins:
-    lazy val gvoi = Prefix[ImplementationSettings.Rdf]("gvoi",
-        "http://assemblee-virtuelle.github.io/grands-voisins-v2/gv.owl.ttl#" )
-    entMap.set("text", dc("subject"))
-    entMap.set("text", gvoi("administrativeName"))
-    entMap.set("text", gvoi("proposedContribution"))
-    entMap.set("text", gvoi("realisedContribution"))
-    entMap.set("text", gvoi("building"))
-    entMap.set("text", foaf.status)
+//    lazy val gvoi = Prefix[ImplementationSettings.Rdf]("gvoi",
+//        "http://assemblee-virtuelle.github.io/grands-voisins-v2/gv.owl.ttl#" )
+//    entMap.set("text", dc("subject"))
+//    entMap.set("text", gvoi("administrativeName"))
+//    entMap.set("text", gvoi("proposedContribution"))
+//    entMap.set("text", gvoi("realisedContribution"))
+//    entMap.set("text", gvoi("building"))
 
     entMap
   }
