@@ -27,47 +27,50 @@ $(document).ready(function() {
   const suggestionSearchCSSclass = 'sf-suggestion-search-dbpedia'
 
   registerCompletionGeneric( makeAjaxSPARQLlookupProtocolFunction, lookupCSSclass ,
-                             lookupServer, getRDFtypeInURLfullURI )
+                             lookupServer, getRDFtypeInURLfullURI, prepareCompletionVirtuoso )
 
 }); // end document ready function
 
-// function prepareCompletionVirtuoso( userString ) { return userString .  }
+/** prepare Completion string, Virtuoso syntax */
+function prepareCompletionVirtuoso( userString ) {
+  var stringToSearch = userString
+  var words = stringToSearch .split(' ')
+  if( words . length > 1 )
+    stringToSearch = `"${words[0]}*" AND "${words[1]}*"`
+  else
+    stringToSearch = `"${userString}*"`
+  return stringToSearch
+}
 
 const makeAjaxSPARQLlookupProtocolFunction =
 /** @param request: user input for completion */
-function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL){
+function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
+         prepareCompletionString){
   console.log("Trigger HTTP on <" + searchServiceURL + "> for '" + request.term + "'")
-  var stringToSearch = request.term
-  var words = stringToSearch .split(' ')
-  if( words . length > 1 )
-    stringToSearch = words[0] + '*_' +  words[1] + '*'
-  else
-    stringToSearch = `"${stringToSearch}*"`
-  console.log( "stringToSearch '" + stringToSearch + "'" )
+  var stringToSearch = prepareCompletionString(request.term)
 
+/* 	    # ?s1 <http://taxref.mnhn.fr/lod/property/vernacularName> ?vernac .
+	    # ?vernac bif:contains ' ( ${stringToSearch} ) '
+	    # option ( score ?sc2 ) . */
   return (
     $.ajax({
       url: searchServiceURL +
 	   "/sparql?default-graph-uri=&query=" +
 	    encodeURIComponent(
-	    `select ?s1 as ?c1, ( bif:search_excerpt ( bif:vector () , ?o1 ) ) as ?c2, ?sc, ?rank, ?g where {
-        select ?s1, ( ?sc * 3e-1 ) as ?sc, ?o1, ( sql:rnk_scale ( <LONG::IRI_RANK> ( ?s1 ) ) ) as ?rank, ?g where
-        {
-          quad map virtrdf:DefaultQuadMap
-          {
-            graph <http://taxref.mnhn.fr/lod/graph/classes/13.0>
+     `select ?s1 as ?c1, ( bif:search_excerpt ( bif:vector () , ?o1 ) ) as ?c2, ?sc, ?rank where {
+        select ?s1, ( ?sc * 3e-1 ) as ?sc, ?o1, ( sql:rnk_scale ( <LONG::IRI_RANK> ( ?s1 ) ) ) as ?rank where {
+          quad map virtrdf:DefaultQuadMap {
+            graph ?g # <http://taxref.mnhn.fr/lod/graph/classes/13.0>
             {
-              ?s1 <http://www.w3.org/2000/01/rdf-schema#label> ?o1 .
-              ?o1 bif:contains ' ( ${stringToSearch} ) '
-		    option ( score ?sc ) .
-	    # ?s1 <http://taxref.mnhn.fr/lod/property/vernacularName> ?vernac .
-	    # ?vernac bif:contains ' ( ${stringToSearch} ) '
-	    # option ( score ?sc2 ) .
+              ?s1 ?s1textp ?o1 .
+              ?o1 bif:contains ' ( ${stringToSearch} ) ' option ( score ?sc ) .
+              ?s1 a owl:Class .
             }
            }
          }
-       order by desc ( ?sc * 3e-1 + sql:rnk_scale ( <LONG::IRI_RANK> ( ?s1 ) ) ) limit 20 offset 0
-   }` // end Template literal
+       }
+       order by desc ( ?sc * 3e-1 + sql:rnk_scale ( <LONG::IRI_RANK> ( ?s1 ) ) ) limit 40 offset 0
+   ` // end Template literal
    ) // end encodeURIComponent
     // + "&format=application/sparql-results+json&timeout=0" // should work , but Virtuoso minor bug!
     + "&format=application/sparql-results%2Bjson&timeout=0"
@@ -89,7 +92,8 @@ function prettyPrintURIsFromSPARQLresponse(ajaxResponse){
     function (m) {
       return {
 	      "label": m.c2.value + " - "
-                +  " - rank " + m.rank.value ,
+                +  " - rank " + m.rank.value
+                +  " - <" + m.c1.value + ">",
 	      "value": m.c1.value }
   })
 }

@@ -49,15 +49,6 @@ function prepareCompletionDbPedia( userString ) {
   return userString . replace( / /g, "_" )
 }
 
-/** prepare Completion string, Lucene syntax (for Jena in SF) */
-function prepareCompletionLucene( userString ) {
-  var stringToSearch = userString
-  var words = stringToSearch .split(' ')
-  if( words . length > 1 )
-    stringToSearch = encodeURIComponent( words[0] + '+AND+' +  words[1] )
-  return stringToSearch
-}
-
 const makeAjaxDbPediaLookupProtocolFunction =
 /** @param request: user input for completion */
 function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,

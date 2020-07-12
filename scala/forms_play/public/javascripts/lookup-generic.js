@@ -5,6 +5,15 @@ function makeProxiedLookupURL(baseURL) {
   return "/proxy?originalurl=" + encodeURIComponent(baseURL)
 }
 
+/** prepare Completion string, Lucene syntax (for Jena in SF) */
+function prepareCompletionLucene( userString ) {
+  var stringToSearch = userString
+  var words = stringToSearch .split(' ')
+  if( words . length > 1 )
+    stringToSearch = encodeURIComponent( words[0] + '+AND+' +  words[1] )
+  return stringToSearch
+}
+
 function registerCompletionGeneric( makeAjaxFunction, lookupCompletionCSSclass, searchServiceURL,
      getRDFtypeInURL, prepareCompletionString ) {
     $(".sf-standard-form").on( 'focus', lookupCompletionCSSclass, function(event) {
