@@ -195,7 +195,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     if (node.toString() === "") return ""
 
     val label = super.makeInstanceLabel(node, graph, lang)
-    logger.debug(s"computeInstanceLabeAndStoreInTDB: $node , computed label $label")
+    logger.debug(s"computeInstanceLabeAndStoreInTDB: $node , computed label '$label'")
     val label2 =
       if (label === "" || isLabelLikeURI(node: Rdf#Node, label)) {
         val labelFromLabelProperty = instanceLabelFromLabelProperty(node)
@@ -217,7 +217,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     val nodeString = node.toString()
     nodeString.endsWith(label) ||
     nodeString.endsWith(label.substring(0, label.length()-1)) ||
-    nodeString.endsWith("#")
+    label.endsWith("#")
   }
 
   private def storeInstanceLabel(node: Rdf#Node, label: String,
