@@ -214,6 +214,7 @@ with ApplicationTrait
         .addHttpHeadersLinks( httpRequest.uri )
 
   /** generate a Main Page wrapping given XHTML content from a contentMaker,
+   *  HTTP parameter layout=* : form only, no SF application wrapper (to include in any HTML page)
    *  while filtering unwanted clients, @see IPFilter */
   private def outputMainPage2(
       contentMaker: SemanticController,
@@ -229,6 +230,7 @@ with ApplicationTrait
     httpWrapper(
       layout match {
         case Some("form") => content
+        case Some("on") => content
         case _ => mainPage(
             content, userInfo, title,
             displaySearch,

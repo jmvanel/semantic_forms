@@ -32,6 +32,7 @@ import deductions.runtime.services.RDFContentNegociationIO
 import scala.util.Success
 import deductions.runtime.utils.HTTPHelpers
 import deductions.runtime.utils.DefaultConfiguration
+import org.w3.banana.RDFStore
 
 
 /**
@@ -102,7 +103,10 @@ object RDFStoreLocalJenaProviderObject
   import ops._
   type DATASET = ImplementationSettings.DATASET
   /** very important that defensiveCopy=false, otherwise no update happens, and a big overhead for every operation */
-  override val rdfStore = new JenaDatasetStore(false)
+  override val rdfStore
+  // : RDFStore[ImplementationSettings.Rdf, Try, ImplementationSettings.DATASET] 
+  // :RDFStore[Jena, Try, org.apache.jena.query.Dataset]
+  = new JenaDatasetStore(false)
   val jenaComplements = new JenaComplements()(ops)
 
   /**

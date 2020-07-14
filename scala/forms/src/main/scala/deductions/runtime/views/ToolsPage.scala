@@ -120,6 +120,7 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
              class="btn btn-primary" type="submit" value={ I18NMessages.get("Table", request.getLanguage()) }
              formaction="/table"/>,
       {paragraphsViewInput(request)},
+      {formOnlyViewInput(request)},
       {orderbyViewInput(request)},
       {detailsViewInput(request)},
       {labelViewInput(request)},
@@ -164,7 +165,8 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
                  I18NMessages.get("History", request.getLanguage()) }
                formaction="/history"
                title="Chronological view (only local edits)"/> ++
-             {paragraphsViewInput(request)}
+             {paragraphsViewInput(request)} ++
+             {formOnlyViewInput(request)}
           }
         </div>
       </div>
@@ -175,6 +177,11 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
     <input class="btn btn-primary" type="checkbox" title="paragraphs view (else table)"
       id="paragraphs" name="paragraphs"
       checked={ request.getHTTPparameterValue("paragraphs").getOrElse(null) } />
+  // layout=form
+  def formOnlyViewInput(request: HTTPrequest) =
+    <input class="btn btn-primary" type="checkbox" title="form only (to include in any HTML page)"
+      id="formOnly" name="layout"
+      checked={ request.getHTTPparameterValue("formOnly").getOrElse(null) } />
   def orderbyViewInput(request: HTTPrequest) =
     <input class="" title="Order by given property"
       id="orderby" name="orderby"
