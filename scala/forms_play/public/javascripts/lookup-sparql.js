@@ -57,14 +57,17 @@ function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
       url: searchServiceURL +
 	   "/sparql?default-graph-uri=&query=" +
 	    encodeURIComponent(
-     `select ?s1 as ?c1, ( bif:search_excerpt ( bif:vector () , ?o1 ) ) as ?c2, ?sc, ?rank where {
-        select ?s1, ( ?sc * 3e-1 ) as ?sc, ?o1, ( sql:rnk_scale ( <LONG::IRI_RANK> ( ?s1 ) ) ) as ?rank where {
+     `select ?s1 as ?c1, ( bif:search_excerpt ( bif:vector () , ?o1 ) ) as ?c2, ?sc, ?rank, ?LAB where {
+        select ?s1, ( ?sc * 3e-1 ) as ?sc, ?o1, ( sql:rnk_scale ( <LONG::IRI_RANK> ( ?s1 ) ) ) as ?rank, ?LAB where {
           quad map virtrdf:DefaultQuadMap {
             graph ?g # <http://taxref.mnhn.fr/lod/graph/classes/13.0>
             {
               ?s1 ?s1textp ?o1 .
               ?o1 bif:contains ' ( ${stringToSearch} ) ' option ( score ?sc ) .
               ?s1 a owl:Class .
+            }
+            graph ?g1 {
+              ?s1 <http://taxref.mnhn.fr/lod/property/vernacularName> ?LAB .
             }
            }
          }
@@ -92,6 +95,7 @@ function prettyPrintURIsFromSPARQLresponse(ajaxResponse){
     function (m) {
       return {
 	      "label": m.c2.value + " - "
+                +  " - " + m.LAB.value
                 +  " - rank " + m.rank.value
                 +  " - <" + m.c1.value + ">",
 	      "value": m.c1.value }
