@@ -42,13 +42,18 @@ function prepareCompletionVirtuoso( userString ) {
   return stringToSearch
 }
 
+function getUserLanguage() {
+  var userLang = navigator.language || navigator.userLanguage; 
+  return userLang.replace(RegExp("-.*"), "")
+}
+
 const makeAjaxSPARQLlookupProtocolFunction =
 /** @param request: user input for completion */
 function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
          prepareCompletionString){
   console.log("Trigger HTTP on <" + searchServiceURL + "> for '" + request.term + "'")
   var stringToSearch = prepareCompletionString(request.term)
-
+  var USER_LANG = getUserLanguage()
 /* 	    # ?s1 <http://taxref.mnhn.fr/lod/property/vernacularName> ?vernac .
 	    # ?vernac bif:contains ' ( ${stringToSearch} ) '
 	    # option ( score ?sc2 ) . */
@@ -57,19 +62,21 @@ function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
       url: searchServiceURL +
 	   "/sparql?default-graph-uri=&query=" +
 	    encodeURIComponent(
-     `select ?s1 as ?c1, ( bif:search_excerpt ( bif:vector () , ?o1 ) ) as ?c2, ?sc, ?rank, ?LAB where {
-        select ?s1, ( ?sc * 3e-1 ) as ?sc, ?o1, ( sql:rnk_scale ( <LONG::IRI_RANK> ( ?s1 ) ) ) as ?rank, ?LAB where {
-          quad map virtrdf:DefaultQuadMap {
-            graph ?g # <http://taxref.mnhn.fr/lod/graph/classes/13.0>
-            {
+     `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+      select DISTINCT ?s1 as ?c1, ( bif:search_excerpt ( bif:vector () , ?o1 ) ) as ?c2, ?sc, ?rank, ?LAB, ?VERN where {
+        select ?s1, ( ?sc * 3e-1 ) as ?sc, ?o1, ( sql:rnk_scale ( <LONG::IRI_RANK> ( ?s1 ) ) ) as ?rank, ?LAB, ?VERN where {
+            graph ?g {
               ?s1 ?s1textp ?o1 .
               ?o1 bif:contains ' ( ${stringToSearch} ) ' option ( score ?sc ) .
+            }
+            graph <http://taxref.mnhn.fr/lod/graph/vernacular/13.0> {
+              ?s1 <http://taxref.mnhn.fr/lod/property/vernacularName> ?VERN .
+              FILTER( LANG(?VERN) = "${USER_LANG}" )
+            }
+            graph <http://taxref.mnhn.fr/lod/graph/classes/13.0> {
+              ?s1 rdfs:label ?LAB .
               ?s1 a owl:Class .
             }
-            graph ?g1 {
-              ?s1 <http://taxref.mnhn.fr/lod/property/vernacularName> ?LAB .
-            }
-           }
          }
        }
        order by desc ( ?sc * 3e-1 + sql:rnk_scale ( <LONG::IRI_RANK> ( ?s1 ) ) ) limit 40 offset 0
@@ -94,8 +101,8 @@ function prettyPrintURIsFromSPARQLresponse(ajaxResponse){
   return ajaxResponse.results.bindings.map(
     function (m) {
       return {
-	      "label": m.c2.value + " - "
-                +  " - " + m.LAB.value
+	      "label": m.LAB.value + " - "
+                +  " - " + m.VERN.value
                 +  " - rank " + m.rank.value
                 +  " - <" + m.c1.value + ">",
 	      "value": m.c1.value }
