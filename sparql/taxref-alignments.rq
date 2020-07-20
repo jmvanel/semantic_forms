@@ -1,0 +1,15 @@
+prefix wdtn: <http://www.wikidata.org/prop/direct-normalized/>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# Example of searching alignment triples from Wikidata SPARQL endpoint
+# SERVICE <https://query.wikidata.org/sparql>
+
+SELECT DISTINCT *
+WHERE {
+  ?TAXON_WKDT wdtn:P3186 ?TAXON_TAXREF .
+  ?TAXON_WKDT rdfs:label ?LAB .
+  FILTER ( LANG(?LAB) = "en" )
+}
+# OFFSET 32940
+

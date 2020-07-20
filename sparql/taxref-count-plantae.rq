@@ -1,0 +1,9 @@
+# query on http://taxref.mnhn.fr/sparql 
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix wdtn: <http://www.wikidata.org/prop/direct-normalized/>
+SELECT (count(?TAXON_TAXREF) AS ?C )
+WHERE {
+  ?TAXON_TAXREF rdfs:subClassOf* <http://taxref.mnhn.fr/lod/taxon/187079/13.0> # Plantae
+  SERVICE <https://query.wikidata.org/sparql> { ?TAXON_WKDT wdtn:P3186 ?TAXON_TAXREF . }
+}
+

@@ -1,0 +1,12 @@
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix dbo: <http://dbpedia.org/ontology/>
+# select distinct *
+construct {
+  ?TAX owl:sameAs ?TAX_WKDT .
+  ?TAX_WKDT owl:sameAs ?TAX .
+} where {
+  ?TAX owl:sameAs ?TAX_WKDT .
+  FILTER ( STRSTARTS( STR(?TAX_WKDT), 'http://www.wikidata.org/entity' ) )
+  ?TAX a dbo:Plant .
+  ?TAX a dbo:Species .
+}
