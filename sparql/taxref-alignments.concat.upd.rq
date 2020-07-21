@@ -1,0 +1,21 @@
+prefix wdtn: <http://www.wikidata.org/prop/direct-normalized/>
+prefix wdt:  <http://www.wikidata.org/prop/direct/>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+
+# Example of adding alignment triples from external SPARQL endpoint
+
+INSERT {
+  GRAPH ?TARGET_GRAPH {
+    ?TAXON_TAXREF owl:sameAs ?TAXON_WKDT .
+  }
+}
+
+WHERE {
+  BIND ( <urn:alignments:taxref> AS ?TARGET_GRAPH )
+  SERVICE <https://query.wikidata.org/sparql> {
+      ?TAXON_WKDT wdt:P3186 ?TAXON_ID .
+  # } LIMIT 22
+}
+  BIND ( URI( CONCAT( 'http://taxref.mnhn.fr/lod/taxon/', ?TAXON_ID , '/13.0' )) AS ?TAXON_TAXREF )
+}
+
