@@ -58,7 +58,7 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
       </p>
       <p>
         <a href={
-          s"""http://yasgui.org?endpoint=$localSparqlEndpoint"""
+          s"""http://yasgui.triply.cc#?endpoint=$localSparqlEndpoint"""
         } target="_blank">
           YasGUI
         </a>
