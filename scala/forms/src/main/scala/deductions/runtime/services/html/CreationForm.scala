@@ -108,6 +108,13 @@ with CreationAbstractForm[Rdf, DATASET] {
       <p>Problem occured when creating an XHTML input form from a class URI.</p>)
   }
 
+  def reallyPrefillProperty(prop: Rdf#URI): Boolean = {
+    val noPrefillProperties: List[Rdf#URI] =
+      List( geo("lat"), geo("long"), geo("alt"),
+            URI("http://deductions.github.io/nature_observation.owl.ttl#taxon") )
+    println ( s"reallyPrefillProperty: <$prop> ${! noPrefillProperties.contains(prop)}")
+    ! noPrefillProperties.contains(prop)
+  }
 
   /** create Prefilled input Form, from the Referer URL */
   def createPrefillForm(form: FormSyntax, request: HTTPrequest) : FormSyntax = {
@@ -122,13 +129,20 @@ with CreationAbstractForm[Rdf, DATASET] {
         getHTTPparameterValue("prefill").getOrElse("").trim() != "no" )
     wrapInReadTransaction {
       val newTriples = duplicateTree(makeUri(referenceSubjectURI), form.subject, allNamedGraph) . toList
+//      println ( s"createPrefillForm: newTriples \n${newTriples.mkString("\t\n")}")
+//      println ( s"createPrefillForm: form.fields.size ${form.fields.size} :::: \n${form.fields.mkString("\n")}")
       val newFfields = for (field <- form.fields) yield {
+//        println ( s"createPrefillForm: form field ${field}")
         val found = newTriples.find(triple => triple.predicate == makeURI(field.property))
-        found match {
-          case Some(t) => field.copyEntry(value = t.objectt)
-          case None  => field
+//        println ( s"createPrefillForm: found $found")
+        val f = found match {
+          case Some(t) if( reallyPrefillProperty(t.predicate) ) => field.copyEntry(value = t.objectt)
+          case _ => field
         }
+//        println ( s"createPrefillForm: newFfield $f")
+        f
       }
+//      println ( s"createPrefillForm: 3 form.fields.size ${form.fields.size} :::: ${form.fields.mkString("\n")}")
       form.fields = newFfields
     }
     form
