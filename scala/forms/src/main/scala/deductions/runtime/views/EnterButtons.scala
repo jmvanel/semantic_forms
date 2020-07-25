@@ -99,8 +99,9 @@ trait EnterButtons[Rdf <: RDF, DATASET] extends InstanceLabelsInferenceMemory[Rd
   private lazy val suggestedClassesForCreation: Map[String, NodeSeq] = {
     def encode(u: Rdf#URI): String = URLEncoder.encode(fromUri(u), "UTF-8")
     def suggestedClassForCreation(uri: Rdf#URI, lang: String): NodeSeq = {
+      // TODO use creationButton()
       <span><a href={
-       "/create?uri=" + encode(uri) } >
+       "/create?prefill=no&uri=" + encode(uri) } >
          {instanceLabelFromTDB(uri, lang)} ({abbreviateTurtle(uri)})</a> -</span>
     }
     val resultTry = wrapInReadTransaction {
