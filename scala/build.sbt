@@ -27,7 +27,7 @@ sources in (Compile,doc) := Seq.empty
 lazy val forms_play = (project in file("forms_play"))
 	.dependsOn(forms)
 	.dependsOn(contacts_management)
-        .dependsOn(mobion)
+//        .dependsOn(mobion)
 	.dependsOn(clients)
 .enablePlugins(PlayScala) .disablePlugins(PlayLogback)
 .settings(
@@ -67,7 +67,7 @@ lazy val generic_app = project
 lazy val projects_catalog = project
 lazy val contacts_management = project .dependsOn(forms)
 
-lazy val mobion = project .dependsOn(forms)
+// lazy val mobion = project .dependsOn(forms)
 // lazy val jsonld = project
 
 // lazy val forms_services = project
