@@ -2,27 +2,28 @@ package deductions.runtime.sparql_cache
 
 import deductions.runtime.jena.RDFStoreLocalJenaProvider
 import deductions.runtime.utils.DefaultConfiguration
-import org.scalatest.FunSuite
 import org.w3.banana.{RDF, RDFOps, RDFStore}
 import org.w3.banana.binder.PGBinder
 import org.w3.banana.jena.{Jena, JenaModule}
 
 import scala.util.Try
+import org.scalatest.funsuite.AnyFunSuite
+import deductions.runtime.jena.ImplementationSettings
 
-class TestRDFList extends FunSuite
+class TestRDFList extends AnyFunSuite
     with JenaModule
     with RDFStoreLocalJenaProvider
-    with TestRDFListTrait[Jena] {
+    with TestRDFListTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
   val config = new DefaultConfiguration {
     override val useTextQuery = false
   }
 }
    
-trait TestRDFListTrait[Rdf <: RDF] extends FunSuite {
+trait TestRDFListTrait[Rdf <: RDF, DATASET] extends AnyFunSuite {
 
   implicit val ops: RDFOps[Rdf]
   import ops._
-  type DATASET
+//  type DATASET
   val dataset: DATASET
   implicit val rdfStore: RDFStore[Rdf, Try, DATASET]
 
