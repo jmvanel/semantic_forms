@@ -50,10 +50,10 @@ import scala.util.{Failure, Success, Try}
   /** Prefix form: actually used in vocabulary/forms.owl.ttl , but in source code form() is actually used !!! :( */
   lazy val form2 = Prefix[Rdf]("form", "http://deductions-software.com/ontologies/forms.owl.ttl#")
 
-  /** prefix for specific forms (eg forms:personForm) */
+  /** prefix for specific forms (eg foaf-forms:personForm) */
   lazy val foafForms = Prefix[Rdf]("foaf-forms",
-"http://raw.githubusercontent.com/jmvanel/semantic_forms/master/scala/forms/form_specs/foaf.form.ttl#" )
-      // "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms#"
+    "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/scala/forms/form_specs/foaf.form.ttl#" )
+
 lazy val loginForms = Prefix[Rdf]("login-forms",
 "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/scala/forms/form_specs/login.form.ttl#" )
 
