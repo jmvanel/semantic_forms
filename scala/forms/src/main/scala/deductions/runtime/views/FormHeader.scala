@@ -94,12 +94,12 @@ trait FormHeader[Rdf <: RDF, DATASET]
               } else NodeSeq.Empty
             }
             { 
-              // <p>creationButton { formSyntax.types().mkString(", ")}</p> ++
+              val typeEntry = formSyntax.typeEntries().headOption.getOrElse(NullResourceEntry)
+                .asInstanceOf[FormModule[Rdf#Node,Rdf#URI]#ResourceEntry]
               creationButton(
-                 nodeToString(formSyntax.types().headOption.getOrElse(nullURI)),
                  Seq("#Class"),
                  clone=true,
-                 request
+                 request, typeEntry
               )
             }
           </h3>

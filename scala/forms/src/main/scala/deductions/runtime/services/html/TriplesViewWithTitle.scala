@@ -1,7 +1,6 @@
 package deductions.runtime.services.html
 
 import deductions.runtime.data_cleaning.BlankNodeCleanerIncremental
-import deductions.runtime.html.logger
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.sparql_cache.algos.StatisticsGraph
 import deductions.runtime.core.HTTPrequest

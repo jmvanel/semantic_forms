@@ -23,7 +23,7 @@ trait BasicWidgets[NODE, URI <: NODE]
   with URIHelpers
   with URIManagement
   with FormModule[NODE, URI] {
-
+  // TODO why was it added, since we already inherit FormModule ?
   type formMod = FormModule[NODE, URI]
 
   /** TODO LIMIT should *not* be hardcoded */

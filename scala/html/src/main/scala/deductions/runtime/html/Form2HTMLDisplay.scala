@@ -44,7 +44,6 @@ with StringHelpers
   }
 
   /** create HTML Resource Readonly Field
-    * PENDING if inner val should need to be overridden, they should be directly in trait
     *  */
   def createHTMLResourceReadonlyField(
                                        resourceEntry: formMod#ResourceEntry,
@@ -67,7 +66,7 @@ with StringHelpers
       displayThumbnail(resourceEntry, request) ++
       backLinkButton(resourceEntry, request) ++
       makeNeighborhoodLink(objectURIstringValue, request) ++
-      creationButton(toPlainString(value),
+      creationButton(
               type_.map { t => t.toString() },
               clone=false,
               request=request,
@@ -219,12 +218,13 @@ with StringHelpers
 
   /** Contextual creation Button for a new local URI
    *  either in form header or on rdf:type objects */
-  def creationButton(classURIstringValue: String, types: Seq[String],
+  def creationButton(types: Seq[String],
       clone: Boolean,
       request: HTTPrequest,
-      resourceEntry: formMod#ResourceEntry = NullResourceEntry): NodeSeq = {
+      resourceEntry: formMod#ResourceEntry): NodeSeq = {
     val imageURL = "/assets/images/create-instance.svg"
     implicit val _ = request.getLanguage()
+    val classURIstringValue: String = toPlainString(resourceEntry.value)
     val messCreate_instance = mess("Create_instance_of") +
     " " + resourceEntry.valueLabel +
     s" <$classURIstringValue>"
