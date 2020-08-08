@@ -13,11 +13,13 @@ lazy val root = Project("semantic_forms-root", file("."))
 organization in ThisBuild := "deductions"
 version in ThisBuild := "2.X-SNAPSHOT"
 
-scalaVersion in ThisBuild := "2.12.11"
-// "2.13.2" //
+scalaVersion in ThisBuild := "2.12.12"
+// "2.13.3" //
 
-javacOptions in ThisBuild := Seq("-source","1.8", "-target","1.8")
-scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-explaintypes", "-language:_", "-Xlint:_")
+// javacOptions in ThisBuild := Seq("-source","1.8", "-target","1.8")
+scalacOptions ++= Seq("-unchecked",
+	// "-deprecation",
+	"-feature", "-explaintypes", "-language:_", "-Xlint:_")
 
 publishArtifact in (Compile, packageDoc) := false
 sources in (Compile,doc) := Seq.empty
@@ -25,7 +27,7 @@ sources in (Compile,doc) := Seq.empty
 lazy val forms_play = (project in file("forms_play"))
 	.dependsOn(forms)
 	.dependsOn(contacts_management)
-	.dependsOn(mobion)
+        .dependsOn(mobion)
 	.dependsOn(clients)
 .enablePlugins(PlayScala) .disablePlugins(PlayLogback)
 .settings(
@@ -64,7 +66,9 @@ lazy val forms_js = project .settings(
 lazy val generic_app = project
 lazy val projects_catalog = project
 lazy val contacts_management = project .dependsOn(forms)
+
 lazy val mobion = project .dependsOn(forms)
+// lazy val jsonld = project
 
 // lazy val forms_services = project
 // lazy val social_web = project
