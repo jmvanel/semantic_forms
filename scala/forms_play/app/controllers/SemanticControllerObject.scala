@@ -6,8 +6,8 @@ import deductions.runtime.services.{CentralSemanticController, TypicalSFDependen
 import deductions.runtime.user.RegisterPage
 import deductions.runtime.utils.DefaultConfiguration
 import play.api.mvc.{Action, Request}
-import deductions.runtime.mobion.GeoController
-import deductions.runtime.mobion.PerVehicleView
+// import deductions.runtime.mobion.GeoController
+// import deductions.runtime.mobion.PerVehicleView
 import deductions.apps.ContactsFrontPage
 import deductions.apps.ContactsDashboard
 import deductions.runtime.utils.FormModuleBanana
@@ -39,8 +39,8 @@ extends play.api.mvc.Results with
   /** add/remove plugin pages */
   val actions: Seq[deductions.runtime.core.SemanticController] =
     Seq(
-      new DependenciesNoTextQuery with GeoController[Rdf, ImplementationSettings.DATASET] with FormModuleBanana[Rdf] {},
-      new DependenciesNoTextQuery with PerVehicleView[Rdf, ImplementationSettings.DATASET] with FormModuleBanana[Rdf] {},
+      // new DependenciesNoTextQuery with GeoController[Rdf, ImplementationSettings.DATASET] with FormModuleBanana[Rdf] {},
+      // new DependenciesNoTextQuery with PerVehicleView[Rdf, ImplementationSettings.DATASET] with FormModuleBanana[Rdf] {},
       new DependenciesNoTextQuery with ContactsFrontPage[Rdf, ImplementationSettings.DATASET] with FormModuleBanana[Rdf]  {},
       new DependenciesNoTextQuery with ContactsDashboard[Rdf, ImplementationSettings.DATASET]
         with FormModuleBanana[Rdf] {}

@@ -23,6 +23,9 @@ libraryDependencies += filters
 // libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0-M1" % "test"
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % "test"
 
+// For debug breakpoints ???
+fork in run := false
+
 // fork a new JVM for 'test:run' and 'run'
 // fork in run := true
 // fork := true
