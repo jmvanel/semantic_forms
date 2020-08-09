@@ -98,6 +98,8 @@ PUT     /ldp                  @controllers.LDPservicesApp.ldpPOSTActionNoURI()
 DELETE  /ldp/*uri             @controllers.LDPservicesApp.ldpDeleteResource(uri: String)
 HEAD    /ldp/*uri             @controllers.LDPservicesApp.ldpHEAD(uri: String)
 
+GET     /json2rdf             @controllers.Json2RDFServiceApp.json2rdf
+
 OPTIONS /*path                @controllers.ServicesApp.httpOptions(path)
 
 # see https://www.w3.org/TR/void/#well-known

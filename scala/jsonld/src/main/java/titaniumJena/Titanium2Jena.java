@@ -12,7 +12,7 @@ public class Titanium2Jena {
   public Titanium2Jena() {}
 
   /** populate a Jena Dataset from a Titanium Dataset */
-  public DatasetGraph populateDataset( RdfDataset titaniumIn, DatasetGraph jenaToUpdate) {   
+  public static DatasetGraph populateDataset( RdfDataset titaniumIn, DatasetGraph jenaToUpdate) {
     for ( RdfNQuad triple : titaniumIn.toList() ) {
       // System.out.println ( triple.getSubject() + " <" + triple.getPredicate() + "> " + triple.getObject() );
       RdfValue obj = triple.getObject();

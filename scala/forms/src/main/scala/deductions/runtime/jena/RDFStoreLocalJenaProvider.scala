@@ -233,7 +233,7 @@ object RDFStoreLocalJenaProviderObject
       import org.apache.jena.riot.LangBuilder
       val contentTypeNoEncoding = contentType.replaceFirst(";.*", "")
       val lang = RDFLanguages.contentTypeToLang(contentTypeNoEncoding)
-      logger.debug(s"readWithContentType: $lang , contentType $contentType, contentTypeNoEncoding $contentTypeNoEncoding")
+      logger.debug(s"readWithContentTypeJena: $lang , contentType $contentType, contentTypeNoEncoding $contentTypeNoEncoding")
       RDFParser.create()
         .httpClient(
           CachingHttpClientBuilder.create()
