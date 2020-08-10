@@ -18,6 +18,7 @@ trait CORS //extends Configuration
     "Access-Control-Allow-Origin" -> allow_Origin,
     "Access-Control-Allow-Methods" -> "GET, POST",
     "Access-Control-Allow-Headers" -> "Slug, Link, Origin, Content-Type, Accept",
+    // TODO remove, nothing to do with CORS :   ActorSystemImpl - Explicitly set HTTP header 'Content-Type: text/turtle; charset=utf-8, application/ld+json; charset=utf-8' is ignored, illegal RawHeader
     "Content-Type" -> "text/turtle; charset=utf-8, application/ld+json; charset=utf-8",
 
     "Allow" -> "OPTIONS,HEAD,GET,POST,PUT,PATCH",
