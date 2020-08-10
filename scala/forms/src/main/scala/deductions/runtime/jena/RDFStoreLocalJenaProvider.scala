@@ -218,12 +218,14 @@ object RDFStoreLocalJenaProviderObject
           .setConnectionRequestTimeout(10 * 1000)
           .build()
 
+  /** TODO dataset is not used */
   def readWithContentType(
     uri: Rdf#URI,
     contentType: String,
     dataset: DATASET): Try[Rdf#Graph] =
     readWithContentTypeNoJena(uri, contentType, dataset)
 
+  /** TODO dataset is not used */
   private def readWithContentTypeJena(
     uri: Rdf#URI,
     contentType: String,
@@ -249,7 +251,9 @@ object RDFStoreLocalJenaProviderObject
     }
   }
 
-  /** move it to specific trait */
+  /** move it to specific trait
+   *  TODO dataset is not used
+   *   */
   private def readWithContentTypeNoJena(
     uri:         Rdf#URI,
     contentType: String,
