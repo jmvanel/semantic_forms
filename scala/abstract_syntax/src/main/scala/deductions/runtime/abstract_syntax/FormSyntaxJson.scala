@@ -5,6 +5,7 @@ import deductions.runtime.utils.RDFHelpers
 import org.w3.banana.RDF
 import play.api.libs.json.{JsString, JsValue, Json, Writes}
 
+/** TODO bad naming !  */
 trait FormSyntaxJson[Rdf <: RDF]
     extends FormModule[Rdf#Node, Rdf#URI]
     with RDFHelpers[Rdf] {
