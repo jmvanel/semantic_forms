@@ -24,7 +24,8 @@ with RDFPrefixes[Rdf]
 with FormSyntaxJson[Rdf]
 with CSSClasses
 with CreationAbstractForm[Rdf, DATASET]
-with PrefillForm[Rdf, DATASET]{
+with PrefillForm[Rdf, DATASET]
+with PrefillFormDefaults[Rdf, DATASET]{
 
   val config: Configuration
   val htmlGenerator: HtmlGeneratorInterface[Rdf#Node, Rdf#URI]
@@ -44,7 +45,7 @@ with PrefillForm[Rdf, DATASET]{
 
     val lang = request.getLanguage()
     val form0 = createData(classUri, formSpecURI, request)
-    val form = createPrefillForm(form0, request)
+    val form = prefillFormDefaults( createPrefillForm(form0, request), request )
 
     val rawForm = generateHTML(
       form, hrefPrefix = "",

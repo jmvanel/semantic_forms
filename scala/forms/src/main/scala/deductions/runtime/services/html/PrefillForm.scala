@@ -30,12 +30,12 @@ with FormSyntaxJson[Rdf]
         path == "/create" &&
         getHTTPparameterValue("prefill").getOrElse("").trim() != "no" )
     wrapInReadTransaction {
-      val newTriples = duplicateTree(makeUri(referenceSubjectURI), form.subject, allNamedGraph) . toList
-//      println ( s"createPrefillForm: newTriples \n${newTriples.mkString("\t\n")}")
+      val triplesWithValuesToCopy = duplicateTree(makeUri(referenceSubjectURI), form.subject, allNamedGraph) . toList
+//      println ( s"createPrefillForm: triplesWithValuesToCopy \n${triplesWithValuesToCopy.mkString("\t\n")}")
 //      println ( s"createPrefillForm: form.fields.size ${form.fields.size} :::: \n${form.fields.mkString("\n")}")
       val newFfields = for (field <- form.fields) yield {
 //        println ( s"createPrefillForm: form field ${field}")
-        val found = newTriples.find(triple => triple.predicate == makeURI(field.property))
+        val found = triplesWithValuesToCopy.find(triple => triple.predicate == makeURI(field.property))
 //        println ( s"createPrefillForm: found $found")
         val f = found match {
           case Some(t) if( reallyPrefillProperty(t.predicate) ) => field.copyEntry(value = t.objectt)

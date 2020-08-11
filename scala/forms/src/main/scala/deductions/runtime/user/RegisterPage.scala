@@ -33,7 +33,8 @@ trait RegisterPage[Rdf <: RDF, DATASET]
   import config._
   import ops._
 
-  /** display User information in pages - transactional */
+  /** display User information in pages - transactional
+   *  TODO: remove userid argument , use request.userId() */
   def displayUser(userid: String, request: HTTPrequest
       ): NodeSeq = {
 
