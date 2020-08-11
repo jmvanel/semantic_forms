@@ -7,7 +7,6 @@ import play.api.mvc.Result
 import play.api.mvc.Results._
 
 import deductions.runtime.jena.RDFStoreLocalJenaProvider
-import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.query.DatasetFactory
 import titaniumJena._
 import com.apicatalog.jsonld._
@@ -66,13 +65,18 @@ class Json2RDFServiceApp
       case Success(os) =>
         println(s"json2rdf: Success(os)")
         val resp = os.toString("UTF-8")
-//        println(s"after resp, ${resp.substring(0, Math.min(1000, resp.length() -1))}")
-        println(s"after resp, length ${resp.length() }")
+        //        println(s"after resp, ${resp.substring(0, Math.min(1000, resp.length() -1))}")
+        println(s"after resp, length ${resp.length()}")
         Ok(resp)
-//        .as("application/n-quad; charset=utf-8")
+          //        .as("application/n-quad; charset=utf-8")
           .as("text/turtle; charset=utf-8")
           .withHeaders(corsHeaders.toList: _*)
-      case Failure(f) => InternalServerError(f.toString()) //  fillInStackTrace())
+      case Failure(f) =>
+        val mess = f match {
+          case e: JsonLdError => e.getCode().toString() + "\n" + e.getMessage
+          case _              => f.toString()
+        }
+        InternalServerError(mess) //  fillInStackTrace())
     }
   }
 }

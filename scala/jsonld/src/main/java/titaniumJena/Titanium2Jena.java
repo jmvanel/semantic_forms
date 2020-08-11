@@ -7,6 +7,7 @@ import com.apicatalog.rdf.RdfLiteral;
 import org.apache.jena.sparql.core.DatasetGraph;
 import org.apache.jena.sparql.core.Quad;
 import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.query.TxnType;
 import org.apache.jena.graph.Node;
 
 public class Titanium2Jena {
@@ -15,7 +16,7 @@ public class Titanium2Jena {
   /** populate a Jena Dataset from a Titanium Dataset */
   public static DatasetGraph populateDataset( RdfDataset titaniumIn, DatasetGraph jenaToUpdate) {
     System.out.println( "jenaToUpdate.supportsTransactions " + jenaToUpdate.supportsTransactions() );
-//	if( jenaToUpdate.supportsTransactions() ) jenaToUpdate.begin();
+	if( jenaToUpdate.supportsTransactions() ) jenaToUpdate.begin(TxnType.WRITE);
     for ( RdfNQuad triple : titaniumIn.toList() ) {
 //      System.out.println( triple.getGraphName().toString() + " " + triple.getSubject() + " <" + triple.getPredicate() + "> " + triple.getObject() );
       RdfValue obj = triple.getObject();
@@ -34,7 +35,7 @@ public class Titanium2Jena {
         objNode );
 //      System.out.println( "jenaToUpdate.size " + jenaToUpdate.size() );
     };
-//    if( jenaToUpdate.supportsTransactions() ) jenaToUpdate.commit();
+    if( jenaToUpdate.supportsTransactions() ) jenaToUpdate.commit();
     return jenaToUpdate;
   }
   
