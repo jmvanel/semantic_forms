@@ -258,7 +258,8 @@ JMV:
     localTimestamp match {
       case Success(longLocalTimestamp) => {
         logger.debug(s"updateLocalVersion: $uri local TDB Timestamp: ${new Date(longLocalTimestamp)} - $longLocalTimestamp .")
-        val (noErrorLastModified, timestampFromHTTPHeader, connectionOption) = lastModified(uri.toString(), httpHeadTimeout)
+        val (noErrorLastModified, timestampFromHTTPHeader, connectionOption) =
+          lastModified(uri.toString(), httpHeadTimeout)
         logger.debug(s"updateLocalVersion: <$uri> last Modified: ${new Date(timestampFromHTTPHeader)} - no Error: $noErrorLastModified .")
 
         if (isDocumentExpired(connectionOption)) {
@@ -517,7 +518,10 @@ JMV:
    * */
   def getContentTypeFromHEADRequest(url0: String): Try[String] = {
     val url = url0 // TODO: test more: fromUri(withoutFragment(URI(url0)))
-    val requestConfig = RequestConfig.custom().setConnectTimeout(defaultConnectTimeout).build();
+    val requestConfig = RequestConfig.custom().
+      setConnectTimeout(defaultConnectTimeout).
+      setSocketTimeout(defaultReadTimeout).
+      build();
     val httpclient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
     try {
       val httpHead = new HttpHead(url)
@@ -526,6 +530,10 @@ JMV:
           "Accept",
           "application/rdf+xml, text/turtle; charset=utf-8, application/ld+json; charset=utf-8")
 
+          // For GEoNature ...
+          //      httpHead.setHeader(
+//    		  "Cookie",
+//    		  "token=eyJhbGciOiJIUzI1NiIsImlhdCI6MTU5NjcwMjM4MywiZXhwIjoxNTk3MzA3MTgzfQ.eyJpZF9yb2xlIjoxLCJub21fcm9sZSI6IkFkbWluaXN0cmF0ZXVyIiwicHJlbm9tX3JvbGUiOiJ0ZXN0IiwiaWRfYXBwbGljYXRpb24iOjMsImlkX29yZ2FuaXNtZSI6LTEsImlkZW50aWZpYW50IjoiYWRtaW4iLCJpZF9kcm9pdF9tYXgiOjF9.4mbwrP9iQ8gTHewWLvJMhl1NiFHnP2C_UQgiMBrni0o; session=.eJyrVvJ3dg5xjFCyqlYqLU4tik8uKi1LTQFxnZWslIyVdJRcoLQrlA6C0qFQOgxM19bWAgAPNhKx.Eg1atA.kvCblUrgeP-yZJ8RyZaS5eNf_PY")
       logger.debug("Executing request " + httpHead.getRequestLine());
       // Create a custom response handler
       val responseHandler = new ResponseHandler[String]() {

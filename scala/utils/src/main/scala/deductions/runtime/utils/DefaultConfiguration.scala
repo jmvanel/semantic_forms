@@ -30,7 +30,7 @@ trait DefaultConfiguration extends Configuration {
   }
 
   /** 3 timeouts in milliseconds */
-  override val defaultReadTimeout = 10000
+  override val defaultReadTimeout = 300000
   override val defaultConnectTimeout = 5000
   override val httpHeadTimeout = 5000
 

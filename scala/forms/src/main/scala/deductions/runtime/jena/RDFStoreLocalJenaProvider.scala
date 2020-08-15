@@ -213,10 +213,12 @@ object RDFStoreLocalJenaProviderObject
   }
 
   private val requestConfig =
-        RequestConfig.custom()
-          .setConnectTimeout(10 * 1000)
-          .setConnectionRequestTimeout(10 * 1000)
-          .build()
+    RequestConfig.custom()
+      .setConnectTimeout(10 * 1000)
+      .setConnectionRequestTimeout(10 * 1000)
+//      .setConnectTimeout(defaultConnectTimeout)
+      .setSocketTimeout(defaultReadTimeout)
+      .build()
 
   /** TODO dataset is not used */
   def readWithContentType(
