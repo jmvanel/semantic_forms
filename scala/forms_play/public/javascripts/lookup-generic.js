@@ -100,7 +100,7 @@ function getRDFtypeInURLastItem(inputElement) {
                     }
                 }
                 if( typeName.length > 0 )
-                  typeNameInURL = "&QueryClass="+typeName
+                  typeNameInURL = typeName
                 else
                   typeNameInURL = ""
   return typeNameInURL
@@ -109,7 +109,7 @@ function getRDFtypeInURLastItem(inputElement) {
 function getRDFtypeInURLfullURI(inputElement) {
   var typeName = getRDFtypeFullURI(inputElement)
   if( typeName.length > 0 )
-                  typeNameInURL = "&QueryClass="+typeName
+                  typeNameInURL = typeName
                 else
                   typeNameInURL = ""
   return typeNameInURL

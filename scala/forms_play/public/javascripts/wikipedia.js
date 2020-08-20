@@ -37,8 +37,11 @@ $(document).ready(function() {
   const lookupLocalCSSclass = '.sfLookup'
   const searchServiceLocalURL = "/lookup"
 
+  // register Completion for DbPedia Lookup
   registerCompletionGeneric( makeAjaxDbPediaLookupProtocolFunction, lookupDbPediaCSSclass,
 	  searchServiceDbPediaURL, getRDFtypeInURLastItem, prepareCompletionDbPedia )
+
+  // register Completion for Local Lookup, same protocol as DbPedia, but different search string preparation
   registerCompletionGeneric( makeAjaxDbPediaLookupProtocolFunction, lookupLocalCSSclass,
 	  searchServiceLocalURL, getRDFtypeInURLfullURI, prepareCompletionLucene )
 
@@ -59,7 +62,7 @@ function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
     $.ajax({
         url: searchServiceURL + "?QueryString=" + stringToSearch
                               + "&MaxHits="+resultsCount
-                              + encodeURIComponent(getRDFtypeInURL(inputElement)) ,
+                              + "&QueryClass=" + encodeURIComponent(getRDFtypeInURL(inputElement)) ,
         dataType: "json" ,
         timeout: 30000
     }).done( function (ajaxResponse) {
