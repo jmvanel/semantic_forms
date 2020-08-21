@@ -19,6 +19,7 @@ trait ThumbnailInference[Rdf <: RDF, DATASET]
     foaf("img"),
     dbo("thumbnail"),
     foaf("depiction"),
+    foaf("logo"),
     wikidata("P18"),
     URI("http://www.wikidata.org/prop/direct/P18"),
     prefixesMap2("pair")("image"),
