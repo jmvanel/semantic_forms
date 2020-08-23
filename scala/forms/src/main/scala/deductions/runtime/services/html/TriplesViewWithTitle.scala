@@ -129,7 +129,8 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
               request = request, inputGraph = tryGraph)
             logger.debug(s">>>> after htmlFormElemRaw, formSyntax $formSyntax")
 
-            wrapInTransaction({  // or wrapInReadTransaction ?
+//            wrapInTransaction({  // or
+            wrapInReadTransaction{
               Text("\n") ++
               titleEditDisplayDownloadLinksThumbnail(formSyntax, editable2, request) ++
               <div class="sf-statistics" zzclass="col-xs-12">
@@ -137,7 +138,8 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
                 { failureOrStatistics }</div> ++
               profileClaimUI(request) ++
               formItself
-          }, datasetOrDefault)
+          }
+//          , datasetOrDefault)
         }
 
         val resultXML =  <div> {result.get } </div>

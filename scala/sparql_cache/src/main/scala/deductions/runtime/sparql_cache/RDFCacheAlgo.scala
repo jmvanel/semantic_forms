@@ -534,6 +534,7 @@ JMV:
           //      httpHead.setHeader(
 //    		  "Cookie",
 //    		  "token=eyJhbGciOiJIUzI1NiIsImlhdCI6MTU5NjcwMjM4MywiZXhwIjoxNTk3MzA3MTgzfQ.eyJpZF9yb2xlIjoxLCJub21fcm9sZSI6IkFkbWluaXN0cmF0ZXVyIiwicHJlbm9tX3JvbGUiOiJ0ZXN0IiwiaWRfYXBwbGljYXRpb24iOjMsImlkX29yZ2FuaXNtZSI6LTEsImlkZW50aWZpYW50IjoiYWRtaW4iLCJpZF9kcm9pdF9tYXgiOjF9.4mbwrP9iQ8gTHewWLvJMhl1NiFHnP2C_UQgiMBrni0o; session=.eJyrVvJ3dg5xjFCyqlYqLU4tik8uKi1LTQFxnZWslIyVdJRcoLQrlA6C0qFQOgxM19bWAgAPNhKx.Eg1atA.kvCblUrgeP-yZJ8RyZaS5eNf_PY")
+
       logger.debug("Executing request " + httpHead.getRequestLine());
       // Create a custom response handler
       val responseHandler = new ResponseHandler[String]() {
@@ -542,15 +543,16 @@ JMV:
           val status = response.getStatusLine().getStatusCode();
           if (
               (status >= 200 && status < 300)
-              // NOTE: why did I do this ???
-              // || status === 406 /* Not Acceptable */ || status === 404 
+                /* NOTE: why doing ? when the original URL is not RDF, but somehow the database has some content
+                   e.g. reading an RDF document with this URL as subject */
+               || status === 406 /* Not Acceptable */ || status === 404
               ) {
             val ct = response.getFirstHeader("Content-Type")
             if ( ct == null ) "" else ct.getValue
           } else {
             logger.error(s"---- ${response.getStatusLine()} - ${response.getAllHeaders()}");
             throw new ClientProtocolException(
-                s"getContentTypeFromHEADRequest: Unexpected HTTP response status: '$status' on <$url>");
+                s"getContentTypeFromHEADRequest: Unexpected HTTP response status: '${response.getStatusLine()}' on <$url>");
           }
         }
       };

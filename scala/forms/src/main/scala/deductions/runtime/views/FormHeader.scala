@@ -11,6 +11,7 @@ import org.w3.banana.{OWLPrefix, PointedGraph, RDF}
 import scala.xml.{NodeSeq, Text}
 import deductions.runtime.html.Form2HTMLDisplay
 import deductions.runtime.core.HTTPrequest
+import scala.reflect.ClassTag
 
 /** generic application: links on top of the form: Edit, Display, Download Links
  *  TODO rename GenericApplicationHeader */
@@ -94,12 +95,14 @@ trait FormHeader[Rdf <: RDF, DATASET]
               } else NodeSeq.Empty
             }
             { 
-              val typeEntry = formSyntax.typeEntries().headOption.getOrElse(NullResourceEntry)
-                .asInstanceOf[FormModule[Rdf#Node,Rdf#URI]#ResourceEntry]
+
+              // formSyntax.typeEntries() is not very robust, it can return literal "types"
+              val typeEntry = asInstanceOfOption[FormModule[Rdf#Node,Rdf#URI]#ResourceEntry](
+                  formSyntax.typeEntries().headOption.getOrElse(NullResourceEntry))
               creationButton(
                  Seq("#Class"),
                  clone=true,
-                 request, typeEntry
+                 request, typeEntry.getOrElse(NullResourceEntry)
               )
             }
           </h3>
@@ -113,6 +116,10 @@ trait FormHeader[Rdf <: RDF, DATASET]
           downloadLink("RDF/XML")}
       </div>
   }
+
+  /** cf https://stackoverflow.com/questions/1803036/how-to-write-asinstanceofoption-in-scala */
+  private def asInstanceOfOption[T: ClassTag](o: Any): Option[T] =
+    Some(o) collect { case m: T => m}
 
   def mess(m: String)(implicit lang: String) = I18NMessages.get(m, lang)
 
