@@ -20,12 +20,16 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
+import akka.http.scaladsl.unmarshalling.Unmarshal
+import scala.util.Try
 
 /**
  * Load triples in given graph URI (SPARQL Load service);
  * splitting RDF file in chunks.
- * Arguments: RDF_FILE, LOAD_SERVICE, GRAPH,
+ * Arguments:
+ * RDF_FILE, LOAD_SERVICE, GRAPH,
  * starting triple: allows to start sending after given triple number
+ *
  * (not implemented) [MIME]
  * Content-Type [MIME] : application/ld+json application/rdf+xml text/turtle'
  * default value for arg. 4, Content-Type
@@ -49,7 +53,7 @@ object RDFuploader extends App {
   val loadServiceUri = args(1)
   val graphURI = args(2)
   val startingTriple = args.lift(3).getOrElse("0").toInt
-  val mimeInput = args.lift(4).getOrElse("turtle")
+  val mimeInput = args.lift(4).getOrElse("turtle") // TODO
   logger.info( s"startingTriple=$startingTriple")
 
   val chunkSize = 10000
@@ -72,9 +76,28 @@ object RDFuploader extends App {
 //      println(s"count $count, size=${triples.size}")
       if(count % chunkSize == 0 ) {
         logger.info(s"StreamRDF: position=$count , size=${triples.size}")
-        if(count >= startingTriple && triples.size > 0) {
-          httpResponses += sendTriples(triples.toSeq)
-          logger.info(s"StreamRDF: send triples, position=$count , size=${triples.size}")
+        if (count >= startingTriple && triples.size > 0) {
+          var reTry = true
+          var reTryCount = 1
+          do {
+            val (httpResponse, optionThrowable) = sendTriples(triples.toSeq, count)
+            logger.info(s"StreamRDF: send triples, position=$count , size=${triples.size}")
+            optionThrowable match {
+              case Failure(error) =>
+                logger.info(s"StreamRDF: RETRY, position=$count , size=${triples.size}")
+                Thread.sleep(delayBetweenRequests)
+                reTry = true
+                reTryCount = reTryCount+1
+                println(s"reTryCount $reTryCount")
+                if( reTryCount >= 5 ) {
+                  println(s"Too mny retries with server <$loadServiceUri> , quitting!")
+                  System.exit(1)
+                }
+              case Success(s) =>
+                httpResponses += httpResponse
+                reTry = false
+            }
+          } while (reTry)
         }
         triples.clear
         Thread.sleep(delayBetweenRequests)
@@ -83,11 +106,13 @@ object RDFuploader extends App {
   }
   RDFDataMgr.parse(destination, file)
   // send remaining Triples
-  httpResponses += sendTriples(triples toSeq)
+  val (httpResponse, optionThrowable) = sendTriples(triples toSeq, Int.MaxValue)
+  httpResponses += httpResponse
+
 
   // terminate when all HTTP requests are done
   // cf https://stackoverflow.com/questions/29344430/scala-waiting-for-sequence-of-futures
-  val httpResponsesTry = httpResponses.map(_.map { Success(_) }.recover { case t => Failure(t) })
+  val httpResponsesTry = httpResponses.map(_.map { Success(_) } ) // .recover { case t => Failure(t) })
   val httpResponsesFuture = Future.sequence(httpResponsesTry)
   logger.info(s"Awaiting until all HTTP ${httpResponsesTry.size} requests are done")
   Await.result(httpResponsesFuture, Duration("300 sec"))
@@ -97,14 +122,19 @@ object RDFuploader extends App {
     logger.warn(s"http Responses are NOT Completed")
 
   /** send Triples in a Future */
-  private def sendTriples(triplesChunk: Seq[Triple]): Future[HttpResponse] = {
+  private def sendTriples(triplesChunk: Seq[Triple], count:Int): ( Future[HttpResponse],
+      Try[String]
+  ) = {
     import scala.concurrent.ExecutionContext.Implicits.global
+    import scala.concurrent.duration.DurationInt
       val graph = GraphFactory.createDefaultGraph()
       for (triple <- triplesChunk) graph.add(triple)
       val sw = new StringWriter()
-      RDFDataMgr.write(sw, graph, Lang.NTRIPLES)
+      RDFDataMgr.write(sw, graph,
+          // TODO use mimeInput
+          Lang.NTRIPLES)
       val data: String = sw.toString()
-      val uriAkka = Uri(loadServiceUri+s"?graph=$graphURI")
+      val uriAkka = Uri(loadServiceUri+s"?graph=$graphURI&message=count-$count")
     val httpRequest = HttpRequest(
       method = HttpMethods.POST,
       uri = uriAkka,
@@ -112,15 +142,28 @@ object RDFuploader extends App {
         MediaType.applicationWithFixedCharset("n-triples", HttpCharsets.`UTF-8`, "nt"),
         // MediaType.text("turtle", "turtle")
         data))
-    val responseFuture: Future[HttpResponse] = Http().singleRequest(
-          httpRequest)
+    val responseFuture: Future[HttpResponse] = Http().singleRequest(httpRequest)
     val triplesSize = triplesChunk.size
-    responseFuture . onComplete {
-        case Success(res) =>
-          logger.info(s"HttpResponse: Success: size ${triplesSize}, ${res.toString()}")
-        case Failure(f)   => sys.error(s"sendTriples: something wrong: $f")
-      }
-    logger.info(s"StreamRDF: future: send triples to $uriAkka, size ${triplesChunk.size}, responseFuture $responseFuture")
-    responseFuture
+    var optionThrowable : Try[String] = Success("Initial value")
+    val waited = Try { Await.result(responseFuture, 20000 millis) }
+    println( s"waited $waited")
+    responseFuture.onComplete {
+      case Success(res) =>
+        val mess = s"HttpResponse: Success: count $count, size ${triplesSize}, ${res.toString()}, entity ${Unmarshal(res.entity).to[String]}"
+        logger.info(mess)
+        optionThrowable = Success(mess)
+      case Failure(f) =>
+        sys.error(s"sendTriples: something wrong: count $count, $f")
+        optionThrowable = Failure(f)
+    }
+    // logger.info(s"StreamRDF: future: send triples to $uriAkka, count $count, size ${triplesSize}, responseFuture $responseFuture")
+    println( s"optionThrowable $optionThrowable")
+    val optionThrowableCombined : Try[String] = optionThrowable . map { s => s + " - " + waited.toString }
+    println( s"optionThrowableCombined $optionThrowableCombined")
+    // NOTE: don't like this but somehow in case of ConnectException in Await, optionThrowable is not updated ...
+    val returnedTry = if (optionThrowableCombined . isSuccess && waited . isFailure )
+      waited . map { resp => resp.toString() }
+    else optionThrowableCombined
+    ( responseFuture, returnedTry)
   }
 }
