@@ -55,7 +55,7 @@ with CORS {
   import scala.concurrent.ExecutionContext.Implicits.global
 
   /** load URI into TDB; HTTP param publisher (provenance) for adding triple with dct:publisher */
-  def loadURI(uriString: String): Action[AnyContent] = {
+  private def loadURIOLD(uriString: String): Action[AnyContent] = {
     recoverFromOutOfMemoryErrorGeneric[Action[AnyContent]](
       {
         Action { implicit request: Request[_] =>
@@ -91,6 +91,43 @@ with CORS {
       },
       (t: Throwable) =>
         errorActionFromThrowable(t, "in importing URI"))
+  }
+
+  /** /load-uri service : load content of given URI String into TDB in graph of same name */
+  def loadURI(uriString: String): Action[AnyContent] = {
+      Action { implicit request: Request[_] =>
+        recoverFromOutOfMemoryErrorGeneric[Result](
+          { // begin Result
+            val uri = ops.URI(URLDecoder.decode(uriString, "UTF-8"))
+            val httpRequest = copyRequest(request)
+            //          println( s">>>> loadURI: httpRequest $httpRequest")
+            val tryGraph = retrieveURIBody(
+              uri, dataset, httpRequest, transactionsInside = true)
+            val result: String = tryGraph match {
+              case Success(gr) =>
+                val rr = wrapInTransaction {
+                  // add triple <uri> dct:publisher <dct:publisher> to graph <uri> */
+                  httpRequest.getHTTPparameterValue("publisher") match {
+                    case Some(publisherURI) =>
+                      val triple = ops.Triple(uri, dct("publisher"),
+                        ops.URI(publisherURI))
+                      //                  println( s">>>> loadURI: publisher URI <$publisherURI> , $triple")
+                      rdfStore.appendToGraph(dataset, uri, ops.makeGraph(
+                        Seq(triple)))
+                    case None => println(s">>>> loadURI: <$uri> no publisher URI")
+                  }
+                  s"Success loading <$uriString>, size: ${gr.size()}"
+                }
+                rr.toString()
+              case scala.util.Failure(f) => f.getLocalizedMessage
+            }
+            logger.info("Task ended: " + result)
+            Ok("Task result: " + result)
+          } // end Result
+          ,
+          (t: Throwable) =>
+            errorResultFromThrowable(t, "in importing URI", request))
+      } // end Action
   }
 
   def loadURIpost(): Action[AnyContent] = {
