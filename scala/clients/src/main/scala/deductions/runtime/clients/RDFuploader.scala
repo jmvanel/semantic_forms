@@ -149,9 +149,11 @@ object RDFuploader extends App {
     println( s"waited $waited")
     responseFuture.onComplete {
       case Success(res) =>
-        val mess = s"HttpResponse: Success: count $count, size ${triplesSize}, ${res.toString()}, entity ${Unmarshal(res.entity).to[String]}"
+        val mess = s"HttpResponse: sent Success: count $count, size ${triplesSize}, ${res.toString()}, entity ${Unmarshal(res.entity).to[String]}"
         logger.info(mess)
-        optionThrowable = Success(mess)
+        optionThrowable = if(res.status.isFailure())
+          Failure(new InternalError(mess))
+        else Success(mess)
       case Failure(f) =>
         sys.error(s"sendTriples: something wrong: count $count, $f")
         optionThrowable = Failure(f)
