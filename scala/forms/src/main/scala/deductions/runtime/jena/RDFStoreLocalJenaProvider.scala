@@ -33,6 +33,7 @@ import scala.util.Success
 import deductions.runtime.utils.HTTPHelpers
 import deductions.runtime.utils.DefaultConfiguration
 import org.w3.banana.RDFStore
+import org.apache.jena.tdb.TDB
 
 
 /**
@@ -80,6 +81,7 @@ trait RDFStoreLocalJenaProviderImpl {
   lazy val dataset = delegate.dataset
   val jenaComplements = new JenaComplements()(delegate.ops)
   def closeAllTDBs() = delegate.closeAllTDBs
+  def syncTDB(ds: deductions.runtime.jena.ImplementationSettings.DATASET = dataset ) = delegate.syncTDB(ds)
 }
 
 /** For user data and RDF cache, sets a default location for the Jena TDB store directory : TDB
@@ -211,6 +213,9 @@ object RDFStoreLocalJenaProviderObject
     close(dataset3)
     println(s"StopJenaTDB: dataset, dataset2, dataset3 closed.")
   }
+
+  def syncTDB(ds: DATASET = dataset) = TDB.sync( ds )
+
 
   private val requestConfig =
     RequestConfig.custom()

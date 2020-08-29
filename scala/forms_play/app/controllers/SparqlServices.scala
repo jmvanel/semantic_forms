@@ -27,7 +27,7 @@ import deductions.runtime.utils.StringHelpers
 /** SPARQL compliant services: SPARQL query, SPARQL update, SPARQL load */
 trait SparqlServices extends ApplicationTrait
     with LoadService[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with RecoverUtilities
+    with RecoverUtilities[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with StringHelpers
 //    with GraphEnrichment[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 {

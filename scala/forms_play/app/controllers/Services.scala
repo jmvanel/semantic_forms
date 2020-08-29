@@ -37,8 +37,7 @@ trait Services extends
 RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 with RDFContentNegociation
 with LanguageManagement
-with RecoverUtilities
-with HTTPoutputFromThrowable
+with HTTPoutputFromThrowable[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 with CORS {
 
   def httpOptions(path: String) = {

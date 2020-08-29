@@ -83,6 +83,8 @@ extends RDFOPerationsDB[Rdf, DATASET] {
       case _ => Seq()
     }
   }
+
+  def syncTDB(ds: DATASET = dataset)
 }
 
 trait RDFStoreLocalUserManagement[Rdf <: RDF, DATASET]

@@ -65,7 +65,7 @@ trait ApplicationTrait extends PlaySettings.MyControllerBase
     with RequestUtils
     with RDFStoreLocalJenaProvider
     with RDFContentNegociationPlay
-    with HTTPoutputFromThrowable {
+    with HTTPoutputFromThrowable[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 
   val config: Configuration
 

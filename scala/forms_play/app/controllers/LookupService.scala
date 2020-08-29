@@ -20,10 +20,9 @@ class LookupServiceApp  extends  {
 } with RDFStoreLocalJenaProvider
 with LookupService[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 
-trait LookupService[Rdf <: RDF, DATASET] extends RecoverUtilities
-with Lookup[Rdf, DATASET]
+trait LookupService[Rdf <: RDF, DATASET] extends Lookup[Rdf, DATASET]
 with LanguageManagement
-with HTTPoutputFromThrowable
+with HTTPoutputFromThrowable[Rdf, DATASET]
 with AcceptExtractors {
 
   def lookupService(search: String, clas: String = "") = {

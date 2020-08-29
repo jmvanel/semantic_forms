@@ -75,7 +75,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     with Results
     with ServiceListenersManager[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with SFPlugins[Rdf, DATASET]
-    with RecoverUtilities {
+    with RecoverUtilities[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+{
  
   val config: Configuration
   import config._

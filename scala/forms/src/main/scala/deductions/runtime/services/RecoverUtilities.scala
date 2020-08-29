@@ -1,15 +1,21 @@
 package deductions.runtime.services
 
-trait RecoverUtilities {
+import org.w3.banana.RDF
+import deductions.runtime.utils.RDFStoreLocalProvider
+
+trait RecoverUtilities[Rdf <: RDF, DATASET]
+extends  RDFStoreLocalProvider[Rdf, DATASET]
+{
 
   /** Getting the runtime reference from system */
   private val runtime = Runtime.getRuntime
 
   def recoverFromOutOfMemoryErrorGeneric[T](
-    sourceCode: => T,
-    error: Throwable => T ): T = {
+     sourceCode: => T,
+     error: Throwable => T ): T = {
    val freeMemory = runtime.freeMemory()
    if( freeMemory < 1024 * 1024 * 10) {
+     syncTDB()
             System.gc()
             val freeMemoryAfter = Runtime.getRuntime().freeMemory()
             logger.info(s"recoverFromOutOfMemoryErrorGeneric: JVM Free memory after gc(): $freeMemoryAfter")
