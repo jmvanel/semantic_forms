@@ -84,45 +84,17 @@ For larger files, use locally RDFLoaderApp or RDFLoaderGraphApp"""
     )
     } // end Action
 
-  def loadActionOLD() =
-    recoverFromOutOfMemoryErrorGeneric[Action[AnyContent]](
-      {
-    Action( parse.anyContent(maxLength = Some((1024 * 1024 * 8 ).longValue) )) {
-    implicit request: Request[AnyContent] =>
-      val requestCopy = getRequestCopyAnyContent()
-      logger.info(s"""loadAction: before System.gc(): ${formatMemory()}""")
-      System.gc()
-      logger.info(s"""loadAction: AFTER System.gc(): Free Memory: ${
-        Runtime.getRuntime.freeMemory() / (1024 * 1024)} Mb""")
-      logger.info(s"""loadAction: body class ${request.getClass} request.body ${request.body.getClass}
-      - data= "${request.getQueryString("data")}" """)
-      val content = request.getQueryString("data") match {
-        case Some(s) => Some(s)
-        case None => getContent(request)
-      }
-      val contentAbbrev = substringSafe(content.toString, 100)
-      logger.info(s"loadAction: content $contentAbbrev ...")
-      val resultGraph = load(requestCopy.copy(content = content))
-      resultGraph match {
-        case Success(g) => Ok(s"""OK
-          loaded content $contentAbbrev
-        to graph URI <${requestCopy.getHTTPparameterValue("graph")}>""")
-        case Failure(f) =>
-          val errorMessage = f.getMessage
-          val comment = if(errorMessage != null && errorMessage . contains("Request Entity Too Large"))
-            """ The file size is limited to 8Mb ( in loadAction() ).
-For larger files, use locally RDFLoaderApp or RDFLoaderGraphApp"""
-          InternalServerError(
-              errorMessage +
-              comment +
-              " , content: " +
-              content.slice(0, 200))
-      } // end resultGraph match
-    } // end Action
-    }, // end arg 1 recoverFromOutOfMemoryErrorGeneric
-      (t: Throwable) =>
-        errorActionFromThrowable(t, "in /load")
-    )
+//  /** For tests, send HTTP 500 InternalServerError */
+//  def loadAction() =
+//    Action( parse.anyContent(maxLength = Some((1024 * 1024 * 8 ).longValue) )) {
+//    implicit request: Request[AnyContent] =>
+//      logger.info(s"TEST: request $request")
+//      InternalServerError(
+//        s"""Error TEST!!!!, retry later !!!!!!!!
+//        ${request.uri}
+//        """)
+//   }
+
 
   /** sparql compliant GET Service, Construct or SELECT */
   def sparqlGET(query: String): Action[AnyContent] =

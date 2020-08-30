@@ -20,6 +20,7 @@ object Titanium2RDF extends App {
 
   val jsonldInput = args(0)
   val jsonldContext = args(1)
+  try{
   val ds = jsonLDtoRDF3(jsonldInput, jsonldContext)
 
   // cf class Json2RDFServiceApp
@@ -29,4 +30,8 @@ object Titanium2RDF extends App {
   println(s"json2rdf:  after populateDataset  size ${datasetGraph.size()}")
   val outputStream = new ByteArrayOutputStream
   RDFDataMgr.write(System.out, dataset.getDefaultModel, org.apache.jena.riot.RDFFormat.TURTLE)
+}
+catch { case e: JsonLdError => println( e.getCode() .toString() + "\n" + e.getMessage )
+        case f:  Throwable  => println(f.toString() )
+  }
 }

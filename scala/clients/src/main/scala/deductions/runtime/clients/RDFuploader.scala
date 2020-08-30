@@ -90,8 +90,7 @@ object RDFuploader extends App {
                 reTryCount = reTryCount+1
                 println(s"reTryCount $reTryCount")
                 if( reTryCount >= 5 ) {
-                  println(s"Too mny retries with server <$loadServiceUri> , quitting!")
-                  System.exit(1)
+                  sys.error(s"Too many retries with server <$loadServiceUri> , quitting!")
                 }
               case Success(s) =>
                 httpResponses += httpResponse
@@ -146,26 +145,20 @@ object RDFuploader extends App {
     val triplesSize = triplesChunk.size
     var optionThrowable : Try[String] = Success("Initial value")
     val waited = Try { Await.result(responseFuture, 20000 millis) }
-    println( s"waited $waited")
-    responseFuture.onComplete {
+    logger.info(s"waited $waited")
+    waited match {
       case Success(res) =>
-        val mess = s"HttpResponse: sent Success: count $count, size ${triplesSize}, ${res.toString()}, entity ${Unmarshal(res.entity).to[String]}"
+        val mess = s"HTTP: sent Success: count $count, size ${triplesSize}, ${res.toString()}, entity ${Unmarshal(res.entity).to[String]}"
         logger.info(mess)
         optionThrowable = if(res.status.isFailure())
           Failure(new InternalError(mess))
         else Success(mess)
       case Failure(f) =>
-        sys.error(s"sendTriples: something wrong: count $count, $f")
+        logger.error(s"sendTriples: something wrong: count $count, $f")
         optionThrowable = Failure(f)
     }
     // logger.info(s"StreamRDF: future: send triples to $uriAkka, count $count, size ${triplesSize}, responseFuture $responseFuture")
-    println( s"optionThrowable $optionThrowable")
-    val optionThrowableCombined : Try[String] = optionThrowable . map { s => s + " - " + waited.toString }
-    println( s"optionThrowableCombined $optionThrowableCombined")
-    // NOTE: don't like this but somehow in case of ConnectException in Await, optionThrowable is not updated ...
-    val returnedTry = if (optionThrowableCombined . isSuccess && waited . isFailure )
-      waited . map { resp => resp.toString() }
-    else optionThrowableCombined
-    ( responseFuture, returnedTry)
+//    println( s"optionThrowable $optionThrowable")
+    ( responseFuture, optionThrowable)
   }
 }
