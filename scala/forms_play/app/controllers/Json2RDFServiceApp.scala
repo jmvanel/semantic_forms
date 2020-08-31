@@ -54,9 +54,14 @@ class Json2RDFServiceApp
 //      base(jsonURL).
       get
       logger.info(s"json2rdf: after toRdf , titaniumDataset size() ${titaniumDataset.size()}")
-   val dataset = DatasetFactory.create()
+    val dataset = DatasetFactory.create()
     val datasetGraph = dataset.asDatasetGraph()
     Titanium2Jena.populateDataset(titaniumDataset, datasetGraph)
+    logger.whenDebugEnabled {
+      val prw = new StringWriter
+      RDFDataMgr.write(prw, datasetGraph, org.apache.jena.riot.RDFFormat.NQUADS_UTF8)
+      println(prw.toString())
+    }
     logger.info(s"json2rdf: after populateDataset datasetGraph size ${datasetGraph.size()}")
     val outputStream = new ByteArrayOutputStream
     // TODO detect when the output is multi graph RDF and then use N-Triples format

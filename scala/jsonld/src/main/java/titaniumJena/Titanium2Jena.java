@@ -24,9 +24,9 @@ public class Titanium2Jena {
 //	  System.out.println( "Object node " + objNode);
 	  Node graphNode;
 	  if( triple.getGraphName().isPresent() )
-		  graphNode = NodeFactory.createURI( triple.getGraphName().get().getValue() );
+		  graphNode = makeJenaNode( triple.getGraphName().get() );
 	  else
-		  graphNode = Quad.defaultGraphIRI;
+		  graphNode = Quad.tripleInQuad;
 
       jenaToUpdate.add(
         graphNode,
