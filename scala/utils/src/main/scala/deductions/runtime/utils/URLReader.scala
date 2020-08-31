@@ -1,5 +1,7 @@
 package deductions.runtime.utils
 
+import java.net.URL
+
 /** cf https://alvinalexander.com/scala/how-to-write-scala-http-get-request-client-source-fromurl/ */
 trait URLReader {
   import java.io._
@@ -39,26 +41,32 @@ trait URLReader {
     content
   }
 
-    def getRestInputStream(
+  def getRestInputStream(
     url:               String,
-    connectionTimeout: Int = 5000,
-    socketTimeout:     Int= 3000): Option[InputStream] = {
-    val httpClient = buildHttpClient(connectionTimeout, socketTimeout)
- 		val httpGeturl = new HttpGet(url)
-    // For GeoNature TODO remove later
-    httpGeturl setHeader(
-      "Cookie",
-      "token=eyJhbGciOiJIUzI1NiIsImlhdCI6MTU5NjcwMjM4MywiZXhwIjoxNTk3MzA3MTgzfQ.eyJpZF9yb2xlIjoxLCJub21fcm9sZSI6IkFkbWluaXN0cmF0ZXVyIiwicHJlbm9tX3JvbGUiOiJ0ZXN0IiwiaWRfYXBwbGljYXRpb24iOjMsImlkX29yZ2FuaXNtZSI6LTEsImlkZW50aWZpYW50IjoiYWRtaW4iLCJpZF9kcm9pdF9tYXgiOjF9.4mbwrP9iQ8gTHewWLvJMhl1NiFHnP2C_UQgiMBrni0o; session=.eJyrVvJ3dg5xjFCyqlYqLU4tik8uKi1LTQFxnZWslIyVdJRcoLQrlA6C0qFQOgxM19bWAgAPNhKx.Eg1atA.kvCblUrgeP-yZJ8RyZaS5eNf_PY")
+    connectionTimeout: Int    = 5000,
+    socketTimeout:     Int    = 3000): Option[InputStream] = {
+    if ( url.startsWith("file:") ) {
+      //      new FileInputStream( url.replace("^file:", "") )
+      logger.info(s"getRestContent: URL <$url> is file")
+      return Some(new URL(url).openStream())
+    } else {
+      val httpClient = buildHttpClient(connectionTimeout, socketTimeout)
+      val httpGeturl = new HttpGet(url)
+      // For GeoNature TODO remove later
+      httpGeturl setHeader (
+        "Cookie",
+        "token=eyJhbGciOiJIUzI1NiIsImlhdCI6MTU5NjcwMjM4MywiZXhwIjoxNTk3MzA3MTgzfQ.eyJpZF9yb2xlIjoxLCJub21fcm9sZSI6IkFkbWluaXN0cmF0ZXVyIiwicHJlbm9tX3JvbGUiOiJ0ZXN0IiwiaWRfYXBwbGljYXRpb24iOjMsImlkX29yZ2FuaXNtZSI6LTEsImlkZW50aWZpYW50IjoiYWRtaW4iLCJpZF9kcm9pdF9tYXgiOjF9.4mbwrP9iQ8gTHewWLvJMhl1NiFHnP2C_UQgiMBrni0o; session=.eJyrVvJ3dg5xjFCyqlYqLU4tik8uKi1LTQFxnZWslIyVdJRcoLQrlA6C0qFQOgxM19bWAgAPNhKx.Eg1atA.kvCblUrgeP-yZJ8RyZaS5eNf_PY")
 
-    val httpResponse = httpClient.execute(httpGeturl)
-    println( s"getRestContent: $url : StatusLine ${httpResponse.getStatusLine}")
-    val entity = httpResponse.getEntity
-    if (entity != null) {
-      val inputStream = entity.getContent
-      Some(inputStream)
-    } else
-      None
-    // httpClient.getConnectionManager.shutdown
+      val httpResponse = httpClient.execute(httpGeturl)
+      logger.info(s"getRestContent: $url : StatusLine ${httpResponse.getStatusLine}")
+      val entity = httpResponse.getEntity
+      return if (entity != null) {
+        val inputStream = entity.getContent
+        Some(inputStream)
+      } else
+        None
+      // httpClient.getConnectionManager.shutdown
+    }
   }
 
   private def buildHttpClient(connectionTimeout: Int, socketTimeout: Int): DefaultHttpClient = {
