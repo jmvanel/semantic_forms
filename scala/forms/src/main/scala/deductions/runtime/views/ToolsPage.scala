@@ -93,6 +93,7 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
         implicit val lang1: String = lang
         "Charger / Load" ++ enterURItoDownloadAndDisplay()
       }
+      <p>Free Memory {val mb = 1024 * 1024; Runtime.getRuntime.freeMemory().toFloat / mb} Mb</p>
       <p> <a href="..">{ I18NMessages.get("MainPage", lang) }</a> </p>
     </div>
   }
