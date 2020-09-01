@@ -48,10 +48,13 @@ trait LoadService[Rdf <: RDF, DATASET]
 
     logger.info(s""">>>> load: Before storeURI graphURI <$graphURI> , rdfReader $rdfReader,
       triples ${substringSafe(tryGraph.toString, 150)} ...""")
-    val gr = storeURI(tryGraph, URI(graphURI), dataset)
-    syncTDB()
+    val ret = wrapInTransaction {
+      storeURINoTransaction(tryGraph, URI(graphURI), dataset)
+//    val gr = storeURI(tryGraph, URI(graphURI), dataset)
+      syncTDB()
+    }
     logger.info(s">>>> load: After storeURI  graphURI <$graphURI>")
-    gr
+    ret
   }
 
 }

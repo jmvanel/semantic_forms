@@ -392,7 +392,7 @@ JMV:
     }.flatten
   }
 
-  private def storeURINoTransaction(
+  def storeURINoTransaction(
     graphTry: Try[Rdf#Graph], graphUri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
     logger.debug(s"readStoreURINoTransaction: Before appendToGraph graphUri <$graphUri>")
     if (graphTry.isSuccess) rdfStore.appendToGraph(dataset, graphUri, graphTry.get)
