@@ -2,9 +2,11 @@ package deductions.runtime.services
 
 import org.w3.banana.RDF
 import deductions.runtime.utils.RDFStoreLocalProvider
+import deductions.runtime.sparql_cache.SPARQLHelpers
 
 trait RecoverUtilities[Rdf <: RDF, DATASET]
 extends  RDFStoreLocalProvider[Rdf, DATASET]
+with SPARQLHelpers[Rdf, DATASET]
 {
 
   /** Getting the runtime reference from system */
@@ -15,7 +17,7 @@ extends  RDFStoreLocalProvider[Rdf, DATASET]
      error: Throwable => T ): T = {
    val freeMemory = runtime.freeMemory()
    if( freeMemory < 1024 * 1024 * 10) {
-     syncTDB()
+     wrapInTransaction{ syncTDB() }
             System.gc()
             val freeMemoryAfter = Runtime.getRuntime().freeMemory()
             logger.info(s"recoverFromOutOfMemoryErrorGeneric: JVM Free memory after gc(): $freeMemoryAfter")
