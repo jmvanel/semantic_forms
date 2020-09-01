@@ -144,7 +144,7 @@ object RDFuploader extends App {
     val responseFuture: Future[HttpResponse] = Http().singleRequest(httpRequest)
     val triplesSize = triplesChunk.size
     var optionThrowable : Try[String] = Success("Initial value")
-    val waited = Try { Await.result(responseFuture, 20000 millis) }
+    val waited = Try { Await.result(responseFuture, 40000 millis) }
     logger.info(s"waited $waited")
     waited match {
       case Success(res) =>

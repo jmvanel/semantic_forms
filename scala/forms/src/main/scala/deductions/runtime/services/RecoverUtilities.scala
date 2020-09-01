@@ -9,19 +9,19 @@ extends  RDFStoreLocalProvider[Rdf, DATASET]
 with SPARQLHelpers[Rdf, DATASET]
 {
 
-  /** Getting the runtime reference from system */
   private val runtime = Runtime.getRuntime
 
   def recoverFromOutOfMemoryErrorGeneric[T](
      sourceCode: => T,
      error: Throwable => T ): T = {
-   val freeMemory = runtime.freeMemory()
-   if( freeMemory < 1024 * 1024 * 10) {
-     wrapInTransaction{ syncTDB() }
-            System.gc()
-            val freeMemoryAfter = Runtime.getRuntime().freeMemory()
-            logger.info(s"recoverFromOutOfMemoryErrorGeneric: JVM Free memory after gc(): $freeMemoryAfter")
-     error(new OutOfMemoryError(s"Free Memory was $freeMemory < 10 mb, retry later (now $freeMemoryAfter)"))
+
+    val freeMemory = runtime.freeMemory()
+    if( freeMemory < 1024 * 1024 * 10) {
+      wrapInTransaction{ syncTDB() }
+      System.gc()
+        val freeMemoryAfter = Runtime.getRuntime().freeMemory()
+        logger.info(s"recoverFromOutOfMemoryErrorGeneric: JVM Free memory after syncTDB & gc(): $freeMemoryAfter")
+      error(new OutOfMemoryError(s"Free Memory was $freeMemory < 10 mb, retry later (now $freeMemoryAfter)"))
    } else
     try {
       sourceCode

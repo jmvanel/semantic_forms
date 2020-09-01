@@ -53,7 +53,7 @@ trait LoadService[Rdf <: RDF, DATASET]
 //    val gr = storeURI(tryGraph, URI(graphURI), dataset)
       syncTDB()
     }
-    logger.info(s">>>> load: After storeURI  graphURI <$graphURI>")
+    logger.info(s">>>> load: After storeURI graphURI <$graphURI>")
     ret
   }
 
