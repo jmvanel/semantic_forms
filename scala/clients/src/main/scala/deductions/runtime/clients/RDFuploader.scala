@@ -57,7 +57,8 @@ object RDFuploader extends App {
   logger.info( s"startingTriple=$startingTriple")
 
   val chunkSize = 10000
-  val delayBetweenRequests = 10000 // milliseconds
+  val delayBetweenRequests = 30000 // milliseconds
+  val awaitResultTime = 40000 // milliseconds
 
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
@@ -144,7 +145,7 @@ object RDFuploader extends App {
     val responseFuture: Future[HttpResponse] = Http().singleRequest(httpRequest)
     val triplesSize = triplesChunk.size
     var optionThrowable : Try[String] = Success("Initial value")
-    val waited = Try { Await.result(responseFuture, 40000 millis) }
+    val waited = Try { Await.result(responseFuture, awaitResultTime millis) }
     logger.info(s"waited $waited")
     waited match {
       case Success(res) =>

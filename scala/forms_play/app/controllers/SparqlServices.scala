@@ -37,7 +37,8 @@ trait SparqlServices extends ApplicationTrait
   /** load RDF String in database, cf
    *  https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-post
    *  The file size is limited to 8Mb ;
-   *  for larger files, use locally RDFLoaderApp or RDFLoaderGraphApp .
+   *  for larger files, use locally RDFLoaderApp or RDFLoaderGraphApp,
+   *  or client RDFuploader app.
    */
     def loadAction() =
     Action( parse.anyContent(maxLength = Some((1024 * 1024 * 8 ).longValue) )) {
@@ -48,11 +49,12 @@ trait SparqlServices extends ApplicationTrait
       val message = requestCopy.getHTTPparameterValue("message")
       logger.info(s"""loadAction: before System.gc(): ${formatMemory()}""")
       System.gc()
-      logger.info(s"""loadAction: AFTER System.gc(): Free Memory: ${
-        Runtime.getRuntime.freeMemory() / (1024 * 1024)} Mb""")
-      logger.info(s"""loadAction: body class ${request.getClass} request.body ${request.body.getClass}
-      - data= "${request.getQueryString("data")}"
-        message '$message'""")
+      val messMemory = s"""loadAction: AFTER System.gc(): Free Memory: ${
+        Runtime.getRuntime.freeMemory() / (1024 * 1024)} Mb"""
+      logger.info(
+          s"""loadAction: body class ${request.getClass} request.body ${request.body.getClass}
+          message '$message'
+          $messMemory""")
       val content = request.getQueryString("data") match {
         case Some(s) => Some(s)
         case None => getContent(request)
@@ -64,12 +66,13 @@ trait SparqlServices extends ApplicationTrait
         case Success(g) => Ok(s"""OK
           loaded content $contentAbbrev
         to graph URI <${requestCopy.getHTTPparameterValue("graph")}>
-        message '$message'""").as("text/plain")
+        message '$message',
+        freeMemory ${Runtime.getRuntime.freeMemory()}""").as("text/plain")
         case Failure(f) =>
           val errorMessage = f.getMessage
           val comment = if(errorMessage != null && errorMessage . contains("Request Entity Too Large"))
             """ The file size is limited to 8Mb ( in loadAction() ).
-For larger files, use locally RDFLoaderApp or RDFLoaderGraphApp"""
+                For larger files, use locally RDFLoaderApp or RDFLoaderGraphApp"""
           InternalServerError(
               errorMessage + "\n" +
               comment + "\n" +
