@@ -36,12 +36,11 @@ with SPARQLHelpers[Rdf, DATASET]
   def formatMemory(): String = {
     val mb = 1024 * 1024
     "\n##### Heap utilization statistics [MB] #####\n" +
-    "Used Memory:" + (runtime.totalMemory() - runtime.freeMemory()) / mb +
-    "\nFree Memory:" + runtime.freeMemory() / mb +
-    //Print total available memory
-    "\nTotal Memory:" + runtime.totalMemory() / mb +
-    "\nMax Memory:" + runtime.maxMemory() / mb + "\n"
+    "Used Memory:" + (runtime.totalMemory() - runtime.freeMemory()).toFloat / mb +
+    "\nFree Memory:" + runtime.freeMemory().toFloat / mb +
+    "\nTotal Memory:" + runtime.totalMemory().toFloat / mb +
+    "\nMax Memory:" + runtime.maxMemory().toFloat / mb + "\n"
   }
 
-  def printMemory() = logger.error( formatMemory() )
+  def printMemory() = logger.info( formatMemory() )
 }

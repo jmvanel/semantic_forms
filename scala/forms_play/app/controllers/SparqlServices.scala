@@ -67,7 +67,9 @@ trait SparqlServices extends ApplicationTrait
           loaded content $contentAbbrev
         to graph URI <${requestCopy.getHTTPparameterValue("graph")}>
         message '$message',
-        freeMemory ${Runtime.getRuntime.freeMemory()}""").as("text/plain")
+        freeMemory ${
+          val mb = 1024 * 1024 ;Runtime.getRuntime.freeMemory().toFloat / mb
+          }""").as("text/plain")
         case Failure(f) =>
           val errorMessage = f.getMessage
           val comment = if(errorMessage != null && errorMessage . contains("Request Entity Too Large"))
