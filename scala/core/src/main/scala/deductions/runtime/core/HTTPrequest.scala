@@ -97,11 +97,11 @@ case class HTTPrequest(
         s"http${if(secure) "s" else ""}://" +
       // IPv6:
       {
-        println(s"""absoluteURL this.remoteAddress ${this.remoteAddress} this.host $host
+        logger.debug(s"""absoluteURL this.remoteAddress ${this.remoteAddress} this.host $host
             hostNoPort $hostNoPort relativeURIwithSlash $relativeURIwithSlash port $port""" )
         if (this.hostNoPort == "localhost" ||
             this.hostNoPort . startsWith("[") ) {
-          println(s"pv6 or IPV4 normalize address")
+          logger.debug(s"pv6 or IPV4 normalize address")
           "[" +
         // ipv6 or IPV4 normalize address:
         InetAddress.getByName(this.remoteAddress).getHostAddress()+ "]:" + this.port
@@ -131,7 +131,7 @@ case class HTTPrequest(
       cookie <- cookies.get("PLAY_FLASH");
       value = cookie.value
     ) yield {
-      // println(s">>>>>>>> flashCookie value $value")
+      // logger.debug(s">>>>>>>> flashCookie value $value")
       substringAfter(value, s"$id=") }
     URLDecoder.decode(x . getOrElse(""), "UTF-8")
   }
