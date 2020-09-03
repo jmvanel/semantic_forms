@@ -81,7 +81,8 @@ object RDFuploader extends App {
           var reTry = true
           var reTryCount = 1
           do {
-            val (httpResponse, optionThrowable) = sendTriples(triples.toSeq, count)
+            val (httpResponse, optionThrowable) =
+              sendTriples(triples.toSeq, count)
             logger.info(s"StreamRDF: send triples, position=$count , size=${triples.size}")
             optionThrowable match {
               case Failure(error) =>
@@ -98,9 +99,9 @@ object RDFuploader extends App {
                 reTry = false
             }
           } while (reTry)
+          Thread.sleep(delayBetweenRequests)
         }
         triples.clear
-        Thread.sleep(delayBetweenRequests)
       }
     }
   }

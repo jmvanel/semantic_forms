@@ -115,7 +115,7 @@ object RDFStoreLocalJenaProviderObject
    * default is 10; each chunk commitedAwaitingFlush can be several Mb,
    *  so this can easily make an OOM exception
    */
-  TransactionManager.QueueBatchSize = 5
+  TransactionManager.QueueBatchSize = 0 // same as Fuseki, advice of Andy
   //  override TransactionManager.DEBUG = true
 
   /**

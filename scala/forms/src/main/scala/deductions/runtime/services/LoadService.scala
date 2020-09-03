@@ -8,6 +8,8 @@ import org.w3.banana.RDF
 import org.w3.banana.io.{ JsonLd, RDFReader }
 
 import scala.util.{ Failure, Success, Try }
+//import org.apache.jena.tdb.TDBFactory
+//import org.apache.jena.query.Dataset
 
 /**
  * service accepting JSON-LD;
@@ -29,8 +31,6 @@ trait LoadService[Rdf <: RDF, DATASET]
     val anyRDFdataOption = request.content
     val graphURI = request.getHTTPparameterValue("graph").getOrElse("data:/geo/")
 
-    // database: String = "TDB"    TODO
-
     val anyRDFdataEx: Try[String] = anyRDFdataOption match {
       case Some(s) => Success(s)
       case _       => Failure(new Exception("load: No content in request"))
@@ -45,15 +45,31 @@ trait LoadService[Rdf <: RDF, DATASET]
     ) yield {
       graph
     }
-
+/*
+      getCountActiveReaders ${.getTransactionManager().getCountActiveReaders()}
+      getCountActiveWriters ${TransactionManager.getCountActiveWriters()}
+      getQueueLength ${TransactionManager.getQueueLength()}
+       */
     logger.info(s""">>>> load: Before storeURI graphURI <$graphURI> , rdfReader $rdfReader,
-      triples ${substringSafe(tryGraph.toString, 150)} ...""")
+      triples ${substringSafe(tryGraph.toString, 150)} ...
+      """)
+//  val localDS = createDatabase( "TDB", false, false )
+    val localDS = dataset
     val ret = wrapInTransaction {
-      storeURINoTransaction(tryGraph, URI(graphURI), dataset)
-//    val gr = storeURI(tryGraph, URI(graphURI), dataset)
-      syncTDB()
+      storeURINoTransaction(tryGraph, URI(graphURI), localDS)
+      println(s">>>> after storeURINoTransaction")
+      // Pointless. It is a transaction.
+      //      syncTDB(localDS)
     }
-    logger.info(s">>>> load: After storeURI graphURI <$graphURI> , freeMemory ${Runtime.getRuntime.freeMemory()}")
+    //  Jena equivalent of Banana rw: Txn.executeWrite(dataset, ()->{
+    //    val localDataset = localDS.asInstanceOf[Dataset]
+    // localDataset.close
+    // Don't call close(). Call dataset.end
+    // localDataset.end // already done in Banana-RDF
+    // if( ! localDataset . isInTransaction) TDBFactory.release(localDataset)
+    logger.info(s""">>>> load: After storeURI graphURI <$graphURI> , freeMemory ${
+      val mb = 1024 * 1024 ;Runtime.getRuntime.freeMemory().toFloat / mb}
+      ret $ret""")
     ret
   }
 
