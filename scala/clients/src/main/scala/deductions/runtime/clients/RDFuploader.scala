@@ -57,7 +57,7 @@ object RDFuploader extends App {
   logger.info( s"startingTriple=$startingTriple")
 
   val chunkSize = 10000
-  val delayBetweenRequests = 30000 // milliseconds
+  val delayBetweenRequests = 0 // 30000 // milliseconds
   val awaitResultTime = 40000 // milliseconds
 
   implicit val system = ActorSystem()
