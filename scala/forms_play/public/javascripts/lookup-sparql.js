@@ -60,7 +60,8 @@ function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
 	    # option ( score ?sc2 ) . */
   return (
     $.ajax({
-      url: searchServiceURL +
+      url: makeProxiedLookupURL(
+	    searchServiceURL +
 	   "/sparql?default-graph-uri=&query=" +
 	    encodeURIComponent(
      `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -83,6 +84,7 @@ function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
        order by desc ( ?sc * 3e-1 + sql:rnk_scale ( <LONG::IRI_RANK> ( ?s1 ) ) ) limit 40 offset 0
    ` // end Template literal
    ) // end encodeURIComponent
+      ) // end makeProxiedLookupURL
     // + "&format=application/sparql-results+json&timeout=0" // should work , but Virtuoso minor bug!
     + "&format=application/sparql-results%2Bjson&timeout=0"
 	,
