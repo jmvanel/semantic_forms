@@ -20,7 +20,8 @@ https://www.google.fr/search?q=ajax+example+scala.js
 
 $(document).ready(function() {
   const resultsCount = 15
-  const lookupServer = "https://taxref.i3s.unice.fr"
+  const lookupServer = "http://taxref.mnhn.fr/sparql"
+	  // "https://taxref.i3s.unice.fr"
 		// "http://sparks-vm33.i3s.unice.fr:8890/sparql"
 
   const lookupCSSclass = '.virtuosoLookup'
