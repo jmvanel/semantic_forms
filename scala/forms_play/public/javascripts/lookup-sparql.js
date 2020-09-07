@@ -20,8 +20,8 @@ https://www.google.fr/search?q=ajax+example+scala.js
 
 $(document).ready(function() {
   const resultsCount = 15
-  const lookupServer = "http://taxref.mnhn.fr/sparql"
-	  // "https://taxref.i3s.unice.fr"
+  const lookupServer = "https://taxref.i3s.unice.fr/sparql"
+		// "http://taxref.mnhn.fr/sparql"
 		// "http://sparks-vm33.i3s.unice.fr:8890/sparql"
 
   const lookupCSSclass = '.virtuosoLookup'
@@ -60,7 +60,7 @@ function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
 	    # option ( score ?sc2 ) . */
   return (
     $.ajax({
-      url: makeProxiedLookupURL(
+      url: makeProxiedLookupURLifNecessary(
 	    searchServiceURL +
 	   "/sparql?default-graph-uri=&query=" +
 	    encodeURIComponent(

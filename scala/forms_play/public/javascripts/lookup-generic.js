@@ -4,6 +4,11 @@ const suggestionSearchCSSclass = 'sf-suggestion-search-dbpedia'
 function makeProxiedLookupURL(baseURL) {
   return "/proxy?originalurl=" + encodeURIComponent(baseURL)
 }
+function makeProxiedLookupURLifNecessary(baseURL) {
+  if(baseURL.startsWith("http://"))
+	  return makeProxiedLookupURL(baseURL)
+  else return baseURL
+}
 
 /** prepare Completion string, Lucene syntax (for Jena in SF) */
 function prepareCompletionLucene( userString ) {
