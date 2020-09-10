@@ -20,9 +20,9 @@ https://www.google.fr/search?q=ajax+example+scala.js
 
 $(document).ready(function() {
   const resultsCount = 15
-  const lookupServer = "https://taxref.i3s.unice.fr/sparql"
-		// "http://taxref.mnhn.fr/sparql"
-		// "http://sparks-vm33.i3s.unice.fr:8890/sparql"
+  const lookupServer = "https://taxref.mnhn.fr/sparql"
+    // "https://taxref.i3s.unice.fr/sparql" // avoid use this (Franck Michel)
+    // "http://sparks-vm33.i3s.unice.fr:8890/sparql"
 
   const lookupCSSclass = '.virtuosoLookup'
   const suggestionSearchCSSclass = 'sf-suggestion-search-dbpedia'
