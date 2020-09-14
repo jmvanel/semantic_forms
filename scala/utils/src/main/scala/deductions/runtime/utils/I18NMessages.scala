@@ -31,9 +31,8 @@ object I18NMessages {
   def format(messageId: String, lang: String, messageArguments: String*): String = {
     val language = if (lang === "") "en" else lang
     val loc = Locale.forLanguageTag(language)
-    val template0 = messages.getOrElse(messageId,
+    val template = messages.getOrElse(messageId,
       Locale.forLanguageTag(language), messageId)
-    val template = new String(template0.getBytes("ISO-8859-1"), "UTF-8")
 
     val formatter = new MessageFormat("")
     formatter.setLocale(loc)

@@ -62,6 +62,8 @@ http.send(content);
     if (currentPageIsAfoafPerson) {
       if (request.userId() != "" &&
           request.userId() != "anonymous" &&
+          // Account is not already associated to a person
+          personFromAccount == "" &&
           // if currentFocusURI is already a foaf:Person attached to account do not display button
           currentFocusURI != personFromAccount
           ) {
