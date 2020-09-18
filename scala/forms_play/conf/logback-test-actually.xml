@@ -9,9 +9,10 @@
     </encoder>
   </appender>
 
-  <logger name="jena" level="DEBUG"/>
   <logger name="sparql_cache" level="DEBUG"/>
+  <logger name="core" level="DEBUG"/>
   <!--
+  <logger name="jena" level="DEBUG"/>
   <logger name="server" level="DEBUG"/>
   <logger name="services-forms" level="DEBUG"/>
 -->

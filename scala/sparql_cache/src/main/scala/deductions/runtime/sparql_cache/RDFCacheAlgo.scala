@@ -600,6 +600,7 @@ JMV:
   /* test if given URI is a locally managed URL, that is created locally and 100% located here */
   /** get Locally Managed graph from given URI : <URI> ?P ?O */
   private def getLocallyManagedUrlAndData(uri: Rdf#URI, request: HTTPrequest, transactionsInside: Boolean): Option[Rdf#Graph] =
+    // TODO bad smell in code: remove ! in test
     if (! request.isFocusURIlocal() ) {
 //    if (!fromUri(uri).startsWith(request.absoluteURL())) {
       logger.debug(  s"""getLocallyManagedUrlAndData: LOADING
@@ -607,6 +608,8 @@ JMV:
       // then it can be a "pure" HTML web page, or an RDF document
       None
     } else {
+      logger.debug( s"""getLocallyManagedUrlAndData: locally managed user URL""" )
+
       // it's a locally managed user URL and data, no need to download anything
       // used by formatHTMLStatistics():
       // TODO test rather: Some(rdfStore.getGraph( dataset, uri ).getOrElse(emptyGraph))

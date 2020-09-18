@@ -65,10 +65,16 @@ case class HTTPrequest(
    *  accept URI's differing only on http versus https */
   def isFocusURIlocal(): Boolean = {
     val hostOfRDFsubject = getHostOfRDFsubject()
-    logger.debug(s""">>>> isFocusURIlocal: getHostOfRDFsubject: $hostOfRDFsubject =? hostNoPort $hostNoPort ,
-      remoteAddress [$remoteAddress]""")
+    logger.debug(s""">>>> isFocusURIlocal: getHostOfRDFsubject: <$hostOfRDFsubject> =? hostNoPort <$hostNoPort> ,
+      remoteAddress [$remoteAddress]
+      uri <$uri>""")
+    val isFocusURIlocal =
     hostOfRDFsubject == hostNoPort ||
     hostOfRDFsubject == s"[$remoteAddress]"
+    logger.debug(s""">>>> isFocusURIlocal: $isFocusURIlocal ,
+      uri.contains("%2Fjson2rdf ${uri.contains("%2Fjson2rdf%3F")}""")
+    // /json2rdf/
+    isFocusURIlocal && ! uri.contains("%2Fjson2rdf%3F")
   }
 
   private def removeHTTPprotocolFromURI(uri:String): String =
