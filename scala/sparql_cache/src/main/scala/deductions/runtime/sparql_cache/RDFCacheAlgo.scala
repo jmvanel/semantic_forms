@@ -598,8 +598,10 @@ JMV:
   }
 
   /* test if given URI is a locally managed URL, that is created locally and 100% located here */
-  /** get Locally Managed graph from given URI : <URI> ?P ?O */
-  private def getLocallyManagedUrlAndData(uri: Rdf#URI, request: HTTPrequest, transactionsInside: Boolean): Option[Rdf#Graph] =
+  /** get Locally Managed graph from given URI : <URI> ?P ?O	, in any graph
+   *  @param
+   *  transactionsInside: need transaction inside this function */
+  private def getLocallyManagedUrlAndData(uri: Rdf#Node, request: HTTPrequest, transactionsInside: Boolean): Option[Rdf#Graph] =
     // TODO bad smell in code: remove ! in test
     if (! request.isFocusURIlocal() ) {
 //    if (!fromUri(uri).startsWith(request.absoluteURL())) {
@@ -616,9 +618,9 @@ JMV:
 
       val gr1 =
         if (transactionsInside)
-          wrapInReadTransaction { makeGraph(find(allNamedGraph, uri, ANY, ANY).toIterable) }
+          findAllNamedGraphUriANY_ANYTransaction(uri)
         else
-          Success(makeGraph(find(allNamedGraph, uri, ANY, ANY).toIterable))
+          Success( findAllNamedGraphUriANY_ANY(uri) )
 
       gr1 match {
         case Success(gr) => Some(gr)
@@ -627,6 +629,19 @@ JMV:
           None
       }
     }
+
+  /** find
+   *  Uri ANY ANY
+   *  in All Named Graphs ;
+   *  Needs wrapInReadTransaction */
+  def findAllNamedGraphUriANY_ANY(uri: Rdf#Node) : Rdf#Graph =
+    makeGraph(find(allNamedGraph, uri, ANY, ANY).toIterable)
+
+  /** find
+   *  Uri ANY ANY
+   *  in All Named Graphs */
+  def findAllNamedGraphUriANY_ANYTransaction(uri: Rdf#Node) : Try[Rdf#Graph] =
+    wrapInReadTransaction { findAllNamedGraphUriANY_ANY(uri) }
 
   /**
    * transaction inside (Write)

@@ -122,6 +122,7 @@ trait FormModule[NODE, URI <: NODE] {
   def makeURI(n: NODE): URI = nullURI
   def stringToAbstractURI(uri: String): URI
   def toPlainString(n: NODE): String
+  def isBlankNode(n: NODE): Boolean
 
   val NullResourceEntry = new ResourceEntry("", "", nullURI, ResourceValidator(Set()))
   val NullLiteralEntry = new LiteralEntry("", "", nullURI)

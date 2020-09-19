@@ -19,7 +19,7 @@ import deductions.runtime.utils.StringHelpers
 /** generate HTML from abstract Form for Display (Read only) */
 trait Form2HTMLDisplay[NODE, URI <: NODE]
   extends Form2HTMLBase[NODE, URI]
-//with FormModule[NODE, URI]
+  with FormModule[NODE, URI]
 with StringHelpers
 
   with HTMLutils {
@@ -147,11 +147,16 @@ with StringHelpers
     uriStringValue: String,
     linkText:       String,
     typ:            Seq[NODE],
+    resourceEntry: formMod#ResourceEntry = NullResourceEntry,
     request:       HTTPrequest=HTTPrequest()) = {
     val type_ = firstNODEOrElseEmptyString(typ)
     val types0 = typ.mkString(", ")
     val types = if (types0 == "") type_ else types0
-    <a href={ createHyperlinkString(hrefPrefix, uriStringValue) } class={ cssForURI(uriStringValue) } title={
+    logger.debug(s"makeHyperlinkToURI <$uriStringValue> linkText '$linkText' resourceEntry.value ${resourceEntry.value}")
+    <a href={
+      createHyperlinkString( hrefPrefix, uriStringValue,
+          isBlankNode( resourceEntry.value ) ) }
+      class={ cssForURI(uriStringValue) } title={
       s"""Value ${if (uriStringValue =/= linkText) uriStringValue else ""}
         ${I18NMessages.get("of_types", request.getLanguage() ) } ${types}"""
     } draggable="true">
@@ -165,7 +170,9 @@ with StringHelpers
       request:       HTTPrequest) = {
     addTripleAttributesToXMLElement(
       makeHyperlinkToURI(hrefPrefix, uriStringValue = objectURIstringValue,
-        linkText = resourceEntry.valueLabel, typ = resourceEntry.type_, request),
+        linkText = resourceEntry.valueLabel, typ = resourceEntry.type_,
+        resourceEntry,
+        request),
       resourceEntry)
   }
 

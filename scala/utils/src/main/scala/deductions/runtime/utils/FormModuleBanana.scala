@@ -22,4 +22,11 @@ trait FormModuleBanana[Rdf <: RDF]
 
   override def stringToAbstractURI(uri: String): Rdf#URI =
     URI(expandOrUnchanged(uri))
+
+//  def rdfNodeKind(n: Rdf#Node) = ???
+  override def isBlankNode(n: Rdf#Node): Boolean =
+    foldNode(n)(
+        uri => false,
+        bn => true,
+        lit => false )
 }

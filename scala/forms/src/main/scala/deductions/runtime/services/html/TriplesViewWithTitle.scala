@@ -48,7 +48,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
                request: HTTPrequest
   ): (NodeSeq, Boolean) = {
     logger.info(
-      s"""ApplicationFacadeImpl.htmlForm ${request.logRequest()}
+      s"""TriplesViewWithTitle.htmlForm ${request.logRequest()}
               editable=$editable lang=${request.getLanguage()} graphURI <$graphURI>""")
     val uri = uri0.trim()
     var typeChange = false
@@ -61,7 +61,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
 
           val (tryGraph: Try[Rdf#Graph], failureOrStatistics: NodeSeq ) =
             if (blankNode =/= "true") {
-                // TODO pass datasetOrDefault)
+              // TODO pass datasetOrDefault)
               val (tryGraph, resourceStatus) = retrieveURIResourceStatus(
                 makeUri(uri), datasetOrDefault, request, transactionsInside=true)
                 logger.debug(  "LOADING " +s">>>> htmlForm resourceStatus $resourceStatus")
@@ -83,10 +83,13 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
                   }
               }
               (tryGraph, failureOrStatistics)
-            } else
-              // TODO display blankNode
-              (Success(emptyGraph), "")
 
+            } else {
+              // blankNode is necessarily local
+              logger.debug( s"TriplesViewWithTitle.htmlForm uri0 ${BNode(uri0)}")
+              val graph = findAllNamedGraphUriANY_ANYTransaction( BNode(uri0) )
+              ( graph , NodeSeq.Empty )
+            }
 
           // LOGGING only
 

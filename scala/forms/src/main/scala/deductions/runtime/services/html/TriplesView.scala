@@ -46,7 +46,8 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
    * wrapper for htmlForm that shows Failure's ;
    * TRANSACTIONAL
    */
-  def htmlFormElemRaw(uri: String, unionGraph: Rdf#Graph=allNamedGraph, hrefPrefix: String = config.hrefDisplayPrefix, blankNode: String = "",
+  def htmlFormElemRaw(uri: String, unionGraph: Rdf#Graph=allNamedGraph,
+    hrefPrefix: String = config.hrefDisplayPrefix, blankNode: String = "",
     editable: Boolean = false,
     actionURI: String = "/save",
     graphURI: String = "",
