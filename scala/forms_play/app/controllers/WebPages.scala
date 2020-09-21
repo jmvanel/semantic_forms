@@ -168,7 +168,7 @@ with ApplicationTrait
             ("Turtle", "application/turtle"),
             ("RDF/XML", "application/rdf+xml"),
             ("JSON-LD", "application/ld+json"))
-        ) yield downloadURI(uri, syntax) + s"; rel='alternate'; type='$mime' , "
+        ) yield downloadURI(uri, HTTPrequest(), syntax) + s"; rel='alternate'; type='$mime' , "
       result.withHeaders("Link" -> seq.mkString(""))
     }
   }

@@ -29,12 +29,15 @@ trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DAT
    * plus optionally all triples in graph <search> , plus "reverse" triples everywhere
    */
   def search_only(search: String): Try[Rdf#Graph] = {
+    val targetURI = if (search.startsWith("_:"))
+      search.replace("_:", "urn:bn:")
+    else search
     val queryString =
       s"""
          |CONSTRUCT {
-         |  <$search> ?p ?o .
+         |  <$targetURI> ?p ?o .
          |  ?thing ?p ?o .
-         |  ?s ?p1 <$search> .     
+         |  ?s ?p1 <$targetURI> .
          |}
          |WHERE {
          |  GRAPH ?GRAPH

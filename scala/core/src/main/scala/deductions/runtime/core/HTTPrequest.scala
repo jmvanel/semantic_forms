@@ -57,7 +57,11 @@ case class HTTPrequest(
     getHTTPparameterValues("q")
 
   private def getHostOfRDFsubject(): String = {
-    new URI( getRDFsubject().trim ).getHost
+    val subjectURI = getRDFsubject().trim
+    if (subjectURI.startsWith("_:"))
+      ""
+    else
+      new URI(subjectURI).getHost
   }
 
   /** is the RDF subject (=focus URI) a locally hosted URI?

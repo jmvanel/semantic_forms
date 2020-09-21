@@ -13,6 +13,7 @@ import deductions.runtime.sparql_cache.BrowsableGraph
 import akka.stream.scaladsl.StreamConverters
 import deductions.runtime.services.RDFContentNegociation
 import deductions.runtime.jena.RDFStoreLocalJenaProvider
+import deductions.runtime.core.HTTPrequest
 
 class DownloadServiceApp extends  {
   override implicit val config = new PlayDefaultConfiguration
@@ -32,11 +33,14 @@ trait DownloadService extends HTTPrequestHelpers
     Action {
       implicit request: Request[_] =>
         val httpRequest = copyRequest(request)
-        def output(mime: String): Result = {
+        def output(mime: String, httpRequest: HTTPrequest): Result = {
 //          logger.debug(log("downloadAction", request))
           Ok.chunked{
             // TODO >>>>>>> add database arg.
-            download(url, mime)
+            val isBlanknode = httpRequest.getHTTPparameterValue("blanknode").getOrElse("") == "true"
+//            println(s"downloadAction: isBlanknode $isBlanknode ; $httpRequest")
+            val url1 = if(isBlanknode) "_:"+ url else url
+            download( url1, mime)
           } . as(s"${mime}; charset=utf-8")
             . withHeaders("Access-Control-Allow-Origin" -> "*")
         }
@@ -52,12 +56,12 @@ trait DownloadService extends HTTPrequestHelpers
 //            logger.debug((s">>>>>>>> downloadAction , mimeOption $mimeOption"))
             mimeOption match {
               case Some(mimeStringFromSyntaxHTTPparameter) =>
-                output(mimeStringFromSyntaxHTTPparameter)
+                output(mimeStringFromSyntaxHTTPparameter, httpRequest)
               case None =>
-                output(mime)
+                output(mime, httpRequest)
             }
           case None =>
-            output(mime)
+            output(mime, httpRequest)
         }
     }
 

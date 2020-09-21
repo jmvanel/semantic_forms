@@ -30,9 +30,13 @@ trait FormHeader[Rdf <: RDF, DATASET]
   import ops._
 
   /** Make URL for downloading RDF from this SF site */
-  def downloadURI(uri: String, syntax: String = "Turtle"): String = {
+  def downloadURI(uri: String,
+      request: HTTPrequest,
+      syntax: String = "Turtle"): String = {              
+    val isBlanknode = request.getHTTPparameterValue("blanknode").getOrElse("") == "true"
+    val uri1 = (if(isBlanknode) "_:" else "" ) + uri
     hrefDownloadPrefix +
-      URLEncoder.encode(uri, "utf-8") +
+      URLEncoder.encode(uri1, "utf-8") +
       s"&syntax=$syntax"
   }
 
@@ -59,9 +63,9 @@ trait FormHeader[Rdf <: RDF, DATASET]
       makeOOPSlink(uri)
     } else NodeSeq.Empty )
 
-    def downloadLink(syntax: String = "Turtle"): NodeSeq = {
+    def downloadLink(request: HTTPrequest, syntax: String = "Turtle"): NodeSeq = {
       <span class="sf-local-rdf-link">
-        <a href={ downloadURI(uri, syntax) }
+        <a href={ downloadURI(uri, request, syntax) }
         title={ mess("Triples_tooltip") }>
           { mess("Triples") + " " + syntax}
         </a>
@@ -111,9 +115,9 @@ trait FormHeader[Rdf <: RDF, DATASET]
       <div class="sf-links-row">
         {
           <span class="sf-local-rdf-link">Data export: </span> ++
-          downloadLink() ++
-          downloadLink("JSON-LD") ++
-          downloadLink("RDF/XML")}
+          downloadLink(request) ++
+          downloadLink(request, "JSON-LD") ++
+          downloadLink(request, "RDF/XML")}
       </div>
   }
 
