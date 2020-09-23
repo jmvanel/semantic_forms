@@ -26,6 +26,7 @@ function registerCompletionGeneric( makeAjaxFunction, lookupCompletionCSSclass, 
         $(this).autocomplete({
             autoFocus: true,
             minlength: 3,
+            html: true,
 
             search: function() {
                 $(this).addClass(suggestionSearchCSSclass)
@@ -60,7 +61,7 @@ function registerCompletionGeneric( makeAjaxFunction, lookupCompletionCSSclass, 
                 console.log(ajax)
 
                 ajax.fail(function (error){
-                    console.log(error )
+                    console.log("error in Ajax " + error )
 
 /*
                   var ajax = makeAjaxFunction( makeDbPediaLookupURL(alternativeLookupServer), request, inputElement, callback,

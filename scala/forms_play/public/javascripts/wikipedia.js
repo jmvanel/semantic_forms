@@ -29,7 +29,10 @@ const resultsCount = 15
 $(document).ready(function() {
   const lookupServer = "http://lookup.dbpedia.org"
   const alternativeLookupServer = "http://lookup.dbpedia-spotlight.org"
-  function makeDbPediaLookupURL(baseURL) { return "/proxy?originalurl=" + baseURL + "/api/search/PrefixSearch"}
+  //function makeDbPediaLookupURL(baseURL) { return "/proxy?originalurl=" + baseURL + "/api/search/PrefixSearch"}
+  function makeDbPediaLookupURL(baseURL) {
+	// return makeProxiedLookupURLifNecessary( baseURL + "/api/search") }
+	return makeProxiedLookupURLifNecessary( baseURL + "/api/search/PrefixSearch") }
 
   const searchServiceDbPediaURL = makeDbPediaLookupURL(lookupServer)
   const lookupDbPediaCSSclass = '.hasLookup'
@@ -52,17 +55,30 @@ function prepareCompletionDbPedia( userString ) {
   return userString . replace( / /g, "_" )
 }
 
-const makeAjaxDbPediaLookupProtocolFunction =
-/** @param request: user input for completion */
+const makeAjaxDbPediaLookupProtocolFunction_NEW =
+/** @param request: user input for completion
+ * see new API https://github.com/dbpedia/dbpedia-lookup#using-the-lookup-service
+ * @return ajax jquery object to used as source for autocomplete in registerCompletionGeneric()
+ * */
 function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
          prepareCompletionString){
-  console.log("Trigger HTTP on <" + searchServiceURL + "> for '" + request.term + "'")
+  console.log("Trigger HTTP search Service <" + searchServiceURL + "> for '" + request.term + "'")
   var stringToSearch = prepareCompletionString(request.term)
+  var QueryClass = getRDFtypeInURL(inputElement)
+  var QueryClassParam = "&typeName=" + QueryClass
+  if(QueryClass == "") QueryClassParam = ""
+  console.log("HTTP URL <" + searchServiceURL + encodeURIComponent(
+		"?query=" + stringToSearch
+                              + "&maxResults=" + resultsCount
+                              + "&format=json"
+                              + QueryClassParam ) + ">")
   return (
     $.ajax({
-        url: searchServiceURL + "?QueryString=" + stringToSearch
-                              + "&MaxHits="+resultsCount
-                              + "&QueryClass=" + encodeURIComponent(getRDFtypeInURL(inputElement)) ,
+        url: searchServiceURL + encodeURIComponent(
+		"?query=" + stringToSearch
+                              + "&maxResults=" + resultsCount
+                              + "&format=json"
+                              + QueryClassParam ) ,
         dataType: "json" ,
         timeout: 30000
     }).done( function (ajaxResponse) {
@@ -73,7 +89,57 @@ function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
   )
 }
 
+const makeAjaxDbPediaLookupProtocolFunction =
+/** @param request: user input for completion
+ * @return ajax jquery object to used as source for autocomplete in registerCompletionGeneric()
+ * */
+function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
+         prepareCompletionString){
+  console.log("Trigger HTTP on <" + searchServiceURL + "> for '" + request.term + "'")
+  var stringToSearch = prepareCompletionString(request.term)
+  console.log("1 " + stringToSearch + "'")
+  var QueryClass = encodeURIComponent(getRDFtypeInURL(inputElement))
+  console.log("2 QueryClass '" + QueryClass + "'")
+  var QueryClassParam = "&QueryClass=" + QueryClass
+  console.log("3 " + QueryClassParam + "'")
+  if(QueryClass == "") QueryClassParam = ""
+  console.log("4 QueryClassParam '" + QueryClassParam + "'")
+  return (
+    $.ajax({
+        url: searchServiceURL + encodeURIComponent(
+                                "?QueryString=" + stringToSearch
+                              + "&MaxHits="+resultsCount
+                              + "&format=json"
+                              + QueryClassParam ) ,
+        dataType: "json" ,
+        timeout: 30000
+    }).done( function (ajaxResponse) {
+        console.log('Ajax Response from ' + searchServiceURL)
+        console.log(ajaxResponse)
+        callback( prettyPrintURIsFromDbpediaResponse(ajaxResponse) )
+    })
+    // NOTE : fail() is taken care in lookup-generic.js
+  )
+}
+
 function prettyPrintURIsFromDbpediaResponse(ajaxResponse){
+  return ajaxResponse.docs.map(
+    function (m) {
+      return {
+	      "label":
+	        // "<div>"
+	        m.label[0] + " - "
+	        + cutStringAfterCharacter(m.comment[0], '.')
+                + ( m["typeName"] === undefined ? "" : " - " + m.typeName .join(", ") )
+                + ( m["refCount"] === undefined ? "" : " - refCount " + m.refCount[0] )
+	        + " - <" + m.resource[0] + ">"
+	        //  + "</div>"
+	      ,
+	      "value": m.resource[0] }
+  })
+}
+
+function prettyPrintURIsFromDbpediaResponse_OLD(ajaxResponse){
   return ajaxResponse.results.map(
     function (m) {
       return {
