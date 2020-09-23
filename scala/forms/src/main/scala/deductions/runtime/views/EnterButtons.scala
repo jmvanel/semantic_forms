@@ -128,11 +128,13 @@ trait EnterButtons[Rdf <: RDF, DATASET] extends InstanceLabelsInferenceMemory[Rd
       )
       val resultMap0 = for (lang <- Seq("fr", "en")) yield {
         lang -> {
-          val nodes = for (suggestedClass <- suggestedClasses) yield suggestedClassForCreation(suggestedClass, lang)
+          val nodes = for (suggestedClass <- suggestedClasses) yield
+            suggestedClassForCreation(suggestedClass, lang)
           val nf: NodeSeq = nodes.flatten
           nf
         } // . flatten
       }
+//      println( "resultMap0 " + resultMap0.mkString("; ") )
       resultMap0.toMap
     }
     resultTry match{
@@ -163,7 +165,8 @@ trait EnterButtons[Rdf <: RDF, DATASET] extends InstanceLabelsInferenceMemory[Rd
                 data-rdf-type={fromUri(rdfs.Class)}
                 data-rdf-property={fromUri(rdf.typ)}
               ></input>
-                  { suggestedClassesForCreation(lang) }
+                  { val lang1 = if( Seq("fr", "en") . contains (lang) ) lang else "en"
+                    suggestedClassesForCreation(lang1) }
             </div>
 
             <div class="col-sm-4 col-sm-offset-4 col-md-2 col-md-offset-0">
