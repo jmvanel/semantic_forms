@@ -11,6 +11,7 @@ import deductions.runtime.abstract_syntax.InstanceLabelsInferenceMemory
 import scala.util.Success
 import scala.util.Failure
 import scala.xml.Text
+import org.w3.banana.Prefix
 
 /**
  * Buttons for loading/display/edit, search, and create;
@@ -95,55 +96,56 @@ trait EnterButtons[Rdf <: RDF, DATASET] extends InstanceLabelsInferenceMemory[Rd
     <br/>
   }
 
-  /** suggested Classes For Creation */
-  private lazy val suggestedClassesForCreation: Map[String, NodeSeq] = {
-    def encode(u: Rdf#URI): String = URLEncoder.encode(fromUri(u), "UTF-8")
-    def suggestedClassForCreation(uri: Rdf#URI, lang: String): NodeSeq = {
-      // TODO use creationButton()
-      <span><a href={
-       "/create?prefill=no&uri=" + encode(uri) } >
-         {instanceLabelFromTDB(uri, lang)} ({abbreviateTurtle(uri)})</a> -</span>
-    }
-    val resultTry = wrapInReadTransaction {
+  private def htmlSuggestedClassForCreation(uri: Rdf#URI, lang: String): NodeSeq = {
+    // TODO use creationButton()
+//    println( s"lang $lang , uri $uri")
+    <span><a href={
+      "/create?prefill=no&uri=" + encode(uri)
+    }>
+            { instanceLabelFromTDB(uri, lang) }
+            ( { abbreviateTurtle(uri) } )
+          </a> - </span>
+  }
 
-      val suggestedClasses = Seq(
-          foafForms("personForm"),
-          foaf.Organization,
-          prefixesMap2("bioc")("Planting"),
-          prefixesMap2("nature")("Observation"),
-          sioc("Post"),
-          sioc("Thread"),
-          prefixesMap2("schema")("Event"),
-          foaf.Project,
-          prefixesMap2("doas")("Software"),
-          prefixesMap2("tm")("Task")
-          // foaf.Group, prefixesMap2("doap")("Project"), 
-          // prefixesMap2("gr")("Offering")
-          // prefixesMap2("schema")("CreativeWork")  // Oeuvre
-          // prefixesMap2("cco")("Skill")
-          // prefixesMap2("owl")("Class")
-          // prefixesMap2("owl")("DatatypeProperty")
-          // prefixesMap2("owl")("ObjectProperty")
-          // prefixesMap2("seeds")("SeedsBatch")
-      )
-      val resultMap0 = for (lang <- Seq("fr", "en")) yield {
-        lang -> {
-          val nodes = for (suggestedClass <- suggestedClasses) yield
-            suggestedClassForCreation(suggestedClass, lang)
-          val nf: NodeSeq = nodes.flatten
-          nf
-        } // . flatten
-      }
-//      println( "resultMap0 " + resultMap0.mkString("; ") )
-      resultMap0.toMap
+  private def encode(u: Rdf#URI): String = URLEncoder.encode(fromUri(u), "UTF-8")
+
+  /** suggested Classes For Creation */
+  private def suggestedClassesForCreation(lang: String): NodeSeq = {
+    val suggestedClasses: Seq[Rdf#URI] = Seq(
+      foafForms("personForm"),
+      foaf.Organization,
+      prefixesMap2("bioc")("Planting"),
+      prefixesMap2("nature")("Observation"),
+      sioc("Post"),
+      sioc("Thread"),
+      prefixesMap2("schema")("Event"),
+      foaf.Project,
+      prefixesMap2("doas")("Software"),
+      prefixesMap2("tm")("Task")
+    // foaf.Group, prefixesMap2("doap")("Project"),
+    // prefixesMap2("gr")("Offering")
+    // prefixesMap2("schema")("CreativeWork")  // Oeuvre
+    // prefixesMap2("cco")("Skill")
+    // prefixesMap2("owl")("Class")
+    // prefixesMap2("owl")("DatatypeProperty")
+    // prefixesMap2("owl")("ObjectProperty")
+    // prefixesMap2("seeds")("SeedsBatch")
+    )
+
+    val resultTry = wrapInReadTransaction {
+      val nodes = for (suggestedClass <- suggestedClasses) yield
+        htmlSuggestedClassForCreation(suggestedClass, lang)
+      val nf: NodeSeq = nodes.flatten
+      nf
     }
-    resultTry match{
+    resultTry match {
       case Success(nodesSeq) => nodesSeq
       case Failure(f) =>
-        Map(
-            "fr" -> <p>{s"Erreur dans les liens de création: $f"}</p>,
-            "en" -> <p>{s"Error in creation links: $f"}</p>
-        )
+        lang match {
+          case "fr" => <p>{ s"Erreur dans les liens de création: $f" }</p>
+          case "en" => <p>{ s"Error in creation links: $f" }</p>
+          case _    => <p>{ s"Error in creation links: $f" }</p>
+        }
     }
   }
 
@@ -165,8 +167,7 @@ trait EnterButtons[Rdf <: RDF, DATASET] extends InstanceLabelsInferenceMemory[Rd
                 data-rdf-type={fromUri(rdfs.Class)}
                 data-rdf-property={fromUri(rdf.typ)}
               ></input>
-                  { val lang1 = if( Seq("fr", "en") . contains (lang) ) lang else "en"
-                    suggestedClassesForCreation(lang1) }
+                  { suggestedClassesForCreation(lang) }
             </div>
 
             <div class="col-sm-4 col-sm-offset-4 col-md-2 col-md-offset-0">
