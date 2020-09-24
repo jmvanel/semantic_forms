@@ -27,7 +27,7 @@ https://www.google.fr/search?q=ajax+example+scala.js
 const resultsCount = 15
 
 $(document).ready(function() {
-  const lookupServer = "http://lookup.dbpedia.org"
+  const lookupServer = "https://lookup.dbpedia.org"
   const alternativeLookupServer = "http://lookup.dbpedia-spotlight.org"
   //function makeDbPediaLookupURL(baseURL) { return "/proxy?originalurl=" + baseURL + "/api/search/PrefixSearch"}
   function makeDbPediaLookupURL(baseURL) {
@@ -41,7 +41,7 @@ $(document).ready(function() {
   const searchServiceLocalURL = "/lookup"
 
   // register Completion for DbPedia Lookup
-  registerCompletionGeneric( makeAjaxDbPediaLookupProtocolFunction, lookupDbPediaCSSclass,
+  registerCompletionGeneric( makeAjaxDbPediaLookupProtocolFunction_NEW, lookupDbPediaCSSclass,
 	  searchServiceDbPediaURL, getRDFtypeInURLastItem, prepareCompletionDbPedia )
 
   // register Completion for Local Lookup, same protocol as DbPedia, but different search string preparation
@@ -67,11 +67,11 @@ function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
   var QueryClass = getRDFtypeInURL(inputElement)
   var QueryClassParam = "&typeName=" + QueryClass
   if(QueryClass == "") QueryClassParam = ""
-  var urlComplete = searchServiceURL + encodeURIComponent(
+  var urlComplete = searchServiceURL +
 		"?query=" + stringToSearch
                               + "&maxResults=" + resultsCount
                               + "&format=json"
-                              + QueryClassParam )
+                              + QueryClassParam
   console.log("HTTP URL <" + urlComplete + ">" )
   return (
     $.ajax({
@@ -94,14 +94,9 @@ function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
          prepareCompletionString){
   console.log("Trigger HTTP on <" + searchServiceURL + "> for '" + request.term + "'")
   var stringToSearch = prepareCompletionString(request.term)
-  console.log("1 " + stringToSearch + "'")
   var QueryClass = getRDFtypeInURL(inputElement)
-  console.log("2 QueryClass '" + QueryClass + "'")
   var QueryClassParam = "&QueryClass=" + QueryClass
-  console.log("3 " + QueryClassParam + "'")
   if(QueryClass == "") QueryClassParam = ""
-  console.log("4 QueryClassParam '" + QueryClassParam + "'")
-
   var httpParamsRaw = "?QueryString=" + stringToSearch
                               + "&MaxHits="+resultsCount
                               + "&format=json"
