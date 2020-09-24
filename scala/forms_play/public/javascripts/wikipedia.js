@@ -141,7 +141,7 @@ function prettyPrintURIsFromDbpediaResponse(ajaxResponse){
 	      "label":
 	        // "<div>"
 	        m.label[0] + " - "
-	        + cutStringAfterCharacter(m.comment[0], '.')
+	        + ( m["comment"] === undefined ? "" : cutStringAfterCharacter(m.comment[0], '.') )
                 + ( m["typeName"] === undefined ? "" : " - " + m.typeName .join(", ") )
                 + ( m["refCount"] === undefined ? "" : " - refCount " + m.refCount[0] )
 	        + " - <" + m.resource[0] + ">"
