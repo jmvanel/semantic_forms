@@ -110,16 +110,18 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     val localDebuginstanceLabelFromTDB = false
     def printlnLocal(s: String): Unit = if(localDebuginstanceLabelFromTDB) println(s)
     if( nodeToString(node) === "" ) return ""
-	  printlnLocal(s"""\ninstanceLabelFromTDB node <$node> """ )
+	    printlnLocal(s"""\ninstanceLabelFromTDB node <$node> """ )
     val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
     val labelsGraph0 = rdfStore.getGraph( datasetForLabels, labelsGraphUri)
-	  // printlnLocal( s"instanceLabelFromTDB after .getGraph( dataset3, labelsGraphUri) $dataset3 ${Try{labelsGraph0}}" )
+	    // printlnLocal( s"instanceLabelFromTDB after .getGraph( dataset3, labelsGraphUri) $dataset3 ${Try{labelsGraph0}}" )
     val labelsGraph = labelsGraph0.get
-	  // printlnLocal( s"instanceLabelFromTDB after labelsGraph.get '$labelsGraphUri' ${Try{labelsGraph}}")
-    printlnLocal( s"instanceLabelFromTDB: labelsGraphUri $labelsGraphUri , labelsGraph $labelsGraph" )
+	    // printlnLocal( s"instanceLabelFromTDB after labelsGraph.get '$labelsGraphUri' ${Try{labelsGraph}}")
+      printlnLocal( s"instanceLabelFromTDB: labelsGraphUri $labelsGraphUri , labelsGraph $labelsGraph" )
     val displayLabelsIt = find(labelsGraph, node, displayLabelPred, ANY).toIterable
-	  printlnLocal(s"instanceLabelFromTDB after find(labelsGraph, node, displayLabelPred, ANY) : displayLabelPred $displayLabelPred '${displayLabelsIt.mkString("; ")}'" )
-    displayLabelsIt match {
+    val i18nGraph = rdfStore.getGraph( dataset, URI("urn:rdf-i18n")).getOrElse(emptyGraph)
+    val displayLabelsIt2 = find( i18nGraph, node, rdfs.label, ANY).toIterable
+	    printlnLocal(s"instanceLabelFromTDB after find(labelsGraph, node, displayLabelPred, ANY) : displayLabelPred $displayLabelPred '${displayLabelsIt.mkString("; ")}'" )
+    (displayLabelsIt ++ displayLabelsIt2) match {
       case it if (!it.isEmpty) =>
          printlnLocal( s"recover displayLabel from TDB: <$node>" )
         val triple = it.head
