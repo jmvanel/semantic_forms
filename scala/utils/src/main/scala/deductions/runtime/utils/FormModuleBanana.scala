@@ -24,9 +24,11 @@ trait FormModuleBanana[Rdf <: RDF]
     URI(expandOrUnchanged(uri))
 
 //  def rdfNodeKind(n: Rdf#Node) = ???
-  override def isBlankNode(n: Rdf#Node): Boolean =
+  override def isBlankNode(n: Rdf#Node): Boolean = {
+    if( n == null ) return false
     foldNode(n)(
         uri => false,
         bn => true,
-        lit => false )
+        _ => false )
+  }
 }
