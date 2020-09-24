@@ -103,13 +103,13 @@ function getRDFtypeInURLastItem(inputElement) {
                    type = $el.attr('data-rdf-type').split('/');
                     if (type) {
                       typeName = type[type.length - 1];
-                      console.log('typeName ' + typeName)
+                      console.log('getRDFtypeInURLastItem: typeName ' + typeName)
                     }
                 }
-                if( typeName.length > 0 )
-                  typeNameInURL = typeName
-                else
+                if( typeName == "owl#Thing" )
                   typeNameInURL = ""
+                else
+                  typeNameInURL = typeName
   return typeNameInURL
 }
 
