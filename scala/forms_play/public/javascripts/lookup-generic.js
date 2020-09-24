@@ -19,6 +19,7 @@ function prepareCompletionLucene( userString ) {
   return stringToSearch
 }
 
+/** register autocomplete on relevant form elements */
 function registerCompletionGeneric( makeAjaxFunction, lookupCompletionCSSclass, searchServiceURL,
      getRDFtypeInURL, prepareCompletionString ) {
     $(".sf-standard-form").on( 'focus', lookupCompletionCSSclass, function(event) {

@@ -67,18 +67,15 @@ function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
   var QueryClass = getRDFtypeInURL(inputElement)
   var QueryClassParam = "&typeName=" + QueryClass
   if(QueryClass == "") QueryClassParam = ""
-  console.log("HTTP URL <" + searchServiceURL + encodeURIComponent(
+  var urlComplete = searchServiceURL + encodeURIComponent(
 		"?query=" + stringToSearch
                               + "&maxResults=" + resultsCount
                               + "&format=json"
-                              + QueryClassParam ) + ">")
+                              + QueryClassParam )
+  console.log("HTTP URL <" + urlComplete + ">" )
   return (
     $.ajax({
-        url: searchServiceURL + encodeURIComponent(
-		"?query=" + stringToSearch
-                              + "&maxResults=" + resultsCount
-                              + "&format=json"
-                              + QueryClassParam ) ,
+        url: urlComplete ,
         dataType: "json" ,
         timeout: 30000
     }).done( function (ajaxResponse) {
@@ -98,25 +95,40 @@ function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
   console.log("Trigger HTTP on <" + searchServiceURL + "> for '" + request.term + "'")
   var stringToSearch = prepareCompletionString(request.term)
   console.log("1 " + stringToSearch + "'")
-  var QueryClass = encodeURIComponent(getRDFtypeInURL(inputElement))
+  var QueryClass = getRDFtypeInURL(inputElement)
   console.log("2 QueryClass '" + QueryClass + "'")
   var QueryClassParam = "&QueryClass=" + QueryClass
   console.log("3 " + QueryClassParam + "'")
   if(QueryClass == "") QueryClassParam = ""
   console.log("4 QueryClassParam '" + QueryClassParam + "'")
-  return (
-    $.ajax({
-        url: searchServiceURL + encodeURIComponent(
-                                "?QueryString=" + stringToSearch
+
+  var httpParamsRaw = "?QueryString=" + stringToSearch
                               + "&MaxHits="+resultsCount
                               + "&format=json"
-                              + QueryClassParam ) ,
+                              + QueryClassParam
+  var httpParams = httpParamsRaw
+  var isExternalServer =
+    searchServiceURL . startsWith( "http" ) ||
+    searchServiceURL . startsWith( "/proxy" )
+
+  if( isExternalServer )
+    httpParams = encodeURIComponent( httpParamsRaw )
+
+  var urlComplete = searchServiceURL + httpParams
+  console.log("HTTP URL <" + urlComplete + ">" )
+
+  return (
+    $.ajax({
+        url: urlComplete,
         dataType: "json" ,
         timeout: 30000
     }).done( function (ajaxResponse) {
         console.log('Ajax Response from ' + searchServiceURL)
         console.log(ajaxResponse)
-        callback( prettyPrintURIsFromDbpediaResponse(ajaxResponse) )
+        if( isExternalServer )
+          callback( prettyPrintURIsFromDbpediaResponse(ajaxResponse) )
+	else
+          callback( prettyPrintURIsFromDbpediaResponse_Local(ajaxResponse) )
     })
     // NOTE : fail() is taken care in lookup-generic.js
   )
@@ -139,7 +151,8 @@ function prettyPrintURIsFromDbpediaResponse(ajaxResponse){
   })
 }
 
-function prettyPrintURIsFromDbpediaResponse_OLD(ajaxResponse){
+/** for local /lookup server; uses old JSON structure */
+function prettyPrintURIsFromDbpediaResponse_Local(ajaxResponse){
   return ajaxResponse.results.map(
     function (m) {
       return {
