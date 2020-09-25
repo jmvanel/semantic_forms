@@ -11,7 +11,7 @@ NOTE that everyone has complete control on her/his input, it's not like a wiki, 
 ```shell
 sbt run
 ```
-Details and links [forms_play/README.md](here) .
+Details and links [ here ](forms_play/README.md) .
 
 # Features
 
