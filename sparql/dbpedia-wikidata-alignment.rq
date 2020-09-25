@@ -1,12 +1,15 @@
+# Adding alignment triples between Wikidata and dbPedia
+# query to dbpedia.org/sparql
+
 prefix owl: <http://www.w3.org/2002/07/owl#>
 prefix dbo: <http://dbpedia.org/ontology/>
 # select distinct *
 construct {
-  ?TAX owl:sameAs ?TAX_WKDT .
-  ?TAX_WKDT owl:sameAs ?TAX .
+  ?TAX_DBPEDIA owl:sameAs ?TAX_WKDT .
+  ?TAX_WKDT owl:sameAs ?TAX_DBPEDIA .
 } where {
-  ?TAX owl:sameAs ?TAX_WKDT .
+  ?TAX_DBPEDIA owl:sameAs ?TAX_WKDT .
   FILTER ( STRSTARTS( STR(?TAX_WKDT), 'http://www.wikidata.org/entity' ) )
-  ?TAX a dbo:Plant .
-  ?TAX a dbo:Species .
+  ?TAX_DBPEDIA a dbo:Plant .
+  ?TAX_DBPEDIA a dbo:Species .
 }

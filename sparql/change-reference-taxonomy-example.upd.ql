@@ -1,6 +1,6 @@
 PREFIX nature: <http://deductions.github.io/nature_observation.owl.ttl#>
 DELETE {
-  # do not yet delete home grown taxonomic triples, in cas of several observations for the same taxon
+  # do not yet delete home grown taxonomic triples, in case of several observations for the same taxon
   # GRAPH ?taxonGRAPH { ?taxon ?ptaxon ?otaxon .  }
 
   # delete link from the existing observation to home grown taxon URI
@@ -23,10 +23,10 @@ WHERE {
     ?obs nature:taxon ?taxon .
   }
   GRAPH ?taxonGRAPH {
-    # home grown taxon URI: INPN number
+    # home grown taxon URI has INPN number
     ?taxon <http://rs.tdwg.org/dwc/terms/INPN-num> ?INPNnum .
     ?taxon ?ptaxon ?otaxon .
     # make URI for MNHN taxon
-    BIND ( IRI( CONCAT( 'http://taxref.mnhn.fr/lod/taxon/', STR(?INPNnum), '/12.0' )) AS ?MNHN_TAXON )
+    BIND ( IRI( CONCAT( 'http://taxref.mnhn.fr/lod/taxon/', STR(?INPNnum), '/13.0' )) AS ?MNHN_TAXON )
   }
 }

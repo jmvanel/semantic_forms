@@ -50,7 +50,7 @@ Here is a web application with Play! framework around the [form generator](../fo
 - semantic cache
 
 For now, the display looks like this, 
-plus a textbox to enter a URL semantics, eg a FOAF profile or DBpedia URI : 
+plus a textbox to enter a semantic (RDF) URL, eg a FOAF profile or DBpedia URI :
 [example.form.foaf.html](http://htmlpreview.github.io/?https://github.com/jmvanel/semantic_forms/blob/master/scala/forms/example.form.foaf.html)
 
 This README is a guide for building and working from source code.
