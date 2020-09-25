@@ -25,6 +25,7 @@ trait RDFContentNegociation extends StringHelpers {
 
   val rdfXMLmime = "application/rdf+xml"
   val turtleMime = "text/turtle"
+  val turtleMime2 = "application/x-turtle"
   val n3Mime = "text/n3"
   val jsonldMime = "application/ld+json"
   val ntMime = "application/n-triples"
@@ -56,7 +57,8 @@ trait RDFContentNegociation extends StringHelpers {
         turtleMime -> funTurtle,
         jsonldMime -> funJsonld,
         n3Mime -> funN3,
-        ntMime -> funTurtle)
+        ntMime -> funTurtle,
+        turtleMime2 -> funTurtle)
 
     val knownMIME = fun.get(mimeType).isDefined
     (fun.getOrElse(mimeType, funTurtle)(input), knownMIME)
