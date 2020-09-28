@@ -754,6 +754,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
                     bn => Json.obj("type" -> "bnode",
                       "value" -> fromBNode(bn)),
                     lit => {
+                      if(lit!=null) {
                       val litTuple = fromLiteral(lit)
 //                      println(s"lit $lit")
 //                      println(s"litTuple $litTuple")
@@ -769,6 +770,10 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
                         }}
                         )
                         else Json.obj()
+                    } else {
+                      logger.warn(s"sparqlSelectJSON: null in RDF node: ${list.mkString("; ")}")
+                      null
+                    }
                     })
               }
               val v = header.zip(listOfJSONobjects).map {
