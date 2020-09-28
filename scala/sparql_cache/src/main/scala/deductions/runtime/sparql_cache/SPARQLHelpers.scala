@@ -754,7 +754,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
                     bn => Json.obj("type" -> "bnode",
                       "value" -> fromBNode(bn)),
                     lit => {
-                      if(lit!=null) {
+                      if(lit != null) {
                       val litTuple = fromLiteral(lit)
 //                      println(s"lit $lit")
 //                      println(s"litTuple $litTuple")
@@ -764,10 +764,16 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
                         "value" -> litTuple._1,
                         "datatype" -> litTuple._2.toString(),
                         "xml:lang" -> {
-                        litTuple._3 match {
-                          case Some(lang) => lang.toString()
-                          case None => null
-                        }}
+                              if (litTuple._3 != null) {
+                                litTuple._3 match {
+                                  case Some(lang) => lang.toString()
+                                  case None       => null
+                                }
+                              } else {
+                                logger.warn(s"sparqlSelectJSON: null in literal lang: ${list.mkString("; ")}")
+                                null
+                              }
+                        }
                         )
                         else Json.obj()
                     } else {
