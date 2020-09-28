@@ -20,6 +20,7 @@ import scalaz._
 import Scalaz._
 import org.w3.banana.OWLPrefix
 import deductions.runtime.connectors.icalendar.RDF2ICalendar
+import play.api.libs.json.JsNull
 
 /**
  * TODO separate stuff depending on dataset, and stuff taking a graph in argument
@@ -771,14 +772,14 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
                                 }
                               } else {
                                 logger.warn(s"sparqlSelectJSON: null in literal lang: ${list.mkString("; ")}")
-                                null
+                                JsNull
                               }
                         }
                         )
                         else Json.obj()
                     } else {
                       logger.warn(s"sparqlSelectJSON: null in RDF node: ${list.mkString("; ")}")
-                      null
+                      JsNull
                     }
                     })
               }
