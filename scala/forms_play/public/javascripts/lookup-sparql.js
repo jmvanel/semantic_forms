@@ -72,7 +72,8 @@ function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
               ?o1 bif:contains ' ( ${stringToSearch} ) ' option ( score ?sc ) .
             }
             graph <http://taxref.mnhn.fr/lod/graph/vernacular/13.0> {
-              OPTIONAL { ?s1 <http://taxref.mnhn.fr/lod/property/vernacularName> ?VERN . }
+			# OPTIONAL { 
+              ?s1 <http://taxref.mnhn.fr/lod/property/vernacularName> ?VERN . # }
 	      # FILTER( LANG(?VERN) = "${USER_LANG}" )
             }
             graph <http://taxref.mnhn.fr/lod/graph/classes/13.0> {
