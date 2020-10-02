@@ -17,7 +17,7 @@ import org.scalajs.dom.raw.PositionOptions
 import org.scalajs.dom.ext._
 import scala.scalajs.js.Dynamic.{literal => json}
 import org.scalajs.dom.raw.HTMLElement
-import org.w3c.dom.events.Event
+import org.scalajs.dom.Event
 
 @JSExportTopLevel("GPS2")
 object GPS2 extends GPS {
