@@ -17,6 +17,7 @@ import org.scalajs.dom.raw.PositionOptions
 import org.scalajs.dom.ext._
 import scala.scalajs.js.Dynamic.{literal => json}
 import org.scalajs.dom.raw.HTMLElement
+import org.w3c.dom.events.Event
 
 @JSExportTopLevel("GPS2")
 object GPS2 extends GPS {
@@ -38,10 +39,22 @@ object GPS2 extends GPS {
    */
   @JSExport
   def listenToSubmitEventFillGeoCoordinates(): Unit = {
-    if( GeoCoordinatesFields.pageNeedsGeoCoordinates() . needsUpdate )
+    if (GeoCoordinatesFields.pageNeedsGeoCoordinates().needsUpdate)
       // window.addEventListener("load", (e: dom.Event) =>
-        { fillPositionsOnce(); println("Called fillPositionsOnce");
-          fillGeoCoordinates }
+    {
+      fillPositionsOnce(); println("Called fillPositionsOnce")
+      fillGeoCoordinates
+      // stop using GPS when user saves form
+      val buttons = dom.document.getElementsByName("save")
+      for (button <- buttons) {
+        button.addEventListener(
+          "click",
+          (ev: Event) => {
+            dom.console.log("User saves form: stop GPS")
+            clearWatch()
+          })
+      }
+    }
   }
 
   @JSExport
@@ -71,7 +84,7 @@ object GPS2 extends GPS {
   }
 
   @JSExport
-  def clearWatch() = {
+  def clearWatch(): Unit = {
     geo.clearWatch(watchID);
     watchID = -1
   }

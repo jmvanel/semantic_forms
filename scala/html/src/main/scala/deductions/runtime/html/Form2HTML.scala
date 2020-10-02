@@ -87,8 +87,9 @@ trait Form2HTML[NODE, URI <: NODE]
 
     def addSaveButton(actionURIarg: String) =
       if (actionURIarg =/= "")
-        <div class="sf-save" zzclass="col col-sm-4 col-sm-offset-4">
-          <input value={ mess("SAVE") } formaction={ actionURIarg } type="submit" class="form-control btn btn-primary "/>
+        <div class="sf-save">
+          <input value={ mess("SAVE") } formaction={ actionURIarg } type="submit"
+                 class="form-control btn btn-primary name="save" />
         </div>
 
     //// output begins ////
