@@ -1,0 +1,14 @@
+DELETE {
+GRAPH ?G {
+  ?S <urn:displayLabel> ?L .
+} }
+INSERT {
+GRAPH ?G {
+  ?S <urn:displayLabel> ?L2 .
+} }
+WHERE {
+GRAPH ?G {
+  ?S <urn:displayLabel> ?L .
+  FILTER ( STRENDS( ?L, " - no value") )
+  BIND(    REPLACE( ?L, " - no value", "") AS ?L2 )
+} }
