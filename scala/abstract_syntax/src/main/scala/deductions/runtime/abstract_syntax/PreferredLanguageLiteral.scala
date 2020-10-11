@@ -36,10 +36,12 @@ trait PreferredLanguageLiteral[Rdf <: RDF] {
     lang: String = "en"): String = {
 //      println(s""">>>> getPreferedLanguageLiteral "$lang" values $values""")
 
-    def computeValues(): (String, String, String) = {
+    // @return (preferedLanguageValue, enValue, noLanguageValue, otherLanguageValue)
+    def computeValues(): (String, String, String, String) = {
       var preferedLanguageValue = ""
       var enValue = ""
       var noLanguageValue = ""
+      var otherLanguageValue = ""      
       for (value <- values) {
         foldNode(value)(
           x => (), x => (),
@@ -51,13 +53,13 @@ trait PreferredLanguageLiteral[Rdf <: RDF] {
                 if (language == makeLang(lang) ) preferedLanguageValue = raw
                 else if (language == makeLang("en") )
                   enValue = raw
+                else otherLanguageValue = raw
               case None => noLanguageValue = raw
-              case _ =>
             }
           }
         )
       }
-      (preferedLanguageValue, enValue, noLanguageValue)
+      (preferedLanguageValue, enValue, noLanguageValue, otherLanguageValue)
     }
 
     if (values.size === 1)
@@ -65,16 +67,22 @@ trait PreferredLanguageLiteral[Rdf <: RDF] {
         _ => "", _ => "",
         lit => fromLiteral(lit)._1)
 
-    val (preferedLanguageValue, enValue, noLanguageValue) = computeValues
-    (preferedLanguageValue, enValue, noLanguageValue) match {
+    val (preferedLanguageValue, enValue, noLanguageValue, otherLanguageValue) = computeValues
+    (preferedLanguageValue, enValue, noLanguageValue, otherLanguageValue) match {
       case _ if (preferedLanguageValue  =/=  "") => preferedLanguageValue
       case _ if (enValue  =/=  "") => enValue
       case _ if (noLanguageValue  =/=  "") => noLanguageValue
+      case _ if (otherLanguageValue  =/=  "") =>
+        // TODO remove later
+        val mess = s"""otherLanguageValue "$otherLanguageValue", preferedLanguageValue "$preferedLanguageValue", enValue "$enValue"", noLanguageValue "$noLanguageValue""""
+        if( values . size > 0 ) logger.warn(
+          s"getPreferedLanguageFromValues: case otherLanguageValue (${values.mkString(", ")}) : $mess");
+        otherLanguageValue
       case _ =>
         val mess = s"""preferedLanguageValue "$preferedLanguageValue", enValue "$enValue"", noLanguageValue "$noLanguageValue""""
         if( values . size > 0 ) logger.warn(
           s"getPreferedLanguageFromValues: case not expected in values (${values.mkString(", ")}) : $mess");
-        "no value"
+        "?"
     }
   }
 }
