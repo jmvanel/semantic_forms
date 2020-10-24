@@ -66,7 +66,9 @@ function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
 	   "/sparql?default-graph-uri=&query=" +
 	    encodeURIComponent(
      `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-      select DISTINCT ?s1 as ?c1, ( bif:search_excerpt ( bif:vector () , ?o1 ) ) as ?c2, ?sc, ?rank, ?LAB, ?VERN where {
+      select DISTINCT ?s1 as ?c1,
+	  # ( bif:search_excerpt ( bif:vector () , ?o1 ) ) as ?c2, ?sc,
+	  ?rank, ?LAB, ?VERN where {
         select ?s1, ( ?sc * 3e-1 ) as ?sc, ?o1, ( sql:rnk_scale ( <LONG::IRI_RANK> ( ?s1 ) ) ) as ?rank, ?LAB, ?VERN where {
             graph ?g {
               ?s1 ?s1textp ?o1 .
@@ -105,12 +107,16 @@ function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
 function prettyPrintURIsFromSPARQLresponse(ajaxResponse){
   return ajaxResponse.results.bindings.map(
     function (m) {
-      return {
+      const lang = m.VERN["xml:lang"]
+	    var mess = {
 	      "label": m.LAB.value + " - "
                 +  " - " + m.VERN.value
                 +  " - rank " + m.rank.value
                 +  " - <" + m.c1.value + ">",
 	      "value": m.c1.value }
+	    if( lang == 'fr' || lang == 'en' || lang == navigator.language .split("-")[0] ) ret = mess
+	    else ret = ""
+	    return ret
   })
 }
 
