@@ -34,12 +34,13 @@ $(document).ready(function() {
 
 /** prepare Completion string, Virtuoso syntax */
 function prepareCompletionVirtuoso( userString ) {
-  var stringToSearch = userString
+  var stringToSearch = userString.trim()
   var words = stringToSearch .split(' ')
-  if( words . length > 1 )
+  if( words . length > 1 && words[1].length >= 4)
     stringToSearch = `"${words[0]}*" AND "${words[1]}*"`
   else
-    stringToSearch = `"${userString}*"`
+    stringToSearch = `"${words[0]}*"`
+  console.log( `stringToSearch '${stringToSearch}'`)
   return stringToSearch
 }
 
