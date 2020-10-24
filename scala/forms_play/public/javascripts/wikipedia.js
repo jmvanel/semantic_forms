@@ -95,7 +95,7 @@ function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
   console.log("Trigger HTTP on <" + searchServiceURL + "> for '" + request.term + "'")
   var stringToSearch = prepareCompletionString(request.term)
   var QueryClass = getRDFtypeInURL(inputElement)
-  var QueryClassParam = "&QueryClass=" + QueryClass
+  var QueryClassParam = "&QueryClass=" + encodeURIComponent(QueryClass)
   if(QueryClass == "") QueryClassParam = ""
   var httpParamsRaw = "?QueryString=" + stringToSearch
                               + "&MaxHits="+resultsCount
