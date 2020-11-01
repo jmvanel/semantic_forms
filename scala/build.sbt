@@ -71,6 +71,7 @@ lazy val contacts_management = project .dependsOn(forms)
 
 // lazy val mobion = project .dependsOn(forms)
 lazy val jsonld = project
+lazy val geo = project . dependsOn( jsonld )
 
 // lazy val forms_services = project
 // lazy val social_web = project
