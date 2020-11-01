@@ -63,7 +63,7 @@ object GeoJSONexport extends App {
       FILTER ( ?P != geo:lat )
       FILTER ( ?P != geo:long )
     }
-  } LIMIT 40
+  } LIMIT 100
   """
   val fileName = "out.geojson"
 
@@ -126,7 +126,8 @@ object GeoJSONexport extends App {
     val fromRdf: FromRdfApi =
       JsonLd.fromRdf(
         RdfDocument.of(titaniumOut) )
-      JsonLd.compact(
+      JsonLd.frame(
+      // compact(
         JsonDocument.of(fromRdf.get), contextDocument)
         .options(options)
         .get
