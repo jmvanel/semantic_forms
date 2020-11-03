@@ -1,12 +1,16 @@
-"use strict";
+// "use strict";
 /*jslint browser: true*/
 
 /** button with an action to duplicate the original HTML widget with an empty content */
-function cloneWidget(widget,button) {
+function cloneWidget(widget0, button) {
+	if (widget0.parent == undefined) // plain JavaScript, not JQuery
+		widget = jQuery(widget0)
+	else
+		widget = widget0
 
     var addedWidget = $("<input type='text' />"),
         parent = widget.parent(),
-        cardinal = widget.parent().children().length;
+        cardinal = parent.children().length;
     console.log("nombre de widgets : "+cardinal);
     console.log("addedWidget 1: " + JSON.stringify( addedWidget , null, 4));
 
@@ -32,6 +36,7 @@ function cloneWidget(widget,button) {
         parent.prepend(addedWidget, widget);
     }
     else {
+      if( button != undefined ) {
         widgetName = decodeURIComponent(button.attr('input-name')).split("+")
         if (widgetName[2][0] == '<' )
             widgetName = widgetName[0] +'+'+widgetName[1]+'+<>+.'
@@ -47,11 +52,11 @@ function cloneWidget(widget,button) {
             .attr('title', button.attr('input-title'))
             .attr('hidden', 'false');
         button.parent().parent().find('.sf-value-block').first().prepend(addedWidget, widget);
+      }
     }
     addedWidget.focus();
 
     // console.log("addedWidget: " + JSON.stringify( addedWidget , null, 4));
-    console.log("addedWidget: " + addedWidget );
     return addedWidget;
 }
 

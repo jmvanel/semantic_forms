@@ -1,8 +1,25 @@
-    <script type='text/javascript'>
+<script type='text/javascript'>
+    function listener(event) {
+      console.log( "Handler for keydown called: key: " + event . key )
+      if( event . key == "Enter"){
+        console.log( "Enter typed" )
+        var addedWidget = cloneWidget(event.srcElement)
+        console.log( "addedWidget .get(0) : " + JSON.stringify(addedWidget .get(0) ))
+        addedWidget .
+           get(0) .
+            addEventListener( "keydown", listener )
+      }
+    }
+    var fcs = document.querySelectorAll(".form-control")
+    console.log( `fcs ${fcs}` )
+    fcs.forEach(
+      fc => fc.addEventListener( "keydown", listener ) )
+
         $(document).ready( function (){
             // commented out, because rich HTML content in forms values are displayed badly
             // $(".form-horizontal").tabs();
             //$(".form-group").on('click', '.add-widget', function(event) {
+
             $(".sf-values-group").on('click', '.add-widget', function(event) {
             // $(".add-widget").on('click', function(event) {
                 console.log('Cloning field :');
