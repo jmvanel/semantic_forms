@@ -1,19 +1,44 @@
 <script type='text/javascript'>
-    function listener(event) {
+    function enterTypedListener(event) {
       console.log( "Handler for keydown called: key: " + event . key )
       if( event . key == "Enter"){
         console.log( "Enter typed" )
         var addedWidget = cloneWidget(event.srcElement)
-        console.log( "addedWidget .get(0) : " + JSON.stringify(addedWidget .get(0) ))
+        // console.log( "addedWidget .get(0) : " + JSON.stringify(addedWidget .get(0) ))
         addedWidget .
-           get(0) .
-            addEventListener( "keydown", listener )
+          get(0) .
+          addEventListener( "keydown", enterTypedListener )
       }
     }
     var fcs = document.querySelectorAll(".form-control")
     console.log( `fcs ${fcs}` )
     fcs.forEach(
-      fc => fc.addEventListener( "keydown", listener ) )
+      fc => {
+        fc.addEventListener( "keydown", enterTypedListener )
+        fc .addEventListener('paste', pasteListener )
+      } )
+
+    function pasteListener(event) {
+      console.log( JSON.stringify( event.clipboardData ) )
+      console.log( JSON.stringify( window.clipboardData ) )
+        let paste = (
+          event.clipboardData ||
+          window.clipboardData).getData('text');
+        var arrayOfStrings = paste.split("\n");
+        console.log('La chaine d\'origine est : "' + paste + '"');
+        console.log("Le tableau comporte " + arrayOfStrings.length + " elements : ");
+        if( arrayOfStrings.length > 1 ) {
+        for (var i=0; i < arrayOfStrings.length; i++) {
+          console.log(arrayOfStrings[i] + " / ")
+          var addedWidget = cloneWidget(event.srcElement)
+          addedWidget . get(0) . value = arrayOfStrings[i]
+        }
+          // const selection = window.getSelection();
+          // if (!selection.rangeCount) return false;
+          // selection.deleteFromDocument();
+          event.preventDefault();
+        }
+      }
 
         $(document).ready( function (){
             // commented out, because rich HTML content in forms values are displayed badly
