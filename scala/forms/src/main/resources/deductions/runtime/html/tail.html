@@ -1,6 +1,7 @@
 <script type='text/javascript'>
+
     function enterTypedListener(event) {
-      console.log( "Handler for keydown called: key: " + event . key )
+      // console.log( "Handler for keydown called: key: " + event . key )
       if( event . key == "Enter"){
         console.log( "Enter typed" )
         var addedWidget = cloneWidget(event.srcElement)
@@ -11,31 +12,27 @@
       }
     }
     var fcs = document.querySelectorAll(".form-control")
-    console.log( `fcs ${fcs}` )
+    console.log( `fcs .form-control : ${fcs}` )
     fcs.forEach(
       fc => {
         fc.addEventListener( "keydown", enterTypedListener )
         fc .addEventListener('paste', pasteListener )
-      } )
+    } )
 
     function pasteListener(event) {
-      console.log( JSON.stringify( event.clipboardData ) )
-      console.log( JSON.stringify( window.clipboardData ) )
         let paste = (
           event.clipboardData ||
-          window.clipboardData).getData('text');
+          window.clipboardData ).getData('text');
         var arrayOfStrings = paste.split("\n");
         console.log('La chaine d\'origine est : "' + paste + '"');
         console.log("Le tableau comporte " + arrayOfStrings.length + " elements : ");
         if( arrayOfStrings.length > 1 ) {
-        for (var i=0; i < arrayOfStrings.length; i++) {
-          console.log(arrayOfStrings[i] + " / ")
-          var addedWidget = cloneWidget(event.srcElement)
-          addedWidget . get(0) . value = arrayOfStrings[i]
-        }
-          // const selection = window.getSelection();
-          // if (!selection.rangeCount) return false;
-          // selection.deleteFromDocument();
+          // for (var i=0; i < arrayOfStrings.length; i++) {
+          for (var i=arrayOfStrings.length - 1; i>=0; i--) {
+            console.log(arrayOfStrings[i] + " / ")
+            var addedWidget = cloneWidget(event.srcElement)
+            addedWidget . get(0) . value = arrayOfStrings[i]
+          }
           event.preventDefault();
         }
       }
