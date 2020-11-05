@@ -40,8 +40,13 @@ trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DAT
          |  ?s ?p1 <$targetURI> .
          |}
          |WHERE {
-         |  GRAPH ?GRAPH
-         |  { <$search> ?p ?o . }
+         |  GRAPH ?GRAPH {
+         |    <$search> ?p ?o .
+         |    OPTIONAL {
+         |      ?o ?p1 ?s1 .
+         |      FILTER( isBlank(?o) )
+         |    }
+         |  }
          |  OPTIONAL {
          |    GRAPH <$search>
          |    { ?thing ?p ?o . }
