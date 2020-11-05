@@ -11,7 +11,9 @@
           addEventListener( "keydown", enterTypedListener )
       }
     }
-    var fcs = document.querySelectorAll(".form-control")
+
+    // cf https://blog.garstasio.com/you-dont-need-jquery/events/#event-delegation
+    var fcs = document.querySelectorAll(".sf-values-group") // ".form-control")
     console.log( `fcs .form-control : ${fcs}` )
     fcs.forEach(
       fc => {
