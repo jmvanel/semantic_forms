@@ -15,14 +15,25 @@ import deductions.runtime.services.RecoverUtilities
 import deductions.runtime.jena.RDFStoreLocalJenaProvider
 import deductions.runtime.jena.ImplementationSettings
 
-class LookupServiceApp  extends  {
-  override implicit val config = new PlayDefaultConfiguration
-} with RDFStoreLocalJenaProvider
-with LookupService[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+import javax.inject.Inject
+import play.api.mvc.ControllerComponents
+import play.api.mvc.AbstractController
 
-trait LookupService[Rdf <: RDF, DATASET] extends Lookup[Rdf, DATASET]
+//class LookupServiceApp  extends  {
+//  override implicit val config = new PlayDefaultConfiguration
+//} with RDFStoreLocalJenaProvider
+//with LookupService[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+
+//trait LookupService[Rdf <: RDF, DATASET] extends Lookup[Rdf, DATASET]
+class LookupServiceApp @Inject() (
+  components: ControllerComponents, configuration: play.api.Configuration) extends {
+    override implicit val config = new PlayDefaultConfiguration
+  }
+with AbstractController(components)
+with RDFStoreLocalJenaProvider
+with Lookup[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 with LanguageManagement
-with HTTPoutputFromThrowable[Rdf, DATASET]
+with HTTPoutputFromThrowable[ImplementationSettings.Rdf, ImplementationSettings.DATASET  ]
 with AcceptExtractors {
 
   def lookupService(search: String, clas: String = "") = {

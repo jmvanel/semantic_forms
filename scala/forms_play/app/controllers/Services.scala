@@ -23,18 +23,24 @@ import deductions.runtime.services.CORS
 import deductions.runtime.jena.RDFStoreLocalJenaProvider
 import deductions.runtime.sparql_cache.RDFCacheAlgo
 
+import javax.inject.Inject
+import play.api.mvc.ControllerComponents
+import play.api.mvc.AbstractController
 
-class ServicesApp extends {
-    override implicit val config = new PlayDefaultConfiguration
-  }
-  with Services
-  with RDFStoreLocalJenaProvider
-
+//class ServicesApp
+//  // with { override implicit val config = new PlayDefaultConfiguration }
+//  extends Services
+//  with RDFStoreLocalJenaProvider
+//  { override implicit val config = new PlayDefaultConfiguration }
 
 /** controller for non-SPARQL Services (or SPARQL related but not in the W3C recommendations)
  *  including LDP */
-trait Services extends
-RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+class ServicesApp @Inject() (
+     components: ControllerComponents, configuration: play.api.Configuration)
+extends { override implicit val config = new PlayDefaultConfiguration }
+with AbstractController(components)
+with RDFStoreLocalJenaProvider
+with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 with RDFContentNegociation
 with LanguageManagement
 with HTTPoutputFromThrowable[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
