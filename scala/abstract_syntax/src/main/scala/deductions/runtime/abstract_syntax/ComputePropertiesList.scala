@@ -67,8 +67,8 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
       propsFromClasses . diff( propsFromFormsSpecs )
     }
         
-    val propertiesListAllItems = (
-        propsFromFormsSpecs ++
+    val propertiesList = (
+        addRDFSLabelComment(propsFromFormsSpecs) ++
       (if (!propsFromSubject.isEmpty)
         form("separator_props_From_Subject") ::
         propsFromSubject.toList
@@ -78,12 +78,6 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
         propsFromClasses2.toList
       else Seq())
     ).distinct
-
-    val propertiesList =
-      if (propsFromFormsSpecs.isEmpty)
-        addRDFSLabelComment(propertiesListAllItems)
-      else
-        propertiesListAllItems
   
     val reversePropertiesList =
       reversePropertiesListFromFormConfiguration(

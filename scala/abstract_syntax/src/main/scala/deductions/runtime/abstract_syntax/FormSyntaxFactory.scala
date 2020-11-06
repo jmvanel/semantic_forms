@@ -178,11 +178,17 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     }
   }
 
-  /** general purpose properties, added if not already present in form specification */
+  /** general purpose properties, appendded if not already present in form specification */
   private[abstract_syntax] def addRDFSLabelComment(propertiesList: Seq[Rdf#Node]): Seq[Rdf#Node] = {
-    if (addRDFS_label_comment &&
-      !propertiesList.contains(rdfs.label)) {
-      Seq(rdfs.label, rdfs.comment, owl.sameAs ) ++ propertiesList
+    def addIfNotPresent(propertiesList: Seq[Rdf#Node], elem: Rdf#URI): Seq[Rdf#Node] =
+      if (!propertiesList.contains(elem))
+        elem +: propertiesList
+      else propertiesList
+
+    if (addRDFS_label_comment) {
+      val l1 = addIfNotPresent(Seq(), owl.sameAs)
+      val l2 = addIfNotPresent(l1, rdfs.comment)
+      propertiesList ++ addIfNotPresent(l2, rdfs.label)
     } else propertiesList
   }
 
