@@ -96,6 +96,9 @@ trait InstanceLabelsInference2[Rdf <: RDF]
         val geoname = getLiteralInPreferedLanguageFromSubjectAndPredicate(node,
             URI("http://www.geonames.org/ontology#name"), "")
         if (geoname  =/=  "") return geoname
+        val schema_name = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, schema("name"), "")
+        if (schema_name  =/=  "") return schema_name
+
         val pairPreferedLabel = getLiteralInPreferedLanguageFromSubjectAndPredicate(node, pairPreferedLabelProp, "")
         if (pairPreferedLabel  =/=  "") return pairPreferedLabel
 
