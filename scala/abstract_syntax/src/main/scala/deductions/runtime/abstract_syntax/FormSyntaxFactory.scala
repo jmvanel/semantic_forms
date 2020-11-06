@@ -178,10 +178,11 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     }
   }
 
+  /** general purpose properties, added if not already present in form specification */
   private[abstract_syntax] def addRDFSLabelComment(propertiesList: Seq[Rdf#Node]): Seq[Rdf#Node] = {
     if (addRDFS_label_comment &&
       !propertiesList.contains(rdfs.label)) {
-      Seq(rdfs.label, rdfs.comment) ++ propertiesList
+      Seq(rdfs.label, rdfs.comment, owl.sameAs ) ++ propertiesList
     } else propertiesList
   }
 
