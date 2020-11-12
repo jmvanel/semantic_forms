@@ -5,9 +5,17 @@ import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
 
-class ProxyServicesApp extends ProxyServices
+import javax.inject.Inject
+import play.api.mvc.ControllerComponents
+import play.api.mvc.AbstractController
+import play.api.mvc.BaseController
 
-trait ProxyServices  extends PlaySettings.MyControllerBase {
+class ProxyServicesApp  @Inject() (
+     components: ControllerComponents, configuration: play.api.Configuration)
+  extends AbstractController(components)
+  with ProxyServices
+
+trait ProxyServices  extends BaseController {
 
 import org.apache.http.{HttpEntity, HttpResponse}
 import org.apache.http.client._
