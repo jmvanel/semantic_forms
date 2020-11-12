@@ -23,17 +23,19 @@ import play.api.mvc.Action
 import play.api.mvc.Call
 import play.api.mvc.Request
 import play.api.mvc.Security
+// import play.api.mvc.Results._
 
 import scalaz._
 import Scalaz._
 import deductions.runtime.utils.FormModuleBanana
 
-//import javax.inject.Inject
-//import play.api.mvc.ControllerComponents
+import javax.inject.Inject
+import play.api.mvc.ControllerComponents
+import play.api.mvc.AbstractController
+import play.api.mvc.BaseController
 
-class AuthService
-// @Inject() (val controllerComponents: ControllerComponents)
-extends PlaySettings.MyControllerBase with
+class AuthService @Inject() (val components: ControllerComponents)
+extends AbstractController(components) with
 AuthServiceTrait {
   override implicit val config: Configuration = new DefaultConfiguration {
     override val needLoginForEditing = true
@@ -50,7 +52,6 @@ extends ImplementationSettings.RDFModule
 with ImplementationSettings.RDFCache
 with AuthServiceTrait2[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 with FormModuleBanana[ImplementationSettings.Rdf] {
-
   logger.info(s"object Auth")
   /** NOTE otherwise we get "Lock obtain timed out", because
    *  LUCENE transactions would overlap with main database TDB/ */
@@ -59,7 +60,7 @@ with FormModuleBanana[ImplementationSettings.Rdf] {
 /** Controller for registering account, login, logout;
  *  see https://www.playframework.com/documentation/2.4.x/ScalaSessionFlash */
 trait AuthServiceTrait2[Rdf <: RDF, DATASET]
-extends PlaySettings.MyControllerBase
+extends BaseController
  with Authentication[Rdf, DATASET]
  with RDFStoreLocalUserManagement[Rdf, DATASET]
  with TriplesViewModule[Rdf, DATASET]
@@ -171,7 +172,14 @@ extends PlaySettings.MyControllerBase
           !url.endsWith("/authenticate")) => Call("GET", url)
         case _ => routes.WebPagesApp.index
       }
-      Redirect(call).withSession(Security.username -> useridOption.get )
+
+      // cf https://www.playframework.com/documentation/2.7.x/Migration26 , search Security, username
+      // private object Attrs {  val UserName: TypedKey[String] = TypedKey("userName") }
+      // Getting an attribute from a Request or RequestHeader   val userName: String = req.attrs(Attrs.UserName) ; val optUserName: [String] = req.attrs.get(Attrs.UserName)
+      // Setting an attribute on a Request or RequestHeader val newReq = req.addAttr(Attrs.UserName, newName)
+
+      // Redirect(call).withSession(Security.username -> useridOption.get )
+      Redirect(call).withSession("username" -> useridOption.get )
         .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
         .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
         .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
@@ -235,7 +243,8 @@ extends PlaySettings.MyControllerBase
         // TODO also Redirect to the URL before login
         logger.info(s"register: user: $useridOption")
         Redirect(routes.WebPagesApp.index).withSession(
-          Security.username -> makeURIPartFromString(useridOption.get))
+          // Security.username -> makeURIPartFromString(useridOption.get))
+          "username" -> makeURIPartFromString(useridOption.get))
           .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
