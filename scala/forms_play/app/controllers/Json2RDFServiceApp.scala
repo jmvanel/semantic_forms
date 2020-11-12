@@ -22,11 +22,16 @@ import scala.util.Success
 import scala.util.Failure
 import java.io.StringWriter
 
-class Json2RDFServiceApp
- extends {
-    override implicit val config = new PlayDefaultConfiguration
-  }
+import javax.inject.Inject
+import play.api.mvc.ControllerComponents
+import play.api.mvc.AbstractController
+
+class Json2RDFServiceApp @Inject() (
+     components: ControllerComponents, configuration: play.api.Configuration)
+extends { override implicit val config = new PlayDefaultConfiguration }
+// extends { override implicit val config = new PlayDefaultConfiguration }
   // with Services
+with AbstractController(components)
 with HTTPrequestHelpers
   with RDFStoreLocalJenaProvider // TODO remove, useless
   with CORS
