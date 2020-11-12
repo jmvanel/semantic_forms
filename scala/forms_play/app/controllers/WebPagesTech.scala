@@ -9,17 +9,33 @@ import scalaz._
 import Scalaz._
 
 
-class WebPagesTechApp extends {
-    override implicit val config = new PlayDefaultConfiguration
-  }
+import javax.inject.Inject
+import play.api.mvc.ControllerComponents
+import play.api.mvc.AbstractController
+import deductions.runtime.utils.Configuration
+import deductions.runtime.services.RecoverUtilities
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.services.html.TriplesViewWithTitle
+import deductions.runtime.jena.RDFStoreLocalJenaProvider
+
+class WebPagesTechApp @Inject() (
+     components: ControllerComponents, configuration: play.api.Configuration)
+extends { override implicit val config = new PlayDefaultConfiguration }
+with AbstractController(components)
   with WebPagesTech
   with HTMLGenerator
 
 
 /** controller for Web Pages, Technical users */
-trait WebPagesTech extends PlaySettings.MyControllerBase
-with ApplicationTrait
+trait WebPagesTech extends play.api.mvc.BaseController
+with RDFStoreLocalJenaProvider
+with RecoverUtilities[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+with HTTPrequestHelpers
+with LanguageManagement
+with TriplesViewWithTitle[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+with HTTPoutputFromThrowable[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 {
+  val config: Configuration
   import config._
 
   /** "naked" HTML form */
