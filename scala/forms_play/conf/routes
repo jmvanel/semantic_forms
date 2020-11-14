@@ -24,7 +24,7 @@ GET     /display            controllers.WebPagesApp.displayURI(displayuri:String
 GET     /load-uri          @controllers.ServicesApp.loadURI(uri:String)
 POST    /load-uri          @controllers.ServicesApp.loadURIpost()
 
-POST    /load               controllers.Application.loadAction()
+POST    /load               @controllers.SparqlServices.loadAction()
 GET     /table              controllers.WebPagesApp.table()
 
 GET     /edit               controllers.WebPagesApp.edit( url:String )
@@ -44,20 +44,19 @@ GET     /page               controllers.SemanticControllerObject.page()
 
 GET     /sparql-ui          controllers.WebPagesApp.sparql( query:String )
 POST    /sparql-ui          controllers.WebPagesApp.sparql( query:String )
-
-# Construct or SELECT 
-GET     /sparql             controllers.Application.sparqlGET( query:String )
-GET     /sparql2            controllers.Application.sparqlGetUnionGraph( query:String )
-
-# application/x-www-form-urlencoded
-POST    /sparql             controllers.Application.sparqlPOST()
-POST    /sparql2            controllers.Application.sparqlPOSTUnionGraph()
-
 GET     /select-ui          controllers.WebPagesApp.select( query:String )
 POST    /select-ui          controllers.WebPagesApp.select( query:String )
 
-GET     /update             controllers.Application.updateGET( update:String )
-POST    /update             controllers.Application.updatePOST()
+# Construct or SELECT 
+GET     /sparql             @controllers.SparqlServicesGET.sparqlGET( query:String )
+GET     /sparql2            @controllers.SparqlServicesGET.sparqlGetUnionGraph( query:String )
+
+# application/x-www-form-urlencoded
+POST    /sparql             @controllers.SparqlServicesGET.sparqlPOST()
+POST    /sparql2            @controllers.SparqlServicesGET.sparqlPOSTUnionGraph()
+
+GET     /update             @controllers.SparqlServices.updateGET( update:String )
+POST    /update             @controllers.SparqlServices.updatePOST()
 
 
 GET     /wordsearch         controllers.WebPagesApp.wordsearchAction(q:String ?= "", clas: String ?= "")

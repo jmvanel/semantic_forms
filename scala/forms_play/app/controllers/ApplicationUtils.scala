@@ -10,12 +10,12 @@ import deductions.runtime.abstract_syntax.FormSyntaxFactory
 import deductions.runtime.abstract_syntax.FormSyntaxFromSPARQL
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFStoreLocalJenaProvider
-import deductions.runtime.services.ApplicationFacadeImpl
 import deductions.runtime.services.CORS
 import deductions.runtime.services.LoadService
 import deductions.runtime.utils.Configuration
 import deductions.runtime.utils.RDFPrefixes
 import deductions.runtime.utils.URIManagement
+import deductions.runtime.utils.ServiceListenersManager
 
 import play.api.http.MediaRange
 import play.api.mvc.Accepting
@@ -27,6 +27,7 @@ import play.api.mvc.RequestHeader
 import play.api.mvc.Result
 import play.api.mvc.BaseController
 import play.api.mvc.Controller
+import play.api.mvc.Results._
 
 import deductions.runtime.views.MainXmlWithHead
 import deductions.runtime.core.HTTPrequest
@@ -44,34 +45,31 @@ import play.api.mvc.Rendering
 import scalaz._
 import Scalaz._
 import deductions.runtime.utils.I18NMessages
-
-//object Global extends GlobalSettings with Results {
-//  override def onBadRequest(request: RequestHeader, error: String) = {
-//    Future{ BadRequest("""Bad Request: "$error" """) }
-//  }
-//}
-
-object PlaySettings {
-  type MyControllerBase =
-    play.api.mvc.Controller
-    // play.api.mvc.BaseController
-}
+import deductions.runtime.sparql_cache.SPARQLHelpers
 
 /** controller base;
  *  HTML pages & HTTP services are in WebPages and Services */
-trait ApplicationTrait extends Rendering
+trait ApplicationUtils
+    extends HTTPrequestHelpers
+    with RDFContentNegociationPlay
+    with deductions.runtime.utils.RDFStoreLocalProvider[org.w3.banana.jena.Jena,org.apache.jena.query.Dataset]
+    with RDFStoreLocalJenaProvider
+    with ServiceListenersManager[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with SPARQLHelpers[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    with RequestUtils
+/* extends
+    Rendering
     with HeaderNames
-    with ApplicationFacadeImpl[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with LanguageManagement
     with Secured
     with MainXmlWithHead[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with CORS
-    with HTTPrequestHelpers
     with RDFPrefixes[ImplementationSettings.Rdf]
-    with RequestUtils
     with RDFStoreLocalJenaProvider
     with RDFContentNegociationPlay
-    with HTTPoutputFromThrowable[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
+    with HTTPoutputFromThrowable[ImplementationSettings.Rdf, ImplementationSettings.DATASET] 
+*/
+{
 
   val config: Configuration
 
@@ -98,44 +96,10 @@ trait ApplicationTrait extends Rendering
   protected def callAllServiceListeners(request: HTTPrequest) = {
     logger.debug( s">>>> callAllServiceListeners $request => ${request.uri}")
     implicit val rdfLocalProvider
+    : RDFStoreLocalProvider[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 //    : RDFStoreLocalProvider[Rdf, DATASET]
     = this
     callServiceListeners(request)(request.userId(), rdfLocalProvider)
-  }
-              
-  /////////////////////////////////
-
-  /** save Only, no display - TODO move outside of forms_play */
-  protected def saveOnly(
-      httpRequest: HTTPrequest,
-      userid: String, graphURI: String = ""): (String, Boolean) = {
-    val host = httpRequest.host
-    val lang = httpRequest.getLanguage()
-    val map = httpRequest.formMap
-    logger.debug(
-      s"""
-        ApplicationTrait.saveOnly: request $httpRequest ,
-        ApplicationTrait.saveOnly: map $map""")
-    // cf http://danielwestheide.com/blog/2012/12/26/the-neophytes-guide-to-scala-part-6-error-handling-with-try.html
-    val subjectUriTryOption = Try {
-      saveForm(map, lang, userid, graphURI, host)
-    }
-    subjectUriTryOption match {
-      case Success((Some(url1), typeChange)) => (url1, typeChange)
-      case _                                 => ("", false)
-    }
-  }
-
-  protected def renderResult(output: Accepting => Result, default: Accepting = AcceptsTTL)(implicit request: RequestHeader): Result = {
-    render {
-      case AcceptsTTL()    => output(AcceptsTTL)
-      case AcceptsJSONLD() => output(AcceptsJSONLD)
-      case AcceptsRDFXML() => output(AcceptsRDFXML)
-      case Accepts.Json()  => output(Accepts.Json)
-      case Accepts.Xml()   => output(Accepts.Xml)
-      case AcceptsSPARQLresults() => output(AcceptsSPARQLresults)
-      case _             => output(default)
-    }
   }
 
   val mimeSet = mimeAbbrevs.keys.toSet
@@ -156,6 +120,9 @@ trait ApplicationTrait extends Rendering
     }
   }
 
+
+  def recoverFromOutOfMemoryErrorDefaultMessage(lang: String) =
+    I18NMessages.get("recoverFromOutOfMemoryErrorDefaultMessage", lang)
   def recoverFromOutOfMemoryErrorResult(
     sourceCode: => Result,
     message:    String    = recoverFromOutOfMemoryErrorDefaultMessage("en") ): Result = {
@@ -173,5 +140,7 @@ trait ApplicationTrait extends Rendering
         }
     }
   }
+
+
 
 }

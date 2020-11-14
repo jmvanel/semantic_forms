@@ -2,15 +2,17 @@ package controllers
 
 
 import deductions.runtime.jena.ImplementationSettings
-import deductions.runtime.services.ApplicationFacadeImpl
 import deductions.runtime.utils.Configuration
+import deductions.runtime.services.Authentication
+
 import play.api.mvc._
 /**
  * Trait for user/password secured controllers
  *  cf https://github.com/playframework/playframework/blob/master/framework/src/play/src/main/scala/play/api/mvc/Security.scala
  */
 trait Secured
-    extends ApplicationFacadeImpl[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    extends Authentication[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+    // ApplicationFacadeImpl[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with Results {
 
   val config: Configuration
