@@ -7,6 +7,13 @@ import Common._
 name := "semantic_forms_play"
 maintainer := "jeanmarc.vanel@gmail.com"
 
+scalacOptions ++= Seq(
+	// 
+	"-unchecked",
+        // "-deprecation",
+        // "-feature", "-explaintypes", "-language:_", 
+	"-Xlint:unused")
+
 publishArtifact in (Compile, packageDoc) := false
 sources in (Compile,doc) := Seq.empty
 
@@ -16,7 +23,9 @@ baseDirectory in run := file(".") // does not work: the TDB files are in parent 
 
 connectInput in run := true
 
-routesGenerator := StaticRoutesGenerator
+// routesGenerator := StaticRoutesGenerator
+routesGenerator := InjectedRoutesGenerator
+// 
 libraryDependencies += guice
 
 libraryDependencies += filters

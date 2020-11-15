@@ -3,30 +3,19 @@ package controllers
 import scala.util.Failure
 import scala.util.Success
 
-import play.api.http.MediaRange
-import play.api.mvc.Accepting
-import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.EssentialAction
 import play.api.mvc.Request
 import play.api.mvc.Result
 
-import deductions.runtime.core.HTTPrequest
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.LoadService
 
 import scalaz._
 import Scalaz._
-import play.api.mvc.RequestHeader
 
 import deductions.runtime.services.RecoverUtilities
 import deductions.runtime.utils.StringHelpers
-
-// import deductions.runtime.services.CORS
-// import deductions.runtime.utils.Configuration
-// import deductions.runtime.utils.RDFPrefixes
-// import deductions.runtime.utils.URIManagement
-// import deductions.runtime.jena.RDFStoreLocalJenaProvider
 
 import javax.inject.Inject
 import play.api.mvc.ControllerComponents
@@ -41,10 +30,6 @@ class SparqlServices @Inject() (
 with AbstractController(components)
 // with ApplicationTrait
 with ApplicationUtils
-/*
-    with Rendering
-    with HeaderNames
-*/
     with Secured
     with LanguageManagement
     with HTTPoutputFromThrowable[ImplementationSettings.Rdf, ImplementationSettings.DATASET] 
@@ -52,7 +37,7 @@ with ApplicationUtils
     with RecoverUtilities[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with StringHelpers
 {
-  import config._
+  // import config._
 
   /** load RDF String in database, cf
    *  https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-post
@@ -150,8 +135,7 @@ with ApplicationUtils
                 request.body.asFormUrlEncoded.getOrElse(Map()).getOrElse("query", Seq("")).headOption.getOrElse("")
               }
             } else update
-          logInfo(s"sparql: update2 '$update2'")
-          val lang = chooseLanguage(request) // for logging
+          logInfo(s"sparql: update2 '$update2' , userid '$userid'")
           val res = wrapInTransaction( sparqlUpdateQuery(update2) ) .flatten
           res match {
             case Success(s) =>

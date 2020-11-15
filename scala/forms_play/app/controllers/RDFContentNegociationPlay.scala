@@ -2,6 +2,7 @@ package controllers
 
 import play.api.mvc.Accepting
 import play.api.mvc.AcceptExtractors
+import play.api.http.MediaRange
 
 trait RDFContentNegociationPlay
 extends AcceptExtractors {
@@ -30,4 +31,20 @@ extends AcceptExtractors {
 
 	 val simpleString2mimeMap = mimeAbbrevs.map(_.swap)
 
+  val mimeSet = mimeAbbrevs.keys.toSet
+  protected def computeMIME(accepts: Accepting, default: Accepting): Accepting = {
+    if( mimeSet.contains(accepts))
+       accepts
+    else default
+  }
+
+  protected def computeMIME(accepts: Seq[MediaRange], default: Accepting): Accepting = {
+    val v = accepts.find {
+      mediaRange => val acc = Accepting(mediaRange.toString())
+      mimeSet.contains(acc) }
+    v match {
+      case Some(acc) => Accepting(acc.toString())
+      case None => default
+    }
+  }
 }

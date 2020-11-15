@@ -8,28 +8,13 @@ import play.api.http.MediaRange
 import play.api.mvc.Accepting
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
-// import play.api.mvc.EssentialAction
 import play.api.mvc.Request
 import play.api.mvc.Result
-// import play.api.mvc.Results
-import play.api.mvc.RequestHeader
 
 import scalaz._
 import Scalaz._
 
 import deductions.runtime.core.HTTPrequest
-// import deductions.runtime.services.RecoverUtilities
-// import deductions.runtime.utils.StringHelpers
-
-// import deductions.runtime.services.CORS
-// import deductions.runtime.utils.Configuration
-// import deductions.runtime.utils.RDFPrefixes
-// import deductions.runtime.utils.URIManagement
-// import deductions.runtime.jena.RDFStoreLocalJenaProvider
-// import deductions.runtime.services.ApplicationFacadeImpl
-
-// import play.api.http.HeaderNames
-// import play.api.mvc.Rendering
 import javax.inject.Inject
 import play.api.mvc.ControllerComponents
 import play.api.mvc.AbstractController
@@ -50,7 +35,7 @@ with HTTPrequestHelpers
     with StringHelpers
 */
 {
-  import config._
+  // import config._
 
   /** sparql compliant GET Service, Construct or SELECT */
   def sparqlGET(query: String): Action[AnyContent] =
