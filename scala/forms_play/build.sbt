@@ -6,7 +6,6 @@ import Common._
 
 name := "semantic_forms_play"
 maintainer := "jeanmarc.vanel@gmail.com"
-
 scalacOptions ++= Seq(
 	// 
 	"-unchecked",
@@ -23,8 +22,9 @@ baseDirectory in run := file(".") // does not work: the TDB files are in parent 
 
 connectInput in run := true
 
-// routesGenerator := StaticRoutesGenerator
-routesGenerator := InjectedRoutesGenerator
+//
+routesGenerator := StaticRoutesGenerator
+// routesGenerator := InjectedRoutesGenerator
 // 
 libraryDependencies += guice
 
