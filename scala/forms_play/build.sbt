@@ -7,11 +7,12 @@ import Common._
 name := "semantic_forms_play"
 maintainer := "jeanmarc.vanel@gmail.com"
 scalacOptions ++= Seq(
-	// 
-	"-unchecked",
+	// "-unchecked",
         // "-deprecation",
         // "-feature", "-explaintypes", "-language:_", 
-	"-Xlint:unused")
+	// "-Xlint:unused"
+// "-J-g:none"
+)
 
 publishArtifact in (Compile, packageDoc) := false
 sources in (Compile,doc) := Seq.empty

@@ -39,8 +39,53 @@ import org.slf4j.LoggerFactory
 import ch.qos.logback.core.util.StatusPrinter
 import ch.qos.logback.classic.LoggerContext
 
+import javax.inject.Inject
+import play.api.mvc.ControllerComponents
+import play.api.mvc.AbstractController
 
-object WebPagesApp extends {
+class WebPagesApp @Inject() (
+  components: ControllerComponents, configuration: play.api.Configuration) extends AbstractController(components)
+  {
+    def index() = WebPagesObject.index()
+    def displayURI(uri0: String, blanknode: String = "", Edit: String = "",
+                 formuri: String = "") =
+       WebPagesObject . displayURI(uri0: String, blanknode: String , Edit: String ,
+                 formuri: String )
+
+   def table()
+ = WebPagesObject .table()
+   def edit( url:String )
+ = WebPagesObject .edit( url:String )
+   def saveAction()
+   = WebPagesObject .saveAction()
+   def createAction()
+ = WebPagesObject .createAction()
+   def sparqlForm(query:String, Edit:String="", formuri:String ="", database:String ="TDB")
+ = WebPagesObject .sparqlForm(query:String, Edit:String, formuri:String , database:String )
+   def sparql( query:String )
+ = WebPagesObject .sparql( query:String )
+   def select( query:String )
+ = WebPagesObject .select( query:String )
+   def wordsearchAction(q:String = "", clas: String = "")
+ = WebPagesObject .wordsearchAction(q:String , clas: String )
+   def searchOrDisplayAction(q:String = "")
+ = WebPagesObject .searchOrDisplayAction(q:String )
+   def backlinksAction(q:String = "")
+ = WebPagesObject .backlinksAction(q:String )
+   def extSearch(q:String = "")
+ = WebPagesObject .extSearch(q:String )
+   def toolsPage
+ = WebPagesObject .toolsPage
+   def showNamedGraphsAction
+ = WebPagesObject .showNamedGraphsAction
+   def showTriplesInGraphAction(uri: String)
+ = WebPagesObject .showTriplesInGraphAction(uri: String)
+   def makeHistoryUserActionsAction(limit: String= "")
+ = WebPagesObject .makeHistoryUserActionsAction(limit: String)
+
+  }
+
+object WebPagesObject extends {
     override implicit val config = new PlayDefaultConfiguration
   }
   with WebPages
