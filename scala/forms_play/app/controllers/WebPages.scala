@@ -42,10 +42,15 @@ import ch.qos.logback.classic.LoggerContext
 import javax.inject.Inject
 import play.api.mvc.ControllerComponents
 import play.api.mvc.AbstractController
+import play.api.mvc.BaseController
 
 class WebPagesApp @Inject() (
   components: ControllerComponents, configuration: play.api.Configuration) extends AbstractController(components)
   {
+    val WebPagesObject = new WebPagesObject {
+      override def controllerComponents = components
+    }
+
     def index() = WebPagesObject.index()
     def displayURI(uri0: String, blanknode: String = "", Edit: String = "",
                  formuri: String = "") =
@@ -85,7 +90,9 @@ class WebPagesApp @Inject() (
 
   }
 
-object WebPagesObject extends {
+
+// object
+abstract class WebPagesObject extends {
     override implicit val config = new PlayDefaultConfiguration
   }
   with WebPages
@@ -103,7 +110,7 @@ object WebPagesObject extends {
 
 
 /** controller for HTML pages ("generic application") */
-trait WebPages extends PlaySettings.MyControllerBase
+trait WebPages extends BaseController // PlaySettings.MyControllerBase
 with ApplicationTrait
   with FormHeader[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
   with SemanticControllerWrapper
