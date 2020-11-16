@@ -13,20 +13,24 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Results._
 import play.api.http.HeaderNames._
 
-
 import org.apache.commons.codec.digest.DigestUtils
 import deductions.runtime.services.LDP
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFStoreLocalJenaProvider
 
-class LDPgetServicesApp extends  {
+import javax.inject.Inject
+import play.api.mvc.ControllerComponents
+import play.api.mvc.AbstractController
+
+class LDPgetServicesApp @Inject() (
+  components: ControllerComponents, configuration: play.api.Configuration) extends  {
     override implicit val config = new PlayDefaultConfiguration
   }
+  with AbstractController(components)
   with RDFStoreLocalJenaProvider
-  with LDPgetService
-
-
-trait LDPgetService extends LDP[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+  // with LDPgetService
+//trait LDPgetService extends
+  with LDP[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
   with HTTPrequestHelpers {
 
   /** LDP GET

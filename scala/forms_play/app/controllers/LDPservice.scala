@@ -23,13 +23,18 @@ import deductions.runtime.services.LDP
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.jena.RDFStoreLocalJenaProvider
 
-class LDPservicesApp extends  {
+import javax.inject.Inject
+import play.api.mvc.ControllerComponents
+import play.api.mvc.AbstractController
+
+class LDPservicesApp @Inject() (
+  components: ControllerComponents, configuration: play.api.Configuration) extends  {
     override implicit val config = new PlayDefaultConfiguration
   }
+  with AbstractController(components)
   with RDFStoreLocalJenaProvider
-  with LDPservice
-
-trait LDPservice extends HTTPrequestHelpers
+  // with LDPservice
+//trait LDPservice extends HTTPrequestHelpers
     with LDP[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RequestUtils {
 

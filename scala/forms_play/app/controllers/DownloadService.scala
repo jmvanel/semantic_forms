@@ -15,12 +15,18 @@ import deductions.runtime.services.RDFContentNegociation
 import deductions.runtime.jena.RDFStoreLocalJenaProvider
 import deductions.runtime.core.HTTPrequest
 
-class DownloadServiceApp extends  {
-  override implicit val config = new PlayDefaultConfiguration
-} with RDFStoreLocalJenaProvider
-with DownloadService
+import javax.inject.Inject
+import play.api.mvc.ControllerComponents
+import play.api.mvc.AbstractController
 
-trait DownloadService extends HTTPrequestHelpers
+class DownloadServiceApp @Inject() (
+  components: ControllerComponents, configuration: play.api.Configuration)
+  extends {
+    override implicit val config = new PlayDefaultConfiguration
+  }
+  with AbstractController(components)
+  with RDFStoreLocalJenaProvider
+  with HTTPrequestHelpers
   with BrowsableGraph[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
   with RDFContentNegociation {
   /**

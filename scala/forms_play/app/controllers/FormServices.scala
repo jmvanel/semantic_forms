@@ -18,17 +18,19 @@ import deductions.runtime.services.FormJSON
 import deductions.runtime.jena.RDFStoreLocalJenaProvider
 import deductions.runtime.utils.FormModuleBanana
 
-class FormServicesApp extends  {
-    override implicit val config = new PlayDefaultConfiguration
-  }
-  with FormServices
-  with FormModuleBanana[ImplementationSettings.Rdf]
-  with RDFStoreLocalJenaProvider
-
+import javax.inject.Inject
+import play.api.mvc.ControllerComponents
+import play.api.mvc.AbstractController
 
 /** Services providing raw Forms in JSON format (for external renderers) */
-trait FormServices  extends
-CreationAbstractForm[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+class FormServicesApp @Inject() (
+  components: ControllerComponents, configuration: play.api.Configuration) extends {
+    override implicit val config = new PlayDefaultConfiguration
+  }
+  with AbstractController(components)
+  with FormModuleBanana[ImplementationSettings.Rdf]
+  with RDFStoreLocalJenaProvider
+with CreationAbstractForm[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 with FormJSON[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 with RDFContentNegociation
 with RDFContentNegociationPlay
