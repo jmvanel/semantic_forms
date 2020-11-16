@@ -15,8 +15,9 @@
 # Home page
 GET     /                   @controllers.WebPagesApp.index
 
-# TODO put it in files/
-GET /robots.txt             controllers.Assets.at(path="/public", file="robots.txt")
+# put it in files/
+# GET /robots.txt             controllers.Assets.at(path="/public", file="robots.txt")
+GET /robots.txt             controllers.Default.redirect(to = "/files/robots.txt")
 
 # GET /bla controllers.HomeController.bla()
 
@@ -38,7 +39,7 @@ GET     /sparql-data       @controllers.FormServicesApp.sparqlDataGET(query: Str
 
 GET     /download          @controllers.DownloadServiceApp.downloadAction( url:String, database:String ?="TDB" )
 GET     /form              @controllers.WebPagesTechApp.form(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="", database:String ?="TDB")
-GET     /sparql-form        @controllers.WebPagesApp.sparqlForm(query:String, Edit:String?="", formuri:String ?="", database:String ?="TDB")
+GET     /sparql-form       @controllers.WebPagesApp.sparqlForm(query:String, Edit:String?="", formuri:String ?="", database:String ?="TDB")
 
 GET     /page               controllers.SemanticControllerObject.page()
 
