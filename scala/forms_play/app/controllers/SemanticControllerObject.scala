@@ -12,6 +12,10 @@ import deductions.apps.ContactsFrontPage
 import deductions.apps.ContactsDashboard
 import deductions.runtime.utils.FormModuleBanana
 
+import javax.inject.Inject
+import play.api.mvc.ControllerComponents
+import play.api.mvc.AbstractController
+
 /** RDF based HTTP Controller/router;
  *  this allows to create new pages or services ("plugins")
  *  without relying on routes file of Play! framework,
@@ -19,9 +23,12 @@ import deductions.runtime.utils.FormModuleBanana
  *
  * To create a new service, just implement interface in trait SemanticController,
  * and add this to val actions below. */
-object SemanticControllerObject
-extends play.api.mvc.Results with
-    ImplementationSettings.RDFCache
+// object SemanticControllerObject
+class SemanticControllerObject @Inject() (
+  components: ControllerComponents)
+extends AbstractController(components)
+  with play.api.mvc.Results
+  with ImplementationSettings.RDFCache
     with CentralSemanticController[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with LanguageManagement
     with RegisterPage[ImplementationSettings.Rdf, ImplementationSettings.DATASET]

@@ -41,7 +41,7 @@ GET     /download          @controllers.DownloadServiceApp.downloadAction( url:S
 GET     /form              @controllers.WebPagesTechApp.form(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="", database:String ?="TDB")
 GET     /sparql-form       @controllers.WebPagesApp.sparqlForm(query:String, Edit:String?="", formuri:String ?="", database:String ?="TDB")
 
-GET     /page               controllers.SemanticControllerObject.page()
+GET     /page               @controllers.SemanticControllerObject.page()
 
 GET     /sparql-ui          @controllers.WebPagesApp.sparql( query:String )
 POST    /sparql-ui          @controllers.WebPagesApp.sparql( query:String )

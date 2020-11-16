@@ -8,9 +8,11 @@ import play.api.mvc.{Action, Request}
 import deductions.runtime.utils.FormModuleBanana
 import play.api.mvc.ControllerComponents
 import javax.inject.Inject
+import play.api.mvc.AbstractController
 
 /** Dummy controller for helping in creating new web pages or services */
-class DummyController @Inject() (val controllerComponents: ControllerComponents) extends PlaySettings.MyControllerBase
+class DummyController @Inject() (components: ControllerComponents)
+extends AbstractController(components)
     with ImplementationSettings.RDFCache
     with LanguageManagement
     with RegisterPage[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
