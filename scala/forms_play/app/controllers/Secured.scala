@@ -6,14 +6,14 @@ import deductions.runtime.utils.Configuration
 import deductions.runtime.services.Authentication
 
 import play.api.mvc._
+
 /**
  * Trait for user/password secured controllers
  *  cf https://github.com/playframework/playframework/blob/master/framework/src/play/src/main/scala/play/api/mvc/Security.scala
  */
-trait Secured
-    extends Authentication[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    // ApplicationFacadeImpl[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with Results {
+trait Secured extends Authentication[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+  with BaseController
+  with Results {
 
   val config: Configuration
   import config._
@@ -21,7 +21,8 @@ trait Secured
   val loginActivated = needLogin
 
   def getUsername(request: RequestHeader): Option[String] =
-    request.session.get(Security.username)
+    // request.session.get(Security.username)
+    request.session.get("username")
 
   private def onUnauthorized(request: RequestHeader) = {
     if (request.path.startsWith("/form"))

@@ -54,7 +54,9 @@ trait HTTPrequestHelpers {
     res
   }
 
-  private def getUsername(request: RequestHeader): Option[String] = request.session.get(Security.username)
+  private def getUsername(request: RequestHeader): Option[String] =
+    request.session.get("username")
+    // request.session.get(Security.username)
 
   def copyCookie(cookie: play.api.mvc.Cookie): Cookie = {
     import cookie._
