@@ -28,7 +28,7 @@ import play.api.mvc.AbstractController
 
 class Json2RDFServiceApp @Inject() (
      components: ControllerComponents, configuration: play.api.Configuration)
-extends { override implicit val config = new PlayDefaultConfiguration }
+extends { override implicit val config = new PlayDefaultConfiguration(configuration)}
 // extends { override implicit val config = new PlayDefaultConfiguration }
   // with Services
 with AbstractController(components)

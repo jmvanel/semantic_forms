@@ -16,7 +16,7 @@ class PlayDefaultConfiguration(configuration: play.api.Configuration)
      */
     // override val useTextQuery = true
 
-  def this() { this(Play.current.configuration) }
+  // def this() { this(Play.current.configuration) }
 
   override val serverPort = makeServerPort(configuration)
   def makeServerPort(configuration: play.api.Configuration) = {

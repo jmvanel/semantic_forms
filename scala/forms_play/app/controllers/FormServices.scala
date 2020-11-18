@@ -25,7 +25,7 @@ import play.api.mvc.AbstractController
 /** Services providing raw Forms in JSON format (for external renderers) */
 class FormServicesApp @Inject() (
   components: ControllerComponents, configuration: play.api.Configuration) extends {
-    override implicit val config = new PlayDefaultConfiguration
+    override implicit val config = new PlayDefaultConfiguration(configuration)
   }
   with AbstractController(components)
   with FormModuleBanana[ImplementationSettings.Rdf]

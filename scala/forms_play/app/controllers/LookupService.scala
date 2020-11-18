@@ -27,7 +27,7 @@ import play.api.mvc.AbstractController
 //trait LookupService[Rdf <: RDF, DATASET] extends Lookup[Rdf, DATASET]
 class LookupServiceApp @Inject() (
   components: ControllerComponents, configuration: play.api.Configuration) extends {
-    override implicit val config = new PlayDefaultConfiguration
+    override implicit val config = new PlayDefaultConfiguration(configuration)
   }
 with AbstractController(components)
 with RDFStoreLocalJenaProvider

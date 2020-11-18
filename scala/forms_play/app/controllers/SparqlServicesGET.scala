@@ -22,7 +22,7 @@ import play.api.mvc.AbstractController
 /** SPARQL compliant services: SPARQL query */
 class SparqlServicesGET @Inject() (
   components: ControllerComponents, configuration: play.api.Configuration) extends {
-    override implicit val config = new PlayDefaultConfiguration 
+    override implicit val config = new PlayDefaultConfiguration(configuration)
   }
 with AbstractController(components)
 with ApplicationUtils

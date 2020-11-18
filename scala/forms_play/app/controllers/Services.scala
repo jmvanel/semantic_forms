@@ -37,7 +37,7 @@ import play.api.mvc.AbstractController
  *  including LDP */
 class ServicesApp @Inject() (
      components: ControllerComponents, configuration: play.api.Configuration)
-extends { override implicit val config = new PlayDefaultConfiguration }
+extends { override implicit val config = new PlayDefaultConfiguration(configuration) }
 with AbstractController(components)
 with RDFStoreLocalJenaProvider
 with RDFCacheAlgo[ImplementationSettings.Rdf, ImplementationSettings.DATASET]

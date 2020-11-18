@@ -20,7 +20,7 @@ import deductions.runtime.jena.RDFStoreLocalJenaProvider
 
 class WebPagesTechApp @Inject() (
      components: ControllerComponents, configuration: play.api.Configuration)
-extends { override implicit val config = new PlayDefaultConfiguration }
+extends { override implicit val config = new PlayDefaultConfiguration(configuration) }
 with AbstractController(components)
   with WebPagesTech
   with HTMLGenerator
