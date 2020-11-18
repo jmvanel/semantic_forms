@@ -10,13 +10,15 @@ val jenaVersion =  "3.16.0"
 val akkaVersion =  "2.5.26" // because of Play 2.6.25
                   // "2.6.5" //
 val akkaHttpVersion = "10.1.12"
+val any23Version = "2.3"
+val commonsCsvVersion = "1.8"
 
   val bananaDependency0 = "org.w3" %%  "banana-jena" % "0.8.4-SNAPSHOT" 
   val bananaDependency = bananaDependency0 exclude("org.slf4j", "slf4j-api" )	exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
   val jenaDependency = "org.apache.jena" % "apache-jena-libs" % jenaVersion exclude("org.slf4j", "slf4j-api")
   val jenaPermissionsDependency = "org.apache.jena" % "jena-permissions" % jenaVersion	
   val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion
-  val jenaSpatialDependency = "org.apache.jena" % "jena-spatial" % jenaVersion
+  val jenaSpatialDependency = "org.apache.jena" % "jena-geosparql" % jenaVersion
 
 
   val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.3.0"
@@ -38,16 +40,15 @@ val akkaHttpVersion = "10.1.12"
   // allready in Banana
   // val httpComponents = "org.apache.httpcomponents" % "httpclient" % "4.5.2"
 
-  val any23Dependencies = "org.apache.any23" % "apache-any23-csvutils" % "2.3"
+  val any23Dependencies = "org.apache.any23" % "apache-any23-csvutils" % any23Version
 
   val commonDependencies =
     loggingDependencies ++
     Seq(bananaDependency,
 	jenaDependency, jenaPermissionsDependency, jenaTextDependency,
-// jenaSpatialDependency,
-	xmlDependency,
-
-	junitDependency, scalatestDependency,
+    jenaSpatialDependency,
+    xmlDependency,
+    junitDependency, scalatestDependency,
 
     "com.typesafe.play" %% "play-json" %  "2.8.1" , // 2.6.14",
     // "com.typesafe.play" %% "play-iteratees" % "2.6.1",
