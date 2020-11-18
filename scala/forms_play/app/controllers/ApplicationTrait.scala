@@ -33,13 +33,12 @@ import scalaz._
 //    Future{ BadRequest("""Bad Request: "$error" """) }
 //  }
 //}
-
+/*
 object PlaySettings {
-  type MyControllerBase =
-    play.api.mvc.Controller
+  type MyControllerBase = play.api.mvc.Controller
     // play.api.mvc.BaseController
 }
-
+*/
 /** controller base;
  *  HTML pages & HTTP services are in WebPages and Services */
 trait ApplicationTrait extends Rendering

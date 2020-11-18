@@ -45,11 +45,13 @@ import play.api.mvc.AbstractController
 import play.api.mvc.BaseController
 
 class WebPagesApp @Inject() (
-  components: ControllerComponents, configuration: play.api.Configuration) extends AbstractController(components)
+  components: ControllerComponents, configuration: play.api.Configuration) extends
   {
-    val WebPagesObject = new WebPagesObject {
-      override def controllerComponents = components
-    }
+    val WebPagesObject = new {
+      override val controllerComponents = components
+      override implicit val config = new PlayDefaultConfiguration(configuration)
+    } with AbstractController(components)
+    with WebPagesObject
 
     def index() = WebPagesObject.index()
     def displayURI(uri0: String, blanknode: String = "", Edit: String = "",
@@ -92,10 +94,9 @@ class WebPagesApp @Inject() (
 
 
 // object
-abstract class WebPagesObject extends {
-    override implicit val config = new PlayDefaultConfiguration
-  }
-  with WebPages
+// abstract class
+trait WebPagesObject
+  extends WebPages
   with HTMLGenerator {
     import ch.qos.logback.classic.util.ContextInitializer;
        // must be set before the first call to  LoggerFactory.getLogger();

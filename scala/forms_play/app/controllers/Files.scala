@@ -1,6 +1,5 @@
 package controllers
 import play.api.mvc.Action
-import play.api.mvc.Controller
 import java.io.File
 import scala.concurrent.ExecutionContext
 import javax.inject.Inject

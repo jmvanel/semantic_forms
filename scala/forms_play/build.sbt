@@ -23,8 +23,7 @@ baseDirectory in run := file(".") // does not work: the TDB files are in parent 
 
 connectInput in run := true
 
-//
-routesGenerator := StaticRoutesGenerator
+// routesGenerator := StaticRoutesGenerator
 // routesGenerator := InjectedRoutesGenerator
 // 
 libraryDependencies += guice
