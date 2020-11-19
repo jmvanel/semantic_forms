@@ -1,7 +1,11 @@
+<!--============ keydown, multi-lines ==========-->
 <script type='text/javascript'>
 
+    /** Listener for "enter" typed */
     function enterTypedListener(event) {
-      // console.log( "Handler for keydown called: key: " + event . key )
+      // console.log( "Handler for keydown called: key: '" + event . key + "'" )
+      // console.log( `event.srcElement.type '${event.srcElement.type}' ` )
+      // console.log( `event.srcElement.tagName '${event.srcElement.tagName}' ` )
       if( event . key == "Enter"){
         console.log( "Enter typed" )
         var addedWidget = cloneWidget(event.srcElement)
@@ -10,10 +14,13 @@
           get(0) .
           addEventListener( "keydown", enterTypedListener )
       }
+      // event.preventDefault();
     }
 
+    /* ==== Listen to events ===== */
+
     // cf https://blog.garstasio.com/you-dont-need-jquery/events/#event-delegation
-    var fcs = document.querySelectorAll(".sf-values-group") // ".form-control")
+    var fcs = document.querySelectorAll(".sf-values-group")
     console.log( `fcs .form-control : ${fcs}` )
     fcs.forEach(
       fc => {
@@ -21,15 +28,25 @@
         fc .addEventListener('paste', pasteListener )
     } )
 
+    /** Listener for "paste" event */
     function pasteListener(event) {
+      // console.log( `paste: event event.srcElement.type '${event.srcElement.type}' ` )
+      // console.log( `paste: event event.srcElement '${event.srcElement}' ` )
+      // console.log( `paste: event.srcElement.tagName '${event.srcElement.tagName}' ` )
+      // console.log( `paste: event.srcElement.classList '${event.srcElement.classList}' ` )
+
+      // filter out HTML editor (SummerNote)
+      if ( event.srcElement.tagName == "TEXTAREA" ||
+	   findparentClass( event.srcElement, "note-editable" )
+      ) return ;
+
         let paste = (
           event.clipboardData ||
           window.clipboardData ).getData('text');
         var arrayOfStrings = paste.split("\n");
-        console.log('La chaine d\'origine est : "' + paste + '"');
+        console.log('paste: La chaine d\'origine est : "' + paste + '"');
         console.log("Le tableau comporte " + arrayOfStrings.length + " elements : ");
         if( arrayOfStrings.length > 1 ) {
-          // for (var i=0; i < arrayOfStrings.length; i++) {
           for (var i=arrayOfStrings.length - 1; i>=0; i--) {
             console.log(arrayOfStrings[i] + " / ")
             var addedWidget = cloneWidget(event.srcElement)
@@ -39,11 +56,23 @@
         }
       }
 
+function findparentClass(node, clsName) {
+    const parentNode = node.parentNode
+    if( node.classList.contains(clsName) ) {
+        return true
+    } else if( parentNode != null ) {
+        return findparentClass( parentNode, clsName)
+    } else
+        // here we went all the way to root element
+	false
+}
+
         $(document).ready( function (){
             // commented out, because rich HTML content in forms values are displayed badly
             // $(".form-horizontal").tabs();
             //$(".form-group").on('click', '.add-widget', function(event) {
 
+            /** Listener for click on "(+)" button */
             $(".sf-values-group").on('click', '.add-widget', function(event) {
             // $(".add-widget").on('click', function(event) {
                 console.log('Cloning field :');
@@ -71,6 +100,7 @@
         })
     </script>
 
+    <!--============ GPS ==========-->
     <script type='text/javascript'>
       // Really necessary to use $(document).ready() ? This code is at the page end...
       $(document).ready( function (){
