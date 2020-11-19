@@ -70,6 +70,8 @@ val commonsCsvVersion = "1.8"
     // for Java 9 (works also with Java 8)
     , "javax.xml.bind" % "jaxb-api" % "2.3.1"
     , "org.jsoup" % "jsoup" % "1.13.1"
+
+    , "commons-io" % "commons-io" % "2.8.0"
   )
 
 }
