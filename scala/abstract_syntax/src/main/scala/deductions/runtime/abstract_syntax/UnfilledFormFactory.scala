@@ -30,27 +30,29 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
    *  
    *  Transaction inside (RW)
    */
-  def createFormFromClass(classe: Rdf#URI,
+  def createFormFromClass(classOrForm: Rdf#URI,
     formSpecURI0: String = "" , request: HTTPrequest )
   	  (implicit graph: Rdf#Graph) : FormSyntax = {
 
     val formFromClass = wrapInTransaction {
     // if classs argument is not an owl:Class, check if it is a form:specification, then use it as formSpecURI
-    val checkIsOWLClass = find( graph, classe, rdf.typ, owl.Class)
-    val checkIsRDFSClass = find( graph, classe, rdf.typ, rdfs.Class)
-    val checkIsFormSpec = find( graph, classe, rdf.typ, form("specification") ) . toList
-    logger.debug( s">>>> createFormFromClass checkIsFormSpec $checkIsFormSpec" )
+    val checkIsOWLClass = find( graph, classOrForm, rdf.typ, owl.Class).toList
+    val checkIsRDFSClass = find( graph, classOrForm, rdf.typ, rdfs.Class).toList
+    val checkIsFormSpec = find( graph, classOrForm, rdf.typ, form("specification") ) . toList
+    logger.debug( s""">>>> createFormFromClass checkIsFormSpec $checkIsFormSpec
+        checkIsOWLClass $checkIsOWLClass, checkIsRDFSClass $checkIsRDFSClass""" )
 
     val ( formSpecURI, classs ) = if( checkIsOWLClass.isEmpty && checkIsRDFSClass.isEmpty
         && ! checkIsFormSpec.isEmpty )
-      (fromUri(classe), nullURI ) else (formSpecURI0, classe)
+      (fromUri(classOrForm), nullURI ) else (formSpecURI0, classOrForm)
 
     val classFromSpecsOrGiven =
       if (formSpecURI  =/=  "" && classs == nullURI ) {
         val classFromSpecs = lookClassInFormSpec( URI(formSpecURI), graph)
         uriNodeToURI(classFromSpecs)
       } else classs
-    logger.info(s">>> UnfilledFormFactory.createFormFromClass: formSpecURI=<> , class <$classe> => classFromSpecsOrGiven <$classFromSpecsOrGiven>")
+    logger.info(s""">>> UnfilledFormFactory.createFormFromClass: formSpecURI=<$formSpecURI> , classOrForm <$classOrForm> =>
+      classFromSpecsOrGiven <$classFromSpecsOrGiven>""")
 
     val instanceURI = getFirstNonEmptyInMap(request.queryString, "subjecturi")
     val newId = if (instanceURI === "")
@@ -61,7 +63,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
       implicit val lang = request.getLanguage()
       createFormDetailed(makeUri(newId),
         classFromSpecsOrGiven,
-        CreationMode, nullURI, URI(formSpecURI0), request )
+        CreationMode, nullURI, URI(formSpecURI), request )
   } . getOrElse( FormSyntax( nullURI, Seq() ) )
 
 //    addExtraTypesFromHTTPrequest( formFromClass, request)
