@@ -68,11 +68,11 @@ trait RangeInference[Rdf <: RDF, DATASET]
         val enumerated = getObjects(graph, range, owl.oneOf)
         fillPossibleValuesFromList(enumerated, possibleValuesFromOwlOneOf)
       }
-      logger.debug(s"populateFromOwlOneOf size ${possibleValuesFromOwlOneOf.size} ranges $ranges - entryField $entryField")
+      logger.debug(s"populateFromOwlOneOf '${entryField.label}' size ${possibleValuesFromOwlOneOf.size} ranges $ranges - entryField $entryField")
       if (!possibleValuesFromOwlOneOf.isEmpty) {
         /* normally we have a non empty list of possible values to propose to user,
          * and then there is no open Choice for her. */
-        logger.debug(s"populateFromOwlOneOf ${entryField.label} set openChoice = false")
+        logger.debug(s"populateFromOwlOneOf '${entryField.label}' set openChoice = false")
         // entryField.openChoice = false // TODO <<<<<<<<<<
       }
 
@@ -179,12 +179,12 @@ trait RangeInference[Rdf <: RDF, DATASET]
           }
       }
       
-    /* populate possible Values From Instances */
+    /** populate possible Values From Instances in TDB */
     def populateFromInstances(): Seq[ResourceWithLabel[Rdf]] = {
       val possibleValues = time(
     		s"populateFromInstances ${entryField.label}",
         { val rrrr = for (rangeClass <- ranges.toSeq ) yield {
-          // TODO limit number of possible values; later implement Comet on demand access to possible Values
+          // TODO limit number of possible values
           getInstancesAndLabels(rangeClass)
         }
         rrrr.flatten
@@ -215,7 +215,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
       } else Seq()
     }
     
-    /* populate From configuration in TDB
+    /** populate From FormGroup configuration in TDB
      *  TODO ? merge given possibleValues with existing ones
      */
     def populateFromTDB(): Seq[ResourceWithLabel[Rdf]] = {
@@ -247,7 +247,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
           val resourcesWithLabelFromOwlUnion = populateFromOwlUnion()
           val resourcesWithLabel =
             populateFromTDB() ++
-              populateFromInstances() ++
+//              populateFromInstances() ++
               populateFromOwlOneOf()
           val res = recordPossibleValues(resourcesWithLabel, resourcesWithLabelFromOwlUnion )
           res
@@ -272,7 +272,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
       }
     }
     
-    // ==== body of function addPossibleValues ====
+    // ==== body of function addPossibleValues() ====
 
     setPossibleValues
   }

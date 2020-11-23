@@ -75,8 +75,7 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
     val hasLookupCSSclass = lookupCSSclass(resourceEntry)
     Seq(
       Text("\n"),
-    		// format: OFF
-        if (openChoice)
+//        if (openChoice)
           <div class={ cssConfig.formDivInputCSSClass }>
             {
       addTripleAttributesToXMLElement(
@@ -105,9 +104,9 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
             >
           </input> , resourceEntry) }
 		  </div>
-		else new Text("") // format: ON
+//		else new Text("")
       ,
-      if (lookupActivatedFor(resourceEntry))
+//      if (lookupActivatedFor(resourceEntry))
         formatPossibleValues(resourceEntry, inDatalist = true)
 
       /* TODO
@@ -116,10 +115,10 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
        *  - detect mobile
        *  - detect slow Internet connection
        */
-      else if( config.downloadPossibleValues)
-        renderPossibleValues(resourceEntry)
-      else NodeSeq.Empty
-      , Text("\n")
+//      else if( config.downloadPossibleValues)
+//        renderPossibleValues(resourceEntry)
+//      else NodeSeq.Empty
+//      , Text("\n")
     ). flatten
   }
 
@@ -340,17 +339,21 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
   }
 
   /** @return a list of option tags or a datalist tag (with the option tags inside) */
-  def formatPossibleValues(field: FormEntry, inDatalist: Boolean = false)
-  (implicit form: formMod#FormSyntax)
-  : NodeSeq = {
-    val options = Seq(<option value=""></option>) ++
-    		makeHTMLOptionsSequence(field)
-    if (inDatalist)
-      <datalist id={ makeHTMLIdForDatalist(field) }>
-        { options }
-      </datalist>
-    else options
+  def formatPossibleValues(field: FormEntry, inDatalist: Boolean = false)(implicit form: formMod#FormSyntax): NodeSeq = {
+    if (hasPossibleValues(field)) {
+      val options =
+        Seq(<option value=""></option>) ++
+          makeHTMLOptionsSequence(field)
+      if (inDatalist)
+        <datalist id={ makeHTMLIdForDatalist(field) }>
+          { options }
+        </datalist>
+      else options
+    } else NodeSeq.Empty
   }
+
+  def getPossibleValues( f: FormEntry)(implicit form: formMod#FormSyntax): Seq[(NODE, NODE)] =
+    form.possibleValuesMap.getOrElse( f.property, Seq() )
 
   /** make sequence of HTML <option> */
   private def makeHTMLOptionsSequence(field: FormEntry)
@@ -365,8 +368,6 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
 		    toPlainString(value._2) }
 		  </option>
 	  }
-	  def getPossibleValues( f: FormEntry) =
-	    form.possibleValuesMap.getOrElse( f.property, Seq() )
 
 	  for (value <- getPossibleValues(field) )
 	    yield makeHTMLOption(value, field)

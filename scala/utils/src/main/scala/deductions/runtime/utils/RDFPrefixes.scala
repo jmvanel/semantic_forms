@@ -57,8 +57,10 @@ import scala.util.{Failure, Success, Try}
 lazy val loginForms = Prefix[Rdf]("login-forms",
 "http://raw.githubusercontent.com/jmvanel/semantic_forms/master/scala/forms/form_specs/login.form.ttl#" )
 
+  /** dct: dc/terms/ : properties "intended to be used with non-literal values" */
   lazy val dct = DCTPrefix[Rdf]
-	lazy val dc = DCPrefix[Rdf]
+  /** dc: dc/elements : no rdfs:range nor domain ; rather not use! */
+  lazy val dc = DCPrefix[Rdf]
   lazy val orgVocab = Prefix[Rdf]("org", "http://www.w3.org/ns/org#" )
   lazy val geo = Prefix[Rdf]("geo", "http://www.w3.org/2003/01/geo/wgs84_pos#" )
   lazy val event = Prefix[Rdf]("event", "http://purl.org/NET/c4dm/event.owl#" )

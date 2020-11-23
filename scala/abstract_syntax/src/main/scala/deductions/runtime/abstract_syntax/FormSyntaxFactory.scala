@@ -222,12 +222,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     step1:     FormSyntax,
     formGroup: Rdf#URI    = nullURI)(implicit graph: Rdf#Graph, lang: String = ""): FormSyntax = {
 
-    // TEST SL4J
-    // logger.error("marker XXXXXXXXXXXXXXXXXXXXXXXXXXXXX message")
-
-    val formConfig = step1.formURI
+    val formSpecif = step1.formURI
     logger.debug(
-      s">>>> createFormDetailed2 fields size ${step1.fields.size}, formConfig <$formConfig> , lang $lang")
+      s">>>> createFormDetailed2 fields size ${step1.fields.size}, formSpecif <$formSpecif> , lang $lang")
 
     // TODO make it functional #170
     // http://sujitpal.blogspot.fr/2013/06/functional-chain-of-responsibility.html
@@ -262,7 +259,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 
     // TODO make it functional #170
     logger.debug(s"createFormDetailed2: step1.editable=${step1.editable}, && downloadPossibleValues=$downloadPossibleValues")
-    if (step1.editable && downloadPossibleValues)
+    if (step1.editable // && downloadPossibleValues
+        )
       addAllPossibleValues(formSyntax, valuesFromFormGroup)
     logger.debug(s"createFormDetailed2: createForm " + this)
 
@@ -272,8 +270,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       isDebugEnabled = true
     }
     val res = time(
-      s"createFormDetailed2: updateFormFromConfig(formConfig=$formConfig)",
-      updateFormFromConfig(formSyntax, formConfig),
+      s"createFormDetailed2: updateFormFromConfig(formSpecif=$formSpecif)",
+      updateFormFromConfig(formSyntax, formSpecif),
       isDebugEnabled )
     logger.debug(s"createFormDetailed2: createForm 2 " + this)
     //        check(formSyntax.fields, "res")

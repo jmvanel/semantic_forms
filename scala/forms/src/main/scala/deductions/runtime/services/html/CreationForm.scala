@@ -15,6 +15,7 @@ import scala.xml.NodeSeq
 import deductions.runtime.utils.CSSClasses
 import deductions.runtime.utils.RDFTreeDuplicator
 import java.net.URLDecoder
+import scala.xml.Text
 
 trait CreationFormAlgo[Rdf <: RDF, DATASET]
 extends RDFCacheAlgo[Rdf, DATASET]
@@ -57,7 +58,7 @@ with PrefillFormDefaults[Rdf, DATASET]{
 
     val editingHeaders = (
       for (classe <- form.classs)
-        yield makeEditingHeader(fromUri(uriNodeToURI(classe)), lang, formSpecURI, graphURI)
+        yield { makeEditingHeader(fromUri(uriNodeToURI(classe)), lang, formSpecURI, graphURI) ++ Text(" - ") }
     ) . flatten
 
     Success(
