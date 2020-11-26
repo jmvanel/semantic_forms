@@ -12,7 +12,7 @@ import scalaz.Scalaz._
 
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.CreationAbstractForm
-import deductions.runtime.services.RDFContentNegociation
+import deductions.runtime.utils.RDFContentNegociation
 import deductions.runtime.core.MapUtils
 import deductions.runtime.services.FormJSON
 import deductions.runtime.jena.RDFStoreLocalJenaProvider

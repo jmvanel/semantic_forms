@@ -21,6 +21,7 @@ import Scalaz._
 import org.w3.banana.OWLPrefix
 import deductions.runtime.connectors.icalendar.RDF2ICalendar
 import play.api.libs.json.JsNull
+import deductions.runtime.utils.RDFContentNegociation
 
 /**
  * TODO separate stuff depending on dataset, and stuff taking a graph in argument
@@ -31,7 +32,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     with RDFHelpers0[Rdf]
     with RDFPrefixes[Rdf]
     with RDF2ICalendar[Rdf, DATASET]
-    with Timer {
+    with Timer
+    with RDFContentNegociation {
 
   val config: Configuration
 
@@ -876,8 +878,9 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   /**
    * RDF graph to String
-   *  @param format "turtle" or "rdfxml" or "jsonld"
-   *  TODO REFACTOR, use conneg helper
+   *  @param format "turtle" or "rdfxml" or "jsonld" or ""
+   *  TODO REFACTOR, use conneg helper RDFContentNegociation:
+   *  then pass MIME type
    */
   def graph2String(triples: Try[Rdf#Graph], baseURI: String, format: String = "turtle"): Try[String] = {
     logger.info(s"graph2String: base URI <$baseURI>, format $format, triples ${triples}")

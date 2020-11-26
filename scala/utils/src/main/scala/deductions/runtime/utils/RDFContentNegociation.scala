@@ -1,7 +1,4 @@
-package deductions.runtime.services
-
-import org.apache.jena.sparql.function.library.substring
-import deductions.runtime.utils.StringHelpers
+package deductions.runtime.utils
 
 //import org.w3.banana.io.{
 //  N3,

@@ -11,7 +11,7 @@ import deductions.runtime.services.ApplicationFacadeImpl
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.sparql_cache.BrowsableGraph
 import akka.stream.scaladsl.StreamConverters
-import deductions.runtime.services.RDFContentNegociation
+import deductions.runtime.utils.RDFContentNegociation
 import deductions.runtime.jena.RDFStoreLocalJenaProvider
 import deductions.runtime.core.HTTPrequest
 

@@ -17,7 +17,8 @@
   <logger name="jena" level="DEBUG"/>
   <logger name="server" level="DEBUG"/>
   <logger name="services-forms" level="DEBUG"/>
--->
+  <logger name="abstract_syntax" level="DEBUG"/>
+  -->
 
   <!-- <root level="debug"> -->
   <root level="info">

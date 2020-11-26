@@ -16,7 +16,7 @@ import scala.util.Success
 import scala.util.Failure
 import scala.concurrent.Future
 
-import deductions.runtime.services.RDFContentNegociation
+import deductions.runtime.utils.RDFContentNegociation
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.RecoverUtilities
 import deductions.runtime.services.CORS

@@ -4,6 +4,7 @@ import scala.util.{ Failure, Success, Try }
 
 import deductions.runtime.core.HTTPrequest
 import deductions.runtime.sparql_cache.RDFCacheDependencies
+import deductions.runtime.utils.RDFContentNegociation
 
 import org.w3.banana.io.RDFReader
 import org.w3.banana.io.RDFWriter
