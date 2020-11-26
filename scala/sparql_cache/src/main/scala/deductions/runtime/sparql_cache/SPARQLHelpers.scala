@@ -22,6 +22,7 @@ import org.w3.banana.OWLPrefix
 import deductions.runtime.connectors.icalendar.RDF2ICalendar
 import play.api.libs.json.JsNull
 import deductions.runtime.utils.RDFContentNegociation
+import org.w3.banana.io.NTriples
 
 /**
  * TODO separate stuff depending on dataset, and stuff taking a graph in argument
@@ -40,6 +41,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]
   val rdfXMLWriter: RDFWriter[Rdf, Try, RDFXML]
+  val ntriplesWriter: RDFWriter[Rdf, Try, NTriples]
 
   import ops._
   import rdfStore.sparqlEngineSyntax._
@@ -878,12 +880,12 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   /**
    * RDF graph to String
-   *  @param format "turtle" or "rdfxml" or "jsonld" or ""
+   *  @param format "turtle" or "rdfxml" or "jsonld" or ntMime = "application/n-triples"
    *  TODO REFACTOR, use conneg helper RDFContentNegociation:
    *  then pass MIME type
    */
   def graph2String(triples: Try[Rdf#Graph], baseURI: String, format: String = "turtle"): Try[String] = {
-    logger.info(s"graph2String: base URI <$baseURI>, format $format, triples ${triples}")
+    logger.info(s"graph2String: base URI <$baseURI>, format '$format', triples ${triples}")
     triples match {
       case Success(graph) =>
         val graphSize = graph.size
@@ -893,6 +895,10 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
             (jsonldCompactedWriter, "")
           else if (format === "rdfxml")
             (rdfXMLWriter, s"<!-- graph size ${graphSize} -->\n")
+            else if (format === ntMime ||
+                format === "ntriples" ||
+                format === "n-triples" )
+            (ntriplesWriter, "")
           else
             (turtleWriter, s"# graph size ${graphSize}\n")
 

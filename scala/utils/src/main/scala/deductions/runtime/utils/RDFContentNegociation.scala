@@ -70,6 +70,7 @@ trait RDFContentNegociation extends StringHelpers {
     result._2
   }
 
+  /** @return MIME from given string loosely matching an RDF syntax */
   def stringMatchesRDFsyntax(s: String): Option[String] = {
     val sLowerCase = s.toLowerCase()
     def testMime(pattern: String) = sLowerCase.matches(s".*$pattern.*")
@@ -77,6 +78,7 @@ trait RDFContentNegociation extends StringHelpers {
       case _ if (testMime("rdf"))    => Some(rdfXMLmime)
       case _ if (testMime("turtle")) => Some(turtleMime)
       case _ if (testMime("json"))   => Some(jsonldMime)
+      case _ if (testMime("triples"))=> Some(ntMime)
       case _                         => None
     }
   }

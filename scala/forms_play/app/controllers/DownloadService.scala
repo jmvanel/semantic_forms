@@ -55,11 +55,11 @@ class DownloadServiceApp @Inject() (
         val mime = computeMIMEOption(accepts)
 
         val syntaxOption = httpRequest.getHTTPparameterValue("syntax")
-//        logger.debug((s">>>>>>>> downloadAction syntaxOption $syntaxOption"))
+        logger.debug((s">>>>>>>> downloadAction syntaxOption $syntaxOption"))
         syntaxOption match {
           case Some(syntax) =>
             val mimeOption = stringMatchesRDFsyntax(syntax)
-//            logger.debug((s">>>>>>>> downloadAction , mimeOption $mimeOption"))
+            logger.debug((s">>>>>>>> downloadAction , mimeOption $mimeOption"))
             mimeOption match {
               case Some(mimeStringFromSyntaxHTTPparameter) =>
                 output(mimeStringFromSyntaxHTTPparameter, httpRequest)

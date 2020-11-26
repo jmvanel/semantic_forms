@@ -72,6 +72,8 @@ trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DAT
         "turtle"
         else if( mime.contains("rdf+xml"))
           "rdfxml"
+        else if( mime.contains("n-triples"))
+          mime
         else
           "jsonld"
 
