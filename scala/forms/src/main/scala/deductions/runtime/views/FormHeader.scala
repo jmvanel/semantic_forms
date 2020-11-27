@@ -113,11 +113,12 @@ trait FormHeader[Rdf <: RDF, DATASET]
         </div>
       </div>
       <div class="sf-links-row">
+        <span class="sf-local-rdf-link">Data export: </span>
         {
-          <span class="sf-local-rdf-link">Data export: </span> ++
           downloadLink(request) ++
           downloadLink(request, "JSON-LD") ++
-          downloadLink(request, "RDF/XML")}
+          downloadLink(request, "RDF/XML") ++
+          downloadLink(request, "N-TRIPLES")}
       </div>
   }
 
