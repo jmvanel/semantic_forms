@@ -1,0 +1,15 @@
+@prefix  form: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix schema: <http://schema.org/>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+
+ <#> rdfs:label """ form:shortString declarations:
+ will be displayed in SF forms as short HTML element
+ """ .
+
+<http://www.geonames.org/ontology#countryCode>
+form:shortString true .
+
+schema:branchCode form:shortString true .
+schema:telephone form:shortString true .
+dct:identifier form:shortString true .
