@@ -155,7 +155,7 @@ input.form-control[type='text']
 .sf-sparql-table td { padding:0px 10px; }
 .sf-sparql-table tr:first-of-type { font-weight:bold; }
 
-.sf-local-rdf-link { font-size: xx-small; }
+/* .sf-local-rdf-link { font-size: xx-small; } */
 .sf-expert         { font-size: xx-small; }
 .sf-local-rdf-link img {
     max-height:16px; width:auto; }
