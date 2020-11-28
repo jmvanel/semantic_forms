@@ -18,7 +18,7 @@
 # NOTES:
 # - maybe use https://www.w3.org/TR/2012/WD-vocab-org-20121023/
 #	property is interesting, https://www.w3.org/TR/2012/WD-vocab-org-20121023/#property--memberof
-# as FOAF soes not have this.
+# as FOAF does not have this.
 # FOAF has foaf:member , but it is applied to foaf:Group ;
 # however, foaf:Group is NOT distinct (owl:disjointWith) of foaf:Organization ,
 # it could be good to treat all foaf:Organization's as being foaf:Group's also
@@ -27,9 +27,15 @@
 #	because nothing is implemented, not even specified,
 #	and it is always possible to enter the link on one side of the relation. 
 
+
+#### foaf: vocab' ####
+
 # For forms:personForm
 foaf:currentProject rdfs:range foaf:Project .
 foaf:pastProject rdfs:range foaf:Project .
+
+
+#### org: vocab' ####
 
 # To avoid a owl:sameClass inference 
 org:memberOf a owl:ObjectProperty ;
@@ -44,6 +50,7 @@ org:headOf a owl:ObjectProperty ;
     rdfs:range  foaf:Organization;
     rdfs:subPropertyOf org:memberOf .
 
+#### geo: vocab' ####
 geo:long
     a owl:DatatypeProperty ;
     rdfs:range xsd:float .
@@ -56,15 +63,32 @@ geo:alt
     a owl:DatatypeProperty ;
     rdfs:range xsd:float .
 
+
+#### dct: vocab' ####
+
 dct:subject a owl:ObjectProperty ;
-    rdfs:label "sujet (thème, topic)"@fr .
+  rdfs:label "sujet (thème, topic)"@fr .
+dct:created a owl:DatatypeProperty ;
+  rdfs:label "créé (date)"@fr ;
+  rdfs:range xsd:date .
+dct:modified a owl:DatatypeProperty ;
+  rdfs:label "modifié (date)"@fr ;
+  rdfs:range xsd:date .
+dct:language a owl:DatatypeProperty ;
+  rdfs:label "langue"@fr .
+dct:identifier a owl:DatatypeProperty ;
+  rdfs:label "identifiant"@fr .
+dct:source a owl:ObjectProperty .
+dct:relation a owl:ObjectProperty .
+dct:isReferencedBy a owl:ObjectProperty .
+
 
 cco:expertise rdfs:label "expertise"@fr .
 
 # see also https://github.com/jmvanel/rdf-i18n
 
 
-# Icons for OWL classes
+### Icons for OWL classes ####
 
 foaf:Person foaf:img <https://mirrors.creativecommons.org/presskit/icons/by.svg> .
 foaf:Project foaf:img ded:noun_247207_cc.svg .
