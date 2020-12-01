@@ -18,6 +18,7 @@ import deductions.runtime.core.HTTPrequest
 import javax.inject.Inject
 import play.api.mvc.ControllerComponents
 import play.api.mvc.AbstractController
+import deductions.runtime.utils.StringHelpers
 
 class DownloadServiceApp @Inject() (
   components: ControllerComponents, configuration: play.api.Configuration)
@@ -28,7 +29,8 @@ class DownloadServiceApp @Inject() (
   with RDFStoreLocalJenaProvider
   with HTTPrequestHelpers
   with BrowsableGraph[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-  with RDFContentNegociation {
+  with RDFContentNegociation
+  with StringHelpers {
   /**
    * get RDF with content negotiation (conneg) for RDF syntax;
    *  see also LDP.scala
@@ -47,8 +49,12 @@ class DownloadServiceApp @Inject() (
 //            println(s"downloadAction: isBlanknode $isBlanknode ; $httpRequest")
             val url1 = if(isBlanknode) "_:"+ url else url
             download( url1, mime)
-          } . as(s"${mime}; charset=utf-8")
-            . withHeaders("Access-Control-Allow-Origin" -> "*")
+          }.as(s"${mime}; charset=utf-8")
+            .withHeaders("Access-Control-Allow-Origin" -> "*")
+            .withHeaders("Content-Disposition" ->
+              ("filename=" +
+                substringAfterLastIndexOf(url, "/").getOrElse("from-SF")
+                + "." + mimeToExtension(mime)))
         }
 
         val accepts = httpRequest.getHTTPheaderValue("Accept")

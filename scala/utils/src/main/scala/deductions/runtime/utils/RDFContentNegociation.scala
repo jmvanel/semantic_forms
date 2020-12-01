@@ -39,6 +39,9 @@ trait RDFContentNegociation extends StringHelpers {
       "nt" ->  ntMime,
       "nq" ->  nqMime
       )
+
+  val mimeToExtension = extensionToMime.map(_.swap)
+
   /** order of arguments is historical order of RDF syntaxes;
    *  default is Turtle;
    *  @return pair of given function result, whether given MIME is known to be RDF */

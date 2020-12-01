@@ -162,6 +162,7 @@ object GeoJSONexport extends App {
         .get
   }
 
+  /** cf http://www.mastertheboss.com/javaee/json/how-to-pretty-print-a-jsonobject-using-jakarta-ee-api */
   def makeWriterFactory(): JsonWriterFactory = {
     val jsonWriterProperties = new java.util.HashMap[String, Any](1)
     jsonWriterProperties.put(JsonGenerator.PRETTY_PRINTING, true)
