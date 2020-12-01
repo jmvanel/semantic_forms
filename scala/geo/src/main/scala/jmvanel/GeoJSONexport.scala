@@ -5,26 +5,36 @@ import org.apache.jena.query._
 import collection.JavaConverters._
 import java.io.FileWriter
 import java.io.File
+import java.net.URL
+import java.io.StringReader
+
 import org.apache.jena.riot.JsonLDWriteContext
 import org.apache.jena.riot.RDFFormat
-import java.net.URL
 import org.apache.jena.riot.RDFDataMgr
 import org.apache.jena.riot.writer.JsonLDWriter
 import org.apache.jena.riot.system.PrefixMapStd
 import titaniumJena.Jena2Titanium
+
+//import javax.json.Json
+//import javax.json.JsonObject
+// import javax.json.JsonArray
+import jakarta.json.Json
+import jakarta.json.JsonObject
+import jakarta.json.JsonArray
+
 import com.apicatalog.rdf.impl.DefaultRdfProvider
 import com.apicatalog.jsonld.JsonLd
 import com.apicatalog.rdf.RdfDataset
 import com.apicatalog.rdf.RdfGraph
 import com.apicatalog.jsonld.document.DocumentParser
 import com.apicatalog.jsonld.http.media.MediaType
-import java.io.StringReader
 import com.apicatalog.jsonld.document.RdfDocument
-import javax.json.Json
-import javax.json.JsonObject
 import com.apicatalog.jsonld.api.impl.FromRdfApi
 import com.apicatalog.jsonld.document.JsonDocument
 import com.apicatalog.jsonld.api.JsonLdOptions
+import com.fasterxml.jackson.annotation.JsonFormat
+import java.io.StringWriter
+import titaniumJena.Titanium2Jena
 
 /** export GeoJSON (both plain GeoJSON & JSON-LD) from URI's having geographic data
  *  in given TDB database */
@@ -44,10 +54,11 @@ object GeoJSONexport extends App {
    
     ?S a geojson:Feature ;
          geojson:geometry ?point .
-      ?point  a geojson:Point ;
-              geojson:coordinates ?coordinates .
-    ?coordinates rdf:first ?LON ; rdf:rest ?rest .
-    ?rest rdf:first ?LAT ;  rdf:rest   rdf:nil .
+      ?point a geojson:Point ;
+               geojson:coordinates ?coordinates .
+    ?coordinates # a rdf:List ;
+    rdf:first ?LON ; rdf:rest ?rest .
+    ?rest rdf:first ?LAT ; rdf:rest rdf:nil .
     ?S geojson:properties ?properties .
     ?properties ?P ?O .
     }
@@ -63,12 +74,16 @@ object GeoJSONexport extends App {
       FILTER ( ?P != geo:lat )
       FILTER ( ?P != geo:long )
     }
-  } LIMIT 100
+  } LIMIT 50
   """
-  val fileName = "out.geojson"
-
   val qexec = QueryExecutionFactory.create(queryString, dataset)
   val resultModel = qexec.execConstruct()
+  
+  val nsPrefixMap = resultModel.getNsPrefixMap()
+  println(s"nsPrefixMap: ${nsPrefixMap.asScala.mkString("; ")}")
+  // empty!!!
+//  val nsPrefixMapGlobal = dataset.getUnionModel.getNsPrefixMap()
+//  println(s"nsPrefixMap2: ${nsPrefixMapGlobal.asScala.mkString("; ")}")
 
   val datasetGraph = DatasetFactory.wrap(resultModel).asDatasetGraph()
   
@@ -103,33 +118,89 @@ object GeoJSONexport extends App {
     "type": "@type"
   }
 }"""
-  val fw = new FileWriter(fileName)
-  
+
   val rdfProvider = DefaultRdfProvider.INSTANCE
   val titaniumOut = rdfProvider.createDataset()
+  println(s"==== SPARQL ouput ====")
+  /// RDFDataMgr.write( System.out, resultModel, RDFFormat.TURTLE_PRETTY)
+
   Jena2Titanium.populateDataset( resultModel.getGraph, titaniumOut)
+  // printTitanium(titaniumOut) // OK !!!
   val jsonObject = rdfToJsonLD(titaniumOut, geojsonContext)
+
+  // write JsonObject
+  val fileName = "out.geojson"
+  val fw = new FileWriter(fileName)
   val jsonWriter = Json.createWriter(fw)
   jsonWriter.writeObject(jsonObject)
   jsonWriter.close()
-  
-  def rdfToJsonLD(titaniumOut: RdfDataset, context: String): JsonObject = {
+  println( s"$fileName written")
+
+  def rdfToJsonLD(titaniumDS: RdfDataset, context: String): JsonObject = {
     val options = new JsonLdOptions()
     options.setUseNativeTypes(true)
     options.setOmitGraph(true)
     options.setCompactToRelative(true)
-    options.setUseNativeTypes(true)
     val inputStream = new StringReader(context)
     val contextDocument = DocumentParser.parse(
         MediaType.JSON_LD,
         inputStream)
+
     val fromRdf: FromRdfApi =
       JsonLd.fromRdf(
-        RdfDocument.of(titaniumOut) )
-      JsonLd.frame(
-      // compact(
-        JsonDocument.of(fromRdf.get), contextDocument)
+        RdfDocument.of(titaniumDS) )
+
+    // TEST intermediate result
+    printJsonArray(fromRdf . get) // KO: blank nodes not as such !!!!!!!!!!!!!!!!!!!!
+
+    JsonLd.frame(
+      JsonDocument.of(fromRdf.get), contextDocument)
         .options(options)
         .get
+  }
+
+  def printJsonArray(jsa: JsonArray) {
+    val sw = new StringWriter()
+//    val jsonWriter = Json.createWriter(sw)
+    val factory = Json.createWriterFactory(new java.util.HashMap() )
+    val jsonWriter = factory.createWriter(sw)
+    jsonWriter.writeArray(jsa)
+    jsonWriter.close()
+    sw.close()
+    println(sw.toString())
+  }
+
+//  def printJsonArray(jsa: JsonArray) {
+//    val sw = new StringWriter()
+//    val jsonWriter = Json.createWriter(sw)
+//    jsonWriter.writeArray(jsa)
+//    jsonWriter.close()
+//    val jsValue = ujson.read(sw.toString())
+//    val jsPretty = ujson.write(jsValue, 2) // , indent, escapeUnicode)
+//    val fileName = "out.fromRdf.geojson"
+//    val fw = new FileWriter(fileName)
+//    fw.write(jsPretty)
+//    fw.close()
+//    println(s"$fileName written")
+//  }
+
+  def printTitanium(titanium: RdfDataset) {
+    println("======== titaniumOut =========")
+    println(titanium.toList().asScala.
+      map { t =>
+        (
+          t.getSubject,
+          t.getSubject.isBlankNode(),
+          t.getPredicate,
+          t.getObject,
+          t.getObject.isBlankNode())
+      }.mkString("\n"))
+  }
+  def printTitaniumKO(titanium: RdfDataset) {
+    val ds = DatasetFactory.create().asDatasetGraph()
+    Titanium2Jena.populateDataset( titanium, ds)
+   val fw = new FileWriter("printTitanium.ttl")
+    RDFDataMgr.write( fw, ds, RDFFormat.TRIG )
+    println( s"printTitanium written")
   }
 }

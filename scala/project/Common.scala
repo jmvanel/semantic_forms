@@ -42,15 +42,25 @@ val commonsCsvVersion = "1.8"
 
   val any23Dependencies = "org.apache.any23" % "apache-any23-csvutils" % any23Version
 
+  val jsonDependencies = Seq(
+    // TODO remove play-json !
+    "com.typesafe.play" %% "play-json" %  "2.8.1" , // 2.6.14",
+    //"javax.json" % "javax.json-api" % "1.1.4" ,
+    //"jakarta.json" % "jakarta.json-api" % "2.0.0" ,
+    "org.glassfish" % "jakarta.json" % "2.0.0"
+  )
+
+  val jsonldDependencies = Seq( "com.apicatalog" % "titanium-json-ld" % "0.9-SNAPSHOT" )
+
   val commonDependencies =
     loggingDependencies ++
+    jsonDependencies ++
     Seq(bananaDependency,
 	jenaDependency, jenaPermissionsDependency, jenaTextDependency,
     jenaSpatialDependency,
     xmlDependency,
     junitDependency, scalatestDependency,
 
-    "com.typesafe.play" %% "play-json" %  "2.8.1" , // 2.6.14",
     // "com.typesafe.play" %% "play-iteratees" % "2.6.1",
 
     "org.apache.lucene" % "lucene-suggest" % "7.7.2" , // 7.4.0" , // "6.4.1" , // "7.5.0", // 6.6.5",
