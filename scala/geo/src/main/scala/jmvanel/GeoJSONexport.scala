@@ -35,6 +35,8 @@ import com.apicatalog.jsonld.api.JsonLdOptions
 import com.fasterxml.jackson.annotation.JsonFormat
 import java.io.StringWriter
 import titaniumJena.Titanium2Jena
+import jakarta.json.stream.JsonGenerator
+import jakarta.json.JsonWriterFactory
 
 /** export GeoJSON (both plain GeoJSON & JSON-LD) from URI's having geographic data
  *  in given TDB database */
@@ -121,7 +123,7 @@ object GeoJSONexport extends App {
 
   val rdfProvider = DefaultRdfProvider.INSTANCE
   val titaniumOut = rdfProvider.createDataset()
-  println(s"==== SPARQL ouput ====")
+//  println(s"==== SPARQL ouput ====")
   /// RDFDataMgr.write( System.out, resultModel, RDFFormat.TURTLE_PRETTY)
 
   Jena2Titanium.populateDataset( resultModel.getGraph, titaniumOut)
@@ -131,7 +133,8 @@ object GeoJSONexport extends App {
   // write JsonObject
   val fileName = "out.geojson"
   val fw = new FileWriter(fileName)
-  val jsonWriter = Json.createWriter(fw)
+  val writerFactory = makeWriterFactory
+  val jsonWriter = writerFactory.createWriter(fw)
   jsonWriter.writeObject(jsonObject)
   jsonWriter.close()
   println( s"$fileName written")
@@ -150,8 +153,8 @@ object GeoJSONexport extends App {
       JsonLd.fromRdf(
         RdfDocument.of(titaniumDS) )
 
-    // TEST intermediate result
-    printJsonArray(fromRdf . get) // KO: blank nodes not as such !!!!!!!!!!!!!!!!!!!!
+//    println( "TEST intermediate result")
+//    printJsonArray(fromRdf . get) // OK: blank nodes as @list
 
     JsonLd.frame(
       JsonDocument.of(fromRdf.get), contextDocument)
@@ -159,30 +162,20 @@ object GeoJSONexport extends App {
         .get
   }
 
+  def makeWriterFactory(): JsonWriterFactory = {
+    val jsonWriterProperties = new java.util.HashMap[String, Any](1)
+    jsonWriterProperties.put(JsonGenerator.PRETTY_PRINTING, true)
+    Json.createWriterFactory(jsonWriterProperties)
+  }
   def printJsonArray(jsa: JsonArray) {
     val sw = new StringWriter()
-//    val jsonWriter = Json.createWriter(sw)
-    val factory = Json.createWriterFactory(new java.util.HashMap() )
-    val jsonWriter = factory.createWriter(sw)
+    val writerFactory = makeWriterFactory()
+    val jsonWriter = writerFactory.createWriter(sw)
     jsonWriter.writeArray(jsa)
     jsonWriter.close()
     sw.close()
     println(sw.toString())
   }
-
-//  def printJsonArray(jsa: JsonArray) {
-//    val sw = new StringWriter()
-//    val jsonWriter = Json.createWriter(sw)
-//    jsonWriter.writeArray(jsa)
-//    jsonWriter.close()
-//    val jsValue = ujson.read(sw.toString())
-//    val jsPretty = ujson.write(jsValue, 2) // , indent, escapeUnicode)
-//    val fileName = "out.fromRdf.geojson"
-//    val fw = new FileWriter(fileName)
-//    fw.write(jsPretty)
-//    fw.close()
-//    println(s"$fileName written")
-//  }
 
   def printTitanium(titanium: RdfDataset) {
     println("======== titaniumOut =========")
