@@ -65,7 +65,10 @@ lazy val loginForms = Prefix[Rdf]("login-forms",
   lazy val geo = Prefix[Rdf]("geo", "http://www.w3.org/2003/01/geo/wgs84_pos#" )
   lazy val event = Prefix[Rdf]("event", "http://purl.org/NET/c4dm/event.owl#" )
 
+  /** Biodiversity */
   lazy val dwc = Prefix[Rdf]("dwc", "http://rs.tdwg.org/dwc/terms/")
+  lazy val karstlink = Prefix[Rdf]("karstlink", "https://ontology.uis-speleo.org/ontology/#" )
+
   lazy val geoloc = Prefix[Rdf]("geoloc", "http://deductions.github.io/geoloc.owl.ttl#")
   lazy val vehman = Prefix[Rdf]("vehman", "http://deductions.github.io/vehicule-management.owl.ttl#")
   lazy val vehma = Prefix[Rdf]("vehma", "http://deductions.github.io/vehicule-management.owl.ttl#")
@@ -145,6 +148,7 @@ lazy val loginForms = Prefix[Rdf]("login-forms",
       (pf.prefixIri) ->
       pf.prefixName
       }.toMap
+  lazy val prefix2uriMap = urisMap.map(_.swap)
 
   def expandOrUnchanged(possiblyPrefixedURI: String): String = {
      val uriMaybe = expand(possiblyPrefixedURI)
