@@ -90,7 +90,7 @@ class DownloadServiceApp @Inject() (
   def downloadAsString(url: String, mime: String="text/turtle"): String = {
     logger.info( s"download url $url mime $mime")
     val res = focusOnURI(url, mime)
-    logger.info(s"""download result "$res" """)
+    logger.debug(s"""download result "$res" """)
     res
   }
 

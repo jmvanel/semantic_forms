@@ -25,12 +25,11 @@ import java.io.StringWriter
 import javax.inject.Inject
 import play.api.mvc.ControllerComponents
 import play.api.mvc.AbstractController
+import jakarta.json.JsonArray
 
 class Json2RDFServiceApp @Inject() (
      components: ControllerComponents, configuration: play.api.Configuration)
 extends { override implicit val config = new PlayDefaultConfiguration(configuration)}
-// extends { override implicit val config = new PlayDefaultConfiguration }
-  // with Services
 with AbstractController(components)
 with HTTPrequestHelpers
   with RDFStoreLocalJenaProvider // TODO remove, useless
@@ -40,17 +39,20 @@ with HTTPrequestHelpers
   def json2rdf() = Action { implicit request: Request[_] =>
     val httpRequest = copyRequest(request)
     val jsonURL = httpRequest.getHTTPparameterValue("src").get
-    val contextURLdefault = "https://raw.githubusercontent.com/jmvanel/rdf-convert/master/geonature/context.jsonld"
+//    val contextURLdefault = "https://raw.githubusercontent.com/jmvanel/rdf-convert/master/geonature/context.jsonld"
+    val contextURLdefault = "https://github.com/jmvanel/Karstlink-ontology/raw/master/grottocenter.org_context.jsonld"
     val contextURL = httpRequest.getHTTPparameterValue("context").getOrElse(contextURLdefault)
 
     val processed = Try {
       val is1 = getRestInputStream(jsonURL).get
 
       val options = new JsonLdOptions()
-      if (contextURL != "") {
+//      if (contextURL != "") {
         val is2 = getRestInputStream(contextURL).get
-        options.setExpandContext(JsonDocument of (is2))
-      }
+        val contextJsonDocument = JsonDocument of (is2)
+        options.setExpandContext(contextJsonDocument)
+//      }
+
       // be able to process media type 'text/plain' , use JsonDocument
       // https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/document/JsonDocument.html
       // toRdf Supports only content types [application/ld+json, application/json, +json, application/n-quads]]
@@ -58,6 +60,7 @@ with HTTPrequestHelpers
         options(options).
         //      base("https://api.inaturalist.org/v1/observations/").
         //      base(jsonURL).
+        numericId().
         get
       logger.info(s"json2rdf: after toRdf , titaniumDataset size() ${titaniumDataset.size()}")
       val dataset = DatasetFactory.create()
@@ -72,8 +75,14 @@ with HTTPrequestHelpers
       val outputStream = new ByteArrayOutputStream
       // TODO detect when the output is multi graph RDF and then use N-Triples format
       val modelToWrite = dataset.getUnionModel
+
+      // Prefix mapping
+      val jsonArray: JsonArray = JsonLd.expand(contextJsonDocument).get()
+      // modelToWrite.setNsPrefix(prefix, uri) // getNsPrefixMap()
+
+
       logger.info(s"json2rdf: modelToWrite size: ${modelToWrite.size()}")
-      RDFDataMgr.write(outputStream, modelToWrite, org.apache.jena.riot.RDFFormat.TURTLE)
+      RDFDataMgr.write(outputStream, modelToWrite, org.apache.jena.riot.RDFFormat.TURTLE_PRETTY)
       //    val stringWriter = new  StringWriter
       //    RDFDataMgr.write(stringWriter, dataset.getDefaultModel, org.apache.jena.riot.RDFFormat.TURTLE )
       // NQUADS) // NTRIPLES) //
