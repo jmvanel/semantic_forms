@@ -50,31 +50,37 @@ http.send(content);
   }
 
   def profileClaimUI(request: HTTPrequest): NodeSeq = {
-    // this URI is actually a foaf:Person
     val currentFocusURI = URI(request.getRDFsubject())
     val currentPageIsAfoafPerson: Boolean =
       currentFocusURI != nullURI &&
       getObjects(allNamedGraph, currentFocusURI, rdf.typ).toSeq.contains(foaf.Person)
 
     val label = instanceLabelFromTDB(currentFocusURI, request.getLanguage())
-    val personFromAccount = getPersonFromAccount(request.userId())
-    logger.debug( s">>>>==== profileClaimUI: personFromAccount ${request.userId()} --> <$personFromAccount>")
+    val userId = request.userId()
+    val personFromAccount: Rdf#Node = getPersonFromAccount(userId)
+    logger.debug( s""">>>>==== profileClaimUI: currentPageIsAfoafPerson $currentPageIsAfoafPerson
+      request.userId() '${userId}' ==> personFromAccount <$personFromAccount>
+      currentFocusURI <$currentFocusURI>""")
+    val realUserId = userId != "" && userId != "anonymous" 
+    val accountNotAlreadyAssociatedToAPerson = personFromAccount == nullURI
+    // if currentFocusURI is already a foaf:Person attached to account do not display button
+    val currentFocusURInotAlreadyAttachedToAccount =
+      currentFocusURI != personFromAccount
     if (currentPageIsAfoafPerson) {
-      if (request.userId() != "" &&
-          request.userId() != "anonymous" &&
-          // Account is not already associated to a person
-          personFromAccount == "" &&
-          // if currentFocusURI is already a foaf:Person attached to account do not display button
-          currentFocusURI != personFromAccount
+    logger.debug( s""">>>> realUserId $realUserId, accountNotAlreadyAssociatedToAPerson $accountNotAlreadyAssociatedToAPerson
+        currentFocusURInotAlreadyAttachedToAccount $currentFocusURInotAlreadyAttachedToAccount""")
+      if (realUserId &&
+          accountNotAlreadyAssociatedToAPerson &&
+          currentFocusURInotAlreadyAttachedToAccount
           ) {
-        val absoluteURIForUserid = makeAbsoluteURIForSaving(request.userId())
+        val absoluteURIForUserid = makeAbsoluteURIForSaving(userId)
         // propose to claim current page's identity (foaf:Person)
         val rdfString = s"""
           ${declarePrefix(foaf)}
           <$currentFocusURI> foaf:account <${absoluteURIForUserid}> .
           <$absoluteURIForUserid> foaf:isAccountOf <$currentFocusURI>  .
           """
-//        logger.debug( s"profileClaimUI: rdfString $rdfString")
+        logger.debug( s"profileClaimUI: rdfString $rdfString")
         // `` : ECMAScript 6 (ES6)
         <div>
           <script type="text/javascript">
@@ -82,13 +88,14 @@ http.send(content);
           </script>
           <button type="button" onclick={ s"sendPOST(`data=$rdfString`);" }>
             <!-- Claim current page's identity:{ label }
-            for current user: {request.userId()}
+            for current user: {userId}
             -->
-            { I18NMessages.format("Claim", request.getLanguage(), label, request.userId()) }
+            { I18NMessages.format("Claim", request.getLanguage(), label, userId) }
           </button>
         </div>
       } else {
-        val accountFromPerson = getAccountFromPerson(request.getRDFsubject())
+        <span>current Page Is A foaf Person but cannot show claim button</span>
+        val accountFromPerson = getAccountFromPerson(currentFocusURI.getString)
         if (accountFromPerson != nullURI)
           // link to current page's associated user account
           <div>
@@ -98,8 +105,9 @@ http.send(content);
             }
           </div>
         else
-          <span/>
+          <span>No account For this Person '{label}' &lt;{currentFocusURI}&gt; </span>
       }
-    } else NodeSeq.Empty
+    } else
+      <span>current Page Is NOT A foaf Person</span>
   }
 }
