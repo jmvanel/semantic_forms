@@ -26,6 +26,8 @@ import javax.inject.Inject
 import play.api.mvc.ControllerComponents
 import play.api.mvc.AbstractController
 import jakarta.json.JsonArray
+import java.io.PrintWriter
+import com.apicatalog.jsonld.http.media.MediaType
 
 class Json2RDFServiceApp @Inject() (
      components: ControllerComponents, configuration: play.api.Configuration)
@@ -39,29 +41,29 @@ with HTTPrequestHelpers
   def json2rdf() = Action { implicit request: Request[_] =>
     val httpRequest = copyRequest(request)
     val jsonURL = httpRequest.getHTTPparameterValue("src").get
-//    val contextURLdefault = "https://raw.githubusercontent.com/jmvanel/rdf-convert/master/geonature/context.jsonld"
     val contextURLdefault = "https://github.com/jmvanel/Karstlink-ontology/raw/master/grottocenter.org_context.jsonld"
     val contextURL = httpRequest.getHTTPparameterValue("context").getOrElse(contextURLdefault)
 
     val processed = Try {
       val is1 = getRestInputStream(jsonURL).get
 
+      val is2 = getRestInputStream(contextURL).get
+      val contextJsonDocument = JsonDocument of (
+          MediaType.JSON_LD,
+          is2)
       val options = new JsonLdOptions()
-//      if (contextURL != "") {
-        val is2 = getRestInputStream(contextURL).get
-        val contextJsonDocument = JsonDocument of (is2)
-        options.setExpandContext(contextJsonDocument)
-//      }
+      options.setExpandContext(contextJsonDocument)
 
       // be able to process media type 'text/plain' , use JsonDocument
       // https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/document/JsonDocument.html
       // toRdf Supports only content types [application/ld+json, application/json, +json, application/n-quads]]
       val titaniumDataset = JsonLd.toRdf(JsonDocument of (is1)).
         options(options).
-        //      base("https://api.inaturalist.org/v1/observations/").
-        //      base(jsonURL).
         numericId().
         get
+
+      // print titanium Dataset using Jena
+
       logger.info(s"json2rdf: after toRdf , titaniumDataset size() ${titaniumDataset.size()}")
       val dataset = DatasetFactory.create()
       val datasetGraph = dataset.asDatasetGraph()
@@ -76,32 +78,34 @@ with HTTPrequestHelpers
       // TODO detect when the output is multi graph RDF and then use N-Triples format
       val modelToWrite = dataset.getUnionModel
 
-      // Prefix mapping
-      val jsonArray: JsonArray = JsonLd.expand(contextJsonDocument).get()
+      // Prefix mapping : WIP
+      // val jsonArray: JsonArray = JsonLd.expand(contextJsonDocument).get()
       // modelToWrite.setNsPrefix(prefix, uri) // getNsPrefixMap()
-
 
       logger.info(s"json2rdf: modelToWrite size: ${modelToWrite.size()}")
       RDFDataMgr.write(outputStream, modelToWrite, org.apache.jena.riot.RDFFormat.TURTLE_PRETTY)
-      //    val stringWriter = new  StringWriter
-      //    RDFDataMgr.write(stringWriter, dataset.getDefaultModel, org.apache.jena.riot.RDFFormat.TURTLE )
-      // NQUADS) // NTRIPLES) //
-      //      logger.info(s"json2rdf: after RDFDataMgr.write stringWriter '$stringWriter'")
       outputStream
     }
     processed match {
       case Success(os) =>
         logger.info(s"json2rdf: Success(os)")
         val resp = os.toString("UTF-8")
-        //        logger.info(s"after resp, ${resp.substring(0, Math.min(1000, resp.length() -1))}")
+        // logger.info(s"after resp, ${resp.substring(0, Math.min(1000, resp.length() -1))}")
         Ok(resp)
-          //        .as("application/n-quad; charset=utf-8")
+          // .as("application/n-quad; charset=utf-8")
           .as("text/turtle; charset=utf-8")
           .withHeaders(corsHeaders.toList: _*)
       case Failure(f) =>
         val mess = f match {
           case e: JsonLdError => e.getCode().toString() + "\n" + e.getMessage
-          case _              => f.toString()
+          case _ =>
+            val baos = new ByteArrayOutputStream
+            val ss = new PrintWriter(baos)
+            f.printStackTrace(ss)
+            ss.close
+            baos.close()
+//            f.toString() + "\n" +
+              baos.toString()
         }
         InternalServerError(mess) //  fillInStackTrace())
     }

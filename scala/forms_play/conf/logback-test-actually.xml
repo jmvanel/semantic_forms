@@ -18,6 +18,7 @@
   <logger name="server" level="DEBUG"/>
   <logger name="services-forms" level="DEBUG"/>
   <logger name="abstract_syntax" level="DEBUG"/>
+  <logger name="user" level="DEBUG"/>
   -->
 
   <!-- <root level="debug"> -->
