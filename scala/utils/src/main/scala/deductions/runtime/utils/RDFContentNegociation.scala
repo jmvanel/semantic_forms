@@ -27,6 +27,8 @@ trait RDFContentNegociation extends StringHelpers {
   val jsonldMime = "application/ld+json"
   val ntMime = "application/n-triples"
   val nqMime = "application/n-quads"
+  val csvMIME = "text/csv"
+  val trigMIME = "application/trig"
 
   val htmlMime = "text/html"
 
@@ -37,8 +39,10 @@ trait RDFContentNegociation extends StringHelpers {
       "jsonld" -> jsonldMime,
       "n3" ->  n3Mime,
       "nt" ->  ntMime,
-      "nq" ->  nqMime
-      )
+      "nq" ->  nqMime,
+      "csv" ->  csvMIME,
+      "trig" -> trigMIME
+  )
 
   val mimeToExtension = extensionToMime.map(_.swap)
 

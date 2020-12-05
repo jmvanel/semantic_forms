@@ -38,7 +38,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     with RDF2ICalendar[Rdf, DATASET]
     with Timer
     with RDFContentNegociation 
-    with SparqlSelectCSVRdf [Rdf, DATASET] {
+    with SparqlSelectGeneric [Rdf, DATASET] {
 
   val config: Configuration
 
@@ -692,7 +692,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       case "rdfxml" => sparqlSelectXML(queryString, ds) // ??? should not happen
       case "xml"    => sparqlSelectXML(queryString, ds, context)
       case "json"   => sparqlSelectJSON(queryString, ds, context)
-      case "csv"   => sparqlSelectCSV(queryString, ds, context)
+      case "csv"   => sparqlSelectWrite(queryString, ds, context)
       case _        => sparqlSelectJSON(queryString, ds)
     }
   }

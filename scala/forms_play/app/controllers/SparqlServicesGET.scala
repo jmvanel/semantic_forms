@@ -157,7 +157,7 @@ with HTTPrequestHelpers
       // TODO implicit class ResultFormat(val format: String)
       val resultFormat: String = mimeAbbrevs.getOrElse(defaultMIME, 
         mimeAbbrevs.get( defaultMIMEaPriori) . get )
-      logInfo(s"""outputSPARQL: output(accepts=$acceptedTypes) => result format: "$resultFormat"
+      logInfo(s"""outputSPARQL: output(accepts=${acceptedTypes.mkString(", ")}) => result format: '$resultFormat'
         defaultMIMEaPriori $defaultMIMEaPriori
         preferredMedia $preferredMedia""")
 
@@ -177,7 +177,7 @@ with HTTPrequestHelpers
             else context
       )
     }
-    logInfo(s"result 10 first lines: $result".split("\n").take(10).mkString("\n"))
+    logInfo(s"result 10 first lines: $result".split("\n|\r\n").take(10).mkString("\n"))
     result match {
       case Success(result) =>
         Ok(result)
