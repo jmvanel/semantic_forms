@@ -23,6 +23,9 @@ import deductions.runtime.connectors.icalendar.RDF2ICalendar
 import play.api.libs.json.JsNull
 import deductions.runtime.utils.RDFContentNegociation
 import org.w3.banana.io.NTriples
+import scala.collection.JavaConverters._
+import org.apache.jena.util.PrefixMappingUtils
+import org.apache.jena.riot.RDFDataMgr
 
 /**
  * TODO separate stuff depending on dataset, and stuff taking a graph in argument
@@ -34,7 +37,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     with RDFPrefixes[Rdf]
     with RDF2ICalendar[Rdf, DATASET]
     with Timer
-    with RDFContentNegociation {
+    with RDFContentNegociation 
+    with SparqlSelectCSVRdf [Rdf, DATASET] {
 
   val config: Configuration
 
@@ -113,6 +117,17 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   /** enrich given Graph with computed labels From TDB */
   private def enrichGraphFromTDB(graph: Rdf#Graph, context: Map[String, String]) = {
+    println( "printNsPrefixMap(graph)" )
+    printNsPrefixMap(graph)
+//    println( "printNsPrefixMap( allNamedGraph )")
+//    printNsPrefixMap( allNamedGraph )
+    println( ">>>> dataset.isInstanceOf[org.apache.jena.query.Dataset]")
+    println( dataset.isInstanceOf[org.apache.jena.query.Dataset] )
+    val dsJena = dataset.asInstanceOf[org.apache.jena.query.Dataset]
+    println( "getDefaultModel.getNsPrefixMap '" +
+        dsJena.getDefaultModel.getNsPrefixMap.asScala.mkString(", ") + "'")
+    val jenaGraph = graph.asInstanceOf[org.apache.jena.graph.Graph]
+    println( "prefix2uriMap " + jenaGraph.getPrefixMapping.setNsPrefixes(prefix2uriMap.asJava) )
     if (context.get("enrich").isDefined) {
       /* loop on each unique subject ?S in graph:
 		   * - compute instance label ?LABEL
@@ -132,9 +147,30 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
           Literal(instanceLabelFromTDB))
 //          Literal.tagged(instanceLabelFromTDB, Lang(lang)))
       }
-      logger.debug( s">>>> enrichGraphFromTDB: addedTriples: $addedTriples" )
+      logger.info( s">>>> enrichGraphFromTDB: addedTriples: '$addedTriples'" )
       graph union (Graph(addedTriples))
-    } else graph
+    } else {
+      logger.info( s">>>> NO enrichGraphFromTDB" )
+      graph
+    }
+  }
+
+  private def printNsPrefixMap(graph: Rdf#Graph) = {
+    val jenaGraph = graph.asInstanceOf[org.apache.jena.graph.Graph]
+    val mapping = PrefixMappingUtils.calcInUsePrefixMapping(jenaGraph)
+    val map = mapping.getNsPrefixMap();
+    println(map.size())
+    println(map.asScala.mkString(", "))
+  }
+  private def printNsPrefixMap0(graph: Rdf#Graph) = {
+    if (graph.isInstanceOf[org.apache.jena.graph.Graph]) {
+      println(">>>> graph .asInstanceOf[org.apache.jena.graph.Graph]")
+      val jenaGraph = graph.asInstanceOf[org.apache.jena.graph.Graph]
+      val mapping = jenaGraph.getPrefixMapping
+      val map = mapping.getNsPrefixMap();
+      println( map.size() )
+      println( map.asScala.mkString(", "))
+    }
   }
 
   private def checkUnionDefaultGraph(context: Map[String,String]) = {
@@ -619,7 +655,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
             rowSeq
         }
         val results = resultsIterator.to[List]
-        logger.debug(s"makeListofListsFromSolutions: after results : results \n\t${results.mkString(",\n\t")}")
+        logger.debug(s"""makeListofListsFromSolutions: after results : results
+          ${results.mkString(",\n\t")}""")
 
         if (addHeaderRow) {
           implicit val literalIsOrdered: scala.Ordering[Rdf#Literal] =
@@ -655,6 +692,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       case "rdfxml" => sparqlSelectXML(queryString, ds) // ??? should not happen
       case "xml"    => sparqlSelectXML(queryString, ds, context)
       case "json"   => sparqlSelectJSON(queryString, ds, context)
+      case "csv"   => sparqlSelectCSV(queryString, ds, context)
       case _        => sparqlSelectJSON(queryString, ds)
     }
   }
@@ -751,6 +789,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
           val headValue = Json.obj("vars" -> JsArray(header.toSeq.map { s => JsString(s) }))
           val bindings = res.drop(1).map {
             list =>
+//              println(s"list (row) ${list.mkString("; ")}")
               val listOfJSONobjects = list.map {
                 node =>
                   foldNode(node)(
@@ -772,7 +811,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
                               if (litTuple._3 != null) {
                                 litTuple._3 match {
                                   case Some(lang) => lang.toString()
-                                  case None       => null
+                                  case None       => JsNull
                                 }
                               } else {
                                 logger.warn(s"sparqlSelectJSON: null in literal lang: ${list.mkString("; ")}")
@@ -885,7 +924,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    *  then pass MIME type
    */
   def graph2String(triples: Try[Rdf#Graph], baseURI: String, format: String = "turtle"): Try[String] = {
-    logger.info(s"graph2String: base URI <$baseURI>, format '$format', triples ${triples}")
+    logger.info(s"graph2String: base URI <$baseURI>, format '$format', triples ${triples.isSuccess}")
     triples match {
       case Success(graph) =>
         val graphSize = graph.size
