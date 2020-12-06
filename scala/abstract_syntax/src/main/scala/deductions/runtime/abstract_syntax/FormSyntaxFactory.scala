@@ -185,7 +185,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
         elem +: propertiesList
       else propertiesList
 
-    if (addRDFS_label_comment) {
+    if (addRDFS_label_comment &&
+        ! propertiesList.contains(form("userid") )) {
       val l1 = addIfNotPresent(Seq(), owl.sameAs)
       val l2 = addIfNotPresent(l1, rdfs.comment)
       propertiesList ++ addIfNotPresent(l2, rdfs.label)
