@@ -1,26 +1,33 @@
 @prefix form: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
 @prefix owl:	<http://www.w3.org/2002/07/owl#>.
-@prefix dc:	<http://purl.org/dc/elements/1.1/>.
+# @prefix dc:	<http://purl.org/dc/elements/1.1/>.
+@prefix dct: <http://purl.org/dc/terms/>.
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#>.
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#>.
 
 # About this vocab'
+# TODO use a prefix different from form:
 form: a owl:Ontology ;
 	rdfs:label "Authentication Ontology"@en ;
-	dc:date		"2020-12-06"^^xsd:date ;
-	dc:date		"2014-07-19"^^xsd:date ;
-	dc:creator	<http://jmvanel.free.fr/jmv.rdf#me> .
+	dct:date		"2020-12-06"^^xsd:date ;
+	dct:date		"2014-07-19"^^xsd:date ;
+	dct:creator	<http://jmvanel.free.fr/jmv.rdf#me> ;
+	dct:hasPart form:AuthenticationAttempt ,
+	  form:userid , form:password , form:confirmPassword ,
+	  form:RegisterAccount .
 
 #### Authentication ####
 form:AuthenticationAttempt  a owl:Class ;
 	rdfs:label "Authentication Attempt"@en  ;
 	rdfs:label "Tentative d'Authentification"@fr.
 
-form:userid a owl:ObjectProperty ;
+# form:userid a owl:ObjectProperty ;
+form:userid a owl:DatatypeProperty ;
         rdfs:label "login"@en ;
         rdfs:label "identifiant"@fr ;
         rdfs:domain form:AuthenticationAttempt ;
-        rdfs:range xsd:string . # foaf:OnlineAccount .
+        rdfs:range xsd:string ; # foaf:OnlineAccount .
+        form:shortString true .
 
 form:password a owl:DatatypeProperty ;
         rdfs:label "password"@en ;
@@ -37,6 +44,6 @@ form:confirmPassword a owl:DatatypeProperty ;
 
 form:RegisterAccount a owl:Class ;
 	rdfs:label "Register Account"@en  ;
-	rdfs:label "Créer un compte"@fr .
+	rdfs:label "Action de créer un compte"@fr .
 
 
