@@ -34,8 +34,6 @@ trait DefaultConfiguration extends Configuration {
   override val defaultConnectTimeout = 5000
   override val httpHeadTimeout = 5000
 
-  //  override val formVocabPrefix = "http://deductions-software.com/ontologies/forms.owl.ttl#"
-
 //  override val prefixAVontology = "http://www.virtual-assembly.org/ontologies/1.0/pair#"
 
   override val needLoginForEditing: Boolean = // false //
