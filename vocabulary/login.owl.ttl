@@ -1,0 +1,42 @@
+@prefix form: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
+@prefix owl:	<http://www.w3.org/2002/07/owl#>.
+@prefix dc:	<http://purl.org/dc/elements/1.1/>.
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#>.
+
+# About this vocab'
+form: a owl:Ontology ;
+	rdfs:label "Authentication Ontology"@en ;
+	dc:date		"2020-12-06"^^xsd:date ;
+	dc:date		"2014-07-19"^^xsd:date ;
+	dc:creator	<http://jmvanel.free.fr/jmv.rdf#me> .
+
+#### Authentication ####
+form:AuthenticationAttempt  a owl:Class ;
+	rdfs:label "Authentication Attempt"@en  ;
+	rdfs:label "Tentative d'Authentification"@fr.
+
+form:userid a owl:ObjectProperty ;
+        rdfs:label "login"@en ;
+        rdfs:label "identifiant"@fr ;
+        rdfs:domain form:AuthenticationAttempt ;
+        rdfs:range xsd:string . # foaf:OnlineAccount .
+
+form:password a owl:DatatypeProperty ;
+        rdfs:label "password"@en ;
+        rdfs:label "mot de passe"@fr ;
+        rdfs:domain form:AuthenticationAttempt ;
+        rdfs:range xsd:string ;
+        form:shortString true .
+form:confirmPassword a owl:DatatypeProperty ;
+        rdfs:label "confirm Password"@en ;
+        rdfs:label "confirmer le mot de passe"@fr ;
+        rdfs:domain form:AuthenticationAttempt ;
+        rdfs:range xsd:string ;
+        form:shortString true .
+
+form:RegisterAccount a owl:Class ;
+	rdfs:label "Register Account"@en  ;
+	rdfs:label "Créer un compte"@fr .
+
+
