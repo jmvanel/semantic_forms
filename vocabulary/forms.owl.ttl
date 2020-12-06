@@ -5,9 +5,6 @@
 @prefix dc:	<http://purl.org/dc/elements/1.1/>.
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#>.
 
-# CAUTION: this vocab' is not self-hosted, not sure where it's used !!!!
-@prefix frm: <http://deductions-software.com/ontologies/forms.owl.ttl#> .
-
 # actually used in source code and in forms/form_specs/*.form.ttl:
 @prefix form: <http://raw.githubusercontent.com/jmvanel/semantic_forms/master/vocabulary/forms.owl.ttl#> .
 
@@ -110,34 +107,6 @@ form:WidgetClass a owl:Class ;
 		form:Upload
         ) .
   
-#### Authentication ####
-form:AuthenticationAttempt  a owl:Class ;
-	rdfs:label "Authentication Attempt"@en  ;
-	rdfs:label "Tentative d'Authentification"@fr.
-
-form:userid a owl:ObjectProperty ;
-        rdfs:label "login"@en ;
-        rdfs:label "identifiant"@fr ;
-        rdfs:domain form:AuthenticationAttempt ;
-        rdfs:range xsd:string . # foaf:OnlineAccount .
-
-form:password a owl:DatatypeProperty ;
-        rdfs:label "password"@en ;
-        rdfs:label "mot de passe"@fr ;
-        rdfs:domain form:AuthenticationAttempt ;
-        rdfs:range xsd:string ;
-        form:shortString true .
-form:confirmPassword a owl:DatatypeProperty ;
-        rdfs:label "confirm Password"@en ;
-        rdfs:label "confirmer le mot de passe"@fr ;
-        rdfs:domain form:AuthenticationAttempt ;
-        rdfs:range xsd:string ;
-        form:shortString true .
-
-form:RegisterAccount  a owl:Class ;
-	rdfs:label "Register Account"@en  ;
-	rdfs:label "Créer un compte"@fr .
-
 # from e-commerce project ...
 # form:has_applicable_property 	form:has_mandatory_properties  form:computedProperty form:multipleChoice  
 # form:Field form:property form:class 	form:label 	form:detail
