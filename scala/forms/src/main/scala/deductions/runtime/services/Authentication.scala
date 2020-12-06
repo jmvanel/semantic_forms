@@ -126,7 +126,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
     println1(s"""Authentication.signin: userId "$agentURI"""")
 
     // TODO ? probably use absoluteURIForSaving instead of userUri everywhere
-    val userUri =  makeURIPartFromString(agentURI)
+    val userUri = agentURI //  makeURIPartFromString(agentURI)
     val absoluteURIForSaving = URI(makeAbsoluteURIForSaving(userUri))
 
     /* NOTE: here we are putting password triple in named graph <userUri>,
