@@ -107,6 +107,7 @@ lazy val loginForms = Prefix[Rdf]("login-forms",
     dcat,
     void,
     orga,
+    karstlink,
 
     // prefixes for resources
 
