@@ -147,7 +147,9 @@ trait CSVImporter[Rdf <: RDF, DATASET]
     if (isAbsoluteURI(candidate) ||
         candidate.startsWith(":") ) {
       // accept prefixed URI's like foaf:name, and expand them
-      expand(candidate) match {
+      val expcan = expand(candidate)
+      // println(s"candidate $candidate, expand $expcan")
+      expcan match {
         case Some(uri) => Some(uri)
         case None      => Some(URI(candidate))
       }
@@ -201,8 +203,9 @@ trait CSVImporter[Rdf <: RDF, DATASET]
   /** get RDF Object From Cell */
   private def getObjectFromCell(cell0: String): Rdf#Node = {
     val cell = cell0.trim()
+    // println(s"cell '$cell'  isAbsoluteURI(cell) ${isAbsoluteURI(cell)}")
     if (isAbsoluteURI(cell)) {
-        URI(cell)
+        URI(expandOrUnchanged(cell))
 
     } else if( cell.contains(":")) {
     	recognizePrefixedURI(cell) match {
