@@ -79,7 +79,9 @@ trait RDFStoreLocalJenaProviderImpl {
       scala.util.Try[deductions.runtime.jena.ImplementationSettings.Rdf#Graph] = delegate.readWithContentType(uri, contentType, dataset)
 
   lazy val dataset = delegate.dataset
-  val jenaComplements = new JenaComplements()(delegate.ops)
+  val jenaComplements = new JenaComplements() // (delegate.ops)
+  val  graphWriter = new deductions.runtime.sparql_cache.GraphWriterPrefixMapClass
+  
   def closeAllTDBs() = delegate.closeAllTDBs
   def syncTDB(ds: deductions.runtime.jena.ImplementationSettings.DATASET = dataset ) = delegate.syncTDB(ds)
 }
@@ -109,7 +111,7 @@ object RDFStoreLocalJenaProviderObject
   // : RDFStore[ImplementationSettings.Rdf, Try, ImplementationSettings.DATASET] 
   // :RDFStore[Jena, Try, org.apache.jena.query.Dataset]
   = new JenaDatasetStore(false)
-  val jenaComplements = new JenaComplements()(ops)
+  val jenaComplements = new JenaComplements()//(ops)
 
   /**
    * default is 10; each chunk commitedAwaitingFlush can be several Mb,
@@ -127,7 +129,8 @@ object RDFStoreLocalJenaProviderObject
       useTextQuery: Boolean = useTextQuery,
       useSpatialIndex: Boolean= useSpatialIndex
   ): ImplementationSettings.DATASET = {
-    if (database_location != "") {
+    
+      if (database_location != "") {
       // if the directory does not exist, create it
       val currentRelativePath = Paths.get("");
       val abs = currentRelativePath.toAbsolutePath().toString();
@@ -154,9 +157,22 @@ object RDFStoreLocalJenaProviderObject
       try {
         logger.info(
           s"configureLuceneIndex, useTextQuery: $useTextQuery, useSpatialIndex: $useSpatialIndex")
+
+        // TEST geo !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //
         val res = configureLuceneIndex(dts, useTextQuery, useSpatialIndex)
-        logger.info(
+        // val res = dts
+        
+          logger.info(
           s"configureLuceneIndex DONE => $res")
+          //    if(useSpatialIndex)
+      
+        // TEST geo !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        import org.apache.jena.geosparql.configuration._
+        // GeoSPARQLConfig.setupMemoryIndex()
+//        GeoSPARQLConfig.setupNoIndex()
+//        GeoSPARQLConfig.setupSpatialIndex(res)
+
         res
       } catch {
         case t: Throwable =>
