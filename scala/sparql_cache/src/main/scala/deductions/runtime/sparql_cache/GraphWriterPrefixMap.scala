@@ -1,22 +1,16 @@
-package deductions.runtime.jena
+package deductions.runtime.sparql_cache
 
-import java.io.OutputStream;
-import java.util.Map;
+import java.io.OutputStream
+import java.util.Map
 import java.io.ByteArrayOutputStream
 import java.util.HashMap
-
-import org.apache.jena.graph.Graph;
-import org.apache.jena.riot.RDFFormat;
-import org.apache.jena.riot.RDFWriterRegistry;
-import org.apache.jena.riot.WriterGraphRIOT;
-import org.apache.jena.riot.WriterGraphRIOTFactory;
-import org.apache.jena.riot.system.PrefixMapFactory;
-import org.apache.jena.sparql.util.Context;
+import org.apache.jena.graph.Graph
+import org.apache.jena.riot.RDFFormat
+import org.apache.jena.riot.RDFWriterRegistry
+import org.apache.jena.sparql.util.Context
 import org.apache.jena.util.PrefixMappingUtils
 import org.apache.jena.shared.impl.PrefixMappingImpl
 import org.apache.jena.riot.system.PrefixMapBase
-
-//import deductions.runtime.utils.RDFPrefixes
 
 /**
  * Graph Writer with Prefix Map, using Jena Riot

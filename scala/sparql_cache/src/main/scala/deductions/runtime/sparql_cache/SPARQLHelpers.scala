@@ -25,7 +25,7 @@ import deductions.runtime.utils.RDFContentNegociation
 import org.w3.banana.io.NTriples
 import scala.collection.JavaConverters._
 import org.apache.jena.util.PrefixMappingUtils
-import org.apache.jena.riot.RDFDataMgr
+import org.apache.jena.riot.RDFFormat
 
 /**
  * TODO separate stuff depending on dataset, and stuff taking a graph in argument
@@ -54,7 +54,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   import sparqlOps._
 
   val jenaComplements: SparqlComplements[Rdf, DATASET]
-  
+  val graphWriter: GraphWriterPrefixMapTrait[Rdf]
+
   /**
    * sparql Construct Query with Arq Syntax;
    * used in SPARQL results Web page
@@ -920,10 +921,55 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   /**
    * RDF graph to String
    *  @param format "turtle" or "rdfxml" or "jsonld" or ntMime = "application/n-triples"
-   *  TODO REFACTOR, use conneg helper RDFContentNegociation:
+   *  TODO REFACTOR, use conneg helper RDFContentNegociation (use MIME types directly)
    *  then pass MIME type
    */
   def graph2String(triples: Try[Rdf#Graph], baseURI: String, format: String = "turtle"): Try[String] = {
+    if (format != "ical") {
+      val graphSize = triples.getOrElse(emptyGraph).size
+        if (format === "jsonld")
+          writeTryGraphBanana(triples, jsonldCompactedWriter, "")
+        else if (format === "rdfxml")
+          writeTryGraphBanana(triples, rdfXMLWriter, s"<!-- graph size ${graphSize} -->\n")
+        else if (format === ntMime ||
+          format === "ntriples" ||
+          format === "n-triples")
+          writeTryGraphBanana(triples, ntriplesWriter, "")
+        else
+          // writeTryGraphBanana( triples, turtleWriter, s"# graph size ${graphSize}\n")
+          Try {
+            val outputStream = new ByteArrayOutputStream
+            graphWriter.writeGraph(triples.get, outputStream,
+              RDFFormat.TURTLE_PRETTY, prefix2uriMap.asJava)
+            s"# graph size ${graphSize}\n" +
+            outputStream.toString()
+          }
+    } else
+      Try(graph2iCalendar(triples.get))
+  }
+
+  private def writeTryGraphBanana(
+    triples: Try[Rdf#Graph],
+    writer:  RDFWriter[Rdf, Try, Object], stats: String): Try[String] = {
+    triples.map {
+      graph =>
+        val tryString = writer.asString(graph, base = "") // baseURI)
+        //        logger.debug( s">>>> graph2String tryString $tryString" )
+        tryString match {
+          case Success(s) => stats + s
+          case Failure(f) => s"graph2String: trouble in writing graph: $f"
+        }
+    }
+  }
+
+  /**
+   * UNUSED, BANANA RDF version
+   * RDF graph to String
+   *  @param format "turtle" or "rdfxml" or "jsonld" or ntMime = "application/n-triples"
+   *  TODO REFACTOR, use conneg helper RDFContentNegociation:
+   *  then pass MIME type
+   */
+  private def graph2StringBANANA(triples: Try[Rdf#Graph], baseURI: String, format: String = "turtle"): Try[String] = {
     logger.info(s"graph2String: base URI <$baseURI>, format '$format', triples ${triples.isSuccess}")
     triples match {
       case Success(graph) =>
