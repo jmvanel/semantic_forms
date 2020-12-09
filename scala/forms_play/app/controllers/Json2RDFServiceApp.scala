@@ -29,7 +29,8 @@ import play.api.mvc.AbstractController
 import jakarta.json.JsonArray
 import java.io.PrintWriter
 import com.apicatalog.jsonld.http.media.MediaType
-import deductions.runtime.jena.GraphWriterPrefixMap
+//import deductions.runtime.jena.GraphWriterPrefixMap
+import deductions.runtime.sparql_cache.GraphWriterPrefixMap
 
 class Json2RDFServiceApp @Inject() (
      components: ControllerComponents, configuration: play.api.Configuration)
@@ -99,7 +100,9 @@ with HTTPrequestHelpers
           .withHeaders(corsHeaders.toList: _*)
       case Failure(f) =>
         val mess = f match {
-          case e: JsonLdError => e.getCode().toString() + "\n" + e.getMessage
+          case e: JsonLdError => 
+            e.printStackTrace
+            e.getCode().toString() + "\n" + e.getMessage
           case _ =>
             val baos = new ByteArrayOutputStream
             val ss = new PrintWriter(baos)
