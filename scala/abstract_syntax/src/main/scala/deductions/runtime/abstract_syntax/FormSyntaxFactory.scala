@@ -22,6 +22,7 @@ import java.util.Locale
 import java.time.LocalDate
 import scala.util.Try
 
+
 /** one of EditionMode, DisplayMode, CreationMode */
 abstract sealed class FormMode { val editable = true }
 object FormMode { def apply(editable: Boolean = true) = if (editable) EditionMode else DisplayMode }
@@ -212,7 +213,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     request:    HTTPrequest)(implicit graph: Rdf#Graph, lang: String): FormSyntax = {
 
     val step1 = computePropertiesList(subject, formMode.editable, fromUri(uriNodeToURI(formConfig)), classs)
-
+    //    println(">>>> step1.propertiesList") ; step1.propertiesList.map { p=> println(p) }
     val step2 = createFormDetailed2(step1, formGroup)
     addExtraTypesFromHTTPrequest(step2, request)
   }
@@ -440,7 +441,10 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
    */
   private def addTypeTriples(subject: Rdf#Node, classses: Seq[Rdf#Node],
                              fields: Iterable[Entry])(implicit graph: Rdf#Graph): Seq[Entry] = {
+    // TEST !!!!!!!!!!!!!!! return Seq()
+
     val alreadyInDatabase = !find(graph, subject, rdf.typ, ANY).isEmpty
+//    println(s">>>> addTypeTriples classses ${classses.mkString("; ")} - alreadyInDatabase $alreadyInDatabase")
     if ( // defaults.displayRdfType ||
     !alreadyInDatabase
       && !(subject == nullURI)) {
@@ -454,6 +458,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
             htmlName = makeHTMLName(makeTriple(subject, rdf.typ, nullURI)),
             type_ = Seq(rdfs.Class))
         }
+//      println(s"classFormEntry $classFormEntry")
       (fields ++ classFormEntry).toSeq
     } else fields.toSeq
   }
@@ -729,25 +734,32 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     }
   }
 
-  /** Add extra type(s) from HTTP request /create?uri=
+  /** Add extra type(s) from HTTP request /create?uri=<mainClass>&uri=<extraClass>
    *  TESTED with http://localhost:9000/create?uri=bioc%3APlanting&uri=seeds%3APlantOffering&prefill=no
-   *  ( create a form with fields from class bioc:Planting and additional class seeds:PlantOffering )*/
+   *  ( create a form with fields from class bioc:Planting + add additional class seeds:PlantOffering )*/
   def addExtraTypesFromHTTPrequest(
     formFromClass: FormSyntax,
-    request:       HTTPrequest): FormSyntax = {
-    println(s"addExtraTypesFromHTTPrequest: formFromClass.classs ${formFromClass.classs}")
+    request:       HTTPrequest)
+  (implicit graph: Rdf#Graph)
+  : FormSyntax = {
+    logger.info(s"addExtraTypesFromHTTPrequest: class = form.classs ${formFromClass.classs}")
+//Thread.dumpStack()
+
     val extraFields: Seq[ResourceEntry] = for (
       classURIexpanded <- request.getHTTPparameterValues("uri")
-        . map { u => expandOrUnchanged(u) }
+        . map { u =>
+          println(s"addExtraTypesFromHTTPrequest: expandOrUnchanged(u) = ${expandOrUnchanged(u)}")
+          expandOrUnchanged(u) }
         . filter(u => u != "")
         . filter(u => ! formFromClass.classs. contains( URI(u)))
+        . filter(u => isOWLClass(URI(u)) || isRDFSClass(URI(u)) )
     ) yield {
       ResourceEntry(
       subject = formFromClass.subject, property = rdf.typ, value = URI(classURIexpanded),
       type_ = Seq(owl.Class),
       htmlName = makeHTMLName(makeTriple(formFromClass.subject, rdf.typ, URI(classURIexpanded))))
     }
-//    println(s"addExtraTypesFromHTTPrequest: ${extraFields.mkString("\n")}")
+    logger.info(s"addExtraTypesFromHTTPrequest: extraFields ${extraFields.mkString("\n")}")
 
     formFromClass.fields = formFromClass.fields ++ extraFields
     formFromClass

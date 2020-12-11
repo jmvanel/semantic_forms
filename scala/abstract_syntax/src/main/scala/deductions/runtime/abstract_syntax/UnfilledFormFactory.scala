@@ -34,42 +34,53 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
     formSpecURI0: String = "" , request: HTTPrequest )
   	  (implicit graph: Rdf#Graph) : FormSyntax = {
 
-    val formFromClass = wrapInTransaction {
-    // if classs argument is not an owl:Class, check if it is a form:specification, then use it as formSpecURI
-    val checkIsOWLClass = find( graph, classOrForm, rdf.typ, owl.Class).toList
-    val checkIsRDFSClass = find( graph, classOrForm, rdf.typ, rdfs.Class).toList
-    val checkIsFormSpec = find( graph, classOrForm, rdf.typ, form("specification") ) . toList
-    logger.debug( s""">>>> createFormFromClass checkIsFormSpec $checkIsFormSpec
-        checkIsOWLClass $checkIsOWLClass, checkIsRDFSClass $checkIsRDFSClass""" )
+    val formFromClass: FormSyntax = wrapInTransaction {
+      lazy val itsOWLClass = isOWLClass(classOrForm)
+      lazy val itsRDFSClass = isRDFSClass(classOrForm)
+      lazy val itsFormSpecification = isFormSpecification(classOrForm)
 
-    val ( formSpecURI, classs ) = if( checkIsOWLClass.isEmpty && checkIsRDFSClass.isEmpty
-        && ! checkIsFormSpec.isEmpty )
-      (fromUri(classOrForm), nullURI ) else (formSpecURI0, classOrForm)
-
-    val classFromSpecsOrGiven =
-      if (formSpecURI  =/=  "" && classs == nullURI ) {
-        val classFromSpecs = lookClassInFormSpec( URI(formSpecURI), graph)
-        uriNodeToURI(classFromSpecs)
-      } else classs
-    logger.info(s""">>> UnfilledFormFactory.createFormFromClass: formSpecURI=<$formSpecURI> , classOrForm <$classOrForm> =>
+      // if classs argument is not an owl:Class, check if it is a form:specification, then use it as formSpecURI
+      val (formSpecURI, classs) = if (!itsOWLClass && !itsRDFSClass
+        && itsFormSpecification)
+        (fromUri(classOrForm), nullURI)
+      else
+        (formSpecURI0, classOrForm)
+      val classFromSpecsOrGiven =
+        if (formSpecURI =/= "" && classs == nullURI) {
+          val classFromSpecs = lookClassInFormSpec(URI(formSpecURI), graph)
+          uriNodeToURI(classFromSpecs)
+        } else classs
+      logger.info(s""">>> UnfilledFormFactory.createFormFromClass: formSpecURI=<$formSpecURI> , classOrForm <$classOrForm> =>
       classFromSpecsOrGiven <$classFromSpecsOrGiven>""")
 
-    val instanceURI = getFirstNonEmptyInMap(request.queryString, "subjecturi")
-    val newId = if (instanceURI === "")
-      makeId(request)
-    else
-      instanceURI
+      val newId = {
+        val instanceURI = getFirstNonEmptyInMap(request.queryString, "subjecturi")
+        if (instanceURI === "")
+          makeId(request)
+        else instanceURI
+      }
 
       implicit val lang = request.getLanguage()
-      createFormDetailed(makeUri(newId),
+      val form = createFormDetailed(
+        makeUri(newId),
         classFromSpecsOrGiven,
-        CreationMode, nullURI, URI(formSpecURI), request )
-  } . getOrElse( FormSyntax( nullURI, Seq() ) )
+        CreationMode, nullURI, URI(formSpecURI), request)
 
-//    addExtraTypesFromHTTPrequest( formFromClass, request)
+      //      logger.info( s""">>>> createFormFromClass isFormSpec $itsFormSpecification
+      //        itsOWLClass $itsOWLClass, itsRDFSClass $itsRDFSClass""" )
+      //      if( itsOWLClass || itsRDFSClass )
+      //        addExtraTypesFromHTTPrequest( form, request)
+      //      else
+      form
+    }.getOrElse(FormSyntax(nullURI, Seq()))
 
     formFromClass
   }
+
+//  def isFormSpecification(classOrForm: Rdf#URI)(implicit graph: Rdf#Graph): Boolean
+//  = ! find( graph, classOrForm, rdf.typ, form("specification")).toList.isEmpty
+//  def isOWLClass(classOrForm: Rdf#URI)(implicit graph: Rdf#Graph): Boolean
+//  = ! find( graph, classOrForm, rdf.typ, owl.Class).toList.isEmpty
 
   // TODO put in reusable trait
   private def getFirstNonEmptyInMap(

@@ -88,6 +88,7 @@ case class HTTPrequest(
   def getHTTPparameterValue(param: String): Option[String] =
     queryString.get(param) .map(seq => seq.headOption map(s => s.trim)) . flatten
 
+  /** get HTTP parameter Values */
   def getHTTPparameterValues(param: String): Seq[String] =
     queryString.get(param).headOption.getOrElse(Seq() )
 

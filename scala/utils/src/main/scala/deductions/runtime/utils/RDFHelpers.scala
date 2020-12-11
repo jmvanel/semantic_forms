@@ -22,9 +22,8 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf]
     with RDFPrefixes[Rdf] {
 
   implicit val ops: RDFOps[Rdf]
-//  val rdfh: RDFHelpers[Rdf] = this
-//  import rdfh.{ ops => _, _ }
   import ops.{rdf => _, _}
+  private lazy val owl = OWLPrefix[Rdf]
 
   /** recursively iterate on the Rdf#Node through rdf:first and rdf:rest */
   def rdfListToSeq(listOp: Option[Rdf#Node], result: Seq[Rdf#Node] = Seq())(implicit graph: Rdf#Graph): Seq[Rdf#Node] = {
@@ -62,11 +61,20 @@ trait RDFHelpers[Rdf <: RDF] extends RDFHelpers0[Rdf]
     values
   }
 
+  /** TODO rename getTypes */
   def getClasses(subject: Rdf#Node)(implicit graph: Rdf#Graph): List[Rdf#Node] =
     if (subject == nullURI)
       List()
     else
-      getObjects(graph, subject: Rdf#Node, rdf("type")).toList
+      getObjects(graph, subject: Rdf#Node, rdf.typ).toList
+
+  def isOWLClass(classOrForm: Rdf#Node) (implicit graph: Rdf#Graph): Boolean
+  = getClasses(classOrForm).contains(owl.Class)
+  def isRDFSClass(classOrForm: Rdf#Node) (implicit graph: Rdf#Graph): Boolean
+  = getClasses(classOrForm).contains(rdfs.Class)
+  def isFormSpecification(classOrForm: Rdf#URI)(implicit graph: Rdf#Graph): Boolean
+    = getClasses(classOrForm).contains(form("specification"))
+//  = find( graph, classOrForm, rdf.typ, form("specification")).toList.isEmpty
 
   def getClassOrNullURI(subject: Rdf#Node)(implicit graph: Rdf#Graph): Rdf#Node =
     getClasses(subject).headOption.getOrElse(nullURI)
