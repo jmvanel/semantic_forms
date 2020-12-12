@@ -28,8 +28,8 @@ class FormServicesApp @Inject() (
     override implicit val config = new PlayDefaultConfiguration(configuration)
   }
   with AbstractController(components)
-  with FormModuleBanana[ImplementationSettings.Rdf]
   with RDFStoreLocalJenaProvider
+  with FormModuleBanana[ImplementationSettings.Rdf]
 with CreationAbstractForm[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 with FormJSON[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 with RDFContentNegociation
