@@ -6,7 +6,9 @@ object Common {
     val localResolver = Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
     val bananaResolver = "bblfish-snapshots" at "http://bblfish.net/work/repo/releases"
 
+// 
 val jenaVersion =  "3.16.0"
+// val jenaVersion =  "3.17.0"
 val akkaVersion =  "2.5.26" // because of Play 2.6.25
                   // "2.6.5" //
 val akkaHttpVersion = "10.1.12"
@@ -15,10 +17,11 @@ val commonsCsvVersion = "1.8"
 
   val bananaDependency0 = "org.w3" %%  "banana-jena" % "0.8.4-SNAPSHOT" 
   val bananaDependency = bananaDependency0 exclude("org.slf4j", "slf4j-api" )	exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
-  val jenaDependency = "org.apache.jena" % "apache-jena-libs" % jenaVersion exclude("org.slf4j", "slf4j-api")
-  val jenaPermissionsDependency = "org.apache.jena" % "jena-permissions" % jenaVersion	
-  val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion
-  val jenaSpatialDependency = "org.apache.jena" % "jena-geosparql" % jenaVersion
+  val jenaDependency = "org.apache.jena" % "apache-jena-libs" % jenaVersion    exclude("org.slf4j", "slf4j-api")     exclude("com.fasterxml.jackson.core", "jackson-core" )  exclude("com.fasterxml.jackson.core", "jackson-databind" )   exclude("com.fasterxml.jackson.core", "jackson-annotations")  exclude("com.fasterxml.jackson.datatype", "jackson-datatype" ) exclude("com.fasterxml.jackson.datatype", "jackson-datatype-jsr310") exclude("com.fasterxml.jackson.datatype", "jackson-datatype-jdk8") exclude("com.fasterxml.jackson.module", "jackson-module-parameter-names") exclude("com.fasterxml.jackson.module", "jackson-module-scala") exclude("com.fasterxml.jackson.module", "jackson-module-paranamer")
+
+  val jenaPermissionsDependency = "org.apache.jena" % "jena-permissions" % jenaVersion	   exclude("com.fasterxml.jackson.core", "jackson-core" )  exclude("com.fasterxml.jackson.core", "jackson-databind" )   exclude("com.fasterxml.jackson.core", "jackson-annotations")  exclude("com.fasterxml.jackson.datatype", "jackson-datatype" ) exclude("com.fasterxml.jackson.datatype", "jackson-datatype-jsr310") exclude("com.fasterxml.jackson.datatype", "jackson-datatype-jdk8") exclude("com.fasterxml.jackson.module", "jackson-module-parameter-names") exclude("com.fasterxml.jackson.module", "jackson-module-scala") exclude("com.fasterxml.jackson.module", "jackson-module-paranamer")
+  val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion   exclude("com.fasterxml.jackson.core", "jackson-core" )  exclude("com.fasterxml.jackson.core", "jackson-databind" )   exclude("com.fasterxml.jackson.core", "jackson-annotations")  exclude("com.fasterxml.jackson.datatype", "jackson-datatype" ) exclude("com.fasterxml.jackson.datatype", "jackson-datatype-jsr310") exclude("com.fasterxml.jackson.datatype", "jackson-datatype-jdk8") exclude("com.fasterxml.jackson.module", "jackson-module-parameter-names") exclude("com.fasterxml.jackson.module", "jackson-module-scala") exclude("com.fasterxml.jackson.module", "jackson-module-paranamer")
+  val jenaSpatialDependency = "org.apache.jena" % "jena-geosparql" % jenaVersion   exclude("com.fasterxml.jackson.core", "jackson-core" )  exclude("com.fasterxml.jackson.core", "jackson-databind" )   exclude("com.fasterxml.jackson.core", "jackson-annotations")  exclude("com.fasterxml.jackson.datatype", "jackson-datatype" ) exclude("com.fasterxml.jackson.datatype", "jackson-datatype-jsr310") exclude("com.fasterxml.jackson.datatype", "jackson-datatype-jdk8") exclude("com.fasterxml.jackson.module", "jackson-module-parameter-names") exclude("com.fasterxml.jackson.module", "jackson-module-scala") exclude("com.fasterxml.jackson.module", "jackson-module-paranamer")
 
 
   val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.3.0"
@@ -50,7 +53,7 @@ val commonsCsvVersion = "1.8"
     "org.glassfish" % "jakarta.json" % "2.0.0"
   )
 
-  val jsonldDependencies = Seq( "com.apicatalog" % "titanium-json-ld" % "0.9-SNAPSHOT" )
+  val jsonldDependencies = Seq( "com.apicatalog" % "titanium-json-ld" % "1.0.0" ) // "0.9-SNAPSHOT" )
 
   val commonDependencies =
     loggingDependencies ++
