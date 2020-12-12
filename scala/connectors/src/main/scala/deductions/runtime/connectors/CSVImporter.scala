@@ -200,7 +200,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
     }
   }
 
-  /** get RDF Object From Cell */
+  /** get RDF triple Object From Cell */
   private def getObjectFromCell(cell0: String): Rdf#Node = {
     val cell = cell0.trim()
     // println(s"cell '$cell'  isAbsoluteURI(cell) ${isAbsoluteURI(cell)}")

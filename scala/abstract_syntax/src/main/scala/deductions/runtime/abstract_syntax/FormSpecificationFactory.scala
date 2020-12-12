@@ -85,7 +85,9 @@ trait FormSpecificationFactory[Rdf <: RDF, DATASET]
       }.headOption
       if (forms.size > 1)
         logger.warn(
-          s"WARNING: several form specs for <$classe>; chosen $formSpecOption \n\tother form specs: ${forms.drop(0).mkString("", "\n\t", "")}")
+          s"WARNING: several form specs for <$classe>; chosen $formSpecOption \n\tother form specs: ${
+            forms.filter(_ != formSpecOption.getOrElse(nullURI)).mkString("", "\n\t", "")
+          }")
       logger.debug(s"lookFormSpecInConfiguration: found for <$classe> : formSpecOption $formSpecOption")
       formSpecOption
     }

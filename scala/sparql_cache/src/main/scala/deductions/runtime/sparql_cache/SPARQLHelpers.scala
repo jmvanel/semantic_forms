@@ -118,17 +118,17 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 
   /** enrich given Graph with computed labels From TDB */
   private def enrichGraphFromTDB(graph: Rdf#Graph, context: Map[String, String]) = {
-    println( "printNsPrefixMap(graph)" )
-    printNsPrefixMap(graph)
+//    println( "printNsPrefixMap(graph)" )
+//    printNsPrefixMap(graph)
 //    println( "printNsPrefixMap( allNamedGraph )")
 //    printNsPrefixMap( allNamedGraph )
-    println( ">>>> dataset.isInstanceOf[org.apache.jena.query.Dataset]")
-    println( dataset.isInstanceOf[org.apache.jena.query.Dataset] )
+    // println( ">>>> enrichGraphFromTDB: dataset.isInstanceOf[org.apache.jena.query.Dataset]" + 
+//       dataset.isInstanceOf[org.apache.jena.query.Dataset] )
     val dsJena = dataset.asInstanceOf[org.apache.jena.query.Dataset]
-    println( "getDefaultModel.getNsPrefixMap '" +
-        dsJena.getDefaultModel.getNsPrefixMap.asScala.mkString(", ") + "'")
+    // println( "getDefaultModel.getNsPrefixMap '" +
+//        dsJena.getDefaultModel.getNsPrefixMap.asScala.mkString(", ") + "'")
     val jenaGraph = graph.asInstanceOf[org.apache.jena.graph.Graph]
-    println( "prefix2uriMap " + jenaGraph.getPrefixMapping.setNsPrefixes(prefix2uriMap.asJava) )
+//    println( "prefix2uriMap " + jenaGraph.getPrefixMapping.setNsPrefixes(prefix2uriMap.asJava) )
     if (context.get("enrich").isDefined) {
       /* loop on each unique subject ?S in graph:
 		   * - compute instance label ?LABEL
@@ -148,10 +148,10 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
           Literal(instanceLabelFromTDB))
 //          Literal.tagged(instanceLabelFromTDB, Lang(lang)))
       }
-      logger.info( s">>>> enrichGraphFromTDB: addedTriples: '$addedTriples'" )
+      logger.debug( s">>>> enrichGraphFromTDB: addedTriples: '$addedTriples'" )
       graph union (Graph(addedTriples))
     } else {
-      logger.info( s">>>> NO enrichGraphFromTDB" )
+      logger.debug( s">>>> NO enrichGraphFromTDB" )
       graph
     }
   }
