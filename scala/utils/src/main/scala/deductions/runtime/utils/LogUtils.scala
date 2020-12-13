@@ -1,7 +1,6 @@
 package deductions.runtime.utils
 
 import com.typesafe.scalalogging.Logger
-//import deductions.runtime.utils.Timer
 
 trait LogUtils extends Timer {
 

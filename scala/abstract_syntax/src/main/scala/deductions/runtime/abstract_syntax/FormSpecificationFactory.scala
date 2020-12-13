@@ -30,6 +30,7 @@ trait FormSpecificationFactory[Rdf <: RDF, DATASET]
       classs: Rdf#Node)
   (implicit graph: Rdf#Graph)
   : (Seq[Rdf#URI], Rdf#Node) = {
+
     val formSpecs = lookFormSpecsInConfiguration(
         Seq(classs)) // TODO
       

@@ -75,6 +75,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     logger.debug(s">>>> makeTableHistoryUserActions metadata1 $metadata1")
     val metadata = filterMetadataFocus(metadata1, request)
     logger.debug(s">>>> makeTableHistoryUserActions metadata $metadata")
+//    logger.info(s">>>> makeTableHistoryUserActions metadata ${metadata._1.mkString("\n")}")
     implicit val lang = request.getLanguage()
     val historyLink =
       if( request.getHTTPparameterValue("paragraphs").isDefined )
@@ -288,7 +289,8 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
 
   /** paragraphs View */
   private def paragraphsView(rows: List[Seq[Rdf#Node]], request: HTTPrequest): NodeSeq = {
-    val formSyntaxes = for (row <- rows) yield {
+    val formSyntaxes = for (
+        row <- rows if( row(0) != nullURI ) ) yield {
       try {
         logger.debug("row " + row(1).toString())
         val subjectURI = row(0)
