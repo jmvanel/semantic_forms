@@ -24,24 +24,27 @@ val commonsCsvVersion = "1.8"
     ExclusionRule(organization = "com.fasterxml.jackson.module" )
   )
 
-  val jenaPermissionsDependency = "org.apache.jena" % "jena-permissions" % jenaVersion	   exclude("com.fasterxml.jackson.core", "jackson-core" ) excludeAll(
+  val jenaPermissionsDependency = "org.apache.jena" % "jena-permissions" % jenaVersion	excludeAll(
     ExclusionRule(organization = "com.fasterxml.jackson.core" ) ,
     ExclusionRule(organization = "com.fasterxml.jackson.datatype" ) ,
     ExclusionRule(organization = "com.fasterxml.jackson.module" )
   )
 
-  val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion   exclude("com.fasterxml.jackson.core", "jackson-core" ) excludeAll(
+  val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion  excludeAll(
     ExclusionRule(organization = "com.fasterxml.jackson.core" ) ,
     ExclusionRule(organization = "com.fasterxml.jackson.datatype" ) ,
     ExclusionRule(organization = "com.fasterxml.jackson.module" )
   )
 
-  val jenaSpatialDependency = "org.apache.jena" % "jena-geosparql" % jenaVersion   exclude("com.fasterxml.jackson.core", "jackson-core" )  excludeAll(
+  val jenaSpatialDependency = "org.apache.jena" % "jena-geosparql" % jenaVersion excludeAll(
     ExclusionRule(organization = "com.fasterxml.jackson.core" ) ,
     ExclusionRule(organization = "com.fasterxml.jackson.datatype" ) ,
     ExclusionRule(organization = "com.fasterxml.jackson.module" )
   )
 
+excludeDependencies ++= Seq(
+  ExclusionRule("com.fasterxml.jackson.core" ) //, "jackson-databind")
+)
 
   val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.3.0"
 
