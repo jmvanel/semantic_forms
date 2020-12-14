@@ -29,14 +29,16 @@ import com.apicatalog.rdf.RdfGraph
 import com.apicatalog.jsonld.document.DocumentParser
 import com.apicatalog.jsonld.http.media.MediaType
 import com.apicatalog.jsonld.document.RdfDocument
-import com.apicatalog.jsonld.api.impl.FromRdfApi
 import com.apicatalog.jsonld.document.JsonDocument
-import com.apicatalog.jsonld.api.JsonLdOptions
 import com.fasterxml.jackson.annotation.JsonFormat
+
 import java.io.StringWriter
 import titaniumJena.Titanium2Jena
 import jakarta.json.stream.JsonGenerator
 import jakarta.json.JsonWriterFactory
+
+import com.apicatalog.jsonld.JsonLdOptions
+import com.apicatalog.jsonld.api.FromRdfApi
 
 /** export GeoJSON (both plain GeoJSON & JSON-LD) from URI's having geographic data
  *  in given TDB database */
