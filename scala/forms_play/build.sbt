@@ -28,9 +28,9 @@ connectInput in run := true
 // 
 libraryDependencies += guice
 
-libraryDependencies += filters
-// libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0-M1" % "test"
-libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % "test"
+// libraryDependencies += filters
+// libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % "test"
+libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % "test"
 
 // For debug breakpoints ???
 fork in run := false

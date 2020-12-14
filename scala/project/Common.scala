@@ -6,12 +6,11 @@ object Common {
     val localResolver = Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
     val bananaResolver = "bblfish-snapshots" at "http://bblfish.net/work/repo/releases"
 
-//
 val jenaVersion =  "3.16.0"
-// val jenaVersion =  "3.17.0"
-val akkaVersion =  "2.5.26" // because of Play 2.6.25
-                  // "2.6.5" //
-val akkaHttpVersion = "10.1.12"
+//val jenaVersion =  "3.17.0"
+val akkaVersion =  // "2.5.26" // because of Play 2.6.25
+                   "2.6.8" //
+val akkaHttpVersion = "10.2.2" // "10.1.12"
 val any23Version = "2.3"
 val commonsCsvVersion = "1.8"
 
@@ -43,7 +42,9 @@ val commonsCsvVersion = "1.8"
   )
 
 excludeDependencies ++= Seq(
-  ExclusionRule("com.fasterxml.jackson.core" ) //, "jackson-databind")
+  ExclusionRule("com.fasterxml.jackson.core" ) , //, "jackson-databind")
+  ExclusionRule(organization = "com.fasterxml.jackson.datatype" ) ,
+  ExclusionRule(organization = "com.fasterxml.jackson.module" )
 )
 
   val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.3.0"
@@ -69,7 +70,7 @@ excludeDependencies ++= Seq(
 
   val jsonDependencies = Seq(
     // TODO remove play-json !
-    "com.typesafe.play" %% "play-json" %  "2.8.1" , // 2.6.14",
+    "com.typesafe.play" %% "play-json" % "2.9.1" , // "2.8.1" , // 2.6.14",
     //"javax.json" % "javax.json-api" % "1.1.4" ,
     //"jakarta.json" % "jakarta.json-api" % "2.0.0" ,
     "org.glassfish" % "jakarta.json" % "2.0.0"
@@ -85,8 +86,6 @@ excludeDependencies ++= Seq(
     jenaSpatialDependency,
     xmlDependency,
     junitDependency, scalatestDependency,
-
-    // "com.typesafe.play" %% "play-iteratees" % "2.6.1",
 
     "org.apache.lucene" % "lucene-suggest" % "7.7.2" , // 7.4.0" , // "6.4.1" , // "7.5.0", // 6.6.5",
     "org.apache.lucene" % "lucene-demo"    % "7.7.2" , // 7.4.0" , // "6.4.1" , // "7.5.0", // 6.6.5",

@@ -16,10 +16,9 @@ version in ThisBuild := "2.X-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.12"
 // "2.13.3" //
 
-// javacOptions in ThisBuild := Seq("-source","1.8", "-target","1.8")
-scalacOptions ++= Seq("-unchecked",
-	// "-deprecation",
-	"-feature", "-explaintypes", "-language:_", "-Xlint:_")
+// 
+javacOptions in ThisBuild := Seq("-source","1.8", "-target","1.11")
+// scalacOptions ++= Seq("-unchecked", // "-deprecation", "-feature", "-explaintypes", "-language:_", "-Xlint:unused")
 
 publishArtifact in (Compile, packageDoc) := false
 sources in (Compile,doc) := Seq.empty
@@ -39,7 +38,7 @@ lazy val forms_play = (project in file("forms_play"))
 // triggers scalaJSPipeline when using compile or continuous compilation
    compile in Compile := ((compile in Compile) dependsOn scalaJSPipeline).value,
    libraryDependencies ++= Seq(
-     ( "com.vmunier" %% "scalajs-scripts" % "1.1.2" ) . exclude("com.typesafe.play", "twirl-api_2.11")
+     ( "com.vmunier" %% "scalajs-scripts" % "1.1.4" ) // . exclude("com.typesafe.play", "twirl-api_2.11")
    )
    )
 
@@ -80,7 +79,7 @@ lazy val geo = project . dependsOn( jsonld )
 // Added for locally compiled Java-RDFa:
 // resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
 resolvers in ThisBuild += Resolver.mavenLocal
-resolvers += Resolver.url("typesafe", url("https://repo.typesafe.com/typesafe/ivy-releases/"))(Resolver.ivyStylePatterns)
+// resolvers += Resolver.url("typesafe", url("https://repo.typesafe.com/typesafe/ivy-releases/"))(Resolver.ivyStylePatterns)
 
 // PENDING: really necessary?
 // resolvers in ThisBuild += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
