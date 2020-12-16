@@ -32,6 +32,9 @@ libraryDependencies += guice
 // libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % "test"
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % "test"
 
+libraryDependencies += "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % "test"
+//libraryDependencies += "com.typesafe.play" %% "play-test" % "2.8.5" % "test"
+
 // For debug breakpoints ???
 fork in run := false
 

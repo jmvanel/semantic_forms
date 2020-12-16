@@ -17,36 +17,27 @@ val commonsCsvVersion = "1.8"
   val bananaDependency0 = "org.w3" %%  "banana-jena" % "0.8.4-SNAPSHOT" 
   val bananaDependency = bananaDependency0 exclude("org.slf4j", "slf4j-api" )	exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
 
-  val jenaDependency = "org.apache.jena" % "apache-jena-libs" % jenaVersion exclude("org.slf4j", "slf4j-api") excludeAll(
-    ExclusionRule(organization = "com.fasterxml.jackson.core" ) ,
-    ExclusionRule(organization = "com.fasterxml.jackson.datatype" ) ,
-    ExclusionRule(organization = "com.fasterxml.jackson.module" )
-  )
+  val jenaDependency = "org.apache.jena" % "apache-jena-libs" % jenaVersion exclude("org.slf4j", "slf4j-api")
+  val jenaPermissionsDependency = "org.apache.jena" % "jena-permissions" % jenaVersion
+  val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion
+  val jenaSpatialDependency = "org.apache.jena" % "jena-geosparql" % jenaVersion
 
-  val jenaPermissionsDependency = "org.apache.jena" % "jena-permissions" % jenaVersion	excludeAll(
-    ExclusionRule(organization = "com.fasterxml.jackson.core" ) ,
-    ExclusionRule(organization = "com.fasterxml.jackson.datatype" ) ,
-    ExclusionRule(organization = "com.fasterxml.jackson.module" )
-  )
-
-  val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion  excludeAll(
-    ExclusionRule(organization = "com.fasterxml.jackson.core" ) ,
-    ExclusionRule(organization = "com.fasterxml.jackson.datatype" ) ,
-    ExclusionRule(organization = "com.fasterxml.jackson.module" )
-  )
-
-  val jenaSpatialDependency = "org.apache.jena" % "jena-geosparql" % jenaVersion excludeAll(
-    ExclusionRule(organization = "com.fasterxml.jackson.core" ) ,
-    ExclusionRule(organization = "com.fasterxml.jackson.datatype" ) ,
-    ExclusionRule(organization = "com.fasterxml.jackson.module" )
-  )
-
+libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.10.4" force()
+  /*
 excludeDependencies ++= Seq(
   ExclusionRule("com.fasterxml.jackson.core" ) , //, "jackson-databind")
   ExclusionRule(organization = "com.fasterxml.jackson.datatype" ) ,
   ExclusionRule(organization = "com.fasterxml.jackson.module" )
 )
-
+// TEST !!!!!!!!!!
+dependencyOverrides += "com.fasterxml.jackson.core" % "jackson-databind" % "2.11.3" // 2.10.5"
+dependencyOverrides += "com.fasterxml.jackson.core" % "jackson-core" % "2.11.3" // 2.10.5"
+dependencyOverrides += "com.fasterxml.jackson.core" % "jackson-annotations" % "2.11.3"
+dependencyOverrides += "com.fasterxml.jackson.module" % "jackson-module-paranamer" % "2.11.3"
+dependencyOverrides += "com.fasterxml.jackson.dataformat" % "jackson-dataformat-cbor" % "2.11.3"
+dependencyOverrides += "com.fasterxml.jackson.module" % "jackson-module-scala" % "2.11.3"
+dependencyOverrides += "com.fasterxml.jackson.module" % "jackson-module-parameter-names" % "2.11.3"
+*/
   val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.3.0"
 
   val junitDependency = "junit" % "junit" % "4.13" % Test

@@ -5,20 +5,24 @@ import deductions.runtime.services.html.Form2HTMLObject
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.services.html.{Form2HTMLBanana, Form2HTMLObject}
 import deductions.runtime.utils.DefaultConfiguration
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+
 import play.api.test.{FakeRequest, Helpers}
 import play.api.test.Helpers.contentAsString
 
 import scala.concurrent.duration.DurationInt
 import scala.language.postfixOps
+import play.api.mvc.ControllerComponents
 
 class TestAuth
     extends PlaySpec
     with DefaultConfiguration
     with WhiteBoxTestdependencies
-    with OneAppPerSuite
+    with GuiceOneAppPerSuite
     with Secured
     {
+    val controllerComponents: ControllerComponents = null
 
   def stringToAbstractURI(uri: String): deductions.runtime.jena.ImplementationSettings.Rdf#URI = ???
   def toPlainString(n: deductions.runtime.jena.ImplementationSettings.Rdf#Node): String = ???
@@ -38,6 +42,7 @@ class TestAuth
   val timeout: Timeout = Timeout(DurationInt(240) seconds)
   val config1 = config
   val auth = new AuthServiceTrait {
+    val controllerComponents: ControllerComponents = null
     val config = config1
     		val htmlGenerator: Form2HTMLBanana[ImplementationSettings.Rdf] =
     		      Form2HTMLObject.makeDefaultForm2HTML(config)(ops)

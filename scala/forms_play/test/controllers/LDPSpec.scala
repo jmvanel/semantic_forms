@@ -3,12 +3,15 @@ package controllers
 import akka.stream.Materializer
 import akka.util.Timeout
 import deductions.runtime.utils.DefaultConfiguration
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+
 import play.api.test.{FakeRequest, Helpers}
 import play.api.test.Helpers.{charset, contentAsString, contentType, defaultAwaitTimeout, status, _}
 
 import scala.concurrent.duration.DurationInt
 import scala.language.postfixOps
+import play.api.mvc.DefaultActionBuilder
 
 /** 
  *  https://www.playframework.com/documentation/2.4.x/ScalaTestingWithScalaTest
@@ -41,7 +44,9 @@ The triples for this test are stored in this named graph:
  * cf http://www.w3.org/TR/ldp-primer/#creating-an-rdf-resource-post-an-rdf-resource-to-an-ldp-bc */
 class LDPSpec extends PlaySpec
     with WhiteBoxTestdependencies
-    with  OneAppPerSuite {
+    with  GuiceOneAppPerSuite {
+
+  implicit lazy val Action = app.injector.instanceOf(classOf[DefaultActionBuilder])
 
   val config = new DefaultConfiguration {
     override val useTextQuery = false
@@ -76,7 +81,7 @@ class LDPSpec extends PlaySpec
           ("Slug", file),
           ("Content-Type", "text/turtle")
       ). withTextBody(bodyTTL)
-    val action = new LDPservicesApp().ldpPOSTAction(ldpContainerURI)
+    val action = new LDPservicesApp( Helpers.stubControllerComponents() , null).ldpPOSTAction(ldpContainerURI)
     val result = call(action, request)
       
     info( s"POST to URL $appURL")
@@ -96,7 +101,7 @@ class LDPSpec extends PlaySpec
     {
       val query = s"SELECT * WHERE { GRAPH <$ldpDataFileURI> {?S ?P ?O.}}"
       info(s"query $query")
-      val action = WebPagesApp.select(query)
+      val action = new WebPagesApp(Helpers.stubControllerComponents() , null).select(query)
       val request = FakeRequest(Helpers.GET, "")
       val result = call(action, request)
       val sresult: String = contentAsString(result)
@@ -112,7 +117,7 @@ class LDPSpec extends PlaySpec
     info( s"""GET: $getRelativeURI""" )
 	  val request = FakeRequest( Helpers.GET, getRelativeURI ).
 	  withHeaders(( "Accept", "text/turtle")) // , application/ld+json") )
-    val action = new LDPgetServicesApp().ldp(ldpContainerURI + file)
+    val action = new LDPgetServicesApp( Helpers.stubControllerComponents() , null ).ldp(ldpContainerURI + file)
     val result = call(action, request)
 //    val enum: Enumerator[Array[Byte]] = Enumerator() ; val result = enum run result0 
     val content = contentAsString(result)(timeout)
