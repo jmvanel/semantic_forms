@@ -93,6 +93,7 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
         implicit val lang1: String = lang
         "Charger / Load" ++ enterURItoDownloadAndDisplay()
       }
+      { json2rdfForm(request) }
       <p>Free Memory {val mb = 1024 * 1024; Runtime.getRuntime.freeMemory().toFloat / mb} Mb</p>
       <p> <a href="..">{ I18NMessages.get("MainPage", lang) }</a> </p>
     </div>
@@ -305,6 +306,19 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
 }());
 """)}
     </script>
+  }
+
+  private def json2rdfForm(request: HTTPrequest): NodeSeq = {
+    <form role="form" style="border: solid;">
+      <fieldset>
+        <p>JSON(-LD) to RDF</p>
+        <div>JSON source</div>
+        <input name="src" type="url" size="50" />
+        <div>JSON-LD Expand @context</div>
+        <input name="context" id="context" type="url" size="50" />
+        <input class="btn btn-primary" type="submit" value={ I18NMessages.get("Submit", request.getLanguage()) } formaction="/json2rdf"/>
+      </fieldset>
+    </form>
   }
 
   /** TODO also in ApplicationFacadeImpl */
