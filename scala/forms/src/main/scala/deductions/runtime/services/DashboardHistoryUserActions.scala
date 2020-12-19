@@ -360,7 +360,10 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
           }
           Text(fieldEntry.valueLabel) ++ icon
       }
-      <span>{ labelAndThumbnailURIs . flatten }</span>
+      <span>{
+        val list = labelAndThumbnailURIs . flatten
+        for(i <- list; p <- List( Text(" - "), i)) yield p
+      }</span>
     }
 
     val aggregatedFormSyntaxes =
