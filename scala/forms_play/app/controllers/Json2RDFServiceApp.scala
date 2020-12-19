@@ -31,6 +31,8 @@ import java.io.PrintWriter
 import com.apicatalog.jsonld.http.media.MediaType
 //import deductions.runtime.jena.GraphWriterPrefixMap
 import deductions.runtime.sparql_cache.GraphWriterPrefixMap
+import java.net.URI
+import titaniumJena.JsonUtils
 
 class Json2RDFServiceApp @Inject() (
      components: ControllerComponents, configuration: play.api.Configuration)
@@ -40,20 +42,24 @@ with HTTPrequestHelpers
   with RDFStoreLocalJenaProvider // TODO remove, useless
   with CORS
   with URLReader
-  with GraphWriterPrefixMap {
+  with GraphWriterPrefixMap
+  with JsonUtils {
 
   def json2rdf() = Action { implicit request: Request[_] =>
     val httpRequest = copyRequest(request)
     val jsonURL = httpRequest.getHTTPparameterValue("src").get
     val contextURLdefault = "https://github.com/jmvanel/Karstlink-ontology/raw/master/grottocenter.org_context.jsonld"
+    println( "context: " + httpRequest.getHTTPparameterValue("context") )
     val contextURL = httpRequest.getHTTPparameterValue("context").getOrElse(contextURLdefault)
 
     val processed = Try {
       val jsonLDcontextStream = getRestInputStream(contextURL).get
       val contextJsonDocument = JsonDocument of (
           MediaType.JSON_LD, jsonLDcontextStream)
+
       val options = new JsonLdOptions()
       options.setExpandContext(contextJsonDocument)
+      options.setBase(new URI(jsonURL))
 
       // be able to process media type 'text/plain' , use JsonDocument
       // https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/document/JsonDocument.html
