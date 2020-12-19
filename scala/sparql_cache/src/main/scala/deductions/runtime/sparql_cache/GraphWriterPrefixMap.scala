@@ -19,7 +19,8 @@ import org.apache.jena.riot.system.PrefixMapBase
 trait GraphWriterPrefixMap {
   def writeGraph(graph: Graph, out: OutputStream = new ByteArrayOutputStream,
                  rdfFormat: RDFFormat           = RDFFormat.TURTLE_PRETTY,
-                 prefixMap: Map[String, String] = new HashMap): OutputStream = {
+                 prefixMap: Map[String, String] = new HashMap,
+                 baseURI:String = ""): OutputStream = {
     val writerFactory = RDFWriterRegistry.getWriterGraphFactory(rdfFormat)
     val pmi = new PrefixMappingImpl
     pmi.setNsPrefixes(prefixMap)
@@ -29,7 +30,7 @@ trait GraphWriterPrefixMap {
     graphWriter.write(out, graph,
       prefixMapImpl,
       // PrefixMapFactory.createForOutput(prefixMap), // this would output the whole prefixMap
-      "", new Context())
+      baseURI, new Context())
     return out
   }
 

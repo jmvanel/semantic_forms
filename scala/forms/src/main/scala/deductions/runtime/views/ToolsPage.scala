@@ -313,9 +313,10 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
       <fieldset>
         <p>JSON(-LD) to RDF</p>
         <div>JSON source</div>
-        <input name="src" type="url" size="50" />
+        <input name="src" type="url" size="90" />
         <div>JSON-LD Expand @context</div>
-        <input name="context" id="context" type="url" size="50" />
+        <input name="context" id="context" type="url" size="90" />
+        <br/>
         <input class="btn btn-primary" type="submit" value={ I18NMessages.get("Submit", request.getLanguage()) } formaction="/json2rdf"/>
       </fieldset>
     </form>

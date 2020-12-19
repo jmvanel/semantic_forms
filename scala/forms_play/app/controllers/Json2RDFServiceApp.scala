@@ -49,7 +49,7 @@ with HTTPrequestHelpers
     val httpRequest = copyRequest(request)
     val jsonURL = httpRequest.getHTTPparameterValue("src").get
     val contextURLdefault = "https://github.com/jmvanel/Karstlink-ontology/raw/master/grottocenter.org_context.jsonld"
-    println( "context: " + httpRequest.getHTTPparameterValue("context") )
+    logger.info( "context: " + httpRequest.getHTTPparameterValue("context") )
     val contextURL = httpRequest.getHTTPparameterValue("context").getOrElse(contextURLdefault)
 
     val processed = Try {
@@ -70,7 +70,7 @@ with HTTPrequestHelpers
         options(options).
         numericId(). get
 
-      logger.info(s"json2rdf: after toRdf , titaniumDataset size() ${titaniumDataset.size()}")
+      logger.debug(s"json2rdf: after toRdf , titaniumDataset size() ${titaniumDataset.size()}")
       val dataset = DatasetFactory.create()
       val datasetGraph = dataset.asDatasetGraph()
       Titanium2Jena.populateDataset(titaniumDataset, datasetGraph)
@@ -92,7 +92,8 @@ with HTTPrequestHelpers
       val outputStream = new ByteArrayOutputStream
       // RDFDataMgr.write(outputStream, modelToWrite, org.apache.jena.riot.RDFFormat.TURTLE_PRETTY)
       writeGraph(modelToWrite.getGraph, outputStream,
-        RDFFormat.TURTLE_PRETTY, prefix2uriMap.asJava)
+        RDFFormat.TURTLE_PRETTY, prefix2uriMap.asJava,
+        jsonURL)
       outputStream
     }
     processed match {

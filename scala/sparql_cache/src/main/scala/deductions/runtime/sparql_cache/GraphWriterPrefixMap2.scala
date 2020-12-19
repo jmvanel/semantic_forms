@@ -18,7 +18,8 @@ import org.w3.banana.RDFOps
 trait GraphWriterPrefixMapTrait[Rdf <: RDF]{
   def writeGraph(graph: Rdf#Graph, out: OutputStream = new ByteArrayOutputStream,
                  rdfFormat: RDFFormat           = RDFFormat.TURTLE_PRETTY,
-                 prefixMap: Map[String, String] = new HashMap): OutputStream
+                 prefixMap: Map[String, String] = new HashMap,
+                 baseURI:String = ""): OutputStream
 }
 
 /**
