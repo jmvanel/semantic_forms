@@ -39,7 +39,7 @@ class Json2RDFServiceApp @Inject() (
 extends { override implicit val config = new PlayDefaultConfiguration(configuration)}
 with AbstractController(components)
 with HTTPrequestHelpers
-  with RDFStoreLocalJenaProvider // TODO remove, useless
+with RDFStoreLocalJenaProvider // for prefix2uriMap
   with CORS
   with URLReader
   with GraphWriterPrefixMap

@@ -10,10 +10,12 @@ import scala.concurrent.Future
  * Can be used for any component that contributes to XHTML output
  * **interface**
  */
-trait SemanticController {
-  
+trait SemanticController extends SemanticControllerGeneric[NodeSeq]
+
+/** Controller for HTTP requests like /rdf2json */
+trait SemanticControllerGeneric[R] {
   val featureURI: String = ""
-  def result(request: HTTPrequest): NodeSeq
+  def result(request: HTTPrequest): R
 }
 
 /** Future version of the above */

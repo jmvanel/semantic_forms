@@ -7,7 +7,7 @@ import jakarta.json.Json
 import jakarta.json.JsonObject
 
 trait JsonUtils {
-  def prettyPrintJSON(obj: JsonObject) = {
+  def prettyPrintJSON(obj: JsonObject): String = {
     val properties =
       new HashMap[String, Any](1)
     //				new HashMap<String,*>(1);
