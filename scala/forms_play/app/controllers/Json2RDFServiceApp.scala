@@ -49,9 +49,12 @@ with HTTPrequestHelpers
     val httpRequest = copyRequest(request)
     val jsonURL = httpRequest.getHTTPparameterValue("src").get
     val contextURLdefault = "https://github.com/jmvanel/Karstlink-ontology/raw/master/grottocenter.org_context.jsonld"
-    logger.info( "context: " + httpRequest.getHTTPparameterValue("context") )
-    val contextURL = httpRequest.getHTTPparameterValue("context").getOrElse(contextURLdefault)
-
+    logger.info( "context: '" + httpRequest.getHTTPparameterValue("context") + "'" )
+    val contextURL = {
+      val v = httpRequest.getHTTPparameterValue("context").getOrElse(contextURLdefault)
+      if (v == "") contextURLdefault
+      else v
+    }
     val processed = Try {
       val jsonLDcontextStream = getRestInputStream(contextURL).get
       val contextJsonDocument = JsonDocument of (
