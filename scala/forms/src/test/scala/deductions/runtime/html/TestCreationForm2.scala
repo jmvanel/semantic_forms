@@ -14,12 +14,14 @@ import org.w3.banana.jena.JenaModule
 import scala.util.Try
 import deductions.runtime.core.HTTPrequest
 import com.typesafe.scalalogging.Logger
+import deductions.runtime.utils.FormModuleBanana
 
 class TestCreationForm2Jena extends {
     override val config = new DefaultConfiguration{}
 }
 with FunSuite with TestForJena
 with TestCreationForm2[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+with FormModuleBanana[ImplementationSettings.Rdf]
 
 trait TestForJena extends JenaModule
   with RDFStoreLocalJenaProvider
@@ -29,9 +31,6 @@ trait TestCreationForm2[Rdf <: RDF, DATASET] extends FunSuite
     with CreationFormAlgo[Rdf, DATASET]
     with GraphTest[Rdf]
     with BeforeAndAfterAll {
-
-  def stringToAbstractURI(uri: String): Rdf#URI = ???
-  def toPlainString(n: deductions.runtime.jena.ImplementationSettings.Rdf#Node): String = ???
 
 	override lazy val htmlGenerator =
 			Form2HTMLObject.makeDefaultForm2HTML(config)(ops)

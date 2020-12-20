@@ -16,6 +16,7 @@ import scala.collection.JavaConverters._
 import scala.xml.{Elem, NodeSeq}
 import deductions.runtime.core.HTTPrequest
 import com.typesafe.scalalogging.Logger
+import deductions.runtime.utils.FormModuleBanana
 
 /**
  * Test Creation Form from class URI, without form specification
@@ -32,10 +33,12 @@ class TestCreationForm extends {
     with InstanceLabelsInferenceMemory[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with BeforeAndAfter
     with Configuration
+    with FormModuleBanana[ImplementationSettings.Rdf]
+
     with DefaultConfiguration {
 
-  def stringToAbstractURI(uri: String): deductions.runtime.jena.ImplementationSettings.Rdf#URI = ???
-  def toPlainString(n: deductions.runtime.jena.ImplementationSettings.Rdf#Node): String = ???
+  override def stringToAbstractURI(uri: String): deductions.runtime.jena.ImplementationSettings.Rdf#URI = ???
+  override def toPlainString(n: deductions.runtime.jena.ImplementationSettings.Rdf#Node): String = ???
 
 	override lazy val htmlGenerator =
     Form2HTMLObject.makeDefaultForm2HTML(config)(ops)

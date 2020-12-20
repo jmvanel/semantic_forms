@@ -10,17 +10,16 @@ import org.junit.Assert
 import org.scalatest.{BeforeAndAfter, FunSuite}
 import deductions.runtime.core.HTTPrequest
 import com.typesafe.scalalogging.Logger
+import deductions.runtime.utils.FormModuleBanana
 
 class TestTableView extends FunSuite
     with ImplementationSettings.RDFModule
     with TriplesViewModule[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with RDFStoreLocalJenaProvider
+    with FormModuleBanana[ImplementationSettings.Rdf]
     with BeforeAndAfter //    with DefaultConfiguration
     {
   val config = new DefaultConfiguration {}
-
-  def stringToAbstractURI(uri: String): deductions.runtime.jena.ImplementationSettings.Rdf#URI = ???
-  def toPlainString(n: deductions.runtime.jena.ImplementationSettings.Rdf#Node): String = ???
 
   override val htmlGenerator =
     Form2HTMLObject.makeDefaultForm2HTML(config)(ops)

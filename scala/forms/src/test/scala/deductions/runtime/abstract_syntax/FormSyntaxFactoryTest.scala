@@ -15,19 +15,21 @@ import deductions.runtime.TestsBase
 import deductions.runtime.core.HTTPrequest
 import com.typesafe.scalalogging.Logger
 import org.scalatest.funsuite.AnyFunSuite
+import deductions.runtime.utils.FormModuleBanana
 
 class FormSyntaxFactoryTestJena extends AnyFunSuite
     with RDFStoreLocalJenaProvider
     with FormSyntaxFactoryTest[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with DefaultConfiguration
+    with FormModuleBanana[ImplementationSettings.Rdf]
     with BeforeAndAfterAll {
   val config = new DefaultConfiguration {
     override val useTextQuery = false
   }
 //  val logger = Logger("test") // .getRootLogger()
 
-  def stringToAbstractURI(uri: String): deductions.runtime.jena.ImplementationSettings.Rdf#URI = ???
-  def toPlainString(n: deductions.runtime.jena.ImplementationSettings.Rdf#Node): String = ???
+  override def stringToAbstractURI(uri: String): deductions.runtime.jena.ImplementationSettings.Rdf#URI = ???
+  override def toPlainString(n: deductions.runtime.jena.ImplementationSettings.Rdf#Node): String = ???
 
   test("form contains label and data") {
     val form = createFormWithGivenProps
