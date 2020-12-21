@@ -28,7 +28,6 @@ lazy val forms_play = (project in file("forms_play"))
 	.dependsOn(contacts_management)
 //        .dependsOn(mobion)
 	.dependsOn(clients)
-	.dependsOn(jsonld)
 
 .enablePlugins(PlayScala) .disablePlugins(PlayLogback)
 .settings(
@@ -56,6 +55,7 @@ lazy val forms = project
 	.dependsOn(abstract_syntax)
 	// .dependsOn(connectors)
 	.dependsOn(rdf_links_rank)
+	.dependsOn(jsonld)
 
 // lazy val web_tests = project
 lazy val forms_js = project .settings(
