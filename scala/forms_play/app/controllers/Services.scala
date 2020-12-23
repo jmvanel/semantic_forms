@@ -143,7 +143,9 @@ with CORS {
             val tryGraph = retrieveURIBody(
               ops.URI(uri), dataset, copyRequest(request), transactionsInside = true)
             val result = tryGraph match {
-              case Success(gr)           => s"Success loading <$uri>, size: ${gr.size()}"
+              case Success(gr) =>
+                val sz = wrapInReadTransaction{gr.size()}.getOrElse("Size not available")
+                s"Success loading <$uri>, size: ${sz}"
               case Failure(f) => f.getLocalizedMessage
             }
             result
