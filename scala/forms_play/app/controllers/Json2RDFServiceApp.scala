@@ -67,7 +67,10 @@ with RDFStoreLocalJenaProvider // for prefix2uriMap
       // be able to process media type 'text/plain' , use JsonDocument
       // https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/document/JsonDocument.html
       // toRdf Supports only content types [application/ld+json, application/json, +json, application/n-quads]]
-      val jsonDataStream = getRestInputStream(jsonURL).get
+      val jsonDataStream = getRestInputStream(jsonURL,
+          // for https://beta.grottocenter.org/api/v1/massifs/3
+          connectionTimeout=15000,
+          socketTimeout=15000).get
       val titaniumDataset = JsonLd.toRdf(JsonDocument of (
           MediaType.JSON_LD, jsonDataStream )).
         options(options).
@@ -122,6 +125,7 @@ with RDFStoreLocalJenaProvider // for prefix2uriMap
 //            f.toString() + "\n" +
               baos.toString()
         }
+        logger.error( s"<$jsonURL> " + f.getLocalizedMessage)
         InternalServerError(mess) //  fillInStackTrace())
     }
   }
