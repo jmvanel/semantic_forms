@@ -131,7 +131,7 @@ JMV:
                       transactionsInside: Boolean): (Try[Rdf#Graph], Try[String]) = {
     val tryGraphLocallyManagedData = getLocallyManagedUrlAndData(uri, request, transactionsInside: Boolean)
 
-    logger.debug(  "LOADING " + s"retrieveURIBody: tryGraphLocallyManagedData $tryGraphLocallyManagedData")
+    logger.debug(  "LOADING " + s"retrieveURIResourceStatus: tryGraphLocallyManagedData $tryGraphLocallyManagedData")
 
     tryGraphLocallyManagedData match {
       case Some(tgr) => (Success(tgr), Success(""))
@@ -141,12 +141,12 @@ JMV:
 
         val result: (Try[Rdf#Graph], Try[String]) =
           if (nothingStoredLocally) { // then read unconditionally from URI and store in TDB
-          logger.debug(s"retrieveURIBody: stored Graph Is Empty for URI <$uri>")
+          logger.debug(s"retrieveURIResourceStatus: stored Graph Is Empty for URI <$uri>")
           val mirrorURI = getMirrorURI(uri)
           val resultWhenNothingStoredLocally: (Try[Rdf#Graph], Try[String]) =
             if (mirrorURI === "") {
             val graphTry_MIME = readURI(uri, dataset, request)
-            logger.debug(  "LOADING " + s""">>>> retrieveURIBody graphTry_MIME $graphTry_MIME""")
+            logger.debug(  "LOADING " + s""">>>> retrieveURIResourceStatus graphTry_MIME $graphTry_MIME""")
             val graphDownloaded = {
               val graphTry = graphTry_MIME._1
               if (transactionsInside)
@@ -165,7 +165,7 @@ JMV:
                 s"Download Graph at URI <$uri> was tried, but it's faulty: $graphDownloaded")
 
             val contentType = graphTry_MIME._2
-            logger.debug(s"""retrieveURIBody: downloaded graph from URI <$uri> $graphDownloaded
+            logger.debug(s"""retrieveURIResourceStatus: downloaded graph from URI <$uri> $graphDownloaded
                     size ${if (graphDownloaded.isSuccess) graphDownloaded.get.size} content Type: $contentType""")
             val isDocument = isDocumentMIME(contentType) // TODO case RDFa
             graphDownloaded match {
@@ -190,7 +190,7 @@ JMV:
               }
             }
           } else {
-            logger.debug(s"retrieveURIBody: mirrorURI found: $mirrorURI")
+            logger.debug(s"retrieveURIResourceStatus: mirrorURI found: $mirrorURI")
             // TODO find in Mirror URI the relevant triples ( but currently AFAIK the graph returned by this function is not used )
             (Success(emptyGraph), Success(""))
           }
