@@ -155,13 +155,12 @@ JMV:
                 storeURINoTransaction(graphTry, uri, dataset)
             }
             if (graphDownloaded.isSuccess) {
-//              logger.debug(
-              logger.debug(  "LOADING " +
+              logger.debug(  "LOADING isSuccess " +
                   s"""Graph at URI <$uri>, size ${graphDownloaded.get.size}
                     Either new addition was downloaded, or locally managed data""")
-              addTimestampToDataset(uri, dataset2)
-              //, Success("") )
-              } else
+              if( ! request.isFocusURIlocal() )
+                addTimestampToDataset(uri, dataset2)
+            } else
               logger.error(
                 s"Download Graph at URI <$uri> was tried, but it's faulty: $graphDownloaded")
 
