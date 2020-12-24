@@ -15,8 +15,7 @@ trait LanguageManagement extends RequestUtils {
   def chooseLanguageObject(request: Request[_]): Lang = {
     val languages = request.acceptLanguages
     val resLang = if (languages.length > 0) languages(0) else Lang("en")
-    println(
-//    logger.info(
+    logger.debug(
         log("chooseLanguage", request) + s"\t$resLang" )
     resLang
   }

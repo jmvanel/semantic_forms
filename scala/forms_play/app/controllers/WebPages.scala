@@ -602,7 +602,8 @@ with ApplicationTrait
           val pageURI = uri
           val httpRequest = copyRequest(request)
           val userInfo = displayUser(userid, httpRequest)
-          logger.info(s"userInfo $userInfo, userid $userid")
+          logger.debug(s"""userInfo $userInfo,
+            userid $userid""")
           val content = htmlForm(
             uri, editable = true,
             graphURI = makeAbsoluteURIForSaving(userid),

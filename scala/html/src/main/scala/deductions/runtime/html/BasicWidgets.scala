@@ -51,7 +51,7 @@ trait BasicWidgets[NODE, URI <: NODE]
   def hyperlinkForDisplayingURI(uri: String, lang: String): NodeSeq = {
     implicit val _ = lang
     val hrefDisplay = hrefDisplayPrefix() + urlEncode(uri) + "#subject"
-    println(s">>>>>>>>>>> linkToShow: $hrefDisplay")
+    logger.debug(s">>>> hyperlinkForDisplayingURI linkToShow: $hrefDisplay")
     <a class="btn btn-warning btn-xs" href={ hrefDisplay } title={ mess("display_URI") }>
       <i class="glyphicon"></i>
     </a>
