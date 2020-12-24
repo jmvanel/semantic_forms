@@ -246,7 +246,7 @@ trait LuceneIndex // [Rdf <: RDF]
   private def configureLuceneIndexTEST_6_spatial_Textual(dataset: ImplementationSettings.DATASET,
       useTextQuery: Boolean):
     ImplementationSettings.DATASET = {
-    println(s"configureLuceneIndex: useTextQuery $useTextQuery")
+    logger.debug(s"configureLuceneIndex: useTextQuery $useTextQuery")
     if (useTextQuery) {
 
       val (textualDataset, textIndex) = {

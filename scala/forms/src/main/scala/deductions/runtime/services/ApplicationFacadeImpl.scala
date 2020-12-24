@@ -96,8 +96,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     override def asString(graph: Rdf#Graph, base: String): Try[String] = ???
   }
 
-  logger.info(s"in Global")
-
+  logger.debug(s"ApplicationFacadeImpl: in Global")
 
 
   /** NON transactional */

@@ -98,15 +98,15 @@ class WebPagesApp @Inject() (
 trait WebPagesObject
   extends WebPages
   with HTMLGenerator {
-    import ch.qos.logback.classic.util.ContextInitializer;
-       // must be set before the first call to  LoggerFactory.getLogger();
-       // ContextInitializer.CONFIG_FILE_PROPERTY is set to "logback.configurationFile"
-//       System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY,
-//           "/home/jmv/src/semantic_forms/scala/forms_play/conf/logback-test.xml" )
-  val lc: LoggerContext = LoggerFactory.getILoggerFactory().asInstanceOf[LoggerContext]
-  // print logback's internal status
-  StatusPrinter.print(lc)
-  println(">>>> AFTER StatusPrinter.print(lc)")
+//    import ch.qos.logback.classic.util.ContextInitializer;
+//       // must be set before the first call to  LoggerFactory.getLogger();
+//       // ContextInitializer.CONFIG_FILE_PROPERTY is set to "logback.configurationFile"
+////       System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY,
+////           "/home/jmv/src/semantic_forms/scala/forms_play/conf/logback-test.xml" )
+//  val lc: LoggerContext = LoggerFactory.getILoggerFactory().asInstanceOf[LoggerContext]
+//  // print logback's internal status
+//  StatusPrinter.print(lc)
+//  println(">>>> AFTER StatusPrinter.print(lc)")
   }
 
 

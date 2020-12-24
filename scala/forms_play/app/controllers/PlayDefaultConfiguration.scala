@@ -23,9 +23,8 @@ class PlayDefaultConfiguration(configuration: play.api.Configuration)
       val tr = Try {
         val port = configuration.get[String]("play.server.http.port")
         port match {
-          //        case Some(port) =>
           case port if (port != null && port != "") =>
-            println(s"Running on port $port")
+            PlayDefaultConfiguration.printFirstTime(s"Running on port $port")
             port
           case _ =>
             val serverPortFromConfig = super.serverPort
@@ -47,3 +46,13 @@ class PlayDefaultConfiguration(configuration: play.api.Configuration)
       }
     }
 }
+
+object PlayDefaultConfiguration {
+  var firstCall = true
+  def printFirstTime(s: String) =
+    if (firstCall) {
+      firstCall = false
+      println(s)
+    }
+}
+

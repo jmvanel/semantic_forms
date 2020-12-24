@@ -149,13 +149,12 @@ object RDFStoreLocalJenaProviderObject
         else
           TDBFactory.createDataset(Paths.get(database_location).toString())
           // TODO TDBFactory.assembleDataset(assemblerFile)
-//      logger.info
-      println(s"TDB Dataset created in '$database_location' in directory '$abs'")
-
+      logger.debug(s"TDB Dataset created in '$database_location' in directory '$abs'")
+      //Thread.dumpStack()
       logger.debug(s"RDFStoreLocalJenaProvider $database_location, dataset created: $dts")
 
       try {
-        logger.info(
+        logger.debug(
           s"configureLuceneIndex, useTextQuery: $useTextQuery, useSpatialIndex: $useSpatialIndex")
 
         // TEST geo !!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -163,7 +162,7 @@ object RDFStoreLocalJenaProviderObject
         val res = configureLuceneIndex(dts, useTextQuery, useSpatialIndex)
         // val res = dts
         
-          logger.info(
+          logger.debug(
           s"configureLuceneIndex DONE => $res")
           //    if(useSpatialIndex)
       

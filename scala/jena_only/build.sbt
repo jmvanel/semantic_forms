@@ -3,7 +3,7 @@
 
 // scalaVersion := "2.12.6"
 
-  val jenaVersion =  "3.8.0"
+  val jenaVersion =  "3.17.0"
 
   val jenaDependency = "org.apache.jena" % "apache-jena-libs" % jenaVersion 
   val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion

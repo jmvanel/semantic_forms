@@ -55,7 +55,9 @@ trait Form2HTML[NODE, URI <: NODE]
       "generateHTMLJustFields",
       generateHTMLJustFields(form, hrefPrefix, editable, graphURI, request,
         cssForURI, cssForProperty),
-      isInfoEnabled(logger))
+      isDebugEnabled(logger)
+//      isInfoEnabled(logger)
+      )
 
     val lang = request.getLanguage
 
