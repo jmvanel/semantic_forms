@@ -27,6 +27,8 @@ import javax.inject.Inject
 import play.api.mvc.ControllerComponents
 import play.api.mvc.AbstractController
 import jakarta.json.JsonArray
+import jakarta.json.Json
+
 import java.io.PrintWriter
 import com.apicatalog.jsonld.http.media.MediaType
 //import deductions.runtime.jena.GraphWriterPrefixMap
@@ -34,6 +36,8 @@ import deductions.runtime.sparql_cache.GraphWriterPrefixMap
 import java.net.URI
 import titaniumJena.JsonUtils
 import deductions.runtime.utils.Timer
+import scala.io.Source
+import java.util.HashMap
 
 class Json2RDFServiceApp @Inject() (
      components: ControllerComponents, configuration: play.api.Configuration)
@@ -50,12 +54,24 @@ with RDFStoreLocalJenaProvider // for prefix2uriMap
   def json2rdf() = Action { implicit request: Request[_] =>
     val httpRequest = copyRequest(request)
     val jsonURL = httpRequest.getHTTPparameterValue("src").get
+
     val contextURLdefault = "https://github.com/jmvanel/Karstlink-ontology/raw/master/grottocenter.org_context.jsonld"
-    logger.info( "context: '" + httpRequest.getHTTPparameterValue("context") + "'" )
-    val contextURL = {
-      val v = httpRequest.getHTTPparameterValue("context").getOrElse(contextURLdefault)
-      if (v == "") contextURLdefault else v
+    lazy val contextJsonDocumentDefault: JsonDocument = {
+      val factory = Json.createReaderFactory(new HashMap())
+      val reader = factory.createReader(
+        Source.fromURL(contextURLdefault).reader())
+      val structure = reader.read()
+      JsonDocument of (MediaType.JSON_LD, structure)
     }
+
+    logger.info( "context: '" + httpRequest.getHTTPparameterValue("context") + "'" )
+    val (contextURL, isDefault) = {
+      val v = httpRequest.getHTTPparameterValue("context").getOrElse(contextURLdefault)
+      if (v == "") (contextURLdefault, true)
+      else if (v == contextURLdefault) (v, true)
+      else (v, false)
+    }
+
     val timerCall = {
       var ret = false
       logger.whenDebugEnabled{ ret=true }
@@ -63,9 +79,14 @@ with RDFStoreLocalJenaProvider // for prefix2uriMap
     }
     val processed = Try {
       val contextJsonDocument = time(s"jsonLDcontextStream <$jsonURL>", {
-        val jsonLDcontextStream = getRestInputStream(contextURL).get
-        JsonDocument of (
-          MediaType.JSON_LD, jsonLDcontextStream)
+        if (isDefault) {
+//          println(s"contextURL isDefault ")
+          contextJsonDocumentDefault
+        } else {
+          val jsonLDcontextStream = getRestInputStream(contextURL).get
+          JsonDocument of (
+            MediaType.JSON_LD, jsonLDcontextStream)
+        }
       }, timerCall)
       val options = new JsonLdOptions()
       options.setExpandContext(contextJsonDocument)
