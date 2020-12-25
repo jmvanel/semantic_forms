@@ -300,8 +300,9 @@ trait FormSaver[Rdf <: RDF, DATASET]
         case Success(_) =>
           logger.info(s""" Successfully stored ${triplesToAdd.size} triples
             ${triplesToAdd.mkString("<<<<", ">>>>\n<<<<", ">>>>\n")}
-            and removed ${triplesToRemove.size}
-            triplesToRemove:
+            and removed ${triplesToRemove.size} """)
+          logger.debug(
+            """triplesToRemove:
             ${triplesToRemove.mkString("\n")}
           in graph <$graphURI>""")
         case Failure (t) => logger.error(s"doSave: Failure $t")

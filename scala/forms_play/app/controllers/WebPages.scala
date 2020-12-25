@@ -627,6 +627,7 @@ with ApplicationTrait
 
     def saveLocal(userid: String)(implicit request: Request[_]) = {
       val httpRequest = copyRequest(request)
+      logRequest(httpRequest)
       logger.debug(s"""ApplicationTrait.saveOnly: class ${request.body.getClass},
               request $httpRequest""")
       val (uri, typeChanges) = saveOnly(

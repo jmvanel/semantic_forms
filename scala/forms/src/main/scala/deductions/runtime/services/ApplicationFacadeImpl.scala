@@ -227,7 +227,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   def saveForm(requestMap: Map[String, Seq[String]], lang: String = "",
       userid: String, graphURI: String = "", host: String= "")
   : (Option[String], Boolean) = {
-    logger.info(s"ApplicationFacadeImpl.saveForm: request :$requestMap, userid <$userid>")
+    logger.debug(s"""ApplicationFacadeImpl.saveForm: request :$requestMap,
+      userid <$userid>""")
     val mainSubjectURI = try {
       implicit val userURI: String = userid
       saveTriples(requestMap,lang)
@@ -238,7 +239,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
         throw t
     }
     val uriOption = (requestMap).getOrElse("uri", Seq()).headOption
-    logger.info(s"ApplicationFacadeImpl.saveForm: uriOption $uriOption, graphURI $graphURI")
+    logger.info(s"ApplicationFacadeImpl.saveForm: uriOption $uriOption, graphURI <$graphURI>")
     uriOption match {
       case Some(url1) =>
       val uri = URLDecoder.decode(url1, "utf-8")
