@@ -47,7 +47,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
                database: String = "TDB",
                request: HTTPrequest
   ): (NodeSeq, Boolean) = {
-    logger.info(
+    logger.debug(
       s"""TriplesViewWithTitle.htmlForm ${request.logRequest()}
               editable=$editable lang=${request.getLanguage()} graphURI <$graphURI>""")
     val uri = uri0.trim()

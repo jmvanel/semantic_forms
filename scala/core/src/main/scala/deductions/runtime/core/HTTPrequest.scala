@@ -206,7 +206,7 @@ case class HTTPrequest(
   def appMessages: NodeSeq = messages
   def addAppMessage(m: NodeSeq): Unit = { messages = messages ++ m }
 
-  def logRequest() = s"$uri, host $host, IP $remoteAddress"
+  def logRequest() = s"$uri, host <$host>, RDF subject <$getRDFsubject>, IP $remoteAddress, userId '$userId', lang '$getLanguage'"
 }
 
 /** Borrowed from Play */

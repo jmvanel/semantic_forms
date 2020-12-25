@@ -169,6 +169,7 @@ with ApplicationTrait
       val precomputed = new MainPagePrecompute(request0)
       import precomputed._
       // println(s"========= outputMainPageWithContent precomputed $precomputed - title ${precomputed.title}")
+      logger.info( requestCopy.logRequest() )
       addAppMessageFromSession(requestCopy)
       outputMainPage2(
         contentMaker,
@@ -602,7 +603,8 @@ with ApplicationTrait
           val pageURI = uri
           val httpRequest = copyRequest(request)
           val userInfo = displayUser(userid, httpRequest)
-          logger.debug(s"""userInfo $userInfo,
+          logger.info( httpRequest.logRequest() )
+          logger.debug(s"""/edit userInfo $userInfo,
             userid $userid""")
           val content = htmlForm(
             uri, editable = true,
