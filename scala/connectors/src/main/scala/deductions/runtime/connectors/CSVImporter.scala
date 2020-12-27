@@ -203,7 +203,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
     }
   }
 
-  /** split Property Chain; eg
+  /** create intermediate blank node from Property Chain in column header; eg
    *  Transform:
    *  <subject>
    *    <http://purl.org/dc/terms/rights/cc:attributionName>
@@ -224,13 +224,13 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       println(s"lastPathElement $lastPathElement")
       recognizePrefixedURI(lastPathElement) match {
         case Some(uri) =>
-          (true, URI(fromUri(p).replace(lastPathElement + "/", "")), URI(expandOrUnchanged(fromUri(uri))))
+          (true, URI(fromUri(p).replace("/" + lastPathElement, "")), URI(expandOrUnchanged(fromUri(uri))))
         case None => (false, p, URI(""))
       }
     }
     val (isTurtleAbbreviated, p1, p2) = uriLastPathElementIsTurtleAbbreviated(tr.predicate)
     if (isTurtleAbbreviated) {
-      val blank = createBlankNode()
+      val blank = createBlankNode(tr.subject, p1)
       (true, List(
         Triple(tr.subject, p1, blank),
         Triple(blank, p2, tr.objectt)))
@@ -239,10 +239,19 @@ trait CSVImporter[Rdf <: RDF, DATASET]
   }
 
   private var currentBlankNode = 0
-  private def createBlankNode() = {
-    val ret = s"n$currentBlankNode" ;
-    currentBlankNode = currentBlankNode + 1 ;
-    BNode(ret) }
+  private var currentSubject : Rdf#Node = URI("")
+  private var currentProperty = URI("")
+  private def createBlankNode(row: Rdf#Node, property: Rdf#URI) = {
+//    println(s">>>> createBlankNode <$row>, <$property>")
+    if( row != currentSubject ||
+        property != currentProperty ) {
+      currentBlankNode = currentBlankNode + 1
+      currentSubject = row
+      currentProperty = property
+    }
+    val ret = s"n$currentBlankNode"
+    BNode(ret)
+  }
 
   /** get RDF triple Object From Cell */
   private def getObjectFromCell(cell0: String): Rdf#Node = {
