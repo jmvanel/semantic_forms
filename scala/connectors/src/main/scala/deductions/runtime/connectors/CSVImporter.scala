@@ -143,6 +143,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
     result
   }
 
+  /** Take prefixed URI's like foaf:name, and expand them */
   def recognizePrefixedURI(candidate: String): Option[Rdf#URI] = {
     if (isAbsoluteURI(candidate) ||
         candidate.startsWith(":") ) {
@@ -192,13 +193,56 @@ trait CSVImporter[Rdf <: RDF, DATASET]
         if (cell  =/=  "") {
           val predicate = headerURIs(index)
           val `object` = getObjectFromCell(cell)
-          // println( s"Triple : ${Triple(rowSubject, predicate, `object`)}")
-          list += Triple(rowSubject, predicate, `object`)
+          println( s"produceRowStatements: Triple : ${Triple(rowSubject, predicate, `object`)}")
+          val simpleCaseTriple = Triple(rowSubject, predicate, `object`)
+          val (isComplexCase, complexCaseList) = splitPropertyChain(simpleCaseTriple)
+          list ++= ( if( isComplexCase ) complexCaseList else List(simpleCaseTriple) )
         }
         index += 1
       }
     }
   }
+
+  /** split Property Chain; eg
+   *  Transform:
+   *  <subject>
+   *    <http://purl.org/dc/terms/rights/cc:attributionName>
+          "Frédéric Urien" ;
+   *  into
+   *  <subject> <http://purl.org/dc/terms/rights/> _:n1 .
+   *  _:n1 cc:attributionName "Frédéric Urien" .
+   */
+  private def splitPropertyChain(tr: Rdf#Triple): (Boolean, List[Rdf#Triple]) = {
+    def uriLastPathElementIsTurtleAbbreviated(p: Rdf#URI): (Boolean, Rdf#URI, Rdf#URI) = {
+      println(s"uriLastPathElementIsTurtleAbbreviated(p:$p")
+      val path = new java.net.URI(fromUri(p)).getPath
+      println(s"path $path")
+      if( path == null )
+        return ((false, p, URI("")))
+      val pathElements = path.split("/")
+      val lastPathElement = pathElements .last
+      println(s"lastPathElement $lastPathElement")
+      recognizePrefixedURI(lastPathElement) match {
+        case Some(uri) =>
+          (true, URI(fromUri(p).replace(lastPathElement + "/", "")), URI(expandOrUnchanged(fromUri(uri))))
+        case None => (false, p, URI(""))
+      }
+    }
+    val (isTurtleAbbreviated, p1, p2) = uriLastPathElementIsTurtleAbbreviated(tr.predicate)
+    if (isTurtleAbbreviated) {
+      val blank = createBlankNode()
+      (true, List(
+        Triple(tr.subject, p1, blank),
+        Triple(blank, p2, tr.objectt)))
+    } else
+      (false, List())
+  }
+
+  private var currentBlankNode = 0
+  private def createBlankNode() = {
+    val ret = s"n$currentBlankNode" ;
+    currentBlankNode = currentBlankNode + 1 ;
+    BNode(ret) }
 
   /** get RDF triple Object From Cell */
   private def getObjectFromCell(cell0: String): Rdf#Node = {
