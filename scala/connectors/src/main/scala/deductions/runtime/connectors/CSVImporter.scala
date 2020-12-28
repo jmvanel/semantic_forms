@@ -78,19 +78,33 @@ trait CSVImporter[Rdf <: RDF, DATASET]
     }
     println( s"rowSubjectPrefix: $rowSubjectPrefix")
 
-    var index = 0
+    var rowIndex = 0
     for( record <- csvParser.getRecords.asScala ) {
-      val rowSubject = URI( rowSubjectPrefix + index)
-      // list += Triple(rowSubject, rdf.typ, rowType)
-      produceRowStatements(rowSubject, record, list)
+      val rowSubject = makeRowSubject(rowSubjectPrefix, rowIndex, record)
+      produceRowStatements(rowSubject, record, list, uriPrefix )
       for( pv <- propertyValueForEachRow ) {
     	  list += Triple(rowSubject, pv._1, pv._2)
       }
       // list += Triple(rowSubject, csvPredicate(CSV.ROW_POSITION), Literal( String.valueOf(index) ) )
-      index = index + 1
+      rowIndex = rowIndex + 1
     }
-    addTableMetadataStatements(uriPrefix, list, index, headerURIs.length)
+    addTableMetadataStatements(uriPrefix, list, rowIndex, headerURIs.length)
     makeGraph(list)
+  }
+
+  private def findIDcolumnIndex(uriPrefix: URI) : Int = {
+    headerURIs
+      .indexWhere(
+        uri =>
+          isIDcolumn(fromUri(uri), uriPrefix))
+  }
+
+  private def makeRowSubject(rowSubjectPrefix: String, index: Int, record: CSVRecord) = {
+    val values = record.iterator()
+    // println( s"rowSubject : $rowSubject")
+    for (cell <- values.asScala) {
+    }
+    URI(rowSubjectPrefix + index)
   }
 
   private def isInteger(number: String): Boolean = {
@@ -181,22 +195,37 @@ trait CSVImporter[Rdf <: RDF, DATASET]
     URI(result.toString)
   }
 
+  private def isIDcolumn(columnURI: String, documentURI: URI): Boolean = {
+    columnURI == documentURI + "Id"
+  }
+
   private def produceRowStatements(
     rowSubject: URI,
-    record: CSVRecord,
-    list: ArrayBuffer[Rdf#Triple]) {
+    record:     CSVRecord,
+    list:       ArrayBuffer[Rdf#Triple],
+    uriPrefix:  URI) {
+    val idColumnIndex = findIDcolumnIndex(uriPrefix)
+    val rowSubjectOrID : Rdf#URI = if(idColumnIndex >= 0 ) {
+//      println(s"rowSubjectOrID uriPrefix $uriPrefix, ${record.get(idColumnIndex)} ")
+      URI(new java.net.URI(fromUri(uriPrefix)).resolve(record.get(idColumnIndex)).toString())
+//      ops.resolve(uriPrefix, URI(record.get(idColumnIndex)))
+    } else
+      rowSubject
     val values = record.iterator()
     var index = 0
-    // println( s"rowSubject : $rowSubject")
+    // println( s"rowSubjectOrID : $rowSubjectOrID")
     for (cell <- values.asScala) {
       if (index < headerURIs.length) {
-        if (cell  =/=  "") {
-          val predicate = headerURIs(index)
-          val `object` = getObjectFromCell(cell)
-          println( s"produceRowStatements: Triple : ${Triple(rowSubject, predicate, `object`)}")
-          val simpleCaseTriple = Triple(rowSubject, predicate, `object`)
-          val (isComplexCase, complexCaseList) = splitPropertyChain(simpleCaseTriple)
-          list ++= ( if( isComplexCase ) complexCaseList else List(simpleCaseTriple) )
+        val predicate = headerURIs(index)
+        if (cell =/= "") {
+//          if (isIDcolumn(fromUri(predicate), uriPrefix)) {
+//          } else {
+            val `object` = getObjectFromCell(cell)
+            println(s"produceRowStatements: Triple : ${Triple(rowSubjectOrID, predicate, `object`)}")
+            val simpleCaseTriple = Triple(rowSubjectOrID, predicate, `object`)
+            val (isComplexCase, complexCaseList) = splitPropertyChain(simpleCaseTriple)
+            list ++= (if (isComplexCase) complexCaseList else List(simpleCaseTriple))
+//          }
         }
         index += 1
       }
@@ -214,14 +243,14 @@ trait CSVImporter[Rdf <: RDF, DATASET]
    */
   private def splitPropertyChain(tr: Rdf#Triple): (Boolean, List[Rdf#Triple]) = {
     def uriLastPathElementIsTurtleAbbreviated(p: Rdf#URI): (Boolean, Rdf#URI, Rdf#URI) = {
-      println(s"uriLastPathElementIsTurtleAbbreviated(p:$p")
+//      println(s"uriLastPathElementIsTurtleAbbreviated(p:$p")
       val path = new java.net.URI(fromUri(p)).getPath
-      println(s"path $path")
+//      println(s"path $path")
       if( path == null )
         return ((false, p, URI("")))
       val pathElements = path.split("/")
       val lastPathElement = pathElements .last
-      println(s"lastPathElement $lastPathElement")
+//      println(s"lastPathElement $lastPathElement")
       recognizePrefixedURI(lastPathElement) match {
         case Some(uri) =>
           (true, URI(fromUri(p).replace("/" + lastPathElement, "")), URI(expandOrUnchanged(fromUri(uri))))
