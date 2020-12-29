@@ -64,7 +64,13 @@ object CSVImporterApp extends {
       }
       d
     })
-  println(s"""URI prefix $uriPrefix""")
+  println(s"""URI prefix <$uriPrefix>""")
+  try {
+    populatePrefix2uriMapFromURL( "prefixes.ttl" )
+    println( "Read local file: " + "prefixes.ttl" )
+  } catch {
+    case t: Throwable => println( "Could not read local file: " + t.getLocalizedMessage)
+  }
 
   val in: InputStream = getUrlInputStream(url)
   val graph = if (args.size > 2) {
@@ -77,9 +83,9 @@ object CSVImporterApp extends {
       }
       r.toList
     }
-  val separator = if (args.size > 3) args(3)(0) else ','
-	  println(s"separator '$separator'")
-	  run(in, uriPrefix,
+    val separator = if (args.size > 3) args(3)(0) else ','
+    println(s"separator '$separator'")
+    run(in, uriPrefix,
       propertyValueForEachRow, separator)
   } else
     run(in, uriPrefix)

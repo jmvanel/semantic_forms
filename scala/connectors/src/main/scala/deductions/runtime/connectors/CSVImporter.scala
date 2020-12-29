@@ -221,7 +221,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
 //          if (isIDcolumn(fromUri(predicate), uriPrefix)) {
 //          } else {
             val `object` = getObjectFromCell(cell)
-            println(s"produceRowStatements: Triple : ${Triple(rowSubjectOrID, predicate, `object`)}")
+            // println(s"produceRowStatements: Triple : ${Triple(rowSubjectOrID, predicate, `object`)}")
             val simpleCaseTriple = Triple(rowSubjectOrID, predicate, `object`)
             val (isComplexCase, complexCaseList) = splitPropertyChain(simpleCaseTriple)
             list ++= (if (isComplexCase) complexCaseList else List(simpleCaseTriple))

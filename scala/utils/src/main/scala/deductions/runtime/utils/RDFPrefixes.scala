@@ -5,6 +5,8 @@ import java.net.{URI => jURI}
 import org.w3.banana.{RDF, RDFOps, RDFPrefix, RDFSPrefix, _}
 
 import scala.util.{Failure, Success, Try}
+import scala.collection.JavaConverters._
+import org.apache.jena.graph.Graph
 
 /** database of Turtle prefixes;
  *  TODO possibility to add prefix-URI pairs;
@@ -147,6 +149,24 @@ lazy val loginForms = Prefix[Rdf]("login-forms",
       }.toMap
   lazy val prefix2uriMap = urisMap.map(_.swap)
 
+  lazy val prefix2uriMapMutable = scala.collection.mutable.Map[String, String]() //  ++ prefix2uriMap
+  prefix2uriMapMutable ++= prefix2uriMap
+
+  def populatePrefix2uriMapFromURL(rdfSource: String) = {
+    val gr = org.apache.jena.riot.RDFDataMgr.loadGraph( rdfSource )
+    populatePrefix2uriMapJena(gr)
+  }
+
+  def populatePrefix2uriMap(graph: Rdf#Graph) = {
+    if( graph . isInstanceOf[Graph] ) {
+      populatePrefix2uriMapJena( graph.asInstanceOf[Graph] )
+  } }
+  def populatePrefix2uriMapJena(graph: Graph) = {
+     val ret = prefix2uriMapMutable ++= graph.getPrefixMapping.getNsPrefixMap.asScala
+     // println( s">>>> populatePrefix2uriMapJena: $ret")
+     ret
+  }
+
   def expandOrUnchanged(possiblyPrefixedURI: String): String = {
      val uriMaybe = expand(possiblyPrefixedURI)
      uriMaybe match {
@@ -155,14 +175,12 @@ lazy val loginForms = Prefix[Rdf]("login-forms",
      }
   }
 
-  /**
-   * expand possibly Prefixed URI (like foaf:name),
-   *  @return Some(URI("http://xmlns.com/foaf/0.1/name")),
-   *  or output None if no prefix is found
-   *
-   *  TODO move to URIHelpers
-   */
   def expand(possiblyPrefixedURI: String): Option[Rdf#URI] = {
+    expandNEW(possiblyPrefixedURI)
+//    expandOLD(possiblyPrefixedURI)
+  }
+
+  private def expandOLD(possiblyPrefixedURI: String): Option[Rdf#URI] = {
     val uri_string = possiblyPrefixedURI // URLEncoder.encode(possiblyPrefixedURI, "UTF-8")
     val tr = Try {
 
@@ -193,15 +211,63 @@ lazy val loginForms = Prefix[Rdf]("login-forms",
         case None => None
       }
     }
+    // println(s"expand($possiblyPrefixedURI tr $tr")
     tr match {
       case Success(r) => r
       case Failure(e) => None
     }
   }
 
-    def abbreviateTurtle(uri: String): String = {
-      abbreviateTurtle(URI(uri))
+  /**
+   * expand possibly Prefixed URI (like foaf:name),
+   *  @return Some(URI("http://xmlns.com/foaf/0.1/name")),
+   *  or output None if no prefix is found
+   * use mutable prefix to URI Map
+   *
+   *  TODO move to URIHelpers
+   */
+  def expandNEW(possiblyPrefixedURI: String): Option[Rdf#URI] = {
+    val uri_string = possiblyPrefixedURI // URLEncoder.encode(possiblyPrefixedURI, "UTF-8")
+    val tr = Try {
+
+      val prefixOption =
+        if (possiblyPrefixedURI.startsWith(":")) {
+          Some("")
+        } else {
+          if (uri_string.endsWith(":"))
+            Some(uri_string.substring(0, uri_string.length - 1))
+          else {
+            val uri = new jURI(uri_string)
+            if (uri.isAbsolute() && !commonSchemes.contains(uri.getScheme)) {
+              // then it's possibly a Prefixed URI like foaf:name
+              Some(uri.getScheme)
+            } else None
+          }
+        }
+
+      prefixOption match {
+        case Some(prefix) => {
+          // println(s"prefix2uriMapMutable $prefix2uriMapMutable")
+          val prefixAsURI = prefix2uriMapMutable.get(prefix)
+          prefixAsURI match {
+            case Some(prefixIri) =>
+              Some(URI(prefixIri + possiblyPrefixedURI.substring(prefix.length() + 1)))
+            case None => None
+          }
+        }
+        case None => None
+      }
     }
+    // println(s"expand($possiblyPrefixedURI tr $tr")
+    tr match {
+      case Success(r) => r
+      case Failure(e) => None
+    }
+  }
+
+  def abbreviateTurtle(uri: String): String = {
+      abbreviateTurtle(URI(uri))
+  }
 
   /**
    * inverse of #expand()
