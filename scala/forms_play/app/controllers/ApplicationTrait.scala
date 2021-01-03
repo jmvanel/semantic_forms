@@ -41,7 +41,9 @@ object PlaySettings {
 */
 /** controller base;
  *  HTML pages & HTTP services are in WebPages and Services */
-trait ApplicationTrait extends Rendering
+trait ApplicationTrait extends
+     RDFStoreLocalJenaProvider
+with Rendering
     with HeaderNames
     with ApplicationFacadeImpl[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with LanguageManagement
@@ -51,7 +53,6 @@ trait ApplicationTrait extends Rendering
     with HTTPrequestHelpers
     with RDFPrefixes[ImplementationSettings.Rdf]
     with RequestUtils
-    with RDFStoreLocalJenaProvider
     with RDFContentNegociationPlay
     with HTTPoutputFromThrowable[ImplementationSettings.Rdf, ImplementationSettings.DATASET] {
 

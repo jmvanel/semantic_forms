@@ -11,6 +11,7 @@ import deductions.runtime.abstract_syntax.ThumbnailInference
 import deductions.runtime.utils.FormModuleBanana
 import deductions.runtime.core.HTTPrequest
 import scala.util.Try
+import scala.util.Failure
 
 /** Results Display, typically SPARQL SELECT */
 trait ResultsDisplay[Rdf <: RDF, DATASET]
@@ -103,12 +104,14 @@ extends ThumbnailInference[Rdf, DATASET] {
       request: HTTPrequest,
       sortAnd1rowPerElement:Boolean = false )
     : NodeSeq = {
+    logger.trace(s"makeHyperlinkForURI label $label")
     val displayLabel =
       if( label != "" )
           label
         else
           makeInstanceLabelFuture(node, graph, request.getLanguage())
      val `type` = getClassOrNullURI(node)(graph)
+    logger.trace(s"makeHyperlinkForURI type ${`type`}")
      displayNode(uriNodeToURI(node), hrefPrefix, displayLabel,
          property = nullURI, type_ = `type`, request)
   }
@@ -138,10 +141,21 @@ extends ThumbnailInference[Rdf, DATASET] {
    * 
    * transactional, needs no transaction */
   def makeHyperlinkForURItr( node: Rdf#Node, request: HTTPrequest)
-      : NodeSeq =
-    wrapInTransaction{
+      : NodeSeq = {
+    val trans = wrapInReadTransaction{
       makeHyperlinkForURI( node, request = request )
-    } . getOrElse(<span>Problem in makeHyperlinkForURItr {node.toString()}</span>)
+    }
+    logger.debug(s">>>> makeHyperlinkForURItr: trans $trans")
+    logger.debug(s">>>> ${
+      if( trans.isInstanceOf[Failure[_]] )
+      trans.asInstanceOf[Failure[_]].exception.printStackTrace(System.out) }")
+    trans . getOrElse(
+        <span>Problem in makeHyperlinkForURItr {
+          // Thread.dumpStack()
+          node.toString() + "\n" +
+          trans.toString()
+        }</span>)
+  }
 
   /** display given URI with bells and whistles,
    *  implementation: call createHTMLResourceReadonlyField() from trait Form2HTMLDisplay */
@@ -152,9 +166,11 @@ extends ThumbnailInference[Rdf, DATASET] {
       type_ : Rdf#Node,
       request: HTTPrequest
       ): NodeSeq = {
+      println(s"""displayNode 0""")
     if( uri != nullURI ) {
       val resourceEntry = makeResourceEntry(uri, label, property, type_)
 
+      logger.trace(s"""displayNode 1""")
       def hyperlink =
         if( hrefPrefix != "" &&
             hrefPrefix != config.hrefDisplayPrefix )
@@ -163,6 +179,7 @@ extends ThumbnailInference[Rdf, DATASET] {
            } class="" title={s"hyperlink to Triples in Graph at URI <$uri>"}>
            { label } </a>
         else NodeSeq.Empty
+      logger.trace(s"""displayNode 2""")
 
       hyperlink ++
       createHTMLResourceReadonlyField( resourceEntry, request )
@@ -186,15 +203,17 @@ extends ThumbnailInference[Rdf, DATASET] {
       property: Rdf#URI,
       type_ : Rdf#Node
       ) = {
+    logger.trace( s"makeResourceEntry: ops $ops")
     val ops1 = ops
     val fmod = new FormModule[Rdf#Node,  Rdf#URI ]
                    with FormModuleBanana[Rdf] {
       val ops = ops1
-        val nullURI= ops.URI("")
-      }
-      val types = getClasses(uri)(allNamedGraph)
-      // println(s"==== displayNode: types: $types")
-       new fmod.ResourceEntry(
+      val nullURI= ops.URI("")
+    }
+    logger.trace( s"==== makeResourceEntry: fmod $fmod ")
+    val types = getClasses(uri)(allNamedGraph)
+    logger.trace(s"==== makeResourceEntry: types: $types")
+    new fmod.ResourceEntry(
         valueLabel=label,
         property=property,
         value=uri,

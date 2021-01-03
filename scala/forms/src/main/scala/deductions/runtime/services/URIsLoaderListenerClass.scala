@@ -12,8 +12,9 @@ import deductions.runtime.utils.RDFHelpers
 
 /** URI's Loader Listener, for form submit */
 class URIsLoaderListenerClass(val config: Configuration)
-  extends URIsLoaderListenerTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-    with ImplementationSettings.RDFModule
+  extends 
+     ImplementationSettings.RDFModule with
+  URIsLoaderListenerTrait[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
     with ImplementationSettings.RDFCache
     with RDFHelpers[ImplementationSettings.Rdf]
 

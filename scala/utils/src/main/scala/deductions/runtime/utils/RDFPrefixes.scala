@@ -149,8 +149,8 @@ lazy val loginForms = Prefix[Rdf]("login-forms",
       }.toMap
   lazy val prefix2uriMap = urisMap.map(_.swap)
 
-  lazy val prefix2uriMapMutable = scala.collection.mutable.Map[String, String]() //  ++ prefix2uriMap
-  prefix2uriMapMutable ++= prefix2uriMap
+  lazy val prefix2uriMapMutable = scala.collection.mutable.Map[String, String]() ++ prefix2uriMap
+  // prefix2uriMapMutable ++= prefix2uriMap
 
   def populatePrefix2uriMapFromURL(rdfSource: String) = {
     val gr = org.apache.jena.riot.RDFDataMgr.loadGraph( rdfSource )
