@@ -24,6 +24,7 @@ Application and database administration
          * [Example of a shell session to reload a dump](#example-of-a-shell-session-to-reload-a-dump)
       * [Mirror SPARQL site into SF semantic cache](#mirror-sparql-site-into-sf-semantic-cache)
    * [Semantize raw stuff](#semantize-raw-stuff)
+   * [Customize SF site](#customize-sf-site)
    * [SPARQL queries](#sparql-queries)
    * [Populating with dbPedia (mirroring dbPedia)](#populating-with-dbpedia-mirroring-dbpedia)
    * [Text indexing with Lucene or SOLR](#text-indexing-with-lucene-or-solr)
@@ -489,6 +490,16 @@ See more detail here in the SF wiki:
 https://github.com/jmvanel/semantic_forms/wiki/Semantization
  
 Link on [other tools for semantization](http://svn.code.sf.net/p/eulergui/code/trunk/eulergui/html/documentation.html#L3234).
+
+
+# Customize SF site
+
+There two local files that are read at each HTML page creation.
+
+`messages.html` is the global site page header.
+`head-extra.html` is included in the `<head>` tag ; it allows to specify CSS styles, and anything that can be done in the `<head>` tag.
+
+`blacklist.txt` contains a list of blacklisted IP's .
 
 # SPARQL queries
 There is a web page for SPARQL queries, and also a real (compliant) SPARQL endpoint at URL `/sparql` for CONSTRUCT and SELECT queries (see in README in parag. Test about how to query with authentication).
