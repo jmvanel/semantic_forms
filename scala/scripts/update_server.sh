@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 
 function make_shared_file {
   if [ $(getent group sf) ]; then

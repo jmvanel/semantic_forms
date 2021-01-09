@@ -499,6 +499,9 @@ There two local files that are read at each HTML page creation.
 `messages.html` is the global site page header.
 `head-extra.html` is included in the `<head>` tag ; it allows to specify CSS styles, and anything that can be done in the `<head>` tag.
 
+These files can be HTML or XHTML.
+Examples of both files are given in [scala directory](../../scala/) .
+
 `blacklist.txt` contains a list of blacklisted IP's .
 
 # SPARQL queries

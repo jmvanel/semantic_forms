@@ -13,8 +13,8 @@ Table of Contents
 
    * [Installation of the semantic_forms generic application](#installation-of-the-semantic_forms-generic-application)
       * [Prerequisites](#prerequisites)
-      * [Obtaining the zipped application](#obtaining-the-zipped-application)
-      * [Runnning the zipped application](#runnning-the-zipped-application)
+      * [Obtaining the zipped distribution](#obtaining-the-zipped-distribution)
+      * [Runnning the zipped distribution](#runnning-the-zipped-distribution)
          * [On windows](#on-windows)
          * [URL of the main application page](#url-of-the-main-application-page)
             * [Stopping the zipped distribution](#stopping-the-zipped-distribution)
@@ -31,10 +31,10 @@ Table of Contents
 ## Prerequisites 
 - Java JRE 8 (check with `java -version`)
 
-## Obtaining the zipped application
-The zipped application is available as a [github release](https://github.com/jmvanel/semantic_forms/releases).
+## Obtaining the zipped distribution
+The zipped distribution is available as a [github release](https://github.com/jmvanel/semantic_forms/releases).
 
-## Runnning the zipped application
+## Runnning the zipped distribution
 Download this zip on the server, unzip and type (on Linux or Mac):
 ```shell
 VERSION=2.4
@@ -42,12 +42,39 @@ cd semantic_forms_play-$VERSION
 nohup bin/semantic_forms_play -J-Xmx50M &
 ```
 
-`nohup` starts the application so that it continues running after the user disconnects.
+`nohup` starts the web application so that it continues running after the user disconnects.
 One can also simply run:
 ```
 bin/semantic_forms_play -J-Xmx50M &
 ```
 but then the application will be stopped when the user disconnects.
+
+## Runnning on ports 80 and 443
+
+After hesitating around several solutions, SF runs on port 80, simply by prefixing the usual shell script with
+```shell
+authbind --deep
+```
+Runnning on ports 80 and 443 (HTTPS)
+the complete produre:
+
+```shell
+# the first time:
+man authbind
+sudo touch /etc/authbind/byport/80
+sudo chmod 500 /etc/authbind/byport/80
+sudo chown jmv /etc/authbind/byport/80
+ls -l /etc/authbind/byport/80
+# actually start:
+nohup authbind --deep bin/semantic_forms_play -J-Xmx300M -J-server -Dhttp.port=80 &
+# WIP: FAILS: Bind failed because of java.net.SocketException: Opération non permise
+nohup authbind --deep bin/semantic_forms_play -J-Xmx300M -J-server -Dhttps.port=443 &
+```
+
+Of course, do not forget to stop any program running on port 80, e.g.
+```shell
+/etc/init.d/apache2 stop 
+```
 
 ### On windows
 **On windows** simply run:
