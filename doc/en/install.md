@@ -15,6 +15,7 @@ Table of Contents
       * [Prerequisites](#prerequisites)
       * [Obtaining the zipped distribution](#obtaining-the-zipped-distribution)
       * [Runnning the zipped distribution](#runnning-the-zipped-distribution)
+      * [Runnning on ports 80 and 443](#runnning-on-ports-80-and-443)
          * [On windows](#on-windows)
          * [URL of the main application page](#url-of-the-main-application-page)
             * [Stopping the zipped distribution](#stopping-the-zipped-distribution)
@@ -51,29 +52,38 @@ but then the application will be stopped when the user disconnects.
 
 ## Runnning on ports 80 and 443
 
+I looked at the options for port 80 with SF; there is authbind https://en.wikipedia.org/wiki/Authbind
+The idea is to remedy a Linux system limitation with a system tool, instead of a certainly known tool, Apache, but which brings management complexity: 2 servers and config.
+There is also this other system alternative: `CAP_NET_BIND_SERVICE`
+see
+https://cwiki.apache.org/confluence/display/HTTPD/NonRootPortBinding
+https://man7.org/linux/man-pages/man7/capabilities.7.html
+
 After hesitating around several solutions, SF runs on port 80, simply by prefixing the usual shell script with
 ```shell
 authbind --deep
 ```
-Runnning on ports 80 and 443 (HTTPS)
-the complete produre:
+Runnning on ports 80 and 443 (HTTPS) , the complete procedure:
 
 ```shell
 # the first time:
+sudo apt-get authbind
 man authbind
 sudo touch /etc/authbind/byport/80
 sudo chmod 500 /etc/authbind/byport/80
-sudo chown jmv /etc/authbind/byport/80
-ls -l /etc/authbind/byport/80
+sudo chown $USERNAME /etc/authbind/byport/80
+sudo touch /etc/authbind/byport/443
+sudo chmod 500 /etc/authbind/byport/443
+sudo chown $USERNAME /etc/authbind/byport/443
+ls -l /etc/authbind/byport/*
+
 # actually start:
-nohup authbind --deep bin/semantic_forms_play -J-Xmx300M -J-server -Dhttp.port=80 &
-# WIP: FAILS: Bind failed because of java.net.SocketException: Opération non permise
-nohup authbind --deep bin/semantic_forms_play -J-Xmx300M -J-server -Dhttps.port=443 &
+nohup authbind --deep bin/semantic_forms_play -J-Xmx300M -J-server -Dhttp.port=80 -Dhttps.port=443 &
 ```
 
 Of course, do not forget to stop any program running on port 80, e.g.
 ```shell
-/etc/init.d/apache2 stop 
+sudo /etc/init.d/apache2 stop 
 ```
 
 ### On windows
