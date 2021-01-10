@@ -239,7 +239,7 @@ with StringHelpers
     if ( types.exists { t => t.endsWith("#Class") } ) {
       <a href={
         "/create?uri=" + URLEncoder.encode(classURIstringValue, "UTF-8") +
-          (if (clone) s"&referer=${request.getRDFsubject()}"
+          (if (clone) s"&referer=${ URLEncoder.encode(request.getRDFsubject(), "UTF-8")}"
           else "&prefill=no")
       } title={ messCreate_instance + (if (clone) " (clone)" else "") }
       class="sf-create-contextual">

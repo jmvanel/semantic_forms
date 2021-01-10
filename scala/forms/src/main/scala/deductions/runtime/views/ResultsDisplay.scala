@@ -166,7 +166,7 @@ extends ThumbnailInference[Rdf, DATASET] {
       type_ : Rdf#Node,
       request: HTTPrequest
       ): NodeSeq = {
-      println(s"""displayNode 0""")
+    logger.trace(s"""displayNode 0 $uri""")
     if( uri != nullURI ) {
       val resourceEntry = makeResourceEntry(uri, label, property, type_)
 
