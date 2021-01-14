@@ -78,7 +78,7 @@ trait URIManagement extends URIHelpers {
       }
     } catch {
       case t: Throwable =>
-        System.err.println(s"makeAbsoluteURIForSaving: $userid: ${t.getLocalizedMessage}")
+        System.err.println(s"makeAbsoluteURIForSaving: userid '$userid' : ${t.getLocalizedMessage}")
         "error:error"
     }
   }

@@ -67,14 +67,14 @@ Runnning on ports 80 and 443 (HTTPS) , the complete procedure:
 
 ```shell
 # the first time:
-sudo apt-get authbind
+sudo apt-get install authbind
 man authbind
 sudo touch /etc/authbind/byport/80
 sudo chmod 500 /etc/authbind/byport/80
-sudo chown $USERNAME /etc/authbind/byport/80
+sudo chown $USER /etc/authbind/byport/80
 sudo touch /etc/authbind/byport/443
 sudo chmod 500 /etc/authbind/byport/443
-sudo chown $USERNAME /etc/authbind/byport/443
+sudo chown $USER /etc/authbind/byport/443
 ls -l /etc/authbind/byport/*
 
 # actually start:

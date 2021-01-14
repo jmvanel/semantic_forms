@@ -54,8 +54,13 @@ with RDFStoreLocalJenaProvider // for prefix2uriMap
   def json2rdf() = Action { implicit request: Request[_] =>
     val httpRequest = copyRequest(request)
     val jsonURL = httpRequest.getHTTPparameterValue("src").get
+    val timeout = httpRequest.getHTTPparameterValue("timeout").getOrElse("1000").toInt
 
-    val contextURLdefault = "https://github.com/jmvanel/Karstlink-ontology/raw/master/grottocenter.org_context.jsonld"
+    val contextURLdefault =
+      // "file:///home/jmv/ontologies/Karstlink-ontology/geb.ffspeleo.fr_context.jsonld"
+//       "file:///home/jmv/ontologies/Karstlink-ontology/grottocenter.org_context.jsonld"
+      "https://ontology.uis-speleo.org/grottocenter.org_context.jsonld"
+      // "https://github.com/jmvanel/Karstlink-ontology/raw/master/grottocenter.org_context.jsonld"
     lazy val contextJsonDocumentDefault: JsonDocument = {
       val factory = Json.createReaderFactory(new HashMap())
       val reader = factory.createReader(
@@ -97,8 +102,8 @@ with RDFStoreLocalJenaProvider // for prefix2uriMap
       // https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/document/JsonDocument.html
       val jsonDataStream = getRestInputStream(jsonURL,
           // for https://beta.grottocenter.org/api/v1/massifs/3
-          connectionTimeout=15000,
-          socketTimeout=15000).get
+          connectionTimeout=timeout,
+          socketTimeout=timeout).get
       JsonLd.toRdf(JsonDocument of (
           MediaType.JSON_LD, jsonDataStream )).
         options(options).
