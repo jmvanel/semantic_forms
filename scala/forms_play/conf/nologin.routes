@@ -1,0 +1,58 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET     /                   @controllers.WebPagesApp.index
+
+GET /robots.txt             controllers.Default.redirect(to = "/files/robots.txt")
+
+GET     /display            @controllers.WebPagesApp.displayURI(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="")
+GET     /table              @controllers.WebPagesApp.table()
+GET     /form-data         @controllers.FormServicesApp.formDataAction(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="", database:String ?="TDB")
+GET     /sparql-data       @controllers.FormServicesApp.sparqlDataGET(query: String)
+GET     /download          @controllers.DownloadServiceApp.downloadAction( url:String, database:String ?="TDB" )
+GET     /form              @controllers.WebPagesTechApp.form(displayuri:String, blanknode:String ?= "", Edit:String?="", formuri:String ?="", database:String ?="TDB")
+GET     /sparql-form       @controllers.WebPagesApp.sparqlForm(query:String, Edit:String?="", formuri:String ?="", database:String ?="TDB")
+GET     /sparql-ui          @controllers.WebPagesApp.sparql( query:String )
+POST    /sparql-ui          @controllers.WebPagesApp.sparql( query:String )
+GET     /select-ui          @controllers.WebPagesApp.select( query:String )
+POST    /select-ui          @controllers.WebPagesApp.select( query:String )
+
+# Construct or SELECT 
+GET     /sparql             @controllers.SparqlServicesGET.sparqlGET( query:String )
+GET     /sparql2            @controllers.SparqlServicesGET.sparqlGetUnionGraph( query:String )
+
+# application/x-www-form-urlencoded
+POST    /sparql             @controllers.SparqlServicesGET.sparqlPOST()
+POST    /sparql2            @controllers.SparqlServicesGET.sparqlPOSTUnionGraph()
+
+GET     /wordsearch         @controllers.WebPagesApp.wordsearchAction(q:String ?= "", clas: String ?= "")
+GET     /search             @controllers.WebPagesApp.searchOrDisplayAction(q:String ?= "")
+GET     /lookup            @controllers.LookupServiceApp.lookupService(QueryString:String, QueryClass: String ?= "")
+
+GET     /backlinks          @controllers.WebPagesApp.backlinksAction(q:String ?= "")
+GET     /esearch            @controllers.WebPagesApp.extSearch(q:String ?= "")
+
+GET     /tools		    @controllers.WebPagesApp.toolsPage
+GET     /showNamedGraphs    @controllers.WebPagesApp.showNamedGraphsAction
+GET     /showTriplesInGraph  @controllers.WebPagesApp.showTriplesInGraphAction(uri: String)
+GET     /history            @controllers.WebPagesApp.makeHistoryUserActionsAction(limit: String?= "")
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               @controllers.Assets.at(path="/public", file)
+# files in local files/ directory are served like Apache does:
+GET     /files/*file                @controllers.Files.at(file)
+
+GET     /proxy                @controllers.ProxyServicesApp.getProxy(originalurl: String)
+
+GET     /ldp/*uri             @controllers.LDPgetServicesApp.ldp(uri: String)
+GET     /ldp                  @controllers.LDPgetServicesApp.ldp(uri: String ?= "")
+
+GET     /json2rdf             @controllers.Json2RDFServiceApp.json2rdf
+HEAD   /json2rdf              @controllers.Json2RDFServiceApp.json2rdfHead
+GET     /rdf2json             @controllers.RDF2JSONservice.rdf2json
+
+OPTIONS /*path                @controllers.ServicesApp.httpOptions(path)
+
+# see https://www.w3.org/TR/void/#well-known
+GET /.well-known/void         @controllers.ServicesApp.wellKnownVoid()

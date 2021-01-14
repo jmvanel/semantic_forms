@@ -29,7 +29,8 @@ trait Secured extends Authentication[ImplementationSettings.Rdf, ImplementationS
       Unauthorized("""{"currentRequest": "ERROR UNAUTHORIZED"}""").
         addingToSession("to-redirect" -> request.uri)(request)
     else
-      Results.Redirect(routes.AuthService.login).
+      //Results.Redirect(routes.AuthService.login).
+      Results.Redirect( "/login" ).
         addingToSession("to-redirect" -> request.uri)(request)
   }
 

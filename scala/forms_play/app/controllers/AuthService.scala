@@ -261,7 +261,8 @@ extends BaseController
   def redirect(request: Request[_]) = request.session.get("to-redirect") . getOrElse("")
 
   def logout = Action {
-    Redirect(routes.AuthService.login).withNewSession.flashing(
+    // Redirect(routes.AuthService.login).withNewSession.flashing(
+    Redirect( "/login" ).withNewSession.flashing(
       "success" -> "You are now logged out."
     )
   }
