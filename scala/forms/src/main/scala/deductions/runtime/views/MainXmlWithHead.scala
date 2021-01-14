@@ -9,15 +9,21 @@ import scala.xml.XML
 // import deductions.runtime.views.MainXml
 import scala.xml.NodeSeq
 import org.w3.banana.RDF
+import java.io.File
 
 /** HTML page skeleton */
 trait MainXmlWithHead[Rdf <: RDF, DATASET] extends MainXml[Rdf, DATASET] {
 
   private def add(e: Elem, c: Node): Elem = e.copy(child = e.child ++ c)
-  private def addFile(name: String): NodeSeq =
+  private def addFile(name: String): NodeSeq = {
     scala.xml.Unparsed(
-      // this way, head.html is in forms/ module, removing a dependency in forms_play/ module
-      Source.fromURL(getClass.getResource("/deductions/runtime/html/" + name)).getLines().mkString("\n"))
+      if( new File(name).exists() )
+          Source.fromFile(name).getLines .mkString("\n")
+      else
+        // this way, head.html is in forms/ module, removing a dependency in forms_play/ module
+      Source.fromURL(getClass.getResource("/deductions/runtime/html/" + name)).getLines().mkString("\n")
+    )
+  }
 
   private val basicHead = addFile("head.html")
 
