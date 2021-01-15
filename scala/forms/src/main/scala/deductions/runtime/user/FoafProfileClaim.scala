@@ -107,7 +107,10 @@ http.send(content);
         else
           <span>No account For this Person '{label}' &lt;{currentFocusURI}&gt; </span>
       }
-    } else
-      <span>current Page Is NOT A foaf Person</span>
+    } else {
+      var mess = <span/>
+      logger.whenDebugEnabled { mess = <span>current Page Is NOT A foaf Person</span> }
+      mess
+    }
   }
 }
