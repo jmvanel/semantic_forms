@@ -71,7 +71,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
                   <p class="sf-error">{ e.getLocalizedMessage }</p>
 
                 case Success(g) if(resourceStatus.isFailure) =>
-                   logger.debug(  "LOADING " +s">>>> tryGraph Failure resourceStatus $resourceStatus")
+                   logger.debug(  "LOADING " + s">>>> tryGraph Failure resourceStatus $resourceStatus")
                   <p>{ resourceStatus }</p>
 
                 case Success(g) =>
@@ -95,8 +95,8 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
 
           tryGraph match {
             case Success(gr) =>
-
-              logger.debug(s"htmlForm: Success !!!!!!!!!!")
+             logger.whenDebugEnabled {
+              logger.debug(s"htmlForm: <$uri> Success !!!!!!!!!!")
               wrapInReadTransaction {
                 // FEATURE: annotate plain Web site
                 // TODO use exists( triple => ... )
@@ -114,6 +114,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
                     URI(uri), datasetOrDefault)
                 }
               }
+             }
             case Failure(f) => logger.error(s"htmlForm: ERROR: typeChange, manageBlankNodesReload: $f")
           }
 
@@ -132,7 +133,6 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
               request = request, inputGraph = tryGraph)
             logger.debug(s">>>> after htmlFormElemRaw, formSyntax $formSyntax")
 
-//            wrapInTransaction({  // or
             wrapInReadTransaction{
               Text("\n") ++
               titleEditDisplayDownloadLinksThumbnail(formSyntax, editable2, request) ++

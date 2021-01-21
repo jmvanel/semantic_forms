@@ -58,6 +58,7 @@ extends RDFCacheDependencies[Rdf, DATASET]
     with HTTPHelpers
     with TypeAddition[Rdf, DATASET]
     with StringHelpers
+    with CSVadaptor[Rdf, DATASET]
   {
 
   import scala.concurrent.ExecutionContext.Implicits.global
@@ -129,11 +130,11 @@ JMV:
   def retrieveURIResourceStatus(uri: Rdf#URI, dataset: DATASET,
                       request: HTTPrequest,
                       transactionsInside: Boolean): (Try[Rdf#Graph], Try[String]) = {
-    val tryGraphLocallyManagedData = getLocallyManagedUrlAndData(uri, request, transactionsInside: Boolean)
 
-    logger.debug(  "LOADING " + s"retrieveURIResourceStatus: tryGraphLocallyManagedData $tryGraphLocallyManagedData")
+    val tryGraphLocalData = getLocallyManagedUrlAndData(uri, request, transactionsInside)
+    logger.debug( "LOADING " + s"retrieveURIResourceStatus: tryGraphLocallyManagedData $tryGraphLocalData")
 
-    tryGraphLocallyManagedData match {
+    tryGraphLocalData match {
       case Some(tgr) => (Success(tgr), Success(""))
       case None =>
 
@@ -145,9 +146,9 @@ JMV:
           val mirrorURI = getMirrorURI(uri)
           val resultWhenNothingStoredLocally: (Try[Rdf#Graph], Try[String]) =
             if (mirrorURI === "") {
-            val graphTry_MIME = readURI(uri, dataset, request)
+            val graphTry_MIME: (Try[Rdf#Graph], String) = readURI(uri, dataset, request)
             logger.debug(  "LOADING " + s""">>>> retrieveURIResourceStatus graphTry_MIME $graphTry_MIME""")
-            val graphDownloaded = {
+            val graphDownloaded: Try[Rdf#Graph] = {
               val graphTry = graphTry_MIME._1
               if (transactionsInside)
                 storeURI(graphTry, uri, dataset)
@@ -161,8 +162,7 @@ JMV:
               if( ! request.isFocusURIlocal() )
                 addTimestampToDataset(uri, dataset2)
             } else
-              logger.error(
-                s"Download Graph at URI <$uri> was tried, but it's faulty: $graphDownloaded")
+              logger.error(s"Download Graph at URI <$uri> was tried, but it's faulty: $graphDownloaded")
 
             val contentType = graphTry_MIME._2
             logger.debug(s"""retrieveURIResourceStatus: downloaded graph from URI <$uri> $graphDownloaded
@@ -493,16 +493,24 @@ JMV:
     	    s""">>>> readURI: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
       contentType match {
         case Success(typ) =>
-          if (!typ.startsWith("text/html")) {
+          logger.info(s"readURIsf: MIME type: '$typ'")
+          if( ! typ.startsWith("text/html")) {
+            if(
+              typ == "text/csv" ||
+              typ == "text/comma-separated-values") {
+                ( readCSVfromURL(uri, typ, dataset, request), typ )
+
+          } else {
             logger.debug(s""">>>> readURIsf: for <$uri>
                trying read With explicit content Type; ContentType From HEAD Request "$contentType" """)
             val gr = readWithContentType( uri, typ, dataset): Try[Rdf#Graph]
             logger.debug(s"""readURIsf After readWithContentType: ${gr}""")
             ( gr, typ)
+          }
           } else {
             ( Success(emptyGraph), typ)
           }
-        case Failure(f) => ( Failure(f), "ERROR")
+        case Failure(f) => ( Failure(f), "ERROR getContentTypeFromHEADRequest")
       }
     } else {
       val message = s"Load uri <$uri> is not possible, not a downloadable URI."
@@ -597,13 +605,12 @@ JMV:
   }
 
   /* test if given URI is a locally managed URL, that is created locally and 100% located here */
-  /** get Locally Managed graph from given URI : <URI> ?P ?O	, in any graph
+  /** get Local data in any graph from given URI : <URI> ?P ?O
    *  @param
    *  transactionsInside: need transaction inside this function */
   private def getLocallyManagedUrlAndData(uri: Rdf#Node, request: HTTPrequest, transactionsInside: Boolean): Option[Rdf#Graph] =
     // TODO bad smell in code: remove ! in test
     if (! request.isFocusURIlocal() ) {
-//    if (!fromUri(uri).startsWith(request.absoluteURL())) {
       logger.debug(  s"""getLocallyManagedUrlAndData: LOADING
         <$uri> from <${request.absoluteURL()}>""" )
       // then it can be a "pure" HTML web page, or an RDF document
@@ -624,7 +631,7 @@ JMV:
       gr1 match {
         case Success(gr) => Some(gr)
         case Failure(f) =>
-          logger.error(s"getLocallyManagedUrlAndData: $f")
+          logger.error(s"getLocallyManagedUrlAndData: URI $uri - $f")
           None
       }
     }

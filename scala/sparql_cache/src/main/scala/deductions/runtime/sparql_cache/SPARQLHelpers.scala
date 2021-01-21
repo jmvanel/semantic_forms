@@ -403,7 +403,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   /** a triple plus its named graph (empty URI if default graph) */
   type Quad = (Rdf#Triple, Rdf#URI)
 
-  /* An SPO Query returning quads */
+  /** An SPO Query returning quads
+   *  TODO, too complex, use Jena */
   def quadQuery(s: Rdf#NodeMatch, p: Rdf#NodeMatch, o: Rdf#NodeMatch): Iterable[Quad] = {
 
     def makeSPARQLTermFromNodeMatch(nm: Rdf#NodeMatch, varName: String) = {

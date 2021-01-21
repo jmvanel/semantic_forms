@@ -69,14 +69,16 @@ trait CSVImporter[Rdf <: RDF, DATASET]
     val list = ArrayBuffer[Rdf#Triple]()
     
     writeHeaderPropertiesMetadata(header, list)
-    val rowSubjectPrefix = {
+    val rowSubjectPrefix = fromUri(uriPrefix)
+    /* {
       val doc = uriPrefix.toString
       if( doc.endsWith("/") ||
         doc.endsWith("#") ) doc + "row/"
       else
         doc + "/row/"
-    }
-    println( s"rowSubjectPrefix: $rowSubjectPrefix")
+    } */
+
+    logger.debug( s"rowSubjectPrefix: $rowSubjectPrefix")
 
     var rowIndex = 0
     for( record <- csvParser.getRecords.asScala ) {
@@ -100,10 +102,9 @@ trait CSVImporter[Rdf <: RDF, DATASET]
   }
 
   private def makeRowSubject(rowSubjectPrefix: String, index: Int, record: CSVRecord) = {
-    val values = record.iterator()
-    // println( s"rowSubject : $rowSubject")
-    for (cell <- values.asScala) {
-    }
+    // val values = record.iterator()
+    logger.debug( s"makeRowSubject: rowSubjectPrefix $rowSubjectPrefix, index $index")
+    // for (cell <- values.asScala) { }
     URI(rowSubjectPrefix + index)
   }
 
@@ -163,7 +164,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
         candidate.startsWith(":") ) {
       // accept prefixed URI's like foaf:name, and expand them
       val expcan = expand(candidate)
-      // println(s"candidate $candidate, expand $expcan")
+      // logger.debug( s"candidate $candidate, expand $expcan")
       expcan match {
         case Some(uri) => Some(uri)
         case None      => Some(URI(candidate))
@@ -174,7 +175,9 @@ trait CSVImporter[Rdf <: RDF, DATASET]
 
   /** manage Mapping from Column name to URI */
   private def manageColumnsMapping(columnName: String, documentURI: URI): URI = {
-    println(s"manageColumnsMapping: columnName '$columnName': <${columnsMappings.getOrElse( columnName, normalize( columnName, documentURI) )}>")
+    logger.debug(
+      s"manageColumnsMapping: columnName '$columnName': <${columnsMappings.getOrElse( columnName, normalize( columnName, documentURI) )}>")
+
     columnsMappings.getOrElse( columnName.trim(),
         normalize( columnName, documentURI) )
   }
@@ -206,14 +209,18 @@ trait CSVImporter[Rdf <: RDF, DATASET]
     uriPrefix:  URI) {
     val idColumnIndex = findIDcolumnIndex(uriPrefix)
     val rowSubjectOrID : Rdf#URI = if(idColumnIndex >= 0 ) {
-//      println(s"rowSubjectOrID uriPrefix $uriPrefix, ${record.get(idColumnIndex)} ")
-      URI(new java.net.URI(fromUri(uriPrefix)).resolve(record.get(idColumnIndex)).toString())
+      val idFromRow = record.get(idColumnIndex)
+      logger.info(
+        s"""">>>> rowSubjectOrID uriPrefix $uriPrefix, idColumnIndex $idColumnIndex,
+        idFromRow=$idFromRow""")
+      URI(fromUri(uriPrefix) + idFromRow)
+      // URI(new java.net.URI(fromUri(uriPrefix)).resolve(record.get(idColumnIndex)).toString())
 //      ops.resolve(uriPrefix, URI(record.get(idColumnIndex)))
     } else
       rowSubject
     val values = record.iterator()
     var index = 0
-    // println( s"rowSubjectOrID : $rowSubjectOrID")
+    logger.debug( s"rowSubjectOrID : $rowSubjectOrID")
     for (cell <- values.asScala) {
       if (index < headerURIs.length) {
         val predicate = headerURIs(index)
@@ -221,7 +228,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
 //          if (isIDcolumn(fromUri(predicate), uriPrefix)) {
 //          } else {
             val `object` = getObjectFromCell(cell)
-            // println(s"produceRowStatements: Triple : ${Triple(rowSubjectOrID, predicate, `object`)}")
+            logger.debug(s"produceRowStatements: Triple : ${Triple(rowSubjectOrID, predicate, `object`)}")
             val simpleCaseTriple = Triple(rowSubjectOrID, predicate, `object`)
             val (isComplexCase, complexCaseList) = splitPropertyChain(simpleCaseTriple)
             list ++= (if (isComplexCase) complexCaseList else List(simpleCaseTriple))
@@ -243,14 +250,14 @@ trait CSVImporter[Rdf <: RDF, DATASET]
    */
   private def splitPropertyChain(tr: Rdf#Triple): (Boolean, List[Rdf#Triple]) = {
     def uriLastPathElementIsTurtleAbbreviated(p: Rdf#URI): (Boolean, Rdf#URI, Rdf#URI) = {
-//      println(s"uriLastPathElementIsTurtleAbbreviated(p:$p")
+      logger.debug(s"uriLastPathElementIsTurtleAbbreviated(p:$p")
       val path = new java.net.URI(fromUri(p)).getPath
-//      println(s"path $path")
+      logger.debug(s"path $path")
       if( path == null )
         return ((false, p, URI("")))
       val pathElements = path.split("/")
       val lastPathElement = pathElements .last
-//      println(s"lastPathElement $lastPathElement")
+      logger.debug(s"lastPathElement $lastPathElement")
       recognizePrefixedURI(lastPathElement) match {
         case Some(uri) =>
           (true, URI(fromUri(p).replace("/" + lastPathElement, "")), URI(expandOrUnchanged(fromUri(uri))))
@@ -271,7 +278,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
   private var currentSubject : Rdf#Node = URI("")
   private var currentProperty = URI("")
   private def createBlankNode(row: Rdf#Node, property: Rdf#URI) = {
-//    println(s">>>> createBlankNode <$row>, <$property>")
+    logger.debug(s">>>> createBlankNode <$row>, <$property>")
     if( row != currentSubject ||
         property != currentProperty ) {
       currentBlankNode = currentBlankNode + 1
@@ -285,7 +292,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
   /** get RDF triple Object From Cell */
   private def getObjectFromCell(cell0: String): Rdf#Node = {
     val cell = cell0.trim()
-    // println(s"cell '$cell'  isAbsoluteURI(cell) ${isAbsoluteURI(cell)}")
+    logger.debug(s"cell '$cell'  isAbsoluteURI(cell) ${isAbsoluteURI(cell)}")
     if (isAbsoluteURI(cell)) {
         URI(expandOrUnchanged(cell))
 

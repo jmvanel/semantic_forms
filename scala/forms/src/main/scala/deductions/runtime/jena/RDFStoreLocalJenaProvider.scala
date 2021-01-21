@@ -245,7 +245,7 @@ object RDFStoreLocalJenaProviderObject
     uri: Rdf#URI,
     contentType: String,
     dataset: DATASET): Try[Rdf#Graph] =
-    readWithContentTypeNoJena(uri, contentType, dataset)
+    readWithContentTypeNoJena(uri, contentType)
 
   /** TODO dataset is not used */
   private def readWithContentTypeJena(
@@ -278,8 +278,7 @@ object RDFStoreLocalJenaProviderObject
    *   */
   private def readWithContentTypeNoJena(
     uri:         Rdf#URI,
-    contentType: String,
-    dataset:     DATASET): Try[Rdf#Graph] = {
+    contentType: String): Try[Rdf#Graph] = {
 
     setTimeoutsFromConfig()
 
