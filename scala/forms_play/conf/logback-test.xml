@@ -19,6 +19,7 @@
   <logger name="services/html" level="DEBUG"/>
   <logger name="abstract_syntax" level="DEBUG"/>
   <logger name="user" level="DEBUG"/>
+  <logger name="connectors" level="DEBUG"/>
   -->
 
   <!-- <root level="debug"> -->

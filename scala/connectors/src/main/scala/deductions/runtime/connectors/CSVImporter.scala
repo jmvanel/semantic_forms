@@ -249,12 +249,26 @@ trait CSVImporter[Rdf <: RDF, DATASET]
    *  _:n1 cc:attributionName "Frédéric Urien" .
    */
   private def splitPropertyChain(tr: Rdf#Triple): (Boolean, List[Rdf#Triple]) = {
+
     def uriLastPathElementIsTurtleAbbreviated(p: Rdf#URI): (Boolean, Rdf#URI, Rdf#URI) = {
-      logger.debug(s"uriLastPathElementIsTurtleAbbreviated(p:$p")
-      val path = new java.net.URI(fromUri(p)).getPath
-      logger.debug(s"path $path")
+      logger.debug(s"uriLastPathElementIsTurtleAbbreviated(p: $p")
+      val pURI = new java.net.URI(fromUri(p))
+      val path = {
+        if( pURI.getFragment() == null )
+          /* process e.g.
+           * http://purl.org/dc/terms/rights/cc:attributionName */
+          pURI.getPath
+        else {
+          /* process e.g.
+           * https://ontology.uis-speleo.org/ontology/#hasDescriptionDocument/dct:description  ; or
+           * http://www.w3.org/2003/01/geo/wgs84_pos#longitude */
+          pURI.getPath + "#" + pURI.getFragment()
+        }
+      }
+      logger.debug(s"  path $path")
       if( path == null )
         return ((false, p, URI("")))
+
       val pathElements = path.split("/")
       val lastPathElement = pathElements .last
       logger.debug(s"lastPathElement $lastPathElement")
@@ -264,6 +278,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
         case None => (false, p, URI(""))
       }
     }
+
     val (isTurtleAbbreviated, p1, p2) = uriLastPathElementIsTurtleAbbreviated(tr.predicate)
     if (isTurtleAbbreviated) {
       val blank = createBlankNode(tr.subject, p1)
