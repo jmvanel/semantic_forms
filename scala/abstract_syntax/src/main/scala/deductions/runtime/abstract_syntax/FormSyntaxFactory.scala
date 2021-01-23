@@ -746,8 +746,9 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 //Thread.dumpStack()
 
     val extraFields: Seq[ResourceEntry] = for (
-      classURIexpanded <- request.getHTTPparameterValues("uri")
-        . map { u =>
+      classURIexpanded <-request.getHTTPparameterValues("uri")
+        .drop(1)
+        . map { u: String =>
           println(s"addExtraTypesFromHTTPrequest: expandOrUnchanged(u) = ${expandOrUnchanged(u)}")
           expandOrUnchanged(u) }
         . filter(u => u != "")
@@ -759,7 +760,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       type_ = Seq(owl.Class),
       htmlName = makeHTMLName(makeTriple(formFromClass.subject, rdf.typ, URI(classURIexpanded))))
     }
-    logger.info(s"addExtraTypesFromHTTPrequest: extraFields ${extraFields.mkString("\n")}")
+    logger.info(s"addExtraTypesFromHTTPrequest: extraFields =${extraFields.mkString("\n")}=")
 
     formFromClass.fields = formFromClass.fields ++ extraFields
     formFromClass
