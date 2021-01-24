@@ -166,6 +166,10 @@ with ApplicationTrait
    * while filtering unwanted clients, @see IPFilter */
   private def outputMainPageWithContent(contentMaker: SemanticController, classForContent: String = "") = {
     Action { request0: Request[_] =>
+    logger.debug( s"""
+    host ${request0.host}
+    headers ${request0.headers.toSimpleMap.mkString("\n")}
+        """)
       val precomputed = new MainPagePrecompute(request0)
       import precomputed._
       // println(s"========= outputMainPageWithContent precomputed $precomputed - title ${precomputed.title}")
@@ -674,9 +678,10 @@ with ApplicationTrait
           val uri = expandOrUnchanged(uri0)
           // URI of form Specification
           val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formuri")
-          logger.info(s"formSpecURI from HTTP request: <$formSpecURI>")
-          val lang = chooseLanguage(request)
           val httpRequest = copyRequest(request)
+          logger.info(s"""${httpRequest.logRequest()}
+            formSpecURI from HTTP request: <$formSpecURI>""")
+          val lang = chooseLanguage(request)
           outputMainPage(
             create(uri,
               formSpecURI, makeAbsoluteURIForSaving(userid), httpRequest).getOrElse(<div/>),
