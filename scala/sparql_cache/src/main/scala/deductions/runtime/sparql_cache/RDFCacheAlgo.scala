@@ -132,7 +132,7 @@ JMV:
                       transactionsInside: Boolean): (Try[Rdf#Graph], Try[String]) = {
 
     val tryGraphLocalData = getLocallyManagedUrlAndData(uri, request, transactionsInside)
-    logger.debug( "LOADING " + s"retrieveURIResourceStatus: tryGraphLocallyManagedData $tryGraphLocalData")
+    logger.debug( "retrieveURIResourceStatus: LOADING " + s"<$uri> tryGraphLocallyManagedData $tryGraphLocalData")
 
     tryGraphLocalData match {
       case Some(tgr) => (Success(tgr), Success(""))
@@ -198,8 +198,7 @@ JMV:
 
         } else { // something Stored Locally: get a chance for more recent RDF data, that will be shown next time
           val resourceStatus = Success("undefined")
-          Future {
-            // TODO, retrieve HTTP HEAD status
+          Future { // TODO, retrieve HTTP HEAD status
             updateLocalVersion(uri, dataset).getOrElse(graphStoredLocally)
           }
           ( Success(graphStoredLocally), resourceStatus)
@@ -251,24 +250,35 @@ JMV:
    * TODO return a couple (Try[Rdf#Graph], Try[HttpURLConnection]), to indicate network error
    */
   private def updateLocalVersion(uri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
-    val localTimestamp = dataset2.r { getTimestampFromDataset(uri, dataset2) }.get
     /* see http://stackoverflow.com/questions/5321876/which-one-to-use-expire-header-last-modified-header-or-etags
-     * TODO: code too complex */
+     * TODO: code too complex
+     * maybe have 3 functions like:
+     * def isOutdatedByLastModified(uri: Rdf#URI, connectionOption: Try[HttpURLConnection], localTimestamp): Try[Long]:
+     *   (Boolean, String) */
+    val localTimestamp = dataset2.r { getTimestampFromDataset(uri, dataset2) }.get
+    val currentTimestamp = (new Date).getTime
     localTimestamp match {
       case Success(longLocalTimestamp) => {
-        logger.debug(s"updateLocalVersion: $uri local TDB Timestamp: ${new Date(longLocalTimestamp)} - $longLocalTimestamp .")
+        logger.debug(s"updateLocalVersion: <$uri> local TDB Timestamp: ${new Date(longLocalTimestamp)} - $longLocalTimestamp .")
         val (noErrorLastModified, timestampFromHTTPHeader, connectionOption) =
           lastModified(uri.toString(), httpHeadTimeout)
         logger.debug(s"updateLocalVersion: <$uri> last Modified: ${new Date(timestampFromHTTPHeader)} - no Error: $noErrorLastModified .")
 
-        if (isDocumentExpired(connectionOption)) {
+        val (outdatedByExpires, expiresTimestamp) = isDocumentExpired(connectionOption)
+        // if Expired is older than LastModified, do not take it in account
+        if ( outdatedByExpires &&
+            expiresTimestamp > timestampFromHTTPHeader &&
+            expiresTimestamp > currentTimestamp  &&
+            expiresTimestamp > longLocalTimestamp) {
           logger.info(s"updateLocalVersion: <$uri> was OUTDATED by Expires HTPP header field")
           return readStoreURITry(uri, uri, dataset, request=HTTPrequest() )
         }
 
         if (noErrorLastModified &&
+           // if LastModified is in the future, do not take it in account
+            timestampFromHTTPHeader < currentTimestamp &&
            (timestampFromHTTPHeader > longLocalTimestamp
-            || longLocalTimestamp === Long.MaxValue)) {
+             || longLocalTimestamp === Long.MaxValue)) {
           val graph = readStoreURITry(uri, uri, dataset, request=HTTPrequest() )
           logger.info(
             s"updateLocalVersion: <$uri> was OUTDATED by timestamp ${new Date(timestampFromHTTPHeader)}; downloaded.")
@@ -280,6 +290,8 @@ JMV:
 
         } else if (!noErrorLastModified ||
           timestampFromHTTPHeader === Long.MaxValue) {
+          logger.debug(
+            s"updateLocalVersion: <$uri> was UP TO DATE by timestamp : ${new Date(timestampFromHTTPHeader)}")
           connectionOption match {
             case Success(connection) =>
               val etag = getHeaderField("ETag", connection)
@@ -293,6 +305,7 @@ JMV:
                 graph
               } else Success(emptyGraph)
             case Failure(f) =>
+              logger.warn(s"updateLocalVersion: <$uri> Failure for ETag ($f)")
               readStoreURITry(uri, uri, dataset, request=HTTPrequest())
           }
         } else Success(emptyGraph)
@@ -393,12 +406,13 @@ JMV:
 
   def storeURINoTransaction(
     graphTry: Try[Rdf#Graph], graphUri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
-    logger.debug(s"readStoreURINoTransaction: Before appendToGraph graphUri <$graphUri>")
-    if (graphTry.isSuccess) rdfStore.appendToGraph(dataset, graphUri, graphTry.get)
-    else
-      logger.debug(s"storeURINoTransaction: $graphTry")
-    // TODO: reuse appendToGraph return
-    logger.info(s"readStoreURINoTransaction: stored into graphUri <$graphUri>")
+    logger.debug(s"storeURINoTransaction: Before appendToGraph graphUri <$graphUri>")
+    if (graphTry.isSuccess) {
+      rdfStore.appendToGraph(dataset, graphUri, graphTry.get)
+      logger.info(s"storeURINoTransaction: stored into graphUri <$graphUri>")
+    } else
+      logger.warn(s"storeURINoTransaction: graphUri <$graphUri> : Try: $graphTry")
+    // TODO ? reuse appendToGraph return
     graphTry
   }
 
@@ -425,7 +439,7 @@ JMV:
       dataset: DATASET,
       request: HTTPrequest ): (Try[Rdf#Graph], String) = {
 
-    logger.info(s"readURIWithJenaRdfLoader: Before load uri $uri")
+    logger.info(s"readURIWithJenaRdfLoader: Before load uri <$uri>")
 
     if (isDownloadableURI(uri)) {
       // To avoid troubles with Jena cf https://issues.apache.org/jira/browse/JENA-1335
@@ -483,7 +497,7 @@ JMV:
       dataset: DATASET,
       request: HTTPrequest ): (Try[Rdf#Graph], String) = {
 
-    logger.info(s"Before load uri $uri")
+    logger.info(s"readURIsf: Before load uri <$uri>")
 
     if (isDownloadableURI(uri)) {
       // To avoid troubles with Jena cf https://issues.apache.org/jira/browse/JENA-1335
@@ -604,15 +618,13 @@ JMV:
       }
   }
 
-  /* test if given URI is a locally managed URL, that is created locally and 100% located here */
   /** get Local data in any graph from given URI : <URI> ?P ?O
    *  @param
    *  transactionsInside: need transaction inside this function */
   private def getLocallyManagedUrlAndData(uri: Rdf#Node, request: HTTPrequest, transactionsInside: Boolean): Option[Rdf#Graph] =
     // TODO bad smell in code: remove ! in test
     if (! request.isFocusURIlocal() ) {
-      logger.debug(  s"""getLocallyManagedUrlAndData: LOADING
-        <$uri> from <${request.absoluteURL()}>""" )
+      logger.debug(  s"""getLocallyManagedUrlAndData: LOADING <$uri> from <${request.absoluteURL()}>""" )
       // then it can be a "pure" HTML web page, or an RDF document
       None
     } else {

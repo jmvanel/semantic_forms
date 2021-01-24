@@ -50,7 +50,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
           val classFromSpecs = lookClassInFormSpec(URI(formSpecURI), graph)
           uriNodeToURI(classFromSpecs)
         } else classs
-      logger.info(s""">>> UnfilledFormFactory.createFormFromClass: formSpecURI=<$formSpecURI> , classOrForm <$classOrForm> =>
+      logger.debug(s""">>> UnfilledFormFactory.createFormFromClass: formSpecURI=<$formSpecURI> , classOrForm <$classOrForm> =>
       classFromSpecsOrGiven <$classFromSpecsOrGiven>""")
 
       val newId = {

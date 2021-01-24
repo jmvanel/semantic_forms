@@ -34,7 +34,9 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
 
   //// Expires ////
 
-  def isDocumentExpired(connectionOption: Try[HttpURLConnection]) = {
+  def isDocumentExpired(connectionOption: Try[HttpURLConnection]):
+  (Boolean, Long)  = {
+    var expiresTimestamp = 0L
     val opt = connectionOption.map {
       conn =>
         val expires = getHeaderField("Expires", conn)
@@ -45,12 +47,13 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
           val resulTest = Try {
             val expireDate = DateUtils.parseDate(expires)
             val currentDate = new Date
-            currentDate.getTime > expireDate.getTime
+            expiresTimestamp = expireDate.getTime
+            currentDate.getTime > expiresTimestamp
           }
           resulTest.getOrElse(false)
         }
     }
-    opt.getOrElse(false)
+    (opt.getOrElse(false), expiresTimestamp)
   }
 
     //// Last-Modified ////
@@ -109,8 +112,9 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
           }
       }
     }
-    logger.debug(s"getTimestampFromDataset: result: $result")
-    result.map { x => x.next.longValue() }
+    val ret = result.map { x => x.next.longValue() }
+    logger.debug(s"getTimestampFromDataset: URI <$uri> result: $ret")
+    ret
   }
   
   /** get Last-Modified HTTP header, uses plain Java library
