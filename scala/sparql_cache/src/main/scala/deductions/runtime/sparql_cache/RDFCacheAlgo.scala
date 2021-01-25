@@ -127,12 +127,13 @@ JMV:
 - probably need to leverage in class inheritance on Java exceptions
 - On Internet data, I want to store more: HTTP headers like Last-updated, number of triples, checksum, user who did the loading, what more ?
  */
-  def retrieveURIResourceStatus(uri: Rdf#URI, dataset: DATASET,
+  def retrieveURIResourceStatus(uriArg: Rdf#URI, dataset: DATASET,
                       request: HTTPrequest,
                       transactionsInside: Boolean): (Try[Rdf#Graph], Try[String]) = {
 
+    val uri = withoutFragment(uriArg)
     val tryGraphLocalData = getLocallyManagedUrlAndData(uri, request, transactionsInside)
-    logger.debug( "retrieveURIResourceStatus: LOADING " + s"<$uri> tryGraphLocallyManagedData $tryGraphLocalData")
+    logger.debug( "retrieveURIResourceStatus: LOADING " + s"<$uriArg> tryGraphLocallyManagedData $tryGraphLocalData")
 
     tryGraphLocalData match {
       case Some(tgr) => (Success(tgr), Success(""))
@@ -408,11 +409,12 @@ JMV:
     graphTry: Try[Rdf#Graph], graphUri: Rdf#URI, dataset: DATASET): Try[Rdf#Graph] = {
     logger.debug(s"storeURINoTransaction: Before appendToGraph graphUri <$graphUri>")
     if (graphTry.isSuccess) {
-      rdfStore.appendToGraph(dataset, graphUri, graphTry.get)
-      logger.info(s"storeURINoTransaction: stored into graphUri <$graphUri>")
+      val uriWithoutFragment = withoutFragment(graphUri)
+      rdfStore.appendToGraph(dataset, uriWithoutFragment, graphTry.get)
+      logger.info(s"storeURINoTransaction: stored into graphUri <$uriWithoutFragment>")
     } else
       logger.warn(s"storeURINoTransaction: graphUri <$graphUri> : Try: $graphTry")
-    // TODO ? reuse appendToGraph return
+    // TODO ? reuse appendToGraph
     graphTry
   }
 
@@ -488,9 +490,9 @@ JMV:
    * read unconditionally from URI,
    * no matter what the concrete syntax is;
    * use SF specific implementation for downloading RDF, not Jena RDFDataMgr
+   * an URI with # fragment is loaded into an graph named without the fragment
    * TODO:
-   * - also load an URI with the # part
-   * - load a file:// URI
+   * an ontology URI without fragment is loaded into an graph named after the ontology
    */
   private def readURIsf(
       uri: Rdf#URI,
@@ -501,10 +503,10 @@ JMV:
 
     if (isDownloadableURI(uri)) {
       // To avoid troubles with Jena cf https://issues.apache.org/jira/browse/JENA-1335
-      val contentType = getContentTypeFromHEADRequest(fromUri(withoutFragment(uri)))
-
+      val uriWithoutFragment = fromUri(withoutFragment(uri))
+      val contentType = getContentTypeFromHEADRequest(uriWithoutFragment)
       logger.debug(  "LOADING " +
-    	    s""">>>> readURI: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
+        s""">>>> readURIsf: getContentTypeFromHEADRequest: contentType for <$uri> "$contentType" """)
       contentType match {
         case Success(typ) =>
           logger.info(s"readURIsf: MIME type: '$typ'")
