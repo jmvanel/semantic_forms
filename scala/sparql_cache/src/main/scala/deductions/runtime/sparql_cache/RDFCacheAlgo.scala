@@ -217,7 +217,7 @@ JMV:
       wrapInReadTransaction{
         val x = find( allNamedGraph, uri, rdfs.isDefinedBy , ANY) . toList . headOption . getOrElse(
          Triple(nullURI, nullURI, uri)) . objectt
-       logger.info(s"findDefinitionURI: x '$x'")
+       logger.debug(s"findDefinitionURI: x '$x'")
        x
     } . getOrElse(uri)
     val ret = foldNode(node)(u=>u, bn=>uri, lit=>uri)

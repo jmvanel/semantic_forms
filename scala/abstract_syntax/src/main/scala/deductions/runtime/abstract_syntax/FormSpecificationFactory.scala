@@ -7,6 +7,7 @@ import deductions.runtime.core.HTTPrequest
 import org.w3.banana.{Prefix, RDF}
 
 import scala.util.Try
+import scala.util.Success
 
 /**
  * Lookup Form specifications from RDF graph
@@ -48,13 +49,15 @@ trait FormSpecificationFactory[Rdf <: RDF, DATASET]
    *  TODO remove dependency to RDFCacheAlgo (dataset)
    *  PENDING : what to do when given formuri gives an empty propertiesList?
    *  
-   *  @return properties List, form Configuration URI,
-   *  Try[Graph]: possibly downloaded form Configuration from its URI */
+   *  @return properties List, form Configuration URI
+   *  Try[Graph]
+   *  NOT possibly downloaded form Configuration from its URI */
   def lookPropertiesListFromDatabaseOrDownload(formuri: String)
       (implicit graph: Rdf#Graph):
        (Seq[Rdf#URI], Rdf#Node, Try[Rdf#Graph]) = {
     val formConfiguration = URI(formuri)
-    val tryGraph = retrieveURIBody( formConfiguration, dataset, HTTPrequest(), transactionsInside=false )
+    // val tryGraph = retrieveURIBody( formConfiguration, dataset, HTTPrequest(), transactionsInside=false )
+    val tryGraph = Success(checkIfNothingStoredLocally(formConfiguration, false) . _2 )
     val propertiesList = propertiesListFromFormConfiguration(formConfiguration)
     (propertiesList, formConfiguration, tryGraph)
   }
