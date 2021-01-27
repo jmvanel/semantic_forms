@@ -87,7 +87,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
    *  No Transaction
    */
   def getTimestampFromDataset(uri: Rdf#URI, dataset: DATASET): Try[Long] = {
-    logger.debug(s"getTimestampFromDataset: uri: <$uri>")
+    logger.debug(s"getTimestampFromDataset: URI <$uri>")
     import java.math.BigInteger
     val queryString = s"""
          |SELECT DISTINCT ?ts WHERE {

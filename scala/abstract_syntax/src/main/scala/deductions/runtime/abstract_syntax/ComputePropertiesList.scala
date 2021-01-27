@@ -46,7 +46,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
 
     val classesOfSubjectOrFromConfig =
       if (classesOfSubject . isEmpty && formuri =/= "") {
-        println(s"computePropertiesList tryClassFromConfig $tryClassFromConfig")
+        logger.info(s"computePropertiesList tryClassFromConfig $tryClassFromConfig")
         List( uriNodeToURI(tryClassFromConfig.getOrElse(nullURI)) )
       } else
         classesOfSubject
@@ -161,7 +161,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
         val tryClass = tryGraph.map { gr =>
           lookClassInFormSpec(URI(formuri), gr)
         }
-          println(
+          logger.info(
             s"computePropsFromConfig: formuri != <> propertiesList $propertiesList tryClass $tryClass")
         List((propertiesList, formSpecification, tryClass))
       }

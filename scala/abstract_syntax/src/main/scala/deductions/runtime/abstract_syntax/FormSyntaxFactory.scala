@@ -213,7 +213,8 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     request:    HTTPrequest)(implicit graph: Rdf#Graph, lang: String): FormSyntax = {
 
     val step1 = computePropertiesList(subject, formMode.editable, fromUri(uriNodeToURI(formConfig)), classs)
-    logger.debug(">>>> createFormDetailed step1.propertiesList") ; step1.propertiesList.map { p=> println(p) }
+    logger.debug(s">>>> createFormDetailed step1.propertiesList\n ${step1.propertiesList.map { p=> p.toString }}")
+    // step1.propertiesList.map { p=> println(p)
     val step2 = createFormDetailed2(step1, formGroup)
     logger.debug(">>>> createFormDetailed step2")
     addExtraTypesFromHTTPrequest(step2, request)

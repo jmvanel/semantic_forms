@@ -131,9 +131,11 @@ JMV:
                       request: HTTPrequest,
                       transactionsInside: Boolean): (Try[Rdf#Graph], Try[String]) = {
 
-    val uri = withoutFragment(uriArg)
+    val uriNoFrag = withoutFragment(uriArg)
+    val uri = findDefinitionURI(uriNoFrag)
+
     val tryGraphLocalData = getLocallyManagedUrlAndData(uri, request, transactionsInside)
-    logger.debug( "retrieveURIResourceStatus: LOADING " + s"<$uriArg> tryGraphLocallyManagedData $tryGraphLocalData")
+    logger.debug( "retrieveURIResourceStatus: CONSIDERING " + s"<$uriArg> tryGraphLocallyManagedData $tryGraphLocalData")
 
     tryGraphLocalData match {
       case Some(tgr) => (Success(tgr), Success(""))
@@ -143,12 +145,12 @@ JMV:
 
         val result: (Try[Rdf#Graph], Try[String]) =
           if (nothingStoredLocally) { // then read unconditionally from URI and store in TDB
-          logger.debug(s"retrieveURIResourceStatus: stored Graph Is Empty for URI <$uri>")
+          logger.debug(s"retrieveURIResourceStatus: stored Graph Is Empty for URI <$uri> => read URI <$uri>")
           val mirrorURI = getMirrorURI(uri)
           val resultWhenNothingStoredLocally: (Try[Rdf#Graph], Try[String]) =
             if (mirrorURI === "") {
             val graphTry_MIME: (Try[Rdf#Graph], String) = readURI(uri, dataset, request)
-            logger.debug(  "LOADING " + s""">>>> retrieveURIResourceStatus graphTry_MIME $graphTry_MIME""")
+            logger.debug(  "LOADING in TDB " + s""">>>> retrieveURIResourceStatus graphTry_MIME $graphTry_MIME""")
             val graphDownloaded: Try[Rdf#Graph] = {
               val graphTry = graphTry_MIME._1
               if (transactionsInside)
@@ -206,6 +208,21 @@ JMV:
         }
         result
     }
+  }
+
+  /** find Definition URI by detecting rdfs:isDefinedBy triple;
+   *  e.g. for foaf: vocab' */
+  private def findDefinitionURI(uri: Rdf#URI): Rdf#URI = {
+    val node =
+      wrapInReadTransaction{
+        val x = find( allNamedGraph, uri, rdfs.isDefinedBy , ANY) . toList . headOption . getOrElse(
+         Triple(nullURI, nullURI, uri)) . objectt
+       logger.info(s"findDefinitionURI: x '$x'")
+       x
+    } . getOrElse(uri)
+    val ret = foldNode(node)(u=>u, bn=>uri, lit=>uri)
+    logger.info(s"findDefinitionURI: ret '$ret'")
+    ret
   }
 
   /**
@@ -285,34 +302,41 @@ JMV:
             s"updateLocalVersion: <$uri> was OUTDATED by timestamp ${new Date(timestampFromHTTPHeader)}; downloaded.")
 
           // TODO pass arg. timestampFromHTTPHeader to addTimestampToDataset
-          addTimestampToDataset(uri, dataset2) // PENDING: maybe do this in a Future
+          addTimestampToDataset(uri, dataset2)
 
-          graph
+          return graph
 
         } else if (!noErrorLastModified ||
+          // indicates LastModified not present:
           timestampFromHTTPHeader === Long.MaxValue) {
           logger.debug(
-            s"updateLocalVersion: <$uri> was UP TO DATE by timestamp : ${new Date(timestampFromHTTPHeader)}")
+            s"updateLocalVersion: <$uri> timestamp COULD NOT BE CHECKED : ${new Date(timestampFromHTTPHeader)}")
           connectionOption match {
             case Success(connection) =>
               val etag = getHeaderField("ETag", connection)
               val etagFromDataset = dataset2.r { getETagFromDataset(uri, dataset2) }.get
               if (etag  =/=  etagFromDataset) {
-                logger.debug(s"""updateLocalVersion: <$uri> was OUTDATED by ETag; downloading...""")
+                logger.info(s"""updateLocalVersion: <$uri> was OUTDATED by ETag; downloading...""")
                 val graph = readStoreURITry(uri, uri, dataset, request=HTTPrequest())
                 logger.debug(s"""updateLocalVersion: <$uri> was OUTDATED by ETag; downloaded.
                   etag "$etag"  =/=  etagFromDataset "$etagFromDataset" """)
                 rdfStore.rw(dataset2, { addETagToDatasetNoTransaction(uri, etag, dataset2) })
                 graph
-              } else Success(emptyGraph)
+              } else {
+                logger.info(s"""updateLocalVersion: <$uri> seems UP TO DATE.""")
+                Success(emptyGraph)
+              }
             case Failure(f) =>
-              logger.warn(s"updateLocalVersion: <$uri> Failure for ETag ($f)")
+              logger.warn(s"updateLocalVersion: <$uri> Failure for ETag ($f); download <$uri>")
               readStoreURITry(uri, uri, dataset, request=HTTPrequest())
           }
-        } else Success(emptyGraph)
+        } else {
+          logger.info(s"""updateLocalVersion: <$uri> all tests pased, considered UP TO DATE.""")
+          Success(emptyGraph)
+        }
       }
       case Failure(fail) =>
-        logger.debug(s"updateLocalVersion: <$uri> had no local Timestamp ($fail); download it:")
+        logger.info(s"updateLocalVersion: <$uri> had no local Timestamp ($fail); download it:")
         readStoreURITry(uri, uri, dataset, request=HTTPrequest() )
     }
   }
@@ -626,7 +650,7 @@ JMV:
   private def getLocallyManagedUrlAndData(uri: Rdf#Node, request: HTTPrequest, transactionsInside: Boolean): Option[Rdf#Graph] =
     // TODO bad smell in code: remove ! in test
     if (! request.isFocusURIlocal() ) {
-      logger.debug(  s"""getLocallyManagedUrlAndData: LOADING <$uri> from <${request.absoluteURL()}>""" )
+      logger.debug(  s"""getLocallyManagedUrlAndData: CONSIDERING <$uri> from <${request.absoluteURL()}>""" )
       // then it can be a "pure" HTML web page, or an RDF document
       None
     } else {
