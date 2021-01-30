@@ -221,7 +221,7 @@ trait Form2HTML[NODE, URI <: NODE]
             htmlFieldWithSeparator
           }
 
-        <span class="sf-values-group">{
+        <span class="sf-values-group" data-rdf-property={field.property.toString()}>{
           makeFieldSubject(field) ++
             makeFieldLabelBasic(field, editable, lang) ++
             { htmlForEntries }
