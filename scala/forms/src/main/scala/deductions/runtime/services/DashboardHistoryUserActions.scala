@@ -79,7 +79,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     implicit val lang = request.getLanguage()
     val historyLink =
       if( request.getHTTPparameterValue("paragraphs").isDefined )
-      <a href="/history?limit=50">
+      <a href="/history?limit=50" class="sf-History_table-link">
        {I18NMessages.get("History_table",lang)}
       </a>
       else NodeSeq.Empty
@@ -149,11 +149,13 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       lazy val paragraphs = paragraphsView(sorted, request)
 
       val html: NodeSeq =
+        <span class="sf-history-body">{
         title ++
           historyLink ++ (
             if (request.getHTTPparameterValue("paragraphs").isDefined)
               paragraphs
             else table)
+        }</span>
       html
     }
   }
@@ -297,7 +299,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
         val formSyntax = {
           val lang = request.getLanguage()
           val formSyntax = createFormTR(subjectURI)(allNamedGraph, lang)
-          filterOutFields(formSyntax)
+          // filterOutFields(formSyntax)
           addUserInfoOnTriples(abbreviateLiterals(formSyntax))(allNamedGraph)
         }
         formSyntax
@@ -315,6 +317,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
             for (formSyntax <- formSyntaxesGrouped) yield {
               (if (formSyntaxesGrouped.size > 1)
                 <h4 class="sf-paragraphs-view-subtitle"> {
+                filterOutFields(formSyntax)
                 makeHyperlinkForURItr(formSyntax.subject, request)
               }</h4>
               else
@@ -436,9 +439,8 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
           field.property == form("separator_props_From_Classes") ||
           field.property == form("linksCount") ||
           field.property == geo("lat") ||
-          field.property == geo("alt")
-//          || // not possible to filter out rdf.typ , it suppresse all output!
-//          field.property == rdf.typ
+          field.property == geo("alt") ||
+          field.property == rdf.typ
     )
   }
 
