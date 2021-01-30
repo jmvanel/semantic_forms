@@ -29,6 +29,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
   import ops._
 
   val passwordPred = URI("urn:password")
+  val userRolePred = URI("urn:userRole")
 
   /** compare password with database; @return user URI if success */
   def checkLogin(loginName: String, password: String): Boolean = {
@@ -40,6 +41,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
   }
 
   /**
+   * find User in registered logins database.
    * a user is a resource URI having user role in the application
    * (typically a foaf:Person),
    *  and having a password triple in dedicated Authentication database.
@@ -50,6 +52,12 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
       case Some(databasePassword) => Some(loginName)
       case None => None
     }
+  }
+
+  import UserRolesModes._
+  import UserRoles._
+  def findUserRole(loginName: String): UserRole = {
+    ???
   }
 
   /** query for (digest) password in dedicated Authentication database */
@@ -64,7 +72,6 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
       find( makeIGraph(passwordsGraph), userURI, passwordPred, ANY)
       .toList
     }).get
-    
 
     println1( s"findPassword: passwordDigestsForUser $passwordDigestsForUser" )
 

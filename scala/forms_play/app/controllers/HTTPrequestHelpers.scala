@@ -40,7 +40,8 @@ trait HTTPrequestHelpers {
       secure = secure,
       domain = domain,
       session = session.data,
-      username = username
+      username = username,
+      method = method
     )
     // println(s"copyRequest: headers: " + headers.toMap)
 //    println(s"copyRequest: cookiesMap $cookiesMap , userId ${res.userId()}")

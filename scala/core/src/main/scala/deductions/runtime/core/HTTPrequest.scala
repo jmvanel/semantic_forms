@@ -43,7 +43,9 @@ case class HTTPrequest(
     secure: Boolean= false,
     domain: String = "",
     session: Map[String,String] = Map(),
-    username : Option[String] = None
+    username : Option[String] = None,
+    method: String = ""
+
     ) {
 
   /** get RDF subject, that is "focus" (HTTP parameter "displayuri") */
