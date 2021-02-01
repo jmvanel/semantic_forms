@@ -15,27 +15,37 @@ object UserRolesModes {
   /** apply App User Mode defined by config.file
    *  @param defaultResponse HTTP request response, unfiltered */
   def applyAppUserMode[RESP](req: HTTPrequest, defaultResponse: RESP): RESP = {
-    getAppUserMode.
-      httpRequestTriage(req, defaultResponse)
+    val mode = getAppUserMode
+    logger.info(s"mode '$mode'")
+    mode.httpRequestTriage(req, defaultResponse)
   }
 
-  sealed trait AppUserMode {
-    def httpRequestTriage[RESP](req: HTTPrequest, defaultResponse: RESP): RESP = {
-      defaultResponse
+  sealed
+  trait AppUserMode {
+    def httpRequestTriage[RESP](req: HTTPrequest, defaultResponse: => RESP): RESP = {
+      logger.info(s"this '$this'")
+      if (isRouteAllowedForUserMode(req)) {
+        logger.info(s"httpRequestTriage default")
+        defaultResponse
+      } else
+        throw new Exception(
+         notAllowedMessage(req) )
     }
+    def isRouteAllowedForUserMode(req: HTTPrequest): Boolean
+    def notAllowedMessage(req: HTTPrequest) = ""
   }
 
   /** historic, default mode: any logged user can /create and /edit 
    *  her triples */
-  case object EditAllowed extends AppUserMode
+  case object EditAllowed extends AppUserMode {
+    override def isRouteAllowedForUserMode(req: HTTPrequest): Boolean = true
+  }
 
   /** Only administrator can update the site */
   case object EditByAdmin extends AppUserMode {
-    def httpRequestTriage(req: HTTPrequest, defaultResponse: NodeSeq): NodeSeq =
-      httpRequestTriageAdmin(req, defaultResponse)
+    override def isRouteAllowedForUserMode(req: HTTPrequest): Boolean = isRouteAllowedForUserModeAdmin(req)
+    override def notAllowedMessage(req: HTTPrequest) = "Not allowed, need to be admin or Content Manager."
   }
-
-  def getUserRole(req: HTTPrequest): UserRole = ???
 
   /** Only ContentManager can update the site with /edit, /create,
    *  /load,  /load-uri , etc ;
@@ -43,29 +53,33 @@ object UserRolesModes {
    *  only admin can ;
    *  PENDING: will ContentManager be allowed /update ?
    *  */
-  case object EditByContentManagers extends AppUserMode{
-    def httpRequestTriage(req: HTTPrequest, defaultResponse: NodeSeq): NodeSeq =
-      httpRequestTriageAdmin(req, defaultResponse)
+  case object EditByContentManagers extends AppUserMode {
+    override def isRouteAllowedForUserMode(req: HTTPrequest): Boolean = isRouteAllowedForUserModeAdmin(req)
+    override def notAllowedMessage(req: HTTPrequest) = "Not allowed, need to be admin or Content Manager."
   }
 
   /**  logged user can propose content, which ContentManager will approve, thus updating the site
    *   TODO */
-  case object CMSmode extends AppUserMode
+  case object CMSmode extends AppUserMode {
+    override def isRouteAllowedForUserMode(req: HTTPrequest): Boolean = true
+    override def notAllowedMessage(req: HTTPrequest) = "Not allowed, need to be admin or Content Manager."
+  }
 
-  def httpRequestTriageAdmin(
-    req:             HTTPrequest,
-    defaultResponse: scala.xml.NodeSeq): scala.xml.NodeSeq = {
+  def getUserRole(req: HTTPrequest): UserRole = ???
+
+  /** is Route Allowed For User Admin in User Mode Admin ? */
+  def isRouteAllowedForUserModeAdmin(req: HTTPrequest): Boolean = {
     val path = req.path
     val method = req.method
+    logger.info(s"path '$path'")
     val isChangeBearingsRoute = changeBearingsRoutes.contains(path)
-    if (req.userId() == "admin" ||
-      !isChangeBearingsRoute ||
-      (isChangeBearingsRoute && method == "GET"))
-      defaultResponse
-    else
-      <p>Not allowed, need to be admin or Content Manager.</p>
+    logger.info(s"isChangeBearingsRoute '$isChangeBearingsRoute' , method $method")
+    (req.userId() == "admin" ||
+      !isChangeBearingsRoute
+      || (path.startsWith("/ldp") && method == "GET")
+      )
   }
-  
+
   private val changeBearingsRoutes = Set(
     "/load-uri",
 
@@ -86,6 +100,7 @@ object UserRolesModes {
     "/authenticate",
     "/register",
     "/logout")
+
   /** read file or system property for application mode */
   def getAppUserMode: AppUserMode = {
     val props = new Properties
@@ -100,6 +115,7 @@ object UserRolesModes {
 
   private val appUserModeMap = Map(
       "EditAllowed" -> EditAllowed,
+      "EditByAdmin" ->  EditByAdmin,
       "EditByContentManagers" -> EditByContentManagers,
       "CMSmode" -> CMSmode
       )

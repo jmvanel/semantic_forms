@@ -64,10 +64,8 @@ with CORS {
     recoverFromOutOfMemoryErrorGeneric[Action[AnyContent]](
       {
         Action { implicit request: Request[_] =>
-//         val resultFuture = Future {
           val uri = ops.URI(URLDecoder.decode(uriString, "UTF-8"))
           val httpRequest = copyRequest(request)
-//          println( s">>>> loadURI: httpRequest $httpRequest")
           val tryGraph = retrieveURIBody(
             uri, dataset, httpRequest, transactionsInside = true)
           val result:String = tryGraph match {
@@ -126,7 +124,7 @@ with CORS {
                 rr.toString()
               case scala.util.Failure(f) => f.getLocalizedMessage
             }
-            logger.info("Task ended: " + result)
+            logger.info(s"/load-uri <$uri> Task ended: $result")
             Ok("Task result: " + result)
           } // end Result
           ,

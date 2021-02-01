@@ -43,6 +43,7 @@ import javax.inject.Inject
 import play.api.mvc.ControllerComponents
 import play.api.mvc.AbstractController
 import play.api.mvc.BaseController
+import deductions.runtime.services.UserRolesModes
 
 class WebPagesApp @Inject() (
   components: ControllerComponents, configuration: play.api.Configuration) extends
@@ -601,8 +602,9 @@ with ApplicationTrait
 
   def edit(uri: String): EssentialAction =
     withUser { implicit userid => implicit request =>
+      val httpRequest = copyRequest(request)
       recoverFromOutOfMemoryErrorGeneric(
-        {
+          {
           val lang = chooseLanguageObject(request).language
           val pageURI = uri
           val httpRequest = copyRequest(request)
@@ -615,7 +617,9 @@ with ApplicationTrait
             graphURI = makeAbsoluteURIForSaving(userid),
             request = httpRequest )._1
           httpWrapper(
-             mainPage(content, userInfo, lang, httpRequest=httpRequest) ,
+            UserRolesModes.applyAppUserMode(httpRequest,
+             mainPage(content, userInfo, lang, httpRequest=httpRequest)
+             ),
              httpRequest )
         },
         (t: Throwable) =>
