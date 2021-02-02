@@ -22,7 +22,7 @@ function prepareCompletionLucene( userString ) {
 /** register autocomplete on relevant form elements */
 function registerCompletionGeneric( makeAjaxFunction, lookupCompletionCSSclass, searchServiceURL,
      getRDFtypeInURL, prepareCompletionString ) {
-    $(".sf-standard-form").on( 'focus', lookupCompletionCSSclass, function(event) {
+    $(".sf-standard-form, .sf-search-form-container").on( 'focus', lookupCompletionCSSclass, function(event) {
 	var inputElement = $(this);
         $(this).autocomplete({
             autoFocus: true,
