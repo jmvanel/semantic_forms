@@ -535,7 +535,6 @@ with ApplicationTrait
     def isURI(q: String): Boolean =
       // isAbsoluteURI(q)
       q.contains(":")
-    
     if (isURI(q))
       displayURI( q, Edit="" )
     else

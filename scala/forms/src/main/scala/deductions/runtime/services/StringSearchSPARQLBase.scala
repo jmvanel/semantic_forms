@@ -58,6 +58,15 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
          | }""".stripMargin
   }
 
+  private def themeCriterium(theme: String, unionGraph: Boolean = false): String = {
+    if (theme . startsWith("http"))
+        s"  ?thing ?p_dbpedia <$theme> ."
+        else if (theme != "")
+        s"  ?thing ?p_dbpedia <${dbpedia.prefixIri}$theme> ."
+      else
+        ""
+  }
+
   private def classVariableInSelect(classe: String): String = {
     if (classe === "")
       "?CLASS"
@@ -85,7 +94,8 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
   /** query With links Count, with or without text query */
   def queryWithlinksCount(
     search: String,
-    classe: String = ""): String =
+    classe: String = "",
+    theme: String = ""): String =
     s"""
     |# queryWithlinksCount() search "$search" class <$classe>
     |${declarePrefix(text)}
@@ -96,6 +106,7 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
     |  ${textQuery(search, unionGraph=false)}
     |  GRAPH <urn:x-arq:UnionGraph> {
     |    ${classCriterium(classe, unionGraph=true)}
+    |    ${themeCriterium(theme, unionGraph=true)}
     |    $countPattern
     |    $excludePerson
     |  # $excludePlace

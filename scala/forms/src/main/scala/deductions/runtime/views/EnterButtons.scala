@@ -77,6 +77,7 @@ trait EnterButtons[Rdf <: RDF, DATASET] extends InstanceLabelsInferenceMemory[Rd
   def enterSearchTerm()(implicit lang: String = "en") = {
     val inputMessage = messageI18N("Search_placeholder")
     val classMessage = messageI18N("Class_placeholder")
+    val dbpediaMessage = messageI18N("dbpedia_placeholder")
         <form  role="form" action="/search" class="sf-margin-top-10 sf-search-form">
               <!-- enterSearchTerm() TODO ? dropzone="copy" -->
               <input class="sf-search sfLookup" type="text" id="q" name="q" size="40"
@@ -89,6 +90,10 @@ trait EnterButtons[Rdf <: RDF, DATASET] extends InstanceLabelsInferenceMemory[Rd
                 title={ classMessage }
                 data-rdf-type={fromUri(rdfs.Class)}
                 data-rdf-property={fromUri(rdf.typ)}
+                />
+              <input class="hasLookup" type="text" name="link" size="25"
+                placeholder={ dbpediaMessage }
+                title={ "" }
                 />
               { rdfStartingPoints }
             <input class="btn btn-primary" type="submit" value={ messageI18N("Search") }/>

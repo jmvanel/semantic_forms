@@ -160,7 +160,13 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     wrapSearchResults(fut, q,
       mess =
         Seq( mapButton(sparqlQuery, request),
-             <span>In class &lt;{ clas }&gt;, searched for</span>
+          <span>
+            { if( clas != "" )
+              s"${I18NMessages.get("of_types", request.getLanguage())} <$clas> ," else "" }
+            { val theme = request.getHTTPparameterValue("link").getOrElse("")
+              if( theme != "" ) s", ${I18NMessages.get("linked_to", request.getLanguage())} '$theme'," else "" }
+            { I18NMessages.get("search", request.getLanguage()) }
+          </span>
         ) )
   }
 

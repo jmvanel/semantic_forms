@@ -27,11 +27,12 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
 //      println( s"makeQueryString ${searchStrings.mkString(", ")}")
       val search =  searchStrings.headOption.getOrElse("")
       val clas = if(searchStrings.size >= 2 ) searchStrings(1) else ""
+      val theme = if(searchStrings.size >= 3 ) searchStrings(2) else ""
 
       // TODO add argument "limit" to queryWithlinksCount()
       val limit = if( clas != "" ) "" else "LIMIT 15"
 
-      queryWithlinksCount( search, clas )
+      queryWithlinksCount( search, clas, theme )
     }
 
   }
@@ -56,9 +57,12 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
   def searchString(searchString: String, hrefPrefix: String = config.hrefDisplayPrefix,
                    request: HTTPrequest=HTTPrequest(), classURI: String = ""
                    ): Future[NodeSeq] = {
+
+    val theme = request.getHTTPparameterValue("link").getOrElse("")
+
 		logger.debug( s"searchString: SPARQL ${indexBasedQuery.makeQueryString(searchString, classURI)}")
     search(hrefPrefix, request.getLanguage(),
-        Seq(searchString, classURI),
+        Seq(searchString, classURI, theme),
 //        Seq("?thing", "?CLASS"))
         Seq("?thing"),
         httpRequest=request)
