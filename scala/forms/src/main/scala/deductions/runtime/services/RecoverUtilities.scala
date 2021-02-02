@@ -3,6 +3,7 @@ package deductions.runtime.services
 import org.w3.banana.RDF
 import deductions.runtime.utils.RDFStoreLocalProvider
 import deductions.runtime.sparql_cache.SPARQLHelpers
+import deductions.runtime.core.HTTPrequest
 
 trait RecoverUtilities[Rdf <: RDF, DATASET]
 extends  RDFStoreLocalProvider[Rdf, DATASET]
@@ -43,4 +44,15 @@ with SPARQLHelpers[Rdf, DATASET]
   }
 
   def printMemory() = logger.info( formatMemory() )
+
+  /** unused yet */
+  def errorStringFromThrowable(
+    t:               Throwable,
+    specificMessage: String    = "ERROR",
+    request: HTTPrequest ): String = {
+      s"""Error '$specificMessage', retry later !!!!!!!!
+        ${request.uri}
+          ${t.getLocalizedMessage}
+          ${printMemory}"""
+  }
 }

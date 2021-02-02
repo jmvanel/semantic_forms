@@ -54,7 +54,6 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
     }
   }
 
-  import UserRolesModes._
   import UserRoles._
   def findUserRole(loginName: String): UserRole = {
     ???

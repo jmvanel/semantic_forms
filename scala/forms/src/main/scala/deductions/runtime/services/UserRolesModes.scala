@@ -8,24 +8,39 @@ import java.io.FileReader
 import scala.util.Try
 import deductions.runtime.services.UserRoles.UserRole
 import deductions.runtime.services.UserRoles.ContentManager
+import deductions.runtime.jena.ImplementationSettings
+import deductions.runtime.utils.DefaultConfiguration
 
 /** cf https://github.com/jmvanel/semantic_forms/issues/209 */
-object UserRolesModes {
+object UserRolesModes extends   {
+    override implicit val config = new DefaultConfiguration {}
+  }
+  with deductions.runtime.jena.RDFStoreLocalJenaProvider
+   with RecoverUtilities
+  [ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+{
+
+//  def recoverFromOutOfMemoryErrorAapplyAppUserMode[RESP](req: HTTPrequest, defaultResponse: RESP): RESP = {
+//    recoverFromOutOfMemoryErrorGeneric(
+//        applyAppUserMode[RESP](req, defaultResponse),
+//        (t: Throwable) => ()
+//    )
+//  }
 
   /** apply App User Mode defined by config.file
    *  @param defaultResponse HTTP request response, unfiltered */
   def applyAppUserMode[RESP](req: HTTPrequest, defaultResponse: RESP): RESP = {
     val mode = getAppUserMode
-    logger.info(s"mode '$mode'")
+    logger.debug(s"mode '$mode'")
     mode.httpRequestTriage(req, defaultResponse)
   }
 
   sealed
   trait AppUserMode {
     def httpRequestTriage[RESP](req: HTTPrequest, defaultResponse: => RESP): RESP = {
-      logger.info(s"this '$this'")
+      logger.debug(s"this '$this'")
       if (isRouteAllowedForUserMode(req)) {
-        logger.info(s"httpRequestTriage default")
+        logger.debug(s"httpRequestTriage default Response $req")
         defaultResponse
       } else
         throw new Exception(
@@ -65,15 +80,15 @@ object UserRolesModes {
     override def notAllowedMessage(req: HTTPrequest) = "Not allowed, need to be admin or Content Manager."
   }
 
-  def getUserRole(req: HTTPrequest): UserRole = ???
+  private def getUserRole(req: HTTPrequest): UserRole = ???
 
   /** is Route Allowed For User Admin in User Mode Admin ? */
-  def isRouteAllowedForUserModeAdmin(req: HTTPrequest): Boolean = {
+  private def isRouteAllowedForUserModeAdmin(req: HTTPrequest): Boolean = {
     val path = req.path
     val method = req.method
-    logger.info(s"path '$path'")
+    logger.debug(s"path '$path'")
     val isChangeBearingsRoute = changeBearingsRoutes.contains(path)
-    logger.info(s"isChangeBearingsRoute '$isChangeBearingsRoute' , method $method")
+    logger.debug(s"isChangeBearingsRoute '$isChangeBearingsRoute' , method $method")
     (req.userId() == "admin" ||
       !isChangeBearingsRoute
       || (path.startsWith("/ldp") && method == "GET")
@@ -102,7 +117,7 @@ object UserRolesModes {
     "/logout")
 
   /** read file or system property for application mode */
-  def getAppUserMode: AppUserMode = {
+  private def getAppUserMode: AppUserMode = {
     val props = new Properties
     Try {
       props.load(new FileReader("app.properties"))

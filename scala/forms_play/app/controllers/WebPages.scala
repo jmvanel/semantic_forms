@@ -618,9 +618,9 @@ with ApplicationTrait
             request = httpRequest )._1
           httpWrapper(
             UserRolesModes.applyAppUserMode(httpRequest,
-             mainPage(content, userInfo, lang, httpRequest=httpRequest)
-             ),
-             httpRequest )
+              mainPage(content, userInfo, lang, httpRequest=httpRequest)
+            ),
+            httpRequest )
         },
         (t: Throwable) =>
           errorResultFromThrowable(t, "in /edit", request))
@@ -633,25 +633,27 @@ with ApplicationTrait
    */
   def saveAction(): EssentialAction = {
 
-    def saveLocal(userid: String)(implicit request: Request[_]) = {
+    def saveLocal(userid: String)(implicit request: Request[_]): Result = {
       val httpRequest = copyRequest(request)
       logRequest(httpRequest)
-      logger.debug(s"""ApplicationTrait.saveOnly: class ${request.body.getClass},
+      UserRolesModes.applyAppUserMode(httpRequest, {
+        logger.debug(s"""ApplicationTrait.saveOnly: class ${request.body.getClass},
               request $httpRequest""")
-      val (uri, typeChanges) = saveOnly(
-        httpRequest, userid, graphURI = makeAbsoluteURIForSaving(userid))
-      logger.info(s"saveAction: uri <$uri>, typeChanges=$typeChanges")
-      val saveAfterCreate = httpRequest.getHTTPheaderValue("Referer") .filter( _ .contains("/create?") ).isDefined
-      val edit = typeChanges && ! saveAfterCreate
-      val editParam = if( edit ) "edit" else ""
-      val call = routes.WebPagesApp.displayURI(
-        uri, Edit = editParam)
-      Redirect(call).flashing(
-        "message" ->
-        s"The item <$uri> has been created" )
+        val (uri, typeChanges) = saveOnly(
+          httpRequest, userid, graphURI = makeAbsoluteURIForSaving(userid))
+        logger.info(s"saveAction: uri <$uri>, typeChanges=$typeChanges")
+        val saveAfterCreate = httpRequest.getHTTPheaderValue("Referer").filter(_.contains("/create?")).isDefined
+        val edit = typeChanges && !saveAfterCreate
+        val editParam = if (edit) "edit" else ""
+        val call = routes.WebPagesApp.displayURI(
+          uri, Edit = editParam)
+        Redirect(call).flashing(
+          "message" ->
+            s"The item <$uri> has been created")
         // s"The item <$uri> of type <${httpRequest.getHTTPparameterValue("clas")}> has been created" )
-      /* TODO */
-      // recordForHistory( userid, request.remoteAddress, request.host )
+        /* TODO */
+        // recordForHistory( userid, request.remoteAddress, request.host )
+      })
     } // end saveLocal(
 
     recoverFromOutOfMemoryErrorGeneric(
@@ -675,14 +677,15 @@ with ApplicationTrait
   /** creation form - generic SF application */
   def createAction() =
     withUser { implicit userid => implicit request =>
+      val httpRequest = copyRequest(request)
       recoverFromOutOfMemoryErrorGeneric(
+       UserRolesModes.applyAppUserMode(httpRequest,
         {
           // URI of RDF class from which to create instance
           val uri0 = getFirstNonEmptyInMap(request.queryString, "uri")
           val uri = expandOrUnchanged(uri0)
           // URI of form Specification
           val formSpecURI = getFirstNonEmptyInMap(request.queryString, "formuri")
-          val httpRequest = copyRequest(request)
           logger.info(s"""${httpRequest.logRequest()}
             formSpecURI from HTTP request: <$formSpecURI>""")
           val lang = chooseLanguage(request)
@@ -690,7 +693,7 @@ with ApplicationTrait
             create(uri,
               formSpecURI, makeAbsoluteURIForSaving(userid), httpRequest).getOrElse(<div/>),
             userInfo = displayUser(userid, httpRequest), classForContent="" )
-        },
+        }),
         (t: Throwable) =>
           errorResultFromThrowable(t, "in create Actions /create", request))
     }

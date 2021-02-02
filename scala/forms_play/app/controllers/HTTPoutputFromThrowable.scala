@@ -23,7 +23,7 @@ trait HTTPoutputFromThrowable[Rdf <: RDF, DATASET] extends RecoverUtilities[Rdf,
           ${printMemory}""")
   }
 
-    def errorActionFromThrowable(
+  def errorActionFromThrowable(
     t:               Throwable,
     specificMessage: String    = "ERROR") = Action {
           implicit request: Request[_] =>
