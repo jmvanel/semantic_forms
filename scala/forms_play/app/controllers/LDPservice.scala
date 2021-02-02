@@ -50,7 +50,7 @@ class LDPservicesApp @Inject() (
           val contentType = request.contentType
           val content = getContent(request)
           logger.info(s"LDP POST: slug: $slug, link $link")
-          logger.info(s"	LDP POST: content: $content")
+          logger.info(s"	LDP POST: content: '$content'")
           logger.info(s"	LDP POST: headers: ${request.headers}")
           val copiedRequest = copyRequest(request)
           val serviceCalled =

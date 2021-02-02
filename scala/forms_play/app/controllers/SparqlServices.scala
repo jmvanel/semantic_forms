@@ -20,6 +20,7 @@ import deductions.runtime.utils.StringHelpers
 import javax.inject.Inject
 import play.api.mvc.ControllerComponents
 import play.api.mvc.AbstractController
+import deductions.runtime.services.UserRolesModes
 
 
 /** SPARQL compliant services: SPARQL update, SPARQL load */
@@ -39,59 +40,61 @@ with ApplicationUtils
 {
   // import config._
 
-  /** load RDF String in database, cf
+  /**
+   * load RDF String in database, cf
    *  https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-post
    *  The file size is limited to 8Mb ;
    *  for larger files, use locally RDFLoaderApp or RDFLoaderGraphApp,
    *  or client RDFuploader app.
    */
-    def loadAction() =
-    Action( parse.anyContent(maxLength = Some((1024 * 1024 * 8 ).longValue) )) {
-    implicit request: Request[AnyContent] =>
-      recoverFromOutOfMemoryErrorGeneric[Result](
+  def loadAction() =
+    Action(parse.anyContent(maxLength = Some((1024 * 1024 * 8).longValue))) {
+      implicit request: Request[AnyContent] =>
+        val requestCopy = getRequestCopyAnyContent()
+        recoverFromOutOfMemoryErrorGeneric[Result](
+          UserRolesModes.applyAppUserMode( requestCopy,
           { // begin Result
-            val requestCopy = getRequestCopyAnyContent()
-      val message = requestCopy.getHTTPparameterValue("message")
-      logger.info(s"""loadAction: before System.gc(): ${formatMemory()}""")
-      System.gc()
-      val messMemory = s"""loadAction: AFTER System.gc(): Free Memory: ${
-        Runtime.getRuntime.freeMemory() / (1024 * 1024)} Mb"""
-      logger.info(
-          s"""loadAction: body class ${request.getClass} request.body ${request.body.getClass}
+            val message = requestCopy.getHTTPparameterValue("message")
+            logger.info(s"""loadAction: before System.gc(): ${formatMemory()}""")
+            System.gc()
+            val messMemory = s"""loadAction: AFTER System.gc(): Free Memory: ${
+              Runtime.getRuntime.freeMemory() / (1024 * 1024)
+            } Mb"""
+            logger.info(
+              s"""loadAction: body class ${request.getClass} request.body ${request.body.getClass}
           message '$message'
           $messMemory""")
-      val content = request.getQueryString("data") match {
-        case Some(s) => Some(s)
-        case None => getContent(request)
-      }
-      val contentAbbrev = substringSafe(content.toString, 100)
-      logger.info(s"loadAction: content $contentAbbrev ...")
-      val resultGraph = load(requestCopy.copy(content = content))
-      resultGraph match {
-        case Success(g) => Ok(s"""OK
+            val content = request.getQueryString("data") match {
+              case Some(s) => Some(s)
+              case None    => getContent(request)
+            }
+            val contentAbbrev = substringSafe(content.toString, 100)
+            logger.info(s"loadAction: content $contentAbbrev ...")
+            val resultGraph = load(requestCopy.copy(content = content))
+            resultGraph match {
+              case Success(g) => Ok(s"""OK
           loaded content $contentAbbrev
         to graph URI <${requestCopy.getHTTPparameterValue("graph")}>
         message '$message',
         freeMemory ${
-          val mb = 1024 * 1024 ;Runtime.getRuntime.freeMemory().toFloat / mb
-          }""").as("text/plain")
-        case Failure(f) =>
-          val errorMessage = f.getMessage
-          val comment = if(errorMessage != null && errorMessage . contains("Request Entity Too Large"))
-            """ The file size is limited to 8Mb ( in loadAction() ).
+                val mb = 1024 * 1024; Runtime.getRuntime.freeMemory().toFloat / mb
+              }""").as("text/plain")
+              case Failure(f) =>
+                val errorMessage = f.getMessage
+                val comment = if (errorMessage != null && errorMessage.contains("Request Entity Too Large"))
+                  """ The file size is limited to 8Mb ( in loadAction() ).
                 For larger files, use locally RDFLoaderApp or RDFLoaderGraphApp"""
-          InternalServerError(
-              errorMessage + "\n" +
-              comment + "\n" +
-              "message " + message +
-              " , content: " +
-              content.slice(0, 200))
-      } // end resultGraph match
-          } // end Result
-    , // end arg 1 recoverFromOutOfMemoryErrorGeneric
-      (t: Throwable) =>
-        errorResultFromThrowable(t, "in /load", request)
-    )
+                InternalServerError(
+                  errorMessage + "\n" +
+                    comment + "\n" +
+                    "message " + message +
+                    " , content: " +
+                    content.slice(0, 200))
+            } // end resultGraph match
+          }) // end Result
+          , // end arg 1 recoverFromOutOfMemoryErrorGeneric
+          (t: Throwable) =>
+            errorResultFromThrowable(t, "in /load", request))
     } // end Action
 
 //  /** For tests, send HTTP 500 InternalServerError */
@@ -116,6 +119,8 @@ with ApplicationUtils
     withUser {
       implicit userid =>
         implicit request =>
+          val requestCopy = getRequestCopyAnyContent()
+          UserRolesModes.applyAppUserMode( requestCopy, {
           logInfo("sparql update: " + request)
           logInfo(s"sparql: update '$update'")
           logInfo(log("update: request", request))
@@ -146,6 +151,7 @@ with ApplicationUtils
               logger.error(res.toString())
               BadRequest(f.toString())
           }
+        })
     }
 
   private def logInfo(s: String) = println(s) // logger.info(s)

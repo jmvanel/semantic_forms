@@ -22,6 +22,7 @@ import deductions.runtime.services.RecoverUtilities
 import deductions.runtime.services.CORS
 import deductions.runtime.jena.RDFStoreLocalJenaProvider
 import deductions.runtime.sparql_cache.RDFCacheAlgo
+import deductions.runtime.services.UserRolesModes
 
 import javax.inject.Inject
 import play.api.mvc.ControllerComponents
@@ -99,10 +100,11 @@ with CORS {
   /** /load-uri service : load content of given URI String into TDB in graph of same name */
   def loadURI(uriString: String): Action[AnyContent] = {
       Action { implicit request: Request[_] =>
+        val httpRequest = copyRequest(request)
         recoverFromOutOfMemoryErrorGeneric[Result](
+          UserRolesModes.applyAppUserMode( httpRequest,
           { // begin Result
             val uri = ops.URI(URLDecoder.decode(uriString, "UTF-8"))
-            val httpRequest = copyRequest(request)
             //          println( s">>>> loadURI: httpRequest $httpRequest")
             val tryGraph = retrieveURIBody(
               uri, dataset, httpRequest, transactionsInside = true)
@@ -126,7 +128,7 @@ with CORS {
             }
             logger.info(s"/load-uri <$uri> Task ended: $result")
             Ok("Task result: " + result)
-          } // end Result
+          }) // end Result
           ,
           (t: Throwable) =>
             errorResultFromThrowable(t, "in importing URI", request))
@@ -148,7 +150,8 @@ with CORS {
             }
             result
           }
-
+          val httpRequest = copyRequest(request)
+          UserRolesModes.applyAppUserMode( httpRequest, {
           val content = getContent(request)
           logger.info("loadURIpost " + content)
           val finalResults = content match {
@@ -162,7 +165,8 @@ with CORS {
               Ok(results.mkString("\n"))
           }
           finalResults
-        }
+          }) // end applyAppUserMode()
+          } // end Action
       },
       (t: Throwable) =>
         errorActionFromThrowable(t, "in POST /load-uri"))

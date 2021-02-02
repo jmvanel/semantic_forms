@@ -58,7 +58,7 @@ object UserRolesModes extends   {
 
   /** Only administrator can update the site */
   case object EditByAdmin extends AppUserMode {
-    override def isRouteAllowedForUserMode(req: HTTPrequest): Boolean = isRouteAllowedForUserModeAdmin(req)
+    override def isRouteAllowedForUserMode(req: HTTPrequest): Boolean = isRouteAllowedInModeAdmin(req)
     override def notAllowedMessage(req: HTTPrequest) = "Not allowed, need to be admin or Content Manager."
   }
 
@@ -69,7 +69,7 @@ object UserRolesModes extends   {
    *  PENDING: will ContentManager be allowed /update ?
    *  */
   case object EditByContentManagers extends AppUserMode {
-    override def isRouteAllowedForUserMode(req: HTTPrequest): Boolean = isRouteAllowedForUserModeAdmin(req)
+    override def isRouteAllowedForUserMode(req: HTTPrequest): Boolean = isRouteAllowedInModeAdmin(req)
     override def notAllowedMessage(req: HTTPrequest) = "Not allowed, need to be admin or Content Manager."
   }
 
@@ -82,39 +82,39 @@ object UserRolesModes extends   {
 
   private def getUserRole(req: HTTPrequest): UserRole = ???
 
-  /** is Route Allowed For User Admin in User Mode Admin ? */
-  private def isRouteAllowedForUserModeAdmin(req: HTTPrequest): Boolean = {
+  /** is Route Allowed For any User in User Mode Admin ? */
+  private def isRouteAllowedInModeAdmin(req: HTTPrequest): Boolean = {
     val path = req.path
     val method = req.method
     logger.debug(s"path '$path'")
     val isChangeBearingsRoute = changeBearingsRoutes.contains(path)
     logger.debug(s"isChangeBearingsRoute '$isChangeBearingsRoute' , method $method")
-    (req.userId() == "admin" ||
-      !isChangeBearingsRoute
-      || (path.startsWith("/ldp") && method == "GET")
-      )
+    req.userId() == "admin" ||  // addmin can do anything
+      !isChangeBearingsRoute || // anyone can do read only things
+      (path.startsWith("/ldp") && method == "GET") // LDP POST and PUT are not for anyone
   }
 
   private val changeBearingsRoutes = Set(
     "/load-uri",
-
     "/load",
 
     "/edit",
     "/save",
     "/create",
 
-    "/create-data",
-    "/sparql-data",
+//    "/create-data",
+//    "/sparql-data",
 
-    "/page",
+//    "/page",
 
     "/update",
+    "/update-ui",
 
-    "/login",
-    "/authenticate",
-    "/register",
-    "/logout")
+//    "/login",
+//    "/authenticate",
+//    "/register",
+//    "/logout"
+  )
 
   /** read file or system property for application mode */
   private def getAppUserMode: AppUserMode = {
