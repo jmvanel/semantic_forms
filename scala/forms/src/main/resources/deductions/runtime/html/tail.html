@@ -56,8 +56,12 @@
         }
       }
 
+/** is found Class in node or parents ? */
 function findparentClass(node, clsName) {
     const parentNode = node.parentNode
+    const classList = node.classList
+    if( classList == undefined )
+	return findparentClass( parentNode, clsName)
     if( node.classList.contains(clsName) ) {
         return true
     } else if( parentNode != null ) {
