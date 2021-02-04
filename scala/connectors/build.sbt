@@ -6,7 +6,7 @@ name := "connectors"
 
 libraryDependencies ++= Seq(
     any23Dependencies ,
-    "org.apache.commons" % "commons-csv" % "1.5" ,
+    "org.apache.commons" % "commons-csv" % commonsCsvVersion ,
     bananaDependency,
     jenaDependency
 )
