@@ -192,6 +192,7 @@ case class HTTPrequest(
     remoteAddress: $remoteAddress,
     rawQueryString: $rawQueryString,
     queryString: $queryString,
+    username $username,
     content: $content,
     headers: $headers,
     cookies: $cookies,

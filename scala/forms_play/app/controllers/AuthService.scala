@@ -113,6 +113,7 @@ extends BaseController
 
     val content =
       <div>
+        <p>Current user '{ httpRequest.userId()}'</p>
         <h3 id="login">{I18NMessages.get( "Login", httpRequest.getLanguage())}
           -
           <a href="#register" style="font-size: medium">{I18NMessages.get( "Create_account", httpRequest.getLanguage())}</a>
@@ -131,26 +132,29 @@ extends BaseController
   }
 
   /**
-   * start a session after login if user Id & password are OK */
+   * start a session after login if user Id & password are OK;
+   * otherwise redirect to /login */
   def authenticate = Action {
     implicit request: Request[_] =>
       val httpRequest = copyRequest(request)
 
       val userFromSession = httpRequest.userId() // normally not yet set in session !
-      if(logPasswordInClear)
-      logger.info( s"""authenticate: httpRequest $httpRequest - queryString ${httpRequest.queryString}
-    	userFromSession $userFromSession
-    	formMap ${httpRequest.formMap}""" )
+      if (logPasswordInClear)
+        logger.info(s"""authenticate: httpRequest $httpRequest - queryString ${httpRequest.queryString}
+          userFromSession $userFromSession
+          formMap ${httpRequest.formMap}""")
       else
         logger.info( s"""authenticate: httpRequest host ${httpRequest.host}
           userFromSession $userFromSession""")
+
       val (useridOption, passwordOption, confirmPasswordOption)
-      = decodeResponse(httpRequest)
+        = decodeResponse(httpRequest)
 
       val checkLoginOption = for (
         userid <- useridOption;
         password <- passwordOption
       ) yield checkLogin(userid, password)
+
       val loginChecked = checkLoginOption match {
         case Some(true) => true
         case _          => false
@@ -158,34 +162,31 @@ extends BaseController
       if(logPasswordInClear)
         logger.info( s"useridOption $useridOption, passwordOption $passwordOption" )
 
-      if( loginChecked ) {
-      // Redirect to URL before login
-      logger.info(s"""authenticate: cookies ${request.cookies}
+      val message=""
+      if (loginChecked) {
+        // Redirect to URL before login
+        logger.info(s"""authenticate: cookies ${request.cookies}
           get("to-redirect") ${request.session.get("to-redirect")}
           keySet ${request.session.data.keySet}""")
-      val previousURL = redirect(request)
-      logger.info(s"authenticate: previous url <$previousURL>")
-      val call = previousURL match {
-        case (url) if (
-          url =/= "" &&
-          !url.endsWith("/login") &&
-          !url.endsWith("/authenticate")) => Call("GET", url)
-        case _ => routes.WebPagesApp.index
-      }
+        val previousURL = redirect(request)
+        logger.info(s"authenticate: previous url <$previousURL>")
+        val call = previousURL match {
+          case (url) if (
+            url =/= "" &&
+            !url.endsWith("/login") &&
+            !url.endsWith("/authenticate")) => Call("GET", url)
+          case _ => routes.WebPagesApp.index
+        }
 
-      // cf https://www.playframework.com/documentation/2.7.x/Migration26 , search Security, username
-      // private object Attrs {  val UserName: TypedKey[String] = TypedKey("userName") }
-      // Getting an attribute from a Request or RequestHeader   val userName: String = req.attrs(Attrs.UserName) ; val optUserName: [String] = req.attrs.get(Attrs.UserName)
-      // Setting an attribute on a Request or RequestHeader val newReq = req.addAttr(Attrs.UserName, newName)
+        Redirect(call).withSession("username" -> useridOption.get)
+          .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+          .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
+          .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
 
-      // Redirect(call).withSession(Security.username -> useridOption.get )
-      Redirect(call).withSession("username" -> useridOption.get )
-        .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
-        .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
-        .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
       } else {
+//        Redirect(Call("GET", s"/login?message=$message"))
         Redirect(Call("GET", "/login"))
-//         makeBadRequest( <div>login NOT Checked</div> )
+        //         makeBadRequest( <div>login NOT Checked</div> )
       }
   }
 
@@ -217,21 +218,28 @@ extends BaseController
   def register = Action {
     implicit request: Request[_] =>
       val httpRequest = copyRequest(request)
-//      logger.info(s"register = Action: Request:\n\t$httpRequest")
 
       val (useridOption, passwordOption, confirmPasswordOption) = decodeResponse(httpRequest)
+      val userFromSession = httpRequest.userId() // normally not yet set in session !
+      val givenLoginMatchesUserFromSession = useridOption.getOrElse("") === userFromSession
+      val userRedefinesPassword = givenLoginMatchesUserFromSession && userFromSession != "anonymous"
 
-      logger.info(s"register = Action: :\n\tuseridOption $useridOption")
+      logger.info(s"""register ${httpRequest.logRequest()}
+        useridOption $useridOption""")
       if(logPasswordInClear)
         print(s"\tpasswordOption $passwordOption, confirmPasswordOption $confirmPasswordOption")
-      val checkRegisterOption = for (
+
+        val checkRegisterOption = for (
         userid <- useridOption;
         password <- passwordOption;
         confirmPassword <- confirmPasswordOption;
         passwordConfirmed = (password === confirmPassword);
         useridLongEnough = (userid.length() >= 2);
-        _ = logger.info( s"\tpasswordConfirmed $passwordConfirmed, useridLongEnough $useridLongEnough");
-        if (passwordConfirmed && useridLongEnough )
+        _ = logger.info( s"""\tpasswordConfirmed $passwordConfirmed, useridLongEnough $useridLongEnough
+            givenLoginMatchesUserFromSession $givenLoginMatchesUserFromSession
+            userRedefinesPassword $userRedefinesPassword""");
+        if (passwordConfirmed && useridLongEnough &&
+            (givenLoginMatchesUserFromSession || userFromSession == "anonymous") )
       ) yield signin(userid, password)
 
       val registerChecked = checkRegisterOption match {
@@ -239,21 +247,27 @@ extends BaseController
         case _                 => false
       }
 
+      val message= if(userRedefinesPassword) "user Redefines Password" else ""
+
       if (registerChecked) {
         // TODO also Redirect to the URL before login
-        logger.info(s"register: user: $useridOption")
-        Redirect(routes.WebPagesApp.index).withSession(
-          // Security.username -> makeURIPartFromString(useridOption.get))
+        logger.info(s"register SUCCEEDED: user: $useridOption")
+        Redirect(s"/").withSession(
+//        Redirect(s"/?message=$message").withSession(
           "username" -> makeURIPartFromString(useridOption.get))
           .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "*")
           .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "*")
       } else {
-        logger.info(s"""register = Action: BadRequest:\n\t$useridOption
+        logger.info(s"""register FAILED \n\t$useridOption
           passwordOption ${passwordOption.isDefined}, confirmPasswordOption ${confirmPasswordOption.isDefined}""" )
         if( logPasswordInClear)
           logger.info(s"\tpasswordOption $passwordOption, confirmPasswordOption $confirmPasswordOption")
-        makeBadRequest(<div>Register NOT succeeded for user {useridOption}</div>)
+        makeBadRequest(<div>Register NOT succeeded for user {useridOption}
+          - user From Session {userFromSession}
+          - givenLoginMatchesUserFromSession {givenLoginMatchesUserFromSession}
+          - {message}
+        </div>)
       }
   }
 

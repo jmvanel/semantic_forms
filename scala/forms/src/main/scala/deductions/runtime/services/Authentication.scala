@@ -31,7 +31,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
   val passwordPred = URI("urn:password")
   val userRolePred = URI("urn:userRole")
 
-  /** compare password with database; @return user URI if success */
+  /** compare password with database; @return true if password matches login Name */
   def checkLogin(loginName: String, password: String): Boolean = {
     val databasePasswordOption = findPassword(loginName)
     databasePasswordOption match {
@@ -125,8 +125,10 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
 
   /**
    * record password in database; @return user Id if success
-   * store hash , not password
-   * TODO check already existing account;
+   * store hash, not password;
+   * remove existing password;
+   * password and user name quality have already been checked,
+   * check already existing account: only user can modify password
    */
   def signin(agentURI: String, password: String): Try[String] = {
     println1(s"""Authentication.signin: userId "$agentURI"""")
@@ -141,20 +143,26 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
      * so this is not a problem */
     val resultStorePassword = rdfStore.rw( dataset3, {
       val mGraph = passwordsGraph
+      val existingTriplesToRemove = find( makeIGraph(mGraph), URI(userUri), passwordPred, ANY ).toList
       mGraph += makeTriple(URI(userUri), passwordPred,
         makeLiteral(hashPassword(password), xsd.string))
+      logger.debug(s"signin(agentURI=$agentURI) existingTriplesToRemove \n${existingTriplesToRemove.mkString("\n")}")
+      removeTriples(mGraph, existingTriplesToRemove)
       userUri
     })
     println1(s"""Authentication.signin: resultStorePassword "$resultStorePassword"""")
 
     // annotate the user graph URI as a foaf:OnlineAccount
     val res2OnlineAccount = rdfStore.rw(dataset, {
-      val newTripleForUser = List(makeTriple(absoluteURIForSaving, rdf.typ, foaf.OnlineAccount))
+      val newTripleForUser = List(
+          makeTriple(absoluteURIForSaving, rdf.typ, foaf.OnlineAccount),
+          makeTriple(absoluteURIForSaving, rdf.typ, form("OnlineAccount"))
+          )
       val newGraphForUser: Rdf#Graph = makeGraph(newTripleForUser)
       rdfStore.appendToGraph( dataset, absoluteURIForSaving, newGraphForUser)
       userUri
     })
-    println1(s"""Authentication.signin: resultStorePassword "$res2OnlineAccount"""")
+    println1(s"""Authentication.signin: result user graph URI as OnlineAccount : '"$res2OnlineAccount'"""")
     resultStorePassword
   }
 
