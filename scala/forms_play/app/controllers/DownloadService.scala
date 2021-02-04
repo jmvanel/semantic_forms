@@ -48,6 +48,7 @@ class DownloadServiceApp @Inject() (
             val isBlanknode = httpRequest.getHTTPparameterValue("blanknode").getOrElse("") == "true"
 //            println(s"downloadAction: isBlanknode $isBlanknode ; $httpRequest")
             val url1 = if(isBlanknode) "_:"+ url else url
+            logger.info( s"${httpRequest.logRequest()} - download mime=$mime")
             download( url1, mime)
           }.as(s"${mime}; charset=utf-8")
             .withHeaders("Access-Control-Allow-Origin" -> "*")
@@ -88,7 +89,6 @@ class DownloadServiceApp @Inject() (
   }
 
   def downloadAsString(url: String, mime: String="text/turtle"): String = {
-    logger.info( s"download url $url mime $mime")
     val res = focusOnURI(url, mime)
     logger.debug(s"""download result "$res" """)
     res
