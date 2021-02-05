@@ -30,12 +30,22 @@ trait IPFilter extends HTTPFilter {
     ipsFromFile getOrElse List()
   }
 
+  private lazy val noAccessByIP =
+    ( blacklistedIPs contains "noAccessByIP" ) ||
+    ( blacklistedIPs contains "no access by IP" )
+
   val responseToBlackListed = Some(
   "Black listed, please respect robots.txt, see https://en.wikipedia.org/wiki/Robots_exclusion_standard")
 
+  private val regexIP = """\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b""".r
   /** @return a message for HTTP output or None */
   override def filter(request: HTTPrequest): Option[String] = {
-    val blacklistCriterium = blacklistedIPs contains request.remoteAddress
+    val blacklistCriterium =
+      ( blacklistedIPs contains request.remoteAddress ) ||
+      // this excludes all access by IP : should be under configuration
+      ( noAccessByIP &&
+      regexIP.findAllIn(request.host).size == 1 )
+
     if( blacklistCriterium ) {
         responseToBlackListed
     } else {
