@@ -240,7 +240,7 @@ with ApplicationTrait
   private def outputMainPage( content: NodeSeq,
       userInfo: NodeSeq = <div/>, title: String = "",
       displaySearch:Boolean = true,
-      classForContent: String ) // = "container sf-complete-form")
+      classForContent: String ="") // = "container sf-complete-form")
   (implicit request: Request[_]) : Result = {
     val httpRequest = copyRequest(request)
     val layout = httpRequest.getHTTPparameterValue("layout")
@@ -731,23 +731,21 @@ with ApplicationTrait
 
   // implicit val myCustomCharset = Codec.javaSupported("utf-8") // does not seem to work :(
 
-  def toolsPage = {
-    withUser {
-      implicit userid =>
+  def toolsPage = { Action {
+    //withUser { implicit userid =>
         implicit request =>
           val lang = chooseLanguageObject(request).language
           val config1 = config
           val httpRequest = copyRequest(request)
-          val userInfo = displayUser(userid, httpRequest)
+          val userInfo = displayUser(httpRequest.userId(), httpRequest)
           outputMainPage(
             new ImplementationSettings.RDFCache
-            with ToolsPage[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
-            with FormModuleBanana[ImplementationSettings.Rdf]
-          {
-              override val config: Configuration = config1
-            }.getPage( copyRequest(request)), displaySearch = false, userInfo = userInfo, classForContent="")
-            .as("text/html; charset=utf-8")
-
+              with ToolsPage[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
+              with FormModuleBanana[ImplementationSettings.Rdf] {
+                override val config: Configuration = config1
+              }.getPage( copyRequest(request)),
+            displaySearch = false, userInfo = userInfo, classForContent="")
+          .as("text/html; charset=utf-8")
     }
   }
 
