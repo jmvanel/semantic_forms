@@ -494,15 +494,36 @@ Link on [other tools for semantization](http://svn.code.sf.net/p/eulergui/code/t
 
 # Customize SF site
 
-There two local files that are read at each HTML page creation.
+These two local files that are read at each HTML page creation.
 
-`messages.html` is the global site page header.
-`head-extra.html` is included in the `<head>` tag ; it allows to specify CSS styles, and anything that can be done in the `<head>` tag.
+- `messages.html` is the global site page header.
+- `head-extra.html` is included in the `<head>` tag ; it allows to specify CSS styles, and anything that can be done in the `<head>` tag.
 
 These files can be HTML or XHTML.
 Examples of both files are given in [scala directory](../../scala/) .
 
+## Filter content with respect to users
+
 `blacklist.txt` contains a list of blacklisted IP's .
+In same file, it is possible to exclude all access by IP; that is all HTTP requests by IP address instead of DNS site name.
+The feature is activated if file contains one line with noAccessByIP .
+
+**Admin mode**
+
+In addition to default site mode, where every connected user can add content, there an "admin" site mode, where the services able to create or modify content are accessible only to "admin" user ; [ cf #209 ](https://github.com/jmvanel/semantic_forms/issues/209) .
+It is configured in file app.properties.
+The feature is activated if file contains one line with 'AppUserMode=EditByAdmin' . 
+
+The admin mode concerns routes /create , /save , /edit , /load-uri, /load, /update .
+The routes /login , /authenticate , /register, /logout are not subjected to filter by admin mode policy, because admin should be able to log,
+
+**No login mode**
+
+For even greater security for static content sites, this mode deactivates all HTTP routes mentioned in "admin mode" above.
+So it is impossible to edit content ; cf thread https://gitter.im/playframework/playframework?at=5ffd9e5ce578cf1e95e2e3c9 .
+It is configured in forms_play/conf/nologin.routes .
+Run with
+    `authbind --deep bin/semantic_forms_play -J-Xmx300M -J-server -Dhttp.port=80 -Dhttps.port=443 -Dplay.http.router=nologin.Routes`
 
 # SPARQL queries
 There is a web page for SPARQL queries, and also a real (compliant) SPARQL endpoint at URL `/sparql` for CONSTRUCT and SELECT queries (see in README in parag. Test about how to query with authentication).
