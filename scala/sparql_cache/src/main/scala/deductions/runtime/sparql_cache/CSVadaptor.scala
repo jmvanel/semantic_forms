@@ -52,9 +52,9 @@ trait CSVadaptor[Rdf <: RDF, DATASET] extends CSVImporter[Rdf, DATASET] {
   /** create unique LDP path from given uri */
   private def createUniqueLDPpath(uri: Rdf#URI, request: HTTPrequest) = {
     val jURI = new java.net.URI(fromUri(uri))
+    println(s"")
     URI(
-      request.host +
-      "/ldp/" +
+      request.absoluteURL("/ldp/") +
       jURI.getHost +
       jURI.getPath +
       // jURI.getQuery +

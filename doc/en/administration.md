@@ -506,13 +506,13 @@ Examples of both files are given in [scala directory](../../scala/) .
 
 `blacklist.txt` contains a list of blacklisted IP's .
 In same file, it is possible to exclude all access by IP; that is all HTTP requests by IP address instead of DNS site name.
-The feature is activated if file contains one line with noAccessByIP .
+The feature is activated if file contains one line with `noAccessByIP`.
 
 **Admin mode**
 
 In addition to default site mode, where every connected user can add content, there an "admin" site mode, where the services able to create or modify content are accessible only to "admin" user ; [ cf #209 ](https://github.com/jmvanel/semantic_forms/issues/209) .
 It is configured in file app.properties.
-The feature is activated if file contains one line with 'AppUserMode=EditByAdmin' . 
+The feature is activated if file contains one line with `AppUserMode=EditByAdmin` . 
 
 The admin mode concerns routes /create , /save , /edit , /load-uri, /load, /update .
 The routes /login , /authenticate , /register, /logout are not subjected to filter by admin mode policy, because admin should be able to log,
