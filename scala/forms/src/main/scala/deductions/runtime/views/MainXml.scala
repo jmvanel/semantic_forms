@@ -26,7 +26,7 @@ trait MainXml[Rdf <: RDF, DATASET] extends ToolsPage[Rdf, DATASET] {
                messages: NodeSeq = defaultSiteMessage,
                headExtra: NodeSeq = NodeSeq.Empty,
                classForContent: String = "container sf-complete-form",
-               httpRequest: HTTPrequest) = {
+               httpRequest: HTTPrequest): NodeSeq = {
     val lang = httpRequest.getLanguage()
     <html xmlns="http://www.w3.org/1999/xhtml" xml:lang={lang} lang={lang}>
       <head>
@@ -42,7 +42,7 @@ trait MainXml[Rdf <: RDF, DATASET] extends ToolsPage[Rdf, DATASET] {
         {pageBottom(lang)}
       </body>
     </html>
-      }
+  }
 
   /** HTML <head> tag, to be redefined */
   def head(title: String = "")(implicit lang: String = "en"): NodeSeq = <head></head>

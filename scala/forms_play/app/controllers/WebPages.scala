@@ -236,7 +236,8 @@ with ApplicationTrait
   private implicit def resultToResult(r: Result) = new ResultEnhanced(r)
 
   /** generate a Main Page wrapping given XHTML content;
-   *  if HTTP URL contains &layout=form , do not apply SF application HTML header */
+   *  if HTTP URL contains &layout=form , do not apply SF application HTML header;
+   *  filter IP (blacklist) */
   private def outputMainPage( content: NodeSeq,
       userInfo: NodeSeq = <div/>, title: String = "",
       displaySearch:Boolean = true,
@@ -245,18 +246,22 @@ with ApplicationTrait
     val httpRequest = copyRequest(request)
     val layout = httpRequest.getHTTPparameterValue("layout")
     httpWrapper(
-      layout match {
-        case Some("form") => content
-        case _ =>
-          mainPage( content,
-            userInfo, title,
-            displaySearch,
-            messages = getDefaultAppMessage(),
-            headExtra = getDefaultHeadExtra(),
-            classForContent,
-            httpRequest )
-      } ,
-      httpRequest )
+      filterRequestResult(
+        httpRequest,
+        () => layout match {
+          case Some("form") => content
+          case _ =>
+            mainPage(
+              content,
+              userInfo, title,
+              displaySearch,
+              messages = getDefaultAppMessage(),
+              headExtra = getDefaultHeadExtra(),
+              classForContent,
+              httpRequest)
+        },
+        ipFilterInstance),
+      httpRequest)
   }
 
   private val DOCTYPE = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"

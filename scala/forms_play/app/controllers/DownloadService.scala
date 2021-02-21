@@ -81,13 +81,15 @@ class DownloadServiceApp @Inject() (
   /** implements download of RDF content from HTTP client;
    *  TODO should be non-blocking !!!!!!!!!!!!!
    *  currently accumulates a string first !!!
-   *  not sure if Banana and Jena allow a non-blocking access to SPARQL query results */
+   *  not sure if Banana and Jena allow a non-blocking access to SPARQL query results
+   *  TODO add arg. HTTPrequest to set base URI */
   def download(url: String, mime: String="text/turtle") = {
 	  val res = downloadAsString(url, mime)
 	  val input = new ByteArrayInputStream(res.getBytes("utf-8"))
 	  StreamConverters.fromInputStream(() ⇒ input)
   }
 
+  /** TODO add arg. HTTPrequest to set base URI */
   def downloadAsString(url: String, mime: String="text/turtle"): String = {
     val res = focusOnURI(url, mime)
     logger.debug(s"""download result "$res" """)

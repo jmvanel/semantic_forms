@@ -108,7 +108,7 @@ trait SemanticControllerWrapper {
     }
 
   import scala.xml.Text
-  private def filterRequestResult(
+  def filterRequestResult(
     request:    HTTPrequest,
     content: () => NodeSeq, filter: HTTPFilter): NodeSeq =
     filter.filter(request) match {
