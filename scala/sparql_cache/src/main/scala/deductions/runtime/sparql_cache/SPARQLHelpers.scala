@@ -249,6 +249,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   /**
    * transactional, output Turtle String
    *  @param format = "turtle" or "rdfxml" or "jsonld"
+   *  TODO add arg. request: HTTPrequest , to set base URI
    */
   def sparqlConstructQueryTR(queryString: String, format: String = "turtle",
                              context: Map[String, String] = Map()): Try[String] = {

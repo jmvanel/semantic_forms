@@ -19,6 +19,7 @@ import javax.inject.Inject
 import play.api.mvc.ControllerComponents
 import play.api.mvc.AbstractController
 import deductions.runtime.utils.StringHelpers
+import deductions.runtime.core.IPFilter
 
 class DownloadServiceApp @Inject() (
   components: ControllerComponents, configuration: play.api.Configuration)
@@ -31,6 +32,9 @@ class DownloadServiceApp @Inject() (
   with BrowsableGraph[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
   with RDFContentNegociation
   with StringHelpers {
+
+  val filter = new IPFilter{}
+
   /**
    * get RDF with content negotiation (conneg) for RDF syntax;
    *  see also LDP.scala
@@ -49,7 +53,10 @@ class DownloadServiceApp @Inject() (
 //            println(s"downloadAction: isBlanknode $isBlanknode ; $httpRequest")
             val url1 = if(isBlanknode) "_:"+ url else url
             logger.info( s"${httpRequest.logRequest()} - download mime=$mime")
-            download( url1, mime)
+            filter.filter(httpRequest) match {
+            case None          =>  download( url1, mime)
+            case Some(message) => makeSourceFromString(message)
+            }
           }.as(s"${mime}; charset=utf-8")
             .withHeaders("Access-Control-Allow-Origin" -> "*")
             .withHeaders("Content-Disposition" ->
@@ -85,6 +92,10 @@ class DownloadServiceApp @Inject() (
    *  TODO add arg. HTTPrequest to set base URI */
   def download(url: String, mime: String="text/turtle") = {
 	  val res = downloadAsString(url, mime)
+	  makeSourceFromString(res)
+  }
+
+  private def makeSourceFromString(res: String) = {
 	  val input = new ByteArrayInputStream(res.getBytes("utf-8"))
 	  StreamConverters.fromInputStream(() ⇒ input)
   }

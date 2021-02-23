@@ -38,7 +38,8 @@ trait IPFilter extends HTTPFilter {
   "Black listed, please respect robots.txt, see https://en.wikipedia.org/wiki/Robots_exclusion_standard")
 
   private val regexIP = """\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b""".r
-  /** @return a message for HTTP output or None */
+
+  /** @return a message for HTTP output or None, which means OK */
   override def filter(request: HTTPrequest): Option[String] = {
     val blacklistCriterium =
       ( blacklistedIPs contains request.remoteAddress ) ||
@@ -47,8 +48,10 @@ trait IPFilter extends HTTPFilter {
       regexIP.findAllIn(request.host).size == 1 )
 
     if( blacklistCriterium ) {
+      logger.info("BLACKLISTED: " + request.logRequest())
         responseToBlackListed
     } else {
+      // logger.info("not BLACKLISTED: " + request.logRequest())
       val addr = InetAddress.getByName(request.remoteAddress);
       val host = addr.getHostName()
       if( host.endsWith( "compute.amazonaws.com.cn" ) )
