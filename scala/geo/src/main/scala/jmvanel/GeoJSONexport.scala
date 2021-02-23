@@ -43,14 +43,21 @@ import com.apicatalog.jsonld.api.FromRdfApi
 /** export GeoJSON (both plain GeoJSON & JSON-LD) from URI's having geographic data
  *  in given TDB database */
 object GeoJSONexport extends App {
+  if( args.length < 1) {
+    println("Args: TDB, SPARQL string")
+    System.exit(0)
+  }
   // Open TDB db
   val dataset = TDBFactory.createDataset(args(0))
 
-  // SPARQL query
-  val queryString = """
+  // Take inspiration from this to generate geojson RDF
+  // this SPARQL expects plain geo: coordinates
+  // Remove LIMIT 50 , and and add your own criteria in WHERE
+  val defaultSPARQL = """
   PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
   PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
   PREFIX geojson: <https://purl.org/geojson/vocab#>
+  prefix xsd: <http://www.w3.org/2001/XMLSchema#>
   CONSTRUCT {
 
     <urn:geojson> a geojson:FeatureCollection ;
@@ -61,8 +68,8 @@ object GeoJSONexport extends App {
       ?point a geojson:Point ;
                geojson:coordinates ?coordinates .
     ?coordinates # a rdf:List ;
-    rdf:first ?LON ; rdf:rest ?rest .
-    ?rest rdf:first ?LAT ; rdf:rest rdf:nil .
+    rdf:first ?LONstring ; rdf:rest ?rest .
+    ?rest rdf:first ?LATstring ; rdf:rest rdf:nil .
     ?S geojson:properties ?properties .
     ?properties ?P ?O .
     }
@@ -70,6 +77,8 @@ object GeoJSONexport extends App {
     GRAPH ?gr {
       ?S geo:lat ?LAT .
       ?S geo:long ?LON .
+      BIND( xsd:float(STR(?LAT)) AS ?LATstring)
+      BIND( xsd:float(STR(?LON)) AS ?LONstring)
       BIND(BNODE() AS ?point)
       BIND(BNODE() AS ?coordinates)
       BIND(BNODE() AS ?rest)
@@ -78,8 +87,15 @@ object GeoJSONexport extends App {
       FILTER ( ?P != geo:lat )
       FILTER ( ?P != geo:long )
     }
-  } LIMIT 50
+  } LIMIT 25
   """
+
+  // SPARQL query
+  val queryString =
+    if( args.length >= 2 )
+      args(1)
+    else defaultSPARQL
+
   val qexec = QueryExecutionFactory.create(queryString, dataset)
   val resultModel = qexec.execConstruct()
   
@@ -95,6 +111,7 @@ object GeoJSONexport extends App {
   val geojsonContext = """{
   "@context": {
     "geojson": "https://purl.org/geojson/vocab#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
     "Feature": "geojson:Feature",
     "FeatureCollection": "geojson:FeatureCollection",
     "GeometryCollection": "geojson:GeometryCollection",
@@ -110,7 +127,8 @@ object GeoJSONexport extends App {
     },
     "coordinates": {
       "@container": "@list",
-      "@id": "geojson:coordinates"
+      "@id": "geojson:coordinates",
+      "@context": { "type": null }
     },
     "features": {
       "@container": "@set",
@@ -120,7 +138,8 @@ object GeoJSONexport extends App {
     "id": "@id",
     "properties": "geojson:properties",
     "type": "@type"
-  }
+  } ,
+  "@type": "FeatureCollection"
 }"""
 
   val rdfProvider = DefaultRdfProvider.INSTANCE
@@ -141,11 +160,18 @@ object GeoJSONexport extends App {
   jsonWriter.close()
   println( s"$fileName written")
 
+  /** RDF To JsonLD:
+   *  1) fromRdf
+   *  2) frame
+   *  @arg titaniumDS: Rdf Dataset
+   *  @arg context: frame context
+   *  */
   def rdfToJsonLD(titaniumDS: RdfDataset, context: String): JsonObject = {
     val options = new JsonLdOptions()
     options.setUseNativeTypes(true)
     options.setOmitGraph(true)
     options.setCompactToRelative(true)
+    options.setOmitDefault(true)
     val inputStream = new StringReader(context)
     val contextDocument = DocumentParser.parse(
         MediaType.JSON_LD,
