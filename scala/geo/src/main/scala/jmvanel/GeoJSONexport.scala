@@ -169,6 +169,7 @@ object GeoJSONexport extends App {
   jsonWriter.close()
   println( s"GeoJSON $fileName written")
 
+
   /** RDF To JsonLD:
    *  1) fromRdf
    *  2) frame
@@ -183,7 +184,7 @@ object GeoJSONexport extends App {
 
     val fromRdf: FromRdfApi =
       JsonLd.fromRdf(
-        RdfDocument.of(titaniumDS) )
+        RdfDocument.of(titaniumDS) ).options(frameOptions)
 
 //    println( "TEST intermediate result")
 //    printJsonArray(fromRdf . get) // OK: blank nodes as @list
