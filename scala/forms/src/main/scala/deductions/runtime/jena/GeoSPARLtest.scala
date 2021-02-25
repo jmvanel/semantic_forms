@@ -14,12 +14,11 @@ object GeoSPARLtest extends App {
     SELECT * WHERE {
       ?feature spatial:withinBox( 43.0 0.0 48.0 10.0 100 )
     } LIMIT 100
-    """
+  """
 
   val dataset = TDBFactory.createDataset( "TDBgeo" )
   def loadDBP(id: String) = {
     val model = RDFDataMgr.loadModel("http://dbpedia.org/resource/" + id )
-    "http://dbpedia.org/resource/"
     dataset.getDefaultModel.add(model)
   }
   dataset.begin(ReadWrite.WRITE)

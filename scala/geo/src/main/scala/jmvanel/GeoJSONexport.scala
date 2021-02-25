@@ -77,8 +77,8 @@ object GeoJSONexport extends App {
     GRAPH ?gr {
       ?S geo:lat ?LAT .
       ?S geo:long ?LON .
-      BIND( xsd:float(STR(?LAT)) AS ?LATstring)
-      BIND( xsd:float(STR(?LON)) AS ?LONstring)
+      BIND( xsd:double(STR(?LAT)) AS ?LATstring)
+      BIND( xsd:double(STR(?LON)) AS ?LONstring)
       BIND(BNODE() AS ?point)
       BIND(BNODE() AS ?coordinates)
       BIND(BNODE() AS ?rest)
@@ -89,6 +89,16 @@ object GeoJSONexport extends App {
     }
   } LIMIT 25
   """
+
+  val frameOptions = {
+    val frameOptions = new JsonLdOptions()
+    frameOptions.setUseNativeTypes(true)
+    frameOptions.setOmitGraph(true)
+    frameOptions.setCompactToRelative(true)
+    frameOptions.setOmitDefault(true)
+    // options.setExplicit(true)
+    frameOptions
+  }
 
   // SPARQL query
   val queryString =
@@ -127,8 +137,7 @@ object GeoJSONexport extends App {
     },
     "coordinates": {
       "@container": "@list",
-      "@id": "geojson:coordinates",
-      "@context": { "type": null }
+      "@id": "geojson:coordinates"
     },
     "features": {
       "@container": "@set",
@@ -158,7 +167,7 @@ object GeoJSONexport extends App {
   val jsonWriter = writerFactory.createWriter(fw)
   jsonWriter.writeObject(jsonObject)
   jsonWriter.close()
-  println( s"$fileName written")
+  println( s"GeoJSON $fileName written")
 
   /** RDF To JsonLD:
    *  1) fromRdf
@@ -167,11 +176,6 @@ object GeoJSONexport extends App {
    *  @arg context: frame context
    *  */
   def rdfToJsonLD(titaniumDS: RdfDataset, context: String): JsonObject = {
-    val options = new JsonLdOptions()
-    options.setUseNativeTypes(true)
-    options.setOmitGraph(true)
-    options.setCompactToRelative(true)
-    options.setOmitDefault(true)
     val inputStream = new StringReader(context)
     val contextDocument = DocumentParser.parse(
         MediaType.JSON_LD,
@@ -186,7 +190,7 @@ object GeoJSONexport extends App {
 
     JsonLd.frame(
       JsonDocument.of(fromRdf.get), contextDocument)
-        .options(options)
+        .options(frameOptions)
         .get
   }
 
