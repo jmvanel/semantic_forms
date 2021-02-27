@@ -6,6 +6,7 @@ import org.apache.jena.query.QueryExecutionFactory
 import org.apache.jena.query.ResultSetFormatter
 import org.apache.jena.riot.RDFDataMgr
 import org.apache.jena.query.ReadWrite
+import org.apache.jena.geosparql.configuration.GeoSPARQLOperations
 
 /** cf doc https://jena.apache.org/documentation/geosparql/ */
 object GeoSPARLtest extends App {
@@ -26,10 +27,28 @@ object GeoSPARLtest extends App {
     loadDBP("Parcieux")
   dataset.commit()
   GeoSPARQLConfig.setupSpatialIndex(dataset)
+  GeoSPARQLConfig.setupMemoryIndex // actually registers special SPARQL predicates!
+  println( "isFunctionRegistered " + GeoSPARQLConfig.isFunctionRegistered )
+  println( "findModeSRS " + GeoSPARQLOperations.findModeSRS(dataset) )
 
-  dataset.begin(ReadWrite.READ)
+  // Alas, additions to TDB after setupSpatialIndex() are not indexed :( !!!
+  println( "Load RDF after setupSpatialIndex")
+  dataset.begin(ReadWrite.WRITE)
+    loadDBP("Massieux")
+  dataset.commit()
+
+  queryWithinBox()
+
+  println( "re-index (setupSpatialIndex)")
+  GeoSPARQLConfig.setupSpatialIndex(dataset)
+
+  queryWithinBox()
+
+  def queryWithinBox() = {
+    dataset.begin(ReadWrite.READ)
     val qe = QueryExecutionFactory.create(queryStr, dataset)
     val rs = qe.execSelect();
     ResultSetFormatter.outputAsTSV(rs)
-  dataset.end()
+    dataset.end()
+  }
 }
