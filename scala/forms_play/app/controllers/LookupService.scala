@@ -40,12 +40,13 @@ with AcceptExtractors {
     recoverFromOutOfMemoryErrorGeneric[Action[AnyContent]](
       {
       Action { implicit request: Request[AnyContent] =>
-        logger.info(s"""Lookup: $request
+        val httpRequest = copyRequest(request)
+        logger.info(s"""Lookup: ${httpRequest.logRequest()}
             accepts ${request.acceptedTypes} """)
         val lang = chooseLanguage(request)
         val mime = request.acceptedTypes.headOption.map {
           typ => typ.toString() }.getOrElse(Accepts.Xml.mimeType)
-        logger.info(s"mime $mime")
+        logger.debug(s"	First mime $mime")
         Ok(lookup(search, lang, clas, mime)).as(s"$mime; charset=utf-8")
           .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
       }

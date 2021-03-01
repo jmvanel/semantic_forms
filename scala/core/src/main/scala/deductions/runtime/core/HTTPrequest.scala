@@ -187,6 +187,11 @@ case class HTTPrequest(
       host.substring(colonIndex+1)
   }
 
+  def firstMimeTypeAccepted : String = {
+    val accepts = getHTTPheaderValue("Accept")
+    accepts.getOrElse("").replaceFirst(",.*", "")
+  }
+
   override def toString(): String = {
     s"""    host:  = $host,
     remoteAddress: $remoteAddress,
