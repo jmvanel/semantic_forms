@@ -34,9 +34,11 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
       """|PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
          |PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
          |PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+         |PREFIX spatial: <http://jena.apache.org/spatial#>
          |CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10
          |#CONSTRUCT { ?S geo:long ?LON ; geo:lat ?LAT ; rdfs:label ?LAB; foaf:depiction ?IMG.}
-         |#WHERE {GRAPH ?GRAPH { ?S geo:long ?LON ; geo:lat ?LAT ; rdfs:label ?LAB. OPTIONAL{?S foaf:depiction ?IMG} OPTIONAL{?S foaf:img ?IMG} } }"""
+         |#WHERE {GRAPH ?GRAPH { ?S geo:long ?LON ; geo:lat ?LAT ; rdfs:label ?LAB. OPTIONAL{?S foaf:depiction ?IMG} OPTIONAL{?S foaf:img ?IMG} } }
+         |#       ?S spatial:withinBox( 43.0 0.0 48.0 10.0  100 #km )"""
     .stripMargin
 
     <link href="/assets/images/favicon.png" type="image/png" rel="shortcut icon"/>
@@ -56,6 +58,7 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
             Seq( querySampleConstruct ), request)
          } 
       </p>
+      <a href="https://jena.apache.org/documentation/geosparql/">Jena GeoSPARQL doc.</a>
       <p>
         <a href={
           s"""http://yasgui.triply.cc#?endpoint=$localSparqlEndpoint"""
