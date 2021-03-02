@@ -49,8 +49,7 @@ class LDPgetServicesApp @Inject() (
       logger.info( s"acceptedTypes $acceptedTypes")
 
       val httpRequest = copyRequest(request)
-      val accept = httpRequest.getHTTPheaderValue("Accept")
-      val firstMimeTypeAccepted = accept.getOrElse("").replaceFirst(",.*", "")
+      val firstMimeTypeAccepted = httpRequest.firstMimeTypeAccepted()
       val mimeType =
         if( isKnownRdfSyntax(firstMimeTypeAccepted) ||
             firstMimeTypeAccepted === htmlMime )

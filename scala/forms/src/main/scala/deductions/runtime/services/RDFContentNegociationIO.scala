@@ -37,7 +37,7 @@ trait RDFContentNegociationIO[Rdf <: RDF, DATASET]
 
   /** get RDF Writer From MIME */
   def getRDFWriter(request: HTTPrequest): RDFWriter[Rdf, Try, _] = {
-		val mimeType = request.getHTTPheaderValue("Accept").getOrElse("")
+		val mimeType = request.firstMimeTypeAccepted()
 		getWriterFromMIME(mimeType)
   }
 

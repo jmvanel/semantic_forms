@@ -187,9 +187,9 @@ case class HTTPrequest(
       host.substring(colonIndex+1)
   }
 
-  def firstMimeTypeAccepted : String = {
+  def firstMimeTypeAccepted(default: String="") : String = {
     val accepts = getHTTPheaderValue("Accept")
-    accepts.getOrElse("").replaceFirst(",.*", "")
+    accepts.getOrElse(default).replaceFirst(",.*", "")
   }
 
   override def toString(): String = {

@@ -61,8 +61,7 @@ with HTTPrequestHelpers
             accepts ${request.acceptedTypes} """)
 
       val httpRequest = copyRequest(request)
-      val accepts = httpRequest.getHTTPheaderValue("Accept")
-      val firstMimeTypeAccepted = accepts.getOrElse("").replaceFirst(",.*", "")
+      val firstMimeTypeAccepted = httpRequest.firstMimeTypeAccepted()
       logger.debug( "firstMimeTypeAccepted " + firstMimeTypeAccepted )
       if (firstMimeTypeAccepted == "text/html") {
         val call0 = routes.WebPagesApp.sparql(query)

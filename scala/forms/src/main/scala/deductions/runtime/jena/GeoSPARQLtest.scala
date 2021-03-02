@@ -21,7 +21,7 @@ object GeoSPARQLtest extends App {
   lazy val datasetGeo = TDBFactory.createDataset( "TDBgeo" )
   testSuiteGeoSPARQL( datasetGeo)
 
-
+  /** test Suite for GeoSPARQL; calls setupSpatialIndex() */
   def testSuiteGeoSPARQL(dataset: Dataset) = {
     load2Cities(dataset)
     GeoSPARQLConfig.setupSpatialIndex(dataset)

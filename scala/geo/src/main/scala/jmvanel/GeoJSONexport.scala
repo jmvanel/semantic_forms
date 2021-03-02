@@ -117,7 +117,10 @@ object GeoJSONexport extends App {
 
   val datasetGraph = DatasetFactory.wrap(resultModel).asDatasetGraph()
   
-  // From https://geojson.org/geojson-ld/geojson-context.jsonld
+  /** From
+   *  https://github.com/geojson/geojson-ld/blob/gh-pages/geojson-context.jsonld
+   *  https://geojson.org/geojson-ld/geojson-context.jsonld
+  */
   val geojsonContext = """{
   "@context": {
     "geojson": "https://purl.org/geojson/vocab#",

@@ -36,16 +36,17 @@ with LanguageManagement
 with HTTPoutputFromThrowable[ImplementationSettings.Rdf, ImplementationSettings.DATASET  ]
 with AcceptExtractors {
 
+  private val XML = "application/xml"
+
   def lookupService(search: String, clas: String = "") = {
     recoverFromOutOfMemoryErrorGeneric[Action[AnyContent]](
       {
       Action { implicit request: Request[AnyContent] =>
         val httpRequest = copyRequest(request)
         logger.info(s"""Lookup: ${httpRequest.logRequest()}
-            accepts ${request.acceptedTypes} """)
-        val lang = chooseLanguage(request)
-        val mime = request.acceptedTypes.headOption.map {
-          typ => typ.toString() }.getOrElse(Accepts.Xml.mimeType)
+            accepts ${httpRequest.getHTTPheaderValue("Accept")} """)
+        val lang = httpRequest.getLanguage()
+        val mime = httpRequest.firstMimeTypeAccepted(XML)
         logger.debug(s"	First mime $mime")
         Ok(lookup(search, lang, clas, mime)).as(s"$mime; charset=utf-8")
           .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
