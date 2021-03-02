@@ -8,6 +8,8 @@ object Common {
 
 // val jenaVersion =  "3.16.0"
 val jenaVersion =  "3.17.0"
+// val jenaVersion =  "3.18.0-SNAPSHOT"
+
 val akkaVersion =  // "2.5.26" // because of Play 2.6.25
                    "2.6.8" //
 val akkaHttpVersion = "10.2.2" // "10.1.12"
@@ -51,7 +53,9 @@ val commonsCsvVersion = "1.8"
     "org.glassfish" % "jakarta.json" % "2.0.0"
   )
 
-  val jsonldDependencies = Seq( "com.apicatalog" % "titanium-json-ld" % "1.0.0" ) // "0.9-SNAPSHOT" )
+  val jsonldDependencies = Seq( "com.apicatalog" % "titanium-json-ld" % "1.0.0"
+    // "1.0.2-SNAPSHOT"
+  )
 
   val commonDependencies =
     loggingDependencies ++

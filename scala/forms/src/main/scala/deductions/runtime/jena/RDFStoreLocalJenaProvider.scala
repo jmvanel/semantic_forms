@@ -157,31 +157,29 @@ object RDFStoreLocalJenaProviderObject
         logger.debug(
           s"configureLuceneIndex, useTextQuery: $useTextQuery, useSpatialIndex: $useSpatialIndex")
 
-        // TEST geo !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //
         val res = configureLuceneIndex(dts, useTextQuery, useSpatialIndex)
-        // val res = dts
-        
           logger.debug(
           s"configureLuceneIndex DONE => $res")
-          //    if(useSpatialIndex)
-      
-        // TEST geo !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        import org.apache.jena.geosparql.configuration._
-        // GeoSPARQLConfig.setupMemoryIndex()
-//        GeoSPARQLConfig.setupNoIndex()
-//        GeoSPARQLConfig.setupSpatialIndex(res)
 
+        if (useSpatialIndex) {
+          import org.apache.jena.geosparql.configuration._
+          println(s"Before setupMemoryIndex")
+          GeoSPARQLConfig.setupMemoryIndex // actually registers special SPARQL predicates!
+          logger.info("isFunctionRegistered " + GeoSPARQLConfig.isFunctionRegistered)
+          println(s"Before setupSpatialIndex")
+          GeoSPARQLConfig.setupSpatialIndex(res)
+          logger.info("findModeSRS <" + GeoSPARQLOperations.findModeSRS(res) + ">")
+        }
         res
       } catch {
         case t: Throwable =>
           logger.error("!!!!! createDatabase: configureLuceneIndex: Exception: " +
               t.getLocalizedMessage)
-          logger.error("	Exception " + t.getClass )
+          logger.error("	Exception class:" + t.getClass )
           logger.error("	Exception " + t )
           logger.error("	getCause " + t.getCause)
-          logger.error("	>> Lucene will not be available.")
-          logger.error(s"${Thread.currentThread().getStackTrace().slice(0, 10).mkString("\n")}")
+          logger.error("	>> Some indexing will not be available: Stack:")
+          logger.error(s"${t.getStackTrace().slice(0, 12).mkString("\n")}")
           dts
       }
     } else
