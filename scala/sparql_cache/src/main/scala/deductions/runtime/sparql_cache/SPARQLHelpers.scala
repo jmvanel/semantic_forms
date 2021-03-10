@@ -927,25 +927,35 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    *  then pass MIME type
    */
   def graph2String(triples: Try[Rdf#Graph], baseURI: String, format: String = "turtle"): Try[String] = {
+//    println( s""">>>> format $format
+//        prefix2uriMap ${prefix2uriMap.mkString("\n")}""" )
+    val outputStream = new ByteArrayOutputStream
+    def doGraph2String(format: RDFFormat, statistics: String) =
+      Try {
+        graphWriter.writeGraph(triples.get, outputStream,
+          format, prefix2uriMap.asJava)
+        statistics + outputStream.toString()
+      }
     if (format != "ical") {
       val graphSize = triples.getOrElse(emptyGraph).size
         if (format === "jsonld")
           writeTryGraphBanana(triples, jsonldCompactedWriter, "")
-        else if (format === "rdfxml")
-          writeTryGraphBanana(triples, rdfXMLWriter, s"<!-- graph size ${graphSize} -->\n")
-        else if (format === ntMime ||
+        else if (format === "rdfxml") {
+          val statistics = s"<!-- graph size ${graphSize} -->\n"
+//          writeTryGraphBanana(triples, rdfXMLWriter, statistics)
+          doGraph2String( RDFFormat.RDFXML_PRETTY, statistics )
+        } else if (format === ntMime ||
           format === "ntriples" ||
           format === "n-triples")
           writeTryGraphBanana(triples, ntriplesWriter, "")
         else
-          // writeTryGraphBanana( triples, turtleWriter, s"# graph size ${graphSize}\n")
-          Try {
-            val outputStream = new ByteArrayOutputStream
-            graphWriter.writeGraph(triples.get, outputStream,
-              RDFFormat.TURTLE_PRETTY, prefix2uriMap.asJava)
-            s"# graph size ${graphSize}\n" +
-            outputStream.toString()
-          }
+          doGraph2String( RDFFormat.TURTLE_PRETTY, s"# graph size ${graphSize}\n" )
+//          Try {
+//            graphWriter.writeGraph(triples.get, outputStream,
+//              RDFFormat.TURTLE_PRETTY, prefix2uriMap.asJava)
+//            s"# graph size ${graphSize}\n" +
+//            outputStream.toString()
+//          }
     } else
       Try(graph2iCalendar(triples.get))
   }
