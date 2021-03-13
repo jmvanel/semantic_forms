@@ -192,24 +192,27 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
   
   /** No Transaction */
   def getETagFromDataset(uri: Rdf#URI, dataset: DATASET): String = {
+    logger.debug( s"getETagFromDataset($uri")
 	  val queryString = s"""
          |SELECT DISTINCT ?etag WHERE {
          |  GRAPH <$timestampGraphURI> {
-         |    <$uri> <ETag> ?etag .
+         |    <$uri> <urn:ETag> ?etag .
          |  }
          |}""".stripMargin
     val list = sparqlSelectQueryVariablesNT(queryString, Seq("etag"), ds=dataset )
     val v = list.headOption.getOrElse(Seq())
     val vv = v.headOption.getOrElse(Literal(""))
+    logger.debug( s"getETagFromDataset: '$vv'")
     nodeToString(vv)
   }
 
   /** No Transaction */
   def addETagToDatasetNoTransaction(uri: Rdf#URI, etag: String, dataset: DATASET) = {
+    logger.debug( s"addETagToDatasetNoTransaction: etag $etag" )
     replaceRDFTriple(
       makeTriple(
         uri,
-        makeUri("ETag"),
+        makeUri("urn:ETag"),
         makeLiteral( etag, xsd.string )),
       URI(timestampGraphURI),
       dataset)

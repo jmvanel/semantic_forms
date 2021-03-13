@@ -658,7 +658,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
             rowSeq
         }
         val results = resultsIterator.to[List]
-        logger.debug(s"""makeListofListsFromSolutions: after results : results
+        logger.trace(s"""makeListofListsFromSolutions: after results : results
           ${results.mkString(",\n\t")}""")
 
         if (addHeaderRow) {
