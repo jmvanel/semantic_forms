@@ -41,9 +41,15 @@ import com.apicatalog.jsonld.JsonLdOptions
 import com.apicatalog.jsonld.api.FromRdfApi
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.graph.Graph
+import java.io.ByteArrayOutputStream
 
 /** export GeoJSON (both plain GeoJSON & JSON-LD) from URI's having geographic data
  *  in given TDB database, or RDF graph
+ *  Steps:
+ *  - user SPARQL extracting geo: coordinates
+ *  - geo: to GeoJSONLD SPARQL
+ *  - JsonLD.fromRdf
+ *  - JsonLD.frame
  *  */
 object GeoJSONexport extends App with GeoJSONexportAPI {
   if( args.length < 1) {
@@ -53,42 +59,21 @@ object GeoJSONexport extends App with GeoJSONexportAPI {
   // Open TDB db
   val dataset = TDBFactory.createDataset(args(0))
 
-  // Take inspiration from this to generate geojson RDF
+  // Take inspiration from this to extract the geo: data
   // this SPARQL expects plain geo: coordinates
-  // Remove LIMIT 50 , and and add your own criteria in WHERE
+  // Remove LIMIT 25 , and add your own criteria in WHERE
   val defaultSPARQL = """
   PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
   PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-  PREFIX geojson: <https://purl.org/geojson/vocab#>
-  prefix xsd: <http://www.w3.org/2001/XMLSchema#>
   CONSTRUCT {
-
-    <urn:geojson> a geojson:FeatureCollection ;
-      geojson:features ?S .
-   
-    ?S a geojson:Feature ;
-         geojson:geometry ?point .
-      ?point a geojson:Point ;
-               geojson:coordinates ?coordinates .
-    ?coordinates # a rdf:List ;
-    rdf:first ?LONstring ; rdf:rest ?rest .
-    ?rest rdf:first ?LATstring ; rdf:rest rdf:nil .
-    ?S geojson:properties ?properties .
-    ?properties ?P ?O .
-    }
-  WHERE {
+      ?S geo:lat ?LAT .
+      ?S geo:long ?LON .
+      ?S ?P ?O .
+  } WHERE {
     GRAPH ?gr {
       ?S geo:lat ?LAT .
       ?S geo:long ?LON .
-      BIND( xsd:double(STR(?LAT)) AS ?LATstring)
-      BIND( xsd:double(STR(?LON)) AS ?LONstring)
-      BIND(BNODE() AS ?point)
-      BIND(BNODE() AS ?coordinates)
-      BIND(BNODE() AS ?rest)
-      BIND(BNODE() AS ?properties)
       ?S ?P ?O .
-      FILTER ( ?P != geo:lat )
-      FILTER ( ?P != geo:long )
     }
   } LIMIT 25
   """
@@ -145,6 +130,7 @@ object GeoJSONexport extends App with GeoJSONexportAPI {
   }
 }
 
+/** reusable trait for exporting GeoJSON from RDF Jena model */
 trait GeoJSONexportAPI {
   /**
    * RDF To JsonLD:
@@ -153,12 +139,16 @@ trait GeoJSONexportAPI {
    */
   def rdfModelToGeoJSON(
     model: Model
-  // graph: Graph
   ): JsonObject = {
     val nsPrefixMap = model.getNsPrefixMap()
-    val datasetGraph = DatasetFactory.wrap(model).asDatasetGraph()
+//      val output = new ByteArrayOutputStream
+//      model.write(output, "turtle")
+//      println( "User query result " + output.toString() )
+    val qexec = QueryExecutionFactory.create(geoToGeoJSONLD_SPARQL, model)
+    val geoJsonModel = qexec.execConstruct()
+    val datasetGraph = DatasetFactory.wrap(geoJsonModel).asDatasetGraph()
     val titaniumOut = rdfProvider.createDataset()
-    Jena2Titanium.populateDataset(model.getGraph, titaniumOut)
+    Jena2Titanium.populateDataset(geoJsonModel.getGraph, titaniumOut)
     rdfToJsonLD(titaniumOut, geojsonContext)
   }
 
@@ -215,35 +205,38 @@ trait GeoJSONexportAPI {
   PREFIX geojson: <https://purl.org/geojson/vocab#>
   prefix xsd: <http://www.w3.org/2001/XMLSchema#>
   CONSTRUCT {
-
     <urn:geojson> a geojson:FeatureCollection ;
       geojson:features ?S .
-   
     ?S a geojson:Feature ;
          geojson:geometry ?point .
-      ?point a geojson:Point ;
-               geojson:coordinates ?coordinates .
+    ?point a geojson:Point ;
+             geojson:coordinates ?coordinates .
     ?coordinates # a rdf:List ;
     rdf:first ?LONstring ; rdf:rest ?rest .
-    ?rest rdf:first ?LATstring ; rdf:rest rdf:nil .
+    ?rest  rdf:first ?LATstring ;
+           rdf:rest ?rest2 .
+    ?rest2 rdf:first ?ALTstring ;
+           rdf:rest rdf:nil .
     ?S geojson:properties ?properties .
     ?properties ?P ?O .
-    }
+  }
   WHERE {
-    GRAPH ?gr {
       ?S geo:lat ?LAT .
       ?S geo:long ?LON .
+      OPTIONAL {?S geo:alt ?ALT}
       BIND( xsd:double(STR(?LAT)) AS ?LATstring)
       BIND( xsd:double(STR(?LON)) AS ?LONstring)
+      BIND( xsd:double(STR(?ALT)) AS ?ALTstring)
       BIND(BNODE() AS ?point)
       BIND(BNODE() AS ?coordinates)
       BIND(BNODE() AS ?rest)
+      BIND(BNODE() AS ?rest2)
       BIND(BNODE() AS ?properties)
       ?S ?P ?O .
       FILTER ( ?P != geo:lat )
       FILTER ( ?P != geo:long )
-    }
-  } LIMIT 25
+      FILTER ( ?P != geo:alt )
+  }
   """
 
   val rdfProvider = DefaultRdfProvider.INSTANCE
