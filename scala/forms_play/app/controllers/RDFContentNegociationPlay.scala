@@ -15,6 +15,7 @@ extends AcceptExtractors {
   protected val AcceptsSPARQLresultsXML = Accepting("application/sparql-results+xml")
   protected val AcceptsICal = Accepting("text/calendar")
   protected val AcceptsCSV = Accepting("text/csv")
+  private val   AcceptsGeoJson = Accepting("application/geo+json")
 
   protected val turtle = AcceptsTTL.mimeType
 
@@ -28,7 +29,8 @@ extends AcceptExtractors {
 	    AcceptsSPARQLresults -> "json",
 	    AcceptsSPARQLresultsXML -> "xml",
 	    AcceptsICal -> "ical",
-	    AcceptsCSV-> "csv"
+	    AcceptsCSV -> "csv",
+	    AcceptsGeoJson -> AcceptsGeoJson.mimeType
 	 )
 
 	 val simpleString2mimeMap = mimeAbbrevs.map(_.swap)

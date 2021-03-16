@@ -299,27 +299,6 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     </p>
   }
 
-  /** SPARQL result
-   *
-   * @param format : "turtle" or "rdfxml" or "jsonld"
-   */
-  def sparqlConstructResult(query: String, lang: String,
-      format: String = "turtle",
-      context: Map[String,String] = Map()): Try[String] = {
-    logger.info("Global.sparql query  " + query)
-    if (query != "")
-      sparqlConstructQueryTR(query, format,
-          context + ("lang" -> lang))
-//      match {
-//        case Success(s) => Success(s)
-//        case Failure(f) => Failure(f)
-////          Failure( new Exception(
-////            if( format === "turtle")
-////              s"# $f" else "{error: \"" + f + "\" }" ))
-//      }
-    else  Success("# Empty query result !!!")
-  }
-
 /** Display result of a SPARQL select, plus a form to edit the SPARQL text */
   def selectSPARQL(query: String, request: HTTPrequest): NodeSeq = {
     logger.debug("sparql query  " + query)

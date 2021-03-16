@@ -203,13 +203,6 @@ with HTTPrequestHelpers
     if (query != "")
       sparqlConstructQueryTR(query, format,
           context + ("lang" -> lang))
-//      match {
-//        case Success(s) => Success(s)
-//        case Failure(f) => Failure(f)
-////          Failure( new Exception(
-////            if( format === "turtle")
-////              s"# $f" else "{error: \"" + f + "\" }" ))
-//      }
     else  Success("# Empty query result !!!")
   }
 

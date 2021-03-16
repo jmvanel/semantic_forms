@@ -29,6 +29,7 @@ trait RDFContentNegociation extends StringHelpers {
   val nqMime = "application/n-quads"
   val csvMIME = "text/csv"
   val trigMIME = "application/trig"
+  val geoJsonMIME = "application/geo+json"
 
   val htmlMime = "text/html"
 

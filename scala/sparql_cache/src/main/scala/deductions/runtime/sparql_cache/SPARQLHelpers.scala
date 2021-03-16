@@ -26,6 +26,7 @@ import org.w3.banana.io.NTriples
 import scala.collection.JavaConverters._
 import org.apache.jena.util.PrefixMappingUtils
 import org.apache.jena.riot.RDFFormat
+import org.apache.jena.rdf.model.ModelFactory
 
 /**
  * TODO separate stuff depending on dataset, and stuff taking a graph in argument
@@ -38,7 +39,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     with RDF2ICalendar[Rdf, DATASET]
     with Timer
     with RDFContentNegociation 
-    with SparqlSelectGeneric [Rdf, DATASET] {
+    with SparqlSelectGeneric [Rdf, DATASET]
+    with jmvanel.GeoJSONexportAPI {
 
   val config: Configuration
 
@@ -927,7 +929,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    *  then pass MIME type
    */
   def graph2String(triples: Try[Rdf#Graph], baseURI: String, format: String = "turtle"): Try[String] = {
-//    println( s""">>>> format $format
+    logger.debug( s""">>>> graph2String format '$format'""" )
 //        prefix2uriMap ${prefix2uriMap.mkString("\n")}""" )
     val outputStream = new ByteArrayOutputStream
     def doGraph2String(format: RDFFormat, statistics: String) =
@@ -938,24 +940,22 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       }
     if (format != "ical") {
       val graphSize = triples.getOrElse(emptyGraph).size
-        if (format === "jsonld")
-          writeTryGraphBanana(triples, jsonldCompactedWriter, "")
-        else if (format === "rdfxml") {
-          val statistics = s"<!-- graph size ${graphSize} -->\n"
-//          writeTryGraphBanana(triples, rdfXMLWriter, statistics)
-          doGraph2String( RDFFormat.RDFXML_PRETTY, statistics )
-        } else if (format === ntMime ||
-          format === "ntriples" ||
-          format === "n-triples")
-          writeTryGraphBanana(triples, ntriplesWriter, "")
-        else
-          doGraph2String( RDFFormat.TURTLE_PRETTY, s"# graph size ${graphSize}\n" )
-//          Try {
-//            graphWriter.writeGraph(triples.get, outputStream,
-//              RDFFormat.TURTLE_PRETTY, prefix2uriMap.asJava)
-//            s"# graph size ${graphSize}\n" +
-//            outputStream.toString()
-//          }
+      if (format === "jsonld")
+        writeTryGraphBanana(triples, jsonldCompactedWriter, "")
+      else if (format === "rdfxml") {
+        val statistics = s"<!-- graph size ${graphSize} -->\n"
+        doGraph2String(RDFFormat.RDFXML_PRETTY, statistics)
+      } else if (format === ntMime ||
+        format === "ntriples" ||
+        format === "n-triples")
+        writeTryGraphBanana(triples, ntriplesWriter, "")
+      else if (format === geoJsonMIME ||
+        format === "geojson") {
+        val gr: org.apache.jena.graph.Graph = triples.get.asInstanceOf[org.apache.jena.graph.Graph]
+        Success(rdfModelToGeoJSONstring(
+          ModelFactory.createModelForGraph(gr)))
+      } else
+        doGraph2String(RDFFormat.TURTLE_PRETTY, s"# graph size ${graphSize}\n")
     } else
       Try(graph2iCalendar(triples.get))
   }

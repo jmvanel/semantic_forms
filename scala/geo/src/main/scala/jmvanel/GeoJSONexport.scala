@@ -42,6 +42,7 @@ import com.apicatalog.jsonld.api.FromRdfApi
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.graph.Graph
 import java.io.ByteArrayOutputStream
+import java.io.Writer
 
 /** export GeoJSON (both plain GeoJSON & JSON-LD) from URI's having geographic data
  *  in given TDB database, or RDF graph
@@ -87,34 +88,24 @@ object GeoJSONexport extends App with GeoJSONexportAPI {
   val qexec = QueryExecutionFactory.create(queryString, dataset)
   val resultModel = qexec.execConstruct()
 
- val jsonObject = rdfModelToGeoJSON( resultModel )
+  // val jsonObject = rdfModelToGeoJSON( resultModel )
 
   // write JsonObject
   val fileName = "out.geojson"
-  val fw = new FileWriter(fileName)
-  val writerFactory = makeWriterFactory
-  val jsonWriter = writerFactory.createWriter(fw)
-  jsonWriter.writeObject(jsonObject)
-  jsonWriter.close()
+  val fw  : Writer = new FileWriter(fileName)
+  rdfModelToGeoJSONwriter( resultModel, fw )
   println( s"GeoJSON $fileName written")
 
 
-
-  /** cf http://www.mastertheboss.com/javaee/json/how-to-pretty-print-a-jsonobject-using-jakarta-ee-api */
-  def makeWriterFactory(): JsonWriterFactory = {
-    val jsonWriterProperties = new java.util.HashMap[String, Any](1)
-    jsonWriterProperties.put(JsonGenerator.PRETTY_PRINTING, true)
-    Json.createWriterFactory(jsonWriterProperties)
-  }
-  def printJsonArray(jsa: JsonArray) {
-    val sw = new StringWriter()
-    val writerFactory = makeWriterFactory()
-    val jsonWriter = writerFactory.createWriter(sw)
-    jsonWriter.writeArray(jsa)
-    jsonWriter.close()
-    sw.close()
-    println(sw.toString())
-  }
+//  def printJsonArray(jsa: JsonArray) {
+//    val sw = new StringWriter()
+//    val writerFactory = makeWriterFactory()
+//    val jsonWriter = writerFactory.createWriter(sw)
+//    jsonWriter.writeArray(jsa)
+//    jsonWriter.close()
+//    sw.close()
+//    println(sw.toString())
+//  }
 
   def printTitanium(titanium: RdfDataset) {
     println("======== titaniumOut =========")
@@ -132,6 +123,25 @@ object GeoJSONexport extends App with GeoJSONexportAPI {
 
 /** reusable trait for exporting GeoJSON from RDF Jena model */
 trait GeoJSONexportAPI {
+
+  def rdfModelToGeoJSONwriter(
+    model: Model,
+    wr:    Writer): Unit = {
+    val jsonObject = rdfModelToGeoJSON(model)
+    val writerFactory = makeWriterFactory
+    val jsonWriter = writerFactory.createWriter(wr)
+    jsonWriter.writeObject(jsonObject)
+    jsonWriter.close()
+  }
+
+  def rdfModelToGeoJSONstring(
+    model: Model
+  ): String = {
+    val sw = new StringWriter()
+    rdfModelToGeoJSONwriter(model, sw)
+    sw.toString()
+  }
+
   /**
    * RDF To JsonLD:
    *  1) fromRdf
@@ -264,5 +274,12 @@ trait GeoJSONexportAPI {
       JsonDocument.of(fromRdf.get), contextDocument)
         .options(frameOptions)
         .get
+  }
+
+  /** cf http://www.mastertheboss.com/javaee/json/how-to-pretty-print-a-jsonobject-using-jakarta-ee-api */
+  private def makeWriterFactory(): JsonWriterFactory = {
+    val jsonWriterProperties = new java.util.HashMap[String, Any](1)
+    jsonWriterProperties.put(JsonGenerator.PRETTY_PRINTING, true)
+    Json.createWriterFactory(jsonWriterProperties)
   }
 }
