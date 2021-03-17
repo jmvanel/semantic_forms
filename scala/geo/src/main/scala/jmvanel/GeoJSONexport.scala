@@ -97,16 +97,6 @@ object GeoJSONexport extends App with GeoJSONexportAPI {
   println( s"GeoJSON $fileName written")
 
 
-//  def printJsonArray(jsa: JsonArray) {
-//    val sw = new StringWriter()
-//    val writerFactory = makeWriterFactory()
-//    val jsonWriter = writerFactory.createWriter(sw)
-//    jsonWriter.writeArray(jsa)
-//    jsonWriter.close()
-//    sw.close()
-//    println(sw.toString())
-//  }
-
   def printTitanium(titanium: RdfDataset) {
     println("======== titaniumOut =========")
     println(titanium.toList().asScala.
@@ -199,7 +189,7 @@ trait GeoJSONexportAPI {
   "@type": "FeatureCollection"
 }"""
 
-  val frameOptions = {
+  lazy val frameOptions = {
     val frameOptions = new JsonLdOptions()
     frameOptions.setUseNativeTypes(true)
     frameOptions.setOmitGraph(true)
@@ -242,7 +232,7 @@ trait GeoJSONexportAPI {
       BIND(BNODE() AS ?rest)
       BIND(BNODE() AS ?rest2)
       BIND(BNODE() AS ?properties)
-      ?S ?P ?O .
+      OPTIONAL { ?S ?P ?O . }
       FILTER ( ?P != geo:lat )
       FILTER ( ?P != geo:long )
       FILTER ( ?P != geo:alt )
@@ -267,7 +257,7 @@ trait GeoJSONexportAPI {
       JsonLd.fromRdf(
         RdfDocument.of(titaniumDS) ).options(frameOptions)
 
-//    println( "TEST intermediate result")
+//    println( "TEST intermediate result after JsonLd.fromRdf")
 //    printJsonArray(fromRdf . get) // OK: blank nodes as @list
 
     JsonLd.frame(
@@ -281,5 +271,15 @@ trait GeoJSONexportAPI {
     val jsonWriterProperties = new java.util.HashMap[String, Any](1)
     jsonWriterProperties.put(JsonGenerator.PRETTY_PRINTING, true)
     Json.createWriterFactory(jsonWriterProperties)
+  }
+
+  private def printJsonArray(jsa: JsonArray) {
+    val sw = new StringWriter()
+    val writerFactory = makeWriterFactory()
+    val jsonWriter = writerFactory.createWriter(sw)
+    jsonWriter.writeArray(jsa)
+    jsonWriter.close()
+    sw.close()
+    println(sw.toString())
   }
 }

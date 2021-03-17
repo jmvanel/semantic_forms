@@ -27,6 +27,9 @@ import scala.collection.JavaConverters._
 import org.apache.jena.util.PrefixMappingUtils
 import org.apache.jena.riot.RDFFormat
 import org.apache.jena.rdf.model.ModelFactory
+import deductions.runtime.core.HTTPrequest
+import org.apache.jena.riot.RDFLanguages
+import org.apache.jena.riot.RDFWriterRegistry
 
 /**
  * TODO separate stuff depending on dataset, and stuff taking a graph in argument
@@ -251,13 +254,13 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   /**
    * transactional, output Turtle String
    *  @param format = "turtle" or "rdfxml" or "jsonld"
-   *  TODO add arg. request: HTTPrequest , to set base URI
+   *  with arg. request: HTTPrequest , TODO set base URI
    */
-  def sparqlConstructQueryTR(queryString: String, format: String = "turtle",
+  def sparqlConstructQueryTR(queryString: String, request: HTTPrequest, format: String = "turtle",
                              context: Map[String, String] = Map()): Try[String] = {
     val transaction = rdfStore.r(dataset, {
       graph2String(
-        sparqlConstructQuery(queryString, context=context),
+        sparqlConstructQuery(queryString, context=context), request,
         "", format)
     })
     transaction .flatten
@@ -925,12 +928,18 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
   /**
    * RDF graph to String
    *  @param format "turtle" or "rdfxml" or "jsonld" or ntMime = "application/n-triples"
+   *  TODO nothing to do with SPARQL; move to other trait called GraphFormatter
    *  TODO REFACTOR, use conneg helper RDFContentNegociation (use MIME types directly)
    *  then pass MIME type
    */
-  def graph2String(triples: Try[Rdf#Graph], baseURI: String, format: String = "turtle"): Try[String] = {
-    logger.debug( s""">>>> graph2String format '$format'""" )
+  def graph2String(triples: Try[Rdf#Graph],
+      request: HTTPrequest,
+      baseURI: String, format: String = "turtle"): Try[String] = {
+    val formatFromURL = request.getHTTPparameterValue("format").getOrElse("")
+    logger.debug( s""">>>> graph2String format from HTTP header: '$format'
+      formatFromURL (priority) '$formatFromURL'""" )
 //        prefix2uriMap ${prefix2uriMap.mkString("\n")}""" )
+
     val outputStream = new ByteArrayOutputStream
     def doGraph2String(format: RDFFormat, statistics: String) =
       Try {
@@ -938,6 +947,12 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
           format, prefix2uriMap.asJava)
         statistics + outputStream.toString()
       }
+    def writeGeoJSON(triples: Try[Rdf#Graph]) = {
+      val gr: org.apache.jena.graph.Graph = triples.get.asInstanceOf[org.apache.jena.graph.Graph]
+      Success(rdfModelToGeoJSONstring(
+        ModelFactory.createModelForGraph(gr)))
+    }
+    if (formatFromURL === "" )
     if (format != "ical") {
       val graphSize = triples.getOrElse(emptyGraph).size
       if (format === "jsonld")
@@ -951,13 +966,21 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         writeTryGraphBanana(triples, ntriplesWriter, "")
       else if (format === geoJsonMIME ||
         format === "geojson") {
-        val gr: org.apache.jena.graph.Graph = triples.get.asInstanceOf[org.apache.jena.graph.Graph]
-        Success(rdfModelToGeoJSONstring(
-          ModelFactory.createModelForGraph(gr)))
+        writeGeoJSON(triples)
       } else
         doGraph2String(RDFFormat.TURTLE_PRETTY, s"# graph size ${graphSize}\n")
     } else
       Try(graph2iCalendar(triples.get))
+    else {
+      if( formatFromURL === geoJsonMIME)
+        writeGeoJSON(triples)
+      else {
+      val jenaLang = RDFLanguages.contentTypeToLang(formatFromURL)
+      logger.debug(s"formatFromURL $formatFromURL, jenaLang $jenaLang ; defaultSerialization ${RDFWriterRegistry.defaultSerialization(jenaLang)}")
+      doGraph2String(
+          RDFWriterRegistry.defaultSerialization(jenaLang), "")
+      }
+    }
   }
 
   private def writeTryGraphBanana(

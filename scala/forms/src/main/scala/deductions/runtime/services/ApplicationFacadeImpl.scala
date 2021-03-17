@@ -284,8 +284,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
         {
 //          try {
           if( query != "" )
-            // TODO add arg. request: HTTPrequest , to set base URI
-            sparqlConstructQueryTR(query, context=context)
+            sparqlConstructQueryTR(query, request: HTTPrequest, context=context)
         		  match {
         		    case Success(str) => str
         		    case Failure(f) => f.getLocalizedMessage

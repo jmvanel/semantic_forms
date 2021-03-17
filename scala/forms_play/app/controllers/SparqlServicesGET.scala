@@ -168,8 +168,7 @@ with HTTPrequestHelpers
     val result = if (isSelect)
       sparqlSelectConneg(query, resultFormat, dataset, context)
     else {
-      sparqlConstructResult(query,
-          lang=httpRequest.getLanguage(),
+      sparqlConstructResult(query, httpRequest,
           resultFormat,
           if( httpRequest.getHTTPparameterValue("enrich").isDefined )
             context + ("enrich" -> "true")
@@ -196,12 +195,14 @@ with HTTPrequestHelpers
   /** SPARQL result
    * @param format : "turtle" or "rdfxml" or "jsonld"
    */
-  def sparqlConstructResult(query: String, lang: String,
+  private def sparqlConstructResult(query: String,
+      httpRequest: HTTPrequest,
       format: String = "turtle",
       context: Map[String,String] = Map()): Try[String] = {
     logger.info("Global.sparql query  " + query)
+    val lang = httpRequest.getLanguage()
     if (query != "")
-      sparqlConstructQueryTR(query, format,
+      sparqlConstructQueryTR(query, httpRequest, format,
           context + ("lang" -> lang))
     else  Success("# Empty query result !!!")
   }

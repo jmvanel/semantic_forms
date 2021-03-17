@@ -15,6 +15,7 @@ import scala.util.{Failure, Success, Try}
 
 import scalaz._
 import Scalaz._
+import deductions.runtime.core.HTTPrequest
 
 /**
  * merge Duplicates among instances of given class URI;
@@ -593,7 +594,7 @@ type MergeGroups = Seq[MergeGroup]
     WHERE {
       GRAPH ?GR { ?S ?P ?O }
     } """
-    val tryTTL = sparqlConstructQueryTR(queryString)
+    val tryTTL = sparqlConstructQueryTR(queryString, HTTPrequest() )
     tryTTL match {
       case Success(ttl) =>
         val outputFile = outputDir + File.separator + new File(file).getName + suffix

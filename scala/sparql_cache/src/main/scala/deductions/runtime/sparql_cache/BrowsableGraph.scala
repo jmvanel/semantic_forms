@@ -7,6 +7,7 @@ import org.w3.banana.io.{RDFWriter, Turtle}
 import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
+import deductions.runtime.core.HTTPrequest
 
 /**
  * Browsable Graph implementation, in the sense of
@@ -78,7 +79,7 @@ trait BrowsableGraph[Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rdf, DAT
         else
           "jsonld"
 
-      graph2String(transaction.get, uri, format=format) match {
+      graph2String(transaction.get, HTTPrequest(), uri, format=format) match {
         case Success(s) => s
         case Failure(f) => f.getLocalizedMessage
       }

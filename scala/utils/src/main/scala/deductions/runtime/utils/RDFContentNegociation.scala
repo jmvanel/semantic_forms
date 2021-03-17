@@ -42,10 +42,24 @@ trait RDFContentNegociation extends StringHelpers {
       "nt" ->  ntMime,
       "nq" ->  nqMime,
       "csv" ->  csvMIME,
-      "trig" -> trigMIME
+      "trig" -> trigMIME,
+      "GeoJson" -> geoJsonMIME
   )
 
   val mimeToExtension = extensionToMime.map(_.swap)
+
+  lazy val htmlSelectForRDFmime =
+    <div>
+      <label for="format">format</label>
+      <select name="format">
+        <option value="">-- choose</option>
+        {
+        for ((extension, mime) <- extensionToMime) yield {
+          // println( s"$extension - $mime" )
+          <option value={ mime }>{ s"$extension - $mime" }</option>
+        }
+      }</select>
+    </div>
 
   /** order of arguments is historical order of RDF syntaxes;
    *  default is Turtle;

@@ -174,6 +174,7 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
              {paragraphsViewInput(request)} ++
              {formOnlyViewInput(request)}
           }
+          { htmlSelectForRDFmime }
         </div>
       </div>
     </form>
