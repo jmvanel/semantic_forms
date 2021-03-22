@@ -65,18 +65,27 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
     /* NOTE : now we store actual URI in TDB3:
      * <user:jmvanel> <urn:password> "4124BC0A9335C27F" <urn:users> .
      * but old accounts are stored like this :( :
-     * <jmvanel> <urn:password> "4124BC0A9335C27F" <urn:users> .*/
+     * <jmvanel> <urn:password> "4124BC0A9335C27F" <urn:users> .
+     * so we try both forms for compatibility with old accounts */
+     */
     val userURI = URI(makeAbsoluteURIstringForSaving(userid))
-    val passwordDigestsForUser = rdfStore.r( dataset3, {
-      println1( s"""findPassword: passwordsGraph:
+    def doFindPassword(userURI: Rdf#URI) = {
+      val passwordDigestsForUser = rdfStore.r(dataset3, {
+        println1(s"""findPassword: passwordsGraph:
         $passwordsGraph
         Query:
-        <$userURI> <$passwordPred> ?DIGEST_FOR_PASSWORD)""" )
-      find( makeIGraph(passwordsGraph), userURI, passwordPred, ANY)
-      .toList
-    }).get
-
-    println1( s"findPassword: passwordDigestsForUser $passwordDigestsForUser" )
+        <$userURI> <$passwordPred> ?DIGEST_FOR_PASSWORD)""")
+        find(makeIGraph(passwordsGraph), userURI, passwordPred, ANY)
+          .toList
+      }).get
+      println1(s"findPassword: passwordDigestsForUser '$userid' '$passwordDigestsForUser'")
+      passwordDigestsForUser
+    }
+    val passwordDigestsForUser0 = doFindPassword(userURI)
+    val passwordDigestsForUser = if (passwordDigestsForUser0.size > 0)
+      passwordDigestsForUser0
+    else
+      doFindPassword(URI(userid))
 
     if (passwordDigestsForUser.size > 0) {
       val databasePasswordNode = passwordDigestsForUser(0).objectt
