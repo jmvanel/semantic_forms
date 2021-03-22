@@ -112,8 +112,14 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
           }
       }
     }
-    val ret = result.map { x => x.next.longValue() }
-    logger.debug(s"getTimestampFromDataset: URI <$uri> result: $ret")
+    val ret = result.map { x =>
+      logger.debug(s"getTimestampFromDataset x $x getClass ${x.getClass}")
+      if( x.hasNext )
+        x.next.longValue()
+      else
+        0L
+      }
+    logger.debug(s"getTimestampFromDataset: URI <$uri> result: '$ret'")
     ret
   }
   
