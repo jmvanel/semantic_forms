@@ -39,7 +39,7 @@ trait RegisterPage[Rdf <: RDF, DATASET]
       ): NodeSeq = {
 
     val lang: String = request.getLanguage()
-    val absoluteURIForUserid = makeAbsoluteURIForSaving(userid)
+    val absoluteURIForUserid = makeAbsoluteURIstringForSaving(userid)
 // 	  println( s">>>> displayUser userid $userid, absoluteURIForUserid $absoluteURIForUserid" )
     <div class="userInfo"> {
       if (needLogin) {

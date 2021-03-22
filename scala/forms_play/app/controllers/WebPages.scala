@@ -357,7 +357,7 @@ with ApplicationTrait
             logger.debug(s"displayURI: expandOrUnchanged <$uri>")
             val userInfo = displayUser(userid, request)
             htmlForm(uri, blanknode, editable = Edit  =/=  "", formuri,
-              graphURI = makeAbsoluteURIForSaving(userid),
+              graphURI = makeAbsoluteURIstringForSaving(userid),
               request = request)._1
           }
         }
@@ -412,7 +412,7 @@ with ApplicationTrait
         <form> {
             <input name="query" type="hidden" value={ query }></input> ++
               <input name="edit" type="hidden" value="yes"></input> ++
-              <input type="hidden" name="graphURI" value={ makeAbsoluteURIForSaving(request.userId()) }/> ++
+              <input type="hidden" name="graphURI" value={ makeAbsoluteURIstringForSaving(request.userId()) }/> ++
               {
                 if (isEditableFromRequest(request))
                   submitButton
@@ -618,7 +618,7 @@ with ApplicationTrait
             userid $userid""")
           val content = htmlForm(
             uri, editable = true,
-            graphURI = makeAbsoluteURIForSaving(userid),
+            graphURI = makeAbsoluteURIstringForSaving(userid),
             request = httpRequest )._1
           httpWrapper(
             UserRolesModes.applyAppUserMode(httpRequest,
@@ -644,7 +644,7 @@ with ApplicationTrait
         logger.debug(s"""ApplicationTrait.saveOnly: class ${request.body.getClass},
               request $httpRequest""")
         val (uri, typeChanges) = saveOnly(
-          httpRequest, userid, graphURI = makeAbsoluteURIForSaving(userid))
+          httpRequest, userid, graphURI = makeAbsoluteURIstringForSaving(userid))
         logger.info(s"saveAction: uri <$uri>, typeChanges=$typeChanges")
         val saveAfterCreate = httpRequest.getHTTPheaderValue("Referer").filter(_.contains("/create?")).isDefined
         val edit = typeChanges && !saveAfterCreate
@@ -695,7 +695,7 @@ with ApplicationTrait
           val lang = chooseLanguage(request)
           outputMainPage(
             create(uri,
-              formSpecURI, makeAbsoluteURIForSaving(userid), httpRequest).getOrElse(<div/>),
+              formSpecURI, makeAbsoluteURIstringForSaving(userid), httpRequest).getOrElse(<div/>),
             userInfo = displayUser(userid, httpRequest), classForContent="" )
         }),
         (t: Throwable) =>

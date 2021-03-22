@@ -13,6 +13,7 @@ import scala.util.{Success, Try, Failure}
 
 import scalaz._
 import Scalaz._
+import scala.util.Failure
 
 /** SF compares the document timestamp from HTTP header e.g. :
   Last-Modified: Fri, 26 Jan 2018 11:12:18 GMT
@@ -139,6 +140,7 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
      * // Otherwise an exception may be thrown on invalid SSL certificates.
      */
     try {
+      if( ! isDownloadableURL(url) ) return (true, 0L, Failure(null) )
       val connection0 = new URL(url).openConnection()
       connection0 match {
         case connection: HttpURLConnection if( ! url.startsWith("file:/") ) =>

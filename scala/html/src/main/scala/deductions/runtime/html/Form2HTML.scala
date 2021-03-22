@@ -424,7 +424,7 @@ trait Form2HTML[NODE, URI <: NODE]
   }
 
   private def userURI(request: HTTPrequest): String = {
-    makeAbsoluteURIForSaving(request.userId())
+    makeAbsoluteURIstringForSaving(request.userId())
   }
 }
 

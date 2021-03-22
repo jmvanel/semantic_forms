@@ -47,6 +47,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
    *  and having a password triple in dedicated Authentication database.
    */
   def findUser(loginName: String): Option[String] = {
+    println1(s">>>> findUser loginName $loginName")
     val databasePasswordOption = findPassword(loginName)
     databasePasswordOption match {
       case Some(databasePassword) => Some(loginName)
@@ -61,8 +62,11 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
 
   /** query for (digest) password in dedicated Authentication database */
   private def findPassword(userid: String): Option[(String)] = {
-    val userURI = URI(userid)
-
+    /* NOTE : now we store actual URI in TDB3:
+     * <user:jmvanel> <urn:password> "4124BC0A9335C27F" <urn:users> .
+     * but old accounts are stored like this :( :
+     * <jmvanel> <urn:password> "4124BC0A9335C27F" <urn:users> .*/
+    val userURI = URI(makeAbsoluteURIstringForSaving(userid))
     val passwordDigestsForUser = rdfStore.r( dataset3, {
       println1( s"""findPassword: passwordsGraph:
         $passwordsGraph
@@ -124,33 +128,28 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
   }
 
   /**
-   * record password in database; @return user Id if success
+   * record password for user URI in database; @return user Id if success;
    * store hash, not password;
    * remove existing password;
    * password and user name quality have already been checked,
    * check already existing account: only user can modify password
+   * @param agentURI user ID as entered by user: URI, or else will be converted in URI part
    */
   def signin(agentURI: String, password: String): Try[String] = {
-    println1(s"""Authentication.signin: userId "$agentURI"""")
+    println1(s"""Authentication.signin: userId '$agentURI'""")
+    val absoluteURIstringForSaving = makeAbsoluteURIstringForSaving(agentURI)
+    val absoluteURIForSaving = URI(absoluteURIstringForSaving )
 
-    // TODO ? probably use absoluteURIForSaving instead of userUri everywhere
-    val userUri = agentURI //  makeURIPartFromString(agentURI)
-    val absoluteURIForSaving = URI(makeAbsoluteURIForSaving(userUri))
-
-    /* NOTE: here we are putting password triple in named graph <userUri>,
-     * which is generally a NON absolute URI;
-     * but the passwords graph and database is probably only accessed by API (never by SPARQL),
-     * so this is not a problem */
     val resultStorePassword = rdfStore.rw( dataset3, {
       val mGraph = passwordsGraph
-      val existingTriplesToRemove = find( makeIGraph(mGraph), URI(userUri), passwordPred, ANY ).toList
-      mGraph += makeTriple(URI(userUri), passwordPred,
+      val existingTriplesToRemove = find( makeIGraph(mGraph), absoluteURIForSaving, passwordPred, ANY ).toList
+      removeTriples(mGraph, existingTriplesToRemove)
+      mGraph += makeTriple(absoluteURIForSaving, passwordPred,
         makeLiteral(hashPassword(password), xsd.string))
       logger.debug(s"signin(agentURI=$agentURI) existingTriplesToRemove \n${existingTriplesToRemove.mkString("\n")}")
-      removeTriples(mGraph, existingTriplesToRemove)
-      userUri
+      absoluteURIstringForSaving
     })
-    println1(s"""Authentication.signin: resultStorePassword "$resultStorePassword"""")
+    println1(s"""Authentication.signin: resultStorePassword '$resultStorePassword'""")
 
     // annotate the user graph URI as a foaf:OnlineAccount
     val res2OnlineAccount = rdfStore.rw(dataset, {
@@ -160,7 +159,7 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
           )
       val newGraphForUser: Rdf#Graph = makeGraph(newTripleForUser)
       rdfStore.appendToGraph( dataset, absoluteURIForSaving, newGraphForUser)
-      userUri
+      absoluteURIstringForSaving
     })
     println1(s"""Authentication.signin: result user graph URI as OnlineAccount : '"$res2OnlineAccount'"""")
     resultStorePassword

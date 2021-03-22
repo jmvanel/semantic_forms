@@ -24,6 +24,14 @@ trait URIManagement extends URIHelpers {
     makeId(instanceURIPrefix(request))
   }
 
+  /** take care of spaces, then
+   * make URI From String, if not already an absolute URI,
+   */
+  def makeAbsoluteURIstringForSaving(agentURIOrString: String) = {
+    val userUri = if(isCorrectURI(agentURIOrString)) agentURIOrString else makeURIPartFromString(agentURIOrString)
+    makeAbsoluteURIForSaving(userUri)
+  }
+
   /**
    * make URI From String, if not already an absolute URI,
    *  by prepending instance URI Prefix and URL Encoding
@@ -63,7 +71,7 @@ trait URIManagement extends URIHelpers {
 
   /**
    * make Absolute URI For Saving in user named graph:
-   *  add URI scheme mailto or user, if not already absolute
+   * add URI scheme mailto or user, if not already absolute
    */
   def makeAbsoluteURIForSaving(userid: String): String = {
     try {
@@ -79,6 +87,7 @@ trait URIManagement extends URIHelpers {
     } catch {
       case t: Throwable =>
         System.err.println(s"makeAbsoluteURIForSaving: userid '$userid' : ${t.getLocalizedMessage}")
+//        Thread.dumpStack()
         "error:error"
     }
   }

@@ -145,7 +145,7 @@ extends BaseController
           formMap ${httpRequest.formMap}""")
       else
         logger.info( s"""authenticate: httpRequest host ${httpRequest.host}
-          userFromSession $userFromSession""")
+          userFromSession '$userFromSession'""")
 
       val (useridOption, passwordOption, confirmPasswordOption)
         = decodeResponse(httpRequest)
@@ -185,6 +185,7 @@ extends BaseController
 
       } else {
 //        Redirect(Call("GET", s"/login?message=$message"))
+        logger.debug(s"Login failed for user '$useridOption'  Redirect /login")
         Redirect(Call("GET", "/login"))
         //         makeBadRequest( <div>login NOT Checked</div> )
       }

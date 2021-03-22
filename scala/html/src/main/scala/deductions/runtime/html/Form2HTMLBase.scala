@@ -177,7 +177,7 @@ private[html] trait Form2HTMLBase[NODE, URI <: NODE]
         {
           <a style="text-decoration: underline" tabindex="-1" href={
             hrefDisplayPrefix +
-              makeAbsoluteURIForSaving(userMetadata) }>{ userMetadata }</a>
+              makeAbsoluteURIstringForSaving(userMetadata) }>{ userMetadata }</a>
         }&nbsp;{ message("on_date", lang) }&nbsp;{ time }
       </span>
     }

@@ -18,7 +18,7 @@ trait UserQueries[Rdf <: RDF, DATASET] extends SPARQLHelpers[Rdf, DATASET]
 
   /** get foaf:Person From user Id (non URI), NON transactional */
   def getPersonFromAccount(userId: String): Rdf#Node = {
-    val absoluteURIForUserid = makeAbsoluteURIForSaving(userId)
+    val absoluteURIForUserid = makeAbsoluteURIstringForSaving(userId)
     val queryString = s"""
       ${declarePrefix(foaf)}
       SELECT ?PERSON
