@@ -67,7 +67,6 @@ trait Authentication[Rdf <: RDF, DATASET] extends RDFCacheAlgo[Rdf, DATASET]
      * but old accounts are stored like this :( :
      * <jmvanel> <urn:password> "4124BC0A9335C27F" <urn:users> .
      * so we try both forms for compatibility with old accounts */
-     */
     val userURI = URI(makeAbsoluteURIstringForSaving(userid))
     def doFindPassword(userURI: Rdf#URI) = {
       val passwordDigestsForUser = rdfStore.r(dataset3, {

@@ -197,10 +197,10 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     logger.debug(s"compute displayLabel for <$node>")
     if (node.toString() === "") return ""
 
-    val label = super.makeInstanceLabel(node, graph, lang)
-    logger.debug(s"computeInstanceLabeAndStoreInTDB: $node , computed label '$label'")
+    val labelFromNode = super.makeInstanceLabel(node, graph, lang)
+    logger.debug(s"computeInstanceLabeAndStoreInTDB: $node , computed label '$labelFromNode'")
     val label2 =
-      if (label === "" || isLabelLikeURI(node: Rdf#Node, label)) {
+      if (labelFromNode === "" || isLabelLikeURI(node: Rdf#Node, labelFromNode)) {
         val labelFromLabelProperty = instanceLabelFromLabelProperty(node)
         logger.debug(s"computeInstanceLabeAndStoreInTDB: $node labelFromLabelProperty $labelFromLabelProperty")
         labelFromLabelProperty match {
@@ -209,9 +209,9 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
               uri => makeInstanceLabel(uri, graph, lang),
               bn => makeInstanceLabel(node, graph, lang),
               lit => fromLiteral(lit)._1)
-          case _ => label
+          case _ => labelFromNode
         }
-      } else label
+      } else labelFromNode
     storeInstanceLabel(node, label2, graph, lang)
     label2
   }

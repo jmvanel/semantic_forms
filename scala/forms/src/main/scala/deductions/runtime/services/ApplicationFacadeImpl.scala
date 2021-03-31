@@ -109,11 +109,14 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   def labelForURITransaction(uri: String, language: String)
   : String = {
 //    logger.info( s"labelForURITransaction $uri, $language"  )
-    val res = rdfStore.rw(dataset, {
+    val tried = rdfStore.rw(dataset, {
       makeInstanceLabel(URI(uri), allNamedGraph, language)
-    }).getOrElse(uri)
-//    logger.info( s"result $res"  )
-    res
+    })
+    tried match {
+      case Success(s) => logger.info( s"labelForURI tried '$tried'" )
+      case Failure(s) => logger.error( s"labelForURI tried '$tried'" )
+    }
+    tried.getOrElse(uri)
   }
 
   //    def displayURI2(uriSubject: String) //  : Enumerator[scala.xml.Elem]
