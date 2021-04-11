@@ -15,7 +15,7 @@ function prepareCompletionLucene( userString ) {
   var stringToSearch = userString
   var words = stringToSearch .split(' ')
   if( words . length > 1 )
-    stringToSearch = encodeURIComponent( words[0] + '+AND+' +  words[1] )
+    stringToSearch = encodeURIComponent( words[0] + ' AND ' +  words[1] )
   return stringToSearch
 }
 
