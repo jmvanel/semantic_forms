@@ -43,19 +43,21 @@ trait StringSearchSPARQLBase[Rdf <: RDF]
 
   private def classCriterium(classe: String, unionGraph: Boolean = false): String = {
     logger.debug(s"""classCriterium: class( "${classe}" )""")
+    val expandedClass = expandOrUnchanged(classe)
+    val noUseOfClassCriterium = classe === "" || expandedClass === "http://www.w3.org/2000/01/rdf-schema#Resource"
     if (unionGraph)
-      if (classe === "")
+      if ( noUseOfClassCriterium )
         "  ?thing a ?CLASS ."
       else
         s"""|  ?thing a ?sub .
-            |  ?sub rdfs:subClassOf* <${expandOrUnchanged(classe)}> .""".stripMargin
-    else if (classe === "")
+            |  ?sub rdfs:subClassOf* <${expandedClass}> .""".stripMargin
+    else if ( noUseOfClassCriterium)
       "graph ?g1 { ?thing a ?CLASS . }"
     else
       s"""|
-         | graph ?g1 {
-         |   ?thing a <${expandOrUnchanged(classe)}> .
-         | }""".stripMargin
+          | graph ?g1 {
+          |   ?thing a <${expandedClass}> .
+          | }""".stripMargin
   }
 
   private def themeCriterium(theme: String, unionGraph: Boolean = false): String = {
