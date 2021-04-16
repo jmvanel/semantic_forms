@@ -7,7 +7,8 @@ object Common {
     val bananaResolver = "bblfish-snapshots" at "http://bblfish.net/work/repo/releases"
 
 // val jenaVersion =  "3.16.0"
-val jenaVersion =  "3.17.0"
+// val jenaVersion =  "3.17.0"
+val jenaVersion =  "4.0.0"
 // val jenaVersion =  "3.18.0-SNAPSHOT"
 
 val akkaVersion =  // "2.5.26" // because of Play 2.6.25
@@ -61,7 +62,9 @@ val commonsCsvVersion = "1.8"
     loggingDependencies ++
     jsonDependencies ++
     Seq(bananaDependency,
-	jenaDependency, jenaPermissionsDependency, jenaTextDependency,
+	jenaDependency, 
+        // jenaPermissionsDependency,
+        jenaTextDependency,
     jenaSpatialDependency,
     xmlDependency,
     junitDependency, scalatestDependency,

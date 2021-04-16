@@ -36,10 +36,10 @@ trait GraphWriterPrefixMap {
 
   class PrefixMapImpl( prefixMap: Map[String, String] ) extends PrefixMapBase {
           def getMapping(): java.util.Map[String, String] = prefixMap
-      def abbrev(uriStr: String): org.apache.jena.atlas.lib.Pair[String, String] =
+      override def abbrev(uriStr: String): org.apache.jena.atlas.lib.Pair[String, String] =
         this.abbrev( getMapping(), uriStr, true)
       /** @return URI in prefixed name form if possible, null otherwise */
-      def abbreviate(uriStr: String): String = {
+      override def abbreviate(uriStr: String): String = {
         val abbrevPair = abbrev(uriStr)
         if( abbrevPair != null ){
         val prefix = abbrevPair.getLeft
@@ -56,6 +56,8 @@ trait GraphWriterPrefixMap {
       def add(x$1: String, x$2: String): Unit = ???
       def clear(): Unit = ???
       def delete(x$1: String): Unit = ???
-      def expand(x$1: String, x$2: String): String = ???
+      override def expand(x$1: String, x$2: String): String = ???
+
+      def get(s: String): String = ???
   }
 }

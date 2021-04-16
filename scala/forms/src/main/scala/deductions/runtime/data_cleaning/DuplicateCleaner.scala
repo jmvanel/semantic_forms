@@ -584,8 +584,8 @@ type MergeGroups = Seq[MergeGroup]
   /* use Jena utility RIResolver.resolveFileURL()
    * TODO move to global utility */
   def uriFromFile(filename: String) =
-    org.apache.jena.riot.system.IRIResolver.resolveFileURL(
-      new File(filename).getCanonicalPath)
+    org.apache.jena.irix.IRIxResolver.create().build().resolve( "file://" + new File(filename).getCanonicalPath).toString()
+//    resolveFileURL(new File(filename).getCanonicalPath)
 
   /** output modified data (actually all triples in TDB) in /tmp */
   def outputModifiedTurtle(file: String, outputDir: String = "/tmp", suffix: String = "") = {

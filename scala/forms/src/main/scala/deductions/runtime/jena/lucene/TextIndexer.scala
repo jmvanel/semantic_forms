@@ -23,8 +23,8 @@ object TextIndexerRDF extends App {
   te.doIndex()
 }
 
-private[lucene] class TextIndexerClass extends jena.textindexer(Array[String]())
-    with ImplementationSettings.RDFModule
+private[lucene] class TextIndexerClass extends // jena.textindexer() // Array[String]())
+    ImplementationSettings.RDFModule
     with LuceneIndex {
 
   val config = new DefaultConfiguration {
@@ -43,13 +43,14 @@ private[lucene] class TextIndexerClass extends jena.textindexer(Array[String]())
     println("datasetWithLuceneConfigured.asDatasetGraph() getClass " + graphWithLuceneConfigured.getClass)
   val datasetGraphText: DatasetGraphText = graphWithLuceneConfigured.asInstanceOf[DatasetGraphText]
 
-  // override jena.textindexer fields
-  dataset = datasetGraphText
-  textIndex = dataset.getTextIndex()
+  // NOTE: formerly overrided jena.textindexer fields
+  val dataset = datasetGraphText
+  val textIndex = dataset.getTextIndex()
   println("textIndex.getDocDef.fields " + textIndex.getDocDef.fields())
+  val entityDefinition = rdfIndexing
 
   def doIndex() = {
-    this.entityDefinition = rdfIndexing
+//    this.entityDefinition = rdfIndexing
     println( s"entityDefinition $entityDefinition \n" )
     println( "textIndex.getDocDef hashCode " + textIndex.getDocDef.hashCode() )
     println( "entityDefinition hashCode " + entityDefinition.hashCode() )
@@ -60,7 +61,8 @@ private[lucene] class TextIndexerClass extends jena.textindexer(Array[String]())
     exec()
   }
 
-  override def exec() = {
+  // override
+  def exec() = {
     val properties = getIndexedProperties(textIndex.getDocDef)
 
     // there are various strategies possible here
