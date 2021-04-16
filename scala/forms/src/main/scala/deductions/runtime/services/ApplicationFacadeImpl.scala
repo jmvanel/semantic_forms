@@ -113,8 +113,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       makeInstanceLabel(URI(uri), allNamedGraph, language)
     })
     tried match {
-      case Success(s) => logger.info( s"labelForURI tried '$tried'" )
-      case Failure(s) => logger.error( s"labelForURI tried '$tried'" )
+      case Success(s) => logger.debug( s"labelForURI <$uri> tried '$tried'" )
+      case Failure(s) => logger.error( s"labelForURI <$uri> tried '$tried'" )
     }
     tried.getOrElse(uri)
   }
@@ -371,6 +371,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       mess = <div>
         Searched for
         "<a href={ createHyperlinkString(uri = uri) }>{
+          // TODO move to read Transaction
           labelForURITransaction(uri, language = request.getLanguage())
         }</a>"
         &lt;{ uri }&gt;

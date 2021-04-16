@@ -12,7 +12,7 @@ function makeProxiedLookupURLifNecessary(baseURL) {
 
 /** prepare Completion string, Lucene syntax (for Jena in SF) */
 function prepareCompletionLucene( userString ) {
-  var stringToSearch = userString
+  var stringToSearch = userString.trim()
   var words = stringToSearch .split(' ')
   if( words . length > 1 )
     stringToSearch = encodeURIComponent( words[0] + ' AND ' +  words[1] )
