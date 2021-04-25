@@ -1,6 +1,7 @@
 package deductions.runtime.jena.lucene
 
 import scala.collection.JavaConverters.iterableAsScalaIterableConverter
+import scala.collection._
 
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.utils.DefaultConfiguration
@@ -40,24 +41,24 @@ private[lucene] class TextIndexerClass extends // jena.textindexer() // Array[St
   val datasetWithLuceneConfigured = dataset0
 
   val graphWithLuceneConfigured = datasetWithLuceneConfigured.asDatasetGraph()
-    println("datasetWithLuceneConfigured.asDatasetGraph() getClass " + graphWithLuceneConfigured.getClass)
+    logger.info("datasetWithLuceneConfigured.asDatasetGraph() getClass " + graphWithLuceneConfigured.getClass)
   val datasetGraphText: DatasetGraphText = graphWithLuceneConfigured.asInstanceOf[DatasetGraphText]
 
   // NOTE: formerly overrided jena.textindexer fields
   val dataset = datasetGraphText
   val textIndex = dataset.getTextIndex()
-  println("textIndex.getDocDef.fields " + textIndex.getDocDef.fields())
+  logger.info("textIndex.getDocDef.fields " + textIndex.getDocDef.fields())
   val entityDefinition = rdfIndexing
 
   def doIndex() = {
 //    this.entityDefinition = rdfIndexing
-    println( s"entityDefinition $entityDefinition \n" )
-    println( "textIndex.getDocDef hashCode " + textIndex.getDocDef.hashCode() )
-    println( "entityDefinition hashCode " + entityDefinition.hashCode() )
-    println( "getIndexedProperties 1 size " + getIndexedProperties(entityDefinition).size + " " + getIndexedProperties(entityDefinition) )
-    println( "getIndexedProperties 2 size " + + getIndexedProperties(textIndex.getDocDef).size + " " +
+    logger.info( s"entityDefinition $entityDefinition \n" )
+    logger.info( "textIndex.getDocDef hashCode " + textIndex.getDocDef.hashCode() )
+    logger.info( "entityDefinition hashCode " + entityDefinition.hashCode() )
+    logger.info( "getIndexedProperties 1 size " + getIndexedProperties(entityDefinition).size + " " + getIndexedProperties(entityDefinition) )
+    logger.info( "getIndexedProperties 2 size " + + getIndexedProperties(textIndex.getDocDef).size + " " +
         getIndexedProperties(textIndex.getDocDef) )
-    println( s"""entityDefinition.getPredicates("text") """ + entityDefinition.getPredicates("text"))
+    logger.info( s"""entityDefinition.getPredicates("text") """ + entityDefinition.getPredicates("text"))
     exec()
   }
 
@@ -72,6 +73,7 @@ private[lucene] class TextIndexerClass extends // jena.textindexer() // Array[St
     // that way only process triples that will be indexed
     // but each entity may be updated several times
 
+    val graphs = mutable.Set[String]()
     for (property <- properties) {
       val quadIter = dataset.find(Node.ANY, Node.ANY, property, Node.ANY);
       //            for (; quadIter.hasNext(); )
@@ -83,11 +85,12 @@ private[lucene] class TextIndexerClass extends // jena.textindexer() // Array[St
         } else
           quad
 
-        val entity = TextQueryFuncs.entityFromQuad(entityDefinition, quad);
+        val entity = TextQueryFuncs.entityFromQuad(entityDefinition, quad2);
+
         if (entity != null) {
-//          entity.toString()
           textIndex.addEntity(entity)
-          println(s"$quad => $entity")
+          logger.debug(s"$quad2 => $entity")
+          if( graphs.add(quad2.getGraph().getURI() ) ) logger.info( s"""Graph ${quad2.getGraph()}""")
         }
       }
     }
@@ -103,9 +106,9 @@ private[lucene] class TextIndexerClass extends // jena.textindexer() // Array[St
 //    val r = 
       for (
       f <- entityDefinition.fields.asScala;
-      _ = println(s"	field $f") ;
+      _ = logger.info(s"	field $f") ;
       p <- entityDefinition.getPredicates(f).asScala
-//      _ = println(s"	Predicate $p")
+//      _ = logger.info(s"	Predicate $p")
     ) yield p
 //    r.toList
   }
