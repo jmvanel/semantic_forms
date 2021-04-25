@@ -13,6 +13,7 @@ object WebServer {
     val port = args . lift(0).getOrElse("8080").toInt
     val mess = args . lift(1).getOrElse("")
 
+    val startTime = new java.util.Date
     implicit val system = ActorSystem("my-system")
     implicit val materializer = ActorMaterializer()
     // needed for the future flatMap/onComplete in the end
@@ -29,6 +30,7 @@ object WebServer {
            <h1>This site is in maintenance</h1>
             Be patient...
             <hr/>
+            $startTime
             <p>
             $mess
             </p>
