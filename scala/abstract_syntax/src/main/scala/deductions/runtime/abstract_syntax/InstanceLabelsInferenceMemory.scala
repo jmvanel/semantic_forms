@@ -186,7 +186,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
    *  then replace label in special named Graph */
   def replaceInstanceLabel(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
     val label = computeInstanceLabelAndStoreInTDB(node, graph, lang)
-
+    // Thread.sleep(30000) // test interrupted HTTP request
     val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
     replaceObjects( labelsGraphUri, node, displayLabelPred, Literal(label), datasetForLabels )
     label

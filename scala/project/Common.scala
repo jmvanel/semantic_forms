@@ -54,7 +54,8 @@ val commonsCsvVersion = "1.8"
     "org.glassfish" % "jakarta.json" % "2.0.0"
   )
 
-  val jsonldDependencies = Seq( "com.apicatalog" % "titanium-json-ld" % "1.0.0"
+  val jsonldDependencies = Seq( "com.apicatalog" % "titanium-json-ld" % "1.0.3"
+    // 1.0.0"
     // "1.0.2-SNAPSHOT"
   )
 
