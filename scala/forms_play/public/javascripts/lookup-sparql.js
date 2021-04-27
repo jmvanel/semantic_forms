@@ -68,15 +68,16 @@ function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
      `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
       select DISTINCT ?s1 as ?c1,
 	  # ( bif:search_excerpt ( bif:vector () , ?o1 ) ) as ?c2, ?sc,
-	  ?rank, ?LAB, ?VERN where {
+          ?rank, ?LAB,
+          (group_concat(distinct ?VERN; separator="; ") as ?VERNS)
+      where {
         select ?s1, ( ?sc * 3e-1 ) as ?sc, ?o1, ( sql:rnk_scale ( <LONG::IRI_RANK> ( ?s1 ) ) ) as ?rank, ?LAB, ?VERN where {
             graph ?g {
               ?s1 ?s1textp ?o1 .
               ?o1 bif:contains ' ( ${stringToSearch} ) ' option ( score ?sc ) .
             }
             graph <http://taxref.mnhn.fr/lod/graph/vernacular/13.0> {
-			# OPTIONAL { 
-              ?s1 <http://taxref.mnhn.fr/lod/property/vernacularName> ?VERN . # }
+              ?s1 <http://taxref.mnhn.fr/lod/property/vernacularName> ?VERN .
 	      # FILTER( LANG(?VERN) = "${USER_LANG}" )
             }
             graph <http://taxref.mnhn.fr/lod/graph/classes/13.0> {
@@ -105,6 +106,19 @@ function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
 /** adapted to Virtuoso e.g.
  * http://sparks-vm33.i3s.unice.fr:8890/fct/facet.vsp?cmd=set_text_property&iri=http%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label&lang=&datatype=uri&sid=274 */
 function prettyPrintURIsFromSPARQLresponse(ajaxResponse){
+  return ajaxResponse.results.bindings.map(
+    function (m) {
+	    var mess = {
+	      "label": m.LAB.value + " - "
+                +  " - " + m.VERNS.value
+                +  " - rank " + m.rank.value
+                +  " - <" + m.c1.value + ">",
+	      "value": m.c1.value }
+	    return mess
+  })
+}
+
+function prettyPrintURIsFromSPARQLresponse_OLD(ajaxResponse){
   return ajaxResponse.results.bindings.map(
     function (m) {
       const lang = m.VERN["xml:lang"]
