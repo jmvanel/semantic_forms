@@ -52,7 +52,7 @@ $(document).ready(function() {
 
 /** prepare Completion string, DbPedia lookup syntax */
 function prepareCompletionDbPedia( userString ) {
-  return userString . replace( / /g, "_" )
+  return userString //    . replace( / /g, "_" )
 }
 
 const makeAjaxDbPediaLookupProtocolFunction_NEW =
