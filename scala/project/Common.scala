@@ -12,8 +12,8 @@ val jenaVersion =  "4.0.0"
 // val jenaVersion =  "3.18.0-SNAPSHOT"
 
 val akkaVersion =  // "2.5.26" // because of Play 2.6.25
-                   "2.6.8" //
-val akkaHttpVersion = "10.2.2" // "10.1.12"
+                   "2.6.14" // "2.6.8" //
+val akkaHttpVersion = "10.2.4" // 10.2.2" // "10.1.12"
 val any23Version = "2.3"
 val commonsCsvVersion = "1.8"
 
@@ -70,12 +70,8 @@ val commonsCsvVersion = "1.8"
     xmlDependency,
     junitDependency, scalatestDependency,
 
-    "org.apache.lucene" % "lucene-suggest" % "7.7.2" , // 7.4.0" , // "6.4.1" , // "7.5.0", // 6.6.5",
-    "org.apache.lucene" % "lucene-demo"    % "7.7.2" , // 7.4.0" , // "6.4.1" , // "7.5.0", // 6.6.5",
-/*
-    "org.apache.lucene" % "lucene-suggest" % "4.9.1" ,
-    "org.apache.lucene" % "lucene-demo" % "4.9.1" ,
-*/
+    "org.apache.lucene" % "lucene-suggest" % "8.8.0" , // 7.7.2" , // 7.4.0" , // "6.4.1" , // "7.5.0", // 6.6.5",
+    "org.apache.lucene" % "lucene-demo"    % "8.8.0" , // 7.7.2" , // 7.4.0" , // "6.4.1" , // "7.5.0", // 6.6.5",
 
     // "net.rootdev" % "java-rdfa" % "0.4.3-SNAPSHOT"
     "net.rootdev" % "java-rdfa" % "0.4.2" ,
