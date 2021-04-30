@@ -39,11 +39,24 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
 
   import scala.concurrent.ExecutionContext.Implicits.global
   /** get instance Label From TDB, and if recorded label is not usable, compute it in a Future
-   *  Transactional, creates a Read transaction */
+   *  NON transactional, needs r transaction */
   def makeInstanceLabelFuture(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
     val labelFromTDB = instanceLabelFromTDB(node, lang)
-    if (labelFromTDB === "" ||
-        // labelFromTDB === "Thing" ||
+    launchLabelComputeInFuture(node, labelFromTDB, graph, lang)
+  }
+
+  /** get instance Label From TDB, and if recorded label is not usable, compute it in a Future
+   * Transactional, creates a Read transaction */
+  def makeInstanceLabelFutureTr(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
+    val labelFromTDBTry =
+      wrapInReadTransaction { instanceLabelFromTDB(node, lang) }
+    val labelFromTDB = labelFromTDBTry.getOrElse("")
+    launchLabelComputeInFuture(node, labelFromTDB, graph, lang)
+  }
+
+  private def launchLabelComputeInFuture(node: Rdf#Node, labelFromTDB: String,
+      graph: Rdf#Graph, lang: String): String = {
+     if (labelFromTDB === "" ||
         isLabelLikeURI(node, labelFromTDB))
       Future {
         wrapInTransaction(
@@ -96,13 +109,6 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
       funBNode => None,
       funLiteral => None)
   }
-//    for (
-//      triple <- find(allNamedGraph, subjectNode, predNode, ANY).toSeq.headOption;
-//      result = foldNode(triple.objectt)(
-//        _ => "",
-//        _ => "",
-//        literal => fromLiteral(literal)._1)
-//    ) yield result
 
   /** get instance (URI node) Label From TDB
    *  NON transactional, needs r transaction */
@@ -142,45 +148,6 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   override def instanceLabels(list: Seq[Rdf#Node], lang: String = "")
   (implicit graph: Rdf#Graph): Seq[String] =
     list.toList map { node => makeInstanceLabel(node, graph, lang) }
-    // list.map { node => instanceLabelFromTDB(node, lang)
-
-//  /** this was tried during trials to fix a ConcurrentModificationException,
-//   *  but the solution was in calling levels:
-//   *  https://github.com/jmvanel/semantic_forms/commit/6d1263530c337d69358670674de5178fd23d1765
-//   *   */
-//  private def instanceLabelsComplex(list: Seq[Rdf#Node], lang: String = "")
-//  (implicit graph: Rdf#Graph): Seq[String] = {
-//    val labelsFromTDB:Map[Rdf#Node, String] =
-//      list.toList.map { node => node -> instanceLabelFromTDB(node, lang) } . toMap
-//    var recomputeCount = 0
-//    val labelsComputedOrFromTDB =
-//      labelsFromTDB . map { (node_label)  =>
-//        node_label._1 -> {
-//          val recompute = node_label._2 === ""
-//          (
-//            (if (recompute) {
-//              recomputeCount = recomputeCount + 1
-//              super.makeInstanceLabel(node_label._1, graph, lang)
-//            } else node_label._2),
-//            recompute)
-//        }
-//      }
-//      println("labelsComputedOrFromTDB size " + list.size + ", recomputeCount "+recomputeCount)
-//      labelsComputedOrFromTDB . map {
-//        node_label_boolean  =>
-//          if( node_label_boolean._2._2)
-//            storeInstanceLabel(node_label_boolean._1,
-//                node_label_boolean._2._1, graph, lang)
-//                else Success(Unit)
-//      }
-//      println("labelsComputedOrFromTDB 2")
-//      val ret = labelsComputedOrFromTDB . map {
-//        node_label_boolean  => node_label_boolean._2._1
-//      } . toList
-//      println("labelsComputedOrFromTDB 3")
-//      println("labelsComputedOrFromTDB 3 " + ret )
-//      ret
-//  }
 
   /** compute Instance Label and store it in TDB,
    *  then replace label in special named Graph */

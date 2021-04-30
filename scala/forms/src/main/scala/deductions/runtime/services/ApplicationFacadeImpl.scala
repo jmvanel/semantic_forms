@@ -105,6 +105,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     : String = {
       makeInstanceLabel(URI(uri), graph, language)
   }
+
   /** NOTE this creates a transaction; do not use it too often */
   def labelForURITransaction(uri: String, language: String)
   : String = {
@@ -119,40 +120,10 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     tried.getOrElse(uri)
   }
 
-  //    def displayURI2(uriSubject: String) //  : Enumerator[scala.xml.Elem]
-  //    = {
-  //      import ops._
-  //      val graphFuture = RDFStoreObject.allNamedGraphsFuture
-  //      import scala.concurrent.ExecutionContext.Implicits.global
-  //
-  //      type URIPair = (Rdf#Node, SemanticURIGuesser.SemanticURIType)
-  //      val semanticURItypesFuture = tableView.getSemanticURItypes(uriSubject)
-  //      // TODO get rid of mutable, but did not found out with yield
-  //      val elems: Future[Iterator[Elem]] = semanticURItypesFuture map {
-  //        semanticURItypes =>
-  //          {
-  //            semanticURItypes.
-  //              filter { p => isURI(p._1) }.
-  //              map {
-  //                semanticURItype =>
-  //                  val uri = semanticURItype._1
-  //                  val semanticType = semanticURItype._2
-  //                  <p>
-  //                    <div>{ uri }</div>
-  //                    <div>{ semanticType }</div>
-  //                  </p>
-  //              }
-  //          }
-  //      }
-  //      //    def makeEnumerator[E, A]( f: Future[Iterator[A]] ) : Enumerator[A] = new Enumerator[A] {
-  //      //      def apply[A]( i : Iteratee[A, Iterator[A]]): Future[Iteratee[A, Iterator[A]]]
-  //      //      = {
-  //      //        Future(i) // ?????
-  //      //      }
-  //      //    }
-  //      //    val enum = makeEnumerator(elems) // [ , ]
-  //      elems
-  //    }
+  def makeInstanceLabelFutureString(uri: String, lang: String): String = {
+    makeInstanceLabelFutureTr( URI(uri), allNamedGraph, lang: String)
+  }
+
 
   def wordsearchFuture(q: String = "", clas: String = "", request: HTTPrequest): Future[Elem] = {
     val fut = recoverFromOutOfMemoryError(
@@ -371,8 +342,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       mess = <div>
         Searched for
         "<a href={ createHyperlinkString(uri = uri) }>{
-          // TODO move to read Transaction
-          labelForURITransaction(uri, language = request.getLanguage())
+          makeInstanceLabelFutureString(uri, request.getLanguage())
         }</a>"
         &lt;{ uri }&gt;
         {
@@ -394,7 +364,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     logger.debug(s">>>> sparqlServicesURL: dataServicesURL <$dataServicesURL>")
     dataServicesURL
   }
- 
+
   def esearchFuture(q: String = "", httpRequest: HTTPrequest): Future[Elem] = {
     val fut = extendedSearch(q, httpRequest)
     wrapSearchResults(fut, q, mess= <div>"Extended search for</div>)

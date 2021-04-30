@@ -23,7 +23,7 @@ extends ThumbnailInference[Rdf, DATASET] {
 
   /**
    * generate a row of HTML hyperlinks for given list of RDF Node;
-   * non TRANSACTIONAL
+   * non TRANSACTIONAL, needs Read transaction
    * TODO
    * - be able to add HTML at the end of the row, or even in-between
    *   (for issues "Named graph view" : https://github.com/jmvanel/semantic_forms/issues/136 , etc) */
@@ -116,7 +116,8 @@ extends ThumbnailInference[Rdf, DATASET] {
          property = nullURI, type_ = `type`, request)
   }
 
-  /** make HTML Hyperlink For URI, short, no expert stuff */
+  /** make HTML Hyperlink For URI, short, no expert stuff
+   * NON transactional, needs Read transaction */
   def makeHyperlinkForURIBriefly(
       node: Rdf#Node,
       lang: String,
