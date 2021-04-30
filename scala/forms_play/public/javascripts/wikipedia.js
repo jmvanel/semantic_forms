@@ -154,7 +154,8 @@ function prettyPrintURIsFromDbpediaResponse_Local(ajaxResponse){
 	      "label": m.label + " - "
 	        + cutStringAfterCharacter(m.description, '.')
                 +  " - " + m.classes
-                +  " - refCount " + m.refCount ,
+                +  " - refCount " + m.refCount
+                +  ` <${m.uri}>` ,
 	      "value": m.uri }
   })
 }
