@@ -108,20 +108,25 @@ case class HTTPrequest(
   def absoluteURL(relativeURIwithSlash: String = "",
       secure: Boolean = this.secure): String =
         s"http${if(secure) "s" else ""}://" +
-      // IPv6:
       {
         logger.debug(s"""absoluteURL this.remoteAddress ${this.remoteAddress} this.host $host
             hostNoPort $hostNoPort relativeURIwithSlash $relativeURIwithSlash port $port""" )
         if (this.hostNoPort == "localhost" ||
             this.hostNoPort . startsWith("[") ) {
-          logger.debug(s"pv6 or IPV4 normalize address")
-          "[" +
-        // ipv6 or IPV4 normalize address:
-        InetAddress.getByName(this.remoteAddress).getHostAddress()+ "]:" + this.port
+          logger.debug(s"IPV6 or IPV4 normalize address, getInetAddress $getInetAddress")
+          if(isIPv6())
+            "[" + getInetAddress.getHostAddress + "]:" + this.port
+          else
+            getInetAddress.getHostAddress + ":" + this.port
         }
         else this.host
       } +
         relativeURIwithSlash // + this.appendFragment
+
+  private def getInetAddress() = InetAddress.getByName(remoteAddress)
+  private def isIPv6() = {
+    getInetAddress.getAddress.size > 4
+  }
 
   def originalURL(): String = absoluteURL(path +
       (if(rawQueryString != "") "?" + rawQueryString else ""))

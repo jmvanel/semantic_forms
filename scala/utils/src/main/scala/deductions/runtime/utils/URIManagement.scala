@@ -111,7 +111,7 @@ trait URIManagement extends URIHelpers {
 //    val serverPortPart = if (hostname.contains(":")) "" else ":" + serverPort
 //    val urip = "http://" + hostname + serverPortPart + "/" + relativeURIforCreatedResourcesByForm
     val urip = request.absoluteURL( "/" + relativeURIforCreatedResourcesByForm )
-    println1(s"instance URI Prefix <$urip> - $request")
+    println1(s"instance URI Prefix <$urip> <- request: $request")
     urip
   }
 
@@ -239,6 +239,6 @@ trait URIManagement extends URIHelpers {
   private def printlnOnce(mess: String) =
         if(neverLogged) {
           println1( mess )
-          neverLogged =false
+          neverLogged = false
         }
 }
