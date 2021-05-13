@@ -170,14 +170,24 @@ trait FormSaver[Rdf <: RDF, DATASET]
     val triplesToAdd = ArrayBuffer[Rdf#Triple]()
     val triplesToRemove = ArrayBuffer[Rdf#Triple]()
     var typeChange = false
-    
-      log(s"computeDatabaseChanges: originalTriple: $originalTriple, objectsFromUser $objectsFromUser")
-      objectsFromUser.map { objectStringFromUser =>
+
+    log(s"computeDatabaseChanges: originalTriple: $originalTriple, objectsFromUser $objectsFromUser")
+    implicit val graph = allNamedGraph
+    lazy val owl = OWLPrefix[Rdf]
+    val ranges = getRDFSranges(originalTriple.predicate)
+    val hasXSDtype = ranges.exists { typ => nodeToString(typ).startsWith(xsd.prefixIri) }
+    objectsFromUser.map { objectStringFromUser =>
         val objectFromUser: Rdf#Node = foldNode(originalTriple.objectt)(
-          _ => {
+          _ => { // ==== URI ===
             val objectStringFromUserNoSpaces = objectStringFromUser.replaceAll(" ", "")
+            val isDatatypeProperty = getClasses(originalTriple.predicate) . contains (owl.DatatypeProperty)
             if (objectStringFromUserNoSpaces.startsWith("_:"))
               BNode(objectStringFromUserNoSpaces.substring(2))
+            else if (isDatatypeProperty)
+              if (hasXSDtype)
+                Literal(objectStringFromUserNoSpaces, uriNodeToURI(ranges.head))
+              else
+                Literal(objectStringFromUserNoSpaces)
             else {
               if (objectStringFromUserNoSpaces != objectStringFromUser)
                 logger.error(s"""computeDatabaseChanges: objectStringFromUser "$objectStringFromUser" changed: spaces removed""")
@@ -191,10 +201,6 @@ trait FormSaver[Rdf <: RDF, DATASET]
         _ => BNode(objectStringFromUser.replaceAll(" ", "_")), // ?? really do this ?
 
         _ => { // ==== Literal ===
-          implicit val graph = allNamedGraph
-          val ranges = getRDFSranges(originalTriple.predicate)
-          val hasXSDtype = ranges . exists { typ => nodeToString(typ).startsWith(xsd.prefixIri) }
-          lazy val owl = OWLPrefix[Rdf]
           val isObjectProperty = getClasses(originalTriple.predicate) . contains (owl.ObjectProperty)
 
           if (isObjectProperty && isAbsoluteURI(objectStringFromUser))
@@ -210,7 +216,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
             Literal(objectStringFromUser)
           }
         )
-        logger.debug(s"computeDatabaseChangesFor1Triple: objectFromUser $objectFromUser")
+        logger.debug(s"computeDatabaseChangesFor1Triple: objectFromUser '$objectFromUser' ")
         val originalData = nodeToString(originalTriple.objectt)
         val emptyUserInput: Boolean = objectStringFromUser === ""
         val differingUserInput: Boolean = objectStringFromUser =/= originalData
@@ -229,7 +235,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
           val newTriple = makeTriple(originalTriple.subject, originalTriple.predicate, objectFromUser)
           logger.debug(s"""computeDatabaseChangesFor1Triple: originalTriple.subject <${originalTriple.subject}> 
             computeDatabaseChangesFor1Triple: originalTriple.predicate <${originalTriple.predicate}>""")
-          logger.debug(s"computeDatabaseChangesFor1Triple: objectFromUser $objectFromUser")
+          logger.debug(s"computeDatabaseChangesFor1Triple: objectFromUser '$objectFromUser'")
           triplesToAdd += newTriple
         }
         if (originalDataNonEmpty && differingUserInput)
