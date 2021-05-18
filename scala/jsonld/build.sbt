@@ -1,7 +1,6 @@
 import Common._
 
-
-javacOptions in ThisBuild := Seq("-target","11")
+ThisBuild / javacOptions := Seq("-target","11")
 
 libraryDependencies ++= Seq(
     // "com.apicatalog" % "titanium-json-ld" % "0.9-SNAPSHOT" ,
@@ -11,5 +10,10 @@ libraryDependencies ++= Seq(
 jsonldDependencies ++
 jsonDependencies
 
-publishArtifact in (Compile, packageDoc) := false
-sources in (Compile,doc) := Seq.empty
+// Compile / publishArtifact := false
+// packageDoc / publishArtifact := false
+// Compile / sources := Seq.empty
+// doc / sources := Seq.empty
+
+// publishArtifact in (Compile, packageDoc) := false
+// sources in (Compile,doc) := Seq.empty

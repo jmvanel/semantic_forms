@@ -10,8 +10,10 @@ enablePlugins(ScalaJSPlugin)
 
 name := "forms_js"
 
-publishArtifact in (Compile, packageDoc) := false
-sources in (Compile,doc) := Seq.empty
+Compile / publishArtifact := false
+packageDoc / publishArtifact := false
+Compile / sources := Seq.empty
+doc / sources := Seq.empty
 
 libraryDependencies ++= Seq(
   // "org.scala-js" %%% "scalajs-dom" % "0.9.6" ,

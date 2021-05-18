@@ -10,10 +10,10 @@ libraryDependencies += "com.typesafe.akka" %% "akka-stream" % akkaVersion
 
 // NOTE: fork := true necessary to set the working directory when running tests from starting SBT in parent directory
 fork := false
-parallelExecution in Test := false
+Test / parallelExecution := false
 
 // cf http://www.scalatest.org/user_guide/using_scalatest_with_sbt
-logBuffered in Test := false
+Test / logBuffered := false
 
 publishArtifact in (Compile, packageDoc) := false
 sources in (Compile,doc) := Seq.empty
