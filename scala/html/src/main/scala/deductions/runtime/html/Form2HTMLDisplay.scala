@@ -230,7 +230,7 @@ with StringHelpers
       request: HTTPrequest,
       resourceEntry: formMod#ResourceEntry): NodeSeq = {
     val imageURL = "/assets/images/create-instance.svg"
-    implicit val _ = request.getLanguage()
+    implicit val lang = request.getLanguage()
     val classURIstringValue: String = toPlainString(resourceEntry.value)
     val messCreate_instance = mess("Create_instance_of") +
     " " + resourceEntry.valueLabel +

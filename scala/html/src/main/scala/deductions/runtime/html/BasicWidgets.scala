@@ -33,9 +33,9 @@ trait BasicWidgets[NODE, URI <: NODE]
     import config._
 
   def hyperlinkForEditingURI(uri: String, lang: String): NodeSeq = {
-    implicit val _ = lang
+    // implicit val _ = lang
     val hrefEdit = hrefEditPrefix + urlEncode(uri)
-    <a class="btn btn-primary btn-xs" href={ hrefEdit } title={ mess("edit_URI") }>
+    <a class="btn btn-primary btn-xs" href={ hrefEdit } title={ mess("edit_URI")(lang) }>
       <i class="glyphicon glyphicon-edit"></i>
     </a>
   }
@@ -52,7 +52,7 @@ trait BasicWidgets[NODE, URI <: NODE]
     implicit val _ = lang
     val hrefDisplay = hrefDisplayPrefix() + urlEncode(uri) + "#subject"
     logger.debug(s">>>> hyperlinkForDisplayingURI linkToShow: $hrefDisplay")
-    <a class="btn btn-warning btn-xs" href={ hrefDisplay } title={ mess("display_URI") }>
+    <a class="btn btn-warning btn-xs" href={ hrefDisplay } title={ mess("display_URI")(lang) }>
       <i class="glyphicon"></i>
     </a>
   }
@@ -183,11 +183,11 @@ don't mix them */
   }
 
   /** show Continuation Form: print offset, limit, pattern, Sub-form For Continuation */
-  def showContinuationForm( request: HTTPrequest, formaction: Option[String]=None ) = {
+  def showContinuationForm( request0: HTTPrequest, formaction: Option[String]=None ) = {
 //    println(s"showContinuationForm: request $request")
-    val requestPath = request.path
-    val requestKind = request.path . replace("/", "")
-    implicit val _ = request
+    val requestPath = request0.path
+    val requestKind = request0.path . replace("/", "")
+    implicit val request = request0
     <form role="form" >
       <p>{ messRequest(formaction.getOrElse(s"$requestKind")) }
          { messRequest("with") }
