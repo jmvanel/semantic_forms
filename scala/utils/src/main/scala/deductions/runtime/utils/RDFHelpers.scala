@@ -185,8 +185,7 @@ extends URIManagement {
     val r = s.collect {
       case uri if (isURI(uri)) => makeUri(uri.toString)
     }
-    val seq = r.to
-    seq
+    r . toSeq
   }
 
   /** from given Rdf#Node , make a rdf#URI, or null URI */
