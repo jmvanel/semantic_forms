@@ -519,7 +519,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
                 }
               }
           }
-          results.to[List].
+          results.toList. // results.to[List].
             // hack :(((((((((
             filter(node => !node.toString().contains(""">>>> Failure: """))
 
@@ -662,7 +662,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
             logger.debug(s"makeListofListsFromSolutions: rowSeq $rowSeq")
             rowSeq
         }
-        val results = resultsIterator.to[List]
+        val results = resultsIterator.toList
         logger.trace(s"""makeListofListsFromSolutions: after results : results
           ${results.mkString(",\n\t")}""")
 
@@ -879,7 +879,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         }
     }
     //  TODO  val r = runSparqlSelectNodes( queryString, variables, graph)
-    results.to[List]
+    // results.to[List]
+    results.toList
   }
 
   /** run SPARQL on given graph, knowing result variables */
@@ -914,7 +915,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
           cell
         }
     }
-    results.to[List]
+    results.toList
   }
 
   def futureGraph2String(triples: Future[Rdf#Graph], uri: String): String = {

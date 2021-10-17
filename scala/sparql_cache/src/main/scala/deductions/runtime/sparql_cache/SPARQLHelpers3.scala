@@ -416,7 +416,7 @@ trait SPARQLHelpers3[Rdf <: RDF, DATASET]
                 }
               }
           }
-          results.to[List].
+          results.toList.
             // hack :(((((((((
             filter(node => !node.toString().contains(""">>>> Failure: """))
 
@@ -524,10 +524,10 @@ trait SPARQLHelpers3[Rdf <: RDF, DATASET]
           val headerRow = r . toList // . sorted
      		  println(s"headerRow $headerRow ")
 
-          val rrr = headerRow :: results.to[List]
+          val rrr = headerRow :: results.toList
           rrr
 
-        } else results.to[List]
+        } else results.toList
     }
     logger.debug("makeListofListsFromSolutions: before res")
     res
@@ -696,7 +696,7 @@ trait SPARQLHelpers3[Rdf <: RDF, DATASET]
         }
     }
     //  TODO  val r = runSparqlSelectNodes( queryString, variables, graph)
-    results.to[List]
+    results.toList
   }
 
   /** run SPARQL on given graph, knowing result variables */
@@ -731,7 +731,7 @@ trait SPARQLHelpers3[Rdf <: RDF, DATASET]
           cell
         }
     }
-    results.to[List]
+    results.toList
   }
 
   def futureGraph2String(triples: Future[Rdf#Graph], uri: String): String = {

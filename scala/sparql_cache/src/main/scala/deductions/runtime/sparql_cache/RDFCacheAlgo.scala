@@ -39,7 +39,7 @@ trait RDFCacheDependencies[Rdf <: RDF, DATASET] {
   implicit val rdfXMLReader: RDFReader[Rdf, Try, RDFXML]
   implicit val jsonldReader: RDFReader[Rdf, Try, JsonLd]
 
-  implicit val rdfLoader: RDFLoader[Rdf, Try]
+  implicit def rdfLoader(): RDFLoader[Rdf, Try]
 
   implicit val turtleWriter: RDFWriter[Rdf, Try, Turtle]
   implicit val jsonldCompactedWriter: RDFWriter[Rdf, Try, JsonLdCompacted]
@@ -172,10 +172,12 @@ JMV:
                     size ${if (graphDownloaded.isSuccess) graphDownloaded.get.size} content Type: $contentType""")
             val isDocument = isDocumentMIME(contentType) // TODO case RDFa
             graphDownloaded match {
-              case Success(gr) if (!isDocument) => (Success(gr), Success(""))
-              case Success(gr) if (isDocument) =>
-                // TODO pass transactionsInside
-                (Success(pureHTMLwebPageAnnotateAsDocument(uri, request)), Success(""))
+              case Success(gr) =>
+                if (!isDocument)
+                  (Success(gr), Success(""))
+                else
+                  // TODO pass transactionsInside
+                  (Success(pureHTMLwebPageAnnotateAsDocument(uri, request)), Success(""))
 
               case Failure(f) => {
                 logger.debug(s"Graph at URI <$uri> could not be downloaded, (exception ${f.getLocalizedMessage}, ${f.getClass} cause ${f.getCause}).")
@@ -370,8 +372,8 @@ JMV:
               foldNode(importedOntology.objectt)(onto => readStoreURINoTransaction(onto, onto, dataset,
                   request=HTTPrequest() ),
                 _ => emptyGraph,
-                _ => emptyGraph); Unit
-            case None => Unit
+                _ => emptyGraph); ()
+            case None => ()
           }
         } catch {
           case e: Throwable => logger.error(e.getLocalizedMessage)

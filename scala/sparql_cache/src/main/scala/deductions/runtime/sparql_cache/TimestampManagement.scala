@@ -148,14 +148,14 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
           connection.setConnectTimeout(timeout)
           connection.setReadTimeout(timeout)
           connection.setRequestMethod("HEAD")
-          val responseCode = connection.getResponseCode()
 
           def tryHeaderField(headerName: String): (Boolean, Boolean, Long) = {
             val dateString = getHeaderField( headerName, connection)
             if (dateString  =/=  "") {
               // from Apache http client - Date objects are in coordinated universal time (UTC)
               val dateFromHTTPHeader: java.util.Date = DateUtils.parseDate(dateString)
-              logger.debug("TimestampManagement.lastModified(): responseCode: " + responseCode +
+              val responseCode = connection.getResponseCode()
+              logger.debug(s"TimestampManagement.lastModified(): URL <$url> responseCode: " + responseCode +
                 ", date: " + dateFromHTTPHeader + ", dateString " + dateString)
               (true, 200 <= responseCode && responseCode <= 399, dateFromHTTPHeader.getTime())
             } else (false, false, Long.MaxValue)
@@ -181,7 +181,9 @@ extends RDFStoreLocalProvider[Rdf, DATASET]
       case exception: IOException =>
         logger.warn(s"lastModified($url0) : exception $exception")
         (false, Long.MaxValue, Failure(exception))
-      case e: Throwable           => throw e
+      case exception: Throwable =>
+        logger.error(s"lastModified($url0) : exception $exception")
+        throw exception
     }
   }
 
