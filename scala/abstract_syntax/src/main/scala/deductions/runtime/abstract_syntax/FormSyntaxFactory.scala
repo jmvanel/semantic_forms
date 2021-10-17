@@ -488,7 +488,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
       if (objects isEmpty) result += makeEntryFromTriple(subject, prop, nullURI, formMode)
 
       logger.debug("result: Entry's " + result)
-      result
+      result.toSeq
     } catch {
       case t: Exception =>
         val message = s"ERROR in makeEntriesForSubject: subject <$subject>, prop <$prop> , ${t.getLocalizedMessage}"
@@ -748,7 +748,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
 //Thread.dumpStack()
 
     val extraFields: Seq[ResourceEntry] = for (
-      classURIexpanded <-request.getHTTPparameterValues("uri")
+      classURIexpanded <-request.getHTTPparameterValues("uri").toSeq
         .drop(1)
         . map { u: String =>
           println(s"addExtraTypesFromHTTPrequest: expandOrUnchanged(u) = ${expandOrUnchanged(u)}")

@@ -154,7 +154,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
           //          logger.debug(
           logger.debug(
             s"computePropsFromConfig: class <$classe> : $propertiesList")
-          (propertiesList, formConfiguration, Success(classe))
+          (propertiesList.toSeq, formConfiguration, Success(classe))
         }
       } else {
         val (propertiesList, formSpecification, tryGraph) = lookPropertiesListFromDatabaseOrDownload(formuri)
@@ -176,7 +176,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
       formSpecificationAll.append(formSpecification)
       tryClassLast = tryClass
     }
-    (propertiesListAll, formSpecificationAll, tryClassLast)
+    (propertiesListAll.toSeq, formSpecificationAll.toSeq, tryClassLast)
   }
 
   private def computePropsFromConfigOLD(classes: List[Rdf#Node],
@@ -212,7 +212,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
       formSpecificationAll.append(formSpecification)
       tryClassLast = tryClass
     }
-    (propertiesListAll, formSpecificationAll, tryClassLast)
+    (propertiesListAll.toSeq, formSpecificationAll.toSeq, tryClassLast)
   }
     
   private def classFromSubject(subject: Rdf#Node)(implicit graph: Rdf#Graph) = {

@@ -170,7 +170,7 @@ with FormModule[Rdf#Node, Rdf#URI]
     FormSyntax(
         nullURI,
 //        Seq(),
-        makeEntries( inferedProperties.distinct ),
+        makeEntries( inferedProperties.toSeq.distinct ),
         Seq(classs),
         nullURI,
         propertiesGroupMap = propertiesGroups)

@@ -39,7 +39,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
     	val ranges = objectsQuery( field.property, rdfs.range)
     	logger.debug( ">>>> addAllPossibleValues: before addPossibleValues field " + field )
       formSyntax.possibleValuesMap.put(field.property,
-        addPossibleValues(field, ranges, valuesFromFormGroup))
+        addPossibleValues(field, ranges, valuesFromFormGroup).toSeq)
       logger.debug( "> field after  addPossibleValues" + field )
     }
   }
@@ -120,7 +120,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
       val classes = processOwlUnion()
       logger.debug( "populateFromOwlUnion: classes " + classes )
       val map = ( for( classe <- classes ) yield {
-    	  classe -> tuples2ResourcesWithLabel( getInstancesAndLabels(classe) )
+        classe -> tuples2ResourcesWithLabel( getInstancesAndLabels(classe).toSeq )
       } ) . toMap
       map
     }
@@ -262,10 +262,10 @@ trait RangeInference[Rdf <: RDF, DATASET]
     ): Seq[(Rdf#Node, Rdf#Node)] = {
       val fieldType = entryField.type_
       if (classesAndLabels isEmpty)
-        addPossibleValues(firstNodeOrElseNullURI(fieldType), resourcesWithLabel)
+        addPossibleValues(firstNodeOrElseNullURI(fieldType), resourcesWithLabel.toSeq)
       else {
         for( (classe, rlabels ) <- classesAndLabels ) {
-        	addPossibleValues(classe, rlabels)
+          addPossibleValues(classe, rlabels.toSeq)
         }
         val r = classesAndLabels.values.flatMap( identity ) .toSeq
         resourcesWithLabel2Tuples(r)
@@ -296,7 +296,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
               } """
     //    info(s"populateFromTDB $q")
 
-    val query = parseSelect(q, Seq()).get
+    val query = parseSelect(q, scala.collection.immutable.Seq()).get
     val solutions: Rdf#Solutions = graph.executeSelect(query).get
 
     val res = solutions.iterator() map {
@@ -305,7 +305,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
          row("LABEL").get // .as[Rdf#Node].get
          )
     }
-    val possibleValues = res.to[List]
+    val possibleValues = res.toList
     logger.debug(
         s"""possibleValuesFromFormGroup populateFromTDB formGroup <$formGroup> size ${possibleValues.size}
              ${possibleValues.mkString("\n")}""")

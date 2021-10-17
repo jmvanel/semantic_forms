@@ -145,7 +145,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
       makeInstanceLabel(URI(uri), graph, language)
   }
 
-  override def instanceLabels(list: Seq[Rdf#Node], lang: String = "")
+  override def instanceLabels(list: Seq[Rdf#Node], lang: String)
   (implicit graph: Rdf#Graph): Seq[String] =
     list.toList map { node => makeInstanceLabel(node, graph, lang) }
 
@@ -173,9 +173,15 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
         labelFromLabelProperty match {
           case Some(node) =>
             foldNode(node)(
-              uri => makeInstanceLabel(uri, graph, lang),
-              bn => makeInstanceLabel(node, graph, lang),
-              lit => fromLiteral(lit)._1)
+              (uri =>
+                { logger.debug(s"computeInstanceLabeAndStoreInTDB: $node , foldNode uri <$uri>") ; makeInstanceLabel(uri, graph, lang) }
+              ),
+              bn => makeInstanceLabel(node, graph, lang)
+              ,
+              ( lit =>
+                { logger.debug(s"computeInstanceLabeAndStoreInTDB: $node , foldNode lit <$lit>") ; fromLiteral(lit)._1  }
+              )
+            )
           case _ => labelFromNode
         }
       } else labelFromNode
@@ -204,9 +210,9 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
         bn => doStore,
         literal => {
           logger.error(s">>>> storeInstanceLabel(node=$node, label⁼$label): Node should be URI or BN")
-          Success(Unit)
+          Success(())
         })
-    } else Success(Unit)
+    } else Success(())
   }
 
   def cleanStoredLabels(lang: String) {

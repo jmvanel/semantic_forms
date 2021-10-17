@@ -3,7 +3,7 @@ package deductions.runtime.abstract_syntax
 import deductions.runtime.utils.{ RDFHelpers, RDFPrefixes }
 import org.w3.banana.{ PointedGraph, RDF }
 
-import scala.collection.Seq
+// import scala.collection.Seq
 import scalaz._
 import Scalaz._
 
@@ -26,7 +26,7 @@ trait InstanceLabelsInference2[Rdf <: RDF]
 
   import ops._
 
-  def instanceLabels(list: Seq[Rdf#Node], lang: String = "")(implicit graph: Rdf#Graph): Seq[String] =
+  def instanceLabels(list: Seq[Rdf#Node], lang: String)(implicit graph: Rdf#Graph): Seq[String] =
     list.map { node => makeInstanceLabel(node, graph, lang) }
 
   /**

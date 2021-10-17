@@ -53,8 +53,9 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
       logger.debug(s""">>> UnfilledFormFactory.createFormFromClass: formSpecURI=<$formSpecURI> , classOrForm <$classOrForm> =>
       classFromSpecsOrGiven <$classFromSpecsOrGiven>""")
 
-      val newId = {
-        val instanceURI = getFirstNonEmptyInMap(request.queryString, "subjecturi")
+      val newId: String = {
+        val instanceURI = request.getHTTPparameterValueOrEmpty("subjecturi")
+          // getFirstNonEmptyInMap(request.queryString, "subjecturi")
         if (instanceURI === "")
           makeId(request)
         else instanceURI
