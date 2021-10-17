@@ -1,7 +1,7 @@
 package deductions.runtime.core
 
 import java.net.URLEncoder
-import scala.collection.Seq
+// import scala.collection.Seq
 import java.net.URLDecoder
 import scala.xml.NodeSeq
 import java.net.URI
@@ -89,6 +89,9 @@ case class HTTPrequest(
   /** get (first) HTTP parameter Value (and trim it) */
   def getHTTPparameterValue(param: String): Option[String] =
     queryString.get(param) .map(seq => seq.headOption map(s => s.trim)) . flatten
+
+  def getHTTPparameterValueOrEmpty(param: String): String =
+    getHTTPparameterValue(param).getOrElse("")
 
   /** get HTTP parameter Values */
   def getHTTPparameterValues(param: String): Seq[String] =

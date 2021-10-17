@@ -22,6 +22,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import scala.util.Try
+import scala.language.postfixOps
 
 /**
  * Load triples in given graph URI (SPARQL Load service);

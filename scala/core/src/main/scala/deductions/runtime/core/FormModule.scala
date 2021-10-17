@@ -6,8 +6,8 @@ $Id$
 package deductions.runtime.core
 
 import scala.collection.mutable
-import scalaz._
-import Scalaz._
+// import scalaz._
+// import Scalaz._
 
 object FormModule {
   val formDefaults = FormDefaults()
@@ -89,8 +89,9 @@ trait FormModule[NODE, URI <: NODE] {
 
     def nonEmptyFields(): Seq[Entry] = {
       fields . filter { f =>
-        f.value.toString()  =/=  "" &&
-        f.value.toString()  =/=  "\"\""
+        val stringValue: String = f.value.toString() // .toString()
+        stringValue != "" &&
+        stringValue != "\"\""
       }
 //      println(s"==== nonEmptyFields: $ret")
     }

@@ -43,7 +43,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
   private var csvParser: CSVParser = _
   type URI = Rdf#URI
 
-  private var headerURIs: IndexedSeq[URI] = _
+  private var headerURIs: scala.collection.IndexedSeq[URI] = _
 
   private val csv: CSV = CSV.getInstance
 
