@@ -64,7 +64,8 @@ trait RDFStoreLocalJenaProvider extends RDFStoreLocalJenaProviderImpl
 /** delegation to singleton RDFStoreLocalJenaProviderObject */
 trait RDFStoreLocalJenaProviderImpl {
   val delegate = RDFStoreLocalJenaProviderObject
-  def rdfStore = delegate.rdfStore
+  // def rdfStore = delegate.rdfStore
+  val rdfStore = delegate.rdfStore
 
   // Members declared in deductions.runtime.utils.RDFStoreLocalProvider
   def allNamedGraph = delegate.allNamedGraph

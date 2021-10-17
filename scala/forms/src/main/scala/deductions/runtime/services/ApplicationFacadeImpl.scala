@@ -87,6 +87,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   import ops._
 
   // Members declared in org.w3.banana.JsonLDWriterModule
+/*
   implicit val jsonldExpandedWriter = new RDFWriter[Rdf, scala.util.Try, JsonLdExpanded] {
     override def write(graph: Rdf#Graph, os: OutputStream, base: String): Try[Unit] = ???
     override def asString(graph: Rdf#Graph, base: String): Try[String] = ???
@@ -95,7 +96,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     override def write(graph: Rdf#Graph, os: OutputStream, base: String): Try[Unit] = ???
     override def asString(graph: Rdf#Graph, base: String): Try[String] = ???
   }
-
+*/
   logger.debug(s"ApplicationFacadeImpl: in Global")
 
 

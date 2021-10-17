@@ -97,7 +97,7 @@ trait GeoPath[Rdf <: RDF, DATASET]
       println(s"\nmobile ${mobile}");
       val dist = getPathLengthForMobile(mobile, graph)
       println( s"dist $dist" )
-      Triple(mobile, geoloc("totalDistanceTraveled"), Literal(dist toString(), xsd.float))
+      Triple(mobile, geoloc("totalDistanceTraveled"), Literal(dist.toString(), xsd.float))
     }
 
     println(s"after global paths length computation\n")

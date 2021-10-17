@@ -68,7 +68,7 @@ with SPARQLHelpers[Rdf, DATASET] {
         rdfStore.appendToGraph( dataset2, graphUri, graph)
         logger.debug(s"TimeSeries.notifyDataEvent: saved to new graph <$graphUri> : added Triples: $addedTriples")
       })
-      Unit
+      ()
   }
 
   /** make Graph URI And associated metadata for saving data at a current date & time;
