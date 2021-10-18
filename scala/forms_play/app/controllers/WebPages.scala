@@ -398,7 +398,7 @@ with ApplicationTrait
       val query = queryFromRequest(request)
       val userid = request.userId()
       val title = "Table view from SPARQL"
-      val lang = request.getLanguage
+      val lang = request.getLanguage()
       val userInfo = displayUser(userid, request)
 
       val editButton = <button action="/table" title="Edit each cell of the table (like a spreadheet)">Edit</button>
@@ -491,7 +491,7 @@ with ApplicationTrait
   def sparql(query: String) : EssentialAction = {
     def doAction(implicit request: Request[_]) = {
       val httpRequest = copyRequest(request)
-      logger.info(s"sparql: ${httpRequest.logRequest} , query" + query)
+      logger.info(s"sparql: ${httpRequest.logRequest()} , query" + query)
       val lang = httpRequest.getLanguage()
       val userInfo = displayUser(getUsername(request).getOrElse("anonymous"), httpRequest)
       outputMainPage(
@@ -521,7 +521,7 @@ with ApplicationTrait
       recoverFromOutOfMemoryErrorGeneric(
         {
           val httpRequest = copyRequest(request)
-          logger.info(s"select: ${httpRequest.logRequest} , query" + query)
+          logger.info(s"select: ${httpRequest.logRequest()} , query" + query)
           val userInfo = displayUser(getUsername(request).getOrElse("anonymous"), httpRequest)
           outputMainPage(
               selectSPARQL(query, httpRequest),
@@ -563,7 +563,7 @@ with ApplicationTrait
 
 
   /** show Named Graphs */
-  def showNamedGraphsAction() = boilerPlateActionFuture {
+  def showNamedGraphsAction = boilerPlateActionFuture {
     precomputed =>
       import precomputed._
       requestCopy.
@@ -773,7 +773,7 @@ with ApplicationTrait
             s", in make History of User Actions /history?limit=$limit") )
   }
 
-  def logRequest(httpRequest: HTTPrequest) {
-    logger.info(httpRequest.logRequest)
+  def logRequest(httpRequest: HTTPrequest) : Unit = {
+    logger.info(httpRequest.logRequest())
   }
 }

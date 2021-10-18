@@ -11,10 +11,9 @@ object Common {
 val jenaVersion =  "4.2.0"
 // val jenaVersion =  "3.18.0-SNAPSHOT"
 
-val akkaVersion =  // "2.5.26" // because of Play 2.6.25
-                   "2.6.14" // "2.6.8" //
+val akkaVersion = "2.6.14" // because of Play 2.8.8 -- 6" // 7" // 4" // "2.6.8" //
 val akkaHttpVersion = "10.2.4" // 10.2.2" // "10.1.12"
-val any23Version = "2.3"
+val any23Version = "2.5" // 3"
 val commonsCsvVersion = "1.8"
 
   val bananaDependency0 = "org.w3" %%  "banana-jena" % "0.8.4-SNAPSHOT"  exclude("com.fasterxml.jackson.core", "jackson-databind")
@@ -25,19 +24,21 @@ val commonsCsvVersion = "1.8"
   val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion  exclude("com.fasterxml.jackson.core", "jackson-databind")
   val jenaSpatialDependency = "org.apache.jena" % "jena-geosparql" % jenaVersion  exclude("com.fasterxml.jackson.core", "jackson-databind")
 
-  val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % 
+  val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.3.0"
   // "2.0.1"
-  "1.3.0"
 
-  val junitDependency = "junit" % "junit" % "4.13" % Test
+  val junitDependency = "junit" % "junit" % "4.13.2" % Test
   libraryDependencies += "org.scalactic" %% "scalactic" % "3.1.1"
-  val scalatestDependency = "org.scalatest" %% "scalatest" % "3.1.1" % "test"
-  logBuffered in Test := false
+  val scalatestDependency = "org.scalatest" %% "scalatest" % "3.2.10" % "test"
+    // 3.1.4"
+    // 3.1.1"
+  Test / logBuffered := false
 
   val loggingDependencies = Seq(
-   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
- , "ch.qos.logback" % "logback-classic" % "1.2.3"
- , "org.slf4j" % "slf4j-api" % "1.7.30"
+   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4"
+ , "ch.qos.logback" % "logback-classic" % "1.2.6"
+ , "org.slf4j" % "slf4j-api" % "1.7.32" // :if expand("%") == ""|browse confirm w|else|confirm w|endif
+ // 0"
 )
 
   // val scalazDependency = "org.scalaz" %% "scalaz-core" % "7.2.8"
@@ -50,11 +51,11 @@ val commonsCsvVersion = "1.8"
   val any23Dependencies = "org.apache.any23" % "apache-any23-csvutils" % any23Version
 
   val jsonDependencies = Seq(
-    // TODO remove play-json !
-    "com.typesafe.play" %% "play-json" % "2.9.1" , // "2.8.1" , // 2.6.14",
+    // remove play-json ?
+    "com.typesafe.play" %% "play-json" % "2.9.2" , // 1" , // "2.8.1"
     //"javax.json" % "javax.json-api" % "1.1.4" ,
     //"jakarta.json" % "jakarta.json-api" % "2.0.0" ,
-    "org.glassfish" % "jakarta.json" % "2.0.0"
+    "org.glassfish" % "jakarta.json" % "2.0.1" // 0"
   )
 
   val jsonldDependencies = Seq( "com.apicatalog" % "titanium-json-ld" % "1.1.0"
@@ -74,21 +75,21 @@ val commonsCsvVersion = "1.8"
     xmlDependency,
     junitDependency, scalatestDependency,
 
-    "org.apache.lucene" % "lucene-suggest" % "8.8.0" , // 7.7.2" , // 7.4.0" , // "6.4.1" , // "7.5.0", // 6.6.5",
-    "org.apache.lucene" % "lucene-demo"    % "8.8.0" , // 7.7.2" , // 7.4.0" , // "6.4.1" , // "7.5.0", // 6.6.5",
+    "org.apache.lucene" % "lucene-suggest" % "8.10.0" , // 8.8.0" , // 7.7.2" , // 7.4.0"
+    "org.apache.lucene" % "lucene-demo"    % "8.10.0" , // 8.8.0" , // 7.7.2" , // 7.4.0"
 
     // "net.rootdev" % "java-rdfa" % "0.4.3-SNAPSHOT"
     "net.rootdev" % "java-rdfa" % "0.4.2" ,
 
     "org.scala-lang.modules" %% "scala-async" % "1.0.1" , // 0.9.7" ,
 
-    "org.apache.commons" % "commons-csv" % "1.8" ,
+    "org.apache.commons" % "commons-csv" % "1.9.0" , // 1.8" ,
     any23Dependencies
     // for Java 9 (works also with Java 8)
     , "javax.xml.bind" % "jaxb-api" % "2.3.1"
-    , "org.jsoup" % "jsoup" % "1.13.1"
+    , "org.jsoup" % "jsoup" % "1.14.3" // 1.13.1"
 
-    , "commons-io" % "commons-io" % "2.8.0"
+    , "commons-io" % "commons-io" % "2.11.0" // 2.8.0"
   )
 
 }
