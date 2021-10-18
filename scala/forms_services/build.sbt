@@ -9,6 +9,3 @@ name := "semantic_forms_services"
 resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
 // cf http://stackoverflow.com/questions/16400877/local-dependencies-resolved-by-sbt-but-not-by-play-framework
 
-publishArtifact in (Compile, packageDoc) := false
-sources in (Compile,doc) := Seq.empty
-

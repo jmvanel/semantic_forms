@@ -10,10 +10,9 @@ lazy val root = Project("semantic_forms-root", file("."))
     .aggregate(forms_play, forms, core, utils, sparql_cache,
                abstract_syntax, html, clients, rdf_links_rank)
 
-organization in ThisBuild := "deductions"
-version in ThisBuild := "2.X-SNAPSHOT"
+ThisBuild / organization := "deductions"
+ThisBuild / version := "2.X-SNAPSHOT"
 
-// scalaVersion in ThisBuild := // "2.12.13"
 ThisBuild / scalaVersion := // "2.12.13"
 	"2.13.6"
 
@@ -21,11 +20,13 @@ ThisBuild / scalaVersion := // "2.12.13"
 ThisBuild / libraryDependencySchemes += "org.scala-lang.modules" %% "scala-async" % "early-semver"
 
 // 
-javacOptions in ThisBuild := Seq("-source","1.8", "-target","1.11")
+ThisBuild / javacOptions := Seq("-source","1.8", "-target","1.11")
 // scalacOptions ++= Seq("-unchecked", // "-deprecation", "-feature", "-explaintypes", "-language:_", "-Xlint:unused")
 
-publishArtifact in (Compile, packageDoc) := false
-sources in (Compile,doc) := Seq.empty
+Compile / publishArtifact := false
+packageDoc / publishArtifact := false
+Compile / sources := Seq.empty
+doc / sources := Seq.empty
 
 lazy val forms_play = (project in file("forms_play"))
 	.dependsOn(forms)
@@ -94,7 +95,7 @@ lazy val geo = project . dependsOn( jsonld )
 // resolvers in ThisBuild += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
 // loads the server project at sbt startup
-onLoad in Global := (onLoad in Global).value andThen {s: State => "project forms_play" :: s}
+Global / onLoad := (onLoad in Global).value andThen {s: State => "project forms_play" :: s}
 
 // Scala code checkers
 

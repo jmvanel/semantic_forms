@@ -12,6 +12,3 @@ libraryDependencies ++= Seq(
 ) ++ loggingDependencies
 // libraryDependencies += httpComponents // allready in Banana
 
-publishArtifact in (Compile, packageDoc) := false
-sources in (Compile,doc) := Seq.empty
-

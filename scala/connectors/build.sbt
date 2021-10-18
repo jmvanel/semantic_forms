@@ -11,5 +11,3 @@ libraryDependencies ++= Seq(
     jenaDependency
 )
 
-publishArtifact in (Compile, packageDoc) := false
-sources in (Compile,doc) := Seq.empty

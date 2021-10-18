@@ -8,9 +8,6 @@
   val jenaDependency = "org.apache.jena" % "apache-jena-libs" % jenaVersion 
   val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion
 
-publishArtifact in (Compile, packageDoc) := false
-sources in (Compile,doc) := Seq.empty
-
 libraryDependencies ++= Seq(
 jenaDependency, jenaTextDependency
 )

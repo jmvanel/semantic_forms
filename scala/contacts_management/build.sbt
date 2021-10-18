@@ -9,6 +9,3 @@ name := "contacts_management"
 
 libraryDependencies ++= Seq()
 
-publishArtifact in (Compile, packageDoc) := false
-sources in (Compile,doc) := Seq.empty
-

@@ -15,11 +15,7 @@ Test / parallelExecution := false
 // cf http://www.scalatest.org/user_guide/using_scalatest_with_sbt
 Test / logBuffered := false
 
-publishArtifact in (Compile, packageDoc) := false
-sources in (Compile,doc) := Seq.empty
-
-
-// NOTE: required for the javaOptions to be passed in
+// NOTE: required for the javaOptions to be passed in ?
 // fork := true
 
 // javaOptions in (Test) += "-Xdebug"

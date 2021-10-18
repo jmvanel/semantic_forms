@@ -6,6 +6,3 @@ libraryDependencies ++= Seq(
 )
 libraryDependencies ++= loggingDependencies
 
-publishArtifact in (Compile, packageDoc) := false
-sources in (Compile,doc) := Seq.empty
-

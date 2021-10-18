@@ -9,6 +9,3 @@ libraryDependencies ++= Seq(
 )
 libraryDependencies ++=commonDependencies
 
-publishArtifact in (Compile, packageDoc) := false
-sources in (Compile,doc) := Seq.empty
-

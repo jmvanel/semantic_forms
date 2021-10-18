@@ -15,5 +15,3 @@ jsonDependencies
 // Compile / sources := Seq.empty
 // doc / sources := Seq.empty
 
-// publishArtifact in (Compile, packageDoc) := false
-// sources in (Compile,doc) := Seq.empty

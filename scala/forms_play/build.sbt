@@ -14,14 +14,11 @@ scalacOptions ++= Seq(
 // "-J-g:none"
 )
 
-publishArtifact in (Compile, packageDoc) := false
-sources in (Compile,doc) := Seq.empty
-
 // CAUTION here: this is for run and runMain; what is given with sbt -J-Xmx12G is *not* in effect for run! 
 // javaOptions in run ++= Seq( "-Xms256M", "-Xmx8G", "-XX:MaxPermSize=1024M", "-XX:+UseConcMarkSweepGC")
-baseDirectory in run := file(".") // does not work: the TDB files are in parent dir.
+run / baseDirectory := file(".") // does not work: the TDB files are in parent dir.
 
-connectInput in run := true
+run / connectInput := true
 
 // routesGenerator := StaticRoutesGenerator
 // routesGenerator := InjectedRoutesGenerator
@@ -36,7 +33,7 @@ libraryDependencies += "com.typesafe.play" %% "play-test" % play.core.PlayVersio
 //libraryDependencies += "com.typesafe.play" %% "play-test" % "2.8.5" % "test"
 
 // For debug breakpoints ???
-fork in run := false
+run / fork := false
 
 // fork a new JVM for 'test:run' and 'run'
 // fork in run := true
