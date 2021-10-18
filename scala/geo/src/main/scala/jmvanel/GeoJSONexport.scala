@@ -33,7 +33,6 @@ import com.apicatalog.jsonld.document.JsonDocument
 import com.fasterxml.jackson.annotation.JsonFormat
 
 import java.io.StringWriter
-import titaniumJena.Titanium2Jena
 import jakarta.json.stream.JsonGenerator
 import jakarta.json.JsonWriterFactory
 

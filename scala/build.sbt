@@ -13,8 +13,12 @@ lazy val root = Project("semantic_forms-root", file("."))
 organization in ThisBuild := "deductions"
 version in ThisBuild := "2.X-SNAPSHOT"
 
-scalaVersion in ThisBuild := "2.12.13"
-	// "2.13.5"
+// scalaVersion in ThisBuild := // "2.12.13"
+ThisBuild / scalaVersion := // "2.12.13"
+	"2.13.6"
+
+// ThisBuild / versionScheme := Some("early-semver")
+ThisBuild / libraryDependencySchemes += "org.scala-lang.modules" %% "scala-async" % "early-semver"
 
 // 
 javacOptions in ThisBuild := Seq("-source","1.8", "-target","1.11")
@@ -79,7 +83,10 @@ lazy val geo = project . dependsOn( jsonld )
 
 // Added for locally compiled Java-RDFa:
 // resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
-resolvers in ThisBuild += Resolver.mavenLocal
+
+// ???
+// resolvers in ThisBuild += Resolver.mavenLocal
+
 // resolvers += Resolver.url("typesafe", url("https://repo.typesafe.com/typesafe/ivy-releases/"))(Resolver.ivyStylePatterns)
 
 // PENDING: really necessary?

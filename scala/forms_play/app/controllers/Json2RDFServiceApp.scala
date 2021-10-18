@@ -38,6 +38,8 @@ import titaniumJena.JsonUtils
 import deductions.runtime.utils.Timer
 import scala.io.Source
 import java.util.HashMap
+import com.apicatalog.jsonld.expansion.ObjectExpansion1314
+import java.util.logging.Level
 
 class Json2RDFServiceApp @Inject() (
      components: ControllerComponents, configuration: play.api.Configuration)
@@ -61,6 +63,12 @@ with RDFStoreLocalJenaProvider // for prefix2uriMap
 //       "file:///home/jmv/ontologies/Karstlink-ontology/grottocenter.org_context.jsonld"
       "https://ontology.uis-speleo.org/grottocenter.org_context.jsonld"
       // "https://github.com/jmvanel/Karstlink-ontology/raw/master/grottocenter.org_context.jsonld"
+
+    import java.util.logging.Logger;
+//    val LOGGER = Logger.getLogger(ObjectExpansion1314.getclass.getName());
+    val LOGGER = Logger.getLogger( "com.apicatalog.jsonld.expansion.ObjectExpansion1314")
+    LOGGER.setLevel(Level.FINE)
+
     lazy val contextJsonDocumentDefault: JsonDocument = {
       val factory = Json.createReaderFactory(new HashMap())
       val reader = factory.createReader(
@@ -129,7 +137,6 @@ with RDFStoreLocalJenaProvider // for prefix2uriMap
           jsonURL)
         outputStream
       }, timerCall)
-
     }
 
     processed match {
@@ -146,7 +153,9 @@ with RDFStoreLocalJenaProvider // for prefix2uriMap
         val mess = f match {
           case e: JsonLdError => 
             e.printStackTrace
-            e.getCode().toString() + "\n" + e.getMessage
+            e.getCode().toString() + "\n" +
+            e.getMessage + "\n" +
+            "Cause: " + e.getCause
           case _ =>
             val baos = new ByteArrayOutputStream
             val ss = new PrintWriter(baos)

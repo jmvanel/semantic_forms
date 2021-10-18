@@ -80,11 +80,15 @@ class LDPSpec extends PlaySpec
       withHeaders(
           ("Slug", file),
           ("Content-Type", "text/turtle")
-      ). withTextBody(bodyTTL)
+      )
+//      . withTextBody(bodyTTL)
+      . withBody(bodyTTL)
+    info( s"Before action = new LDPservicesApp")
     val action = new LDPservicesApp( Helpers.stubControllerComponents() , null).ldpPOSTAction(ldpContainerURI)
+    info( s"Before call(action, request)")
     val result = call(action, request)
-      
-    info( s"POST to URL $appURL")
+
+    info( s"POST to URL <$appURL>")
     info(  "POST status: " + status(result)(timeout) ) // must equalTo(OK)
     info( s"POST ${contentType(result)(timeout)}" ) // must beSome("text/plain")
     info(  "POST charset: " + charset(result)(timeout) ) // must beSome("utf-8")
@@ -114,7 +118,7 @@ class LDPSpec extends PlaySpec
   
   def get() {
     val getRelativeURI = appURL + file
-    info( s"""GET: $getRelativeURI""" )
+    info( s"""GET: <$getRelativeURI>""" )
 	  val request = FakeRequest( Helpers.GET, getRelativeURI ).
 	  withHeaders(( "Accept", "text/turtle")) // , application/ld+json") )
     val action = new LDPgetServicesApp( Helpers.stubControllerComponents() , null ).ldp(ldpContainerURI + file)
