@@ -85,13 +85,13 @@ trait EnterButtons[Rdf <: RDF, DATASET] extends InstanceLabelsInferenceMemory[Rd
                 title={ inputMessage }
                 list="start_uris"
                 />
-              <input class="sf-search sfLookup" type="text" name="clas" size="25"
+              <input class="sf-search sfLookup sf-local-rdf-link" type="text" name="clas" size="25"
                 placeholder={ classMessage }
                 title={ classMessage }
                 data-rdf-type={fromUri(rdfs.Class)}
                 data-rdf-property={fromUri(rdf.typ)}
                 />
-              <input class="hasLookup" type="text" name="link" size="25"
+              <input class="hasLookup sf-local-rdf-link" type="text" name="link" size="25"
                 placeholder={ dbpediaMessage }
                 title={ "" }
                 />
