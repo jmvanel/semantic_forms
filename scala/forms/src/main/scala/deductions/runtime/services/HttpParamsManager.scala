@@ -61,6 +61,6 @@ with StringHelpers {
 
   private def triple2HttpParam(tr: Rdf#Triple) = {
     val gr = ops.makeGraph(Seq(tr))
-    ntriplesWriter.asString(gr, "")
+    ntriplesWriter.asString(gr, None)
   }
 }

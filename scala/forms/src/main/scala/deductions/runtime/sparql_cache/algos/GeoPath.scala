@@ -57,7 +57,7 @@ object GeoPathApp extends {
         val fileName = "data.stats.ttl"
         val os = new FileOutputStream(fileName)
         val statsGraph = getPathLengthForAllMobiles(graph)
-        turtleWriter.write(statsGraph, os, "")
+        turtleWriter.write(statsGraph, os, None)
         os.close()
         println(s"getPathLengthForAllMobiles: Written ${statsGraph.size()} triples to ${System.getProperty("user.dir")}/$fileName")
 

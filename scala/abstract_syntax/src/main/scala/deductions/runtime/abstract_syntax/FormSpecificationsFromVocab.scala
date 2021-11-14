@@ -46,7 +46,7 @@ trait FormSpecificationsFromVocab[Rdf <: RDF, DATASET]
         val formSpecifications = makeFormSpecificationsFromVocab(graph)
         val formspecFile = new File(vocabFile.getAbsolutePath + ".formspec.ttl")
         val os = new FileOutputStream(formspecFile)
-        turtleWriter.write(formSpecifications, os, "")
+        turtleWriter.write(formSpecifications, os, None)
         println(s"Written: $formspecFile")
     }
   }

@@ -95,7 +95,7 @@ object CSVImporterApp extends {
     println(s"""Write $outputFile,
       # of triples ${graph.size()}""")
     val os = new FileOutputStream(outputFile)
-    turtleWriter.write(graph, os, "") // fromUri(documentURI))
+    turtleWriter.write(graph, os, None) // fromUri(documentURI))
   }
   println(s"args ${args.mkString(", ")}" )
   if (args.size > 4) {

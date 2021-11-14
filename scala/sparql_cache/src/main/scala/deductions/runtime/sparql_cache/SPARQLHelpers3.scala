@@ -738,7 +738,7 @@ trait SPARQLHelpers3[Rdf <: RDF, DATASET]
     val graph = Await.result(triples, 5000 millis)
     logger.info(s"uri $uri ${graph}")
     val to = new ByteArrayOutputStream
-    val ret = turtleWriter.write(graph, to, base = uri)
+    val ret = turtleWriter.write(graph, to, base = Some(uri) )
     to.toString
   }
 
@@ -762,7 +762,7 @@ trait SPARQLHelpers3[Rdf <: RDF, DATASET]
 //        println( s">>>> graph2String baseURI $baseURI, graph $graph" )
 
         stats + {
-          val tryString = writer.asString(graph, base = "") // baseURI)
+          val tryString = writer.asString(graph, base = None) // baseURI)
 //        println( s">>>> graph2String tryString $tryString" )
           tryString match {
             case Success(s) => s

@@ -69,7 +69,7 @@ extends RDFPrefixes[Rdf] {
 	  import java.nio.file.{Files, Paths}
 	  val writer = Files.newBufferedWriter( Paths.get(file), StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW )
     for( tr <- triples ) {
-      writer.write( ntriplesWriter.asString( Graph(triples), base ).get )
+      writer.write( ntriplesWriter.asString( Graph(triples), Some(base) ).get )
     }
 	  writer.close()
   }

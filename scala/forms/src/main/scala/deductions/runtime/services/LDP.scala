@@ -117,7 +117,7 @@ trait LDP[Rdf <: RDF, DATASET]
         graph <- sparqlConstructQuery(queryString)
         s <- {
           val writer = getWriterFromMIME(accept)
-          writer.asString(graph, uri)
+          writer.asString(graph, Some(uri))
         }
       } yield s
     })
@@ -177,7 +177,7 @@ trait LDP[Rdf <: RDF, DATASET]
     })
 
     //  TODO use conneg helper
-    turtleWriter.asString(graphTry.getOrElse(emptyGraph), base = uri)
+    turtleWriter.asString(graphTry.getOrElse(emptyGraph), base = Some(uri))
 
     /* # EXAMPLE from LDP primer
      * @prefix ldp: <http://www.w3.org/ns/ldp#>.

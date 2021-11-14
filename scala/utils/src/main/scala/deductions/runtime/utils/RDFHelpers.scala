@@ -401,7 +401,7 @@ extends URIManagement {
 
   def makeTurtleTriple(triple: Rdf#Triple): Try[String] = {
     val graph = makeGraph(List(triple).toIterable)
-    ntriplesWriter.asString(graph, "")
+    ntriplesWriter.asString(graph, None ) // "")
   }
 
 }

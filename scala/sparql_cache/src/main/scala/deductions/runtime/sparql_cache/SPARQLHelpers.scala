@@ -922,7 +922,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     val graph = Await.result(triples, 5000 millis)
     logger.info(s"uri $uri ${graph}")
     val to = new ByteArrayOutputStream
-    val ret = turtleWriter.write(graph, to, base = uri)
+    val ret = turtleWriter.write(graph, to, base = Some(uri))
     to.toString
   }
 
@@ -989,7 +989,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     writer:  RDFWriter[Rdf, Try, Object], stats: String): Try[String] = {
     triples.map {
       graph =>
-        val tryString = writer.asString(graph, base = "") // baseURI)
+        val tryString = writer.asString(graph, base = None ) // baseURI)
         //        logger.debug( s">>>> graph2String tryString $tryString" )
         tryString match {
           case Success(s) => stats + s
@@ -1026,7 +1026,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
 //        logger.debug( s">>>> graph2String writer $writer, stats $stats, baseURI $baseURI, graph $graph" )
 
         Success( stats + {
-          val tryString = writer.asString(graph, base = "") // baseURI)
+          val tryString = writer.asString(graph, base = None ) // baseURI)
 //        logger.debug( s">>>> graph2String tryString $tryString" )
           tryString match {
             case Success(s) => s

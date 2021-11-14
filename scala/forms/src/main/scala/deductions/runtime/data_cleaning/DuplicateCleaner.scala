@@ -612,7 +612,7 @@ type MergeGroups = Seq[MergeGroup]
     println(s"""Writing ${auxiliaryOutput.size} triples in output File
       $outputFile""")
     val os = new FileOutputStream(outputFile)
-    turtleWriter.write(auxiliaryOutput, os, "")
+    turtleWriter.write(auxiliaryOutput, os, None)
     os.close()
   }
 
