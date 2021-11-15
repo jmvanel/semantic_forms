@@ -97,7 +97,7 @@ class DownloadServiceApp @Inject() (
 
   private def makeSourceFromString(res: String) = {
 	  val input = new ByteArrayInputStream(res.getBytes("utf-8"))
-	  StreamConverters.fromInputStream(() ⇒ input)
+          StreamConverters.fromInputStream(() => input)
   }
 
   /** TODO add arg. HTTPrequest to set base URI */

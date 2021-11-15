@@ -76,7 +76,7 @@ with MapUtils {
     // TODO pasted from sparqlConstructPOST
     implicit request: Request[AnyContent] =>
       val httpRequest = copyRequest(request)
-      logger.info(s"""sparqlConstruct /sparql-data: ${httpRequest.logRequest}
+      logger.info(s"""sparqlConstruct /sparql-data: ${httpRequest.logRequest()}
             accepts ${request.acceptedTypes} """)
       val lang = chooseLanguage(request)
       val body: AnyContent = request.body

@@ -14,7 +14,8 @@ ThisBuild / organization := "deductions"
 ThisBuild / version := "2.X-SNAPSHOT"
 
 ThisBuild / scalaVersion := // "2.12.13"
-	"2.13.6"
+	// "2.13.6"
+	"2.13.7"
 
 // ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / libraryDependencySchemes += "org.scala-lang.modules" %% "scala-async" % "early-semver"
