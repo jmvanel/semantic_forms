@@ -1,6 +1,6 @@
 import sbt.Keys._
 import sbt._
-// import Common._ // TODO
+import Common._
 
 // scalaVersion := "2.11.12" // "2.12.6" //
 // scalaVersion := "2.12.7"
@@ -18,7 +18,8 @@ doc / sources := Seq.empty
 libraryDependencies ++= Seq(
   // "org.scala-js" %%% "scalajs-dom" % "0.9.6" ,
   "org.scala-js" %%% "scalajs-dom" % "1.0.0" ,
-  "org.w3" %%  "banana-plantain" % "0.8.4-SNAPSHOT"
+  bananaOrganisation %%  "banana-plantain" % bananaVersion
+  // "org.w3" %%  "banana-plantain" % "0.8.4-SNAPSHOT"
 )
 
 // libraryDependencies += "be.doeraene" %%% "scalajs-jquery" % "0.9.4"

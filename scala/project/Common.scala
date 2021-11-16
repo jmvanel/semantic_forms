@@ -15,9 +15,11 @@ val akkaVersion = "2.6.14" // because of Play 2.8.8 -- 6" // 7" // 4" // "2.6.8"
 val akkaHttpVersion = "10.2.4" // 10.2.2" // "10.1.12"
 val any23Version = "2.5" // 3"
 val commonsCsvVersion = "1.8"
+val bananaVersion = "0.8.4-SNAPSHOT"
+val bananaOrganisation = "net.bblfish.rdf"
 
   // val bananaDependency0 = "org.w3" %%  "banana-jena" % "0.8.4-SNAPSHOT"  exclude("com.fasterxml.jackson.core", "jackson-databind")
-  val bananaDependency0 = "net.bblfish.rdf" %%  "banana-jena" % "0.8.4-SNAPSHOT"  exclude("com.fasterxml.jackson.core", "jackson-databind")
+  val bananaDependency0 = bananaOrganisation %%  "banana-jena" % bananaVersion exclude("com.fasterxml.jackson.core", "jackson-databind")
   val bananaDependency = bananaDependency0 exclude("org.slf4j", "slf4j-api" )	exclude("org.slf4j", "slf4j-log4j12")	exclude("org.apache.logging.log4j","log4j-slf4j-impl")
 
   val jenaDependency = "org.apache.jena" % "apache-jena-libs" % jenaVersion exclude("org.slf4j", "slf4j-api") exclude("com.fasterxml.jackson.core", "jackson-databind")
