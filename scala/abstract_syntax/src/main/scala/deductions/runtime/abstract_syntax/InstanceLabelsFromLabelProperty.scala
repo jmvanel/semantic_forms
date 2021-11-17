@@ -22,7 +22,7 @@ trait InstanceLabelsFromLabelProperty[Rdf <: RDF, DATASET]
   lazy val compiledQuery: Rdf#SelectQuery = {
     val query = s"""
 		|${declarePrefix(form)}
-    |SELECT ?LABEL_URI
+    |SELECT distinct ?LABEL_URI
     |WHERE {
     |  GRAPH ?G {
     |    ?CLASS form:labelProperty ?PROP.
@@ -42,28 +42,29 @@ trait InstanceLabelsFromLabelProperty[Rdf <: RDF, DATASET]
 
  /**
    * inferring possible label from:
-   *
    * form:labelProperty in the rdf:type class of given node
    *
    * @return URI from which to get the desired label
    */
   def instanceLabelFromLabelProperty(node: Rdf#Node): Option[Rdf#Node] = {
+import scala.collection.mutable.ArrayBuffer
     ops.foldNode(node)(
       uri => {
         if (uri == nullURI )
           None
         else {
           val bindings: Map[String, Rdf#Node] = Map("?thing" -> uri )
-//        	println( s">>>> instanceLabelFromLabelProperty ?thing node $node compiledQuery $compiledQuery" )
+                // println( s">>>> instanceLabelFromLabelProperty ?thing node <$node> compiledQuery $compiledQuery" )
         	val solutionsTry = for {
         		es <- dataset.executeSelect(compiledQuery, bindings)
         	} yield es
           makeListofListsFromSolutions(solutionsTry, addHeaderRow = false) match {
-            case Success(List(Seq(lab, _*), _*)) =>
-              // println( s">>>> instanceLabelFromLabelProperty label $lab" )
+            // case Success(List(Seq(lab, _*), _*)) =>
+            case Success(List(ArrayBuffer(lab, _*), _*)) =>
+              // println( s">>>> instanceLabelFromLabelProperty URI for label <$lab>" )
               Some(lab)
             case res =>
-              //        	    println( s">>>> instanceLabelFromLabelProperty result $res" )
+              // println( s">>>> instanceLabelFromLabelProperty result '$res'" )
               None
           }
         }
