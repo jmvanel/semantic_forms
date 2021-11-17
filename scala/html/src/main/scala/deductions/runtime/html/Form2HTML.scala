@@ -91,7 +91,7 @@ trait Form2HTML[NODE, URI <: NODE]
       if (actionURIarg =/= "")
         <div class="sf-save">
           <input value={ mess("SAVE") } formaction={ actionURIarg } type="submit"
-                 class="form-control btn btn-primary" name="save" />
+                 class="form-control btn btn-primary" />
         </div>
 
     //// output begins ////
