@@ -122,6 +122,10 @@ extends BaseController
         <p/><br/>
         <h3 id="register" name="register">{I18NMessages.get( "Create_account", httpRequest.getLanguage())}</h3>
         { registerForm }
+        <p/>-
+        <p/>-
+        <p/>-
+        <p/>-
       </div>
 
     val page = mainPage(content, userInfo = <div/>, title = "",
