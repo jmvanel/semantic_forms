@@ -116,7 +116,7 @@ extends RDFCacheDependencies[Rdf, DATASET]
     ret._1
   }
 
-  /** retrieve URI with Resource Status
+  /** retrieve URI's content with Resource Status
    * TODO [Marco] collect possible behavior patterns
 to give more meaningful feedback to user
 1. site is down

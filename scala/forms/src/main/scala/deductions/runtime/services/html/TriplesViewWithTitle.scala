@@ -57,9 +57,13 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
         val datasetOrDefault = getDatasetOrDefault(database)
         val result: Try[NodeSeq] = {
 
-          // 1. retrieve or check URI from Internet
 
           val (tryGraph: Try[Rdf#Graph], failureOrStatistics: NodeSeq ) =
+
+          // 0. do nothing if local URI
+          if( ! isDownloadableURI(URI(uri)) )
+
+            // 1. retrieve or check URI from Internet
             if (blankNode =/= "true") {
               // TODO pass datasetOrDefault)
               val (tryGraph, resourceStatus) = retrieveURIResourceStatus(
@@ -90,6 +94,12 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
               val graph = findAllNamedGraphUriANY_ANYTransaction( BNode(uri0) )
               ( graph , NodeSeq.Empty )
             }
+
+          else {
+            // locally hosted stuff
+            logger.debug( s"==== TriplesViewWithTitle.htmlForm locally hosted stuff <${uri0}>")
+            ( Success(emptyGraph), NodeSeq.Empty )
+          }
 
           // LOGGING only
 

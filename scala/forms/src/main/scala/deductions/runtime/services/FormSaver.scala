@@ -85,7 +85,8 @@ trait FormSaver[Rdf <: RDF, DATASET]
             log(s"getTriplesFromHTTPparams: triple from httpParam: {$comingBackTriple}")
             comingBackTriple
           }
-          if (tryTriple.isFailure) logger.error(s"getTriplesFromHTTPparams: ERROR: param $tripleAsTurtle : result $tryTriple")
+          if (tryTriple.isFailure)
+            logger.error(s"getTriplesFromHTTPparams: ERROR !!!!!!!!!!!!!!! param $tripleAsTurtle : result $tryTriple")
           tryTriple match {
             case Success(triple) => (triple, objects)
             case Failure(f)      =>
@@ -99,7 +100,9 @@ trait FormSaver[Rdf <: RDF, DATASET]
     res
   }
 
-  /** is Special HTTPparameter For a Triple ? (not uri, url, graphURI) */
+  /** is it a Special HTTP parameter For a Triple ? (not uri, url, graphURI) ;
+   *  these parameters are URL-encoded string for original Turtle triple in database,
+   *  to be possibly modifed by user. */
   private def isSpecialHTTPparameterForTriple(param0: String) = (
         param0 != "url" &&
         param0 != "uri" &&
@@ -171,7 +174,8 @@ trait FormSaver[Rdf <: RDF, DATASET]
     val triplesToRemove = ArrayBuffer[Rdf#Triple]()
     var typeChange = false
 
-    log(s"computeDatabaseChanges: originalTriple: $originalTriple, objectsFromUser $objectsFromUser")
+    log(s"""computeDatabaseChanges: originalTriple: $originalTriple,
+      objectsFromUser $objectsFromUser""")
     implicit val graph = allNamedGraph
     lazy val owl = OWLPrefix[Rdf]
     val ranges = getRDFSranges(originalTriple.predicate)
@@ -269,7 +273,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
     log(s">>>> doSave: userURI $userURI, graphURI $graphURI, ds: ${dataset}")
 
       val transaction = wrapInTransaction {
-        log( s"doSave: triplesToRemove ${triplesToRemove.mkString(", ")}")
+        log( s"doSave: triplesToRemove ${triplesToRemove.mkString(",\n")}")
         val res0 =
         time("removeTriples",
           rdfStore.removeTriples( dataset,
@@ -282,7 +286,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
             URI("user:anonymous"),
             triplesToRemove.toIterable)
 
-        log( s"doSave: triplesToAdd ${triplesToAdd.mkString(", ")}")
+        log( s"doSave: triplesToAdd ${triplesToAdd.mkString(",\n")}")
         val res =
           time("appendToGraph",
             rdfStore.appendToGraph( dataset,
@@ -317,6 +321,5 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
   private def log(s: String) =
     logger.debug(s"FormSaver: $s")
-
 }
 
