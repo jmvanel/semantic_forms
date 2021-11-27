@@ -11,8 +11,8 @@ object Common {
 val jenaVersion =  "4.2.0"
 // val jenaVersion =  "3.18.0-SNAPSHOT"
 
-val akkaVersion = "2.6.14" // because of Play 2.8.8 -- 6" // 7" // 4" // "2.6.8" //
-val akkaHttpVersion = "10.2.4" // 10.2.2" // "10.1.12"
+val akkaVersion = "2.6.17" // 4" // because of Play 2.8.8
+val akkaHttpVersion = "10.2.7" // "10.2.4"
 val any23Version = "2.5" // 3"
 val commonsCsvVersion = "1.8"
 val bananaVersion = "0.8.4-SNAPSHOT"
@@ -27,8 +27,8 @@ val bananaOrganisation = "net.bblfish.rdf"
   val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion  exclude("com.fasterxml.jackson.core", "jackson-databind")
   val jenaSpatialDependency = "org.apache.jena" % "jena-geosparql" % jenaVersion  exclude("com.fasterxml.jackson.core", "jackson-databind")
 
-  val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.3.0"
-  // "2.0.1"
+  val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.3.0" // com.typesafe.play:twirl-api_2.13:1.5.1 (depends on 1.2.0)
+                                                             // "2.0.1"
 
   val junitDependency = "junit" % "junit" % "4.13.2" % Test
   libraryDependencies += "org.scalactic" %% "scalactic" % "3.1.1"
@@ -39,7 +39,7 @@ val bananaOrganisation = "net.bblfish.rdf"
 
   val loggingDependencies = Seq(
    "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4"
- , "ch.qos.logback" % "logback-classic" % "1.2.6"
+ , "ch.qos.logback" % "logback-classic" % "1.2.7"
  , "org.slf4j" % "slf4j-api" % "1.7.32" // :if expand("%") == ""|browse confirm w|else|confirm w|endif
  // 0"
 )
@@ -78,8 +78,8 @@ val bananaOrganisation = "net.bblfish.rdf"
     xmlDependency,
     junitDependency, scalatestDependency,
 
-    "org.apache.lucene" % "lucene-suggest" % "8.10.0" , // 8.8.0" , // 7.7.2" , // 7.4.0"
-    "org.apache.lucene" % "lucene-demo"    % "8.10.0" , // 8.8.0" , // 7.7.2" , // 7.4.0"
+    "org.apache.lucene" % "lucene-suggest" % "8.11.0" , // "8.10.0" , // 8.8.0" 
+    "org.apache.lucene" % "lucene-demo"    % "8.11.0" , // "8.10.0" , // 8.8.0"
 
     // "net.rootdev" % "java-rdfa" % "0.4.3-SNAPSHOT"
     "net.rootdev" % "java-rdfa" % "0.4.2" ,
