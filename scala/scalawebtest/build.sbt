@@ -1,8 +1,8 @@
 import sbt.Keys._
 import sbt._
+import Common._
 
-scalaVersion := // "2.12.4" //
-		"2.11.12"
+// scalaVersion := "2.11.12"
 
 val scalawebtestVersion = // "2.0.2-SNAPSHOT"
 			"2.0.1"

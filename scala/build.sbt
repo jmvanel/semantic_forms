@@ -43,9 +43,9 @@ lazy val forms_play = (project in file("forms_play"))
 // triggers scalaJSPipeline when using compile or continuous compilation
    compile in Compile := ((compile in Compile) dependsOn scalaJSPipeline).value,
    libraryDependencies ++= Seq(
-     ( "com.vmunier" %% "scalajs-scripts" % "1.1.4" ) // . exclude("com.typesafe.play", "twirl-api_2.11")
+     ( "com.vmunier" %% "scalajs-scripts" % "1.2.0" )
    )
-   )
+)
 
 lazy val core = project
 lazy val utils = project .dependsOn(core)
