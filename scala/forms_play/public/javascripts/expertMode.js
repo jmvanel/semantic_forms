@@ -4,6 +4,7 @@ function getElementsExpertMode() {
   return document.getElementsByClassName('sf-local-rdf-link')
 }
 
+/** set visibility according to Expert Mode flag from local Storage */
 function applyExpertMode(isExpertMode) {
   const localRdfLinks = getElementsExpertMode()
   if(isExpertMode)
@@ -14,8 +15,11 @@ function applyExpertMode(isExpertMode) {
     // localRdfLinks[i].style.visibility = visibility
     localRdfLinks[i].style.display = visibility
   }
+  var expertModeCheckbox = document.getElementById("expertModeCheckbox")
+  expertModeCheckbox.checked = isExpertMode
 }
 
+/** get Expert Mode flag from local Storage */
 function getExpertMode() {
   const isExpertModeString = localStorage.getItem(SF_ExpertModeKey)
   return String(isExpertModeString).toLowerCase() === 'true'
