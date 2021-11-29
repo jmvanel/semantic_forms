@@ -35,12 +35,6 @@ libraryDependencies += "com.typesafe.play" %% "play-test" % play.core.PlayVersio
 // For debug breakpoints ???
 run / fork := false
 
-// fork a new JVM for 'test:run' and 'run'
-// fork in run := true
-// fork := true
-// add a JVM option to use when forking a JVM for 'run'
-// javaOptions += "-Xmx50M"
-
 // PENDING: really necessary? (also in ../build.sbt)
 resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
 // cf http://stackoverflow.com/questions/16400877/local-dependencies-resolved-by-sbt-but-not-by-play-framework

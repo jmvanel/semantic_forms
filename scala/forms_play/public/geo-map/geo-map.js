@@ -1,6 +1,6 @@
 /* populate LeafLet map with array data */
 
-/* TODO pass to Scala.js ,
+/* TODO migrate to Scala.js ,
  * see Scala.js bindings for Leaflet.js : https://github.com/fancellu/scalajs-leaflet
  * API http://leafletjs.com/reference-1.2.0.html
 */
@@ -37,12 +37,9 @@ function computeMinInPoints(initialData, key/*: String*/) {
         /** @return Bounds object from LeafLet */
         function findGeographicZone(initialData,keyLat,keyLong) {
 
-//  	        console.log( 'findGeographicZone: initialData: ' +
-//  	        		JSON.stringify(initialData) )
-//  	        console.log( 'findGeographicZone: computeMinInPoints keyLat: ' +
-//  	        		computeMinInPoints(initialData, keyLat) )
-//  	        console.log( 'findGeographicZone: computeMaxInPoints keyLat: ' +
-//  	        		computeMaxInPoints(initialData, keyLat) )
+//  	        console.log( 'findGeographicZone: initialData: ' + JSON.stringify(initialData) )
+//  	        console.log( 'findGeographicZone: computeMinInPoints keyLat: ' + computeMinInPoints(initialData, keyLat) )
+//  	        console.log( 'findGeographicZone: computeMaxInPoints keyLat: ' + computeMaxInPoints(initialData, keyLat) )
 
             var result = L.latLngBounds(
                       L.latLng(
@@ -55,8 +52,7 @@ function computeMinInPoints(initialData, key/*: String*/) {
 //  	        console.log( 'findGeographicZone: ' +
 //  	        		computeMaxInPoints(initialData, keyLong) + " , " +
 //  	        		computeMinInPoints(initialData, keyLong) + " , " +
-//  	        		JSON.stringify( result )
-//  	        )
+//  	        		JSON.stringify( result ))
 
             return result
         }
@@ -97,6 +93,11 @@ class Map{
             maxZoom: 30,
             maxNativeZoom: 18
         }).addTo(this.OSM )
+
+        L.control.locate({
+            strings: { title: "Show me where I am" }
+        }).addTo(this.OSM)
+
         this.keyLat = keyLat
         this.keyLong = keyLong
         this.keyLat = keyLat
@@ -132,7 +133,7 @@ class Map{
     }
 
     /**
-     * affiche tous les points enregistré
+     * affiche tous les points enregistrés
      * @param latitude -- la latitude du point
      * @param longitude -- la latitude du point
      * @param key -- la clé pour la sauvegarde du point
@@ -143,11 +144,16 @@ class Map{
         for (let key in this.pins) {
             if (this.pins.hasOwnProperty(key)) {
                 this.pinShow(key)
-
             }
         }
+        // displayUserLocation()
+    }
 
-        // display user location
+    /** display user location
+     * TODO
+     * - add a button to move to user location
+     * - remove circle on new location received */
+    displayUserLocation() {
         var map = this.OSM
         function onLocationFound(e) {
           var radius = e.accuracy / 2;
@@ -178,7 +184,7 @@ class Map{
     addPin(latitude,longitude, key, text, image) {
       "use strict"
       var pinText = text
-      console.log('addPin key '); console.log( key )
+      console.log('addPin key ' + key )
       if( key.length > 0 ) {
         // TODO should be usable not embedded inside semantic_forms
         pinText = '<a href="/display?displayuri=' + encodeURIComponent(key) + '" target="_blank">' + text + '</a>'
@@ -196,11 +202,13 @@ class Map{
       } else
         pinText = ''
       this.pins[key] = L.marker([latitude,longitude],
-          {draggable:'true'} )
-          .bindPopup(pinText, {autoClose:false} )
+          {draggable:'true',
+	    "className": "sf-geo-marker"} )
+          .bindPopup(pinText,
+            {autoClose:false} )
 
       var popupLocation = new L.LatLng( latitude,longitude );
-      var popup = L.popup();
+      var popup = L.popup( {"className": "sf-geo-popup"});
       popup.setLatLng(popupLocation);
       popup.setContent(pinText);
       this.OSM.addLayer(popup)

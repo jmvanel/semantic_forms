@@ -4,7 +4,9 @@
 //const SparqlStore = require('rdf-store-sparql')
 //const rdfFetch = require('rdf-fetch')
 
-/* cf
+/* Create an array of data from the geographic RDF triples
+ *
+ * cf
  * http://rawgit.com/rdf-ext/rdf-examples/develop/parse-jsonld-to-dataset.html
  * https://github.com/rdfjs/representation-task-force/blob/master/interface-spec.md */
 
@@ -19,11 +21,13 @@ let geoLat = geo + "lat"
 let displayLabel = "urn:displayLabel"
 let foafDepictionURI = foaf + "depiction"
 let foafImgURI = foaf + "img"
+let ogcAsWKT = "http://www.opengis.net/ont/geosparql#asWKT"
 
 /** From a JSON-LD URL , produce a structure like :
- * [{"@id":"http://dbpedia.org/resource/Lyon","label":"Lyon",
- *   "long":"4.840000152587891E0","lat":"4.57599983215332E1"}]
- *   as a Promise.
+ * [{"@id":"http://dbpedia.org/resource/Lyon", "label":"Lyon",
+ *   "long":"4.840000152587891E0", "lat":"4.57599983215332E1"}]
+ *
+ * as a Promise.
 */
 function rdfURL2SimpleArray(/*String: */url)/*: Promise*/ {
   return rdfFetch( url ).then(
@@ -34,30 +38,32 @@ function rdfURL2SimpleArray(/*String: */url)/*: Promise*/ {
 
     /** For filtering with RDF lang */
     function rdfsLabelCriterium(quad, subject) {
-    var userLanguage = (navigator.language || navigator.userLanguage ). substring(0,2)
-    var ret = (
-       quad.predicate.value === rdfsLabel ||
-       quad.predicate.value === displayLabel
-       )
-     && ( quad.object.language === userLanguage ||
-          quad.object.language === "" )
-     &&  quad.subject.toString() == subject.toString()
-//     console.log( 'rdfsLabelCriterium quad: ' + quad)
-     return ret
+      var userLanguage = (navigator.language || navigator.userLanguage ). substring(0,2)
+      var ret = (
+        quad.predicate.value === rdfsLabel ||
+        quad.predicate.value === displayLabel
+      )
+       && ( quad.object.language === userLanguage ||
+            quad.object.language === "" )
+       &&  quad.subject.toString() == subject.toString()
+//      console.log( 'rdfsLabelCriterium quad: ' + quad)
+      return ret
     }
 
-	/** For filtering with non-lang RDF property */
-	function plainPropertyCriterium(/*Quad: */quad, /*Term: */subject, /*String: */property)/*:Boolean*/ {
-     return quad.predicate.value === property
-       &&  quad.subject.toString() == subject.toString()
-	}
+    /** For filtering with non-lang RDF property */
+    function plainPropertyCriterium(/*Quad: */quad, /*Term: */subject, /*String: */property)/*:Boolean*/ {
+      return quad.predicate.value === property
+         &&  quad.subject.toString() == subject.toString()
+    }
 
-	function longCriterium(quad, subject) {
+    function longCriterium(quad, subject) {
 		return plainPropertyCriterium(quad, subject, geoLong) }
-	function latCriterium(quad, subject) {
+    function latCriterium(quad, subject) {
 		return plainPropertyCriterium(quad, subject, geoLat) }
+    function wktCriterium(quad, subject) {
+		return plainPropertyCriterium(quad, subject, ogcAsWKT) }
 
-	function getRdfsLabel(subj) {
+    function getRdfsLabel(subj) {
 		var rdfsLabelValue = filterQuad(subj, rdfsLabelCriterium)
 		var rdfsLabelOrElse = rdfsLabelValue
 		if( rdfsLabelValue == "" || rdfsLabelValue == undefined )
@@ -65,19 +71,39 @@ function rdfURL2SimpleArray(/*String: */url)/*: Promise*/ {
 		return rdfsLabelOrElse
 	}
 
-	function imgCriterium(quad, subject) {
+    function imgCriterium(quad, subject) {
       return plainPropertyCriterium(quad, subject, foafImgURI ) }
 	function depictionCriterium(quad, subject) {
       return plainPropertyCriterium(quad, subject, foafDepictionURI ) }
 
-	function getGeoLong(subj){ return filterQuad(subj, longCriterium) }
-	function getGeoLat(subj) { return filterQuad(subj, latCriterium) }
+    function getGeoLong(subj){
+      let geoLong = filterQuad(subj, longCriterium)
+      if( geoLong === undefined) {
+        let wkt = filterQuad(subj, wktCriterium)
+        let ret = wkt .
+             split(',')[0].
+                   replace("POINT(", "")
+        return ret
+      } else
+        return geoLong;
+    }
+    function getGeoLat(subj) {
+      let geo = filterQuad(subj, latCriterium)
+      if( geo === undefined) {
+        let wkt = filterQuad(subj, wktCriterium)
+       return wkt .
+            split(',')[1] .
+              replace(",0)", "") .
+              replace(")", "")
+      } else
+          return geo;
+    }
     function getImage(subj)  { return filterQuad(subj, imgCriterium) ||
                                       filterQuad(subj, depictionCriterium) }
 
-	/** filter Quad with given criterium
-	 * @return string value, e.g. of rdfs:label , or undefined */
-	function filterQuad(subj, criterium) {
+    /** filter Quad with given criterium
+     * @return string value, e.g. of rdfs:label , or undefined */
+    function filterQuad(subj, criterium) {
       // console.log('subj ' + subj);
       let criteriumQuads = dataset.filter((quad) => {
         return criterium(quad, subj)
@@ -86,21 +112,25 @@ function rdfURL2SimpleArray(/*String: */url)/*: Promise*/ {
       return criteriumQuads && criteriumQuads.object.value;
     }
 
-    console.log( 'RDF FETCH dataset:' ); console.log( dataset );
+    // console.log( 'RDF FETCH dataset:' ); console.log( dataset );
     let lats = dataset
-    .match(null, rdf.namedNode("http://www.w3.org/2003/01/geo/wgs84_pos#lat"))
+    .match(null, rdf.namedNode( geoLat ))
     .toArray()
-//    console.log( 'LATs: ' ); console.log( lats );
+    // console.log( 'LATs: ' ); console.log( lats );
+    let wtks = dataset
+    .match(null, rdf.namedNode( ogcAsWKT ))
+    .toArray()
+    // console.log( 'WTKs: ' ); console.log( wtks );
 
-    var subjs = lats.map( (latQuad) => { return latQuad.subject; });
-    console.log( 'LAT subjs ' + subjs )
+    var subjs = lats.concat(wtks).map( (latQuad) => { return latQuad.subject; });
+    console.log( 'LAT + WTK subjs ' ); console.log( subjs )
 
     let simpleArray = subjs . map((subj) => {
       return {
         "@id": (subj.toString()),
         "label":getRdfsLabel(subj),
-        "long": getGeoLong(subj),
-        "lat":  getGeoLat(subj),
+        "long": Number( getGeoLong(subj) ),
+        "lat":  Number( getGeoLat(subj) ),
         "img":  getImage(subj)
         // 'http://commons.wikimedia.org/wiki/Special:FilePath/Trevoux-008.JPG?width=300'
       }
