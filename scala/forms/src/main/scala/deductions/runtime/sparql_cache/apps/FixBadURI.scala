@@ -9,7 +9,6 @@ import deductions.runtime.sparql_cache.RDFCacheAlgo
 import deductions.runtime.utils.{DefaultConfiguration, URIHelpers}
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.riot.RDFDataMgr
-import org.apache.jena.util.FileManager
 import org.w3.banana.RDF
 
 import scalaz._
@@ -180,13 +179,21 @@ trait FixBadURI[Rdf <: RDF, DATASET]
   }
 
   private def readJena = {
+    try{
+      val model = RDFDataMgr.loadModel(fileNameOrUri)
+      model.write(System.out, "TURTLE");
+    } catch
+    /*
     val model = ModelFactory.createDefaultModel();
     val is = FileManager.get().open(fileNameOrUri);
     if (is != null) {
       model.read(is, null, "N-QUADS");
       model.write(System.out, "TURTLE");
-    } else {
-      System.err.println("cannot read " + fileNameOrUri); ;
+    } else
+    */
+    {
+      case e: Throwable =>
+      System.err.println("cannot read " + fileNameOrUri + e ); ;
     }
   }
 
