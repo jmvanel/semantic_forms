@@ -42,7 +42,7 @@ trait UserTraceability[Rdf <: RDF, DATASET]
       val objet = row(objectId).toString
 
       if(resultsTimestamp.contains( (property,objet)) ){
-        logger.debug(resultsTimestamp( (property,objet) )
+        logger.debug(resultsTimestamp( (property,objet) ) . toString()
         + (" < ")
         + (timeElement)
         + (" = ")

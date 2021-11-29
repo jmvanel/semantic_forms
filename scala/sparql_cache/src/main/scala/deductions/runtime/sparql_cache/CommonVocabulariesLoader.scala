@@ -70,7 +70,7 @@ trait CommonVocabulariesLoader[Rdf <: RDF, DATASET]
    * TRANSACTIONAL
    *  #basicVocabs (FOAF etc) are not supposed to change often, so they are not removed ..
    */
-  def resetCommonVocabularies(except:List[Rdf#URI] = List()) {
+  def resetCommonVocabularies(except:List[Rdf#URI] = List()) : Unit = {
     val r = rdfStore.rw( dataset, {
       (largerVocabs diff except) map {
         voc =>
@@ -89,7 +89,7 @@ trait CommonVocabulariesLoader[Rdf <: RDF, DATASET]
   }
 
   /** TRANSACTIONAL */
-  def loadCommonVocabularies() {
+  def loadCommonVocabularies() : Unit = {
     // Logger.getRootLogger().info(vocabularies)
     vocabularies map {
       voc =>
@@ -130,7 +130,7 @@ trait CommonVocabulariesLoader[Rdf <: RDF, DATASET]
     }
   }
 
-    def loadCommonVocabulariesTest() {
+    def loadCommonVocabulariesTest() : Unit = {
     	readStoreUriInNamedGraph( URI(githubcontent + "/jmvanel/semantic_forms/master/scala/forms/form_specs/additions_to_vocabs.ttl") )
     }
 

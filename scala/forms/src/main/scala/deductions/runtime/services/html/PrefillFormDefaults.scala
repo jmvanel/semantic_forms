@@ -33,9 +33,9 @@ with UserQueries[Rdf, DATASET] {
         case field: LiteralEntry if (field.property == dct("date") ) =>
           field.copy(value = Literal(localDateText))
         case field: ResourceEntry if (field.property == foaf("maker") ) =>
-          val personFromAccount = getPersonFromAccountTR(request.userId())
+          val personFromAccount = getPersonFromAccountTR(request.userId)
           val maker = if( personFromAccount == nullURI )
-            URI(request.userId())
+            URI(request.userId)
           else personFromAccount
           field.copy( value = maker )
         case _ => field

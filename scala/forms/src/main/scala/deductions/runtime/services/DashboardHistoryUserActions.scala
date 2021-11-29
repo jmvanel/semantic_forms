@@ -76,7 +76,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
     val metadata = filterMetadataFocus(metadata1, request)
     logger.debug(s">>>> makeTableHistoryUserActions metadata $metadata")
 //    logger.info(s">>>> makeTableHistoryUserActions metadata ${metadata._1.mkString("\n")}")
-    implicit val lang = request.getLanguage()
+    implicit val lang = request.getLanguage
     val historyLink =
       if( request.getHTTPparameterValue("paragraphs").isDefined )
       <a href="/history?limit=50" class="sf-History_table-link">
@@ -233,7 +233,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       val focusURI = expandOrUnchanged(params("uri").headOption.getOrElse(""))
       logger.debug(s"""===== filterMetadataFocus: params.contains("uri") ${focusURI}""")
       val sparqlQuery = neighborhoodSearchSPARQL(focusURI)
-      implicit val lang = request.getLanguage()
+      implicit val lang = request.getLanguage
       (
         filterMetadataSPARQL(metadata, request, sparqlQuery),
         // focus URI Pretty Printed
@@ -297,7 +297,7 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
         logger.debug("row " + row(1).toString())
         val subjectURI = row(0)
         val formSyntax = {
-          val lang = request.getLanguage()
+          val lang = request.getLanguage
           val formSyntax = createFormTR(subjectURI)(allNamedGraph, lang)
           // filterOutFields(formSyntax)
           addUserInfoOnTriples(abbreviateLiterals(formSyntax))(allNamedGraph)
@@ -373,10 +373,10 @@ trait DashboardHistoryUserActions[Rdf <: RDF, DATASET]
       for ((types, formSyntaxesFortypes) <- formSyntaxesGroupedByClass ) yield {
         if (formSyntaxesFortypes.size > 1) {
           val classURI = types.headOption.getOrElse(URI("urn:No_Class"))
-          val mess = Text( I18NMessages.get("Class", request.getLanguage() ) + " " )
+          val mess = Text( I18NMessages.get("Class", request.getLanguage ) + " " )
           val mess2 = " (" + formSyntaxesFortypes.size.toString() + ") "
           ( makeHtmlHeader(
-//              Text(instanceLabelFromTDBtr(classURI, request.getLanguage()) ),
+//              Text(instanceLabelFromTDBtr(classURI, request.getLanguage) ),
               makeHyperlinkForURItr(classURI, request),
               mess,
               mess2) ,

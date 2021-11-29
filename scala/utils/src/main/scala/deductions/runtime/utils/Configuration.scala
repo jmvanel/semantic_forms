@@ -74,7 +74,7 @@ trait Configuration extends CSSClasses {
 
   // relative URI's
   // maybe TODO use inverse Play's URI API
-  def hrefDisplayPrefix(): String =
+  def hrefDisplayPrefix: String =
 //    s"/display$anchor?displayuri="
     s"/display?displayuri="
   def hrefDownloadPrefix = "/download?url="

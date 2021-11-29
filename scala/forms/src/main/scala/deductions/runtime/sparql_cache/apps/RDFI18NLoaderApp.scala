@@ -33,14 +33,14 @@ trait RDFI18NLoaderTrait[Rdf <: RDF, DATASET]
 
   /** load RDF I18N Translations From GitHub, into named graph "rdf-i18n";
    *  TRANSACTIONAL */
-  def loadFromGitHubRDFI18NTranslations() {
+  def loadFromGitHubRDFI18NTranslations() : Unit = {
 
     /* do not hardcode the URL's but read:
      * https://raw.githubusercontent.com/jmvanel/rdf-i18n/master/translations_list.ttl
      * and query ?S lingvoj:translatedResource ?RES */
 	  val translationDocURL = s"${githubcontent}/jmvanel/rdf-i18n/master/translations_list.ttl"
 
-     val translationDoc = rdfLoader.load(new java.net.URL(translationDocURL)) . getOrElse (sys.error(
+     val translationDoc = rdfLoader().load(new java.net.URL(translationDocURL)) . getOrElse (sys.error(
           s"couldn't read translation Doc URL <$translationDocURL>"))
 
      println(s"translationDoc $translationDoc" )

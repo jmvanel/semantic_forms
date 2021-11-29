@@ -144,9 +144,9 @@ with ApplicationTrait
       request: Request[_] ) {
     val requestCopy: HTTPrequest = copyRequest(request)
     // TODO copied below in MainPagePrecompute
-    val lang = requestCopy.getLanguage()
-    val userid = requestCopy.userId()
-    val uri = expandOrUnchanged( requestCopy.getRDFsubject() )
+    val lang = requestCopy.getLanguage
+    val userid = requestCopy.userId
+    val uri = expandOrUnchanged( requestCopy.getRDFsubject )
     val title = labelForURITransaction(uri, lang)
     val userInfo = displayUser(userid, requestCopy)
   }
@@ -155,9 +155,9 @@ with ApplicationTrait
   private case class MainPagePrecompute(
       val requestCopy: HTTPrequest) {
     callAllServiceListeners(requestCopy)
-    val lang = requestCopy.getLanguage()
-    val userid = requestCopy.userId()
-    val uri = expandOrUnchanged( requestCopy.getRDFsubject() )
+    val lang = requestCopy.getLanguage
+    val userid = requestCopy.userId
+    val uri = expandOrUnchanged( requestCopy.getRDFsubject )
     val title = labelForURITransaction(uri, lang)
     val userInfo = displayUser(userid, requestCopy)
     def this(request: Request[_]) = this(copyRequest(request))
@@ -396,9 +396,9 @@ with ApplicationTrait
   private val tableContentMaker: SemanticController = new SemanticController {
     override def result(request: HTTPrequest): NodeSeq = {
       val query = queryFromRequest(request)
-      val userid = request.userId()
+      val userid = request.userId
       val title = "Table view from SPARQL"
-      val lang = request.getLanguage()
+      val lang = request.getLanguage
       val userInfo = displayUser(userid, request)
 
       val editButton = <button action="/table" title="Edit each cell of the table (like a spreadheet)">Edit</button>
@@ -412,7 +412,7 @@ with ApplicationTrait
         <form> {
             <input name="query" type="hidden" value={ query }></input> ++
               <input name="edit" type="hidden" value="yes"></input> ++
-              <input type="hidden" name="graphURI" value={ makeAbsoluteURIstringForSaving(request.userId()) }/> ++
+              <input type="hidden" name="graphURI" value={ makeAbsoluteURIstringForSaving(request.userId) }/> ++
               {
                 if (isEditableFromRequest(request))
                   submitButton
@@ -472,7 +472,7 @@ with ApplicationTrait
       recoverFromOutOfMemoryErrorGeneric(
         {
           val requestCopy = getRequestCopy()
-          val userid = requestCopy.userId()
+          val userid = requestCopy.userId
           val lang = chooseLanguage(request)
           val userInfo = displayUser(userid, requestCopy)
           outputMainPage(
@@ -492,7 +492,7 @@ with ApplicationTrait
     def doAction(implicit request: Request[_]) = {
       val httpRequest = copyRequest(request)
       logger.info(s"sparql: ${httpRequest.logRequest()} , query" + query)
-      val lang = httpRequest.getLanguage()
+      val lang = httpRequest.getLanguage
       val userInfo = displayUser(getUsername(request).getOrElse("anonymous"), httpRequest)
       outputMainPage(
           sparqlConstructQueryHTML(query, httpRequest, context=httpRequest.queryString2),
@@ -557,7 +557,7 @@ with ApplicationTrait
             }
           wordsearchFuture(q, classe, requestCopy)
         },
-          recoverFromOutOfMemoryErrorDefaultMessage(requestCopy.getLanguage()) +
+          recoverFromOutOfMemoryErrorDefaultMessage(requestCopy.getLanguage) +
             s", in word search /wordsearch?q=$q")
     }
 
@@ -593,7 +593,7 @@ with ApplicationTrait
   /** show Triples In given Graph */
   def showTriplesInGraphAction(uri: String) = boilerPlateActionFuture {
     precomputed =>
-      val lang = precomputed.requestCopy.getLanguage()
+      val lang = precomputed.requestCopy.getLanguage
       recoverFromOutOfMemoryError(
         Future.successful(showTriplesInGraph(uri, lang)),
         s"in show Triples In Graph /showTriplesInGraph?uri=$uri")
@@ -739,7 +739,7 @@ with ApplicationTrait
           val lang = chooseLanguageObject(request).language
           val config1 = config
           val httpRequest = copyRequest(request)
-          val userInfo = displayUser(httpRequest.userId(), httpRequest)
+          val userInfo = displayUser(httpRequest.userId, httpRequest)
           outputMainPage(
             new ImplementationSettings.RDFCache
               with ToolsPage[ImplementationSettings.Rdf, ImplementationSettings.DATASET]

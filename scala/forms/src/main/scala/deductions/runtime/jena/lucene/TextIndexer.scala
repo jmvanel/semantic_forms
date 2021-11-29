@@ -1,14 +1,13 @@
 package deductions.runtime.jena.lucene
 
-import scala.collection.JavaConverters.iterableAsScalaIterableConverter
+// import scala.collection.JavaConverters.iterableAsScalaIterableConverter
 import scala.collection._
 
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.utils.DefaultConfiguration
 
 import org.apache.jena.query.text.DatasetGraphText
-//import scala.collection.JavaConverters.iterableAsScalaIterableConverter
-import collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 import org.apache.jena.query.text.EntityDefinition
 import org.apache.jena.graph.Node

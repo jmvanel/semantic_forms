@@ -42,7 +42,7 @@ with SemanticController {
   def contactsDashboardHTML(request: HTTPrequest): NodeSeq = {
     <div class="raw">
       {
-        val person = getPersonFromAccountTR(request.userId())
+        val person = getPersonFromAccountTR(request.userId)
         println(s">>>>>>>>>>> person $person")
         contactsDirectlyConnected(person) }
     </div>

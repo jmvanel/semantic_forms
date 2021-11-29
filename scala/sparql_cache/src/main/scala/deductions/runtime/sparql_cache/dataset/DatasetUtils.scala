@@ -16,7 +16,7 @@ trait DatasetUtils[Rdf <: RDF]
       new GraphStore[Rdf, Try, Dataset] {
         def appendToGraph(a: Dataset, uri: Rdf#URI, graph: Rdf#Graph): Try[Unit] = ??? //         {// TODO        }
         def getGraph(a: Dataset, uri: Rdf#URI): Try[Rdf#Graph] = {
-          val i = datasets.toIterator
+          val i = datasets.iterator.to(Iterator)
           def f: Try[Rdf#Graph] = {
             val r = while (i.hasNext) {
               val res = getGraph(i.next(), uri)

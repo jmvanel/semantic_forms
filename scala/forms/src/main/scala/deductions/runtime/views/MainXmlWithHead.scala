@@ -18,7 +18,7 @@ trait MainXmlWithHead[Rdf <: RDF, DATASET] extends MainXml[Rdf, DATASET] {
   private def addFile(name: String): NodeSeq = {
     scala.xml.Unparsed(
       if( new File(name).exists() )
-          Source.fromFile(name).getLines .mkString("\n")
+          Source.fromFile(name).getLines() .mkString("\n")
       else
         // this way, head.html is in forms/ module, removing a dependency in forms_play/ module
       Source.fromURL(getClass.getResource("/deductions/runtime/html/" + name)).getLines().mkString("\n")

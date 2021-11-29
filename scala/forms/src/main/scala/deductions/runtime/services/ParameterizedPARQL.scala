@@ -76,7 +76,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
       val graph: Rdf#Graph = allNamedGraph
       val sparqlQuery = queryMaker.makeQueryString(search : _*)
       val elems = Seq(
-        <button value="Sort" id="sort">{ I18NMessages.get("Sort", httpRequest.getLanguage() ) }</button>,
+        <button value="Sort" id="sort">{ I18NMessages.get("Sort", httpRequest.getLanguage ) }</button>,
         sortJSscript,
         sparqlQueryButton(sparqlQuery, httpRequest),
         showContinuationForm( httpRequest ),
@@ -101,7 +101,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
       <a href={
         "/select-ui?query=" +
           URLEncoder.encode(sparqlQuery, "utf-8")
-      }>{I18NMessages.get( "Edit_SPARQL_query", request.getLanguage()) }</a>
+      }>{I18NMessages.get( "Edit_SPARQL_query", request.getLanguage) }</a>
       &nbsp;
     </span>
 
@@ -171,7 +171,7 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
               // create table like HTML
               u =>
                 // logger.trace(s"**** search2 u $u")
-                displayResults(u.toIterable, hrefPrefix, graph,
+                displayResults(u, hrefPrefix, graph,
                     request=HTTPrequest(acceptLanguages=Seq(lang)) )
             }
         }</div>

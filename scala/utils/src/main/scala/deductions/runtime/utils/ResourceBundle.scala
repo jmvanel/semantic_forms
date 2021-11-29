@@ -2,7 +2,7 @@ package com.netaporter.i18n
 
 import java.util.{Locale, ResourceBundle => JResourceBundle}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.util.Try
 
 /**

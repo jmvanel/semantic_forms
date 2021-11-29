@@ -1,9 +1,8 @@
 package deductions.runtime.sparql_cache.apps
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
-//import scala.collection.JavaConverters
 
 import deductions.runtime.jena.ImplementationSettings
 import deductions.runtime.sparql_cache.RDFCacheAlgo
@@ -60,10 +59,10 @@ trait FixBadURI[Rdf <: RDF, DATASET]
 
   import ops._
 
-  def fix() = {
+  def fix = {
     val names =
       wrapInReadTransaction {
-        listGraphNames.toIterable.toSeq
+        listGraphNames().toSeq
       }.get
     // println("Graph names size " + names.size) // CAUTION: Exception here because of Blank node for graph name !?! 
 
@@ -86,11 +85,11 @@ trait FixBadURI[Rdf <: RDF, DATASET]
     System.err.println("" + corrections + " corrections")
   }
 
-  def fixGraph(graphURI: Rdf#URI) {
+  def fixGraph(graphURI: Rdf#URI) : Unit = {
     fixGraph(graphURI, graphURI)
   }
 
-  def fixGraph(graphURI: Rdf#URI, newGraphURI: Rdf#URI) {
+  def fixGraph(graphURI: Rdf#URI, newGraphURI: Rdf#URI) : Unit = {
 //    rdfStore.rw(dataset, {
       val gr = rdfStore.getGraph(dataset, graphURI).get
       val trs = gr.triples
@@ -113,7 +112,7 @@ trait FixBadURI[Rdf <: RDF, DATASET]
         }
       }
       try {
-        rdfStore.removeTriples(dataset, newGraphURI, triplesToRemove.toIterable)
+        rdfStore.removeTriples(dataset, newGraphURI, triplesToRemove)
       } catch {
         case t: Throwable =>
           System.err.println("Could not remove Triples from " + s"<$newGraphURI>")

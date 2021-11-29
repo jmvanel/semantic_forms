@@ -37,7 +37,7 @@ trait PreferredLanguageLiteral[Rdf <: RDF] {
 //      println(s""">>>> getPreferedLanguageLiteral "$lang" values $values""")
 
     // @return (preferedLanguageValue, enValue, noLanguageValue, otherLanguageValue)
-    def computeValues(): (String, String, String, String) = {
+    def computeValues : (String, String, String, String) = {
       var preferedLanguageValue = ""
       var enValue = ""
       var noLanguageValue = ""

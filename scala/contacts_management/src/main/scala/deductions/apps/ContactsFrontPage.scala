@@ -20,7 +20,7 @@ with RegisterPage[Rdf, DATASET] {
   override val htmlGenerator = null
 
   override def result(request: HTTPrequest): NodeSeq = {
-    val userid = request.userId()
+    val userid = request.userId
     val userInfo = displayUser(userid, request)
     val content = contactsDashboardHTML(request)
 

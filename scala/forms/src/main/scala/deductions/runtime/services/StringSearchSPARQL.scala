@@ -61,7 +61,7 @@ trait StringSearchSPARQL[Rdf <: RDF, DATASET]
     val theme = request.getHTTPparameterValue("link").getOrElse("")
 
 		logger.debug( s"searchString: SPARQL ${indexBasedQuery.makeQueryString(searchString, classURI)}")
-    search(hrefPrefix, request.getLanguage(),
+    search(hrefPrefix, request.getLanguage,
         Seq(searchString, classURI, theme),
 //        Seq("?thing", "?CLASS"))
         Seq("?thing"),

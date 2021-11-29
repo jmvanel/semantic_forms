@@ -63,7 +63,8 @@ trait DefaultConfiguration extends Configuration {
   /** use Text indexing with Lucene or SOLR */
   override def useTextQuery: Boolean = // false //
   true
-  override def useSpatialIndex: Boolean = false // true
+  override def useSpatialIndex: Boolean = // false // 
+    true
 
   override def geoMapURL = "/assets/geo-map/geo-map.html"
 
@@ -84,7 +85,7 @@ trait DefaultConfiguration extends Configuration {
   // relative URI's
   // maybe TODO use inverse Play's URI API
   /** often used as argument hrefprefix */
-  override def hrefDisplayPrefix() = s"/display?displayuri="
+  override def hrefDisplayPrefix = s"/display?displayuri="
 
   override val hrefDownloadPrefix = "/download?url="
   override val hrefEditPrefix = "/edit?url="

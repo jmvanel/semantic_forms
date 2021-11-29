@@ -161,7 +161,8 @@ trait Form2HTML[NODE, URI <: NODE]
 
     /** group by preserving insertion order
      *  See https://stackoverflow.com/questions/9594431/scala-groupby-preserving-insertion-order */
-    def groupByOrdered[A, K](t: Traversable[A], f: A => K): scala.collection.mutable.Map[K, LinkedHashSet[A]] = {
+    def groupByOrdered[A, K](t:Iterable[A], f: A => K): scala.collection.mutable.Map[K, LinkedHashSet[A]] = {
+    // def groupByOrdered[A, K](t: Traversable[A], f: A => K): scala.collection.mutable.Map[K, LinkedHashSet[A]] = {
       val map = LinkedHashMap[K, LinkedHashSet[A]]().withDefault(_ => LinkedHashSet[A]())
       for (i <- t) {
         val key = f(i)
@@ -362,7 +363,7 @@ trait Form2HTML[NODE, URI <: NODE]
 
     val isCreateRequest = request.path.contains("create")
     val editableByUser =
-      field.metadata === request.userId() ||
+      field.metadata === request.userId ||
         field.metadata === userURI(request)
 
     // hack instead of true form separator in the form spec in RDF:
@@ -413,7 +414,7 @@ trait Form2HTML[NODE, URI <: NODE]
     if (xmlField != (<span/>))
         Seq(createAddRemoveWidgets(field, editable)) ++
           <span class={ if (displayInTable === true) "sf-tooltip-container" else css + " sf-tooltip-container" }>
-            { val tooltipText0 = makeUserInfoOnTriples(field, request.getLanguage())
+            { val tooltipText0 = makeUserInfoOnTriples(field, request.getLanguage)
               val tooltipText = if(tooltipText0 != <span/> ) tooltipText0 else "data from Internet"
               xmlField  ++
               <span class="sf-tooltiptext">
@@ -424,7 +425,7 @@ trait Form2HTML[NODE, URI <: NODE]
   }
 
   private def userURI(request: HTTPrequest): String = {
-    makeAbsoluteURIstringForSaving(request.userId())
+    makeAbsoluteURIstringForSaving(request.userId)
   }
 }
 

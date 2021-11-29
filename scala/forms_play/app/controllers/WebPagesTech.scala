@@ -48,7 +48,7 @@ with HTTPoutputFromThrowable[ImplementationSettings.Rdf, ImplementationSettings.
             logger.info(s"""form: request $request : "$Edit" formuri <$formuri> """)
             val lang = chooseLanguage(request)
             val requestCopy = getRequestCopy()
-            val userid = requestCopy.userId()
+            val userid = requestCopy.userId
             Ok(htmlForm(uri, blankNode, editable = Edit  =/=  "", formuri,
               graphURI = makeAbsoluteURIForSaving(userid), database = database,
               HTTPrequest( acceptLanguages=Seq(lang) ) )._1)

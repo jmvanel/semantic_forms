@@ -14,7 +14,7 @@ import org.apache.jena.tdb.TDBFactory
 import org.apache.jena.tdb.transaction.TransactionManager
 import org.w3.banana.jena.{Jena, JenaDatasetStore, JenaModule}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 import scala.util.Try
 import org.w3.banana.jena.io.TripleSink
@@ -83,7 +83,7 @@ trait RDFStoreLocalJenaProviderImpl {
   val jenaComplements = new JenaComplements() // (delegate.ops)
   val  graphWriter = new deductions.runtime.sparql_cache.GraphWriterPrefixMapClass
   
-  def closeAllTDBs() = delegate.closeAllTDBs
+  def closeAllTDBs() = delegate.closeAllTDBs()
   def syncTDB(ds: deductions.runtime.jena.ImplementationSettings.DATASET = dataset ) = delegate.syncTDB(ds)
 }
 
@@ -166,10 +166,10 @@ object RDFStoreLocalJenaProviderObject
           import org.apache.jena.geosparql.configuration._
           println(s"Before setupMemoryIndex")
           GeoSPARQLConfig.setupMemoryIndex // actually registers special SPARQL predicates!
-          logger.info("isFunctionRegistered " + GeoSPARQLConfig.isFunctionRegistered)
+          logger.info("SpatialIndex: isFunctionRegistered " + GeoSPARQLConfig.isFunctionRegistered)
           println(s"Before setupSpatialIndex")
           GeoSPARQLConfig.setupSpatialIndex(res)
-          logger.info("findModeSRS <" + GeoSPARQLOperations.findModeSRS(res) + ">")
+          logger.info("SpatialIndex: findModeSRS <" + GeoSPARQLOperations.findModeSRS(res) + ">")
         }
         res
       } catch {
@@ -221,7 +221,7 @@ object RDFStoreLocalJenaProviderObject
 //  ds.asDatasetGraph.close()
   ds.close() }
 
-  def closeAllTDBs() {
+  def closeAllTDBs() : Unit = {
     close(dataset)
     close(dataset2)
     close(dataset3)

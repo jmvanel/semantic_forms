@@ -137,10 +137,10 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
         Seq( mapButton(sparqlQuery, request),
           <span>
             { if( clas != "" )
-              s"${I18NMessages.get("of_types", request.getLanguage())} <$clas> ," else "" }
+              s"${I18NMessages.get("of_types", request.getLanguage)} <$clas> ," else "" }
             { val theme = request.getHTTPparameterValue("link").getOrElse("")
-              if( theme != "" ) s", ${I18NMessages.get("linked_to", request.getLanguage())} '$theme'," else "" }
-            { I18NMessages.get("search", request.getLanguage()) }
+              if( theme != "" ) s", ${I18NMessages.get("linked_to", request.getLanguage)} '$theme'," else "" }
+            { I18NMessages.get("search", request.getLanguage) }
           </span>
         ) )
   }
@@ -150,7 +150,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       <a href={
           request.adjustSecure(geoMapURL) +
           "?link-prefix=" + "http://" /*TODO https case*/+ request.host + hrefDisplayPrefix +
-          "&lang=" + request.getLanguage() +
+          "&lang=" + request.getLanguage +
 //          "&label=" + request.getHTTPparameterValue("label").getOrElse("") +
           "&url=" + sparqlServicesURL(request) +
           "?" + "query=" + sparqlQuery
@@ -158,7 +158,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
         target="_blank"
         class="sf-button_important"
         style="font-size: 1.6em;"
-     > { I18NMessages.get("Map", request.getLanguage()) } </a>
+     > { I18NMessages.get("Map", request.getLanguage) } </a>
 
   /** for test, creates an OutOfMemoryError exception */
   private def fillMemory() = {
@@ -240,7 +240,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
               makeGraph(
                   // TODO
 //              Seq( Triple( URI(graphURI), URI("urn:graphForUser"), URI(userid) ) ) . toIterable
-              Seq() . toIterable
+              Seq() // . toIterable
       )
       )
     })
@@ -343,7 +343,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       mess = <div>
         Searched for
         "<a href={ createHyperlinkString(uri = uri) }>{
-          makeInstanceLabelFutureString(uri, request.getLanguage())
+          makeInstanceLabelFutureString(uri, request.getLanguage)
         }</a>"
         &lt;{ uri }&gt;
         {

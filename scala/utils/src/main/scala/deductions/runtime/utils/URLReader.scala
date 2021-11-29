@@ -34,7 +34,7 @@ trait URLReader {
     var content = ""
     if (entity != null) {
       val inputStream = entity.getContent
-      content = io.Source.fromInputStream(inputStream).getLines.mkString
+      content = io.Source.fromInputStream(inputStream).getLines().mkString
       inputStream.close
     }
     httpClient.getConnectionManager.shutdown

@@ -367,9 +367,9 @@ type MergeGroups = Seq[MergeGroup]
   protected def removeQuadsWithSubjects(subjects: Seq[Rdf#Node]) = {
     val transaction = rdfStore.rw(dataset, {
       for (dupURI <- subjects) {
-        println(s"removeQuadsWithSubject <$dupURI> size() $datasetSizeNoTR")
+        println(s"removeQuadsWithSubject <$dupURI> size() ${datasetSizeNoTR()}")
         removeQuadsWithSubject(dupURI)
-        println(s"removeQuadsWithSubject <$dupURI> size() after $datasetSizeNoTR")
+        println(s"removeQuadsWithSubject <$dupURI> size() after ${datasetSizeNoTR()}")
       }
     })
   }

@@ -20,7 +20,7 @@ with FormSyntaxJson[Rdf]{
                  ) : FormSyntax = {
     val classURI = URI(classUri)
     retrieveURIBody(classURI, dataset, request, transactionsInside = true)
-    implicit val lang = request.getLanguage()
+    implicit val lang = request.getLanguage
     implicit val graph: Rdf#Graph = allNamedGraph
     val form = createFormFromClass(classURI, formSpecURI, request)
     form

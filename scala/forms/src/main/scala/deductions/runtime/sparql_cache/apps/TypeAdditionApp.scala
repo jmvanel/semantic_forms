@@ -37,12 +37,12 @@ trait TypeAdditionAppTrait[Rdf <: RDF, DATASET]
   val uris: ArraySeq[Rdf#URI]
 
   /** non TRANSACTIONAL */
-  def run() {
+  def run() : Unit = {
     println(s"""Types added for URI's $uris""")
     Try {
       if (uris isEmpty) {
         val tr = getTriples(allNamedGraph)
-        add_types(tr.toIterator)
+        add_types(tr.iterator)
       } else {
         uris map { uri =>
           {
@@ -55,7 +55,7 @@ trait TypeAdditionAppTrait[Rdf <: RDF, DATASET]
     }
   }
 
-  private def add_types(tr: Iterator[Rdf#Triple]) {
+  private def add_types(tr: Iterator[Rdf#Triple]) : Unit = {
     println(s"""Types added for
     ${addTypes(tr.toSeq, None)}""")
   }

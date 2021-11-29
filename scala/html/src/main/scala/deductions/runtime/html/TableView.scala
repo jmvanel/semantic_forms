@@ -139,7 +139,7 @@ trait TableView[NODE, URI <: NODE]
     {
       for (property <- properties.list) yield {
         <th onclick="sortTable(this.cellIndex)"
-            title={ I18NMessages.get("Click_to_sort", request.getLanguage()) }>{
+            title={ I18NMessages.get("Click_to_sort", request.getLanguage) }>{
           val entry = propertiesMap(property)
           makeFieldLabel(NullResourceEntry, entry, editable = false)(nullFormSyntax)
         }</th>

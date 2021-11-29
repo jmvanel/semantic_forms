@@ -23,7 +23,7 @@ import deductions.runtime.connectors.icalendar.RDF2ICalendar
 import play.api.libs.json.JsNull
 import deductions.runtime.utils.RDFContentNegociation
 import org.w3.banana.io.NTriples
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import org.apache.jena.util.PrefixMappingUtils
 import org.apache.jena.riot.RDFFormat
 import org.apache.jena.rdf.model.ModelFactory
@@ -507,7 +507,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         case Success(solutions) =>
           logger.debug( "sparqlSelectQueryVariablesNT: solutionsTry.isSuccess " + solutionsTry.isSuccess )
           // TODO nullPointer on empty database
-          val results = solutions.iterator.toIterable.map {
+          val results = solutions.iterator().iterator.to(Iterable).map {
             row =>
               // TODO rather loop on row.varnames() , to make sparqlSelectQueryVariablesNT more robust
                logger.debug( s"sparqlSelectQueryVariablesNT: row $row" )

@@ -21,7 +21,7 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
 		def absoluteURI = request.absoluteURL()
 		def localSparqlEndpoint = URLEncoder.encode(absoluteURI + "/sparql2", "UTF-8")
 
-    val lang = request.getLanguage()
+    val lang = request.getLanguage
     val querySampleSelect =
     """|PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
        |PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -112,7 +112,7 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
 
     val buttonsAllRDFViews = Seq(
       <input title="Plain form view"
-             class="btn btn-primary" type="submit" value={ I18NMessages.get("View", request.getLanguage()) }
+             class="btn btn-primary" type="submit" value={ I18NMessages.get("View", request.getLanguage) }
              formaction="/sparql-form"/>,
       makeLinkCarto( textareaId, config.geoMapURL, request ),
       makeLinkToVisualTool(textareaId,
@@ -123,7 +123,7 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
           "/assets/images/calendar-tool-for-time-organization.svg",
           request=request),
       <input title="Table view"
-             class="btn btn-primary" type="submit" value={ I18NMessages.get("Table", request.getLanguage()) }
+             class="btn btn-primary" type="submit" value={ I18NMessages.get("Table", request.getLanguage) }
              formaction="/table"/>,
       {paragraphsViewInput(request)},
       {formOnlyViewInput(request)},
@@ -134,7 +134,7 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
       <input title="Tree view - NOT YET IMPLEMENTED"
              class="btn btn-primary" type="submit"
              disabled="disabled"
-             value={ I18NMessages.get("Tree", request.getLanguage() ) }/>,
+             value={ I18NMessages.get("Tree", request.getLanguage ) }/>,
       makeLinkToVisualTool(textareaId,
           "/assets/rdfviewer/rdfviewer.html?url=",
           "RDF_Viewer", 15,
@@ -159,7 +159,7 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
         <div class="btn-group">
           <!-- Buttons common to CONSTRUCT and SELECT -->
           <input class ="btn btn-primary" type="submit"
-                 value={ I18NMessages.get("Submit", request.getLanguage()) } formaction ={action} />
+                 value={ I18NMessages.get("Submit", request.getLanguage) } formaction ={action} />
           <label>unionDefaultGraph</label>
           <input name="unionDefaultGraph" id="unionDefaultGraph" type="checkbox"
                  checked={ request.getHTTPparameterValue("unionDefaultGraph").getOrElse(null) } />
@@ -168,7 +168,7 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
             buttonsAllRDFViews
           else
              <input class="btn btn-primary" type="submit" value={
-                 I18NMessages.get("History", request.getLanguage()) }
+                 I18NMessages.get("History", request.getLanguage) }
                formaction="/history"
                title="Chronological view (only local edits)"/> ++
              {paragraphsViewInput(request)} ++
@@ -266,7 +266,7 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
     <input id={buttonId} type="submit"
            title="make LeafLet map (OSM)"
            class="btn btn-primary" target="_blank"
-           value={ I18NMessages.get("Map", request.getLanguage() )}>
+           value={ I18NMessages.get("Map", request.getLanguage )}>
     </input>
     <input class="btn btn-primary" type="checkbox" checked="true" title="points (else path)"
            id="points-path" />
@@ -300,7 +300,7 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
       '?view=' + pointsOrPathValue +
       '&enrich=yes' +
       "&link-prefix=" + ${ s""""${request.absoluteURL() + config.hrefDisplayPrefix}""""} +
-      "&lang=" + "${request.getLanguage()}" +
+      "&lang=" + "${request.getLanguage}" +
       // "&label=" + ${request.getHTTPparameterValue("label").getOrElse("")} +
       "&label=" + document.getElementById('label').value +
       '&url=' +
@@ -322,7 +322,7 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
         <div>JSON-LD Expand @context</div>
         <input name="context" id="context" type="url" size="90" />
         <br/>
-        <input class="btn btn-primary" type="submit" value={ I18NMessages.get("Submit", request.getLanguage()) } formaction="/json2rdf"/>
+        <input class="btn btn-primary" type="submit" value={ I18NMessages.get("Submit", request.getLanguage) } formaction="/json2rdf"/>
       </fieldset>
     </form>
   }
@@ -336,7 +336,7 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
         <div>JSON-LD frame @context</div>
         <input name="frame" type="url" size="90" />
         <br/>
-        <input class="btn btn-primary" type="submit" value={ I18NMessages.get("Submit", request.getLanguage()) }
+        <input class="btn btn-primary" type="submit" value={ I18NMessages.get("Submit", request.getLanguage) }
         formaction="/rdf2json"/>
       </fieldset>
     </form>

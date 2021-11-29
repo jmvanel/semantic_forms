@@ -406,7 +406,7 @@ trait SPARQLHelpers3[Rdf <: RDF, DATASET]
           //    logger.debug( "solutionsTry.isSuccess " + solutionsTry.isSuccess )
           val answers: Rdf#Solutions = solutions
           // TODO nullPointer on empty database
-          val results = answers.iterator.toIterable.map {
+          val results = answers.iterator().iterator.to(Iterable).map {
             row =>
               for (variable <- variables) yield {
                 val cell = row(variable)
@@ -486,7 +486,7 @@ trait SPARQLHelpers3[Rdf <: RDF, DATASET]
     import scala.collection._
     val res = solutionsTry.map {
       solutions =>
-        val solsIterable = solutions.iterator.toIterable
+        val solsIterable = solutions.iterator().to(Iterable)
 
 //        val columnsMap2: scala.collection.mutable.SortedSet[String] = scala.collection.mutable.SortedSet()
 //        val columnsMap2: scala.collection.mutable.Set[String] = scala.collection.mutable.Set()

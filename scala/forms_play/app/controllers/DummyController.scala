@@ -25,7 +25,7 @@ extends AbstractController(components)
   def page() =
     Action { implicit request: Request[_] =>
       val requestCopy = getRequestCopy()
-      val userid = requestCopy.userId()
+      val userid = requestCopy.userId
       val title = "My view"
       val lang = chooseLanguage(request)
       val userInfo = displayUser(userid, requestCopy)

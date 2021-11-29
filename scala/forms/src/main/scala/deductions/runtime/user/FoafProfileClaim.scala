@@ -50,13 +50,13 @@ http.send(content);
   }
 
   def profileClaimUI(request: HTTPrequest): NodeSeq = {
-    val currentFocusURI = URI(request.getRDFsubject())
+    val currentFocusURI = URI(request.getRDFsubject)
     val currentPageIsAfoafPerson: Boolean =
       currentFocusURI != nullURI &&
       getObjects(allNamedGraph, currentFocusURI, rdf.typ).toSeq.contains(foaf.Person)
 
-    val label = instanceLabelFromTDB(currentFocusURI, request.getLanguage())
-    val userId = request.userId()
+    val label = instanceLabelFromTDB(currentFocusURI, request.getLanguage)
+    val userId = request.userId
     val personFromAccount: Rdf#Node = getPersonFromAccount(userId)
     logger.debug( s""">>>>==== profileClaimUI: currentPageIsAfoafPerson $currentPageIsAfoafPerson
       request.userId() '${userId}' ==> personFromAccount <$personFromAccount>
@@ -90,7 +90,7 @@ http.send(content);
             <!-- Claim current page's identity:{ label }
             for current user: {userId}
             -->
-            { I18NMessages.format("Claim", request.getLanguage(), label, userId) }
+            { I18NMessages.format("Claim", request.getLanguage, label, userId) }
           </button>
         </div>
       } else {

@@ -49,7 +49,7 @@ case class HTTPrequest(
     ) {
 
   /** get RDF subject, that is "focus" (HTTP parameter "displayuri") */
-  def getRDFsubject(): String =
+  def getRDFsubject: String =
     getHTTPparameterValue("displayuri").getOrElse(
       getHTTPparameterValue("q").getOrElse(
         getHTTPparameterValue("url").
@@ -59,7 +59,7 @@ case class HTTPrequest(
     getHTTPparameterValues("q")
 
   private def getHostOfRDFsubject(): String = {
-    val subjectURI = getRDFsubject().trim
+    val subjectURI = getRDFsubject.trim
     if (subjectURI.startsWith("_:"))
       ""
     else
@@ -116,7 +116,7 @@ case class HTTPrequest(
             hostNoPort $hostNoPort relativeURIwithSlash $relativeURIwithSlash port $port""" )
         if (this.hostNoPort == "localhost" ||
             this.hostNoPort . startsWith("[") ) {
-          logger.debug(s"IPV6 or IPV4 normalize address, getInetAddress $getInetAddress")
+          logger.debug(s"IPV6 or IPV4 normalize address, getInetAddress ${getInetAddress}")
           if(isIPv6())
             "[" + getInetAddress.getHostAddress + "]:" + this.port
           else
@@ -126,7 +126,7 @@ case class HTTPrequest(
       } +
         relativeURIwithSlash // + this.appendFragment
 
-  private def getInetAddress() = InetAddress.getByName(remoteAddress)
+  private def getInetAddress = InetAddress.getByName(remoteAddress)
   private def isIPv6() = {
     getInetAddress.getAddress.size > 4
   }
@@ -142,7 +142,7 @@ case class HTTPrequest(
     else
       url.replaceFirst("^https://", "http://")
 
-  def userId(): String = {
+  def userId: String = {
     // Play 2.6 & 2.5
     URLDecoder.decode( username.getOrElse("anonymous"), "UTF-8")
   }
@@ -162,7 +162,7 @@ case class HTTPrequest(
   /** URL Encoded local Sparql Endpoint */
   def localSparqlEndpoint = URLEncoder.encode(absoluteURL("/sparql"), "UTF-8")
 
-  def getLanguage(): String = {
+  def getLanguage: String = {
     val resLang = if (acceptLanguages.length > 0) acceptLanguages(0) else "en"
 //    logger.debug("chooseLanguage", this) + s"\t$resLang" )
     resLang

@@ -29,7 +29,7 @@ with SPARQLHelpers[Rdf, DATASET]
     } catch {
       case t: Throwable =>
         t.printStackTrace()
-        printMemory()
+        printMemory
         error(t)
     }
   }
@@ -43,7 +43,7 @@ with SPARQLHelpers[Rdf, DATASET]
     "\nMax Memory:" + runtime.maxMemory().toFloat / mb + "\n"
   }
 
-  def printMemory() = logger.info( formatMemory() )
+  def printMemory = logger.info( formatMemory() )
 
   /** unused yet */
   def errorStringFromThrowable(

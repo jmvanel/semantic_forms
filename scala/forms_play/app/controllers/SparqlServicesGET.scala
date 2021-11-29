@@ -200,7 +200,7 @@ with HTTPrequestHelpers
       format: String = "turtle",
       context: Map[String,String] = Map()): Try[String] = {
     logger.info("Global.sparql query  " + query)
-    val lang = httpRequest.getLanguage()
+    val lang = httpRequest.getLanguage
     if (query != "")
       sparqlConstructQueryTR(query, httpRequest, format,
           context + ("lang" -> lang))

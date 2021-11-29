@@ -36,7 +36,7 @@ trait ReverseLinksSearchSPARQL[Rdf <: RDF, DATASET]
     // NOTE queryMaker is passed here implicitly!
     search(
       hrefPrefix,
-      request.getLanguage(),
+      request.getLanguage,
       qs,
       httpRequest = request)
   }

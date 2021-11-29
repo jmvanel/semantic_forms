@@ -58,13 +58,13 @@ trait BlankNodeCleanerIncremental[Rdf <: RDF, DATASET] extends BlankNodeCleanerB
     Map[Rdf#URI, Iterable[Rdf#Graph]]= {
       val triples = find(graph, uri, ANY, ANY)
       // these are the triples  <uri1> ?P1 _:bn11_old .
-      val blankTriples = triples.filter { t => t.objectt.isBNode }.toIterable
+      val blankTriples = triples.filter { t => t.objectt.isBNode }.iterator.to(Iterable)
 
       blankTriples.groupBy { t => t.predicate }.map {
         case (pred, triplesVar) => (pred, triplesVar.map {
           // here we get the triples  _:bn11_old . ?P2 ?O2 .
           tr =>
-            val triplesFromBlank = find(graph, tr.objectt, ANY, ANY).toIterable
+            val triplesFromBlank = find(graph, tr.objectt, ANY, ANY).iterator.to(Iterable)
             makeGraph(triplesFromBlank)
         })
       }

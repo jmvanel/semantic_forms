@@ -228,7 +228,7 @@ trait RangeInference[Rdf <: RDF, DATASET]
     }
 
     /* this function does the job! */
-    def setPossibleValues() : Seq[(Rdf#Node, Rdf#Node)] = {
+    def setPossibleValues : Seq[(Rdf#Node, Rdf#Node)] = {
       val fieldType = entryField.type_
       val possibleValues = {
         

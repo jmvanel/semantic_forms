@@ -101,7 +101,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     lang: String = "en"): Option[String] = {
     subjectNode.fold(
       uri => {
-        val triples = find(allNamedGraph, subjectNode, predNode, ANY).toIterable
+        val triples = find(allNamedGraph, subjectNode, predNode, ANY).iterator.to(Iterable)
         val values = triples.map(triple => triple.objectt)
         Some(
           getPreferedLanguageLiteral(values)(allNamedGraph, lang))
@@ -123,9 +123,9 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     val labelsGraph = labelsGraph0.get
 	    // printlnLocal( s"instanceLabelFromTDB after labelsGraph.get '$labelsGraphUri' ${Try{labelsGraph}}")
       printlnLocal( s"instanceLabelFromTDB: labelsGraphUri $labelsGraphUri , labelsGraph $labelsGraph" )
-    val displayLabelsIt = find(labelsGraph, node, displayLabelPred, ANY).toIterable
+    val displayLabelsIt = find(labelsGraph, node, displayLabelPred, ANY).iterator.to(Iterable)
     val i18nGraph = rdfStore.getGraph( dataset, URI("urn:rdf-i18n")).getOrElse(emptyGraph)
-    val displayLabelsIt2 = find( i18nGraph, node, rdfs.label, ANY).toIterable
+    val displayLabelsIt2 = find( i18nGraph, node, rdfs.label, ANY).iterator.to(Iterable)
 	    printlnLocal(s"instanceLabelFromTDB after find(labelsGraph, node, displayLabelPred, ANY) : displayLabelPred $displayLabelPred '${displayLabelsIt.mkString("; ")}'" )
     (displayLabelsIt ++ displayLabelsIt2) match {
       case it if (!it.isEmpty) =>
@@ -215,7 +215,7 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
     } else Success(())
   }
 
-  def cleanStoredLabels(lang: String) {
+  def cleanStoredLabels(lang: String) : Unit = {
     val labelsGraphUri = URI(labelsGraphUriPrefix + lang)
     rdfStore.removeGraph( datasetForLabels, labelsGraphUri)
   }

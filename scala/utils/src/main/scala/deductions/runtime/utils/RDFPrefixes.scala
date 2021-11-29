@@ -5,7 +5,7 @@ import java.net.{URI => jURI}
 import org.w3.banana.{RDF, RDFOps, RDFPrefix, RDFSPrefix, _}
 
 import scala.util.{Failure, Success, Try}
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import org.apache.jena.graph.Graph
 
 /** database of Turtle prefixes;

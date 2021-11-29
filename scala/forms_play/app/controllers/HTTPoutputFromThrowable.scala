@@ -20,7 +20,7 @@ trait HTTPoutputFromThrowable[Rdf <: RDF, DATASET] extends RecoverUtilities[Rdf,
       s"""Error '$specificMessage', retry later !!!!!!!!
         ${request.uri}
           ${t.getLocalizedMessage}
-          ${printMemory()}""")
+          ${printMemory}""")
   }
 
   def errorActionFromThrowable(

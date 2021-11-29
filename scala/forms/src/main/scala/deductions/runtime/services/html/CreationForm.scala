@@ -44,7 +44,7 @@ with PrefillFormDefaults[Rdf, DATASET]{
              formSpecURI: String = "", graphURI: String = "",
              request: HTTPrequest ): Try[NodeSeq] = {
 
-    val lang = request.getLanguage()
+    val lang = request.getLanguage
     val form0 = createData(classUri, formSpecURI, request)
     val form = prefillFormDefaults( createPrefillForm(form0, request), request )
 

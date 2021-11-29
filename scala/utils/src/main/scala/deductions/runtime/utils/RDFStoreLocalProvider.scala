@@ -55,7 +55,7 @@ extends RDFOPerationsDB[Rdf, DATASET] {
   /** make an MGraph from a Dataset */
   def makeMGraph( graphURI: Rdf#URI, ds: DATASET = dataset): Rdf#MGraph
 
-  def close(ds: DATASET = dataset)
+  def close(ds: DATASET = dataset) : Unit
 
   def readWithContentType( uri: Rdf#URI, contentType: String, dataset: DATASET): Try[Rdf#Graph]
   
@@ -73,7 +73,7 @@ extends RDFOPerationsDB[Rdf, DATASET] {
   }
 
 
-  import scala.collection.JavaConverters._
+  import scala.jdk.CollectionConverters._
 
   /** TODO move this to Banana */
   def listGraphNames(ds: DATASET = dataset): Seq[String] = {
@@ -84,7 +84,7 @@ extends RDFOPerationsDB[Rdf, DATASET] {
     }
   }
 
-  def syncTDB(ds: DATASET = dataset)
+  def syncTDB(ds: DATASET = dataset) : Unit
 }
 
 trait RDFStoreLocalUserManagement[Rdf <: RDF, DATASET]

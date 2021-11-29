@@ -697,7 +697,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
                 .replaceFirst("(\\d\\d\\d\\d) .*", "$1")
               logger.debug(s"==== parseValue s '$originalValueToString'")
               val lit = Literal(
-                normalizeDate(originalValueToString, new Locale(request.getLanguage())).getOrElse(originalValueToString),
+                normalizeDate(originalValueToString, new Locale(request.getLanguage)).getOrElse(originalValueToString),
                 xsd("date"))
               logger.debug(s">>>> parseValue lit $lit")
               lit
@@ -725,7 +725,7 @@ trait FormSyntaxFactory[Rdf <: RDF, DATASET]
     val trimmedDate = dateStr.trim
     if (trimmedDate.isEmpty) None
     else {
-      dateFormats.toStream.map {
+      dateFormats.to(LazyList).map {
         case (pattern, fmt) =>
           Try {
             LocalDate.parse(trimmedDate, fmt)

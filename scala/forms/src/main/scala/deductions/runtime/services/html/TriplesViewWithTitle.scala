@@ -49,7 +49,7 @@ trait TriplesViewWithTitle[Rdf <: RDF, DATASET]
   ): (NodeSeq, Boolean) = {
     logger.debug(
       s"""TriplesViewWithTitle.htmlForm ${request.logRequest()}
-              editable=$editable lang=${request.getLanguage()} graphURI <$graphURI>""")
+              editable=$editable lang=${request.getLanguage} graphURI <$graphURI>""")
     val uri = uri0.trim()
     var typeChange = false
     if (uri =/= null && uri =/= "")

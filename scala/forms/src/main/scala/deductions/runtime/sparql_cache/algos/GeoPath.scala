@@ -207,7 +207,7 @@ trait GeoPath[Rdf <: RDF, DATASET]
       triplesAboutPoint = find(graph, point, ANY, ANY)
     ) yield {
 //          println(s"getPathForMobile: $point")
-          PointedGraph(point, makeGraph(triplesAboutPoint.toIterable)) }
+          PointedGraph(point, makeGraph(triplesAboutPoint.iterator.to(Iterable))) }
   }
 
   /** get Points (URI's) For Mobile, ordered by using dct:date */

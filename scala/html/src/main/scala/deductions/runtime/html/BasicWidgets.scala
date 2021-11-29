@@ -50,7 +50,7 @@ trait BasicWidgets[NODE, URI <: NODE]
 
   def hyperlinkForDisplayingURI(uri: String, lang: String): NodeSeq = {
     implicit val _ = lang
-    val hrefDisplay = hrefDisplayPrefix() + urlEncode(uri) + "#subject"
+    val hrefDisplay = hrefDisplayPrefix + urlEncode(uri) + "#subject"
     logger.debug(s">>>> hyperlinkForDisplayingURI linkToShow: $hrefDisplay")
     <a class="btn btn-warning btn-xs" href={ hrefDisplay } title={ mess("display_URI")(lang) }>
       <i class="glyphicon"></i>
@@ -64,7 +64,7 @@ don't mix them */
                          request: HTTPrequest,
                          resourceEntry: formMod#ResourceEntry = NullResourceEntry): NodeSeq = {
     val tit = if (title === "")
-      I18NMessages.get("Reverse-links-reaching", request.getLanguage()) +
+      I18NMessages.get("Reverse-links-reaching", request.getLanguage) +
         s"<$uri>;" else title
       val propertyURIEncoded = urlEncode(toPlainString(resourceEntry.property))
       <a href={s"/backlinks?q=${urlEncode(uri)}&q=$propertyURIEncoded"}
@@ -79,7 +79,7 @@ don't mix them */
   def makeBackLinkButtonWithCheckbox(uri: String, title: String = "",
                                      request: HTTPrequest): NodeSeq = {
     val tit = if (title === "")
-      I18NMessages.get("Reverse-links-reaching", request.getLanguage()) +
+      I18NMessages.get("Reverse-links-reaching", request.getLanguage) +
         s"<$uri>;" else title
     <form action="/backlinks" style='display:inline;' >
       <input type="hidden" name="q" value={ uri } />
@@ -139,7 +139,7 @@ don't mix them */
       request: HTTPrequest,
       toolURLprefix: String = "/history?uri=",
       icon: String = "/assets/images/radial_layout.png"): NodeSeq = {
-    val toolname = I18NMessages.get("Neighborhood", request.getLanguage())
+    val toolname = I18NMessages.get("Neighborhood", request.getLanguage)
     <span class="sf-navigation-button">{
     makeToolLink( uri, request, toolURLprefix, toolname, icon, imgWidth=25 )
     }</span>
@@ -172,7 +172,7 @@ don't mix them */
 
     if( uri  =/=  "" )
       <a class="sf-button btn-default" href={ s"$toolURLprefix$link" }
-      title={s"${I18NMessages.get("Launch_tool",request.getLanguage())} $toolname for <$uri>"}
+      title={s"${I18NMessages.get("Launch_tool",request.getLanguage)} $toolname for <$uri>"}
       target="_blank">
       <img width={imgWidth.toString()} style="border:1px solid"
         src={icon}

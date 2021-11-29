@@ -332,9 +332,9 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
   private def makeHTMLIdForDatalist(re: formMod#Entry): String = {
     "possibleValues-" + (
       re match {
-        case re: formMod#ResourceEntry => (re.property + "--" + re.value).hashCode().toString()
-        case lit: formMod#LiteralEntry => (lit.property + "--" + lit.value).hashCode().toString()
-        case bn: formMod#BlankNodeEntry => (bn.property + "--" + bn.value).hashCode().toString()
+        case re: formMod#ResourceEntry => (re.property.toString + "--" + re.value).hashCode().toString()
+        case lit: formMod#LiteralEntry => (lit.property.toString + "--" + lit.value).hashCode().toString()
+        case bn: formMod#BlankNodeEntry => (bn.property.toString + "--" + bn.value).hashCode().toString()
       })
   }
 

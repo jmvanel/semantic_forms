@@ -113,14 +113,14 @@ extends BaseController
 
     val content =
       <div>
-        <p>Current user '{ httpRequest.userId()}'</p>
-        <h3 id="login">{I18NMessages.get( "Login", httpRequest.getLanguage())}
+        <p>Current user '{ httpRequest.userId}'</p>
+        <h3 id="login">{I18NMessages.get( "Login", httpRequest.getLanguage)}
           -
-          <a href="#register" style="font-size: medium">{I18NMessages.get( "Create_account", httpRequest.getLanguage())}</a>
+          <a href="#register" style="font-size: medium">{I18NMessages.get( "Create_account", httpRequest.getLanguage)}</a>
         </h3>
         { loginForm }
         <p/><br/>
-        <h3 id="register" name="register">{I18NMessages.get( "Create_account", httpRequest.getLanguage())}</h3>
+        <h3 id="register" name="register">{I18NMessages.get( "Create_account", httpRequest.getLanguage)}</h3>
         { registerForm }
         <p/>-
         <p/>-
@@ -142,7 +142,7 @@ extends BaseController
     implicit request: Request[_] =>
       val httpRequest = copyRequest(request)
 
-      val userFromSession = httpRequest.userId() // normally not yet set in session !
+      val userFromSession = httpRequest.userId // normally not yet set in session !
       if (logPasswordInClear)
         logger.info(s"""authenticate: httpRequest ${httpRequest.logRequest} - queryString ${httpRequest.queryString}
           userFromSession $userFromSession
@@ -225,7 +225,7 @@ extends BaseController
       val httpRequest = copyRequest(request)
 
       val (useridOption, passwordOption, confirmPasswordOption) = decodeResponse(httpRequest)
-      val userFromSession = httpRequest.userId() // normally not yet set in session !
+      val userFromSession = httpRequest.userId // normally not yet set in session !
       val givenLoginMatchesUserFromSession = useridOption.getOrElse("") === userFromSession
       val userRedefinesPassword = givenLoginMatchesUserFromSession && userFromSession != "anonymous"
 

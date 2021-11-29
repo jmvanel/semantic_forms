@@ -89,7 +89,7 @@ object UserRolesModes extends   {
     logger.debug(s"path '$path'")
     val isChangeBearingsRoute = changeBearingsRoutes.contains(path)
     logger.debug(s"isChangeBearingsRoute '$isChangeBearingsRoute' , method $method")
-    req.userId() == "admin" ||  // addmin can do anything
+    req.userId == "admin" ||  // addmin can do anything
       !isChangeBearingsRoute || // anyone can do read only things
       (path.startsWith("/ldp") && method == "GET") // LDP POST and PUT are not for anyone
   }
@@ -121,7 +121,7 @@ object UserRolesModes extends   {
     val props = new Properties
     Try {
       props.load(new FileReader("app.properties"))
-      import scala.collection.JavaConverters._
+      import scala.jdk.CollectionConverters._
       getAppUserModeFromString(
         props.asScala.getOrElse("AppUserMode", "EditAllowed"))
     } . getOrElse(EditAllowed)

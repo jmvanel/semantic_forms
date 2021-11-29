@@ -10,9 +10,9 @@ package object html extends LogUtils {
   implicit val logger = Logger("html")
 
   def message(m: String, lang: String): String = I18NMessages.get(m, lang)
-  def messageRequest(m: String, request: HTTPrequest): String = I18NMessages.get(m, request.getLanguage())
+  def messageRequest(m: String, request: HTTPrequest): String = I18NMessages.get(m, request.getLanguage)
 
   def mess(m: String)(implicit lang: String) = message(m, lang)
-  def messRequest(m: String)(implicit request: HTTPrequest) = message(m, request.getLanguage())
+  def messRequest(m: String)(implicit request: HTTPrequest) = message(m, request.getLanguage)
 
 }

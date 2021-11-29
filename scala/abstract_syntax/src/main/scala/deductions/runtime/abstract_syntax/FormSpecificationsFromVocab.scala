@@ -63,7 +63,7 @@ trait FormSpecificationsFromVocab[Rdf <: RDF, DATASET]
 
   def readTurtleTerm(term: String): Try[Rdf#Graph] = {
 	  println(s"readTurtleTerm ${expandOrUnchanged(term)}")
-    rdfLoader.load(
+    rdfLoader().load(
       new URL(expandOrUnchanged(term)))
   }
   

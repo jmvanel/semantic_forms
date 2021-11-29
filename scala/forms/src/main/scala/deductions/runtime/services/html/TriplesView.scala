@@ -77,7 +77,7 @@ trait TriplesViewModule[Rdf <: RDF, DATASET]
     formGroup: String = fromUri(nullURI),
     request: HTTPrequest
     ): NodeSeq = {
-    val lang = request.getLanguage()
+    val lang = request.getLanguage
     htmlForm(uri, hrefPrefix, blankNode, editable, actionURI,
       graphURI, actionURI2, URI(formGroup), request) match {
         case Success(e) => e._1
@@ -201,7 +201,7 @@ println( s">>>> htmlFormElemJustFields 2 " )
       }
       // TODO find another way of reporting download failures: 
       //      graphDownloaded <- tryGraph
-        lang = request.getLanguage()
+        lang = request.getLanguage
         form = graf2form(allNamedGraph, uri, hrefPrefix, blankNode, editable,
           actionURI, graphURIActual, actionURI2, formGroup, "", request)
     } yield form

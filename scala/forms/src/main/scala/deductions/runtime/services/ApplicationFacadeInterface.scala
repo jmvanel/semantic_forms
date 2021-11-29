@@ -58,14 +58,14 @@ trait ApplicationFacadeInterface {
 
   def signin(agentURI: String, password: String): Try[String]
 
-  def claimIdentityAction(uri: String)
+  def claimIdentityAction(uri: String) : Unit
 
   /**
    * action="register"
    *  register from scratch;
    *  new account: foaf:Person creation + entering password
    */
-  def registerAction(uri: String)
+  def registerAction(uri: String) : Unit
 
   def labelForURITransaction(uri: String, language: String): String
 }

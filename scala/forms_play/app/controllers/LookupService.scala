@@ -45,7 +45,7 @@ with AcceptExtractors {
         val httpRequest = copyRequest(request)
         logger.info(s"""Lookup: ${httpRequest.logRequest()}
             accepts ${httpRequest.getHTTPheaderValue("Accept")} """)
-        val lang = httpRequest.getLanguage()
+        val lang = httpRequest.getLanguage
         val mime = httpRequest.firstMimeTypeAccepted(XML)
         logger.debug(s"	First mime $mime")
         Ok(lookup(search, lang, clas, mime)).as(s"$mime; charset=utf-8")

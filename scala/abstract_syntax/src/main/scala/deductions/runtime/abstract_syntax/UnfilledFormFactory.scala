@@ -61,7 +61,7 @@ trait UnfilledFormFactory[Rdf <: RDF, DATASET]
         else instanceURI
       }
 
-      implicit val lang = request.getLanguage()
+      implicit val lang = request.getLanguage
       val form = createFormDetailed(
         makeUri(newId),
         classFromSpecsOrGiven,

@@ -77,7 +77,7 @@ trait FormHeader[Rdf <: RDF, DATASET]
         <div class="col-xs-12">
           <h3 id="subject">
             {
-              linkToFormSubject(formSyntax, request.getLanguage())
+              linkToFormSubject(formSyntax, request.getLanguage)
               // formSyntax.title
             }
             <strong>

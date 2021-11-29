@@ -17,7 +17,7 @@ trait FormSpecificationsLoader[Rdf <: RDF, DATASET]
   val formSpecificationsGraphURI = URI( "urn:form_specs")
 
   /** TRANSACTIONAL */
-  def resetCommonFormSpecifications() {
+  def resetCommonFormSpecifications() : Unit = {
     val ret = wrapInTransaction {
       rdfStore.removeGraph(dataset, formSpecificationsGraphURI)
     }
@@ -29,12 +29,12 @@ trait FormSpecificationsLoader[Rdf <: RDF, DATASET]
    *  on in project jmvanel/semantic_forms on github;
    *  non TRANSACTIONAL
    */
-  def loadCommonFormSpecifications() {
+  def loadCommonFormSpecifications() : Unit = {
     loadFormSpecification(all_form_specs_document)
   }
 
   /** non TRANSACTIONAL */
-  def loadFormSpecification(form_specs: String) {
+  def loadFormSpecification(form_specs: String) : Unit = {
     try {
       setTimeoutsFromConfig()
 
@@ -43,7 +43,7 @@ trait FormSpecificationsLoader[Rdf <: RDF, DATASET]
 
       val form_specs_graph: Rdf#Graph =
 //    turtleReader.read(from, base = form_specs) 
-        rdfLoader.load(new java.net.URL(form_specs)) . getOrElse (sys.error(
+        rdfLoader().load(new java.net.URL(form_specs)) . getOrElse (sys.error(
           s"couldn't read form_specs <$form_specs>"))
 
       val formPrefix = form
@@ -57,7 +57,7 @@ trait FormSpecificationsLoader[Rdf <: RDF, DATASET]
 //          val from = new java.net.URL(formSpecification.toString()).openStream()
           val form_spec_graph: Rdf#Graph =
             // turtleReader.read(from, base = formSpecification.toString())
-            rdfLoader.load(new java.net.URL(nodeToString(formSpecification))) . getOrElse (sys.error(
+            rdfLoader().load(new java.net.URL(nodeToString(formSpecification))) . getOrElse (sys.error(
             s"couldn't read form Specification <${formSpecification.toString()}>"))
           val ret = wrapInTransaction {
 //            rdfStore.appendToGraph(dataset, formSpecificationsGraphURI, form_spec_graph)

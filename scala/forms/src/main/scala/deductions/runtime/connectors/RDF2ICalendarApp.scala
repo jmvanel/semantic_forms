@@ -21,7 +21,7 @@ object RDF2ICalendarApp
     writeGraph(allNamedGraph)
   }
 
-  def writeGraph(graph: Rdf#Graph) {
+  def writeGraph(graph: Rdf#Graph) : Unit = {
     val outputFile = "from-RDF.ics"
     println(s"""Write $outputFile,
     # of triples ${graph.size()}""")

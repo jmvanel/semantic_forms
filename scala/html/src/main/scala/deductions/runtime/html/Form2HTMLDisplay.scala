@@ -106,7 +106,7 @@ with StringHelpers
         makeDrawGraphLinkSpoggy(uri) ++
         makeDrawGraphLinkLodLive(uri) ++
         makeClassTableButton(resourceEntry) ++
-        hyperlinkForEditingURIinsideForm(uri, request.getLanguage()),
+        hyperlinkForEditingURIinsideForm(uri, request.getLanguage),
       uri)
     } else NodeSeq.Empty )
   }
@@ -157,8 +157,8 @@ with StringHelpers
       createHyperlinkString( hrefPrefix, uriStringValue,
           isBlankNode( resourceEntry.value ) ) }
       class={ cssForURI(uriStringValue) } title={
-      s"""Value ${if (uriStringValue =/= linkText) uriStringValue else ""}
-        ${I18NMessages.get("of_types", request.getLanguage() ) } ${types}"""
+        s"""Value ${ if(uriStringValue =/= linkText) uriStringValue else ""}
+        ${I18NMessages.get("of_types", request.getLanguage ) } ${types}"""
     } draggable="true">
       { linkText }
     </a>
@@ -181,7 +181,7 @@ with StringHelpers
     import resourceEntry._
     val objectURIstringValue = resourceEntry.value.toString()
     (if (objectURIstringValue.size > 0 && showExpertButtons) {
-      val mess = I18NMessages.get("Reverse-links-reaching", request.getLanguage())
+      val mess = I18NMessages.get("Reverse-links-reaching", request.getLanguage)
       val title = s""" $mess "$valueLabel" <$value> """
       makeBackLinkButton(objectURIstringValue, title = title, request, resourceEntry)
     } else NodeSeq.Empty)
@@ -230,7 +230,7 @@ with StringHelpers
       request: HTTPrequest,
       resourceEntry: formMod#ResourceEntry): NodeSeq = {
     val imageURL = "/assets/images/create-instance.svg"
-    implicit val lang = request.getLanguage()
+    implicit val lang = request.getLanguage
     val classURIstringValue: String = toPlainString(resourceEntry.value)
     val messCreate_instance = mess("Create_instance_of") +
     " " + resourceEntry.valueLabel +
@@ -239,7 +239,7 @@ with StringHelpers
     if ( types.exists { t => t.endsWith("#Class") } ) {
       <a href={
         "/create?uri=" + URLEncoder.encode(classURIstringValue, "UTF-8") +
-          (if (clone) s"&referer=${ URLEncoder.encode(request.getRDFsubject(), "UTF-8")}"
+          (if (clone) s"&referer=${ URLEncoder.encode(request.getRDFsubject, "UTF-8")}"
           else "&prefill=no")
       } title={ messCreate_instance + (if (clone) " (clone)" else "") }
       class="sf-create-contextual">
@@ -298,7 +298,7 @@ with StringHelpers
 
     // TODO I18N
     if(fittingCount  =/=  literalEntriesCount)
-      <span>{literalEntriesCount - fittingCount} data not fitting user language ({request.getLanguage()}) </span>
+      <span>{literalEntriesCount - fittingCount} data not fitting user language ({request.getLanguage}) </span>
       <button
         onclick="
 console.log(document.getElementsByClassName('sf-data-not-fitting-user-language'));

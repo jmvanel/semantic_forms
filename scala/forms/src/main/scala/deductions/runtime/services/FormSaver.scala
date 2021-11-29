@@ -38,7 +38,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
     httpRequest: HTTPrequest): DatabaseChanges[Rdf] =
     computeDatabaseChangesFromMap(
         httpRequest.formMap,
-        httpRequest.getLanguage() )
+        httpRequest.getLanguage )
 
   private def computeDatabaseChangesFromMap(
     httpParamsMap: Map[String, Seq[String]],
@@ -264,7 +264,7 @@ trait FormSaver[Rdf <: RDF, DATASET]
 
   /** do Save the computed Database Changes - transactional */
   private def doSave(graphURI: String, databaseChanges: DatabaseChanges[Rdf])
-    ( implicit userURI: String = graphURI ) {
+    ( implicit userURI: String = graphURI ) : Unit = {
     import databaseChanges._
 
     // DEBUG
@@ -278,13 +278,14 @@ trait FormSaver[Rdf <: RDF, DATASET]
         time("removeTriples",
           rdfStore.removeTriples( dataset,
             URI(graphURI),
-            triplesToRemove.toIterable), isDebugEnabled(logger) )
+            triplesToRemove), isDebugEnabled(logger) )
+            // triplesToRemove.toIterable), isDebugEnabled(logger) )
           log( s"res0 removeTriples $res0")
 
           // special case of triples  ?S rdf:type foaf:Document.
           rdfStore.removeTriples( dataset,
             URI("user:anonymous"),
-            triplesToRemove.toIterable)
+            triplesToRemove)
 
         log( s"doSave: triplesToAdd ${triplesToAdd.mkString(",\n")}")
         val res =

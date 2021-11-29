@@ -14,5 +14,5 @@ case class UnicityList[E](list0: Iterable[E] = mutable.ArrayBuffer[E]()) {
       liste += e
     }
 
-  def list = liste.toIterable
+  def list = liste // .toIterable
 }

@@ -477,7 +477,7 @@ JMV:
         case Success(typ) =>
         setTimeoutsFromConfig()
         // NOTE: Jena RDF loader can throw an exception "Failed to determine the content type"
-        val graphTryLoadedFromURL = rdfLoader.load(new java.net.URL(withoutFragment(uri).toString()))
+        val graphTryLoadedFromURL = rdfLoader().load(new java.net.URL(withoutFragment(uri).toString()))
         logger.debug(s"readURIWithJenaRdfLoader: after rdfLoader.load($uri): graphTryLoadedFromURL $graphTryLoadedFromURL")
 
         graphTryLoadedFromURL match {
@@ -681,7 +681,8 @@ JMV:
    *  in All Named Graphs ;
    *  Needs wrapInReadTransaction */
   def findAllNamedGraphUriANY_ANY(uri: Rdf#Node) : Rdf#Graph =
-    makeGraph(find(allNamedGraph, uri, ANY, ANY).toIterable)
+    makeGraph(find(allNamedGraph, uri, ANY, ANY) .iterator.to(Iterable) )
+    // makeGraph(find(allNamedGraph, uri, ANY, ANY).toIterable)
 
   /** find
    *  Uri ANY ANY
@@ -694,7 +695,7 @@ JMV:
    * TODO: graphURI should be obtained from the HTTP request, or else from user Id
    */
   private def pureHTMLwebPageAnnotateAsDocument(uri: Rdf#URI, request: HTTPrequest): Rdf#Graph = {
-    val graphURI = URI(makeAbsoluteURIForSaving(request.userId()))
+    val graphURI = URI(makeAbsoluteURIForSaving(request.userId))
     val addedGraphTry = wrapInTransaction {
       val existingType = find(allNamedGraph, uri, rdf.typ, ANY)
       val addedGraph =
@@ -712,7 +713,7 @@ JMV:
             graphURI,
             newGraphWithUrl)
           logger.debug(s"""pureHTMLwebPageAnnotateAsDocument: saved $newGraphWithUrl
-            in graph <${makeAbsoluteURIForSaving(request.userId())}>""")
+            in graph <${makeAbsoluteURIForSaving(request.userId)}>""")
           newGraphWithUrl
         } else emptyGraph
       addRDFSLabelValue(uri, Some(graphURI))
@@ -720,7 +721,7 @@ JMV:
     }
     val currentPageTriplesIterator = wrapInReadTransaction {
       find(allNamedGraph, uri, ANY, ANY)
-    }.getOrElse(Iterator.empty).toIterable
+    }.getOrElse(Iterator.empty).iterator.to(Iterable)
     logger.debug(s"""pureHTMLwebPageAnnotateAsDocument: addedGraphTry $addedGraphTry""")
     val result = addedGraphTry.getOrElse(emptyGraph). // newGraphWithUrl.
       // NOTE: after user added triples, this way typeChange will not be triggered

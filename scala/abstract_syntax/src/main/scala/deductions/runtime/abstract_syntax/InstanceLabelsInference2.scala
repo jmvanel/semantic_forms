@@ -51,7 +51,7 @@ trait InstanceLabelsInference2[Rdf <: RDF]
 
     def tryFoafPerson() = try2Properties(foaf.givenName, foaf.familyName)
     def tryFoafPerson2() = try2Properties(foaf.firstName, foaf.lastName)
-    def tryNonStandardPerson() = try2Properties(
+    def tryNonStandardPerson = try2Properties(
       prefixesMap2("pair")("firstName"),
       prefixesMap2("pair")("lastName"))
 

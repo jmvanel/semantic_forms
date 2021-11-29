@@ -319,7 +319,7 @@ extends URIManagement {
       case NonFatal(e) => node.toString()
     }
     
-  def printGraph(graph: Rdf#Graph) {
+  def printGraph(graph: Rdf#Graph) : Unit = {
     val iterable = getTriples(graph)
     for (t <- iterable) {
       println(t)
@@ -395,12 +395,14 @@ extends URIManagement {
           if(rawString.endsWith("\""))
             rawString.replaceAll("\"", "\\\"")
           else
-            rawString.replaceAll("""\\\r""", """\\\\\u000d""")
+            // rawString.replaceAll("""\\\r""", """\\\\\u000d""")
+            rawString.replaceAll("""\\\r""", """\\\\\r""")
         wrapping + turtleString + wrapping + suffix
       })
 
   def makeTurtleTriple(triple: Rdf#Triple): Try[String] = {
-    val graph = makeGraph(List(triple).toIterable)
+    // val graph = makeGraph(List(triple).toIterable)
+    val graph = makeGraph(List(triple))
     ntriplesWriter.asString(graph, None ) // "")
   }
 

@@ -104,7 +104,7 @@ with FormModule[Rdf#Node, Rdf#URI]
     }
 
     /* recursively process super-classes and owl:equivalentClass until reaching owl:Thing */
-    def processSuperClasses(classs: Rdf#Node) {
+    def processSuperClasses(classs: Rdf#Node) : Unit = {
       if (classs != owl.Thing) {
         val propertiesFromDomains = propertiesFromDomainsFromClass(classs)
         inferedProperties ++= propertiesFromDomains
@@ -144,7 +144,7 @@ with FormModule[Rdf#Node, Rdf#URI]
      * properties without Domain are supposed to be applicable to any class in the same ontology
      *  ( use case : DOAP )
      */
-    def addDomainlessProperties(uri: Rdf#URI) {
+    def addDomainlessProperties(uri: Rdf#URI) : Unit = {
       val graphURI = getGraphURI(uri)
       val props1 = find(graph, ANY, rdf.typ, rdf.Property)
       val props2 = find(graph, ANY, rdf.typ, owl.ObjectProperty)

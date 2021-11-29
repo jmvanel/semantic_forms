@@ -83,7 +83,7 @@ with Rendering
     implicit val rdfLocalProvider
 //    : RDFStoreLocalProvider[Rdf, DATASET]
     = this
-    callServiceListeners(request)(request.userId(), rdfLocalProvider)
+    callServiceListeners(request)(request.userId, rdfLocalProvider)
   }
               
   /////////////////////////////////
@@ -93,7 +93,7 @@ with Rendering
       httpRequest: HTTPrequest,
       userid: String, graphURI: String = ""): (String, Boolean) = {
     val host = httpRequest.host
-    val lang = httpRequest.getLanguage()
+    val lang = httpRequest.getLanguage
     val map = httpRequest.formMap
     logger.debug(
       s"""

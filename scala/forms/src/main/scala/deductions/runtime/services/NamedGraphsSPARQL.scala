@@ -35,7 +35,7 @@ trait NamedGraphsSPARQL[Rdf <: RDF, DATASET]
   }
   
   def showNamedGraphs(httpRequest: HTTPrequest): Future[NodeSeq] = {
-    val lang = httpRequest.getLanguage()
+    val lang = httpRequest.getLanguage
     val patternOption = httpRequest.getHTTPparameterValue("pattern")
     val searchArg = patternOption  match {
       case Some(patt) => Seq(patt)

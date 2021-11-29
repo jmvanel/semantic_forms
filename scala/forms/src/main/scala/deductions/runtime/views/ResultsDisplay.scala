@@ -109,7 +109,7 @@ extends ThumbnailInference[Rdf, DATASET] {
       if( label != "" )
           label
         else
-          makeInstanceLabelFuture(node, graph, request.getLanguage())
+          makeInstanceLabelFuture(node, graph, request.getLanguage)
      val `type` = getClassOrNullURI(node)(graph)
     logger.trace(s"makeHyperlinkForURI type ${`type`}")
      displayNode(uriNodeToURI(node), hrefPrefix, displayLabel,

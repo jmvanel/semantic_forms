@@ -60,7 +60,7 @@ trait ApplicationUtils
     : RDFStoreLocalProvider[ImplementationSettings.Rdf, ImplementationSettings.DATASET]
 //    : RDFStoreLocalProvider[Rdf, DATASET]
     = this
-    callServiceListeners(request)(request.userId(), rdfLocalProvider)
+    callServiceListeners(request)(request.userId, rdfLocalProvider)
   }
 
   def recoverFromOutOfMemoryErrorDefaultMessage(lang: String) =

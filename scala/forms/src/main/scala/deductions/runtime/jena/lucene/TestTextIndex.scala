@@ -12,7 +12,7 @@ import org.apache.lucene.search.ScoreDoc
 import org.apache.jena.query.ReadWrite
 
 import scala.collection.Seq
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 import org.apache.jena.query.text.DatasetGraphText
 import deductions.runtime.jena.ImplementationSettings
