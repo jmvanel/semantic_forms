@@ -30,7 +30,7 @@ import com.apicatalog.jsonld.document.DocumentParser
 import com.apicatalog.jsonld.http.media.MediaType
 import com.apicatalog.jsonld.document.RdfDocument
 import com.apicatalog.jsonld.document.JsonDocument
-import com.fasterxml.jackson.annotation.JsonFormat
+// import com.fasterxml.jackson.annotation.JsonFormat
 
 import java.io.StringWriter
 import jakarta.json.stream.JsonGenerator
