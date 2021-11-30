@@ -251,22 +251,22 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
   /** XHTML wrapper around SPARQL Construct result TODO  move to a trait in html package */
   def sparqlConstructQueryHTML(query: String, request: HTTPrequest,
       context: Map[String,String] ): Elem = {
-    logger.info("Global.sparql query  " + query)
+    logger.info(">>>> sparqlConstructQueryHTML, query\n" + query)
     <p>
-		{ sparqlQueryForm( true,query, "/sparql-ui",
-				Seq("CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10"), request ) }
+      { sparqlQueryForm( true,query, "/sparql-ui",
+          Seq("CONSTRUCT { ?S ?P ?O . } WHERE { GRAPH ?G { ?S ?P ?O . } } LIMIT 10"), request ) }
       <pre>
         {
-//          try {
           if( query != "" )
             sparqlConstructQueryTR(query, request: HTTPrequest, context=context)
         		  match {
-        		    case Success(str) => str
-        		    case Failure(f) => f.getLocalizedMessage
+                            case Success(str) =>
+                              logger.debug("sparqlConstructQueryHTML, str\n" + str)
+                              str
+                            case Failure(f) =>
+                              logger.warn("sparqlConstructQueryHTML, failure\n" + f)
+                              f.getLocalizedMessage
         		  }
-//          } catch {
-//            case NonFatal(e) => e.printStackTrace() // TODO: handle error?
-//          }
           /* TODO Future !!!!!!!!!!!!!!!!!!! */
         }
       </pre>

@@ -164,11 +164,11 @@ object RDFStoreLocalJenaProviderObject
 
         if (useSpatialIndex) {
           import org.apache.jena.geosparql.configuration._
-          println(s"Before setupMemoryIndex")
           GeoSPARQLConfig.setupMemoryIndex // actually registers special SPARQL predicates!
           logger.info("SpatialIndex: isFunctionRegistered " + GeoSPARQLConfig.isFunctionRegistered)
-          println(s"Before setupSpatialIndex")
+          logger.info(s"Before setupSpatialIndex")
           GeoSPARQLConfig.setupSpatialIndex(res)
+          logger.info(s"After setupSpatialIndex")
           logger.info("SpatialIndex: findModeSRS <" + GeoSPARQLOperations.findModeSRS(res) + ">")
         }
         res
@@ -258,6 +258,7 @@ object RDFStoreLocalJenaProviderObject
       val lang = RDFLanguages.contentTypeToLang(contentTypeNoEncoding)
       logger.debug(s"readWithContentTypeJena: $lang , contentType $contentType, contentTypeNoEncoding $contentTypeNoEncoding")
       RDFParser.create()
+        /* Deprecated !!!!!!!! */
         .httpClient(
           CachingHttpClientBuilder.create()
             .setRedirectStrategy(new LaxRedirectStrategy())

@@ -491,7 +491,7 @@ with ApplicationTrait
   def sparql(query: String) : EssentialAction = {
     def doAction(implicit request: Request[_]) = {
       val httpRequest = copyRequest(request)
-      logger.info(s"sparql: ${httpRequest.logRequest()} , query" + query)
+      logger.info(s"sparql: ${httpRequest.logRequest()} , query\n" + query)
       val lang = httpRequest.getLanguage
       val userInfo = displayUser(getUsername(request).getOrElse("anonymous"), httpRequest)
       outputMainPage(
@@ -521,7 +521,7 @@ with ApplicationTrait
       recoverFromOutOfMemoryErrorGeneric(
         {
           val httpRequest = copyRequest(request)
-          logger.info(s"select: ${httpRequest.logRequest()} , query" + query)
+          logger.info(s"select: ${httpRequest.logRequest()} , query\n" + query)
           val userInfo = displayUser(getUsername(request).getOrElse("anonymous"), httpRequest)
           outputMainPage(
               selectSPARQL(query, httpRequest),

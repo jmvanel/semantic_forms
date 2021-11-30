@@ -101,7 +101,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       }
       //      _ = logger.debug( s"sparqlConstructQuery: query $query" )
       es <- {
-        logger.debug("sparqlConstructQuery: before executeConstruct")
+        logger.debug(s"sparqlConstructQuery: before executeConstruct, query $query")
         if (checkUnionDefaultGraph(context))
           jenaComplements.executeConstructUnionGraph(dataset, query: Rdf#ConstructQuery)
         else
@@ -258,10 +258,11 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    */
   def sparqlConstructQueryTR(queryString: String, request: HTTPrequest, format: String = "turtle",
                              context: Map[String, String] = Map()): Try[String] = {
-    val transaction = rdfStore.r(dataset, {
-      graph2String(
-        sparqlConstructQuery(queryString, context=context), request,
-        "", format)
+      val transaction = rdfStore.r(dataset, {
+        logger.debug( s"sparqlConstructQueryTR: query $queryString \n\t\tformat $format, context $context" )
+        graph2String(
+          sparqlConstructQuery(queryString, context=context), request,
+          "", format)
     })
     transaction .flatten
   }
@@ -938,12 +939,14 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       baseURI: String, format: String = "turtle"): Try[String] = {
     val formatFromURL = request.getHTTPparameterValue("format").getOrElse("")
     logger.debug( s""">>>> graph2String format from HTTP header: '$format'
-      formatFromURL (priority) '$formatFromURL'""" )
+      formatFromURL (priority) '$formatFromURL'
+        $triples""" )
 //        prefix2uriMap ${prefix2uriMap.mkString("\n")}""" )
 
     val outputStream = new ByteArrayOutputStream
     def doGraph2String(format: RDFFormat, statistics: String) =
       Try {
+        logger.debug( s""">>>> doGraph2String format: '$format'""")
         graphWriter.writeGraph(triples.get, outputStream,
           format, prefix2uriMap.asJava)
         statistics + outputStream.toString()
@@ -990,10 +993,10 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     triples.map {
       graph =>
         val tryString = writer.asString(graph, base = None ) // baseURI)
-        //        logger.debug( s">>>> graph2String tryString $tryString" )
+        //        logger.debug( s">>>> writeTryGraphBanana tryString $tryString" )
         tryString match {
           case Success(s) => stats + s
-          case Failure(f) => s"graph2String: trouble in writing graph: $f"
+          case Failure(f) => s"writeTryGraphBanana: trouble in writing graph: $f"
         }
     }
   }
@@ -1006,7 +1009,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
    *  then pass MIME type
    */
   private def graph2StringBANANA(triples: Try[Rdf#Graph], baseURI: String, format: String = "turtle"): Try[String] = {
-    logger.info(s"graph2String: base URI <$baseURI>, format '$format', triples ${triples.isSuccess}")
+    logger.info(s"graph2StringBANANA: base URI <$baseURI>, format '$format', triples ${triples.isSuccess}")
     triples match {
       case Success(graph) =>
         val graphSize = graph.size
@@ -1023,14 +1026,14 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
           else
             (turtleWriter, s"# graph size ${graphSize}\n")
 
-//        logger.debug( s">>>> graph2String writer $writer, stats $stats, baseURI $baseURI, graph $graph" )
+//        logger.debug( s">>>> graph2StringBANANA writer $writer, stats $stats, baseURI $baseURI, graph $graph" )
 
         Success( stats + {
           val tryString = writer.asString(graph, base = None ) // baseURI)
-//        logger.debug( s">>>> graph2String tryString $tryString" )
+//        logger.debug( s">>>> graph2StringBANANA tryString $tryString" )
           tryString match {
             case Success(s) => s
-            case Failure(f) => s"graph2String: trouble in writing graph: $f"
+            case Failure(f) => s"graph2StringBANANA: trouble in writing graph: $f"
           }
         }
         )
