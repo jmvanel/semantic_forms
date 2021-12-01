@@ -14,7 +14,7 @@ import scala.language.postfixOps
 import deductions.runtime.utils.{Configuration, RDFPrefixes, URIHelpers}
 import org.w3.banana.{RDF, RDFOps, RDFPrefix, XSDPrefix}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 import scalaz._
 import Scalaz._
@@ -60,7 +60,11 @@ trait CSVImporter[Rdf <: RDF, DATASET]
       separator: Char = ','): Rdf#Graph = {
 
     val rowType = csvPredicate(CSV.ROW_TYPE)
-    val csvFormat = CSVFormat.DEFAULT.withDelimiter(separator).withHeader()
+    val csvFormat = CSVFormat.DEFAULT
+      .builder()
+      .setHeader()
+      .setDelimiter(separator)
+      .build()
 
     csvParser = new CSVParser( new InputStreamReader(in), csvFormat)
     val header: java.util.Map[String, Integer] = csvParser.getHeaderMap
@@ -128,7 +132,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
 
   private def writeHeaderPropertiesMetadata(
     header: java.util.Map[String, Integer],
-    list: ArrayBuffer[Rdf#Triple]) {
+    list: ArrayBuffer[Rdf#Triple]) : Unit = {
     var index = 0
     for (singleHeader <- headerURIs) {
       if (index <= headerURIs.length) {
@@ -199,14 +203,14 @@ trait CSVImporter[Rdf <: RDF, DATASET]
   }
 
   private def isIDcolumn(columnURI: String, documentURI: URI): Boolean = {
-    columnURI == documentURI + "Id"
+    columnURI == documentURI.toString() + "Id"
   }
 
   private def produceRowStatements(
     rowSubject: URI,
     record:     CSVRecord,
     list:       ArrayBuffer[Rdf#Triple],
-    uriPrefix:  URI) {
+    uriPrefix:  URI) : Unit = {
     val idColumnIndex = findIDcolumnIndex(uriPrefix)
     val rowSubjectOrID : Rdf#URI = if(idColumnIndex >= 0 ) {
       val idFromRow = record.get(idColumnIndex)
@@ -333,7 +337,7 @@ trait CSVImporter[Rdf <: RDF, DATASET]
   private def addTableMetadataStatements(documentURI: URI, 
 		  list: ArrayBuffer[Rdf#Triple],
 		  numberOfRows: Int, 
-      numberOfColumns: Int) {
+      numberOfColumns: Int) : Unit = {
     list += Triple(documentURI, csvPredicate(CSV.NUMBER_OF_ROWS), Literal(String.valueOf(numberOfRows), xsd.integer))
     list += Triple(documentURI, csvPredicate(CSV.NUMBER_OF_COLUMNS), Literal(String.valueOf(numberOfColumns), 
       xsd.integer))
