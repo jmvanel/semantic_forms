@@ -572,6 +572,10 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
       makeListofListsFromSolutions(solutionsTry)
     })
     logger.debug("sparqlSelectQuery: before transaction.get")
+    if( transaction.isFailure )
+      logger.warn(s"""sparqlSelectQuery Failure : ${transaction.failed}
+        queryString
+        $queryString""")
     transaction.get
   }
 
