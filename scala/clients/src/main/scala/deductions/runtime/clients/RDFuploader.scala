@@ -71,7 +71,7 @@ object RDFuploader extends App {
   val httpResponses = ArrayBuffer[Future[HttpResponse]]()
   val destination: StreamRDF = new StreamRDFBase{
     var count = 0
-    override def triple(triple: Triple ) {
+    override def triple(triple: Triple ) : Unit = {
       count += 1
       if(count >= startingTriple)
         triples += triple
@@ -102,7 +102,7 @@ object RDFuploader extends App {
           } while (reTry)
           Thread.sleep(delayBetweenRequests)
         }
-        triples.clear
+        triples.clear()
       }
     }
   }

@@ -2,8 +2,6 @@ package deductions.runtime.clients
 
 import java.net.URLEncoder
 
-import scala.collection.JavaConverters._
-
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
@@ -14,8 +12,7 @@ import org.w3.banana.jena.Jena
 
 import org.apache.http.params.BasicHttpParams
 import org.apache.http.client.utils.URIBuilder
-import scala.collection.JavaConverters._
-
+import scala.jdk.CollectionConverters._
    
 /** SPARQL query to Semantic_Forms cache */
 trait SPARQLquery2SFcache {
@@ -93,7 +90,7 @@ trait SPARQLquery2SFcache {
     // by the connection manager.
     try {
       num = num + 1
-      println(num + " " + uri + " --> " + response1.getStatusLine() +
+      println(num.toString() + " " + uri + " --> " + response1.getStatusLine() +
           "\t" + httpGet)
       val entity1 = response1.getEntity()
 

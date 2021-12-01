@@ -96,7 +96,7 @@ object GeoJSONexport extends App with GeoJSONexportAPI {
   println( s"GeoJSON $fileName written")
 
 
-  def printTitanium(titanium: RdfDataset) {
+  def printTitanium(titanium: RdfDataset) : Unit = {
     println("======== titaniumOut =========")
     println(titanium.toList().asScala.
       map { t =>
@@ -117,7 +117,7 @@ trait GeoJSONexportAPI {
     model: Model,
     wr:    Writer): Unit = {
     val jsonObject = rdfModelToGeoJSON(model)
-    val writerFactory = makeWriterFactory
+    val writerFactory = makeWriterFactory()
     val jsonWriter = writerFactory.createWriter(wr)
     jsonWriter.writeObject(jsonObject)
     jsonWriter.close()
@@ -272,7 +272,7 @@ trait GeoJSONexportAPI {
     Json.createWriterFactory(jsonWriterProperties)
   }
 
-  private def printJsonArray(jsa: JsonArray) {
+  private def printJsonArray(jsa: JsonArray) : Unit = {
     val sw = new StringWriter()
     val writerFactory = makeWriterFactory()
     val jsonWriter = writerFactory.createWriter(sw)
