@@ -8,7 +8,8 @@ trait URLReader {
   import org.apache.http.{ HttpEntity, HttpResponse }
   import org.apache.http.client._
   import org.apache.http.client.methods.HttpGet
-  import org.apache.http.impl.client.DefaultHttpClient
+  import org.apache.http.impl.client.cache.CachingHttpClientBuilder
+
   import scala.collection.mutable.StringBuilder
   import scala.xml.XML
   import org.apache.http.params.HttpConnectionParams
@@ -37,7 +38,7 @@ trait URLReader {
       content = io.Source.fromInputStream(inputStream).getLines().mkString
       inputStream.close
     }
-    httpClient.getConnectionManager.shutdown
+    // httpClient.getConnectionManager.shutdown
     content
   }
 
@@ -70,12 +71,17 @@ trait URLReader {
     }
   }
 
-  private def buildHttpClient(connectionTimeout: Int, socketTimeout: Int): DefaultHttpClient = {
-    val httpClient = new DefaultHttpClient
-    val httpParams = httpClient.getParams
-    HttpConnectionParams.setConnectionTimeout(httpParams, connectionTimeout)
-    HttpConnectionParams.setSoTimeout(httpParams, socketTimeout)
-    httpClient.setParams(httpParams)
-    httpClient
+  private def buildHttpClient(connectionTimeout: Int, socketTimeout: Int): 
+      org.apache.http.impl.client.CloseableHttpClient = {
+    val requestConfig =
+      org.apache.http.client.config.RequestConfig.custom()
+      .setConnectTimeout(connectionTimeout /*ms*/)
+      .setSocketTimeout(socketTimeout)
+      .build()
+
+   val httpClient =  CachingHttpClientBuilder . create()
+     .setDefaultRequestConfig(requestConfig)
+
+   httpClient.build()
   }
 }
