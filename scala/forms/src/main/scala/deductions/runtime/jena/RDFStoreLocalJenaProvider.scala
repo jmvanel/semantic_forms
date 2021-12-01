@@ -21,6 +21,11 @@ import org.w3.banana.jena.io.TripleSink
 import org.apache.jena.riot.RDFParser
 import org.apache.jena.riot.RDFLanguages
 import org.apache.http.impl.client.cache.CachingHttpClientBuilder
+
+import java.net.http.HttpClient;
+import java.net.http.HttpClient.Redirect;
+import java.time.Duration;
+
 import org.apache.http.impl.client.LaxRedirectStrategy
 import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.methods.HttpGet
@@ -230,7 +235,7 @@ object RDFStoreLocalJenaProviderObject
 
   def syncTDB(ds: DATASET = dataset) = TDB.sync( ds )
 
-
+  // Apache HTTP client setting; TODO there other lines also setting this
   private val requestConfig =
     RequestConfig.custom()
       .setConnectTimeout(10 * 1000)
@@ -246,8 +251,20 @@ object RDFStoreLocalJenaProviderObject
     dataset: DATASET): Try[Rdf#Graph] =
     readWithContentTypeNoJena(uri, contentType)
 
-  /** TODO dataset is not used */
-  private def readWithContentTypeJena(
+  // JVM wide setting for Jena 4.3.0
+  /*
+  org.apache.jena.http.HttpEnv.setDftHttpClient(
+    HttpClient.newBuilder()
+                // By default, the client has polling and connection-caching.
+                // Version HTTP/2 is the default, negotiating up from HTTP 1.1.
+                .connectTimeout(Duration.ofSeconds(10))
+                .followRedirects(Redirect.ALWAYS) // NORMAL ?
+                .build()
+    )
+  */
+
+  /** _UNUSED ; TODO dataset is not used */
+  private def readWithContentTypeJena_UNUSED(
     uri: Rdf#URI,
     contentType: String,
     dataset: DATASET): Try[Rdf#Graph] = {
@@ -258,14 +275,16 @@ object RDFStoreLocalJenaProviderObject
       val lang = RDFLanguages.contentTypeToLang(contentTypeNoEncoding)
       logger.debug(s"readWithContentTypeJena: $lang , contentType $contentType, contentTypeNoEncoding $contentTypeNoEncoding")
       RDFParser.create()
-        /* Deprecated !!!!!!!! */
+        /* Removed in Jena 4.3.0 !!! See above HttpEnv.setDftHttpClient() to set (Lax?) RedirectStrategy ...
         .httpClient(
           CachingHttpClientBuilder.create()
             .setRedirectStrategy(new LaxRedirectStrategy())
             .setDefaultRequestConfig(requestConfig)
             .build())
+         */
         .source(fromUri(uri))
-//        .httpAccept(contentType)
+        .httpAccept(contentType)
+        // .acceptHeader(contentType) // for Jena 4.3.0
         .forceLang(lang)
 //        .lang(lang)
         .parse(sink)

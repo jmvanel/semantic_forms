@@ -89,8 +89,9 @@ lazy val geo = project . dependsOn( jsonld )
 // lazy val social_web = project
 // lazy val sparql_client = project
 
-// Added for locally compiled Java-RDFa:
+// Added for locally compiled Java with Maven (e.g. Jena)
 // resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
+Global / resolvers += Resolver.mavenLocal
 
 // ???
 // resolvers in ThisBuild += Resolver.mavenLocal

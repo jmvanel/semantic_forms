@@ -6,10 +6,8 @@ object Common {
     val localResolver = Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
     val bananaResolver = "bblfish-snapshots" at "http://bblfish.net/work/repo/releases"
 
-// val jenaVersion =  "3.16.0"
-// val jenaVersion =  "3.17.0"
 val jenaVersion =  "4.2.0"
-// val jenaVersion =  "3.18.0-SNAPSHOT"
+// val jenaVersion =  "4.3.0-SNAPSHOT"
 
 val akkaVersion = "2.6.17" // 4" // because of Play 2.8.8
 val akkaHttpVersion = "10.2.7" // "10.2.4"
@@ -49,7 +47,7 @@ val bananaOrganisation = "net.bblfish.rdf"
   val scalazDependency = "org.scalaz" %% "scalaz-core" % "7.3.5"
 
   // allready in Banana
-  // val httpComponents = "org.apache.httpcomponents" % "httpclient" % "4.5.2"
+  // val httpComponents = "org.apache.httpcomponents" % "httpclient" % "4.5.13"
 
   val any23Dependencies = "org.apache.any23" % "apache-any23-csvutils" % any23Version
 

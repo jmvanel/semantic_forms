@@ -5,9 +5,7 @@
     <!-- encoders are assigned the type
          ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
     <encoder>
-      <!--pattern>%date %d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern-->
       <Pattern>%date{"yyyy-MM-dd'T'HH:mm:ss.SSSXXX", UTC} [%thread] %-5level %logger{36} - %msg%n</Pattern>
-
     </encoder>
   </appender>
 
@@ -22,6 +20,7 @@
   <logger name="abstract_syntax" level="DEBUG"/>
   <logger name="user" level="DEBUG"/>
   <logger name="connectors" level="DEBUG"/>
+  <logger name="org.apache.jena.geosparql.spatial.SpatialIndex" level="DEBUG"/>
   -->
 
   <!-- <root level="debug"> -->
