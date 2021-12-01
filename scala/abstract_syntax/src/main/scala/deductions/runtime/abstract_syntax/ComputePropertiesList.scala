@@ -130,9 +130,8 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
                              addedDataForForm: FormSyntax) =
       globalDataForForm.copy(
         propertiesGroupMap =
-          globalDataForForm.propertiesGroupMap +
-            (key -> addedDataForForm))
-            
+          globalDataForForm.propertiesGroupMap . concat ( Map (
+            (key -> addedDataForForm))) )
     return prependPropertyGroup(globalDataForForm, Literal("Short form"), formSyntaxFromSpecif)
   }
 

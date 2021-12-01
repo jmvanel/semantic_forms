@@ -130,8 +130,7 @@ with FormModule[Rdf#Node, Rdf#URI]
     def getGraphURI(classs: Rdf#URI): String = {
       getFragment(classs) match {
         case Some(frag) =>
-          //        classs.toString().substring(frag.length() + 1)
-          withoutFragment(classs) + "#"
+          withoutFragment(classs).toString() + "#"
         case None =>
           val i = classs.toString().lastIndexOf("/")
           if (i > 0)
