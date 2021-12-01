@@ -2,7 +2,7 @@ package jmvanel
 
 import org.apache.jena.tdb.TDBFactory
 import org.apache.jena.query._
-import collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import java.io.FileWriter
 import java.io.File
 import java.net.URL
@@ -248,9 +248,7 @@ trait GeoJSONexportAPI {
    *  */
   def rdfToJsonLD(titaniumDS: RdfDataset, context: String): JsonObject = {
     val inputStream = new StringReader(context)
-    val contextDocument = DocumentParser.parse(
-        MediaType.JSON_LD,
-        inputStream)
+    val contextDocument = JsonDocument.of( inputStream)
 
     val fromRdf: FromRdfApi =
       JsonLd.fromRdf(

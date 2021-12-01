@@ -1,7 +1,7 @@
 package jmvanel
 import org.apache.jena.tdb.TDBFactory
 import org.apache.jena.query._
-import collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import java.io.FileWriter
 import java.io.File
 
