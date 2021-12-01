@@ -166,7 +166,7 @@ trait Form2HTML[NODE, URI <: NODE]
       val map = LinkedHashMap[K, LinkedHashSet[A]]().withDefault(_ => LinkedHashSet[A]())
       for (i <- t) {
         val key = f(i)
-        map(key) = map(key) + i
+        map(key) = map(key) . union( Set( i ))
       }
       map
     }
