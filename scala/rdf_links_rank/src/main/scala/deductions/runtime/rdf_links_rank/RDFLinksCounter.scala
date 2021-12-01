@@ -199,7 +199,7 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
             counts
           case Failure(f) =>
             logger.error("computeLinksCount: " + f)
-            Seq((URI(""), 0)).toIterator
+            Seq((URI(""), 0)).iterator
         }
       })
 
@@ -219,7 +219,7 @@ trait RDFLinksCounter[Rdf <: RDF, DATASET]
           linksCountPred,
           IntToLiteral(ops).toLiteral(count))
     }
-    val tripleIterable = tripleIterator.toIterable
+    val tripleIterable = tripleIterator.iterator.to(Iterable)
     rdfStore.rw(dataset, {
       rdfStore.appendToGraph(linksCountDataset, linksCountGraphURI,
         makeGraph(tripleIterable))
