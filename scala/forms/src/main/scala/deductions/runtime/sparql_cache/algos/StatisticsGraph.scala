@@ -55,7 +55,7 @@ trait StatisticsGraph[Rdf <: RDF, DATASET] extends RDFHelpers[Rdf]
               <button title="Show all classes"
               >....</button> )
       }
-      { if( ! request.isFocusURIlocal)
+      { if( ! request.isFocusURIlocal() )
         <a href={"/showTriplesInGraph?uri=" + URLEncoder.encode(fromUri(focus),"UTF-8")}>Named graph</a>
       }
     </span>

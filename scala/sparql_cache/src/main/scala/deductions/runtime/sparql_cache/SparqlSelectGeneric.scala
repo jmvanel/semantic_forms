@@ -35,6 +35,7 @@ trait SparqlSelectGeneric [Rdf <: RDF, DATASET] extends RDFStoreLocalProvider[Rd
     context:     Map[String, String] = Map(),
     outputSyntax: Lang = Lang.CSV): Try[String] = {
 
+    import scala.language.implicitConversions
     implicit def funToRunnable(fun: () => Unit) = new Runnable() { def run() = fun() }
 
     val ds = ds0.asInstanceOf[org.apache.jena.query.Dataset]

@@ -25,7 +25,7 @@ trait RDFI18NLoaderTrait[Rdf <: RDF, DATASET]
   val i18NGraph = URI("urn:rdf-i18n")
 
   /** TRANSACTIONAL */
-  def resetRDFI18NTranslations() {
+  def resetRDFI18NTranslations() : Unit = {
     val r = rdfStore.rw( dataset, {
       rdfStore.removeGraph( dataset, i18NGraph)
     })

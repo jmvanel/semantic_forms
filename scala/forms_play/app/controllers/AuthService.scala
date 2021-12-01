@@ -82,7 +82,7 @@ extends BaseController
   /** page for login or signin */
   def login = Action { implicit request: Request[_] =>
     val httpRequest = copyRequest(request)
-    logger.info(s"""login: request ${ httpRequest.logRequest }
+    logger.info(s"""login: request ${ httpRequest.logRequest() }
       cookies ${request.cookies}
       keySet ${request.session.data.keySet}""")
 
@@ -144,7 +144,7 @@ extends BaseController
 
       val userFromSession = httpRequest.userId // normally not yet set in session !
       if (logPasswordInClear)
-        logger.info(s"""authenticate: httpRequest ${httpRequest.logRequest} - queryString ${httpRequest.queryString}
+        logger.info(s"""authenticate: httpRequest ${httpRequest.logRequest()} - queryString ${httpRequest.queryString}
           userFromSession $userFromSession
           formMap ${httpRequest.formMap}""")
       else

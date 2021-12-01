@@ -129,7 +129,7 @@ with RDFStoreLocalJenaProvider // for prefix2uriMap
         val modelToWrite = dataset.getUnionModel
 
         logger.info(s"json2rdf: modelToWrite size: ${modelToWrite.size()}")
-        import scala.collection.JavaConverters._
+        import scala.jdk.CollectionConverters._
         val outputStream = new ByteArrayOutputStream
         // RDFDataMgr.write(outputStream, modelToWrite, org.apache.jena.riot.RDFFormat.TURTLE_PRETTY)
         writeGraph(modelToWrite.getGraph, outputStream,
