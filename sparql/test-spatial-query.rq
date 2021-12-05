@@ -1,0 +1,16 @@
+PREFIX spatial: <http://jena.apache.org/spatial#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+CONSTRUCT { 
+    ?place rdfs:label ?placeName .
+    ?place geo:long ?LONG.
+    ?place geo:lat ?LAT.
+} WHERE {
+    ?place spatial:nearby (
+       45.750000 4.85 # Lyon
+       1000 ) . # km
+    ?place rdfs:label ?placeName .
+    ?place geo:long ?LONG.
+    ?place geo:lat ?LAT.
+    FILTER( LANG( ?placeName) = 'fr' )
+}

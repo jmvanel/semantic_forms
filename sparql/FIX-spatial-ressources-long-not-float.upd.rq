@@ -1,0 +1,20 @@
+PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+DELETE {
+GRAPH ?G {
+  ?place geo:long ?V .
+}}
+
+INSERT {
+GRAPH ?G {
+  ?place geo:long ?FLOAT .
+}}
+
+WHERE {
+GRAPH ?G {
+  ?place geo:long ?V .
+  FILTER ( datatype(?V) = xsd:string
+        || datatype(?V) = rdf:langString )
+  BIND ( xsd:float(?V) AS ?FLOAT )
+}}

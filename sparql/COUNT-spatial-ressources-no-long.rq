@@ -1,0 +1,13 @@
+# These triples create a NP exception in Jena 4.2.0
+# In the special case when latitude is present but not longitude, a null pointer exception is raised, which kills the Spatial initialization.
+PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT 
+  (COUNT(?place) AS ?placeNoLong) 
+WHERE {
+  SELECT ?place
+  WHERE { GRAPH ?G {
+    ?place geo:lat ?LAT.
+    FILTER ( ! EXISTS { ?place geo:long ?LONG. } )
+  }}
+}
