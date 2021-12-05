@@ -1,0 +1,21 @@
+# These triples create an exception in Jena 4.2.0 :
+# Unrecognised Geometry Datatype: http://www.w3.org/2001/XMLSchema#string
+# WKT strings must not have datatype rdfs:string, per the OGC GeoSPARQL standard
+PREFIX geosparql: <http://www.opengis.net/ont/geosparql#>
+
+DELETE {
+GRAPH ?G {
+  ?S geosparql:asWKT ?O .
+}}
+
+INSERT {
+GRAPH ?G {
+  ?S geosparql:asWKT ?OWKT .
+}}
+
+WHERE { GRAPH ?G {
+  ?S geosparql:asWKT ?O .
+  FILTER ( datatype(?O) != geosparql:wktLiteral )
+  BIND ( STRDT(?O,  geosparql:wktLiteral) AS ?OWKT )
+}
+}
