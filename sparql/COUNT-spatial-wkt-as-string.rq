@@ -4,8 +4,7 @@
 PREFIX geosparql: <http://www.opengis.net/ont/geosparql#>
 SELECT 
   (COUNT(?S) AS ?placeNotWktLiteral) 
-  WHERE { GRAPH ?G {
-    ?S geosparql:asWKT ?O .
+WHERE { GRAPH ?G {
+  ?S geosparql:asWKT ?O .
   FILTER ( datatype(?O) != geosparql:wktLiteral )
-  }
-}
+}}

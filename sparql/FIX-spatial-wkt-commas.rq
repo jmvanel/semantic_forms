@@ -1,0 +1,19 @@
+PREFIX geosparql: <http://www.opengis.net/ont/geosparql#>
+
+DELETE {
+GRAPH ?G {
+  ?S geosparql:asWKT ?O .
+}}
+
+INSERT {
+GRAPH ?G {
+  ?S geosparql:asWKT ?WKT .
+}}
+
+WHERE { GRAPH ?G {
+  ?S geosparql:asWKT ?O .
+  FILTER ( datatype(?O) = geosparql:wktLiteral )
+  FILTER ( CONTAINS( STR(?O) , "POINT(" ) )
+  FILTER ( CONTAINS( STR(?O) , "," ) )
+  BIND( REPLACE( STR(?O) , ",", " ") AS ?WKT)
+}}

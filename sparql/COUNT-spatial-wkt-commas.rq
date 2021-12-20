@@ -1,0 +1,8 @@
+PREFIX geosparql: <http://www.opengis.net/ont/geosparql#>
+SELECT (COUNT(?S) AS ?placeWktLiteralComma) 
+WHERE { GRAPH ?G {
+  ?S geosparql:asWKT ?O .
+  FILTER ( datatype(?O) = geosparql:wktLiteral )
+  FILTER ( CONTAINS( STR(?O) , "POINT(" ) )
+  FILTER ( CONTAINS( STR(?O) , "," ) )
+}}
