@@ -110,7 +110,7 @@ trait MainXml[Rdf <: RDF, DATASET] extends ToolsPage[Rdf, DATASET] {
     <div class="collapse" id="collapseDisplay">{
       if (displaySearch) {
         // enterURItoDownloadAndDisplay() ++
-        enterClassForCreatingInstance()
+        enterClassesForCreatingInstance(lang)
       }
     }</div>
     <div class="sf-search-form-container">{ enterSearchTerm() }</div>

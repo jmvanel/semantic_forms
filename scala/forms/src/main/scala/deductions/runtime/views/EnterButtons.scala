@@ -72,7 +72,7 @@ trait EnterButtons[Rdf <: RDF, DATASET] extends InstanceLabelsInferenceMemory[Rd
       <option label="H. Story FOAF profile"> http://bblfish.net/people/henry/card#me </option>
     </datalist>
 
-  /** enter Search Term or URI
+  /** HTML to enter Search Term or URI
    *  Used in main page */
   def enterSearchTerm()(implicit lang: String = "en") = {
     val inputMessage = messageI18N("Search_placeholder")
@@ -154,8 +154,8 @@ trait EnterButtons[Rdf <: RDF, DATASET] extends InstanceLabelsInferenceMemory[Rd
     }
   }
 
-  /** Used in main page */
-  def enterClassForCreatingInstance()(implicit lang: String = "en"): NodeSeq =
+  /** compute HTML links to Classes For Creating Instance */
+  private def computeEnterClassForCreatingInstance()(implicit lang: String = "en"): NodeSeq =
 
     <div class="row sf-margin-top-10">
       <div class="col-xs-12 col-sm-12 col-md-12 col-md-offset-1">
@@ -182,39 +182,19 @@ trait EnterButtons[Rdf <: RDF, DATASET] extends InstanceLabelsInferenceMemory[Rd
       </div>
     </div>
 
+  private val suggestedClassesForCreationLang = scala.collection.mutable.Map[String, NodeSeq]()
 
-/*
-  val avOptgroup =
-    <optgroup label="Assemblée Virtuelle">
-      <optgroup label="Acteur">
-        <option label="foaf:Person long"> http://www.virtual-assembly.org/ontologies/1.0/forms#PersonForm </option>
-        <option label="foaf:Group">                      { foaf.Group ) } </option>
-        <option label="foaf:Organization">               { foaf.Organization ) } </option>
-      </optgroup>
-      <optgroup label="Idée">
-        <option label="av:Theme"> { prefixAVontology }Theme </option>
-        <option label="Proposition"> { prefixAVontology }Proposition </option>
-        <option label="Commentaire"> { prefixAVontology }Comment </option>
-      </optgroup>
-      <optgroup label="Projet">
-        <option label="foaf:Project">                    { foaf.Project } </option>
-        <option label="av:InitiativeOrMission"> { prefixAVontology }InitiativeOrMission </option>
-        <option label="av:Event"> { prefixAVontology }Event </option>
-        <option label="Tâche"> { prefixesMap2("tm")("Task") }</option>
-      </optgroup>
-      <optgroup label="Ressource">
-        <option label="Bien ou service"> { prefixesMap2("gr")("Offering") }</option>
-        Logiciel
-        <option label="Desc. Of A Software (DOAS)">      { prefixesMap2("doas")("Software") } </option>
-        Compétence
-        <option label="cco:Skill">                       { prefixesMap2("cco")("Skill") } </option>
-        <option label="Document">                        { foaf.Document } </option>
-        <option label="Lieu">                            { prefixesMap2("schema")("Place") } </option>
-        <option label="Oeuvre">                          { prefixesMap2("schema")("CreativeWork") } </option>
-        <option label="Ressource financière">            { prefixesMap2("pair")("FinancialResource") } </option>
-        <option label="Ressource naturelle">             { prefixesMap2("pair")("NaturalResources") } </option>
-        <option label="av:Resource"> { prefixAVontology }Resource </option>
-      </optgroup>
-    </optgroup>
-    */
+  /** HTML links to Classes For Creating Instance
+   *  Used in main page */
+  def enterClassesForCreatingInstance(lang: String = "en"): NodeSeq = {
+    val alreadyThere = suggestedClassesForCreationLang.keys.toList.contains(lang)
+    if( alreadyThere )
+      suggestedClassesForCreationLang.get(lang).get
+    else {
+      val ret = computeEnterClassForCreatingInstance()(lang)
+      suggestedClassesForCreationLang.put(lang, ret)
+      ret
+    }
+  }
+
 }
