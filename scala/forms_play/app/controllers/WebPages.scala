@@ -147,7 +147,7 @@ with ApplicationTrait
     val lang = requestCopy.getLanguage
     val userid = requestCopy.userId
     val uri = expandOrUnchanged( requestCopy.getRDFsubject )
-    val title = labelForURITransaction(uri, lang)
+    val title = labelForURITransactionFuture(uri, lang)
     val userInfo = displayUser(userid, requestCopy)
   }
 
@@ -158,7 +158,7 @@ with ApplicationTrait
     val lang = requestCopy.getLanguage
     val userid = requestCopy.userId
     val uri = expandOrUnchanged( requestCopy.getRDFsubject )
-    val title = labelForURITransaction(uri, lang)
+    val title = labelForURITransactionFuture(uri, lang)
     val userInfo = displayUser(userid, requestCopy)
     def this(request: Request[_]) = this(copyRequest(request))
   }

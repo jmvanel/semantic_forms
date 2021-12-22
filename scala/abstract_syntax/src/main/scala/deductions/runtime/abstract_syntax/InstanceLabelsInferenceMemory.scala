@@ -48,6 +48,9 @@ trait InstanceLabelsInferenceMemory[Rdf <: RDF, DATASET]
   /** get instance Label From TDB, and if recorded label is not usable, compute it in a Future
    * Transactional, creates a Read transaction */
   def makeInstanceLabelFutureTr(node: Rdf#Node, graph: Rdf#Graph, lang: String): String = {
+    if( node == nullURI ) return ""
+    logger.debug( s"makeInstanceLabelFutureTr $node , lang $lang")
+    logger.trace(s"labelForURITransactionFutureTR - ${Thread.currentThread().getStackTrace().slice(0, 20).mkString("\n")}")
     val labelFromTDBTry =
       wrapInReadTransaction { instanceLabelFromTDB(node, lang) }
     val labelFromTDB = labelFromTDBTry.getOrElse("")

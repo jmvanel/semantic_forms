@@ -107,7 +107,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       makeInstanceLabel(URI(uri), graph, language)
   }
 
-  /** NOTE this creates a transaction; do not use it too often */
+  /** NOTE this creates a RW transaction; do not use it too often */
   def labelForURITransaction(uri: String, language: String)
   : String = {
 //    logger.info( s"labelForURITransaction $uri, $language"  )
@@ -119,6 +119,13 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       case Failure(s) => logger.error( s"labelForURI <$uri> tried '$tried'" )
     }
     tried.getOrElse(uri)
+  }
+
+  /** NOTE this creates a R transaction, better use this */
+  def labelForURITransactionFuture(uri: String, language: String) : String = {
+    logger.debug( s"labelForURITransactionFuture <$uri>, $language"  )
+    logger.trace(s"labelForURITransactionFuture - ${Thread.currentThread().getStackTrace().slice(0, 10).mkString("\n")}")
+    makeInstanceLabelFutureTr( URI(uri), allNamedGraph, language)
   }
 
   def makeInstanceLabelFutureString(uri: String, lang: String): String = {
