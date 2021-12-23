@@ -10,7 +10,7 @@ object Common {
 val jenaVersion =  "4.3.2"
 // val jenaVersion =  "4.4.0-SNAPSHOT"
 
-val akkaVersion = "2.6.17" // 4" // because of Play 2.8.8
+val akkaVersion = "2.6.17" // 8"
 val akkaHttpVersion = "10.2.7" // "10.2.4"
 val any23Version = "2.5" // 3"
 val commonsCsvVersion = "1.8"
@@ -38,7 +38,7 @@ val bananaOrganisation = "net.bblfish.rdf"
 
   val loggingDependencies = Seq(
    "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4"
- , "ch.qos.logback" % "logback-classic" % "1.2.7"
+ , "ch.qos.logback" % "logback-classic" % "1.2.9"
  , "org.slf4j" % "slf4j-api" % "1.7.32" // :if expand("%") == ""|browse confirm w|else|confirm w|endif
  // 0"
 )
@@ -77,8 +77,8 @@ val bananaOrganisation = "net.bblfish.rdf"
     xmlDependency,
     junitDependency, scalatestDependency,
 
-    "org.apache.lucene" % "lucene-suggest" % "8.11.0" , // "8.10.0" , // 8.8.0" 
-    "org.apache.lucene" % "lucene-demo"    % "8.11.0" , // "8.10.0" , // 8.8.0"
+    "org.apache.lucene" % "lucene-suggest" % "9.0.0" , // 8.11.0" ,
+    "org.apache.lucene" % "lucene-demo"    % "9.0.0" , // 8.11.0" ,
 
     // "net.rootdev" % "java-rdfa" % "0.4.3-SNAPSHOT"
     "net.rootdev" % "java-rdfa" % "0.4.2" ,
