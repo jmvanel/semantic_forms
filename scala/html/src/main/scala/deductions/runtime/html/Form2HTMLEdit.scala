@@ -321,6 +321,35 @@ private[html] trait Form2HTMLEdit[NODE, URI <: NODE]
                     maxHeight: null,  // set maximum height of editor
                     focus: true      // set focus to editable area after initializing summernote
                     // , codemirror: {}
+                    ,
+                      toolbar: [
+    // [groupName, [list of button]]
+    ['style', ['style']],
+    ['insert', ['link', 'picture', 'video']],
+    ['style', [ 'bold', 'italic', 'underline', 'clear']],
+    ['font', ['strikethrough', 'superscript', 'subscript']],
+    ['fontsize', ['fontsize']],
+    ['height', ['height']]
+    ,
+  ['fontname', ['fontname']],
+  ['color', ['color']],
+  ['para', ['ul', 'ol', 'paragraph']],
+  ['table', ['table']],
+  ['view', ['fullscreen', 'codeview', 'help']]
+    ] ,
+    popover: {
+            image: [
+                ['custom', ['captionIt']],
+                ['imagesize', ['imageSize100', 'imageSize50', 'imageSize25']],
+                ['float', ['floatLeft', 'floatRight', 'floatNone']],
+                ['remove', ['removeMedia']]
+            ],
+        },
+        captionIt:{
+            figureClass:'{figure-class/es}',
+            figcaptionClass:'{figcapture-class/es}',
+            captionText:'{Default Caption Editable Placeholder Text if Title or Alt are empty}'
+        }
                   } )
                 """ }
                 title="Click to edit multiline text in HTML editor">
