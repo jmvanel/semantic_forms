@@ -14,6 +14,7 @@ val akkaVersion = "2.6.17" // 8"
 val akkaHttpVersion = "10.2.7" // "10.2.4"
 val any23Version = "2.5" // 3"
 val commonsCsvVersion = "1.8"
+val luceneVersion = "8.10.1" // must be Jena's Lucene version
 val bananaVersion = "0.8.4-SNAPSHOT"
 val bananaOrganisation = "net.bblfish.rdf"
 
@@ -77,8 +78,8 @@ val bananaOrganisation = "net.bblfish.rdf"
     xmlDependency,
     junitDependency, scalatestDependency,
 
-    "org.apache.lucene" % "lucene-suggest" % "9.0.0" , // 8.11.0" ,
-    "org.apache.lucene" % "lucene-demo"    % "9.0.0" , // 8.11.0" ,
+    "org.apache.lucene" % "lucene-suggest" % luceneVersion , // "9.0.0" , // 8.11.0" ,
+    "org.apache.lucene" % "lucene-demo"    % luceneVersion , // "9.0.0" , // 8.11.0" ,
 
     // "net.rootdev" % "java-rdfa" % "0.4.3-SNAPSHOT"
     "net.rootdev" % "java-rdfa" % "0.4.2" ,

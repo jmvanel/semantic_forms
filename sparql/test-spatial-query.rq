@@ -9,8 +9,9 @@ CONSTRUCT {
     ?place spatial:nearby (
        45.750000 4.85 # Lyon
        1000 ) . # km
-    ?place rdfs:label ?placeName .
     ?place geo:long ?LONG.
     ?place geo:lat ?LAT.
-    FILTER( LANG( ?placeName) = 'fr' )
+    OPTIONAL { ?place rdfs:label ?placeName . }
+    # FILTER( LANG( ?placeName) = 'fr' )
 }
+LIMIT 100
