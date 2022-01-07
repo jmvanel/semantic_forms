@@ -157,10 +157,12 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
 
       <div class="container">
         <div class="btn-group">
+
           <!-- Buttons common to CONSTRUCT and SELECT -->
           <input class ="btn btn-primary" type="submit"
                  value={ I18NMessages.get("Submit", request.getLanguage) } formaction ={action} />
-          <label>unionDefaultGraph</label>
+
+          <label title="RDF names graphs are processed as if they were the root (unnamed) graph">&nbsp; unionDefaultGraph</label>
           <input name="unionDefaultGraph" id="unionDefaultGraph" type="checkbox"
                  checked={ request.getHTTPparameterValue("unionDefaultGraph").getOrElse(null) } />
 
@@ -172,7 +174,9 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
                formaction="/history"
                title="Chronological view (only local edits)"/> ++
              {paragraphsViewInput(request)} ++
-             {formOnlyViewInput(request)}
+             {formOnlyViewInput(request)} ++
+             <label title="Takes first URI in each response row and loads it in RDF database">load URI's</label> ++
+             <input name="load-uris" id="load-uris"  type="checkbox" />
           }
           { htmlSelectForRDFmime }
         </div>

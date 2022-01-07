@@ -1,0 +1,13 @@
+# COUNT wgs84_pos resources
+PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT
+  (COUNT(?place) AS ?placeCOUNT)
+  (COUNT(?G)  AS ?GRAPHCOUNT )
+WHERE {
+GRAPH ?G {
+  {
+  ?place geo:long ?LONG .
+  ?place geo:lat ?LAT .
+}}
