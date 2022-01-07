@@ -175,8 +175,10 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
                title="Chronological view (only local edits)"/> ++
              {paragraphsViewInput(request)} ++
              {formOnlyViewInput(request)} ++
-             <label title="Takes first URI in each response row and loads it in RDF database">load URI's</label> ++
-             <input name="load-uris" id="load-uris"  type="checkbox" />
+             <label title="Takes first URI in each response row and loads it in RDF database">&nbsp; load URI's</label> ++
+             <input name="load-uris" id="load-uris" type="checkbox" /> ++
+             <label title="compute Labels for URI's">&nbsp; compute Labels</label> ++
+             <input name="compute-Labels" id="compute-Labels" type="checkbox" />
           }
           { htmlSelectForRDFmime }
         </div>

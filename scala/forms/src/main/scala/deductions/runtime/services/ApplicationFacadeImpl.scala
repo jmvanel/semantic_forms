@@ -107,7 +107,8 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       makeInstanceLabel(URI(uri), graph, language)
   }
 
-  /** NOTE this creates a RW transaction; do not use it too often */
+  /** Update label For URI
+   *  NOTE this creates a RW transaction; do not use it too often */
   def labelForURITransaction(uri: String, language: String)
   : String = {
 //    logger.info( s"labelForURITransaction $uri, $language"  )
@@ -121,17 +122,13 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     tried.getOrElse(uri)
   }
 
-  /** NOTE this creates a R transaction, better use this */
+  /** Update label For URI
+   *  NOTE this creates a R transaction, better use this */
   def labelForURITransactionFuture(uri: String, language: String) : String = {
     logger.debug( s"labelForURITransactionFuture <$uri>, $language"  )
     logger.trace(s"labelForURITransactionFuture - ${Thread.currentThread().getStackTrace().slice(0, 10).mkString("\n")}")
     makeInstanceLabelFutureTr( URI(uri), allNamedGraph, language)
   }
-
-  def makeInstanceLabelFutureString(uri: String, lang: String): String = {
-    makeInstanceLabelFutureTr( URI(uri), allNamedGraph, lang: String)
-  }
-
 
   def wordsearchFuture(q: String = "", clas: String = "", request: HTTPrequest): Future[Elem] = {
     val fut = recoverFromOutOfMemoryError(
@@ -304,6 +301,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
               else
                 tableForSPARQLresults(rows)
               loadURIsIfRequested( rows, request)
+              computeLabelsIfRequested(rows, request)
               results
             case Failure(e)=> e.toString()
           }
@@ -350,7 +348,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
       mess = <div>
         Searched for
         "<a href={ createHyperlinkString(uri = uri) }>{
-          makeInstanceLabelFutureString(uri, request.getLanguage)
+          labelForURITransactionFuture(uri, request.getLanguage)
         }</a>"
         &lt;{ uri }&gt;
         {

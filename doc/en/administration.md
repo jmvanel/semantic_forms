@@ -531,20 +531,24 @@ There is a web page for SPARQL queries, and also a real (compliant) SPARQL endpo
 There is an HTML page for entering queries, in the /tools page.
 There are some example showing some queries that you can paste into your browser:
 
-The service
+The page
 <code>/sparql-ui?query=</code>
 is for CONSTRUCT queries.
 
-and the service
+and the page
 <code>/select-ui?query=</code>
 is for SELECT queries.
 
 In the /tools page, there is also a link to the YasGUI client tool, a famous SPARQL requester.
 
-In addition to the SPARQL endpoint at URL `/sparql`, therer is another endpoint at URL `/sparql2`, where all named graphs content is put in the unnamed graph. This is convenient:
+In addition to the SPARQL endpoint at URL`/sparql`, therer is another endpoint at URL `/sparql2`, where all named graphs content is put in the unnamed graph. This is convenient:
 
 - many tools do not consider named graphs (or just one), like Sparklis,
 - one does not have to wrap all triple patterns in `GRAPH ?GRnnn { }` blocks
+
+To compute Labels for selected URI's , there an input checkbox in `/select-ui` .
+To load selected URI's , there an input checkbox in `/select-ui` .
+Use case for both feature is when URI labels are not right after loading new RDF data.
 
 # Populating with dbPedia (mirroring dbPedia)
 

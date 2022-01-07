@@ -72,7 +72,8 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
     val elem0 = rdfStore.r(dataset, {
       val uris = search_onlyNT(search, variables, httpRequest)
       logger.info(s"search: ${httpRequest.logRequest()}: result URI's size ${uris.size}")
-      loadURIsIfRequested( uris, httpRequest)
+      loadURIsIfRequested(uris, httpRequest)
+      computeLabelsIfRequested(uris, httpRequest)
       val graph: Rdf#Graph = allNamedGraph
       val sparqlQuery = queryMaker.makeQueryString(search : _*)
       val elems = Seq(
@@ -122,6 +123,17 @@ abstract trait ParameterizedSPARQL[Rdf <: RDF, DATASET]
             forceNodeToURI(uri), dataset,
             httpRequest, transactionsInside = true)
           logger.info(s"loadURIsIfRequested: <$uri> was loaded.")
+        }
+
+  def computeLabelsIfRequested(
+    uris:        List[Iterable[Rdf#Node]],
+    httpRequest: HTTPrequest) =
+    if (httpRequest.getHTTPparameterValue("compute-Labels").isDefined)
+      for (uriRow <- uris)
+        Future {
+          val uri = uriRow.headOption.getOrElse(nullURI)
+          makeInstanceLabelFutureTr(uri, allNamedGraph, httpRequest.getLanguage)
+          // println(s"makeInstanceLabelFutureTr(<$uri>, allNamedGraph, language)")
         }
 
   private val sortJSscript =
