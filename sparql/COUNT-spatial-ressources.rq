@@ -7,7 +7,6 @@ SELECT
   (COUNT(?G)  AS ?GRAPHCOUNT )
 WHERE {
 GRAPH ?G {
-  {
   ?place geo:long ?LONG .
   ?place geo:lat ?LAT .
 }}

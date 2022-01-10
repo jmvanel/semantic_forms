@@ -33,6 +33,7 @@ dcat:  form:ontologyHasFormSpecification <https://deductions.github.io/dcat.form
 skos: form:ontologyHasFormSpecification <skos.form.ttl> .
 doas: form:ontologyHasFormSpecification <http://deductions.github.io/doas.form.ttl> .
 form: form:ontologyHasFormSpecification <login.form.ttl> .
+login:  form:ontologyHasFormSpecification <login.owl.ttl>
 
 # geoloc: form:ontologyHasFormSpecification <http://deductions.github.io/geoloc.form.ttl>.
 # vehman: form:ontologyHasFormSpecification <http://deductions.github.io/vehicule-management.owl.ttl>.
