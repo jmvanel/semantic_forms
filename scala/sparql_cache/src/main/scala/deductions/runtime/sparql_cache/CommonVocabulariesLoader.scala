@@ -36,11 +36,11 @@ trait CommonVocabulariesLoader[Rdf <: RDF, DATASET]
       
   /** larger and less known vocab's, they are NOT necessarily "self-hosted" */
   val largerVocabs: List[Rdf#URI] =
-//    URI(githubcontent + "/edumbill/doap/master/schema/doap.rdf") ::
       URI("https://github.com/ewilderj/doap/raw/master/schema/doap.rdf") ::
       URI("http://rdfs.org/sioc/ns#") ::
       URI(orgVocab.prefixIri) ::
-      URI("http://schema.org/version/3.4/schema.ttl") ::
+      // URI("http://schema.org/version/3.4/schema.ttl") ::
+      URI( "https://schema.org/version/latest/schemaorg-current-http.ttl" ) ::
       /* see also scripts/download-dbpedia.sh in Semantic_forms */
       URI("http://downloads.dbpedia.org/2016-10/dbpedia_2016-10.nt") ::
       URI("http://www.w3.org/2003/01/geo/wgs84_pos#") ::
