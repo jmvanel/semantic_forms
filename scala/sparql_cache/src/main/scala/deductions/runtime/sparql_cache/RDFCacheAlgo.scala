@@ -720,13 +720,16 @@ JMV:
       addedGraph
     }
     val currentPageTriplesIterator = wrapInReadTransaction {
-      find(allNamedGraph, uri, ANY, ANY)
-    }.getOrElse(Iterator.empty).iterator.to(Iterable)
-    logger.debug(s"""pureHTMLwebPageAnnotateAsDocument: addedGraphTry $addedGraphTry""")
-    val result = addedGraphTry.getOrElse(emptyGraph). // newGraphWithUrl.
-      // NOTE: after user added triples, this way typeChange will not be triggered
-      union(makeGraph(currentPageTriplesIterator))
-    logger.debug(s"pureHTMLwebPageAnnotateAsDocument: ret $result")
-    result
+      val triplesInDatabase = find(allNamedGraph, uri, ANY, ANY)
+      logger.debug(s"""pureHTMLwebPageAnnotateAsDocument: triplesInDatabase  $triplesInDatabase""")    
+      val triplesInDatabaseIterator = triplesInDatabase .iterator.to(Iterable)
+      logger.debug(s"""pureHTMLwebPageAnnotateAsDocument: addedGraphTry $addedGraphTry""")
+      val result = addedGraphTry.getOrElse(emptyGraph).
+        // NOTE: after user added triples, this way typeChange will not be triggered
+        union(makeGraph(triplesInDatabaseIterator))
+      logger.debug(s"pureHTMLwebPageAnnotateAsDocument: ret $result")
+      result
+    }
+    currentPageTriplesIterator. getOrElse(emptyGraph)
   }
 }

@@ -161,7 +161,7 @@ trait ComputePropertiesList[Rdf <: RDF, DATASET] {
           lookClassInFormSpec(URI(formuri), gr)
         }
           logger.info(
-            s"computePropsFromConfig: formuri != <> propertiesList $propertiesList tryClass $tryClass")
+            s"computePropsFromConfig: formuri != <> ; propertiesList = $propertiesList ; tryClass $tryClass")
         List((propertiesList, formSpecification, tryClass))
       }
     // concatenate all properties List
