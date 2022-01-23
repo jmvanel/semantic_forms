@@ -71,6 +71,8 @@ dct:subject a owl:ObjectProperty ;
 dct:created a owl:DatatypeProperty ;
   rdfs:label "créé (date)"@fr ;
   rdfs:range xsd:date .
+dct:date a owl:DatatypeProperty ;
+  rdfs:range xsd:date .
 dct:modified a owl:DatatypeProperty ;
   rdfs:label "modifié (date)"@fr ;
   rdfs:range xsd:date .
@@ -81,7 +83,6 @@ dct:identifier a owl:DatatypeProperty ;
 dct:source a owl:ObjectProperty .
 dct:relation a owl:ObjectProperty .
 dct:isReferencedBy a owl:ObjectProperty .
-
 
 cco:expertise rdfs:label "expertise"@fr .
 
