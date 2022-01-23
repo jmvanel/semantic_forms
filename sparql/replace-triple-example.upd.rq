@@ -1,0 +1,17 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+# replace a one-valued subject-property pair, for a specific langage
+DELETE {
+GRAPH ?G {
+  ?SUBJECT rdfs:label ?L .
+} }
+INSERT {
+GRAPH ?G {
+  ?SUBJECT rdfs:label ?VALUE .
+} }
+WHERE {
+GRAPH ?G {
+  BIND( <http://purl.org/dc/terms/identifier> as ?SUBJECT )
+  BIND( "Identifiant"@fr as ?VALUE)
+  ?SUBJECT rdfs:label ?L .
+  FILTER ( LANG(?L) = 'fr' )
+} }

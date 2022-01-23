@@ -59,6 +59,7 @@ function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
 /* 	    # ?s1 <http://taxref.mnhn.fr/lod/property/vernacularName> ?vernac .
 	    # ?vernac bif:contains ' ( ${stringToSearch} ) '
 	    # option ( score ?sc2 ) . */
+  const taxref_ld_version = "15.0"
   return (
     $.ajax({
       url: makeProxiedLookupURLifNecessary(
@@ -76,11 +77,11 @@ function(searchServiceURL, request, inputElement, callback, getRDFtypeInURL,
               ?s1 ?s1textp ?o1 .
               ?o1 bif:contains ' ( ${stringToSearch} ) ' option ( score ?sc ) .
             }
-            graph <http://taxref.mnhn.fr/lod/graph/vernacular/13.0> {
+            graph <http://taxref.mnhn.fr/lod/graph/vernacular/${taxref_ld_version}> {
               ?s1 <http://taxref.mnhn.fr/lod/property/vernacularName> ?VERN .
 	      # FILTER( LANG(?VERN) = "${USER_LANG}" )
             }
-            graph <http://taxref.mnhn.fr/lod/graph/classes/13.0> {
+            graph <http://taxref.mnhn.fr/lod/graph/classes/${taxref_ld_version}> {
               ?s1 rdfs:label ?LAB .
               ?s1 a owl:Class .
             }
