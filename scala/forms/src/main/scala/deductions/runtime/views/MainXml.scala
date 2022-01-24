@@ -39,6 +39,12 @@ trait MainXml[Rdf <: RDF, DATASET] extends ToolsPage[Rdf, DATASET] {
         <div class={classForContent + " sf-content"}>
         {content}
         </div>
+        <p></p>
+        <p></p>
+        <p></p>
+        <p></p>
+        <p></p>
+        <p></p>
         {pageBottom(lang)}
       </body>
     </html>
