@@ -1,0 +1,20 @@
+prefix nature: <http://deductions.github.io/nature_observation.owl.ttl#>
+# Migration TAXREF 15.0
+DELETE {
+  GRAPH ?G { ?S nature:taxon ?TAX . }
+  GRAPH ?GTAX { ?TAX ?P ?O . }
+}
+INSERT {
+  GRAPH ?G { ?S nature:taxon ?TAX2 . }
+  # GRAPH ?TAX2 { ?TAX2 ?P ?O . }
+}
+WHERE {
+GRAPH ?G {
+  ?S nature:taxon ?TAX .
+  BIND ( URI( REPLACE( STR(?TAX), '/13.0', '')) AS ?TAX2 )
+}
+GRAPH ?GTAX {
+  OPTIONAL { ?TAX ?P ?O . }
+}
+}
+
