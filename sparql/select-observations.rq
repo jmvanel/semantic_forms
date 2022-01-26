@@ -1,0 +1,20 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+prefix nature: <http://deductions.github.io/nature_observation.owl.ttl#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> 
+PREFIX dwc:	<http://rs.tdwg.org/dwc/terms/>
+SELECT ?LAB ?LONG ?LAT ?DATE ?cd_nom ?LAB_EVENT ?OBS
+where {
+  BIND ( <http://semantic-forms.cc:1952/ldp/Flore_de_Reyrieux> as ?PRODUCT )
+  ?OBS nature:taxon ?TAX .  
+  # ?TAX dwc:family 'Orchidaceae' . # construire la liste des observations d'Orchidaceae
+  ?OBS geo:long ?LONG0 . BIND( str(?LONG0) as ?LONG )
+  ?OBS geo:lat ?LAT0 . BIND( str(?LAT0) as ?LAT )
+  OPTIONAL{ ?OBS dcterms:date ?DATE0 . BIND( str(?DATE0) as ?DATE ) }
+  ?TAX dcterms:identifier ?cd_nom .
+  ?TAX rdfs:label ?LAB .
+  # OPTIONAL{
+  ?OBS  <http://purl.org/NET/c4dm/event.owl#produced_in> ?EVENT .
+    ?EVENT rdfs:label ?LAB_EVENT .
+    ?EVENT <http://purl.org/NET/c4dm/event.owl#product> ?PRODUCT .          .
+}

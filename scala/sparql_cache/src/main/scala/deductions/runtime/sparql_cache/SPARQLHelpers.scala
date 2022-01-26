@@ -599,95 +599,49 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     transaction.get
   }
 
-  /** @param addHeaderRow the first row is the variables' list */
-//  private def makeListofListsFromSolutionsOLD(
-//    solutionsTry: Try[Rdf#Solutions],
-//    addHeaderRow: Boolean            = true): Try[List[Iterable[Rdf#Node]]] = {
-//
-//    import scala.collection._
-//    val res = solutionsTry.map {
-//      solutions =>
-//        val solsIterable = solutions.iterator
-//        val columnsMap2: mutable.TreeSet[String] = mutable.TreeSet()
-//        solsIterable foreach {
-//          row =>
-//            val variables = row.varnames().toList
-//            columnsMap2 ++= variables
-//        }
-//        val results = solsIterable . map {
-//          row =>
-//            val rowSeq: mutable.Buffer[Rdf#Node] = mutable.Buffer()
-//            for (variable <- columnsMap2) rowSeq +=
-//              row(variable).getOrElse(Literal(""))
-//            logger.info(s"makeListofListsFromSolutions: rowSeq $rowSeq")
-//            rowSeq
-//        }
-//        logger.debug(s"makeListofListsFromSolutions: after results : results \n\t${results.mkString(",\n\t")}")
-//
-//        if (addHeaderRow) {
-//          implicit val literalIsOrdered: scala.Ordering[Rdf#Literal] =
-//            scala.Ordering.by(lit => fromLiteral(lit)._1 )
-//          val r = columnsMap2 .map {
-//        	  name =>
-//        	  logger.debug(s"name $name")
-//        	  Literal(name)
-//          }
-//          val headerRow = r . toList // . sorted
-//          logger.debug(s"makeListofListsFromSolutions: headerRow $headerRow ")
-//          val rrr = headerRow :: results.to[List]
-//          rrr
-//        } else results.to[List]
-//    }
-//    logger.debug("makeListofListsFromSolutions: before res")
-//    res
-//  }
-
-  def makeListofListsFromSolutions(
+  /** make List of Lists From Solutions
+   *  @param addHeaderRow the first row is the variables' list */
+  def makeListofListsFromSolutions( // OLD(
     solutionsTry: Try[Rdf#Solutions],
     addHeaderRow: Boolean            = true): Try[List[Iterable[Rdf#Node]]] = {
 
     import scala.collection._
     val res = solutionsTry.map {
-      /* CAUTION: an Iterator should be only in one loop, 
-       * cf https://www.scala-lang.org/api/current/scala/collection/Iterator.html
-       */
       solutions =>
-        Try {
-        val solsIterable = solutions.iterator()
+        /* CAUTION: an Iterator should be only in one loop,
+         * cf https://www.scala-lang.org/api/current/scala/collection/Iterator.html */
+        val solsIterable = solutions.iterator().toList
         val columnsMap2: mutable.TreeSet[String] = mutable.TreeSet()
-
-        val resultsIterator = solsIterable . map {
+        solsIterable foreach {
           row =>
-//            println( "makeListofListsFromSolutions "+ row )
-            val variables = row.varnames().toList.sorted
+            val variables = row.varnames().toList
             columnsMap2 ++= variables
+        }
+        val results = solsIterable . map {
+          row =>
             val rowSeq: mutable.Buffer[Rdf#Node] = mutable.Buffer()
-            for (variable <- variables) rowSeq +=
+            for (variable <- columnsMap2) rowSeq +=
               row(variable).getOrElse(Literal(""))
             logger.debug(s"makeListofListsFromSolutions: rowSeq $rowSeq")
             rowSeq
         }
-        val results = resultsIterator.toList
-        logger.trace(s"""makeListofListsFromSolutions: after results : results
-          ${results.mkString(",\n\t")}""")
+        logger.trace(s"makeListofListsFromSolutions: after results : results \n\t${results.mkString(",\n\t")}")
 
         if (addHeaderRow) {
           implicit val literalIsOrdered: scala.Ordering[Rdf#Literal] =
             scala.Ordering.by(lit => fromLiteral(lit)._1 )
-          val columnLiterals = columnsMap2 .map { // columnLiterals
+          val r = columnsMap2 .map {
         	  name =>
         	  logger.debug(s"name $name")
         	  Literal(name)
           }
-          val headerRow = columnLiterals . toList
+          val headerRow = r . toList // . sorted
           logger.debug(s"makeListofListsFromSolutions: headerRow $headerRow ")
-          headerRow :: results
-        } else results
+          headerRow :: results.toList
+        } else results.toList
     }
-    }
-//    logger.info(s"makeListofListsFromSolutions: size: ${ for(l <- res ) l.size}")
-    // logger.info(s"makeListofListsFromSolutions: size: ${ if( res isSuccess) res .get. size}")
-    res.flatten
+    logger.debug("makeListofListsFromSolutions: before res")
+    res
   }
 
   /**

@@ -1,0 +1,13 @@
+# consequence of the bug where unremovable triples (for web user) were copied in graph named after the subject URI
+# need to remove all triples such that subject=graph with site URL prefix
+# cf commit 51a32b5bba55294398fc648ae336f4ed12371c92
+  DELETE {
+      GRAPH ?G { ?G ?P ?O . } }
+  WHERE {
+      GRAPH ?G { ?G ?P ?O . }
+      FILTER (
+        strstarts( str(?G) , "http://semantic-forms.cc:1952/") ||
+        strstarts( str(?G) , "https://semantic-forms.cc:1953/")
+      )
+      # "http://127.0.0.1:9000/ldp/"
+  }
