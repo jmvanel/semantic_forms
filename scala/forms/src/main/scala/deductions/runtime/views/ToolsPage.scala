@@ -148,7 +148,7 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
       )
 
     <form role="form">
-      <textarea name="query" id={textareaId} style="min-width:80em; min-height:8em" title="To get started, uncomment one of these lines.">{
+      <textarea name="query" id={textareaId} style="min-width:80em; min-height:8em; font-family: courier" title="To get started, uncomment one of these lines.">{
         if (query != "")
           query          
         else
