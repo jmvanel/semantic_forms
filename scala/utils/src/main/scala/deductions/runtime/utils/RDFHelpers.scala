@@ -247,7 +247,14 @@ extends URIManagement {
       uri => fromUri(uri),
       bn => fromBNode(bn),
       literal => fromLiteral(literal)._1)
- 
+
+  import scala.xml._
+  def nodeToHTML(node: Rdf#Node): Node =
+    foldNode(node)(
+      uri => { val uris = fromUri(uri) ; <a href={uris}>{uris}</a> },
+      bn => Text(fromBNode(bn)),
+      literal => Text(fromLiteral(literal)._1))
+
   def compareTriples( tr1: Rdf#Triple,tr2: Rdf#Triple ): Boolean =
     tr1.subject == tr2.subject &&
     tr1.objectt == tr2.objectt &&

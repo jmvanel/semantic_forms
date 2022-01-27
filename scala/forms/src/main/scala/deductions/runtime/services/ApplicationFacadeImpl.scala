@@ -318,7 +318,7 @@ trait ApplicationFacadeImpl[Rdf <: RDF, DATASET]
     <table class="sf-sparql-table">{
       for (row <- rows) yield {
         <tr>
-          { for (cell <- row) yield <td> { cell } </td> }
+          { for (cell <- row) yield <td> { nodeToHTML(cell) } </td> }
         </tr>
       }
     }</table>
