@@ -175,7 +175,9 @@ with HTTPrequestHelpers
             else context
       )
     }
-    logInfo(s"result 10 first lines: $result".split("\n|\r\n").take(10).mkString("\n"))
+    logInfo( if(result == null)
+      s"SparqlServicesGET: result 10 first lines: $result".split("\n|\r\n").take(10).mkString("\n")
+      else "SparqlServicesGET: result == null")
     result match {
       case Success(result) =>
         Ok(result)

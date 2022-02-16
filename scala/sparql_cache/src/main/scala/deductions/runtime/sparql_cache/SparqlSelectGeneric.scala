@@ -15,10 +15,7 @@ import org.apache.jena.system.Txn ;
 import deductions.runtime.utils.RDFStoreLocalProvider
 import org.w3.banana.RDF
 import scala.util.Try
-//import org.apache.jena.query.QueryCancelledException
-//import org.apache.jena.query.QueryExecutionFactory
-//import org.apache.jena.query.QueryFactory
-import org.apache.jena.riot.resultset.rw.ResultsWriter
+import org.apache.jena.sparql.resultset._
 import org.apache.jena.riot.Lang
 import java.io.ByteArrayOutputStream
 
