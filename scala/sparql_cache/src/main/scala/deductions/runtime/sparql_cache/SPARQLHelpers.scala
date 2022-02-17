@@ -905,6 +905,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     def doGraph2String(format: RDFFormat, statistics: String) =
       Try {
         logger.debug( s""">>>> doGraph2String format: '$format'""")
+        logger.trace(">>>> triples: " + triples)
         graphWriter.writeGraph(triples.get, outputStream,
           format, prefix2uriMap.asJava)
         statistics + outputStream.toString()
@@ -915,7 +916,7 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
         ModelFactory.createModelForGraph(gr)))
     }
     if (formatFromURL === "" )
-    if (format != "ical") {
+    if (format != "ical" && format != "text/calendar") {
       val graphSize = triples.getOrElse(emptyGraph).size
       if (format === "jsonld")
         writeTryGraphBanana(triples, jsonldCompactedWriter, "")
@@ -936,6 +937,8 @@ trait SPARQLHelpers[Rdf <: RDF, DATASET]
     else {
       if( formatFromURL === geoJsonMIME)
         writeGeoJSON(triples)
+      else if(formatFromURL === icalMime )
+        Try(graph2iCalendar(triples.get))
       else {
       val jenaLang = RDFLanguages.contentTypeToLang(formatFromURL)
       logger.debug(s"formatFromURL $formatFromURL, jenaLang $jenaLang ; defaultSerialization ${RDFWriterRegistry.defaultSerialization(jenaLang)}")

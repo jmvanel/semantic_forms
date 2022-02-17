@@ -201,7 +201,7 @@ with HTTPrequestHelpers
       httpRequest: HTTPrequest,
       format: String = "turtle",
       context: Map[String,String] = Map()): Try[String] = {
-    logger.info("Global.sparql query  " + query)
+    logger.info(s"sparqlConstructResult, format=$format, query  " + query)
     val lang = httpRequest.getLanguage
     if (query != "")
       sparqlConstructQueryTR(query, httpRequest, format,
@@ -209,5 +209,6 @@ with HTTPrequestHelpers
     else  Success("# Empty query result !!!")
   }
 
-  private def logInfo(s: String) = println(s) // logger.info(s)
+  private def logInfo(s: String) = // println(s) //
+    logger.info(s)
 }

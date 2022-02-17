@@ -32,6 +32,7 @@ trait RDFContentNegociation extends StringHelpers {
   val geoJsonMIME = "application/geo+json"
 
   val htmlMime = "text/html"
+  val icalMime = "text/calendar"
 
   val extensionToMime = Map(
       "owl" -> rdfXMLmime,
@@ -43,7 +44,8 @@ trait RDFContentNegociation extends StringHelpers {
       "nq" ->  nqMime,
       "csv" ->  csvMIME,
       "trig" -> trigMIME,
-      "GeoJson" -> geoJsonMIME
+      "GeoJson" -> geoJsonMIME,
+      "ical" -> icalMime
   )
 
   val mimeToExtension = extensionToMime.map(_.swap)
