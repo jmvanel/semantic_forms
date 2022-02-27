@@ -643,17 +643,23 @@ with ApplicationTrait
         val (uri, typeChanges) = saveOnly(
           httpRequest, userid, graphURI = makeAbsoluteURIstringForSaving(userid))
         logger.info(s"saveAction: uri <$uri>, typeChanges=$typeChanges")
-        val saveAfterCreate = httpRequest.getHTTPheaderValue("Referer").filter(_.contains("/create?")).isDefined
+
+        val saveAfterCreate : Boolean = httpRequest.getHTTPheaderValue("Referer").filter(_.contains("/create?")).isDefined
         val edit = typeChanges && !saveAfterCreate
         val editParam = if (edit) "edit" else ""
-        val call = routes.WebPagesApp.displayURI(
+        if( edit ) {
+          val call = routes.WebPagesApp.displayURI(
           uri, Edit = editParam)
-        Redirect(call).flashing(
-          "message" ->
+          Redirect(call).flashing(
+            "message" ->
             s"The item <$uri> has been created")
-        // s"The item <$uri> of type <${httpRequest.getHTTPparameterValue("clas")}> has been created" )
-        /* TODO */
-        // recordForHistory( userid, request.remoteAddress, request.host )
+          // s"The item <$uri> of type <${httpRequest.getHTTPparameterValue("clas")}> has been created" )
+          /* TODO */
+          // recordForHistory( userid, request.remoteAddress, request.host )
+        } else {
+          Ok( <p> &lt;<a href={ uri }>{ uri }</a>&gt; saved in database.
+            <br/> <a href="/"> Back to home page </a> </p> ).as(HTML)
+        }
       })
     } // end saveLocal(
 
