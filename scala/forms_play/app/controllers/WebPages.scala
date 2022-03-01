@@ -647,7 +647,7 @@ with ApplicationTrait
         val saveAfterCreate : Boolean = httpRequest.getHTTPheaderValue("Referer").filter(_.contains("/create?")).isDefined
         val edit = typeChanges && !saveAfterCreate
         val editParam = if (edit) "edit" else ""
-        if( edit ) {
+        if( saveAfterCreate ) {
           val call = routes.WebPagesApp.displayURI(
           uri, Edit = editParam)
           Redirect(call).flashing(
@@ -659,9 +659,9 @@ with ApplicationTrait
         } else {
           // TODO get original RDF class for uri= parameter
           val href=s"/create?uri=http%3A%2F%2Fdeductions.github.io%2Fnature_observation.owl.ttl%23Observation&referer=${URLEncoder.encode(uri,"UTF8")}"
-          Ok( <p> &lt;<a href={ uri }>{ uri }</a>&gt; saved in database.
-            <br/> <a href={href}> Create URI with similar data </a>
-            <br/> <a href="/"> Back to home page </a> </p> ).as(HTML)
+          Ok( <h3> &lt;<a href={ uri }>{ uri }</a>&gt; saved in database.
+            <br/><br/> <a href={href}> Create URI with similar data </a>
+            <br/><br/> <a href="/"> Back to home page </a> </h3> ).as(HTML)
         }
       })
     } // end saveLocal(
