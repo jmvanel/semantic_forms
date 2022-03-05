@@ -7,6 +7,8 @@ import scala.concurrent.Future
 import scala.xml.Elem
 import scala.xml.NodeSeq
 import scala.xml.Text
+// import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 import deductions.runtime.html.TableView
 import deductions.runtime.jena.ImplementationSettings
@@ -643,23 +645,38 @@ with ApplicationTrait
         val (uri, typeChanges) = saveOnly(
           httpRequest, userid, graphURI = makeAbsoluteURIstringForSaving(userid))
         logger.info(s"saveAction: uri <$uri>, typeChanges=$typeChanges")
-
-        val saveAfterCreate : Boolean = httpRequest.getHTTPheaderValue("Referer").filter(_.contains("/create?")).isDefined
+        val referer = httpRequest.getHTTPheaderValue("Referer")
+        val saveAfterCreate : Boolean = referer.filter(_.contains("/create?")).isDefined
         val edit = typeChanges && !saveAfterCreate
         val editParam = if (edit) "edit" else ""
-        if( saveAfterCreate ) {
+        /* println( s">>>> saveAfterCreate $saveAfterCreate" )
+        println( s">>>> edit $edit" )
+        println( s">>>> referer $referer" ) */
+
+        // get original RDF class for uri= parameter
+        val url : String = referer.getOrElse("")
+        import org.apache.http.client.utils.URLEncodedUtils
+        import java.nio.charset.Charset
+        val params = URLEncodedUtils.parse(new java.net.URL(url).getQuery(), Charset.forName("UTF-8")).asScala
+        // println( s">>>> params $params" )
+        val rdfClass0 = for (/*NameValuePair*/ paramPair <- params ;
+             rdfClass = paramPair.getValue() if(paramPair.getName() == "uri") )
+             yield { rdfClass }
+        val rdfClass = rdfClass0.headOption.getOrElse("")
+        // println( s">>>> rdfClass $rdfClass" )
+
+        if( edit ) {
           val call = routes.WebPagesApp.displayURI(
           uri, Edit = editParam)
           Redirect(call).flashing(
             "message" ->
             s"The item <$uri> has been created")
-          // s"The item <$uri> of type <${httpRequest.getHTTPparameterValue("clas")}> has been created" )
-          /* TODO */
-          // recordForHistory( userid, request.remoteAddress, request.host )
+          /* TODO recordForHistory( userid, request.remoteAddress, request.host ) */
         } else {
-          // TODO get original RDF class for uri= parameter
-          val href=s"/create?uri=http%3A%2F%2Fdeductions.github.io%2Fnature_observation.owl.ttl%23Observation&referer=${URLEncoder.encode(uri,"UTF8")}"
-          Ok( <h3> &lt;<a href={ uri }>{ uri }</a>&gt; saved in database.
+          def encode(u: String) = URLEncoder.encode(u,"UTF-8")
+          val href=s"/create?uri=${encode(rdfClass)}&referer=${encode(uri)}"
+          Ok( <h3> &lt;<a href={ uri }>{ uri }</a>&gt;
+            <br/> saved in database.
             <br/><br/> <a href={href}> Create URI with similar data </a>
             <br/><br/> <a href="/"> Back to home page </a> </h3> ).as(HTML)
         }
