@@ -649,30 +649,32 @@ with ApplicationTrait
         val saveAfterCreate : Boolean = referer.filter(_.contains("/create?")).isDefined
         val edit = typeChanges && !saveAfterCreate
         val editParam = if (edit) "edit" else ""
-        /* println( s">>>> saveAfterCreate $saveAfterCreate" )
-        println( s">>>> edit $edit" )
-        println( s">>>> referer $referer" ) */
+        logger.debug( s">>>> saveAfterCreate '$saveAfterCreate'" )
+        logger.debug( s">>>> edit '$edit'" )
+        logger.debug( s">>>> referer '$referer'" )
 
         // get original RDF class for uri= parameter
         val url : String = referer.getOrElse("")
         import org.apache.http.client.utils.URLEncodedUtils
         import java.nio.charset.Charset
         val params = URLEncodedUtils.parse(new java.net.URL(url).getQuery(), Charset.forName("UTF-8")).asScala
-        // println( s">>>> params $params" )
+        logger.debug( s">>>> params $params" )
         val rdfClass0 = for (/*NameValuePair*/ paramPair <- params ;
              rdfClass = paramPair.getValue() if(paramPair.getName() == "uri") )
              yield { rdfClass }
         val rdfClass = rdfClass0.headOption.getOrElse("")
-        // println( s">>>> rdfClass $rdfClass" )
+        logger.debug( s">>>> rdfClass <$rdfClass>" )
 
-        if( edit ) {
-          val call = routes.WebPagesApp.displayURI(
+        def displayURI() : Result = {
+            val call = routes.WebPagesApp.displayURI(
           uri, Edit = editParam)
           Redirect(call).flashing(
             "message" ->
             s"The item <$uri> has been created")
           /* TODO recordForHistory( userid, request.remoteAddress, request.host ) */
-        } else {
+        }
+
+        def displayLinksForNewInput() : Result = {
           def encode(u: String) = URLEncoder.encode(u,"UTF-8")
           val href=s"/create?uri=${encode(rdfClass)}&referer=${encode(uri)}"
           Ok( <h3> &lt;<a href={ uri }>{ uri }</a>&gt;
@@ -680,6 +682,11 @@ with ApplicationTrait
             <br/><br/> <a href={href}> Create URI with similar data </a>
             <br/><br/> <a href="/"> Back to home page </a> </h3> ).as(HTML)
         }
+
+        if( saveAfterCreate ) displayLinksForNewInput()
+        else displayURI()
+
+        // if( edit ) { displayURI() } else { displayLinksForNewInput() }
       })
     } // end saveLocal(
 
