@@ -21,10 +21,8 @@ with FormSyntaxJson[Rdf]
   /** create Prefilled input Form, from the Referer URL */
   def createPrefillForm(form: FormSyntax, request: HTTPrequest) : FormSyntax = {
     import request._
-    val referer = getHTTPheaderValue("Referer") getOrElse("")
-    val referenceSubjectURI = URLDecoder.decode( substringAfter( referer, config.hrefDisplayPrefix ), "UTF-8")
-    // Referer example: http://localhost:9000/display?displayuri=http%3A%2F%2F172.17.0.1%3A9000%2Fldp%2FHerv%C3%A9_Mureau
-    logger.debug(s""">>>> createPrefillForm: referenceSubjectURI $referenceSubjectURI
+    val referenceSubjectURI = getHTTPparameterValue("referer") getOrElse("")
+    logger.debug(s""">>>> createPrefillForm: referenceSubjectURI <$referenceSubjectURI>
         request.path ${request.path}""")
     if( referenceSubjectURI != "" &&
         path == "/create" &&
