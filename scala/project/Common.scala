@@ -6,15 +6,15 @@ object Common {
     val localResolver = Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
     val bananaResolver = "bblfish-snapshots" at "http://bblfish.net/work/repo/releases"
 
-// val jenaVersion =  "4.4.0"
-val jenaVersion =  "4.5.0"
+// val jenaVersion =  "4.5.0"
+val jenaVersion =  "4.6.1"
 
 val akkaVersion =
   // "2.7.0" // 
 "2.6.20"
 
 val akkaHttpVersion = "10.2.7" // "10.2.4"
-val any23Version = "2.5" // 3"
+val any23Version = "2.7" // 5" // 3"
 val commonsCsvVersion = "1.8"
 val luceneVersion = "8.10.1" // must be Jena's Lucene version
 val bananaVersion = "0.8.4-SNAPSHOT"
@@ -40,7 +40,7 @@ val bananaOrganisation = "net.bblfish.rdf"
   Test / logBuffered := false
 
   val loggingDependencies = Seq(
-   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4"
+   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5" // 4"
  , "ch.qos.logback" % "logback-classic" % "1.4.5" // 1.2.9"
  , "org.slf4j" % "slf4j-api" % "2.0.6" // 1.7.32"
 )
@@ -56,7 +56,7 @@ val bananaOrganisation = "net.bblfish.rdf"
 
   val jsonDependencies = Seq(
     // remove play-json ?
-    "com.typesafe.play" %% "play-json" % "2.9.2" , // 1" , // "2.8.1"
+    "com.typesafe.play" %% "play-json" % "2.9.3", // 2" , // 1" , // "2.8.1"
     //"javax.json" % "javax.json-api" % "1.1.4" ,
     //"jakarta.json" % "jakarta.json-api" % "2.0.0" ,
     "org.glassfish" % "jakarta.json" % "2.0.1" // 0"
@@ -91,7 +91,7 @@ val bananaOrganisation = "net.bblfish.rdf"
     any23Dependencies
     // for Java 9 (works also with Java 8)
     , "javax.xml.bind" % "jaxb-api" % "2.3.1"
-    , "org.jsoup" % "jsoup" % "1.14.3" // 1.13.1"
+    , "org.jsoup" % "jsoup" % "1.15.3" // 14.3" // 1.13.1"
 
     , "commons-io" % "commons-io" % "2.11.0" // 2.8.0"
   )
