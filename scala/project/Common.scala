@@ -26,7 +26,7 @@ val bananaOrganisation = "net.bblfish.rdf"
   val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion  exclude("com.fasterxml.jackson.core", "jackson-databind")
   val jenaSpatialDependency = "org.apache.jena" % "jena-geosparql" % jenaVersion  exclude("com.fasterxml.jackson.core", "jackson-databind")
 
-  val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.3.0" // com.typesafe.play:twirl-api_2.13:1.5.1 (depends on 1.2.0)
+  val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "2.1.0" // 1.3.0" // com.typesafe.play:twirl-api_2.13:1.5.1 (depends on 1.2.0)
                                                              // "2.0.1"
 
   val junitDependency = "junit" % "junit" % "4.13.2" % Test
@@ -38,9 +38,8 @@ val bananaOrganisation = "net.bblfish.rdf"
 
   val loggingDependencies = Seq(
    "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4"
- , "ch.qos.logback" % "logback-classic" % "1.2.9"
- , "org.slf4j" % "slf4j-api" % "1.7.32" // :if expand("%") == ""|browse confirm w|else|confirm w|endif
- // 0"
+ , "ch.qos.logback" % "logback-classic" % "1.4.5" // 1.2.9"
+ , "org.slf4j" % "slf4j-api" % "2.0.6" // 1.7.32"
 )
 
   // val scalazDependency = "org.scalaz" %% "scalaz-core" % "7.2.8"
