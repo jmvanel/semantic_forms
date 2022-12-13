@@ -17,9 +17,10 @@ doc / sources := Seq.empty
 
 libraryDependencies ++= Seq(
   // "org.scala-js" %%% "scalajs-dom" % "0.9.6" ,
-  "org.scala-js" %%% "scalajs-dom" % "1.0.0" ,
+  "org.scala-js" %%% "scalajs-dom" % "1.2.0" ,
   bananaOrganisation %%  "banana-plantain" % bananaVersion
   // "org.w3" %%  "banana-plantain" % "0.8.4-SNAPSHOT"
+  // , "org.scala-js" %% "scalajs-env-jsdom-nodejs" % "1.0.0"
 )
 
 // libraryDependencies += "be.doeraene" %%% "scalajs-jquery" % "0.9.4"
@@ -38,3 +39,7 @@ resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + 
 
   // scalaJSUseMainModuleInitializer := true
   // enablePlugins(ScalaJSPlugin, ScalaJSWeb)
+
+// Add support for the DOM in `run` and `test`
+// jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
+
