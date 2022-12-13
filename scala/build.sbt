@@ -15,7 +15,8 @@ ThisBuild / version := "2.X-SNAPSHOT"
 
 ThisBuild / scalaVersion :=
 	// "2.13.7"
-	"2.13.8"
+	// "2.13.8"
+	"2.13.10"
 
 ThisBuild / scalacOptions ++= Seq(
 	// "-deprecation"

@@ -9,7 +9,10 @@ object Common {
 // val jenaVersion =  "4.4.0"
 val jenaVersion =  "4.5.0"
 
-val akkaVersion = "2.6.17" // 8"
+val akkaVersion =
+  // "2.7.0" // 
+"2.6.20"
+
 val akkaHttpVersion = "10.2.7" // "10.2.4"
 val any23Version = "2.5" // 3"
 val commonsCsvVersion = "1.8"
@@ -26,8 +29,8 @@ val bananaOrganisation = "net.bblfish.rdf"
   val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion  exclude("com.fasterxml.jackson.core", "jackson-databind")
   val jenaSpatialDependency = "org.apache.jena" % "jena-geosparql" % jenaVersion  exclude("com.fasterxml.jackson.core", "jackson-databind")
 
-  val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "2.1.0" // 1.3.0" // com.typesafe.play:twirl-api_2.13:1.5.1 (depends on 1.2.0)
-                                                             // "2.0.1"
+  val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.3.0" // com.typesafe.play:twirl-api_2.13:1.5.1 (depends on 1.2.0)
+  // "2.1.0" // 
 
   val junitDependency = "junit" % "junit" % "4.13.2" % Test
   libraryDependencies += "org.scalactic" %% "scalactic" % "3.1.1"
