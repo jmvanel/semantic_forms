@@ -11,7 +11,7 @@ import java.io.StringReader
 import org.apache.jena.riot.JsonLDWriteContext
 import org.apache.jena.riot.RDFFormat
 import org.apache.jena.riot.RDFDataMgr
-import org.apache.jena.riot.writer.JsonLDWriter
+import org.apache.jena.riot.writer.JsonLD11Writer
 import org.apache.jena.riot.system.PrefixMapStd
 import titaniumJena.Jena2Titanium
 
