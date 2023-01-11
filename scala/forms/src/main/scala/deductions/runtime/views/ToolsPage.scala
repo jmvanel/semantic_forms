@@ -249,10 +249,10 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
       window.encodeURIComponent( window.encodeURIComponent(query)) +
       "&label=" + document.getElementById('label').value
     console.log( 'URL ' + url );
-    if($isDNS)
+    if($isDNS || "$toolname" != "RDF_Viewer" )
       window.open( url , '_blank' );
     else {
-      var message = "RDFViewer works only on a hosted Internet serverURL !!! URL is " + url;
+      var message = "RDF_Viewer works only on a hosted Internet serverURL !!! URL is " + url;
       console.log( message );
       alert(message);
     }
