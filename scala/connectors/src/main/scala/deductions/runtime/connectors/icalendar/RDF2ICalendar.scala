@@ -90,7 +90,8 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
       val objet = triple.objectt
       // println(s"processTriple( $triple")
       addLine( pred match {
-        case dbo("startDate") => "DTSTAMP:" + formatDateTime( objet )
+        case dbo("startDate") => "DTSTAMP:" + formatDateTime( objet ) + "\n" +
+                                 "DTSTART:" + formatDateTime( objet )
         case schema("doorTime") => "DTSTART:" + formatDateTime( objet )
         case URI("http://purl.org/NET/c4dm/event.owl#agent") =>
           "ORGANIZER:" + getDisplayLabel(objet).replace(' ', '_')
