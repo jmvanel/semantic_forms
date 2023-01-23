@@ -138,13 +138,11 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
       makeLinkToVisualTool(textareaId,
           "/assets/rdfviewer/rdfviewer.html?url=",
           "RDF_Viewer", 15,
-          request=request),
-      makeLinkToVisualTool(textareaId,
-          spoggyToolURL,
-          // "sparql=" + URLEncoder.encode(servicesURIPrefix, "UTF-8") +
-//          "&url=",
-          "Spoggy", 15,
           request=request)
+      /* makeLinkToVisualTool(textareaId,
+          spoggyToolURL,
+          "Spoggy", 15,
+          request=request) */
       )
 
     <form role="form">
@@ -246,9 +244,12 @@ trait ToolsPage[Rdf <: RDF, DATASET] extends EnterButtons[Rdf, DATASET]
     console.log( 'query in textarea ' + query);
     console.log( 'services URL $servicesURL' );
     var url = '$servicesURL' +
-      window.encodeURIComponent( window.encodeURIComponent(query)) +
+      window.encodeURIComponent(
+        window.encodeURIComponent(query) +
+        "&unionDefaultGraph=" + document.getElementById('unionDefaultGraph').value
+      ) +
       "&label=" + document.getElementById('label').value
-    console.log( 'URL ' + url );
+    console.log( "makeLinkToVisualTool: toolname=$toolname, URL " + url );
     if($isDNS || "$toolname" != "RDF_Viewer" )
       window.open( url , '_blank' );
     else {
