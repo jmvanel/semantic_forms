@@ -68,14 +68,22 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
       val t0 = value.replaceAll("-", "").replaceAll(":", "")
       // "2013-09-18T14:30:00+02:00" : cut string after character "+" (otherwise not accepted by online validator)
       val t1 = t0.split( """\+""" )(0)
-      val t2 = if ( t1 . contains("T"))
-        if ( (t1.split("T"))(1) . length() == 4 )
-          t1 + "00"
+      val t2 =
+        if ( t1 . contains("T"))
+          if ( (t1.split("T"))(1) . length() == 4 )
+            t1 + "00"
+          else
+            t1
         else
-          t1
-      else
-        t1 + "T120000"
+          t1 + "T120000"
       t2
+    }
+
+    def formatTime( objet: Rdf#Node): String = {
+      val value = nodeToString(objet)
+      if( value == "")
+        return ""
+      return value.replaceAll(":", "")
     }
 
     def formatText(t: String): String =
@@ -95,7 +103,8 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
         case schema("doorTime") => "DTSTART:" + formatDateTime( objet )
         case URI("http://purl.org/NET/c4dm/event.owl#agent") =>
           "ORGANIZER:" + getDisplayLabel(objet).replace(' ', '_')
-        case dbo("endDate")   => "DTEND:" + formatDateTime( objet ) // nodeToString(objet).replaceAll("-", "")
+        case dbo("endDate")   => "DTEND:" + formatDateTime( objet )
+        case URI( "https://deductions.github.io/event.form.ttl#time") => "TIME:" + formatTime(objet)
         case URI("urn:displayLabel") => formatText("SUMMARY:" + nodeToString(objet))
         case rdfs.label              => formatText("SUMMARY:" + nodeToString(objet))
         case URI("http://purl.org/NET/c4dm/event.owl#place") =>
