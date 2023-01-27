@@ -19,9 +19,12 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
   /** main reusable function in API */
   def graph2iCalendar(graph: Rdf#Graph): String = {
 
-    val eventTriples = find(graph, ANY, rdf.typ, schema("Event"))
+    // val eventTriples = find(graph, ANY, rdf.typ, schema("Event"))
+    val eventTriples = find(graph, ANY, dbo("startDate"), ANY )
     val events = new StringBuilder()
     val CRLF = "\r\n"
+    // println(s">>>> graph2iCalendar graph $graph")
+    // println(s">>>> eventTriples2iCalendar eventTriples $eventTriples")
 
     def addLine(s: String): StringBuilder = {
       if (s != "") {
@@ -52,7 +55,7 @@ with RDFStoreLocalProvider[Rdf, DATASET]{
         for (
           triple2 <- find(graph, subject, ANY, ANY)
         ) { processTriple(triple2) }
-        addLine("END:VEVENT")
+        addLine("END:VEVENT\r\n")
       }
     }
 
