@@ -7,7 +7,8 @@ object Common {
     val bananaResolver = "bblfish-snapshots" at "http://bblfish.net/work/repo/releases"
 
 // val jenaVersion =  "4.5.0"
-val jenaVersion =  "4.6.1"
+// val jenaVersion =  "4.6.1"
+val jenaVersion =  "4.7.0"
 
 val akkaVersion =
   // "2.7.0" // 
@@ -16,7 +17,7 @@ val akkaVersion =
 val akkaHttpVersion = "10.2.7" // "10.2.4"
 val any23Version = "2.7" // 5" // 3"
 val commonsCsvVersion = "1.8"
-val luceneVersion = "8.10.1" // must be Jena's Lucene version
+val luceneVersion = "9.4.1" // 8.10.1" // MUST be Jena's Lucene version
 val bananaVersion = "0.8.4-SNAPSHOT"
 val bananaOrganisation = "net.bblfish.rdf"
 
@@ -56,7 +57,7 @@ val bananaOrganisation = "net.bblfish.rdf"
 
   val jsonDependencies = Seq(
     // remove play-json ?
-    "com.typesafe.play" %% "play-json" % "2.9.3", // 2" , // 1" , // "2.8.1"
+    "com.typesafe.play" %% "play-json" % "2.9.4" , // 3"
     //"javax.json" % "javax.json-api" % "1.1.4" ,
     //"jakarta.json" % "jakarta.json-api" % "2.0.0" ,
     "org.glassfish" % "jakarta.json" % "2.0.1" // 0"
