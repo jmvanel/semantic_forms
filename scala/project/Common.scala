@@ -6,18 +6,18 @@ object Common {
     val localResolver = Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
     val bananaResolver = "bblfish-snapshots" at "http://bblfish.net/work/repo/releases"
 
-// val jenaVersion =  "4.5.0"
 // val jenaVersion =  "4.6.1"
-val jenaVersion =  "4.7.0"
+// val jenaVersion =  "4.7.0"
+val jenaVersion =  "4.8.0"
 
 val akkaVersion =
-  // "2.7.0" // 
-"2.6.20"
+  "2.6.20"
+  // "2.8.1" // adding an explicit dependency on version 2.8.1 of the [akka-slf4j, akka-actor-typed, akka-serialization-jackson] artifacts ???
 
 val akkaHttpVersion = "10.2.7" // "10.2.4"
 val any23Version = "2.7" // 5" // 3"
 val commonsCsvVersion = "1.8"
-val luceneVersion = "9.4.1" // 8.10.1" // MUST be Jena's Lucene version
+val luceneVersion = "9.5.0" // 9.4.1" // 8.10.1" // MUST be Jena's Lucene version
 val bananaVersion = "0.8.4-SNAPSHOT"
 val bananaOrganisation = "net.bblfish.rdf"
 
@@ -30,8 +30,9 @@ val bananaOrganisation = "net.bblfish.rdf"
   val jenaTextDependency = "org.apache.jena" % "jena-text" % jenaVersion  exclude("com.fasterxml.jackson.core", "jackson-databind")
   val jenaSpatialDependency = "org.apache.jena" % "jena-geosparql" % jenaVersion  exclude("com.fasterxml.jackson.core", "jackson-databind")
 
-  val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % "1.3.0" // com.typesafe.play:twirl-api_2.13:1.5.1 (depends on 1.2.0)
-  // "2.1.0" // 
+  val xmlDependency = "org.scala-lang.modules" %% "scala-xml" % // "1.3.0" // com.typesafe.play:twirl-api_2.13:1.5.1 (depends on 1.2.0)
+    "2.1.0" //
+dependencyOverrides += "org.scala-lang.modules" %% "scala-xml" % "2.1.0"
 
   val junitDependency = "junit" % "junit" % "4.13.2" % Test
   libraryDependencies += "org.scalactic" %% "scalactic" % "3.1.1"
@@ -42,8 +43,8 @@ val bananaOrganisation = "net.bblfish.rdf"
 
   val loggingDependencies = Seq(
    "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5" // 4"
- , "ch.qos.logback" % "logback-classic" % "1.4.5" // 1.2.9"
- , "org.slf4j" % "slf4j-api" % "2.0.6" // 1.7.32"
+ , "ch.qos.logback" % "logback-classic" % "1.4.7" // 1.2.9"
+ , "org.slf4j" % "slf4j-api" % "2.0.7" // 6" // 1.7.32"
 )
 
   // val scalazDependency = "org.scalaz" %% "scalaz-core" % "7.2.8"
@@ -88,11 +89,11 @@ val bananaOrganisation = "net.bblfish.rdf"
 
     "org.scala-lang.modules" %% "scala-async" % "1.0.1" , // 0.9.7" ,
 
-    "org.apache.commons" % "commons-csv" % "1.9.0" , // 1.8" ,
+    "org.apache.commons" % "commons-csv" % "1.10.0" , // 1.9.0"
     any23Dependencies
     // for Java 9 (works also with Java 8)
     , "javax.xml.bind" % "jaxb-api" % "2.3.1"
-    , "org.jsoup" % "jsoup" % "1.15.3" // 14.3" // 1.13.1"
+    , "org.jsoup" % "jsoup" % "1.16.1" // 1.15.3" // 14.3"
 
     , "commons-io" % "commons-io" % "2.11.0" // 2.8.0"
   )
